@@ -28,6 +28,11 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 -/
 
+-- Porting note: this file is incredibly slow, so rather than trying to find minimal values
+-- for `maxHeartbeats` and `synthInstance.maxHeartbeats`, we just remove the limits altogether!
+-- It is better with `reenableeta`, but not perfect!
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 
 noncomputable section
 
@@ -512,16 +517,17 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
--- Porting FIXME: replacing `bad` with `ContinuousLinearMap.algebra` below causes a massive timeout.
+-- Porting FIXME: replacing `algebra'` with `algebra` (its definition!) below
+-- causes a massive timeout.
 
 set_option synthInstance.etaExperiment true in
-private def bad : Algebra 𝕜 (E →L[𝕜] E) := inferInstance
+private def algebra' : Algebra 𝕜 (E →L[𝕜] E) := algebra
 
 set_option synthInstance.etaExperiment true in
 -- /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 -- respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
-  { bad with
+  { algebra' with
     norm_smul_le := by
       intro c f
       apply op_norm_smul_le c f}
@@ -866,7 +872,7 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
 set_option synthInstance.etaExperiment true in
 set_option maxHeartbeats 400000 in
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
+  f.op_norm_le_bound₂ (norm_nonneg (flip f)) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_op_norm₂ y x
 
@@ -910,7 +916,7 @@ variable (E F G σ₁₃ σ₂₃)
 set_option synthInstance.etaExperiment true in
 -- set_option maxHeartbeats 12800000 in
 set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 40000 in
+set_option synthInstance.maxHeartbeats 640000 in
 -- On `reenableeta` these suffice:
 -- set_option maxHeartbeats 400000 in
 -- set_option synthInstance.maxHeartbeats 40000 in
@@ -1020,6 +1026,11 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using op_norm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
+-- Porting note: this instance should just be `inferInstance`,
+-- and indeed simply unneeded.
+local instance : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) := by
+  exact @hasOpNorm _ _ (F →SL[σ₂₃] G) ((E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) _ _ _ _ _ _ _
+
 set_option synthInstance.etaExperiment true in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1083,10 +1094,13 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
+-- Porting note: we need additional instances close at hand to get this to compile.
+local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
+local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
 set_option synthInstance.etaExperiment true in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
-    ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := op_norm_comp_le _ _
+    ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := op_norm_comp_le (compL 𝕜 Eₗ Fₗ Gₗ) L
     _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
@@ -1110,6 +1124,7 @@ variable {Eₗ} (𝕜)
 set_option linter.uppercaseLean3 false
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 800000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy
@@ -1129,11 +1144,27 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      apply ContinuousLinearMap.ext fun x => _
-      simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
-        Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
-      rfl)
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
+      -- Porting note: mathport suggested:
+      -- ```
+      -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
+      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
+      --   Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
+      -- rfl
+      -- ```
+      -- Frustratingly, in `mathlib3` we can use:
+      -- ```
+      -- dsimp   -- ⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)
+      -- simp
+      -- ```
+      -- Here neither `dsimp` or `simp` seem to make progress.
+      rw [add_apply, add_apply]
+      rw [comp_apply, comp_apply, comp_apply, comp_apply]
+      rw [compL_apply, compL_apply]
+      rw [flip_apply, flip_apply]
+      rw [compL_apply, compL_apply]
+      rw [comp_apply, comp_apply, comp_apply, comp_apply]
+      simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
 variable {M₁ M₂ M₃ M₄}
@@ -1232,6 +1263,11 @@ theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜
 theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x‖ ≤ ‖x‖ :=
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
+
+-- Porting note: this instance should just be `inferInstance`,
+-- and indeed simply unneeded.
+local instance : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := by
+  exact @hasOpNorm _ _ 𝕜' (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') _ _ _ _ _ _ _
 
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
