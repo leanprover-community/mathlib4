@@ -346,6 +346,14 @@ instance [ToMessageData β] : ToMessageData (Later (β := β) σ s add) where
       "takeBestOfEq (" ++ f b ++ ", " ++ f b' ++ ")"
     f
 
+/-- Form the "outer product" version of a given `takeBestOfEq` function. -/
+private def outer {m : Type → Type} [Monad m] : (σ × β → σ × β → m β) →
+    σ × List β → σ × List β → m (List β)
+| takeBestOfEq, (s,bs), (s',b's) => do
+  let r ← bs.mapM fun b => do
+    b's.mapM fun b' => takeBestOfEq (s,b) (s',b')
+  return r.join
+
 /-- Collapse a `Later` tree via `incorporate`. To allow us to extract other values from the tree
 via modified `incorporate`s, we generalize to `β'` in appropriate places. This completely ignores
 `takeBestOfEq`. -/
@@ -554,6 +562,18 @@ def minimizeItems [Monad m] [Alternative m] [MonadBacktrack σ m]
     best.crushListReduceOptionM takeBestOfEq
   else
     return best.crushListReduceOption
+
+/-- `BacktrackMinimizeConfig` specialized for minimizing the number of subgoals generated in
+nondeterministic evolution in `MetaM`. -/
+structure MinimizeSubgoalsConfig extends MinimizeItemsConfig MetaM MVarId
+
+/-- Given a list of goals and a function `alternatives` which generates different possible lists of
+subgoals, generate the minimum number of goals for which either `alternatives` fails in `MetaM` (or
+all alternatives thus generated fail) or which are encountered at `maxDepth`. -/
+def minimizeSubgoals (goals : List MVarId)
+    (alternatives : MVarId → MetaM (List (MetaM (List MVarId))))
+    (cfg : MinimizeSubgoalsConfig := {}) : MetaM (List MVarId) :=
+  minimizeItems goals alternatives cfg.toMinimizeItemsConfig
 
 end BacktrackOptimize
 
