@@ -2,13 +2,13 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Pretriangulated
 
 variable (C : Type _) [Category C] [Abelian C]
 
-/-instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
-
+instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
 
 namespace HomotopyCategory
 
@@ -89,6 +89,83 @@ instance : (Qh : _ ⥤ DerivedCategory C).IsTriangulated := by
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
 
-end DerivedCategory-/
+noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).HasCommShift ℤ := by
+  dsimp only [Q]
+  infer_instance
 
-example : ℕ := 42
+@[reassoc]
+lemma Q_commShiftIso_hom_app (X : CochainComplex C ℤ) (n : ℤ) :
+    (Q.commShiftIso n).hom.app X =
+      Qh.map (((HomotopyCategory.quotient C _).commShiftIso n).hom.app X) ≫
+        (Qh.commShiftIso n).hom.app ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj X) :=
+  by apply Functor.commShiftIso_comp_hom_app
+
+@[reassoc]
+lemma Q_commShiftIso_inv_app (X : CochainComplex C ℤ) (n : ℤ) :
+    (Q.commShiftIso n).inv.app X =
+      (Qh.commShiftIso n).inv.app ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj X) ≫
+      Qh.map (((HomotopyCategory.quotient C _).commShiftIso n).inv.app X) :=
+  by apply Functor.commShiftIso_comp_inv_app
+
+@[reassoc]
+lemma Qh_commShiftIso_hom_app (X : CochainComplex C ℤ) (n : ℤ) :
+    Qh.map (((HomotopyCategory.quotient C _).commShiftIso n).hom.app X) =
+      (Q.commShiftIso n).hom.app X ≫
+        (Qh.commShiftIso n).inv.app ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj X) := by
+  simp only [Q_commShiftIso_hom_app, Functor.comp_obj, assoc, Iso.hom_inv_id_app, comp_id]
+
+@[reassoc]
+lemma Qh_commShiftIso_inv_app (X : CochainComplex C ℤ) (n : ℤ) :
+    (Qh.commShiftIso n).inv.app ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj X) =
+      (Q.commShiftIso n).inv.app X ≫
+      Qh.map (((HomotopyCategory.quotient C _).commShiftIso n).hom.app X) := by
+  simp only [Q_commShiftIso_inv_app, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
+    Functor.comp_obj, Paths.of_obj, CategoryTheory.Functor.map_id, comp_id]
+
+lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
+    IsIso (Qh.map f) ↔ HomotopyCategory.qis C f := by
+  constructor
+  . intro hf
+    sorry
+  . intro hf
+    exact Localization.inverts Qh (HomotopyCategory.qis C) _ hf
+
+lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔
+      ∀ (n : ℤ), IsIso ((HomologicalComplex.newHomologyFunctor C _ n).map φ) := by
+  dsimp only [Q, Functor.comp]
+  rw [← HomotopyCategory.mem_qis_iff', isIso_Qh_map_iff]
+
+-- this will appear in Algebra.Homology.HomotopyCategory.ShortExact
+noncomputable def _root_.CochainComplex.MappingCone.fromOfShortComplex (S : ShortComplex (CochainComplex C ℤ)):
+  CochainComplex.mappingCone S.f ⟶ S.X₃ := CochainComplex.MappingCone.desc S.f 0 S.g (by simp)
+lemma _root_.CochainComplex.MappingCone.isIso_homologyMap_fromOfShortComplex
+  {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) (n : ℤ) :
+    IsIso (HomologicalComplex.homologyMap (CochainComplex.MappingCone.fromOfShortComplex S) n) := sorry
+
+section
+
+variable {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
+
+lemma isIso_Q_map_fromOfShortComplex :
+    IsIso (Q.map (CochainComplex.MappingCone.fromOfShortComplex S)) := by
+  rw [isIso_Q_map_iff]
+  exact CochainComplex.MappingCone.isIso_homologyMap_fromOfShortComplex hS
+
+noncomputable def triangleOfSESδ :
+  Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
+    have := isIso_Q_map_fromOfShortComplex hS
+    inv (Q.map (CochainComplex.MappingCone.fromOfShortComplex S)) ≫
+      Q.map (CochainComplex.MappingCone.triangleδ S.f) ≫
+      (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
+
+noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
+  Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
+
+lemma triangleOfSES_distinguished :
+  triangleOfSES hS ∈ distTriang (DerivedCategory C) := sorry
+
+end
+
+
+end DerivedCategory
