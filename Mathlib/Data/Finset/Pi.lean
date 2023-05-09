@@ -93,8 +93,7 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
-    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (Pi.cons s a b) :=
-  by
+    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
   refine'
@@ -113,8 +112,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
 #align finset.pi_insert Finset.pi_insert
 
 theorem pi_singletons {β : Type _} (s : Finset α) (f : α → β) :
-    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} :=
-  by
+    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
   rw [eq_singleton_iff_unique_mem]
   constructor
   · simp

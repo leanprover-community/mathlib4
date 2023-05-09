@@ -391,8 +391,7 @@ containing both `S` and `star S`. -/
 @[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
   { S ⊔ star S with
-    star_mem' := fun {a} ha =>
-      by
+    star_mem' := fun {a} ha => by
       simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
       rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
       simpa using ha }
@@ -536,8 +535,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
     (Hstar : ∀ x, p x → p (star x)) : p a :=
-  Subtype.recOn a fun b hb =>
-    by
+  Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
     apply adjoin_induction hb
     exacts[fun x hx => ⟨subset_adjoin R s hx, Hs x hx⟩, fun r =>

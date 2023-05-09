@@ -349,8 +349,8 @@ theorem plus_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.plusObj P ⟶ Q) (hQ : Pre
 #align category_theory.grothendieck_topology.plus_hom_ext CategoryTheory.GrothendieckTopology.plus_hom_ext
 
 @[simp]
-theorem isoToPlus_inv (hP : Presheaf.IsSheaf J P) : (J.isoToPlus P hP).inv = J.plusLift (𝟙 _) hP :=
-  by
+theorem isoToPlus_inv (hP : Presheaf.IsSheaf J P) :
+    (J.isoToPlus P hP).inv = J.plusLift (𝟙 _) hP := by
   apply J.plusLift_unique
   rw [Iso.comp_inv_eq, Category.id_comp]
   rfl
