@@ -30,13 +30,13 @@ domain and range, and possibly with side conditions. -/
 syntax (name := mono) "mono" (ppSpace mono.side)? : attr
 
 /--
-A extension for `mono`.
+An extension for `mono`.
 -/
 structure MonoExt where
   /-- The side this expression applies to. -/
   side : Side := .both
   /-- The name of the `mono` extension. -/
-  name : Name -- !! := by exact decl_name%
+  name : Name
 deriving Inhabited
 
 /-- Checks for left `mono`s (i.e., `mono`s with `side` equal to `.left` or `.both`) -/
@@ -81,8 +81,6 @@ deriving Inhabited
 initialize monoExt : ScopedEnvExtension Entry Entry Monos ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq MonoExt := ⟨fun _ _ ↦ false⟩
-  -- /- Insert `v : MonoExt` into the tree `dt` on all key sequences given in `kss`. -/
-  -- let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e ↦ return e
@@ -100,15 +98,19 @@ def Monos.eraseCore (d : Monos) (declName : Name) : Monos :=
   Erase a name's `mono` attribute.
 
   Check that it does in fact have the `mono` attribute by making sure it names a `MonoExt`
-  found somewhere in the state's tree, and is not erased.
+found somewhere in the state's tree, and is not already erased.
 -/
 def Monos.erase [Monad m] [MonadError m] (d : Monos) (declName : Name) : m Monos := do
   unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName do
     throwError "'{declName}' does not have the [mono] attribute"
   return d.eraseCore declName
 
+/-- Particular names of `Prop` classes representing monotonicity which are unfolded in lemma return
+types via `dsimp` prior to addition to the DiscrTree and unfolded similarly in goal types when
+applying `mono`. -/
 def Monos.toUnfold : Array Name := #[``Monotone, ``StrictMono, ``MonotoneOn, ``StrictMonoOn]
 
+/-- The `dsimp` context used to unfold only the names given in `Monos.toUnfold`. -/
 def Monos.SimpContext : Simp.Context where
   config       := Simp.neutralConfig
   simpTheorems := #[{ toUnfold := Monos.toUnfold.foldl (·.insert ·) {}}]
@@ -121,7 +123,7 @@ initialize registerBuiltinAttribute {
     | `(attr| mono $[$s:mono.side]?) => do
       let side ← parseSide s
       let env ← getEnv
-      unless (env.find? name).isNone do --!! good way to check?
+      unless (env.find? name).isNone do
         let s := monoExt.getState env
         if s.tree.values.any (·.name == name) then
           throwError "declaration '{name}' is already tagged mono"
