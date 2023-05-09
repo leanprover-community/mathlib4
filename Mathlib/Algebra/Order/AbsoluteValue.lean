@@ -8,12 +8,7 @@ Authors: Mario Carneiro, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Absolute values
