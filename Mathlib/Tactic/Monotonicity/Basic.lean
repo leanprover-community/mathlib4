@@ -17,7 +17,7 @@ The tactic `mono` applies monotonicity rules (collected through the library by b
 `@[mono]`).
 -/
 
-open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim
+open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim BacktrackOptimize
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -96,8 +96,9 @@ private def applyMonosAlternatives (side : Side) (goal : MVarId) :
     let (e, gs) ← applyMono t m; goal.assign e; pure gs
 
 def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
-    (simpUsing : Option Simp.Context := none) (recurse : Bool := false) :
-    MetaM (List MVarId) := withReducible do
+    (simpUsing : Option Simp.Context := none) (recurse : Bool := false)
+    (failIfAmbiguousMatch : Bool := false) :
+    MetaM (List MVarId) := goal.withContext <| withReducible do
   if ! recurse then
     let goal ← match ← dsimpGoal goal Monos.SimpContext false with
   | (some goal, _) => pure goal
@@ -106,28 +107,31 @@ def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
       if let some ctx := simpUsing then
         match ← simpGoal goal ctx with
         | (some (_, goal), _) => pure goal
-        | _ => pure goal
+        | (none, _) => return []
       else
         pure goal
   let (_, goal) ← goal.introsP!
   let t ← whnfR <|← instantiateMVars <|← goal.getType
   trace[Tactic.mono] "Applying monos to {t}"
-    let (expr, goals) ← goal.withContext <| applyMonos t side
+    let (expr, goals) ← goal.withContext <| applyMonos t side failIfAmbiguousMatch
   goal.assign expr
   return goals
   else
-    try
+    let cfg : MinimizeSubgoalsConfig :=
       if let some ctx := simpUsing then
-        let simpProc (goals : List MVarId) : MetaM (Option (List MVarId)) := do
-          let goals ← goals.mapM
-            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map (·.2) |>.getD g )
-          return some goals
-        let cfg : BacktrackConfig := { proc := fun _ curr ↦ simpProc curr }
-        backtrack cfg `Tactic.mono (applyMonosAlternatives side) [goal]
+        let simpProc (goals : List MVarId) : MetaM (Option (List MVarId)) := optional do
+          let goals := (← goals.mapM
+            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map (·.2))).reduceOption
+          return goals
+        { proc := fun _ curr ↦ simpProc curr, trace := `Tactic.mono }
       else
-        backtrack {} `Tactic.mono (applyMonosAlternatives side) [goal]
-    catch _ =>
-      throwError "could not close the goal by applying mono recursively"
+        { trace := `Tactic.mono }
+    let some goals ← optional <| minimizeSubgoals [goal] (applyMonosAlternatives side) cfg
+      | throwError "backtracking in mono* failed"
+    if ! (← goal.isAssigned) then
+      throwError "mono* could not make progress on the goal"
+    else
+      return goals
 
 open Parser.Tactic in
 /--
