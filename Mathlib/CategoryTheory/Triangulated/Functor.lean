@@ -68,6 +68,13 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
         (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+attribute [local simp] commShiftIso_comp_hom_app
+
+@[simps!]
+def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
+  NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
 variable [HasZeroObject C] [HasZeroObject D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]

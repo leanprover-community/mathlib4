@@ -45,6 +45,8 @@ end HomotopyCategory
 
 def DerivedCategory := (HomotopyCategory.qis C).Localization
 
+-- TODO: prevent projections "_as" for @[simps] in `DerivedCategory C`
+
 namespace DerivedCategory
 
 instance : Category (DerivedCategory C) := by
@@ -128,6 +130,18 @@ lemma Qh_commShiftIso_inv_app (X : CochainComplex C ℤ) (n : ℤ) :
   simp only [Q_commShiftIso_inv_app, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
     Functor.comp_obj, Paths.of_obj, CategoryTheory.Functor.map_id, comp_id]
 
+lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
+    (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
+      Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.MappingCone.triangle f)) := by
+  constructor
+  . rintro ⟨T', e, ⟨X, Y, f, ⟨e'⟩⟩⟩
+    exact ⟨_, _, f, ⟨e ≪≫ Qh.mapTriangle.mapIso e' ≪≫
+      (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).symm.app _⟩⟩
+  . rintro ⟨X, Y, f, ⟨e⟩⟩
+    refine' isomorphic_distinguished _ (Qh.map_distinguished _ _) _
+      (e ≪≫ (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
+    exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
 variable (C)
 
 noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
@@ -203,8 +217,22 @@ noncomputable def triangleOfSESδ :
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
+noncomputable def triangleOfSESIso :
+    Q.mapTriangle.obj (CochainComplex.MappingCone.triangle S.f) ≅ triangleOfSES hS := by
+  have := isIso_Q_map_fromOfShortComplex hS
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    (asIso (Q.map (CochainComplex.MappingCone.fromOfShortComplex S))) _ _ _
+  . dsimp [triangleOfSES]
+    simp only [comp_id, id_comp]
+  . dsimp [triangleOfSES, CochainComplex.MappingCone.fromOfShortComplex, asIso]
+    rw [id_comp, ← Q.map_comp, CochainComplex.MappingCone.inr_desc]
+  . dsimp [triangleOfSES, triangleOfSESδ]
+    rw [CategoryTheory.Functor.map_id, comp_id, IsIso.hom_inv_id_assoc]
+
 lemma triangleOfSES_distinguished :
-  triangleOfSES hS ∈ distTriang (DerivedCategory C) := sorry
+    triangleOfSES hS ∈ distTriang (DerivedCategory C) := by
+  rw [mem_distTriang_iff]
+  exact ⟨_, _, S.f, ⟨(triangleOfSESIso hS).symm⟩⟩
 
 end
 
