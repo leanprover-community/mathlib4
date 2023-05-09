@@ -50,17 +50,20 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
     haveI := Fintype.ofFinite S
     FintypeCat.of S
   map S T f := DiscreteQuotient.ofLE f.le
+set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
 /-- An abbreviation for `X.fintype_diagram ⋙ Fintype_to_Profinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
   X.fintypeDiagram ⋙ FintypeCat.toProfinite
+set_option linter.uppercaseLean3 false in
 #align Profinite.diagram Profinite.diagram
 
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
   { pt
     π := { app := fun S => ⟨S.proj, S.proj_isLocallyConstant.Continuous⟩ } }
+set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone Profinite.asLimitCone
 
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asLimitCone) :=
@@ -75,6 +78,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asL
         refine' ⟨b, _⟩
         ext S : 3
         apply hb)
+set_option linter.uppercaseLean3 false in
 #align Profinite.is_iso_as_limit_cone_lift Profinite.isIso_asLimitCone_lift
 
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
@@ -82,6 +86,7 @@ induced by lifting `X.as_limit_cone`.
 -/
 def isoAsLimitConeLift : X ≅ (limitCone X.diagram).pt :=
   asIso <| (limitConeIsLimit _).lift X.asLimitCone
+set_option linter.uppercaseLean3 false in
 #align Profinite.iso_as_limit_cone_lift Profinite.isoAsLimitConeLift
 
 /-- The isomorphism of cones `X.as_limit_cone` and `Profinite.limit_cone X.diagram`.
@@ -89,17 +94,19 @@ The underlying isomorphism is defeq to `X.iso_as_limit_cone_lift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone _ :=
   Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
+set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone_iso Profinite.asLimitConeIso
 
 /-- `X.as_limit_cone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) X.asLimitConeIso.symm
+set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit Profinite.asLimit
 
 /-- A bundled version of `X.as_limit_cone` and `X.as_limit`. -/
 def lim : Limits.LimitCone X.diagram :=
   ⟨X.asLimitCone, X.asLimit⟩
+set_option linter.uppercaseLean3 false in
 #align Profinite.lim Profinite.lim
 
 end Profinite
-
