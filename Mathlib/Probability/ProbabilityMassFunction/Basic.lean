@@ -372,12 +372,12 @@ namespace Pmf
 open MeasureTheory
 
 /-- The measure associated to a `Pmf` by `toMeasure` is a probability measure. -/
-instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : Pmf α) :
+instance toMeasure.probabilityMeasure [MeasurableSpace α] (p : Pmf α) :
     ProbabilityMeasure p.toMeasure :=
   ⟨by
     simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,
       toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
-#align pmf.to_measure.is_probability_measure Pmf.toMeasure.isProbabilityMeasure
+#align pmf.to_measure.is_probability_measure Pmf.toMeasure.probabilityMeasure
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α) (μ : Measure α)
   [ProbabilityMeasure μ]
