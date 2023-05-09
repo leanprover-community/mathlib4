@@ -111,7 +111,74 @@ example (p : le a b) : le a (plus one b) := by
   mono right
 
 end MonoSide
+
+section MonoWith
+
+example : 1 ≤ 1 := by
+  mono with 1 = 1
+  guard_target =ₛ 1 = 1
+  rfl
+
+example : 1 ≤ 1 := by
+  mono* with True
+  guard_target =ₛ True
   trivial
+
+example : 1 ≤ 1 := by
+  mono with 1 = 1, 2 = 2
+  guard_target =ₛ 1 = 1; rfl
+  guard_target =ₛ 2 = 2; rfl
+
+def propErr :=
+  "type mismatch\n  ℕ\nhas type\n  Type : Type 1\nbut is expected to have type\n  Prop : Type"
+
+example : True := by
+  success_if_fail_with_msg propErr mono with Nat
+  trivial
+
+axiom P : Prop
+axiom Q : Prop
+
+axiom p : P
+
+@[mono]
+axiom a1 (p : P) (a b : A) : le a b
+
+@[mono]
+axiom a2 (q : Q) (a b : A) : le a b
+
+def err := "Found multiple good matches which each produced the same number "
+  ++ "of subgoals. Write `mono with ...` and include the types of one or more of the subgoals in "
+  ++ "one of the following lists to encourage `mono` to use that list."
+  ++ "\n\n  [P]\n  \n  [Q]"
+
+example : le a b := by
+  success_if_fail_with_msg err mono
+  mono with P
+  exact p
+
+@[mono]
+axiom a3 (j : x ≤ y) : z ≤ y → x + z ≤ y
+
+example : x + z ≤ y := by
+  have := True.intro
+  mono with 1 = 1
+  guard_hyp mono_with :ₛ 1 = 1
+  case mono_with => rfl
+  exact lxy
+  exact lzy
+
+example : x + z ≤ y := by
+  have := True.intro
+  mono with 1 = 1, 2 = 2
+  guard_hyp mono_with_1 :ₛ 1 = 1
+  guard_hyp mono_with_2 :ₛ 2 = 2
+  case mono_with_1 => exact Eq.refl 1
+  case mono_with_2 => exact Eq.refl 2
+  exact lxy
+  exact lzy
+
+end MonoWith
 
 -- example
 --   (h : 3 + 6 ≤ 4 + 5)
