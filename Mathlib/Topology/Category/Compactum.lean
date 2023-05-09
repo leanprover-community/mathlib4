@@ -228,7 +228,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
   let ssu := Set (Set (Ultrafilter X))
-  let ι : fsu → ssu := (fun x ↦ ↑x)
+  let ι : fsu → ssu := fun x ↦ ↑x
   let C0 : ssu := { Z | ∃ B ∈ F, X.str ⁻¹' B = Z }
   let AA := { G : Ultrafilter X | A ∈ G }
   let C1 := insert AA C0
@@ -294,7 +294,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
   let ssu := Set (Set (Ultrafilter X))
-  let ι : fsu → ssu := coe
+  let ι : fsu → ssu := fun x ↦ ↑x
   let T0 : ssu := { S | ∃ A ∈ F, S = basic A }
   let AA := X.str ⁻¹' {x}
   let T1 := insert AA T0
@@ -334,7 +334,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
       · rcases h with ⟨Q, hQ, rfl⟩
         exact claim4 Q hQ
     intro S hS
-    apply finite_inter_closure_insert
+    apply finiteInterClosure_insert
     · constructor
       · use Set.univ
         refine' ⟨Filter.univ_sets _, _⟩
@@ -356,9 +356,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     simp [← c1, c2]
   -- Finish...
   intro T hT
-  refine' claim6 _ (finite_inter_mem (finite_inter_closure_has_finite_inter _) _ _)
+  refine' claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ _)
   intro t ht
-  exact finite_inter_closure.basic (@hT t ht)
+  exact finiteInterClosure.basic (@hT t ht)
 #align Compactum.str_eq_of_le_nhds Compactum.str_eq_of_le_nhds
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
@@ -387,13 +387,19 @@ theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
     exact ⟨F, h1, str_eq_of_le_nhds _ _ h2⟩
 #align Compactum.cl_eq_closure Compactum.cl_eq_closure
 
+-- porting note: TODO: rem,ove `TopologicalSpace` instances
 /-- Any morphism of compacta is continuous. -/
-theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
+theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y)
+[TopologicalSpace X.A] [TopologicalSpace Y.A] : Continuous f := by
   rw [continuous_iff_ultrafilter]
-  intro x _ h
-  rw [tendsto, ← coe_map]
-  apply le_nhds_of_str_eq
-  rw [← str_hom_commute, str_eq_of_le_nhds _ x h]
+  intro x g h
+  rw [Tendsto, ← coe_map]
+  convert le_nhds_of_str_eq (map ↑f g) (f x) _
+  --apply le_nhds_of_str_eq
+  sorry
+  rw [← str_hom_commute, str_eq_of_le_nhds _ x _]
+  convert h
+  sorry
 #align Compactum.continuous_of_hom Compactum.continuous_of_hom
 
 /-- Given any compact Hausdorff space, we construct a Compactum. -/
@@ -401,16 +407,16 @@ noncomputable def ofTopologicalSpace (X : Type _) [TopologicalSpace X] [CompactS
     [T2Space X] : Compactum where
   A := X
   a := Ultrafilter.lim
-  unit' := by
+  unit := by
     ext x
     exact lim_eq (pure_le_nhds _)
-  assoc' := by
+  assoc := by
     ext FF
     change Ultrafilter (Ultrafilter X) at FF
     set x := (Ultrafilter.map Ultrafilter.lim FF).lim with c1
     have c2 : ∀ (U : Set X) (F : Ultrafilter X), F.lim ∈ U → IsOpen U → U ∈ F := by
       intro U F h1 hU
-      exact c1 ▸ is_open_iff_ultrafilter.mp hU _ h1 _ (Ultrafilter.le_nhds_lim _)
+      exact isOpen_iff_ultrafilter.mp hU _ h1 _ (Ultrafilter.le_nhds_lim _)
     have c3 : ↑(Ultrafilter.map Ultrafilter.lim FF) ≤ 𝓝 x := by
       rw [le_nhds_iff]
       intro U hx hU
@@ -430,12 +436,12 @@ noncomputable def ofTopologicalSpace (X : Type _) [TopologicalSpace X] [CompactS
 /-- Any continuous map between Compacta is a morphism of compacta. -/
 def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X ⟶ Y :=
   { f
-    h' := by
+    h := by
       rw [continuous_iff_ultrafilter] at cont
       ext (F : Ultrafilter X)
       specialize cont (X.str F) F (le_nhds_of_str_eq F (X.str F) rfl)
-      have := str_eq_of_le_nhds (Ultrafilter.map f F) _ cont
-      simpa only [← this, types_comp_apply, of_type_functor_map] }
+      simp only [types_comp_apply, ofTypeFunctor_map]
+      exact str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
 #align Compactum.hom_of_continuous Compactum.homOfContinuous
 
 end Compactum
@@ -443,7 +449,7 @@ end Compactum
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := { α := X } }
-  map X Y f :=
+  map := @fun X Y f =>
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 #align Compactum_to_CompHaus compactumToCompHaus
@@ -462,7 +468,7 @@ theorem faithful : Faithful compactumToCompHaus :=
 /-- This definition is used to prove essential surjectivity of Compactum_to_CompHaus. -/
 def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
-  Hom :=
+  hom :=
     { toFun := id
       continuous_toFun :=
         continuous_def.2 fun _ h => by
@@ -484,7 +490,7 @@ theorem essSurj : EssSurj compactumToCompHaus :=
 
 /-- The functor Compactum_to_CompHaus is an equivalence of categories. -/
 noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
-  apply equivalence.of_fully_faithfully_ess_surj _
+  apply Equivalence.ofFullyFaithfullyEssSurj _
   exact compactumToCompHaus.full
   exact compactumToCompHaus.faithful
   exact compactumToCompHaus.essSurj
@@ -499,7 +505,7 @@ def compactumToCompHausCompForget :
   (NatIso.ofComponents fun X => eqToIso rfl) <| by
     intro X Y f
     dsimp
-    simpa
+    simp
 #align Compactum_to_CompHaus_comp_forget compactumToCompHausCompForget
 
 /-
@@ -511,7 +517,7 @@ monadicity.
 -/
 noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
   let e : forget CompHaus ≅ Compactum_to_CompHaus.inv ⋙ Compactum.forget :=
-    _ ≪≫ iso_whisker_left _ compactumToCompHausCompForget
+    _ ≪≫ isoWhiskerLeft _ compactumToCompHausCompForget
   swap
   refine' _ ≪≫ functor.associator _ _ _
   refine' (functor.left_unitor _).symm ≪≫ _
@@ -521,6 +527,6 @@ noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget Comp
 #align CompHaus.forget_creates_limits CompHaus.forgetCreatesLimits
 
 noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
-  change creates_limits (profiniteToCompHaus ⋙ forget _)
+  change CreatesLimits (profiniteToCompHaus ⋙ forget _)
   infer_instance
 #align Profinite.forget_creates_limits Profinite.forgetCreatesLimits
