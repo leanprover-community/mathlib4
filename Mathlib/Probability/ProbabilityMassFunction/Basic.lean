@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Ennreal
-import Mathbin.MeasureTheory.Measure.MeasureSpace
+import Mathlib.Topology.Instances.ENNReal
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Probability mass functions
@@ -49,8 +49,7 @@ def Pmf.{u} (α : Type u) : Type u :=
 
 namespace Pmf
 
-instance funLike : FunLike (Pmf α) α fun p => ℝ≥0∞
-    where
+instance funLike : FunLike (Pmf α) α fun p => ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective' p q h := Subtype.eq h
 #align pmf.fun_like Pmf.funLike
@@ -113,8 +112,7 @@ theorem apply_pos_iff (p : Pmf α) (a : α) : 0 < p a ↔ a ∈ p.support :=
   pos_iff_ne_zero.trans (p.mem_support_iff a).symm
 #align pmf.apply_pos_iff Pmf.apply_pos_iff
 
-theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} :=
-  by
+theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := by
   refine'
     ⟨fun h =>
       Set.Subset.antisymm (fun a' ha' => by_contra fun ha => _) fun a' ha' =>
@@ -133,8 +131,7 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} :=
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
       (ENNReal.add_lt_add_of_le_of_lt ENNReal.one_ne_top (le_of_eq h.symm) this)
     _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, if_true]
-    _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) :=
-      by
+    _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
       exact symm (tsum_eq_single a fun b hb => if_neg hb)
     _ = ∑' b, ite (b = a) (p b) 0 + ite (b = a) 0 (p b) := ennreal.tsum_add.symm
@@ -175,8 +172,7 @@ theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x :=
 #align pmf.to_outer_measure_apply Pmf.toOuterMeasure_apply
 
 @[simp]
-theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ :=
-  by
+theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
   refine' eq_top_iff.2 <| le_trans (le_infₛ fun x hx => _) (le_sum_caratheodory _)
   exact
     let ⟨y, hy⟩ := hx
@@ -184,15 +180,13 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ :=
 #align pmf.to_outer_measure_caratheodory Pmf.toOuterMeasure_caratheodory
 
 @[simp]
-theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x :=
-  by
+theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by
   refine' (to_outer_measure_apply p s).trans ((@tsum_eq_sum _ _ _ _ _ _ s _).trans _)
   · exact fun x hx => Set.indicator_of_not_mem hx _
   · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem hx _
 #align pmf.to_outer_measure_apply_finset Pmf.toOuterMeasure_apply_finset
 
-theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a :=
-  by
+theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
   refine' (p.to_outer_measure_apply {a}).trans ((tsum_eq_single a fun b hb => _).trans _)
   · exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
   · exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
@@ -210,15 +204,13 @@ theorem toOuterMeasure_inj {p q : Pmf α} : p.toOuterMeasure = q.toOuterMeasure 
   toOuterMeasure_injective.eq_iff
 #align pmf.to_outer_measure_inj Pmf.toOuterMeasure_inj
 
-theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s :=
-  by
+theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
   rw [to_outer_measure_apply, ENNReal.tsum_eq_zero]
   exact function.funext_iff.symm.trans Set.indicator_eq_zero'
 #align pmf.to_outer_measure_apply_eq_zero_iff Pmf.toOuterMeasure_apply_eq_zero_iff
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » s) -/
-theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s :=
-  by
+theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
   refine' (p.to_outer_measure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
   · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
     have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
