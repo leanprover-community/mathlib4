@@ -154,29 +154,76 @@ def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
     else
       return goals
 
+--TODO: add `config` syntax to adjust `maxDepth` in `mono*` and add custom `proc`
+open Parser.Tactic in
+/-- `mono` applies all lemmas tagged with `@[mono]` to the main goal and chooses the one which
+produces the fewest remaining subgoals.
 
-/--
-`mono` applies monotonicity rules and local hypotheses repetitively.  For example,
-```lean
-example (x y z k : ℤ)
-    (h : 3 ≤ (4 : ℤ))
-    (h' : z ≤ y) :
-    (k + 3 + x) - y ≤ (k + 4 + x) - z := by
-  mono
-```
+* `mono*` applies `mono` lemmas repeatedly, choosing the sequence of applications which produces
+the fewest goals overall up to a given `maxDepth`. `mono*` fails if it cannot make any progress on
+the goal.
+
+* `mono left` and `mono right` only apply "left" and "right" mono lemmas to the goal. Lemmas tagged
+with `@[mono left]` and `@[mono right]` are considered left and right, respectively; lemmas tagged
+with just `@[mono]` are considered both `left` and `right`, and are always included. By default,
+all lemmas are applied.
+
+* `mono with P, Q ...` (where `P : Prop`, `Q : Prop`, ...) asserts `P`, `Q`, ... and leaves them as
+side goals. If multiple different `mono` lemmas each produce the same minimal number of subgoals
+when applied, then `mono` fails; if one of those goals has e.g. type `P`, then `mono with P` can be
+used to encourage `mono` to choose the set of subgoals that includes `P`.
+
+* `mono using l₁, l₂, ...` runs `simp [l₁, l₂, ...]` before applying `mono`. `mono* using ...` runs
+`simp` before each iteration of `mono`.
+
+All syntax options can be used in combination with each other, as long as they're used in the order
+given above.
 -/
 syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
   (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
 elab_rules : tactic
-| `(tactic| mono $[*]? $[$h:mono.side]? $[ with%$w $a:term,*]? $[ using%$u $s,*]? ) => do
-  let msg (s : String) := s ++ " syntax is not yet supported in 'mono'"
-  if let some h := h then throwErrorAt h (msg "'left'/'right'/'both'")
-  if let some w := w then throwErrorAt w (msg "'with'")
-  if let some u := u then throwErrorAt u (msg "'using'")
-  let cfg ← elabApplyRulesConfig <| mkNullNode #[]
-  let cfg := { cfg with
-    backtracking := false
-    transparency := .reducible
-    exfalso := false }
-  liftMetaTactic fun g => do solveByElim.processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+| `(tactic| mono $[*%$r]? $[$s:mono.side]? $[ with%$w $a:term,*]? $[ using%$u $l,*]? ) =>
+  withMainContext do
+    let goal ← getMainGoal
+    let side ← parseSide s
+    -- Handle 'with' by asserting all hypotheses provided
+    let (assertedMVarIds, goal) ←
+      if let some a := a then
+        let as ← a.getElems.mapM (fun a => withRef a <| Tactic.elabTermEnsuringType a q(Prop))
+        trace[Tactic.mono] "asserting {as}"
+        let assertedMVars ← as.mapM (fun t => mkFreshExprMVar (some t) .syntheticOpaque)
+        let hs : Array Hypothesis :=
+          if as.size == 1 then
+            #[⟨`mono_with, as[0]!, assertedMVars[0]!⟩]
+          else
+            as.zipWithIndex.zipWith assertedMVars fun (a,n) mvar =>
+              ⟨`mono_with |>.appendIndexAfter (n+1), a, mvar⟩
+        let (_, goal) ← goal.assertHypotheses hs
+        pure (assertedMVars.map (·.mvarId!), goal)
+      else
+        pure (#[], goal)
+    -- Change the context to that of the new goal
+    goal.withContext do
+      -- Handle 'using'
+      let ctx? : Option Simp.Context ← l.mapM fun l => do
+        pure (← Tactic.mkSimpContext (←`(tactic| simp only [$l,*])) false).ctx
+      -- Run `mono`.
+      let newGoals ← goal.mono side ctx? r.isSome true
+      -- Cleanup:
+      -- Replace all internal goal usernames with appropriate user-friendly ones.
+      let _ ← liftMetaM <| newGoals.foldlM (init := 1) fun n g => do
+        if (← g.getTag).isInternal' then
+          g.setUserName <| (`mono).appendIndexAfter n
+          pure (n+1)
+        else
+          pure n
+      -- Name all `assertedMVarIds` `mono_with_<n>`, or just `mono_with` if there's only one.
+      if assertedMVarIds.size == 1 then
+        assertedMVarIds[0]!.setUserName `mono_with
+      else
+        let _ ← liftMetaM <| assertedMVarIds.foldlM (init := 1)
+          fun n g => do g.setUserName <| (`mono_with).appendIndexAfter n; pure (n+1)
+      -- Change all (possibly natural) goals to syntheticOpaque.
+      for goal in newGoals do goal.setKind .syntheticOpaque
+      replaceMainGoal (newGoals ++ assertedMVarIds.toList)
