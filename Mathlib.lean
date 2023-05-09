@@ -164,6 +164,7 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Pi
