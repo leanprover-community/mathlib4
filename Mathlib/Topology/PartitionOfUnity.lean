@@ -8,12 +8,12 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Finprod
-import Mathbin.SetTheory.Ordinal.Basic
-import Mathbin.Topology.ContinuousFunction.Algebra
-import Mathbin.Topology.Paracompact
-import Mathbin.Topology.ShrinkingLemma
-import Mathbin.Topology.UrysohnsLemma
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.Paracompact
+import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Continuous partition of unity
@@ -158,8 +158,7 @@ theorem sum_eq_one {x : X} (hx : x ∈ s) : (∑ᶠ i, f i x) = 1 :=
 
 /-- If `f` is a partition of unity on `s`, then for every `x ∈ s` there exists an index `i` such
 that `0 < f i x`. -/
-theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x :=
-  by
+theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   have H := f.sum_eq_one hx
   contrapose! H
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
@@ -250,8 +249,7 @@ theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
 
 /-- A `bump_covering` that consists of a single function, uniformly equal to one, defined as an
 example for `inhabited` instance. -/
-protected def single (i : ι) (s : Set X) : BumpCovering ι X s
-    where
+protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   toFun := Pi.single i 1
   locally_finite' x := by
     refine' ⟨univ, univ_mem, (finite_singleton i).Subset _⟩
@@ -295,8 +293,7 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
           IsClosed t →
             Disjoint s t → ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U :=
-  by
+    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
   rcases exists_subset_unionᵢ_closure_subset hs ho (fun x _ => hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU⟩
   have hVU' : ∀ i, V i ⊆ U i := fun i => subset.trans subset_closure (hVU i)
@@ -341,8 +338,7 @@ theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (
           IsClosed t →
             Disjoint s t → ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
-    ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U :=
-  by
+    ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
   rcases precise_refinement_set hs _ ho hU with ⟨V, hVo, hsV, hVf, hVU⟩
   rcases exists_is_subordinate_of_locally_finite_of_prop p h01 hs V hVo hVf hsV with ⟨f, hfp, hf⟩
   exact ⟨f, hfp, hf.mono hVU⟩
@@ -351,8 +347,7 @@ theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
 `s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
-    (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
-  by
+    (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U := by
   rcases precise_refinement_set hs _ ho hU with ⟨V, hVo, hsV, hVf, hVU⟩
   rcases exists_is_subordinate_of_locally_finite hs V hVo hVf hsV with ⟨f, hf⟩
   exact ⟨f, hf.mono hVU⟩
@@ -395,24 +390,20 @@ theorem support_toPouFun_subset (i : ι) : support (f.toPouFun i) ⊆ support (f
 
 theorem toPouFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPouFun i x = f i x * ∏ j in t.filterₓ fun j => WellOrderingRel j i, 1 - f j x :=
-  by
+    f.toPouFun i x = f i x * ∏ j in t.filterₓ fun j => WellOrderingRel j i, 1 - f j x := by
   refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun j hj => _)
   rw [Ne.def, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
 #align bump_covering.to_pou_fun_eq_mul_prod BumpCovering.toPouFun_eq_mul_prod
 
-theorem sum_toPouFun_eq (x : X) : (∑ᶠ i, f.toPouFun i x) = 1 - ∏ᶠ i, 1 - f i x :=
-  by
+theorem sum_toPouFun_eq (x : X) : (∑ᶠ i, f.toPouFun i x) = 1 - ∏ᶠ i, 1 - f i x := by
   set s := (f.point_finite x).toFinset
   have hs : (s : Set ι) = { i | f i x ≠ 0 } := finite.coe_to_finset _
-  have A : (support fun i => to_pou_fun f i x) ⊆ s :=
-    by
+  have A : (support fun i => to_pou_fun f i x) ⊆ s := by
     rw [hs]
     exact fun i hi => f.support_to_pou_fun_subset i hi
-  have B : (mul_support fun i => 1 - f i x) ⊆ s :=
-    by
+  have B : (mul_support fun i => 1 - f i x) ⊆ s := by
     rw [hs, mul_support_one_sub]
     exact fun i => id
   letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
@@ -425,8 +416,7 @@ theorem sum_toPouFun_eq (x : X) : (∑ᶠ i, f.toPouFun i x) = 1 - ∏ᶠ i, 1 -
 
 theorem exists_finset_toPouFun_eventuallyEq (i : ι) (x : X) :
     ∃ t : Finset ι,
-      f.toPouFun i =ᶠ[𝓝 x] f i * ∏ j in t.filterₓ fun j => WellOrderingRel j i, 1 - f j :=
-  by
+      f.toPouFun i =ᶠ[𝓝 x] f i * ∏ j in t.filterₓ fun j => WellOrderingRel j i, 1 - f j := by
   rcases f.locally_finite x with ⟨U, hU, hf⟩
   use hf.to_finset
   filter_upwards [hU]with y hyU
@@ -436,8 +426,7 @@ theorem exists_finset_toPouFun_eventuallyEq (i : ι) (x : X) :
   exact hf.mem_to_finset.2 ⟨y, ⟨hj, hyU⟩⟩
 #align bump_covering.exists_finset_to_pou_fun_eventually_eq BumpCovering.exists_finset_toPouFun_eventuallyEq
 
-theorem continuous_toPouFun (i : ι) : Continuous (f.toPouFun i) :=
-  by
+theorem continuous_toPouFun (i : ι) : Continuous (f.toPouFun i) := by
   refine'
     (f i).Continuous.mul <|
       continuous_finprod_cond (fun j _ => continuous_const.sub (f j).Continuous) _
@@ -453,21 +442,18 @@ words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
 In order to avoid an assumption `linear_order ι`, we use `well_ordering_rel` instead of `(<)`. -/
-def toPartitionOfUnity : PartitionOfUnity ι X s
-    where
+def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPouFun i, f.continuous_toPouFun i⟩
   locally_finite' := f.LocallyFinite.Subset f.support_toPouFun_subset
   nonneg' i x :=
     mul_nonneg (f.NonNeg i x) (finprod_cond_nonneg fun j hj => sub_nonneg.2 <| f.le_one j x)
-  sum_eq_one' x hx :=
-    by
+  sum_eq_one' x hx := by
     simp only [ContinuousMap.coe_mk, sum_to_pou_fun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
     · rw [mul_support_one_sub]
       exact f.point_finite x
-  sum_le_one' x :=
-    by
+  sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_to_pou_fun_eq, sub_le_self_iff]
     exact finprod_nonneg fun i => sub_nonneg.2 <| f.le_one i x
 #align bump_covering.to_partition_of_unity BumpCovering.toPartitionOfUnity

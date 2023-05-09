@@ -2060,6 +2060,7 @@ import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
+import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
