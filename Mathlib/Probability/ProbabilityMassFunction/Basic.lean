@@ -49,9 +49,9 @@ def Pmf.{u} (α : Type u) : Type u :=
 
 namespace Pmf
 
-instance funLike : FunLike (Pmf α) α fun p => ℝ≥0∞ where
+instance funLike : FunLike (Pmf α) α fun _ => ℝ≥0∞ where
   coe p a := p.1 a
-  coe_injective' p q h := Subtype.eq h
+  coe_injective' _ _ h := Subtype.eq h
 #align pmf.fun_like Pmf.funLike
 
 @[ext]
@@ -79,7 +79,7 @@ theorem tsum_coe_ne_top (p : Pmf α) : (∑' a, p a) ≠ ∞ :=
 theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : (∑' a, s.indicator p a) ≠ ∞ :=
   ne_of_lt
     (lt_of_le_of_lt
-      (tsum_le_tsum (fun a => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
+      (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
         ENNReal.summable)
       (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
 #align pmf.tsum_coe_indicator_ne_top Pmf.tsum_coe_indicator_ne_top
@@ -118,7 +118,7 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
       Set.Subset.antisymm (fun a' ha' => by_contra fun ha => _) fun a' ha' =>
         ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
       fun h =>
-      trans (symm <| tsum_eq_single a fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha'))
+      _root_.trans (symm <| tsum_eq_single a fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha'))
         p.tsum_coe⟩
   suffices : 1 < ∑' a, p a
   exact ne_of_lt this p.tsum_coe.symm
@@ -134,16 +134,15 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
       exact symm (tsum_eq_single a fun b hb => if_neg hb)
-    _ = ∑' b, ite (b = a) (p b) 0 + ite (b = a) 0 (p b) := ennreal.tsum_add.symm
+    _ = ∑' b, ite (b = a) (p b) 0 + ite (b = a) 0 (p b) := ENNReal.tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
-    
 #align pmf.apply_eq_one_iff Pmf.apply_eq_one_iff
 
 theorem coe_le_one (p : Pmf α) (a : α) : p a ≤ 1 :=
   hasSum_le
     (by
       intro b
-      split_ifs <;> simp only [h, zero_le', le_rfl])
+      split_ifs with h <;> simp only [h, zero_le', le_rfl])
     (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
 #align pmf.coe_le_one Pmf.coe_le_one
 
@@ -181,13 +180,13 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 
 @[simp]
 theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by
-  refine' (to_outer_measure_apply p s).trans ((@tsum_eq_sum _ _ _ _ _ _ s _).trans _)
-  · exact fun x hx => Set.indicator_of_not_mem hx _
-  · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem hx _
+  refine' (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) _).trans _)
+  · exact fun x hx => Set.indicator_of_not_mem (Finset.mem_coe.not.2 hx) _
+  · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
 #align pmf.to_outer_measure_apply_finset Pmf.toOuterMeasure_apply_finset
 
 theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
-  refine' (p.to_outer_measure_apply {a}).trans ((tsum_eq_single a fun b hb => _).trans _)
+  refine' (p.toOuterMeasure_apply {a}).trans ((tsum_eq_single a fun b hb => _).trans _)
   · exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
   · exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
 #align pmf.to_outer_measure_apply_singleton Pmf.toOuterMeasure_apply_singleton
@@ -205,13 +204,13 @@ theorem toOuterMeasure_inj {p q : Pmf α} : p.toOuterMeasure = q.toOuterMeasure 
 #align pmf.to_outer_measure_inj Pmf.toOuterMeasure_inj
 
 theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
-  rw [to_outer_measure_apply, ENNReal.tsum_eq_zero]
-  exact function.funext_iff.symm.trans Set.indicator_eq_zero'
+  rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
+  exact Function.funext_iff.symm.trans Set.indicator_eq_zero'
 #align pmf.to_outer_measure_apply_eq_zero_iff Pmf.toOuterMeasure_apply_eq_zero_iff
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » s) -/
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
-  refine' (p.to_outer_measure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
+  refine' (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
   · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
     have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
     have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap
@@ -220,7 +219,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
         (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
   · suffices : ∀ (x) (_ : x ∉ s), p x = 0
     exact
-      trans
+      _root_.trans
         (tsum_congr fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a))
         p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
@@ -229,7 +228,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
 @[simp]
 theorem toOuterMeasure_apply_inter_support :
     p.toOuterMeasure (s ∩ p.support) = p.toOuterMeasure s := by
-  simp only [to_outer_measure_apply, Pmf.support, Set.indicator_inter_support]
+  simp only [toOuterMeasure_apply, Pmf.support, Set.indicator_inter_support]
 #align pmf.to_outer_measure_apply_inter_support Pmf.toOuterMeasure_apply_inter_support
 
 /-- Slightly stronger than `outer_measure.mono` having an intersection with `p.support` -/
@@ -246,7 +245,7 @@ theorem toOuterMeasure_apply_eq_of_inter_support_eq {s t : Set α}
 
 @[simp]
 theorem toOuterMeasure_apply_fintype [Fintype α] : p.toOuterMeasure s = ∑ x, s.indicator p x :=
-  (p.to_outer_measure_apply s).trans (tsum_eq_sum fun x h => absurd (Finset.mem_univ x) h)
+  (p.toOuterMeasure_apply s).trans (tsum_eq_sum fun x h => absurd (Finset.mem_univ x) h)
 #align pmf.to_outer_measure_apply_fintype Pmf.toOuterMeasure_apply_fintype
 
 end OuterMeasure
@@ -273,17 +272,17 @@ theorem toMeasure_apply_eq_toOuterMeasure_apply (hs : MeasurableSet s) :
 #align pmf.to_measure_apply_eq_to_outer_measure_apply Pmf.toMeasure_apply_eq_toOuterMeasure_apply
 
 theorem toMeasure_apply (hs : MeasurableSet s) : p.toMeasure s = ∑' x, s.indicator p x :=
-  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs).trans (p.to_outer_measure_apply s)
+  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs).trans (p.toOuterMeasure_apply s)
 #align pmf.to_measure_apply Pmf.toMeasure_apply
 
 theorem toMeasure_apply_singleton (a : α) (h : MeasurableSet ({a} : Set α)) :
     p.toMeasure {a} = p a := by
-  simp [to_measure_apply_eq_to_outer_measure_apply _ _ h, to_outer_measure_apply_singleton]
+  simp [toMeasure_apply_eq_toOuterMeasure_apply _ _ h, toOuterMeasure_apply_singleton]
 #align pmf.to_measure_apply_singleton Pmf.toMeasure_apply_singleton
 
 theorem toMeasure_apply_eq_zero_iff (hs : MeasurableSet s) :
     p.toMeasure s = 0 ↔ Disjoint p.support s := by
-  rw [to_measure_apply_eq_to_outer_measure_apply p s hs, to_outer_measure_apply_eq_zero_iff]
+  rw [toMeasure_apply_eq_toOuterMeasure_apply p s hs, toOuterMeasure_apply_eq_zero_iff]
 #align pmf.to_measure_apply_eq_zero_iff Pmf.toMeasure_apply_eq_zero_iff
 
 theorem toMeasure_apply_eq_one_iff (hs : MeasurableSet s) : p.toMeasure s = 1 ↔ p.support ⊆ s :=
@@ -294,19 +293,19 @@ theorem toMeasure_apply_eq_one_iff (hs : MeasurableSet s) : p.toMeasure s = 1 �
 @[simp]
 theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet p.support) :
     p.toMeasure (s ∩ p.support) = p.toMeasure s := by
-  simp [p.to_measure_apply_eq_to_outer_measure_apply s hs,
-    p.to_measure_apply_eq_to_outer_measure_apply _ (hs.inter hp)]
+  simp [p.toMeasure_apply_eq_toOuterMeasure_apply s hs,
+    p.toMeasure_apply_eq_toOuterMeasure_apply _ (hs.inter hp)]
 #align pmf.to_measure_apply_inter_support Pmf.toMeasure_apply_inter_support
 
 theorem toMeasure_mono {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : s ∩ p.support ⊆ t) : p.toMeasure s ≤ p.toMeasure t := by
-  simpa only [p.to_measure_apply_eq_to_outer_measure_apply, hs, ht] using to_outer_measure_mono p h
+  simpa only [p.toMeasure_apply_eq_toOuterMeasure_apply, hs, ht] using toOuterMeasure_mono p h
 #align pmf.to_measure_mono Pmf.toMeasure_mono
 
 theorem toMeasure_apply_eq_of_inter_support_eq {s t : Set α} (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : s ∩ p.support = t ∩ p.support) : p.toMeasure s = p.toMeasure t := by
-  simpa only [p.to_measure_apply_eq_to_outer_measure_apply, hs, ht] using
-    to_outer_measure_apply_eq_of_inter_support_eq p h
+  simpa only [p.toMeasure_apply_eq_toOuterMeasure_apply, hs, ht] using
+    toOuterMeasure_apply_eq_of_inter_support_eq p h
 #align pmf.to_measure_apply_eq_of_inter_support_eq Pmf.toMeasure_apply_eq_of_inter_support_eq
 
 section MeasurableSingletonClass
@@ -327,17 +326,17 @@ theorem toMeasure_inj {p q : Pmf α} : p.toMeasure = q.toMeasure ↔ p = q :=
 
 @[simp]
 theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x in s, p x :=
-  (p.toMeasure_apply_eq_toOuterMeasure_apply s s.MeasurableSet).trans
+  (p.toMeasure_apply_eq_toOuterMeasure_apply s s.measurableSet).trans
     (p.toOuterMeasure_apply_finset s)
 #align pmf.to_measure_apply_finset Pmf.toMeasure_apply_finset
 
 theorem toMeasure_apply_of_finite (hs : s.Finite) : p.toMeasure s = ∑' x, s.indicator p x :=
-  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs.MeasurableSet).trans (p.to_outer_measure_apply s)
+  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs.measurableSet).trans (p.toOuterMeasure_apply s)
 #align pmf.to_measure_apply_of_finite Pmf.toMeasure_apply_of_finite
 
 @[simp]
 theorem toMeasure_apply_fintype [Fintype α] : p.toMeasure s = ∑ x, s.indicator p x :=
-  (p.toMeasure_apply_eq_toOuterMeasure_apply s s.toFinite.MeasurableSet).trans
+  (p.toMeasure_apply_eq_toOuterMeasure_apply s s.toFinite.measurableSet).trans
     (p.toOuterMeasure_apply_fintype s)
 #align pmf.to_measure_apply_fintype Pmf.toMeasure_apply_fintype
 
@@ -357,10 +356,10 @@ namespace Measure
 we can convert any probability measure into a `pmf`, where the mass of a point
 is the measure of the singleton set under the original measure. -/
 def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
-    [h : IsProbabilityMeasure μ] : Pmf α :=
+    [h : ProbabilityMeasure μ] : Pmf α :=
   ⟨fun x => μ ({x} : Set α),
     ENNReal.summable.hasSum_iff.2
-      (trans
+      (_root_.trans
         (symm <|
           (tsum_indicator_apply_singleton μ Set.univ MeasurableSet.univ).symm.trans
             (tsum_congr fun x => congr_fun (Set.indicator_univ _) x))
@@ -368,7 +367,7 @@ def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
 #align measure_theory.measure.to_pmf MeasureTheory.Measure.toPmf
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
-  [IsProbabilityMeasure μ]
+  [ProbabilityMeasure μ]
 
 theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} :=
   rfl
@@ -377,7 +376,8 @@ theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} :=
 @[simp]
 theorem toPmf_toMeasure : μ.toPmf.toMeasure = μ :=
   Measure.ext fun s hs => by
-    simpa only [μ.to_pmf.to_measure_apply s hs, ← μ.tsum_indicator_apply_singleton s hs]
+    rw [μ.toPmf.toMeasure_apply s hs, ← μ.tsum_indicator_apply_singleton s hs]
+    rfl
 #align measure_theory.measure.to_pmf_to_measure MeasureTheory.Measure.toPmf_toMeasure
 
 end Measure
@@ -390,28 +390,27 @@ open MeasureTheory
 
 /-- The measure associated to a `pmf` by `to_measure` is a probability measure -/
 instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : Pmf α) :
-    IsProbabilityMeasure p.toMeasure :=
+    ProbabilityMeasure p.toMeasure :=
   ⟨by
-    simpa only [MeasurableSet.univ, to_measure_apply_eq_to_outer_measure_apply, Set.indicator_univ,
-      to_outer_measure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
+    simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,
+      toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
 #align pmf.to_measure.is_probability_measure Pmf.toMeasure.isProbabilityMeasure
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α) (μ : Measure α)
-  [IsProbabilityMeasure μ]
+  [ProbabilityMeasure μ]
 
 @[simp]
 theorem toMeasure_toPmf : p.toMeasure.toPmf = p :=
   Pmf.ext fun x => by
-    rw [← p.to_measure_apply_singleton x (measurable_set_singleton x), p.to_measure.to_pmf_apply]
+    rw [← p.toMeasure_apply_singleton x (measurableSet_singleton x), p.toMeasure.toPmf_apply]
 #align pmf.to_measure_to_pmf Pmf.toMeasure_toPmf
 
-theorem toMeasure_eq_iff_eq_toPmf (μ : Measure α) [IsProbabilityMeasure μ] :
-    p.toMeasure = μ ↔ p = μ.toPmf := by rw [← to_measure_inj, measure.to_pmf_to_measure]
+theorem toMeasure_eq_iff_eq_toPmf (μ : Measure α) [ProbabilityMeasure μ] :
+    p.toMeasure = μ ↔ p = μ.toPmf := by rw [← toMeasure_inj, Measure.toPmf_toMeasure]
 #align pmf.to_measure_eq_iff_eq_to_pmf Pmf.toMeasure_eq_iff_eq_toPmf
 
-theorem toPmf_eq_iff_toMeasure_eq (μ : Measure α) [IsProbabilityMeasure μ] :
-    μ.toPmf = p ↔ μ = p.toMeasure := by rw [← to_measure_inj, measure.to_pmf_to_measure]
+theorem toPmf_eq_iff_toMeasure_eq (μ : Measure α) [ProbabilityMeasure μ] :
+    μ.toPmf = p ↔ μ = p.toMeasure := by rw [← toMeasure_inj, Measure.toPmf_toMeasure]
 #align pmf.to_pmf_eq_iff_to_measure_eq Pmf.toPmf_eq_iff_toMeasure_eq
 
 end Pmf
-
