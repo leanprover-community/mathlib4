@@ -8,7 +8,7 @@ Authors: Minchao Wu, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Computability.Halting
+import Mathlib.Computability.Halting
 
 /-!
 # Strong reducibility and degrees.
@@ -132,8 +132,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 open Computable
 
 theorem computable_of_manyOneReducible {p : α → Prop} {q : β → Prop} (h₁ : p ≤₀ q)
-    (h₂ : ComputablePred q) : ComputablePred p :=
-  by
+    (h₂ : ComputablePred q) : ComputablePred p := by
   rcases h₁ with ⟨f, c, hf⟩
   rw [show p = fun a => q (f a) from Set.ext hf]
   rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
@@ -438,16 +437,14 @@ private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on <;> simp
 #align many_one_degree.le_refl many_one_degree.le_refl
 
-private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ :=
-  by
+private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and_iff]
 #align many_one_degree.le_antisymm many_one_degree.le_antisymm
 
-private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ :=
-  by
+private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
@@ -485,8 +482,7 @@ theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
 #align many_one_degree.add_of ManyOneDegree.add_of
 
 @[simp]
-protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ :=
-  by
+protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
