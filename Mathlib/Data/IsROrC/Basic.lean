@@ -8,9 +8,9 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Sqrt
-import Mathbin.Analysis.NormedSpace.Star.Basic
-import Mathbin.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 /-!
 # `is_R_or_C`: a typeclass for ℝ or ℂ
@@ -345,8 +345,7 @@ theorem conj_i : conj (i : K) = -i :=
 #align is_R_or_C.conj_I IsROrC.conj_i
 
 @[simp, is_R_or_C_simps]
-theorem conj_of_real (r : ℝ) : conj (r : K) = (r : K) :=
-  by
+theorem conj_of_real (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [of_real_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
 #align is_R_or_C.conj_of_real IsROrC.conj_of_real
@@ -370,8 +369,7 @@ theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * i :=
     rw [map_add, map_mul, conj_I, conj_of_real, conj_of_real, mul_neg, sub_eq_add_neg]
 #align is_R_or_C.conj_eq_re_sub_im IsROrC.conj_eq_re_sub_im
 
-theorem sub_conj (z : K) : z - conj z = 2 * im z * i :=
-  by
+theorem sub_conj (z : K) : z - conj z = 2 * im z * i := by
   nth_rw 1 [← re_add_im z]
   rw [conj_eq_re_sub_im, add_sub_sub_cancel, ← two_mul, mul_assoc]
 #align is_R_or_C.sub_conj IsROrC.sub_conj
@@ -399,8 +397,7 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = i * (conj z - z) / 2 := by
 #align is_R_or_C.im_eq_conj_sub IsROrC.im_eq_conj_sub
 
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_tFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] :=
-  by
+theorem is_real_tFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
   · intro h
     rw [← @of_real_inj K, im_eq_conj_sub, h, sub_self, MulZeroClass.mul_zero, zero_div,
@@ -477,8 +474,7 @@ theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
 #align is_R_or_C.norm_sq_nonneg IsROrC.normSq_nonneg
 
 @[simp, is_R_or_C_simps]
-theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 :=
-  by
+theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 := by
   rw [norm_sq_eq_def']
   simp [sq]
 #align is_R_or_C.norm_sq_eq_zero IsROrC.normSq_eq_zero
@@ -502,8 +498,7 @@ theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   normSq.map_mul z w
 #align is_R_or_C.norm_sq_mul IsROrC.normSq_mul
 
-theorem normSq_add (z w : K) : normSq (z + w) = normSq z + normSq w + 2 * re (z * conj w) :=
-  by
+theorem normSq_add (z w : K) : normSq (z + w) = normSq z + normSq w + 2 * re (z * conj w) := by
   simp only [norm_sq_apply, map_add, mul_neg, sub_neg_eq_add, is_R_or_C_simps]
   ring
 #align is_R_or_C.norm_sq_add IsROrC.normSq_add
@@ -542,8 +537,7 @@ theorem of_real_inv (r : ℝ) : ((r⁻¹ : ℝ) : K) = r⁻¹ :=
   map_inv₀ (algebraMap ℝ K) r
 #align is_R_or_C.of_real_inv IsROrC.of_real_inv
 
-theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) :=
-  by
+theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
@@ -672,8 +666,7 @@ theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
 #align is_R_or_C.norm_of_nonneg IsROrC.norm_of_nonneg
 
 @[simp, is_R_or_C_simps, norm_cast]
-theorem norm_nat_cast (n : ℕ) : ‖(n : K)‖ = n :=
-  by
+theorem norm_nat_cast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← of_real_nat_cast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 #align is_R_or_C.norm_nat_cast IsROrC.norm_nat_cast
@@ -726,14 +719,12 @@ theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
 
 open IsAbsoluteValue
 
-theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 :=
-  by
+theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le (abs_re_le_norm _) (norm_nonneg _)
 #align is_R_or_C.abs_re_div_norm_le_one IsROrC.abs_re_div_norm_le_one
 
-theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 :=
-  by
+theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
 #align is_R_or_C.abs_im_div_norm_le_one IsROrC.abs_im_div_norm_le_one
@@ -984,8 +975,7 @@ theorem ofRealAm_coe : (ofRealAm : ℝ → K) = coe :=
 #align is_R_or_C.of_real_am_coe IsROrC.ofRealAm_coe
 
 /-- The ℝ → K coercion, as a linear isometry -/
-noncomputable def ofRealLi : ℝ →ₗᵢ[ℝ] K
-    where
+noncomputable def ofRealLi : ℝ →ₗᵢ[ℝ] K where
   toLinearMap := ofRealAm.toLinearMap
   norm_map' := norm_of_real
 #align is_R_or_C.of_real_li IsROrC.ofRealLi
