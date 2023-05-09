@@ -244,6 +244,17 @@ def applyMatchReducing (constName : Name) (t : Expr) (kind : MetavarKind := .nat
   let (expr, goals?) ← mkAppMFromTelescope' cExpr (hs, bs) allowPendingInstMVars
   return (expr, goals?.reduceOption)
 
+/-- Given a list of goals, evaluate `f` on each goal in sequence and join the results. Each
+evaluation of `f` on a goal `g` is performed in the context of `g` (i.e. using `g.withContext`). If
+`f` fails, the goal is left unchanged. -/
+def accumulateGoals (goals : List MVarId) (f : MVarId → MetaM (List MVarId)) :
+    MetaM (List MVarId) := do
+  let acc' : Array MVarId ← goals.foldlM (init := #[]) fun acc g => g.withContext do
+    match ← optional (f g) with
+    | none => pure (acc.push g)
+    | some gs => pure (acc.appendList gs)
+  pure acc'.toList
+
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
 annotations. -/
