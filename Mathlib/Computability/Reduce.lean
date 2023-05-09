@@ -19,7 +19,7 @@ semilattice.
 
 ## Notations
 
-This file uses the local notation `⊕'` for `sum.elim` to denote the disjoint union of two degrees.
+This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint union of two degrees.
 
 ## References
 
@@ -44,11 +44,12 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
 #align many_one_reducible ManyOneReducible
 
 -- mathport name: «expr ≤₀ »
+@[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
 theorem ManyOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
     (h : Computable f) : (fun a => q (f a)) ≤₀ q :=
-  ⟨f, h, fun a => Iff.rfl⟩
+  ⟨f, h, fun _ => Iff.rfl⟩
 #align many_one_reducible.mk ManyOneReducible.mk
 
 @[refl]
@@ -60,7 +61,8 @@ theorem manyOneReducible_refl {α} [Primcodable α] (p : α → Prop) : p ≤₀
 theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
-    ⟨g ∘ f, c₂.comp c₁, fun a => ⟨fun h => by rwa [← h₂, ← h₁], fun h => by rwa [h₁, h₂]⟩⟩
+    ⟨g ∘ f, c₂.comp c₁,
+      fun a => ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 #align many_one_reducible.trans ManyOneReducible.trans
 
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
@@ -68,7 +70,7 @@ theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneRe
 #align reflexive_many_one_reducible reflexive_manyOneReducible
 
 theorem transitive_manyOneReducible {α} [Primcodable α] : Transitive (@ManyOneReducible α α _ _) :=
-  fun p q r => ManyOneReducible.trans
+  fun _ _ _ => ManyOneReducible.trans
 #align transitive_many_one_reducible transitive_manyOneReducible
 
 /--
@@ -80,11 +82,12 @@ def OneOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop) 
 #align one_one_reducible OneOneReducible
 
 -- mathport name: «expr ≤₁ »
+@[inherit_doc OneOneReducible]
 infixl:1000 " ≤₁ " => OneOneReducible
 
 theorem OneOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
     (h : Computable f) (i : Injective f) : (fun a => q (f a)) ≤₁ q :=
-  ⟨f, h, i, fun a => Iff.rfl⟩
+  ⟨f, h, i, fun _ => Iff.rfl⟩
 #align one_one_reducible.mk OneOneReducible.mk
 
 @[refl]
@@ -97,22 +100,22 @@ theorem OneOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Prim
     {q : β → Prop} {r : γ → Prop} : p ≤₁ q → q ≤₁ r → p ≤₁ r
   | ⟨f, c₁, i₁, h₁⟩, ⟨g, c₂, i₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁, i₂.comp i₁, fun a =>
-      ⟨fun h => by rwa [← h₂, ← h₁], fun h => by rwa [h₁, h₂]⟩⟩
+      ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 #align one_one_reducible.trans OneOneReducible.trans
 
 theorem OneOneReducible.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ q → p ≤₀ q
-  | ⟨f, c, i, h⟩ => ⟨f, c, h⟩
+  | ⟨f, c, _, h⟩ => ⟨f, c, h⟩
 #align one_one_reducible.to_many_one OneOneReducible.to_many_one
 
 theorem OneOneReducible.of_equiv {α β} [Primcodable α] [Primcodable β] {e : α ≃ β} (q : β → Prop)
     (h : Computable e) : (q ∘ e) ≤₁ q :=
-  OneOneReducible.mk _ h e.Injective
+  OneOneReducible.mk _ h e.injective
 #align one_one_reducible.of_equiv OneOneReducible.of_equiv
 
 theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β}
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
-  convert OneOneReducible.of_equiv _ h <;> funext <;> simp
+  convert OneOneReducible.of_equiv _ h; funext; simp
 #align one_one_reducible.of_equiv_symm OneOneReducible.of_equiv_symm
 
 theorem reflexive_oneOneReducible {α} [Primcodable α] : Reflexive (@OneOneReducible α α _ _) :=
@@ -120,7 +123,7 @@ theorem reflexive_oneOneReducible {α} [Primcodable α] : Reflexive (@OneOneRedu
 #align reflexive_one_one_reducible reflexive_oneOneReducible
 
 theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneReducible α α _ _) :=
-  fun p q r => OneOneReducible.trans
+  fun _ _ _ => OneOneReducible.trans
 #align transitive_one_one_reducible transitive_oneOneReducible
 
 namespace ComputablePred
@@ -174,7 +177,7 @@ theorem ManyOneEquiv.trans {α β γ} [Primcodable α] [Primcodable β] [Primcod
 #align many_one_equiv.trans ManyOneEquiv.trans
 
 theorem equivalence_of_manyOneEquiv {α} [Primcodable α] : Equivalence (@ManyOneEquiv α α _ _) :=
-  ⟨manyOneEquiv_refl, fun x y => ManyOneEquiv.symm, fun x y z => ManyOneEquiv.trans⟩
+  ⟨manyOneEquiv_refl, fun {_ _} => ManyOneEquiv.symm, fun {_ _ _} => ManyOneEquiv.trans⟩
 #align equivalence_of_many_one_equiv equivalence_of_manyOneEquiv
 
 @[refl]
@@ -195,7 +198,7 @@ theorem OneOneEquiv.trans {α β γ} [Primcodable α] [Primcodable β] [Primcoda
 #align one_one_equiv.trans OneOneEquiv.trans
 
 theorem equivalence_of_oneOneEquiv {α} [Primcodable α] : Equivalence (@OneOneEquiv α α _ _) :=
-  ⟨oneOneEquiv_refl, fun x y => OneOneEquiv.symm, fun x y z => OneOneEquiv.trans⟩
+  ⟨oneOneEquiv_refl, fun {_ _} => OneOneEquiv.symm, fun {_ _ _} => OneOneEquiv.trans⟩
 #align equivalence_of_one_one_equiv equivalence_of_oneOneEquiv
 
 theorem OneOneEquiv.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
@@ -204,7 +207,7 @@ theorem OneOneEquiv.to_many_one {α β} [Primcodable α] [Primcodable β] {p : �
 #align one_one_equiv.to_many_one OneOneEquiv.to_many_one
 
 /-- a computable bijection -/
-def Equiv.Computable {α β} [Primcodable α] [Primcodable β] (e : α ≃ β) :=
+nonrec def Equiv.Computable {α β} [Primcodable α] [Primcodable β] (e : α ≃ β) :=
   Computable e ∧ Computable e.symm
 #align equiv.computable Equiv.Computable
 
@@ -297,24 +300,24 @@ open Nat.Primrec
 
 theorem OneOneReducible.disjoin_left {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ p ⊕' q :=
-  ⟨Sum.inl, Computable.sum_inl, fun x y => Sum.inl.inj_iff.1, fun a => Iff.rfl⟩
+  ⟨Sum.inl, Computable.sum_inl, fun _ _ => Sum.inl.inj_iff.1, fun _ => Iff.rfl⟩
 #align one_one_reducible.disjoin_left OneOneReducible.disjoin_left
 
 theorem OneOneReducible.disjoin_right {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : q ≤₁ p ⊕' q :=
-  ⟨Sum.inr, Computable.sum_inr, fun x y => Sum.inr.inj_iff.1, fun a => Iff.rfl⟩
+  ⟨Sum.inr, Computable.sum_inr, fun _ _ => Sum.inr.inj_iff.1, fun _ => Iff.rfl⟩
 #align one_one_reducible.disjoin_right OneOneReducible.disjoin_right
 
 theorem disjoin_manyOneReducible {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
-    {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ r → q ≤₀ r → p ⊕' q ≤₀ r
+    {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ r → q ≤₀ r → (p ⊕' q) ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨Sum.elim f g,
-      Computable.id.sum_cases (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂, fun x => by
-      cases x <;> [apply h₁, apply h₂]⟩
+      Computable.id.sum_casesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
+      fun x => by cases x <;> [apply h₁, apply h₂]⟩
 #align disjoin_many_one_reducible disjoin_manyOneReducible
 
 theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {p : α → Prop}
-    {q : β → Prop} {r : γ → Prop} : p ⊕' q ≤₀ r ↔ p ≤₀ r ∧ q ≤₀ r :=
+    {q : β → Prop} {r : γ → Prop} : (p ⊕' q) ≤₀ r ↔ p ≤₀ r ∧ q ≤₀ r :=
   ⟨fun h =>
     ⟨OneOneReducible.disjoin_left.to_many_one.trans h,
       OneOneReducible.disjoin_right.to_many_one.trans h⟩,
@@ -330,12 +333,12 @@ variable {γ : Type w} [Primcodable γ] [Inhabited γ]
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
 def toNat (p : Set α) : Set ℕ :=
-  { n | p ((Encodable.decode α n).getD default) }
+  { n | p ((Encodable.decode (α := α) n).getD default) }
 #align to_nat toNat
 
 @[simp]
 theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
-  ⟨fun n => (Encodable.decode α n).getD default,
+  ⟨fun n => (Encodable.decode (α := α) n).getD default,
     Computable.option_getD Computable.decode (Computable.const _), fun _ => Iff.rfl⟩
 #align to_nat_many_one_reducible toNat_manyOneReducible
 
@@ -379,7 +382,7 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
 
 /-- Lifts a function on sets of natural numbers to many-one degrees.
 -/
-@[elab_as_elim, reducible]
+@[reducible] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected def liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
@@ -393,7 +396,7 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
 
 /-- Lifts a binary function on sets of natural numbers to many-one degrees.
 -/
-@[elab_as_elim, reducible, simp]
+@[reducible, simp] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
   d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
@@ -414,19 +417,23 @@ protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ →
 
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
-  simp [of, Quotient.eq'']
+  rw [of, of, Quotient.eq'']
+  unfold Setoid.r
+  simp
 #align many_one_degree.of_eq_of ManyOneDegree.of_eq_of
 
-instance : Inhabited ManyOneDegree :=
+instance instInhabited : Inhabited ManyOneDegree :=
   ⟨of (∅ : Set ℕ)⟩
+#align many_one_degree.inhabited ManyOneDegree.instInhabited
 
 /-- For many-one degrees `d₁` and `d₂`, `d₁ ≤ d₂` if the sets in `d₁` are many-one reducible to the
 sets in `d₂`.
 -/
-instance : LE ManyOneDegree :=
+instance instLE : LE ManyOneDegree :=
   ⟨fun d₁ d₂ =>
-    ManyOneDegree.liftOn₂ d₁ d₂ (· ≤₀ ·) fun p₁ p₂ q₁ q₂ hp hq =>
+    ManyOneDegree.liftOn₂ d₁ d₂ (· ≤₀ ·) fun _p₁ _p₂ _q₁ _q₂ hp hq =>
       propext (hp.le_congr_left.trans hq.le_congr_right)⟩
+#align many_one_degree.has_le ManyOneDegree.instLE
 
 @[simp]
 theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
@@ -434,41 +441,40 @@ theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤�
 #align many_one_degree.of_le_of ManyOneDegree.of_le_of
 
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
-  induction d using ManyOneDegree.ind_on <;> simp
-#align many_one_degree.le_refl many_one_degree.le_refl
+  induction d using ManyOneDegree.ind_on; simp; rfl
 
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and_iff]
-#align many_one_degree.le_antisymm many_one_degree.le_antisymm
 
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
   apply ManyOneReducible.trans
-#align many_one_degree.le_trans many_one_degree.le_trans
 
-instance : PartialOrder ManyOneDegree where
+instance instPartialOrder : PartialOrder ManyOneDegree where
   le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm
+#align many_one_degree.partial_order ManyOneDegree.instPartialOrder
 
 /-- The join of two degrees, induced by the disjoint union of two underlying sets. -/
-instance : Add ManyOneDegree :=
+instance instAdd : Add ManyOneDegree :=
   ⟨fun d₁ d₂ =>
     d₁.liftOn₂ d₂ (fun a b => of (a ⊕' b))
       (by
         rintro a b c d ⟨hl₁, hr₁⟩ ⟨hl₂, hr₂⟩
         rw [of_eq_of]
         exact
-          ⟨disjoin_manyOneReducible (hl₁.trans one_one_reducible.disjoin_left.to_many_one)
-              (hl₂.trans one_one_reducible.disjoin_right.to_many_one),
-            disjoin_manyOneReducible (hr₁.trans one_one_reducible.disjoin_left.to_many_one)
-              (hr₂.trans one_one_reducible.disjoin_right.to_many_one)⟩)⟩
+          ⟨disjoin_manyOneReducible (hl₁.trans OneOneReducible.disjoin_left.to_many_one)
+              (hl₂.trans OneOneReducible.disjoin_right.to_many_one),
+            disjoin_manyOneReducible (hr₁.trans OneOneReducible.disjoin_left.to_many_one)
+              (hr₂.trans OneOneReducible.disjoin_right.to_many_one)⟩)⟩
+#align many_one_degree.has_add ManyOneDegree.instAdd
 
 @[simp]
 theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
@@ -499,12 +505,12 @@ protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d�
   (ManyOneDegree.add_le.1 (by rfl)).2
 #align many_one_degree.le_add_right ManyOneDegree.le_add_right
 
-instance : SemilatticeSup ManyOneDegree :=
-  { ManyOneDegree.partialOrder with
+instance instSemilatticeSup : SemilatticeSup ManyOneDegree :=
+  { ManyOneDegree.instPartialOrder with
     sup := (· + ·)
     le_sup_left := ManyOneDegree.le_add_left
     le_sup_right := ManyOneDegree.le_add_right
-    sup_le := fun a b c h₁ h₂ => ManyOneDegree.add_le.2 ⟨h₁, h₂⟩ }
+    sup_le := fun _ _ _ h₁ h₂ => ManyOneDegree.add_le.2 ⟨h₁, h₂⟩ }
+#align many_one_degree.semilattice_sup ManyOneDegree.instSemilatticeSup
 
 end ManyOneDegree
-
