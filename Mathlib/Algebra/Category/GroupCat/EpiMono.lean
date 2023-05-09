@@ -99,7 +99,6 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
 
 namespace SurjectiveOfEpiAuxs
 
--- mathport name: exprX
 local notation "X" => Set.range (Function.swap leftCoset f.range.carrier)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
@@ -113,13 +112,10 @@ open XWithInfinity Equiv.Perm
 
 open Coset
 
--- mathport name: exprX'
 local notation "X'" => XWithInfinity f
 
--- mathport name: «expr∞»
 local notation "∞" => XWithInfinity.infinity
 
--- mathport name: exprSX'
 local notation "SX'" => Equiv.Perm X'
 
 instance : SMul B X' where
@@ -183,7 +179,6 @@ noncomputable def tau : SX' :=
   Equiv.swap (fromCoset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩) ∞
 #align Group.surjective_of_epi_auxs.tau GroupCat.SurjectiveOfEpiAuxs.tau
 
--- mathport name: exprτ
 local notation "τ" => tau f
 
 theorem τ_apply_infinity : τ ∞ = fromCoset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ :=
@@ -323,16 +318,21 @@ theorem agree : f.range.carrier = { x | h x = g x } := by
     exact (fromCoset_ne_of_nin_range _ r).symm (by rw [← eq1, ← eq2, FunLike.congr_fun hb])
 #align Group.surjective_of_epi_auxs.agree GroupCat.SurjectiveOfEpiAuxs.agree
 
-theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ GroupCat.of SX' from h :=
-  FunLike.ext _ _ fun a => by
-    have : h (f a) = _ := by simp [← agree]
-    simp only [comp_apply, show h (f a) = _ from (by simp [← agree] : f a ∈ { b | h b = g b })]
+theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ GroupCat.of SX' from h := by
+  ext a
+  change g (f a) = h (f a)
+  have : f a ∈ { b | h b = g b } := by
+    rw [←agree]
+    use a
+    rfl
+  rw [this]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq
 
 theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
   intro r
   replace r :=
     FunLike.congr_fun (FunLike.congr_fun r x) (fromCoset ⟨f.range, ⟨1, one_leftCoset _⟩⟩)
+  change _ = ((τ).symm.trans (g x)).trans τ _ at r
   rw [g_apply_fromCoset, MonoidHom.coe_mk] at r
   simp only [MonoidHom.coe_range, Subtype.coe_mk, Equiv.symm_swap, Equiv.toFun_as_coe,
     Equiv.coe_trans, Function.comp_apply] at r
@@ -344,11 +344,12 @@ end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   by_contra r
+  dsimp [Function.Surjective] at r
   push_neg at r
   rcases r with ⟨b, hb⟩
   exact
-    surjective_of_epi_auxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
-      ((cancel_epi f).1 (surjective_of_epi_auxs.comp_eq f))
+    SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
+      ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f))
 #align Group.surjective_of_epi GroupCat.surjective_of_epi
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
