@@ -367,19 +367,31 @@ end MeasurableFunctions
 
 section Constructions
 
-instance : MeasurableSpace Empty := ⊤
-instance : MeasurableSpace PUnit := ⊤
-instance : MeasurableSpace Bool := ⊤
-instance : MeasurableSpace ℕ := ⊤
-instance : MeasurableSpace ℤ := ⊤
-instance : MeasurableSpace ℚ := ⊤
+instance Empty.instMeasurableSpace : MeasurableSpace Empty := ⊤
+#align empty.measurable_space Empty.instMeasurableSpace
+instance PUnit.instMeasurableSpace : MeasurableSpace PUnit := ⊤
+#align punit.measurable_space PUnit.instMeasurableSpace
+instance Bool.instMeasurableSpace : MeasurableSpace Bool := ⊤
+#align bool.measurable_space Bool.instMeasurableSpace
+instance Nat.instMeasurableSpace : MeasurableSpace ℕ := ⊤
+#align nat.measurable_space Nat.instMeasurableSpace
+instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
+#align int.measurable_space Int.instMeasurableSpace
+instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
+#align rat.measurable_space Rat.instMeasurableSpace
 
-instance : MeasurableSingletonClass Empty := ⟨fun _ => trivial⟩
-instance : MeasurableSingletonClass PUnit := ⟨fun _ => trivial⟩
-instance : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
-instance : MeasurableSingletonClass ℕ := ⟨fun _ => trivial⟩
-instance : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩
-instance : MeasurableSingletonClass ℚ := ⟨fun _ => trivial⟩
+instance Empty.instMeasurableSingletonClass : MeasurableSingletonClass Empty := ⟨fun _ => trivial⟩
+#align empty.measurable_singleton_class Empty.instMeasurableSingletonClass
+instance PUnit.instMeasurableSingletonClass : MeasurableSingletonClass PUnit := ⟨fun _ => trivial⟩
+#align punit.measurable_singleton_class PUnit.instMeasurableSingletonClass
+instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
+#align bool.measurable_singleton_class Bool.instMeasurableSingletonClass
+instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨fun _ => trivial⟩
+#align nat.measurable_singleton_class Nat.instMeasurableSingletonClass
+instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩
+#align int.measurable_singleton_class Int.instMeasurableSingletonClass
+instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨fun _ => trivial⟩
+#align rat.measurable_singleton_class Rat.instMeasurableSingletonClass
 
 theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ y, MeasurableSet (f ⁻¹' {f y})) : Measurable f := fun s _ => by
@@ -449,16 +461,20 @@ section Quotient
 
 variable [MeasurableSpace α] [MeasurableSpace β]
 
-instance {α} {r : α → α → Prop} [m : MeasurableSpace α] : MeasurableSpace (Quot r) :=
+instance Quot.instMeasurableSpace {α} {r : α → α → Prop} [m : MeasurableSpace α] :
+    MeasurableSpace (Quot r) :=
   m.map (Quot.mk r)
+#align quot.measurable_space Quot.instMeasurableSpace
 
-instance {α} {s : Setoid α} [m : MeasurableSpace α] : MeasurableSpace (Quotient s) :=
+instance Quotient.instMeasurableSpace {α} {s : Setoid α} [m : MeasurableSpace α] :
+    MeasurableSpace (Quotient s) :=
   m.map Quotient.mk''
+#align quotient.measurable_space Quotient.instMeasurableSpace
 
 @[to_additive]
 instance QuotientGroup.measurableSpace {G} [Group G] [MeasurableSpace G] (S : Subgroup G) :
     MeasurableSpace (G ⧸ S) :=
-  instMeasurableSpaceQuotient
+  Quotient.instMeasurableSpace
 #align quotient_group.measurable_space QuotientGroup.measurableSpace
 #align quotient_add_group.measurable_space QuotientAddGroup.measurableSpace
 
@@ -504,8 +520,10 @@ end Quotient
 
 section Subtype
 
-instance {α} {p : α → Prop} [m : MeasurableSpace α] : MeasurableSpace (Subtype p) :=
+instance Subtype.instMeasurableSpace {α} {p : α → Prop} [m : MeasurableSpace α] :
+    MeasurableSpace (Subtype p) :=
   m.comap ((↑) : _ → α)
+#align subtype.measurable_space Subtype.instMeasurableSpace
 
 section
 
@@ -516,10 +534,13 @@ theorem measurable_subtype_coe {p : α → Prop} : Measurable ((↑) : Subtype p
   MeasurableSpace.le_map_comap
 #align measurable_subtype_coe measurable_subtype_coe
 
-instance {p : α → Prop} [MeasurableSingletonClass α] : MeasurableSingletonClass (Subtype p) where
+instance Subtype.instMeasurableSingletonClass {p : α → Prop} [MeasurableSingletonClass α] :
+    MeasurableSingletonClass (Subtype p) where
   measurableSet_singleton x :=
     ⟨{(x : α)}, measurableSet_singleton (x : α), by
       rw [← image_singleton, preimage_image_eq _ Subtype.val_injective]⟩
+#align subtype.measurable_singleton_class Subtype.instMeasurableSingletonClass
+
 end
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β}
@@ -610,8 +631,10 @@ def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableS
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
 #align measurable_space.prod MeasurableSpace.prod
 
-instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : MeasurableSpace (α × β) :=
+instance Prod.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] :
+    MeasurableSpace (α × β) :=
   m₁.prod m₂
+#align prod.measurable_space Prod.instMeasurableSpace
 
 @[measurability]
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
@@ -718,9 +741,11 @@ theorem measurableSet_swap_iff {s : Set (α × β)} :
   ⟨fun hs => measurable_swap hs, fun hs => measurable_swap hs⟩
 #align measurable_set_swap_iff measurableSet_swap_iff
 
-instance [MeasurableSingletonClass α] [MeasurableSingletonClass β] :
+instance Prod.instMeasurableSingletonClass
+    [MeasurableSingletonClass α] [MeasurableSingletonClass β] :
     MeasurableSingletonClass (α × β) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
+#align prod.measurable_singleton_class Prod.instMeasurableSingletonClass
 
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
@@ -874,9 +899,10 @@ theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable)
   · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
 #align measurable_set_pi measurableSet_pi
 
-instance [Countable δ] [∀ a, MeasurableSingletonClass (π a)] :
+instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (π a)] :
     MeasurableSingletonClass (∀ a, π a) :=
   ⟨fun f => univ_pi_singleton f ▸ MeasurableSet.univ_pi fun t => measurableSet_singleton (f t)⟩
+#align pi.measurable_singleton_class Pi.instMeasurableSingletonClass
 
 variable (π)
 
@@ -904,11 +930,11 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
 
 end Pi
 
-instance TProd.measurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
+instance TProd.instMeasurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
     ∀ l : List δ, MeasurableSpace (List.TProd π l)
-  | [] => instMeasurableSpacePUnit
-  | _::is => @instMeasurableSpaceProd _ _ _ (TProd.measurableSpace π is)
-#align tprod.measurable_space TProd.measurableSpace
+  | [] => PUnit.instMeasurableSpace
+  | _::is => @Prod.instMeasurableSpace _ _ _ (TProd.instMeasurableSpace π is)
+#align tprod.measurable_space TProd.instMeasurableSpace
 
 section TProd
 
@@ -947,8 +973,10 @@ theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, M
 
 end TProd
 
-instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : MeasurableSpace (α ⊕ β) :=
+instance Sum.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] :
+    MeasurableSpace (α ⊕ β) :=
   m₁.map Sum.inl ⊓ m₂.map Sum.inr
+#align sum.measurable_space Sum.instMeasurableSpace
 
 section Sum
 
@@ -1016,15 +1044,17 @@ theorem measurableSet_range_inr [MeasurableSpace α] :
 
 end Sum
 
-instance {α} {β : α → Type _} [m : ∀ a, MeasurableSpace (β a)] : MeasurableSpace (Sigma β) :=
+instance Sigma.instMeasurableSpace {α} {β : α → Type _} [m : ∀ a, MeasurableSpace (β a)] :
+    MeasurableSpace (Sigma β) :=
   ⨅ a, (m a).map (Sigma.mk a)
+#align sigma.measurable_space Sigma.instMeasurableSpace
 
 end Constructions
 
 /-- A map `f : α → β` is called a *measurable embedding* if it is injective, measurable, and sends
 measurable sets to measurable sets. The latter assumption can be replaced with “`f` has measurable
 inverse `g : Set.range f → α`”, see `MeasurableEmbedding.measurable_rangeSplitting`,
-`measurable_embedding.of_measurable_inverse_range`, and
+`MeasurableEmbedding.of_measurable_inverse_range`, and
 `MeasurableEmbedding.of_measurable_inverse`.
 
 One more interpretation: `f` is a measurable embedding if it defines a measurable equivalence to its
@@ -1139,7 +1169,7 @@ theorem toEquiv_injective : Injective (toEquiv : α ≃ᵐ β → α ≃ β) := 
   rfl
 #align measurable_equiv.to_equiv_injective MeasurableEquiv.toEquiv_injective
 
-instance : EquivLike (α ≃ᵐ β) α β where
+instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   coe e := e.toEquiv
   inv e := e.toEquiv.symm
   left_inv e := e.toEquiv.left_inv
@@ -1169,7 +1199,7 @@ def refl (α : Type _) [MeasurableSpace α] : α ≃ᵐ α where
   measurable_invFun := measurable_id
 #align measurable_equiv.refl MeasurableEquiv.refl
 
-instance : Inhabited (α ≃ᵐ α) := ⟨refl α⟩
+instance instInhabited : Inhabited (α ≃ᵐ α) := ⟨refl α⟩
 
 /-- The composition of equivalences between measurable spaces. -/
 def trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : α ≃ᵐ γ where
@@ -1740,16 +1770,18 @@ namespace MeasurableSet
 
 variable [MeasurableSpace α]
 
-instance : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun a s => a ∈ (s : Set α)⟩
+#align measurable_set.subtype.has_mem MeasurableSet.Subtype.instMembership
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl
 #align measurable_set.mem_coe MeasurableSet.mem_coe
 
-instance : EmptyCollection (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instEmptyCollection : EmptyCollection (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨⟨∅, MeasurableSet.empty⟩⟩
+#align measurable_set.subtype.has_emptyc MeasurableSet.Subtype.instEmptyCollection
 
 @[simp]
 theorem coe_empty : ↑(∅ : Subtype (MeasurableSet : Set α → Prop)) = (∅ : Set α) :=
@@ -1757,10 +1789,10 @@ theorem coe_empty : ↑(∅ : Subtype (MeasurableSet : Set α → Prop)) = (∅ 
 #align measurable_set.coe_empty MeasurableSet.coe_empty
 
 -- porting note: why do these instances have to be noncomputable?
--- porting note: new instance
-noncomputable instance [MeasurableSingletonClass α] :
+noncomputable instance Subtype.instInsert [MeasurableSingletonClass α] :
     Insert α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun a s => ⟨insert a (s : Set α), s.prop.insert a⟩⟩
+#align measurable_set.subtype.has_insert MeasurableSet.Subtype.instInsert
 
 @[simp]
 theorem coe_insert [MeasurableSingletonClass α] (a : α)
@@ -1769,7 +1801,7 @@ theorem coe_insert [MeasurableSingletonClass α] (a : α)
   rfl
 #align measurable_set.coe_insert MeasurableSet.coe_insert
 
-noncomputable instance [MeasurableSingletonClass α] :
+noncomputable instance Subtype.instSingleton [MeasurableSingletonClass α] :
     Singleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun a => ⟨{a}, .singleton _⟩⟩
 
@@ -1777,74 +1809,82 @@ noncomputable instance [MeasurableSingletonClass α] :
     ↑({a} : Subtype (MeasurableSet : Set α → Prop)) = ({a} : Set α) :=
   rfl
 
-instance [MeasurableSingletonClass α] :
+instance Subtype.instIsLawfulSingleton [MeasurableSingletonClass α] :
     IsLawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
 
-noncomputable instance : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
+#align measurable_set.subtype.has_compl MeasurableSet.Subtype.instHasCompl
 
 @[simp]
 theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑(sᶜ) = (sᶜ : Set α) :=
   rfl
 #align measurable_set.coe_compl MeasurableSet.coe_compl
 
-noncomputable instance : Union (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨(x : Set α) ∪ y, x.prop.union y.prop⟩⟩
+#align measurable_set.subtype.has_union MeasurableSet.Subtype.instUnion
 
 @[simp]
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
 @[simp]
 protected theorem sup_eq_union (s t : {s : Set α // MeasurableSet s}) : s ⊔ t = s ∪ t := rfl
 
-noncomputable instance : Inter (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x ∩ y, x.prop.inter y.prop⟩⟩
+#align measurable_set.subtype.has_inter MeasurableSet.Subtype.instInter
 
 @[simp]
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma
 @[simp]
 protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t = s ∩ t := rfl
 
-noncomputable instance : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
+#align measurable_set.subtype.has_sdiff MeasurableSet.Subtype.instSDiff
 
 @[simp]
 theorem coe_sdiff (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s \ t) = (s : Set α) \ t :=
   rfl
 #align measurable_set.coe_sdiff MeasurableSet.coe_sdiff
 
-instance : Bot (Subtype (MeasurableSet : Set α → Prop)) := ⟨∅⟩
+instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := ⟨∅⟩
+#align measurable_set.subtype.has_bot MeasurableSet.Subtype.instBot
 
 @[simp]
 theorem coe_bot : ↑(⊥ : Subtype (MeasurableSet : Set α → Prop)) = (⊥ : Set α) :=
   rfl
 #align measurable_set.coe_bot MeasurableSet.coe_bot
 
-instance : Top (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨⟨Set.univ, MeasurableSet.univ⟩⟩
+#align measurable_set.subtype.has_top MeasurableSet.Subtype.instTop
 
 @[simp]
 theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : Set α) :=
   rfl
 #align measurable_set.coe_top MeasurableSet.coe_top
 
-noncomputable instance : BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance Subtype.instBooleanAlgebra :
+    BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
   Subtype.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
+#align measurable_set.subtype.boolean_algebra MeasurableSet.Subtype.instBooleanAlgebra
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
