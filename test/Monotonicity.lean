@@ -4,77 +4,80 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Defs
 -- import measure_theory.measure.lebesgue
 -- import measure_theory.function.locally_integrable
-import Mathlib.Data.List.Defs
+-- import Mathlib.Data.Set.Basic
 
 open List Set
 
 example (x y z k : ℕ)
-    (h : 3 ≤ (4 : ℕ))
+    (_ : 3 ≤ (4 : ℕ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
-  mono
-  -- norm_num
+  mono*
 
 example (x y z k : ℤ)
-    (h : 3 ≤ (4 : ℤ))
+    (_ : 3 ≤ (4 : ℤ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
-  mono
-  -- norm_num
+  mono*
 
-example (x y z a b : ℕ)
+theorem x (x y z a b : ℕ)
     (h : a ≤ (b : ℕ))
     (h' : z ≤ y) :
     (1 + a + x) - y ≤ (1 + b + x) - z := by
-  transitivity (1 + a + x - z)
+  trans (1 + a + x - z)
   · mono
-  · mono
-    -- mono
-    -- mono
+  · mono; mono; mono
 
 example (x y z a b : ℤ)
     (h : a ≤ (b : ℤ))
     (h' : z ≤ y) :
     (1 + a + x) - y ≤ (1 + b + x) - z := by
   apply @le_trans ℤ _ _ (1 + a + x - z)
-  -- transitivity (1 + a + x - z)
+  trans (1 + a + x - z)
   · mono
   · mono
-    -- mono
-    -- mono
+  · mono*
 
 example (x y z : ℤ)
     (h' : z ≤ y) :
     (1 + 3 + x) - y ≤ (1 + 4 + x) - z := by
   apply @le_trans ℤ _ _ (1 + 3 + x - z)
-  -- transitivity (1 + 3 + x - z)
+  trans (1 + 3 + x - z)
   · mono
   · mono
-    -- mono
-    norm_num
+  · mono; mono; norm_num1
 
-example {x y z : ℕ} : true := by
+variable {x y z w : ℕ}
+-- We use axioms instead of variables so that `mono` doesn't grab the proofs from the local context.
+axiom lxz : x ≤ z
+axiom lyw : y ≤ w
+axiom lxy : x ≤ y
+axiom lzy : z ≤ y
+
+example : True := by
   have : y + x ≤ y + z := by
     mono
     guard_target = x ≤ z
-    admit
+    exact lxz
   trivial
 
-example {x y z : ℕ} : true := by
+example : True := by
   suffices : x + y ≤ z + y ; trivial
   mono
   guard_target = x ≤ z
-  admit
+  exact lxz
 
-example {x y z w : ℕ} : true := by
+example : True := by
   have : x + y ≤ z + w := by
     mono
-    guard_target = x ≤ z ; admit
-    guard_target = y ≤ w ; admit
+    guard_target = x ≤ z ; exact lxz
+    guard_target = y ≤ w ; exact lyw
+  trivial
   trivial
 
 -- example
