@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Vitali families
@@ -92,14 +92,12 @@ include μ
 
 /-- A Vitali family for a measure `μ` is also a Vitali family for any measure absolutely continuous
 with respect to `μ`. -/
-def mono (v : VitaliFamily μ) (ν : Measure α) (hν : ν ≪ μ) : VitaliFamily ν
-    where
+def mono (v : VitaliFamily μ) (ν : Measure α) (hν : ν ≪ μ) : VitaliFamily ν where
   setsAt := v.setsAt
   MeasurableSet' := v.MeasurableSet'
   nonempty_interior := v.nonempty_interior
   Nontrivial := v.Nontrivial
-  covering s f h h' :=
-    by
+  covering s f h h' := by
     rcases v.covering s f h h' with ⟨t, ts, disj, mem_f, hμ⟩
     exact ⟨t, ts, disj, mem_f, hν hμ⟩
 #align vitali_family.mono VitaliFamily.mono
@@ -196,8 +194,7 @@ end FineSubfamilyOn
 /-- One can enlarge a Vitali family by adding to the sets `f x` at `x` all sets which are not
 contained in a `δ`-neighborhood on `x`. This does not change the local filter at a point, but it
 can be convenient to get a nicer global behavior. -/
-def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ
-    where
+def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ where
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
   MeasurableSet' x a ha := by
     cases ha
@@ -212,8 +209,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ
   covering := by
     intro s f fset ffine
     let g : α → Set (Set α) := fun x => f x ∩ v.sets_at x
-    have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α)(H : a ∈ g x), a ⊆ closed_ball x ε :=
-      by
+    have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α)(H : a ∈ g x), a ⊆ closed_ball x ε := by
       intro x hx ε εpos
       obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closed_ball x (min ε δ)
       exact ffine x hx (min ε δ) (lt_min εpos δpos)
@@ -237,8 +233,7 @@ def filterAt (x : α) : Filter (Set α) :=
 #align vitali_family.filter_at VitaliFamily.filterAt
 
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
-    s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s :=
-  by
+    s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
   simp only [filter_at, exists_prop, gt_iff_lt]
   rw [mem_binfi_of_directed]
   · simp only [subset_def, and_imp, exists_prop, mem_sep_iff, mem_Ioi, mem_principal]
@@ -252,8 +247,7 @@ theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
   · exact ⟨(1 : ℝ), mem_Ioi.2 zero_lt_one⟩
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
-instance filterAt_neBot (x : α) : (v.filterAt x).ne_bot :=
-  by
+instance filterAt_neBot (x : α) : (v.filterAt x).ne_bot := by
   simp only [ne_bot_iff, ← empty_mem_iff_bot, mem_filter_at_iff, not_exists, exists_prop,
     mem_empty_iff_false, and_true_iff, gt_iff_lt, not_and, Ne.def, not_false_iff, not_forall]
   intro ε εpos
@@ -266,24 +260,21 @@ theorem eventually_filterAt_iff {x : α} {P : Set α → Prop} :
   v.mem_filterAt_iff
 #align vitali_family.eventually_filter_at_iff VitaliFamily.eventually_filterAt_iff
 
-theorem eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x :=
-  by
+theorem eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x := by
   simp (config := { contextual := true }) only [eventually_filter_at_iff, exists_prop, and_true_iff,
     gt_iff_lt, imp_true_iff]
   exact ⟨1, zero_lt_one⟩
 #align vitali_family.eventually_filter_at_mem_sets VitaliFamily.eventually_filterAt_mem_sets
 
 theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
-    ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε :=
-  by
+    ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε := by
   simp only [v.eventually_filter_at_iff]
   exact ⟨ε, hε, fun a ha ha' => ha'⟩
 #align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
 
 theorem tendsto_filterAt_iff {ι : Type _} {l : Filter ι} {f : ι → Set α} {x : α} :
     Tendsto f l (v.filterAt x) ↔
-      (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε :=
-  by
+      (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
   refine'
     ⟨fun H =>
       ⟨H.Eventually <| v.eventually_filter_at_mem_sets x, fun ε hε =>
@@ -313,8 +304,7 @@ theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ �
 #align vitali_family.eventually_filter_at_subset_of_nhds VitaliFamily.eventually_filterAt_subset_of_nhds
 
 theorem fineSubfamilyOnOfFrequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
-    (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, a ∈ f x) : v.FineSubfamilyOn f s :=
-  by
+    (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, a ∈ f x) : v.FineSubfamilyOn f s := by
   intro x hx ε εpos
   obtain ⟨a, av, ha, af⟩ : ∃ (a : Set α)(H : a ∈ v.sets_at x), a ⊆ closed_ball x ε ∧ a ∈ f x :=
     v.frequently_filter_at_iff.1 (h x hx) ε εpos
