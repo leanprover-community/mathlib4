@@ -285,6 +285,29 @@ instance [ToMessageData β] : ToMessageData (Later (β := β) σ s add) where
       "takeBestOfEq (" ++ f b ++ ", " ++ f b' ++ ")"
     f
 
+/-- Collapse a `Later` tree via `incorporate`. To allow us to extract other values from the tree
+via modified `incorporate`s, we generalize to `β'` in appropriate places. This completely ignores
+`takeBestOfEq`. -/
+def Later.crush' (init' : β') (incorporate' : β' → β → β') (data : Later (β := β) σ s add) : β' :=
+  aux init' data
+where
+  aux : β' → Later (β := β) σ s add → β'
+  | acc, .of b => (incorporate' acc b)
+  | acc, .incorporateLater b b' => let acc' := aux acc b; aux acc' b'
+  | acc, .takeBestOfEqLater _ _ => acc
+
+/-- Collapse a `Later` tree via `incorporate` and `takeBestOfEq`. To allow us to extract other
+values from the tree  via modified `incorporate`s and `takeBestOfEq`s, we generalize to `β'` in
+appropriate places. -/
+def Later.crushM' [Monad m] [MonadBacktrack σ m] (init' : β') (incorporate' : β' → β → β')
+    (takeBestOfEq : σ × β' → σ × β' → m β') (data : Later (β := β) σ s add) : m β' :=
+  aux init' data
+where
+  aux : β' → Later (β := β) σ s add → m β'
+  | acc, .of b => pure (incorporate' acc b)
+  | acc, .incorporateLater b b' => do let acc' ← aux acc b; aux acc' b'
+  | acc, .takeBestOfEqLater (s,b) (s',b') => do takeBestOfEq (s, ← aux acc b) (s', ← aux acc b')
+
 /-- Given a list of `α`s and a means of generating alternative possible lists from that list, i.e.
 a function roughly of the form `alternatives : α → List (List α)`, as well as a sufficient means of
 defining and working with minimality (given in `BacktrackMinimizeListConfig`), get the minimum `β`
@@ -397,6 +420,19 @@ where
     restoreState s
     withTrace (m!"❓✅⬆️ found a new best among all alternatives {bestOfAlts}") <|
       pure bestOfAlts
+
+def minimizeListAlternatives [Monad m] [Alternative m] [MonadBacktrack σ m]
+    -- instances to enable tracing
+    [MonadExcept ε m] [MonadOptions m] [MonadLiftT IO m] [MonadLiftT BaseIO m] [MonadTrace m]
+    [MonadRef m] [AddMessageContext m] [ToMessageData α] [ToMessageData β]
+    -- arguments
+    (init : List α) (alternatives : α → m (List (m (List α))))
+    (cfg : BacktrackMinimizeListConfig m α β γ) : m β := do
+  let some best ← minimizeListAlternativesCore init alternatives cfg | failure
+  if let some takeBestOfEq := cfg.takeBestOfEq? then
+    best.crushM' cfg.bot cfg.incorporate takeBestOfEq
+  else
+    return best.crush' cfg.bot cfg.incorporate
 
 end BacktrackOptimize
 
