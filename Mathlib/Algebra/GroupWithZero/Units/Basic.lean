@@ -95,8 +95,7 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
-  simp only [Units.isUnit, inverse, dif_pos]
-  exact Units.inv_unique rfl
+  rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 #align ring.inverse_unit Ring.inverse_unit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/

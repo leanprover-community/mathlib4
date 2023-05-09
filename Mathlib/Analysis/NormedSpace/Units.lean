@@ -51,48 +51,45 @@ def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val_inv := mul_neg_geom_series t h
   inv_val := geom_series_mul_neg t h
 #align units.one_sub Units.oneSub
-#align units.one_sub_coe Units.oneSub_val
+#align units.coe_one_sub Units.oneSub_val
 
 /-- In a complete normed ring, a perturbation of a unit `x` by an element `t` of distance less than
 `‖x⁻¹‖⁻¹` from `x` is a unit.  Here we construct its `units` structure. -/
-@[simps! coe]
+@[simps! val]
 def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
-  Units.copy
-    (-- to make `coe_add` true definitionally, for convenience
-      x *
-      Units.oneSub (-(↑x⁻¹ * t))
-        (by
-          nontriviality R using zero_lt_one
-          have hpos : 0 < ‖(↑x⁻¹ : R)‖ := Units.norm_pos x⁻¹
-          calc
-            ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
-            _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le ↑x⁻¹ _
-            _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
-            _ = 1 := mul_inv_cancel (ne_of_gt hpos)
-            ))
+  Units.copy -- to make `add_val` true definitionally, for convenience
+    (x * Units.oneSub (-((x⁻¹).1 * t)) (by
+      nontriviality R using zero_lt_one
+      have hpos : 0 < ‖(↑x⁻¹ : R)‖ := Units.norm_pos x⁻¹
+      calc
+        ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
+        _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).1 _
+        _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
+        _ = 1 := mul_inv_cancel (ne_of_gt hpos)))
     (x + t) (by simp [mul_add]) _ rfl
 #align units.add Units.add
+#align units.coe_add Units.add_val
 
 /-- In a complete normed ring, an element `y` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
 Here we construct its `units` structure. -/
 @[simps! val]
-def unitOfNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
-  Units.copy (x.add (y - x : R) h) y (by simp) _ rfl
-#align units.unit_of_nearby Units.unitOfNearby
+def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
+  (x.add (y - x : R) h).copy y (by simp) _ rfl
+#align units.unit_of_nearby Units.ofNearby
+#align units.coe_unit_of_nearby Units.ofNearby_val
 
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
   apply Metric.isOpen_iff.mpr
-  rintro x' ⟨x, rfl⟩
-  refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), _⟩
-  intro y hy
-  rw [Metric.mem_ball, dist_eq_norm] at hy
-  exact (x.unit_of_nearby y hy).IsUnit
+  rintro _ ⟨x, rfl⟩
+  refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ _⟩
+  rw [mem_ball_iff_norm] at hy
+  exact (x.ofNearby y hy).isUnit
 #align units.is_open Units.isOpen
 
 protected theorem nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
-  IsOpen.mem_nhds Units.isOpen x.IsUnit
+  IsOpen.mem_nhds Units.isOpen x.isUnit
 #align units.nhds Units.nhds
 
 end Units
@@ -101,10 +98,8 @@ namespace nonunits
 
 /-- The `nonunits` in a complete normed ring are contained in the complement of the ball of radius
 `1` centered at `1 : R`. -/
-theorem subset_compl_ball : nonunits R ⊆ Metric.ball (1 : R) 1ᶜ :=
-  Set.subset_compl_comm.mp fun x hx => by
-    simpa [sub_sub_self, Units.coe_oneSub] using
-      (Units.oneSub (1 - x) (by rwa [Metric.mem_ball, dist_eq_norm, norm_sub_rev] at hx)).IsUnit
+theorem subset_compl_ball : nonunits R ⊆ Metric.ball (1 : R) 1ᶜ := fun x hx h₁ ↦ hx <|
+  sub_sub_self 1 x ▸ (Units.oneSub (1 - x) (by rwa [mem_ball_iff_norm'] at h₁)).isUnit
 #align nonunits.subset_compl_ball nonunits.subset_compl_ball
 
 -- The `nonunits` in a complete normed ring are a closed set
@@ -120,77 +115,54 @@ open Classical BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
-theorem inverse_oneSub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
-  rw [← inverse_unit (Units.oneSub t h), Units.coe_oneSub]
-#align normed_ring.inverse_one_sub NormedRing.inverse_oneSub
+theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
+  rw [← inverse_unit (Units.oneSub t h), Units.oneSub_val]
+#align normed_ring.inverse_one_sub NormedRing.inverse_one_sub
 
 /-- The formula `inverse (x + t) = inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently small. -/
-theorem inverse_add (x : Rˣ) : ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) = inverse (1 + ↑x⁻¹ * t) * ↑x⁻¹ :=
-  by
+theorem inverse_add (x : Rˣ) :
+    ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) = inverse (1 + ↑x⁻¹ * t) * ↑x⁻¹ := by
   nontriviality R
-  rw [eventually_iff, Metric.mem_nhds_iff]
-  have hinv : 0 < ‖(↑x⁻¹ : R)‖⁻¹ := by cancel_denoms
-  use ‖(↑x⁻¹ : R)‖⁻¹, hinv
-  intro t ht
-  simp only [mem_ball, dist_zero_right] at ht
-  have ht' : ‖-↑x⁻¹ * t‖ < 1 := by
-    refine' lt_of_le_of_lt (norm_mul_le _ _) _
-    rw [norm_neg]
-    refine' lt_of_lt_of_le (mul_lt_mul_of_pos_left ht x⁻¹.norm_pos) _
-    cancel_denoms
-  have hright := inverse_one_sub (-↑x⁻¹ * t) ht'
-  have hleft := inverse_unit (x.add t ht)
-  simp only [neg_mul, sub_neg_eq_add] at hright
-  simp only [Units.coe_add] at hleft
-  simp [hleft, hright, Units.add]
+  rw [Metric.eventually_nhds_iff]
+  refine ⟨‖(↑x⁻¹ : R)‖⁻¹, by cancel_denoms, fun t ht ↦ ?_⟩
+  rw [dist_zero_right] at ht
+  rw [← x.add_val t ht, inverse_unit, Units.add, Units.copy_eq, mul_inv_rev, Units.val_mul,
+    ← inverse_unit, Units.oneSub_val, sub_neg_eq_add]
 #align normed_ring.inverse_add NormedRing.inverse_add
 
+theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
+    inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
+  have := NormedRing.summable_geometric_of_norm_lt_1 t ht
+  calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
+    _ = ∑ i in range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
+    _ = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
+      simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
+
 theorem inverse_one_sub_nth_order (n : ℕ) :
-    ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
-  simp only [eventually_iff, Metric.mem_nhds_iff]
-  use 1, by norm_num
-  intro t ht
-  simp only [mem_ball, dist_zero_right] at ht
-  simp only [inverse_one_sub t ht, Set.mem_setOf_eq]
-  have h : 1 = ((range n).Sum fun i => t ^ i) * Units.oneSub t ht + t ^ n := by
-    simp only [Units.coe_oneSub]
-    rw [geom_sum_mul_neg]
-    simp
-  rw [← one_mul ↑(Units.oneSub t ht)⁻¹, h, add_mul]
-  congr
-  · rw [mul_assoc, (Units.oneSub t ht).mul_inv]
-    simp
-  · simp only [Units.coe_oneSub]
-    rw [← add_mul, geom_sum_mul_neg]
-    simp
+    ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
+  Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_one_sub_nth_order' n <| by
+    rwa [← dist_zero_right]⟩
 #align normed_ring.inverse_one_sub_nth_order NormedRing.inverse_one_sub_nth_order
+
 
 /-- The formula
 `inverse (x + t) = (∑ i in range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * inverse (x + t)`
 holds for `t` sufficiently small. -/
 theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
-    ∀ᶠ t in 𝓝 0,
-      inverse ((x : R) + t) =
-        (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * inverse (x + t) := by
-  refine' (inverse_add x).mp _
-  have hzero : tendsto (fun t : R => -↑x⁻¹ * t) (𝓝 0) (𝓝 0) := by
-    convert((mulLeft_continuous (-(↑x⁻¹ : R))).Tendsto 0).comp tendsto_id
-    simp
-  refine' (hzero.eventually (inverse_one_sub_nth_order n)).mp (eventually_of_forall _)
-  simp only [neg_mul, sub_neg_eq_add]
-  intro t h1 h2
-  have h := congr_arg (fun a : R => a * ↑x⁻¹) h1
-  dsimp at h
-  convert h
-  rw [add_mul, mul_assoc]
-  simp [h2.symm]
+    ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) =
+      (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * inverse (x + t) := by
+  have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
+    (mulLeft_continuous _).tendsto' _ _ <| mul_zero _
+  filter_upwards [inverse_add x, hzero.eventually (inverse_one_sub_nth_order n)] with t ht ht'
+  rw [neg_mul, sub_neg_eq_add] at ht'
+  conv_lhs => rw [ht, ht', add_mul, ← neg_mul, mul_assoc]
+  rw [ht]
 #align normed_ring.inverse_add_nth_order NormedRing.inverse_add_nth_order
 
 theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun t => 1 : R → ℝ) := by
-  simp only [is_O, is_O_with, eventually_iff, Metric.mem_nhds_iff]
-  refine' ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, _⟩
-  intro t ht
-  simp only [ball, dist_zero_right, Set.mem_setOf_eq] at ht
+  simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
+  refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
+  rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by
     have : (2 : ℝ)⁻¹ < 1 := by cancel_denoms
     linarith
