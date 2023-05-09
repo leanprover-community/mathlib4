@@ -1,5 +1,8 @@
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.RelCongr.Basic
+
+macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
 
 /-! # ≤, + -/
 

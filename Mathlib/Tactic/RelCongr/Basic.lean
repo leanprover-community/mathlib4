@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Positivity
+import Mathlib.Init.Algebra.Order
+import Mathlib.Tactic.Relation.Rfl
 
 namespace Mathlib.Tactic.Rel
 open Lean Meta
@@ -65,27 +65,7 @@ initialize registerBuiltinAttribute {
 
 syntax "rel_congr_discharger" : tactic
 
-macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
-macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
-
 syntax "rel" " [" term,* "] " : tactic
--- syntax (name := ExtraSyntax) "extra" : tactic
-
--- open Lean Mathlib Tactic
-
--- def RelConfig : SolveByElim.Config :=
--- { transparency := .instances
---   -- On applying a lemma or hypothesis successfully, don't backtrack
---   failAtMaxDepth := false
---   maxDepth := 50 }
-
--- -- def Lean.MVarId.RelCongr (attr : Name) --(add : List Term)
--- --     (disch : MVarId → MetaM (Option (List MVarId)) := fun _ => pure none)
--- --     (proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none)
--- --     (g : MVarId) :
--- --     MetaM (List MVarId) := do
--- --   let cfg : SolveByElim.Config := { RelConfig with discharge := disch, proc := proc }
--- --   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[mkIdent attr] [g]
 
 initialize registerTraceClass `Meta.rel
 
