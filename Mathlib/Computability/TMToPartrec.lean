@@ -85,6 +85,13 @@ inductive Code
   | fix : Code → Code
   deriving DecidableEq, Inhabited
 #align turing.to_partrec.code Turing.ToPartrec.Code
+#align turing.to_partrec.code.zero' Turing.ToPartrec.Code.zero'
+#align turing.to_partrec.code.succ Turing.ToPartrec.Code.succ
+#align turing.to_partrec.code.tail Turing.ToPartrec.Code.tail
+#align turing.to_partrec.code.cons Turing.ToPartrec.Code.cons
+#align turing.to_partrec.code.comp Turing.ToPartrec.Code.comp
+#align turing.to_partrec.code.case Turing.ToPartrec.Code.case
+#align turing.to_partrec.code.fix Turing.ToPartrec.Code.fix
 
 /-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`. By convention
 we functions that return a single result return a singleton `[n]`, or in some cases `n :: v` where
@@ -432,6 +439,11 @@ inductive Cont
   | fix : Code → Cont → Cont
   deriving Inhabited
 #align turing.to_partrec.cont Turing.ToPartrec.Cont
+#align turing.to_partrec.cont.halt Turing.ToPartrec.Cont.halt
+#align turing.to_partrec.cont.cons₁ Turing.ToPartrec.Cont.cons₁
+#align turing.to_partrec.cont.cons₂ Turing.ToPartrec.Cont.cons₂
+#align turing.to_partrec.cont.comp Turing.ToPartrec.Cont.comp
+#align turing.to_partrec.cont.fix Turing.ToPartrec.Cont.fix
 
 /-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
@@ -456,6 +468,8 @@ inductive Cfg
   | ret : Cont → List ℕ → Cfg
   deriving Inhabited
 #align turing.to_partrec.cfg Turing.ToPartrec.Cfg
+#align turing.to_partrec.cfg.halt Turing.ToPartrec.Cfg.halt
+#align turing.to_partrec.cfg.ret Turing.ToPartrec.Cfg.ret
 
 /-- Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`. This goes by
 recursion on `c`, building an augmented continuation and a value to pass to it.
@@ -566,140 +580,140 @@ theorem stepNormal_then (c) (k k' : Cont) (v) :
 equality, not a simulation; the original and embedded machines move in lock-step until the
 embedded machine reaches the halt state. -/
 theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).then k' := by
-  induction k generalizing v <;> simp only [cont.then, step_ret, cfg.then, *]
-  · rw [← step_normal_then]
+  induction k generalizing v <;> simp only [Cont.then, stepRet, *] <;>
+    try { simp only [Cfg.then]; done }
+  case cons₁ =>
+    rw [← stepNormal_then]
     rfl
-  · rw [← step_normal_then]
-  · split_ifs
+  case comp =>
+    rw [← stepNormal_then]
+  case fix _ k_ih =>
+    split_ifs
     · rw [← k_ih]
-    · rw [← step_normal_then]
+    · rw [← stepNormal_then]
       rfl
 #align turing.to_partrec.step_ret_then Turing.ToPartrec.stepRet_then
 
 /-- This is a temporary definition, because we will prove in `code_is_ok` that it always holds.
 It asserts that `c` is semantically correct; that is, for any `k` and `v`,
-`eval (step_normal c k v) = eval (cfg.ret k (code.eval c v))`, as an equality of partial values
+`eval (stepNormal c k v) = eval (Cfg.ret k (Code.eval c v))`, as an equality of partial values
 (so one diverges iff the other does).
 
-In particular, we can let `k = cont.halt`, and then this asserts that `step_normal c cont.halt v`
-evaluates to `cfg.halt (code.eval c v)`. -/
+In particular, we can let `k = Cont.halt`, and then this asserts that `stepNormal c Cont.halt v`
+evaluates to `Cfg.halt (Code.eval c v)`. -/
 def Code.Ok (c : Code) :=
-  ∀ k v, eval step (stepNormal c k v) = Code.eval c v >>= fun v => eval step (Cfg.ret k v)
+  ∀ k v, Turing.eval step (stepNormal c k v) =
+    Code.eval c v >>= fun v => Turing.eval step (Cfg.ret k v)
 #align turing.to_partrec.code.ok Turing.ToPartrec.Code.Ok
 
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
-    eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
-  rw [h, ← bind_pure_comp_eq_map]; congr ; funext v
-  exact Part.eq_some_iff.2 (mem_eval.2 ⟨refl_trans_gen.single rfl, rfl⟩)
+    Turing.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
+  rw [h, ← bind_pure_comp]; congr ; funext v
+  exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single rfl, rfl⟩)
 #align turing.to_partrec.code.ok.zero Turing.ToPartrec.Code.Ok.zero
 
 theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' := by
   induction c generalizing k v
   iterate 3 exact ⟨_, _, rfl⟩
-  case cons f fs IHf IHfs => apply IHf
-  case comp f g IHf IHg => apply IHg
-  case case f g IHf IHg => rw [step_normal];
-    cases v.head <;> simp only [Nat.rec] <;> [apply IHf, apply IHg]
+  case cons _f fs IHf _IHfs => apply IHf
+  case comp f _g _IHf IHg => apply IHg
+  case case f g IHf IHg =>
+    rw [stepNormal]
+    simp only []
+    cases v.headI <;> simp only [] <;> [apply IHf, apply IHg]
   case fix f IHf => apply IHf
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret
 
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
-    eval step (stepNormal f (Cont.fix f k) v) = f.fix.eval v >>= fun v => eval step (Cfg.ret k v) :=
-  by
+    Turing.eval step (stepNormal f (Cont.fix f k) v) =
+      f.fix.eval v >>= fun v => Turing.eval step (Cfg.ret k v) := by
   refine' Part.ext fun x => _
   simp only [Part.bind_eq_bind, Part.mem_bind_iff]
   constructor
-  · suffices
-      ∀ c,
-        x ∈ eval step c →
-          ∀ v c',
-            c = cfg.then c' (cont.fix f k) →
-              reaches step (step_normal f cont.halt v) c' →
-                ∃ v₁ ∈ f.eval v,
-                  ∃ v₂ ∈ if List.headI v₁ = 0 then pure v₁.tail else f.fix.eval v₁.tail,
-                    x ∈ eval step (cfg.ret k v₂) by
+  · suffices ∀ c, x ∈ eval step c → ∀ v c', c = Cfg.then c' (Cont.fix f k) →
+      Reaches step (stepNormal f Cont.halt v) c' →
+        ∃ v₁ ∈ f.eval v, ∃ v₂ ∈ if List.headI v₁ = 0 then pure v₁.tail else f.fix.eval v₁.tail,
+          x ∈ eval step (Cfg.ret k v₂) by
       intro h
       obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
-        this _ h _ _ (step_normal_then _ cont.halt _ _) refl_trans_gen.refl
+        this _ h _ _ (stepNormal_then _ Cont.halt _ _) ReflTransGen.refl
       refine' ⟨v₂, PFun.mem_fix_iff.2 _, h₃⟩
       simp only [Part.eq_some_iff.2 hv₁, Part.map_some]
-      split_ifs  at hv₂⊢
+      split_ifs at hv₂ ⊢
       · rw [Part.mem_some_iff.1 hv₂]
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
-    refine' fun c he => eval_induction he fun y h IH => _
-    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [cfg.then] at h IH
+    refine' fun c he => evalInduction he fun y h IH => _
+    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
       obtain ⟨v'', h₁, h₂⟩ := this
       rw [reaches_eval] at h₂
       swap
-      exact refl_trans_gen.single rfl
-      cases Part.mem_unique h₂ (mem_eval.2 ⟨refl_trans_gen.refl, rfl⟩)
+      exact ReflTransGen.single rfl
+      cases Part.mem_unique h₂ (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
       refine' ⟨v', h₁, _⟩
-      rw [step_ret] at h
+      rw [stepRet] at h
       revert h
-      by_cases he : v'.head = 0 <;> simp only [exists_prop, if_pos, if_false, he] <;> intro h
+      by_cases he : v'.headI = 0 <;> simp only [exists_prop, if_pos, if_false, he] <;> intro h
       · refine' ⟨_, Part.mem_some _, _⟩
         rw [reaches_eval]
         exact h
-        exact refl_trans_gen.single rfl
-      · obtain ⟨k₀, v₀, e₀⟩ := step_normal.is_ret f cont.halt v'.tail
-        have e₁ := step_normal_then f cont.halt (cont.fix f k) v'.tail
-        rw [e₀, cont.then, cfg.then] at e₁
+        exact ReflTransGen.single rfl
+      · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
+        have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
+        rw [e₀, Cont.then, Cfg.then] at e₁
+        simp only [] at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
-          IH (step_ret (k₀.then (cont.fix f k)) v₀) _ v'.tail _ step_ret_then _
+          IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
+            v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
         · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
           simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs  at hv₂⊢ <;> [exact Or.inl (Part.mem_some_iff.1 hv₂),
+          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂)),
             exact Or.inr ⟨_, rfl, hv₂⟩]
-        · rw [step_ret, if_neg he, e₁]
-          rfl
-        · apply refl_trans_gen.single
-          rw [e₀]
-          exact rfl
-    · exact IH _ rfl _ _ step_ret_then (refl_trans_gen.tail hr rfl)
+    · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
     swap
-    exact refl_trans_gen.single rfl
+    exact ReflTransGen.single rfl
     refine' PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => _
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
     obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
     · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he
-      split_ifs  at he₂ <;> cases he₂
+      split_ifs at he₂ with h; cases he₂
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact refl_trans_gen.single rfl
-      rwa [step_ret, if_pos h]
+      exact ReflTransGen.single rfl
+      rwa [stepRet, if_pos h]
     · obtain ⟨v₁, he₁, he₂⟩ := (Part.mem_map_iff _).1 he₁'
-      split_ifs  at he₂ <;> cases he₂
-      clear he₂ he₁'
+      split_ifs at he₂ with h; cases he₂
+      clear he₁'
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact refl_trans_gen.single rfl
-      rwa [step_ret, if_neg h]
+      exact ReflTransGen.single rfl
+      rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 #align turing.to_partrec.cont_eval_fix Turing.ToPartrec.cont_eval_fix
 
 theorem code_is_ok (c) : Code.Ok c := by
-  induction c <;> intro k v <;> rw [step_normal]
-  iterate 3 simp only [code.eval, pure_bind]
+  induction c <;> intro k v <;> rw [stepNormal]
+  iterate 3 simp only [Code.eval, pure_bind]
   case cons f fs IHf IHfs =>
-    rw [code.eval, IHf]
-    simp only [bind_assoc, cont.eval, pure_bind]; congr ; funext v
-    rw [reaches_eval]; swap; exact refl_trans_gen.single rfl
-    rw [step_ret, IHfs]; congr ; funext v'
-    refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (refl_trans_gen.single rfl)
+    rw [Code.eval, IHf]
+    simp only [bind_assoc, Cont.eval, pure_bind]; congr ; funext v
+    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [stepRet, IHfs]; congr ; funext v'
+    refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (ReflTransGen.single rfl)
   case comp f g IHf IHg =>
-    rw [code.eval, IHg]
-    simp only [bind_assoc, cont.eval, pure_bind]; congr ; funext v
-    rw [reaches_eval]; swap; exact refl_trans_gen.single rfl
-    rw [step_ret, IHf]
-  case case f g IHf IHg => simp only [code.eval];
-    cases v.head <;> simp only [Nat.rec, code.eval] <;> [apply IHf, apply IHg]
+    rw [Code.eval, IHg]
+    simp only [bind_assoc, Cont.eval, pure_bind]; congr ; funext v
+    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [stepRet, IHf]
+  case case f g IHf IHg =>
+    simp only [Code.eval]
+    cases v.headI <;> simp only [Code.eval] <;> [apply IHf, apply IHg]
   case fix f IHf => rw [cont_eval_fix IHf]
 #align turing.to_partrec.code_is_ok Turing.ToPartrec.code_is_ok
 
@@ -710,25 +724,25 @@ theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt 
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v
   case halt =>
-    simp only [mem_eval, cont.eval, map_pure]
-    exact Part.eq_some_iff.2 (mem_eval.2 ⟨refl_trans_gen.refl, rfl⟩)
+    simp only [mem_eval, Cont.eval, map_pure]
+    exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   case cons₁ fs as k IH =>
-    rw [cont.eval, step_ret, code_is_ok]
-    simp only [← bind_pure_comp_eq_map, bind_assoc]; congr ; funext v'
-    rw [reaches_eval]; swap; exact refl_trans_gen.single rfl
-    rw [step_ret, IH, bind_pure_comp_eq_map]
-  case cons₂ ns k IH => rw [cont.eval, step_ret]; exact IH
+    rw [Cont.eval, stepRet, code_is_ok]
+    simp only [← bind_pure_comp, bind_assoc]; congr ; funext v'
+    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [stepRet, IH, bind_pure_comp]
+  case cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
   case comp f k IH =>
-    rw [cont.eval, step_ret, code_is_ok]
-    simp only [← bind_pure_comp_eq_map, bind_assoc]; congr ; funext v'
-    rw [reaches_eval]; swap; exact refl_trans_gen.single rfl
-    rw [IH, bind_pure_comp_eq_map]
+    rw [Cont.eval, stepRet, code_is_ok]
+    simp only [← bind_pure_comp, bind_assoc]; congr ; funext v'
+    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [IH, bind_pure_comp]
   case fix f k IH =>
-    rw [cont.eval, step_ret]; simp only [bind_pure_comp_eq_map]
+    rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
     split_ifs; · exact IH
-    simp only [← bind_pure_comp_eq_map, bind_assoc, cont_eval_fix (code_is_ok _)]
-    congr ; funext; rw [bind_pure_comp_eq_map, ← IH]
-    exact reaches_eval (refl_trans_gen.single rfl)
+    simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
+    congr ; funext; rw [bind_pure_comp, ← IH]
+    exact reaches_eval (ReflTransGen.single rfl)
 #align turing.to_partrec.step_ret_eval Turing.ToPartrec.stepRet_eval
 
 end ToPartrec
@@ -736,48 +750,48 @@ end ToPartrec
 /-!
 ## Simulating sequentialized partial recursive functions in TM2
 
-At this point we have a sequential model of partial recursive functions: the `cfg` type and
-`step : cfg → option cfg` function from the previous section. The key feature of this model is that
+At this point we have a sequential model of partial recursive functions: the `Cfg` type and
+`step : Cfg → option Cfg` function from the previous section. The key feature of this model is that
 it does a finite amount of computation (in fact, an amount which is statically bounded by the size
 of the program) between each step, and no individual step can diverge (unlike the compositional
 semantics, where every sub-part of the computation is potentially divergent). So we can utilize the
-same techniques as in the other TM simulations in `computability.turing_machine` to prove that
+same techniques as in the other TM simulations in `Computability.TuringMachine` to prove that
 each step corresponds to a finite number of steps in a lower level model. (We don't prove it here,
 but in anticipation of the complexity class P, the simulation is actually polynomial-time as well.)
 
-The target model is `turing.TM2`, which has a fixed finite set of stacks, a bit of local storage,
+The target model is `Turing.TM2`, which has a fixed finite set of stacks, a bit of local storage,
 with programs selected from a potentially infinite (but finitely accessible) set of program
 positions, or labels `Λ`, each of which executes a finite sequence of basic stack commands.
 
 For this program we will need four stacks, each on an alphabet `Γ'` like so:
 
-    inductive Γ'  | Cons | cons | bit0 | bit1
+    inductive Γ'  | consₗ | cons | bit0 | bit1
 
 We represent a number as a bit sequence, lists of numbers by putting `cons` after each element, and
-lists of lists of natural numbers by putting `Cons` after each list. For example:
+lists of lists of natural numbers by putting `consₗ` after each list. For example:
 
     0 ~> []
     1 ~> [bit1]
     6 ~> [bit0, bit1, bit1]
     [1, 2] ~> [bit1, cons, bit0, bit1, cons]
-    [[], [1, 2]] ~> [Cons, bit1, cons, bit0, bit1, cons, Cons]
+    [[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
 
 The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contains the input to the
-current program (a `list ℕ`) and `stack` contains data (a `list (list ℕ)`) associated to the
+current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
 current continuation, and in `ret` mode `main` contains the value that is being passed to the
 continuation and `stack` contains the data for the continuation. The `rev` and `aux` stacks are
 usually empty; `rev` is used to store reversed data when e.g. moving a value from one stack to
 another, while `aux` is used as a temporary for a `main`/`stack` swap that happens during `cons₁`
 evaluation.
 
-The only local store we need is `option Γ'`, which stores the result of the last pop
+The only local store we need is `Option Γ'`, which stores the result of the last pop
 operation. (Most of our working data are natural numbers, which are too large to fit in the local
 store.)
 
 The continuations from the previous section are data-carrying, containing all the values that have
 been computed and are awaiting other arguments. In order to have only a finite number of
 continuations appear in the program so that they can be used in machine states, we separate the
-data part (anything with type `list ℕ`) from the `cont` type, producing a `cont'` type that lacks
+data part (anything with type `List ℕ`) from the `Cont` type, producing a `Cont'` type that lacks
 this information. The data is kept on the `stack` stack.
 
 Because we want to have subroutines for e.g. moving an entire stack to another place, we use an
@@ -806,12 +820,12 @@ prove that only finitely many labels are accessible.) The labels are:
   before then `n :: v` will be on `main` after and we transition to `q₂`.
 * `ret k`: call continuation `k`. Each continuation has its own interpretation of the data in
   `stack` and sets up the data for the next continuation.
-  * `ret (cons₁ fs k)`: `v :: k_data` on `stack` and `ns` on `main`, and the next step expects
-    `v` on `main` and `ns :: k_data` on `stack`. So we have to do a little dance here with six
+  * `ret (cons₁ fs k)`: `v :: KData` on `stack` and `ns` on `main`, and the next step expects
+    `v` on `main` and `ns :: KData` on `stack`. So we have to do a little dance here with six
     reverse-moves using the `aux` stack to perform a three-point swap, each of which involves two
     reversals.
-  * `ret (cons₂ k)`: `ns :: k_data` is on `stack` and `v` is on `main`, and we have to put
-    `ns.head :: v` on `main` and `k_data` on `stack`. This is done using the `head` subroutine.
+  * `ret (cons₂ k)`: `ns :: KData` is on `stack` and `v` is on `main`, and we have to put
+    `ns.headI :: v` on `main` and `KData` on `stack`. This is done using the `head` subroutine.
   * `ret (fix f k)`: This stores no data, so we just check if `main` starts with `0` and
     if so, remove it and call `k`, otherwise `clear` the first value and call `f`.
   * `ret halt`: the stack is empty, and `main` has the output. Do nothing and halt.
@@ -820,26 +834,28 @@ In addition to these basic states, we define some additional subroutines that ar
 above:
 * `push'`, `peek'`, `pop'` are special versions of the builtins that use the local store to supply
   inputs and outputs.
-* `unrev`: special case `move ff rev main` to move everything from `rev` back to `main`. Used as a
-  cleanup operation in several functions.
-* `move_excl p k₁ k₂ q`: same as `move` but pushes the last value read back onto the source stack.
+* `unrev`: special case `move false rev main` to move everything from `rev` back to `main`. Used as
+  a cleanup operation in several functions.
+* `moveExcl p k₁ k₂ q`: same as `move` but pushes the last value read back onto the source stack.
 * `move₂ p k₁ k₂ q`: double `move`, so that the result comes out in the right order at the target
-  stack. Implemented as `move_excl p k rev; move ff rev k₂`. Assumes that neither `k₁` nor `k₂` is
-  `rev` and `rev` is initially empty.
+  stack. Implemented as `moveExcl p k rev; move false rev k₂`. Assumes that neither `k₁` nor `k₂`
+  is `rev` and `rev` is initially empty.
 * `head k q`: get the first natural number from stack `k` and reverse-move it to `rev`, then clear
   the rest of the list at `k` and then `unrev` to reverse-move the head value to `main`. This is
-  used with `k = main` to implement regular `head`, i.e. if `v` is on `main` before then `[v.head]`
+  used with `k = main` to implement regular `head`, i.e. if `v` is on `main` before then `[v.headI]`
   will be on `main` after; and also with `k = stack` for the `cons` operation, which has `v` on
-  `main` and `ns :: k_data` on `stack`, and results in `k_data` on `stack` and `ns.head :: v` on
+  `main` and `ns :: KData` on `stack`, and results in `KData` on `stack` and `ns.headI :: v` on
   `main`.
-* `tr_normal` is the main entry point, defining states that perform a given `code` computation.
+* `trNormal` is the main entry point, defining states that perform a given `code` computation.
   It mostly just dispatches to functions written above.
 
 The main theorem of this section is `tr_eval`, which asserts that for each that for each code `c`,
 the state `init c v` steps to `halt v'` in finitely many steps if and only if
-`code.eval c v = some v'`.
+`Code.eval c v = some v'`.
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 namespace PartrecToTM2
 
@@ -848,17 +864,21 @@ section
 open ToPartrec
 
 /-- The alphabet for the stacks in the program. `bit0` and `bit1` are used to represent `ℕ` values
-as lists of binary digits, `cons` is used to separate `list ℕ` values, and `Cons` is used to
-separate `list (list ℕ)` values. See the section documentation. -/
+as lists of binary digits, `cons` is used to separate `List ℕ` values, and `consₗ` is used to
+separate `List (List ℕ)` values. See the section documentation. -/
 inductive Γ'
-  | Cons
+  | consₗ
   | cons
   | bit0
   | bit1
   deriving DecidableEq, Inhabited, Fintype
 #align turing.partrec_to_TM2.Γ' Turing.PartrecToTM2.Γ'
+#align turing.partrec_to_TM2.Γ'.Cons Turing.PartrecToTM2.Γ'.consₗ
+#align turing.partrec_to_TM2.Γ'.cons Turing.PartrecToTM2.Γ'.cons
+#align turing.partrec_to_TM2.Γ'.bit0 Turing.PartrecToTM2.Γ'.bit0
+#align turing.partrec_to_TM2.Γ'.bit1 Turing.PartrecToTM2.Γ'.bit1
 
-/-- The four stacks used by the program. `main` is used to store the input value in `tr_normal`
+/-- The four stacks used by the program. `main` is used to store the input value in `trNormal`
 mode and the output value in `Λ'.ret` mode, while `stack` is used to keep all the data for the
 continuations. `rev` is used to store reversed lists when transferring values between stacks, and
 `aux` is only used once in `cons₁`. See the section documentation. -/
@@ -869,21 +889,30 @@ inductive K'
   | stack
   deriving DecidableEq, Inhabited
 #align turing.partrec_to_TM2.K' Turing.PartrecToTM2.K'
+#align turing.partrec_to_TM2.K'.main Turing.PartrecToTM2.K'.main
+#align turing.partrec_to_TM2.K'.rev Turing.PartrecToTM2.K'.rev
+#align turing.partrec_to_TM2.K'.aux Turing.PartrecToTM2.K'.aux
+#align turing.partrec_to_TM2.K'.stack Turing.PartrecToTM2.K'.stack
 
 open K'
 
-/-- Continuations as in `to_partrec.cont` but with the data removed. This is done because we want
+/-- Continuations as in `ToPartrec.Cont` but with the data removed. This is done because we want
 the set of all continuations in the program to be finite (so that it can ultimately be encoded into
 the finite state machine of a Turing machine), but a continuation can handle a potentially infinite
 number of data values during execution. -/
 inductive Cont'
   | halt
-  | cons₁ : Code → cont' → cont'
-  | cons₂ : cont' → cont'
-  | comp : Code → cont' → cont'
-  | fix : Code → cont' → cont'
+  | cons₁ : Code → Cont' → Cont'
+  | cons₂ : Cont' → Cont'
+  | comp : Code → Cont' → Cont'
+  | fix : Code → Cont' → Cont'
   deriving DecidableEq, Inhabited
 #align turing.partrec_to_TM2.cont' Turing.PartrecToTM2.Cont'
+#align turing.partrec_to_TM2.cont'.halt Turing.PartrecToTM2.Cont'.halt
+#align turing.partrec_to_TM2.cont'.cons₁ Turing.PartrecToTM2.Cont'.cons₁
+#align turing.partrec_to_TM2.cont'.cons₂ Turing.PartrecToTM2.Cont'.cons₂
+#align turing.partrec_to_TM2.cont'.comp Turing.PartrecToTM2.Cont'.comp
+#align turing.partrec_to_TM2.cont'.fix Turing.PartrecToTM2.Cont'.fix
 
 /-- The set of program positions. We make extensive use of inductive types here to let us describe
 "subroutines"; for example `clear p k q` is a program that clears stack `k`, then does `q` where
@@ -900,31 +929,41 @@ inductive Λ'
   | pred (q₁ q₂ : Λ')
   | ret (k : Cont')
 #align turing.partrec_to_TM2.Λ' Turing.PartrecToTM2.Λ'
+#align turing.partrec_to_TM2.Λ'.move Turing.PartrecToTM2.Λ'.move
+#align turing.partrec_to_TM2.Λ'.clear Turing.PartrecToTM2.Λ'.clear
+#align turing.partrec_to_TM2.Λ'.copy Turing.PartrecToTM2.Λ'.copy
+#align turing.partrec_to_TM2.Λ'.push Turing.PartrecToTM2.Λ'.push
+#align turing.partrec_to_TM2.Λ'.read Turing.PartrecToTM2.Λ'.read
+#align turing.partrec_to_TM2.Λ'.succ Turing.PartrecToTM2.Λ'.succ
+#align turing.partrec_to_TM2.Λ'.pred Turing.PartrecToTM2.Λ'.pred
+#align turing.partrec_to_TM2.Λ'.ret Turing.PartrecToTM2.Λ'.ret
 
-instance : Inhabited Λ' :=
+instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
+#align turing.partrec_to_TM2.Λ'.inhabited Turing.PartrecToTM2.Λ'.instInhabited
 
-instance : DecidableEq Λ' := fun a b => by
+instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> try apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
   all_goals exact decidable_of_iff' _ (by simp [Function.funext_iff])
+#align turing.partrec_to_TM2.Λ'.decidable_eq Turing.PartrecToTM2.Λ'.instDecidableEq
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
-  TM2.Stmt (fun _ : K' => Γ') Λ' (Option Γ')deriving Inhabited
+  TM2.Stmt (fun _ : K' => Γ') Λ' (Option Γ') deriving Inhabited
 #align turing.partrec_to_TM2.stmt' Turing.PartrecToTM2.Stmt'
 
 /-- The type of TM2 configurations used by this machine. -/
 def Cfg' :=
-  TM2.Cfg (fun _ : K' => Γ') Λ' (Option Γ')deriving Inhabited
+  TM2.Cfg (fun _ : K' => Γ') Λ' (Option Γ') deriving Inhabited
 #align turing.partrec_to_TM2.cfg' Turing.PartrecToTM2.Cfg'
 
 open TM2.Stmt
 
-/-- A predicate that detects the end of a natural number, either `Γ'.cons` or `Γ'.Cons` (or
+/-- A predicate that detects the end of a natural number, either `Γ'.cons` or `Γ'.consₗ` (or
 implicitly the end of the list), for use in predicate-taking functions like `move` and `clear`. -/
 @[simp]
 def natEnd : Γ' → Bool
-  | Γ'.Cons => true
+  | Γ'.consₗ => true
   | Γ'.cons => true
   | _ => false
 #align turing.partrec_to_TM2.nat_end Turing.PartrecToTM2.natEnd
@@ -932,13 +971,13 @@ def natEnd : Γ' → Bool
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]
 def pop' (k : K') : Stmt' → Stmt' :=
-  pop k fun x v => v
+  pop k fun _ v => v
 #align turing.partrec_to_TM2.pop' Turing.PartrecToTM2.pop'
 
 /-- Peek a value from the stack and place the result in local store. -/
 @[simp]
 def peek' (k : K') : Stmt' → Stmt' :=
-  peek k fun x v => v
+  peek k fun _ v => v
 #align turing.partrec_to_TM2.peek' Turing.PartrecToTM2.peek'
 
 /-- Push the value in the local store to the given stack. -/
@@ -963,29 +1002,29 @@ def move₂ (p k₁ k₂ q) :=
   moveExcl p k₁ rev <| Λ'.move (fun _ => false) rev k₂ q
 #align turing.partrec_to_TM2.move₂ Turing.PartrecToTM2.move₂
 
-/-- Assuming `tr_list v` is on the front of stack `k`, remove it, and push `v.head` onto `main`.
+/-- Assuming `trList v` is on the front of stack `k`, remove it, and push `v.headI` onto `main`.
 See the section documentation. -/
 def head (k : K') (q : Λ') : Λ' :=
   Λ'.move natEnd k rev <|
     (Λ'.push rev fun _ => some Γ'.cons) <|
       Λ'.read fun s =>
-        (if s = some Γ'.Cons then id else Λ'.clear (fun x => x = Γ'.Cons) k) <| unrev q
+        (if s = some Γ'.consₗ then id else Λ'.clear (fun x => x = Γ'.consₗ) k) <| unrev q
 #align turing.partrec_to_TM2.head Turing.PartrecToTM2.head
 
 /-- The program that evaluates code `c` with continuation `k`. This expects an initial state where
-`tr_list v` is on `main`, `tr_cont_stack k` is on `stack`, and `aux` and `rev` are empty.
+`trList v` is on `main`, `trContStack k` is on `stack`, and `aux` and `rev` are empty.
 See the section documentation for details. -/
 @[simp]
 def trNormal : Code → Cont' → Λ'
-  | code.zero', k => (Λ'.push main fun _ => some Γ'.cons) <| Λ'.ret k
-  | code.succ, k => head main <| Λ'.succ <| Λ'.ret k
-  | code.tail, k => Λ'.clear natEnd main <| Λ'.ret k
-  | code.cons f fs, k =>
-    (Λ'.push stack fun _ => some Γ'.Cons) <|
-      Λ'.move (fun _ => false) main rev <| Λ'.copy <| tr_normal f (Cont'.cons₁ fs k)
-  | code.comp f g, k => tr_normal g (Cont'.comp f k)
-  | code.case f g, k => Λ'.pred (tr_normal f k) (tr_normal g k)
-  | code.fix f, k => tr_normal f (Cont'.fix f k)
+  | Code.zero', k => (Λ'.push main fun _ => some Γ'.cons) <| Λ'.ret k
+  | Code.succ, k => head main <| Λ'.succ <| Λ'.ret k
+  | Code.tail, k => Λ'.clear natEnd main <| Λ'.ret k
+  | Code.cons f fs, k =>
+    (Λ'.push stack fun _ => some Γ'.consₗ) <|
+      Λ'.move (fun _ => false) main rev <| Λ'.copy <| trNormal f (Cont'.cons₁ fs k)
+  | Code.comp f g, k => trNormal g (Cont'.comp f k)
+  | Code.case f g, k => Λ'.pred (trNormal f k) (trNormal g k)
+  | Code.fix f, k => trNormal f (Cont'.fix f k)
 #align turing.partrec_to_TM2.tr_normal Turing.PartrecToTM2.trNormal
 
 /-- The main program. See the section documentation for details. -/
@@ -1018,33 +1057,31 @@ def tr : Λ' → Stmt'
           (peek' main <|
             branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
               ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))
-  | Λ'.ret (cont'.cons₁ fs k) =>
+  | Λ'.ret (Cont'.cons₁ fs k) =>
     goto fun _ =>
       move₂ (fun _ => false) main aux <|
-        move₂ (fun s => s = Γ'.Cons) stack main <|
+        move₂ (fun s => s = Γ'.consₗ) stack main <|
           move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)
-  | Λ'.ret (cont'.cons₂ k) => goto fun _ => head stack <| Λ'.ret k
-  | Λ'.ret (cont'.comp f k) => goto fun _ => trNormal f k
-  | Λ'.ret (cont'.fix f k) =>
+  | Λ'.ret (Cont'.cons₂ k) => goto fun _ => head stack <| Λ'.ret k
+  | Λ'.ret (Cont'.comp f k) => goto fun _ => trNormal f k
+  | Λ'.ret (Cont'.fix f k) =>
     pop' main <|
       goto fun s =>
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
-  | Λ'.ret cont'.halt => (load fun _ => none) <| halt
+  | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 #align turing.partrec_to_TM2.tr Turing.PartrecToTM2.tr
 
-/-- Translating a `cont` continuation to a `cont'` continuation simply entails dropping all the
-data. This data is instead encoded in `tr_cont_stack` in the configuration. -/
+/-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
+data. This data is instead encoded in `trContStack` in the configuration. -/
 def trCont : Cont → Cont'
-  | cont.halt => Cont'.halt
-  | cont.cons₁ c _ k => Cont'.cons₁ c (tr_cont k)
-  | cont.cons₂ _ k => Cont'.cons₂ (tr_cont k)
-  | cont.comp c k => Cont'.comp c (tr_cont k)
-  | cont.fix c k => Cont'.fix c (tr_cont k)
+  | Cont.halt => Cont'.halt
+  | Cont.cons₁ c _ k => Cont'.cons₁ c (trCont k)
+  | Cont.cons₂ _ k => Cont'.cons₂ (trCont k)
+  | Cont.comp c k => Cont'.comp c (trCont k)
+  | Cont.fix c k => Cont'.fix c (trCont k)
 #align turing.partrec_to_TM2.tr_cont Turing.PartrecToTM2.trCont
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- We use `pos_num` to define the translation of binary natural numbers. A natural number is
+/-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
     1 = [bit1]
@@ -1055,13 +1092,13 @@ represented as a little-endian list of `bit0` and `bit1` elements:
 In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
 def trPosNum : PosNum → List Γ'
   | PosNum.one => [Γ'.bit1]
-  | PosNum.bit0 n => Γ'.bit0::tr_pos_num n
-  | PosNum.bit1 n => Γ'.bit1::tr_pos_num n
+  | PosNum.bit0 n => Γ'.bit0 :: trPosNum n
+  | PosNum.bit1 n => Γ'.bit1 :: trPosNum n
 #align turing.partrec_to_TM2.tr_pos_num Turing.PartrecToTM2.trPosNum
 
-/-- We use `num` to define the translation of binary natural numbers. Positive numbers are
-translated using `tr_pos_num`, and `tr_num 0 = []`. So there are never any trailing `bit0`'s in
-a translated `num`.
+/-- We use `Num` to define the translation of binary natural numbers. Positive numbers are
+translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
+a translated `Num`.
 
     0 = []
     1 = [bit1]
@@ -1074,15 +1111,15 @@ def trNum : Num → List Γ'
   | Num.pos n => trPosNum n
 #align turing.partrec_to_TM2.tr_num Turing.PartrecToTM2.trNum
 
-/-- Because we use binary encoding, we define `tr_nat` in terms of `tr_num`, using `num`, which are
-binary natural numbers. (We could also use `nat.binary_rec_on`, but `num` and `pos_num` make for
+/-- Because we use binary encoding, we define `trNat` in terms of `trNum`, using `Num`, which are
+binary natural numbers. (We could also use `Nat.binaryRecOn`, but `Num` and `PosNum` make for
 easy inductions.) -/
 def trNat (n : ℕ) : List Γ' :=
   trNum n
 #align turing.partrec_to_TM2.tr_nat Turing.PartrecToTM2.trNat
 
 @[simp]
-theorem trNat_zero : trNat 0 = [] := by rw [tr_nat, Nat.cast_zero] <;> rfl
+theorem trNat_zero : trNat 0 = [] := by rw [trNat, Nat.cast_zero]; rfl
 #align turing.partrec_to_TM2.tr_nat_zero Turing.PartrecToTM2.trNat_zero
 
 @[simp]
@@ -1090,8 +1127,6 @@ theorem trNat_default : trNat default = [] :=
   trNat_zero
 #align turing.partrec_to_TM2.tr_nat_default Turing.PartrecToTM2.trNat_default
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Lists are translated with a `cons` after each encoded number.
 For example:
 
@@ -1103,47 +1138,43 @@ For example:
 @[simp]
 def trList : List ℕ → List Γ'
   | [] => []
-  | n::ns => trNat n ++ Γ'.cons::tr_list ns
+  | n::ns => trNat n ++ Γ'.cons :: trList ns
 #align turing.partrec_to_TM2.tr_list Turing.PartrecToTM2.trList
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Lists of lists are translated with a `Cons` after each encoded list.
+/-- Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
     [] = []
-    [[]] = [Cons]
-    [[], []] = [Cons, Cons]
-    [[0]] = [cons, Cons]
-    [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, Cons, cons, Cons]
+    [[]] = [consₗ]
+    [[], []] = [consₗ, consₗ]
+    [[0]] = [cons, consₗ]
+    [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
 -/
 @[simp]
-def trLlist : List (List ℕ) → List Γ'
+def trLList : List (List ℕ) → List Γ'
   | [] => []
-  | l::ls => trList l ++ Γ'.Cons::tr_llist ls
-#align turing.partrec_to_TM2.tr_llist Turing.PartrecToTM2.trLlist
+  | l::ls => trList l ++ Γ'.consₗ :: trLList ls
+#align turing.partrec_to_TM2.tr_llist Turing.PartrecToTM2.trLList
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The data part of a continuation is a list of lists, which is encoded on the `stack` stack
-using `tr_llist`. -/
+using `trLList`. -/
 @[simp]
 def contStack : Cont → List (List ℕ)
-  | cont.halt => []
-  | cont.cons₁ _ ns k => ns::cont_stack k
-  | cont.cons₂ ns k => ns::cont_stack k
-  | cont.comp _ k => cont_stack k
-  | cont.fix _ k => cont_stack k
+  | Cont.halt => []
+  | Cont.cons₁ _ ns k => ns :: contStack k
+  | Cont.cons₂ ns k => ns :: contStack k
+  | Cont.comp _ k => contStack k
+  | Cont.fix _ k => contStack k
 #align turing.partrec_to_TM2.cont_stack Turing.PartrecToTM2.contStack
 
 /-- The data part of a continuation is a list of lists, which is encoded on the `stack` stack
-using `tr_llist`. -/
+using `trLList`. -/
 def trContStack (k : Cont) :=
-  trLlist (contStack k)
+  trLList (contStack k)
 #align turing.partrec_to_TM2.tr_cont_stack Turing.PartrecToTM2.trContStack
 
 /-- This is the nondependent eliminator for `K'`, but we use it specifically here in order to
-represent the stack data as four lists rather than as a function `K' → list Γ'`, because this makes
+represent the stack data as four lists rather than as a function `K' → List Γ'`, because this makes
 rewrites easier. The theorems `K'.elim_update_main` et. al. show how such a function is updated
 after an `update` to one of the components. -/
 @[simp]
@@ -1156,81 +1187,75 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
 
 @[simp]
 theorem K'.elim_update_main {a b c d a'} : update (K'.elim a b c d) main a' = K'.elim a' b c d := by
-  funext x <;> cases x <;> rfl
+  funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_main Turing.PartrecToTM2.K'.elim_update_main
 
 @[simp]
 theorem K'.elim_update_rev {a b c d b'} : update (K'.elim a b c d) rev b' = K'.elim a b' c d := by
-  funext x <;> cases x <;> rfl
+  funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_rev Turing.PartrecToTM2.K'.elim_update_rev
 
 @[simp]
 theorem K'.elim_update_aux {a b c d c'} : update (K'.elim a b c d) aux c' = K'.elim a b c' d := by
-  funext x <;> cases x <;> rfl
+  funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_aux Turing.PartrecToTM2.K'.elim_update_aux
 
 @[simp]
 theorem K'.elim_update_stack {a b c d d'} : update (K'.elim a b c d) stack d' = K'.elim a b c d' :=
-  by funext x <;> cases x <;> rfl
+  by funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_stack Turing.PartrecToTM2.K'.elim_update_stack
 
-/-- The halting state corresponding to a `list ℕ` output value. -/
+/-- The halting state corresponding to a `List ℕ` output value. -/
 def halt (v : List ℕ) : Cfg' :=
   ⟨none, none, K'.elim (trList v) [] [] []⟩
 #align turing.partrec_to_TM2.halt Turing.PartrecToTM2.halt
 
-/-- The `cfg` states map to `cfg'` states almost one to one, except that in normal operation the
+/-- The `Cfg` states map to `Cfg'` states almost one to one, except that in normal operation the
 local store contains an arbitrary garbage value. To make the final theorem cleaner we explicitly
 clear it in the halt state so that there is exactly one configuration corresponding to output `v`.
 -/
 def TrCfg : Cfg → Cfg' → Prop
-  | cfg.ret k v, c' =>
+  | Cfg.ret k v, c' =>
     ∃ s, c' = ⟨some (Λ'.ret (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩
-  | cfg.halt v, c' => c' = halt v
+  | Cfg.halt v, c' => c' = halt v
 #align turing.partrec_to_TM2.tr_cfg Turing.PartrecToTM2.TrCfg
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- This could be a general list definition, but it is also somewhat specialized to this
-application. `split_at_pred p L` will search `L` for the first element satisfying `p`.
+application. `splitAtPred p L` will search `L` for the first element satisfying `p`.
 If it is found, say `L = l₁ ++ a :: l₂` where `a` satisfies `p` but `l₁` does not, then it returns
 `(l₁, some a, l₂)`. Otherwise, if there is no such element, it returns `(L, none, [])`. -/
 def splitAtPred {α} (p : α → Bool) : List α → List α × Option α × List α
   | [] => ([], none, [])
-  | a::as =>
+  | a :: as =>
     cond (p a) ([], some a, as) <|
-      let ⟨l₁, o, l₂⟩ := split_at_pred as
+      let ⟨l₁, o, l₂⟩ := splitAtPred p as
       ⟨a::l₁, o, l₂⟩
 #align turing.partrec_to_TM2.split_at_pred Turing.PartrecToTM2.splitAtPred
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem splitAtPred_eq {α} (p : α → Bool) :
     ∀ L l₁ o l₂,
       (∀ x ∈ l₁, p x = false) →
         Option.elim' (L = l₁ ∧ l₂ = []) (fun a => p a = true ∧ L = l₁ ++ a::l₂) o →
           splitAtPred p L = (l₁, o, l₂)
   | [], _, none, _, _, ⟨rfl, rfl⟩ => rfl
-  | [], l₁, some o, l₂, h₁, ⟨h₂, h₃⟩ => by simp at h₃ <;> contradiction
-  | a::L, l₁, o, l₂, h₁, h₂ => by
-    rw [split_at_pred]
-    have IH := split_at_pred_eq L
-    cases o
+  | [], l₁, some o, l₂, _, ⟨_, h₃⟩ => by simp at h₃
+  | a :: L, l₁, o, l₂, h₁, h₂ => by
+    rw [splitAtPred]
+    have IH := splitAtPred_eq p L
+    cases' o with o
     · cases' l₁ with a' l₁ <;> rcases h₂ with ⟨⟨⟩, rfl⟩
-      rw [h₁ a (Or.inl rfl), cond, IH L none [] _ ⟨rfl, rfl⟩]
-      rfl
-      exact fun x h => h₁ x (Or.inr h)
+      rw [h₁ a (List.Mem.head _), cond, IH L none [] _ ⟨rfl, rfl⟩]
+      exact fun x h => h₁ x (List.Mem.tail _ h)
     · cases' l₁ with a' l₁ <;> rcases h₂ with ⟨h₂, ⟨⟩⟩
       · rw [h₂, cond]
-      rw [h₁ a (Or.inl rfl), cond, IH l₁ (some o) l₂ _ ⟨h₂, _⟩] <;> try rfl
-      exact fun x h => h₁ x (Or.inr h)
+      rw [h₁ a (List.Mem.head _), cond, IH l₁ (some o) l₂ _ ⟨h₂, _⟩] <;> try rfl
+      exact fun x h => h₁ x (List.Mem.tail _ h)
 #align turing.partrec_to_TM2.split_at_pred_eq Turing.PartrecToTM2.splitAtPred_eq
 
 theorem splitAtPred_false {α} (L : List α) : splitAtPred (fun _ => false) L = (L, none, []) :=
   splitAtPred_eq _ _ _ _ _ (fun _ _ => rfl) ⟨rfl, rfl⟩
 #align turing.partrec_to_TM2.split_at_pred_ff Turing.PartrecToTM2.splitAtPred_false
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁ ≠ k₂)
     (e : splitAtPred p (S k₁) = (L₁, o, L₂)) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.move p k₁ k₂ q), s, S⟩
@@ -1240,29 +1265,40 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_noteq h₁.symm]
       rfl
-    refine' trans_gen.head' rfl _
-    simp
-    cases' S k₁ with a Sk
+    refine' TransGen.head' rfl _
+    conv =>
+      congr
+      · ext a b
+        rw [Option.mem_def]
+      · simp only [tr, pop', push', TM2.stepAux]
+    revert e ; cases' S k₁ with a Sk <;> intro e
     · cases e
       rfl
-    simp [split_at_pred] at e⊢
-    cases p a <;> simp at e⊢
+    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
+    revert e; cases p a <;> intro e <;>
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and] at e ⊢
     · revert e
-      rcases split_at_pred p Sk with ⟨_, _, _⟩
-      rintro ⟨⟩
+      rcases splitAtPred p Sk with ⟨_, _, _⟩
+      rintro ⟨⟨⟩, _⟩
     · simp only [e]
-  · refine' trans_gen.head rfl _
-    simp
-    cases' e₁ : S k₁ with a' Sk <;> rw [e₁, split_at_pred] at e
+      rfl
+  · refine' TransGen.head rfl _
+    conv =>
+      congr
+      · ext a b
+        rw [Option.mem_def]
+      · simp only [tr, pop', push', TM2.stepAux]
+      · rw [List.reverseAux]
+    cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
     swap
     · cases e
-    rcases e₃ : split_at_pred p Sk with ⟨_, _, _⟩
-    rw [e₃, split_at_pred] at e
+    rcases e₃ : splitAtPred p Sk with ⟨_, _, _⟩
+    rw [e₃] at e
     cases e
     simp [e₂]
-    convert@IH (update (update S k₁ Sk) k₂ (a::S k₂)) _ _ using 2 <;>
+    convert @IH _ (update (update S k₁ Sk) k₂ (a :: S k₂)) _ using 2 <;>
       simp [Function.update_noteq, h₁, h₁.symm, e₃, List.reverseAux]
     simp [Function.update_comm h₁.symm]
 #align turing.partrec_to_TM2.move_ok Turing.PartrecToTM2.move_ok
@@ -1277,9 +1313,14 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
     (h₂ : S rev = []) (e : splitAtPred p (S k₁) = (L₁, o, L₂)) :
     Reaches₁ (TM2.step tr) ⟨some (move₂ p k₁ k₂ q), s, S⟩
       ⟨some q, none, update (update S k₁ (o.elim id List.cons L₂)) k₂ (L₁ ++ S k₂)⟩ := by
-  refine' (move_ok h₁.1 e).trans (trans_gen.head rfl _)
-  cases o <;> simp only [Option.elim', tr, id.def]
-  · convert move_ok h₁.2.1.symm (split_at_pred_ff _) using 2
+  refine' (move_ok h₁.1 e).trans (TransGen.head rfl _)
+  conv =>
+    congr
+    · skip
+    · simp only [tr]
+    · skip
+  cases o <;> simp only [Option.elim, id.def]
+  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_noteq h₁.2.2.symm, Function.update_noteq h₁.2.1,
@@ -1623,13 +1664,13 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
 
 /-- The set of machine states reachable via downward label jumps, discounting jumps via `ret`. -/
 def trStmts₁ : Λ' → Finset Λ'
-  | Q@(Λ'.move p k₁ k₂ q) => insert Q <| tr_stmts₁ q
-  | Q@(Λ'.push k f q) => insert Q <| tr_stmts₁ q
-  | Q@(Λ'.read q) => insert Q <| Finset.univ.bunionᵢ fun s => tr_stmts₁ (q s)
-  | Q@(Λ'.clear p k q) => insert Q <| tr_stmts₁ q
-  | Q@(Λ'.copy q) => insert Q <| tr_stmts₁ q
-  | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| tr_stmts₁ q
-  | Q@(Λ'.pred q₁ q₂) => insert Q <| tr_stmts₁ q₁ ∪ insert (unrev q₂) (tr_stmts₁ q₂)
+  | Q@(Λ'.move p k₁ k₂ q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.push k f q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.read q) => insert Q <| Finset.univ.bunionᵢ fun s => trStmts₁ (q s)
+  | Q@(Λ'.clear p k q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.copy q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| trStmts₁ q
+  | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret k) => {Q}
 #align turing.partrec_to_TM2.tr_stmts₁ Turing.PartrecToTM2.trStmts₁
 
@@ -1797,13 +1838,13 @@ theorem contSupp_halt : contSupp Cont'.halt = ∅ :=
 reachable from `q`.
 (This is a technical condition used in the proof that the machine is supported.) -/
 def Λ'.Supports (S : Finset Λ') : Λ' → Prop
-  | Q@(Λ'.move p k₁ k₂ q) => Λ'.supports q
-  | Q@(Λ'.push k f q) => Λ'.supports q
-  | Q@(Λ'.read q) => ∀ s, Λ'.supports (q s)
-  | Q@(Λ'.clear p k q) => Λ'.supports q
-  | Q@(Λ'.copy q) => Λ'.supports q
-  | Q@(Λ'.succ q) => Λ'.supports q
-  | Q@(Λ'.pred q₁ q₂) => Λ'.supports q₁ ∧ Λ'.supports q₂
+  | Q@(Λ'.move p k₁ k₂ q) => Λ'.Supports S q
+  | Q@(Λ'.push k f q) => Λ'.Supports S q
+  | Q@(Λ'.read q) => ∀ s, Λ'.Supports S (q s)
+  | Q@(Λ'.clear p k q) => Λ'.Supports S q
+  | Q@(Λ'.copy q) => Λ'.Supports S q
+  | Q@(Λ'.succ q) => Λ'.Supports S q
+  | Q@(Λ'.pred q₁ q₂) => Λ'.Supports S q₁ ∧ Λ'.Supports S q₂
   | Q@(Λ'.ret k) => contSupp k ⊆ S
 #align turing.partrec_to_TM2.Λ'.supports Turing.PartrecToTM2.Λ'.Supports
 
