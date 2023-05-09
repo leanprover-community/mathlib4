@@ -62,6 +62,8 @@ namespace Triangulated
 
 namespace Localization
 
+section
+
 variable {C D : Type _} [Category C] [Category D]
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
     [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -176,6 +178,9 @@ lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W ; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W ; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
+lemma essSurj_mapArrow : EssSurj L.mapArrow :=
+  MorphismProperty.HasLeftCalculusOfFractions.essSurj_mapArrow L W
+
 end
 
 /-
@@ -262,6 +267,33 @@ instance (n : ℤ) : (shiftFunctor W.Localization n).Additive :=
 
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 noncomputable instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
+
+instance : EssSurj W.Q.mapArrow := essSurj_mapArrow W.Q W
+
+end
+
+section
+
+variable {C D : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
+  [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [EssSurj L.mapArrow]
+  [L.HasCommShift ℤ] [L.IsTriangulated]
+
+lemma distTriang_iff (T : Triangle D) :
+    (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by
+  constructor
+  . intro hT
+    let f := L.mapArrow.objPreimage T.mor₁
+    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
+      Pretriangulated.distinguished_cocone_triangle f.hom
+    exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
+      (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩
+  . rintro ⟨T₀, e, hT₀⟩
+    exact isomorphic_distinguished _ (L.map_distinguished _ hT₀) _ e
+
+end
 
 end Localization
 

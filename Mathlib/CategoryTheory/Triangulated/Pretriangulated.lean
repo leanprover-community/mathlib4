@@ -592,6 +592,33 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     dsimp
     rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel'_right]
 
+lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
+    (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
+    isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
+      (rot_of_dist_triangle _ hT') h₂ (by dsimp ; infer_instance)
+
+lemma complete_distinguished_triangle_morphism' (T₁ T₂ : Triangle C)
+    (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+      ∃ (φ : T₁ ⟶ T₂), φ.hom₁ = a ∧ φ.hom₂ = b := by
+  obtain ⟨c, ⟨hc₁, hc₂⟩⟩ := complete_distinguished_triangle_morphism _ _ hT₁ hT₂ a b comm
+  exact ⟨{  hom₁ := a
+            hom₂ := b
+            hom₃ := c
+            comm₁ := comm
+            comm₂ := hc₁
+            comm₃ := hc₂ }, rfl, rfl⟩
+
+lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
+    ∃ (e' : T₁ ≅ T₂), e'.hom.hom₁ = e.hom.left ∧ e'.hom.hom₂ = e.hom.right := by
+  obtain ⟨φ, ⟨hφ₁, hφ₂⟩⟩ :=
+    complete_distinguished_triangle_morphism' T₁ T₂ hT₁ hT₂ e.hom.left e.hom.right e.hom.w.symm
+  have : IsIso φ.hom₁ := by rw [hφ₁] ; infer_instance
+  have : IsIso φ.hom₂ := by rw [hφ₂] ; infer_instance
+  have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
+  exact ⟨asIso φ, hφ₁, hφ₂⟩
+
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
 then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.

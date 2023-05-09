@@ -632,6 +632,9 @@ lemma liftMap_fac {X Y : D} (f : X ⟶ Y) : f ≫ (liftMapIso₂ L W f).hom =
     (liftMapIso₁ L W f).hom ≫ L.map (liftMap L W f) :=
   (mapLiftMapIso L W f).hom.w.symm
 
+lemma essSurj_mapArrow : EssSurj L.mapArrow := ⟨fun f =>
+  ⟨Arrow.mk (liftMap L W f.hom), ⟨(mapLiftMapIso L W f.hom).symm⟩⟩⟩
+
 end HasLeftCalculusOfFractions
 
 namespace HasRightCalculusOfFractions

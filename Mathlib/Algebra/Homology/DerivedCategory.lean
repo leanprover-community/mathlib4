@@ -6,7 +6,9 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 open CategoryTheory Category Limits Pretriangulated
 
-variable (C : Type _) [Category C] [Abelian C]
+universe v u
+
+variable (C : Type u) [Category.{v} C] [Abelian C]
 
 instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
 
@@ -86,6 +88,10 @@ instance : (Qh : _ ⥤ DerivedCategory C).IsTriangulated := by
   dsimp only [Qh, DerivedCategory, HomotopyCategory.qis]
   infer_instance
 
+instance : EssSurj (Functor.mapArrow (Qh : _ ⥤ DerivedCategory C)) := by
+  dsimp only [Qh, DerivedCategory, HomotopyCategory.qis]
+  infer_instance
+
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
 
@@ -122,11 +128,46 @@ lemma Qh_commShiftIso_inv_app (X : CochainComplex C ℤ) (n : ℤ) :
   simp only [Q_commShiftIso_inv_app, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
     Functor.comp_obj, Paths.of_obj, CategoryTheory.Functor.map_id, comp_id]
 
+variable (C)
+
+noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
+  HomologicalComplex.single _ _ n ⋙ Q
+
+lemma homologyFunctor_inverts_qis (n : ℤ) :
+    (HomotopyCategory.qis C).IsInvertedBy
+      (HomotopyCategory.newHomologyFunctor C _ n) := fun X Y f hf => by
+  rw [HomotopyCategory.mem_qis_iff] at hf
+  exact hf n
+
+noncomputable def homologyFunctor (n : ℤ) : DerivedCategory C ⥤ C :=
+  Localization.lift _ (homologyFunctor_inverts_qis C n) Qh
+
+noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n ≅
+  HomotopyCategory.newHomologyFunctor C _ n := Localization.fac _ _ _
+
+attribute [irreducible] homologyFunctor homologyFunctorFactorsh
+
+instance : (homologyFunctor C n).PreservesZeroMorphisms :=
+  Functor.preservesZeroMorphisms_of_fac_of_essSurj _ _ _
+    (homologyFunctorFactorsh C n)
+
+-- could be better to have `IsHomological` extend `PreservesZeroMorphisms` so that
+-- we do not have to prove both statement separately
+instance : (homologyFunctor C n).IsHomological :=
+  Functor.isHomological_of_localization Qh (HomotopyCategory.qis C)
+    (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
+
+variable {C}
+
 lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     IsIso (Qh.map f) ↔ HomotopyCategory.qis C f := by
   constructor
   . intro hf
-    sorry
+    rw [HomotopyCategory.mem_qis_iff]
+    intro n
+    rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) f]
+    dsimp
+    infer_instance
   . intro hf
     exact Localization.inverts Qh (HomotopyCategory.qis C) _ hf
 
@@ -167,5 +208,11 @@ lemma triangleOfSES_distinguished :
 
 end
 
-
 end DerivedCategory
+
+namespace CategoryTheory.Abelian
+
+def newExt (X Y : C) (n : ℕ) : Type (max u v) :=
+  (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
+
+end CategoryTheory.Abelian

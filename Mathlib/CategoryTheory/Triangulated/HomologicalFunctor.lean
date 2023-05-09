@@ -71,10 +71,11 @@ end
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C A : Type _} [Category C] [HasZeroObject C]
-  [HasShift C ℤ] [Preadditive C]
+variable {C D A : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
+  [HasShift C ℤ] [Preadditive C] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
-  [Pretriangulated C]
+  [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
   [Category A] [Abelian A]
 
 namespace Functor
@@ -89,7 +90,7 @@ lemma map_distinguished_exact [F.IsHomological] (T : Triangle C) (hT : T ∈ dis
     ((shortComplexOfDistTriangle T hT).map F).Exact :=
   IsHomological.exact _ hT
 
-def IsHomological.mk' (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ distTriang C),
+lemma IsHomological.mk' (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ distTriang C),
   ∃ (T' : Pretriangulated.Triangle C) (e : T ≅ T'),
     ((shortComplexOfDistTriangle T' (isomorphic_distinguished _ hT _ e.symm)).map F).Exact) :
     F.IsHomological where
@@ -97,6 +98,12 @@ def IsHomological.mk' (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ dis
     obtain ⟨T', e, h'⟩ := hF T hT
     exact (ShortComplex.exact_iff_of_iso
       (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
+
+lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.PreservesZeroMorphisms]
+    [F₂.PreservesZeroMorphisms] [F₁.IsHomological] (e : F₁ ≅ F₂) :
+    F₂.IsHomological where
+  exact T hT := ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
+    (F₁.map_distinguished_exact T hT)
 
 def homologicalKernel [F.IsHomological] :
     Triangulated.Subcategory C where
@@ -209,6 +216,21 @@ lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :
     have : Epi (F.map (f⟦n⟧')) := (ShortComplex.exact_iff_epi _ ((hZ n).eq_of_tgt _ _)).1
       (F.homology_seq_exact₂ _ mem n)
     apply isIso_of_mono_of_epi
+
+instance (L : C ⥤ D) [HasCommShift L ℤ] [IsTriangulated L]
+  (F : D ⥤ A) [F.PreservesZeroMorphisms] [F.IsHomological] :
+    (L ⋙ F).IsHomological :=
+  ⟨fun T hT => F.map_distinguished_exact _ (L.map_distinguished T hT)⟩
+
+lemma isHomological_of_localization (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+    [L.HasCommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
+    (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.PreservesZeroMorphisms] [G.IsHomological]
+    [F.PreservesZeroMorphisms] : F.IsHomological := by
+  have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm
+  refine' IsHomological.mk' _ (fun T hT => _)
+  rw [Triangulated.Localization.distTriang_iff L] at hT
+  obtain ⟨T₀, e, hT₀⟩ := hT
+  exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 
 end Functor
 
