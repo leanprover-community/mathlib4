@@ -33,8 +33,19 @@ def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := d
     | .right => arr.filter isRight
     return arr
 
-open Lean Elab Tactic Parser Tactic
-open Mathlib Tactic SolveByElim
+/-- Apply a mono extension to an already fully-telescoped (and in whnf) `t`. Returns any remaining
+subgoals. -/
+private def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
+  let (expr, goals) ← applyMatchReducing m.name t
+  trace[Tactic.mono] "Applied {m.name} to {t}"
+  let goals := goals.toList
+  let cfg : SolveByElim.Config := { discharge := fun _ => pure none }
+  let goals ← accumulateGoals goals fun g => do
+    let (lemmas, ctx) ← mkAssumptionSet false false [] [] #[]
+    let goals ← solveByElim cfg lemmas ctx [g]
+    goals.filterM (fun g => return ! (← succeeds g.rfl))
+  return (expr, goals)
+
 
 namespace Mathlib.Tactic.Monotonicity
 
