@@ -320,12 +320,7 @@ where
 /-- Crush a `Later (β := Option β)` tree into `List β`, removing `none`s. This completely ignores
 `.takeBestOfEqLater`. -/
 def Later.crushListReduceOption (data : Later (β := Option β) (γ := γ) σ s add) : List β :=
-  aux [] data
-where
-  aux : List β → Later (β := (Option β)) (γ := γ) σ s add → List β
-  | acc, .of (some b) => b :: acc
-  | acc, .incorporateLater b b' => let acc' := aux acc b; aux acc' b'
-  | acc, _ => acc
+  Later.crush' [] (fun | acc, some b => b :: acc | acc, none => acc) data
 
 /-- Crush a `Later (β := Option β)` tree into `m (List β)`, removing `none`s. This forms every
 combination of elements encountered within `.takeBestOfEqLater` -/
