@@ -49,7 +49,7 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S :=
     haveI := Fintype.ofFinite S
     FintypeCat.of S
-  map S T f := DiscreteQuotient.ofLE f.le
+  map f := DiscreteQuotient.ofLE f.le
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
@@ -61,8 +61,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
-  { pt
-    π := { app := fun S => ⟨S.proj, S.proj_isLocallyConstant.Continuous⟩ } }
+  { pt := X
+    π := { app := fun S => ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone Profinite.asLimitCone
 
@@ -71,13 +71,18 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asL
     (by
       refine' ⟨fun a b h => _, fun a => _⟩
       · refine' DiscreteQuotient.eq_of_forall_proj_eq fun S => _
-        apply_fun fun f : (limit_cone X.diagram).pt => f.val S  at h
+        apply_fun fun f : (limitCone X.diagram).pt => f.val S  at h
         exact h
       · obtain ⟨b, hb⟩ :=
-          DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (hom_of_le h)
-        refine' ⟨b, _⟩
-        ext S : 3
-        apply hb)
+          DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)
+        use b
+        -- ext S : 3 -- Porting note: `ext` does not work, replaced with following three lines.
+        apply Subtype.ext
+        apply funext
+        rintro S
+        -- Porting note: end replacement block
+        apply hb
+    )
 set_option linter.uppercaseLean3 false in
 #align Profinite.is_iso_as_limit_cone_lift Profinite.isIso_asLimitCone_lift
 
