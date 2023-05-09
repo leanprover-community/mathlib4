@@ -10,6 +10,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -390,12 +391,15 @@ def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
     ext
     simp [liftAux_tprod, LinearMap.compMultilinearMap]
   right_inv φ := by
+    refine ext ?_
     ext
     simp [liftAux_tprod]
   map_add' φ₁ φ₂ := by
+    refine ext ?_
     ext
     simp [liftAux_tprod]
   map_smul' r φ₂ := by
+    refine ext ?_
     ext
     simp [liftAux_tprod]
 #align pi_tensor_product.lift PiTensorProduct.lift
@@ -439,15 +443,21 @@ def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, M) ≃ₗ[R] ⨂[R] i : ι₂, 
   LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] i : ι₂, M))))
     (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] i : ι, M))))
     (by
+      refine ext ?_
       ext
       simp only [LinearMap.comp_apply, LinearMap.id_apply, lift_tprod,
-        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply,
-        Equiv.apply_symm_apply])
+        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply]
+      congr
+      ext
+      rw [e.apply_symm_apply])
     (by
+      refine ext ?_
       ext
       simp only [LinearMap.comp_apply, LinearMap.id_apply, lift_tprod,
-        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply,
-        Equiv.symm_apply_apply])
+        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply]
+      congr
+      ext
+      rw [e.symm_apply_apply])
 #align pi_tensor_product.reindex PiTensorProduct.reindex
 
 end
@@ -455,7 +465,9 @@ end
 @[simp]
 theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ i, M) :
     reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) :=
-  liftAux_tprod _ f
+  by
+    dsimp [reindex]
+    exact liftAux_tprod _ f
 #align pi_tensor_product.reindex_tprod PiTensorProduct.reindex_tprod
 
 @[simp]
@@ -468,6 +480,7 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
 @[simp]
 theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ : ι₂ ↦ M) E) :
     lift φ ∘ₗ ↑(reindex R M e) = lift (φ.domDomCongr e.symm) := by
+  refine ext ?_
   ext
   simp
 #align pi_tensor_product.lift_comp_reindex PiTensorProduct.lift_comp_reindex
@@ -482,6 +495,7 @@ theorem lift_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ ↦ M) E) 
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     (reindex R M e).trans (reindex R M e') = reindex R M (e.trans e') := by
   apply LinearEquiv.toLinearMap_injective
+  refine ext ?_
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
     LinearMap.coe_compMultilinearMap, Function.comp_apply, MultilinearMap.domDomCongr_apply,
@@ -502,6 +516,7 @@ theorem reindex_symm (e : ι ≃ ι₂) : (reindex R M e).symm = reindex R M e.s
 @[simp]
 theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
   apply LinearEquiv.toLinearMap_injective
+  refine ext ?_
   ext1
   rw [reindex_comp_tprod, LinearEquiv.refl_toLinearMap, Equiv.refl_symm]
   rfl
@@ -515,7 +530,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, M) ≃ₗ[R] R where
   toFun := lift (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
-    apply x.induction_on
+    refine x.induction_on ?_ ?_
     · intro r f
       have := Subsingleton.elim f isEmptyElim
       simp [this]
@@ -523,8 +538,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, M) ≃ₗ[R] R where
       intro x y hx hy
       simp [add_smul, hx, hy]
   right_inv t := by
-    simp only [mul_one, Algebra.id.smul_eq_mul, constOfIsEmpty_apply, LinearMap.map_smul,
-      PiTensorProduct.lift.tprod]
+    simp only [map_smul, lift.tprod, constOfIsEmpty_apply, const_apply, smul_eq_mul, mul_one]
   map_add' := LinearMap.map_add _
   map_smul' := LinearMap.map_smul _
 #align pi_tensor_product.is_empty_equiv PiTensorProduct.isEmptyEquiv
@@ -547,9 +561,9 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] i : ι, M) ≃ₗ[
       intro f z
       ext i
       rw [Subsingleton.elim i i₀, Function.update_same]
-    apply x.induction_on
+    refine x.induction_on ?_ ?_
     · intro r f
-      simp only [LinearMap.map_smul, lift.tprod, of_subsingleton_apply, Function.eval, this f,
+      simp only [LinearMap.map_smul, lift.tprod, ofSubsingleton_apply, Function.eval, this f,
         MultilinearMap.map_smul, update_eq_self]
     · intro x y hx hy
       simp only [MultilinearMap.map_add, this 0 (_ + _), LinearMap.map_add, ← this 0 (lift _ _), hx,
