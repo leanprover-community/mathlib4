@@ -17,16 +17,16 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 This file is about probability mass functions or discrete probability measures:
 a function `α → ℝ≥0∞` such that the values have (infinite) sum `1`.
 
-Construction of monadic `pure` and `bind` is found in `probability_mass_function/monad.lean`,
-other constructions of `pmf`s are found in `probability_mass_function/constructions.lean`.
+Construction of monadic `pure` and `bind` is found in `ProbabilityMassFunction/Monad.lean`,
+other constructions of `Pmf`s are found in `ProbabilityMassFunction/Constructions.lean`.
 
-Given `p : pmf α`, `pmf.to_outer_measure` constructs an `outer_measure` on `α`,
+Given `p : Pmf α`, `Pmf.toOuterMeasure` constructs an `OuterMeasure` on `α`,
 by assigning each set the sum of the probabilities of each of its elements.
 Under this outer measure, every set is Carathéodory-measurable,
-so we can further extend this to a `measure` on `α`, see `pmf.to_measure`.
-`pmf.to_measure.is_probability_measure` shows this associated measure is a probability measure.
+so we can further extend this to a `Measure` on `α`, see `Pmf.toMeasure`.
+`Pmf.toMeasure.isProbabilityMeasure` shows this associated measure is a probability measure.
 Conversely, given a probability measure `μ` on a measurable space `α` with all singleton sets
-measurable, `μ.to_pmf` constructs a `pmf` on `α`, setting the probability mass of a point `x`
+measurable, `μ.toPmf` constructs a `Pmf` on `α`, setting the probability mass of a point `x`
 to be the measure of the singleton set `{x}`.
 
 ## Tags
@@ -89,7 +89,7 @@ theorem coe_ne_zero (p : Pmf α) : ⇑p ≠ 0 := fun hp =>
   zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm (congr_fun hp x))).trans p.tsum_coe)
 #align pmf.coe_ne_zero Pmf.coe_ne_zero
 
-/-- The support of a `pmf` is the set where it is nonzero. -/
+/-- The support of a `Pmf` is the set where it is nonzero. -/
 def support (p : Pmf α) : Set α :=
   Function.support p
 #align pmf.support Pmf.support
@@ -158,8 +158,8 @@ section OuterMeasure
 
 open MeasureTheory MeasureTheory.OuterMeasure
 
-/-- Construct an `outer_measure` from a `pmf`, by assigning measure to each set `s : set α` equal
-  to the sum of `p x` for for each `x ∈ α` -/
+/-- Construct an `OuterMeasure` from a `Pmf`, by assigning measure to each set `s : Set α` equal
+  to the sum of `p x` for each `x ∈ α`. -/
 def toOuterMeasure (p : Pmf α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 #align pmf.to_outer_measure Pmf.toOuterMeasure
@@ -208,7 +208,6 @@ theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p
   exact Function.funext_iff.symm.trans Set.indicator_eq_zero'
 #align pmf.to_outer_measure_apply_eq_zero_iff Pmf.toOuterMeasure_apply_eq_zero_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » s) -/
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
   refine' (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
   · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
@@ -231,7 +230,7 @@ theorem toOuterMeasure_apply_inter_support :
   simp only [toOuterMeasure_apply, Pmf.support, Set.indicator_inter_support]
 #align pmf.to_outer_measure_apply_inter_support Pmf.toOuterMeasure_apply_inter_support
 
-/-- Slightly stronger than `outer_measure.mono` having an intersection with `p.support` -/
+/-- Slightly stronger than `OuterMeasure.mono` having an intersection with `p.support`. -/
 theorem toOuterMeasure_mono {s t : Set α} (h : s ∩ p.support ⊆ t) :
     p.toOuterMeasure s ≤ p.toOuterMeasure t :=
   le_trans (le_of_eq (toOuterMeasure_apply_inter_support p s).symm) (p.toOuterMeasure.mono h)
@@ -254,8 +253,8 @@ section Measure
 
 open MeasureTheory
 
-/-- Since every set is Carathéodory-measurable under `pmf.to_outer_measure`,
-  we can further extend this `outer_measure` to a `measure` on `α` -/
+/-- Since every set is Carathéodory-measurable under `Pmf.toOuterMeasure`,
+  we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
 def toMeasure [MeasurableSpace α] (p : Pmf α) : Measure α :=
   p.toOuterMeasure.toMeasure ((toOuterMeasure_caratheodory p).symm ▸ le_top)
 #align pmf.to_measure Pmf.toMeasure
@@ -353,7 +352,7 @@ open Pmf
 namespace Measure
 
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
-we can convert any probability measure into a `pmf`, where the mass of a point
+we can convert any probability measure into a `Pmf`, where the mass of a point
 is the measure of the singleton set under the original measure. -/
 def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : ProbabilityMeasure μ] : Pmf α :=
@@ -388,7 +387,7 @@ namespace Pmf
 
 open MeasureTheory
 
-/-- The measure associated to a `pmf` by `to_measure` is a probability measure -/
+/-- The measure associated to a `Pmf` by `toMeasure` is a probability measure. -/
 instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : Pmf α) :
     ProbabilityMeasure p.toMeasure :=
   ⟨by
