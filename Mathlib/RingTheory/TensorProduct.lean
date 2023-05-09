@@ -1018,6 +1018,7 @@ section Basis
 variable {k : Type _} [CommRing k] (R : Type _) [Ring R] [Algebra k R] {M : Type _}
   [AddCommMonoid M] [Module k M] {ι : Type _} (b : Basis ι k M)
 
+set_option synthInstance.etaExperiment true in
 /-- Given a `k`-algebra `R` and a `k`-basis of `M,` this is a `k`-linear isomorphism
 `R ⊗[k] M ≃ (ι →₀ R)` (which is in fact `R`-linear). -/
 noncomputable def basisAux : R ⊗[k] M ≃ₗ[k] ι →₀ R :=
@@ -1031,20 +1032,21 @@ variable {R}
 theorem basisAux_tmul (r : R) (m : M) :
     basisAux R b (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap k R) (map_zero _) (b.repr m) := by
   ext
-  simp [basis_aux, ← Algebra.commutes, Algebra.smul_def]
+  simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
 #align algebra.tensor_product.basis_aux_tmul Algebra.TensorProduct.basisAux_tmul
 
 theorem basisAux_map_smul (r : R) (x : R ⊗[k] M) : basisAux R b (r • x) = r • basisAux R b x :=
   TensorProduct.induction_on x (by simp)
-    (fun x y => by simp only [TensorProduct.smul_tmul', basis_aux_tmul, smul_assoc])
+    (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
 #align algebra.tensor_product.basis_aux_map_smul Algebra.TensorProduct.basisAux_map_smul
 
 variable (R)
 
+set_option synthInstance.etaExperiment true in
 /-- Given a `k`-algebra `R`, this is the `R`-basis of `R ⊗[k] M` induced by a `k`-basis of `M`. -/
-noncomputable def basis : Basis ι R (R ⊗[k] M)
-    where repr := { basisAux R b with map_smul' := basisAux_map_smul b }
+noncomputable def basis : Basis ι R (R ⊗[k] M) where
+  repr := { basisAux R b with map_smul' := basisAux_map_smul b }
 #align algebra.tensor_product.basis Algebra.TensorProduct.basis
 
 variable {R}
@@ -1058,7 +1060,7 @@ theorem basis_repr_tmul (r : R) (m : M) :
 @[simp]
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  simp [Basis, Equiv.uniqueProd_symm_apply, basis_aux]
+  simp [Basis, Equiv.uniqueProd_symm_apply, basisAux]
 #align algebra.tensor_product.basis_repr_symm_apply Algebra.TensorProduct.basis_repr_symm_apply
 
 end Basis
@@ -1078,19 +1080,19 @@ variable [Module R M] [Module R N]
 /-- The algebra homomorphism from `End M ⊗ End N` to `End (M ⊗ N)` sending `f ⊗ₜ g` to
 the `tensor_product.map f g`, the tensor product of the two maps. -/
 def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := by
-  refine' Algebra.TensorProduct.algHomOfLinearMapTensorProduct (hom_tensor_hom_map R M N M N) _ _
+  refine' Algebra.TensorProduct.algHomOfLinearMapTensorProduct (homTensorHomMap R M N M N) _ _
   · intro f₁ f₂ g₁ g₂
-    simp only [hom_tensor_hom_map_apply, TensorProduct.map_mul]
+    simp only [homTensorHomMap_apply, TensorProduct.map_mul]
   · intro r
-    simp only [hom_tensor_hom_map_apply]
+    simp only [homTensorHomMap_apply]
     ext (m n)
     simp [smul_tmul]
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 
 theorem endTensorEndAlgHom_apply (f : End R M) (g : End R N) :
     endTensorEndAlgHom (f ⊗ₜ[R] g) = TensorProduct.map f g := by
-  simp only [End_tensor_End_alg_hom, Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply,
-    hom_tensor_hom_map_apply]
+  simp only [endTensorEndAlgHom, Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply,
+    homTensorHomMap_apply]
 #align module.End_tensor_End_alg_hom_apply Module.endTensorEndAlgHom_apply
 
 end Module
