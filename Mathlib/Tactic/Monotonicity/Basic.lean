@@ -140,7 +140,6 @@ open Parser.Tactic in
 syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
   (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
---TODO: factor out `mono*` etc. into `MetaM`
 elab_rules : tactic
 | `(tactic| mono $[*%$r]? $[$s:mono.side]? $[ with%$w $a:term,*]? $[ using%$u $l,*]? ) =>
   withMainContext do
@@ -149,41 +148,40 @@ elab_rules : tactic
     -- Handle 'with' by asserting all hypotheses provided
     let (assertedMVarIds, goal) ←
       if let some a := a then
-        let as ← a.getElems.mapM (Tactic.elabTermEnsuringType · q(Prop))
+        let as ← a.getElems.mapM (fun a => withRef a <| Tactic.elabTermEnsuringType a q(Prop))
+        trace[Tactic.mono] "asserting {as}"
         let assertedMVars ← as.mapM (fun t => mkFreshExprMVar (some t) .syntheticOpaque)
-        let hs : Array Hypothesis := as.zipWith assertedMVars (⟨Name.anonymous,·,·⟩)
+        let hs : Array Hypothesis :=
+          if as.size == 1 then
+            #[⟨`mono_with, as[0]!, assertedMVars[0]!⟩]
+          else
+            as.zipWithIndex.zipWith assertedMVars fun (a,n) mvar =>
+              ⟨`mono_with |>.appendIndexAfter (n+1), a, mvar⟩
         let (_, goal) ← goal.assertHypotheses hs
         pure (assertedMVars.map (·.mvarId!), goal)
       else
         pure (#[], goal)
-    -- Handle  '*'
-    if r.isNone then
-      -- Handle 'using' in the non-'*' case
-      let goal ←
-        if let some l := l then
-          let { ctx .. } ← Tactic.mkSimpContext (←`(tactic| simp only [$l,*])) false
-          match ← simpGoal goal ctx with
-          | (some (_, goal), _) => pure goal
-          | (none, _) => replaceMainGoal []; return ()
-        else
-          pure goal
-      -- Apply mono once
-      let newGoals ← goal.mono side
-      for goal in newGoals do goal.setKind .syntheticOpaque
-      replaceMainGoal (newGoals ++ assertedMVarIds.toList)
+    -- Change the context to that of the new goal
+    goal.withContext do
+      -- Handle 'using'
+      let ctx? : Option Simp.Context ← l.mapM fun l => do
+        pure (← Tactic.mkSimpContext (←`(tactic| simp only [$l,*])) false).ctx
+      -- Run `mono`.
+      let newGoals ← goal.mono side ctx? r.isSome true
+      -- Cleanup:
+      -- Replace all internal goal usernames with appropriate user-friendly ones.
+      let _ ← liftMetaM <| newGoals.foldlM (init := 1) fun n g => do
+        if (← g.getTag).isInternal' then
+          g.setUserName <| (`mono).appendIndexAfter n
+          pure (n+1)
     else
-      -- Handle 'using' in the '*' case
-      if let some l := l then
-        let { ctx .. } ← Tactic.mkSimpContext (←`(tactic| simp only [$l,*])) false
-        let monoAfterSimp (goal : MVarId) : TacticM (List MVarId) := do
-          let goal ← match ← simpGoal goal ctx with
-          | (some (_, goal), _) => pure goal
-          | (none, _) => return []
-          goal.mono side
-        let newGoals ← repeatM [goal] monoAfterSimp
-        for goal in newGoals do goal.setKind .syntheticOpaque
-        replaceMainGoal (newGoals ++ assertedMVarIds.toList)
+          pure n
+      -- Name all `assertedMVarIds` `mono_with_<n>`, or just `mono_with` if there's only one.
+      if assertedMVarIds.size == 1 then
+        assertedMVarIds[0]!.setUserName `mono_with
       else
-        let newGoals ← repeatM [goal] (·.mono side)
+        let _ ← liftMetaM <| assertedMVarIds.foldlM (init := 1)
+          fun n g => do g.setUserName <| (`mono_with).appendIndexAfter n; pure (n+1)
+      -- Change all (possibly natural) goals to syntheticOpaque.
         for goal in newGoals do goal.setKind .syntheticOpaque
         replaceMainGoal (newGoals ++ assertedMVarIds.toList)
