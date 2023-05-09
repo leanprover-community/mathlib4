@@ -82,9 +82,7 @@ equivalence is proved in `Submodule.fg_iff_finiteDimensional`.
 
 universe u v v' w
 
-open Classical Cardinal
-
-open Cardinal Submodule Module Function
+open Classical Cardinal Submodule Module Function
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
@@ -1117,8 +1115,6 @@ set_option synthInstance.etaExperiment true in -- Porting note: gets around lean
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
 noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
-  -- porting note: added to avoid a timeout
-  haveI : SMulCommClass F K K := IsScalarTower.to_smulCommClass
   -- porting note: extracted from the fields below to a `haveI`
   haveI : ∀ x : K, x ≠ 0 → Function.Surjective (LinearMap.mulLeft F x) := fun x H =>
     LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
@@ -1221,7 +1217,6 @@ theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type _} [hι :
     calc
       Fintype.card ι = finrank K V := card_eq
       _ = 0 := dif_neg (mt IsNoetherian.iff_rank_lt_aleph0.mpr fin)
-
 #align span_eq_top_of_linear_independent_of_card_eq_finrank span_eq_top_of_linearIndependent_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
@@ -1551,9 +1546,9 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     apply le_antisymm
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
-    · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m]
-      change LinearMap.ker ((f ^ (k + 1)).comp (f ^ m)) ≤ LinearMap.ker ((f ^ k).comp (f ^ m))
-      rw [LinearMap.ker_comp, LinearMap.ker_comp, h, Nat.add_one]
+    · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m,
+        LinearMap.mul_eq_comp, LinearMap.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h,
+        Nat.add_one]
 #align module.End.ker_pow_constant Module.End.ker_pow_constant
 
 theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
