@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Defs
 -- import measure_theory.measure.lebesgue
@@ -77,6 +78,39 @@ example : True := by
     guard_target = x ≤ z ; exact lxz
     guard_target = y ≤ w ; exact lyw
   trivial
+
+
+axiom A : Type
+axiom le : A → A → Prop
+
+section MonoSide
+
+axiom one : A
+axiom plus : A → A → A
+
+@[mono left]
+axiom aLeft (a b : A) : le a b → le a (plus b one)
+
+example (p : le a b) : le a (plus b one) := by
+  mono
+
+example (p : le a b) : le a (plus b one) := by
+  mono left
+
+example (p : le a b) : le a (plus b one) := by
+  success_if_fail_with_msg "no monos apply" mono right
+  mono left
+
+@[mono]
+axiom aBoth (a b : A) : le a b → le a (plus one b)
+
+example (p : le a b) : le a (plus one b) := by
+  mono left
+
+example (p : le a b) : le a (plus one b) := by
+  mono right
+
+end MonoSide
 
   trivial
 
