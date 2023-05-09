@@ -161,6 +161,7 @@ that `0 < f i x`. -/
 theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   have H := f.sum_eq_one hx
   contrapose! H
+  simp_rw [not_exists, not_lt] at H
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 #align partition_of_unity.exists_pos PartitionOfUnity.exists_pos
 
@@ -204,9 +205,12 @@ variable {f}
 
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι)(n : Set X)(hn₁ : n ∈ 𝓝 x)(hn₂ : n ⊆ ⋂ i ∈ is, U i),
+    ∃ (is : Finset ι) (n : Set X) (_ : n ∈ 𝓝 x) (_ : n ⊆ ⋂ i ∈ is, U i),
       ∀ z ∈ n, (support fun i => f i z) ⊆ is :=
-  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
+  -- Porting note: Original proof was simply
+  -- `f.locallyFinite.exists_finset_nhd_support_subset hso ho x`
+  let ⟨a, ⟨b, ⟨c, ⟨d, e⟩⟩⟩⟩ := f.locallyFinite.exists_finset_nhd_support_subset hso ho x
+  ⟨a, b, c, d, e⟩
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
@@ -259,7 +263,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
     simp [hx]
   nonneg' := le_update_iff.2 ⟨fun x => zero_le_one, fun _ _ => le_rfl⟩
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
-  eventuallyEq_one' x _ := ⟨i, by simp⟩
+  eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
 #align bump_covering.single BumpCovering.single
 
 @[simp]
@@ -390,8 +394,8 @@ theorem support_toPouFun_subset (i : ι) : support (f.toPouFun i) ⊆ support (f
 
 theorem toPouFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPouFun i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, 1 - f j x := by
-  refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun j hj => _)
+    f.toPouFun i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
+  refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => _)
   rw [Ne.def, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
@@ -409,21 +413,21 @@ theorem sum_toPouFun_eq (x : X) : (∑ᶠ i, f.toPouFun i x) = 1 - ∏ᶠ i, 1 -
   letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
-  refine' Finset.sum_congr rfl fun i hi => _
-  convert f.toPouFun_eq_mul_prod _ _ _ fun j hji hj => _
+  refine' Finset.sum_congr rfl fun i _ => _
+  convert f.toPouFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 #align bump_covering.sum_to_pou_fun_eq BumpCovering.sum_toPouFun_eq
 
 theorem exists_finset_toPouFun_eventuallyEq (i : ι) (x : X) :
     ∃ t : Finset ι,
-      f.toPouFun i =ᶠ[𝓝 x] f i * ∏ j in t.filter fun j => WellOrderingRel j i, 1 - f j := by
+      f.toPouFun i =ᶠ[𝓝 x] f i * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j) := by
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
   use hf.toFinset
   filter_upwards [hU]with y hyU
-  simp only [Pi.mul_apply, Finset.prod_apply]
+  simp only [ContinuousMap.coe_prod, Pi.mul_apply, Finset.prod_apply]
   apply toPouFun_eq_mul_prod
-  intro j hji hj
-  exact hf.mem_to_finset.2 ⟨y, ⟨hj, hyU⟩⟩
+  intro j _ hj
+  exact hf.mem_toFinset.2 ⟨y, ⟨hj, hyU⟩⟩
 #align bump_covering.exists_finset_to_pou_fun_eventually_eq BumpCovering.exists_finset_toPouFun_eventuallyEq
 
 theorem continuous_toPouFun (i : ι) : Continuous (f.toPouFun i) := by
@@ -465,13 +469,12 @@ theorem toPartitionOfUnity_apply (i : ι) (x : X) :
 
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPartitionOfUnity i x = f i x * ∏ _j in t.filter fun j => WellOrderingRel j i, 1 - f j x :=
+    f.toPartitionOfUnity i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j x) :=
   f.toPouFun_eq_mul_prod i x t ht
 #align bump_covering.to_partition_of_unity_eq_mul_prod BumpCovering.toPartitionOfUnity_eq_mul_prod
 
-theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) :
-    ∃ t : Finset ι,
-      f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ _j in t.filter fun j => WellOrderingRel j i, 1 - f j :=
+theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
+    f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j) :=
   f.exists_finset_toPouFun_eventuallyEq i x
 #align bump_covering.exists_finset_to_partition_of_unity_eventually_eq BumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq
 
