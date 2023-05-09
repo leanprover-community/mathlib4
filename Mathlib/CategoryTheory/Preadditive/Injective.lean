@@ -38,6 +38,8 @@ class Injective (J : C) : Prop where
   factors : ∀ {X Y : C} (g : X ⟶ J) (f : X ⟶ Y) [Mono f], ∃ h : Y ⟶ J, f ≫ h = g
 #align category_theory.injective CategoryTheory.Injective
 
+attribute [inherit_doc Injective] Injective.factors
+
 section
 
 /-- An injective presentation of an object `X` consists of a monomorphism `f : X ⟶ J`
@@ -50,6 +52,9 @@ structure InjectivePresentation (X : C) where
   mono : Mono f := by infer_instance
 #align category_theory.injective_presentation CategoryTheory.InjectivePresentation
 
+open InjectivePresentation in
+attribute [inherit_doc InjectivePresentation] J injective f mono
+
 attribute [instance] InjectivePresentation.injective InjectivePresentation.mono
 
 variable (C)
@@ -59,6 +64,8 @@ i.e. if for every object `X` there is an injective object `J` and a monomorphism
 class EnoughInjectives : Prop where
   presentation : ∀ X : C, Nonempty (InjectivePresentation X)
 #align category_theory.enough_injectives CategoryTheory.EnoughInjectives
+
+attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
 end
 
@@ -208,8 +215,8 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
-/-- `injective.under X` provides an arbitrarily chosen injective object equipped with
-an monomorphism `injective.ι : X ⟶ injective.under X`.
+/-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
+an monomorphism `Injective.ι : X ⟶  Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
@@ -219,7 +226,7 @@ instance injective_under (X : C) : Injective (under X) :=
   (EnoughInjectives.presentation X).some.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
-/-- The monomorphism `injective.ι : X ⟶ injective.under X`
+/-- The monomorphism `Injective.ι : X ⟶  Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
@@ -234,7 +241,7 @@ section
 
 variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasCokernel f]
 
-/-- When `C` has enough injectives, the object `injective.syzygies f` is
+/-- When `C` has enough injectives, the object `Injective.syzygies f` is
 an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
