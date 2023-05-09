@@ -8,7 +8,7 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.GroupTheory.QuotientGroup
 
 /-!
