@@ -1252,11 +1252,13 @@ def mulLeftRight : 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' :=
   ((compL 𝕜 𝕜' 𝕜' 𝕜').comp (mul 𝕜 𝕜').flip).flip.comp (mul 𝕜 𝕜')
 #align continuous_linear_map.mul_left_right ContinuousLinearMap.mulLeftRight
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem mulLeftRight_apply (x y z : 𝕜') : mulLeftRight 𝕜 𝕜' x y z = x * z * y :=
   rfl
 #align continuous_linear_map.mul_left_right_apply ContinuousLinearMap.mulLeftRight_apply
 
+set_option synthInstance.etaExperiment true in
 theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x y‖ ≤ ‖x‖ * ‖y‖ :=
   (op_norm_comp_le _ _).trans <|
     (mul_comm _ _).trans_le <|
@@ -1265,6 +1267,7 @@ theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜
         (norm_nonneg _) (norm_nonneg _)
 #align continuous_linear_map.op_norm_mul_left_right_apply_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_apply_le
 
+set_option synthInstance.etaExperiment true in
 theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x‖ ≤ ‖x‖ :=
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
@@ -2182,27 +2185,16 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
 #align continuous_linear_equiv.coord_norm ContinuousLinearEquiv.coord_norm
 
 variable {𝕜} {𝕜₄ : Type _} [NontriviallyNormedField 𝕜₄]
-
 variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜₄ H] [NormedSpace 𝕜₃ G]
-
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
-
 variable {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃}
-
 variable {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄}
-
 variable [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
-
 variable [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-
 variable [RingHomIsometric σ₁₄] [RingHomIsometric σ₂₃]
-
 variable [RingHomIsometric σ₄₃] [RingHomIsometric σ₂₄]
-
 variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁₂]
-
 variable [RingHomIsometric σ₃₄]
 
 set_option synthInstance.etaExperiment true in
