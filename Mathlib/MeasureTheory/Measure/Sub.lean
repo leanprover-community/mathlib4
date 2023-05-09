@@ -83,8 +83,7 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
       exacts [MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   have h_measure_sub_add : ν + measure_sub = μ := by
-    ext t
-    intro h_t_measurable_set
+    ext1 t h_t_measurable_set
     simp only [Pi.add_apply, coe_add]
     rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
       tsub_add_cancel_of_le (h₂ t h_t_measurable_set)]
@@ -102,8 +101,7 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
 theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
-  ext s
-  intro h_s_meas
+  ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
