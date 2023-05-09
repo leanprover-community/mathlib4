@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.RelCongr.Lemmas
+import Mathlib.Tactic.RelCongr.BigOperators
 
 /-!
 a lemma from the proof of IMO 2019 Q4
