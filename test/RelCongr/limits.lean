@@ -1,7 +1,5 @@
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.RCongr.Basic
-
--- set_option trace.aesop true
+import Mathlib.Tactic.RelCongr.Lemmas
 
 example (f g : ℝ → ℝ) (a : ℝ)
     (hf : ∀ ε > 0, ∃ δ > 0, ∀ x, |x - a| < δ → |f x - f a| < ε)
@@ -24,17 +22,16 @@ example (f g : ℝ → ℝ) (a : ℝ)
      _ ≤ δ2 := min_le_right _ _
   calc |(f * g) x - (f * g) a|
       = |f x * g x - f a * g a| := rfl
-    _ = |(f x - f a) * (g x - g a) + (f x - f a) * g a + f a * (g x - g a)| := by
-      congr! 1 -- want this to be `congrm |?_|`
-      ring
+    _ = |(f x - f a) * (g x - g a) + (f x - f a) * g a + f a * (g x - g a)| := by congr! 1 ; ring
     _ ≤ |(f x - f a) * (g x - g a) + (f x - f a) * g a| + |f a * (g x - g a)| := by apply abs_add
     _ ≤ |(f x - f a) * (g x - g a)| + |(f x - f a) * g a| + |f a * (g x - g a)| := by
-      rcongr (add apply safe abs_add)
+      rel_congr ; apply abs_add
     _ = |f x - f a| * |g x - g a| + |f x - f a| * |g a| + |f a| * |g x - g a| := by simp only [abs_mul]
-    _ < η * η + η * |g a| + |f a| * η := by rcongr
+    _ ≤ |f x - f a| * |g x - g a| + η * |g a| + |f a| * η := by rel_congr
+    _ < η * η + η * |g a| + |f a| * η := by rel_congr
     _ = η * (|f a| + |g a| + η) := by ring
     _ ≤ ((|f a| + |g a| + 1)⁻¹ * ε) * (|f a| + |g a| + 1) := by
-      rcongr (add safe apply min_le_right, safe apply min_le_left)
+      rel_congr ; apply min_le_right ; apply min_le_left
     _ = ε := by
       have h : 0 < |f a| + |g a| + 1 := by positivity
       field_simp [h.ne']

@@ -12,6 +12,7 @@ import Mathlib.Tactic.Linarith
 
 open Nat Finset BigOperators
 set_option linter.unusedVariables false
+-- set_option trace.Meta.rel true
 -- set_option trace.Meta.Tactic.solveByElim true
 
 /-! # Examples as a finishing tactic -/
@@ -110,8 +111,15 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
     ∏ i in range n, (a - 2 ^ i) ≤ ∏ i in range n, a := by
   rel_congr
-  refine prod_le_prod (fun i hi => ?_) (fun i _ => ?_) -- `rel_congrm ∏ i in range n, ?_`
-  · simp at hi
+  · intro i hi
+    simp only [mem_range] at hi
     linarith [ha i hi]
-  · have : 0 ≤ 2 ^ i := by positivity
+  · rename_i i hi -- FIXME would be nice not to need to do this
+    have : 0 ≤ 2 ^ i := by positivity
     linarith
+
+example {a b c d e : ℝ} (h1 : 0 ≤ b) (h2 : 0 ≤ c) (hac : a + 1 ≤ c + 1) (hbd : b ≤ d) :
+    a * b + e ≤ c * d + e := by
+  rel_congr ?_ + _
+  -- FIMXE made progress on the `*` comparison but should just have reported `⊢ a * b ≤ c * d`
+  linarith
