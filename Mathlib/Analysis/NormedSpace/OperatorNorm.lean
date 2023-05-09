@@ -517,7 +517,7 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
 -- so something else bad is going on here.
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 0 in
+set_option maxHeartbeats 2000000 in
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
@@ -1119,10 +1119,20 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      apply ContinuousLinearMap.ext fun x => _
+      refine ContinuousLinearMap.ext fun x => ?_
+      -- Porting FIXME: this proof is broken. Mathport suggested:
+      -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
+      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
+      --   Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
+      -- rfl
+      dsimp -- Frustratingly, in mathlib3 this gets us all the way to `⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)`
+      -- Lots of these simp lemmas seem to not be firing:
       simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
         coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
         Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
+      -- We can:
+      rw [add_apply]
+      -- but what next?
       rfl)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
@@ -1223,6 +1233,8 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
+-- Porting FIXME: why isn't this instance found?
+example : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := ContinuousLinearMap.hasOpNorm
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.op_norm_mulLeftRight_le
@@ -1243,9 +1255,8 @@ def mulₗᵢ : 𝕜' →ₗᵢ[𝕜] 𝕜' →L[𝕜] 𝕜' where
   norm_map' x :=
     le_antisymm (op_norm_mul_apply_le _ _ _)
       (by
-        convert ratio_le_op_norm _ (1 : 𝕜')
-        simp [norm_one]
-        infer_instance)
+        convert ratio_le_op_norm ((mul 𝕜 𝕜') x) (1 : 𝕜')
+        simp [norm_one])
 #align continuous_linear_map.mulₗᵢ ContinuousLinearMap.mulₗᵢ
 
 @[simp]
@@ -1291,6 +1302,8 @@ theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ :=
     rw [toSpanSingleton_apply, norm_smul, mul_comm] at h
     exact (mul_le_mul_right (by simp)).mp h
 #align continuous_linear_map.norm_to_span_singleton ContinuousLinearMap.norm_toSpanSingleton
+
+variable {𝕜}
 
 set_option synthInstance.etaExperiment true in
 theorem op_norm_lsmul_apply_le (x : 𝕜') : ‖(lsmul 𝕜 𝕜' x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
@@ -1391,8 +1404,6 @@ namespace ContinuousLinearEquiv
 section
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomIsometric σ₁₂]
-
-set_option synthInstance.etaExperiment true in
 variable (e : E ≃SL[σ₁₂] F)
 
 set_option synthInstance.etaExperiment true in
@@ -1831,9 +1842,10 @@ def extend : Fₗ →SL[σ₁₂] F :=
     cont }
 #align continuous_linear_map.extend ContinuousLinearMap.extend
 
+-- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
-  DenseInducing.extend_eq _ f.cont _
+  DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
 #align continuous_linear_map.extend_eq ContinuousLinearMap.extend_eq
 
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
@@ -1852,7 +1864,10 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-local notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
+-- Porting note: this should be `local notation`, not `scoped notation`,
+-- as we don't want it beyond the next declaration, but that causes errors.
+set_option quotPrecheck false in
+scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
@@ -1876,7 +1891,7 @@ theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
       rw [← norm_le_zero_iff]
       exact le_trans (h_e x) (mul_nonpos_of_nonpos_of_nonneg N0 (norm_nonneg _))
     have hf : f = 0 := by
-      ext
+      ext x
       simp only [he x, zero_apply, map_zero]
     have hψ : ψ = 0 := by
       rw [hf]
@@ -2032,9 +2047,9 @@ This is `ContinuousLinearMap.op_norm_lsmul_le` as an equality. -/
 @[simp]
 theorem op_norm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
-  refine' ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one (fun x => _) fun N hN h => _
+  refine' ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one (fun x => _) fun N _ h => _
   · rw [one_mul]
-    exact op_norm_lsmul_apply_le _
+    apply op_norm_lsmul_apply_le
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   have := le_of_op_norm_le _ (h 1) y
   simp_rw [lsmul_apply, one_smul, norm_one, mul_one] at this
