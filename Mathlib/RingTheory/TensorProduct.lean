@@ -1151,34 +1151,34 @@ https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.
 -/
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
-  zero_smul m := by simp only [map_zero, LinearMap.zero_apply]
-  smul_zero x := by simp only [map_zero]
-  smul_add x m₁ m₂ := by simp only [map_add]
-  add_smul x y m := by simp only [map_add, LinearMap.add_apply]
-  one_smul m := by simp only [module_aux_apply, Algebra.TensorProduct.one_def, one_smul]
+  zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
+  smul_zero x := by simp only [(· • ·), map_zero]
+  smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
+  add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
+  one_smul m := by simp only [(· • ·), moduleAux_apply, Algebra.TensorProduct.one_def, one_smul]
   mul_smul x y m := by
-    apply TensorProduct.induction_on x <;> apply TensorProduct.induction_on y
-    · simp only [MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+    refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
+    · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
     · intro z w hz hw
-      simp only [MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
-      simp only [module_aux_apply, mul_smul, smul_comm a₁ b₂, Algebra.TensorProduct.tmul_mul_tmul,
-        LinearMap.mul_apply]
+      simp only [(· • ·), moduleAux_apply, mul_smul, smul_comm a₁ b₂,
+        Algebra.TensorProduct.tmul_mul_tmul, LinearMap.mul_apply]
     · intro z w hz hw a b
       simp only at hz hw
-      simp only [mul_add, hz, hw, map_add, LinearMap.add_apply]
+      simp only [(· • ·), mul_add, hz, hw, map_add, LinearMap.add_apply]
     · intro z w hz hw
-      simp only [MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only at hz hw
-      simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [(· • ·), map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v hu hv z w hz hw
       simp only at hz hw
-      simp only [add_mul, hz, hw, map_add, LinearMap.add_apply]
+      simp only [(· • ·), add_mul, hz, hw, map_add, LinearMap.add_apply]
 #align tensor_product.algebra.module TensorProduct.Algebra.module
 
 attribute [local instance] TensorProduct.Algebra.module
