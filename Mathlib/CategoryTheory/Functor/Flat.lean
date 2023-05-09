@@ -86,11 +86,7 @@ arrows over `X` with `f` as the cone point.
 def toCone {X : D} (f : X ⟶ F.obj c.pt) :
     Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F) where
   pt := mk f
-  π :=
-    { app := fun j => homMk (c.π.app j) rfl
-      naturality := fun j k g => by
-        ext
-        simp }
+  π := { app := fun j => homMk (c.π.app j) rfl }
 #align category_theory.structured_arrow_cone.to_cone CategoryTheory.StructuredArrowCone.toCone
 
 end StructuredArrowCone
@@ -222,8 +218,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({  app := fun X => 𝟙 _
-                  naturality := by simp } : (toDiagram s ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
+              ({ app := fun X => 𝟙 _ } : (toDiagram s ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 #align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
