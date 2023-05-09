@@ -129,7 +129,7 @@ lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A �
   congr 1
   rw [← cancel_mono S.iCycles, liftCycles_i]
 
-lemma ShortComplex.mono_homology_map_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
+lemma ShortComplex.mono_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     Mono (homologyMap φ) ↔
       ∀ ⦃A : C⦄ (x₂ : A ⟶ S₁.X₂) (_ : x₂ ≫ S₁.g = 0) (y₁ : A ⟶ S₂.X₁)
           (_ : x₂ ≫ φ.τ₂ = y₁ ≫ S₂.f),
@@ -159,7 +159,7 @@ lemma ShortComplex.mono_homology_map_iff_up_to_refinements (φ : S₁ ⟶ S₂) 
     rw [liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements]
     exact ⟨A₃, π₃ ≫ π₂, epi_comp _ _, x₁, by simpa only [assoc] using hx₁⟩
 
-lemma ShortComplex.epi_homology_map_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
+lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     Epi (homologyMap φ) ↔
       ∀ ⦃A : C⦄ (y₂ : A ⟶ S₂.X₂) (_ : y₂ ≫ S₂.g = 0),
         ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₂ : A' ⟶ S₁.X₂) (_ : x₂ ≫ S₁.g = 0)

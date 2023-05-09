@@ -6,7 +6,7 @@ open CategoryTheory Category
 namespace HomologicalComplex
 
 variable {C : Type _} [Category C] [Abelian C] {ι : Type _} {c : ComplexShape ι}
-  (K : HomologicalComplex C c)
+  (K L : HomologicalComplex C c) (φ : K ⟶ L)
 
 lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.newHomology i)
   (j : ι) (hj : c.next i = j) :
@@ -31,5 +31,24 @@ lemma liftCycles_comp_homologyπ_eq_iff_up_to_refinements
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (l : A' ⟶ K.X i'), π ≫ k = π ≫ k' + l ≫ K.d i' i := by
   subst hi'
   apply (K.sc i).liftCycles_comp_homologyπ_eq_iff_up_to_refinements
+
+variable {K L}
+
+lemma mono_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+    Mono (homologyMap φ j) ↔
+      ∀ ⦃A : C⦄ (x₂ : A ⟶ K.X j) (_ : x₂ ≫ K.d j k = 0) (y₁ : A ⟶ L.X i)
+          (_ : x₂ ≫ φ.f j = y₁ ≫ L.d i j),
+        ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i),
+          π ≫ x₂ = x₁ ≫ K.d i j := by
+  subst hi hk
+  apply ShortComplex.mono_homologyMap_iff_up_to_refinements
+
+lemma epi_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+    Epi (homologyMap φ j) ↔
+      ∀ ⦃A : C⦄ (y₂ : A ⟶ L.X j) (_ : y₂ ≫ L.d j k = 0),
+        ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₂ : A' ⟶ K.X j) (_ : x₂ ≫ K.d j k = 0)
+          (y₁ : A' ⟶ L.X i), π ≫ y₂ = x₂ ≫ φ.f j + y₁ ≫ L.d i j := by
+  subst hi hk
+  apply ShortComplex.epi_homologyMap_iff_up_to_refinements
 
 end HomologicalComplex

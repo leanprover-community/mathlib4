@@ -7,7 +7,8 @@ open CategoryTheory Category Limits
 
 variable (C : Type _) [Category C] [Abelian C]
 
-instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
+/-instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
+
 
 namespace HomotopyCategory
 
@@ -42,6 +43,8 @@ end HomotopyCategory
 
 def DerivedCategory := (HomotopyCategory.qis C).Localization
 
+namespace DerivedCategory
+
 instance : Category (DerivedCategory C) := by
   dsimp only [DerivedCategory]
   infer_instance
@@ -65,3 +68,27 @@ instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
 noncomputable instance : Pretriangulated (DerivedCategory C) := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
+
+variable {C}
+
+def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
+  MorphismProperty.Q _
+
+instance : Qh.IsLocalization (HomotopyCategory.qis C) := by
+  dsimp only [Qh, DerivedCategory]
+  infer_instance
+
+noncomputable instance : (Qh : _ ⥤ DerivedCategory C).HasCommShift ℤ := by
+  dsimp only [Qh, DerivedCategory]
+  infer_instance
+
+instance : (Qh : _ ⥤ DerivedCategory C).IsTriangulated := by
+  dsimp only [Qh, DerivedCategory, HomotopyCategory.qis]
+  infer_instance
+
+def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
+  (HomotopyCategory.quotient _ _ ) ⋙ Qh
+
+end DerivedCategory-/
+
+example : ℕ := 42
