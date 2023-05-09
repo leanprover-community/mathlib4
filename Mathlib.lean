@@ -629,6 +629,7 @@ import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.Generator
 import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
@@ -1545,6 +1546,7 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.Measure.OuterMeasure
+import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
@@ -1689,6 +1691,7 @@ import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Fg
@@ -1985,7 +1988,7 @@ import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.Category.Top.EpiMono
 import Mathlib.Topology.Category.Top.Limits.Basic
 import Mathlib.Topology.Category.Top.Limits.Cofiltered
-import Mathlib.Topology.Category.Top.Limits.Products
+import Mathlib.Topology.Category.Top.Limits.Konig
 import Mathlib.Topology.Category.Top.OpenNhds
 import Mathlib.Topology.Category.Top.Opens
 import Mathlib.Topology.CompactOpen
