@@ -318,6 +318,34 @@ We use a tree `Later'` with a computed field, which lets us store the size in th
 retrieve it in constant time. We then fold over the result with `incorporate` later. This lets us
 avoid expensive `incorporate` operations inside alternatives which won't work out.
 -/
+
+/-- A tree specialized for holding the values produced in `BacktrackOptimize` functions. This holds
+a computed field—the size—at each node and leaf. The arguments `s` and `add` used to compute the
+size will be given in practice by `cfg.size` and `cfg.add`. -/
+inductive Later' (β γ σ : Type) (s : β → γ) (add : γ → γ → γ) where
+| of : β → Later' β γ σ s add
+| incorporateLater : Later' β γ σ s add → Later' β γ σ s add → Later' β γ σ s add
+| takeBestOfEqLater : σ × Later' β γ σ s add → σ × Later' β γ σ s add → Later' β γ σ s add
+  with
+    /-- The size of a given node. -/
+    @[computed_field] size : ∀ β γ σ s add, Later' β γ σ s add → γ
+    | _, _, _, s, _, .of b => s b
+    | _, _, _, _, add, .incorporateLater i₁ i₂ => add i₁.size i₂.size
+    | _, _, _, s, _, .takeBestOfEqLater (_,b) _ => b.size -- trust that the sizes are equal
+
+/-- A tree specialized for holding the values produced in `BacktrackOptimize` functions. This holds
+a computed field—the size—at each node and leaf. This is an abbreviation for `Later'` which keeps
+the types implicit. -/
+@[inline] abbrev Later (σ) (s : β → γ) (add) := Later' _ _ σ s add
+
+instance [ToMessageData β] : ToMessageData (Later (β := β) σ s add) where
+  toMessageData := let rec f := fun
+    | .of b => toMessageData b
+    | .incorporateLater b b' => f b ++ " + " ++ f b'
+    | .takeBestOfEqLater (_,b) (_,b') =>
+      "takeBestOfEq (" ++ f b ++ ", " ++ f b' ++ ")"
+    f
+
 end BacktrackOptimize
 
 end Mathlib.Tactic
