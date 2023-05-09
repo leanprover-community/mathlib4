@@ -740,6 +740,7 @@ import Mathlib.Computability.Partrec
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
+import Mathlib.Computability.TmToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
