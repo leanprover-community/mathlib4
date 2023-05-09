@@ -77,11 +77,10 @@ theorem tsum_coe_ne_top (p : Pmf α) : (∑' a, p a) ≠ ∞ :=
 #align pmf.tsum_coe_ne_top Pmf.tsum_coe_ne_top
 
 theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : (∑' a, s.indicator p a) ≠ ∞ :=
-  ne_of_lt
-    (lt_of_le_of_lt
-      (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
-        ENNReal.summable)
-      (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
+  ne_of_lt (lt_of_le_of_lt
+    (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
+      ENNReal.summable)
+    (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
 #align pmf.tsum_coe_indicator_ne_top Pmf.tsum_coe_indicator_ne_top
 
 @[simp]
@@ -95,8 +94,7 @@ def support (p : Pmf α) : Set α :=
 #align pmf.support Pmf.support
 
 @[simp]
-theorem mem_support_iff (p : Pmf α) (a : α) : a ∈ p.support ↔ p a ≠ 0 :=
-  Iff.rfl
+theorem mem_support_iff (p : Pmf α) (a : α) : a ∈ p.support ↔ p a ≠ 0 := Iff.rfl
 #align pmf.mem_support_iff Pmf.mem_support_iff
 
 @[simp]
@@ -113,19 +111,15 @@ theorem apply_pos_iff (p : Pmf α) (a : α) : 0 < p a ↔ a ∈ p.support :=
 #align pmf.apply_pos_iff Pmf.apply_pos_iff
 
 theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := by
-  refine'
-    ⟨fun h =>
-      Set.Subset.antisymm (fun a' ha' => by_contra fun ha => _) fun a' ha' =>
-        ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
-      fun h =>
-      _root_.trans (symm <| tsum_eq_single a fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha'))
-        p.tsum_coe⟩
+  refine' ⟨fun h => Set.Subset.antisymm (fun a' ha' => by_contra fun ha => _)
+    fun a' ha' => ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
+    fun h => _root_.trans (symm <| tsum_eq_single a
+      fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
   suffices : 1 < ∑' a, p a
   exact ne_of_lt this p.tsum_coe.symm
-  have : 0 < ∑' b, ite (b = a) 0 (p b) :=
-    lt_of_le_of_ne' zero_le'
-      ((tsum_ne_zero_iff ENNReal.summable).2
-        ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
+  have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
+    ((tsum_ne_zero_iff ENNReal.summable).2
+      ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
   calc
     1 = 1 + 0 := (add_zero 1).symm
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
@@ -138,12 +132,9 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
 #align pmf.apply_eq_one_iff Pmf.apply_eq_one_iff
 
-theorem coe_le_one (p : Pmf α) (a : α) : p a ≤ 1 :=
-  hasSum_le
-    (by
-      intro b
-      split_ifs with h <;> simp only [h, zero_le', le_rfl])
-    (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
+theorem coe_le_one (p : Pmf α) (a : α) : p a ≤ 1 := by
+  refine' hasSum_le (fun b => _) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
+  split_ifs with h <;> simp only [h, zero_le', le_rfl]
 #align pmf.coe_le_one Pmf.coe_le_one
 
 theorem apply_ne_top (p : Pmf α) (a : α) : p a ≠ ∞ :=
@@ -173,8 +164,8 @@ theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x :=
 @[simp]
 theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
   refine' eq_top_iff.2 <| le_trans (le_infₛ fun x hx => _) (le_sum_caratheodory _)
+  have ⟨y, hy⟩ := hx
   exact
-    let ⟨y, hy⟩ := hx
     ((le_of_eq (dirac_caratheodory y).symm).trans (le_smul_caratheodory _ _)).trans (le_of_eq hy)
 #align pmf.to_outer_measure_caratheodory Pmf.toOuterMeasure_caratheodory
 
@@ -192,10 +183,8 @@ theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := 
 #align pmf.to_outer_measure_apply_singleton Pmf.toOuterMeasure_apply_singleton
 
 theorem toOuterMeasure_injective : (toOuterMeasure : Pmf α → OuterMeasure α).Injective :=
-  fun p q h =>
-  Pmf.ext fun x =>
-    (p.toOuterMeasure_apply_singleton x).symm.trans
-      ((congr_fun (congr_arg _ h) _).trans <| q.toOuterMeasure_apply_singleton x)
+  fun p q h => Pmf.ext fun x => (p.toOuterMeasure_apply_singleton x).symm.trans
+    ((congr_fun (congr_arg _ h) _).trans <| q.toOuterMeasure_apply_singleton x)
 #align pmf.to_outer_measure_injective Pmf.toOuterMeasure_injective
 
 @[simp]
@@ -213,14 +202,11 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
   · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
     have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
     have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap
-    exact
-      ENNReal.tsum_lt_tsum (p.tsum_coe_indicator_ne_top s)
-        (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
+    exact ENNReal.tsum_lt_tsum (p.tsum_coe_indicator_ne_top s)
+      (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
   · suffices : ∀ (x) (_ : x ∉ s), p x = 0
-    exact
-      _root_.trans
-        (tsum_congr fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a))
-        p.tsum_coe
+    exact _root_.trans (tsum_congr
+      fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
 #align pmf.to_outer_measure_apply_eq_one_iff Pmf.toOuterMeasure_apply_eq_one_iff
 
@@ -285,8 +271,7 @@ theorem toMeasure_apply_eq_zero_iff (hs : MeasurableSet s) :
 #align pmf.to_measure_apply_eq_zero_iff Pmf.toMeasure_apply_eq_zero_iff
 
 theorem toMeasure_apply_eq_one_iff (hs : MeasurableSet s) : p.toMeasure s = 1 ↔ p.support ⊆ s :=
-  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs : p.toMeasure s = p.toOuterMeasure s).symm ▸
-    p.toOuterMeasure_apply_eq_one_iff s
+  (p.toMeasure_apply_eq_toOuterMeasure_apply s hs).symm ▸ p.toOuterMeasure_apply_eq_one_iff s
 #align pmf.to_measure_apply_eq_one_iff Pmf.toMeasure_apply_eq_one_iff
 
 @[simp]
@@ -311,11 +296,11 @@ section MeasurableSingletonClass
 
 variable [MeasurableSingletonClass α]
 
-theorem toMeasure_injective : (toMeasure : Pmf α → Measure α).Injective := fun p q h =>
-  Pmf.ext fun x =>
-    (p.toMeasure_apply_singleton x <| measurableSet_singleton x).symm.trans
-      ((congr_fun (congr_arg _ h) _).trans <|
-        q.toMeasure_apply_singleton x <| measurableSet_singleton x)
+theorem toMeasure_injective : (toMeasure : Pmf α → Measure α).Injective := by
+  intro p q h
+  ext x
+  rw [← p.toMeasure_apply_singleton x <| measurableSet_singleton x,
+    ← q.toMeasure_apply_singleton x <| measurableSet_singleton x, h]
 #align pmf.to_measure_injective Pmf.toMeasure_injective
 
 @[simp]
@@ -368,8 +353,7 @@ def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
   [ProbabilityMeasure μ]
 
-theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} :=
-  rfl
+theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} := rfl
 #align measure_theory.measure.to_pmf_apply MeasureTheory.Measure.toPmf_apply
 
 @[simp]
