@@ -822,7 +822,7 @@ end
 
 section
 
-variable {R A C}
+variable {R A}
 
 theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
     (TensorProduct.assoc R A B C) (((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂)) ⊗ₜ[R] (c₁ * c₂)) =
@@ -847,7 +847,7 @@ protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
     (@Algebra.TensorProduct.assoc_aux_2.{u, v₁, v₂, v₃} R _ A _ _ B _ _ C _ _)
 #align algebra.tensor_product.assoc Algebra.TensorProduct.assoc
 
-variable {R A B C}
+variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
@@ -857,8 +857,6 @@ theorem assoc_tmul (a : A) (b : B) (c : C) :
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
 
 end
-
-variable {R A B C D}
 
 /-- The tensor product of a pair of algebra morphisms. -/
 def map (f : A →ₐ[R] B) (g : C →ₐ[R] D) : A ⊗[R] C →ₐ[R] B ⊗[R] D :=
@@ -947,12 +945,12 @@ theorem lmul'_apply_tmul (a b : S) : lmul' R (a ⊗ₜ[R] b) = a * b :=
 
 @[simp]
 theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = AlgHom.id R S :=
-  AlgHom.ext <| mul_one
+  AlgHom.ext <| _root_.mul_one
 #align algebra.tensor_product.lmul'_comp_include_left Algebra.TensorProduct.lmul'_comp_includeLeft
 
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
-  AlgHom.ext <| one_mul
+  AlgHom.ext <| _root_.one_mul
 #align algebra.tensor_product.lmul'_comp_include_right Algebra.TensorProduct.lmul'_comp_includeRight
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
@@ -964,7 +962,7 @@ def productMap : A ⊗[R] B →ₐ[R] S :=
 
 @[simp]
 theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f a * g b := by
-  unfold product_map lmul'
+  unfold productMap lmul'
   simp
 #align algebra.tensor_product.product_map_apply_tmul Algebra.TensorProduct.productMap_apply_tmul
 
