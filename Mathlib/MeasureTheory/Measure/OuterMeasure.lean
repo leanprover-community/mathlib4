@@ -1586,6 +1586,7 @@ theorem le_trim : m ≤ m.trim := by
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
+@[simp] --porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.unionᵢ (fun f _hf => m.unionᵢ_nat f)
     (fun _ _ _ _ h => m.mono h) hs
