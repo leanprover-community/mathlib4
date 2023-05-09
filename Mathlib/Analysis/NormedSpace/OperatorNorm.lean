@@ -497,6 +497,11 @@ theorem op_norm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ *
       exact h.le_op_norm_of_le (f.le_op_norm x)⟩
 #align continuous_linear_map.op_norm_comp_le ContinuousLinearMap.op_norm_comp_le
 
+-- Porting note: restatement of `op_norm_comp_le` for linear maps.
+/-- The operator norm is submultiplicative. -/
+theorem op_norm_comp_le' (h : Eₗ →L[𝕜] Fₗ) (f : E →L[𝕜] Eₗ) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
+  op_norm_comp_le h f
+
 set_option synthInstance.etaExperiment true in
 theorem op_nnnorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖₊ ≤ ‖h‖₊ * ‖f‖₊ :=
   op_norm_comp_le h f
@@ -509,20 +514,16 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
--- Porting FIXME: this instance is not actually needed in this file (verified in mathlib3)
--- and as it is incredible slow, it's commented out for now.
--- It is eventually needed in (at least) `Mathlib.Analysis.Calculus.ContDiff`.
-
--- Note that this is still really slow even on `reenableeta` branches,
--- so something else bad is going on here.
-
+-- Porting FIXME: replacing `(algebra : Algebra 𝕜 (E →L[𝕜] E))` with
+-- just `algebra` below causes a massive timeout.
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 2000000 in
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
-  { ContinuousLinearMap.toNormedSpace, ContinuousLinearMap.algebra with }
-#align continuous_linear_map.to_normed_algebra ContinuousLinearMap.toNormedAlgebra
+  { (algebra : Algebra 𝕜 (E →L[𝕜] E)) with
+    norm_smul_le := by
+      intro c f
+      apply op_norm_smul_le c f}
 
 set_option synthInstance.etaExperiment true in
 theorem le_op_nnnorm : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
@@ -856,9 +857,11 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
     ‖f‖ fun y x => (f.le_op_norm₂ x y).trans_eq <| by simp only [mul_right_comm]
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
+-- Porting note: in mathlib3, in the proof `norm_nonneg (flip f)` was just `norm_nonneg _`,
+-- but this causes a defeq error now.
 set_option synthInstance.etaExperiment true in
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
+  f.op_norm_le_bound₂ (norm_nonneg (flip f)) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_op_norm₂ y x
 
@@ -1008,6 +1011,11 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using op_norm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
+-- Porting note: this instance should just be `inferInstance`,
+-- and indeed simply unneeded.
+local instance : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) := by
+  exact @hasOpNorm _ _ (F →SL[σ₂₃] G) ((E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) _ _ _ _ _ _ _
+
 set_option synthInstance.etaExperiment true in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1071,6 +1079,11 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
+-- Porting note: this instance should just be `inferInstance`,
+-- and indeed simply unneeded.
+local instance : Norm (E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := by
+  exact @hasOpNorm _ _ E ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) _ _ _ _ _ _ _
+
 set_option synthInstance.etaExperiment true in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
@@ -1078,6 +1091,9 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
     _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
+
+local instance : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) := by
+  exact @hasOpNorm _ _ (Eₗ →L[𝕜] E) (Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) _ _ _ _ _ _ _
 
 set_option synthInstance.etaExperiment true in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
@@ -1098,7 +1114,7 @@ variable {Eₗ} (𝕜)
 set_option linter.uppercaseLean3 false
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy
@@ -1118,22 +1134,27 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      refine ContinuousLinearMap.ext fun x => ?_
-      -- Porting FIXME: this proof is broken. Mathport suggested:
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
+      -- Porting note: mathport suggested:
+      -- ```
       -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
       --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
       --   Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
       -- rfl
-      -- Just a mess of trying to work things out here:
-      -- dsimp -- Frustratingly, in mathlib3 this gets us all the way to `⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)`
-      -- Lots of these simp lemmas seem to not be firing:
-      simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
-        Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
-      -- We can:
-      rw [add_apply]
-      -- but what next?
-      rfl)
+      -- ```
+      -- Frustratingly, in `mathlib3` we can use:
+      -- ```
+      -- dsimp   -- ⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)
+      -- simp
+      -- ```
+      -- Here neither `dsimp` or `simp` seem to make progress.
+      rw [add_apply, add_apply]
+      rw [comp_apply, comp_apply, comp_apply, comp_apply]
+      rw [compL_apply, compL_apply]
+      rw [flip_apply, flip_apply]
+      rw [compL_apply, compL_apply]
+      rw [comp_apply, comp_apply, comp_apply, comp_apply]
+      simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
 variable {M₁ M₂ M₃ M₄}
@@ -1233,15 +1254,10 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
-#check topologicalSpace
-
-example : (topologicalSpace : TopologicalSpace (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = UniformSpace.toTopologicalSpace := rfl
-example : (addCommMonoid : AddCommMonoid (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = AddCommGroup.toAddCommMonoid := rfl
-#synth SeminormedAddCommGroup (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
-example : (module : Module 𝕜 (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = NormedSpace.toModule := rfl
-
--- Porting FIXME: why isn't this instance found?
-example : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := ContinuousLinearMap.hasOpNorm
+-- Porting note: this instance should just be `inferInstance`,
+-- and indeed simply unneeded.
+local instance : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := by
+  exact @hasOpNorm _ _ 𝕜' (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') _ _ _ _ _ _ _
 
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
