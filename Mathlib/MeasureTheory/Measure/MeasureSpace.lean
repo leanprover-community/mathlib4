@@ -671,8 +671,6 @@ theorem toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : S
   m.trim_eq hs
 #align measure_theory.to_measure_apply MeasureTheory.toMeasure_apply
 
-attribute [simp] OuterMeasure.trim_eq
-
 theorem le_toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) (s : Set α) :
     m s ≤ m.toMeasure h s :=
   m.le_trim s
