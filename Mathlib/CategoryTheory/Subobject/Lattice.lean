@@ -73,14 +73,14 @@ def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
 
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
-def topLePullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :
+def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :
     (⊤ : MonoOver A) ⟶ (pullback f).obj (mk' f) :=
   homMk _ (pullback.lift_snd _ _ rfl)
-#align category_theory.mono_over.top_le_pullback_self CategoryTheory.MonoOver.topLePullbackSelf
+#align category_theory.mono_over.top_le_pullback_self CategoryTheory.MonoOver.topLEPullbackSelf
 
 /-- The pullback of a monomorphism along itself is isomorphic to the top object. -/
 def pullbackSelf {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk' f) ≅ ⊤ :=
-  iso_of_both_ways (leTop _) (topLePullbackSelf _)
+  iso_of_both_ways (leTop _) (topLEPullbackSelf _)
 #align category_theory.mono_over.pullback_self CategoryTheory.MonoOver.pullbackSelf
 
 end
@@ -104,9 +104,9 @@ theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
 #align category_theory.mono_over.bot_arrow CategoryTheory.MonoOver.bot_arrow
 
 /-- The (unique) morphism from `⊥ : MonoOver X` to any other `f : MonoOver X`. -/
-def botLe {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
+def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
   homMk (initial.to _) (by simp)
-#align category_theory.mono_over.bot_le CategoryTheory.MonoOver.botLe
+#align category_theory.mono_over.bot_le CategoryTheory.MonoOver.botLE
 
 /-- `map f` sends `⊥ : MonoOver X` to `⊥ : MonoOver Y`. -/
 def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
@@ -156,14 +156,14 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the first object. -/
-def infLeLeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
+def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
   homMk _ rfl
-#align category_theory.mono_over.inf_le_left CategoryTheory.MonoOver.infLeLeft
+#align category_theory.mono_over.inf_le_left CategoryTheory.MonoOver.infLELeft
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the second object. -/
-def infLeRight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
+def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
-#align category_theory.mono_over.inf_le_right CategoryTheory.MonoOver.infLeRight
+#align category_theory.mono_over.inf_le_right CategoryTheory.MonoOver.infLERight
 
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
@@ -303,7 +303,7 @@ instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
     refine' Quotient.ind' fun f => _
-    exact ⟨MonoOver.botLe f⟩
+    exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -347,7 +347,8 @@ theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Facto
   ⟨by
     rintro ⟨h, rfl⟩
     simp only [MonoOver.bot_arrow_eq_zero, Functor.id_obj, Functor.const_obj_obj,
-      MonoOver.bot_left, comp_zero], by
+      MonoOver.bot_left, comp_zero],
+   by
     rintro rfl
     exact ⟨0, by simp⟩⟩
 #align category_theory.subobject.bot_factors_iff_zero CategoryTheory.Subobject.bot_factors_iff_zero
@@ -384,11 +385,11 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
 #align category_theory.subobject.inf CategoryTheory.Subobject.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLeLeft _ _⟩
+  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
 #align category_theory.subobject.inf_le_left CategoryTheory.Subobject.inf_le_left
 
 theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLeRight _ _⟩
+  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
 #align category_theory.subobject.inf_le_right CategoryTheory.Subobject.inf_le_right
 
 theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
@@ -399,10 +400,10 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
 #align category_theory.subobject.le_inf CategoryTheory.Subobject.le_inf
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
-    inf := fun m n => (inf.obj m).obj n
-    inf_le_left := inf_le_left
-    inf_le_right := inf_le_right
-    le_inf := le_inf
+  inf := fun m n => (inf.obj m).obj n
+  inf_le_left := inf_le_left
+  inf_le_right := inf_le_right
+  le_inf := le_inf
 
 theorem factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : X.Factors f :=
@@ -715,9 +716,9 @@ theorem supₛ_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g �
 #align category_theory.subobject.Sup_le CategoryTheory.Subobject.supₛ_le
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
-    supₛ := supₛ
-    le_supₛ := le_supₛ
-    supₛ_le := supₛ_le
+  supₛ := supₛ
+  le_supₛ := le_supₛ
+  supₛ_le := supₛ_le
 
 end Sup
 

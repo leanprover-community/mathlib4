@@ -356,6 +356,7 @@ section
 -- Porting note: This takes too long
 set_option maxHeartbeats 0
 
+set_option synthInstance.etaExperiment true in
 @[simp, norm_cast]
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
