@@ -134,6 +134,11 @@ noncomputable def newHomologyFunctor [CategoryWithHomology C] : HomologicalCompl
   obj K := K.newHomology i
   map f := homologyMap f i
 
+@[simps!]
+noncomputable def newHomologyFunctorIso [CategoryWithHomology C] :
+    newHomologyFunctor C c i ≅ shortComplexFunctor C c i ⋙ ShortComplex.homologyFunctor C :=
+  NatIso.ofComponents (fun T => Iso.refl _) (by aesop_cat)
+
 /- TODO : adapt more of the homology of ShortComplex API to this situation, including the
 dual versions cyclesCo, etc... -/
 

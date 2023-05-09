@@ -198,6 +198,9 @@ def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.up ComplexShape.up
 #align complex_shape.up_rel ComplexShape.up_Rel
 
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (up α).Rel := inferInstance
+
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
@@ -205,6 +208,9 @@ def down (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :
   down' 1
 #align complex_shape.down ComplexShape.down
 #align complex_shape.down_rel ComplexShape.down_Rel
+
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (down α).Rel := inferInstance
 
 theorem down_mk {α : Type _} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
   (down α).Rel i j :=
