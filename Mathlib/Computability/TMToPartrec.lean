@@ -112,7 +112,6 @@ we functions that return a single result return a singleton `[n]`, or in some ca
   * `fix f v = w` if `f v = 0 :: w`
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
 -/
-@[simp]
 def Code.eval : Code → List ℕ →. List ℕ
   | Code.zero' => fun v => pure (0 :: v)
   | Code.succ => fun v => pure [v.headI.succ]
@@ -128,6 +127,38 @@ def Code.eval : Code → List ℕ →. List ℕ
 #align turing.to_partrec.code.eval Turing.ToPartrec.Code.eval
 
 namespace Code
+
+/- Porting note: The equation lemma of `eval` is too strong; it simplifies terms like the LHS of
+`pred_eval`. We removed `simp` attr from `eval` and prepare new simp lemmas for `eval`. -/
+
+@[simp]
+theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
+
+@[simp]
+theorem succ_eval : succ.eval = fun v => pure [v.headI.succ] := by simp [eval]
+
+@[simp]
+theorem tail_eval : tail.eval = fun v => pure v.tail := by simp [eval]
+
+@[simp]
+theorem cons_eval (f fs) : (cons f fs).eval = fun v => do {
+    let n ← Code.eval f v
+    let ns ← Code.eval fs v
+    pure (n.headI :: ns) } := by simp [eval]
+
+@[simp]
+theorem comp_eval (f g) : (comp f g).eval = fun v => g.eval v >>= f.eval := by simp [eval]
+
+@[simp]
+theorem case_eval (f g) :
+    (case f g).eval = fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail) := by
+  simp [eval]
+
+@[simp]
+theorem fix_eval (f) : (fix f).eval =
+    PFun.fix fun v => (f.eval v).map fun v =>
+      if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail := by
+  simp [eval]
 
 /-- `nil` is the constant nil function: `nil v = []`. -/
 def nil : Code :=
@@ -254,12 +285,12 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
   case prim.succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
   case prim.get n i =>
     refine' Fin.succRec (fun n => _) (fun n i IH => _) i
-    · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Bind.bind] <;> rfl⟩
+    · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Bind.bind]; rfl⟩
     · obtain ⟨c, h⟩ := IH
       exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
   case prim.comp m n f g hf hg IHf IHg =>
     simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
-  case prim.prec n f g hf hg IHf IHg =>
+  case prim.prec n f g _ _ IHf IHg =>
     obtain ⟨cf, hf⟩ := IHf
     obtain ⟨cg, hg⟩ := IHg
     simp only [Part.map_eq_map, Part.map_some, PFun.coe_val] at hf hg
@@ -271,64 +302,52 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons, Vector.head_cons,
       PFun.coe_val, Vector.tail_val]
     simp only [← Part.pure_eq_some] at hf hg⊢
-    induction' v.head with n IH <;>
+    induction' v.head with n _ <;>
       simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
-    suffices
-      ∀ a b,
-        a + b = n →
-          (n.succ::0::g
-                      (n ::ᵥ
-                        Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ
-                          v.tail)::v.val.tail :
-              List ℕ) ∈
-            PFun.fix
-              (fun v : List ℕ => do
-                let x ← cg.eval (v.headI::v.tail.tail)
-                pure <|
-                    if v = 0 then Sum.inl (v::v::x.headI::v : List ℕ)
-                    else Sum.inr (v::v::x.headI::v))
-              (a::b::Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a::v.val.tail) by
-      rw [(_ : PFun.fix _ _ = pure _)]
-      swap
-      exact Part.eq_some_iff.2 (this 0 n (zero_add n))
-      simp only [List.headI, pure_bind, List.tail_cons]
+    suffices ∀ a b, a + b = n →
+      (n.succ :: 0 ::
+        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail)
+          :: v.val.tail : List ℕ) ∈
+        PFun.fix
+          (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
+            (fun x => Part.some (if v.tail.headI = 0
+              then Sum.inl
+                (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
+              else Sum.inr
+                (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
+          (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
+      erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
+      simp only [List.headI, Part.bind_some, List.tail_cons]
     intro a b e
-    induction' b with b IH generalizing a e
+    induction' b with b IH generalizing a
     · refine' PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 _)
-      simp only [hg, ← e, pure_bind, List.tail_cons]
+      simp only [hg, ← e, Part.bind_some, List.tail_cons, pure]
       rfl
     · refine' PFun.mem_fix_iff.2 (Or.inr ⟨_, _, IH (a + 1) (by rwa [add_right_comm])⟩)
-      simp only [hg, eval, pure_bind, Nat.rec_add_one, List.tail]
+      simp only [hg, eval, Part.bind_some, Nat.rec_add_one, List.tail_nil, List.tail_cons, pure]
       exact Part.mem_some_iff.2 rfl
-  case comp m n f g hf hg IHf IHg => exact exists_code.comp IHf IHg
-  case rfind n f hf IHf =>
+  case comp m n f g _ _ IHf IHg => exact exists_code.comp IHf IHg
+  case rfind n f _ IHf =>
     obtain ⟨cf, hf⟩ := IHf; refine' ⟨rfind cf, fun v => _⟩
     replace hf := fun a => hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf⊢
     refine' Part.ext fun x => _
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
-      exists_prop, eval, List.headI, pred_eval, Part.map_some, Bool.false_eq_decide_iff,
-      Part.mem_bind_iff, List.length, Part.mem_map_iff, Nat.mem_rfind, List.tail,
-      Bool.true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
+      exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
+      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, Bool.false_eq_decide_iff,
+      Part.mem_bind_iff, List.length, Part.mem_map_iff, Nat.mem_rfind, List.tail_nil,
+      List.tail_cons, Bool.true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
-      suffices
-        ∀ v₁ : List ℕ,
-          v' ∈
-              PFun.fix
-                (fun v =>
-                  (cf.eval v).bind fun y =>
-                    Part.some <|
-                      if y.headI = 0 then Sum.inl (v.head.succ::v.tail)
-                      else Sum.inr (v.head.succ::v.tail))
-                v₁ →
-            ∀ n,
-              (v₁ = n::v.val) →
-                (∀ m < n, ¬f (m ::ᵥ v) = 0) →
-                  ∃ a : ℕ,
-                    (f (a ::ᵥ v) = 0 ∧ ∀ {m : ℕ}, m < a → ¬f (m ::ᵥ v) = 0) ∧ [a] = [v'.head.pred]
+      suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
+        (fun v => (cf.eval v).bind fun y => Part.some <|
+          if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
+            else Sum.inr (v.headI.succ :: v.tail)) v₁ →
+        ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
+          ∃ a : ℕ,
+            (f (a ::ᵥ v) = 0 ∧ ∀ {m : ℕ}, m < a → ¬f (m ::ᵥ v) = 0) ∧ [a] = [v'.headI.pred]
         by exact this _ h1 0 rfl (by rintro _ ⟨⟩)
       clear h1
       intro v₀ h1
@@ -337,31 +356,30 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       rintro n rfl hm
       have := PFun.mem_fix_iff.1 h2
       simp only [hf, Part.bind_some] at this
-      split_ifs  at this
-      · simp only [List.headI, exists_false, or_false_iff, Part.mem_some_iff, List.tail_cons,
-          false_and_iff] at this
+      split_ifs at this with h
+      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false_iff, Part.mem_some_iff,
+          List.tail_cons, false_and_iff, Sum.inl.injEq] at this
         subst this
-        exact ⟨_, ⟨h, hm⟩, rfl⟩
+        exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine' IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => _
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts[hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
       refine' ⟨n.succ::v.1, _, rfl⟩
-      have :
-        (n.succ::v.1 : List ℕ) ∈
-          PFun.fix
-            (fun v =>
-              (cf.eval v).bind fun y =>
-                Part.some <|
-                  if y.headI = 0 then Sum.inl (v.head.succ::v.tail)
-                  else Sum.inr (v.head.succ::v.tail))
+      have : (n.succ::v.1 : List ℕ) ∈
+        PFun.fix (fun v =>
+          (cf.eval v).bind fun y =>
+            Part.some <|
+              if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
+                else Sum.inr (v.headI.succ :: v.tail))
             (n::v.val) :=
-        PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn, -Subtype.val_eq_coe]))
-      generalize (n.succ::v.1 : List ℕ) = w at this⊢
+        PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
+      generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
       clear hn
       induction' n with n IH
       · exact this
-      refine' IH (fun m h' => hm (Nat.lt_succ_of_lt h')) (PFun.mem_fix_iff.2 (Or.inr ⟨_, _, this⟩))
+      refine' IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+        (PFun.mem_fix_iff.2 (Or.inr ⟨_, _, this⟩))
       simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
         Part.mem_some_iff, and_self_iff, List.tail_cons]
 #align turing.to_partrec.code.exists_code Turing.ToPartrec.Code.exists_code
@@ -373,13 +391,13 @@ end Code
 
 Our initial sequential model is designed to be as similar as possible to the compositional
 semantics in terms of its primitives, but it is a sequential semantics, meaning that rather than
-defining an `eval c : list ℕ →. list ℕ` function for each program, defined by recursion on
-programs, we have a type `cfg` with a step function `step : cfg → option cfg` that provides a
+defining an `eval c : List ℕ →. List ℕ` function for each program, defined by recursion on
+programs, we have a type `Cfg` with a step function `step : Cfg → Option cfg` that provides a
 deterministic evaluation order. In order to do this, we introduce the notion of a *continuation*,
-which can be viewed as a `code` with a hole in it where evaluation is currently taking place.
-Continuations can be assigned a `list ℕ →. list ℕ` semantics as well, with the interpretation
-being that given a `list ℕ` result returned from the code in the hole, the remainder of the
-program will evaluate to a `list ℕ` final value.
+which can be viewed as a `Code` with a hole in it where evaluation is currently taking place.
+Continuations can be assigned a `List ℕ →. List ℕ` semantics as well, with the interpretation
+being that given a `List ℕ` result returned from the code in the hole, the remainder of the
+program will evaluate to a `List ℕ` final value.
 
 The continuations are:
 
@@ -387,122 +405,118 @@ The continuations are:
   final result. In our notation this is just `_`.
 * `cons₁ fs v k`: evaluating the first part of a `cons`, that is `k (_ :: fs v)`, where `k` is the
   outer continuation.
-* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.head :: _)`. (Technically we don't
+* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI :: _)`. (Technically we don't
   need to hold on to all of `ns` here since we are already committed to taking the head, but this
   is more regular.)
 * `comp f k`: evaluating the first part of a composition: `k (f _)`.
 * `fix f k`: waiting for the result of `f` in a `fix f` expression:
-  `k (if _.head = 0 then _.tail else fix f (_.tail))`
+  `k (if _.headI = 0 then _.tail else fix f (_.tail))`
 
-The type `cfg` of evaluation states is:
+The type `Cfg` of evaluation states is:
 
 * `ret k v`: we have received a result, and are now evaluating the continuation `k` with result
   `v`; that is, `k v` where `k` is ready to evaluate.
 * `halt v`: we are done and the result is `v`.
 
-The main theorem of this section is that for each code `c`, the state `step_normal c halt v` steps
-to `v'` in finitely many steps if and only if `code.eval c v = some v'`.
+The main theorem of this section is that for each code `c`, the state `stepNormal c halt v` steps
+to `v'` in finitely many steps if and only if `Code.eval c v = some v'`.
 -/
 
 
-/-- The type of continuations, built up during evaluation of a `code` expression. -/
+/-- The type of continuations, built up during evaluation of a `Code` expression. -/
 inductive Cont
   | halt
-  | cons₁ : Code → List ℕ → cont → cont
-  | cons₂ : List ℕ → cont → cont
-  | comp : Code → cont → cont
-  | fix : Code → cont → cont
+  | cons₁ : Code → List ℕ → Cont → Cont
+  | cons₂ : List ℕ → Cont → Cont
+  | comp : Code → Cont → Cont
+  | fix : Code → Cont → Cont
   deriving Inhabited
 #align turing.to_partrec.cont Turing.ToPartrec.Cont
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
-  | cont.halt => pure
-  | cont.cons₁ fs as k => fun v => do
+  | Cont.halt => pure
+  | Cont.cons₁ fs as k => fun v => do
     let ns ← Code.eval fs as
-    cont.eval k (v::ns)
-  | cont.cons₂ ns k => fun v => cont.eval k (ns.headI::v)
-  | cont.comp f k => fun v => Code.eval f v >>= cont.eval k
-  | cont.fix f k => fun v => if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
+    Cont.eval k (v.headI :: ns)
+  | Cont.cons₂ ns k => fun v => Cont.eval k (ns.headI :: v)
+  | Cont.comp f k => fun v => Code.eval f v >>= Cont.eval k
+  | Cont.fix f k => fun v => if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
 #align turing.to_partrec.cont.eval Turing.ToPartrec.Cont.eval
 
 /-- The set of configurations of the machine:
 
-* `halt v`: The machine is about to stop and `v : list ℕ` is the result.
-* `ret k v`: The machine is about to pass `v : list ℕ` to continuation `k : cont`.
+* `halt v`: The machine is about to stop and `v : List ℕ` is the result.
+* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : cont`.
 
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
-to a `ret` "in zero steps" using the `step_normal` function. -/
+to a `ret` "in zero steps" using the `stepNormal` function. -/
 inductive Cfg
-  | halt : List ℕ → cfg
-  | ret : Cont → List ℕ → cfg
+  | halt : List ℕ → Cfg
+  | ret : Cont → List ℕ → Cfg
   deriving Inhabited
 #align turing.to_partrec.cfg Turing.ToPartrec.Cfg
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Evaluating `c : code` in a continuation `k : cont` and input `v : list ℕ`. This goes by
+/-- Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`. This goes by
 recursion on `c`, building an augmented continuation and a value to pass to it.
 
 * `zero' v = 0 :: v` evaluates immediately, so we return it to the parent continuation
-* `succ v = [v.head.succ]` evaluates immediately, so we return it to the parent continuation
+* `succ v = [v.headI.succ]` evaluates immediately, so we return it to the parent continuation
 * `tail v = v.tail` evaluates immediately, so we return it to the parent continuation
-* `cons f fs v = (f v).head :: fs v` requires two sub-evaluations, so we evaluate
-  `f v` in the continuation `k (_.head :: fs v)` (called `cont.cons₁ fs v k`)
+* `cons f fs v = (f v).headI :: fs v` requires two sub-evaluations, so we evaluate
+  `f v` in the continuation `k (_.headI :: fs v)` (called `Cont.cons₁ fs v k`)
 * `comp f g v = f (g v)` requires two sub-evaluations, so we evaluate
-  `g v` in the continuation `k (f _)` (called `cont.comp f k`)
-* `case f g v = v.head.cases_on (f v.tail) (λ n, g (n :: v.tail))` has the information needed to
-  evaluate the case statement, so we do that and transition to either `f v` or `g (n :: v.tail)`.
-* `fix f v = let v' := f v in if v'.head = 0 then k v'.tail else fix f v'.tail`
+  `g v` in the continuation `k (f _)` (called `Cont.comp f k`)
+* `case f g v = v.head.casesOn (f v.tail) (fun n => g (n :: v.tail))` has the information needed
+  to evaluate the case statement, so we do that and transition to either
+  `f v` or `g (n :: v.tail)`.
+* `fix f v = let v' := f v; if v'.headI = 0 then k v'.tail else fix f v'.tail`
   needs to first evaluate `f v`, so we do that and leave the rest for the continuation (called
-  `cont.fix f k`)
+  `Cont.fix f k`)
 -/
 def stepNormal : Code → Cont → List ℕ → Cfg
-  | code.zero', k, v => Cfg.ret k (0::v)
-  | code.succ, k, v => Cfg.ret k [v.headI.succ]
-  | code.tail, k, v => Cfg.ret k v.tail
-  | code.cons f fs, k, v => step_normal f (Cont.cons₁ fs v k) v
-  | code.comp f g, k, v => step_normal g (Cont.comp f k) v
-  | code.case f g, k, v =>
-    v.headI.elim (step_normal f k v.tail) fun y _ => step_normal g k (y::v.tail)
-  | code.fix f, k, v => step_normal f (Cont.fix f k) v
+  | Code.zero' => fun k v => Cfg.ret k (0::v)
+  | Code.succ => fun k v => Cfg.ret k [v.headI.succ]
+  | Code.tail => fun k v => Cfg.ret k v.tail
+  | Code.cons f fs => fun k v => stepNormal f (Cont.cons₁ fs v k) v
+  | Code.comp f g => fun k v => stepNormal g (Cont.comp f k) v
+  | Code.case f g => fun k v =>
+    v.headI.rec (stepNormal f k v.tail) fun y _ => stepNormal g k (y::v.tail)
+  | Code.fix f => fun k v => stepNormal f (Cont.fix f k) v
 #align turing.to_partrec.step_normal Turing.ToPartrec.stepNormal
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Evaluating a continuation `k : cont` on input `v : list ℕ`. This is the second part of
-evaluation, when we receive results from continuations built by `step_normal`.
+/-- Evaluating a continuation `k : Cont` on input `v : List ℕ`. This is the second part of
+evaluation, when we receive results from continuations built by `stepNormal`.
 
-* `cont.halt v = v`, so we are done and transition to the `cfg.halt v` state
-* `cont.cons₁ fs as k v = k (v.head :: fs as)`, so we evaluate `fs as` now with the continuation
-  `k (v.head :: _)` (called `cons₂ v k`).
-* `cont.cons₂ ns k v = k (ns.head :: v)`, where we now have everything we need to evaluate
-  `ns.head :: v`, so we return it to `k`.
-* `cont.comp f k v = k (f v)`, so we call `f v` with `k` as the continuation.
-* `cont.fix f k v = k (if v.head = 0 then k v.tail else fix f v.tail)`, where `v` is a value,
+* `Cont.halt v = v`, so we are done and transition to the `Cfg.halt v` state
+* `Cont.cons₁ fs as k v = k (v.headI :: fs as)`, so we evaluate `fs as` now with the continuation
+  `k (v.headI :: _)` (called `cons₂ v k`).
+* `Cont.cons₂ ns k v = k (ns.headI :: v)`, where we now have everything we need to evaluate
+  `ns.headI :: v`, so we return it to `k`.
+* `Cont.comp f k v = k (f v)`, so we call `f v` with `k` as the continuation.
+* `Cont.fix f k v = k (if v.headI = 0 then k v.tail else fix f v.tail)`, where `v` is a value,
   so we evaluate the if statement and either call `k` with `v.tail`, or call `fix f v` with `k` as
-  the continuation (which immediately calls `f` with `cont.fix f k` as the continuation).
+  the continuation (which immediately calls `f` with `Cont.fix f k` as the continuation).
 -/
 def stepRet : Cont → List ℕ → Cfg
-  | cont.halt, v => Cfg.halt v
-  | cont.cons₁ fs as k, v => stepNormal fs (Cont.cons₂ v k) as
-  | cont.cons₂ ns k, v => step_ret k (ns.headI::v)
-  | cont.comp f k, v => stepNormal f k v
-  | cont.fix f k, v => if v.headI = 0 then step_ret k v.tail else stepNormal f (Cont.fix f k) v.tail
+  | Cont.halt, v => Cfg.halt v
+  | Cont.cons₁ fs as k, v => stepNormal fs (Cont.cons₂ v k) as
+  | Cont.cons₂ ns k, v => stepRet k (ns.headI :: v)
+  | Cont.comp f k, v => stepNormal f k v
+  | Cont.fix f k, v => if v.headI = 0 then stepRet k v.tail else stepNormal f (Cont.fix f k) v.tail
 #align turing.to_partrec.step_ret Turing.ToPartrec.stepRet
 
-/-- If we are not done (in `cfg.halt` state), then we must be still stuck on a continuation, so
-this main loop calls `step_ret` with the new continuation. The overall `step` function transitions
-from one `cfg` to another, only halting at the `cfg.halt` state. -/
+/-- If we are not done (in `Cfg.halt` state), then we must be still stuck on a continuation, so
+this main loop calls `stepRet` with the new continuation. The overall `step` function transitions
+from one `Cfg` to another, only halting at the `Cfg.halt` state. -/
 def step : Cfg → Option Cfg
-  | cfg.halt _ => none
-  | cfg.ret k v => some (stepRet k v)
+  | Cfg.halt _ => none
+  | Cfg.ret k v => some (stepRet k v)
 #align turing.to_partrec.step Turing.ToPartrec.step
 
 /-- In order to extract a compositional semantics from the sequential execution behavior of
-configurations, we observe that continuations have a monoid structure, with `cont.halt` as the unit
-and `cont.then` as the multiplication. `cont.then k₁ k₂` runs `k₁` until it halts, and then takes
+configurations, we observe that continuations have a monoid structure, with `Cont.halt` as the unit
+and `Cont.then` as the multiplication. `Cont.then k₁ k₂` runs `k₁` until it halts, and then takes
 the result of `k₁` and passes it to `k₂`.
 
 We will not prove it is associative (although it is), but we are instead interested in the
@@ -510,44 +524,45 @@ associativity law `k₂ (eval c k₁) = eval c (k₁.then k₂)`. This holds at 
 compositional levels, and allows us to express running a machine without the ambient continuation
 and relate it to the original machine's evaluation steps. In the literature this is usually
 where one uses Turing machines embedded inside other Turing machines, but this approach allows us
-to avoid changing the ambient type `cfg` in the middle of the recursion.
+to avoid changing the ambient type `Cfg` in the middle of the recursion.
 -/
 def Cont.then : Cont → Cont → Cont
-  | cont.halt, k' => k'
-  | cont.cons₁ fs as k, k' => Cont.cons₁ fs as (k.then k')
-  | cont.cons₂ ns k, k' => Cont.cons₂ ns (k.then k')
-  | cont.comp f k, k' => Cont.comp f (k.then k')
-  | cont.fix f k, k' => Cont.fix f (k.then k')
+  | Cont.halt => fun k' => k'
+  | Cont.cons₁ fs as k => fun k' => Cont.cons₁ fs as (k.then k')
+  | Cont.cons₂ ns k => fun k' => Cont.cons₂ ns (k.then k')
+  | Cont.comp f k => fun k' => Cont.comp f (k.then k')
+  | Cont.fix f k => fun k' => Cont.fix f (k.then k')
 #align turing.to_partrec.cont.then Turing.ToPartrec.Cont.then
 
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
-  induction k generalizing v <;> simp only [cont.eval, cont.then, bind_assoc, pure_bind, *]
+  induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
+    simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
   · simp only [← k_ih]
   · split_ifs <;> [rfl, simp only [← k_ih, bind_assoc]]
 #align turing.to_partrec.cont.then_eval Turing.ToPartrec.Cont.then_eval
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
-`k` to the continuation of a `cfg.ret` state, and to run `k` on `v` if we are in the `cfg.halt v`
+`k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
 state. -/
 def Cfg.then : Cfg → Cont → Cfg
-  | cfg.halt v, k' => stepRet k' v
-  | cfg.ret k v, k' => Cfg.ret (k.then k') v
+  | Cfg.halt v => fun k' => stepRet k' v
+  | Cfg.ret k v => fun k' => Cfg.ret (k.then k') v
 #align turing.to_partrec.cfg.then Turing.ToPartrec.Cfg.then
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:337:16: warning: unsupported simp config option: constructor_eq -/
-/-- The `step_normal` function respects the `then k'` homomorphism. Note that this is an exact
+/-- The `stepNormal` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
 embedded machine reaches the halt state. -/
 theorem stepNormal_then (c) (k k' : Cont) (v) :
     stepNormal c (k.then k') v = (stepNormal c k v).then k' := by
-  induction c generalizing k v <;> simp only [cont.then, step_normal, cfg.then, *]
-  case cons c c' ih ih' => rw [← ih, cont.then]
-  case comp c c' ih ih' => rw [← ih', cont.then]
-  · cases v.head <;> simp only [Nat.rec]
-  case fix c ih => rw [← ih, cont.then]
+  induction c generalizing k v <;> simp only [Cont.then, stepNormal, *] <;>
+    try { simp only [Cfg.then]; done }
+  case cons c c' ih _ => rw [← ih, Cont.then]
+  case comp c c' _ ih' => rw [← ih', Cont.then]
+  · cases v.headI <;> simp only [Nat.rec]
+  case fix c ih => rw [← ih, Cont.then]
 #align turing.to_partrec.step_normal_then Turing.ToPartrec.stepNormal_then
 
-/-- The `step_ret` function respects the `then k'` homomorphism. Note that this is an exact
+/-- The `stepRet` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
 embedded machine reaches the halt state. -/
 theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).then k' := by
