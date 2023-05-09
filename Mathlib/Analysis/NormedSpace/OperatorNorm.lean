@@ -811,11 +811,10 @@ def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ
         ext z
         rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
           smul_apply] }
-    (max C 0) fun x =>
-    sorry
-    -- Porting FIXME: this proof needs fixing.
-    -- (mkContinuous_norm_le' _ _).trans_eq <| by
-    --   rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+    (max C 0) fun x => by
+      dsimp
+      exact (mkContinuous_norm_le' _ _).trans_eq <| by
+        rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 set_option synthInstance.etaExperiment true in
@@ -1122,13 +1121,14 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       refine ContinuousLinearMap.ext fun x => ?_
       -- Porting FIXME: this proof is broken. Mathport suggested:
       -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
+      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
       --   Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
       -- rfl
-      dsimp -- Frustratingly, in mathlib3 this gets us all the way to `⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)`
+      -- Just a mess of trying to work things out here:
+      -- dsimp -- Frustratingly, in mathlib3 this gets us all the way to `⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)`
       -- Lots of these simp lemmas seem to not be firing:
       simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
+        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
         Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
       -- We can:
       rw [add_apply]
@@ -1233,8 +1233,16 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
+#check topologicalSpace
+
+example : (topologicalSpace : TopologicalSpace (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = UniformSpace.toTopologicalSpace := rfl
+example : (addCommMonoid : AddCommMonoid (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = AddCommGroup.toAddCommMonoid := rfl
+#synth SeminormedAddCommGroup (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
+example : (module : Module 𝕜 (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')) = NormedSpace.toModule := rfl
+
 -- Porting FIXME: why isn't this instance found?
 example : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := ContinuousLinearMap.hasOpNorm
+
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.op_norm_mulLeftRight_le
