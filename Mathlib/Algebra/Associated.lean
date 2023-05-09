@@ -925,8 +925,7 @@ end Order
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
     let step : ∀ (c : α),
-      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b :=
-    by
+      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b := by
       intro c hc
       let ⟨d, hd⟩ := (Quotient.exact hc).symm
       exact ⟨↑d * c,

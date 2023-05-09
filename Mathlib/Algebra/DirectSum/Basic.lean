@@ -164,8 +164,8 @@ theorem of_injective (i : ι) : Function.Injective (of β i) :=
 
 @[elab_as_elim]
 protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H_zero : C 0)
-    (H_basic : ∀ (i : ι) (x : β i), C (of β i x)) (H_plus : ∀ x y, C x → C y → C (x + y)) : C x :=
-  by
+    (H_basic : ∀ (i : ι) (x : β i), C (of β i x))
+    (H_plus : ∀ x y, C x → C y → C (x + y)) : C x := by
   apply Dfinsupp.induction x H_zero
   intro i b f h1 h2 ih
   solve_by_elim

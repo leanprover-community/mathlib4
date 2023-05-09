@@ -216,8 +216,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     ⟨fun h => isClosed_iff_sup.2 fun {ι} hι f hf => _, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => _⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso hs).symm ⟨_, hf i⟩
-    suffices enumOrd s (sup.{u, u} g) = sup.{u, u} f
-      by
+    suffices enumOrd s (sup.{u, u} g) = sup.{u, u} f by
       rw [← this]
       exact enumOrd_mem hs _
     rw [@IsNormal.sup.{u, u, u} _ h ι g hι]
