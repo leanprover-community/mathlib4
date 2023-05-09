@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Thomas Murrills
 -/
 import Lean.Meta.Basic
 import Std.Data.List.Basic
