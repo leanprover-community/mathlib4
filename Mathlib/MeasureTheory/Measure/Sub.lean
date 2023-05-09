@@ -8,7 +8,7 @@ Authors: Martin Zinkevich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Subtraction of measures
@@ -84,14 +84,12 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
         repeat' rw [← MeasureTheory.measure_unionᵢ h_disj h_meas]
         exacts[MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
-  · have h_measure_sub_add : ν + measure_sub = μ :=
-      by
+  · have h_measure_sub_add : ν + measure_sub = μ := by
       ext (t h_t_measurable_set)
       simp only [Pi.add_apply, coe_add]
       rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
         tsub_add_cancel_of_le (h₂ t h_t_measurable_set)]
-    have h_measure_sub_eq : μ - ν = measure_sub :=
-      by
+    have h_measure_sub_eq : μ - ν = measure_sub := by
       rw [MeasureTheory.Measure.sub_def]
       apply le_antisymm
       · apply @infₛ_le (Measure α) measure.complete_semilattice_Inf
@@ -104,15 +102,13 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
     apply measure.of_measurable_apply _ h₁
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
-theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ :=
-  by
+theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext (s h_s_meas)
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
-    (μ - ν).restrict s = μ.restrict s - ν.restrict s :=
-  by
+    (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat' rw [sub_def]
   have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, measure.le_add_right le_rfl⟩
   rw [restrict_Inf_eq_Inf_restrict h_nonempty h_meas_s]
