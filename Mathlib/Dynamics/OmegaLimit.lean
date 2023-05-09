@@ -257,7 +257,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     apply Subset.trans hg₃
     simp only [iUnion_subset_iff, compl_subset_compl]
     intros u hu
-    mono
+    mono*
     refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)
     all_goals exact Subset.rfl
   have hw₄ : kᶜ ⊆ closure (image2 ϕ w s)ᶜ := by
