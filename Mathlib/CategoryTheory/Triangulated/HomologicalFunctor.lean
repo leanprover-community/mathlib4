@@ -83,11 +83,20 @@ variable (F : C ⥤ A) [F.PreservesZeroMorphisms]
 
 class IsHomological : Prop where
   exact : ∀ (T : Triangle C) (hT : T ∈ distTriang C),
-    ((shortComplex_of_dist_triangle T hT).map F).Exact
+    ((shortComplexOfDistTriangle T hT).map F).Exact
 
 lemma map_distinguished_exact [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
-    ((shortComplex_of_dist_triangle T hT).map F).Exact :=
+    ((shortComplexOfDistTriangle T hT).map F).Exact :=
   IsHomological.exact _ hT
+
+def IsHomological.mk' (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ distTriang C),
+  ∃ (T' : Pretriangulated.Triangle C) (e : T ≅ T'),
+    ((shortComplexOfDistTriangle T' (isomorphic_distinguished _ hT _ e.symm)).map F).Exact) :
+    F.IsHomological where
+  exact T hT := by
+    obtain ⟨T', e, h'⟩ := hF T hT
+    exact (ShortComplex.exact_iff_of_iso
+      (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
 
 def homologicalKernel [F.IsHomological] :
     Triangulated.Subcategory C where

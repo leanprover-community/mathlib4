@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Tactic.LibrarySearch
 
 -- It seems I have rediscovered the point of view on "pseudoelements"
 -- described in the first page of:

@@ -83,6 +83,12 @@ instance [K.HasHomology i] : Epi (K.homologyπ i) := by
 variable {i}
 
 @[reassoc]
+lemma comp_liftCycles {A' A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
+    (hk : k ≫ K.d i j = 0) (α : A' ⟶ A) :
+    α ≫ K.liftCycles k j hj hk = K.liftCycles (α ≫ k) j hj (by rw [assoc, hk, comp_zero]) := by
+  simp only [← cancel_mono (K.iCycles i), assoc, liftCycles_i]
+
+@[reassoc]
 lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : ι)
     (hj : c.next i = j) {i' : ι} (x : A ⟶ K.X i') (hx : k = x ≫ K.d i' i) :
     K.liftCycles k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) ≫ K.homologyπ i = 0 := by
@@ -104,11 +110,22 @@ variable {K L M} (i)
 noncomputable def homologyMap : K.newHomology i ⟶ L.newHomology i :=
   ShortComplex.homologyMap ((shortComplexFunctor C c i).map φ)
 
+noncomputable def cyclesMap : K.newCycles i ⟶ L.newCycles i :=
+  ShortComplex.cyclesMap ((shortComplexFunctor C c i).map φ)
+
+@[reassoc (attr := simp)]
+lemma cyclesMap_i : cyclesMap φ i ≫ L.iCycles i = K.iCycles i ≫ φ.f i :=
+  ShortComplex.cyclesMap_i _
+
 variable (K)
 
 @[simp]
 lemma homologyMap_id : homologyMap (𝟙 K) i = 𝟙 _ :=
   ShortComplex.homologyMap_id _
+
+@[simp]
+lemma cyclesMap_id : cyclesMap (𝟙 K) i = 𝟙 _ :=
+  ShortComplex.cyclesMap_id _
 
 variable {K}
 
@@ -117,22 +134,48 @@ lemma homologyMap_comp : homologyMap (φ ≫ ψ) i = homologyMap φ i ≫ homolo
   dsimp [homologyMap]
   rw [Functor.map_comp, ShortComplex.homologyMap_comp]
 
+@[reassoc]
+lemma cyclesMap_comp : cyclesMap (φ ≫ ψ) i = cyclesMap φ i ≫ cyclesMap ψ i := by
+  dsimp [cyclesMap]
+  rw [Functor.map_comp, ShortComplex.cyclesMap_comp]
+
 variable (K L)
 
 @[simp]
 lemma homologyMap_zero : homologyMap (0 : K ⟶ L) i = 0 :=
   ShortComplex.homologyMap_zero _ _
 
+@[simp]
+lemma cyclesMap_zero : cyclesMap (0 : K ⟶ L) i = 0 :=
+  ShortComplex.cyclesMap_zero _ _
+
 variable {K L}
 
-attribute [simp] homologyMap_comp
+@[reassoc (attr := simp)]
+lemma homologyπ_naturality :
+    K.homologyπ i ≫ homologyMap φ i = cyclesMap φ i ≫ L.homologyπ i :=
+  ShortComplex.homologyπ_naturality _
+
+
+@[reassoc (attr := simp)]
+lemma liftCycles_comp_cyclesMap {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
+    (hk : k ≫ K.d i j = 0) (φ : K ⟶ L) :
+    K.liftCycles k j hj hk ≫ cyclesMap φ i = L.liftCycles (k ≫ φ.f i) j hj
+      (by rw [assoc, φ.comm, reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_mono (L.iCycles i), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
 
 variable (C c)
+
+section
+
+attribute [local simp] homologyMap_comp
 
 @[simps]
 noncomputable def newHomologyFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
   obj K := K.newHomology i
   map f := homologyMap f i
+
+end
 
 @[simps!]
 noncomputable def newHomologyFunctorIso [CategoryWithHomology C] :

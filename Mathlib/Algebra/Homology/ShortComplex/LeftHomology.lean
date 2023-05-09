@@ -999,9 +999,9 @@ noncomputable def leftHomologyIsCokernel :
 
 @[reassoc (attr := simp)]
 lemma liftCycles_comp_cyclesMap (φ : S ⟶ S₁) [S₁.HasLeftHomology] :
-  S.liftCycles k hk ≫ cyclesMap φ =
-    S₁.liftCycles (k ≫ φ.τ₂) (by rw [assoc, φ.comm₂₃, reassoc_of% hk, zero_comp]) :=
-by simp only [← cancel_mono (S₁.iCycles), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
+    S.liftCycles k hk ≫ cyclesMap φ =
+      S₁.liftCycles (k ≫ φ.τ₂) (by rw [assoc, φ.comm₂₃, reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_mono (S₁.iCycles), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
 
 variable {S}
 

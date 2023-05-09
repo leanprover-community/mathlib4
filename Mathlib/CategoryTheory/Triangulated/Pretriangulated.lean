@@ -179,8 +179,15 @@ theorem comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₁₂
 
 @[simps]
-def shortComplex_of_dist_triangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
+def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
   ShortComplex.mk T.mor₁ T.mor₂ (comp_dist_triangle_mor_zero₁₂ _ hT)
+
+@[simps!]
+def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
+  shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
+    (isomorphic_distinguished _ hT _ e.symm) :=
+  ShortComplex.mkIso (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
+    (by aesop_cat) (by aesop_cat)
 
 /-- Given any distinguished triangle
 ```

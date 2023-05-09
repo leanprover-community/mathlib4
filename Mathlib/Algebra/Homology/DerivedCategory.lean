@@ -1,14 +1,11 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 open CategoryTheory Category Limits
 
 variable (C : Type _) [Category C] [Abelian C]
-
-instance (n : ℤ) : (HomotopyCategory.newHomologyFunctor C (ComplexShape.up ℤ) n).IsHomological :=
-  sorry
 
 instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
 

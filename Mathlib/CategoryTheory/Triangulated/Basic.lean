@@ -273,4 +273,21 @@ def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] :
     hom₂ := f
     hom₃ := 0 }
 
+variable {C}
+
+@[simps]
+def Triangle.π₁ : Triangle C ⥤ C where
+  obj T := T.obj₁
+  map f := f.hom₁
+
+@[simps]
+def Triangle.π₂ : Triangle C ⥤ C where
+  obj T := T.obj₂
+  map f := f.hom₂
+
+@[simps]
+def Triangle.π₃ : Triangle C ⥤ C where
+  obj T := T.obj₃
+  map f := f.hom₃
+
 end CategoryTheory.Pretriangulated

@@ -148,7 +148,7 @@ lemma id (p q : ℤ) (hpq : p + 1 = q) :
   subst hpq
   simp [inl, inr, fst, snd, mappingCone]
 
-lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n₂ : ℤ) (h : n₁ + 1 = n₂)  :
+lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n₂ : ℤ) (h : n₁ + 1 = n₂) :
     f = g ↔ f ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ h =
       g ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ h ∧
       f ≫ (snd φ).v n₁ n₁ (add_zero n₁) = g ≫ (snd φ).v n₁ n₁ (add_zero n₁) := by
@@ -170,6 +170,15 @@ lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
   . rintro ⟨h₁, h₂⟩
     rw [← cancel_epi (𝟙 _), id φ n₁ n₂ h]
     simp only [add_comp, assoc, h₁, h₂]
+
+lemma to_break {A : C} {n₁ : ℤ} (f : A ⟶ (mappingCone φ).X n₁) (n₂ : ℤ) (h : n₁ + 1 = n₂) :
+    ∃ (f₁ : A ⟶ F.X n₂) (f₂ : A ⟶ G.X n₁),
+      f = f₁ ≫ (inl φ : Cochain F (mappingCone φ) (-1)).v n₂ n₁
+        (by rw [← h, add_neg_cancel_right]) + f₂ ≫ (inr φ).f n₁ := by
+  refine' ⟨f ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ h,
+    f ≫ (snd φ).v n₁ n₁ (add_zero n₁), _⟩
+  rw [to_ext_iff _ _ _ _ h]
+  simp
 
 lemma cochain_from_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : Cochain (mappingCone φ) K n)
     (n' : ℤ) (hn' : -1 + n = n') :
@@ -230,11 +239,17 @@ lemma inr_f_d (n₁ n₂ : ℤ) :
   . rw [(mappingCone φ).shape _ _ h, G.shape _ _ h, zero_comp, comp_zero]
 
 @[reassoc]
-lemma d_fst_v (n₁ n₂ n₃ : ℤ) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃):
+lemma d_fst_v (n₁ n₂ n₃ : ℤ) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
   (mappingCone φ).d n₁ n₂ ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₂ n₃ hn₃ =
     -(fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ hn₂ ≫ F.d n₂ n₃ := by
   subst hn₂
   simp [mappingCone, fst]
+
+@[reassoc (attr := simp)]
+lemma d_fst_v' (n n' : ℤ) (hn' : n + 1 = n') :
+  (mappingCone φ).d (n-1) n ≫ (fst φ : Cochain (mappingCone φ) F 1).v n n' hn' =
+    -(fst φ : Cochain (mappingCone φ) F 1).v (n-1) n (by rw [sub_add_cancel]) ≫ F.d n n' :=
+  d_fst_v φ (n-1) n n' (by linarith) hn'
 
 @[reassoc]
 lemma d_snd_v (n₁ n₂ : ℤ) (hn₂ : n₁ + 1 = n₂) :
@@ -243,6 +258,13 @@ lemma d_snd_v (n₁ n₂ : ℤ) (hn₂ : n₁ + 1 = n₂) :
       (snd φ).v n₁ n₁ (add_zero n₁) ≫ G.d n₁ n₂ := by
   subst hn₂
   simp [mappingCone, fst, snd]
+
+@[reassoc (attr := simp)]
+lemma d_snd_v' (n : ℤ) :
+  (mappingCone φ).d (n-1) n ≫ (snd φ).v n n (add_zero n) =
+    (fst φ : Cochain (mappingCone φ) F 1).v (n-1) n (by rw [sub_add_cancel]) ≫ φ.f n +
+      (snd φ).v (n-1) (n-1) (add_zero _) ≫ G.d (n-1) n := by
+  apply d_snd_v
 
 @[simp]
 lemma inl_comp_diff :
@@ -565,6 +587,9 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
   rw [← id_comp ((desc φ α' β' eq').f n), id φ _ _ hnn']
   simp only [add_comp, assoc, inl_v_desc_f, inr_f_desc_f, comp_add,
     lift_f_fst_v_assoc, lift_f_snd_v_assoc]
+
+noncomputable def homotopySelfCompInr : Homotopy (φ ≫ inr φ) 0 :=
+  liftHomotopy _ _ _ (Cochain.ofHom (𝟙 F)) 0 (by simp) (by simp)
 
 end MappingCone
 
