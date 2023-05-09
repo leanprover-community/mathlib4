@@ -74,7 +74,8 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
-
+-- porting note: "Compactum" is already uppser case
+set_option linter.uppercaseLean3 false
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
@@ -83,6 +84,8 @@ open Classical Topology
 
 -- mathport name: exprβ
 local notation "β" => ofTypeMonad Ultrafilter
+
+#check β
 
 /-- The type `Compactum` of Compacta, defined as algebras for the ultrafilter monad. -/
 def Compactum :=
@@ -93,8 +96,15 @@ namespace Compactum
 
 /-- The forgetful functor to Type* -/
 def forget : Compactum ⥤ Type _ :=
-  Monad.forget _ deriving CreatesLimits, Faithful
+  Monad.forget _ --deriving CreatesLimits, Faithful
+  -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
+
+instance : Faithful forget :=
+show Faithful <| Monad.forget _ from inferInstance
+
+noncomputable instance : CreatesLimits forget :=
+show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
 def free : Type _ ⥤ Compactum :=
@@ -107,12 +117,13 @@ def adj : free ⊣ forget :=
 #align Compactum.adj Compactum.adj
 
 -- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
+instance : ConcreteCategory Compactum where Forget := forget
 
-instance : CoeSort Compactum (Type _) :=
+-- porting note: investigate if `noncomputable` is needed here
+noncomputable instance : CoeSort Compactum (Type _) :=
   ⟨forget.obj⟩
 
-instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun f => X → Y :=
+instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨fun f => f.f⟩
 
 instance : HasLimits Compactum :=
@@ -125,18 +136,18 @@ def str (X : Compactum) : Ultrafilter X → X :=
 
 /-- The monadic join. -/
 def join (X : Compactum) : Ultrafilter (Ultrafilter X) → Ultrafilter X :=
-  β.μ.app _
+  (β ).μ.app _
 #align Compactum.join Compactum.join
 
 /-- The inclusion of `X` into `ultrafilter X`. -/
 def incl (X : Compactum) : X → Ultrafilter X :=
-  β.η.app _
+  (β ).η.app _
 #align Compactum.incl Compactum.incl
 
 @[simp]
 theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
-  change (β.η.app _ ≫ X.a) _ = _
-  rw [monad.algebra.unit]
+  change ((β ).η.app _ ≫ X.a) _ = _
+  rw [Monad.Algebra.unit]
   rfl
 #align Compactum.str_incl Compactum.str_incl
 
@@ -151,16 +162,16 @@ theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
 @[simp]
 theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
     X.str (X.join uux) = X.str (map X.str uux) := by
-  change (β.μ.app _ ≫ X.a) _ = _
-  rw [monad.algebra.assoc]
+  change ((β ).μ.app _ ≫ X.a) _ = _
+  rw [Monad.Algebra.assoc]
   rfl
 #align Compactum.join_distrib Compactum.join_distrib
 
 instance {X : Compactum} : TopologicalSpace X where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
-  isOpen_inter S T h3 h4 h5 h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
-  isOpen_unionₛ := fun S h1 F ⟨T, hT, h2⟩ =>
+  isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
+  isOpen_unionₛ := fun _ h1 _ ⟨T, hT, h2⟩ =>
     mem_of_superset (h1 T hT _ h2) (Set.subset_unionₛ_of_mem hT)
 
 theorem isClosed_iff {X : Compactum} (S : Set X) :
@@ -174,14 +185,14 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
     contradiction
   · intro h1 F h2
     specialize h1 F
-    cases F.mem_or_compl_mem S
+    cases' F.mem_or_compl_mem S with h h
     exacts[absurd (h1 h) h2, h]
 #align Compactum.is_closed_iff Compactum.isClosed_iff
 
 instance {X : Compactum} : CompactSpace X := by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
-  intro F h
+  intro F _
   refine' ⟨X.str F, by tauto, _⟩
   rw [le_nhds_iff]
   intro S h1 h2
@@ -190,12 +201,12 @@ instance {X : Compactum} : CompactSpace X := by
 /-- A local definition used only in the proofs. -/
 private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
   { F | A ∈ F }
-#align Compactum.basic Compactum.basic
+-- Porting note: removed #align declaration since it is a private lemma
 
 /-- A local definition used only in the proofs. -/
 private def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
-#align Compactum.cl Compactum.cl
+-- Porting note: removed #align declaration since it is a private lemma
 
 private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = basic A ∩ basic B := by
   ext G
@@ -205,11 +216,11 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
     exacts[And.left, And.right]
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
-#align Compactum.basic_inter Compactum.basic_inter
+-- Porting note: removed #align declaration since it is a private lemma
 
 private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =>
   ⟨X.incl a, ha, by simp⟩
-#align Compactum.subset_cl Compactum.subset_cl
+-- Porting note: removed #align declaration since it is a private lemma
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (B C «expr ∈ » C0) -/
 private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
@@ -217,16 +228,16 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
   let ssu := Set (Set (Ultrafilter X))
-  let ι : fsu → ssu := coe
+  let ι : fsu → ssu := (fun x ↦ ↑x)
   let C0 : ssu := { Z | ∃ B ∈ F, X.str ⁻¹' B = Z }
   let AA := { G : Ultrafilter X | A ∈ G }
   let C1 := insert AA C0
-  let C2 := finite_inter_closure C1
+  let C2 := finiteInterClosure C1
   -- C0 is closed under intersections.
   have claim1 : ∀ (B) (_ : B ∈ C0) (C) (_ : C ∈ C0), B ∩ C ∈ C0 := by
     rintro B ⟨Q, hQ, rfl⟩ C ⟨R, hR, rfl⟩
     use Q ∩ R
-    simp only [and_true_iff, eq_self_iff_true, Set.preimage_inter, Subtype.val_eq_coe]
+    simp only [and_true_iff, eq_self_iff_true, Set.preimage_inter]
     exact inter_sets _ hQ hR
   -- All sets in C0 are nonempty.
   have claim2 : ∀ B ∈ C0, Set.Nonempty B := by
@@ -250,30 +261,30 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
     rw [join_distrib, this]
     exact ⟨h1 (Or.inl rfl), rfl⟩
   -- C2 is closed under finite intersections (by construction!).
-  have claim4 := finite_inter_closure_has_finite_inter C1
+  have claim4 := finiteInterClosure_finiteInter C1
   -- C0 is closed under finite intersections by claim1.
   have claim5 : FiniteInter C0 := ⟨⟨_, univ_mem, Set.preimage_univ⟩, claim1⟩
   -- Every element of C2 is nonempty.
   have claim6 : ∀ P ∈ C2, (P : Set (Ultrafilter X)).Nonempty := by
     suffices ∀ P ∈ C2, P ∈ C0 ∨ ∃ Q ∈ C0, P = AA ∩ Q by
       intro P hP
-      cases this P hP
+      cases' this P hP with h h
       · exact claim2 _ h
       · rcases h with ⟨Q, hQ, rfl⟩
         exact claim3 _ hQ
     intro P hP
-    exact claim5.finite_inter_closure_insert _ hP
+    exact claim5.finiteInterClosure_insert _ hP
   intro T hT
   -- Suffices to show that the intersection of the T's is contained in C2.
   suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
   -- Finish
-  apply claim4.finite_inter_mem
+  apply claim4.finiteInter_mem T
   intro t ht
-  exact finite_inter_closure.basic (@hT t ht)
-#align Compactum.cl_cl Compactum.cl_cl
+  refine' finiteInterClosure.basic (@hT t ht)
+-- Porting note: removed #align declaration since it is a private lemma
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
-  rw [is_closed_iff]
+  rw [isClosed_iff]
   intro F hF
   exact cl_cl _ ⟨F, hF, rfl⟩
 #align Compactum.is_closed_cl Compactum.isClosed_cl
@@ -287,20 +298,20 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   let T0 : ssu := { S | ∃ A ∈ F, S = basic A }
   let AA := X.str ⁻¹' {x}
   let T1 := insert AA T0
-  let T2 := finite_inter_closure T1
+  let T2 := finiteInterClosure T1
   intro cond
   -- If F contains a closed set A, then x is contained in A.
   have claim1 : ∀ A : Set X, IsClosed A → A ∈ F → x ∈ A := by
     intro A hA h
     by_contra H
     rw [le_nhds_iff] at cond
-    specialize cond (Aᶜ) H hA.is_open_compl
+    specialize cond (Aᶜ) H hA.isOpen_compl
     rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.
   have claim2 : ∀ A : Set X, A ∈ F → x ∈ cl A := by
     intro A hA
-    exact claim1 (cl A) (is_closed_cl A) (mem_of_superset hA (subset_cl A))
+    exact claim1 (cl A) (isClosed_cl A) (mem_of_superset hA (subset_cl A))
   -- T0 is closed under intersections.
   have claim3 : ∀ (S1) (_ : S1 ∈ T0) (S2) (_ : S2 ∈ T0), S1 ∩ S2 ∈ T0 := by
     rintro S1 ⟨S1, hS1, rfl⟩ S2 ⟨S2, hS2, rfl⟩
@@ -513,4 +524,3 @@ noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Pro
   change creates_limits (profiniteToCompHaus ⋙ forget _)
   infer_instance
 #align Profinite.forget_creates_limits Profinite.forgetCreatesLimits
-
