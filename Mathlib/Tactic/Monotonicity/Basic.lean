@@ -46,6 +46,44 @@ private def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := 
     goals.filterM (fun g => return ! (← succeeds g.rfl))
   return (expr, goals)
 
+/-- `apply` all registered `mono` extensions of the given `side` to the type `t`. Find the one that
+creates the fewest goals, and return the resulting inhabitant of `t` and a list of any goals in
+that expression.
+
+If a proof of `t` that creates no goals is found, that proof is immediately used.
+
+If multiple mono extensions yield a minimal (nonzero) number of subgoals, then the behavior is
+guided by `failIfAmbiguousMatch`. If `true`, we fail with an error message. If `false`, we choose
+the first one that attains the minimum.
+-/
+private def applyMonos (t : Expr) (side : Side) (failIfAmbiguousMatch : Bool) :
+    MetaM (Expr × List MVarId) := do
+  let monos ← getMatchingMonos t side
+  trace[Tactic.mono] "matched:\n{monos.map (·.name) |>.toList}"
+  if monos.isEmpty then throwError "no monos apply"
+  let mut results : Array (Meta.SavedState × Expr × List MVarId) := #[]
+  let s ← saveState
+  for m in monos do
+    match ← optional (applyMono t m) with
+    | some (e, []) => return (e, []) -- Finish immediately if we find one that proves `t`
+    | some (e, l)  => do results := results.push (← saveState, e, l)
+    | none         => pure ()
+    s.restore
+  trace[Tactic.mono] "got potential proof terms with the following subgoals:\n{results.map (·.2)}"
+  let bestMatches := results.argmins (·.2.2.length)
+  let some (s, e, l) := bestMatches[0]? | throwError "no monos apply"
+  if bestMatches.size == 1 || ! failIfAmbiguousMatch then
+    s.restore
+    return (e, l)
+  else
+    let (bestMatchTypes : MessageData) ← do
+      let a ← bestMatches.mapM fun (s,_,l) => do
+        s.restore; l.mapM fun g => do addMessageContextFull (← g.getType)
+      pure <| toMessageList (a.map toMessageData)
+    throwError m!"Found multiple good matches which each produced the same number of subgoals. "
+      ++ m!"Write `mono with ...` and include the types of one or more of the subgoals in one of "
+      ++ m!"the following lists to encourage `mono` to use that list.\n{bestMatchTypes}"
+
 
 namespace Mathlib.Tactic.Monotonicity
 
