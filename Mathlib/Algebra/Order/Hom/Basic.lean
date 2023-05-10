@@ -9,8 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 
-import Mathlib.Tactic.Positivity
-import Mathlib.Data.FunLike.Basic
+import Mathlib.Algebra.GroupPower.Order
 
 /-!
 # Algebraic order homomorphism classes
