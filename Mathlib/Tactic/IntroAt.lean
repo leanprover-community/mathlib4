@@ -48,7 +48,8 @@ def Lean.MVarId.introAt (mvarId : MVarId) (fvarId : FVarId) (name : Name) :
 namespace Mathlib
 
 /-- The `intro ... at ...` tactic is for introducing additional local hypotheses associated
-to a given local hypothesis. The primary use is to lift `let` bindings.
+to a given local hypothesis. The primary use is to lift `let`s into the local context, and
+it can be thought of as being a `cases` tactic for `let`s.
 
 For example, if `h : let x := 1; x = x`, then `intro x at h` introduces `x : Nat := 1` and changes
 `h` to `h : x = x`.
