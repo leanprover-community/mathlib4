@@ -11,7 +11,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.Tactic.ApplyFun
-
+set_option autoImplicit false
 /-!
 # Cover-preserving functors between sites.
 
@@ -71,23 +71,21 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.pushforward_functor G` is a covering sieve in `D`.
 -/
-@[nolint has_nonempty_instance]
+-- porting note: removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
-  cover_preserve : ∀ {U : C} {S : Sieve U} (hS : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
+  cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
 
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
-  ⟨fun U S hS => by simpa using hS⟩
+  ⟨fun hS => by simpa using hS⟩
 #align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
-
-variable (J) (K)
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
     CoverPreserving J L (F ⋙ G) :=
-  ⟨fun U S hS => by
-    rw [sieve.functor_pushforward_comp]
+  ⟨fun hS => by
+    rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 #align category_theory.cover_preserving.comp CategoryTheory.CoverPreserving.comp
 
@@ -97,12 +95,12 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functor_pushforward` used.
 -/
-@[nolint has_nonempty_instance]
+-- porting note: this doesn't work yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   Compatible :
     ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
-      (h : x.Compatible) {Y₁ Y₂} {X} (f₁ : X ⟶ G.obj Y₁) (f₂ : X ⟶ G.obj Y₂) {g₁ : Y₁ ⟶ Z}
-      {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (eq : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
+      (_ : x.Compatible) {Y₁ Y₂} {X} (f₁ : X ⟶ G.obj Y₁) (f₂ : X ⟶ G.obj Y₂) {g₁ : Y₁ ⟶ Z}
+      {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
 
@@ -110,31 +108,33 @@ variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfT
 
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
-include h hG
+-- porting note: commenting out `include`
+-- include h hG
 
 /-- `compatible_preserving` functors indeed preserve compatible families. -/
 theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
     (x.functorPushforward G).Compatible := by
   rintro Z₁ Z₂ W g₁ g₂ f₁' f₂' H₁ H₂ eq
-  unfold family_of_elements.functor_pushforward
-  rcases get_functor_pushforward_structure H₁ with ⟨X₁, f₁, h₁, hf₁, rfl⟩
-  rcases get_functor_pushforward_structure H₂ with ⟨X₂, f₂, h₂, hf₂, rfl⟩
+  unfold FamilyOfElements.functorPushforward
+  rcases getFunctorPushforwardStructure H₁ with ⟨X₁, f₁, h₁, hf₁, rfl⟩
+  rcases getFunctorPushforwardStructure H₂ with ⟨X₂, f₂, h₂, hf₂, rfl⟩
   suffices : ℱ.val.map (g₁ ≫ h₁).op (x f₁ hf₁) = ℱ.val.map (g₂ ≫ h₂).op (x f₂ hf₂)
   simpa using this
-  apply hG.compatible ℱ h _ _ hf₁ hf₂
-  simpa using Eq
+  apply hG.Compatible ℱ h _ _ hf₁ hf₂
+  simpa using eq
 #align category_theory.presieve.family_of_elements.compatible.functor_pushforward CategoryTheory.Presieve.FamilyOfElements.Compatible.functorPushforward
 
 @[simp]
 theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
     x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf := by
-  unfold family_of_elements.functor_pushforward
-  rcases e₁ : get_functor_pushforward_structure (image_mem_functor_pushforward G T hf) with
+  unfold FamilyOfElements.functorPushforward
+  rcases e₁ : getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
-  simpa using hG.compatible ℱ h f' (𝟙 _) hg hf (by simp [Eq])
+  simpa using hG.Compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
 #align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
 
-omit h hG
+-- porting note: commenting out `omit`
+-- omit h hG
 
 open Limits.WalkingCospan
 
@@ -143,42 +143,42 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ e
   -- First, `f₁` and `f₂` form a cone over `cospan g₁ g₂ ⋙ u`.
-  let c : cone (cospan g₁ g₂ ⋙ G) :=
-    (cones.postcompose (diagram_iso_cospan (cospan g₁ g₂ ⋙ G)).inv).obj (pullback_cone.mk f₁ f₂ e)
+  let c : Cone (cospan g₁ g₂ ⋙ G) :=
+    (Cones.postcompose (diagramIsoCospan (cospan g₁ g₂ ⋙ G)).inv).obj (PullbackCone.mk f₁ f₂ e)
   /-
     This can then be viewed as a cospan of structured arrows, and we may obtain an arbitrary cone
     over it since `structured_arrow W u` is cofiltered.
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
-  let c' := is_cofiltered.cone (structured_arrow_cone.to_diagram c ⋙ structured_arrow.pre _ _ _)
-  have eq₁ : f₁ = (c'.X.hom ≫ G.map (c'.π.app left).right) ≫ eq_to_hom (by simp) := by
+  let c' := IsCofiltered.cone (StructuredArrowCone.toDiagram c ⋙ StructuredArrow.pre _ _ _)
+  have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
     dsimp
     simp
-  have eq₂ : f₂ = (c'.X.hom ≫ G.map (c'.π.app right).right) ≫ eq_to_hom (by simp) := by
+  have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app right).w]
     dsimp
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
-  simp only [op_comp, functor.map_comp, types_comp_apply, eq_to_hom_op, eq_to_hom_map]
+  simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
   congr 1
   /-
     Since everything now falls in the image of `u`,
     the result follows from the compatibility of `x` in the image of `u`.
     -/
-  injection c'.π.naturality walking_cospan.hom.inl with _ e₁
-  injection c'.π.naturality walking_cospan.hom.inr with _ e₂
+  injection c'.π.naturality WalkingCospan.Hom.inl with _ e₁
+  injection c'.π.naturality WalkingCospan.Hom.inr with _ e₂
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 #align category_theory.compatible_preserving_of_flat CategoryTheory.compatiblePreservingOfFlat
 
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F]
-    (hF : ∀ {c : C} {d : D} (f : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
+    (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
-  apply (ℱ.1.mapIso e.op).toEquiv.Injective
-  simp only [iso.op_hom, iso.to_equiv_fun, ℱ.1.mapIso_hom, ← functor_to_types.map_comp_apply]
+  apply (ℱ.1.mapIso e.op).toEquiv.injective
+  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← FunctorToTypes.map_comp_apply]
   simpa using
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
       (F.map_injective <| by simpa using he)
@@ -192,22 +192,22 @@ This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 theorem pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePreserving.{v₃} K G)
     (hG₂ : CoverPreserving J K G) (ℱ : Sheaf K A) : Presheaf.IsSheaf J (G.op ⋙ ℱ.val) := by
   intro X U S hS x hx
-  change family_of_elements (G.op ⋙ ℱ.val ⋙ coyoneda.obj (op X)) _ at x
+  change FamilyOfElements (G.op ⋙ ℱ.val ⋙ coyoneda.obj (op X)) _ at x
   let H := ℱ.2 X _ (hG₂.cover_preserve hS)
-  let hx' := hx.functor_pushforward hG₁ (sheaf_over ℱ X)
+  let hx' := hx.functorPushforward hG₁ (sheafOver ℱ X)
   constructor; swap
-  · apply H.amalgamate (x.functor_pushforward G)
+  · apply H.amalgamate (x.functorPushforward G)
     exact hx'
   constructor
   · intro V f hf
-    convert H.is_amalgamation hx' (G.map f) (image_mem_functor_pushforward G S hf)
-    rw [hG₁.apply_map (sheaf_over ℱ X) hx]
+    convert H.isAmalgamation hx' (G.map f) (image_mem_functorPushforward G S hf)
+    rw [hG₁.apply_map (sheafOver ℱ X) hx]
   · intro y hy
     refine'
-      H.is_separated_for _ y _ _ (H.is_amalgamation (hx.functor_pushforward hG₁ (sheaf_over ℱ X)))
+      H.isSeparatedFor _ y _ _ (H.isAmalgamation (hx.functorPushforward hG₁ (sheafOver ℱ X)))
     rintro V f ⟨Z, f', g', h, rfl⟩
-    erw [family_of_elements.comp_of_compatible (S.functor_pushforward G) hx'
-        (image_mem_functor_pushforward G S h) g']
+    erw [FamilyOfElements.comp_of_compatible (S.functorPushforward G) hx'
+        (image_mem_functorPushforward G S h) g']
     dsimp
     simp [hG₁.apply_map (sheaf_over ℱ X) hx h, ← hy f' h]
 #align category_theory.pullback_is_sheaf_of_cover_preserving CategoryTheory.pullback_isSheaf_of_coverPreserving
@@ -227,14 +227,13 @@ if `G` is cover-preserving and compatible-preserving.
 def Sites.pullback {G : C ⥤ D} (hG₁ : CompatiblePreserving K G) (hG₂ : CoverPreserving J K G) :
     Sheaf K A ⥤ Sheaf J A where
   obj ℱ := pullbackSheaf hG₁ hG₂ ℱ
-  map _ _ f := ⟨((whiskeringLeft _ _ _).obj G.op).map f.val⟩
-  map_id' ℱ := by
+  map f := ⟨((whiskeringLeft _ _ _).obj G.op).map f.val⟩
+  map_id ℱ := by
     ext1
-    apply ((whiskering_left _ _ _).obj G.op).map_id
-  map_comp' _ _ _ f g := by
+    apply ((whiskeringLeft _ _ _).obj G.op).map_id
+  map_comp f g := by
     ext1
-    apply ((whiskering_left _ _ _).obj G.op).map_comp
+    apply ((whiskeringLeft _ _ _).obj G.op).map_comp
 #align category_theory.sites.pullback CategoryTheory.Sites.pullback
 
 end CategoryTheory
-
