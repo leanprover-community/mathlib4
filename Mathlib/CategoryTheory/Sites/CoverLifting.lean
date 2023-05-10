@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Sheaf
-import Mathbin.CategoryTheory.Limits.KanExtension
-import Mathbin.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 
 /-!
 # Cover-lifting functors between sites.
@@ -154,8 +154,7 @@ variable {x} {S}
 include hu hS hx
 
 /-- Given a `G(Y) ⊆ U`, we can find a unique section `X ⟶ ℱ(Y)` that agrees with `x`. -/
-def getSection (Y : StructuredArrow (op U) G.op) : X ⟶ ℱ.val.obj Y.right :=
-  by
+def getSection (Y : StructuredArrow (op U) G.op) : X ⟶ ℱ.val.obj Y.right := by
   let hom_sh := whisker_right ((Ran.adjunction A G.op).counit.app ℱ.val) (coyoneda.obj (op X))
   have S' := K.pullback_stable Y.hom.unop hS
   have hs' := ((hx.pullback Y.3.unop).functorPullback G).compPresheafMap hom_sh
@@ -168,8 +167,7 @@ theorem getSection_isAmalgamation (Y : StructuredArrow (op U) G.op) :
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section_is_amalgamation CategoryTheory.RanIsSheafOfCoverLifting.getSection_isAmalgamation
 
 theorem getSection_is_unique (Y : StructuredArrow (op U) G.op) {y}
-    (H : (pulledbackFamily ℱ S x Y).IsAmalgamation y) : y = getSection hu ℱ hS hx Y :=
-  by
+    (H : (pulledbackFamily ℱ S x Y).IsAmalgamation y) : y = getSection hu ℱ hS hx Y := by
   apply is_sheaf_for.is_separated_for _ (pulledback_family ℱ S x Y)
   · exact H
   · apply get_section_is_amalgamation
@@ -178,12 +176,10 @@ theorem getSection_is_unique (Y : StructuredArrow (op U) G.op) {y}
 
 @[simp]
 theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
-    getSection hu ℱ hS hx Y ≫ ℱ.val.map f.right = getSection hu ℱ hS hx Z :=
-  by
+    getSection hu ℱ hS hx Y ≫ ℱ.val.map f.right = getSection hu ℱ hS hx Z := by
   apply get_section_is_unique
   intro V' fV' hV'
-  have eq : Z.hom = Y.hom ≫ (G.map f.right.unop).op :=
-    by
+  have eq : Z.hom = Y.hom ≫ (G.map f.right.unop).op := by
     convert f.w
     erw [category.id_comp]
   rw [Eq] at hV'
@@ -223,8 +219,7 @@ in order to be applied in the following lemmas easier.
 theorem helper {V} (f : V ⟶ U) (y : X ⟶ ((ran G.op).obj ℱ.val).obj (op V)) (W)
     (H : ∀ {V'} {fV : G.obj V' ⟶ V} (hV), y ≫ ((ran G.op).obj ℱ.val).map fV.op = x (fV ≫ f) hV) :
     y ≫ limit.π (Ran.diagram G.op ℱ.val (op V)) W =
-      (gluedLimitCone hu ℱ hS hx).π.app ((StructuredArrow.map f.op).obj W) :=
-  by
+      (gluedLimitCone hu ℱ hS hx).π.app ((StructuredArrow.map f.op).obj W) := by
   dsimp only [glued_limit_cone_π_app]
   apply get_section_is_unique hu ℱ hS hx ((structured_arrow.map f.op).obj W)
   intro V' fV' hV'
@@ -232,8 +227,7 @@ theorem helper {V} (f : V ⟶ U) (y : X ⟶ ((ran G.op).obj ℱ.val).obj (op V))
   erw [adjunction.adjunction_of_equiv_right_counit_app]
   have :
     y ≫ ((Ran G.op).obj ℱ.val).map (G.map fV' ≫ W.hom.unop).op =
-      x (G.map fV' ≫ W.hom.unop ≫ f) (by simpa only using hV') :=
-    by
+      x (G.map fV' ≫ W.hom.unop ≫ f) (by simpa only using hV') := by
     convert H (show S ((G.map fV' ≫ W.hom.unop) ≫ f) by simpa only [category.assoc] using hV') using
       2
     simp only [category.assoc]
@@ -249,8 +243,7 @@ theorem helper {V} (f : V ⟶ U) (y : X ⟶ ((ran G.op).obj ℱ.val).obj (op V))
 #align category_theory.Ran_is_sheaf_of_cover_lifting.helper CategoryTheory.RanIsSheafOfCoverLifting.helper
 
 /-- Verify that the `glued_section` is an amalgamation of `x`. -/
-theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection hu ℱ hS hx) :=
-  by
+theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection hu ℱ hS hx) := by
   intro V fV hV
   ext W
   simp only [functor.comp_map, limit.lift_pre, coyoneda_obj_map, Ran_obj_map, glued_section]
@@ -263,8 +256,7 @@ theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection hu ℱ hS h
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_section_is_amalgamation CategoryTheory.RanIsSheafOfCoverLifting.gluedSection_isAmalgamation
 
 /-- Verify that the amalgamation is indeed unique. -/
-theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection hu ℱ hS hx :=
-  by
+theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection hu ℱ hS hx := by
   unfold glued_section limit.lift
   ext W
   erw [limit.lift_π]
@@ -283,8 +275,7 @@ This result is basically https://stacks.math.columbia.edu/tag/00XK,
 but without the condition that `C` or `D` has pullbacks.
 -/
 theorem ran_isSheaf_of_coverLifting {G : C ⥤ D} (hG : CoverLifting J K G) (ℱ : Sheaf J A) :
-    Presheaf.IsSheaf K ((ran G.op).obj ℱ.val) :=
-  by
+    Presheaf.IsSheaf K ((ran G.op).obj ℱ.val) := by
   intro X U S hS x hx
   constructor; swap
   · apply Ran_is_sheaf_of_cover_lifting.glued_section hG ℱ hS hx
@@ -296,8 +287,7 @@ theorem ran_isSheaf_of_coverLifting {G : C ⥤ D} (hG : CoverLifting J K G) (ℱ
 variable (A)
 
 /-- A cover-lifting functor induces a morphism of sites in the same direction as the functor. -/
-def Sites.copullback {G : C ⥤ D} (hG : CoverLifting J K G) : Sheaf J A ⥤ Sheaf K A
-    where
+def Sites.copullback {G : C ⥤ D} (hG : CoverLifting J K G) : Sheaf J A ⥤ Sheaf K A where
   obj ℱ := ⟨(ran G.op).obj ℱ.val, ran_isSheaf_of_coverLifting hG ℱ⟩
   map _ _ f := ⟨(ran G.op).map f.val⟩
   map_id' ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
@@ -311,8 +301,7 @@ the pullback and copullback along `G` are adjoint to each other
 @[simps unit_app_val counit_app_val]
 noncomputable def Sites.pullbackCopullbackAdjunction {G : C ⥤ D} (Hp : CoverPreserving J K G)
     (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) :
-    Sites.pullback A Hc Hp ⊣ Sites.copullback A Hl
-    where
+    Sites.pullback A Hc Hp ⊣ Sites.copullback A Hl where
   homEquiv X Y :=
     { toFun := fun f => ⟨(Ran.adjunction A G.op).homEquiv X.val Y.val f.val⟩
       invFun := fun f => ⟨((Ran.adjunction A G.op).homEquiv X.val Y.val).symm f.val⟩
