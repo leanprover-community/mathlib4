@@ -11,7 +11,7 @@ Authors: Jujian Zhang
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.LinearAlgebra.LinearPmap
+import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax
 
 /-!
