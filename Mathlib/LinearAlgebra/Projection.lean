@@ -78,7 +78,7 @@ open LinearMap
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   LinearEquiv.symm <|
     LinearEquiv.ofBijective (p.mkQ.comp q.subtype)
-      ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.Disjoint], by
+      ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.disjoint], by
         rw [← range_eq_top, range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
 #align submodule.quotient_equiv_of_is_compl Submodule.quotientEquivOfIsCompl
 
@@ -138,7 +138,7 @@ theorem prodEquivOfIsCompl_symm_apply_fst_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).1 = 0 ↔ x ∈ q := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
   rw [coe_prodEquivOfIsCompl', Submodule.add_mem_iff_left _ (Submodule.coe_mem _),
-    mem_right_iff_eq_zero_of_disjoint h.Disjoint]
+    mem_right_iff_eq_zero_of_disjoint h.disjoint]
 #align submodule.prod_equiv_of_is_compl_symm_apply_fst_eq_zero Submodule.prodEquivOfIsCompl_symm_apply_fst_eq_zero
 
 @[simp]
@@ -146,7 +146,7 @@ theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).2 = 0 ↔ x ∈ p := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
   rw [coe_prodEquivOfIsCompl', Submodule.add_mem_iff_right _ (Submodule.coe_mem _),
-    mem_left_iff_eq_zero_of_disjoint h.Disjoint]
+    mem_left_iff_eq_zero_of_disjoint h.disjoint]
 #align submodule.prod_equiv_of_is_compl_symm_apply_snd_eq_zero Submodule.prodEquivOfIsCompl_symm_apply_snd_eq_zero
 
 @[simp]

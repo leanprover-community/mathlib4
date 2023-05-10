@@ -82,7 +82,7 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
 #align balanced_core_empty balancedCore_empty
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
-  simp_rw [balancedCore, mem_unionₛ, mem_setOf_eq, exists_prop, and_assoc]
+  simp_rw [balancedCore, mem_unionₛ, mem_setOf_eq, and_assoc]
 #align mem_balanced_core_iff mem_balancedCore_iff
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
@@ -244,9 +244,8 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
 
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
-  obtain ⟨r, V, hr, hV, hrVU⟩ :
-    ∃ (r : ℝ)(V : Set E), 0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U :=
-    by
+  obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ)(V : Set E),
+      0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U := by
     have h : Filter.Tendsto (fun x : 𝕜 × E => x.fst • x.snd) (𝓝 (0, 0)) (𝓝 0) :=
       continuous_smul.tendsto' (0, 0) _ (smul_zero _)
     simpa only [← Prod.exists', ← Prod.forall', ← and_imp, ← and_assoc, exists_prop] using

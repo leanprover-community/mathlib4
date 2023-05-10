@@ -1222,7 +1222,6 @@ theorem Function.LeftInverse.closed_range [T2Space α] {f : α → β} {g : β �
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
-
 #align function.left_inverse.closed_range Function.LeftInverse.closed_range
 
 theorem Function.LeftInverse.closedEmbedding [T2Space α] {f : α → β} {g : β → α}
@@ -1928,7 +1927,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace α ↔ Totall
   rw [connectedComponent_eq_interᵢ_clopen, mem_interᵢ]
   rintro ⟨w : Set α, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp (wᶜ) w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.Codisjoint.top_le
+  exact hyp (wᶜ) w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
     disjoint_compl_left
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 

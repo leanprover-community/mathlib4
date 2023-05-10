@@ -262,7 +262,6 @@ theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y �
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
       solve_by_elim [le_trans _ hy'])
-
 #align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.
@@ -398,7 +397,6 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidable_lt : DecidableRel (. < . : α → α → Prop) :=
     @decidableLT_of_decidableLE _ _ decidable_le
-
 #align complete_linear_order CompleteLinearOrder
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
@@ -927,7 +925,6 @@ theorem le_infᵢ_iff : a ≤ infᵢ f ↔ ∀ i, a ≤ f i :=
 
 theorem supᵢ₂_le_iff {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [supᵢ_le_iff]
-
 #align supr₂_le_iff supᵢ₂_le_iff
 
 theorem le_infᵢ₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j := by
@@ -1684,7 +1681,6 @@ theorem sup_supᵢ_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ 
     (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ x ∈ {0} ∪ range Nat.succ, u x := by
       { rw [supᵢ_union, supᵢ_singleton, supᵢ_range] }
     _ = ⨆ i, u i := by rw [Nat.zero_union_range_succ, supᵢ_univ]
-
 #align sup_supr_nat_succ sup_supᵢ_nat_succ
 
 theorem inf_infᵢ_nat_succ (u : ℕ → α) : (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ i, u i :=

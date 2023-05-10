@@ -1371,7 +1371,7 @@ theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
 theorem zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
   zero_smul_filter_nonpos.antisymm <|
     le_map_iff.2 fun s hs => by
-      simp_rw [Set.image_eta, zero_smul, (hg.nonempty_of_mem hs).image_const]
+      simp_rw [zero_smul, (hg.nonempty_of_mem hs).image_const]
       exact zero_mem_zero
 #align filter.zero_smul_filter Filter.zero_smul_filter
 

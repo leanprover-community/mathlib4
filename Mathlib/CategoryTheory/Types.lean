@@ -55,6 +55,13 @@ theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 #align category_theory.types_hom CategoryTheory.types_hom
 
+-- porting note: this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- because of its "if all else fails, apply all `ext` lemmas" policy,
+-- which apparently we want to move away from.
+@[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
+  funext x
+  exact h x
+
 theorem types_id (X : Type u) : 𝟙 X = id :=
   rfl
 #align category_theory.types_id CategoryTheory.types_id
@@ -343,6 +350,8 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
+
+pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=

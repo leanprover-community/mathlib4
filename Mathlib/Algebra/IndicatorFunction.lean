@@ -306,9 +306,8 @@ theorem mulIndicator_one_preimage (s : Set M) :
 
 @[to_additive]
 theorem mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [Decidable (a ∈ s)]
-    [Decidable ((1 : M) ∈ s)] :
-    (U.mulIndicator fun _ => a) ⁻¹' s = (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ :=
-  by
+    [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
+      (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, preimage_one, preimage_const]
   split_ifs <;> simp [← compl_eq_univ_diff]
 #align set.mul_indicator_const_preimage_eq_union Set.mulIndicator_const_preimage_eq_union
@@ -559,8 +558,7 @@ theorem indicator_compl {G} [AddGroup G] (s : Set α) (f : α → G) :
 @[to_additive indicator_diff']
 theorem mulIndicator_diff (h : s ⊆ t) (f : α → G) :
     mulIndicator (t \ s) f = mulIndicator t f * (mulIndicator s f)⁻¹ :=
-  eq_mul_inv_of_mul_eq <|
-    by
+  eq_mul_inv_of_mul_eq <| by
     rw [Pi.mul_def, ← mulIndicator_union_of_disjoint, diff_union_self,
       union_eq_self_of_subset_right h]
     exact disjoint_sdiff_self_left

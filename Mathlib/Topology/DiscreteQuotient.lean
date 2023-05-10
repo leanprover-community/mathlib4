@@ -203,7 +203,7 @@ theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.co
 
 end Comap
 
-section OfLe
+section OfLE
 
 variable {A B C : DiscreteQuotient X}
 
@@ -222,8 +222,8 @@ theorem ofLE_refl_apply (a : A) : ofLE (le_refl A) a = a := by simp
 #align discrete_quotient.of_le_refl_apply DiscreteQuotient.ofLE_refl_apply
 
 @[simp]
-theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) : ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x :=
-  by
+theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) :
+    ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x := by
   rcases x with ⟨⟩
   rfl
 #align discrete_quotient.of_le_of_le DiscreteQuotient.ofLE_ofLE
@@ -247,7 +247,7 @@ theorem ofLE_comp_proj (h : A ≤ B) : ofLE h ∘ A.proj = B.proj :=
   funext <| ofLE_proj _
 #align discrete_quotient.of_le_comp_proj DiscreteQuotient.ofLE_comp_proj
 
-end OfLe
+end OfLE
 
 /-- When `X` is a locally connected space, there is an `OrderBot` instance on
 `DiscreteQuotient X`. The bottom element is given by `connectedComponentSetoid X`

@@ -51,7 +51,6 @@ theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp 
     rfl
   unfold countp
   rw [this, add_comm, List.countp_go_eq_add]
-
 #align list.countp_cons_of_pos List.countp_cons_of_pos
 
 @[simp]
@@ -327,7 +326,6 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countp_map, (· ∘ ·), hf.beq_eq]
-
 #align list.count_map_of_injective List.count_map_of_injective
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :

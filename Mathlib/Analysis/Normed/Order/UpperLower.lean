@@ -133,16 +133,7 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   replace hz := (norm_le_pi_norm _ i).trans hz
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
-  -- Porting note: rest of proof was just `linarith`. Probably mathlib4#2714
-  have hxz : x i - z i ≤ -2 / 4 * δ := by
-    have h3 : -2 / 4 * δ - δ / 4 = -(3 / 4 * δ) := by ring
-    linarith
-  have hyz : y i - z i ≤ -δ / 4 := by
-    have t := add_le_add hxy.2 hxz
-    have h1 : δ / 4 + -2 / 4 * δ = -δ / 4 := by ring
-    linarith
-  have hδ4 : -δ / 4 < 0 := div_neg_of_neg_of_pos (Left.neg_neg_iff.mpr hδ) zero_lt_four
-  exact sub_neg.mp (lt_of_le_of_lt hyz hδ4)
+  linarith
 #align is_upper_set.exists_subset_ball IsUpperSet.exists_subset_ball
 
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
@@ -160,16 +151,7 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
   replace hz := (norm_le_pi_norm _ i).trans hz
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
-  -- Porting note: rest of proof was just `linarith`. Probably mathlib4#2714
-  have hzx : z i - x i ≤ -2 / 4 * δ := by
-    have h3 : -2 / 4 * δ - δ / 4 = -(3 / 4 * δ) := by ring
-    linarith
-  have hzy : z i - y i ≤ -δ / 4 := by
-    have t := add_le_add hzx hxy.1
-    have h1 : -2 / 4 * δ + δ / 4 = -δ / 4 := by ring
-    linarith
-  have hδ4 : -δ / 4 < 0 := div_neg_of_neg_of_pos (Left.neg_neg_iff.mpr hδ) zero_lt_four
-  exact sub_neg.mp (lt_of_le_of_lt hzy hδ4)
+  linarith
 #align is_lower_set.exists_subset_ball IsLowerSet.exists_subset_ball
 
 end Fintype

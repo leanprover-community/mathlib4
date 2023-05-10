@@ -1821,8 +1821,7 @@ variable [DecidableEq β] [DecidableEq γ] [SMul αᵐᵒᵖ β] [SMul β γ] [S
 -- TODO: replace hypothesis and conclusion with a typeclass
 @[to_additive]
 theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Finset γ)
-    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t :=
-  by
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
   ext
   simp [mem_smul, mem_smul_finset, h]
 #align finset.op_smul_finset_smul_eq_smul_smul_finset Finset.op_smul_finset_smul_eq_smul_smul_finset
