@@ -70,3 +70,11 @@ example (h : (let x := 1; x) = y) : True := by
   lift_lets at h
   guard_hyp h :ₛ let x := 1; x = y
   trivial
+
+example (h : (let x := 1; x) = y) : True := by
+  revert h
+  lift_lets
+  intro x h
+  guard_hyp x : Nat := 1
+  guard_hyp h :ₛ x = y
+  trivial
