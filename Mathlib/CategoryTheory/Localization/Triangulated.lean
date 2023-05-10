@@ -181,6 +181,65 @@ lemma isTriangulated_functor :
 lemma essSurj_mapArrow : EssSurj L.mapArrow :=
   MorphismProperty.HasLeftCalculusOfFractions.essSurj_mapArrow L W
 
+lemma isTriangulated_of_exists_lifting_composable_morphisms [Pretriangulated D]
+    [L.IsTriangulated] [IsTriangulated C]
+    (hF : ∀ ⦃X₁ X₂ X₃ : D⦄ (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃),
+      ∃ (Y₁ Y₂ Y₃ : C) (f' : Y₁ ⟶ Y₂) (g' : Y₂ ⟶ Y₃)
+        (e₁ : L.obj Y₁ ≅ X₁) (e₂ : L.obj Y₂ ≅ X₂) (e₃ : L.obj Y₃ ≅ X₃),
+        L.map f' ≫ e₂.hom = e₁.hom ≫ f ∧ L.map g' ≫ e₃.hom = e₂.hom ≫ g) :
+    IsTriangulated D := by
+  apply IsTriangulated.mk'
+  intro X₁ X₂ X₃ f g
+  obtain ⟨Y₁, Y₂, Y₃, f', g', e₁, e₂, e₃, comm₁, comm₂⟩ := hF f g
+  obtain ⟨Z₁₂, v₁₂, w₁₂, h₁₂⟩ := Pretriangulated.distinguished_cocone_triangle f'
+  obtain ⟨Z₂₃, v₂₃, w₂₃, h₂₃⟩ := Pretriangulated.distinguished_cocone_triangle g'
+  obtain ⟨Z₁₃, v₁₃, w₁₃, h₁₃⟩ := Pretriangulated.distinguished_cocone_triangle (f' ≫ g')
+  let H := Triangulated.someOctahedron rfl h₁₂ h₂₃ h₁₃
+  let T₁₃' := Triangle.mk (L.map f' ≫ L.map g') (L.map v₁₃) (L.map w₁₃ ≫ (L.commShiftIso (1 : ℤ)).hom.app Y₁)
+  have h₁₃' : T₁₃' ∈ distTriang D := isomorphic_distinguished _ (L.map_distinguished _ h₁₃) _
+      (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp))
+  refine' ⟨L.obj Y₁, L.obj Y₂, L.obj Y₃, L.obj Z₁₂, L.obj Z₂₃, L.obj Z₁₃, L.map f', L.map g',
+    e₁.symm, e₂.symm, e₃.symm, _, _,
+      _, _, L.map_distinguished _ h₁₂,
+      _, _, L.map_distinguished _ h₂₃,
+      _, _, h₁₃', ⟨_⟩⟩
+  . dsimp
+    simp only [← cancel_epi e₁.hom, ← reassoc_of% comm₁, Iso.hom_inv_id,
+      Iso.hom_inv_id_assoc, comp_id]
+  . dsimp
+    simp only [← cancel_epi e₂.hom, ← reassoc_of% comm₂, Iso.hom_inv_id,
+      Iso.hom_inv_id_assoc, comp_id]
+  . exact
+    { m₁ := L.map H.m₁
+      m₃ := L.map H.m₃
+      comm₁ := by simpa using L.congr_map H.comm₁
+      comm₂ := by simpa using L.congr_map H.comm₂ =≫ (L.commShiftIso 1).hom.app Y₁
+      comm₃ := by simpa using L.congr_map H.comm₃
+      comm₄ := by simpa using L.congr_map H.comm₄ =≫ (L.commShiftIso 1).hom.app Y₂
+      mem := isomorphic_distinguished _ (L.map_distinguished _ H.mem) _
+        (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+          (by simp) (by simp) (by simp)) }
+
+lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
+    IsTriangulated D := by
+  have := Localization.essSurj L W
+  apply isTriangulated_of_exists_lifting_composable_morphisms L
+  intros X₁ X₂ X₃ f g
+  let Y₂ := L.objPreimage X₂
+  obtain ⟨Y₁, f', s, hs, hf'⟩ :=
+    MorphismProperty.HasRightCalculusOfFractions.fac L W
+      ((L.objObjPreimageIso X₁).hom ≫ f ≫ (L.objObjPreimageIso X₂).inv)
+  obtain ⟨Y₃, g', s', hs', hg'⟩ :=
+    MorphismProperty.HasLeftCalculusOfFractions.fac L W
+      ((L.objObjPreimageIso X₂).hom ≫ g ≫ (L.objObjPreimageIso X₃).inv)
+  refine' ⟨Y₁, Y₂, Y₃, f', g',
+    (Localization.isoOfHom L W s hs) ≪≫ L.objObjPreimageIso X₁, L.objObjPreimageIso X₂,
+    (Localization.isoOfHom L W s' hs').symm ≪≫ L.objObjPreimageIso X₃, _, _⟩
+  . simp only [← cancel_epi (Localization.isoOfHom L W s hs).inv, Iso.trans_hom, assoc,
+      Iso.inv_hom_id_assoc, ← reassoc_of% hf', Iso.inv_hom_id, comp_id]
+  . simp only [← cancel_mono (Localization.isoOfHom L W s' hs').inv, Iso.trans_hom, Iso.symm_hom,
+      ← reassoc_of% hg', Iso.inv_hom_id, comp_id]
+
 end
 
 /-
@@ -269,6 +328,8 @@ noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 noncomputable instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
 
 instance : EssSurj W.Q.mapArrow := essSurj_mapArrow W.Q W
+
+noncomputable instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
 
 end
 

@@ -1,7 +1,4 @@
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
@@ -44,8 +41,6 @@ end HomotopyCategory
 
 def DerivedCategory := (HomotopyCategory.qis C).Localization
 
--- TODO: prevent projections "_as" for @[simps] in `DerivedCategory C`
-
 namespace DerivedCategory
 
 instance : Category (DerivedCategory C) := by
@@ -71,6 +66,11 @@ instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
 noncomputable instance : Pretriangulated (DerivedCategory C) := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
+
+noncomputable instance : IsTriangulated (DerivedCategory C) := by
+  dsimp only [DerivedCategory, HomotopyCategory.qis]
+  infer_instance
+
 
 variable {C}
 
@@ -236,3 +236,5 @@ def newExt (n : ℕ) (X Y : C) : Type (max u v) :=
   (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
 
 end CategoryTheory.Abelian
+
+-- TODO: prevent projections "_as" for @[simps] in `DerivedCategory C`

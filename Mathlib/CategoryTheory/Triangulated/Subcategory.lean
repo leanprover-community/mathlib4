@@ -100,8 +100,7 @@ structure Subcategory where
   set : Set C
   zero : (0 : C) ∈ set
   shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set
-  ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C)
-    (_ : T.obj₁ ∈ set) (_ : T.obj₃ ∈ set), T.obj₂ ∈ set
+  ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set
 
 namespace Subcategory
 
