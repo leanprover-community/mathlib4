@@ -19,11 +19,9 @@ This file provides a `norm_num` extention to prove that natural numbers are prim
 
 -/
 
-open Nat
+open Nat Qq Lean Meta
 
-namespace Tactic
-
-namespace NormNum
+namespace Mathlib.Meta.NormNum
 
 theorem is_prime_helper (n : ℕ) (h₁ : 1 < n) (h₂ : minFac n = n) : Nat.Prime n :=
   Nat.prime_def_minFac.2 ⟨h₁, h₂⟩
@@ -84,7 +82,6 @@ theorem minFacHelper_4 (n k : ℕ) (hd : n % k = 0) (h : MinFacHelper n k) :
   sorry
   -- rw [← Nat.dvd_iff_mod_eq_zero] at hd
   -- exact le_antisymm (minFac_le_of_dvd (Nat.bit1_lt h.1) hd) h.2
-#align tactic.norm_num.min_fac_helper_4 Tactic.NormNum.minFacHelper_4
 
 theorem minFacHelper_5 (n k k' : ℕ) (e : k * k = k') (hd : n < k')
     (h : MinFacHelper n k) : minFac n = n := by
@@ -109,7 +106,6 @@ unsafe def prove_non_prime (e : expr) (n d₁ : ℕ) : tactic expr := do
   guard (e' == e)
   let (c, p₂) ← prove_lt_nat c q(1) e₂
   return <| q(@Nat.not_prime_mul').mk_app [e₁, e₂, e, p, p₁, p₂]
-#align tactic.norm_num.prove_non_prime tactic.norm_num.prove_non_prime
 
 /-- Given `a`,`a1 := bit1 a`, `n1` the value of `a1`, `b` and `p : min_fac_helper a b`,
   returns `(c, ⊢ min_fac a1 = c)`. -/
@@ -141,7 +137,6 @@ unsafe def prove_min_fac_aux (a a1 : expr) (n1 : ℕ) :
               let e' := reflect k'
               let (ic, p₁) ← prove_succ ic b e'
               prove_min_fac_aux ic e' <| q(minFacHelper_3).mk_app [a, b, e', c, p₁, pc, p₀, p]
-#align tactic.norm_num.prove_min_fac_aux tactic.norm_num.prove_min_fac_aux
 
 /-- Given `a` a natural numeral, returns `(b, ⊢ min_fac a = b)`. -/
 unsafe def prove_min_fac (ic : instance_cache) (e : expr) : tactic (instance_cache × expr × expr) :=
@@ -255,7 +250,6 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
                         ,
                         q( factorsHelper_sn ) . mk_app [ en , ea , p₁ , p₂ ]
                     )
-#align tactic.norm_num.prove_factors_aux tactic.norm_num.prove_factors_aux
 
 /-- Evaluates the `prime` and `min_fac` functions. -/
 @[norm_num]
@@ -287,8 +281,22 @@ unsafe def eval_prime : expr → tactic (expr × expr)
         let (c, l, p) ← prove_factors_aux c e q(2) n 2
         pure (l, q(factorsHelper_end).mk_app [e, l, p])
   | _ => failed
-#align tactic.norm_num.eval_prime tactic.norm_num.eval_prime
 
-end NormNum
+theorem isNat_minFac : {a : ℕ} → {a' c : ℕ} →
+    IsNat a a' → Nat.minFac a' = c → IsNat a.minFac c
+  | _, _, _, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-end Tactic
+/-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
+@[norm_num Nat.minFac _] def evalMinFac :
+  NormNumExt where eval {u α} e := do
+  let .app f (n : Q(ℕ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(Nat.minFac)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨nn, pn⟩ ← deriveNat n sℕ
+  have pa : Q(IsNat $n $nn) := pn
+  have nc : Q(ℕ) := mkRawNatLit nn.natLit!.minFac
+  let r : Q(Nat.minFac $nn = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_minFac $pa $r) : Result q(Nat.minFac $n))
+
+
+end Mathlib.Meta.NormNum
