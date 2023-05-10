@@ -23,14 +23,16 @@ private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
     (f : Array Expr → Expr → MetaM Expr) : MetaM Expr := do
   match e with
   | .letE n t v b _ =>
-    -- Eliminate the let binding if there is already one of the same name and value.
-    let fvar? ← fvars.findM? (fun fvar => do
-      let decl ← fvar.fvarId!.getDecl
-      return decl.userName == n && decl.value? == some v)
-    if let some fvar' := fvar? then
-      (b.instantiate1 fvar').liftLetsAux fvars f
-    else
-      withLetDecl n t v fun fvar => (b.instantiate1 fvar).liftLetsAux (fvars.push fvar) f
+    t.liftLetsAux fvars fun fvars t' =>
+      v.liftLetsAux fvars fun fvars v' => do
+        -- Eliminate the let binding if there is already one of the same name and value.
+        let fvar? ← fvars.findM? (fun fvar => do
+          let decl ← fvar.fvarId!.getDecl
+          return decl.userName == n && decl.value? == some v')
+        if let some fvar' := fvar? then
+          (b.instantiate1 fvar').liftLetsAux fvars f
+        else
+          withLetDecl n t' v' fun fvar => (b.instantiate1 fvar).liftLetsAux (fvars.push fvar) f
   | .app x y =>
     x.liftLetsAux fvars fun fvars x' => y.liftLetsAux fvars fun fvars y' => f fvars (.app x' y')
   | .proj n idx s =>

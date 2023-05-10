@@ -13,6 +13,12 @@ example : (let x := 1; x) = (let y := 1; y) := by
   intro _x _y
   rfl
 
+example : (let x := (let y := 1; y + 1); x + 1) = 3 := by
+  lift_lets
+  guard_target =ₛ let y := 1; let x := y + 1; x + 1 = 3
+  intros _y _x
+  rfl
+
 example : (fun x => let a := x; let y := 1; a + y) 2 = 2 + 1 := by
   lift_lets
   guard_target =ₛ let y := 1; (fun x ↦ let a := x; a + y) 2 = 2 + 1
