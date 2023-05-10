@@ -227,7 +227,8 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
         dsimp
         apply congrArg
-        exact Fact.out (p := Function.Injective i) (⟨i m, ⟨_, rfl⟩⟩ : LinearMap.range i).2.choose_spec.symm }
+        exact Fact.out (p := Function.Injective i)
+          (⟨i m, ⟨_, rfl⟩⟩ : LinearMap.range i).2.choose_spec.symm }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.inhabited Module.Baer.ExtensionOf.inhabited
 
@@ -332,9 +333,8 @@ set_option linter.uppercaseLean3 false in
 
 set_option synthInstance.etaExperiment true in
 theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
-    (eq1 : r • y = r' • y) :
-    ExtensionOfMaxAdjoin.extendIdealTo i f h y r = ExtensionOfMaxAdjoin.extendIdealTo i f h y r' :=
-  by
+    (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
+    ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
   convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
@@ -401,8 +401,8 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
               (ExtensionOfMaxAdjoin.snd i a + ExtensionOfMaxAdjoin.snd i b) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, ExtensionOfMaxAdjoin.eqn, add_smul, Submodule.coe_add]
           ac_rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd (y := y) i f h (a + b) _ _ eq1, LinearPMap.map_add,
-          map_add]
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd (y := y) i f h (a + b) _ _ eq1,
+          LinearPMap.map_add, map_add]
         unfold ExtensionOfMaxAdjoin.extensionToFun
         abel
       map_smul' := fun r a => by
