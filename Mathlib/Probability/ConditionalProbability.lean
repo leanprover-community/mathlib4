@@ -8,7 +8,7 @@ Authors: Rishikesh Vaishnav
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Conditional Probability
@@ -106,8 +106,7 @@ theorem cond_univ [ProbabilityMeasure μ] : μ[|Set.univ] = μ := by
 #align probability_theory.cond_univ ProbabilityTheory.cond_univ
 
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
-theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) :=
-  by
+theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, measure.smul_apply, measure.restrict_apply' hms, Set.inter_comm]
   rfl
 #align probability_theory.cond_apply ProbabilityTheory.cond_apply
@@ -116,8 +115,7 @@ theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = �
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
 #align probability_theory.cond_inter_self ProbabilityTheory.cond_inter_self
 
-theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) :=
-  by
+theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
   refine' pos_iff_ne_zero.mpr (right_ne_zero_of_mul _)
   · exact (μ s)⁻¹
   convert hcst
@@ -132,8 +130,7 @@ theorem cond_pos_of_inter_ne_zero [FiniteMeasure μ] (hms : MeasurableSet s) (hc
 #align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 
 theorem cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞)
-    (hci : μ (s ∩ t) ≠ 0) : μ[|s][|t] = μ[|s ∩ t] :=
-  by
+    (hci : μ (s ∩ t) ≠ 0) : μ[|s][|t] = μ[|s ∩ t] := by
   have hcs : μ s ≠ 0 :=
     (μ.to_outer_measure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hci).ne'
   ext u
@@ -160,8 +157,7 @@ theorem cond_mul_eq_inter [FiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ s
 
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq [FiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ s ≠ 0)
-    (hcs' : μ (sᶜ) ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ (sᶜ) = μ t :=
-  by
+    (hcs' : μ (sᶜ) ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ (sᶜ) = μ t := by
   rw [cond_mul_eq_inter μ hms hcs, cond_mul_eq_inter μ hms.compl hcs', Set.inter_comm _ t,
     Set.inter_comm _ t]
   exact measure_inter_add_diff t hms
