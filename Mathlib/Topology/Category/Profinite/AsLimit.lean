@@ -48,14 +48,8 @@ variable (X : Profinite.{u})
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S := @FintypeCat.of S (Fintype.ofFinite S)
   map f := DiscreteQuotient.ofLE f.le
-  -- Porting note: (TODO) `aesop_cat` fails here, so I wrote `map_comp` and `map_id`
-  -- down explicitely for debuging. delete both again if it works.
-  -- Lean3 code for reference:
-  --
-  -- def fintype_diagram : discrete_quotient X ⥤ Fintype :=
-  -- { obj := λ S, by haveI := fintype.of_finite S; exact Fintype.of S,
-  --   map := λ S T f, discrete_quotient.of_le f.le }
-  map_id := by aesop_cat
+  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
+  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
   map_comp _ _ := by ext; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
