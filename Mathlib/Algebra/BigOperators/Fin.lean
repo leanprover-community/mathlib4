@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 
 ! This file was ported from Lean 3 source module algebra.big_operators.fin
-! leanprover-community/mathlib commit ef997baa41b5c428be3fb50089a7139bf4ee886b
+! leanprover-community/mathlib commit cc5dd6244981976cc9da7afc4eee5682b037a013
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -255,46 +255,21 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 #align fin.partial_prod_left_inv Fin.partialProd_left_inv
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
 
--- Porting note:
--- 1) The current proof is really bad! It should be redone once `assoc_rw` is
---    implemented and `rw` knows that `i.succ = i + 1`.
--- 2) The original Mathport output was:
---   cases' i with i hn
---   induction' i with i hi generalizing hn
---   · simp [← Fin.succ_mk, partialProd_succ]
---   · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
---     simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
---       Pi.smul_apply] at hi ⊢
---     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
---     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
---     assoc_rw [hi, inv_mul_cancel_left]
 @[to_additive]
-theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) i)⁻¹ * (g • partialProd f) i.succ = f i := by
-  rcases i with ⟨i, hn⟩
+theorem partialProd_right_inv {G : Type _} [Group G] (f : Fin n → G) (i : Fin n) :
+    (partialProd f (Fin.castSucc i))⁻¹ * partialProd f i.succ = f i := by
+  cases' i with i hn
   induction i with
-  | zero =>
-    simp only [Nat.zero_eq, Nat.cast_zero, Pi.smul_apply, partialProd_zero, smul_eq_mul, mul_one,
-      zero_add, inv_mul_cancel_left, partialProd_succ, castSucc_mk, mk_zero, partialProd_zero,
-      one_mul]
+  | zero => simp [-Fin.succ_mk, partialProd_succ]
   | succ i hi =>
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-    simp only [Pi.smul_apply, smul_eq_mul, mul_inv_rev, Nat.cast_succ] at hi⊢
-    rw [coe_add_one_eq_cast (i.lt_succ_self.trans hn)]
-    simp_rw [Nat.succ_eq_add_one]
-    rw [partialProd_succ, partialProd_succ, Fin.castSucc_mk, Fin.castSucc_mk, mul_inv_rev]
-    simp_rw [← mul_assoc] at hi ⊢
-    suffices h : (f ⟨i, Nat.lt_of_succ_lt hn⟩)⁻¹ *
-        ((partialProd f ⟨i, Nat.lt_succ_of_lt (Nat.lt_of_succ_lt hn)⟩)⁻¹ * g⁻¹ *
-        (g * partialProd f ⟨i + 1, Nat.succ_lt_succ (Nat.lt_of_succ_lt hn)⟩)) *
-        f ⟨Nat.succ i, hn⟩ = f ⟨Nat.succ i, hn⟩
-    · simp_rw [←mul_assoc] at h
-      assumption
-    · rw [mul_left_eq_self, inv_mul_eq_one, ←hi, ← mul_assoc]
-      simp only [inv_mul_cancel_right, succ_mk, mul_left_inj, inv_inj]
-      congr
-      rw [Fin.eq_mk_iff_val_eq, coe_ofNat_eq_mod, Nat.mod_succ_eq_iff_lt]
-      exact i.lt_succ_self.trans <| hn.trans n.lt_succ_self
+    simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi⊢
+    rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
+    rw [Nat.succ_eq_add_one] at hn
+    simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
+    -- Porting note: was
+    -- assoc_rw [hi, inv_mul_cancel_left]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
@@ -312,17 +287,15 @@ Useful for defining group cohomology. -/
 theorem inv_partialProd_mul_eq_contractNth {G : Type _} [Group G] (g : Fin (n + 1) → G)
     (j : Fin (n + 1)) (k : Fin n) :
     (partialProd g (j.succ.succAbove (Fin.castSucc k)))⁻¹ * partialProd g (j.succAbove k).succ =
-      j.contractNth (· * ·) g k := by
-  have := partialProd_right_inv (1 : G) g
-  simp only [one_smul, coe_eq_castSucc] at this
+      j.contractNth (· * ·) g k :=
+  by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
-  · rwa [succAbove_below, succAbove_below, this, contractNth_apply_of_lt]
+  · rwa [succAbove_below, succAbove_below, partialProd_right_inv, contractNth_apply_of_lt]
     · assumption
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
-  · rw [succAbove_below, succAbove_above, partialProd_succ, castSucc_fin_succ, ← mul_assoc,
-      this, contractNth_apply_of_eq]
-    · assumption
+  · rwa [succAbove_below, succAbove_above, partialProd_succ, castSucc_fin_succ, ← mul_assoc,
+      partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
