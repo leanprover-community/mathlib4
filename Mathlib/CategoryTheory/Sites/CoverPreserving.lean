@@ -161,8 +161,8 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
-  simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
-  congr 1
+  simp (config := {zeta := false}) only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
+  apply congr_arg -- porting note: was `congr 1` which didn't do anything
   /-
     Since everything now falls in the image of `u`,
     the result follows from the compatibility of `x` in the image of `u`.
