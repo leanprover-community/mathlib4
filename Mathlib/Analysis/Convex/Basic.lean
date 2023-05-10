@@ -154,9 +154,8 @@ theorem convex_iff_forall_pos :
   forall₂_congr fun _ => starConvex_iff_forall_pos
 #align convex_iff_forall_pos convex_iff_forall_pos
 
-theorem convex_iff_pairwise_pos :
-    Convex 𝕜 s ↔ s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s :=
-  by
+theorem convex_iff_pairwise_pos : Convex 𝕜 s ↔
+    s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
   refine' convex_iff_forall_pos.trans ⟨fun h x hx y hy _ => h hx hy, _⟩
   intro h x hx y hy a b ha hb hab
   obtain rfl | hxy := eq_or_ne x y
@@ -198,8 +197,8 @@ theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinear
   hs.linear_image <| hf.mk' f
 #align convex.is_linear_image Convex.is_linear_image
 
-theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f ⁻¹' s) :=
-  by
+theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) :
+    Convex 𝕜 (f ⁻¹' s) := by
   intro x hx y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hx hy ha hb hab
@@ -247,7 +246,6 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
     a • x + b • y ≤ a • r + b • r :=
       add_le_add (smul_le_smul_of_nonneg hx ha) (smul_le_smul_of_nonneg hy hb)
     _ = r := Convex.combo_self hab _
-
 #align convex_Iic convex_Iic
 
 set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
@@ -288,7 +286,6 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     a • x + b • y < a • r + b • r :=
       add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx ha') (smul_le_smul_of_nonneg hy.le hb)
     _ = r := Convex.combo_self hab _
-
 #align convex_Iio convex_Iio
 
 set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
@@ -538,27 +535,19 @@ theorem Convex.mem_smul_of_zero_mem (h : Convex 𝕜 s) {x : E} (zero_mem : (0 :
   exact h.smul_mem_of_zero_mem zero_mem hx ⟨inv_nonneg.2 (zero_le_one.trans ht), inv_le_one ht⟩
 #align convex.mem_smul_of_zero_mem Convex.mem_smul_of_zero_mem
 
+theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜} (hx : x ∈ s) (hy : y ∈ s)
+    (hp : 0 ≤ p) (hq : 0 ≤ q) : ∃ z ∈ s, (p + q) • z = p • x + q • y := by
+  rcases _root_.em (p = 0 ∧ q = 0) with (⟨rfl, rfl⟩ | hpq)
+  · use x, hx
+    simp
+  · replace hpq : 0 < p + q := (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff' hp hq).1 hpq)
+    refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
+    simp only [smul_add, smul_smul, mul_div_cancel' _ hpq.ne']
+
 theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
-    (p + q) • s = p • s + q • s := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp_rw [smul_set_empty, add_empty]
-  obtain rfl | hp' := hp.eq_or_lt
-  · rw [zero_add, zero_smul_set hs, zero_add]
-  obtain rfl | hq' := hq.eq_or_lt
-  · rw [add_zero, zero_smul_set hs, add_zero]
-  ext
-  constructor
-  · rintro ⟨v, hv, rfl⟩
-    exact ⟨p • v, q • v, smul_mem_smul_set hv, smul_mem_smul_set hv, (_root_.add_smul _ _ _).symm⟩
-  · rintro ⟨v₁, v₂, ⟨v₁₁, h₁₂, rfl⟩, ⟨v₂₁, h₂₂, rfl⟩, rfl⟩
-    have hpq := add_pos hp' hq'
-    refine'
-        mem_smul_set.2
-          ⟨_,
-            h_conv h₁₂ h₂₂ _ _
-              (by rw [← div_self hpq.ne', add_div] : p / (p + q) + q / (p + q) = 1),
-            by simp only [← mul_smul, smul_add, mul_div_cancel' _ hpq.ne']⟩ <;>
-      positivity
+    (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
+  rintro _ ⟨_, _, ⟨v₁, h₁, rfl⟩, ⟨v₂, h₂, rfl⟩, rfl⟩
+  exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 #align convex.add_smul Convex.add_smul
 
 end AddCommGroup

@@ -78,6 +78,7 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
       ⟨x, hx, rfl⟩
 #align eq_bot_of_generator_maximal_map_eq_zero eq_bot_of_generator_maximal_map_eq_zero
 
+set_option synthInstance.etaExperiment true in
 theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M} (b : Basis ι R O)
     (hNO : N ≤ O) {ϕ : O →ₗ[R] R} (hϕ : ∀ ψ : O →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N)
     [(ϕ.submoduleImage N).IsPrincipal] (hgen : generator (ϕ.submoduleImage N) = 0) : N = ⊥ := by
@@ -100,10 +101,12 @@ variable {M : Type _} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
 
+set_option synthInstance.etaExperiment true in
 theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
     x ∣ generator I ↔ I = Ideal.span {x} := by
   conv_rhs => rw [← span_singleton_generator I]
-  erw [Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated, ← mem_iff_generator_dvd]
+  rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
+    ← mem_iff_generator_dvd]
   exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
 #align dvd_generator_iff dvd_generator_iff
 
@@ -269,8 +272,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
       refine' ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, _, _⟩⟩
       · refine' LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from _)
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
-      · simp only [sub_eq_add_neg, neg_smul]
-        rfl
+      · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine' ⟨Nat.succ_le_succ hn'm', _, _⟩
@@ -305,7 +307,7 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
   haveI := Classical.decEq M
   cases nonempty_fintype ι
   induction' N using inductionOnRank with N ih
-  exact b
+  · exact b
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
   by_cases N_bot : N = ⊥
   · subst N_bot
@@ -370,10 +372,8 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     let N := span R (range <| (s ∘ (fun x => x) : I → M))
     -- same as `span R (s '' I)` but more convenient
     let _sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
-    -- `s` restricted to `I`
-    let sI_basis : Basis I R N
     -- `s` restricted to `I` is a basis of `N`
-    exact Basis.span indepI
+    let sI_basis : Basis I R N := Basis.span indepI
     -- Our first goal is to build `A ≠ 0` such that `A • M ⊆ N`
     have exists_a : ∀ i : ι, ∃ a : R, a ≠ 0 ∧ a • s i ∈ N := by
       intro i
@@ -463,7 +463,7 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   cases nonempty_fintype ι
   revert N
   induction' O using inductionOnRank with M0 ih
-  exact b
+  · exact b
   intro N N_le_M0
   obtain ⟨m, b'M⟩ := M0.basisOfPid b
   by_cases N_bot : N = ⊥
@@ -525,6 +525,7 @@ section Ideal
 
 variable {S : Type _} [CommRing S] [IsDomain S] [Algebra R S]
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -542,11 +543,12 @@ noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ide
   let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
   ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
     simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
-      (·∘·)]⟩
+      (· ∘ ·)]⟩
 #align ideal.smith_normal_form Ideal.smithNormalForm
 
 variable [Finite ι]
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -560,19 +562,20 @@ choices of values for this existential quantifier.
 -/
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∃ (b' : Basis ι R S)(a : ι → R)(ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
-  cases nonempty_fintype ι;
-    exact
-      let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
-      let e : Fin (Fintype.card ι) ≃ ι :=
-        Equiv.ofBijective f
-          ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
-      have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
-      ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
-        fun i ↦ by
-          simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
-            Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (·∘·)]⟩
+  cases nonempty_fintype ι
+  let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
+  let e : Fin (Fintype.card ι) ≃ ι :=
+    Equiv.ofBijective f
+      ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
+  have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
+  exact
+    ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
+      fun i ↦ by
+        simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
+          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
 #align ideal.exists_smith_normal_form Ideal.exists_smith_normal_form
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -585,6 +588,7 @@ noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   (Ideal.exists_smith_normal_form b I hI).choose
 #align ideal.ring_basis Ideal.ringBasis
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -597,6 +601,7 @@ noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
 #align ideal.self_basis Ideal.selfBasis
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -609,6 +614,7 @@ noncomputable def Ideal.smithCoeffs (b : Basis ι R S) (I : Ideal S) (hI : I ≠
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose
 #align ideal.smith_coeffs Ideal.smithCoeffs
 
+set_option synthInstance.etaExperiment true in
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
@@ -620,6 +626,7 @@ theorem Ideal.selfBasis_def (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose_spec
 #align ideal.self_basis_def Ideal.selfBasis_def
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) (i) :
     Ideal.smithCoeffs b I hI i ≠ 0 := by

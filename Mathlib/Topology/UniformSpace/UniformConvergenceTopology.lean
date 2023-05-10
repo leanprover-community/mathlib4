@@ -275,7 +275,6 @@ protected theorem gc : GaloisConnection lower_adjoint fun 𝓕 => UniformFun.fil
             𝓐 ×ᶠ (⊤ : Filter α) :=
       forall₂_congr fun U _hU => mem_prod_top.symm
     _ ↔ lower_adjoint 𝓐 ≤ 𝓕 := Iff.rfl
-
 #align uniform_fun.gc UniformFun.gc
 
 variable [UniformSpace β]
@@ -372,8 +371,8 @@ protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒰(α, γ, (⨅ i, 
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ`, then
 `𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂)`. -/
-protected theorem inf_eq {u₁ u₂ : UniformSpace γ} : 𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂) :=
-  by
+protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
+    𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂) := by
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_infᵢ, inf_eq_infᵢ, UniformFun.infᵢ_eq]
@@ -421,7 +420,6 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
     --    UniformFun.mono (uniformContinuous_iff.mp hf)
     --  _ = 𝒰(α, β, _).comap (f ∘ ·) := @UniformFun.comap_eq α β γ _ f
-
 #align uniform_fun.postcomp_uniform_continuous UniformFun.postcomp_uniformContinuous
 
 /-- Post-composition by a uniform inducing is a uniform inducing for the
@@ -713,7 +711,6 @@ protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) �
   calc
     𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₁) := infᵢ_le_infᵢ_of_subset h𝔖
     _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := infᵢ₂_mono fun _i _hi => UniformSpace.comap_mono <| UniformFun.mono hu
-
 #align uniform_on_fun.mono UniformOnFun.mono
 
 /-- If `x : α` is in some `S ∈ 𝔖`, then evaluation at `x` is uniformly continuous on
@@ -728,8 +725,8 @@ variable {β} {𝔖}
 
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, (⨅ i, u i)) = ⨅ i, 𝒱(α, γ, 𝔖, u i)`. -/
-protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) :=
-  by
+protected theorem infᵢ_eq {u : ι → UniformSpace γ} :
+    𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) := by
   simp_rw [UniformOnFun.uniformSpace, UniformFun.infᵢ_eq, UniformSpace.comap_infᵢ]
   rw [infᵢ_comm]
   exact infᵢ_congr fun s => infᵢ_comm
@@ -766,7 +763,6 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
   -- This is a direct consequence of `UniformFun.comap_eq`
   rw [uniformContinuous_iff]
   exact (UniformOnFun.mono (uniformContinuous_iff.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
-
 #align uniform_on_fun.postcomp_uniform_continuous UniformOnFun.postcomp_uniformContinuous
 
 /-- Post-composition by a uniform inducing is a uniform inducing for the

@@ -773,8 +773,7 @@ variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
 -- TODO: replace hypothesis and conclusion with a typeclass
 @[to_additive]
 theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
-    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t :=
-  by
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
   ext
   simp [mem_smul, mem_smul_set, h]
 #align set.op_smul_set_smul_eq_smul_smul_set Set.op_smul_set_smul_eq_smul_smul_set
@@ -1086,6 +1085,17 @@ protected theorem smul_neg : s • -t = -(s • t) := by
 #align set.smul_neg Set.smul_neg
 
 end Monoid
+
+section Semiring
+
+variable [Semiring α] [AddCommMonoid β] [Module α β]
+
+-- porting note: new lemma
+theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
+
+end Semiring
 
 section Ring
 

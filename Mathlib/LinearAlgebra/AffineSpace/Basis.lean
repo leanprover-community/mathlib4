@@ -126,7 +126,6 @@ noncomputable def basisOf (i : ι) : Basis { j : ι // j ≠ i } k V :=
       suffices
         Submodule.span k (range fun j : { x // x ≠ i } => b ↑j -ᵥ b i) = vectorSpan k (range b) by
         rw [this, ← direction_affineSpan, b.tot, AffineSubspace.direction_top]
-        exact le_rfl
       conv_rhs => rw [← image_univ]
       rw [vectorSpan_image_eq_span_vsub_set_right_ne k b (mem_univ i)]
       congr
@@ -299,7 +298,6 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     rw [AffineMap.map_vadd, linear_eq_sumCoords,
         LinearMap.neg_apply]
     simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
-
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

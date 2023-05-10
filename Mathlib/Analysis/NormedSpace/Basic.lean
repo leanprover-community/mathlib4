@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit d3af0609f6db8691dffdc3e1fb7feb7da72698f2
+! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -82,10 +82,7 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : Bounded
   dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using norm_smul_le (x₁ - x₂) y
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
--- Shortcut instance, as otherwise this will be found by `NormedSpace.toModule` and be
--- noncomputable.
-instance : Module ℝ ℝ := by infer_instance
-
+set_option synthInstance.etaExperiment true in
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
@@ -104,9 +101,8 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
 #align norm_zsmul norm_zsmul
 
 @[simp]
-theorem abs_norm_eq_norm (z : β) : |‖z‖| = ‖z‖ :=
-  (abs_eq (norm_nonneg z)).mpr (Or.inl rfl)
-#align abs_norm_eq_norm abs_norm_eq_norm
+theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
+#align abs_norm abs_norm
 
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
@@ -206,6 +202,16 @@ theorem frontier_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0)
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 #align frontier_closed_ball frontier_closedBall
 
+theorem interior_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
+    interior (sphere x r) = ∅ := by
+  rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
+#align interior_sphere interior_sphere
+
+theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
+    frontier (sphere x r) = sphere x r := by
+  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+#align frontier_sphere frontier_sphere
+
 instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
@@ -234,8 +240,8 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
       have : 0 < 1 + ‖x‖ ^ 2 := by positivity
       rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
-        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm_eq_norm x, ← sq_lt_sq,
-        abs_norm_eq_norm, Real.sq_sqrt this.le]
+        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
+        abs_norm, Real.sq_sqrt this.le]
       exact lt_one_add _⟩
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   left_inv x := by
@@ -433,6 +439,17 @@ theorem frontier_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ
   rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
 #align frontier_closed_ball' frontier_closedBall'
 
+@[simp]
+theorem interior_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
+    interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
+#align interior_sphere' interior_sphere'
+
+@[simp]
+theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
+    frontier (sphere x r) = sphere x r := by
+  rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+#align frontier_sphere' frontier_sphere'
+
 theorem rescale_to_shell_zpow {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E} (hx : x ≠ 0) :
     ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ ε / ‖c‖ ≤ ‖c ^ n • x‖ ∧ ‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ :=
   rescale_to_shell_semi_normed_zpow hc εpos (mt norm_eq_zero.1 hx)
@@ -585,10 +602,7 @@ norm. -/
 instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
-    rw [← smul_one_smul ℝ q x]
-    -- Porting note: broken notation class seems to cause a problem here
-    conv_lhs => change ‖(SMul.smul q (1:ℝ)) • x‖; rw [Rat.smul_one_eq_coe q]
-    rw [norm_smul, Rat.norm_cast_real]
+    rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
 #align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where

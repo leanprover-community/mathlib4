@@ -683,8 +683,7 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun s => 0
-          fac := fun s =>
-            by
+          fac := fun s => by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _) (by simp)
                 (by simpa using PushoutCocone.condition s)
@@ -897,8 +896,8 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
 
 /-- If `f f' : X ⟶ Y`, `g : Y ⟶ Z` forms a pushout square, then `g` is the coequalizer of
 `f` and `f'`. -/
-noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) : IsColimit (Cofork.ofπ g H.w) :=
-  by
+noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
+    IsColimit (Cofork.ofπ g H.w) := by
   fapply Cofork.IsColimit.mk
   · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
   · exact fun s => H.isColimit.fac _ WalkingSpan.left
@@ -916,7 +915,6 @@ variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 theorem of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
     BicartesianSq f g h i :=
   BicartesianSq.mk p₁ p₂.isColimit'
-
 #align category_theory.bicartesian_sq.of_is_pullback_is_pushout CategoryTheory.BicartesianSq.of_isPullback_isPushout
 
 theorem flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=

@@ -118,7 +118,6 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
     simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
-
 #align list.forall₂_and_left List.forall₂_and_left
 
 @[simp]
@@ -197,8 +196,7 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
-  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h =>
-    by
+  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     cases' h with h₁ h₂
     induction' l₁ with a l₁ IH generalizing l₂
     · cases length_eq_zero.1 h₁.symm
@@ -257,8 +255,7 @@ theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (. ++ .) (. +
 
 theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ =>
-    by
+  | _, _, Forall₂.cons h₁ h₂ => by
     simp only [reverse_cons]
     exact rel_append (rel_reverse h₂) (Forall₂.cons h₁ Forall₂.nil)
 #align list.rel_reverse List.rel_reverse
