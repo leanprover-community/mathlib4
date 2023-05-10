@@ -56,7 +56,7 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   -- { obj := λ S, by haveI := fintype.of_finite S; exact Fintype.of S,
   --   map := λ S T f, discrete_quotient.of_le f.le }
   map_id := by aesop_cat
-  map_comp := by aesop_cat
+  map_comp _ _ := by ext; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
