@@ -23,27 +23,53 @@ namespace MappingConeCompHomotopyEquiv
 @[simp]
 noncomputable def hom : mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
   lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by simp))
-    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) sorry
+    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
+    ext ⟨p, _, rfl⟩
+    dsimp [mappingConeCompTriangle, map']
+    simp [from_ext_iff _ _ _ _ rfl,
+      inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])
 
-lemma inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ mappingCone g := sorry
+@[simp]
+noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ mappingCone g :=
+  desc _ ((snd f).comp (inl g) (zero_add (-1)))
+    (desc _ ((Cochain.ofHom f).comp (inl g) (zero_add (-1))) (inr g) (by simp)) (by
+      ext p
+      dsimp [map']
+      rw [from_ext_iff _ _ _ (p+1) rfl, to_ext_iff _ _ _ (p+1) rfl]
+      simp [δ_zero_cochain_comp, ε_neg,
+        Cochain.comp_v _ _ (add_neg_self 1) p (p+1) p (by linarith) (by linarith)])
+
+
+def hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
+  ext n
+  dsimp [map']
+  simp [lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl,
+    from_ext_iff _ _ _ (n+1) rfl]
+
+def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) := sorry
 
 end MappingConeCompHomotopyEquiv
 
+@[simps]
 noncomputable def mappingConeCompHomotopyEquiv : HomotopyEquiv (mappingCone g)
     (mappingCone (mappingConeCompTriangle f g).mor₁) where
   hom := MappingConeCompHomotopyEquiv.hom f g
   inv := MappingConeCompHomotopyEquiv.inv f g
-  homotopyHomInvId := sorry
-  homotopyInvHomId := sorry
+  homotopyHomInvId := Homotopy.ofEq (MappingConeCompHomotopyEquiv.hom_inv_id f g)
+  homotopyInvHomId := MappingConeCompHomotopyEquiv.homotopyInvHomId f g
 
 lemma mappingConeCompHomotopyEquiv_comm₁ :
-  inr (mappingConeCompTriangle f g).mor₁ ≫
-    (mappingConeCompHomotopyEquiv f g).inv = (mappingConeCompTriangle f g).mor₂ := sorry
+    inr (mappingConeCompTriangle f g).mor₁ ≫
+      (mappingConeCompHomotopyEquiv f g).inv = (mappingConeCompTriangle f g).mor₂ := by
+  dsimp [map', MappingConeCompHomotopyEquiv.inv]
+  simp
 
 lemma mappingConeCompHomotopyEquiv_comm₂ :
-  (mappingConeCompHomotopyEquiv f g).hom ≫
-    triangleδ (mappingConeCompTriangle f g).mor₁ =
-  (mappingConeCompTriangle f g).mor₃ := sorry
+    (mappingConeCompHomotopyEquiv f g).hom ≫ triangleδ (mappingConeCompTriangle f g).mor₁ =
+      (mappingConeCompTriangle f g).mor₃ := by
+  ext n
+  dsimp [map']
+  simp [lift_f _ _ _ _ _ (n+1) rfl, from_ext_iff _ _ _ (n+1) rfl]
 
 end MappingCone
 
@@ -51,18 +77,31 @@ end CochainComplex
 
 namespace HomotopyCategory
 
+set_option maxHeartbeats 400000 in
 lemma mappingConeCompTriangle_distinguished :
   (quotient _ _).mapTriangle.obj (CochainComplex.MappingCone.mappingConeCompTriangle f g) ∈
-    distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
+    distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
+  refine' ⟨_, _, (CochainComplex.MappingCone.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
+    (CochainComplex.MappingCone.mappingConeCompHomotopyEquiv f g)) _ _ _
+  . dsimp
+    simp
+  . rw [← cancel_mono (isoOfHomotopyEquiv
+      (CochainComplex.MappingCone.mappingConeCompHomotopyEquiv f g)).inv,
+      assoc, Iso.hom_inv_id, comp_id, Iso.refl_hom, id_comp,
+      isoOfHomotopyEquiv_inv]
+    simp only [Functor.mapTriangle_obj, Triangle.mk_mor₂]
+    rw [← CochainComplex.MappingCone.mappingConeCompHomotopyEquiv_comm₁]
+    simp
+  . simp only [Functor.mapTriangle_obj, Triangle.mk_mor₃,
+      ← CochainComplex.MappingCone.mappingConeCompHomotopyEquiv_comm₂ f g]
+    simp
 
---attribute [local simp] CochainComplex.MappingCone.map'
-
-instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
   IsTriangulated.mk' (by
     rintro ⟨X₁ : CochainComplex C ℤ⟩ ⟨X₂ : CochainComplex C ℤ⟩ ⟨X₃ : CochainComplex C ℤ⟩ u₁₂' u₂₃'
     obtain ⟨u₁₂, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₁₂'
     obtain ⟨u₂₃, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₂₃'
-    have pif := mappingCone_triangle_distinguished u₁₂
     refine' ⟨_, _, _, _, _, _, _, _,
       Iso.refl _, Iso.refl _, Iso.refl _, by dsimp ; simp, by dsimp ; simp,
         _, _, mappingCone_triangle_distinguished u₁₂,
