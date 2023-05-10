@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.LocallyConstant.Algebra
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.LocallyConstant.Algebra
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousFunction.Algebra
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
@@ -27,8 +27,7 @@ monoid hom. -/
 @[to_additive
       "The inclusion of locally-constant functions into continuous functions as an\nadditive monoid hom.",
   simps]
-def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y →* C(X, Y)
-    where
+def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y →* C(X, Y) where
   toFun := coe
   map_one' := by
     ext
@@ -42,8 +41,7 @@ def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y 
 /-- The inclusion of locally-constant functions into continuous functions as a linear map. -/
 @[simps]
 def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module R Y]
-    [ContinuousAdd Y] [ContinuousConstSMul R Y] : LocallyConstant X Y →ₗ[R] C(X, Y)
-    where
+    [ContinuousAdd Y] [ContinuousConstSMul R Y] : LocallyConstant X Y →ₗ[R] C(X, Y) where
   toFun := coe
   map_add' x y := by
     ext
@@ -56,8 +54,7 @@ def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module
 /-- The inclusion of locally-constant functions into continuous functions as an algebra map. -/
 @[simps]
 def toContinuousMapAlgHom (R : Type _) [CommSemiring R] [Semiring Y] [Algebra R Y]
-    [TopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y)
-    where
+    [TopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
   toFun := coe
   map_one' := by
     ext
