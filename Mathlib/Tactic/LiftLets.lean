@@ -91,6 +91,8 @@ example : (let x := 1; x) = 1 := by
   intro x
   sorry
 ```
+
+During the lifting process, let bindings are merged if they have the same name and value.
 -/
 syntax (name := lift_lets) "lift_lets" (ppSpace location)? : tactic
 
