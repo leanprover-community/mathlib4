@@ -31,7 +31,7 @@ attribute [local instance]
   CategoryTheory.ConcreteCategory.hasCoeToSort CategoryTheory.ConcreteCategory.hasCoeToFun
 
 -- porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.Forget.obj x) := by
+instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.forget.obj x) := by
   change (Fintype (Fin _))
   infer_instance
 

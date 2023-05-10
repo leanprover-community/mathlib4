@@ -45,20 +45,19 @@ namespace GroupCat
 instance : BundledHom.ParentProjection
   (fun {α : Type _} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
 
+@[to_additive]
 instance largeCategory : LargeCategory GroupCat := by
   dsimp only [GroupCat]
   infer_instance
 
+@[to_additive]
 instance concreteCategory : ConcreteCategory GroupCat := by
   dsimp only [GroupCat]
   infer_instance
 
-attribute [to_additive] GroupCat.largeCategory GroupCat.concreteCategory
-
 @[to_additive]
-instance : CoeSort GroupCat (Type _) := by
-  dsimp only [GroupCat]
-  infer_instance
+instance : CoeSort GroupCat (Type _) where
+  coe X := (forget GroupCat).obj X
 
 /-- Construct a bundled `Group` from the underlying type and typeclass. -/
 @[to_additive]
@@ -86,18 +85,8 @@ add_decl_doc AddGroupCat.ofHom
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ConcreteCategory.hasCoeToFun
-
--- porting note: this was added to ease automation
-@[to_additive (attr := simp)]
-lemma id_apply {X : GroupCat} (x : X) :
-  (𝟙 X) x = x := rfl
-
--- porting note: this was added to ease automation
-@[to_additive (attr := simp)]
-lemma comp_apply {X Y Z : GroupCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-  (f ≫ g) x = g (f x) := rfl
+instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe f := (forget GroupCat).map f
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
@@ -112,13 +101,7 @@ set_option linter.uppercaseLean3 false in
 instance (G : GroupCat) : Group G :=
   G.str
 
--- porting note: added to make `one_apply` work
-@[to_additive]
-instance (G : GroupCat) : Group ((forget GroupCat).obj G) :=
-  G.str
-
--- porting note: simp attribute was removed to please the linter
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [Group R] : ↑(GroupCat.of R) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -131,8 +114,7 @@ instance : Inhabited GroupCat :=
   ⟨GroupCat.of PUnit⟩
 
 @[to_additive]
-instance ofUnique (G : Type _) [Group G] [i : Unique G] : Unique (GroupCat.of G) :=
-  i
+instance ofUnique (G : Type _) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
 set_option linter.uppercaseLean3 false in
 #align Group.of_unique GroupCat.ofUnique
 set_option linter.uppercaseLean3 false in
@@ -191,6 +173,10 @@ lemma Hom.map_mul {X Y : GroupCat} (f : X ⟶ Y) (x y : X) : f (x * y) = f x * f
 lemma Hom.map_one {X Y : GroupCat} (f : X ⟶ Y) : f (1 : X) = 1 := by
   apply MonoidHom.map_one (show MonoidHom X Y from f)
 
+-- We verify that simp lemmas apply when coercing morphisms to functions.
+@[to_additive]
+example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+
 end GroupCat
 
 /-- The category of commutative groups and group morphisms. -/
@@ -206,8 +192,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommGroupCat
 
 /-- `Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. -/
-abbrev Ab :=
-  AddCommGroupCat
+abbrev Ab := AddCommGroupCat
 set_option linter.uppercaseLean3 false in
 #align Ab Ab
 
@@ -373,11 +358,7 @@ lemma Hom.map_mul {X Y : CommGroupCat} (f : X ⟶ Y) (x y : X) : f (x * y) = f x
 lemma Hom.map_one {X Y : CommGroupCat} (f : X ⟶ Y) : f (1 : X) = 1 := by
   apply MonoidHom.map_one (show MonoidHom X Y from f)
 
--- Porting note: is this still relevant?
--- This example verifies an improvement possible in Lean 3.8.
--- Before that, to have `MonoidHom.map_map` usable by `simp` here,
--- we had to mark all the concrete category `CoeSort` instances reducible.
--- Now, it just works.
+-- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 

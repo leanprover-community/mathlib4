@@ -103,7 +103,7 @@ instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M (fun _ => N) :=
   ⟨fun f => f.toFun, fun _ _ h => LinearMap.ext (congr_fun h)⟩
 
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
-  Forget :=
+  forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => LinearMap.ext (fun x => by
