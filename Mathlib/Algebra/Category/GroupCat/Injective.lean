@@ -8,8 +8,8 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.EpiMono
-import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.GroupCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Injective
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.GroupTheory.Divisible
