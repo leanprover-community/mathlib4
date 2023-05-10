@@ -125,7 +125,7 @@ add_decl_doc AddMonCat.ofHom
 
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
-  (⇑(ofHom f)) x = f x := rfl
+  (ofHom f) x = f x := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
@@ -290,7 +290,6 @@ variable [Monoid X] [Monoid Y]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
   inv := MonCat.ofHom e.symm.toMonoidHom
-  hom_inv_id := by aesop_cat_nonterminal
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_Mon_iso MulEquiv.toMonCatIso
 set_option linter.uppercaseLean3 false in
@@ -307,7 +306,6 @@ variable [CommMonoid X] [CommMonoid Y]
 def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of Y where
   hom := CommMonCat.ofHom e.toMonoidHom
   inv := CommMonCat.ofHom e.symm.toMonoidHom
-  hom_inv_id := by aesop_cat_nonterminal
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
