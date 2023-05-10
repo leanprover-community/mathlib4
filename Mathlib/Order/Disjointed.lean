@@ -147,8 +147,7 @@ theorem supᵢ_disjointed (f : ℕ → α) : (⨆ n, disjointed f n) = ⨆ n, f 
   supᵢ_eq_supᵢ_of_partialSups_eq_partialSups (partialSups_disjointed f)
 #align supr_disjointed supᵢ_disjointed
 
-theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, f iᶜ :=
-  by
+theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, f iᶜ := by
   cases n
   · rw [disjointed_zero, eq_comm, inf_eq_left]
     simp_rw [le_infᵢ_iff]
@@ -177,8 +176,7 @@ theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) : disjointed f 
 #align disjointed_eq_inter_compl disjointed_eq_inter_compl
 
 theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
-    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n :=
-  by
+    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
 #align preimage_find_eq_disjointed preimage_find_eq_disjointed

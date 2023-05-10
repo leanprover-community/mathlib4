@@ -96,7 +96,6 @@ theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     _ = ∑ b in t, (s.bipartiteBelow r b).card :=
       sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
-
 #align finset.card_mul_le_card_mul Finset.card_mul_le_card_mul
 
 theorem card_mul_le_card_mul' [∀ a b, Decidable (r a b)]

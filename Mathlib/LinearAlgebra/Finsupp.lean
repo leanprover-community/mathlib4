@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module linear_algebra.finsupp
-! leanprover-community/mathlib commit 3dec44d0b621a174c56e994da4aae15ba60110a2
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -285,7 +285,7 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
       ⨆ i, supported M R (s i) by
-    rwa [LinearMap.range_comp, range_restrictDom, map_top, range_subtype] at this
+    rwa [LinearMap.range_comp, range_restrictDom, Submodule.map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
   -- Porting note: Was ported as `induction l using Finsupp.induction`
@@ -499,8 +499,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   simp; ext x
   haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
-  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 :=
-      by
+  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]
       rfl
     rw [Finsupp.sum_apply, Finsupp.sum, Finset.sum_eq_single x, single_eq_same] at this
@@ -577,6 +576,10 @@ theorem apply_total (f : M →ₗ[R] M') (v) (l : α →₀ R) :
     f (Finsupp.total α M R v l) = Finsupp.total α M' R (f ∘ v) l := by
   apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
 #align finsupp.apply_total Finsupp.apply_total
+
+theorem apply_total_id (f : M →ₗ[R] M') (l : M →₀ R) :
+    f (Finsupp.total M M R _root_.id l) = Finsupp.total M M' R f l :=
+  apply_total ..
 
 theorem total_unique [Unique α] (l : α →₀ R) (v) :
     Finsupp.total α M R v l = l default • v default := by rw [← total_single, ← unique_single l]
@@ -731,8 +734,9 @@ protected def totalOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :
 variable {α} {M} {v}
 
 theorem totalOn_range (s : Set α) : LinearMap.range (Finsupp.totalOn α M R v s) = ⊤ := by
-  rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-    LinearMap.range_le_iff_comap, range_subtype, map_top, LinearMap.range_comp, range_subtype]
+  rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict,
+    ←LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
+    range_subtype]
   exact (span_image_eq_map_total _ _).le
 #align finsupp.total_on_range Finsupp.totalOn_range
 
@@ -1073,9 +1077,8 @@ theorem Fintype.total_apply_single (i : α) (r : R) :
 
 variable (S)
 
-theorem Finsupp.total_eq_fintype_total_apply (x : α → R) :
-    Finsupp.total α M R v ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x :=
-  by
+theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M R v
+    ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x := by
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx
@@ -1133,11 +1136,6 @@ section
 
 variable (R)
 
--- Porting note: `irreducible_def` produces a structure.
---               When a structure is defined, an injectivity theorem of the constructor is
---               generated, which has `simp` attr, but this get a `simpNF` linter.
---               So, this option is required.
-set_option genInjectivity false in
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
 using the axiom of choice.
 -/

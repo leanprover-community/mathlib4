@@ -64,7 +64,6 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   let ⟨_,e,_⟩ := g
   congr
   simp only [eq_iff_true_of_subsingleton]
-
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
 -- @[simp] : Porting note : simp can prove this
@@ -93,7 +92,7 @@ def mk {X Y : T} (f : Y ⟶ X) : Over X :=
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
     be a global instance, but it is sometimes useful. -/
-def coeFromHom {X Y : T} : Coe (Y ⟶ X) (Over X) where coe := mk
+def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 #align category_theory.over.coe_from_hom CategoryTheory.Over.coeFromHom
 
 section
@@ -331,8 +330,8 @@ namespace Under
 variable {X : T}
 
 @[ext]
-theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) : f = g :=
-  by
+theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
+    f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext

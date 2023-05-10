@@ -326,11 +326,11 @@ abbrev ContinuousLinearEquivClass (F : Type _) (R : outParam (Type _)) [Semiring
 
 namespace ContinuousSemilinearEquivClass
 
-variable (F : Type _) {R : Type _} {S : Type _} {_ : Semiring R} {_ : Semiring S} (σ : R →+* S)
-  {σ' : S →+* R} {_ : RingHomInvPair σ σ'} {_ : RingHomInvPair σ' σ}
-  (M : Type _) {_ : TopologicalSpace M} {_ : AddCommMonoid M}
-  (M₂ : Type _) {_ : TopologicalSpace M₂} {_ : AddCommMonoid M₂}
-  {_ : Module R M} {_ : Module S M₂}
+variable (F : Type _) {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  (M : Type _) [TopologicalSpace M] [AddCommMonoid M]
+  (M₂ : Type _) [TopologicalSpace M₂] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂]
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 instance (priority := 100) continuousSemilinearMapClass
@@ -1134,10 +1134,10 @@ theorem coe_prodMap [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f�
 #align continuous_linear_map.coe_prod_map ContinuousLinearMap.coe_prodMap
 
 @[simp, norm_cast]
-theorem coe_prod_map [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
+theorem coe_prodMap' [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
     (f₂ : M₃ →L[R₁] M₄) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
-#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prod_map
+#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prodMap'
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 def coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f₁ : M₁ →L[R₁] M₃)
@@ -1273,8 +1273,7 @@ def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Dis
     where
   toLinearEquiv := LinearMap.infᵢKerProjEquiv R φ hd hu
   continuous_toFun :=
-    continuous_pi fun i =>
-      by
+    continuous_pi fun i => by
       have :=
         @continuous_subtype_val _ _ fun x =>
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
@@ -2811,4 +2810,3 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
-

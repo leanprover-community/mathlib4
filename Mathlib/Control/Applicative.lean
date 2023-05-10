@@ -48,8 +48,8 @@ theorem Applicative.ext {F} :
           @Seq.seq _ A1.toSeq _ _ f (fun _ => x) = @Seq.seq _ A2.toSeq _ _ f (fun _ => x)) →
       A1 = A2
   | { toFunctor := F1, seq := s1, pure := p1, seqLeft := sl1, seqRight := sr1 },
-    { toFunctor := F2, seq := s2, pure := p2, seqLeft := sl2, seqRight := sr2 }, L1, L2, H1, H2 =>
-    by
+    { toFunctor := F2, seq := s2, pure := p2, seqLeft := sl2, seqRight := sr2 },
+    L1, L2, H1, H2 => by
     obtain rfl : @p1 = @p2 := by
       funext α x
       apply H1
@@ -65,7 +65,6 @@ theorem Applicative.ext {F} :
     congr <;> funext α β x y
     · exact (seqLeft_eq1 _ (y Unit.unit)).trans (seqLeft_eq2 _ _).symm
     · exact (seqRight_eq1 _ (y Unit.unit)).trans (seqRight_eq2 _ (y Unit.unit)).symm
-
 #align applicative.ext Applicative.ext
 
 end Lemmas

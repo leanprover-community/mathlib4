@@ -444,7 +444,7 @@ theorem init_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
 /-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
 def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)) : α i :=
-  if h : i.val < n then _root_.cast (by rw [Fin.castSucc_cast_lt i h]) (p (castLt i h))
+  if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
 #align fin.snoc Fin.snoc
 
@@ -456,16 +456,16 @@ theorem init_snoc : init (snoc p x) = p := by
 #align fin.init_snoc Fin.init_snoc
 
 @[simp]
-theorem snoc_cast_succ : snoc p x (castSucc i) = p i := by
+theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
   simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
-#align fin.snoc_cast_succ Fin.snoc_cast_succ
+#align fin.snoc_cast_succ Fin.snoc_castSucc
 
 @[simp]
-theorem snoc_comp_cast_succ {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
+theorem snoc_comp_castSucc {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
     (snoc f a : Fin (n + 1) → α) ∘ castSucc = f :=
-  funext fun i ↦ by rw [Function.comp_apply, snoc_cast_succ]
-#align fin.snoc_comp_cast_succ Fin.snoc_comp_cast_succ
+  funext fun i ↦ by rw [Function.comp_apply, snoc_castSucc]
+#align fin.snoc_comp_cast_succ Fin.snoc_comp_castSucc
 
 @[simp]
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
@@ -479,8 +479,8 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
   refine' Fin.lastCases _ (fun i ↦ _) i
   · simp only [Function.comp_apply]
     rw [snoc_last, natAdd_last, snoc_last]
-  · simp only [comp_apply, snoc_cast_succ]
-    rw [natAdd_castSucc, snoc_cast_succ]
+  · simp only [comp_apply, snoc_castSucc]
+    rw [natAdd_castSucc, snoc_castSucc]
 #align fin.snoc_comp_nat_add Fin.snoc_comp_nat_add
 
 @[simp]
@@ -511,18 +511,18 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         convert this
         · exact h'.symm
         · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α (castSucc i) = α (castSucc (castLt j h)) := by rw [castSucc_cast_lt, h']
-      have E2 : update p i y (castLt j h) = _root_.cast C2 y := by
-        have : update p (castLt j h) (_root_.cast C2 y) (castLt j h) = _root_.cast C2 y := by simp
+      have C2 : α (castSucc i) = α (castSucc (castLT j h)) := by rw [castSucc_castLT, h']
+      have E2 : update p i y (castLT j h) = _root_.cast C2 y := by
+        have : update p (castLT j h) (_root_.cast C2 y) (castLT j h) = _root_.cast C2 y := by simp
         convert this
         · simp [h, h']
         · exact heq_of_cast_eq C2 rfl
       rw [E1, E2]
       exact eq_rec_compose (Eq.trans C2.symm C1) C2 y
-    · have : ¬castLt j h = i := by
+    · have : ¬castLT j h = i := by
         intro E
         apply h'
-        rw [← E, castSucc_cast_lt]
+        rw [← E, castSucc_castLT]
       simp [h', this, snoc, h]
   · rw [eq_last_of_not_lt h]
     simp [Ne.symm (ne_of_lt (castSucc_lt_last i))]
@@ -545,7 +545,7 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
   · simp only [init, snoc, h, cast_eq, dite_true]
-    have _ : castSucc (castLt j h) = j := castSucc_cast_lt _ _
+    have _ : castSucc (castLT j h) = j := castSucc_castLT _ _
     rw [← cast_eq rfl (q j)]
     congr
   · rw [eq_last_of_not_lt h]
@@ -585,13 +585,13 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   by_cases h : i = 0
   · rw [h]
     -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
-    simp [snoc, castLt]
+    simp [snoc, castLT]
   set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
   by_cases h' : j.val < n
-  · set k := castLt j h' with jk
-    have : j = castSucc k := by rw [jk, castSucc_cast_lt]
+  · set k := castLT j h' with jk
+    have : j = castSucc k := by rw [jk, castSucc_castLT]
     rw [this, ← castSucc_fin_succ, snoc]
     simp [pred, snoc, cons]
   rw [eq_last_of_not_lt h', succ_last]
@@ -602,7 +602,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
   ext j
   by_cases h : j.val < n
-  · simp [h, snoc, castSucc_cast_lt]
+  · simp [h, snoc, castSucc_castLT]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.comp_snoc Fin.comp_snoc
@@ -614,7 +614,7 @@ theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : 
   refine' Fin.addCases _ _ i <;> clear i
   · intro i
     rw [Fin.append_left]
-    exact (@snoc_cast_succ _ (fun _ => α) _ _ i).symm
+    exact (@snoc_castSucc _ (fun _ => α) _ _ i).symm
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_right]
     exact (@snoc_last _ (fun _ => α) _ _).symm
@@ -643,7 +643,7 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) : α j :=
   if hj : j = i then Eq.rec x hj.symm
   else
-    if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLt hlt) (p _)
+    if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLT hlt) (p _)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
 #align fin.succ_above_cases Fin.succAboveCases
 
@@ -671,12 +671,12 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff]
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : castLt ((succAbove i).toEmbedding j) H₁ = k
-    rw [castLt_succAbove hlt] at hk; cases hk
+    generalize hk : castLT ((succAbove i) j) H₁ = k
+    rw [castLT_succAbove hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
-    rw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
+    erw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove
 
@@ -707,7 +707,7 @@ theorem eq_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbov
 automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLt h) (p <| j.castLt _) := by
+    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLT h) (p <| j.castLT _) := by
   rw [insertNth, succAboveCases, dif_neg h.ne, dif_pos h]
 #align fin.insert_nth_apply_below Fin.insertNth_apply_below
 
@@ -739,7 +739,7 @@ theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAb
   ext j
   apply eq_of_heq
   trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
-  · rw [snoc_cast_succ]
+  · rw [snoc_castSucc]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq
     rw [succAbove_last]
@@ -840,9 +840,9 @@ def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
   | 0, _p, _ => none
   | n + 1, p, _ => by
     exact
-      Option.casesOn (@find n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _)
+      Option.casesOn (@find n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _)
         (if _ : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
-        some (i.castLt (Nat.lt_succ_of_lt i.2))
+        some (i.castLT (Nat.lt_succ_of_lt i.2))
 #align fin.find Fin.find
 
 /-- If `find p = some i`, then `p i` holds -/
@@ -851,7 +851,7 @@ theorem find_spec :
   | 0, p, I, i, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
+    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
     · rw [h] at hi
       dsimp at hi
       split_ifs at hi with hl
@@ -861,7 +861,7 @@ theorem find_spec :
     · rw [h] at hi
       dsimp at hi
       rw [← Option.some_inj.1 hi]
-      refine @find_spec n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _ _ h
+      refine @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
 #align fin.find_spec Fin.find_spec
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
@@ -874,10 +874,10 @@ theorem isSome_find_iff :
       cases' h with i hi
       exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
       dsimp [find]
-      cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
+      cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
       · split_ifs with hl
         · exact Option.isSome_some
-        · have := (@isSome_find_iff n (fun x ↦ p (x.castLt (Nat.lt_succ_of_lt x.2))) _).2
+        · have := (@isSome_find_iff n (fun x ↦ p (x.castLT (Nat.lt_succ_of_lt x.2))) _).2
               ⟨⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ hin) fun h ↦ by cases h; exact hl hi⟩, hi⟩
           rw [h] at this
           exact this
@@ -897,7 +897,7 @@ theorem find_min :
   | 0, p, _, i, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with k
+    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with k
     · simp only [h] at hi
       split_ifs at hi with hl
       · cases hi

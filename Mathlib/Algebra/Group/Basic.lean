@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
+! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -191,6 +191,16 @@ theorem self_eq_mul_right : a = a * b ↔ b = 1 :=
 #align self_eq_mul_right self_eq_mul_right
 #align self_eq_add_right self_eq_add_right
 
+@[to_additive]
+theorem mul_right_ne_self : a * b ≠ a ↔ b ≠ 1 := mul_right_eq_self.not
+#align mul_right_ne_self mul_right_ne_self
+#align add_right_ne_self add_right_ne_self
+
+@[to_additive]
+theorem self_ne_mul_right : a ≠ a * b ↔ b ≠ 1 := self_eq_mul_right.not
+#align self_ne_mul_right self_ne_mul_right
+#align self_ne_add_right self_ne_add_right
+
 end LeftCancelMonoid
 
 section RightCancelMonoid
@@ -209,6 +219,16 @@ theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
   eq_comm.trans mul_left_eq_self
 #align self_eq_mul_left self_eq_mul_left
 #align self_eq_add_left self_eq_add_left
+
+@[to_additive]
+theorem mul_left_ne_self : a * b ≠ b ↔ a ≠ 1 := mul_left_eq_self.not
+#align mul_left_ne_self mul_left_ne_self
+#align add_left_ne_self add_left_ne_self
+
+@[to_additive]
+theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
+#align self_ne_mul_left self_ne_mul_left
+#align self_ne_add_left self_ne_add_left
 
 end RightCancelMonoid
 
@@ -1024,7 +1044,6 @@ lemma multiplicative_of_symmetric_of_isTotal
   obtain rbc | rcb := total_of r b c
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
-
 #align multiplicative_of_symmetric_of_is_total multiplicative_of_symmetric_of_isTotal
 #align additive_of_symmetric_of_is_total additive_of_symmetric_of_isTotal
 
@@ -1049,6 +1068,5 @@ lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → �
   obtain hbc | hcb := t.total b c
   · exact h b c hbc
   · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
-
 #align multiplicative_of_is_total multiplicative_of_isTotal
 #align additive_of_is_total additive_of_isTotal

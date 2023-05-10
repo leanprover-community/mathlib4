@@ -24,8 +24,8 @@ Gluing two metric spaces along a common subset. Formally, we are given
   Y
 ```
 where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
-We want to complete the square by a space `glue_space hΦ hΨ` and two isometries
-`to_glue_l hΦ hΨ` and `to_glue_r hΦ hΨ` that make the square commute.
+We want to complete the square by a space `GlueSpacescan hΦ hΨ` and two isometries
+`toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
 points `Φ p` and `Ψ p` are at distance 0. The (quotient) metric space associated
 to this predistance is the desired space.
@@ -476,7 +476,7 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 #align metric.glue_premetric Metric.gluePremetric
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
-space  `glue_space hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
+space  `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
 def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
@@ -625,7 +625,7 @@ def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.In
 instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
   ⟨toInductiveLimit _ 0 default⟩
 
-/-- The map `to_inductive_limit n` mapping `X n` to the inductive limit is an isometry. -/
+/-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/
 theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
     Isometry (toInductiveLimit I n) :=
   Isometry.of_dist_eq fun x y => by
@@ -634,7 +634,7 @@ theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
       leRecOn_self]
 #align metric.to_inductive_limit_isometry Metric.toInductiveLimit_isometry
 
-/-- The maps `to_inductive_limit n` are compatible with the maps `f n`. -/
+/-- The maps `toInductiveLimit n` are compatible with the maps `f n`. -/
 theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
     toInductiveLimit I n.succ ∘ f n = toInductiveLimit I n := by
   let _ := inductivePremetric I

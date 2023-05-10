@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.order_iso_nat
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -72,8 +72,7 @@ theorem acc_iff_no_decreasing_seq {x} :
     constructor
     rintro ⟨f, k, hf⟩
     exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (lt_add_one k))) ⟨f, _, rfl⟩
-  · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 :=
-      by
+  · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 := by
       rintro ⟨x, hx⟩
       cases exists_not_acc_lt_of_not_acc hx with
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
@@ -179,17 +178,14 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
-      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad :=
-        by
+      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad := by
         by_cases he : hbad.toFinset.Nonempty
-        ·
-          refine'
+        · refine'
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
               Nat.not_succ_le_self _
                 (hn.trans (hbad.toFinset.le_max' n (hbad.mem_toFinset.2 nbad)))⟩
         · exact ⟨0, fun n _ nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
-      have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) :=
-        by
+      have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (le_add_of_nonneg_left n.zero_le)
         simp only [exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
@@ -256,19 +252,12 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 #align monotonic_sequence_limit monotonicSequenceLimit
 
 theorem WellFounded.supᵢ_eq_monotonicSequenceLimit [CompleteLattice α]
-    (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) : supᵢ a = monotonicSequenceLimit a :=
-  by
-  suffices (⨆ m : ℕ, a m) ≤ monotonicSequenceLimit a by exact le_antisymm this (le_supᵢ a _)
-  apply supᵢ_le
-  intro m
-  by_cases hm : m ≤ monotonicSequenceLimitIndex a
+    (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
+    supᵢ a = monotonicSequenceLimit a := by
+  refine' (supᵢ_le fun m => _).antisymm (le_supᵢ a _)
+  cases' le_or_lt m (monotonicSequenceLimitIndex a) with hm hm
   · exact a.monotone hm
-  · replace hm := le_of_not_le hm
-    let S := { n | ∀ m, n ≤ m → a n = a m }
-    have hInf : infₛ S ∈ S := by
-      refine' Nat.infₛ_mem _
-      rw [WellFounded.monotone_chain_condition] at h
-      exact h a
-    change a m ≤ a (infₛ S)
-    rw [hInf m hm]
+  · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
+    have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
+    exact (Nat.infₛ_mem ⟨n, this⟩ m hm.le).ge
 #align well_founded.supr_eq_monotonic_sequence_limit WellFounded.supᵢ_eq_monotonicSequenceLimit

@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit acb3d204d4ee883eb686f45d486a2a6811a01329
+! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -511,21 +511,24 @@ theorem one_half_pos : (0 : α) < 1 / 2 :=
   half_pos zero_lt_one
 #align one_half_pos one_half_pos
 
-theorem div_two_lt_of_pos (h : 0 < a) : a / 2 < a := by
-  rw [div_lt_iff (zero_lt_two' α)]
-  exact lt_mul_of_one_lt_right h one_lt_two
-#align div_two_lt_of_pos div_two_lt_of_pos
+@[simp]
+theorem half_le_self_iff : a / 2 ≤ a ↔ 0 ≤ a := by
+  rw [div_le_iff (zero_lt_two' α), mul_two, le_add_iff_nonneg_left]
+#align half_le_self_iff half_le_self_iff
 
-theorem half_lt_self : 0 < a → a / 2 < a :=
-  div_two_lt_of_pos
+@[simp]
+theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
+  rw [div_lt_iff (zero_lt_two' α), mul_two, lt_add_iff_pos_left]
+#align half_lt_self_iff half_lt_self_iff
+
+alias half_le_self_iff ↔ _ half_le_self
+#align half_le_self half_le_self
+
+alias half_lt_self_iff ↔ _ half_lt_self
 #align half_lt_self half_lt_self
 
-theorem half_le_self (ha_nonneg : 0 ≤ a) : a / 2 ≤ a := by
-  by_cases h0 : a = 0
-  · simp [h0]
-  · rw [← Ne.def] at h0
-    exact (half_lt_self (lt_of_le_of_ne ha_nonneg h0.symm)).le
-#align half_le_self half_le_self
+alias half_lt_self ← div_two_lt_of_pos
+#align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
   half_lt_self zero_lt_one
@@ -741,6 +744,10 @@ theorem lt_div_iff_of_neg (hc : c < 0) : a < b / c ↔ b < a * c :=
 theorem lt_div_iff_of_neg' (hc : c < 0) : a < b / c ↔ b < c * a := by
   rw [mul_comm, lt_div_iff_of_neg hc]
 #align lt_div_iff_of_neg' lt_div_iff_of_neg'
+
+theorem div_le_one_of_ge (h : b ≤ a) (hb : b ≤ 0) : a / b ≤ 1 := by
+  simpa only [neg_div_neg_eq] using div_le_one_of_le (neg_le_neg h) (neg_nonneg_of_nonpos hb)
+#align div_le_one_of_ge div_le_one_of_ge
 
 /-! ### Bi-implications of inequalities using inversions -/
 

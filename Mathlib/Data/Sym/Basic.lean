@@ -153,8 +153,7 @@ theorem of_vector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
 #align sym.of_vector_nil Sym.of_vector_nil
 
 @[simp]
-theorem of_vector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) :=
-  by
+theorem of_vector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
 #align sym.of_vector_cons Sym.of_vector_cons
@@ -255,8 +254,7 @@ def symEquivSym' {α : Type _} {n : ℕ} : Sym α n ≃ Sym' α n :=
 #align sym.sym_equiv_sym' Sym.symEquivSym'
 
 theorem cons_equiv_eq_equiv_cons (α : Type _) (n : ℕ) (a : α) (s : Sym α n) :
-    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) :=
-  by
+    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
 #align sym.cons_equiv_eq_equiv_cons Sym.cons_equiv_eq_equiv_cons
@@ -302,8 +300,7 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
-theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' :=
-  by
+theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
@@ -646,8 +643,7 @@ theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.so
   rfl
 
 @[simp]
-theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s :=
-  by
+theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s := by
   by_cases h : none ∈ s
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_not_none_mem, Embedding.some_apply, map_map,

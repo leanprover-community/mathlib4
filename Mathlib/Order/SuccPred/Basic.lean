@@ -425,15 +425,15 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   · exact ⟨le_succ a, le_rfl⟩
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
-theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
+theorem _root_.Covby.succ_eq (h : a ⋖ b) : succ a = b :=
   (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
-#align covby.succ_eq Order.Covby.succ_eq
+#align covby.succ_eq Covby.succ_eq
 
-theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
+theorem _root_.Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.succ_eq h).ge
   · exact le_succ _
-#align wcovby.le_succ Order.Wcovby.le_succ
+#align wcovby.le_succ Wcovby.le_succ
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
@@ -781,15 +781,15 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem _root_.Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
-#align covby.pred_eq Order.Covby.pred_eq
+#align covby.pred_eq Covby.pred_eq
 
-theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem _root_.Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.pred_eq h).le
   · exact pred_le _
-#align wcovby.pred_le Order.Wcovby.pred_le
+#align wcovby.pred_le Wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
