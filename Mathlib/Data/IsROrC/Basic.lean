@@ -96,68 +96,56 @@ noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨algebraMap ℝ K⟩
 #align is_R_or_C.algebra_map_coe IsROrC.algebraMapCoe
 
-theorem ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) :=
-  Algebra.algebraMap_eq_smul_one x
+theorem ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) := Algebra.algebraMap_eq_smul_one x
 #align is_R_or_C.of_real_alg IsROrC.ofReal_alg
 
-theorem real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z :=
-  Algebra.smul_def r z
+theorem real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z := Algebra.smul_def r z
 #align is_R_or_C.real_smul_eq_coe_mul IsROrC.real_smul_eq_coe_mul
 
 theorem real_smul_eq_coe_smul [AddCommGroup E] [Module K E] [Module ℝ E] [IsScalarTower ℝ K E]
     (r : ℝ) (x : E) : r • x = (r : K) • x := by rw [IsROrC.ofReal_alg, smul_one_smul]
 #align is_R_or_C.real_smul_eq_coe_smul IsROrC.real_smul_eq_coe_smul
 
-theorem algebraMap_eq_ofReal : ⇑(algebraMap ℝ K) = coe :=
-  rfl
+theorem algebraMap_eq_ofReal : ⇑(algebraMap ℝ K) = coe := rfl
 #align is_R_or_C.algebra_map_eq_of_real IsROrC.algebraMap_eq_ofReal
 
 @[simp, isROrC_simps]
-theorem re_add_im (z : K) : (re z : K) + im z * I = z :=
-  IsROrC.re_add_im_ax z
+theorem re_add_im (z : K) : (re z : K) + im z * I = z := IsROrC.re_add_im_ax z
 #align is_R_or_C.re_add_im IsROrC.re_add_im
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_re : ∀ r : ℝ, re (r : K) = r :=
-  IsROrC.ofReal_re_ax
+theorem ofReal_re : ∀ r : ℝ, re (r : K) = r := IsROrC.ofReal_re_ax
 #align is_R_or_C.of_real_re IsROrC.ofReal_re
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_im : ∀ r : ℝ, im (r : K) = 0 :=
-  IsROrC.ofReal_im_ax
+theorem ofReal_im : ∀ r : ℝ, im (r : K) = 0 := IsROrC.ofReal_im_ax
 #align is_R_or_C.of_real_im IsROrC.ofReal_im
 
 @[simp, isROrC_simps]
-theorem mul_re : ∀ z w : K, re (z * w) = re z * re w - im z * im w :=
-  IsROrC.mul_re_ax
+theorem mul_re : ∀ z w : K, re (z * w) = re z * re w - im z * im w := IsROrC.mul_re_ax
 #align is_R_or_C.mul_re IsROrC.mul_re
 
 @[simp, isROrC_simps]
-theorem mul_im : ∀ z w : K, im (z * w) = re z * im w + im z * re w :=
-  IsROrC.mul_im_ax
+theorem mul_im : ∀ z w : K, im (z * w) = re z * im w + im z * re w := IsROrC.mul_im_ax
 #align is_R_or_C.mul_im IsROrC.mul_im
 
 theorem ext_iff {z w : K} : z = w ↔ re z = re w ∧ im z = im w :=
   ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
 #align is_R_or_C.ext_iff IsROrC.ext_iff
 
-theorem ext {z w : K} (hre : re z = re w) (him : im z = im w) : z = w :=
-  ext_iff.2 ⟨hre, him⟩
+theorem ext {z w : K} (hre : re z = re w) (him : im z = im w) : z = w := ext_iff.2 ⟨hre, him⟩
 #align is_R_or_C.ext IsROrC.ext
 
 @[norm_cast]
-theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
-  algebraMap.coe_zero
+theorem ofReal_zero : ((0 : ℝ) : K) = 0 := algebraMap.coe_zero
 #align is_R_or_C.of_real_zero IsROrC.ofReal_zero
 
 @[isROrC_simps]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
-  map_zero re
+theorem zero_re' : re (0 : K) = (0 : ℝ) := map_zero re
 #align is_R_or_C.zero_re' IsROrC.zero_re'
 
 @[norm_cast]
-theorem ofReal_one : ((1 : ℝ) : K) = 1 :=
-  map_one (algebraMap ℝ K)
+theorem ofReal_one : ((1 : ℝ) : K) = 1 := map_one (algebraMap ℝ K)
 #align is_R_or_C.of_real_one IsROrC.ofReal_one
 
 @[simp, isROrC_simps]
@@ -168,18 +156,15 @@ theorem one_re : re (1 : K) = 1 := by rw [← ofReal_one, ofReal_re]
 theorem one_im : im (1 : K) = 0 := by rw [← ofReal_one, ofReal_im]
 #align is_R_or_C.one_im IsROrC.one_im
 
-theorem ofReal_injective : Function.Injective (coe : ℝ → K) :=
-  (algebraMap ℝ K).Injective
+theorem ofReal_injective : Function.Injective (coe : ℝ → K) := (algebraMap ℝ K).Injective
 #align is_R_or_C.of_real_injective IsROrC.ofReal_injective
 
 @[norm_cast]
-theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
-  algebraMap.coe_inj
+theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w := algebraMap.coe_inj
 #align is_R_or_C.of_real_inj IsROrC.ofReal_inj
 
 @[simp, isROrC_simps]
-theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
-  map_bit0 _ _
+theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) := map_bit0 _ _
 #align is_R_or_C.bit0_re IsROrC.bit0_re
 
 @[simp, isROrC_simps]
@@ -187,8 +172,7 @@ theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_a
 #align is_R_or_C.bit1_re IsROrC.bit1_re
 
 @[simp, isROrC_simps]
-theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
-  map_bit0 _ _
+theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) := map_bit0 _ _
 #align is_R_or_C.bit0_im IsROrC.bit0_im
 
 @[simp, isROrC_simps]
@@ -196,37 +180,30 @@ theorem bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
   simp only [bit1, map_add, bit0_im, one_im, add_zero]
 #align is_R_or_C.bit1_im IsROrC.bit1_im
 
-theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.lift_map_eq_zero_iff x
+theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 := algebraMap.lift_map_eq_zero_iff x
 #align is_R_or_C.of_real_eq_zero IsROrC.ofReal_eq_zero
 
-theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
-  ofReal_eq_zero.Not
+theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 := ofReal_eq_zero.Not
 #align is_R_or_C.of_real_ne_zero IsROrC.ofReal_ne_zero
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
-  algebraMap.coe_add _ _
+theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s := algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add IsROrC.ofReal_add
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) :=
-  ofReal_add _ _
+theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) := ofReal_add _ _
 #align is_R_or_C.of_real_bit0 IsROrC.ofReal_bit0
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) :=
-  map_bit1 (algebraMap ℝ K) r
+theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) := map_bit1 (algebraMap ℝ K) r
 #align is_R_or_C.of_real_bit1 IsROrC.ofReal_bit1
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
-  algebraMap.coe_neg r
+theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r := algebraMap.coe_neg r
 #align is_R_or_C.of_real_neg IsROrC.ofReal_neg
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
-  map_sub (algebraMap ℝ K) r s
+theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s := map_sub (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_sub IsROrC.ofReal_sub
 
 @[simp, isROrC_simps, norm_cast]
@@ -242,8 +219,7 @@ theorem ofReal_finsupp_sum {α M : Type _} [Zero M] (f : α →₀ M) (g : α �
 #align is_R_or_C.of_real_finsupp_sum IsROrC.ofReal_finsupp_sum
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
-  algebraMap.coe_mul _ _
+theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s := algebraMap.coe_mul _ _
 #align is_R_or_C.of_real_mul IsROrC.ofReal_mul
 
 @[simp, norm_cast, isROrC_simps]
@@ -289,8 +265,7 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 #align is_R_or_C.smul_im IsROrC.smul_im
 
 @[simp, norm_cast, isROrC_simps]
-theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
-  norm_algebraMap' K r
+theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| := norm_algebraMap' K r
 #align is_R_or_C.norm_of_real IsROrC.norm_ofReal
 
 /-! ### Characteristic zero -/
@@ -304,11 +279,9 @@ instance (priority := 100) charZero_R_or_C : CharZero K :=
 
 /-! ### The imaginary unit, `I` -/
 
-
 /-- The imaginary unit. -/
 @[simp, isROrC_simps]
-theorem I_re : re (I : K) = 0 :=
-  I_re_ax
+theorem I_re : re (I : K) = 0 := I_re_ax
 #align is_R_or_C.I_re IsROrC.I_re
 
 @[simp, isROrC_simps]
@@ -340,8 +313,7 @@ theorem conj_im (z : K) : im (conj z) = -im z :=
 #align is_R_or_C.conj_im IsROrC.conj_im
 
 @[simp, isROrC_simps]
-theorem conj_I : conj (I : K) = -I :=
-  IsROrC.conj_I_ax
+theorem conj_I : conj (I : K) = -I := IsROrC.conj_I_ax
 #align is_R_or_C.conj_I IsROrC.conj_I
 
 @[simp, isROrC_simps]
@@ -384,7 +356,6 @@ theorem add_conj (z : K) : z + conj z = 2 * re z :=
   calc
     z + conj z = re z + im z * I + (re z - im z * I) := by rw [re_add_im, conj_eq_re_sub_im]
     _ = 2 * re z := by rw [add_add_sub_cancel, two_mul]
-    
 #align is_R_or_C.add_conj IsROrC.add_conj
 
 theorem re_eq_add_conj (z : K) : ↑(re z) = (z + conj z) / 2 := by
@@ -566,13 +537,11 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
 #align is_R_or_C.div_im IsROrC.div_im
 
 @[simp, isROrC_simps]
-theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
-  star_inv' _
+theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ := star_inv' _
 #align is_R_or_C.conj_inv IsROrC.conj_inv
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
-  map_div₀ (algebraMap ℝ K) r s
+theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s := map_div₀ (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_div IsROrC.ofReal_div
 
 theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
@@ -580,12 +549,10 @@ theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
 #align is_R_or_C.div_re_of_real IsROrC.div_re_ofReal
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = r ^ n :=
-  map_zpow₀ (algebraMap ℝ K) r n
+theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = r ^ n := map_zpow₀ (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_zpow IsROrC.ofReal_zpow
 
-theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
-  I_mul_I_ax.resolve_left
+theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 := I_mul_I_ax.resolve_left
 #align is_R_or_C.I_mul_I_of_nonzero IsROrC.I_mul_I_of_nonzero
 
 @[simp, isROrC_simps]
@@ -613,11 +580,10 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_norm_sq_eq_norm, norm_sq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 
-instance (priority := 100) : CstarRing K
-    where norm_star_mul_self x := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
+instance (priority := 100) : CstarRing K where
+  norm_star_mul_self x := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
 
 /-! ### Cast lemmas -/
-
 
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
@@ -743,7 +709,6 @@ theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2
 
 /-! ### Cauchy sequences -/
 
-
 theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun ε ε0 =>
   (f.Cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_re_le_norm (f j - f i)) (H _ ij)
@@ -820,23 +785,19 @@ local notation "IR" => @IsROrC.I ℝ _
 local notation "norm_sqR" => @IsROrC.normSq ℝ _
 
 @[simp, isROrC_simps]
-theorem re_to_real {x : ℝ} : reR x = x :=
-  rfl
+theorem re_to_real {x : ℝ} : reR x = x := rfl
 #align is_R_or_C.re_to_real IsROrC.re_to_real
 
 @[simp, isROrC_simps]
-theorem im_to_real {x : ℝ} : imR x = 0 :=
-  rfl
+theorem im_to_real {x : ℝ} : imR x = 0 := rfl
 #align is_R_or_C.im_to_real IsROrC.im_to_real
 
 @[simp, isROrC_simps]
-theorem conj_to_real {x : ℝ} : conj x = x :=
-  rfl
+theorem conj_to_real {x : ℝ} : conj x = x := rfl
 #align is_R_or_C.conj_to_real IsROrC.conj_to_real
 
 @[simp, isROrC_simps]
-theorem I_to_real : IR = 0 :=
-  rfl
+theorem I_to_real : IR = 0 := rfl
 #align is_R_or_C.I_to_real IsROrC.I_to_real
 
 @[simp, isROrC_simps]
@@ -844,8 +805,7 @@ theorem normSq_to_real {x : ℝ} : normSq x = x * x := by simp [IsROrC.normSq]
 #align is_R_or_C.norm_sq_to_real IsROrC.normSq_to_real
 
 @[simp]
-theorem coe_real_eq_id : @coe ℝ ℝ _ = id :=
-  rfl
+theorem coe_real_eq_id : @coe ℝ ℝ _ = id := rfl
 #align is_R_or_C.coe_real_eq_id IsROrC.coe_real_eq_id
 
 end CleanupLemmas
@@ -853,13 +813,11 @@ end CleanupLemmas
 section LinearMaps
 
 /-- The real part in a `is_R_or_C` field, as a linear map. -/
-def reLm : K →ₗ[ℝ] ℝ :=
-  { re with map_smul' := smul_re }
+def reLm : K →ₗ[ℝ] ℝ := { re with map_smul' := smul_re }
 #align is_R_or_C.re_lm IsROrC.reLm
 
 @[simp, isROrC_simps]
-theorem reLm_coe : (reLm : K → ℝ) = re :=
-  rfl
+theorem reLm_coe : (reLm : K → ℝ) = re := rfl
 #align is_R_or_C.re_lm_coe IsROrC.reLm_coe
 
 /-- The real part in a `is_R_or_C` field, as a continuous linear map. -/
@@ -870,28 +828,23 @@ noncomputable def reClm : K →L[ℝ] ℝ :=
 #align is_R_or_C.re_clm IsROrC.reClm
 
 @[simp, isROrC_simps, norm_cast]
-theorem reClm_coe : ((reClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm :=
-  rfl
+theorem reClm_coe : ((reClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm := rfl
 #align is_R_or_C.re_clm_coe IsROrC.reClm_coe
 
 @[simp, isROrC_simps]
-theorem reClm_apply : ((reClm : K →L[ℝ] ℝ) : K → ℝ) = re :=
-  rfl
+theorem reClm_apply : ((reClm : K →L[ℝ] ℝ) : K → ℝ) = re := rfl
 #align is_R_or_C.re_clm_apply IsROrC.reClm_apply
 
 @[continuity]
-theorem continuous_re : Continuous (re : K → ℝ) :=
-  reClm.Continuous
+theorem continuous_re : Continuous (re : K → ℝ) := reClm.Continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
 /-- The imaginary part in a `is_R_or_C` field, as a linear map. -/
-def imLm : K →ₗ[ℝ] ℝ :=
-  { im with map_smul' := smul_im }
+def imLm : K →ₗ[ℝ] ℝ := { im with map_smul' := smul_im }
 #align is_R_or_C.im_lm IsROrC.imLm
 
 @[simp, isROrC_simps]
-theorem imLm_coe : (imLm : K → ℝ) = im :=
-  rfl
+theorem imLm_coe : (imLm : K → ℝ) = im := rfl
 #align is_R_or_C.im_lm_coe IsROrC.imLm_coe
 
 /-- The imaginary part in a `is_R_or_C` field, as a continuous linear map. -/
@@ -902,18 +855,15 @@ noncomputable def imClm : K →L[ℝ] ℝ :=
 #align is_R_or_C.im_clm IsROrC.imClm
 
 @[simp, isROrC_simps, norm_cast]
-theorem imClm_coe : ((imClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm :=
-  rfl
+theorem imClm_coe : ((imClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm := rfl
 #align is_R_or_C.im_clm_coe IsROrC.imClm_coe
 
 @[simp, isROrC_simps]
-theorem imClm_apply : ((imClm : K →L[ℝ] ℝ) : K → ℝ) = im :=
-  rfl
+theorem imClm_apply : ((imClm : K →L[ℝ] ℝ) : K → ℝ) = im := rfl
 #align is_R_or_C.im_clm_apply IsROrC.imClm_apply
 
 @[continuity]
-theorem continuous_im : Continuous (im : K → ℝ) :=
-  imClm.Continuous
+theorem continuous_im : Continuous (im : K → ℝ) := imClm.Continuous
 #align is_R_or_C.continuous_im IsROrC.continuous_im
 
 /-- Conjugate as an `ℝ`-algebra equivalence -/
@@ -926,51 +876,41 @@ def conjAe : K ≃ₐ[ℝ] K :=
 #align is_R_or_C.conj_ae IsROrC.conjAe
 
 @[simp, isROrC_simps]
-theorem conjAe_coe : (conjAe : K → K) = conj :=
-  rfl
+theorem conjAe_coe : (conjAe : K → K) = conj := rfl
 #align is_R_or_C.conj_ae_coe IsROrC.conjAe_coe
 
 /-- Conjugate as a linear isometry -/
-noncomputable def conjLie : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+noncomputable def conjLie : K ≃ₗᵢ[ℝ] K := ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
 #align is_R_or_C.conj_lie IsROrC.conjLie
 
 @[simp, isROrC_simps]
-theorem conjLie_apply : (conjLie : K → K) = conj :=
-  rfl
+theorem conjLie_apply : (conjLie : K → K) = conj := rfl
 #align is_R_or_C.conj_lie_apply IsROrC.conjLie_apply
 
 /-- Conjugate as a continuous linear equivalence -/
-noncomputable def conjCle : K ≃L[ℝ] K :=
-  @conjLie K _
+noncomputable def conjCle : K ≃L[ℝ] K := @conjLie K _
 #align is_R_or_C.conj_cle IsROrC.conjCle
 
 @[simp, isROrC_simps]
-theorem conjCle_coe : (@conjCle K _).toLinearEquiv = conjAe.toLinearEquiv :=
-  rfl
+theorem conjCle_coe : (@conjCle K _).toLinearEquiv = conjAe.toLinearEquiv := rfl
 #align is_R_or_C.conj_cle_coe IsROrC.conjCle_coe
 
 @[simp, isROrC_simps]
-theorem conjCle_apply : (conjCle : K → K) = conj :=
-  rfl
+theorem conjCle_apply : (conjCle : K → K) = conj := rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
 
-instance (priority := 100) : ContinuousStar K :=
-  ⟨conjLie.Continuous⟩
+instance (priority := 100) : ContinuousStar K := ⟨conjLie.Continuous⟩
 
 @[continuity]
-theorem continuous_conj : Continuous (conj : K → K) :=
-  continuous_star
+theorem continuous_conj : Continuous (conj : K → K) := continuous_star
 #align is_R_or_C.continuous_conj IsROrC.continuous_conj
 
 /-- The `ℝ → K` coercion, as a linear map -/
-noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
-  Algebra.ofId ℝ K
+noncomputable def ofRealAm : ℝ →ₐ[ℝ] K := Algebra.ofId ℝ K
 #align is_R_or_C.of_real_am IsROrC.ofRealAm
 
 @[simp, isROrC_simps]
-theorem ofRealAm_coe : (ofRealAm : ℝ → K) = coe :=
-  rfl
+theorem ofRealAm_coe : (ofRealAm : ℝ → K) = coe := rfl
 #align is_R_or_C.of_real_am_coe IsROrC.ofRealAm_coe
 
 /-- The ℝ → K coercion, as a linear isometry -/
@@ -980,28 +920,23 @@ noncomputable def ofRealLi : ℝ →ₗᵢ[ℝ] K where
 #align is_R_or_C.of_real_li IsROrC.ofRealLi
 
 @[simp, isROrC_simps]
-theorem ofRealLi_apply : (ofRealLi : ℝ → K) = coe :=
-  rfl
+theorem ofRealLi_apply : (ofRealLi : ℝ → K) = coe := rfl
 #align is_R_or_C.of_real_li_apply IsROrC.ofRealLi_apply
 
 /-- The `ℝ → K` coercion, as a continuous linear map -/
-noncomputable def ofRealClm : ℝ →L[ℝ] K :=
-  ofRealLi.toContinuousLinearMap
+noncomputable def ofRealClm : ℝ →L[ℝ] K := ofRealLi.toContinuousLinearMap
 #align is_R_or_C.of_real_clm IsROrC.ofRealClm
 
 @[simp, isROrC_simps]
-theorem ofRealClm_coe : (@ofRealClm K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap :=
-  rfl
+theorem ofRealClm_coe : (@ofRealClm K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap := rfl
 #align is_R_or_C.of_real_clm_coe IsROrC.ofRealClm_coe
 
 @[simp, isROrC_simps]
-theorem ofRealClm_apply : (ofRealClm : ℝ → K) = coe :=
-  rfl
+theorem ofRealClm_apply : (ofRealClm : ℝ → K) = coe := rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealClm_apply
 
 @[continuity]
-theorem continuous_ofReal : Continuous (coe : ℝ → K) :=
-  ofRealLi.Continuous
+theorem continuous_ofReal : Continuous (coe : ℝ → K) := ofRealLi.Continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal
 
 @[continuity]
@@ -1012,4 +947,3 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 end LinearMaps
 
 end IsROrC
-
