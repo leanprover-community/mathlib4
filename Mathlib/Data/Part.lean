@@ -322,6 +322,7 @@ theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) 
 #align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `Option α` into a `Part α`. -/
+@[coe]
 def ofOption : Option α → Part α
   | Option.none => none
   | Option.some a => some a
