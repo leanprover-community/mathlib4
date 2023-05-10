@@ -86,7 +86,19 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 -- porting note: added
+@[to_additive (attr := simp)]
+lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+@[to_additive (attr := simp)]
+lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
+
+@[to_additive (attr := ext)]
+lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  MonoidHom.ext w
 
 /-- Construct a bundled `MonCat` from the underlying type and typeclass. -/
 @[to_additive]
@@ -123,7 +135,9 @@ instance : Inhabited MonCat :=
   ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
     (@CommGroup.toGroup _ PUnit.commGroup)))⟩
 
-@[to_additive (attr := simp)]
+-- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
+-- bundled or unbundled lemmas.
+@[to_additive]
 theorem coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.coe_of MonCat.coe_of
@@ -173,9 +187,22 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 -- porting note: added
-@[simp] lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
+@[to_additive (attr := simp)]
+lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+@[to_additive (attr := simp)]
+lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
+@[to_additive (attr := simp)]
+lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
     (forget CommMonCat).map f = (f : X → Y) :=
   rfl
+
+@[to_additive (attr := ext)]
+lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  MonoidHom.ext w
 
 /-- Construct a bundled `CommMonCat` from the underlying type and typeclass. -/
 @[to_additive]
@@ -194,7 +221,9 @@ instance : Inhabited CommMonCat :=
   -- The default instance for `CommMonoid PUnit` is derived via `CommRing` which breaks to_additive
   ⟨@of PUnit (@CommGroup.toCommMonoid _ PUnit.commGroup)⟩
 
-@[to_additive (attr := simp)]
+-- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
+-- bundled or unbundled lemmas.
+@[to_additive]
 theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -213,7 +242,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
--- porting note: this was added to make automation work
+-- porting note: this was added to make automation work (it already exists for MonCat)
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
@@ -221,11 +250,9 @@ def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶
 /-- Typecheck a `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
 add_decl_doc AddCommMonCat.ofHom
 
--- Porting TODO: can we remove this?
--- porting note: this was added to make automation work in `MulEquiv.toCommMonCatIso`
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
-  ((forget CommMonCat).map (ofHom f)) x = f x := rfl
+  (ofHom f) x = f x := rfl
 
 end CommMonCat
 
@@ -261,8 +288,9 @@ variable [Monoid X] [Monoid Y]
 @[to_additive (attr := simps) AddEquiv.toAddMonCatIso
       "Build an isomorphism in the category `AddMonCat` from\nan `AddEquiv` between `AddMonoid`s."]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
-  hom := e.toMonoidHom
-  inv := e.symm.toMonoidHom
+  hom := MonCat.ofHom e.toMonoidHom
+  inv := MonCat.ofHom e.symm.toMonoidHom
+  hom_inv_id := by aesop_cat_nonterminal
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_Mon_iso MulEquiv.toMonCatIso
 set_option linter.uppercaseLean3 false in
@@ -279,6 +307,7 @@ variable [CommMonoid X] [CommMonoid Y]
 def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of Y where
   hom := CommMonCat.ofHom e.toMonoidHom
   inv := CommMonCat.ofHom e.symm.toMonoidHom
+  hom_inv_id := by aesop_cat_nonterminal
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
