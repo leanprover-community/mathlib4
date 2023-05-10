@@ -1301,6 +1301,7 @@ def mulₗᵢ : 𝕜' →ₗᵢ[𝕜] 𝕜' →L[𝕜] 𝕜' where
         simp [norm_one])
 #align continuous_linear_map.mulₗᵢ ContinuousLinearMap.mulₗᵢ
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 𝕜') = mul 𝕜 𝕜' :=
   rfl
@@ -1390,12 +1391,14 @@ def restrictScalarsIsometry : (E →L[𝕜] Fₗ) →ₗᵢ[𝕜''] E →L[𝕜'
 
 variable {𝕜 E Fₗ 𝕜' 𝕜''}
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_restrictScalarsIsometry :
     ⇑(restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'') = restrictScalars 𝕜' :=
   rfl
 #align continuous_linear_map.coe_restrict_scalars_isometry ContinuousLinearMap.coe_restrictScalarsIsometry
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem restrictScalarsIsometry_toLinearMap :
     (restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'').toLinearMap = restrictScalarsₗ 𝕜 E Fₗ 𝕜' 𝕜'' :=
@@ -1422,6 +1425,7 @@ theorem coe_restrictScalarsL :
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.coe_restrict_scalarsL ContinuousLinearMap.coe_restrictScalarsL
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'') = restrictScalars 𝕜' :=
   rfl
@@ -1434,6 +1438,7 @@ end ContinuousLinearMap
 
 namespace Submodule
 
+set_option synthInstance.etaExperiment true in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 set_option linter.uppercaseLean3 false in
