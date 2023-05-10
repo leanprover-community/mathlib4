@@ -290,4 +290,11 @@ def Triangle.π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₁ :=
+  (inferInstance : IsIso (Triangle.π₁.map φ))
+instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₂ :=
+  (inferInstance : IsIso (Triangle.π₂.map φ))
+instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₃ :=
+  (inferInstance : IsIso (Triangle.π₃.map φ))
+
 end CategoryTheory.Pretriangulated

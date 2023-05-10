@@ -95,6 +95,27 @@ noncomputable def triangleMap :
     erw [← NatTrans.naturality]
     rfl
 
+variable (φ₁ φ₂ a b)
+variable (comm : φ₁ ≫ b = a ≫ φ₂)
+
+noncomputable def map' : mappingCone φ₁ ⟶ mappingCone φ₂ :=
+  desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
+    (by simp only [δ_ofHom_comp, δ_inl, reassoc_of% comm, Cochain.ofHom_comp])
+
+lemma map'_eq_map : map' φ₁ φ₂ a b comm = map (Homotopy.ofEq comm) := by
+  dsimp only [map, map']
+  simp
+
+@[simps]
+noncomputable def triangleMap' :
+    CochainComplex.MappingCone.triangle φ₁ ⟶ CochainComplex.MappingCone.triangle φ₂ where
+  hom₁ := a
+  hom₂ := b
+  hom₃ := map' _ _ _ _ comm
+  comm₁ := comm
+  comm₂ := by dsimp [triangle, map'] ; simp only [inr_desc]
+  comm₃ := by dsimp ; simp only [map'_eq_map, triangleMap_comm₃]
+
 end map
 
 section rotate
@@ -384,5 +405,10 @@ instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguished_cocone_triangle := distinguished_cocone_triangle
   rotate_distinguished_triangle := rotate_distinguished_triangle
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism
+
+lemma mappingCone_triangle_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
+  (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
+      (CochainComplex.MappingCone.triangle f) ∈ distTriang (HomotopyCategory _ _) :=
+  ⟨_, _, f, ⟨Iso.refl _⟩⟩
 
 end HomotopyCategory

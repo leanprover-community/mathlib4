@@ -140,6 +140,10 @@ lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q  : ℤ) (hpq : p + 0 = q) :
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
 
+@[simp]
+lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
+    ofHomotopy (Homotopy.ofEq h) = 0 := by rfl
+
 @[reassoc]
 lemma v_comp_XIsoOfEq_hom
     (γ : Cochain F G n) (p q q' : ℤ) (hpq : p + n = q) (hq' : q = q') :
@@ -661,6 +665,9 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
     dsimp [Cochain.ofHomotopy]
     rw [dif_pos]
 
+@[simp]
+lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
+    (equivHomotopy _ _ (Homotopy.ofEq h)).1 = 0 := rfl
 
 lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ := by
   rw [← Cocycle.homOf_ofHom_eq_self f₁, ← Cocycle.homOf_ofHom_eq_self f₂]

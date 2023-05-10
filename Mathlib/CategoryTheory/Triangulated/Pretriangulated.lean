@@ -619,6 +619,18 @@ lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTri
   have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
   exact ⟨asIso φ, hφ₁, hφ₂⟩
 
+@[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
+def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)
+    (comm : T₁.mor₁ ≫ e₂.hom = e₁.hom ≫ T₂.mor₁) : T₁ ≅ T₂ := by
+    have h := exists_iso_of_arrow_iso T₁ T₂ hT₁ hT₂ (Arrow.isoMk e₁ e₂ comm.symm)
+    let e := h.choose
+    refine' Triangle.isoMk _ _ e₁ e₂ (Triangle.π₃.mapIso e) comm (by
+      convert e.hom.comm₂
+      exact h.choose_spec.2.symm) (by
+      convert e.hom.comm₃
+      exact h.choose_spec.1.symm)
+
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
 then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
