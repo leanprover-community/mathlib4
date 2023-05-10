@@ -294,9 +294,10 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = pseudoZero) �
   Eq.symm ∘ zero_morphism_ext f
 #align category_theory.abelian.pseudoelement.zero_morphism_ext' CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext'
 
-scoped[Pseudoelement]
-  attribute [ext]
-    CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext'
+-- Porting note: these are no longer valid as `ext` lemmas.
+-- scoped[Pseudoelement]
+--   attribute [ext]
+--     CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext'
 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = pseudoZero :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
