@@ -248,11 +248,8 @@ protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D
   map := @fun X Y f => (F.map f.unop).unop
 #align category_theory.functor.left_op CategoryTheory.Functor.leftOp
 
-/-- This unexpander makes `Functor.leftOp F` pretty print as `F.leftOp`. -/
-@[app_unexpander Functor.leftOp] def
-  unexpandFunctor.leftOp : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).leftOp $(X)*)
-  | _                 => throw ()
+pp_extended_field_notation Functor.leftOp
+
 /--
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
@@ -264,11 +261,7 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ
   map := @fun X Y f => (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
-/-- This unexpander makes `Functor.rightOp F` pretty print as `F.rightOp`. -/
-@[app_unexpander Functor.rightOp] def
-  unexpandFunctor.rightOp : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).leftOp $(X)*)
-  | _                 => throw ()
+pp_extended_field_notation Functor.rightOp
 
 instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
 
