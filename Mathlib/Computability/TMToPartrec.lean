@@ -12,6 +12,7 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
+import Mathlib.Tactic.Eqns
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -136,7 +137,8 @@ def Code.eval : Code → List ℕ →. List ℕ
 namespace Code
 
 /- Porting note: The equation lemma of `eval` is too strong; it simplifies terms like the LHS of
-`pred_eval`. We removed `simp` attr from `eval` and prepare new simp lemmas for `eval`. -/
+`pred_eval`. Even `eqns` can't fix this. We removed `simp` attr from `eval` and prepare new simp
+lemmas for `eval`. -/
 
 @[simp]
 theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
@@ -1028,7 +1030,6 @@ def trNormal : Code → Cont' → Λ'
 #align turing.partrec_to_TM2.tr_normal Turing.PartrecToTM2.trNormal
 
 /-- The main program. See the section documentation for details. -/
-@[simp]
 def tr : Λ' → Stmt'
   | Λ'.move p k₁ k₂ q =>
     pop' k₁ <|
@@ -1070,6 +1071,57 @@ def tr : Λ' → Stmt'
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 #align turing.partrec_to_TM2.tr Turing.PartrecToTM2.tr
+
+/- Porting note: The equation lemma of `tr` simplifies to `match` structures. To prevent this,
+We replaces equation lemmas of `tr`. -/
+
+theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
+  pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
+      (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
+
+theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
+    ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
+
+theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
+
+theorem tr_clear (p k q) : tr (Λ'.clear p k q) = pop' k (branch
+    (fun s => s.elim true p) (goto fun _ => q) (goto fun _ => Λ'.clear p k q)) := rfl
+
+theorem tr_copy (q) : tr (Λ'.copy q) = pop' rev (branch Option.isSome
+    (push' main <| push' stack <| goto fun _ => Λ'.copy q) (goto fun _ => q)) := rfl
+
+theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'.bit1)
+    ((push rev fun _ => Γ'.bit0) <| goto fun _ => Λ'.succ q) <|
+      branch (fun s => s = some Γ'.cons)
+        ((push main fun _ => Γ'.cons) <| (push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
+        ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
+
+theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
+      ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
+    branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+      (peek' main <|
+        branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
+          ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
+
+theorem tr_ret_cons₁ (fs k) : tr (Λ'.ret (Cont'.cons₁ fs k)) = goto fun _ =>
+    move₂ (fun _ => false) main aux <|
+      move₂ (fun s => s = Γ'.consₗ) stack main <|
+        move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k) := rfl
+
+theorem tr_ret_cons₂ (k) : tr (Λ'.ret (Cont'.cons₂ k)) =
+    goto fun _ => head stack <| Λ'.ret k := rfl
+
+theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNormal f k := rfl
+
+theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
+    cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
+
+theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
+
+attribute
+  [eqns tr_move tr_push tr_read tr_clear tr_copy tr_succ tr_pred tr_ret_cons₁
+    tr_ret_cons₂ tr_ret_comp tr_ret_fix tr_ret_halt] tr
+attribute [simp] tr
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
 data. This data is instead encoded in `trContStack` in the configuration. -/
@@ -1177,13 +1229,26 @@ def trContStack (k : Cont) :=
 represent the stack data as four lists rather than as a function `K' → List Γ'`, because this makes
 rewrites easier. The theorems `K'.elim_update_main` et. al. show how such a function is updated
 after an `update` to one of the components. -/
-@[simp]
 def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.main => a
   | K'.rev => b
   | K'.aux => c
   | K'.stack => d
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
+
+/- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
+We replaces equation lemmas of `elim`. -/
+
+theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
+
+theorem K'.elim_rev (a b c d) : K'.elim a b c d K'.rev = b := rfl
+
+theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
+
+theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
+
+attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
+attribute [simp] K'.elim
 
 @[simp]
 theorem K'.elim_update_main {a b c d a'} : update (K'.elim a b c d) main a' = K'.elim a' b c d := by
@@ -1266,29 +1331,17 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     · rw [Function.update_noteq h₁.symm]
       rfl
     refine' TransGen.head' rfl _
-    conv =>
-      congr
-      · ext a b
-        rw [Option.mem_def]
-      · simp only [tr, pop', push', TM2.stepAux]
+    simp
     revert e ; cases' S k₁ with a Sk <;> intro e
     · cases e
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and] at e ⊢
-    · revert e
-      rcases splitAtPred p Sk with ⟨_, _, _⟩
-      rintro ⟨⟨⟩, _⟩
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
     · simp only [e]
       rfl
   · refine' TransGen.head rfl _
-    conv =>
-      congr
-      · ext a b
-        rw [Option.mem_def]
-      · simp only [tr, pop', push', TM2.stepAux]
-      · rw [List.reverseAux]
+    simp
     cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
@@ -1314,19 +1367,17 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
     Reaches₁ (TM2.step tr) ⟨some (move₂ p k₁ k₂ q), s, S⟩
       ⟨some q, none, update (update S k₁ (o.elim id List.cons L₂)) k₂ (L₁ ++ S k₂)⟩ := by
   refine' (move_ok h₁.1 e).trans (TransGen.head rfl _)
-  conv =>
-    congr
-    · skip
-    · simp only [tr]
-    · skip
+  simp
   cases o <;> simp only [Option.elim, id.def]
-  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · simp only [TM2.stepAux, Option.isSome, cond_false]
+    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_noteq h₁.2.2.symm, Function.update_noteq h₁.2.1,
       Function.update_noteq h₁.1.symm, List.reverseAux_eq, h₂, Function.update_same,
       List.append_nil, List.reverse_reverse]
-  · convert move_ok h₁.2.1.symm (split_at_pred_ff _) using 2
+  · simp only [TM2.stepAux, Option.isSome, cond_true]
+    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_same,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -1337,47 +1388,47 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
 theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p (S k) = (L₁, o, L₂)) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.clear p k q), s, S⟩ ⟨some q, o, update S k L₂⟩ := by
   induction' L₁ with a L₁ IH generalizing S s
-  · refine' trans_gen.head' rfl _
+  · refine' TransGen.head' rfl _
     simp
-    cases' S k with a Sk
+    revert e; cases' S k with a Sk <;> intro e
     · cases e
       rfl
-    simp [split_at_pred] at e⊢
-    cases p a <;> simp at e⊢
-    · revert e
-      rcases split_at_pred p Sk with ⟨_, _, _⟩
-      rintro ⟨⟩
-    · simp only [e]
-  · refine' trans_gen.head rfl _
+    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
+    revert e; cases p a <;> intro e <;>
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
+    · rcases e with ⟨e₁, e₂⟩
+      rw [e₁, e₂]
+  · refine' TransGen.head rfl _
     simp
-    cases' e₁ : S k with a' Sk <;> rw [e₁, split_at_pred] at e
+    cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
     swap
     · cases e
-    rcases e₃ : split_at_pred p Sk with ⟨_, _, _⟩
-    rw [e₃, split_at_pred] at e
+    rcases e₃ : splitAtPred p Sk with ⟨_, _, _⟩
+    rw [e₃] at e
     cases e
     simp [e₂]
-    convert@IH (update S k Sk) _ _ using 2 <;> simp [e₃]
+    convert @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
 #align turing.partrec_to_TM2.clear_ok Turing.PartrecToTM2.clear_ok
 
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
       ⟨some q, none, K'.elim (List.reverseAux b a) [] c (List.reverseAux b d)⟩ := by
   induction' b with x b IH generalizing a d s
-  · refine' trans_gen.single _
+  · refine' TransGen.single _
     simp
-    rfl
-  refine' trans_gen.head rfl _; simp; exact IH _ _ _
+  refine' TransGen.head rfl _
+  simp
+  exact IH _ _ _
 #align turing.partrec_to_TM2.copy_ok Turing.PartrecToTM2.copy_ok
 
 theorem trPosNum_natEnd : ∀ (n), ∀ x ∈ trPosNum n, natEnd x = false
-  | PosNum.one, _, Or.inl rfl => rfl
-  | PosNum.bit0 n, _, Or.inl rfl => rfl
-  | PosNum.bit0 n, _, Or.inr h => tr_pos_num_nat_end n _ h
-  | PosNum.bit1 n, _, Or.inl rfl => rfl
-  | PosNum.bit1 n, _, Or.inr h => tr_pos_num_nat_end n _ h
+  | PosNum.one, _, List.Mem.head _ => rfl
+  | PosNum.bit0 _, _, List.Mem.head _ => rfl
+  | PosNum.bit0 n, _, List.Mem.tail _ h => trPosNum_natEnd n _ h
+  | PosNum.bit1 _, _, List.Mem.head _ => rfl
+  | PosNum.bit1 n, _, List.Mem.tail _ h => trPosNum_natEnd n _ h
 #align turing.partrec_to_TM2.tr_pos_num_nat_end Turing.PartrecToTM2.trPosNum_natEnd
 
 theorem trNum_natEnd : ∀ (n), ∀ x ∈ trNum n, natEnd x = false
@@ -1388,16 +1439,15 @@ theorem trNat_natEnd (n) : ∀ x ∈ trNat n, natEnd x = false :=
   trNum_natEnd _
 #align turing.partrec_to_TM2.tr_nat_nat_end Turing.PartrecToTM2.trNat_natEnd
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem trList_ne_cons : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.Cons
-  | a::l, x, h => by
-    simp [tr_list] at h
+theorem trList_ne_consₗ : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.consₗ
+  | a :: l, x, h => by
+    simp [trList] at h
     obtain h | rfl | h := h
     · rintro rfl
-      cases tr_nat_nat_end _ _ h
+      cases trNat_natEnd _ _ h
     · rintro ⟨⟩
-    · exact tr_list_ne_Cons l _ h
-#align turing.partrec_to_TM2.tr_list_ne_Cons Turing.PartrecToTM2.trList_ne_cons
+    · exact trList_ne_consₗ l _ h
+#align turing.partrec_to_TM2.tr_list_ne_Cons Turing.PartrecToTM2.trList_ne_consₗ
 
 theorem head_main_ok {q s L} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (head main q), s, K'.elim (trList L) [] c d⟩
@@ -1405,141 +1455,121 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
   let o : Option Γ' := List.casesOn L none fun _ _ => some Γ'.cons
   refine'
     (move_ok (by decide)
-          (split_at_pred_eq _ _ (tr_nat L.head) o (tr_list L.tail) (tr_nat_nat_end _) _)).trans
-      (trans_gen.head rfl (trans_gen.head rfl _))
+          (splitAtPred_eq _ _ (trNat L.headI) o (trList L.tail) (trNat_natEnd _) _)).trans
+      (TransGen.head rfl (TransGen.head rfl _))
   · cases L <;> simp
   simp
-  rw [if_neg (show o ≠ some Γ'.Cons by cases L <;> rintro ⟨⟩)]
-  refine' (clear_ok (split_at_pred_eq _ _ _ none [] _ ⟨rfl, rfl⟩)).trans _
-  · exact fun x h => Bool.decide_false (tr_list_ne_Cons _ _ h)
-  convert unrev_ok; simp [List.reverseAux_eq]
+  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp)]
+  refine' (clear_ok (splitAtPred_eq _ _ _ none [] _ ⟨rfl, rfl⟩)).trans _
+  · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
+  convert unrev_ok using 2; simp [List.reverseAux_eq]
 #align turing.partrec_to_TM2.head_main_ok Turing.PartrecToTM2.head_main_ok
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem head_stack_ok {q s L₁ L₂ L₃} :
     Reaches₁ (TM2.step tr)
-      ⟨some (head stack q), s, K'.elim (trList L₁) [] [] (trList L₂ ++ Γ'.Cons::L₃)⟩
-      ⟨some q, none, K'.elim (trList (L₂.headI::L₁)) [] [] L₃⟩ := by
+      ⟨some (head stack q), s, K'.elim (trList L₁) [] [] (trList L₂ ++ Γ'.consₗ :: L₃)⟩
+      ⟨some q, none, K'.elim (trList (L₂.headI :: L₁)) [] [] L₃⟩ := by
   cases' L₂ with a L₂
   · refine'
-      trans_gen.trans
+      TransGen.trans
         (move_ok (by decide)
-          (split_at_pred_eq _ _ [] (some Γ'.Cons) L₃ (by rintro _ ⟨⟩) ⟨rfl, rfl⟩))
-        (trans_gen.head rfl (trans_gen.head rfl _))
-    convert unrev_ok
+          (splitAtPred_eq _ _ [] (some Γ'.consₗ) L₃ (by rintro _ ⟨⟩) ⟨rfl, rfl⟩))
+        (TransGen.head rfl (TransGen.head rfl _))
     simp
-    rfl
+    convert unrev_ok using 2
+    simp
   · refine'
-      trans_gen.trans
+      TransGen.trans
         (move_ok (by decide)
-          (split_at_pred_eq _ _ (tr_nat a) (some Γ'.cons) (tr_list L₂ ++ Γ'.Cons::L₃)
-            (tr_nat_nat_end _) ⟨rfl, by simp⟩))
-        (trans_gen.head rfl (trans_gen.head rfl _))
+          (splitAtPred_eq _ _ (trNat a) (some Γ'.cons) (trList L₂ ++ Γ'.consₗ :: L₃)
+            (trNat_natEnd _) ⟨rfl, by simp⟩))
+        (TransGen.head rfl (TransGen.head rfl _))
     simp
     refine'
-      trans_gen.trans
+      TransGen.trans
         (clear_ok
-          (split_at_pred_eq _ _ (tr_list L₂) (some Γ'.Cons) L₃
-            (fun x h => Bool.decide_false (tr_list_ne_Cons _ _ h)) ⟨rfl, by simp⟩))
+          (splitAtPred_eq _ _ (trList L₂) (some Γ'.consₗ) L₃
+            (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, by simp⟩))
         _
-    convert unrev_ok
+    convert unrev_ok using 2
     simp [List.reverseAux_eq]
 #align turing.partrec_to_TM2.head_stack_ok Turing.PartrecToTM2.head_stack_ok
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem succ_ok {q s n} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.succ q), s, K'.elim (trList [n]) [] c d⟩
       ⟨some q, none, K'.elim (trList [n.succ]) [] c d⟩ := by
-  simp [tr_nat, Num.add_one]
+  simp [trNat, Num.add_one]
   cases' (n : Num) with a
-  · refine' trans_gen.head rfl _
+  · refine' TransGen.head rfl _
     simp
-    rw [if_neg]
-    swap
-    rintro ⟨⟩
-    rw [if_pos]
-    swap
-    rfl
-    convert unrev_ok
+    convert unrev_ok using 2
     simp
     rfl
-  simp [Num.succ, tr_num, Num.succ']
-  suffices
-    ∀ l₁,
-      ∃ l₁' l₂' s',
-        List.reverseAux l₁ (tr_pos_num a.succ) = List.reverseAux l₁' l₂' ∧
-          reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (tr_pos_num a ++ [Γ'.cons]) l₁ c d⟩
-            ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
+  simp [Num.succ, trNum, Num.succ']
+  suffices ∀ l₁, ∃ l₁' l₂' s',
+      List.reverseAux l₁ (trPosNum a.succ) = List.reverseAux l₁' l₂' ∧
+        Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
+          ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
-  induction' a with m IH m IH generalizing s <;> intro l₁
-  · refine' ⟨Γ'.bit0::l₁, [Γ'.bit1], some Γ'.cons, rfl, trans_gen.head rfl (trans_gen.single _)⟩
-    simp [tr_pos_num]
-  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0::l₁)
-    refine' ⟨l₁', l₂', s', e, trans_gen.head _ h⟩
+  induction' a with m IH m _ generalizing s <;> intro l₁
+  · refine' ⟨Γ'.bit0 :: l₁, [Γ'.bit1], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single _)⟩
+    simp [trPosNum]
+  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
+    refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
     swap
-    simp [PosNum.succ, tr_pos_num]
-  · refine' ⟨l₁, _, some Γ'.bit0, rfl, trans_gen.single _⟩
+    simp [PosNum.succ, trPosNum]
+    rfl
+  · refine' ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single _⟩
     simp
     rfl
 #align turing.partrec_to_TM2.succ_ok Turing.PartrecToTM2.succ_ok
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem pred_ok (q₁ q₂ s v) (c d : List Γ') :
-    ∃ s',
-      Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
-        (v.headI.elim ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
-          ⟨some q₂, s', K'.elim (trList (n::v.tail)) [] c d⟩) := by
+theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
+    Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
+      (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
+        ⟨some q₂, s', K'.elim (trList (n::v.tail)) [] c d⟩) := by
   rcases v with (_ | ⟨_ | n, v⟩)
-  · refine' ⟨none, trans_gen.single _⟩
+  · refine' ⟨none, TransGen.single _⟩
     simp
     rfl
-  · refine' ⟨some Γ'.cons, trans_gen.single _⟩
+  · refine' ⟨some Γ'.cons, TransGen.single _⟩
     simp
   refine' ⟨none, _⟩
-  simp [tr_nat, Num.add_one, Num.succ, tr_num]
+  simp [trNat, Num.add_one, Num.succ, trNum]
   cases' (n : Num) with a
-  · simp [tr_pos_num, tr_num, show num.zero.succ' = PosNum.one from rfl]
-    refine' trans_gen.head rfl _
-    convert unrev_ok
+  · simp [trPosNum, trNum, show Num.zero.succ' = PosNum.one from rfl]
+    refine' TransGen.head rfl _
     simp
-    rfl
-  simp [tr_num, Num.succ']
-  suffices
-    ∀ l₁,
-      ∃ l₁' l₂' s',
-        List.reverseAux l₁ (tr_pos_num a) = List.reverseAux l₁' l₂' ∧
-          reaches₁ (TM2.step tr)
-            ⟨some (q₁.pred q₂), s, K'.elim (tr_pos_num a.succ ++ Γ'.cons::tr_list v) l₁ c d⟩
-            ⟨some (unrev q₂), s', K'.elim (l₂' ++ Γ'.cons::tr_list v) l₁' c d⟩ by
+    convert unrev_ok using 2
+    simp
+  simp [trNum, Num.succ']
+  suffices ∀ l₁, ∃ l₁' l₂' s',
+    List.reverseAux l₁ (trPosNum a) = List.reverseAux l₁' l₂' ∧
+      Reaches₁ (TM2.step tr)
+        ⟨some (q₁.pred q₂), s, K'.elim (trPosNum a.succ ++ Γ'.cons :: trList v) l₁ c d⟩
+        ⟨some (unrev q₂), s', K'.elim (l₂' ++ Γ'.cons :: trList v) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction' a with m IH m IH generalizing s <;> intro l₁
-  · refine' ⟨Γ'.bit1::l₁, [], some Γ'.cons, rfl, trans_gen.head rfl (trans_gen.single _)⟩
-    simp [tr_pos_num, show pos_num.one.succ = pos_num.one.bit0 from rfl]
-  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (some Γ'.bit0) (Γ'.bit1::l₁)
-    refine' ⟨l₁', l₂', s', e, trans_gen.head _ h⟩
+  · refine' ⟨Γ'.bit1::l₁, [], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single _)⟩
+    simp [trPosNum, show PosNum.one.succ = PosNum.one.bit0 from rfl]
+  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (some Γ'.bit0) (Γ'.bit1 :: l₁)
+    refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
     simp
     rfl
-  · obtain ⟨a, l, e, h⟩ : ∃ a l, (tr_pos_num m = a::l) ∧ nat_end a = ff := by
+  · obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
       cases m <;> refine' ⟨_, _, rfl, rfl⟩
-    refine' ⟨Γ'.bit0::l₁, _, some a, rfl, trans_gen.single _⟩
-    simp [tr_pos_num, PosNum.succ, e, h, nat_end, show some Γ'.bit1 ≠ some Γ'.bit0 by decide]
+    refine' ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single _⟩
+    simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
+      Option.iget, -natEnd]
+    rfl
 #align turing.partrec_to_TM2.pred_ok Turing.PartrecToTM2.pred_ok
 
 theorem trNormal_respects (c k v s) :
@@ -1548,26 +1578,27 @@ theorem trNormal_respects (c k v s) :
         Reaches₁ (TM2.step tr)
           ⟨some (trNormal c (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
   induction c generalizing k v s
-  case zero' => refine' ⟨_, ⟨s, rfl⟩, trans_gen.single _⟩; simp
+  case zero' => refine' ⟨_, ⟨s, rfl⟩, TransGen.single _⟩; simp
   case succ => refine' ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   case tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
-    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _; simp; swap
-    refine' split_at_pred_eq _ _ (tr_nat v.head) _ _ (tr_nat_nat_end _) _
+    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
+    refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
     cases v <;> simp
   case
-    cons f fs IHf IHfs =>
-    obtain ⟨c, h₁, h₂⟩ := IHf (cont.cons₁ fs v k) v none
-    refine' ⟨c, h₁, trans_gen.head rfl <| (move_ok (by decide) (split_at_pred_ff _)).trans _⟩
-    simp [step_normal]
-    refine' (copy_ok _ none [] (tr_list v).reverse _ _).trans _
+    cons f fs IHf _ =>
+    obtain ⟨c, h₁, h₂⟩ := IHf (Cont.cons₁ fs v k) v none
+    refine' ⟨c, h₁, TransGen.head rfl <| (move_ok (by decide) (splitAtPred_false _)).trans _⟩
+    simp [stepNormal]
+    refine' (copy_ok _ none [] (trList v).reverse _ _).trans _
     convert h₂ using 2
-    simp [List.reverseAux_eq, tr_cont_stack]
-  case comp f g IHf IHg => exact IHg (cont.comp f k) v s
+    simp [List.reverseAux_eq, trContStack]
+  case comp f _ _ IHg => exact IHg (Cont.comp f k) v s
   case case f g IHf IHg =>
-    rw [step_normal]
+    rw [stepNormal]
+    simp only
     obtain ⟨s', h⟩ := pred_ok _ _ s v _ _
-    cases' v.head with n
+    revert h; cases' v.headI with n <;> intro h
     · obtain ⟨c, h₁, h₂⟩ := IHf k _ s'
       exact ⟨_, h₁, h.trans h₂⟩
     · obtain ⟨c, h₁, h₂⟩ := IHg k _ s'
@@ -1575,65 +1606,63 @@ theorem trNormal_respects (c k v s) :
   case fix f IH => apply IH
 #align turing.partrec_to_TM2.tr_normal_respects Turing.PartrecToTM2.trNormal_respects
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem tr_ret_respects (k v s) :
-    ∃ b₂,
-      TrCfg (stepRet k v) b₂ ∧
-        Reaches₁ (TM2.step tr)
-          ⟨some (Λ'.ret (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
+theorem tr_ret_respects (k v s) : ∃ b₂,
+    TrCfg (stepRet k v) b₂ ∧
+      Reaches₁ (TM2.step tr)
+        ⟨some (Λ'.ret (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
   induction k generalizing v s
-  case halt => exact ⟨_, rfl, trans_gen.single rfl⟩
+  case halt => exact ⟨_, rfl, TransGen.single rfl⟩
   case
-    cons₁ fs as k IH =>
-    obtain ⟨s', h₁, h₂⟩ := tr_normal_respects fs (cont.cons₂ v k) as none
-    refine' ⟨s', h₁, trans_gen.head rfl _⟩; simp
-    refine' (move₂_ok (by decide) _ (split_at_pred_ff _)).trans _; · rfl; simp
+    cons₁ fs as k _ =>
+    obtain ⟨s', h₁, h₂⟩ := trNormal_respects fs (Cont.cons₂ v k) as none
+    refine' ⟨s', h₁, TransGen.head rfl _⟩; simp
+    refine' (move₂_ok (by decide) _ (splitAtPred_false _)).trans _; · rfl
+    simp
     refine' (move₂_ok (by decide) _ _).trans _; pick_goal 4; · rfl
     pick_goal 4;
-    ·
-      exact
-        split_at_pred_eq _ _ _ (some Γ'.Cons) _
-          (fun x h => Bool.decide_false (tr_list_ne_Cons _ _ h)) ⟨rfl, rfl⟩
-    refine' (move₂_ok (by decide) _ (split_at_pred_ff _)).trans _; · rfl; simp
+    · exact
+        splitAtPred_eq _ _ _ (some Γ'.consₗ) _
+          (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
+    refine' (move₂_ok (by decide) _ (splitAtPred_false _)).trans _; · rfl
+    simp
     exact h₂
   case cons₂ ns k IH =>
-    obtain ⟨c, h₁, h₂⟩ := IH (ns.head::v) none
-    exact ⟨c, h₁, trans_gen.head rfl <| head_stack_ok.trans h₂⟩
-  case comp f k IH =>
-    obtain ⟨s', h₁, h₂⟩ := tr_normal_respects f k v s
-    exact ⟨_, h₁, trans_gen.head rfl h₂⟩
+    obtain ⟨c, h₁, h₂⟩ := IH (ns.headI :: v) none
+    exact ⟨c, h₁, TransGen.head rfl <| head_stack_ok.trans h₂⟩
+  case comp f k _ =>
+    obtain ⟨s', h₁, h₂⟩ := trNormal_respects f k v s
+    exact ⟨_, h₁, TransGen.head rfl h₂⟩
   case fix f k IH =>
-    rw [step_ret]
+    rw [stepRet]
     have :
-      if v.head = 0 then nat_end (tr_list v).head?.iget = tt ∧ (tr_list v).tail = tr_list v.tail
+      if v.headI = 0 then natEnd (trList v).head?.iget = true ∧ (trList v).tail = trList v.tail
       else
-        nat_end (tr_list v).head?.iget = ff ∧
-          (tr_list v).tail = (tr_nat v.head).tail ++ Γ'.cons::tr_list v.tail := by
+        natEnd (trList v).head?.iget = false ∧
+          (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
       cases' v with n
       · exact ⟨rfl, rfl⟩
-      cases n
+      cases' n with n
       · simp
-      rw [tr_list, List.headI, tr_nat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
+      rw [trList, List.headI, trNat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
-    by_cases v.head = 0 <;> simp [h] at this⊢
-    · obtain ⟨c, h₁, h₂⟩ := IH v.tail (tr_list v).head?
-      refine' ⟨c, h₁, trans_gen.head rfl _⟩
-      simp [tr_cont, tr_cont_stack, this]
+    by_cases v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
+    · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
+      refine' ⟨c, h₁, TransGen.head rfl _⟩
+      simp [trCont, trContStack, this, -TM2.step, -natEnd]
       exact h₂
-    · obtain ⟨s', h₁, h₂⟩ := tr_normal_respects f (cont.fix f k) v.tail (some Γ'.cons)
-      refine' ⟨_, h₁, trans_gen.head rfl <| trans_gen.trans _ h₂⟩
-      pick_goal 3
-      simp [tr_cont, this.1]
-      convert clear_ok (split_at_pred_eq _ _ (tr_nat v.head).tail (some Γ'.cons) _ _ _) using 2
+    · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
+      refine' ⟨_, h₁, TransGen.head rfl <| TransGen.trans _ h₂⟩
+      simp [trCont, this.1, -TM2.step, -natEnd]
+      convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
-      · exact fun x h => tr_nat_nat_end _ _ (List.tail_subset _ h)
+        convert rfl
+      · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 #align turing.partrec_to_TM2.tr_ret_respects Turing.PartrecToTM2.tr_ret_respects
 
 theorem tr_respects : Respects step (TM2.step tr) TrCfg
-  | cfg.ret k v, _, ⟨s, rfl⟩ => tr_ret_respects _ _ _
-  | cfg.halt v, _, rfl => rfl
+  | Cfg.ret _ _, _, ⟨_, rfl⟩ => tr_ret_respects _ _ _
+  | Cfg.halt _, _, rfl => rfl
 #align turing.partrec_to_TM2.tr_respects Turing.PartrecToTM2.tr_respects
 
 /-- The initial state, evaluating function `c` on input `v`. -/
@@ -1649,16 +1678,16 @@ theorem tr_init (c v) :
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine' Part.ext fun x => _
-  rw [reaches_eval h₂.to_refl]; simp
+  rw [reaches_eval h₂.to_reflTransGen]; simp [-TM2.step]
   refine' ⟨fun h => _, _⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
-    simp [step_normal_eval] at hc₂
+    simp [stepNormal_eval] at hc₂
     obtain ⟨v', hv, rfl⟩ := hc₂
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
-    have := tr_eval tr_respects h₁
-    simp [step_normal_eval] at this
-    obtain ⟨_, ⟨⟩, h⟩ := this _ hv rfl
+    have := Turing.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
+    simp [stepNormal_eval, -TM2.step] at this
+    obtain ⟨_, ⟨⟩, h⟩ := this hv
     exact h
 #align turing.partrec_to_TM2.tr_eval Turing.PartrecToTM2.tr_eval
 
@@ -1888,7 +1917,7 @@ theorem retSupports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ
   case fix =>
     rw [cont_supp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
-    intro s; dsimp only; cases nat_end s.iget
+    intro s; dsimp only; cases natEnd s.iget
     · refine' H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 #align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.retSupports
