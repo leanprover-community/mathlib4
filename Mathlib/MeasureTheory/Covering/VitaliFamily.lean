@@ -289,12 +289,12 @@ theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ �
     fun a _ ha => ha.trans ((closedBall_subset_ball (half_lt_self εpos)).trans hε)⟩
 #align vitali_family.eventually_filter_at_subset_of_nhds VitaliFamily.eventually_filterAt_subset_of_nhds
 
-theorem fineSubfamilyOnOfFrequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
+theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
     (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, a ∈ f x) : v.FineSubfamilyOn f s := by
   intro x hx ε εpos
   obtain ⟨a, av, ha, af⟩ : ∃ (a : Set α) , a ∈ v.setsAt x ∧ a ⊆ closedBall x ε ∧ a ∈ f x :=
     v.frequently_filterAt_iff.1 (h x hx) ε εpos
   exact ⟨a, ⟨av, af⟩, ha⟩
-#align vitali_family.fine_subfamily_on_of_frequently VitaliFamily.fineSubfamilyOnOfFrequently
+#align vitali_family.fine_subfamily_on_of_frequently VitaliFamily.fineSubfamilyOn_of_frequently
 
 end VitaliFamily
