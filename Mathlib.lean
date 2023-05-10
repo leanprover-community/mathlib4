@@ -636,6 +636,7 @@ import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.Generator
+import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
