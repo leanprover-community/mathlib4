@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 
 open CategoryTheory Category Limits Pretriangulated
 
@@ -191,13 +191,6 @@ lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
   dsimp only [Q, Functor.comp]
   rw [← HomotopyCategory.mem_qis_iff', isIso_Qh_map_iff]
 
--- this will appear in Algebra.Homology.HomotopyCategory.ShortExact
-noncomputable def _root_.CochainComplex.MappingCone.fromOfShortComplex (S : ShortComplex (CochainComplex C ℤ)):
-  CochainComplex.mappingCone S.f ⟶ S.X₃ := CochainComplex.MappingCone.desc S.f 0 S.g (by simp)
-lemma _root_.CochainComplex.MappingCone.isIso_homologyMap_fromOfShortComplex
-  {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) (n : ℤ) :
-    IsIso (HomologicalComplex.homologyMap (CochainComplex.MappingCone.fromOfShortComplex S) n) := sorry
-
 section
 
 variable {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
@@ -240,7 +233,7 @@ end DerivedCategory
 
 namespace CategoryTheory.Abelian
 
-def newExt (X Y : C) (n : ℕ) : Type (max u v) :=
+def newExt (n : ℕ) (X Y : C) : Type (max u v) :=
   (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
 
 end CategoryTheory.Abelian

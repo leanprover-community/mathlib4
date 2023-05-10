@@ -1,8 +1,7 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.Refinements
-
-import Mathlib.Tactic.LibrarySearch
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 open CategoryTheory Category Limits Preadditive
   HomologicalComplex
@@ -21,8 +20,6 @@ variable {S}
 
 lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
     IsIso (HomologicalComplex.homologyMap (fromOfShortComplex S) n) := by
-  have : ∀ i, PreservesFiniteLimits (HomologicalComplex.eval C (ComplexShape.up ℤ) i) := sorry
-  have : ∀ i, PreservesFiniteColimits (HomologicalComplex.eval C (ComplexShape.up ℤ) i) := sorry
   have hS' := fun i => hS.map_of_exact (HomologicalComplex.eval C (ComplexShape.up ℤ) i)
   have : ∀ i, Mono (S.f.f i) := fun i => (hS' i).mono_f
   have : ∀ i, Epi (S.g.f i) := fun i => (hS' i).epi_g
