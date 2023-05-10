@@ -35,15 +35,15 @@ This file uses the notation `μ[|s]` the measure of `μ` conditioned on `s`,
 and `μ[t|s]` for the probability of `t` given `s` under `μ` (equivalent to the
 application `μ[|s] t`).
 
-These notations are contained in the locale `probability_theory`.
+These notations are contained in the locale `ProbabilityTheory`.
 
 ## Implementation notes
 
 Because we have the alternative measure restriction application principles
-`measure.restrict_apply` and `measure.restrict_apply'`, which require
+`Measure.restrict_apply` and `Measure.restrict_apply'`, which require
 measurability of the restricted and restricting sets, respectively,
 many of the theorems here will have corresponding alternatives as well.
-For the sake of brevity, we've chosen to only go with `measure.restrict_apply'`
+For the sake of brevity, we've chosen to only go with `Measure.restrict_apply'`
 for now, but the alternative theorems can be added if needed.
 
 Use of `@[simp]` generally follows the rule of removing conditions on a measure
