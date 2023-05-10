@@ -333,8 +333,8 @@ theorem toOuterMeasure_bindOnSupport_apply :
   The additional if statement is needed since `f` is only a partial function. -/
 @[simp]
 theorem toMeasure_bindOnSupport_apply [MeasurableSpace β] (hs : MeasurableSet s) :
-    (p.bindOnSupport f).toMeasure s = ∑' a, p a * if h : p a = 0 then 0 else (f a h).toMeasure s :=
-  by
+    (p.bindOnSupport f).toMeasure s =
+      ∑' a, p a * if h : p a = 0 then 0 else (f a h).toMeasure s := by
   simp only [toMeasure_apply_eq_toOuterMeasure_apply _ _ hs, toOuterMeasure_bindOnSupport_apply]
 #align pmf.to_measure_bind_on_support_apply Pmf.toMeasure_bindOnSupport_apply
 
