@@ -100,8 +100,7 @@ theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
 
 @[simp]
 theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l)) :
-    v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj :=
-  by
+    v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
   rintro rfl
   exact hl.not_mem hj
@@ -175,8 +174,7 @@ theorem mk_preimage_tprod :
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
-    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t :=
-  by
+    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t := by
   have h2 : { i | i ∈ l } = univ := by
     ext i
     simp [h]

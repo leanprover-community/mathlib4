@@ -116,8 +116,8 @@ theorem Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = fun g => 
 #align homeomorph.coe_add_right Homeomorph.coe_addRight
 
 @[to_additive]
-theorem Homeomorph.mulRight_symm (a : G) : (Homeomorph.mulRight a).symm = Homeomorph.mulRight a⁻¹ :=
-  by
+theorem Homeomorph.mulRight_symm (a : G) :
+    (Homeomorph.mulRight a).symm = Homeomorph.mulRight a⁻¹ := by
   ext
   rfl
 #align homeomorph.mul_right_symm Homeomorph.mulRight_symm
@@ -1637,8 +1637,8 @@ neighborhood of the identity, even without separation assumptions on the space. 
   "In a locally compact additive group, any neighborhood of the identity contains a
   compact closed neighborhood of the identity, even without separation assumptions on the space."]
 theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set G}
-    (hU : U ∈ 𝓝 (1 : G)) : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K :=
-  by
+    (hU : U ∈ 𝓝 (1 : G)) :
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K := by
   obtain ⟨L, Lint, LU, Lcomp⟩ : ∃ (L : Set G), L ∈ 𝓝 (1 : G) ∧ L ⊆ U ∧ IsCompact L :=
     local_compact_nhds hU
   obtain ⟨V, Vnhds, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ v ∈ V, ∀ w ∈ V, v * w ∈ L := by
@@ -1655,8 +1655,7 @@ theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set 
           (by simpa only [singleton_subset_iff] using mem_interior_iff_mem_nhds.2 Vnhds)
       _ = interior V * V := isOpen_interior.mul_closure _
       _ ⊆ V * V := mul_subset_mul_right interior_subset
-      _ ⊆ L :=
-      by
+      _ ⊆ L := by
         rintro x ⟨y, z, yv, zv, rfl⟩
         exact hV _ yv _ zv
 
@@ -1868,11 +1867,11 @@ theorem continuous_inv' (g : GroupTopology α) :
 
 @[to_additive]
 theorem toTopologicalSpace_injective :
-    Function.Injective (toTopologicalSpace : GroupTopology α → TopologicalSpace α) := fun f g h =>
-  by
-  cases f
-  cases g
-  congr
+    Function.Injective (toTopologicalSpace : GroupTopology α → TopologicalSpace α) :=
+  fun f g h => by
+    cases f
+    cases g
+    congr
 #align group_topology.to_topological_space_injective GroupTopology.toTopologicalSpace_injective
 #align add_group_topology.to_topological_space_injective AddGroupTopology.toTopologicalSpace_injective
 

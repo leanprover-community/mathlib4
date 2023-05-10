@@ -1063,9 +1063,8 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
         have hw : (∑ i in insert i0 l.support, w i) = 0 := by
           rw [hwdef]
           simp_rw [Pi.sub_apply, Finset.sum_sub_distrib,
-            Finset.sum_update_of_mem (Finset.mem_insert_self _ _), Finset.sum_const_zero,
-            Finset.sum_insert_of_eq_zero_if_not_mem Finsupp.not_mem_support_iff.1, add_zero,
-            sub_self]
+            Finset.sum_update_of_mem (Finset.mem_insert_self _ _),
+            Finset.sum_insert_of_eq_zero_if_not_mem Finsupp.not_mem_support_iff.1]
           simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_insert, true_or, not_true,
             Function.const_apply, Finset.sum_const_zero, add_zero, sub_self]
         use hw

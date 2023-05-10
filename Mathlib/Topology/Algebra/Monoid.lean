@@ -272,14 +272,11 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
   ⟨by
     rw [continuous_iff_continuousAt]
     rintro ⟨x₀, y₀⟩
-    have key :
-      (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
-        ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) :=
-      by
+    have key : (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
+        ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) := by
       ext p
       simp [uncurry, mul_assoc]
-    have key₂ : ((fun x => x₀ * x) ∘ fun x => y₀ * x) = fun x => x₀ * y₀ * x :=
-      by
+    have key₂ : ((fun x => x₀ * x) ∘ fun x => y₀ * x) = fun x => x₀ * y₀ * x := by
       ext x
       simp [mul_assoc]
     calc
@@ -291,8 +288,8 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ᶠ 𝓝 1)) :=
         by rw [key, ← Filter.map_map]
       _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
-      _ = 𝓝 (x₀ * y₀) := by rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]
-      ⟩
+      _ = 𝓝 (x₀ * y₀) := by
+        rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]⟩
 #align has_continuous_mul.of_nhds_one ContinuousMul.of_nhds_one
 #align has_continuous_add.of_nhds_zero ContinuousAdd.of_nhds_zero
 
@@ -548,8 +545,8 @@ theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l
 
 @[to_additive]
 theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
-    (h : ∀ i ∈ l, ContinuousOn (f i) t) : ContinuousOn (fun a => (l.map fun i => f i a).prod) t :=
-  by
+    (h : ∀ i ∈ l, ContinuousOn (f i) t) :
+    ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
   refine' tendsto_list_prod _ fun i hi => _
@@ -820,8 +817,8 @@ theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
 
 @[to_additive]
 theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀ i, p i → Continuous (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ (i) (_h : p i), f i x :=
-  by
+    (hf : LocallyFinite fun i => mulSupport (f i)) :
+    Continuous fun x => ∏ᶠ (i) (_h : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 #align continuous_finprod_cond continuous_finprod_cond

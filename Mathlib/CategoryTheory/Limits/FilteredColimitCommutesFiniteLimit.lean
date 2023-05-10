@@ -19,7 +19,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 # Filtered colimits commute with finite limits.
 
 We show that for a functor `F : J × K ⥤ Type v`, when `J` is finite and `K` is filtered,
-the universal morphism `colimit_limit_to_limit_colimit F` comparing the
+the universal morphism `colimitLimitToLimitColimit F` comparing the
 colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an isomorphism.
 
 (In fact, to prove that it is injective only requires that `J` has finitely many objects.)
@@ -32,13 +32,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Category
-
-open CategoryTheory.Limits.Types
-
-open CategoryTheory.Limits.Types.FilteredColimit
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
+  CategoryTheory.Limits.Types.FilteredColimit
 
 namespace CategoryTheory.Limits
 
@@ -68,12 +63,12 @@ variable [Finite J]
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
-theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitToLimitColimit F) :=
-  by
+theorem colimitLimitToLimitColimit_injective :
+    Function.Injective (colimitLimitToLimitColimit F) := by
   classical
     cases nonempty_fintype J
     -- Suppose we have two terms `x y` in the colimit (over `K`) of the limits (over `J`),
-    -- and that these have the same image under `colimit_limit_to_limit_colimit F`.
+    -- and that these have the same image under `colimitLimitToLimitColimit F`.
     intro x y h
     -- These elements of the colimit have representatives somewhere:
     obtain ⟨kx, x, rfl⟩ := jointly_surjective'.{v, v} x
@@ -196,15 +191,15 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff.{v, v}] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun {_} {_} f => (w f).choose
-    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose
-    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f =>
+    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun f => (w f).choose
+    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f => (w f).choose_spec.choose
+    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f =>
       (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
         F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j') =
           F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
-      fun {j} {j'} f => by
+      fun {j j'} f => by
       have q :
         ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
@@ -337,13 +332,12 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
 noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
-  intro J _ _; skip; constructor
-  intro F; constructor
-  intro c hc
-  apply IsLimit.ofIsoLimit (limit.isLimit _)
-  symm; trans colim.mapCone (limit.cone F)
-  exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
-  exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
+  intro J _ _
+  refine ⟨fun {F} => ⟨fun {c} hc => IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩
+  symm
+  trans colim.mapCone (limit.cone F)
+  · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
+  · exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
 #align category_theory.limits.filtered_colim_preserves_finite_limits_of_types CategoryTheory.Limits.filteredColimPreservesFiniteLimitsOfTypes
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
@@ -371,7 +365,8 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
     [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
-  intro J _ _; skip; infer_instance
+  intro J _ _
+  infer_instance
 
 section
 

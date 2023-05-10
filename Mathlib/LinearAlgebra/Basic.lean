@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -635,8 +635,8 @@ theorem ofLe_injective (h : p ≤ p') : Function.Injective (ofLe h) := fun _ _ h
 
 variable (p p')
 
-theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) : q.subtype.comp (ofLe h) = p.subtype :=
-  by
+theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
+    q.subtype.comp (ofLe h) = p.subtype := by
   ext ⟨b, hb⟩
   rfl
 #align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
@@ -888,8 +888,7 @@ variable [RingHomSurjective σ₁₂]
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
-  (gc_map_comap f).toGaloisInsertion fun S x hx =>
-    by
+  (gc_map_comap f).toGaloisInsertion fun S x hx => by
     rcases hf x with ⟨y, rfl⟩
     simp only [mem_map, mem_comap]
     exact ⟨y, hx, rfl⟩
@@ -1287,8 +1286,7 @@ end
 -/
 @[simps]
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ :=
-  ⟨fun n => LinearMap.range (f ^ n), fun n m w x h =>
-    by
+  ⟨fun n => LinearMap.range (f ^ n), fun n m w x h => by
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
     rw [LinearMap.mem_range] at h
     obtain ⟨m, rfl⟩ := h
@@ -1371,7 +1369,7 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 #align linear_map.le_ker_iff_map LinearMap.le_ker_iff_map
 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
-    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, map_bot]; rfl
+    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
@@ -1454,8 +1452,7 @@ theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
 -/
 @[simps]
 def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M :=
-  ⟨fun n => ker (f ^ n), fun n m w x h =>
-    by
+  ⟨fun n => ker (f ^ n), fun n m w x h => by
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
     rw [LinearMap.mem_ker] at h
     rw [LinearMap.mem_ker, add_comm, pow_add, LinearMap.mul_apply, h, LinearMap.map_zero]⟩
@@ -2497,8 +2494,8 @@ variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 -- Porting note: Was `@[simp]`.
 @[simp high]
-theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} : x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p :=
-  by
+theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
+    x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p := by
   rw [Submodule.mem_map]; constructor
   · rintro ⟨y, hy, hx⟩
     simp [← hx, hy]

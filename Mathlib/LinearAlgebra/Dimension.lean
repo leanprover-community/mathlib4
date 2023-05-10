@@ -64,7 +64,7 @@ For modules over rings with invariant basis number
 For vector spaces (i.e. modules over a field), we have
 
 * `rank_quotient_add_rank`: if `V₁` is a submodule of `V`, then
-  `module.rank (V/V₁) + module.rank V₁ = module.rank V`.
+  `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
 * `rank_range_add_rank_ker`: the rank-nullity theorem.
 
 ## Implementation notes
@@ -1011,7 +1011,7 @@ theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
 #align linear_equiv.nonempty_equiv_iff_rank_eq LinearEquiv.nonempty_equiv_iff_rank_eq
 
 /-- If `M` and `N` are free, then the rank of `M × N` is
-`(module.rank R M).lift + (module.rank R N).lift`. -/
+`(Module.rank R M).lift + (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_prod : Module.rank K (V × V') =
     Cardinal.lift.{v'} (Module.rank K V) + Cardinal.lift.{v, v'} (Module.rank K V') := by
@@ -1279,14 +1279,14 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
     intro v hv
     obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk] at hr
+    simp_rw [Subtype.ext_iff, coe_smul] at hr
     exact hr
   · rintro ⟨v₀, hv₀, h⟩
     use ⟨v₀, hv₀⟩
     rintro ⟨v, hv⟩
     obtain ⟨r, hr⟩ := h v hv
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk]
+    simp_rw [Subtype.ext_iff, coe_smul]
     exact hr
 #align rank_submodule_le_one_iff rank_submodule_le_one_iff
 

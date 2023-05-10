@@ -399,18 +399,17 @@ theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x in s, f x := fu
 #align finset.sum_mono_set Finset.sum_mono_set
 
 @[to_additive sum_le_sum_of_ne_zero]
-theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) : (∏ x in s, f x) ≤ ∏ x in t, f x :=
-  by
+theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
+    (∏ x in s, f x) ≤ ∏ x in t, f x := by
   classical calc
-      (∏ x in s, f x) =
-          (∏ x in s.filter fun x ↦ f x = 1, f x) * ∏ x in s.filter fun x ↦ f x ≠ 1, f x :=
-        by
-          rw [← prod_union, filter_union_filter_neg_eq]
-          exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
-      _ ≤ ∏ x in t, f x :=
-        mul_le_of_le_one_of_le
-          (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
-          (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
+    (∏ x in s, f x) = (∏ x in s.filter fun x ↦ f x = 1, f x) *
+        ∏ x in s.filter fun x ↦ f x ≠ 1, f x := by
+      rw [← prod_union, filter_union_filter_neg_eq]
+      exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
+    _ ≤ ∏ x in t, f x :=
+      mul_le_of_le_one_of_le
+        (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
+        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
 
@@ -446,17 +445,15 @@ theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g 
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : (∏ j in s, f j) < ∏ j in t, f j := by
   classical calc
-      (∏ j in s, f j) < ∏ j in insert i s, f j :=
-        by
-          rw [prod_insert hs]
-          exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
-      _ ≤ ∏ j in t, f j :=
-        by
-          apply prod_le_prod_of_subset_of_one_le'
-          · simp [Finset.insert_subset, h, ht]
-          · intro x hx h'x
-            simp only [mem_insert, not_or] at h'x
-            exact hle x hx h'x.2
+    (∏ j in s, f j) < ∏ j in insert i s, f j := by
+      rw [prod_insert hs]
+      exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
+    _ ≤ ∏ j in t, f j := by
+      apply prod_le_prod_of_subset_of_one_le'
+      · simp [Finset.insert_subset, h, ht]
+      · intro x hx h'x
+        simp only [mem_insert, not_or] at h'x
+        exact hle x hx h'x.2
 #align finset.prod_lt_prod_of_subset' Finset.prod_lt_prod_of_subset'
 #align finset.sum_lt_sum_of_subset Finset.sum_lt_sum_of_subset
 

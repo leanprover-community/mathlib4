@@ -484,7 +484,7 @@ theorem mem_span_insert {y} :
 
 theorem mem_span_pair {x y z : M} :
     z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
-  simp_rw [mem_span_insert, mem_span_singleton, exists_prop, exists_exists_eq_and, eq_comm]
+  simp_rw [mem_span_insert, mem_span_singleton, exists_exists_eq_and, eq_comm]
 #align submodule.mem_span_pair Submodule.mem_span_pair
 
 theorem span_insert (x) (s : Set M) : span R (insert x s) = span R ({x} : Set M) ⊔ span R s := by

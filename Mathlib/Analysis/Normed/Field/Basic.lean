@@ -473,8 +473,8 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_tendsto_zero.2 <| by
-        have : ∀ e : α × α, ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
-          by
+        have : ∀ e : α × α,
+            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
@@ -603,8 +603,8 @@ theorem nnnorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnnormHom : α →*₀ ℝ≥0)
 #align nnnorm_zpow nnnorm_zpow
 
-theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) : dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) :=
-  by
+theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+    dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by
   rw [dist_eq_norm, inv_sub_inv' hz hw, norm_mul, norm_mul, norm_inv, norm_inv, mul_comm ‖z‖⁻¹,
     mul_assoc, dist_eq_norm', div_eq_mul_inv, mul_inv]
 #align dist_inv_inv₀ dist_inv_inv₀
@@ -636,8 +636,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
   refine' ⟨fun r r0 => tendsto_iff_norm_tendsto_zero.2 _⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
-  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε :=
-    by
+  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
     filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr]with e he
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
@@ -1008,6 +1007,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
+set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
@@ -1024,10 +1024,12 @@ namespace SubringClass
 
 variable {S R : Type _} [SetLike S R]
 
+set_option synthInstance.etaExperiment true in
 instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
+set_option synthInstance.etaExperiment true in
 instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing

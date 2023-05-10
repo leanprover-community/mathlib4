@@ -343,16 +343,16 @@ theorem mem_ker [Group H] (f : G → H) {x : G} : x ∈ ker f ↔ f x = 1 :=
 variable [Group G] [Group H]
 
 @[to_additive]
-theorem one_ker_inv {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a * b⁻¹) = 1) : f a = f b :=
-  by
+theorem one_ker_inv {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a * b⁻¹) = 1) :
+    f a = f b := by
   rw [hf.map_mul, hf.map_inv] at h
   rw [← inv_inv (f b), eq_inv_of_mul_eq_one_left h]
 #align is_group_hom.one_ker_inv IsGroupHom.one_ker_inv
 #align is_add_group_hom.zero_ker_neg IsAddGroupHom.zero_ker_neg
 
 @[to_additive]
-theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ * b) = 1) : f a = f b :=
-  by
+theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ * b) = 1) :
+    f a = f b := by
   rw [hf.map_mul, hf.map_inv] at h
   apply inv_injective
   rw [eq_inv_of_mul_eq_one_left h]
@@ -360,16 +360,16 @@ theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ 
 #align is_add_group_hom.zero_ker_neg' IsAddGroupHom.zero_ker_neg'
 
 @[to_additive]
-theorem inv_ker_one {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) : f (a * b⁻¹) = 1 :=
-  by
+theorem inv_ker_one {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
+    f (a * b⁻¹) = 1 := by
   have : f a * (f b)⁻¹ = 1 := by rw [h, mul_right_inv]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 #align is_group_hom.inv_ker_one IsGroupHom.inv_ker_one
 #align is_add_group_hom.neg_ker_zero IsAddGroupHom.neg_ker_zero
 
 @[to_additive]
-theorem inv_ker_one' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) : f (a⁻¹ * b) = 1 :=
-  by
+theorem inv_ker_one' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
+    f (a⁻¹ * b) = 1 := by
   have : (f a)⁻¹ * f b = 1 := by rw [h, mul_left_inv]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 #align is_group_hom.inv_ker_one' IsGroupHom.inv_ker_one'
@@ -648,8 +648,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
 
 @[to_additive]
 theorem mem_closure_union_iff {G : Type _} [CommGroup G] {s t : Set G} {x : G} :
-    x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x :=
-  by
+    x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x := by
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor
   · rintro ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, rfl⟩
@@ -683,8 +682,7 @@ namespace Group
 variable {s : Set G} [Group G]
 
 theorem conjugatesOf_subset {t : Set G} (ht : IsNormalSubgroup t) {a : G} (h : a ∈ t) :
-    conjugatesOf a ⊆ t := fun x hc =>
-  by
+    conjugatesOf a ⊆ t := fun x hc => by
   obtain ⟨c, w⟩ := isConj_iff.1 hc
   have H := IsNormalSubgroup.normal ht a h c
   rwa [← w]
@@ -729,8 +727,7 @@ theorem normalClosure.is_normal : IsNormalSubgroup (normalClosure s) :=
 
 /-- The normal closure of s is the smallest normal subgroup containing s. -/
 theorem normalClosure_subset {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
-    normalClosure s ⊆ t := fun a w =>
-  by
+    normalClosure s ⊆ t := fun a w => by
   induction' w with x hx x _ ihx x y _ _ ihx ihy
   · exact conjugatesOfSet_subset' ht h <| hx
   · exact ht.toIsSubgroup.toIsSubmonoid.one_mem

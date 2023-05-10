@@ -90,8 +90,8 @@ theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
 end Order
 
 theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
-    (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤ Cardinal.lift.{max u v} (Order.cof s) :=
-  by
+    (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
+    Cardinal.lift.{max u v} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_infₛ, lift_infₛ,
     le_cinfₛ_iff'' (nonempty_image_iff.2 (Order.cof_nonempty s))]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
@@ -227,9 +227,8 @@ theorem cof_lsub_def_nonempty (o) :
   ⟨_, card_mem_cof⟩
 #align ordinal.cof_lsub_def_nonempty Ordinal.cof_lsub_def_nonempty
 
-theorem cof_eq_infₛ_lsub (o : Ordinal.{u}) :
-    cof o = infₛ { a : Cardinal | ∃ (ι : Type u)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a } :=
-  by
+theorem cof_eq_infₛ_lsub (o : Ordinal.{u}) : cof o =
+    infₛ { a : Cardinal | ∃ (ι : Type u)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a } := by
   refine' le_antisymm (le_cinfₛ (cof_lsub_def_nonempty o) _) (cinfₛ_le' _)
   · rintro a ⟨ι, f, hf, rfl⟩
     rw [← type_lt o]
@@ -323,8 +322,7 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
   rw [cof_eq_infₛ_lsub]
   exact
     (le_cinfₛ_iff'' (cof_lsub_def_nonempty o)).trans
-      ⟨fun H ι f hf => H _ ⟨ι, f, hf, rfl⟩, fun H b ⟨ι, f, hf, hb⟩ =>
-        by
+      ⟨fun H ι f hf => H _ ⟨ι, f, hf, rfl⟩, fun H b ⟨ι, f, hf, hb⟩ => by
         rw [← hb]
         exact H _ hf⟩
 #align ordinal.le_cof_iff_lsub Ordinal.le_cof_iff_lsub
@@ -413,8 +411,8 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
   nfpFamily_lt_ord_lift hc (by simpa using Cardinal.one_lt_aleph0.trans hc) fun _ => hf
 #align ordinal.nfp_lt_ord Ordinal.nfp_lt_ord
 
-theorem exists_blsub_cof (o : Ordinal) : ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o :=
-  by
+theorem exists_blsub_cof (o : Ordinal) :
+    ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
   rcases exists_lsub_cof o with ⟨ι, f, hf, hι⟩
   rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
   rw [← @blsub_eq_lsub' ι r hr] at hf
@@ -425,8 +423,7 @@ theorem exists_blsub_cof (o : Ordinal) : ∃ f : ∀ a < (cof o).ord, Ordinal, b
 theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
     a ≤ cof b ↔ ∀ {o} (f : ∀ a < o, Ordinal), blsub.{u, u} o f = b → a ≤ o.card :=
   le_cof_iff_lsub.trans
-    ⟨fun H o f hf => by simpa using H _ hf, fun H ι f hf =>
-      by
+    ⟨fun H o f hf => by simpa using H _ hf, fun H ι f hf => by
       rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
       rw [← @blsub_eq_lsub' ι r hr] at hf
       simpa using H _ hf⟩
@@ -616,8 +613,8 @@ theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundam
 end IsFundamentalSequence
 
 /-- Every ordinal has a fundamental sequence. -/
-theorem exists_fundamental_sequence (a : Ordinal.{u}) : ∃ f, IsFundamentalSequence a a.cof.ord f :=
-  by
+theorem exists_fundamental_sequence (a : Ordinal.{u}) :
+    ∃ f, IsFundamentalSequence a a.cof.ord f := by
   suffices h : ∃ o f, IsFundamentalSequence a o f
   · rcases h with ⟨o, f, hf⟩
     exact ⟨_, hf.ord_cof⟩
@@ -662,8 +659,7 @@ protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u
   refine' ⟨_, @fun i j _ _ h => hf.strictMono (hg.2.1 _ _ h), _⟩
   · rcases exists_lsub_cof (f a) with ⟨ι, f', hf', hι⟩
     rw [← hg.cof_eq, ord_le_ord, ← hι]
-    suffices (lsub.{u, u} fun i => infₛ { b : Ordinal | f' i ≤ f b }) = a
-      by
+    suffices (lsub.{u, u} fun i => infₛ { b : Ordinal | f' i ≤ f b }) = a by
       rw [← this]
       apply cof_lsub_le
     have H : ∀ i, ∃ b < a, f' i ≤ f b := fun i => by
@@ -737,8 +733,7 @@ theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
 
 @[simp]
 theorem cof_omega : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 omega_isLimit).antisymm' <|
-    by
+  (aleph0_le_cof.2 omega_isLimit).antisymm' <| by
     rw [← card_omega]
     apply cof_le_card
 #align ordinal.cof_omega Ordinal.cof_omega
@@ -1054,8 +1049,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α �
   simp only [not_le] at h
   let u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge : _) (Set.mem_univ b)
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
-  have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a :=
-    by
+  have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
     simp at m
     rw [← m]
@@ -1222,8 +1216,7 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
-  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h =>
-    by
+  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
     rcases lt_univ'.1 h with ⟨c, rfl⟩
     rw [← lift_two_power.{u, max (u + 1) v}]
     apply lift_lt_univ'

@@ -400,8 +400,7 @@ theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type _} (f : 
 #align polynomial.root_set_prod Polynomial.rootSet_prod
 
 theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
-  ⟨-(p.coeff 0 / p.coeff 1),
-    by
+  ⟨-(p.coeff 0 / p.coeff 1), by
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [←h']

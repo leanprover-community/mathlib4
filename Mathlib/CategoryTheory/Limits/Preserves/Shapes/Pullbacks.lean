@@ -196,8 +196,7 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
 
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 def preservesPushoutSymmetry : PreservesColimit (span g f) G where
-  preserves {c} hc :=
-    by
+  preserves {c} hc := by
     apply (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).toFun
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
     apply PushoutCocone.flipIsColimit

@@ -130,10 +130,8 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
       apply le_antisymm
       assumption'
     exact hm.trans hlen
-  have hq :
-    M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
-      M.evalFrom s ((x.take m).take n) :=
-    by
+  have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
+      M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←
       List.take_take, min_eq_left hle, List.take_append_drop]
   use hq

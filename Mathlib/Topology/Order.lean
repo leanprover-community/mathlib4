@@ -260,8 +260,7 @@ theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U 
     case univ => exact .inr rfl
     case inter h₁ h₂ =>
       rcases h₁ with (rfl | rfl) <;> rcases h₂ with (rfl | rfl) <;> simp
-    case unionₛ _ ih => exact unionₛ_mem_empty_univ ih,
-    by
+    case unionₛ _ ih => exact unionₛ_mem_empty_univ ih, by
       rintro (rfl | rfl)
       exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]⟩
 #align topological_space.is_open_top_iff TopologicalSpace.isOpen_top_iff
