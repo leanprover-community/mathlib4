@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Polynomial
-import Mathbin.Topology.ContinuousFunction.Algebra
-import Mathbin.Topology.UnitInterval
+import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Constructions relating polynomial functions and continuous functions.
@@ -65,8 +65,7 @@ variable {α : Type _} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace 
 
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
-    ((Polynomial.aeval f) g) x = g.eval (f x) :=
-  by
+    ((Polynomial.aeval f) g) x = g.eval (f x) := by
   apply Polynomial.induction_on' g
   · intro p q hp hq
     simp [hp, hq]
@@ -85,8 +84,7 @@ variable [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
 /-- The algebra map from `R[X]` to continuous functions `C(R, R)`.
 -/
 @[simps]
-def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R)
-    where
+def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   toFun p := p.toContinuousMap
   map_zero' := by
     ext
@@ -111,8 +109,7 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R)
 /-- The algebra map from `R[X]` to continuous functions `C(X, R)`, for any subset `X` of `R`.
 -/
 @[simps]
-def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R)
-    where
+def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   toFun p := p.toContinuousMapOn X
   map_zero' := by
     ext
@@ -152,8 +149,7 @@ def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
 
 @[simp]
 theorem polynomialFunctions_coe (X : Set R) :
-    (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) :=
-  by
+    (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
 #align polynomial_functions_coe polynomialFunctions_coe
@@ -163,8 +159,7 @@ theorem polynomialFunctions_coe (X : Set R) :
 -- induces a normed algebra isomorphism between `polynomial_functions X` and
 -- `polynomial_functions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
 theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
-  fun x y h =>
-  by
+  fun x y h => by
   -- We use `polynomial.X`, then clean up.
   refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
   dsimp; simp only [Polynomial.eval_X]
@@ -179,8 +174,7 @@ open ContinuousMap
 is the polynomials on `[a,b]`. -/
 theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :
     (polynomialFunctions I).comap (compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm.toContinuousMap) =
-      polynomialFunctions (Set.Icc a b) :=
-  by
+      polynomialFunctions (Set.Icc a b) := by
   ext f
   fconstructor
   · rintro ⟨p, ⟨-, w⟩⟩
