@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.ProbabilityMassFunction.Basic
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-!
 # Monad Operations for Probability Mass Functions
@@ -74,8 +74,7 @@ section Measure
 variable (s : Set α)
 
 @[simp]
-theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 :=
-  by
+theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
   refine' (to_outer_measure_apply (pure a) s).trans _
   split_ifs with ha ha
   · refine' (tsum_congr fun b => _).trans (tsum_ite_eq a 1)
@@ -133,8 +132,7 @@ theorem mem_support_bind_iff (b : β) :
 #align pmf.mem_support_bind_iff Pmf.mem_support_bind_iff
 
 @[simp]
-theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a :=
-  by
+theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := by
   have : ∀ b a', ite (a' = a) 1 0 * f a' b = ite (a' = a) (f a b) 0 := fun b a' => by
     split_ifs <;> simp <;> subst h <;> simp
   ext b <;> simp [this]
@@ -236,8 +234,7 @@ theorem bindOnSupport_apply (b : β) :
 
 @[simp]
 theorem support_bindOnSupport :
-    (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support :=
-  by
+    (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   refine' Set.ext fun b => _
   simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bind_on_support_apply, Ne.def,
     not_forall, mul_eq_zero, Set.mem_unionᵢ]
@@ -258,8 +255,7 @@ theorem mem_support_bindOnSupport_iff (b : β) :
 /-- `bind_on_support` reduces to `bind` if `f` doesn't depend on the additional hypothesis -/
 @[simp]
 theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
-    (p.bindOnSupport fun a _ => f a) = p.bind f :=
-  by
+    (p.bindOnSupport fun a _ => f a) = p.bind f := by
   ext (b x)
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b := fun a =>
     ite_eq_right_iff.2 fun h => h.symm ▸ symm (MulZeroClass.zero_mul <| f a b)
@@ -268,16 +264,14 @@ theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
 #align pmf.bind_on_support_eq_bind Pmf.bindOnSupport_eq_bind
 
 theorem bindOnSupport_eq_zero_iff (b : β) :
-    p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 :=
-  by
+    p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 := by
   simp only [bind_on_support_apply, ENNReal.tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
   exact ⟨fun h a ha => trans (dif_neg ha).symm (h a ha), fun h a ha => trans (dif_neg ha) (h a ha)⟩
 #align pmf.bind_on_support_eq_zero_iff Pmf.bindOnSupport_eq_zero_iff
 
 @[simp]
 theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (ha : a' ∈ (pure a).support), Pmf β) :
-    (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) :=
-  by
+    (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
   refine' Pmf.ext fun b => _
   simp only [bind_on_support_apply, pure_apply]
   refine' trans (tsum_congr fun a' => _) (tsum_ite_eq a _)
@@ -294,8 +288,7 @@ theorem bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf �
     (p.bindOnSupport f).bindOnSupport g =
       p.bindOnSupport fun a ha =>
         (f a ha).bindOnSupport fun b hb =>
-          g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) :=
-  by
+          g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) := by
   refine' Pmf.ext fun a => _
   simp only [ennreal.coe_eq_coe.symm, bind_on_support_apply, ← tsum_dite_right,
     ennreal.tsum_mul_left.symm, ennreal.tsum_mul_right.symm]
@@ -312,8 +305,7 @@ theorem bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf �
 
 theorem bindOnSupport_comm (p : Pmf α) (q : Pmf β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, Pmf γ) :
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
-      q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb :=
-  by
+      q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb := by
   apply Pmf.ext; rintro c
   simp only [ennreal.coe_eq_coe.symm, bind_on_support_apply, ← tsum_dite_right,
     ennreal.tsum_mul_left.symm, ennreal.tsum_mul_right.symm]
@@ -330,8 +322,7 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_bindOnSupport_apply :
     (p.bindOnSupport f).toOuterMeasure s =
-      ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s :=
-  by
+      ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by
   simp only [to_outer_measure_apply, Set.indicator_apply, bind_on_support_apply]
   calc
     (∑' b, ite (b ∈ s) (∑' a, p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0) =
