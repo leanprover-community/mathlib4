@@ -3,12 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-
 import Mathlib.Data.Rel
 import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Series of a relation
+
 If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
 
@@ -37,15 +37,15 @@ instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
 @[simps!] def singleton (a : α) : RelSeries r where
-length := 0
-toFun := fun _ => a
-step := fun i => Fin.elim0 i
+  length := 0
+  toFun := fun _ => a
+  step := fun i => Fin.elim0 i
 
 instance [IsEmpty α] : IsEmpty (RelSeries r) where
-false := fun x ↦ IsEmpty.false (x 0)
+  false := fun x ↦ IsEmpty.false (x 0)
 
 instance [Inhabited α] : Inhabited (RelSeries r) where
-default := singleton r default
+  default := singleton r default
 
 instance [Nonempty α] : Nonempty (RelSeries r) :=
 Nonempty.map (singleton r) inferInstance
@@ -94,12 +94,12 @@ series of `s`
 -/
 @[simps!]
 def OfLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
-length := x.length
-toFun := x
-step := fun _ => h _ _ <| x.step _
+  length := x.length
+  toFun := x
+  step := fun _ => h _ _ <| x.step _
 
 lemma ofLE_length (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-  (x.OfLE h).length = x.length := rfl
+    (x.OfLE h).length = x.length := rfl
 
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
   (x.OfLE h : _ → _) = x := rfl
@@ -118,7 +118,7 @@ structure LTSeries extends RelSeries ((. < .) : Rel α α)
 namespace LTSeries
 
 instance : Preorder (LTSeries α) :=
-Preorder.lift fun x => x.length
+  Preorder.lift fun x => x.length
 
 variable {α}
 
@@ -126,27 +126,27 @@ instance : CoeFun (LTSeries α) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := fun x => x.toFun }
 
 lemma le_def (x y : LTSeries α) : x ≤ y ↔ x.length ≤ y.length :=
-Iff.rfl
+  Iff.rfl
 
 lemma lt_def (x y : LTSeries α) : x < y ↔ x.length < y.length :=
-Iff.rfl
+  Iff.rfl
 
 lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
-  p.length = (⊤ : LTSeries α).length :=
-le_antisymm (@le_top (LTSeries α) _ _ _) (hp ⊤)
+    p.length = (⊤ : LTSeries α).length :=
+  le_antisymm (@le_top (LTSeries α) _ _ _) (hp ⊤)
 
 lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.length :=
-le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
+  le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 lemma StrictMono (x : LTSeries α) : StrictMono x :=
-fun _ _ h => x.toRelSeries.StrictMono h
+  fun _ _ h => x.toRelSeries.StrictMono h
 
 section PartialOrder
 
 variable {β : Type _} [PartialOrder β]
 
 lemma Monotone (x : LTSeries β) : Monotone x :=
-fun _ _ h => by
+  fun _ _ h => by
   rw [le_iff_lt_or_eq]
   exact x.toRelSeries.Monotone h
 
