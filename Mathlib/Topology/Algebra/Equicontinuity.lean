@@ -14,7 +14,6 @@ import Mathlib.Topology.Algebra.UniformConvergence
 # Algebra-related equicontinuity criterions
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
 
 open Function
 
