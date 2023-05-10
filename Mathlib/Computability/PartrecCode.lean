@@ -628,9 +628,10 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
     Computable.nat_casesOn (list_length.comp snd) (option_some_iff.2 (hz.comp fst)) <|
       Computable.nat_casesOn snd (option_some_iff.2 (hs.comp (fst.comp fst))) <|
         Computable.nat_casesOn snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <|
-          Computable.nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst)))
+          Computable.nat_casesOn snd
+            (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst)))
             (this.comp <|
-              ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
+              ((Computable.fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
                 snd.pair <| nat_div2.comp <| nat_div2.comp snd)
   refine'
     ((nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => _).comp Computable.id <|
@@ -1212,7 +1213,7 @@ theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
 
 theorem eval_part : Partrec₂ eval :=
   (Partrec.rfindOpt
-    (evaln_prim.to_comp.comp ((snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
+    (evaln_prim.to_comp.comp ((Computable.snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
     fun a => by simp [eval_eq_rfindOpt]
 #align nat.partrec.code.eval_part Nat.Partrec.Code.eval_part
 
