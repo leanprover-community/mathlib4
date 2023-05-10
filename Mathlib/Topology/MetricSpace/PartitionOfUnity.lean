@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.EmetricParacompact
-import Mathbin.Analysis.Convex.PartitionOfUnity
+import Mathlib.Topology.MetricSpace.EmetricParacompact
+import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity
@@ -46,10 +46,8 @@ variable [EMetricSpace X] {K : ι → Set X} {U : ι → Set X}
 `y ∈ K i`, then `emetric.closed_ball y r ⊆ U i`. -/
 theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
-    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i :=
-  by
-  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, closed_ball p.2 p.1 ⊆ U i
-    by
+    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
+  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, closed_ball p.2 p.1 ⊆ U i by
     filter_upwards [tendsto_snd (hfin.Inter_compl_mem_nhds hK x),
       (eventually_all_finite (hfin.point_finite x)).2 this]
     rintro ⟨r, y⟩ hxy hyU i hi
@@ -111,8 +109,7 @@ exists a positive continuous function `δ : C(X, ℝ≥0)` such that for any `i`
 we have `emetric.closed_ball x (δ x) ⊆ U i`. -/
 theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
-    ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
-  by
+    ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases exists_continuous_real_forall_closed_ball_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
   lift δ to C(X, ℝ≥0) using fun x => (hδ₀ x).le
   refine' ⟨δ, hδ₀, fun i x hi => _⟩
@@ -142,8 +139,7 @@ positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x �
 `metric.closed_ball x (δ x) ⊆ U i`. -/
 theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
-    ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
-  by
+    ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases Emetric.exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine' ⟨δ, hδ0, fun i x hx => _⟩
   rw [← emetric_closed_ball_nnreal]
