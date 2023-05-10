@@ -12,6 +12,7 @@ import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
+import Mathlib.Tactic.RSuffices
 
 /-!
 
@@ -70,20 +71,20 @@ abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
 
 instance : Mono (homologyCToK f g w) := by
-  apply pseudoelement.mono_of_zero_of_map_zero
+  apply Pseudoelement.mono_of_zero_of_map_zero
   intro a ha
-  obtain ⟨a, rfl⟩ := pseudoelement.pseudo_surjective_of_epi (cokernel.π (kernel.lift g f w)) a
+  obtain ⟨a, rfl⟩ := Pseudoelement.pseudo_surjective_of_epi (cokernel.π (kernel.lift g f w)) a
   apply_fun kernel.ι (cokernel.desc f g w)  at ha
-  simp only [← pseudoelement.comp_apply, cokernel.π_desc, kernel.lift_ι,
-    pseudoelement.apply_zero] at ha
-  simp only [pseudoelement.comp_apply] at ha
-  obtain ⟨b, hb⟩ : ∃ b, f b = _ := (pseudoelement.pseudo_exact_of_exact (exact_cokernel f)).2 _ ha
+  simp only [← Pseudoelement.comp_apply, cokernel.π_desc, kernel.lift_ι,
+    Pseudoelement.apply_zero] at ha
+  simp only [Pseudoelement.comp_apply] at ha
+  obtain ⟨b, hb⟩ : ∃ b, f b = _ := (Pseudoelement.pseudo_exact_of_exact (exact_cokernel f)).2 _ ha
   rsuffices ⟨c, rfl⟩ : ∃ c, kernel.lift g f w c = a
-  · simp [← pseudoelement.comp_apply]
+  · simp [← Pseudoelement.comp_apply]
   use b
   apply_fun kernel.ι g
-  swap; · apply pseudoelement.pseudo_injective_of_mono
-  simpa [← pseudoelement.comp_apply]
+  swap; · apply Pseudoelement.pseudo_injective_of_mono
+  simpa [← Pseudoelement.comp_apply]
 
 instance : Epi (homologyCToK f g w) := by
   apply Pseudoelement.epi_of_pseudo_surjective
@@ -92,9 +93,8 @@ instance : Epi (homologyCToK f g w) := by
   obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b
   apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
   have : g c = 0 := by
-    dsimp [b] at hc
-    rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, pseudoelement.comp_apply, hc]
-    simp [← pseudoelement.comp_apply]
+    rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, Pseudoelement.comp_apply, hc]
+    simp [← Pseudoelement.comp_apply]
   obtain ⟨d, hd⟩ : ∃ d, kernel.ι g d = c := by
     apply (Pseudoelement.pseudo_exact_of_exact exact_kernel_ι).2 _ this
   use cokernel.π (kernel.lift g f w) d
@@ -225,7 +225,7 @@ theorem π'_map (α β h) :
     (kernelSubobjectIso g).inv ≫ kernelSubobjectMap β =
       kernel.map _ _ β.left β.right β.w.symm ≫ (kernelSubobjectIso _).inv := by
     rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-    ext
+    refine Limits.equalizer.hom_ext ?_
     dsimp
     simp
   rw [this]
