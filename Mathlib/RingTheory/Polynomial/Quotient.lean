@@ -157,42 +157,43 @@ theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
-    I.polynomialQuotientEquivQuotientPolynomial (f.map I.Quotient.mk) = Quotient.mk _ f := by
+    I.polynomialQuotientEquivQuotientPolynomial (f.map <| Ideal.Quotient.mk I) =
+    Quotient.mk ((map C I : Ideal R[X])) f := by
   apply (polynomialQuotientEquivQuotientPolynomial I).symm.injective
-  rw [RingEquiv.symm_apply_apply, polynomial_quotient_equiv_quotient_polynomial_symm_mk]
+  rw [RingEquiv.symm_apply_apply, polynomialQuotientEquivQuotientPolynomial_symm_mk]
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_map_mk Ideal.polynomialQuotientEquivQuotientPolynomial_map_mk
 
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
-theorem isDomain_map_C_quotient {P : Ideal R} (H : IsPrime P) :
+theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
   RingEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 #align ideal.is_domain_map_C_quotient Ideal.isDomain_map_C_quotient
 
+set_option synthInstance.etaExperiment true in
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
   In particular we can map `I` across this map, to get `I'` and a new map `R' → R'[x] → R'[x]/I`.
   This theorem shows `I'` will not contain any non-zero constant polynomials
   -/
 theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk I).comp C).range)
-    (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) : x = 0 := by
-  let i := ((Quotient.mk' I).comp C).range_restrict
-  have hi' : (Polynomial.mapRingHom i).ker ≤ I := by
-    refine' fun f hf => polynomial_mem_ideal_ofCcoeff_mem_ideal I f fun n => _
-    rw [memCcomap, ← quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
-    rw [RingHom.mem_ker, coe_map_ring_hom] at hf
+    (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) :
+    (x : R[X] ⧸ I) = 0 := by
+  let i := ((Quotient.mk I).comp C).rangeRestrict
+  have hi' : RingHom.ker (Polynomial.mapRingHom i) ≤ I := by
+    refine' fun f hf => polynomial_mem_ideal_of_coeff_mem_ideal I f fun n => _
+    rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
+    rw [RingHom.mem_ker, coe_mapRingHom] at hf
     replace hf := congr_arg (fun f : Polynomial _ => f.coeff n) hf
     simp only [coeff_map, coeff_zero] at hf
     rwa [Subtype.ext_iff, RingHom.coe_rangeRestrict] at hf
   obtain ⟨x, hx'⟩ := x
   obtain ⟨y, rfl⟩ := RingHom.mem_range.1 hx'
-  refine' Subtype.eq _
-  simp only [RingHom.comp_apply, quotient.eq_zero_iff_mem, ZeroMemClass.coe_zero,
-    Subtype.val_eqCcoe]
+  simp only [RingHom.comp_apply, Quotient.eq_zero_iff_mem]
   suffices C (i y) ∈ I.map (Polynomial.mapRingHom i) by
     obtain ⟨f, hf⟩ :=
       mem_image_of_mem_map_of_surjective (Polynomial.mapRingHom i)
-        (Polynomial.map_surjective _ ((Quotient.mk' I).comp C).rangeRestrict_surjective) this
-    refine' sub_addCcancel (C y) f ▸ I.add_mem (hi' _ : C y - f ∈ I) hf.1
+        (Polynomial.map_surjective _ (RingHom.rangeRestrict_surjective _)) this
+    refine' sub_add_cancel (C y) f ▸ I.add_mem (hi' _ : C y - f ∈ I) hf.1
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_map_ring_hom, map_C]
   exact hx
 #align ideal.eq_zero_of_polynomial_mem_map_range Ideal.eq_zero_of_polynomial_mem_map_range
