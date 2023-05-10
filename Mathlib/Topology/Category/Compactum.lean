@@ -85,8 +85,6 @@ open Classical Topology
 -- mathport name: exprβ
 local notation "β" => ofTypeMonad Ultrafilter
 
-#check β
-
 /-- The type `Compactum` of Compacta, defined as algebras for the ultrafilter monad. -/
 def Compactum :=
   Monad.Algebra β deriving Category, Inhabited
@@ -119,7 +117,7 @@ def adj : free ⊣ forget :=
 -- Basic instances
 instance : ConcreteCategory Compactum where Forget := forget
 
--- porting note: investigate if `noncomputable` is needed here
+-- porting note: TODO investigate if `noncomputable` is needed here
 noncomputable instance : CoeSort Compactum (Type _) :=
   ⟨forget.obj⟩
 
@@ -222,7 +220,6 @@ private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =
   ⟨X.incl a, ha, by simp⟩
 -- Porting note: removed #align declaration since it is a private lemma
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (B C «expr ∈ » C0) -/
 private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   rintro _ ⟨F, hF, rfl⟩
   -- Notation to be used in this proof.
@@ -289,7 +286,6 @@ theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   exact cl_cl _ ⟨F, hF, rfl⟩
 #align Compactum.is_closed_cl Compactum.isClosed_cl
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (S1 S2 «expr ∈ » T0) -/
 theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤ 𝓝 x → X.str F = x := by
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
@@ -387,7 +383,7 @@ theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
     exact ⟨F, h1, str_eq_of_le_nhds _ _ h2⟩
 #align Compactum.cl_eq_closure Compactum.cl_eq_closure
 
--- porting note: TODO: rem,ove `TopologicalSpace` instances
+-- porting note: TODO: remove `TopologicalSpace` instances
 /-- Any morphism of compacta is continuous. -/
 theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y)
 [TopologicalSpace X.A] [TopologicalSpace Y.A] : Continuous f := by
@@ -457,7 +453,7 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor Compactum_to_CompHaus is full. -/
-def full : Full compactumToCompHaus.{u} where preimage X Y f := Compactum.homOfContinuous f.1 f.2
+def full : Full compactumToCompHaus.{u} where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor Compactum_to_CompHaus is faithful. -/
@@ -516,14 +512,13 @@ the instance `creates_limits (forget CompHaus)` can be deduced from this
 monadicity.
 -/
 noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
-  let e : forget CompHaus ≅ Compactum_to_CompHaus.inv ⋙ Compactum.forget :=
-    _ ≪≫ isoWhiskerLeft _ compactumToCompHausCompForget
-  swap
-  refine' _ ≪≫ functor.associator _ _ _
-  refine' (functor.left_unitor _).symm ≪≫ _
-  refine' iso_whisker_right _ _
-  exact Compactum_to_CompHaus.as_equivalence.symm.unit_iso
-  exact creates_limits_of_nat_iso e.symm
+  let e : forget CompHaus ≅ compactumToCompHaus.inv ⋙ Compactum.forget :=
+    (((forget CompHaus).leftUnitor.symm ≪≫
+    isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
+    compactumToCompHaus.inv.associator compactumToCompHaus (forget CompHaus)) ≪≫
+    isoWhiskerLeft _ compactumToCompHausCompForget
+  exact createsLimitsOfNatIso e.symm
+
 #align CompHaus.forget_creates_limits CompHaus.forgetCreatesLimits
 
 noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
