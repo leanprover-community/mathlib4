@@ -772,7 +772,7 @@ theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
     Preadditive.comp_add]
   rw [← Preadditive.sub_comp]
   simp only [CategoryTheory.Subobject.factorThru_add_sub_factorThru_right]
-  erw [Subobject.factorThru_ofLe (D.boundaries_le_cycles i)]
+  erw [Subobject.factorThru_ofLE (D.boundaries_le_cycles i)]
   · simp
   · rw [prevD_eq_toPrev_dTo, ← Category.assoc]
     apply imageSubobject_factors_comp_self

@@ -314,7 +314,6 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
             (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
       _ = μ s' := (congr_arg μ (inter_union_diff _ _))
       _ = μ s := hs'
-
   ·
     calc
       μ s = μ (s ∩ t ∪ s \ t) := by rw [inter_union_diff]
@@ -403,9 +402,9 @@ theorem _root_.Set.Finite.nullMeasurableSet_interₛ {s : Set (Set α)} (hs : s.
   NullMeasurableSet.interₛ (Finite.countable hs) h
 #align set.finite.null_measurable_set_sInter Set.Finite.nullMeasurableSet_interₛ
 
-theorem nullMeasurableSet_to_measurable : NullMeasurableSet (toMeasurable μ s) μ :=
+theorem nullMeasurableSet_toMeasurable : NullMeasurableSet (toMeasurable μ s) μ :=
   (measurableSet_toMeasurable _ _).nullMeasurableSet
-#align measure_theory.null_measurable_set_to_measurable MeasureTheory.nullMeasurableSet_to_measurable
+#align measure_theory.null_measurable_set_to_measurable MeasureTheory.nullMeasurableSet_toMeasurable
 
 end
 
@@ -493,7 +492,7 @@ def completion {_ : MeasurableSpace α} (μ : Measure α) :
     refine' le_antisymm (fun s => _)
       (@OuterMeasure.le_trim (NullMeasurableSpace α μ) _ _)
     rw [@OuterMeasure.trim_eq_infᵢ (NullMeasurableSpace α μ) _];
-    have : ∀s, μ.toOuterMeasure s = μ s := by simp only [forall_const]
+    have : ∀ s, μ.toOuterMeasure s = μ s := by simp only [forall_const]
     rw [this, measure_eq_infᵢ]
     apply infᵢ₂_mono
     exact fun t _ht => infᵢ_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
