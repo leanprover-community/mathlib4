@@ -646,6 +646,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
