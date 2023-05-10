@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Hom
-import Mathbin.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -35,8 +35,7 @@ positive `ε`.
 -/
 theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgroup H} {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : f.SurjectiveOnWith K C) :
-    f.SurjectiveOnWith K.topologicalClosure (C + ε) :=
-  by
+    f.SurjectiveOnWith K.topologicalClosure (C + ε) := by
   rintro (h : H) (h_in : h ∈ K.topological_closure)
   -- We first get rid of the easy case where `h = 0`.
   by_cases hyp_h : h = 0
@@ -64,8 +63,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   /- The desired series `s` is then obtained by summing `u`. We then check our choice of
     `b` ensures `s` is Cauchy. -/
   set s : ℕ → G := fun n => ∑ k in range (n + 1), u k
-  have : CauchySeq s :=
-    by
+  have : CauchySeq s := by
     apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by norm_num) one_half_lt_one
     rintro n (hn : n ≥ 1)
     calc
@@ -78,8 +76,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
   refine' ⟨g, _, _⟩
   · -- We indeed get a preimage. First note:
-    have : f ∘ s = fun n => ∑ k in range (n + 1), v k :=
-      by
+    have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
       simp [map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
@@ -91,8 +88,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     suffices : ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖
     exact le_of_tendsto' (continuous_norm.continuous_at.tendsto.comp hg) this
     intro n
-    have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ :=
-      by
+    have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ := by
       have :=
         calc
           ‖v 0‖ ≤ ‖h‖ + ‖v 0 - h‖ := norm_le_insert' _ _
@@ -136,8 +132,7 @@ This is useful in particular if `j` is the inclusion of a normed group into its 
 theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Type _}
     [SeminormedAddCommGroup K] {j : NormedAddGroupHom K H} (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
-    f.SurjectiveOnWith j.range.topologicalClosure (C + ε) :=
-  by
+    f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
   replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
   · intro h h_in
     rcases(j.mem_range _).mp h_in with ⟨k, rfl⟩
