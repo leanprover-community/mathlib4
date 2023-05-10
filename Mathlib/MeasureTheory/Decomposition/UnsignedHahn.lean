@@ -51,7 +51,7 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
     change _ - _ = _
     rw [measure_empty, measure_empty, sub_self]
   have d_split : ∀ s t, MeasurableSet s → MeasurableSet t → d s = d (s \ t) + d (s ∩ t) := by
-    intro s t hs ht
+    intro s t _hs ht
     simp only [d_empty]
     rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
@@ -77,7 +77,7 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
     exacts [hμ _, ⟨0, hμ _⟩, hν _, ⟨0, hν _⟩]
   have bdd_c : BddAbove c := by
     use (μ univ).toNNReal
-    rintro r ⟨s, hs, rfl⟩
+    rintro r ⟨s, _hs, rfl⟩
     refine' le_trans (sub_le_self _ <| NNReal.coe_nonneg _) _
     rw [NNReal.coe_le_coe, ← ENNReal.coe_le_coe, to_nnreal_μ, to_nnreal_μ]
     exact measure_mono (subset_univ _)
