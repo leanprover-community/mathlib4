@@ -943,8 +943,9 @@ inductive Λ'
 -- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
 
 /-- A computable version of `Turing.PartrecToTM2.Λ'.rec`.
-Workaround until Lean has native support for this. -/
-@[elab_as_elim] private abbrev Λ'.recC.{u} {motive : Λ' → Sort u}
+Workaround until Lean has native support for this. The compiler fails to check the termination,
+so this should be `unsafe`. -/
+@[elab_as_elim] private unsafe abbrev Λ'.recU.{u} {motive : Λ' → Sort u}
     (move : (p : Γ' → Bool) → (k₁ k₂ : K') → (q : Λ') → motive q → motive (Λ'.move p k₁ k₂ q))
     (clear : (p : Γ' → Bool) → (k : K') → (q : Λ') → motive q → motive (Λ'.clear p k q))
     (copy : (q : Λ') → motive q → motive (Λ'.copy q))
@@ -954,16 +955,20 @@ Workaround until Lean has native support for this. -/
     (pred : (q₁ q₂ : Λ') → motive q₁ → motive q₂ → motive (Λ'.pred q₁ q₂))
     (ret : (k : Cont') → motive (Λ'.ret k)) :
     (t : Λ') → motive t
-  | Λ'.move p k₁ k₂ q => move p k₁ k₂ q (Λ'.recC move clear copy push read succ pred ret q)
-  | Λ'.clear p k q => clear p k q (Λ'.recC move clear copy push read succ pred ret q)
-  | Λ'.copy q => copy q (Λ'.recC move clear copy push read succ pred ret q)
-  | Λ'.push k s q => push k s q (Λ'.recC move clear copy push read succ pred ret q)
-  | Λ'.read f => read f (fun a => Λ'.recC move clear copy push read succ pred ret (f a))
-  | Λ'.succ q => succ q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.move p k₁ k₂ q => move p k₁ k₂ q (Λ'.recU move clear copy push read succ pred ret q)
+  | Λ'.clear p k q => clear p k q (Λ'.recU move clear copy push read succ pred ret q)
+  | Λ'.copy q => copy q (Λ'.recU move clear copy push read succ pred ret q)
+  | Λ'.push k s q => push k s q (Λ'.recU move clear copy push read succ pred ret q)
+  | Λ'.read f => read f (fun a => Λ'.recU move clear copy push read succ pred ret (f a))
+  | Λ'.succ q => succ q (Λ'.recU move clear copy push read succ pred ret q)
   | Λ'.pred q₁ q₂ => pred q₁ q₂
-      (Λ'.recC move clear copy push read succ pred ret q₁)
-      (Λ'.recC move clear copy push read succ pred ret q₂)
+      (Λ'.recU move clear copy push read succ pred ret q₁)
+      (Λ'.recU move clear copy push read succ pred ret q₂)
   | Λ'.ret k => ret k
+
+@[elab_as_elim, implemented_by Λ'.recU] private abbrev Λ'.recC.{u} := @Λ'.rec.{u}
+
+@[csimp] private theorem Λ'.rec_eq_recC : @Λ'.rec = @Λ'.recC := rfl
 
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
@@ -1741,19 +1746,19 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
 
 /-- The set of machine states reachable via downward label jumps, discounting jumps via `ret`. -/
 def trStmts₁ : Λ' → Finset Λ'
-  | Q@(Λ'.move p k₁ k₂ q) => insert Q <| trStmts₁ q
-  | Q@(Λ'.push k f q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.move _ _ _ q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.push _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.read q) => insert Q <| Finset.univ.bunionᵢ fun s => trStmts₁ (q s)
-  | Q@(Λ'.clear p k q) => insert Q <| trStmts₁ q
+  | Q@(Λ'.clear _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.copy q) => insert Q <| trStmts₁ q
   | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| trStmts₁ q
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
-  | Q@(Λ'.ret k) => {Q}
+  | Q@(Λ'.ret _) => {Q}
 #align turing.partrec_to_TM2.tr_stmts₁ Turing.PartrecToTM2.trStmts₁
 
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
-  induction q <;>
-    simp (config := { contextual := true }) only [tr_stmts₁, Finset.mem_insert, Finset.mem_union,
+  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
+    simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
   iterate 4 exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
@@ -1766,10 +1771,10 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · intro h x h'
       simp
       exact Or.inr (Or.inr <| q_ih h h')
-  · refine' ⟨fun h x h' => _, fun h x h' => _, fun h x h' => _⟩ <;> simp
-    · exact Or.inr (Or.inr <| Or.inl <| q_ih_q₁ h h')
+  · refine' ⟨fun h x h' => _, fun _ x h' => _, fun h x h' => _⟩ <;> simp
+    · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
     · cases' Finset.mem_insert.1 h' with h' h' <;> simp [h', unrev]
-    · exact Or.inr (Or.inr <| Or.inr <| q_ih_q₂ h h')
+    · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 #align turing.partrec_to_TM2.tr_stmts₁_trans Turing.PartrecToTM2.trStmts₁_trans
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
@@ -1780,24 +1785,24 @@ theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
 including the state `ret k` but not any states after that (that is, the states visited while
 evaluating `k`). -/
 def codeSupp' : Code → Cont' → Finset Λ'
-  | c@code.zero', k => trStmts₁ (trNormal c k)
-  | c@code.succ, k => trStmts₁ (trNormal c k)
-  | c@code.tail, k => trStmts₁ (trNormal c k)
-  | c@(code.cons f fs), k =>
+  | c@Code.zero', k => trStmts₁ (trNormal c k)
+  | c@Code.succ, k => trStmts₁ (trNormal c k)
+  | c@Code.tail, k => trStmts₁ (trNormal c k)
+  | c@(Code.cons f fs), k =>
     trStmts₁ (trNormal c k) ∪
-      (code_supp' f (Cont'.cons₁ fs k) ∪
+      (codeSupp' f (Cont'.cons₁ fs k) ∪
         (trStmts₁
             (move₂ (fun _ => false) main aux <|
-              move₂ (fun s => s = Γ'.Cons) stack main <|
+              move₂ (fun s => s = Γ'.consₗ) stack main <|
                 move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
-          (code_supp' fs (Cont'.cons₂ k) ∪ trStmts₁ (head stack <| Λ'.ret k))))
-  | c@(code.comp f g), k =>
+          (codeSupp' fs (Cont'.cons₂ k) ∪ trStmts₁ (head stack <| Λ'.ret k))))
+  | c@(Code.comp f g), k =>
     trStmts₁ (trNormal c k) ∪
-      (code_supp' g (Cont'.comp f k) ∪ (trStmts₁ (trNormal f k) ∪ code_supp' f k))
-  | c@(code.case f g), k => trStmts₁ (trNormal c k) ∪ (code_supp' f k ∪ code_supp' g k)
-  | c@(code.fix f), k =>
+      (codeSupp' g (Cont'.comp f k) ∪ (trStmts₁ (trNormal f k) ∪ codeSupp' f k))
+  | c@(Code.case f g), k => trStmts₁ (trNormal c k) ∪ (codeSupp' f k ∪ codeSupp' g k)
+  | c@(Code.fix f), k =>
     trStmts₁ (trNormal c k) ∪
-      (code_supp' f (Cont'.fix f k) ∪
+      (codeSupp' f (Cont'.fix f k) ∪
         (trStmts₁ (Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) ∪ {Λ'.ret k}))
 #align turing.partrec_to_TM2.code_supp' Turing.PartrecToTM2.codeSupp'
 
@@ -1809,16 +1814,16 @@ theorem codeSupp'_self (c k) : trStmts₁ (trNormal c k) ⊆ codeSupp' c k := by
 /-- The (finite!) set of machine states visited during the course of evaluation of a continuation
 `k`, not including the initial state `ret k`. -/
 def contSupp : Cont' → Finset Λ'
-  | cont'.cons₁ fs k =>
+  | Cont'.cons₁ fs k =>
     trStmts₁
         (move₂ (fun _ => false) main aux <|
-          move₂ (fun s => s = Γ'.Cons) stack main <|
+          move₂ (fun s => s = Γ'.consₗ) stack main <|
             move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
-      (codeSupp' fs (Cont'.cons₂ k) ∪ (trStmts₁ (head stack <| Λ'.ret k) ∪ cont_supp k))
-  | cont'.cons₂ k => trStmts₁ (head stack <| Λ'.ret k) ∪ cont_supp k
-  | cont'.comp f k => codeSupp' f k ∪ cont_supp k
-  | cont'.fix f k => codeSupp' (Code.fix f) k ∪ cont_supp k
-  | cont'.halt => ∅
+      (codeSupp' fs (Cont'.cons₂ k) ∪ (trStmts₁ (head stack <| Λ'.ret k) ∪ contSupp k))
+  | Cont'.cons₂ k => trStmts₁ (head stack <| Λ'.ret k) ∪ contSupp k
+  | Cont'.comp f k => codeSupp' f k ∪ contSupp k
+  | Cont'.fix f k => codeSupp' (Code.fix f) k ∪ contSupp k
+  | Cont'.halt => ∅
 #align turing.partrec_to_TM2.cont_supp Turing.PartrecToTM2.contSupp
 
 /-- The (finite!) set of machine states visited during the course of evaluation of `c` in
@@ -1853,29 +1858,29 @@ theorem codeSupp_tail (k) : codeSupp Code.tail k = trStmts₁ (trNormal Code.tai
 theorem codeSupp_cons (f fs k) :
     codeSupp (Code.cons f fs) k =
       trStmts₁ (trNormal (Code.cons f fs) k) ∪ codeSupp f (Cont'.cons₁ fs k) :=
-  by simp [code_supp, code_supp', cont_supp, Finset.union_assoc]
+  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
 #align turing.partrec_to_TM2.code_supp_cons Turing.PartrecToTM2.codeSupp_cons
 
 @[simp]
 theorem codeSupp_comp (f g k) :
     codeSupp (Code.comp f g) k =
       trStmts₁ (trNormal (Code.comp f g) k) ∪ codeSupp g (Cont'.comp f k) := by
-  simp [code_supp, code_supp', cont_supp, Finset.union_assoc]
-  rw [← Finset.union_assoc _ _ (cont_supp k),
-    Finset.union_eq_right_iff_subset.2 (code_supp'_self _ _)]
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
+  rw [← Finset.union_assoc _ _ (contSupp k),
+    Finset.union_eq_right_iff_subset.2 (codeSupp'_self _ _)]
 #align turing.partrec_to_TM2.code_supp_comp Turing.PartrecToTM2.codeSupp_comp
 
 @[simp]
 theorem codeSupp_case (f g k) :
     codeSupp (Code.case f g) k =
       trStmts₁ (trNormal (Code.case f g) k) ∪ (codeSupp f k ∪ codeSupp g k) :=
-  by simp [code_supp, code_supp', cont_supp, Finset.union_assoc, Finset.union_left_comm]
+  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm]
 #align turing.partrec_to_TM2.code_supp_case Turing.PartrecToTM2.codeSupp_case
 
 @[simp]
 theorem codeSupp_fix (f k) :
     codeSupp (Code.fix f) k = trStmts₁ (trNormal (Code.fix f) k) ∪ codeSupp f (Cont'.fix f k) := by
-  simp [code_supp, code_supp', cont_supp, Finset.union_assoc, Finset.union_left_comm,
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm,
     Finset.union_left_idem]
 #align turing.partrec_to_TM2.code_supp_fix Turing.PartrecToTM2.codeSupp_fix
 
@@ -1884,10 +1889,10 @@ theorem contSupp_cons₁ (fs k) :
     contSupp (Cont'.cons₁ fs k) =
       trStmts₁
           (move₂ (fun _ => false) main aux <|
-            move₂ (fun s => s = Γ'.Cons) stack main <|
+            move₂ (fun s => s = Γ'.consₗ) stack main <|
               move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
         codeSupp fs (Cont'.cons₂ k) :=
-  by simp [code_supp, code_supp', cont_supp, Finset.union_assoc]
+  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
 #align turing.partrec_to_TM2.cont_supp_cons₁ Turing.PartrecToTM2.contSupp_cons₁
 
 @[simp]
@@ -1902,7 +1907,7 @@ theorem contSupp_comp (f k) : contSupp (Cont'.comp f k) = codeSupp f k :=
 #align turing.partrec_to_TM2.cont_supp_comp Turing.PartrecToTM2.contSupp_comp
 
 theorem contSupp_fix (f k) : contSupp (Cont'.fix f k) = codeSupp f (Cont'.fix f k) := by
-  simp (config := { contextual := true }) [code_supp, code_supp', cont_supp, Finset.union_assoc,
+  simp (config := { contextual := true }) [codeSupp, codeSupp', contSupp, Finset.union_assoc,
     Finset.subset_iff]
 #align turing.partrec_to_TM2.cont_supp_fix Turing.PartrecToTM2.contSupp_fix
 
@@ -1911,22 +1916,22 @@ theorem contSupp_halt : contSupp Cont'.halt = ∅ :=
   rfl
 #align turing.partrec_to_TM2.cont_supp_halt Turing.PartrecToTM2.contSupp_halt
 
-/-- The statement `Λ'.supports S q` means that `cont_supp k ⊆ S` for any `ret k`
+/-- The statement `Λ'.Supports S q` means that `contSupp k ⊆ S` for any `ret k`
 reachable from `q`.
 (This is a technical condition used in the proof that the machine is supported.) -/
 def Λ'.Supports (S : Finset Λ') : Λ' → Prop
-  | Q@(Λ'.move p k₁ k₂ q) => Λ'.Supports S q
-  | Q@(Λ'.push k f q) => Λ'.Supports S q
-  | Q@(Λ'.read q) => ∀ s, Λ'.Supports S (q s)
-  | Q@(Λ'.clear p k q) => Λ'.Supports S q
-  | Q@(Λ'.copy q) => Λ'.Supports S q
-  | Q@(Λ'.succ q) => Λ'.Supports S q
-  | Q@(Λ'.pred q₁ q₂) => Λ'.Supports S q₁ ∧ Λ'.Supports S q₂
-  | Q@(Λ'.ret k) => contSupp k ⊆ S
+  | Λ'.move _ _ _ q => Λ'.Supports S q
+  | Λ'.push _ _ q => Λ'.Supports S q
+  | Λ'.read q => ∀ s, Λ'.Supports S (q s)
+  | Λ'.clear _ _ q => Λ'.Supports S q
+  | Λ'.copy q => Λ'.Supports S q
+  | Λ'.succ q => Λ'.Supports S q
+  | Λ'.pred q₁ q₂ => Λ'.Supports S q₁ ∧ Λ'.Supports S q₂
+  | Λ'.ret k => contSupp k ⊆ S
 #align turing.partrec_to_TM2.Λ'.supports Turing.PartrecToTM2.Λ'.Supports
 
-/-- A shorthand for the predicate that we are proving in the main theorems `tr_stmts₁_supports`,
-`code_supp'_supports`, `cont_supp_supports`, `code_supp_supports`. The set `S` is fixed throughout
+/-- A shorthand for the predicate that we are proving in the main theorems `trStmts₁_supports`,
+`codeSupp'_supports`, `contSupp_supports`, `codeSupp_supports`. The set `S` is fixed throughout
 the proof, and denotes the full set of states in the machine, while `K` is a subset that we are
 currently proving a property about. The predicate asserts that every state in `K` is closed in `S`
 under forward simulation, i.e. stepping forward through evaluation starting from any state in `K`
@@ -1936,128 +1941,123 @@ def Supports (K S : Finset Λ') :=
 #align turing.partrec_to_TM2.supports Turing.PartrecToTM2.Supports
 
 theorem supports_insert {K S q} :
-    Supports (insert q K) S ↔ TM2.SupportsStmt S (tr q) ∧ Supports K S := by simp [supports]
+    Supports (insert q K) S ↔ TM2.SupportsStmt S (tr q) ∧ Supports K S := by simp [Supports]
 #align turing.partrec_to_TM2.supports_insert Turing.PartrecToTM2.supports_insert
 
-theorem supports_singleton {S q} : Supports {q} S ↔ TM2.SupportsStmt S (tr q) := by simp [supports]
+theorem supports_singleton {S q} : Supports {q} S ↔ TM2.SupportsStmt S (tr q) := by simp [Supports]
 #align turing.partrec_to_TM2.supports_singleton Turing.PartrecToTM2.supports_singleton
 
 theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K₁ S ∧ Supports K₂ S := by
-  simp [supports, or_imp, forall_and]
+  simp [Supports, or_imp, forall_and]
 #align turing.partrec_to_TM2.supports_union Turing.PartrecToTM2.supports_union
 
 theorem supports_bunionᵢ {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.bunionᵢ K) S ↔ ∀ a, Supports (K a) S := by
-  simp [supports] <;> apply forall_swap
+  simp [Supports]; apply forall_swap
 #align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_bunionᵢ
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
-  dsimp only <;> split_ifs <;> exact H
+  dsimp only; split_ifs <;> exact H
 #align turing.partrec_to_TM2.head_supports Turing.PartrecToTM2.head_supports
 
-theorem retSupports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ'.ret k)) := by
-  have W := fun {q} => tr_stmts₁_self q
+theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ'.ret k)) := by
+  have W := fun {q} => trStmts₁_self q
   cases k
   case halt => trivial
-  case cons₁ => rw [cont_supp_cons₁, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
-  case cons₂ => rw [cont_supp_cons₂, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
-  case comp => rw [cont_supp_comp] at H₁; exact fun _ => H₁ (code_supp_self _ _ W)
+  case cons₁ => rw [contSupp_cons₁, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
+  case cons₂ => rw [contSupp_cons₂, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
+  case comp => rw [contSupp_comp] at H₁; exact fun _ => H₁ (codeSupp_self _ _ W)
   case fix =>
-    rw [cont_supp_fix] at H₁
+    rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
     intro s; dsimp only; cases natEnd s.iget
     · refine' H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
-#align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.retSupports
+#align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.ret_supports
 
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
-  have W := fun {q} => tr_stmts₁_self q
-  induction q <;> simp [tr_stmts₁] at HS₁⊢
+  have W := fun {q} => trStmts₁_self q
+  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
+    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset.1 HS₁ with h₁ h₂
-    first |have h₃ := h₂ W|try simp [Finset.subset_iff] at h₂
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩
-  -- move
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩
-  -- clear
-  · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩
-  -- copy
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩
-  -- push
-  -- read
-  · refine' supports_insert.2 ⟨fun _ => h₂ _ W, _⟩
-    exact supports_bUnion.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
-  -- succ
-  · refine' supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, _⟩
+    first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
+  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- move
+  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- clear
+  · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- copy
+  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- push
+  · refine' supports_insert.2 ⟨fun _ => h₂ _ W, _⟩ -- read
+    exact supports_bunionᵢ.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
+  · refine' supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, _⟩ -- succ
     exact supports_insert.2 ⟨⟨fun _ => h₂.2 _ W, fun _ => h₂.1⟩, q_ih H₁ h₂.2⟩
-  -- pred
-  · refine'
+  · refine' -- pred
       supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.2 _ (Or.inl W), fun _ => h₂.1, fun _ => h₂.1⟩, _⟩
     refine' supports_insert.2 ⟨⟨fun _ => h₂.2 _ (Or.inr W), fun _ => h₂.1⟩, _⟩
     refine' supports_union.2 ⟨_, _⟩
-    · exact q_ih_q₁ H₁.1 fun _ h => h₂.2 _ (Or.inl h)
-    · exact q_ih_q₂ H₁.2 fun _ h => h₂.2 _ (Or.inr h)
-  -- ret
-  · exact supports_singleton.2 (ret_supports H₁)
+    · exact q₁_ih H₁.1 fun _ h => h₂.2 _ (Or.inl h)
+    · exact q₂_ih H₁.2 fun _ h => h₂.2 _ (Or.inr h)
+  · exact supports_singleton.2 (ret_supports H₁)  -- ret
 #align turing.partrec_to_TM2.tr_stmts₁_supports Turing.PartrecToTM2.trStmts₁_supports
 
 theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStmts₁ q ∪ K ⊆ S)
     (H₃ : K ⊆ S → Supports K S) : Supports (trStmts₁ q ∪ K) S := by
   simp [Finset.union_subset_iff] at H₂
-  exact supports_union.2 ⟨tr_stmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
+  exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 #align turing.partrec_to_TM2.tr_stmts₁_supports' Turing.PartrecToTM2.trStmts₁_supports'
 
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
-  induction c generalizing k <;> simp [Λ'.supports, head]
+  induction c generalizing k <;> simp [Λ'.Supports, head]
   case zero' => exact Finset.union_subset_right Hk
   case succ => intro ; split_ifs <;> exact Finset.union_subset_right Hk
   case tail => exact Finset.union_subset_right Hk
-  case cons f fs IHf IHfs => apply IHf; rw [code_supp_cons] at Hk;
+  case cons f fs IHf _ =>
+    apply IHf
+    rw [codeSupp_cons] at Hk
     exact Finset.union_subset_right Hk
-  case comp f g IHf IHg => apply IHg; rw [code_supp_comp] at Hk; exact Finset.union_subset_right Hk
+  case comp f g _ IHg => apply IHg; rw [codeSupp_comp] at Hk; exact Finset.union_subset_right Hk
   case
     case f g IHf IHg =>
-    simp only [code_supp_case, Finset.union_subset_iff] at Hk
+    simp only [codeSupp_case, Finset.union_subset_iff] at Hk
     exact ⟨IHf Hk.2.1, IHg Hk.2.2⟩
-  case fix f IHf => apply IHf; rw [code_supp_fix] at Hk; exact Finset.union_subset_right Hk
+  case fix f IHf => apply IHf; rw [codeSupp_fix] at Hk; exact Finset.union_subset_right Hk
 #align turing.partrec_to_TM2.tr_normal_supports Turing.PartrecToTM2.trNormal_supports
 
 theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp' c k) S := by
   induction c generalizing k
   iterate 3
-    exact tr_stmts₁_supports (tr_normal_supports H) (Finset.Subset.trans (code_supp_self _ _) H)
+    exact trStmts₁_supports (trNormal_supports H) (Finset.Subset.trans (codeSupp_self _ _) H)
   case cons f fs IHf IHfs =>
-    have H' := H; simp only [code_supp_cons, Finset.union_subset_iff] at H'
-    refine' tr_stmts₁_supports' (tr_normal_supports H) (Finset.union_subset_left H) fun h => _
+    have H' := H; simp only [codeSupp_cons, Finset.union_subset_iff] at H'
+    refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHf H'.2, _⟩
-    refine' tr_stmts₁_supports' (tr_normal_supports _) (Finset.union_subset_right h) fun h => _
-    · simp only [code_supp, Finset.union_subset_iff, cont_supp] at h H⊢
+    refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun h => _
+    · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine' supports_union.2 ⟨IHfs _, _⟩
-    · rw [code_supp, cont_supp_cons₁] at H'
+    · rw [codeSupp, contSupp_cons₁] at H'
       exact Finset.union_subset_right (Finset.union_subset_right H'.2)
     exact
-      tr_stmts₁_supports (head_supports <| Finset.union_subset_right H)
+      trStmts₁_supports (head_supports <| Finset.union_subset_right H)
         (Finset.union_subset_right h)
   case comp f g IHf IHg =>
-    have H' := H; rw [code_supp_comp] at H'; have H' := Finset.union_subset_right H'
-    refine' tr_stmts₁_supports' (tr_normal_supports H) (Finset.union_subset_left H) fun h => _
+    have H' := H; rw [codeSupp_comp] at H'; have H' := Finset.union_subset_right H'
+    refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHg H', _⟩
-    refine' tr_stmts₁_supports' (tr_normal_supports _) (Finset.union_subset_right h) fun h => _
-    · simp only [code_supp', code_supp, Finset.union_subset_iff, cont_supp] at h H⊢
+    refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
+    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
       exact ⟨h.2.2, H.2⟩
     exact IHf (Finset.union_subset_right H')
   case case f g IHf IHg =>
-    have H' := H; simp only [code_supp_case, Finset.union_subset_iff] at H'
-    refine' tr_stmts₁_supports' (tr_normal_supports H) (Finset.union_subset_left H) fun h => _
+    have H' := H; simp only [codeSupp_case, Finset.union_subset_iff] at H'
+    refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun _ => _
     exact supports_union.2 ⟨IHf H'.2.1, IHg H'.2.2⟩
   case fix f IHf =>
-    have H' := H; simp only [code_supp_fix, Finset.union_subset_iff] at H'
-    refine' tr_stmts₁_supports' (tr_normal_supports H) (Finset.union_subset_left H) fun h => _
+    have H' := H; simp only [codeSupp_fix, Finset.union_subset_iff] at H'
+    refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHf H'.2, _⟩
-    refine' tr_stmts₁_supports' (tr_normal_supports _) (Finset.union_subset_right h) fun h => _
-    · simp only [code_supp', code_supp, Finset.union_subset_iff, cont_supp, tr_stmts₁,
+    refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
+    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp, trStmts₁,
         Finset.insert_subset] at h H⊢
       exact ⟨h.1, ⟨H.1.1, h⟩, H.2⟩
     exact supports_singleton.2 (ret_supports <| Finset.union_subset_right H)
@@ -2065,36 +2065,36 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
 
 theorem contSupp_supports {S k} (H : contSupp k ⊆ S) : Supports (contSupp k) S := by
   induction k
-  · simp [cont_supp_halt, supports]
+  · simp [contSupp_halt, Supports]
   case cons₁ f k IH =>
-    have H₁ := H; rw [cont_supp_cons₁] at H₁; have H₂ := Finset.union_subset_right H₁
-    refine' tr_stmts₁_supports' (tr_normal_supports H₂) H₁ fun h => _
-    refine' supports_union.2 ⟨code_supp'_supports H₂, _⟩
-    simp only [code_supp, cont_supp_cons₂, Finset.union_subset_iff] at H₂
-    exact tr_stmts₁_supports' (head_supports H₂.2.2) (Finset.union_subset_right h) IH
+    have H₁ := H; rw [contSupp_cons₁] at H₁; have H₂ := Finset.union_subset_right H₁
+    refine' trStmts₁_supports' (trNormal_supports H₂) H₁ fun h => _
+    refine' supports_union.2 ⟨codeSupp'_supports H₂, _⟩
+    simp only [codeSupp, contSupp_cons₂, Finset.union_subset_iff] at H₂
+    exact trStmts₁_supports' (head_supports H₂.2.2) (Finset.union_subset_right h) IH
   case cons₂ k IH =>
-    have H' := H; rw [cont_supp_cons₂] at H'
-    exact tr_stmts₁_supports' (head_supports <| Finset.union_subset_right H') H' IH
+    have H' := H; rw [contSupp_cons₂] at H'
+    exact trStmts₁_supports' (head_supports <| Finset.union_subset_right H') H' IH
   case comp f k IH =>
-    have H' := H; rw [cont_supp_comp] at H'; have H₂ := Finset.union_subset_right H'
-    exact supports_union.2 ⟨code_supp'_supports H', IH H₂⟩
+    have H' := H; rw [contSupp_comp] at H'; have H₂ := Finset.union_subset_right H'
+    exact supports_union.2 ⟨codeSupp'_supports H', IH H₂⟩
   case fix f k IH =>
-    rw [cont_supp] at H
-    exact supports_union.2 ⟨code_supp'_supports H, IH (Finset.union_subset_right H)⟩
+    rw [contSupp] at H
+    exact supports_union.2 ⟨codeSupp'_supports H, IH (Finset.union_subset_right H)⟩
 #align turing.partrec_to_TM2.cont_supp_supports Turing.PartrecToTM2.contSupp_supports
 
 theorem codeSupp_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp c k) S :=
   supports_union.2 ⟨codeSupp'_supports H, contSupp_supports (Finset.union_subset_right H)⟩
 #align turing.partrec_to_TM2.code_supp_supports Turing.PartrecToTM2.codeSupp_supports
 
-/-- The set `code_supp c k` is a finite set that witnesses the effective finiteness of the `tr`
-Turing machine. Starting from the initial state `tr_normal c k`, forward simulation uses only
-states in `code_supp c k`, so this is a finite state machine. Even though the underlying type of
+/-- The set `codeSupp c k` is a finite set that witnesses the effective finiteness of the `tr`
+Turing machine. Starting from the initial state `trNormal c k`, forward simulation uses only
+states in `codeSupp c k`, so this is a finite state machine. Even though the underlying type of
 state labels `Λ'` is infinite, for a given partial recursive function `c` and continuation `k`,
 only finitely many states are accessed, corresponding roughly to subterms of `c`. -/
-theorem trSupports (c k) : @TM2.Supports _ _ _ _ _ ⟨trNormal c k⟩ tr (codeSupp c k) :=
-  ⟨codeSupp_self _ _ (trStmts₁_self _), fun l' => codeSupp_supports (Finset.Subset.refl _) _⟩
-#align turing.partrec_to_TM2.tr_supports Turing.PartrecToTM2.trSupports
+theorem tr_supports (c k) : @TM2.Supports _ _ _ _ ⟨trNormal c k⟩ tr (codeSupp c k) :=
+  ⟨codeSupp_self _ _ (trStmts₁_self _), fun _ => codeSupp_supports (Finset.Subset.refl _) _⟩
+#align turing.partrec_to_TM2.tr_supports Turing.PartrecToTM2.tr_supports
 
 end
 
