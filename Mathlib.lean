@@ -356,6 +356,7 @@ import Mathlib.Analysis.Convex.Independent
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
