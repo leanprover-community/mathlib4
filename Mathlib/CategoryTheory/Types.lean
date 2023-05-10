@@ -351,6 +351,8 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
 
+pp_extended_field_notation Iso.toEquiv
+
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
