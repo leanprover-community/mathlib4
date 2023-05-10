@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.CoverPreserving
-import Mathbin.CategoryTheory.Sites.LeftExact
+import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 # Pushforward of sheaves
@@ -56,8 +56,7 @@ def Sites.pushforward (G : C ⥤ D) : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
 #align category_theory.sites.pushforward CategoryTheory.Sites.pushforward
 
-instance (G : C ⥤ D) [RepresentablyFlat G] : PreservesFiniteLimits (Sites.pushforward A J K G) :=
-  by
+instance (G : C ⥤ D) [RepresentablyFlat G] : PreservesFiniteLimits (Sites.pushforward A J K G) := by
   apply (config := { instances := false }) comp_preserves_finite_limits
   · infer_instance
   apply (config := { instances := false }) comp_preserves_finite_limits
