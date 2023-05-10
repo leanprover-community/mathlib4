@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity
+import Mathlib.Algebra.Order.Hom.Basic
 
 /-! # Tests for the `positivity` tactic
 
@@ -282,6 +283,10 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 -- example {α : Type _} [ordered_ring α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
+
+/- ## Other extensions -/
+
+example [Zero β] [PartialOrder β] [NonnegHomClass F α β] (f : F) (x : α) : 0 ≤ f x := by positivity
 
 /- ## Tests that the tactic is agnostic on reversed inequalities -/
 
