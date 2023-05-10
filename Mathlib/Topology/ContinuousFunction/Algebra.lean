@@ -61,10 +61,10 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 -- ### "mul" and "add"
 @[to_additive]
-instance hasMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
+instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
-#align continuous_map.has_mul ContinuousMap.hasMul
-#align continuous_map.has_add ContinuousMap.hasAdd
+#align continuous_map.has_mul ContinuousMap.instMul
+#align continuous_map.has_add ContinuousMap.instAdd
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=

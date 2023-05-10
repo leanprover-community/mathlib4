@@ -75,7 +75,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
     have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
-    rw [map_zero, tendsto_atTop'] at this
+    rw [map_zero, Filter.tendsto_atTop'] at this
     refine' Iff.mpr tendsto_atTop' _
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
