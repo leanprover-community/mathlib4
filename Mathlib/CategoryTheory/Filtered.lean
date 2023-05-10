@@ -552,14 +552,14 @@ noncomputable def min (j j' : C) : C :=
   (IsCofilteredOrEmpty.cone_objs j j').choose
 #align category_theory.is_cofiltered.min CategoryTheory.IsCofiltered.min
 
-/-- `min_to_left j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
+/-- `minToLeft j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToLeft (j j' : C) : min j j' ⟶ j :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose
 #align category_theory.is_cofiltered.min_to_left CategoryTheory.IsCofiltered.minToLeft
 
-/-- `min_to_right j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
+/-- `minToRight j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
