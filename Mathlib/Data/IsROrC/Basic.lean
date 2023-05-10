@@ -159,7 +159,7 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w := algebraMap.coe_i
 #align is_R_or_C.of_real_inj IsROrC.ofReal_inj
 
 set_option linter.deprecated false in
-@[deprecated, simp, isROrC_simps]
+@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
 theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) := map_bit0 _ _
 #align is_R_or_C.bit0_re IsROrC.bit0_re
 
@@ -169,7 +169,7 @@ theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_a
 #align is_R_or_C.bit1_re IsROrC.bit1_re
 
 set_option linter.deprecated false in
-@[deprecated, simp, isROrC_simps]
+@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
 theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) := map_bit0 _ _
 #align is_R_or_C.bit0_im IsROrC.bit0_im
 
@@ -332,18 +332,18 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 #align is_R_or_C.conj_of_real IsROrC.conj_ofReal
 
 set_option linter.deprecated false in
-@[deprecated, simp, isROrC_simps]
+@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
 theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
   map_bit0 _ _
 #align is_R_or_C.conj_bit0 IsROrC.conj_bit0
 
 set_option linter.deprecated false in
-@[deprecated, simp, isROrC_simps]
+@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
 theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
   map_bit1 _ _
 #align is_R_or_C.conj_bit1 IsROrC.conj_bit1
 
-@[simp, isROrC_simps]
+@[isROrC_simps] -- porting note: was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_neg_I IsROrC.conj_neg_I
@@ -928,7 +928,7 @@ noncomputable def ofRealAm : ℝ →ₐ[ℝ] K := Algebra.ofId ℝ K
 #align is_R_or_C.of_real_am IsROrC.ofRealAm
 
 @[simp, isROrC_simps]
-theorem ofRealAm_coe : (ofRealAm : ℝ → K) = coe := rfl
+theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal := rfl
 #align is_R_or_C.of_real_am_coe IsROrC.ofRealAm_coe
 
 /-- The ℝ → K coercion, as a linear isometry -/
@@ -938,7 +938,7 @@ noncomputable def ofRealLi : ℝ →ₗᵢ[ℝ] K where
 #align is_R_or_C.of_real_li IsROrC.ofRealLi
 
 @[simp, isROrC_simps]
-theorem ofRealLi_apply : (ofRealLi : ℝ → K) = coe := rfl
+theorem ofRealLi_apply : (ofRealLi : ℝ → K) = ofReal := rfl
 #align is_R_or_C.of_real_li_apply IsROrC.ofRealLi_apply
 
 /-- The `ℝ → K` coercion, as a continuous linear map -/
@@ -950,7 +950,7 @@ theorem ofRealClm_coe : (@ofRealClm K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinear
 #align is_R_or_C.of_real_clm_coe IsROrC.ofRealClm_coe
 
 @[simp, isROrC_simps]
-theorem ofRealClm_apply : (ofRealClm : ℝ → K) = coe := rfl
+theorem ofRealClm_apply : (ofRealClm : ℝ → K) = ofReal := rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealClm_apply
 
 @[continuity]
