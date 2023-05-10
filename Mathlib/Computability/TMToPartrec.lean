@@ -940,13 +940,61 @@ inductive Λ'
 #align turing.partrec_to_TM2.Λ'.pred Turing.PartrecToTM2.Λ'.pred
 #align turing.partrec_to_TM2.Λ'.ret Turing.PartrecToTM2.Λ'.ret
 
+-- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
+
+/-- A computable version of `Turing.PartrecToTM2.Λ'.rec`.
+Workaround until Lean has native support for this. -/
+@[elab_as_elim] private abbrev Λ'.recC.{u} {motive : Λ' → Sort u}
+    (move : (p : Γ' → Bool) → (k₁ k₂ : K') → (q : Λ') → motive q → motive (Λ'.move p k₁ k₂ q))
+    (clear : (p : Γ' → Bool) → (k : K') → (q : Λ') → motive q → motive (Λ'.clear p k q))
+    (copy : (q : Λ') → motive q → motive (Λ'.copy q))
+    (push : (k : K') → (s : Option Γ' → Option Γ') → (q : Λ') → motive q → motive (Λ'.push k s q))
+    (read : (f : Option Γ' → Λ') → ((a : Option Γ') → motive (f a)) → motive (Λ'.read f))
+    (succ : (q : Λ') → motive q → motive (Λ'.succ q))
+    (pred : (q₁ q₂ : Λ') → motive q₁ → motive q₂ → motive (Λ'.pred q₁ q₂))
+    (ret : (k : Cont') → motive (Λ'.ret k)) :
+    (t : Λ') → motive t
+  | Λ'.move p k₁ k₂ q => move p k₁ k₂ q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.clear p k q => clear p k q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.copy q => copy q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.push k s q => push k s q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.read f => read f (fun a => Λ'.recC move clear copy push read succ pred ret (f a))
+  | Λ'.succ q => succ q (Λ'.recC move clear copy push read succ pred ret q)
+  | Λ'.pred q₁ q₂ => pred q₁ q₂
+      (Λ'.recC move clear copy push read succ pred ret q₁)
+      (Λ'.recC move clear copy push read succ pred ret q₂)
+  | Λ'.ret k => ret k
+
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 #align turing.partrec_to_TM2.Λ'.inhabited Turing.PartrecToTM2.Λ'.instInhabited
 
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> try apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-  all_goals exact decidable_of_iff' _ (by simp [Function.funext_iff])
+  case move.move _ _ _ _ I _ _ _ _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case clear.clear _ _ _ I _ _ _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case copy.copy _ I _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case push.push _ _ _ I _ _ _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case read.read _ I _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case succ.succ _ I _ =>
+    letI := I
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case pred.pred _ _ I₁ I₂ _ _ =>
+    letI := I₁
+    letI := I₂
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+  case ret.ret _ _ =>
+    exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
 #align turing.partrec_to_TM2.Λ'.decidable_eq Turing.PartrecToTM2.Λ'.instDecidableEq
 
 /-- The type of TM2 statements used by this machine. -/
