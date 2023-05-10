@@ -15,13 +15,13 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 This file defines conditional probability and includes basic results relating to it.
 
-Given some measure `μ` defined on a measure space on some type `Ω` and some `s : set Ω`,
+Given some measure `μ` defined on a measure space on some type `Ω` and some `s : Set Ω`,
 we define the measure of `μ` conditioned on `s` as the restricted measure scaled by
 the inverse of the measure of `s`: `cond μ s = (μ s)⁻¹ • μ.restrict s`. The scaling
 ensures that this is a probability measure (when `μ` is a finite measure).
 
 From this definition, we derive the "axiomatic" definition of conditional probability
-based on application: for any `s t : set Ω`, we have `μ[t|s] = (μ s)⁻¹ * μ (s ∩ t)`.
+based on application: for any `s t : Set Ω`, we have `μ[t|s] = (μ s)⁻¹ * μ (s ∩ t)`.
 
 ## Main Statements
 
