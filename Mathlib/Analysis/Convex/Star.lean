@@ -119,8 +119,8 @@ theorem starConvex_interᵢ {ι : Sort _} {s : ι → Set E} (h : ∀ i, StarCon
   interₛ_range s ▸ starConvex_interₛ <| forall_range_iff.2 h
 #align star_convex_Inter starConvex_interᵢ
 
-theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) : StarConvex 𝕜 x (s ∪ t) :=
-  by
+theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
+    StarConvex 𝕜 x (s ∪ t) := by
   rintro y (hy | hy) a b ha hb hab
   · exact Or.inl (hs hy ha hb hab)
   · exact Or.inr (ht hy ha hb hab)
@@ -162,9 +162,8 @@ theorem StarConvex.mem (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := 
   rw [one_smul, zero_smul, add_zero]
 #align star_convex.mem StarConvex.mem
 
-theorem starConvex_iff_forall_pos (hx : x ∈ s) :
-    StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s :=
-  by
+theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
+    ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
   refine' ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, _⟩
   intro h y hy a b ha hb hab
   obtain rfl | ha := ha.eq_or_lt
@@ -391,11 +390,8 @@ section AddCommGroup
 variable [AddCommGroup E] [Module 𝕜 E] {x : E} {s : Set E}
 
 /-- Alternative definition of star-convexity, using division. -/
-theorem starConvex_iff_div :
-    StarConvex 𝕜 x s ↔
-      ∀ ⦃y⦄,
-        y ∈ s →
-          ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
+theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
+    ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
   ⟨fun h y hy a b ha hb hab => by
     apply h hy
     · have ha' := mul_le_mul_of_nonneg_left ha (inv_pos.2 hab).le
@@ -403,15 +399,15 @@ theorem starConvex_iff_div :
     · have hb' := mul_le_mul_of_nonneg_left hb (inv_pos.2 hab).le
       rwa [MulZeroClass.mul_zero, ← div_eq_inv_mul] at hb'
     · rw [← add_div]
-      exact div_self hab.ne', fun h y hy a b ha hb hab =>
-    by
+      exact div_self hab.ne',
+  fun h y hy a b ha hb hab => by
     have h' := h hy ha hb
     rw [hab, div_one, div_one] at h'
     exact h' zero_lt_one⟩
 #align star_convex_iff_div starConvex_iff_div
 
-theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) : x ∈ t • s :=
-  by
+theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) :
+    x ∈ t • s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
   exact hs.smul_mem hx (inv_nonneg.2 <| zero_le_one.trans ht) (inv_le_one ht)
 #align star_convex.mem_smul StarConvex.mem_smul

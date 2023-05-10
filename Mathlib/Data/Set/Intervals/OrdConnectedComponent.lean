@@ -38,11 +38,9 @@ theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔  [[x, y]
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <|
-      (Surjective.forall toDual.surjective).2 fun x =>
-      by
-      rw [mem_ordConnectedComponent, dual_uIcc]
-      rfl
+  ext <| (Surjective.forall toDual.surjective).2 fun x => by
+    rw [mem_ordConnectedComponent, dual_uIcc]
+    rfl
 #align set.dual_ord_connected_component Set.dual_ordConnectedComponent
 
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
@@ -213,8 +211,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
 -- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
     cases' ha with ha ha'
     cases' hb with hb hb'
-    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
-      by
+    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
       rw [ordSeparatingSet_comm, uIcc_comm] at hb'
       calc
         [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc

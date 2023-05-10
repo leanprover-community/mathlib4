@@ -786,8 +786,8 @@ theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
 #align topological_space.is_topological_basis.sigma TopologicalSpace.IsTopologicalBasis.sigma
 
 /-- A countable disjoint union of second countable spaces is second countable. -/
-instance [Countable ι] [∀ i, SecondCountableTopology (E i)] : SecondCountableTopology (Σi, E i) :=
-  by
+instance [Countable ι] [∀ i, SecondCountableTopology (E i)] :
+    SecondCountableTopology (Σi, E i) := by
   let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' countableBasis (E i)
   have A : IsTopologicalBasis b := IsTopologicalBasis.sigma fun i => isBasis_countableBasis _
   have B : b.Countable := countable_unionᵢ fun i => (countable_countableBasis _).image _

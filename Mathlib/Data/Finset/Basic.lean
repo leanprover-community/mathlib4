@@ -1647,8 +1647,7 @@ theorem inter_union_self (s t : Finset α) : s ∩ (t ∪ s) = s := by
 @[simp]
 theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
     insert a s₁ ∩ s₂ = insert a (s₁ ∩ s₂) :=
-  ext fun x =>
-    by
+  ext fun x => by
     have : x = a ∨ x ∈ s₂ ↔ x ∈ s₂ := or_iff_right_of_imp <| by rintro rfl; exact h
     simp only [mem_inter, mem_insert, or_and_left, this]
 #align finset.insert_inter_of_mem Finset.insert_inter_of_mem
@@ -2231,14 +2230,12 @@ theorem disjoint_erase_comm : Disjoint (s.erase a) t ↔ Disjoint s (t.erase a) 
   simp_rw [erase_eq, disjoint_sdiff_comm]
 #align finset.disjoint_erase_comm Finset.disjoint_erase_comm
 
-theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t :=
-  by
+theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t := by
   rw [← erase_insert ha, ← disjoint_erase_comm, disjoint_insert_right]
   exact ⟨not_mem_erase _ _, hst⟩
 #align finset.disjoint_of_erase_left Finset.disjoint_of_erase_left
 
-theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : Disjoint s t :=
-  by
+theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : Disjoint s t := by
   rw [← erase_insert ha, disjoint_erase_comm, disjoint_insert_left]
   exact ⟨not_mem_erase _ _, hst⟩
 #align finset.disjoint_of_erase_right Finset.disjoint_of_erase_right
@@ -3347,8 +3344,7 @@ noncomputable def toList (s : Finset α) : List α :=
   s.1.toList
 #align finset.to_list Finset.toList
 
-theorem nodup_toList (s : Finset α) : s.toList.Nodup :=
-  by
+theorem nodup_toList (s : Finset α) : s.toList.Nodup := by
   rw [toList, ← Multiset.coe_nodup, Multiset.coe_toList]
   exact s.nodup
 #align finset.nodup_to_list Finset.nodup_toList
@@ -3485,8 +3481,7 @@ theorem disjUnionᵢ_disjUnionᵢ (s : Finset α) (f : α → Finset β) (g : β
           ((f a).disjUnionᵢ g) fun b hb c hc =>
             h2 (mem_disjUnionᵢ.mpr ⟨_, a.prop, hb⟩) (mem_disjUnionᵢ.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab =>
-        disjoint_left.mpr fun x hxa hxb =>
-          by
+        disjoint_left.mpr fun x hxa hxb => by
           obtain ⟨xa, hfa, hga⟩ := mem_disjUnionᵢ.mp hxa
           obtain ⟨xb, hfb, hgb⟩ := mem_disjUnionᵢ.mp hxb
           refine'
@@ -3639,8 +3634,7 @@ theorem bunionᵢ_singleton_eq_self [DecidableEq α] : s.bunionᵢ (singleton : 
 #align finset.bUnion_singleton_eq_self Finset.bunionᵢ_singleton_eq_self
 
 theorem filter_bunionᵢ (s : Finset α) (f : α → Finset β) (p : β → Prop) [DecidablePred p] :
-    (s.bunionᵢ f).filter p = s.bunionᵢ fun a => (f a).filter p :=
-  by
+    (s.bunionᵢ f).filter p = s.bunionᵢ fun a => (f a).filter p := by
   ext b
   simp only [mem_bunionᵢ, exists_prop, mem_filter]
   constructor
@@ -3739,8 +3733,7 @@ theorem pairwise_subtype_iff_pairwise_finset (r : α → α → Prop) :
 
 theorem pairwise_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α → β) :
     Pairwise (r on fun a : s.cons a ha => f a) ↔
-      Pairwise (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) :=
-  by
+    Pairwise (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
   simp only [pairwise_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert,
     Finset.mem_coe, and_congr_right_iff]
   exact fun _ =>
@@ -3790,8 +3783,7 @@ namespace Multiset
 variable [DecidableEq α]
 
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
-    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 :=
-  by
+    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
   rw [Finset.disjoint_iff_ne]
   refine' ⟨fun h a ha1 ha2 => _, _⟩
   · rw [← Multiset.mem_toFinset] at ha1 ha2

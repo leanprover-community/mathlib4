@@ -499,8 +499,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   simp; ext x
   haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
-  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 :=
-      by
+  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]
       rfl
     rw [Finsupp.sum_apply, Finsupp.sum, Finset.sum_eq_single x, single_eq_same] at this
@@ -1078,9 +1077,8 @@ theorem Fintype.total_apply_single (i : α) (r : R) :
 
 variable (S)
 
-theorem Finsupp.total_eq_fintype_total_apply (x : α → R) :
-    Finsupp.total α M R v ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x :=
-  by
+theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M R v
+    ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x := by
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx

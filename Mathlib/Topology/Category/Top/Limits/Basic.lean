@@ -21,13 +21,7 @@ underlying types are just the limits in the category of types.
 -- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
-open TopologicalSpace
-
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
 /--
 Universe inequalities in Mathlib 3 are expressed through use of `max u v`. Unfortunately,
@@ -132,8 +126,8 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
   · rfl
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u}
-    where has_limits_of_shape _ :=
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u} where
+  has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
           { cone := limitCone.{v,u} F
@@ -182,7 +176,7 @@ def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCoco
     -- Porting note: it appears notation for forget breaks dot notation (also above)
     -- Porting note: previously function was inferred
       ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
-  · intro _ _ ⟨_,h⟩
+  · intro _ _ ⟨_, h⟩
     dsimp
     rw [h, Functor.comp_map, ← comp_apply, s.ι.naturality]
     dsimp
@@ -220,25 +214,25 @@ instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Ty
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
 
 /-- The terminal object of `Top` is `PUnit`. -/
-def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
+def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
     ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
-#align Top.is_terminal_punit TopCat.isTerminalPunit
+#align Top.is_terminal_punit TopCat.isTerminalPUnit
 
 /-- The terminal object of `Top` is `PUnit`. -/
-def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
-  terminalIsTerminal.uniqueUpToIso isTerminalPunit
-#align Top.terminal_iso_punit TopCat.terminalIsoPunit
+def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso isTerminalPUnit
+#align Top.terminal_iso_punit TopCat.terminalIsoPUnit
 
 /-- The initial object of `Top` is `PEmpty`. -/
-def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
+def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
     ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
-#align Top.is_initial_pempty TopCat.isInitialPempty
+#align Top.is_initial_pempty TopCat.isInitialPEmpty
 
 /-- The initial object of `Top` is `PEmpty`. -/
-def initialIsoPempty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
-  initialIsInitial.uniqueUpToIso isInitialPempty
-#align Top.initial_iso_pempty TopCat.initialIsoPempty
+def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+  initialIsInitial.uniqueUpToIso isInitialPEmpty
+#align Top.initial_iso_pempty TopCat.initialIsoPEmpty

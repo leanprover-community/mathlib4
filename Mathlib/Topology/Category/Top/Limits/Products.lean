@@ -3,8 +3,8 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
-! This file was ported from Lean 3 source module topology.category.Top.limits
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
+! This file was ported from Lean 3 source module topology.category.Top.limits.products
+! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -219,8 +219,8 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 -- Porting note: need to force Lean to coerce X × Y to a type
 @[simp]
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
-    (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x, (Limits.prod.snd : X ⨯ Y ⟶ _) x) :=
-  by
+    (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
+    (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
   -- Porting note: ext didn't pick this up
   apply Prod.ext
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x

@@ -139,9 +139,8 @@ theorem iff_quotient_mvPolynomial :
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
-theorem iff_quotient_mvPolynomial' :
-    FiniteType R A ↔ ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f :=
-  by
+theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
+    ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
@@ -255,8 +254,8 @@ alias of_finite ← _root_.RingHom.Finite.to_finiteType
 #align ring_hom.finite.to_finite_type RingHom.Finite.to_finiteType
 
 set_option synthInstance.etaExperiment true in
-theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) : g.FiniteType :=
-  by
+theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
+    g.FiniteType := by
   let _ := f.toAlgebra
   let _ := g.toAlgebra
   let _ := (g.comp f).toAlgebra
@@ -450,8 +449,8 @@ variable (R M)
 
 /-- If an additive monoid `M` is finitely generated then `AddMonoidAlgebra R M` is of finite
 type. -/
-instance finiteType_of_fg [CommRing R] [h : AddMonoid.Fg M] : FiniteType R (AddMonoidAlgebra R M) :=
-  by
+instance finiteType_of_fg [CommRing R] [h : AddMonoid.Fg M] :
+    FiniteType R (AddMonoidAlgebra R M) := by
   obtain ⟨S, hS⟩ := h.out
   exact (FiniteType.mvPolynomial R (S : Set M)).of_surjective
       (MvPolynomial.aeval fun s : (S : Set M) => of' R M ↑s)

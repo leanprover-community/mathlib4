@@ -34,10 +34,8 @@ variable {M}
 -- porting note: changed `(· • ·) m` to `HSMul.hSMul m`
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
-  suffices
-    DistribMulAction.toAddMonoidHom R[X] m =
-      (mapRingHom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom
-    by
+  suffices DistribMulAction.toAddMonoidHom R[X] m =
+      (mapRingHom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom by
     ext1 r
     exact FunLike.congr_fun this r
   ext (n r) : 2

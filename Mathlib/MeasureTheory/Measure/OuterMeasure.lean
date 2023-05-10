@@ -223,14 +223,13 @@ theorem le_inter_add_diff {m : OuterMeasure α} {t : Set α} (s : Set α) :
   rw [inter_union_diff t s]
 #align measure_theory.outer_measure.le_inter_add_diff MeasureTheory.OuterMeasure.le_inter_add_diff
 
-theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0) : m (s \ t) = m s :=
-  by
+theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0) :
+    m (s \ t) = m s := by
   refine' le_antisymm (m.mono <| diff_subset _ _) _
   calc
     m s ≤ m (s ∩ t) + m (s \ t) := le_inter_add_diff _
     _ ≤ m t + m (s \ t) := (add_le_add_right (m.mono <| inter_subset_right _ _) _)
     _ = m (s \ t) := by rw [ht, zero_add]
-
 #align measure_theory.outer_measure.diff_null MeasureTheory.OuterMeasure.diff_null
 
 theorem union_null (m : OuterMeasure α) {s₁ s₂ : Set α} (h₁ : m s₁ = 0) (h₂ : m s₂ = 0) :
@@ -823,9 +822,8 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
       simp only [map_ofFunction Subtype.coe_injective, Subtype.image_preimage_coe]
 #align measure_theory.outer_measure.restrict_of_function MeasureTheory.OuterMeasure.restrict_ofFunction
 
-theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    c • OuterMeasure.ofFunction m m_empty = OuterMeasure.ofFunction (c • m) (by simp [m_empty]) :=
-  by
+theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.ofFunction m m_empty =
+    OuterMeasure.ofFunction (c • m) (by simp [m_empty]) := by
   ext1 s
   haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_unionᵢ (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
@@ -1366,8 +1364,8 @@ theorem extend_unionᵢ_nat {f : ℕ → Set α} (hm : ∀ i, P (f i))
 
 section Subadditive
 
-theorem extend_unionᵢ_le_tsum_nat' (s : ℕ → Set α) : extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) :=
-  by
+theorem extend_unionᵢ_le_tsum_nat' (s : ℕ → Set α) :
+    extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   by_cases h : ∀ i, P (s i)
   · rw [extend_eq _ (PU h), congr_arg tsum _]
     · apply msU h
@@ -1548,8 +1546,8 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
   exact le_iff_exists_add.2 ⟨_, this⟩
 #align measure_theory.extend_mono MeasureTheory.extend_mono
 
-theorem extend_unionᵢ_le_tsum_nat : ∀ s : ℕ → Set α, extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) :=
-  by
+theorem extend_unionᵢ_le_tsum_nat : ∀ s : ℕ → Set α,
+    extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   refine' extend_unionᵢ_le_tsum_nat' MeasurableSet.unionᵢ _; intro f h
   simp (config := { singlePass := true }) [unionᵢ_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
@@ -1588,6 +1586,7 @@ theorem le_trim : m ≤ m.trim := by
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
+@[simp] --porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.unionᵢ (fun f _hf => m.unionᵢ_nat f)
     (fun _ _ _ _ h => m.mono h) hs

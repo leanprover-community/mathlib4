@@ -700,8 +700,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 #align simplex_category.eq_comp_δ_of_not_surjective' SimplexCategory.eq_comp_δ_of_not_surjective'
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
-    (hθ : ¬Function.Surjective θ.toOrderHom) : ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i :=
-  by
+    (hθ : ¬Function.Surjective θ.toOrderHom) :
+    ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
   cases' not_forall.mp hθ with i hi
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)

@@ -1212,8 +1212,8 @@ of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 of the induced maps equals the map of localizations induced by `l ∘ g`."]
 theorem map_comp_map {A : Type _} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
     (j : LocalizationMap U R) {l : P →* A} (hl : ∀ w : T, l w ∈ U) :
-    (k.map hl j).comp (f.map hy k) = f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j :=
-  by
+    (k.map hl j).comp (f.map hy k) =
+    f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j := by
   ext z
   show j.toMap _ * _ = j.toMap (l _) * _
   rw [mul_inv_left, ← mul_assoc, mul_inv_right]
@@ -1643,11 +1643,10 @@ theorem mk_one_eq_monoidOf_mk (x) : mk x 1 = (monoidOf S).toMap x := rfl
 @[to_additive]
 theorem mk_eq_monoidOf_mk'_apply (x y) : mk x y = (monoidOf S).mk' x y :=
   show _ = _ * _ from
-    (Submonoid.LocalizationMap.mul_inv_right (monoidOf S).map_units _ _ _).2 <|
-      by
-        rw [← mk_one_eq_monoidOf_mk, ← mk_one_eq_monoidOf_mk, mk_mul x y y 1, mul_comm y 1]
-        conv => rhs ; rw [← mul_one 1] ; rw [← mul_one x]
-        exact mk_eq_mk_iff.2 (Con.symm _ <| (Localization.r S).mul (Con.refl _ (x, 1)) <| one_rel _)
+    (Submonoid.LocalizationMap.mul_inv_right (monoidOf S).map_units _ _ _).2 <| by
+      rw [← mk_one_eq_monoidOf_mk, ← mk_one_eq_monoidOf_mk, mk_mul x y y 1, mul_comm y 1]
+      conv => rhs ; rw [← mul_one 1] ; rw [← mul_one x]
+      exact mk_eq_mk_iff.2 (Con.symm _ <| (Localization.r S).mul (Con.refl _ (x, 1)) <| one_rel _)
 #align localization.mk_eq_monoid_of_mk'_apply Localization.mk_eq_monoidOf_mk'_apply
 #align add_localization.mk_eq_add_monoid_of_mk'_apply AddLocalization.mk_eq_addMonoidOf_mk'_apply
 

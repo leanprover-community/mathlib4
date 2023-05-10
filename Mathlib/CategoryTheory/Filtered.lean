@@ -389,8 +389,8 @@ theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coe
   by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
-theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
-  by
+theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+    g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
   slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
   slice_rhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
@@ -552,14 +552,14 @@ noncomputable def min (j j' : C) : C :=
   (IsCofilteredOrEmpty.cone_objs j j').choose
 #align category_theory.is_cofiltered.min CategoryTheory.IsCofiltered.min
 
-/-- `min_to_left j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
+/-- `minToLeft j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToLeft (j j' : C) : min j j' ⟶ j :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose
 #align category_theory.is_cofiltered.min_to_left CategoryTheory.IsCofiltered.minToLeft
 
-/-- `min_to_right j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
+/-- `minToRight j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=

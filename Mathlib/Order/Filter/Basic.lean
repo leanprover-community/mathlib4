@@ -2213,8 +2213,7 @@ theorem comap_supᵢ {ι} {f : ι → Filter β} {m : α → β} : comap m (sup�
       have : ∀ i, ∃ t, t ∈ f i ∧ m ⁻¹' t ⊆ s := by
         simpa only [mem_comap, exists_prop, mem_supᵢ] using mem_supᵢ.1 hs
       let ⟨t, ht⟩ := Classical.axiom_of_choice this
-      ⟨⋃ i, t i, mem_supᵢ.2 fun i => (f i).sets_of_superset (ht i).1 (subset_unionᵢ _ _),
-        by
+      ⟨⋃ i, t i, mem_supᵢ.2 fun i => (f i).sets_of_superset (ht i).1 (subset_unionᵢ _ _), by
         rw [preimage_unionᵢ, unionᵢ_subset_iff]
         exact fun i => (ht i).2⟩)
     (supᵢ_le fun i => comap_mono <| le_supᵢ _ _)
@@ -2451,8 +2450,8 @@ instance map_neBot [hf : NeBot f] : NeBot (f.map m) :=
 
 theorem interₛ_comap_sets (f : α → β) (F : Filter β) : ⋂₀ (comap f F).sets = ⋂ U ∈ F, f ⁻¹' U := by
   ext x
-  suffices (∀ (A : Set α) (B : Set β), B ∈ F → f ⁻¹' B ⊆ A → x ∈ A) ↔ ∀ B : Set β, B ∈ F → f x ∈ B
-    by
+  suffices (∀ (A : Set α) (B : Set β), B ∈ F → f ⁻¹' B ⊆ A → x ∈ A) ↔
+      ∀ B : Set β, B ∈ F → f x ∈ B by
     simp only [mem_interₛ, mem_interᵢ, Filter.mem_sets, mem_comap, this, and_imp, exists_prop,
       mem_preimage, exists_imp]
   constructor
