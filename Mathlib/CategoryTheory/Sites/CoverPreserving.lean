@@ -206,10 +206,11 @@ theorem pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePre
     refine'
       H.isSeparatedFor _ y _ _ (H.isAmalgamation (hx.functorPushforward hG₁ (sheafOver ℱ X)))
     rintro V f ⟨Z, f', g', h, rfl⟩
+    -- porting note: was `S` not `S.arrows` near the end there
     erw [FamilyOfElements.comp_of_compatible (S.functorPushforward G) hx'
-        (image_mem_functorPushforward G S h) g']
+        (image_mem_functorPushforward G S.arrows h) g']
     dsimp
-    simp [hG₁.apply_map (sheaf_over ℱ X) hx h, ← hy f' h]
+    simp [hG₁.apply_map (sheafOver ℱ X) hx h, ← hy f' h]
 #align category_theory.pullback_is_sheaf_of_cover_preserving CategoryTheory.pullback_isSheaf_of_coverPreserving
 
 /-- The pullback of a sheaf along a cover-preserving and compatible-preserving functor. -/
