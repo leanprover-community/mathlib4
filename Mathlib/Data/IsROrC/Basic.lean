@@ -150,7 +150,7 @@ theorem one_re : re (1 : K) = 1 := by rw [← ofReal_one, ofReal_re]
 theorem one_im : im (1 : K) = 0 := by rw [← ofReal_one, ofReal_im]
 #align is_R_or_C.one_im IsROrC.one_im
 
-theorem ofReal_injective : Function.Injective (coe : ℝ → K) := (algebraMap ℝ K).Injective
+theorem ofReal_injective : Function.Injective (coe : ℝ → K) := (algebraMap ℝ K).injective
 #align is_R_or_C.of_real_injective IsROrC.ofReal_injective
 
 @[norm_cast]
@@ -177,7 +177,7 @@ theorem bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 := algebraMap.lift_map_eq_zero_iff x
 #align is_R_or_C.of_real_eq_zero IsROrC.ofReal_eq_zero
 
-theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 := ofReal_eq_zero.Not
+theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 := ofReal_eq_zero.not
 #align is_R_or_C.of_real_ne_zero IsROrC.ofReal_ne_zero
 
 @[simp, isROrC_simps, norm_cast]
@@ -208,7 +208,7 @@ theorem ofReal_sum {α : Type _} (s : Finset α) (f : α → ℝ) :
 
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
-    ((f.Sum fun a b => g a b : ℝ) : K) = f.Sum fun a b => (g a b : K) :=
+    ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
   map_finsupp_sum (algebraMap ℝ K) f g
 #align is_R_or_C.of_real_finsupp_sum IsROrC.ofReal_finsupp_sum
 
@@ -229,7 +229,7 @@ theorem ofReal_prod {α : Type _} (s : Finset α) (f : α → ℝ) :
 
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_finsupp_prod {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
-    ((f.Prod fun a b => g a b : ℝ) : K) = f.Prod fun a b => (g a b : K) :=
+    ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   RingHom.map_finsupp_prod _ f g
 #align is_R_or_C.of_real_finsupp_prod IsROrC.ofReal_finsupp_prod
 
@@ -268,7 +268,7 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| := norm_algebraMap' K r
 -- see Note [lower instance priority]
 /-- ℝ and ℂ are both of characteristic zero.  -/
 instance (priority := 100) charZero_R_or_C : CharZero K :=
-  (RingHom.charZero_iff (algebraMap ℝ K).Injective).1 inferInstance
+  (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance
 #align is_R_or_C.char_zero_R_or_C IsROrC.charZero_R_or_C
 
 /-! ### The imaginary unit, `I` -/
@@ -704,12 +704,12 @@ theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2
 /-! ### Cauchy sequences -/
 
 theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun ε ε0 =>
-  (f.Cauchy ε0).imp fun i H j ij =>
+  (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_re_le_norm (f j - f i)) (H _ ij)
 #align is_R_or_C.is_cau_seq_re IsROrC.isCauSeq_re
 
 theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun ε ε0 =>
-  (f.Cauchy ε0).imp fun i H j ij =>
+  (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_im_le_norm (f j - f i)) (H _ ij)
 #align is_R_or_C.is_cau_seq_im IsROrC.isCauSeq_im
 
@@ -830,7 +830,7 @@ theorem reClm_apply : ((reClm : K →L[ℝ] ℝ) : K → ℝ) = re := rfl
 #align is_R_or_C.re_clm_apply IsROrC.reClm_apply
 
 @[continuity]
-theorem continuous_re : Continuous (re : K → ℝ) := reClm.Continuous
+theorem continuous_re : Continuous (re : K → ℝ) := reClm.continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
 /-- The imaginary part in a `is_R_or_C` field, as a linear map. -/
@@ -857,7 +857,7 @@ theorem imClm_apply : ((imClm : K →L[ℝ] ℝ) : K → ℝ) = im := rfl
 #align is_R_or_C.im_clm_apply IsROrC.imClm_apply
 
 @[continuity]
-theorem continuous_im : Continuous (im : K → ℝ) := imClm.Continuous
+theorem continuous_im : Continuous (im : K → ℝ) := imClm.continuous
 #align is_R_or_C.continuous_im IsROrC.continuous_im
 
 /-- Conjugate as an `ℝ`-algebra equivalence -/
@@ -893,7 +893,7 @@ theorem conjCle_coe : (@conjCle K _).toLinearEquiv = conjAe.toLinearEquiv := rfl
 theorem conjCle_apply : (conjCle : K → K) = conj := rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
 
-instance (priority := 100) : ContinuousStar K := ⟨conjLie.Continuous⟩
+instance (priority := 100) : ContinuousStar K := ⟨conjLie.continuous⟩
 
 @[continuity]
 theorem continuous_conj : Continuous (conj : K → K) := continuous_star
@@ -930,7 +930,7 @@ theorem ofRealClm_apply : (ofRealClm : ℝ → K) = coe := rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealClm_apply
 
 @[continuity]
-theorem continuous_ofReal : Continuous (coe : ℝ → K) := ofRealLi.Continuous
+theorem continuous_ofReal : Continuous (coe : ℝ → K) := ofRealLi.continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal
 
 @[continuity]
