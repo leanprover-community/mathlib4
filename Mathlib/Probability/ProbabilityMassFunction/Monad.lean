@@ -13,12 +13,12 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 /-!
 # Monad Operations for Probability Mass Functions
 
-This file constructs two operations on `pmf` that give it a monad structure.
+This file constructs two operations on `Pmf` that give it a monad structure.
 `pure a` is the distribution where a single value `a` has probability `1`.
-`bind pa pb : pmf β` is the distribution given by sampling `a : α` from `pa : pmf α`,
-and then sampling from `pb a : pmf β` to get a final result `b : β`.
+`bind pa pb : Pmf β` is the distribution given by sampling `a : α` from `pa : Pmf α`,
+and then sampling from `pb a : Pmf β` to get a final result `b : β`.
 
-`bind_on_support` generalizes `bind` to allow binding to a partial function,
+`bindOnSupport` generalizes `bind` to allow binding to a partial function,
 so that the second argument only needs to be defined on the support of the first argument.
 
 -/
@@ -36,7 +36,7 @@ namespace Pmf
 
 section Pure
 
-/-- The pure `pmf` is the `pmf` where all the mass lies in one point.
+/-- The pure `Pmf` is the `Pmf` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
 def pure (a : α) : Pmf α :=
   ⟨fun a' => if a' = a then 1 else 0, hasSum_ite_eq _ _⟩
@@ -85,7 +85,7 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
 
 variable [MeasurableSpace α]
 
-/-- The measure of a set under `pure a` is `1` for sets containing `a` and `0` otherwise -/
+/-- The measure of a set under `pure a` is `1` for sets containing `a` and `0` otherwise. -/
 @[simp]
 theorem toMeasure_pure_apply (hs : MeasurableSet s) :
     (pure a).toMeasure s = if a ∈ s then 1 else 0 :=
@@ -107,7 +107,7 @@ end Pure
 
 section Bind
 
-/-- The monadic bind operation for `pmf`. -/
+/-- The monadic bind operation for `Pmf`. -/
 def bind (p : Pmf α) (f : α → Pmf β) : Pmf β :=
   ⟨fun b => ∑' a, p a * f a b,
     ENNReal.summable.hasSum_iff.2
@@ -172,8 +172,6 @@ section Measure
 
 variable (s : Set β)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (b a) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (a b) -/
 @[simp]
 theorem toOuterMeasure_bind_apply :
     (p.bind f).toOuterMeasure s = ∑' a, p a * (f a).toOuterMeasure s :=
@@ -191,7 +189,7 @@ theorem toOuterMeasure_bind_apply :
 #align pmf.to_outer_measure_bind_apply Pmf.toOuterMeasure_bind_apply
 
 /-- The measure of a set under `p.bind f` is the sum over `a : α`
-  of the probability of `a` under `p` times the measure of the set under `f a` -/
+  of the probability of `a` under `p` times the measure of the set under `f a`. -/
 @[simp]
 theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bind f).toMeasure s = ∑' a, p a * (f a).toMeasure s :=
@@ -212,7 +210,7 @@ instance : Monad Pmf where
 section BindOnSupport
 
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
-  `p.bind f` is equivalent to `p.bind_on_support (λ a _, f a)`, see `bind_on_support_eq_bind` -/
+  `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
 def bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf β) : Pmf β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b,
     ENNReal.summable.hasSum_iff.2
@@ -252,7 +250,7 @@ theorem mem_support_bindOnSupport_iff (b : β) :
   simp only [support_bindOnSupport, Set.mem_setOf_eq, Set.mem_unionᵢ]
 #align pmf.mem_support_bind_on_support_iff Pmf.mem_support_bindOnSupport_iff
 
-/-- `bind_on_support` reduces to `bind` if `f` doesn't depend on the additional hypothesis -/
+/-- `bindOnSupport` reduces to `bind` if `f` doesn't depend on the additional hypothesis. -/
 @[simp]
 theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
@@ -320,8 +318,6 @@ section Measure
 
 variable (s : Set β)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (a b) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (b a) -/
 @[simp]
 theorem toOuterMeasure_bindOnSupport_apply :
     (p.bindOnSupport f).toOuterMeasure s =
@@ -339,9 +335,9 @@ theorem toOuterMeasure_bindOnSupport_apply :
       tsum_congr fun a => by split_ifs with ha <;> simp only [ite_self, tsum_zero, eq_self_iff_true]
 #align pmf.to_outer_measure_bind_on_support_apply Pmf.toOuterMeasure_bindOnSupport_apply
 
-/-- The measure of a set under `p.bind_on_support f` is the sum over `a : α`
+/-- The measure of a set under `p.bindOnSupport f` is the sum over `a : α`
   of the probability of `a` under `p` times the measure of the set under `f a _`.
-  The additional if statement is needed since `f` is only a partial function -/
+  The additional if statement is needed since `f` is only a partial function. -/
 @[simp]
 theorem toMeasure_bindOnSupport_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bindOnSupport f).toMeasure s = ∑' a, p a * if h : p a = 0 then 0 else (f a h).toMeasure s :=
