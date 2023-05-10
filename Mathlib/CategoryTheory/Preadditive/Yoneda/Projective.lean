@@ -10,8 +10,8 @@ Authors: Markus Himmel, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.Algebra.Category.Group.EpiMono
-import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.GroupCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 An object is projective iff the preadditive coyoneda functor on it preserves epimorphisms.
@@ -34,7 +34,7 @@ namespace Projective
 
 theorem projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj (P : C) :
     Projective P ↔ (preadditiveCoyoneda.obj (op P)).PreservesEpimorphisms := by
-  rw [projective_iff_preserves_epimorphisms_coyoneda_obj]
+  rw [projective_iff_preservesEpimorphismsoyoneda_obj]
   refine' ⟨fun h : (preadditive_coyoneda.obj (op P) ⋙ forget _).PreservesEpimorphisms => _, _⟩
   ·
     exact
@@ -61,4 +61,3 @@ end Projective
 end Preadditive
 
 end CategoryTheory
-
