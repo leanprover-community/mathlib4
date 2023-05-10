@@ -112,6 +112,22 @@ set_option linter.uppercaseLean3 false in
 /-- Construct a bundled `AddMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddMonCat.of
 
+-- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
+-- bundled or unbundled lemmas.
+-- (This change seems dangerous!)
+@[to_additive]
+theorem coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
+set_option linter.uppercaseLean3 false in
+#align Mon.coe_of MonCat.coe_of
+set_option linter.uppercaseLean3 false in
+#align AddMon.coe_of AddMonCat.coe_of
+
+@[to_additive]
+instance : Inhabited MonCat :=
+  -- The default instance for `Monoid PUnit` is derived via `CommRing` which breaks to_additive
+  ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
+    (@CommGroup.toGroup _ PUnit.commGroup)))⟩
+
 /-- Typecheck a `MonoidHom` as a morphism in `MonCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y := f
@@ -128,21 +144,6 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
   (ofHom f) x = f x := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
-
-@[to_additive]
-instance : Inhabited MonCat :=
-  -- The default instance for `Monoid PUnit` is derived via `CommRing` which breaks to_additive
-  ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
-    (@CommGroup.toGroup _ PUnit.commGroup)))⟩
-
--- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
--- bundled or unbundled lemmas.
-@[to_additive]
-theorem coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.coe_of MonCat.coe_of
-set_option linter.uppercaseLean3 false in
-#align AddMon.coe_of AddMonCat.coe_of
 
 @[to_additive]
 instance {G : Type _} [Group G] : Group (MonCat.of G) := by assumption
@@ -223,6 +224,7 @@ instance : Inhabited CommMonCat :=
 
 -- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
 -- bundled or unbundled lemmas.
+-- (This change seems dangerous!)
 @[to_additive]
 theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
   rfl
@@ -389,8 +391,7 @@ instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonC
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
-    -- Porting FIXME: this should be `by aesop`.
-    -- porting note: same remark as for `MonCat.forget_reflects_iso`
+      -- Porting FIXME: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
