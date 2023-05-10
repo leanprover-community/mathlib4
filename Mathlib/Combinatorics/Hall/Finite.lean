@@ -57,8 +57,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   specialize ha (s'.image fun z => z.1)
   rw [Nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
-  · have ha' : s'.card < (s'.bunionᵢ fun x => t x).card :=
-      by
+  · have ha' : s'.card < (s'.bunionᵢ fun x => t x).card := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_bunionᵢ, exists_prop, SetCoe.exists, exists_and_right,
@@ -141,8 +140,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : s.card = (s.bunionᵢ t).card) (ht : ∀ s : Finset ι, s.card ≤ (s.bunionᵢ t).card)
     (s' : Finset (sᶜ : Set ι)) : s'.card ≤ (s'.bunionᵢ fun x' => t x' \ s.bunionᵢ t).card := by
   haveI := Classical.decEq ι
-  have disj : Disjoint s (s'.image fun z => z.1) :=
-    by
+  have disj : Disjoint s (s'.image fun z => z.1) := by
     simp only [disjoint_left, not_exists, mem_image, exists_prop, SetCoe.exists, exists_and_right,
       exists_eq_right, Subtype.coe_mk]
     intro x hx hc _
@@ -181,8 +179,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   haveI := Classical.decEq ι
   -- Restrict to `s`
   rw [Nat.add_one] at hn
-  have card_ι'_le : Fintype.card s ≤ n :=
-    by
+  have card_ι'_le : Fintype.card s ≤ n := by
     apply Nat.le_of_lt_succ
     calc
       Fintype.card s = s.card := Fintype.card_coe _
@@ -198,13 +195,11 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
   rcases ih t'' card_ι''_le (hall_cond_of_compl hus ht) with ⟨f'', hf'', hsf''⟩
   -- Put them together
-  have f'_mem_bunionᵢ : ∀ (x') (hx' : x' ∈ s), f' ⟨x', hx'⟩ ∈ s.bunionᵢ t :=
-    by
+  have f'_mem_bunionᵢ : ∀ (x') (hx' : x' ∈ s), f' ⟨x', hx'⟩ ∈ s.bunionᵢ t := by
     intro x' hx'
     rw [mem_bunionᵢ]
     exact ⟨x', hx', hsf' _⟩
-  have f''_not_mem_bunionᵢ : ∀ (x'') (hx'' : ¬x'' ∈ s), ¬f'' ⟨x'', hx''⟩ ∈ s.bunionᵢ t :=
-    by
+  have f''_not_mem_bunionᵢ : ∀ (x'') (hx'' : ¬x'' ∈ s), ¬f'' ⟨x'', hx''⟩ ∈ s.bunionᵢ t := by
     intro x'' hx''
     have h := hsf'' ⟨x'', hx''⟩
     rw [mem_sdiff] at h
@@ -239,12 +234,9 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.bunionᵢ t).
   rcases n with (_ | _)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩
-  · have ih' :
-      ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α),
-        Fintype.card ι' ≤ _ →
-          (∀ s' : Finset ι', s'.card ≤ (s'.bunionᵢ t').card) →
-            ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x :=
-      by
+  · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ _ →
+        (∀ s' : Finset ι', s'.card ≤ (s'.bunionᵢ t').card) →
+        ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.bunionᵢ t).card

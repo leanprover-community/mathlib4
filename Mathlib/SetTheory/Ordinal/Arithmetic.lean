@@ -279,8 +279,7 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
 @[simp]
 theorem lift_isLimit (o) : IsLimit (lift o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
-    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h =>
-      by
+    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
       obtain ⟨a', rfl⟩ := lift_down h.le
       rw [← lift_succ, lift_lt]
       exact H a' (lift_lt.1 h)⟩
@@ -680,8 +679,7 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   inductionOn a fun α _ _ =>
-    inductionOn b fun β _ _ =>
-      by
+    inductionOn b fun β _ _ => by
       simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
       rw [or_comm]
       exact isEmpty_prod
@@ -993,8 +991,7 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
   | a, _, c, ⟨b, rfl⟩ =>
-    ⟨fun ⟨d, e⟩ => ⟨d - b, by rw [mul_sub, ← e, add_sub_cancel]⟩, fun ⟨d, e⟩ =>
-      by
+    ⟨fun ⟨d, e⟩ => ⟨d - b, by rw [mul_sub, ← e, add_sub_cancel]⟩, fun ⟨d, e⟩ => by
       rw [e, ← mul_add]
       apply dvd_mul_right⟩
 #align ordinal.dvd_add_iff Ordinal.dvd_add_iff
@@ -1932,8 +1929,7 @@ theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
 
 theorem blsub_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : blsub.{u, max v w} o f ≤ blsub.{v, max u w} o' g :=
-  bsup_le_of_brange_subset.{u, v, w} fun a ⟨b, hb, hb'⟩ =>
-    by
+  bsup_le_of_brange_subset.{u, v, w} fun a ⟨b, hb, hb'⟩ => by
     obtain ⟨c, hc, hc'⟩ := h ⟨b, hb, rfl⟩
     simp_rw [← hc'] at hb'
     exact ⟨c, hc, hb'⟩
@@ -2115,8 +2111,7 @@ theorem bmex_monotone {o o' : Ordinal.{u}}
 #align ordinal.bmex_monotone Ordinal.bmex_monotone
 
 theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
-    bmex.{_, u} o f < (succ o.card).ord :=
-  by
+    bmex.{_, u} o f < (succ o.card).ord := by
   rw [← mk_ordinal_out]
   exact mex_lt_ord_succ_mk (familyOfBFamily o f)
 #align ordinal.bmex_lt_ord_succ_card Ordinal.bmex_lt_ord_succ_card
@@ -2382,8 +2377,7 @@ open Ordinal
 @[simp]
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
   le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h =>
-      by
+    le_of_forall_lt fun o h => by
       rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
       rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
       exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩

@@ -812,14 +812,13 @@ theorem infinite_omega : Infinite ω :=
 #align hyperreal.infinite_omega Hyperreal.infinite_omega
 
 theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
-    InfinitePos x → ¬Infinitesimal y → 0 < y → InfinitePos (x * y) := fun hx hy₁ hy₂ r =>
+    InfinitePos x → ¬Infinitesimal y → 0 < y → InfinitePos (x * y) := fun hx hy₁ hy₂ r => by
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
     rwa [not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  by
-    rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
-    exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
+  rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
+  exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 #align hyperreal.infinite_pos_mul_of_infinite_pos_not_infinitesimal_pos Hyperreal.infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
 theorem infinitePos_mul_of_not_infinitesimal_pos_infinitePos {x y : ℝ*} :

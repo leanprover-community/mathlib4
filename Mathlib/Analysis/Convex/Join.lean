@@ -212,7 +212,7 @@ theorem convexHull_insert (hs : s.Nonempty) :
 theorem convexJoin_segments (a b c d : E) :
     convexJoin 𝕜 (segment 𝕜 a b) (segment 𝕜 c d) = convexHull 𝕜 {a, b, c, d} := by
   simp_rw [← convexHull_pair, convexHull_insert (insert_nonempty _ _),
-    convexHull_insert (singleton_nonempty _), convexJoin_singletons, convexJoin_assoc,
+    convexHull_insert (singleton_nonempty _), convexJoin_assoc,
     convexHull_singleton]
 #align convex_join_segments convexJoin_segments
 
@@ -229,4 +229,3 @@ theorem convexJoin_singleton_segment (a b c : E) :
 -- porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField
-

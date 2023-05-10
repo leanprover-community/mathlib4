@@ -10,6 +10,7 @@ Ported by: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
+import Mathlib.Tactic.ProjectionNotation
 
 /-!
 # Quivers
@@ -65,6 +66,9 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
+pp_extended_field_notation Prefunctor.obj
+pp_extended_field_notation Prefunctor.map
+
 namespace Prefunctor
 
 @[ext]
@@ -103,6 +107,8 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp Prefunctor.comp
 #align prefunctor.comp_obj Prefunctor.comp_obj
 #align prefunctor.comp_map Prefunctor.comp_map
+
+pp_extended_field_notation Prefunctor.comp
 
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :

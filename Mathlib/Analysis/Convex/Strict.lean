@@ -244,8 +244,8 @@ section continuous_add
 
 variable [ContinuousAdd E] {s t : Set E}
 
-theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) : StrictConvex 𝕜 (s + t) :=
-  by
+theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
+    StrictConvex 𝕜 (s + t) := by
   rintro _ ⟨v, w, hv, hw, rfl⟩ _ ⟨x, y, hx, hy, rfl⟩ h a b ha hb hab
   rw [smul_add, smul_add, add_add_add_comm]
   obtain rfl | hvx := eq_or_ne v x

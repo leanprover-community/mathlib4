@@ -102,8 +102,7 @@ theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
 #align setoid.eq_iff_classes_eq Setoid.eq_iff_classes_eq
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r.Rel x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
-  ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ =>
-    by
+  ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
     subst c
     exact r.trans' hx (r.symm' hy)⟩
 #align setoid.rel_iff_exists_classes Setoid.rel_iff_exists_classes
@@ -122,8 +121,7 @@ theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, h
 -- warning: expanding binder collection (b «expr ∈ » r.classes) -/
 /-- Equivalence classes partition the type. -/
 theorem classes_eqv_classes {r : Setoid α} (a) : ∃! (b : _)(_ : b ∈ r.classes), a ∈ b :=
-  ExistsUnique.intro₂ { x | r.Rel x a } (r.mem_classes a) (r.refl' _) <|
-    by
+  ExistsUnique.intro₂ { x | r.Rel x a } (r.mem_classes a) (r.refl' _) <| by
     rintro _ ⟨y, rfl⟩ ha
     ext x
     exact ⟨fun hx => r.trans' hx (r.symm' ha), fun hx => r.trans' hx ha⟩
@@ -282,8 +280,7 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
-  map_rel_iff' {r s} :=
-    by
+  map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
 #align setoid.partition.order_iso Setoid.Partition.orderIso
 

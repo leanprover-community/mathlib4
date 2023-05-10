@@ -238,8 +238,8 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
 
 @[reassoc (attr := simp)]
 theorem unit_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
-    (x : C) : adj1.unit.app x ≫ (rightAdjointUniq adj1 adj2).hom.app (F.obj x) = adj2.unit.app x :=
-  by
+    (x : C) : adj1.unit.app x ≫ (rightAdjointUniq adj1 adj2).hom.app (F.obj x) =
+      adj2.unit.app x := by
   apply Quiver.Hom.op_inj
   convert
     leftAdjointUniq_hom_app_counit (opAdjointOpOfAdjoint _ _ adj2)

@@ -308,8 +308,7 @@ theorem lower_raise : ∀ l n, lower (raise l n) n = l
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
-  | m :: l, n, h =>
-    by
+  | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower

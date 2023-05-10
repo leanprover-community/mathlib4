@@ -449,8 +449,7 @@ contains it.
 See also `exists_lt_subset_ball`. -/
 theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
   simp only [mem_ball] at h ⊢
-  -- porting note: todo: Mathlib 3 used `by linarith` here
-  exact ⟨(dist x y + ε) / 2, add_div_two_lt_right.2 h, left_lt_add_div_two.2 h⟩
+  exact ⟨(dist x y + ε) / 2, by linarith, by linarith⟩
 #align metric.exists_lt_mem_ball_of_mem_ball Metric.exists_lt_mem_ball_of_mem_ball
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
