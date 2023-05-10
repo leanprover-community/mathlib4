@@ -20,18 +20,18 @@ sheaves on `D` back to sheaves on `C` via `G.op ⋙ -`.
 
 ## Main definitions
 
-* `category_theory.cover_preserving`: a functor between sites is cover-preserving if it
+* `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
 pushes covering sieves to covering sieves
-* `category_theory.compatible_preserving`: a functor between sites is compatible-preserving
+* `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
 if it pushes compatible families of elements to compatible families.
-* `category_theory.pullback_sheaf`: the pullback of a sheaf along a cover-preserving and
+* `CategoryTheory.pullbackSheaf`: the pullback of a sheaf along a cover-preserving and
 compatible-preserving functor.
-* `category_theory.sites.pullback`: the induced functor `Sheaf K A ⥤ Sheaf J A` for a
+* `category_theory.Sites.pullback`: the induced functor `Sheaf K A ⥤ Sheaf J A` for a
 cover-preserving and compatible-preserving functor `G : (C, J) ⥤ (D, K)`.
 
 ## Main results
 
-- `category_theory.sites.whiskering_left_is_sheaf_of_cover_preserving`: If `G : C ⥤ D` is
+- `CategoryTheory.pullback_isSheaf_of_coverPreserving`: If `G : C ⥤ D` is
 cover-preserving and compatible-preserving, then `G ⋙ -` (`uᵖ`) as a functor
 `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 
@@ -79,6 +79,9 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
 #align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
+
+-- porting note: this line is not needed as the variables are already explicit
+-- variable (J) (K)
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -160,7 +163,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
-  simp (config := {zeta := false}) only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
+  simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
   apply congr_arg -- porting note: was `congr 1` which didn't do anything
   /-
     Since everything now falls in the image of `u`,
