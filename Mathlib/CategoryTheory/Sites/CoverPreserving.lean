@@ -161,7 +161,8 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
   simp (config := {zeta := false}) only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
-  apply congr_arg -- porting note: was `congr 1` which didn't do anything
+  apply congr_arg -- porting note: was `congr 1` which for some reason doesn't do anything here
+  -- despite goal being of the form f a = f b, with f=`ℱ.val.map (Quiver.Hom.op c'.pt.hom)`
   /-
     Since everything now falls in the image of `u`,
     the result follows from the compatibility of `x` in the image of `u`.
