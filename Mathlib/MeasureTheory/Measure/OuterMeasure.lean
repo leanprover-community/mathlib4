@@ -392,7 +392,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
           calc
             m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := m.unionᵢ_nat _
             _ ≤ ∑' i, ⨆ m ∈ ms, (m : OuterMeasure α) (f i) :=
-               ENNReal.tsum_le_tsum fun i => by apply le_supᵢ₂ m hm
+              ENNReal.tsum_le_tsum fun i => by apply le_supᵢ₂ m hm
              }⟩
 #align measure_theory.outer_measure.has_Sup MeasureTheory.OuterMeasure.instSupSet
 
