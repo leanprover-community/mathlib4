@@ -43,34 +43,11 @@ abbrev AssocRingHom (M N : Type _) [Semiring M] [Semiring N] :=
   RingHom M N
 set_option linter.uppercaseLean3 false in
 #align SemiRing.assoc_ring_hom SemiRingCat.AssocRingHom
-/-
-  toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β
-  /-- the identity as a bundled morphism -/
-  id : ∀ {α : Type u} (I : c α), hom I I
-  /-- composition of bundled morphisms -/
-  comp : ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ), hom Iβ Iγ → hom Iα Iβ → hom Iα Iγ
-  /-- a bundled morphism is determined by the underlying map -/
-  hom_ext : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), Function.Injective (toFun Iα Iβ) := by
-   aesop_cat
-  /-- compatibility with identities -/
-  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by aesop_cat
-  /-- compatibility with the composition -/
-  comp_toFun
--/
 
 instance bundledHom : BundledHom AssocRingHom where
   toFun := fun {M N} _ _ f => f
   id := fun {A} _ => RingHom.id _
   comp := fun {M N L} _ _ _ f g => f.comp g
-  hom_ext := fun {A B} _ _ f g h => by ext x ; exact congrFun h x
-  id_toFun := fun {A} _ => by ext x ; rfl
-  comp_toFun := fun {A B C} _ _ _ f g => rfl
-  /-
-  Porting note: The ported proof is this:
-  ⟨fun M N [Semiring M] [Semiring N] => @RingHom.toFun M N _ _, fun M [Semiring M] =>
-    @RingHom.id M _, fun M N P [Semiring M] [Semiring N] [Semiring P] => @RingHom.comp M N P _ _ _,
-    fun M N [Semiring M] [Semiring N] => @RingHom.coe_inj M N _ _⟩
-  -/
 set_option linter.uppercaseLean3 false in
 #align SemiRing.bundled_hom SemiRingCat.bundledHom
 
@@ -138,7 +115,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMonCat
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat
-    where  -- can't use bundled_hom.mk_has_forget₂, since AddCommMon is an induced category
+    where  -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
   forget₂ :=
     { obj := fun R => AddCommMonCat.of R
       -- Porting note: This doesn't work without the `(_ := _)` trick.
@@ -211,7 +188,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
 instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat
-    where -- can't use bundled_hom.mk_has_forget₂, since AddCommGroup is an induced category
+    where -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
     { obj := fun R => AddCommGroupCat.of R
       -- Porting note: use `(_ := _)` similar to above.
@@ -371,7 +348,7 @@ end CommRingCat
 -- we had to mark all the concrete category `has_coe_to_sort` instances reducible.
 -- Now, it just works.
 -- Porting note: ^^^ no it doesn't :( (with Lean4/Mathlib4)
--- example {R S : CommRingCat} (i : R ⟶ S) (r : R) (h : r = 0) : i r = 0 := by simp [h]
+example {R S : CommRingCat} (i : R ⟶ S) (r : R) (h : r = 0) : i r = 0 := by simp [h]
 
 namespace RingEquiv
 
