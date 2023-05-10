@@ -108,7 +108,7 @@ theorem toContinuousMap_coe (f : P →A[R] Q) : f.toContinuousMap = ↑f := rfl
 theorem coe_to_affineMap (f : P →A[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_affine_map ContinuousAffineMap.coe_to_affineMap
 
--- Porting note: removed `norm_cast` and `simp` since proof is  `simp only [ContinuousMap.coe_mk]`
+-- Porting note: removed `norm_cast` and `simp` since proof is `simp only [ContinuousMap.coe_mk]`
 theorem coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_continuous_map ContinuousAffineMap.coe_to_continuousMap
 
@@ -236,7 +236,7 @@ theorem sub_apply (f g : P →A[R] W) (x : P) : (f - g) x = f x - g x := rfl
 #align continuous_affine_map.sub_apply ContinuousAffineMap.sub_apply
 
 instance : Neg (P →A[R] W) :=
-  --Porting note: Why does this instance need to be given explicitly
+  -- Porting note: Why does this instance need to be given explicitly
   let _ : ContinuousNeg W := TopologicalAddGroup.toContinuousNeg
   { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
@@ -274,19 +274,16 @@ variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
 
 /-- A continuous linear map can be regarded as a continuous affine map. -/
 def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W where
-  -- Porting note: originally `toFun := f` and `linear := f`
-  toFun := f.toFun
-  linear := f.toLinearMap
+  toFun := f
+  linear := f
   map_vadd' := by simp
   cont := f.cont
 #align continuous_linear_map.to_continuous_affine_map ContinuousLinearMap.toContinuousAffineMap
 
-set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coe_toContinuousAffineMap (f : V →L[R] W) : (f.toContinuousAffineMap : V → W) = f := rfl
+theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap = f := rfl
 #align continuous_linear_map.coe_to_continuous_affine_map ContinuousLinearMap.coe_toContinuousAffineMap
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
 #align continuous_linear_map.to_continuous_affine_map_map_zero ContinuousLinearMap.toContinuousAffineMap_map_zero
