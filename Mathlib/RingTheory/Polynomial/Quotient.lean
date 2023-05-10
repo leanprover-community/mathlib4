@@ -37,6 +37,7 @@ noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
   (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
 @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
 
+-- port note: need to split this definition into two sub-definitions to prevent time out
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
 (quotientSpanXSubCAlgEquivAux1 x).trans (quotientSpanXSubCAlgEquivAux2 x)
@@ -86,11 +87,6 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
   · simp [h]
 #align ideal.eval₂_C_mk_eq_zero Ideal.eval₂_C_mk_eq_zero
-
-theorem eval₂_C_mk_eq_zero' {I : Ideal R} :
-    ∀ f ∈ (map (C : R →+* R[X]) I : Ideal R[X]), eval₂ (C.comp (Quotient.mk I)) X f = 0 :=
-fun f hf => eval₂_C_mk_eq_zero f hf
-#align ideal.eval₂_C_mk_eq_zero' Ideal.eval₂_C_mk_eq_zero'
 
 lemma polynomialQuotientEquivQuotientPolynomial_eval₂RingHom_left_inverse (I : Ideal R) :
   Function.LeftInverse
@@ -146,6 +142,7 @@ let e : (R ⧸ I)[X] →+* R[X] ⧸ map C I := eval₂RingHom
 { e with
   invFun := Quotient.lift (map C I : Ideal R[X]) (eval₂RingHom (C.comp (Quotient.mk I)) X)
       eval₂_C_mk_eq_zero
+  -- port note: need to split this definition into two sub-lemmas to prevent time out
   left_inv := polynomialQuotientEquivQuotientPolynomial_eval₂RingHom_left_inverse I
   right_inv := polynomialQuotientEquivQuotientPolynomial_eval₂RingHom_right_inverse I }
 #align ideal.polynomial_quotient_equiv_quotient_polynomial Ideal.polynomialQuotientEquivQuotientPolynomial
@@ -154,8 +151,8 @@ let e : (R ⧸ I)[X] →+* R[X] ⧸ map C I := eval₂RingHom
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by
   rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Ideal.Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map, ←
-    eval₂_eq_eval_map, Polynomial.eval₂_C_X]
+    Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
+    ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_symm_mk Ideal.polynomialQuotientEquivQuotientPolynomial_symm_mk
 
 @[simp]
