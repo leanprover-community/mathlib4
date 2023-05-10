@@ -146,7 +146,6 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
     have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
       simpa using biproduct.ι_π_ne _ (Ne.symm h)
     rw [this, comp_zero]
-
 #align category_theory.hom_orthogonal.matrix_decomposition_id CategoryTheory.HomOrthogonal.matrixDecomposition_id
 
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
@@ -214,8 +213,8 @@ for which each `End (s i)` is a ring with invariant basis number (e.g. if each `
 if two direct sums over `s` are isomorphic, then they have the same multiplicities.
 -/
 theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype β] {f : α → ι}
-    {g : β → ι} (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a :=
-  by
+    {g : β → ι} (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) :
+    ∃ e : α ≃ β, ∀ a, g (e a) = f a := by
   refine' ⟨Equiv.ofPreimageEquiv _, fun a => Equiv.ofPreimageEquiv_map _ _⟩
   intro c
   apply Nonempty.some
