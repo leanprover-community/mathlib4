@@ -17,11 +17,11 @@ import Mathlib.Topology.UnitInterval
 
 ## Main definitions
 
-* `polynomial.to_continuous_map_on p X`: for `X : set R`, interprets a polynomial `p`
+* `Polynomial.toContinuousMapOn p X`: for `X : Set R`, interprets a polynomial `p`
   as a bundled continuous function in `C(X, R)`.
-* `polynomial.to_continuous_map_on_alg_hom`: the same, as an `R`-algebra homomorphism.
-* `polynomial_functions (X : set R) : subalgebra R C(X, R)`: polynomial functions as a subalgebra.
-* `polynomial_functions_separates_points (X : set R) : (polynomial_functions X).separates_points`:
+* `Polynomial.toContinuousMapOnAlgHom`: the same, as an `R`-algebra homomorphism.
+* `polynomialFunctions (X : Set R) : Subalgebra R C(X, R)`: polynomial functions as a subalgebra.
+* `polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints`:
   the polynomial functions separate points.
 
 -/
@@ -52,10 +52,11 @@ with domain restricted to some subset of the semiring of coefficients.
 -/
 @[simps]
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
-  ⟨fun x : X => p.toContinuousMap x, by continuity⟩
+  -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
+  ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
 #align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
 
--- TODO some lemmas about when `to_continuous_map_on` is injective?
+-- TODO some lemmas about when `toContinuousMapOn` is injective?
 end
 
 section
@@ -66,7 +67,7 @@ variable {α : Type _} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace 
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
-  apply Polynomial.induction_on' g
+  refine' Polynomial.induction_on' g _ _
   · intro p q hp hq
     simp [hp, hq]
   · intro n a
@@ -74,8 +75,6 @@ theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
 #align polynomial.aeval_continuous_map_apply Polynomial.aeval_continuousMap_apply
 
 end
-
-section
 
 noncomputable section
 
@@ -89,19 +88,16 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   map_zero' := by
     ext
     simp
-  map_add' := by
-    intros
+  map_add' _ _ := by
     ext
     simp
   map_one' := by
     ext
     simp
-  map_mul' := by
-    intros
+  map_mul' _ _ := by
     ext
     simp
-  commutes' := by
-    intros
+  commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
 #align polynomial.to_continuous_map_alg_hom Polynomial.toContinuousMapAlgHom
@@ -114,19 +110,16 @@ def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   map_zero' := by
     ext
     simp
-  map_add' := by
-    intros
+  map_add' _ _ := by
     ext
     simp
   map_one' := by
     ext
     simp
-  map_mul' := by
-    intros
+  map_mul' _ _ := by
     ext
     simp
-  commutes' := by
-    intros
+  commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
 #align polynomial.to_continuous_map_on_alg_hom Polynomial.toContinuousMapOnAlgHom
@@ -156,11 +149,11 @@ theorem polynomialFunctions_coe (X : Set R) :
 
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
--- induces a normed algebra isomorphism between `polynomial_functions X` and
--- `polynomial_functions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
+-- induces a normed algebra isomorphism between `polynomialFunctions X` and
+-- `polynomialFunctions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
 theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
   fun x y h => by
-  -- We use `polynomial.X`, then clean up.
+  -- We use `Polynomial.X`, then clean up.
   refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
   dsimp; simp only [Polynomial.eval_X]
   exact fun h' => h (Subtype.ext h')
@@ -189,10 +182,8 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
         Polynomial.eval_mul, Polynomial.eval_add, Polynomial.coe_aeval_eq_eval,
         Polynomial.eval_comp, Polynomial.toContinuousMapOnAlgHom_apply,
         Polynomial.toContinuousMapOn_apply, Polynomial.toContinuousMap_apply]
-      convert w ⟨_, _⟩ <;> clear w
-      · -- why does `comm_ring.add` appear here!?
-        change x = (iccHomeoI a b h).symm ⟨_ + _, _⟩
-        ext
+      convert w ⟨_, _⟩
+      · ext
         simp only [iccHomeoI_symm_apply_coe, Subtype.coe_mk]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
         simp only [mul_add]
@@ -213,7 +204,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     · simp
     · ext x
       simp [mul_comm]
+set_option linter.uppercaseLean3 false in
 #align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
 
 end
-
