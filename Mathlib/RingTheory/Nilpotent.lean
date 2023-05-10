@@ -100,17 +100,12 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type _
   exact (hx.map f).eq_zero
 #align is_reduced_of_injective isReduced_of_injective
 
--- Porting note: Added etaExperiment line to synthesize RingHomClass
-set_option synthInstance.etaExperiment true
-
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
     [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
 #align ring_hom.ker_is_radical_iff_reduced_of_surjective RingHom.ker_isRadical_iff_reduced_of_surjective
-
-set_option synthInstance.etaExperiment false
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/

@@ -306,14 +306,6 @@ noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
--- Porting note:
--- This is failing, because we are not finding the right instances!
--- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
--- However `etaExperiment` saves the day:
--- set_option synthInstance.etaExperiment true in
--- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
-
-set_option synthInstance.etaExperiment true in
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
@@ -323,24 +315,20 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     smul' := fun _ _ => by simp only [map_smulₛₗ]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
 
-set_option synthInstance.etaExperiment true in
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
 #align seminorm.coe_comp Seminorm.coe_comp
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_apply (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) : (p.comp f) x = p (f x) :=
   rfl
 #align seminorm.comp_apply Seminorm.comp_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_id (p : Seminorm 𝕜 E) : p.comp LinearMap.id = p :=
   ext fun _ => rfl
 #align seminorm.comp_id Seminorm.comp_id
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_zero (p : Seminorm 𝕜₂ E₂) : p.comp (0 : E →ₛₗ[σ₁₂] E₂) = 0 :=
   ext fun _ => map_zero p
@@ -351,7 +339,6 @@ theorem zero_comp (f : E →ₛₗ[σ₁₂] E₂) : (0 : Seminorm 𝕜₂ E₂)
   ext fun _ => rfl
 #align seminorm.zero_comp Seminorm.zero_comp
 
-set_option synthInstance.etaExperiment true in
 theorem comp_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (p : Seminorm 𝕜₃ E₃) (g : E₂ →ₛₗ[σ₂₃] E₃)
     (f : E →ₛₗ[σ₁₂] E₂) : p.comp (g.comp f) = (p.comp g).comp f :=
   ext fun _ => rfl
@@ -362,7 +349,6 @@ theorem add_comp (p q : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) 
   ext fun _ => rfl
 #align seminorm.add_comp Seminorm.add_comp
 
-set_option synthInstance.etaExperiment true in
 theorem comp_add_le (p : Seminorm 𝕜₂ E₂) (f g : E →ₛₗ[σ₁₂] E₂) :
     p.comp (f + g) ≤ p.comp f + p.comp g := fun _ => map_add_le_add p _ _
 #align seminorm.comp_add_le Seminorm.comp_add_le
@@ -456,21 +442,13 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
--- Porting note: unhappily, turning on `synthInstance.etaExperiment` isn't enough here:
--- we need to elaborate a fragment of the type using `eta_experiment%`,
--- but then can't use it for the proof!
--- Porting note:
--- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
--- and needs an increase to `synthInstance.maxHeartbeats`.
-set_option synthInstance.maxHeartbeats 30000 in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
-    p.comp (eta_experiment% c • f) = ‖c‖₊ • p.comp f :=
+    p.comp (c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
     rw [comp_apply, smul_apply, LinearMap.smul_apply, map_smul_eq_mul, NNReal.smul_def, coe_nnnorm,
       smul_eq_mul, comp_apply]
 #align seminorm.comp_smul Seminorm.comp_smul
 
-set_option synthInstance.etaExperiment true in
 theorem comp_smul_apply (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) (x : E) :
     p.comp (c • f) x = ‖c‖ * p (f x) :=
   map_smul_eq_mul p _ _
@@ -817,14 +795,12 @@ variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
-set_option synthInstance.etaExperiment true in
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
   simp_rw [ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
 #align seminorm.ball_comp Seminorm.ball_comp
 
-set_option synthInstance.etaExperiment true in
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
