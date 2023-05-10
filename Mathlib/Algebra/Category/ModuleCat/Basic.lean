@@ -85,7 +85,7 @@ namespace ModuleCat
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
 
-attribute [-instance] Ring.toNonAssocRing
+attribute [coe] ModuleCat.carrier
 
 instance moduleCategory : Category (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
@@ -120,7 +120,7 @@ lemma hom_ext {M N : ModuleCat.{v} R} (f₁ f₂ : M ⟶ N) (h : ∀ (x : M), f�
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=
     { obj := fun M => AddCommGroupCat.of M
-      map := fun f => LinearMap.toAddMonoidHom f }
+      map := fun f => AddCommGroupCat.ofHom f.toAddMonoidHom }
 set_option linter.uppercaseLean3 false in
 #align Module.has_forget_to_AddCommGroup ModuleCat.hasForgetToAddCommGroup
 
@@ -264,8 +264,6 @@ set_option linter.uppercaseLean3 false in
 scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 
 section
-
-attribute [-instance] Ring.toNonAssocRing
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
