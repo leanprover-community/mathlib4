@@ -30,6 +30,8 @@ To construct an object in the category of `R`-modules from a type `M` with an in
 
 Similarly, there is a coercion from morphisms in `Module R` to linear maps.
 
+Porting note: the next two paragraphs should be revised.
+
 Unfortunately, Lean is not smart enough to see that, given an object `M : Module R`, the expression
 `of R M`, where we coerce `M` to the carrier type, is definitionally equal to `M` itself.
 This means that to go the other direction, i.e., from linear maps/equivalences to (iso)morphisms
@@ -85,7 +87,7 @@ namespace ModuleCat
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
 
-attribute [-instance] Ring.toNonAssocRing
+attribute [coe] ModuleCat.carrier
 
 instance moduleCategory : Category (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
@@ -103,7 +105,7 @@ instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M (fun _ => N) :=
   ⟨fun f => f.toFun, fun _ _ h => LinearMap.ext (congr_fun h)⟩
 
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
-  Forget :=
+  forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => LinearMap.ext (fun x => by
@@ -114,13 +116,13 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease automation
 @[ext]
-lemma hom_ext {M N : ModuleCat.{v} R} (f₁ f₂ : M ⟶ N) (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   FunLike.ext _ _ h
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=
     { obj := fun M => AddCommGroupCat.of M
-      map := fun f => LinearMap.toAddMonoidHom f }
+      map := fun f => AddCommGroupCat.ofHom f.toAddMonoidHom }
 set_option linter.uppercaseLean3 false in
 #align Module.has_forget_to_AddCommGroup ModuleCat.hasForgetToAddCommGroup
 
@@ -133,7 +135,7 @@ def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
 set_option linter.uppercaseLean3 false in
 #align Module.of ModuleCat.of
 
--- porting note: remove simp attribute because it makes the linter complain
+@[simp]
 theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj X = AddCommGroupCat.of X :=
   rfl
@@ -153,6 +155,8 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_map ModuleCat.forget₂_map
+
+-- Porting note: TODO: `ofHom` and `asHom` are duplicates!
 
 /-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
 def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
@@ -264,8 +268,6 @@ set_option linter.uppercaseLean3 false in
 scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 
 section
-
-attribute [-instance] Ring.toNonAssocRing
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
