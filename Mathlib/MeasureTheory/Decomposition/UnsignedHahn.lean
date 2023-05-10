@@ -47,12 +47,9 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
   have hν : ∀ s, ν s ≠ ∞ := measure_ne_top ν
   have to_nnreal_μ : ∀ s, ((μ s).toNNReal : ℝ≥0∞) = μ s := fun s => ENNReal.coe_toNNReal <| hμ _
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
-  have d_empty : d ∅ = 0 := by
-    change _ - _ = _
-    rw [measure_empty, measure_empty, sub_self]
   have d_split : ∀ s t, MeasurableSet s → MeasurableSet t → d s = d (s \ t) + d (s ∩ t) := by
     intro s t _hs ht
-    simp only [d_empty]
+    dsimp only
     rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
       NNReal.coe_add]
