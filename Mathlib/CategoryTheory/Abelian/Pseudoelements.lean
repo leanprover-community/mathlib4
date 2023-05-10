@@ -236,7 +236,8 @@ def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
--- Porting note: in mathlib3, we couldn't make this an instance as it would have fired on on `coe_sort`.
+-- Porting note: in mathlib3, we couldn't make this an instance
+-- as it would have fired on on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
@@ -293,7 +294,8 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f 
 -- Porting note: these are no longer valid as `ext` lemmas.
 -- scoped[Pseudoelement]
 --   attribute [ext]
---     CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext'
+--     CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext
+--     CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext'
 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
