@@ -1452,6 +1452,7 @@ section
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomIsometric σ₁₂]
 
+set_option synthInstance.etaExperiment true in
 variable (e : E ≃SL[σ₁₂] F)
 
 set_option synthInstance.etaExperiment true in
@@ -1482,12 +1483,14 @@ variable [RingHomIsometric σ₂₁]
 set_option synthInstance.etaExperiment true in
 variable (e : E ≃SL[σ₁₂] F)
 
+set_option synthInstance.etaExperiment true in
 theorem isBigO_comp_rev (e : E ≃SL[σ₁₂] F) {α : Type _} (f : α → E) (l : Filter α) :
     f =O[l] fun x' => e (f x') :=
   (e.symm.isBigO_comp _ l).congr_left fun _ => e.symm_apply_apply _
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.is_O_comp_rev ContinuousLinearEquiv.isBigO_comp_rev
 
+set_option synthInstance.etaExperiment true in
 theorem isBigO_sub_rev (e : E ≃SL[σ₁₂] F) (l : Filter E) (x : E) :
     (fun x' => x' - x) =O[l] fun x' => e (x' - x) :=
   e.isBigO_comp_rev _ _
@@ -1716,6 +1719,7 @@ def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} 
     exact g.le_of_op_norm_le (hC _ hg) _
 #align continuous_linear_map.of_mem_closure_image_coe_bounded ContinuousLinearMap.ofMemClosureImageCoeBounded
 
+set_option synthInstance.etaExperiment true in
 /-- Let `f : E → F` be a map, let `g : α → E →SL[σ₁₂] F` be a family of continuous (semi)linear maps
 that takes values in a bounded set and converges to `f` pointwise along a nontrivial filter. Then
 `f` is a continuous (semi)linear map. -/
@@ -1770,6 +1774,7 @@ instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- `ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchy_seq`
   exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchySeq (tendsto_pi_nhds.2 hG) hf⟩
 
+set_option synthInstance.etaExperiment true in
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
 in a proper space. Then `s` interpreted as a set in the space of maps `E → F` with topology of
 pointwise convergence is precompact: its closure is a compact set. -/
@@ -1781,6 +1786,7 @@ theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →S
     (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
 #align continuous_linear_map.is_compact_closure_image_coe_of_bounded ContinuousLinearMap.isCompact_closure_image_coe_of_bounded
 
+set_option synthInstance.etaExperiment true in
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
 in a proper space. If `s` interpreted as a set in the space of maps `E → F` with topology of
 pointwise convergence is closed, then it is compact.
@@ -1834,6 +1840,7 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
   exact (g - f₀).le_of_op_norm_le (mem_closedBall_iff_norm.1 hg) _
 #align continuous_linear_map.is_weak_closed_closed_ball ContinuousLinearMap.is_weak_closed_closedBall
 
+set_option synthInstance.etaExperiment true in
 /-- The set of functions `f : E → F` that represent continuous linear maps `f : E →SL[σ₁₂] F`
 at distance `≤ r` from `f₀ : E →SL[σ₁₂] F` is closed in the topology of pointwise convergence.
 This is one of the key steps in the proof of the **Banach-Alaoglu** theorem. -/
@@ -1842,6 +1849,7 @@ theorem isClosed_image_coe_closedBall (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
   isClosed_image_coe_of_bounded_of_weak_closed bounded_closedBall (is_weak_closed_closedBall f₀ r)
 #align continuous_linear_map.is_closed_image_coe_closed_ball ContinuousLinearMap.isClosed_image_coe_closedBall
 
+set_option synthInstance.etaExperiment true in
 /-- **Banach-Alaoglu** theorem. The set of functions `f : E → F` that represent continuous linear
 maps `f : E →SL[σ₁₂] F` at distance `≤ r` from `f₀ : E →SL[σ₁₂] F` is compact in the topology of
 pointwise convergence. Other versions of this theorem can be found in
@@ -1855,12 +1863,11 @@ end Completeness
 
 section UniformlyExtend
 
-variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
-
 section
 
-variable (h_e : UniformInducing e)
+variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e) (h_e : UniformInducing e)
 
+set_option synthInstance.etaExperiment true in
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
 complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`.  -/
 def extend : Fₗ →SL[σ₁₂] F :=
@@ -1890,17 +1897,20 @@ def extend : Fₗ →SL[σ₁₂] F :=
     cont }
 #align continuous_linear_map.extend ContinuousLinearMap.extend
 
+set_option synthInstance.etaExperiment true in
 -- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
   DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
 #align continuous_linear_map.extend_eq ContinuousLinearMap.extend_eq
 
+set_option synthInstance.etaExperiment true in
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|
     uniformly_extend_unique h_e h_dense (ContinuousLinearMap.ext_iff.1 H) g.continuous
 #align continuous_linear_map.extend_unique ContinuousLinearMap.extend_unique
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
   extend_unique _ _ _ _ _ (zero_comp _)
@@ -1910,17 +1920,20 @@ end
 
 section
 
-variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
+variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : eta_experiment% DenseRange e)
+variable {N : ℝ≥0} (h_e : eta_experiment% ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
 -- Porting note: this should be `local notation`, not `scoped notation`,
 -- as we don't want it beyond the next declaration, but that causes errors.
+set_option synthInstance.etaExperiment true in
 set_option quotPrecheck false in
 scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
+set_option synthInstance.etaExperiment true in
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
-  have uni : UniformInducing e := (uniform_embedding_of_bound _ h_e).toUniformInducing
+  have uni : UniformInducing e := (uniformEmbedding_of_bound _ h_e).toUniformInducing
   have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniformContinuous
   by_cases N0 : 0 ≤ N
   · refine' op_norm_le_bound ψ _ (isClosed_property h_dense (isClosed_le _ _) _)
@@ -2054,7 +2067,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         ext x
         simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
           LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
-    1 fun c x => by by
+    1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
 set_option linter.uppercaseLean3 false in
@@ -2062,12 +2075,14 @@ set_option linter.uppercaseLean3 false in
 
 variable {𝕜 E Fₗ}
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
   norm_smulRight_apply c f
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.norm_smul_rightL_apply ContinuousLinearMap.norm_smulRightL_apply
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
@@ -2080,6 +2095,7 @@ section
 
 variable [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem op_norm_mul [NormOneClass 𝕜'] : ‖mul 𝕜 𝕜'‖ = 1 :=
   haveI := NormOneClass.nontrivial 𝕜'
