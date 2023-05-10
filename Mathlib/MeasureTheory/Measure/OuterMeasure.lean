@@ -426,10 +426,10 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 theorem smul_supᵢ [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {ι} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
   ext fun s => by
-  rw [smul_apply, ← smul_one_mul, supᵢ]
-  simp only [supᵢ_apply, smul_apply, ← smul_one_mul c (f _ _)]
-  rw [←supᵢ, ←ENNReal.mul_supᵢ]
-  simp
+    rw [smul_apply, ← smul_one_mul, supᵢ]
+    simp only [supᵢ_apply, smul_apply, ← smul_one_mul c (f _ _)]
+    rw [←supᵢ, ←ENNReal.mul_supᵢ]
+    simp
 #align measure_theory.outer_measure.smul_supr MeasureTheory.OuterMeasure.smul_supᵢ
 
 end Supremum
