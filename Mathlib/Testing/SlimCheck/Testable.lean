@@ -109,6 +109,19 @@ structure Configuration where
   quiet : Bool := false
   deriving Inhabited
 
+open Lean in
+instance : ToExpr Configuration where
+  toTypeExpr := mkConst `Configuration
+  toExpr cfg := mkApp9 (mkConst ``Configuration.mk)
+    (toExpr cfg.numInst) (toExpr cfg.maxSize) (toExpr cfg.numRetries) (toExpr cfg.traceDiscarded)
+    (toExpr cfg.traceSuccesses) (toExpr cfg.traceShrink) (toExpr cfg.traceShrinkCandidates)
+    (toExpr cfg.randomSeed) (toExpr cfg.quiet)
+
+/--
+Allow elaboration of `Configuration` arguments to tactics.
+-/
+declare_config_elab elabConfig Configuration
+
 /--
 `PrintableProp p` allows one to print a proposition so that
 `SlimCheck` can indicate how values relate to each other.
@@ -517,5 +530,10 @@ def Testable.check (p : Prop) (cfg : Configuration := {})
 -- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10)
 --   Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
+
+macro tk:"#test " e:term : command => `(command| #eval%$tk Testable.check $e)
+
+-- #test ∀ (x : Nat) (h : 5 < x), 10 < x
+-- #test ∀ (x : Nat) (h : 10 < x), 5 < x
 
 end SlimCheck
