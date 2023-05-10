@@ -822,7 +822,7 @@ theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.o
   ext1 s
   haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_unionᵢ (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
-  infᵢ_subtype']
+    infᵢ_subtype']
   rw [ENNReal.infᵢ_mul_left fun h => (hc h).elim]
 #align measure_theory.outer_measure.smul_of_function MeasureTheory.OuterMeasure.smul_ofFunction
 
