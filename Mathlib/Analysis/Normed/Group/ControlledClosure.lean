@@ -36,7 +36,7 @@ positive `ε`.
 theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgroup H} {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : f.SurjectiveOnWith K C) :
     f.SurjectiveOnWith K.topologicalClosure (C + ε) := by
-  rintro (h : H) (h_in : h ∈ K.topological_closure)
+  rintro (h : H) (h_in : h ∈ K.topologicalClosure)
   -- We first get rid of the easy case where `h = 0`.
   by_cases hyp_h : h = 0
   · rw [hyp_h]
@@ -49,11 +49,11 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
   have b_pos : ∀ i, 0 < b i := by
     intro i
-    field_simp [b, hC]
+    field_simp [hC]
     exact
       div_pos (mul_pos hε (norm_pos_iff.mpr hyp_h)) (mul_pos (by norm_num : (0 : ℝ) < 2 ^ i * 2) hC)
   obtain
-    ⟨v : ℕ → H, lim_v : tendsto (fun n : ℕ => ∑ k in range (n + 1), v k) at_top (𝓝 h), v_in :
+    ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ => ∑ k in range (n + 1), v k) atTop (𝓝 h), v_in :
       ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
     controlled_sum_of_mem_closure h_in b_pos
   /- The controlled surjectivity assumption on `f` allows to build preimages `u n` for all
@@ -68,8 +68,8 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     rintro n (hn : n ≥ 1)
     calc
       ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
-      _ ≤ C * b n := (mul_le_mul_of_nonneg_left (hv _ <| nat.succ_le_iff.mp hn).le hC.le)
-      _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [b, mul_div_cancel' _ hC.ne.symm]
+      _ ≤ C * b n := (mul_le_mul_of_nonneg_left (hv _ <| Nat.succ_le_iff.mp hn).le hC.le)
+      _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel' _ hC.ne.symm]
       _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
       
   -- We now show that the limit `g` of `s` is the desired preimage.
@@ -86,7 +86,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     exact tendsto_nhds_unique ((f.continuous.tendsto g).comp hg) lim_v
   · -- Then we need to estimate the norm of `g`, using our careful choice of `b`.
     suffices : ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖
-    exact le_of_tendsto' (continuous_norm.continuous_at.tendsto.comp hg) this
+    exact le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
     intro n
     have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ := by
       have :=
@@ -101,8 +101,8 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         
     have : (∑ k in range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc
-        (∑ k in range (n + 1), C * b k) = (∑ k in range (n + 1), (1 / 2) ^ k) * (ε * ‖h‖ / 2) := by
-          simp only [b, mul_div_cancel' _ hC.ne.symm, ← sum_mul]
+        (∑ k in range (n + 1), C * b k) = (∑ k in range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) :=
+          by simp only [mul_div_cancel' _ hC.ne.symm, ← sum_mul]
         _ ≤ 2 * (ε * ‖h‖ / 2) :=
           (mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (by nlinarith [hε, norm_nonneg h]))
         _ = ε * ‖h‖ := mul_div_cancel' _ two_ne_zero
