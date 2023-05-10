@@ -105,12 +105,13 @@ set_option linter.uppercaseLean3 false in
 instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
   ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
-    ofHom f x = f x :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
+-- Porting note: I think this is now redundant.
+-- @[simp]
+-- theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+--     ofHom f x = f x :=
+--   rfl
+-- set_option linter.uppercaseLean3 false in
+#noalign SemiRing.of_hom_apply
 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
@@ -185,11 +186,12 @@ set_option linter.uppercaseLean3 false in
 instance {R S : RingCat} : CoeFun (R ⟶ S) (fun _ => R → S) :=
   ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Ring.of_hom_apply RingCat.ofHom_apply
+-- Porting note: I think this is now redundant.
+-- @[simp]
+-- theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
+--   rfl
+-- set_option linter.uppercaseLean3 false in
+-- #align Ring.of_hom_apply RingCat.ofHom_apply
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
@@ -256,12 +258,13 @@ set_option linter.uppercaseLean3 false in
 instance {X Y : CommSemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
   ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
-    ofHom f x = f x :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.of_hom_apply CommSemiRing.ofHom_apply
+-- Porting note: I think this is now redundant.
+-- @[simp]
+-- theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
+--     ofHom f x = f x :=
+--   rfl
+-- set_option linter.uppercaseLean3 false in
+#noalign CommSemiRing.of_hom_apply
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -327,12 +330,13 @@ set_option linter.uppercaseLean3 false in
 instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
   ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
-    ofHom f x = f x :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.of_hom_apply CommRingCat.ofHom_apply
+-- Porting note: I think this is now redundant.
+-- @[simp]
+-- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+--     ofHom f x = f x :=
+--   rfl
+-- set_option linter.uppercaseLean3 false in
+#noalign CommRing.of_hom_apply
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
