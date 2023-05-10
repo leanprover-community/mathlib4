@@ -1039,7 +1039,7 @@ theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x
     congr
     use n
     exact multiplicity_eq_count_normalizedFactors hx h
-#align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_powerFactor
+#align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
 
 
 end multiplicity
