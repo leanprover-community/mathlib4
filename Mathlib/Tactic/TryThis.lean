@@ -32,6 +32,22 @@ def addHaveSuggestion (origTac : Syntax) (t? : Option Expr) (e : Expr) :
       `(tactic| let this := $estx)
   addSuggestion origTac tac
 
+/-- Add a suggestion for `rw [h]`. (TODO: this depends on code action support) -/
+def addRewriteSuggestion (origTac : Syntax) (e : Expr) (symm : Bool) (type? : Option Expr := none) :
+    TermElabM Unit := do
+  let estx ← delabToRefinableSyntax e
+  let tac ←
+    if symm then
+      `(tactic| rw [← $estx])
+    else
+      `(tactic| rw [$estx:term])
+  -- We resort to using `logInfoAt` here rather than `addSuggestion`,
+  -- as I've never worked out how to have `addSuggestion` render comments.
+  if let some type := type? then
+    logInfoAt origTac m!"{tac}\n-- {← ppExpr type}"
+  else
+    logInfoAt origTac m!"{tac}"
+
 /-- Add a `refine e` suggestion, also printing the type of the subgoals.
 (TODO: this depends on code action support) -/
 def addRefineSuggestion (origTac : Syntax) (e : Expr) : TermElabM Unit := do
