@@ -9,6 +9,7 @@ Authors: Frédéric Dupuis
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.IsROrC.Attr
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
@@ -76,13 +77,6 @@ class IsROrC (K : Type _) extends DenselyNormedField K, StarRing K, NormedAlgebr
 #align is_R_or_C IsROrC
 
 end
-
-/- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-[PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-     [(Command.docComment "/--" "Simp attribute for lemmas about `is_R_or_C` -/")]
-     "register_simp_attr"
-     `isROrC_simps)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-/-- Simp attribute for lemmas about `is_R_or_C` -/ register_simp_attr isROrC_simps
 
 variable {K E : Type _} [IsROrC K]
 
