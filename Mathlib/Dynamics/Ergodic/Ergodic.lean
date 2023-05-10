@@ -8,7 +8,7 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
 
 /-!
 # Ergodic maps and measures
@@ -97,8 +97,7 @@ theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf
 #align measure_theory.measure_preserving.pre_ergodic_of_pre_ergodic_conjugate MeasureTheory.MeasurePreserving.preErgodic_of_preErgodic_conjugate
 
 theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
-    PreErgodic (e ∘ f ∘ e.symm) μ' ↔ PreErgodic f μ :=
-  by
+    PreErgodic (e ∘ f ∘ e.symm) μ' ↔ PreErgodic f μ := by
   refine'
     ⟨fun hf => pre_ergodic_of_pre_ergodic_conjugate (h.symm e) hf _, fun hf =>
       pre_ergodic_of_pre_ergodic_conjugate h hf _⟩
@@ -109,8 +108,7 @@ theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ 
 #align measure_theory.measure_preserving.pre_ergodic_conjugate_iff MeasureTheory.MeasurePreserving.preErgodic_conjugate_iff
 
 theorem ergodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
-    Ergodic (e ∘ f ∘ e.symm) μ' ↔ Ergodic f μ :=
-  by
+    Ergodic (e ∘ f ∘ e.symm) μ' ↔ Ergodic f μ := by
   have : measure_preserving (e ∘ f ∘ e.symm) μ' μ' ↔ measure_preserving f μ μ := by
     rw [h.comp_left_iff, (measure_preserving.symm e h).comp_right_iff]
   replace h : PreErgodic (e ∘ f ∘ e.symm) μ' ↔ PreErgodic f μ := h.pre_ergodic_conjugate_iff
@@ -126,8 +124,7 @@ namespace QuasiErgodic
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
 theorem ae_empty_or_univ' (hf : QuasiErgodic f μ) (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  by
+    s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   obtain ⟨t, h₀, h₁, h₂⟩ := hf.to_quasi_measure_preserving.exists_preimage_eq_of_preimage_ae hs hs'
   rcases hf.ae_empty_or_univ h₀ h₂ with (h₃ | h₃) <;> [left, right] <;> exact ae_eq_trans h₁.symm h₃
 #align quasi_ergodic.ae_empty_or_univ' QuasiErgodic.ae_empty_or_univ'
@@ -143,8 +140,7 @@ theorem quasiErgodic (hf : Ergodic f μ) : QuasiErgodic f μ :=
 
 /-- See also `ergodic.ae_empty_or_univ_of_preimage_ae_le`. -/
 theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet s)
-    (hs' : f ⁻¹' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  by
+    (hs' : f ⁻¹' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   refine' hf.quasi_ergodic.ae_empty_or_univ' hs _
   refine' ae_eq_of_ae_subset_of_measure_ge hs' (hf.measure_preimage hs).symm.le _ h_fin
   exact measurableSet_preimage hf.measurable hs
@@ -152,8 +148,7 @@ theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : Measurable
 
 /-- See also `ergodic.ae_empty_or_univ_of_ae_le_preimage`. -/
 theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : MeasurableSet s)
-    (hs' : s ≤ᵐ[μ] f ⁻¹' s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  by
+    (hs' : s ≤ᵐ[μ] f ⁻¹' s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace h_fin : μ (f ⁻¹' s) ≠ ∞; · rwa [hf.measure_preimage hs]
   refine' hf.quasi_ergodic.ae_empty_or_univ' hs _
   exact (ae_eq_of_ae_subset_of_measure_ge hs' (hf.measure_preimage hs).le hs h_fin).symm
@@ -161,8 +156,7 @@ theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : Measurable
 
 /-- See also `ergodic.ae_empty_or_univ_of_image_ae_le`. -/
 theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet s)
-    (hs' : f '' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  by
+    (hs' : f '' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace hs' : s ≤ᵐ[μ] f ⁻¹' s :=
     (HasSubset.Subset.eventuallyLE (subset_preimage_image f s)).trans
       (hf.quasi_measure_preserving.preimage_mono_ae hs')
