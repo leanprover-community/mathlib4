@@ -85,7 +85,7 @@ Find lemmas which can rewrite the goal.
 This core function returns a monadic list, to allow the caller to decide how long to search.
 See also `rewrites` for a more convenient interface.
 -/
-unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) :
+def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) :
     ListM MetaM RewriteResult := ListM.squash do
   let type ← instantiateMVars (← goal.getType)
   -- Get all lemmas which could match some subexpression
@@ -108,7 +108,7 @@ unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVa
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId)
     (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) :=
-unsafe rewritesCore lemmas goal
+rewritesCore lemmas goal
   -- Don't use too many heartbeats.
   |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
   -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
