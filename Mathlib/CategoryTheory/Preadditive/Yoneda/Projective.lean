@@ -43,13 +43,13 @@ theorem projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj (P : C) [Co
 #align category_theory.projective.projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj CategoryTheory.Projective.projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj
 
 theorem projective_iff_preservesEpimorphisms_preadditive_coyoneda_obj' (P : C) :
-    Projective P ↔ (preadditiveCoyonedaObj (op P)).PreservesEpimorphisms := by
+    Projective P ↔ (preadditiveCoyoneda.obj (op P)).PreservesEpimorphisms := by
   rw [projective_iff_preservesEpimorphisms_coyoneda_obj]
-  refine' ⟨fun h : (preadditiveCoyoneda.obj (op P) ⋙ forget _).PreservesEpimorphisms => _, _⟩
+  refine' ⟨fun h : (preadditiveCoyoneda.obj (op P) ⋙ forget AddCommGroupCat).PreservesEpimorphisms => _, _⟩
   · exact Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveCoyoneda.obj (op P))
         (forget _)
   · intro
-    exact (inferInstance : (preadditiveCoyoneda_obj (op P) ⋙ forget _).PreservesEpimorphisms)
+    exact (inferInstance : (preadditiveCoyoneda.obj (op P) ⋙ forget _).PreservesEpimorphisms)
 #align category_theory.projective.projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj' CategoryTheory.Projective.projective_iff_preservesEpimorphisms_preadditive_coyoneda_obj'
 
 end Projective
