@@ -8,10 +8,10 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathbin.CategoryTheory.Preadditive.Injective
-import Mathbin.Algebra.Category.Group.EpiMono
-import Mathbin.Algebra.Category.Module.EpiMono
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.Algebra.Category.Group.EpiMono
+import Mathlib.Algebra.Category.Module.EpiMono
 
 /-!
 An object is injective iff the preadditive yoneda functor on it preserves epimorphisms.
@@ -33,8 +33,7 @@ variable [Preadditive C]
 namespace Injective
 
 theorem injective_iff_preservesEpimorphisms_preadditiveYoneda_obj (J : C) :
-    Injective J ↔ (preadditiveYoneda.obj J).PreservesEpimorphisms :=
-  by
+    Injective J ↔ (preadditiveYoneda.obj J).PreservesEpimorphisms := by
   rw [injective_iff_preserves_epimorphisms_yoneda_obj]
   refine' ⟨fun h : (preadditive_yoneda.obj J ⋙ forget _).PreservesEpimorphisms => _, _⟩
   ·
@@ -45,8 +44,7 @@ theorem injective_iff_preservesEpimorphisms_preadditiveYoneda_obj (J : C) :
 #align category_theory.injective.injective_iff_preserves_epimorphisms_preadditive_yoneda_obj CategoryTheory.Injective.injective_iff_preservesEpimorphisms_preadditiveYoneda_obj
 
 theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
-    Injective J ↔ (preadditiveYonedaObj J).PreservesEpimorphisms :=
-  by
+    Injective J ↔ (preadditiveYonedaObj J).PreservesEpimorphisms := by
   rw [injective_iff_preserves_epimorphisms_yoneda_obj]
   refine' ⟨fun h : (preadditive_yoneda_obj J ⋙ forget _).PreservesEpimorphisms => _, _⟩
   ·
