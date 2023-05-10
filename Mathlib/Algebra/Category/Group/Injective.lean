@@ -8,12 +8,12 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.EpiMono
-import Mathbin.Algebra.Category.Module.EpiMono
-import Mathbin.Algebra.Module.Injective
-import Mathbin.CategoryTheory.Preadditive.Injective
-import Mathbin.GroupTheory.Divisible
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.Algebra.Category.Group.EpiMono
+import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Module.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.GroupTheory.Divisible
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Injective objects in the category of abelian groups
@@ -94,8 +94,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
     CategoryTheory.Injective (⟨A⟩ : AddCommGroupCat) :=
   @injective_of_injective_as_module A _ <|
     @Module.injective_object_of_injective_module ℤ _ A _ _ <|
-      Module.Baer.injective fun I g =>
-        by
+      Module.Baer.injective fun I g => by
         rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
         by_cases m_eq_zero : m = 0
         · subst m_eq_zero
