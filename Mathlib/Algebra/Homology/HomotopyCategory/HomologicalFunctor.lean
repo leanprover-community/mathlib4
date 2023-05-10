@@ -22,22 +22,22 @@ lemma homology_triangle_exact {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : �
         homologyMap_zero])).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   dsimp
-  intro A x₂ hx₂
-  obtain ⟨A₁, π₁, hπ₁, z₂, hz₂, hz₂'⟩ :=
-    L.eq_liftCycles_homologyπ_up_to_refinements x₂ (n+1) (by simp)
-  have hz₂'' := hz₂' =≫ homologyMap (inr φ) n
-  simp [hx₂] at hz₂''
-  replace hz₂'' := hz₂''.symm
+  intro A x hx
+  obtain ⟨A₁, π₁, hπ₁, z, hz, hz'⟩ :=
+    L.eq_liftCycles_homologyπ_up_to_refinements x (n+1) (by simp)
+  have hz'' := hz' =≫ homologyMap (inr φ) n
+  simp [hx] at hz''
+  replace hz'' := hz''.symm
   rw [liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
-    _ _ _ _ _ (n-1) (by simp)] at hz₂''
-  obtain ⟨A₂, π₂, hπ₂, x₃, hx₃⟩ := hz₂''
-  obtain ⟨y₁, y₂, hy⟩ := to_break _ x₃ n (by rw [sub_add_cancel])
-  simp [hy, to_ext_iff _ _ _ (n+1) rfl] at hx₃
+    _ _ _ _ _ (n-1) (by simp)] at hz''
+  obtain ⟨A₂, π₂, hπ₂, y, hy⟩ := hz''
+  obtain ⟨y₁, y₂, hy₁₂⟩ := to_break _ y n (by rw [sub_add_cancel])
+  simp [hy₁₂, to_ext_iff _ _ _ (n+1) rfl] at hy
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _,
-    K.liftCycles' y₁ (n+1) (by simp) hx₃.1 ≫ K.homologyπ n, _⟩
-  simp [hz₂', hx₃.2]
+    K.liftCycles' y₁ (n+1) (by simp) hy.1 ≫ K.homologyπ n, _⟩
+  simp [hz', hy.2]
   rw [liftCycles_comp_homologyπ_eq_iff_up_to_refinements _ _ _ _ _ _ _ (n-1) (by simp)]
-  refine' ⟨_, 𝟙 _, inferInstance, y₂, by simp⟩
+  exact ⟨_, 𝟙 _, inferInstance, y₂, by simp⟩
 
 end MappingCone
 
