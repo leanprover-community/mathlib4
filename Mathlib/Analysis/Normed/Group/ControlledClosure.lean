@@ -28,7 +28,7 @@ variable {G : Type _} [NormedAddCommGroup G] [CompleteSpace G]
 
 variable {H : Type _} [NormedAddCommGroup H]
 
-/-- Given `f : normed_add_group_hom G H` for some complete `G` and a subgroup `K` of `H`, if every
+/-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every
 element `x` of `K` has a preimage under `f` whose norm is at most `C*‖x‖` then the same holds for
 elements of the (topological) closure of `K` with constant `C+ε` instead of `C`, for any
 positive `ε`.
@@ -57,7 +57,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
     controlled_sum_of_mem_closure h_in b_pos
   /- The controlled surjectivity assumption on `f` allows to build preimages `u n` for all
-    elements `v n` of the `v` sequence.-/
+    elements `v n` of the `v` sequence. -/
   have : ∀ n, ∃ m' : G, f m' = v n ∧ ‖m'‖ ≤ C * ‖v n‖ := fun n : ℕ => hyp (v n) (v_in n)
   choose u hu hnorm_u using this
   /- The desired series `s` is then obtained by summing `u`. We then check our choice of
@@ -71,7 +71,6 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ ≤ C * b n := (mul_le_mul_of_nonneg_left (hv _ <| Nat.succ_le_iff.mp hn).le hC.le)
       _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel' _ hC.ne.symm]
       _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
-      
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
   refine' ⟨g, _, _⟩
@@ -80,8 +79,8 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       ext n
       simp [map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
-           definition of `g` while the right-hand-side converges to `h` by construction of `v` so
-           `g` is indeed a preimage of `h`. -/
+      definition of `g` while the right-hand-side converges to `h` by construction of `v` so
+      `g` is indeed a preimage of `h`. -/
     rw [← this] at lim_v
     exact tendsto_nhds_unique ((f.continuous.tendsto g).comp hg) lim_v
   · -- Then we need to estimate the norm of `g`, using our careful choice of `b`.
@@ -93,12 +92,10 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         calc
           ‖v 0‖ ≤ ‖h‖ + ‖v 0 - h‖ := norm_le_insert' _ _
           _ ≤ ‖h‖ + b 0 := by apply add_le_add_left hv₀.le
-          
       calc
         ‖u 0‖ ≤ C * ‖v 0‖ := hnorm_u 0
         _ ≤ C * (‖h‖ + b 0) := (mul_le_mul_of_nonneg_left this hC.le)
         _ = C * b 0 + C * ‖h‖ := by rw [add_comm, mul_add]
-        
     have : (∑ k in range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc
         (∑ k in range (n + 1), C * b k) = (∑ k in range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) :=
@@ -106,7 +103,6 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         _ ≤ 2 * (ε * ‖h‖ / 2) :=
           (mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (by nlinarith [hε, norm_nonneg h]))
         _ = ε * ‖h‖ := mul_div_cancel' _ two_ne_zero
-        
     calc
       ‖s n‖ ≤ ∑ k in range (n + 1), ‖u k‖ := norm_sum_le _ _
       _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := (sum_range_succ' _ _)
@@ -119,11 +115,10 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
         apply add_le_add_left this
-      
 #align controlled_closure_of_complete controlled_closure_of_complete
 
-/-- Given `f : normed_add_group_hom G H` for some complete `G`, if every element `x` of the image of
-an isometric immersion `j : normed_add_group_hom K H` has a preimage under `f` whose norm is at most
+/-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
+an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most
 `C*‖x‖` then the same holds for elements of the (topological) closure of this image with constant
 `C+ε` instead of `C`, for any positive `ε`.
 This is useful in particular if `j` is the inclusion of a normed group into its completion
@@ -140,4 +135,3 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp
 #align controlled_closure_range_of_complete controlled_closure_range_of_complete
-
