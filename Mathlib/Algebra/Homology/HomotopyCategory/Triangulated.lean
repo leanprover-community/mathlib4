@@ -48,48 +48,37 @@ def hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
 
 open CochainComplex.HomComplex
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 400000 in
 noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
   (Cochain.equivHomotopy _ _).symm (by
     refine' ⟨-((snd _).comp ((fst (f ≫ g)).1.comp ((inl f).comp (inl _) (by linarith))
       (show 1 + (-2) = -1 by linarith)) (zero_add (-1))), _⟩
     simp only [δ_neg, δ_zero_cochain_comp, ε_neg, ε_1, one_smul, neg_smul,
       δ_comp _ _ (show 1+(-2) = -1 by linarith) 2 (-1) 0 (by linarith) (by linarith) (by linarith),
-      ε_even 2 ⟨1, by linarith⟩,
-      δ_comp _ _ (show (-1)+(-1) = -2 by linarith) 0 0 (-1) (by linarith) (by linarith) (by linarith),
-      δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp,
+      δ_comp _ _ (show (-1)+(-1) = -2 by linarith) 0 0 (-1) (by linarith)
+        (by linarith) (by linarith),
+      ε_even 2 ⟨1, by linarith⟩, δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp,
       add_zero, Cochain.neg_comp, neg_neg]
     ext n
-    rw [from_ext_iff _ _ _ (n+1) rfl]
-    constructor
-    . rw [from_ext_iff _ _ _ (n+2) (show n+1+1 = n+2 by linarith)]
-      constructor
-      . simp [map',
-          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
-      . rw [to_ext_iff _ _ _ (n+1) rfl]
-        constructor
-        . simp [map',
-            Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
-            Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
-            Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
-        . simp [map',
-            Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
-            Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
-            Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
-    . rw [from_ext_iff _ _ _ (n+1) rfl]
-      constructor
-      . rw [to_ext_iff _ _ _ (n+1) rfl]
-        simp [map',
-          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
-      . rw [to_ext_iff _ _ _ (n+1) rfl]
-        simp [map',
-          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)])
+    rw [from_ext_iff _ _ _ (n+1) rfl, from_ext_iff _ _ _ (n+1) rfl,
+      from_ext_iff _ _ _ (n+2) (show n+1+1 = n+2 by linarith)]
+    simp only [to_ext_iff _ _ _ (n+1) rfl]
+    simp only [map', Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
+      Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n
+        (by linarith) (by linarith),
+      Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n
+        (by linarith) (by linarith), Cochain.ofHom_v, mappingConeCompTriangle_obj₁,
+      mappingConeCompTriangle_obj₂, mappingConeCompTriangle_mor₁, inv, hom,
+      Cochain.ofHom_comp, ofHom_desc, ofHom_lift, descCocycle_coe, Cocycle.coe_zero,
+      Cochain.zero_cochain_comp_v, inl_v_descCochain_v_assoc, assoc, inl_v_snd_v_assoc,
+      zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
+      Cochain.comp_add, Cochain.comp_neg, Cochain.comp_assoc_of_second_is_zero_cochain,
+      neg_add_rev, neg_neg, Cochain.add_v, Cochain.neg_v, Cochain.comp_zero_cochain_v,
+      HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg, inl_v_fst_v_assoc,
+      neg_zero, add_zero, comp_id, add_left_neg, and_self, inr_f_snd_v_assoc,
+      liftCochain_v_fst_v, inl_v_descCochain_v, inr_f_descCochain_v_assoc,
+      inr_f_fst_v_assoc, comp_zero, zero_add, inl_v_fst_v, liftCochain_v_snd_v, Cochain.zero_v,
+      inl_v_snd_v, neg_add_cancel_right, inr_f_descCochain_v, inr_f_fst_v, inr_f_snd_v])
 
 end MappingConeCompHomotopyEquiv
 
