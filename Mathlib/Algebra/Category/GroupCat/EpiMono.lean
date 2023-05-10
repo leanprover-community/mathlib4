@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
-In this file, we prove monomorphisms in category of group are injective homomorphisms and
+In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
 
