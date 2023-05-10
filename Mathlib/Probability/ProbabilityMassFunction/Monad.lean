@@ -45,8 +45,7 @@ def pure (a : α) : Pmf α :=
 variable (a a' : α)
 
 @[simp]
-theorem pure_apply : pure a a' = if a' = a then 1 else 0 :=
-  rfl
+theorem pure_apply : pure a a' = if a' = a then 1 else 0 := rfl
 #align pmf.pure_apply Pmf.pure_apply
 
 @[simp]
@@ -57,7 +56,7 @@ theorem support_pure : (pure a).support = {a} :=
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp
 #align pmf.mem_support_pure_iff Pmf.mem_support_pure_iff
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem pure_apply_self : pure a a = 1 :=
   if_pos rfl
 #align pmf.pure_apply_self Pmf.pure_apply_self
@@ -98,7 +97,8 @@ theorem toMeasure_pure : (pure a).toMeasure = Measure.dirac a :=
 
 @[simp]
 theorem toPmf_dirac [Countable α] [h : MeasurableSingletonClass α] :
-    (Measure.dirac a).toPmf = pure a := by rw [toPmf_eq_iff_toMeasure_eq, toMeasure_pure]
+    (Measure.dirac a).toPmf = pure a := by
+  rw [toPmf_eq_iff_toMeasure_eq, toMeasure_pure]
 #align pmf.to_pmf_dirac Pmf.toPmf_dirac
 
 end Measure
@@ -117,8 +117,7 @@ def bind (p : Pmf α) (f : α → Pmf β) : Pmf β :=
 variable (p : Pmf α) (f : α → Pmf β) (g : β → Pmf γ)
 
 @[simp]
-theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b :=
-  rfl
+theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
 #align pmf.bind_apply Pmf.bind_apply
 
 @[simp]
@@ -141,12 +140,9 @@ theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := by
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
-  Pmf.ext fun x =>
-    (bind_apply _ _ _).trans
-      (_root_.trans
-          (tsum_eq_single x fun y hy => by
-            rw [pure_apply_of_ne _ _ hy.symm, MulZeroClass.mul_zero]) <|
-        by rw [pure_apply_self, mul_one])
+  Pmf.ext fun x => (bind_apply _ _ _).trans (_root_.trans
+    (tsum_eq_single x fun y hy => by rw [pure_apply_of_ne _ _ hy.symm, MulZeroClass.mul_zero]) <|
+    by rw [pure_apply_self, mul_one])
 #align pmf.bind_pure Pmf.bind_pure
 
 @[simp]
@@ -212,30 +208,27 @@ section BindOnSupport
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
   `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
 def bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf β) : Pmf β :=
-  ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b,
-    ENNReal.summable.hasSum_iff.2
-      (by
-        refine' ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => _) p.tsum_coe)
-        simp_rw [ENNReal.tsum_mul_left]
-        split_ifs with h
-        · simp only [h, MulZeroClass.zero_mul]
-        · rw [(f a h).tsum_coe, mul_one])⟩
+  ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by
+    refine' ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => _) p.tsum_coe)
+    simp_rw [ENNReal.tsum_mul_left]
+    split_ifs with h
+    · simp only [h, MulZeroClass.zero_mul]
+    · rw [(f a h).tsum_coe, mul_one])⟩
 #align pmf.bind_on_support Pmf.bindOnSupport
 
 variable {p : Pmf α} (f : ∀ a ∈ p.support, Pmf β)
 
 @[simp]
 theorem bindOnSupport_apply (b : β) :
-    p.bindOnSupport f b = ∑' a, p a * if h : p a = 0 then 0 else f a h b :=
-  rfl
+    p.bindOnSupport f b = ∑' a, p a * if h : p a = 0 then 0 else f a h b := rfl
 #align pmf.bind_on_support_apply Pmf.bindOnSupport_apply
 
 @[simp]
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   refine' Set.ext fun b => _
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def,
-    not_forall, mul_eq_zero, Set.mem_unionᵢ]
+  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def, not_forall,
+    mul_eq_zero, Set.mem_unionᵢ]
   exact
     ⟨fun hb =>
       let ⟨a, ⟨ha, ha'⟩⟩ := hb
@@ -246,7 +239,7 @@ theorem support_bindOnSupport :
 #align pmf.support_bind_on_support Pmf.support_bindOnSupport
 
 theorem mem_support_bindOnSupport_iff (b : β) :
-    b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α)(h : a ∈ p.support), b ∈ (f a h).support := by
+    b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
   simp only [support_bindOnSupport, Set.mem_setOf_eq, Set.mem_unionᵢ]
 #align pmf.mem_support_bind_on_support_iff Pmf.mem_support_bindOnSupport_iff
 
@@ -255,8 +248,8 @@ theorem mem_support_bindOnSupport_iff (b : β) :
 theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
   ext (b x)
-  have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b := fun a =>
-    ite_eq_right_iff.2 fun h => h.symm ▸ symm (MulZeroClass.zero_mul <| f a b)
+  have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
+    fun a => ite_eq_right_iff.2 fun h => h.symm ▸ symm (MulZeroClass.zero_mul <| f a b)
   simp only [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,
     MulZeroClass.mul_zero, this]
 #align pmf.bind_on_support_eq_bind Pmf.bindOnSupport_eq_bind
