@@ -13,6 +13,7 @@ import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
@@ -162,6 +163,8 @@ instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 #align equiv.symm Equiv.symm
 
+pp_extended_field_notation Equiv.symm
+
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 #align equiv.simps.symm_apply Equiv.Simps.symm_apply
@@ -180,6 +183,8 @@ theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_i
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
+
+pp_extended_field_notation Equiv.trans
 
 @[simps]
 instance : Trans Equiv Equiv Equiv where
