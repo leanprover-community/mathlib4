@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
+! leanprover-community/mathlib commit c1686dff26eaecf4efd4edd141ebf78de309ae80
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -927,8 +927,14 @@ theorem coe_infₛ {s : Set ℝ≥0} : s.Nonempty → (↑(infₛ s) : ℝ≥0�
   WithTop.coe_infₛ
 #align ennreal.coe_Inf ENNReal.coe_infₛ
 
-theorem coe_infᵢ {ι} [Nonempty ι] (f : ι → ℝ≥0) : (↑(infᵢ f) : ℝ≥0∞) = ⨅ i, ↑(f i) :=
+theorem coe_supᵢ {ι : Sort _} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
+    (↑(supᵢ f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=
+  WithTop.coe_supᵢ _ hf
+#align ennreal.coe_supr ENNReal.coe_supᵢ
+@[norm_cast]
+theorem coe_infᵢ {ι : Sort _} [Nonempty ι] (f : ι → ℝ≥0) : (↑(infᵢ f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
   WithTop.coe_infᵢ f
+#align ennreal.coe_infi ENNReal.coe_infᵢ
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
@@ -2303,10 +2309,52 @@ theorem toNNReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toNNReal = ⨅ i,
   cases isEmpty_or_nonempty ι
   · rw [infᵢ_of_empty, top_toNNReal, NNReal.infᵢ_empty]
   · lift f to ι → ℝ≥0 using hf
-    simp only [← coe_infᵢ, toNNReal_coe]
+    simp_rw [← coe_infᵢ, toNNReal_coe]
+#align ennreal.to_nnreal_infi ENNReal.toNNReal_infᵢ
+
+theorem toNNReal_infₛ (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
+    (infₛ s).toNNReal = infₛ (ENNReal.toNNReal '' s) := by
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  -- porting note: ← infₛ_image' had to be replaced by ← image_eq_range
+  simpa only [← infₛ_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_infᵢ hf)
+#align ennreal.to_nnreal_Inf ENNReal.toNNReal_infₛ
+
+theorem toNNReal_supᵢ (hf : ∀ i, f i ≠ ∞) : (supᵢ f).toNNReal = ⨆ i, (f i).toNNReal := by
+  lift f to ι → ℝ≥0 using hf
+  simp_rw [toNNReal_coe]
+  by_cases h : BddAbove (range f)
+  · rw [← coe_supᵢ h, toNNReal_coe]
+  · -- porting note: using all three lemmas in a single rewrite used to work but now doesn't,
+    -- probably because ENNReal does not reduce to WithTop NNReal
+    rw [NNReal.supᵢ_of_not_bddAbove h]
+    convert top_toNNReal
+    exact (WithTop.supᵢ_coe_eq_top f).mpr h
+#align ennreal.to_nnreal_supr ENNReal.toNNReal_supᵢ
+
+theorem toNNReal_supₛ (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
+    (supₛ s).toNNReal = supₛ (ENNReal.toNNReal '' s) := by
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  -- porting note: ← supₛ_image' had to replaced by ← image_eq_range
+  simpa only [← supₛ_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_supᵢ hf)
+#align ennreal.to_nnreal_Sup ENNReal.toNNReal_supₛ
 
 theorem toReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toReal = ⨅ i, (f i).toReal := by
   simp only [ENNReal.toReal, toNNReal_infᵢ hf, NNReal.coe_infᵢ]
+#align ennreal.to_real_infi ENNReal.toReal_infᵢ
+
+theorem toReal_infₛ (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
+    (infₛ s).toReal = infₛ (ENNReal.toReal '' s) := by
+  simp only [ENNReal.toReal, toNNReal_infₛ s hf, NNReal.coe_infₛ, Set.image_image]
+#align ennreal.to_real_Inf ENNReal.toReal_infₛ
+
+theorem toReal_supᵢ (hf : ∀ i, f i ≠ ∞) : (supᵢ f).toReal = ⨆ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_supᵢ hf, NNReal.coe_supᵢ]
+#align ennreal.to_real_supr ENNReal.toReal_supᵢ
+
+theorem toReal_supₛ (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
+    (supₛ s).toReal = supₛ (ENNReal.toReal '' s) := by
+  simp only [ENNReal.toReal, toNNReal_supₛ s hf, NNReal.coe_supₛ, Set.image_image]
+#align ennreal.to_real_Sup ENNReal.toReal_supₛ
 
 theorem infᵢ_add : infᵢ f + a = ⨅ i, f i + a :=
   le_antisymm (le_infᵢ fun _ => add_le_add (infᵢ_le _ _) <| le_rfl)
