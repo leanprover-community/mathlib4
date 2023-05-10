@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Sites.LeftExact
 
 ## Main definitions
 
-* `category_theory.sites.pushforward`: the induced functor `Sheaf J A ⥤ Sheaf K A` for a
+* `CategoryTheory.Sites.Pushforward`: the induced functor `Sheaf J A ⥤ Sheaf K A` for a
 cover-preserving and compatible-preserving functor `G : (C, J) ⥤ (D, K)`.
 
 -/
@@ -36,44 +36,41 @@ variable (A : Type u₁) [Category.{v₁} A]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
-instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) :=
-  CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
+-- porting note: this no longer require explicit universe parameters
+instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
+--  CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
 
 -- The assumptions so that we have sheafification
 variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
 
 variable [PreservesFilteredColimits (forget A)] [ReflectsIsomorphisms (forget A)]
 
-attribute [local instance] reflects_limits_of_reflects_isomorphisms
+attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
 
-instance {X : C} : IsCofiltered (J.cover X) :=
+instance {X : C} : IsCofiltered (J.Cover X) :=
   inferInstance
 
 /-- The pushforward functor `Sheaf J A ⥤ Sheaf K A` associated to a functor `G : C ⥤ D` in the
 same direction as `G`. -/
-@[simps]
+@[simps!]
 def Sites.pushforward (G : C ⥤ D) : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
 #align category_theory.sites.pushforward CategoryTheory.Sites.pushforward
 
 instance (G : C ⥤ D) [RepresentablyFlat G] : PreservesFiniteLimits (Sites.pushforward A J K G) := by
-  apply (config := { instances := false }) comp_preserves_finite_limits
-  · infer_instance
-  apply (config := { instances := false }) comp_preserves_finite_limits
-  · apply CategoryTheory.lanPreservesFiniteLimitsOfFlat
-  · apply CategoryTheory.presheafToSheaf.Limits.preservesFiniteLimits.{u₁, v₁, v₁}
-    infer_instance
+  have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
+    compPreservesFiniteLimits _ _
+  apply compPreservesFiniteLimits
 
 /-- The pushforward functor is left adjoint to the pullback functor. -/
 def Sites.pullbackPushforwardAdjunction {G : C ⥤ D} (hG₁ : CompatiblePreserving K G)
     (hG₂ : CoverPreserving J K G) : Sites.pushforward A J K G ⊣ Sites.pullback A hG₁ hG₂ :=
   ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (sheafToPresheaf J A) (𝟭 _)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ _ _ =>
+    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
       (Category.comp_id _).trans (Category.id_comp _).symm)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ _ _ =>
+    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
       (Category.comp_id _).trans (Category.id_comp _).symm)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Sites.pullbackPushforwardAdjunction
 
 end CategoryTheory
-
