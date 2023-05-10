@@ -50,6 +50,8 @@ default := singleton r default
 instance [Nonempty α] : Nonempty (RelSeries r) :=
 Nonempty.map (singleton r) inferInstance
 
+variable {r}
+
 lemma StrictMono [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     r (x i) (x j) := by
   induction i using Fin.inductionOn generalizing j with
@@ -76,6 +78,15 @@ lemma StrictMono [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h 
       . rw [H]
         exact x.step _
       . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
+
+lemma Monotone [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
+    r (x i) (x j) ∨ x i = x j := by
+  rw [le_iff_lt_or_eq] at h
+  rcases h with (h|h)
+  . left
+    apply x.StrictMono h
+  . right
+    rw [h]
 
 end RelSeries
 
@@ -112,7 +123,18 @@ lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.
 le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 lemma StrictMono (x : LTSeries α) : StrictMono x :=
-fun _ _ h => x.toRelSeries.StrictMono _ h
+fun _ _ h => x.toRelSeries.StrictMono h
+
+section PartialOrder
+
+variable {β : Type _} [PartialOrder β]
+
+lemma Monotone (x : LTSeries β) : Monotone x :=
+fun _ _ h => by
+  rw [le_iff_lt_or_eq]
+  exact x.toRelSeries.Monotone h
+
+end PartialOrder
 
 end LTSeries
 
