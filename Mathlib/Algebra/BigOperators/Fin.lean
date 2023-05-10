@@ -287,8 +287,7 @@ Useful for defining group cohomology. -/
 theorem inv_partialProd_mul_eq_contractNth {G : Type _} [Group G] (g : Fin (n + 1) → G)
     (j : Fin (n + 1)) (k : Fin n) :
     (partialProd g (j.succ.succAbove (Fin.castSucc k)))⁻¹ * partialProd g (j.succAbove k).succ =
-      j.contractNth (· * ·) g k :=
-  by
+      j.contractNth (· * ·) g k := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [succAbove_below, succAbove_below, partialProd_right_inv, contractNth_apply_of_lt]
     · assumption
