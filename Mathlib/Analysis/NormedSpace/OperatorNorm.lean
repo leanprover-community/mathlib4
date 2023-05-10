@@ -1153,8 +1153,8 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       -- Porting note: mathport suggested:
       -- ```
       -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap', Prod_map,
-      --   Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
+      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap',
+      --   Prod_map, Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
       -- rfl
       -- ```
       -- Frustratingly, in `mathlib3` we can use:
