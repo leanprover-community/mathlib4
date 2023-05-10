@@ -11,7 +11,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.Tactic.ApplyFun
-set_option autoImplicit false
 /-!
 # Cover-preserving functors between sites.
 
