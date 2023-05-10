@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.Flat
-import Mathbin.CategoryTheory.Sites.Sheaf
-import Mathbin.Tactic.ApplyFun
+import Mathlib.CategoryTheory.Functor.Flat
+import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Cover-preserving functors between sites.
@@ -114,8 +114,7 @@ include h hG
 
 /-- `compatible_preserving` functors indeed preserve compatible families. -/
 theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
-    (x.functorPushforward G).Compatible :=
-  by
+    (x.functorPushforward G).Compatible := by
   rintro Z₁ Z₂ W g₁ g₂ f₁' f₂' H₁ H₂ eq
   unfold family_of_elements.functor_pushforward
   rcases get_functor_pushforward_structure H₁ with ⟨X₁, f₁, h₁, hf₁, rfl⟩
@@ -128,8 +127,7 @@ theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
 
 @[simp]
 theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
-    x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf :=
-  by
+    x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf := by
   unfold family_of_elements.functor_pushforward
   rcases e₁ : get_functor_pushforward_structure (image_mem_functor_pushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
@@ -141,8 +139,7 @@ omit h hG
 open Limits.WalkingCospan
 
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₁} D]
-    (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G :=
-  by
+    (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ e
   -- First, `f₁` and `f₂` form a cone over `cospan g₁ g₂ ⋙ u`.
@@ -154,13 +151,11 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
   let c' := is_cofiltered.cone (structured_arrow_cone.to_diagram c ⋙ structured_arrow.pre _ _ _)
-  have eq₁ : f₁ = (c'.X.hom ≫ G.map (c'.π.app left).right) ≫ eq_to_hom (by simp) :=
-    by
+  have eq₁ : f₁ = (c'.X.hom ≫ G.map (c'.π.app left).right) ≫ eq_to_hom (by simp) := by
     erw [← (c'.π.app left).w]
     dsimp
     simp
-  have eq₂ : f₂ = (c'.X.hom ≫ G.map (c'.π.app right).right) ≫ eq_to_hom (by simp) :=
-    by
+  have eq₂ : f₂ = (c'.X.hom ≫ G.map (c'.π.app right).right) ≫ eq_to_hom (by simp) := by
     erw [← (c'.π.app right).w]
     dsimp
     simp
@@ -178,8 +173,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
 #align category_theory.compatible_preserving_of_flat CategoryTheory.compatiblePreservingOfFlat
 
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F]
-    (hF : ∀ {c : C} {d : D} (f : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F :=
-  by
+    (hF : ∀ {c : C} {d : D} (f : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
@@ -196,8 +190,7 @@ then `G.op ⋙ _` pulls sheaves back to sheaves.
 This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 -/
 theorem pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePreserving.{v₃} K G)
-    (hG₂ : CoverPreserving J K G) (ℱ : Sheaf K A) : Presheaf.IsSheaf J (G.op ⋙ ℱ.val) :=
-  by
+    (hG₂ : CoverPreserving J K G) (ℱ : Sheaf K A) : Presheaf.IsSheaf J (G.op ⋙ ℱ.val) := by
   intro X U S hS x hx
   change family_of_elements (G.op ⋙ ℱ.val ⋙ coyoneda.obj (op X)) _ at x
   let H := ℱ.2 X _ (hG₂.cover_preserve hS)
