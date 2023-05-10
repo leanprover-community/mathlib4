@@ -3,14 +3,13 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
+import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 open CategoryTheory Category Limits Pretriangulated
 
 universe v u
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
-
-instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := sorry
 
 namespace HomotopyCategory
 

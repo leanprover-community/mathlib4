@@ -12,7 +12,7 @@ namespace MappingCone
 
 open HomComplex
 
-@[simps! mor₁ mor₂ mor₃]
+@[simps! mor₁ mor₂ mor₃ obj₁ obj₂ obj₃]
 noncomputable def mappingConeCompTriangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk (map' f (f ≫ g) (𝟙 X₁) g (by rw [id_comp]))
     (map' (f ≫ g) g f (𝟙 X₃) (by rw [comp_id]))
@@ -46,7 +46,50 @@ def hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   simp [lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl,
     from_ext_iff _ _ _ (n+1) rfl]
 
-def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) := sorry
+open CochainComplex.HomComplex
+
+set_option maxHeartbeats 800000 in
+noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
+  (Cochain.equivHomotopy _ _).symm (by
+    refine' ⟨-((snd _).comp ((fst (f ≫ g)).1.comp ((inl f).comp (inl _) (by linarith))
+      (show 1 + (-2) = -1 by linarith)) (zero_add (-1))), _⟩
+    simp only [δ_neg, δ_zero_cochain_comp, ε_neg, ε_1, one_smul, neg_smul,
+      δ_comp _ _ (show 1+(-2) = -1 by linarith) 2 (-1) 0 (by linarith) (by linarith) (by linarith),
+      ε_even 2 ⟨1, by linarith⟩,
+      δ_comp _ _ (show (-1)+(-1) = -2 by linarith) 0 0 (-1) (by linarith) (by linarith) (by linarith),
+      δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp,
+      add_zero, Cochain.neg_comp, neg_neg]
+    ext n
+    rw [from_ext_iff _ _ _ (n+1) rfl]
+    constructor
+    . rw [from_ext_iff _ _ _ (n+2) (show n+1+1 = n+2 by linarith)]
+      constructor
+      . simp [map',
+          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
+      . rw [to_ext_iff _ _ _ (n+1) rfl]
+        constructor
+        . simp [map',
+            Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+            Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
+            Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
+        . simp [map',
+            Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+            Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
+            Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
+    . rw [from_ext_iff _ _ _ (n+1) rfl]
+      constructor
+      . rw [to_ext_iff _ _ _ (n+1) rfl]
+        simp [map',
+          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)]
+      . rw [to_ext_iff _ _ _ (n+1) rfl]
+        simp [map',
+          Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n+1) (n+2) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n+2) (n+1) n (by linarith) (by linarith)])
 
 end MappingConeCompHomotopyEquiv
 

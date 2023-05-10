@@ -418,7 +418,7 @@ lemma inr_f_desc_f {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G �
     (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) (p : ℤ) :
     (inr φ).f p ≫ (desc φ α β eq).f p = β.f p := by aesop_cat
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma inr_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
     (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
     inr φ ≫ desc φ α β eq = β := by aesop_cat
