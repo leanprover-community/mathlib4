@@ -27,6 +27,7 @@ section
 
 variable {n : ℕ} (m : ℕ) [CharP R m]
 
+set_option synthInstance.etaExperiment true in
 /-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n` -/
 def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with

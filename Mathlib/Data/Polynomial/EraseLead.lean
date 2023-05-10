@@ -315,16 +315,14 @@ theorem card_support_eq {n : ℕ} :
   · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
   · intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (eraseLead_card_support' h)
-    have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n :=
-      by
+    have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
       exact i.castSucc_lt_last.ne hi
     refine'
       ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, _, _, _⟩
     · intro i j hij
-      have hi : i ∈ Set.range (Fin.castSucc : Fin n ↪o Fin (n + 1)) :=
-        by
+      have hi : i ∈ Set.range (Fin.castSucc : Fin n ↪o Fin (n + 1)) := by
         rw [Fin.range_castSucc, Set.mem_def]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
@@ -353,8 +351,8 @@ theorem card_support_eq {n : ℕ} :
       all_goals exact H
 #align polynomial.card_support_eq Polynomial.card_support_eq
 
-theorem card_support_eq_one : f.support.card = 1 ↔ ∃ (k : ℕ)(x : R)(hx : x ≠ 0), f = C x * X ^ k :=
-  by
+theorem card_support_eq_one : f.support.card = 1 ↔
+    ∃ (k : ℕ) (x : R) (hx : x ≠ 0), f = C x * X ^ k := by
   refine' ⟨fun h => _, _⟩
   · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩

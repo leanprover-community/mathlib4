@@ -469,8 +469,7 @@ theorem exists_subset_nhds_of_isCompact' {ι : Type _} [Nonempty ι] {V : ι →
   · exact this.imp fun i hi => hi.trans hWU
   by_contra' H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
-  have : (⋂ i, V i ∩ Wᶜ).Nonempty :=
-    by
+  have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
     refine'
       IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed _ (fun i j => _) H
         (fun i => (hV_cpct i).inter_right W_op.isClosed_compl) fun i =>
@@ -560,8 +559,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hb
   rcases hb with ⟨s, hsb, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsb) with ⟨K, hKc, hKs⟩
-  have : f '' K ∈ l :=
-    by
+  have : f '' K ∈ l := by
     filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
     exacts[(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
@@ -1201,9 +1199,8 @@ protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace α] {s : Set
 
 protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace β] {f : α → β}
     (hf : OpenEmbedding f) : LocallyCompactSpace α := by
-  have :
-    ∀ x : α, (𝓝 x).HasBasis (fun s => (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) fun s => f ⁻¹' s :=
-    by
+  have : ∀ x : α, (𝓝 x).HasBasis
+      (fun s => (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) fun s => f ⁻¹' s := by
     intro x
     rw [hf.toInducing.nhds_eq_comap]
     exact
@@ -1256,8 +1253,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
         exact hne
   refine' ⟨Uᶜ, Set.compl_subset_comm.mp Uc, Ucne, Uo.isClosed_compl, _⟩
   intro V' V'sub V'ne V'cls
-  have : V'ᶜ = U :=
-    by
+  have : V'ᶜ = U := by
     refine' h (V'ᶜ) ⟨_, isOpen_compl_iff.mpr V'cls, _⟩ (Set.subset_compl_comm.mp V'sub)
     exact Set.Subset.trans Uc (Set.subset_compl_comm.mp V'sub)
     simp only [compl_compl, V'ne]

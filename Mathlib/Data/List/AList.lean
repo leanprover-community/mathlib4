@@ -317,8 +317,8 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 #align alist.lookup_to_alist AList.lookup_to_alist
 
 @[simp]
-theorem insert_insert {a} {b b' : β a} (s : AList β) : (s.insert a b).insert a b' = s.insert a b' :=
-  by
+theorem insert_insert {a} {b b' : β a} (s : AList β) :
+    (s.insert a b).insert a b' = s.insert a b' := by
   ext : 1 ; simp only [AList.insert_entries, List.kerase_cons_eq]
 #align alist.insert_insert AList.insert_insert
 
@@ -378,10 +378,8 @@ theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   cases' l with l hl
-  suffices
-    HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
-      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩))
-    by
+  suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
+      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
     apply eq_of_heq
     convert this <;> rw [insert_of_neg h]

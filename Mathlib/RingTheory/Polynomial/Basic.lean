@@ -715,8 +715,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
-        obtain hi | hj : i < m ∨ j < n :=
-          by
+        obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
           rintro (hmi | rfl)
           · rw [← not_le]
@@ -914,72 +913,62 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         hs ▸ fun hx =>
           Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
             (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
-      ⟨s,
-        le_antisymm
-            (Ideal.span_le.2 fun x hx =>
-              have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
-              this.2) <|
-          by
-          have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
-          rw [this]
-          intro p hp
-          generalize hn : p.natDegree = k
-          induction' k using Nat.strong_induction_on with k ih generalizing p
-          cases' le_or_lt k N with h h
-          · subst k
-            refine'
-              hs2
-                ⟨Polynomial.mem_degreeLE.2
-                    (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h),
-                  hp⟩
-          · have hp0 : p ≠ 0 := by
-              rintro rfl
-              cases hn
-              exact Nat.not_lt_zero _ h
-            have : (0 : R) ≠ 1 := by
-              intro h
-              apply hp0
-              ext i
-              refine' (mul_one _).symm.trans _
-              rw [← h, MulZeroClass.mul_zero]
-              rfl
-            haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
-            have : p.leadingCoeff ∈ I.leadingCoeffNth N :=
-              by
-              rw [HN]
-              exact
-                hm2 k
-                  ((I.mem_leadingCoeffNth _ _).2
-                    ⟨_, hp, hn ▸ Polynomial.degree_le_natDegree, rfl⟩)
-            rw [I.mem_leadingCoeffNth] at this
-            rcases this with ⟨q, hq, hdq, hlqp⟩
-            have hq0 : q ≠ 0 := by
-              intro H
-              rw [← Polynomial.leadingCoeff_eq_zero] at H
-              rw [hlqp, Polynomial.leadingCoeff_eq_zero] at H
-              exact hp0 H
-            have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree :=
-              by
-              rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
-              rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
-              rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
-                add_tsub_cancel_of_le, hn]
-              · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
-              rw [Polynomial.leadingCoeff_X_pow, mul_one]
-              exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
-            have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
-              rw [← hlqp, Polynomial.leadingCoeff_mul_X_pow]
-            have := Polynomial.degree_sub_lt h1 hp0 h2
-            rw [Polynomial.degree_eq_natDegree hp0] at this
-            rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
-            refine' (Ideal.span ↑s).add_mem _ ((Ideal.span ↑s).mul_mem_right _ _)
-            · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
-              · rw [hpq]
-                exact Ideal.zero_mem _
-              refine' ih _ _ (I.sub_mem hp (I.mul_mem_right _ hq)) rfl
-              rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot,
-                WithBot.coe_lt_coe, hn] at this
-            exact hs2 ⟨Polynomial.mem_degreeLE.2 hdq, hq⟩⟩⟩
+      ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
+          have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
+          this.2) <| by
+        have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
+        rw [this]
+        intro p hp
+        generalize hn : p.natDegree = k
+        induction' k using Nat.strong_induction_on with k ih generalizing p
+        cases' le_or_lt k N with h h
+        · subst k
+          refine' hs2 ⟨Polynomial.mem_degreeLE.2
+            (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
+        · have hp0 : p ≠ 0 := by
+            rintro rfl
+            cases hn
+            exact Nat.not_lt_zero _ h
+          have : (0 : R) ≠ 1 := by
+            intro h
+            apply hp0
+            ext i
+            refine' (mul_one _).symm.trans _
+            rw [← h, MulZeroClass.mul_zero]
+            rfl
+          haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
+          have : p.leadingCoeff ∈ I.leadingCoeffNth N := by
+            rw [HN]
+            exact hm2 k ((I.mem_leadingCoeffNth _ _).2
+              ⟨_, hp, hn ▸ Polynomial.degree_le_natDegree, rfl⟩)
+          rw [I.mem_leadingCoeffNth] at this
+          rcases this with ⟨q, hq, hdq, hlqp⟩
+          have hq0 : q ≠ 0 := by
+            intro H
+            rw [← Polynomial.leadingCoeff_eq_zero] at H
+            rw [hlqp, Polynomial.leadingCoeff_eq_zero] at H
+            exact hp0 H
+          have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree := by
+            rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
+            rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
+            rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
+              add_tsub_cancel_of_le, hn]
+            · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
+            rw [Polynomial.leadingCoeff_X_pow, mul_one]
+            exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
+          have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
+            rw [← hlqp, Polynomial.leadingCoeff_mul_X_pow]
+          have := Polynomial.degree_sub_lt h1 hp0 h2
+          rw [Polynomial.degree_eq_natDegree hp0] at this
+          rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
+          refine' (Ideal.span ↑s).add_mem _ ((Ideal.span ↑s).mul_mem_right _ _)
+          · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
+            · rw [hpq]
+              exact Ideal.zero_mem _
+            refine' ih _ _ (I.sub_mem hp (I.mul_mem_right _ hq)) rfl
+            rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot,
+              WithBot.coe_lt_coe, hn] at this
+          exact hs2 ⟨Polynomial.mem_degreeLE.2 hdq, hq⟩⟩⟩
 #align polynomial.is_noetherian_ring Polynomial.isNoetherianRing
 
 attribute [instance] Polynomial.isNoetherianRing
@@ -1098,8 +1087,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
 
 /-- The multivariate polynomial ring in finitely many variables over a noetherian ring
 is itself a noetherian ring. -/
-instance isNoetherianRing [Finite σ] [IsNoetherianRing R] : IsNoetherianRing (MvPolynomial σ R) :=
-  by
+instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
+    IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ
   exact
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
@@ -1138,13 +1127,11 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
     obtain ⟨t, q, rfl⟩ := exists_finset_rename q
     have :
-      rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } → { x // x ∈ s ∪ t })
-            p *
-          rename
-            (Subtype.map id (Finset.subset_union_right s t) : { x // x ∈ t } → { x // x ∈ s ∪ t })
-            q =
-        0 :=
-      by
+        rename (Subtype.map id (Finset.subset_union_left s t) :
+          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
+        rename (Subtype.map id (Finset.subset_union_right s t) :
+          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
+        0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
     letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }

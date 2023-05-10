@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 
 ! This file was ported from Lean 3 source module algebra.order.lattice_group
-! leanprover-community/mathlib commit 474656fdf40ae1741dfffcdd7c685a0f198da61a
+! leanprover-community/mathlib commit db07e6feaf211fe704c1e79ba5f480fd6d218523
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -65,16 +65,6 @@ lattice, ordered, group
 -- Needed for squares
 -- Needed for squares
 universe u
-
--- A linearly ordered additive commutative group is a lattice ordered commutative group
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_covariantClass (α : Type u)
-    [LinearOrderedCommGroup α] :
-    CovariantClass α α (· * ·)
-      (· ≤ ·) where elim a _ _ bc := OrderedCommGroup.mul_le_mul_left _ _ bc a
-#align linear_ordered_comm_group.to_covariant_class LinearOrderedCommGroup.to_covariantClass
-#align linear_ordered_add_comm_group.to_covariant_class LinearOrderedAddCommGroup.to_covariantClass
 
 variable {α : Type u} [Lattice α] [CommGroup α]
 
@@ -330,11 +320,10 @@ theorem inf_eq_div_pos_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
       by rw [mul_one a, div_eq_mul_inv, mul_comm b, mul_inv_cancel_left]
     _ = a * (1 ⊓ b / a) := by rw [← mul_inf 1 (b / a) a]
     _ = a * (b / a ⊓ 1) := by rw [inf_comm]
-    _ = a * ((a / b)⁻¹ ⊓ 1) :=
-      by
-        rw [div_eq_mul_inv]
-        nth_rw 1 [← inv_inv b]
-        rw [← mul_inv, mul_comm b⁻¹, ← div_eq_mul_inv]
+    _ = a * ((a / b)⁻¹ ⊓ 1) := by
+      rw [div_eq_mul_inv]
+      nth_rw 1 [← inv_inv b]
+      rw [← mul_inv, mul_comm b⁻¹, ← div_eq_mul_inv]
     _ = a * ((a / b)⁻¹ ⊓ 1⁻¹) := by rw [inv_one]
     _ = a / (a / b ⊔ 1) := by rw [← inv_sup_eq_inv_inf_inv, ← div_eq_mul_inv]
 #align lattice_ordered_comm_group.inf_eq_div_pos_div LatticeOrderedCommGroup.inf_eq_div_pos_div

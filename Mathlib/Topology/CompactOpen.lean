@@ -120,8 +120,7 @@ private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpe
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
-  continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ =>
-    by
+  continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
     rw [hm, image_gen f hs hu]
     exact ContinuousMap.isOpen_gen (hs.image f.2) hu
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
@@ -268,8 +267,7 @@ theorem tendsto_compactOpen_restrict {ι : Type _} {l : Filter ι} {F : ι → C
 
 theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι → C(α, β)) (f : C(α, β)) :
     Filter.Tendsto F l (𝓝 f) ↔
-      ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
-  by
+    ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) := by
     rw [compactOpen_eq_infₛ_induced]
     simp [nhds_infᵢ, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
 #align continuous_map.tendsto_compact_open_iff_forall ContinuousMap.tendsto_compactOpen_iff_forall
@@ -279,8 +277,7 @@ it converges in the compact-open topology on each compact subset of `α`. -/
 theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space α] [T2Space β]
     {ι : Type _} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
-      ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) :=
-  by
+    ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
   · rintro ⟨f, hf⟩ s _
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
@@ -290,8 +287,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
     -- `f s₂ hs₂ x`, we have `f s₁ hs₁ x = f s₂ hs₂ x`
     have h :
       ∀ (s₁) (hs₁ : IsCompact s₁) (s₂) (hs₂ : IsCompact s₂) (x : α) (hxs₁ : x ∈ s₁) (hxs₂ : x ∈ s₂),
-        f s₁ hs₁ ⟨x, hxs₁⟩ = f s₂ hs₂ ⟨x, hxs₂⟩ :=
-      by
+        f s₁ hs₁ ⟨x, hxs₁⟩ = f s₂ hs₂ ⟨x, hxs₂⟩ := by
       rintro s₁ hs₁ s₂ hs₂ x hxs₁ hxs₂
       haveI := isCompact_iff_compactSpace.mp hs₁
       haveI := isCompact_iff_compactSpace.mp hs₂
@@ -300,8 +296,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    have hs : ∀ x : α, ∃ (s : _), IsCompact s ∧ s ∈ 𝓝 x :=
-      by
+    have hs : ∀ x : α, ∃ (s : _), IsCompact s ∧ s ∈ 𝓝 x := by
       intro x
       obtain ⟨s, hs, hs'⟩ := exists_compact_mem_nhds x
       exact ⟨s, hs, hs'⟩
@@ -483,8 +478,7 @@ variable {X₀ X Y Z : Type _} [TopologicalSpace X₀] [TopologicalSpace X] [Top
 theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
-  have h : ∀ x : X, Continuous fun y => g (x, y) :=
-    by
+  have h : ∀ x : X, Continuous fun y => g (x, y) := by
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous

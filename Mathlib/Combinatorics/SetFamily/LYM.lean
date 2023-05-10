@@ -172,8 +172,7 @@ variable {𝒜 k}
 antichain property. -/
 theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) ((∂ ) (falling n 𝒜)) :=
-  disjoint_right.2 fun s h₁ h₂ =>
-    by
+  disjoint_right.2 fun s h₁ h₂ => by
     simp_rw [mem_shadow_iff, mem_falling] at h₁
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
@@ -234,10 +233,8 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical
-    suffices
-      (∑ r in Iic (Fintype.card α),
-          ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1
-      by
+    suffices (∑ r in Iic (Fintype.card α),
+        ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       simp only [cast_le] at this
       rwa [sum_card_slice] at this
