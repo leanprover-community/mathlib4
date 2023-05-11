@@ -51,7 +51,7 @@ automorphism of `α`. -/
 @[to_additive
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
       defines a measurable automorphism of `α`.",
-  simps! (config := { fullyApplied := false }) toEquiv apply]
+  simps (config := { fullyApplied := false }) toEquiv apply]
 def smul (c : G) : α ≃ᵐ α where
   toEquiv := MulAction.toPerm c
   measurable_toFun := measurable_const_smul c
@@ -65,7 +65,7 @@ theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((·
 #align measurable_embedding_const_smul measurableEmbedding_const_smul
 #align measurable_embedding_const_vadd measurableEmbedding_const_vadd
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem symm_smul (c : G) : (smul c : α ≃ᵐ α).symm = smul c⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_smul MeasurableEquiv.symm_smul
@@ -107,19 +107,19 @@ def mulLeft (g : G) : G ≃ᵐ G :=
 #align measurable_equiv.mul_left MeasurableEquiv.mulLeft
 #align measurable_equiv.add_left MeasurableEquiv.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
   rfl
 #align measurable_equiv.coe_mul_left MeasurableEquiv.coe_mulLeft
 #align measurable_equiv.coe_add_left MeasurableEquiv.coe_addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem symm_mulLeft (g : G) : (mulLeft g).symm = mulLeft g⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_mul_left MeasurableEquiv.symm_mulLeft
 #align measurable_equiv.symm_add_left MeasurableEquiv.symm_addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
   rfl
 #align measurable_equiv.to_equiv_mul_left MeasurableEquiv.toEquiv_mulLeft
@@ -149,19 +149,19 @@ theorem _root_.measurableEmbedding_mul_right (g : G) : MeasurableEmbedding fun x
 #align measurable_embedding_mul_right measurableEmbedding_mul_right
 #align measurable_embedding_add_right measurableEmbedding_add_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (g : G) : ⇑(mulRight g) = fun x => x * g :=
   rfl
 #align measurable_equiv.coe_mul_right MeasurableEquiv.coe_mulRight
 #align measurable_equiv.coe_add_right MeasurableEquiv.coe_addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem symm_mulRight (g : G) : (mulRight g).symm = mulRight g⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_mul_right MeasurableEquiv.symm_mulRight
 #align measurable_equiv.symm_add_right MeasurableEquiv.symm_addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toEquiv_mulRight (g : G) : (mulRight g).toEquiv = Equiv.mulRight g :=
   rfl
 #align measurable_equiv.to_equiv_mul_right MeasurableEquiv.toEquiv_mulRight
@@ -233,7 +233,7 @@ def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G
 #align measurable_equiv.inv MeasurableEquiv.inv
 #align measurable_equiv.neg MeasurableEquiv.neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
     (inv G).symm = inv G :=
   rfl
