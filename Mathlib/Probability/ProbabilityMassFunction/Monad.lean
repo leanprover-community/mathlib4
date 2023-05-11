@@ -282,14 +282,11 @@ theorem bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf �
         (f a ha).bindOnSupport fun b hb =>
           g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) := by
   refine' Pmf.ext fun a => _
-  -- Porting note: TODO fix this proof
-  sorry
-  simp only [ENNReal.coe_eq_coe.symm, bindOnSupport_apply, ← tsum_dite_right,
-    ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
-  simp only [ENNReal.tsum_eq_zero, ENNReal.coe_eq_coe, ENNReal.coe_eq_zero, ENNReal.coe_zero,
-    dite_eq_left_iff, mul_eq_zero]
+  dsimp only [bindOnSupport_apply]
+  simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
+  simp only [ENNReal.tsum_eq_zero, dite_eq_left_iff]
   refine' ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => _)
-  split_ifs
+  split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
     simp [h] at this
