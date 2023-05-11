@@ -253,7 +253,7 @@ open Term
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
   | _, equal t₁ t₂, v, xs => t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs)
-  | _, rel R ts, v, xs => rel_map R fun i => (ts i).realize (Sum.elim v xs)
+  | _, rel R ts, v, xs => RelMap R fun i => (ts i).realize (Sum.elim v xs)
   | _, imp f₁ f₂, v, xs => Realize f₁ v xs → Realize f₂ v xs
   | _, all f, v, xs => ∀ x : M, Realize f v (snoc xs x)
 #align first_order.language.bounded_formula.realize FirstOrder.Language.BoundedFormula.Realize
@@ -302,13 +302,13 @@ theorem realize_imp : (φ.imp ψ).Realize v xs ↔ φ.Realize v xs → ψ.Realiz
 
 @[simp]
 theorem realize_rel {k : ℕ} {R : L.Relations k} {ts : Fin k → L.Term _} :
-    (R.boundedFormula ts).Realize v xs ↔ rel_map R fun i => (ts i).realize (Sum.elim v xs) :=
+    (R.boundedFormula ts).Realize v xs ↔ RelMap R fun i => (ts i).realize (Sum.elim v xs) :=
   Iff.rfl
 #align first_order.language.bounded_formula.realize_rel FirstOrder.Language.BoundedFormula.realize_rel
 
 @[simp]
 theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
-    (R.boundedFormula₁ t).Realize v xs ↔ rel_map R ![t.realize (Sum.elim v xs)] := by
+    (R.boundedFormula₁ t).Realize v xs ↔ RelMap R ![t.realize (Sum.elim v xs)] := by
   rw [Relations.boundedFormula₁, realize_rel, iff_eq_eq]
   refine' congr rfl (funext fun _ => _)
   simp only [Matrix.cons_val_fin_one]
@@ -317,7 +317,7 @@ theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
 @[simp]
 theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
     (R.boundedFormula₂ t₁ t₂).Realize v xs ↔
-      rel_map R ![t₁.realize (Sum.elim v xs), t₂.realize (Sum.elim v xs)] := by
+      RelMap R ![t₁.realize (Sum.elim v xs), t₂.realize (Sum.elim v xs)] := by
   rw [Relations.boundedFormula₂, realize_rel, iff_eq_eq]
   refine' congr rfl (funext (Fin.cases _ _))
   · simp only [Matrix.cons_val_zero]
@@ -369,7 +369,7 @@ theorem realize_mapTermRel_id [L'.Structure M]
     (h1 :
       ∀ (n) (t : L.Term (Sum α (Fin n))) (xs : Fin n → M),
         (ft n t).realize (Sum.elim v' xs) = t.realize (Sum.elim v xs))
-    (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), rel_map (fr n R) x = rel_map R x) :
+    (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), RelMap (fr n R) x = RelMap R x) :
     (φ.mapTermRel ft fr fun _ => id).Realize v' xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih
   · rfl
@@ -386,7 +386,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
     (h1 :
       ∀ (n) (t : L.Term (Sum α (Fin n))) (xs' : Fin (k + n) → M),
         (ft n t).realize (Sum.elim v' xs') = t.realize (Sum.elim (v xs') (xs' ∘ Fin.natAdd _)))
-    (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), rel_map (fr n R) x = rel_map R x)
+    (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), RelMap (fr n R) x = RelMap R x)
     (hv : ∀ (n) (xs : Fin (k + n) → M) (x : M), @v (n + 1) (snoc xs x : Fin _ → M) = v xs) :
     (φ.mapTermRel ft fr fun n => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
       φ.Realize (v xs) (xs ∘ Fin.natAdd _) := by
@@ -639,13 +639,13 @@ theorem realize_imp : (φ.imp ψ).Realize v ↔ φ.Realize v → ψ.Realize v :=
 
 @[simp]
 theorem realize_rel {k : ℕ} {R : L.Relations k} {ts : Fin k → L.Term α} :
-    (R.formula ts).Realize v ↔ rel_map R fun i => (ts i).realize v :=
+    (R.formula ts).Realize v ↔ RelMap R fun i => (ts i).realize v :=
   BoundedFormula.realize_rel.trans (by simp)
 #align first_order.language.formula.realize_rel FirstOrder.Language.Formula.realize_rel
 
 @[simp]
 theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
-    (R.formula₁ t).Realize v ↔ rel_map R ![t.realize v] := by
+    (R.formula₁ t).Realize v ↔ RelMap R ![t.realize v] := by
   rw [Relations.formula₁, realize_rel, iff_eq_eq]
   refine' congr rfl (funext fun _ => _)
   simp only [Matrix.cons_val_fin_one]
@@ -653,7 +653,7 @@ theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
 
 @[simp]
 theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
-    (R.formula₂ t₁ t₂).Realize v ↔ rel_map R ![t₁.realize v, t₂.realize v] := by
+    (R.formula₂ t₁ t₂).Realize v ↔ RelMap R ![t₁.realize v, t₂.realize v] := by
   rw [Relations.formula₂, realize_rel, iff_eq_eq]
   refine' congr rfl (funext (Fin.cases _ _))
   · simp only [Matrix.cons_val_zero]
@@ -996,36 +996,36 @@ open BoundedFormula
 variable {r : L.Relations 2}
 
 @[simp]
-theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => rel_map r ![x, y] :=
+theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ => realize_rel₂
 #align first_order.language.relations.realize_reflexive FirstOrder.Language.Relations.realize_reflexive
 
 @[simp]
-theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Irreflexive fun x y : M => rel_map r ![x, y] :=
+theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Irreflexive fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ => not_congr realize_rel₂
 #align first_order.language.relations.realize_irreflexive FirstOrder.Language.Relations.realize_irreflexive
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => rel_map r ![x, y] :=
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ => forall_congr' fun _ => imp_congr realize_rel₂ realize_rel₂
 #align first_order.language.relations.realize_symmetric FirstOrder.Language.Relations.realize_symmetric
 
 @[simp]
 theorem realize_antisymmetric :
-    M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => rel_map r ![x, y] :=
+    M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ =>
     forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ Iff.rfl)
 #align first_order.language.relations.realize_antisymmetric FirstOrder.Language.Relations.realize_antisymmetric
 
 @[simp]
-theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => rel_map r ![x, y] :=
+theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ =>
     forall_congr' fun _ =>
       forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
 #align first_order.language.relations.realize_transitive FirstOrder.Language.Relations.realize_transitive
 
 @[simp]
-theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => rel_map r ![x, y] :=
+theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => RelMap r ![x, y] :=
   forall_congr' fun _ =>
     forall_congr' fun _ => realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
 #align first_order.language.relations.realize_total FirstOrder.Language.Relations.realize_total
