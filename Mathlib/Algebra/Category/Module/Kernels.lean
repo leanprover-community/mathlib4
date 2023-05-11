@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.EpiMono
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
@@ -40,8 +40,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
   Fork.IsLimit.mk _
     (fun s =>
       LinearMap.codRestrict f.ker (Fork.ι s) fun c =>
-        LinearMap.mem_ker.2 <|
-          by
+        LinearMap.mem_ker.2 <| by
           rw [← @Function.comp_apply _ _ _ f (fork.ι s) c, ← coe_comp, fork.condition,
             has_zero_morphisms.comp_zero (fork.ι s) N]
           rfl)
@@ -59,8 +58,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
   Cofork.IsColimit.mk _
     (fun s =>
       f.range.liftQ (Cofork.π s) <| LinearMap.range_le_ker_iff.2 <| CokernelCofork.condition s)
-    (fun s => f.range.liftQ_mkQ (Cofork.π s) _) fun s m h =>
-    by
+    (fun s => f.range.liftQ_mkQ (Cofork.π s) _) fun s m h => by
     haveI : epi (as_hom f.range.mkq) := (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     apply (cancel_epi (as_hom f.range.mkq)).1
     convert h
