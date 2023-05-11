@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Idempotents.Karoubi
+import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 
@@ -48,8 +48,7 @@ namespace Biproducts
 /-- The `bicone` used in order to obtain the existence of
 the biproduct of a functor `J ⥤ karoubi C` when the category `C` is additive. -/
 @[simps]
-def bicone [HasFiniteBiproducts C] {J : Type} [Fintype J] (F : J → Karoubi C) : Bicone F
-    where
+def bicone [HasFiniteBiproducts C] {J : Type} [Fintype J] (F : J → Karoubi C) : Bicone F where
   pt :=
     { pt := biproduct fun j => (F j).pt
       p := biproduct.map fun j => (F j).p
@@ -116,8 +115,7 @@ attribute [instance] karoubi_has_finite_biproducts
 /-- `P.complement` is the formal direct factor of `P.X` given by the idempotent
 endomorphism `𝟙 P.X - P.p` -/
 @[simps]
-def complement (P : Karoubi C) : Karoubi C
-    where
+def complement (P : Karoubi C) : Karoubi C where
   pt := P.pt
   p := 𝟙 _ - P.p
   idem := idem_of_id_sub_idem P.p P.idem
@@ -131,13 +129,11 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
       inl := P.decompId_i
       inr := P.complement.decompId_i
       inl_fst := P.decompId.symm
-      inl_snd :=
-        by
+      inl_snd := by
         simp only [decomp_id_i_f, decomp_id_p_f, complement_p, comp_sub, comp_f, hom_ext,
           quiver.hom.add_comm_group_zero_f, P.idem]
         erw [comp_id, sub_self]
-      inr_fst :=
-        by
+      inr_fst := by
         simp only [decomp_id_i_f, complement_p, decomp_id_p_f, sub_comp, comp_f, hom_ext,
           quiver.hom.add_comm_group_zero_f, P.idem]
         erw [id_comp, sub_self]
@@ -149,8 +145,7 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
 /-- A formal direct factor `P : karoubi C` of an object `P.X : C` in a
 preadditive category is actually a direct factor of the image `(to_karoubi C).obj P.X`
 of `P.X` in the category `karoubi C` -/
-def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.pt
-    where
+def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.pt where
   Hom := biprod.desc P.decompId_i P.complement.decompId_i
   inv := biprod.lift P.decompId_p P.complement.decompId_p
   hom_inv_id' := by
