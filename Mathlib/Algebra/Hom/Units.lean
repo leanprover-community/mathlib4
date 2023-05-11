@@ -437,8 +437,8 @@ protected theorem div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
 #align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
 #align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
 
-/-- The `group` version of this lemma is `div_mul_cancel'''` -/
-@[to_additive "The `add_group` version of this lemma is `sub_add_cancel''`"]
+/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
+@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
 protected theorem div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
   rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
 #align is_unit.div_mul_left IsUnit.div_mul_left
