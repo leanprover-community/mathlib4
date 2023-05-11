@@ -1,15 +1,16 @@
-import Mathlib.Algebra.Abs
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Rat.Order
-import Mathlib.Data.Real.NNReal
-import Mathlib.Tactic.Positivity
+-- import Mathlib.Algebra.Abs
+-- import Mathlib.Algebra.Order.Hom.Basic
+-- import Mathlib.Data.Rat.Order
+-- import Mathlib.Data.Real.NNReal
+-- import Mathlib.Tactic.Positivity
+import Mathlib.Topology.MetricSpace.Basic
 
 /-! # Tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 
-open Function NNReal
+open Function NNReal ENNReal
 
 variable {ι α β : Type _}
 
@@ -239,8 +240,8 @@ example (n : ℕ) : 0 < n.succ := by positivity
 
 -- example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ∥x∥ := by positivity
 
--- example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
--- example [MetricSpace α] {s : Set α} : 0 ≤ metric.diam s := by positivity
+example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
+example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
 
 -- example {E : Type _} [AddGroup E] {p : AddGroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
 -- example {E : Type _} [Group E] {p : GroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
@@ -255,7 +256,7 @@ example (n : ℕ) : 0 < n.succ := by positivity
 example {a : ℕ} : 0 ≤ a := by positivity
 -- example {a : ℚ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0} : 0 ≤ a := by positivity
--- example {a : ℝ≥0∞} : 0 ≤ a := by positivity
+example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
 /- ### Coercions -/
 

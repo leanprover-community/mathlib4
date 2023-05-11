@@ -1079,6 +1079,7 @@ open Lean Meta Qq Function
 private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
   NNReal.coe_pos.2
 
+/-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
 def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(NNReal))) ← withReducible (whnf e) | throwError "not NNReal.toReal"
