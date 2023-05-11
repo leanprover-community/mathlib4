@@ -191,6 +191,9 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   rw [eq] at hV'
   convert getSection_isAmalgamation hu ℱ hS hx Y (fV' ≫ f.right.unop) _ using 1
   · aesop_cat
+  -- porting note: the below proof was mildly rewritten because `simp` changed behaviour
+  -- slightly (a rewrite which seemed to work in Lean 3, didn't work in Lean 4 because of
+  -- motive is not type correct issues)
   · rw [pulledbackFamily_apply, pulledbackFamily_apply]
     · congr 2
       simp [eq]
