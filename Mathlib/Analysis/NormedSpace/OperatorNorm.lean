@@ -1026,8 +1026,8 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using op_norm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
--- Porting note: this instance should just be `inferInstance`,
--- and indeed simply unneeded.
+/-- Porting note: Local instance for `norm_compSL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 set_option synthInstance.etaExperiment true in
 local instance : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) := by
   exact @hasOpNorm _ _ (F →SL[σ₂₃] G) ((E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) _ _ _ _ _ _ _ in
@@ -1067,9 +1067,9 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
--- Porting note: this instance should just be `inferInstance`,
--- and indeed simply unneeded.
 set_option synthInstance.etaExperiment true in
+/-- Porting note: Local instance for `norm_compL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) := by
   exact @hasOpNorm _ _ (Fₗ →L[𝕜] Gₗ) ((E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) _ _ _ _ _ _ _ in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
@@ -1097,9 +1097,12 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
--- Porting note: we need additional instances close at hand to get this to compile.
 set_option synthInstance.etaExperiment true in
+/-- Porting note: Local instance for `norm_precompR_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
+/-- Porting note: Local instance for `norm_precompR_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
@@ -1109,6 +1112,8 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
 set_option synthInstance.etaExperiment true in
+/-- Porting note: Local instance for `norm_precompL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) := by
   exact @hasOpNorm _ _ (Eₗ →L[𝕜] E) (Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) _ _ _ _ _ _ _ in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
@@ -1271,9 +1276,9 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
--- Porting note: this instance should just be `inferInstance`,
--- and indeed simply unneeded.
 set_option synthInstance.etaExperiment true in
+/-- Porting note: Local instance for `op_norm_mulLeftRight_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := by
   exact @hasOpNorm _ _ 𝕜' (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') _ _ _ _ _ _ _ in
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
