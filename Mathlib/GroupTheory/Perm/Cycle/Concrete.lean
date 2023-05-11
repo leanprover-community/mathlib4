@@ -137,7 +137,7 @@ variable [DecidableEq α] (s s' : Cycle α)
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
 def formPerm : ∀ (s : Cycle α) (h : Nodup s), Equiv.Perm α :=
-  fun s => Quot.hrecOn s (fun l h => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
+  fun s => Quotient.hrecOn s (fun l h => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
     ext
     · exact h.nodup_iff
     · intro h₁ h₂ _
@@ -200,7 +200,11 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : C
   intro s s'
   apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
   intro l l'
-  simpa using formPerm_eq_formPerm_iff
+  -- Porting note: was `simpa using formPerm_eq_formPerm_iff`
+  simp_all
+  intro hs hs'
+  constructor <;> intro h <;> simp_all only [formPerm_eq_formPerm_iff]
+
 #align cycle.form_perm_eq_form_perm_iff Cycle.formPerm_eq_formPerm_iff
 
 end Cycle
