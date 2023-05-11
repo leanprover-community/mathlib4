@@ -177,42 +177,62 @@ partial def _root_.Lean.MVarId.relCongr
   -- the goal.
   for lem in (relCongrExt.getState (← getEnv)).findD (relName, lhsHead) #[] do
     -- Filter further according to whether the boolean-array of varying/nonvarying arguments of such
-    -- a lemma matches `varyingArgs`
+    -- a lemma matches `varyingArgs`.
     if lem.varyingArgs == varyingArgs then
       let gs ← try
+        -- Try `apply`-ing such a lemma to the goal.
         Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
       catch e => pure (Except.error e)
       match gs with
       | .error e =>
-        ex? := ex? <|> (some (← saveState, e)) -- stash the first failure of `apply`
+        -- If the `apply` fails, go on to try to apply the next matching lemma.
+        -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
+        -- error message the first failure, so stash that.
+        ex? := ex? <|> (some (← saveState, e))
         s.restore
       | .ok gs =>
         let some e ← getExprMVarAssignment? g | panic! "unassigned?"
         let args := e.getAppArgs
         let mut subgoals := #[]
+        -- If the `apply` succeeds, iterate over `(i, j)` belonging to the lemma's `mainSubgoal`
+        -- list: here `i` is an index in the lemma's array of arguments, and `j` is an index in the
+        -- array of arguments to the head function in the conclusion of the lemma (this should be
+        -- the same as the head function of the LHS and RHS of our goal), such that the `i`-th
+        -- argument to the lemma is a relation between the LHS and RHS `j`-th inputs to the head
+        -- function in the goal.
         for (i, j) in lem.mainSubgoals do
+          -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
+          -- unification ...
           let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
+          -- Introduce all variables and hypotheses in this subgoal.
           let (_vs, mvarId) ← mvarId.intros
+          -- B. If there is a template, look up the part of the template corresponding to the `j`-th
+          -- input to the head function
           let tpl ← tplArgs[j]!.1.mapM fun e => do
             let (_vs, _, e) ← lambdaMetaTelescope e
             pure e
+          -- Recurse: call ourself (`Lean.MVarId.relCongr`) on the subgoal with (if available) the
+          -- appropriate template
           subgoals := subgoals ++ (← mvarId.relCongr tpl discharger assumption)
         let mut out := #[]
+        -- Also try to the discharger on any "side" (i.e., non-"main") goals which were not resolved
+        -- by the `apply`.
         for g in gs do
           if !(← g.isAssigned) && !subgoals.contains g then
             try discharger g
             catch _ => out := out.push g
+        -- Return all unresolved subgoals, "main" or "side"
         return out ++ subgoals
   -- A. If there is no template, and there was no `@[rel_congr]` lemma which matched the goal,
   -- report this goal back.
   if template.isNone then
     return #[g]
-  -- B. If there is a template, and there was no `@[rel_congr]` lemma which matched the template,
-  -- fail.
   let some (sErr, e) := ex?
+    -- B. If there is a template, and there was no `@[rel_congr]` lemma which matched the template,
+    -- fail.
     | throwError "rel_congr failed, no @[rel_congr] lemma applies for the template portion {template} and the relation {rel}"
   -- B. If there is a template, and there was a `@[rel_congr]` lemma which matched the template, but
-  -- it was not possible to apply that lemma, then report the error message from applying that
+  -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
   -- lemma.
   sErr.restore
   throw e

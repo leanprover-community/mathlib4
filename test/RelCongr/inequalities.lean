@@ -119,11 +119,10 @@ example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
     linarith
 
 -- this tests that the match goes only as deep as is indicated by the template
-example {a b c d e : ℝ} (h1 : 0 ≤ b) (h2 : 0 ≤ c) (hac : a + 1 ≤ c + 1) (hbd : b ≤ d) :
+example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c * d + 1) (_hbd : b ≤ d) :
     a * b + e ≤ c * d + e := by
   rel_congr ?_ + _
   guard_target =ₛ a * b ≤ c * d
-  rel_congr
   linarith
 
 -- this tests templates with binders
