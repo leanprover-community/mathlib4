@@ -76,7 +76,6 @@ theorem SemilinearMapClass.bound_of_shell_semi_normed [SemilinearMapClass 𝓕 �
     (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) {x : E} (hx : ‖x‖ ≠ 0) :
     ‖f x‖ ≤ C * ‖x‖ := by
   rcases rescale_to_shell_semi_normed hc ε_pos hx with ⟨δ, hδ, δxle, leδx, _⟩
-  have := hf (δ • x) leδx δxle
   simpa only [map_smulₛₗ, norm_smul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ),
     RingHomIsometric.is_iso] using hf (δ • x) leδx δxle
 #align semilinear_map_class.bound_of_shell_semi_normed SemilinearMapClass.bound_of_shell_semi_normed
