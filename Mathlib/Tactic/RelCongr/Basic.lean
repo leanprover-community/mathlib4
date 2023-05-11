@@ -255,8 +255,8 @@ partial def _root_.Lean.MVarId.relCongr
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
       -- (if not, stop and report the existing goal)
       return #[g]
-    -- and also build a array of booleans according to which arguments `_ ... _` to the head function
-    -- differ between the LHS and RHS
+    -- and also build a array of booleans according to which arguments `_ ... _` to the head
+    -- function differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
       return (none, !(← isDefEq lhsArg rhsArg))
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
@@ -325,7 +325,8 @@ partial def _root_.Lean.MVarId.relCongr
   let some (sErr, e) := ex?
     -- B. If there is a template, and there was no `@[rel_congr]` lemma which matched the template,
     -- fail.
-    | throwError "rel_congr failed, no @[rel_congr] lemma applies for the template portion {template} and the relation {rel}"
+    | throwError "rel_congr failed, no @[rel_congr] lemma applies for the template portion {""
+        }{template} and the relation {rel}"
   -- B. If there is a template, and there was a `@[rel_congr]` lemma which matched the template, but
   -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
   -- lemma.
