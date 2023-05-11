@@ -170,7 +170,8 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
   smul₀ g hg
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
-theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
+    MeasurableEmbedding ((· * ·) g) :=
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
@@ -198,7 +199,8 @@ def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   measurable_invFun := measurable_mul_const g⁻¹
 #align measurable_equiv.mul_right₀ MeasurableEquiv.mulRight₀
 
-theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding fun x => x * g :=
+theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) :
+    MeasurableEmbedding fun x => x * g :=
   (mulRight₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_right₀ measurableEmbedding_mulRight₀
 
