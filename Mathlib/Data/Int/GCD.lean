@@ -606,22 +606,22 @@ theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 /-- Supporting definition for `proveNatGCD`. Returns the GCD and an equality proof. -/
-def proveNatGCD' (x y : ℕ) : MetaM ((d : ℕ) × Q(Nat.gcd $x $y = $d)) := do
+def proveNatGCD' (x y : ℕ) : ((d : ℕ) × Q(Nat.gcd $x $y = $d)) :=
   match x, y with
-  | 0, y => return ⟨y, q(Nat.gcd_zero_left $y)⟩
-  | x, 0 => return ⟨x, q(Nat.gcd_zero_right $x)⟩
-  | 1, y => return ⟨1, q(Nat.gcd_one_left $y)⟩
-  | x, 1 => return ⟨1, q(Nat.gcd_one_right $x)⟩
-  | x, y => do
+  | 0, y => ⟨y, q(Nat.gcd_zero_left $y)⟩
+  | x, 0 => ⟨x, q(Nat.gcd_zero_right $x)⟩
+  | 1, y => ⟨1, q(Nat.gcd_one_left $y)⟩
+  | x, 1 => ⟨1, q(Nat.gcd_one_right $x)⟩
+  | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
       have q : ℕ := y / x
       have pq : Q(Nat.mul $x $q = $y) := (q(Eq.refl $y) : Expr)
-      return ⟨x, q(nat_gcd_helper_dvd_left $x $y $q $pq)⟩
+      ⟨x, q(nat_gcd_helper_dvd_left $x $y $q $pq)⟩
     else if d = y then
       have q : ℕ := x / y
       have pq : Q(Nat.mul $y $q = $x) := (q(Eq.refl $x) : Expr)
-      return ⟨y, q(nat_gcd_helper_dvd_right $x $y $q $pq)⟩
+      ⟨y, q(nat_gcd_helper_dvd_right $x $y $q $pq)⟩
     else
       have a' : ℕ := a.natAbs
       have b' : ℕ := b.natAbs
@@ -635,17 +635,17 @@ def proveNatGCD' (x y : ℕ) : MetaM ((d : ℕ) × Q(Nat.gcd $x $y = $d)) := do
       have py : Q(Nat.mul $y $b' = $ty) := (q(Eq.refl $ty) : Expr)
       if a ≥ 0 then
         have pt : Q(Nat.add $ty $d = $tx) := (q(Eq.refl $tx) : Expr)
-        return ⟨d, q(nat_gcd_helper_2 $d $x $y $a' $b' $u $v $tx $ty $pu $pv $px $py $pt)⟩
+        ⟨d, q(nat_gcd_helper_2 $d $x $y $a' $b' $u $v $tx $ty $pu $pv $px $py $pt)⟩
       else
         have pt : Q(Nat.add $tx $d = $ty) := (q(Eq.refl $ty) : Expr)
-        return ⟨d, q(nat_gcd_helper_1 $d $x $y $a' $b' $u $v $tx $ty $pu $pv $px $py $pt)⟩
+        ⟨d, q(nat_gcd_helper_1 $d $x $y $a' $b' $u $v $tx $ty $pu $pv $px $py $pt)⟩
 
 /-- Given natural number literals `nx` and `ny`, return their GCD as a natural number literal
 and an equality proof. -/
-def proveNatGCD (nx ny : Q(ℕ)) : MetaM ((d : Q(ℕ)) × Q(Nat.gcd $nx $ny = $d)) := do
-  let some x := nx.natLit? | failure
-  let some y := ny.natLit? | failure
-  let ⟨c, pf⟩ ← proveNatGCD' x y
+def proveNatGCD (nx ny : Q(ℕ)) : Option ((d : Q(ℕ)) × Q(Nat.gcd $nx $ny = $d)) := do
+  let x ← nx.natLit?
+  let y ← ny.natLit?
+  let ⟨c, pf⟩ := proveNatGCD' x y
   return ⟨mkRawNatLit c, pf⟩
 #align tactic.norm_num.prove_gcd_nat Tactic.NormNum.proveNatGCD
 
@@ -660,27 +660,27 @@ def evalNatGCD : NormNumExt where eval {u α} e := do
   return .isNat sℕ cd pf'
 
 /-- Supporting definition for `proveNatLCM`. Returns the LCM and an equality proof. -/
-def proveNatLCM' (x y : ℕ) : MetaM ((d : ℕ) × Q(Nat.lcm $x $y = $d)) := do
+def proveNatLCM' (x y : ℕ) : ((d : ℕ) × Q(Nat.lcm $x $y = $d)) :=
   match x, y with
-  | 0, y => return ⟨0, q(Nat.lcm_zero_left $y)⟩
-  | x, 0 => return ⟨0, q(Nat.lcm_zero_right $x)⟩
-  | 1, y => return ⟨y, q(Nat.lcm_one_left $y)⟩
-  | x, 1 => return ⟨x, q(Nat.lcm_one_right $x)⟩
+  | 0, y => ⟨0, q(Nat.lcm_zero_left $y)⟩
+  | x, 0 => ⟨0, q(Nat.lcm_zero_right $x)⟩
+  | 1, y => ⟨y, q(Nat.lcm_one_left $y)⟩
+  | x, 1 => ⟨x, q(Nat.lcm_one_right $x)⟩
   | x, y =>
-    let ⟨d, pd⟩ ← proveNatGCD' x y
+    let ⟨d, pd⟩ := proveNatGCD' x y
     have p0 : Q(Nat.blt 0 $d = true) := (q(Eq.refl true) : Expr)
     have n : ℕ := x * y
     have pxy : Q(Nat.mul $x $y = $n) := (q(Eq.refl $n) : Expr)
     have m : ℕ := x * y / d
     have pm : Q(Nat.mul $d $m = $n) := (q(Eq.refl $n) : Expr)
-    return ⟨m, q(nat_lcm_helper $x $y $d $m $n $pd (Eq.mp Nat.blt_eq $p0) $pxy $pm)⟩
+    ⟨m, q(nat_lcm_helper $x $y $d $m $n $pd (Eq.mp Nat.blt_eq $p0) $pxy $pm)⟩
 
 /-- Given natural number literals `nx` and `ny`, return their GCD as a natural number literal
 and an equality proof. -/
-def proveNatLCM (nx ny : Q(ℕ)) : MetaM ((d : Q(ℕ)) × Q(Nat.lcm $nx $ny = $d)) := do
-  let some x := nx.natLit? | failure
-  let some y := ny.natLit? | failure
-  let ⟨c, pf⟩ ← proveNatLCM' x y
+def proveNatLCM (nx ny : Q(ℕ)) : Option ((d : Q(ℕ)) × Q(Nat.lcm $nx $ny = $d)) := do
+  let x ← nx.natLit?
+  let y ← ny.natLit?
+  let ⟨c, pf⟩ := proveNatLCM' x y
   return ⟨mkRawNatLit c, pf⟩
 #align tactic.norm_num.prove_lcm_nat Tactic.NormNum.proveNatLCM
 
@@ -696,19 +696,19 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
   return .isNat sℕ cd pf'
 
 /-- Helper for `proveNatCoprime`. Evaluates `Nat.coprime` given the given natural numbers. -/
-def proveNatCoprime' (x y : ℕ) : MetaM (Q(Nat.coprime $x $y) ⊕ Q(¬ Nat.coprime $x $y)) := do
-  let ⟨cd, pf⟩ ← proveNatGCD' x y
+def proveNatCoprime' (x y : ℕ) : Q(Nat.coprime $x $y) ⊕ Q(¬ Nat.coprime $x $y) :=
+  let ⟨cd, pf⟩ := proveNatGCD' x y
   match cd with
-  | 1 => return Sum.inl q(Nat.coprime_iff_gcd_eq_one.mpr $pf)
+  | 1 => Sum.inl q(Nat.coprime_iff_gcd_eq_one.mpr $pf)
   | cd =>
     have cdne : Q(Nat.beq $cd 1 = false) := (q(Eq.refl false) : Expr)
-    return Sum.inr q(not_coprime_helper $pf $cdne)
+    Sum.inr q(not_coprime_helper $pf $cdne)
 
 /-- Evaluates `Nat.coprime` for the given natural number literals. -/
-def proveNatCoprime (nx ny : Q(ℕ)) : MetaM (Q(Nat.coprime $nx $ny) ⊕ Q(¬ Nat.coprime $nx $ny)) := do
-  let some x := nx.natLit? | failure
-  let some y := ny.natLit? | failure
-  proveNatCoprime' x y
+def proveNatCoprime (nx ny : Q(ℕ)) : Option (Q(Nat.coprime $nx $ny) ⊕ Q(¬ Nat.coprime $nx $ny)) := do
+  let x ← nx.natLit?
+  let y ← ny.natLit?
+  return proveNatCoprime' x y
 #align tactic.norm_num.prove_coprime_nat Tactic.NormNum.proveNatCoprime
 
 /-- Evaluates the `Nat.coprime` function. -/
@@ -727,14 +727,14 @@ def evalNatCoprime : NormNumExt where eval {u α} e := do
     return .isFalse pf'
 
 /-- Given two integers, return their GCD and an equality proof. -/
-def proveIntGCD' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.gcd $x $y = $d)) := do
+def proveIntGCD' (x y : ℤ) : (d : ℕ) × Q(Int.gcd $x $y = $d) :=
   let x' : ℕ := x.natAbs
   let y' : ℕ := y.natAbs
   have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
   have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
-  let ⟨d, pf⟩ ← proveNatGCD' x.natAbs y.natAbs
+  let ⟨d, pf⟩ := proveNatGCD' x.natAbs y.natAbs
   have pf' : Q(Int.gcd $x $y = $d) := q(int_gcd_helper $hx $hy $pf)
-  return ⟨d, pf'⟩
+  ⟨d, pf'⟩
 #align tactic.norm_num.prove_gcd_int Tactic.NormNum.proveIntGCD'
 
 /-- Evaluates the `Int.gcd` function. -/
@@ -745,20 +745,20 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
   let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
   let ⟨cx, nx, p⟩ ← (← derive x).toInt
   let ⟨cy, ny, q⟩ ← (← derive y).toInt
-  let ⟨cd, pf⟩ ← proveIntGCD' cx cy
+  let ⟨cd, pf⟩ := proveIntGCD' cx cy
   have pf : Q(Int.gcd $nx $ny = $cd) := pf
   have pf' : Q(IsNat (Int.gcd $x $y) $cd) := q(isInt_gcd $p $q $pf)
   return .isNat sℕ (mkRawNatLit cd) pf'
 
 /-- Given two integers numbers, return their LCM and an equality proof. -/
-def proveIntLCM' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.lcm $x $y = $d)) := do
+def proveIntLCM' (x y : ℤ) : (d : ℕ) × Q(Int.lcm $x $y = $d) :=
   let x' : ℕ := x.natAbs
   let y' : ℕ := y.natAbs
   have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
   have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
-  let ⟨d, pf⟩ ← proveNatLCM' x.natAbs y.natAbs
+  let ⟨d, pf⟩ := proveNatLCM' x.natAbs y.natAbs
   have pf' : Q(Int.lcm $x $y = $d) := q(int_lcm_helper $hx $hy $pf)
-  return ⟨d, pf'⟩
+  ⟨d, pf'⟩
 #align tactic.norm_num.prove_lcm_int Tactic.NormNum.proveIntLCM'
 
 /-- Evaluates the `Int.lcm` function. -/
@@ -769,7 +769,7 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
   let ⟨cx, nx, p⟩ ← (← derive x).toInt
   let ⟨cy, ny, q⟩ ← (← derive y).toInt
-  let ⟨cd, pf⟩ ← proveIntLCM' cx cy
+  let ⟨cd, pf⟩ := proveIntLCM' cx cy
   have pf : Q(Int.lcm $nx $ny = $cd) := pf
   have pf' : Q(IsNat (Int.lcm $x $y) $cd) := q(isInt_lcm $p $q $pf)
   return .isNat sℕ (mkRawNatLit cd) pf'
