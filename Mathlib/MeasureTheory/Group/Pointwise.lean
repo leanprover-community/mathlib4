@@ -11,11 +11,11 @@ Authors: Yury G. Kudryashov, Alex J. Best
 import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
-# Pointwise set operations on `measurable_set`s
+# Pointwise set operations on `MeasurableSet`s
 
 In this file we prove several versions of the following fact: if `s` is a measurable set, then so is
 `a • s`. Note that the pointwise product of two measurable sets need not be measurable, so there is
-no `measurable_set.mul` etc.
+no `MeasurableSet.mul` etc.
 -/
 
 
