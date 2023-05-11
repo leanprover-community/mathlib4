@@ -183,7 +183,7 @@ theorem formPerm_eq_self_of_not_mem (s : Cycle α) (h : Nodup s) (x : α) (hx : 
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_apply_mem_eq_next h _ _
+  simpa using List.formPerm_apply_mem_eq_next h _ (by simp_all)
 #align cycle.form_perm_apply_mem_eq_next Cycle.formPerm_apply_mem_eq_next
 
 nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
@@ -204,7 +204,6 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : C
   simp_all
   intro hs hs'
   constructor <;> intro h <;> simp_all only [formPerm_eq_formPerm_iff]
-
 #align cycle.form_perm_eq_form_perm_iff Cycle.formPerm_eq_formPerm_iff
 
 end Cycle
