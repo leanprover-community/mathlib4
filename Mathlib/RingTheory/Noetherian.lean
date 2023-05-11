@@ -187,13 +187,11 @@ variable [Module R M] [Module R P]
 
 open IsNoetherian
 
-set_option synthInstance.etaExperiment true in
 theorem isNoetherian_of_ker_bot [IsNoetherian R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) :
     IsNoetherian R M :=
   isNoetherian_of_linearEquiv (LinearEquiv.ofInjective f <| LinearMap.ker_eq_bot.mp hf).symm
 #align is_noetherian_of_ker_bot isNoetherian_of_ker_bot
 
-set_option synthInstance.etaExperiment true in
 theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
     (hf : LinearMap.ker f = ⊥) : N.Fg :=
   haveI := isNoetherian_of_ker_bot f hf
@@ -395,7 +393,6 @@ theorem finite_of_linearIndependent [Nontrivial R] [IsNoetherian R M] {s : Set M
       by dsimp [GT.gt]; simp only [lt_iff_le_not_le, (this _ _).symm]; tauto⟩
 #align finite_of_linear_independent finite_of_linearIndependent
 
-set_option synthInstance.etaExperiment true in
 /-- If the first and final modules in a short exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : M →ₗ[R] N)
@@ -589,7 +586,6 @@ theorem isNoetherian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R 
   isNoetherian_of_fg_of_noetherian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 #align is_noetherian_span_of_finite isNoetherian_span_of_finite
 
-set_option synthInstance.etaExperiment true in
 theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H⊢

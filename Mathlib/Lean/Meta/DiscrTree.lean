@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Traverse
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`
@@ -22,6 +23,11 @@ def insertIfSpecific [BEq α] (d : DiscrTree α s)
   else
     d.insertCore keys v
 
+/--
+Find keys which match the expression, or some subexpression.
+-/
+partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Array α) := do
+  e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e)
 variable {m : Type → Type} [Monad m]
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/

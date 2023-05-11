@@ -63,6 +63,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C] where
 #align category_theory.concrete_category CategoryTheory.ConcreteCategory
 #align category_theory.concrete_category.forget CategoryTheory.ConcreteCategory.Forget
 
+attribute [reducible] ConcreteCategory.Forget
 attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
@@ -71,6 +72,8 @@ def forget (C : Type v) [Category C] [ConcreteCategory.{u} C] : C ⥤ Type u :=
   ConcreteCategory.Forget
 #align category_theory.forget CategoryTheory.forget
 
+-- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
+@[reducible]
 instance ConcreteCategory.types : ConcreteCategory (Type u) where
   Forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
