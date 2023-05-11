@@ -1290,7 +1290,7 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
 
 /- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
-We replaces equation lemmas of `elim`. -/
+we replace equation lemmas of `elim`. -/
 
 theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
 
