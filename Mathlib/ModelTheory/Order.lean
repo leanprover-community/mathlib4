@@ -209,22 +209,22 @@ variable [IsOrdered L] [L.Structure M]
 @[simp]
 theorem relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
     RelMap (leSymb : L.Relations 2) ![a, b] ↔ a ≤ b := by
-  rw [← order_Lhom_le_symb, Lhom.map_on_relation]
+  rw [← orderLHom_leSymb, LHom.map_onRelation]
   rfl
 #align first_order.language.rel_map_le_symb FirstOrder.Language.relMap_leSymb
 
 @[simp]
-theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.term (Sum α (Fin n))} {v : α → M}
+theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))} {v : α → M}
     {xs : Fin n → M} :
-    (t₁.le t₂).realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
-  simp [term.le]
+    (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
+  simp [Term.le]
 #align first_order.language.term.realize_le FirstOrder.Language.Term.realize_le
 
 @[simp]
-theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.term (Sum α (Fin n))}
+theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))}
     {v : α → M} {xs : Fin n → M} :
-    (t₁.lt t₂).realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
-  simp [term.lt, lt_iff_le_not_le]
+    (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
+  simp [Term.lt, lt_iff_le_not_le]
 #align first_order.language.term.realize_lt FirstOrder.Language.Term.realize_lt
 
 end OrderedStructure
@@ -233,31 +233,29 @@ section LE
 
 variable [LE M]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoTopOrder M := by
-  simp only [no_top_order_sentence, sentence.realize, formula.realize, bounded_formula.realize_all,
-    bounded_formula.realize_ex, bounded_formula.realize_not, realize, term.realize_le, Sum.elim_inr]
+  simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
+    BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
+    Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
   intro h a
   exact exists_not_le a
 #align first_order.language.realize_no_top_order_iff FirstOrder.Language.realize_noTopOrder_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ Language.order.noTopOrderSentence :=
   realize_noTopOrder_iff.2 h
 #align first_order.language.realize_no_top_order FirstOrder.Language.realize_noTopOrder
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoBotOrder M := by
-  simp only [no_bot_order_sentence, sentence.realize, formula.realize, bounded_formula.realize_all,
-    bounded_formula.realize_ex, bounded_formula.realize_not, realize, term.realize_le, Sum.elim_inr]
+  simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
+    BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
+    Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
   intro h a
   exact exists_not_ge a
 #align first_order.language.realize_no_bot_order_iff FirstOrder.Language.realize_noBotOrder_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderSentence :=
   realize_noBotOrder_iff.2 h
@@ -265,33 +263,30 @@ theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderS
 
 end LE
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_denselyOrdered_iff [Preorder M] :
     M ⊨ Language.order.denselyOrderedSentence ↔ DenselyOrdered M := by
-  simp only [densely_ordered_sentence, sentence.realize, formula.realize,
-    bounded_formula.realize_imp, bounded_formula.realize_all, realize, term.realize_lt,
-    Sum.elim_inr, bounded_formula.realize_ex, bounded_formula.realize_inf]
+  simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
+    BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
+    Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
   refine' ⟨fun h => ⟨fun a b ab => h a b ab⟩, _⟩
   intro h a b ab
   exact exists_between ab
 #align first_order.language.realize_densely_ordered_iff FirstOrder.Language.realize_denselyOrdered_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_denselyOrdered [Preorder M] [h : DenselyOrdered M] :
     M ⊨ Language.order.denselyOrderedSentence :=
   realize_denselyOrdered_iff.2 h
 #align first_order.language.realize_densely_ordered FirstOrder.Language.realize_denselyOrdered
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance model_dLO [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
-    M ⊨ Language.order.dLO := by
-  simp only [DLO, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_no_top_order, realize_no_bot_order, realize_densely_ordered,
+instance model_dlo [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
+    M ⊨ Language.order.dlo := by
+  simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
+    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
     true_and_iff]
   rw [← Theory.model_iff]
   infer_instance
-#align first_order.language.model_DLO FirstOrder.Language.model_dLO
+#align first_order.language.model_DLO FirstOrder.Language.model_dlo
 
 end Language
 
