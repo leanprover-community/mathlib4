@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.SetLike.Basic
-import Mathbin.ModelTheory.Semantics
+import Mathlib.Data.SetLike.Basic
+import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
@@ -54,8 +54,7 @@ def Definable (s : Set (α → M)) : Prop :=
 variable {L} {A} {B : Set M} {s : Set (α → M)}
 
 theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h : A.Definable L s)
-    (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.Definable L' s :=
-  by
+    (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.Definable L' s := by
   obtain ⟨ψ, rfl⟩ := h
   refine' ⟨(φ.add_constants A).onFormula ψ, _⟩
   ext x
@@ -73,8 +72,7 @@ theorem definable_iff_empty_definable_with_params :
   empty_definable_iff.symm
 #align set.definable_iff_empty_definable_with_params Set.definable_iff_empty_definable_with_params
 
-theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s :=
-  by
+theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s := by
   rw [definable_iff_empty_definable_with_params] at *
   exact hAs.map_expansion (L.Lhom_with_constants_map (Set.inclusion hAB))
 #align set.definable.mono Set.Definable.mono
@@ -130,22 +128,19 @@ theorem definable_finset_sup {ι : Type _} {f : ∀ i : ι, Set (α → M)} (hf 
 #align set.definable_finset_sup Set.definable_finset_sup
 
 theorem definable_finset_bInter {ι : Type _} {f : ∀ i : ι, Set (α → M)}
-    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) :=
-  by
+    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_interᵢ]
   exact definable_finset_inf hf s
 #align set.definable_finset_bInter Set.definable_finset_bInter
 
 theorem definable_finset_bUnion {ι : Type _} {f : ∀ i : ι, Set (α → M)}
-    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) :=
-  by
+    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_bunionᵢ]
   exact definable_finset_sup hf s
 #align set.definable_finset_bUnion Set.definable_finset_bUnion
 
 @[simp]
-theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) :=
-  by
+theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
   rw [hφ]
@@ -159,8 +154,7 @@ theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.De
 #align set.definable.sdiff Set.Definable.sdiff
 
 theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
-    A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) :=
-  by
+    A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine' ⟨φ.relabel f, _⟩
   ext
@@ -168,8 +162,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
 #align set.definable.preimage_comp Set.Definable.preimage_comp
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
-    A.Definable L ((fun g : β → M => g ∘ f) '' s) :=
-  by
+    A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
   refine' (congr rfl _).mp (h.preimage_comp f.symm)
   rw [image_eq_preimage_of_inverse]
   · intro i
@@ -182,8 +175,7 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
 
 /-- This lemma is only intended as a helper for `definable.image_comp. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
-    (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) :=
-  by
+    (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine' ⟨(bounded_formula.relabel id φ).exs, _⟩
   ext x
@@ -226,8 +218,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
             _).preimage_comp
         (range_splitting f)
     have h' :
-      A.definable L { x : α → M | ∀ a, x a = x (range_splitting f (range_factorization f a)) } :=
-      by
+      A.definable L { x : α → M | ∀ a, x a = x (range_splitting f (range_factorization f a)) } := by
       have h' :
         ∀ a, A.definable L { x : α → M | x a = x (range_splitting f (range_factorization f a)) } :=
         by
@@ -285,8 +276,7 @@ namespace DefinableSet
 
 variable {L A α} {s t : L.DefinableSet A α} {x : α → M}
 
-instance : SetLike (L.DefinableSet A α) (α → M)
-    where
+instance : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
