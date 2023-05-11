@@ -23,11 +23,8 @@ open Nat Qq Lean Meta
 
 namespace Mathlib.Meta.NormNum
 
-theorem is_prime_helper (n : ℕ) (h₁ : 1 < n) (h₂ : minFac n = n) : Nat.Prime n :=
-  Nat.prime_def_minFac.2 ⟨h₁, h₂⟩
-
-theorem minFac_bit0 (n : ℕ) (hn : n % 2 = 0) : minFac n = 2 := by
-  simp [minFac_eq, Nat.dvd_iff_mod_eq_zero, hn]
+theorem minFac_eq_two (n : ℕ) (hn : n % 2 = 0) : minFac n = 2 := by
+  rw [minFac_eq_two_iff, Nat.dvd_iff_mod_eq_zero, hn]
 
 /-- A predicate representing partial progress in a proof of `min_fac`. -/
 def MinFacHelper (n k : ℕ) : Prop :=
@@ -93,6 +90,18 @@ theorem minFacHelper_5 (n k k' : ℕ) (e : k * k = k') (hd : n < k')
   -- rw [Nat.le_sqrt] at this
   -- exact not_le_of_lt hd this
 
+theorem prime_helper (n : ℕ) : 1 < n ∧ minFac n = n ↔ Nat.Prime n :=
+  Nat.prime_def_minFac.symm
+
+theorem prime_helper_1 (n : ℕ) (h₁ : 1 < n) (h₂ : minFac n = n) : Nat.Prime n :=
+  Nat.prime_def_minFac.2 ⟨succ_le_of_lt h₁, h₂⟩
+
+theorem prime_helper_2 (n : ℕ) : (h : ¬ 1 < n) → ¬ Nat.Prime n :=
+  mt fun h => (prime_def_minFac.mp h).1
+
+theorem prime_helper_3 (n : ℕ) : ¬ minFac n = n → ¬ Nat.Prime n :=
+  mt fun h => (prime_def_minFac.mp h).2
+
 open NormNum
 
 /-- Given `e` a natural numeral and `d : nat` a factor of it, return `⊢ ¬ prime e`. -/
@@ -143,7 +152,7 @@ unsafe def prove_min_fac (ic : instance_cache) (e : expr) : tactic (instance_cac
   match match_numeral e with
   | match_numeral_result.zero => return (ic, q((2 : ℕ)), q(minFac_zero))
   | match_numeral_result.one => return (ic, q((1 : ℕ)), q(minFac_one))
-  | match_numeral_result.bit0 e => return (ic, q(2), q(minFac_bit0).mk_app [e])
+  | match_numeral_result.bit0 e => return (ic, q(2), q(minFac_eq_two).mk_app [e])
   | match_numeral_result.bit1 e => do
     let n ← e.toNat
     let c ← mk_instance_cache q(Nat)
@@ -289,14 +298,104 @@ theorem isNat_minFac : {a : ℕ} → {a' c : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] def evalMinFac :
   NormNumExt where eval {u α} e := do
-  let .app f (n : Q(ℕ)) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq f q(Nat.minFac)
+  let .app (.const `Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   have pa : Q(IsNat $n $nn) := pn
-  have nc : Q(ℕ) := mkRawNatLit nn.natLit!.minFac
-  let r : Q(Nat.minFac $nn = $nc) := (q(Eq.refl $nc) : Expr)
-  return (.isNat sℕ nc q(isNat_minFac $pa $r) : Result q(Nat.minFac $n))
+  let rec core : MetaM (Result q(Nat.minFac $n)) := do
+    have nc : Q(ℕ) := mkRawNatLit nn.natLit!.minFac -- fix
+    let r : Q(Nat.minFac $nn = $nc) := (q(Eq.refl $nc) : Expr) -- fix
+    return .isNat sℕ nc q(isNat_minFac $pa $r)
+  core
 
+/-- Given `Mathlib.Meta.NormNum.Result.isBool b p`, this is the type of `p`.
+  Note that `BoolResult b p` is definitionally equal to `Expr`. -/
+@[reducible]
+def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
+Q(Bool.rec (¬ $p) ($p) $b)
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
+  let .isBool b prf ← derive (α := (q(Prop) : Q(Type))) p | failure
+  pure ⟨b, prf⟩
+
+/-- Obtain a `Result` from a `BoolResult`. -/
+def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) :
+  Result q(Prop) :=
+  Result'.isBool b prf
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
+    MetaM ((b : Bool) × BoolResult p' b) := do
+  let ⟨b, pb⟩ ← deriveBool p
+  match b with
+  | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
+  | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
+
+-- /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
+-- @[norm_num Nat.Prime _] def evalNatPrime :
+--   NormNumExt where eval {u α} e := do
+--   let .app f (n : Q(ℕ)) ← whnfR e | failure
+--   guard <| ← withNewMCtxDepth <| isDefEq f q(Nat.Prime)
+--   let rec core : MetaM (Result q(Nat.Prime $n)) := do
+--     let .isBool b1 pb1 ← derive q(1 < $n) | failure
+--     if let false := b1 then
+--       have pb1 : Q(¬ 1 < $n) := pb1
+--       return .isFalse q(prime_helper_2 $n $pb1)
+--     let .isBool b2 pb2 ← derive q(Nat.minFac $n = $n) | failure
+--     if let false := b2 then
+--       have pb2 : Q(¬ Nat.minFac $n = $n) := pb2
+--       return .isFalse q(prime_helper_3 $n $pb2)
+--     have pb1 : Q(1 < $n) := pb1
+--     have pb2 : Q(Nat.minFac $n = $n) := pb2
+--     return .isTrue q(prime_helper_1 $n $pb1 $pb2)
+--   core
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
+@[norm_num Nat.Prime _] def evalNatPrime' : NormNumExt where eval {u α} e := do
+  let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
+  let rec core : MetaM (Result q(Nat.Prime $n)) := do
+    let ⟨b, pn⟩ ← deriveBoolOfIff q(1 < $n ∧ Nat.minFac $n = $n) q(Nat.Prime $n) q(prime_helper $n)
+    logInfo m!"{b}, {pn}"
+    return .ofBoolResult pn
+  core
+
+/-- The `norm_num` extension which identifies expressions of the form `a ∧ b`,
+such that `norm_num` successfully recognises `a` and `b`. -/
+@[norm_num _ ∧ _] def evalAnd : NormNumExt where eval {u α} e := do
+  let .app (.app (.const ``And _) (p : Q($α))) (q : Q($α)) ← whnfR e | failure
+  guard <| ← withNewMCtxDepth <| isDefEq α q(Prop)
+  have p : Q(Prop) := p; have q : Q(Prop) := q
+  let ⟨bp, pp⟩ ← deriveBool p
+  match bp with
+  | false => return .isFalse (q(not_and_of_not_left $q $pp) : Q(¬($p ∧ $q)))
+  | true =>
+    let ⟨bq, pq⟩ ← deriveBool q
+    match bq with
+    | false => return .isFalse (q(not_and_of_not_right $p $pq) : Q(¬($p ∧ $q)))
+    | true  => return .isTrue (q(⟨$pp, $pq⟩) : Q($p ∧ $q))
+
+/-- The `norm_num` extension which identifies expressions of the form `a ∨ b`,
+such that `norm_num` successfully recognises `a` and `b`. -/
+@[norm_num _ ∨ _] def evalOr : NormNumExt where eval {u α} e := do
+  let .app (.app (.const ``Or _) (p : Q($α))) (q : Q($α)) ← whnfR e | failure
+  guard <| ← withNewMCtxDepth <| isDefEq α q(Prop)
+  have p : Q(Prop) := p; have q : Q(Prop) := q
+  let ⟨bp, pp⟩ ← deriveBool p
+  match bp with
+  | true  => return .isTrue (q(Or.inl $pp) : Q($p ∨ $q))
+  | false =>
+    let ⟨bq, pq⟩ ← deriveBool q
+    match bq with
+    | true  => return .isTrue (q(Or.inr $pq) : Q($p ∨ $q))
+    | false => return .isFalse (q(not_or_of_not $pp $pq) : Q(¬($p ∨ $q)))
+
+set_option trace.Tactic.norm_num true
+
+example : ¬ Nat.Prime 4 := by norm_num1
+
+example [Ring α] : (2 : α) + 2 = 4 ∧ (3 : α) * 3 = 9 := by norm_num1
 
 end Mathlib.Meta.NormNum
