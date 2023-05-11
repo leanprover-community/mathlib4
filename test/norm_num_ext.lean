@@ -32,41 +32,45 @@ example : Nat.sqrt 120 = 10 := by norm_num
 example : Nat.sqrt 121 = 11 := by norm_num
 -/
 
-/-
-example : Nat.coprime 1 2 := by norm_num
-example : Nat.coprime 2 1 := by norm_num
-example : ¬ Nat.coprime 0 0 := by norm_num
-example : ¬ Nat.coprime 0 3 := by norm_num
-example : ¬ Nat.coprime 2 0 := by norm_num
-example : Nat.coprime 2 3 := by norm_num
-example : ¬ Nat.coprime 2 4 := by norm_num
--/
+example : Nat.coprime 1 2 := by norm_num only
+example : Nat.coprime 2 1 := by norm_num only
+example : ¬ Nat.coprime 0 0 := by norm_num only
+example : ¬ Nat.coprime 0 3 := by norm_num only
+example : ¬ Nat.coprime 2 0 := by norm_num only
+example : Nat.coprime 2 3 := by norm_num only
+example : ¬ Nat.coprime 2 4 := by norm_num only
 
-example : Nat.gcd 1 2 = 1 := by norm_num
-example : Nat.gcd 2 1 = 1 := by norm_num
-example : Nat.gcd 0 0 = 0 := by norm_num
-example : Nat.gcd 0 3 = 3 := by norm_num
-example : Nat.gcd 2 0 = 2 := by norm_num
-example : Nat.gcd 2 3 = 1 := by norm_num
-example : Nat.gcd 2 4 = 2 := by norm_num
+example : Nat.gcd 1 2 = 1 := by norm_num only
+example : Nat.gcd 2 1 = 1 := by norm_num only
+example : Nat.gcd 0 0 = 0 := by norm_num only
+example : Nat.gcd 0 3 = 3 := by norm_num only
+example : Nat.gcd 2 0 = 2 := by norm_num only
+example : Nat.gcd 2 3 = 1 := by norm_num only
+example : Nat.gcd 2 4 = 2 := by norm_num only
 
-example : Nat.lcm 1 2 = 2 := by norm_num
-example : Nat.lcm 2 1 = 2 := by norm_num
-example : Nat.lcm 0 0 = 0 := by norm_num
-example : Nat.lcm 0 3 = 0 := by norm_num
-example : Nat.lcm 2 0 = 0 := by norm_num
-example : Nat.lcm 2 3 = 6 := by norm_num
-example : Nat.lcm 2 4 = 4 := by norm_num
+example : Nat.lcm 1 2 = 2 := by norm_num only
+example : Nat.lcm 2 1 = 2 := by norm_num only
+example : Nat.lcm 0 0 = 0 := by norm_num only
+example : Nat.lcm 0 3 = 0 := by norm_num only
+example : Nat.lcm 2 0 = 0 := by norm_num only
+example : Nat.lcm 2 3 = 6 := by norm_num only
+example : Nat.lcm 2 4 = 4 := by norm_num only
 
-example : Int.gcd 2 3 = 1 := by norm_num
-example : Int.gcd (-2) 3 = 1 := by norm_num
-example : Int.gcd 2 (-3) = 1 := by norm_num
-example : Int.gcd (-2) (-3) = 1 := by norm_num
+example : Int.gcd 2 3 = 1 := by norm_num only
+example : Int.gcd (-2) 3 = 1 := by norm_num only
+example : Int.gcd 2 (-3) = 1 := by norm_num only
+example : Int.gcd (-2) (-3) = 1 := by norm_num only
 
-example : Int.lcm 2 3 = 6 := by norm_num
-example : Int.lcm (-2) 3 = 6 := by norm_num
-example : Int.lcm 2 (-3) = 6 := by norm_num
-example : Int.lcm (-2) (-3) = 6 := by norm_num
+example : Int.lcm 2 3 = 6 := by norm_num only
+example : Int.lcm (-2) 3 = 6 := by norm_num only
+example : Int.lcm 2 (-3) = 6 := by norm_num only
+example : Int.lcm (-2) (-3) = 6 := by norm_num only
+
+example : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num only
+
+example : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num only
+
+example : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num only
 
 /-
 example : ¬ Nat.Prime 0 := by norm_num
@@ -101,65 +105,65 @@ example : Nat.factors 221 = [13, 17] := by norm_num
 -/
 
 -- randomized tests
-example : Nat.gcd 35 29 = 1 := by norm_num
-example : Int.gcd 35 29 = 1 := by norm_num
-example : Nat.lcm 35 29 = 1015 := by norm_num
-example : Int.gcd 35 29 = 1 := by norm_num
-example : Nat.coprime 35 29 := by norm_num
+example : Nat.gcd 35 29 = 1 := by norm_num only
+example : Int.gcd 35 29 = 1 := by norm_num only
+example : Nat.lcm 35 29 = 1015 := by norm_num only
+example : Int.gcd 35 29 = 1 := by norm_num only
+example : Nat.coprime 35 29 := by norm_num only
 
-example : Nat.gcd 80 2 = 2 := by norm_num
-example : Int.gcd 80 2 = 2 := by norm_num
-example : Nat.lcm 80 2 = 80 := by norm_num
-example : Int.gcd 80 2 = 2 := by norm_num
-example : ¬ Nat.coprime 80 2 := by norm_num
+example : Nat.gcd 80 2 = 2 := by norm_num only
+example : Int.gcd 80 2 = 2 := by norm_num only
+example : Nat.lcm 80 2 = 80 := by norm_num only
+example : Int.gcd 80 2 = 2 := by norm_num only
+example : ¬ Nat.coprime 80 2 := by norm_num only
 
-example : Nat.gcd 19 17 = 1 := by norm_num
-example : Int.gcd 19 17 = 1 := by norm_num
-example : Nat.lcm 19 17 = 323 := by norm_num
-example : Int.gcd 19 17 = 1 := by norm_num
-example : Nat.coprime 19 17 := by norm_num
+example : Nat.gcd 19 17 = 1 := by norm_num only
+example : Int.gcd 19 17 = 1 := by norm_num only
+example : Nat.lcm 19 17 = 323 := by norm_num only
+example : Int.gcd 19 17 = 1 := by norm_num only
+example : Nat.coprime 19 17 := by norm_num only
 
-example : Nat.gcd 11 18 = 1 := by norm_num
-example : Int.gcd 11 18 = 1 := by norm_num
-example : Nat.lcm 11 18 = 198 := by norm_num
-example : Int.gcd 11 18 = 1 := by norm_num
-example : Nat.coprime 11 18 := by norm_num
+example : Nat.gcd 11 18 = 1 := by norm_num only
+example : Int.gcd 11 18 = 1 := by norm_num only
+example : Nat.lcm 11 18 = 198 := by norm_num only
+example : Int.gcd 11 18 = 1 := by norm_num only
+example : Nat.coprime 11 18 := by norm_num only
 
-example : Nat.gcd 23 73 = 1 := by norm_num
-example : Int.gcd 23 73 = 1 := by norm_num
-example : Nat.lcm 23 73 = 1679 := by norm_num
-example : Int.gcd 23 73 = 1 := by norm_num
-example : Nat.coprime 23 73 := by norm_num
+example : Nat.gcd 23 73 = 1 := by norm_num only
+example : Int.gcd 23 73 = 1 := by norm_num only
+example : Nat.lcm 23 73 = 1679 := by norm_num only
+example : Int.gcd 23 73 = 1 := by norm_num only
+example : Nat.coprime 23 73 := by norm_num only
 
-example : Nat.gcd 73 68 = 1 := by norm_num
-example : Int.gcd 73 68 = 1 := by norm_num
-example : Nat.lcm 73 68 = 4964 := by norm_num
-example : Int.gcd 73 68 = 1 := by norm_num
-example : Nat.coprime 73 68 := by norm_num
+example : Nat.gcd 73 68 = 1 := by norm_num only
+example : Int.gcd 73 68 = 1 := by norm_num only
+example : Nat.lcm 73 68 = 4964 := by norm_num only
+example : Int.gcd 73 68 = 1 := by norm_num only
+example : Nat.coprime 73 68 := by norm_num only
 
-example : Nat.gcd 28 16 = 4 := by norm_num
-example : Int.gcd 28 16 = 4 := by norm_num
-example : Nat.lcm 28 16 = 112 := by norm_num
-example : Int.gcd 28 16 = 4 := by norm_num
-example : ¬ Nat.coprime 28 16 := by norm_num
+example : Nat.gcd 28 16 = 4 := by norm_num only
+example : Int.gcd 28 16 = 4 := by norm_num only
+example : Nat.lcm 28 16 = 112 := by norm_num only
+example : Int.gcd 28 16 = 4 := by norm_num only
+example : ¬ Nat.coprime 28 16 := by norm_num only
 
-example : Nat.gcd 44 98 = 2 := by norm_num
-example : Int.gcd 44 98 = 2 := by norm_num
-example : Nat.lcm 44 98 = 2156 := by norm_num
-example : Int.gcd 44 98 = 2 := by norm_num
-example : ¬ Nat.coprime 44 98 := by norm_num
+example : Nat.gcd 44 98 = 2 := by norm_num only
+example : Int.gcd 44 98 = 2 := by norm_num only
+example : Nat.lcm 44 98 = 2156 := by norm_num only
+example : Int.gcd 44 98 = 2 := by norm_num only
+example : ¬ Nat.coprime 44 98 := by norm_num only
 
-example : Nat.gcd 21 79 = 1 := by norm_num
-example : Int.gcd 21 79 = 1 := by norm_num
-example : Nat.lcm 21 79 = 1659 := by norm_num
-example : Int.gcd 21 79 = 1 := by norm_num
-example : Nat.coprime 21 79 := by norm_num
+example : Nat.gcd 21 79 = 1 := by norm_num only
+example : Int.gcd 21 79 = 1 := by norm_num only
+example : Nat.lcm 21 79 = 1659 := by norm_num only
+example : Int.gcd 21 79 = 1 := by norm_num only
+example : Nat.coprime 21 79 := by norm_num only
 
-example : Nat.gcd 93 34 = 1 := by norm_num
-example : Int.gcd 93 34 = 1 := by norm_num
-example : Nat.lcm 93 34 = 3162 := by norm_num
-example : Int.gcd 93 34 = 1 := by norm_num
-example : Nat.coprime 93 34 := by norm_num
+example : Nat.gcd 93 34 = 1 := by norm_num only
+example : Int.gcd 93 34 = 1 := by norm_num only
+example : Nat.lcm 93 34 = 3162 := by norm_num only
+example : Int.gcd 93 34 = 1 := by norm_num only
+example : Nat.coprime 93 34 := by norm_num only
 
 /-
 example : ¬ Nat.Prime 912 := by norm_num
@@ -313,19 +317,18 @@ variable {α : Type _} [CommRing α]
 open BigOperators
 
 -- Lists:
-example : ([1, 2, 1, 3]).sum = 7 := by norm_num [-List.sum_cons]
+example : ([1, 2, 1, 3]).sum = 7 := by norm_num only
 example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map]
-example : (List.range 10).sum = 45 := by norm_num [-List.range_succ]
-example : (List.finRange 10).sum = 45 := by norm_num [-List.finRange_succ]
+example : (List.range 10).sum = 45 := by norm_num only
+example : (List.finRange 10).sum = 45 := by norm_num only
 
 -- Multisets:
-example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num [-Multiset.sum_cons]
-example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by
-  norm_num [-Multiset.map_cons]
+example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num only
+example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by norm_num only
 example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
   norm_num [-Multiset.map_cons]
-example : (Multiset.range 10).sum = 45 := by norm_num [-Multiset.map_cons, -Multiset.range_succ]
-example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num
+example : (Multiset.range 10).sum = 45 := by norm_num only
+example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
 
 -- Finsets:
 /-
