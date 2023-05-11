@@ -761,8 +761,8 @@ theorem coe_withConstants : (S.withConstants h : Set M) = ↑S :=
 #align first_order.language.substructure.coe_with_constants FirstOrder.Language.Substructure.coe_withConstants
 
 @[simp]
-theorem reduct_withConstants : (L.lhomWithConstants A).substructureReduct (S.withConstants h) = S :=
-  by
+theorem reduct_withConstants :
+    (L.lhomWithConstants A).substructureReduct (S.withConstants h) = S := by
   ext
   simp
 #align first_order.language.substructure.reduct_with_constants FirstOrder.Language.Substructure.reduct_withConstants
