@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Init.Algebra.Order
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
 
 namespace Mathlib.Tactic.Rel
 open Lean Meta
@@ -165,10 +166,11 @@ def relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit :=
     for h in hs do
       try
         try myExact g h catch _ =>
-          try myExact g (← mkAppM ``le_of_lt #[h]) catch _ =>
-            let m ← mkFreshExprMVar none
-            myExact g (← mkAppOptM ``Eq.subst #[h, m])
-            g.rfl
+          try g.symm >>= fun g ↦ myExact g h catch _ =>
+            try myExact g (← mkAppM ``le_of_lt #[h]) catch _ =>
+              let m ← mkFreshExprMVar none
+              myExact g (← mkAppOptM ``Eq.subst #[h, m])
+              g.rfl
         return
       catch _ => s.restore
     throwError "rel_assumption failed"
