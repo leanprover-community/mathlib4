@@ -1928,6 +1928,7 @@ variable {N : ℝ≥0} (h_e : eta_experiment% ∀ x, ‖x‖ ≤ N * ‖e x‖) 
 -- as we don't want it beyond the next declaration, but that causes errors.
 set_option synthInstance.etaExperiment true in
 set_option quotPrecheck false in
+/-- Convenient notation for `op_norm_extend_le`. -/
 scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
 set_option synthInstance.etaExperiment true in
