@@ -43,7 +43,7 @@ variable {R : Type _} [NormedRing R] [CompleteSpace R]
 namespace Units
 
 /-- In a complete normed ring, a perturbation of `1` by an element `t` of distance less than `1`
-from `1` is a unit.  Here we construct its `units` structure.  -/
+from `1` is a unit.  Here we construct its `Units` structure.  -/
 @[simps val]
 def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
@@ -54,7 +54,7 @@ def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
 #align units.coe_one_sub Units.oneSub_val
 
 /-- In a complete normed ring, a perturbation of a unit `x` by an element `t` of distance less than
-`‖x⁻¹‖⁻¹` from `x` is a unit.  Here we construct its `units` structure. -/
+`‖x⁻¹‖⁻¹` from `x` is a unit.  Here we construct its `Units` structure. -/
 @[simps! val]
 def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy -- to make `add_val` true definitionally, for convenience
@@ -71,7 +71,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
 #align units.coe_add Units.add_val
 
 /-- In a complete normed ring, an element `y` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
-Here we construct its `units` structure. -/
+Here we construct its `Units` structure. -/
 @[simps! val]
 def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   (x.add (y - x : R) h).copy y (by simp) _ rfl
@@ -256,13 +256,13 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
   I.eq_top_iff_one.mpr <| by simpa only [show u.inv * x = 1 by simp] using I.mul_mem_left u.inv hxI
 #align ideal.eq_top_of_norm_lt_one Ideal.eq_top_of_norm_lt_one
 
-/-- The `ideal.closure` of a proper ideal in a complete normed ring is proper. -/
+/-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
   simpa only [I.closure.eq_top_iff_one, Ne.def] using mt (@h 1) one_not_mem_nonunits
 #align ideal.closure_ne_top Ideal.closure_ne_top
 
-/-- The `ideal.closure` of a maximal ideal in a complete normed ring is the ideal itself. -/
+/-- The `Ideal.closure` of a maximal ideal in a complete normed ring is the ideal itself. -/
 theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
   (hI.eq_of_le (I.closure_ne_top hI.ne_top) subset_closure).symm
 #align ideal.is_maximal.closure_eq Ideal.IsMaximal.closure_eq
