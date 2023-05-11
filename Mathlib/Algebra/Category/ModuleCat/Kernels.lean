@@ -8,7 +8,7 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
@@ -16,9 +16,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe u v
 
@@ -32,7 +30,7 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  KernelFork.ofι (asHom f.ker.Subtype) <| by tidy
+  KernelFork.ofι (asHom f.ker.subtype) <| by tidy
 #align Module.kernel_cone ModuleCat.kernelCone
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
@@ -132,4 +130,3 @@ theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) 
 #align Module.cokernel_π_ext ModuleCat.cokernel_π_ext
 
 end ModuleCat
-
