@@ -13,35 +13,35 @@ import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.SolveByElim
 
 /-!
-# Approximations for Continued Fraction Computations (`generalized_continued_fraction.of`)
+# Approximations for Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
 
 ## Summary
 
 This file contains useful approximations for the values involved in the continued fractions
-computation `generalized_continued_fraction.of`. In particular, we derive the so-called
-*determinant formula* for `generalized_continued_fraction.of`:
+computation `GeneralizedContinuedFraction.of`. In particular, we derive the so-called
+*determinant formula* for `GeneralizedContinuedFraction.of`:
 `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`.
 
 Moreover, we derive some upper bounds for the error term when computing a continued fraction up a
 given position, i.e. bounds for the term
-`|v - (generalized_continued_fraction.of v).convergents n|`. The derived bounds will show us that
+`|v - (GeneralizedContinuedFraction.of v).convergents n|`. The derived bounds will show us that
 the error term indeed gets smaller. As a corollary, we will be able to show that
-`(generalized_continued_fraction.of v).convergents` converges to `v` in
-`algebra.continued_fractions.computation.approximation_corollaries`.
+`(GeneralizedContinuedFraction.of v).convergents` converges to `v` in
+`Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 
 ## Main Theorems
 
-- `generalized_continued_fraction.of_part_num_eq_one`: shows that all partial numerators `aᵢ` are
+- `GeneralizedContinuedFraction.of_part_num_eq_one`: shows that all partial numerators `aᵢ` are
   equal to one.
-- `generalized_continued_fraction.exists_int_eq_of_part_denom`: shows that all partial denominators
+- `GeneralizedContinuedFraction.exists_int_eq_of_part_denom`: shows that all partial denominators
   `bᵢ` correspond to an integer.
-- `generalized_continued_fraction.one_le_of_nth_part_denom`: shows that `1 ≤ bᵢ`.
-- `generalized_continued_fraction.succ_nth_fib_le_of_nth_denom`: shows that the `n`th denominator
-  `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `nat.fib (n + 1)`.
-- `generalized_continued_fraction.le_of_succ_nth_denom`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
+- `GeneralizedContinuedFraction.of_one_le_get?_part_denom`: shows that `1 ≤ bᵢ`.
+- `GeneralizedContinuedFraction.succ_nth_fib_le_of_nth_denom`: shows that the `n`th denominator
+  `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
+- `GeneralizedContinuedFraction.le_of_succ_get?_denom`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
   the `n`th partial denominator of the continued fraction.
-- `generalized_continued_fraction.abs_sub_convergents_le`: shows that
-  `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`, where `Aₙ` is the nth partial numerator.
+- `GeneralizedContinuedFraction.abs_sub_convergents_le`: shows that
+  `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`, where `Aₙ` is the `n`th partial numerator.
 
 ## References
 
@@ -62,7 +62,7 @@ variable {K : Type _} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
 namespace IntFractPair
 
 /-!
-We begin with some lemmas about the stream of `int_fract_pair`s, which presumably are not
+We begin with some lemmas about the stream of `IntFractPair`s, which presumably are not
 of great interest for the end user.
 -/
 
@@ -111,7 +111,7 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
 the `n`th fractional part `frₙ` of the stream.
-This result is straight-forward as `bₙ₊₁` is defined as the floor of `1 / frₙ`
+This result is straight-forward as `bₙ₊₁` is defined as the floor of `1 / frₙ`.
 -/
 theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n)
@@ -131,8 +131,8 @@ theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair 
 end IntFractPair
 
 /-!
-Next we translate above results about the stream of `int_fract_pair`s to the computed continued
-fraction `generalized_continued_fraction.of`.
+Next we translate above results about the stream of `IntFractPair`s to the computed continued
+fraction `GeneralizedContinuedFraction.of`.
 -/
 
 
@@ -184,12 +184,12 @@ theorem exists_int_eq_of_part_denom {b : K}
 
 /-!
 One of our next goals is to show that `bₙ * Bₙ ≤ Bₙ₊₁`. For this, we first show that the partial
-denominators `Bₙ` are bounded from below by the fibonacci sequence `nat.fib`. This then implies that
+denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. This then implies that
 `0 ≤ Bₙ` and hence `Bₙ₊₂ = bₙ₊₁ * Bₙ₊₁ + Bₙ ≥ bₙ₊₁ * Bₙ₊₁ + 0 = bₙ₊₁ * Bₙ₊₁`.
 -/
 
 
--- open `nat` as we will make use of fibonacci numbers.
+-- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
 theorem fib_le_of_continuantsAux_b :
@@ -207,11 +207,11 @@ theorem fib_le_of_continuantsAux_b :
         exact Option.ne_none_iff_exists'.mp not_terminated_at_n
         set pconts := g.continuantsAux (n + 1) with pconts_eq
         set ppconts := g.continuantsAux n with ppconts_eq
-        -- use the recurrence of continuants_aux
+        -- use the recurrence of `continuantsAux`
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
           simpa [fib_add_two, add_comm,
             continuantsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
-        -- make use of the fact that gp.a = 1
+        -- make use of the fact that `gp.a = 1`
         suffices (fib n : K) + fib (n + 1) ≤ ppconts.b + gp.b * pconts.b by
           simpa [of_part_num_eq_one <| part_num_eq_s_a s_ppred_nth_eq]
         have not_terminated_at_pred_n : ¬g.TerminatedAt (n - 1) :=
@@ -225,7 +225,7 @@ theorem fib_le_of_continuantsAux_b :
           IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminated_at_ppred_n)
         suffices : (fib (n + 1) : K) ≤ gp.b * pconts.b
         solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
-        -- finally use the fact that 1 ≤ gp.b to solve the goal
+        -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
           of_one_le_get?_part_denom (part_denom_eq_s_b s_ppred_nth_eq)
@@ -235,7 +235,7 @@ theorem fib_le_of_continuantsAux_b :
 #align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_of_continuantsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
-that is `nat.fib (n + 1) ≤ Bₙ`. -/
+that is `Nat.fib (n + 1) ≤ Bₙ`. -/
 theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     (fib (n + 1) : K) ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
@@ -312,7 +312,7 @@ section Determinant
 /-!
 ### Determinant Formula
 
-Next we prove the so-called *determinant formula* for `generalized_continued_fraction.of`:
+Next we prove the so-called *determinant formula* for `GeneralizedContinuedFraction.of`:
 `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`.
 -/
 
@@ -356,7 +356,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 #align generalized_continued_fraction.determinant_aux GeneralizedContinuedFraction.determinant_aux
 
-/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)` -/
+/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
 theorem determinant (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     (of v).numerators n * (of v).denominators (n + 1) -
       (of v).denominators n * (of v).numerators (n + 1) = (-1) ^ (n + 1) :=
@@ -371,7 +371,7 @@ section ErrorTerm
 ### Approximation of Error Term
 
 Next we derive some approximations for the error term when computing a continued fraction up a given
-position, i.e. bounds for the term `|v - (generalized_continued_fraction.of v).convergents n|`.
+position, i.e. bounds for the term `|v - (GeneralizedContinuedFraction.of v).convergents n|`.
 -/
 
 
@@ -402,7 +402,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     let pB := pred_conts.b
     -- first, let's simplify the goal as `ifp.fr ≠ 0`
     suffices v - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by simpa [ifp_fr_ne_zero]
-    -- now we can unfold `g.comp_exact_value` to derive the following equality for `v`
+    -- now we can unfold `g.compExactValue` to derive the following equality for `v`
     replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B)
     · simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_ne_zero, nextContinuants,
         nextNumerator, nextDenominator, add_comm] using g_finite_correctness
@@ -462,7 +462,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
       _ = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) := by ac_rfl
 #align generalized_continued_fraction.sub_convergents_eq GeneralizedContinuedFraction.sub_convergents_eq
 
-/-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)` -/
+/-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     |v - (of v).convergents n| ≤ 1 / ((of v).denominators n * ((of v).denominators <| n + 1)) := by
   -- shorthand notation
@@ -492,7 +492,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
   -- now we can use `sub_convergents_eq` to simplify our goal
   suffices |(-1) ^ n / denom'| ≤ 1 / denom by
     have : v - g.convergents n = (-1) ^ n / denom' := by
-      -- apply `sub_convergens_eq` and simplify the result
+      -- apply `sub_convergents_eq` and simplify the result
       have tmp := sub_convergents_eq stream_nth_eq
       simp only [stream_nth_fr_ne_zero, conts_eq.symm, pred_conts_eq.symm, if_false] at tmp
       rw [tmp]
@@ -547,7 +547,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
-`gcf.abs_sub_convergents_le`, but sometimes it is easier to apply and sufficient for one's use case.
+`GCF.abs_sub_convergents_le`, but sometimes it is easier to apply and sufficient for one's use case.
  -/
 theorem abs_sub_convergents_le' {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) :
@@ -555,8 +555,8 @@ theorem abs_sub_convergents_le' {b : K}
   have not_terminated_at_n : ¬(of v).TerminatedAt n := by
     simp [terminatedAt_iff_part_denom_none, nth_part_denom_eq]
   refine' (abs_sub_convergents_le not_terminated_at_n).trans _
-  -- One can show that `0 < (generalized_continued_fraction.of v).denominators n` but it's easier
-  -- to consider the case `(generalized_continued_fraction.of v).denominators n = 0`.
+  -- One can show that `0 < (GeneralizedContinuedFraction.of v).denominators n` but it's easier
+  -- to consider the case `(GeneralizedContinuedFraction.of v).denominators n = 0`.
   rcases zero_le_of_denom.eq_or_gt with
     ((hB : (GeneralizedContinuedFraction.of v).denominators n = 0) | hB)
   · simp only [hB, MulZeroClass.mul_zero, MulZeroClass.zero_mul, div_zero, le_refl]
