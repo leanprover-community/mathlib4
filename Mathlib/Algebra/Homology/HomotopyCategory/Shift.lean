@@ -11,8 +11,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-attribute [local simp] Preadditive.comp_zsmul Preadditive.zsmul_comp
-attribute [local simp] XIsoOfEq_hom_naturality
+attribute [local simp] Preadditive.comp_zsmul Preadditive.zsmul_comp XIsoOfEq_hom_naturality
 
 @[simps]
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
@@ -134,6 +133,9 @@ lemma shiftFunctorZero_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
   rw [← cancel_mono (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n), ← comp_f,
     Iso.hom_inv_id_app, id_f, shiftFunctorZero_inv_app_f]
   simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+
+lemma XIsoOfEq_shift (K : CochainComplex C ℤ) (n : ℤ) {p q : ℤ} (hpq : p = q) :
+  (K⟦n⟧).XIsoOfEq hpq = K.XIsoOfEq (show p + n = q + n by rw [hpq]) := rfl
 
 variable (C)
 
