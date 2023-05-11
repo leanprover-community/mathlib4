@@ -71,7 +71,6 @@ noncomputable instance : IsTriangulated (DerivedCategory C) := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
 
-
 variable {C}
 
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
