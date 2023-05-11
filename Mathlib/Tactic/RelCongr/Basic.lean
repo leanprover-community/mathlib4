@@ -35,11 +35,11 @@ conclusion of a form such as `f x₁ y z₁ ∼ f x₂ y z₂`; that is, a relat
 a function to two argument lists, in which the "varying argument" pairs (here `x₁`/`x₂` and
 `z₁`/`z₂`) are all free variables.
 
-The hypotheses of such a lemma are classified as generating "main goals" if they are of the form
+The antecedents of such a lemma are classified as generating "main goals" if they are of the form
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
-pair `f₁`/`f₂`. (Other hypotheses are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" hypothesis is recorded. -/
+pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
+"varying argument" pair corresponding to each "main" antecedent is recorded. -/
 initialize registerBuiltinAttribute {
   name := `rel_congr
   descr := "relational congruence"
@@ -71,11 +71,11 @@ initialize registerBuiltinAttribute {
       varyingArgs := varyingArgs.push !isEq
     let mut mainSubgoals := #[]
     let mut i := 0
-    -- iterate over hypotheses `hyp` to the lemma
+    -- iterate over antecedents `hyp` to the lemma
     for hyp in xs do
       mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun _args hypTy => do
         let mut mainSubgoals := mainSubgoals
-        -- pull out the conclusion `hypTy` of the hypothesis, and check whether it is of the form
+        -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
         -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
         -- `rel` above)
         if let .app (.app _ lhs₁) rhs₁ ← whnf hypTy then
@@ -87,7 +87,7 @@ initialize registerBuiltinAttribute {
             isDefEq lhs₁ e1 <&&> isDefEq rhs₁ e2 <||>
             isDefEq lhs₁ e2 <&&> isDefEq rhs₁ e1
           then
-            -- if yes, record the index of this hypothesis as a "main subgoal", together with the
+            -- if yes, record the index of this antecedent as a "main subgoal", together with the
             -- index of the "varying argument" pair it corresponds to
             mainSubgoals := mainSubgoals.push (i, j.1)
         pure mainSubgoals
@@ -109,14 +109,20 @@ partial def _root_.Lean.MVarId.relCongr
     MetaM (Array MVarId) := do
   withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
+  -- A. If there is no template, try to resolve the goal by the provided `assumption` tactic, and
+  -- continue on if this fails.
   | none =>
     try assumption g; return #[]
     catch _ => pure ()
+  -- B. If there is a template, (i) if the template is `?_` then try to resolve the goal by the
+  -- provided `assumption` tactic; if this fails, stop and report the existing goal.
   | some (.mvar mvarId) =>
     if let .syntheticOpaque ← mvarId.getKind then
       try assumption g; return #[]
       catch _ => return #[g]
+  -- B. If there is a template, (ii) if the template is *not* `?_` then continue on.
   | some _ => pure ()
+  -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
     | throwError "rel_congr failed, not a relation"
   let some relName := rel.getAppFn.constName?
@@ -127,6 +133,8 @@ partial def _root_.Lean.MVarId.relCongr
   let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName?, a)
     | if template.isNone then return #[g]
       throwError "rel_congr failed, {rhs} is not a constant"
+  -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
+  -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
     let (some tplHead, tplArgs) := tpl.withApp fun e a => (e.constName?, a)
       | throwError "rel_congr failed, {tpl} is not a constant"
@@ -134,6 +142,9 @@ partial def _root_.Lean.MVarId.relCongr
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
+    -- and also build a array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in the
+    -- template (these will be used in recursive calls later), and a array of booleans according to
+    -- which of these contain `?_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
       let hasMVar := tpl.findMVar? fun mvarId =>
@@ -142,17 +153,29 @@ partial def _root_.Lean.MVarId.relCongr
         else
           false
       pure (some tpl, hasMVar.isSome)
+  -- A. If there is no template, check that `lhs = rhs`
   else
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
+      -- (if not, stop and report the existing goal)
       return #[g]
+    -- and also build a array of booleans according to which arguments `_ ... _` to the head function
+    -- differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
       return (none, !(← isDefEq lhsArg rhsArg))
+  -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
+  -- supposed to vary, according to the template (if there is one) to vary, and in the absence of
+  -- a template to record which arguments to the head function differ between the two sides of the
+  -- goal.
   let varyingArgs := tplArgs.map (·.2)
   if varyingArgs.all not then
     throwError "try refl"
   let s ← saveState
   let mut ex? := none
+  -- Look up the `@[rel_congr]` lemmas whose conclusion has the same relation and head function as
+  -- the goal.
   for lem in (relCongrExt.getState (← getEnv)).findD (relName, lhsHead) #[] do
+    -- Filter further according to whether the boolean-array of varying/nonvarying arguments of such
+    -- a lemma matches `varyingArgs`
     if lem.varyingArgs == varyingArgs then
       let gs ← try
         Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
@@ -178,9 +201,17 @@ partial def _root_.Lean.MVarId.relCongr
             try discharger g
             catch _ => out := out.push g
         return out ++ subgoals
+  -- A. If there is no template, and there was no `@[rel_congr]` lemma which matched the goal,
+  -- report this goal back.
   if template.isNone then
     return #[g]
-  let some (sErr, e) := ex? | throwError "rel_congr failed, no lemma with @[rel_congr] applies"
+  -- B. If there is a template, and there was no `@[rel_congr]` lemma which matched the template,
+  -- fail.
+  let some (sErr, e) := ex?
+    | throwError "rel_congr failed, no @[rel_congr] lemma applies for the template portion {template} and the relation {rel}"
+  -- B. If there is a template, and there was a `@[rel_congr]` lemma which matched the template, but
+  -- it was not possible to apply that lemma, then report the error message from applying that
+  -- lemma.
   sErr.restore
   throw e
 
