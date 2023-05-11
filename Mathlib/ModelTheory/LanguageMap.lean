@@ -78,7 +78,7 @@ variable (ϕ : L →ᴸ L')
 /-- Pulls a structure back along a language map. -/
 def reduct (M : Type _) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
-  rel_map r xs := rel_map (ϕ.onRelation r) xs
+  RelMap r xs := RelMap (ϕ.onRelation r) xs
 #align first_order.language.Lhom.reduct FirstOrder.Language.LHom.reduct
 
 /-- The identity language homomorphism. -/
@@ -237,8 +237,8 @@ noncomputable def defaultExpansion (ϕ : L →ᴸ L')
   funMap {n} f xs :=
     if h' : f ∈ Set.range fun f : L.Functions n => onFunction ϕ f then funMap h'.choose xs
     else default
-  rel_map {n} r xs :=
-    if h' : r ∈ Set.range fun r : L.Relations n => onRelation ϕ r then rel_map h'.choose xs
+  RelMap {n} r xs :=
+    if h' : r ∈ Set.range fun r : L.Relations n => onRelation ϕ r then RelMap h'.choose xs
     else default
 #align first_order.language.Lhom.default_expansion FirstOrder.Language.LHom.defaultExpansion
 
@@ -247,7 +247,7 @@ all symbols on that structure. -/
 class IsExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] : Prop where
   map_onFunction : ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x
   map_onRelation : ∀ {n} (R : L.Relations n) (x : Fin n → M),
-    rel_map (ϕ.onRelation R) x = rel_map R x
+    RelMap (ϕ.onRelation R) x = RelMap R x
 #align first_order.language.Lhom.is_expansion_on FirstOrder.Language.LHom.IsExpansionOn
 
 @[simp]
@@ -258,7 +258,7 @@ theorem map_onFunction {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpan
 
 @[simp]
 theorem map_onRelation {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
-    (R : L.Relations n) (x : Fin n → M) : rel_map (ϕ.onRelation R) x = rel_map R x :=
+    (R : L.Relations n) (x : Fin n → M) : RelMap (ϕ.onRelation R) x = RelMap R x :=
   IsExpansionOn.map_onRelation R x
 #align first_order.language.Lhom.map_on_relation FirstOrder.Language.LHom.map_onRelation
 
@@ -512,7 +512,7 @@ theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L
 
 @[simp]
 theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @rel_map (L[[α]]) M _ n (Sum.inl R) x = rel_map R x :=
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 #align first_order.language.with_constants_rel_map_sum_inl FirstOrder.Language.withConstants_relMap_sum_inl
 
