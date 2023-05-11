@@ -160,7 +160,7 @@ theorem copy_eq {s : Set M} (hs : s = S) : S.copy s hs = S :=
 #align first_order.language.substructure.copy_eq FirstOrder.Language.Substructure.copy_eq
 
 theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
-  mem_carrier.2 (S.fun_mem c _ Fin.elim0)
+  mem_carrier.2 (S.fun_mem c _ finZeroElim)
 #align first_order.language.substructure.constants_mem FirstOrder.Language.Substructure.constants_mem
 
 /-- The substructure `M` of the structure `M`. -/
@@ -418,6 +418,7 @@ def comap (φ : M →[L] N) (S : L.Substructure N) : L.Substructure M where
     rw [mem_preimage, φ.map_fun]
     exact S.fun_mem f (φ ∘ x) hx
 #align first_order.language.substructure.comap FirstOrder.Language.Substructure.comap
+#align first_order.language.substructure.comap_coe FirstOrder.Language.Substructure.comap_coe
 
 @[simp]
 theorem mem_comap {S : L.Substructure N} {f : M →[L] N} {x : M} : x ∈ S.comap f ↔ f x ∈ S :=
@@ -445,6 +446,7 @@ def map (φ : M →[L] N) (S : L.Substructure M) : L.Substructure N where
         simp only [Hom.map_fun, SetLike.mem_coe]
         exact congr rfl (funext fun i => (Classical.choose_spec (hx i)).2)⟩
 #align first_order.language.substructure.map FirstOrder.Language.Substructure.map
+#align first_order.language.substructure.map_coe FirstOrder.Language.Substructure.map_coe
 
 @[simp]
 theorem mem_map {f : M →[L] N} {S : L.Substructure M} {y : N} :
@@ -539,7 +541,7 @@ theorem comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
 
 @[simp]
 theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
-  ext fun x => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
 #align first_order.language.substructure.map_id FirstOrder.Language.Substructure.map_id
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
@@ -557,9 +559,7 @@ section GaloisCoinsertion
 
 variable {ι : Type _} {f : M →[L] N} (hf : Function.Injective f)
 
-include hf
-
-/-- `map f` and `comap f` form a `galois_coinsertion` when `f` is injective. -/
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 #align first_order.language.substructure.gci_map_comap FirstOrder.Language.Substructure.gciMapComap
@@ -608,9 +608,7 @@ section GaloisInsertion
 
 variable {ι : Type _} {f : M →[L] N} (hf : Function.Surjective f)
 
-include hf
-
-/-- `map f` and `comap f` form a `galois_insertion` when `f` is surjective. -/
+/-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -660,18 +658,19 @@ theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
 end GaloisInsertion
 
 instance inducedStructure {S : L.Substructure M} : L.Structure S where
-  funMap n f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
-  rel_map n r x := RelMap r fun i => (x i : M)
+  funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
+  RelMap {_} r x := RelMap r fun i => (x i : M)
+set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.induced_Structure FirstOrder.Language.Substructure.inducedStructure
 
 /-- The natural embedding of an `L.substructure` of `M` into `M`. -/
 def subtype (S : L.Substructure M) : S ↪[L] M where
-  toFun := coe
+  toFun := (↑)
   inj' := Subtype.coe_injective
 #align first_order.language.substructure.subtype FirstOrder.Language.Substructure.subtype
 
 @[simp]
-theorem coeSubtype : ⇑S.Subtype = coe :=
+theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 #align first_order.language.substructure.coe_subtype FirstOrder.Language.Substructure.coeSubtype
 
@@ -684,11 +683,12 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
 #align first_order.language.substructure.top_equiv FirstOrder.Language.Substructure.topEquiv
 
 @[simp]
-theorem coe_topEquiv : ⇑(topEquiv : (⊤ : L.Substructure M) ≃[L] M) = coe :=
+theorem coe_topEquiv :
+    ⇑(topEquiv : (⊤ : L.Substructure M) ≃[L] M) = ((↑) : (⊤ : L.Substructure M) → M) :=
   rfl
 #align first_order.language.substructure.coe_top_equiv FirstOrder.Language.Substructure.coe_topEquiv
 
-/-- A dependent version of `substructure.closure_induction`. -/
+/-- A dependent version of `Substructure.closure_induction`. -/
 @[elab_as_elim]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
@@ -700,26 +700,26 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
 
 end Substructure
 
-namespace Lhom
+namespace LHom
+
+set_option linter.uppercaseLean3 false
 
 open Substructure
 
 variable {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
-include φ
-
 /-- Reduces the language of a substructure along a language hom. -/
 def substructureReduct : L'.Substructure M ↪o L.Substructure M where
   toFun S :=
     { carrier := S
-      fun_mem := fun n f x hx => by
-        have h := S.fun_mem (φ.on_function f) x hx
-        simp only [Lhom.map_on_function, substructure.mem_carrier] at h
+      fun_mem := fun {n} f x hx => by
+        have h := S.fun_mem (φ.onFunction f) x hx
+        simp only [LHom.map_onFunction, Substructure.mem_carrier] at h
         exact h }
   inj' S T h := by
-    simp only [SetLike.coe_set_eq] at h
+    simp only [SetLike.coe_set_eq, Substructure.mk.injEq] at h
     exact h
-  map_rel_iff' S T := Iff.rfl
+  map_rel_iff' {S T} := Iff.rfl
 #align first_order.language.Lhom.substructure_reduct FirstOrder.Language.LHom.substructureReduct
 
 @[simp]
@@ -733,15 +733,15 @@ theorem coe_substructureReduct {S : L'.Substructure M} : (φ.substructureReduct 
   rfl
 #align first_order.language.Lhom.coe_substructure_reduct FirstOrder.Language.LHom.coe_substructureReduct
 
-end Lhom
+end LHom
 
 namespace Substructure
 
 /-- Turns any substructure containing a constant set `A` into a `L[[A]]`-substructure. -/
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
-  fun_mem n f := by
-    cases f
+  fun_mem {n} f := by
+    cases' f with f f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2
@@ -778,12 +778,10 @@ theorem closure_withConstants_eq :
     closure (L[[A]]) s =
       (closure L (A ∪ s)).withConstants ((A.subset_union_left s).trans subset_closure) := by
   refine' closure_eq_of_le ((A.subset_union_right s).trans subset_closure) _
-  rw [← (L.Lhom_with_constants A).substructureReduct.le_iff_le]
-  simp only [subset_closure, reduct_with_constants, closure_le, Lhom.coe_substructure_reduct,
+  rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
+  simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
     Set.union_subset_iff, and_true_iff]
-  · exact subset_closure_with_constants
-  · infer_instance
-  · infer_instance
+  · exact subset_closure_withConstants
 #align first_order.language.substructure.closure_with_constants_eq FirstOrder.Language.Substructure.closure_withConstants_eq
 
 end Substructure
@@ -793,29 +791,32 @@ namespace Hom
 open Substructure
 
 /-- The restriction of a first-order hom to a substructure `s ⊆ M` gives a hom `s → N`. -/
-@[simps]
+@[simps!]
 def domRestrict (f : M →[L] N) (p : L.Substructure M) : p →[L] N :=
-  f.comp p.Subtype.toHom
+  f.comp p.subtype.toHom
 #align first_order.language.hom.dom_restrict FirstOrder.Language.Hom.domRestrict
+#align first_order.language.hom.dom_restrict_to_fun FirstOrder.Language.Hom.domRestrict_toFun
 
 /-- A first-order hom `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted to a
 hom `M → p`. -/
 @[simps]
 def codRestrict (p : L.Substructure N) (f : M →[L] N) (h : ∀ c, f c ∈ p) : M →[L] p where
   toFun c := ⟨f c, h c⟩
-  map_rel' n R x h := f.map_rel R x h
+  map_fun' {n} f x := by aesop
+  map_rel' {n} R x h := f.map_rel R x h
 #align first_order.language.hom.cod_restrict FirstOrder.Language.Hom.codRestrict
+#align first_order.language.hom.cod_restrict_to_fun_coe FirstOrder.Language.Hom.codRestrict_toFun_coe
 
 @[simp]
 theorem comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
-    ((codRestrict p g h).comp f : M →[L] p) = codRestrict p (g.comp f) fun b => h _ :=
-  ext fun b => rfl
+    ((codRestrict p g h).comp f : M →[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
+  ext fun _ => rfl
 #align first_order.language.hom.comp_cod_restrict FirstOrder.Language.Hom.comp_codRestrict
 
 @[simp]
 theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
-    p.Subtype.toHom.comp (codRestrict p f h) = f :=
-  ext fun b => rfl
+    p.subtype.toHom.comp (codRestrict p f h) = f :=
+  ext fun _ => rfl
 #align first_order.language.hom.subtype_comp_cod_restrict FirstOrder.Language.Hom.subtype_comp_codRestrict
 
 /-- The range of a first-order hom `f : M → N` is a submodule of `N`.
@@ -870,7 +871,7 @@ theorem map_le_range {f : M →[L] N} {p : L.Substructure M} : map f p ≤ range
 /-- The substructure of elements `x : M` such that `f x = g x` -/
 def eqLocus (f g : M →[L] N) : Substructure L M where
   carrier := { x : M | f x = g x }
-  fun_mem n fn x hx := by
+  fun_mem {n} fn x hx := by
     have h : f ∘ x = g ∘ x := by
       ext
       repeat' rw [Function.comp_apply]
@@ -878,14 +879,14 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
     simp [h]
 #align first_order.language.hom.eq_locus FirstOrder.Language.Hom.eqLocus
 
-/-- If two `L.hom`s are equal on a set, then they are equal on its substructure closure. -/
+/-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure L s) :=
   show closure L s ≤ f.eqLocus g from closure_le.2 h
 #align first_order.language.hom.eq_on_closure FirstOrder.Language.Hom.eqOn_closure
 
 theorem eq_of_eqOn_top {f g : M →[L] N} (h : Set.EqOn f g (⊤ : Substructure L M)) : f = g :=
-  ext fun x => h trivial
+  ext fun _ => h trivial
 #align first_order.language.hom.eq_of_eq_on_top FirstOrder.Language.Hom.eq_of_eqOn_top
 
 variable {s : Set M}
@@ -903,7 +904,7 @@ open Substructure
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
 -/
 def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
-  f.comp p.Subtype
+  f.comp p.subtype
 #align first_order.language.embedding.dom_restrict FirstOrder.Language.Embedding.domRestrict
 
 @[simp]
@@ -915,13 +916,13 @@ theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.do
 to an embedding `M → p`. -/
 def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) : M ↪[L] p where
   toFun := f.toHom.codRestrict p h
-  inj' a b ab := f.Injective (Subtype.mk_eq_mk.1 ab)
-  map_fun' n F x := (f.toHom.codRestrict p h).map_fun' F x
-  map_rel' n r x := by
+  inj' a b ab := f.injective (Subtype.mk_eq_mk.1 ab)
+  map_fun' {n} F x := (f.toHom.codRestrict p h).map_fun' F x
+  map_rel' {n} r x := by
     simp only
-    rw [← p.subtype.map_rel, Function.comp.assoc]
-    change rel_map r (hom.comp p.subtype.to_hom (f.to_hom.cod_restrict p h) ∘ x) ↔ _
-    rw [hom.subtype_comp_cod_restrict, ← f.map_rel]
+    rw [← p.subtype.map_rel]
+    change RelMap r (Hom.comp p.subtype.toHom (f.toHom.codRestrict p h) ∘ x) ↔ _
+    rw [Hom.subtype_comp_codRestrict, ← f.map_rel]
     rfl
 #align first_order.language.embedding.cod_restrict FirstOrder.Language.Embedding.codRestrict
 
@@ -933,29 +934,31 @@ theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
 
 @[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
-    ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun b => h _ :=
-  ext fun b => rfl
+    ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
+  ext fun _ => rfl
 #align first_order.language.embedding.comp_cod_restrict FirstOrder.Language.Embedding.comp_codRestrict
 
 @[simp]
 theorem subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
-    p.Subtype.comp (codRestrict p f h) = f :=
-  ext fun b => rfl
+    p.subtype.comp (codRestrict p f h) = f :=
+  ext fun _ => rfl
 #align first_order.language.embedding.subtype_comp_cod_restrict FirstOrder.Language.Embedding.subtype_comp_codRestrict
 
-/-- The equivalence between a substructure `s` and its image `s.map f.to_hom`, where `f` is an
+/-- The equivalence between a substructure `s` and its image `s.map f.toHom`, where `f` is an
   embedding. -/
-noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) : s ≃[L] s.map f.toHom
-    where
+noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
+    s ≃[L] s.map f.toHom where
   toFun := codRestrict (s.map f.toHom) (f.domRestrict s) fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩
   invFun n := ⟨Classical.choose n.2, (Classical.choose_spec n.2).1⟩
   left_inv := fun ⟨m, hm⟩ =>
     Subtype.mk_eq_mk.2
-      (f.Injective
+      (f.injective
         (Classical.choose_spec
             (codRestrict (s.map f.toHom) (f.domRestrict s) (fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩)
                 ⟨m, hm⟩).2).2)
   right_inv := fun ⟨n, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
+  map_fun' {n} f x := by aesop
+  map_rel' {n} R x := by aesop
 #align first_order.language.embedding.substructure_equiv_map FirstOrder.Language.Embedding.substructureEquivMap
 
 @[simp]
@@ -969,8 +972,10 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.2
   left_inv m :=
-    f.Injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
+    f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
   right_inv := fun ⟨n, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
+  map_fun' {n} f x := by aesop
+  map_rel' {n} R x := by aesop
 #align first_order.language.embedding.equiv_range FirstOrder.Language.Embedding.equivRange
 
 @[simp]
@@ -984,7 +989,7 @@ namespace Equiv
 
 theorem toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
   ext n
-  simp only [hom.mem_range, coe_to_hom, substructure.mem_top, iff_true_iff]
+  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true_iff]
   exact ⟨f.symm n, apply_symm_apply _ _⟩
 #align first_order.language.equiv.to_hom_range FirstOrder.Language.Equiv.toHom_range
 
@@ -994,7 +999,7 @@ namespace Substructure
 
 /-- The embedding associated to an inclusion of substructures. -/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
-  S.Subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.2
 #align first_order.language.substructure.inclusion FirstOrder.Language.Substructure.inclusion
 
 @[simp]
@@ -1003,9 +1008,9 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
   rfl
 #align first_order.language.substructure.coe_inclusion FirstOrder.Language.Substructure.coe_inclusion
 
-theorem range_subtype (S : L.Substructure M) : S.Subtype.toHom.range = S := by
+theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
-  simp only [hom.mem_range, embedding.coe_to_hom, coeSubtype]
+  simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
   refine' ⟨_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
