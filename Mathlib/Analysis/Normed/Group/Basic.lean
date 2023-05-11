@@ -494,7 +494,8 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via `norm_nonneg'`. -/
+/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
+`norm_nonneg'`. -/
 @[positivity Norm.norm _]
 def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
   let .app _ a ← withReducible (whnf e) | throwError "not ‖ ⬝ ‖"
