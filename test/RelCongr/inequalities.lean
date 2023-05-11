@@ -121,7 +121,7 @@ example {a b c d e : ℝ} (h1 : 0 ≤ b) (h2 : 0 ≤ c) (hac : a + 1 ≤ c + 1) 
   rel_congr
   linarith
 
--- this tests templates with for binders
+-- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
   -- FIXME `rel_congr ∑ i in s, ?_` does not work
