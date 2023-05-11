@@ -5,9 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Tactic.RelCongr.ModEq
 
--- attribute [irreducible] Int.mod Int.ModEq
--- local attribute [-norm_num] NormNum.eval_nat_int_ext
-
+/-! # Modular arithmetic tests for the `rel_congr` tactic -/
 
 example (ha : a ≡ 2 [ZMOD 4]) : a * b ^ 2 + a ^ 2 * b + 3 ≡ 2 * b ^ 2 + 2 ^ 2 * b + 3 [ZMOD 4] := by
   rel_congr
