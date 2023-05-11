@@ -123,5 +123,5 @@ example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
 example {a b c d e : ℝ} (h1 : 0 ≤ b) (h2 : 0 ≤ c) (hac : a + 1 ≤ c + 1) (hbd : b ≤ d) :
     a * b + e ≤ c * d + e := by
   rel_congr ?_ + _
-  -- FIXME made progress on the `*` comparison but should just have reported `⊢ a * b ≤ c * d`
+  rel_congr
   linarith
