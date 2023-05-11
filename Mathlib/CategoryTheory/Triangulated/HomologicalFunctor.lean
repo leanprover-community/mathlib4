@@ -117,8 +117,19 @@ def homologicalKernel [F.IsHomological] :
     (shift_distinguished T hT n)).isZero_of_both_zeros
       (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _)
 
+lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ]
+    (X : C) : X ∈ F.homologicalKernel.set ↔
+      ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
+  rfl
+
 def IsHomological.W [F.IsHomological] : MorphismProperty C := fun _ _ f =>
   ∀ (n : ℤ), IsIso (F.map (f⟦n⟧'))
+
+lemma IsHomological.mem_W_iff [F.IsHomological] [F.ShiftSequence ℤ] {X Y : C}
+    (f : X ⟶ Y) : IsHomological.W F f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
+  simp only [← fun (n : ℤ) => NatIso.isIso_map_iff (F.isoShift n) f]
+  rfl
 
 noncomputable instance [F.IsHomological] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from

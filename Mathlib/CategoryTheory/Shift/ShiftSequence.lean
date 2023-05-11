@@ -10,6 +10,13 @@ namespace CategoryTheory
 
 namespace Functor
 
+-- the idea of `ShiftSequence` is to attach to the functor `H^0`
+-- (on cochain complexes, the homotopy category, or the derived category)
+-- the whole sequence of functor `H^n` for all `n : ℤ`, so that the
+-- homology sequence associated to a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧`
+-- will be like `H^n X ⟶ H^n Y ⟶ H^n Z ⟶ H^(n+1) X` rather than
+-- `H^0 (X⟦n⟧) ⟶ H^0 (Y⟦n⟧]) ⟶ H^0 (Z⟦n⟧]) ⟶ H^0 (X⟦n+1⟧]))`.
+
 class ShiftSequence where
   sequence : M → C ⥤ A
   isoZero : sequence 0 ≅ F
