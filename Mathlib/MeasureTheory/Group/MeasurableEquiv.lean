@@ -39,8 +39,6 @@ We also deduce that the corresponding maps are measurable embeddings.
 measurable, equivalence, group action
 -/
 
-set_option autoImplicit false -- **TODO** delete
-
 namespace MeasurableEquiv
 
 variable {G G₀ α : Type _} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
@@ -126,10 +124,10 @@ theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
 #align measurable_equiv.to_equiv_add_left MeasurableEquiv.toEquiv_addLeft
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mul_left (g : G) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
   (mulLeft g).measurableEmbedding
-#align measurable_embedding_mul_left measurableEmbedding_mul_left
-#align measurable_embedding_add_left measurableEmbedding_add_left
+#align measurable_embedding_mul_left measurableEmbedding_mulLeft
+#align measurable_embedding_add_left measurableEmbedding_addLeft
 
 /-- If `G` is a group with measurable multiplication, then right multiplication by `g : G` is a
 measurable automorphism of `G`. -/
@@ -144,10 +142,10 @@ def mulRight (g : G) : G ≃ᵐ G where
 #align measurable_equiv.add_right MeasurableEquiv.addRight
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mul_right (g : G) : MeasurableEmbedding fun x => x * g :=
+theorem _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x => x * g :=
   (mulRight g).measurableEmbedding
-#align measurable_embedding_mul_right measurableEmbedding_mul_right
-#align measurable_embedding_add_right measurableEmbedding_add_right
+#align measurable_embedding_mul_right measurableEmbedding_mulRight
+#align measurable_embedding_add_right measurableEmbedding_addRight
 
 @[to_additive (attr := simp)]
 theorem coe_mulRight (g : G) : ⇑(mulRight g) = fun x => x * g :=
@@ -173,9 +171,9 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
   smul₀ g hg
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
-theorem _root_.measurableEmbedding_mul_left₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding ((· * ·) g) :=
   (mulLeft₀ g hg).measurableEmbedding
-#align measurable_embedding_mul_left₀ measurableEmbedding_mul_left₀
+#align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
 @[simp]
 theorem coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
@@ -201,9 +199,9 @@ def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   measurable_invFun := measurable_mul_const g⁻¹
 #align measurable_equiv.mul_right₀ MeasurableEquiv.mulRight₀
 
-theorem _root_.measurableEmbedding_mul_right₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding fun x => x * g :=
+theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) : MeasurableEmbedding fun x => x * g :=
   (mulRight₀ g hg).measurableEmbedding
-#align measurable_embedding_mul_right₀ measurableEmbedding_mul_right₀
+#align measurable_embedding_mul_right₀ measurableEmbedding_mulRight₀
 
 @[simp]
 theorem coe_mulRight₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulRight₀ g hg) = fun x => x * g :=
@@ -225,7 +223,7 @@ end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
 @[to_additive "Negation as a measurable automorphism of an additive group.",
-  simps! (config := { fullyApplied := false }) toEquiv apply]
+  simps (config := { fullyApplied := false }) toEquiv apply]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G
   measurable_toFun := measurable_inv
