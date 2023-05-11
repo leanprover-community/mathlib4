@@ -3,7 +3,7 @@
 -- import Mathlib.Data.Rat.Order
 -- import Mathlib.Data.Real.NNReal
 -- import Mathlib.Tactic.Positivity
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-! # Tests for the `positivity` tactic
 
@@ -238,7 +238,8 @@ example (n : ℕ) : 0 < n.succ := by positivity
 
 -- example {r : ℝ} : 0 < Real.exp r := by positivity
 
--- example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ∥x∥ := by positivity
+example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 
 example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
 example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
