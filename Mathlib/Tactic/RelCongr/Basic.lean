@@ -11,7 +11,7 @@ open Lean Meta
 
 structure RelCongrLemma where
   declName : Name
-  mainSubgoals : Array Nat
+  mainSubgoals : Array (Nat × Nat)
   varyingArgs : Array Bool
   deriving Inhabited, Repr
 
@@ -41,10 +41,10 @@ initialize registerBuiltinAttribute {
     let mut pairs := #[]
     for e1 in lhsArgs, e2 in rhsArgs do
       let isEq ← isDefEq e1 e2
-      varyingArgs := varyingArgs.push !isEq
       if !isEq then
         unless e1.isFVar && e2.isFVar do fail
-        pairs := pairs.push (e1, e2)
+        pairs := pairs.push (varyingArgs.size, e1, e2)
+      varyingArgs := varyingArgs.push !isEq
     let mut mainSubgoals := #[]
     let mut i := 0
     for hyp in xs do
@@ -53,11 +53,11 @@ initialize registerBuiltinAttribute {
         if let .app (.app _ lhs₁) rhs₁ ← whnf hypTy then
           let lhs₁ := lhs₁.getAppFn
           let rhs₁ := rhs₁.getAppFn
-          if ← pairs.anyM fun (e1, e2) =>
+          if let some j ← pairs.findM? fun (_, e1, e2) =>
             isDefEq lhs₁ e1 <&&> isDefEq rhs₁ e2 <||>
             isDefEq lhs₁ e2 <&&> isDefEq rhs₁ e1
           then
-            mainSubgoals := mainSubgoals.push i
+            mainSubgoals := mainSubgoals.push (i, j.1)
         pure mainSubgoals
       i := i + 1
     relCongrExt.add ((relName, head), { declName := decl, mainSubgoals, varyingArgs }) kind
@@ -132,10 +132,10 @@ partial def _root_.Lean.MVarId.relCongr
         let some e ← getExprMVarAssignment? g | panic! "unassigned?"
         let args := e.getAppArgs
         let mut subgoals := #[]
-        for i in lem.mainSubgoals do
-          let .mvar mvarId := args[i]! | panic! "what kind of lemma is this?"
+        for (i, j) in lem.mainSubgoals do
+          let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
           let (_vs, mvarId) ← mvarId.intros
-          let tpl ← tplArgs[i]!.1.mapM fun e => do
+          let tpl ← tplArgs[j]!.1.mapM fun e => do
             let (_vs, _, e) ← lambdaMetaTelescope e
             pure e
           subgoals := subgoals ++ (← mvarId.relCongr tpl discharger assumption)
