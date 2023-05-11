@@ -355,11 +355,12 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 640000 in
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
   refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
-  case toFun => set_option synthInstance.etaExperiment true in -- Porting note: to get `Module R R`
+  case toFun => -- Porting note: to get `Module R R`
     exact fun x ↦
       Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
