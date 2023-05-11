@@ -1,8 +1,4 @@
--- import Mathlib.Algebra.Abs
--- import Mathlib.Algebra.Order.Hom.Basic
--- import Mathlib.Data.Rat.Order
--- import Mathlib.Data.Real.NNReal
--- import Mathlib.Tactic.Positivity
+import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 
@@ -241,7 +237,7 @@ example (n : ℕ) : 0 < n.succ := by positivity
 -- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
--- example {r : ℝ} : 0 < Real.exp r := by positivity
+example {r : ℝ} : 0 < Real.exp r := by positivity
 
 example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
