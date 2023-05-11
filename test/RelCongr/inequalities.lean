@@ -84,6 +84,15 @@ example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by rel
 
 /-! ## Non-finishing examples -/
 
+example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
+    x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  rel_congr <;> linarith
+
+example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
+    x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
+  rel_congr x ^ 2 * ?_ + 5
+  linarith
+
 example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by rel_congr ; apply abs_add
 
 example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ; apply abs_add

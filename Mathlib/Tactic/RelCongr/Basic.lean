@@ -260,6 +260,42 @@ def relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit :=
       catch _ => s.restore
     throwError "rel_assumption failed"
 
+/-- The `rel_congr` tactic applies "relational congruence" rules, reducing a relational goal
+between a LHS and RHS matching the same pattern to relational subgoals between the differing
+inputs to the pattern.  For example,
+```
+example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
+    x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  rel_congr
+  · linarith
+  · linarith
+```
+This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+```
+x ^ 2 * ?_ + ?_
+```
+(with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
+`rel_congr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
+
+A pattern can be provided explicitly; this is useful if a non-maximal match is desired:
+```
+example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
+    x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
+  rel_congr x ^ 2 * ?_ + 5
+  linarith
+```
+
+Relevant "relational congruence" lemmas are declared using the attribute `@[rel_congr]`.  For
+example, the first example constructs the proof term
+```
+add_le_add (mul_le_mul_of_nonneg_left _ (pow_bit0_nonneg x 1)) _
+```
+using the relational congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.
+
+The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
+side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
+`rel_congr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
+in this way are left for the user. -/
 elab "rel_congr" template:(colGt term)? : tactic => do
   let g ← getMainGoal
   g.withContext do
