@@ -46,19 +46,6 @@ variable {S : Type v}
 -- Porting note: we need η for TC
 set_option synthInstance.etaExperiment true
 
--- Note that at present `Ideal` means a left-ideal,
--- so this quotient is only useful in a commutative ring.
--- We should develop quotients by two-sided ideals as well.
-/-- The quotient `R/I` of a ring `R` by an ideal `I`.
-
-The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition is marked `reducible` so that typeclass instances can be shared between
-`Ideal.Quotient I` and `Submodule.Quotient I`.
--/
-@[reducible]
-instance : HasQuotient R (Ideal R) :=
-  Submodule.hasQuotient
-
 namespace Quotient
 
 variable {I} {x y : R}
@@ -321,9 +308,13 @@ section Pi
 
 variable (ι : Type v)
 
-set_option maxHeartbeats 300000 in
-/-- `R^n/I^n` is a `R/I`-module. -/
-instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
+-- Porting note: we originally just put all the fields of
+-- the `SMul`, `MulAction` and `DistribMulAction` instances in the `Module` instance.
+-- We know that this style of definition has performance problems
+-- see e.g. https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/performance.20debug
+-- so I've split them out again.
+
+instance instSMulPi : SMul (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
     Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) $ by
       intro c₁ m₁ c₂ m₂ hc hm
@@ -331,6 +322,8 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
       rw [Submodule.quotientRel_r_def] at hc hm
       intro i
       exact I.mul_sub_mul_mem hc (hm i)
+
+instance instMulActionPi : MulAction (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   one_smul := by
     rintro ⟨a⟩
     convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
@@ -339,6 +332,8 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
     convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr 1; funext i; exact mul_assoc a b (c i)
+
+instance instDistribMulActionPi : DistribMulAction (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul_add := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
     convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
@@ -347,6 +342,9 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     rintro ⟨a⟩
     convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with _; exact mul_zero a
+
+/-- `R^n/I^n` is a `R/I`-module. -/
+instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   add_smul := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
     convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
@@ -357,7 +355,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
-set_option synthInstance.etaExperiment false in -- Porting note: needed, otherwise type times out
+set_option maxHeartbeats 400000 in
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
   refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
