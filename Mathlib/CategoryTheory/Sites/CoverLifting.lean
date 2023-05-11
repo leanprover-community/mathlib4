@@ -27,15 +27,15 @@ but they are actually equivalent via `category_theory.grothendieck_topology.supe
 
 ## Main definitions
 
-* `category_theory.sites.cover_lifting`: a functor between sites is cover-lifting if it
+* `CategoryTheory.CoverLifting`: a functor between sites is cover-lifting if it
   pulls back covering sieves to covering sieves
-* `category_theory.sites.copullback`: A cover-lifting functor `G : (C, J) ⥤ (D, K)` induces a
+* `CategoryTheory.Sites.copullback`: A cover-lifting functor `G : (C, J) ⥤ (D, K)` induces a
   morphism of sites in the same direction as the functor.
 
 ## Main results
-* `category_theory.sites.Ran_is_sheaf_of_cover_lifting`: If `G : C ⥤ D` is cover_lifting, then
+* `CategoryTheory.ran_isSheaf_of_coverLifting`: If `G : C ⥤ D` is cover_lifting, then
   `Ran G.op` (`ₚu`) as a functor `(Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
-* `category_theory.pullback_copullback_adjunction`: If `G : (C, J) ⥤ (D, K)` is cover-lifting,
+* `CategoryTheory.Sites.pullbackCopullbackAdjunction`: If `G : (C, J) ⥤ (D, K)` is cover-lifting,
   cover-preserving, and compatible-preserving, then `pullback G` and `copullback G` are adjoint.
 
 ## References
