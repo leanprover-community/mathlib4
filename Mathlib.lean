@@ -1830,6 +1830,7 @@ import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -1844,7 +1845,6 @@ import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.IntroAt
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight

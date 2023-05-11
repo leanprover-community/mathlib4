@@ -1,4 +1,4 @@
-import Mathlib.Tactic.IntroAt
+import Mathlib.Tactic.ExtractLets
 import Std.Tactic.GuardExpr
 
 example (h : let x := 1; x = x) : True := by
@@ -38,9 +38,10 @@ example (h : let x := 1; let y := 2; x + 1 = y) : True := by
   guard_hyp h :ₛ let y := 2; x + 1 = y
   trivial
 
-example (h : let x := 1; let y := 2; x + 1 = y) : let _z := 3; True := by
+example (h : let x := 1; let y := 2; x + 1 = y) : let _z := 3; ∀ (_ : Nat), True := by
   extract_lets at *
   guard_hyp h : _ + 1 = _
   fail_if_success extract_lets x at h
-  guard_target =ₛ True
+  guard_target =ₛ ∀ (_ : Nat), True
+  intro
   trivial
