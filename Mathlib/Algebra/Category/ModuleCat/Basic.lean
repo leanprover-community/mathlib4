@@ -142,7 +142,11 @@ theorem forget₂_obj (X : ModuleCat R) :
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_obj ModuleCat.forget₂_obj
 
-@[simp 900]
+-- Porting note: the simpNF linter correctly doesn't like this.
+-- I'm not sure what this is for, actually.
+-- If it is really needed, better might be a simp lemma that says
+-- `AddCommGroupCat.of (ModuleCat.of R X) = AddCommGroupCat.of X`.
+-- @[simp 900]
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj (of R X) = AddCommGroupCat.of X :=
   rfl
