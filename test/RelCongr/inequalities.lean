@@ -3,14 +3,19 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.RelCongr.Lemmas
 import Mathlib.Tactic.RelCongr.BigOperators
-import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Inequality tests for the `rel_congr` tactic -/
 
 open Nat Finset BigOperators
+
+-- We deliberately mock `ℝ` here so that we don't have to import the dependencies
+axiom Real : Type
+notation "ℝ" => Real
+@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
 
 /-! ## Examples as a finishing tactic -/
 
@@ -128,3 +133,11 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   rel_congr s.sum ?_
   rename_i i hi
   linarith [h i hi]
+
+axiom f : ℕ → ℕ
+
+example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
+  success_if_fail_with_msg
+    "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?m.84728 and the relation LE.le"
+    (rel_congr f ?_)
+  exact h
