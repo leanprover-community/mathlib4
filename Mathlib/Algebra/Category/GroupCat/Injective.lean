@@ -36,8 +36,8 @@ set_option linter.uppercaseLean3 false
 
 namespace AddCommGroupCat
 
+-- Porting note: remind Lean of this
 private local instance (X : AddCommGroupCat) : AddCommGroup X.α := X.str
--- private local instance (X : ModuleCat ℤ) : AddCommGroup X.carrier := X.isModule
 
 theorem injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
     CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
