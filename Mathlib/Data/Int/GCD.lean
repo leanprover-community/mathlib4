@@ -513,8 +513,6 @@ theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m =
 
 /-! ### GCD prover -/
 
---open NormNum
-
 namespace Tactic
 
 namespace NormNum
