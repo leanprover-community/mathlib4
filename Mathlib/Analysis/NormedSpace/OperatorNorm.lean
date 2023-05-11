@@ -71,7 +71,6 @@ theorem SemilinearMapClass.bound_of_shell_semi_normed [SemilinearMapClass 𝓕 �
     (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) {x : E} (hx : ‖x‖ ≠ 0) :
     ‖f x‖ ≤ C * ‖x‖ := by
   rcases rescale_to_shell_semi_normed hc ε_pos hx with ⟨δ, hδ, δxle, leδx, _⟩
-  have := hf (δ • x) leδx δxle
   simpa only [map_smulₛₗ, norm_smul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ),
     RingHomIsometric.is_iso] using hf (δ • x) leδx δxle
 #align semilinear_map_class.bound_of_shell_semi_normed SemilinearMapClass.bound_of_shell_semi_normed
@@ -1011,11 +1010,10 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using op_norm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
--- Porting note: this instance should just be `inferInstance`,
--- and indeed simply unneeded.
+/-- Porting note: Local instance for `norm_compSL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) := by
-  exact @hasOpNorm _ _ (F →SL[σ₂₃] G) ((E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) _ _ _ _ _ _ _
-
+  exact @hasOpNorm _ _ (F →SL[σ₂₃] G) ((E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) _ _ _ _ _ _ _ in
 set_option synthInstance.etaExperiment true in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1053,6 +1051,10 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
+/-- Porting note: Local instance for `norm_compL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
+local instance : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) := by
+  exact @hasOpNorm _ _ (Fₗ →L[𝕜] Gₗ) ((E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) _ _ _ _ _ _ _ in
 set_option synthInstance.etaExperiment true in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
@@ -1079,10 +1081,13 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
--- Porting note: we need additional instances close at hand to get this to compile.
-local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
-local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
 set_option synthInstance.etaExperiment true in
+/-- Porting note: Local instance for `norm_precompR_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
+local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
+/-- Porting note: Local instance for `norm_precompR_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
+local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := op_norm_comp_le (compL 𝕜 Eₗ Fₗ Gₗ) L
@@ -1090,9 +1095,10 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
+/-- Porting note: Local instance for `norm_precompL_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) := by
-  exact @hasOpNorm _ _ (Eₗ →L[𝕜] E) (Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) _ _ _ _ _ _ _
-
+  exact @hasOpNorm _ _ (Eₗ →L[𝕜] E) (Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) _ _ _ _ _ _ _ in
 set_option synthInstance.etaExperiment true in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, op_norm_flip, ← op_norm_flip L]
@@ -1252,11 +1258,10 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
--- Porting note: this instance should just be `inferInstance`,
--- and indeed simply unneeded.
+/-- Porting note: Local instance for `op_norm_mulLeftRight_le`.
+Should be by `inferInstance`, and indeed not be needed. -/
 local instance : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := by
-  exact @hasOpNorm _ _ 𝕜' (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') _ _ _ _ _ _ _
-
+  exact @hasOpNorm _ _ 𝕜' (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') _ _ _ _ _ _ _ in
 theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.op_norm_mulLeftRight_le
@@ -1886,9 +1891,10 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
+set_option quotPrecheck false in
 -- Porting note: this should be `local notation`, not `scoped notation`,
 -- as we don't want it beyond the next declaration, but that causes errors.
-set_option quotPrecheck false in
+/-- Convenient notation for `op_norm_extend_le`. -/
 scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
