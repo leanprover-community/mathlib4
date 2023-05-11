@@ -1126,7 +1126,7 @@ def tr : Λ' → Stmt'
 #align turing.partrec_to_TM2.tr Turing.PartrecToTM2.tr
 
 /- Porting note: The equation lemma of `tr` simplifies to `match` structures. To prevent this,
-We replaces equation lemmas of `tr`. -/
+we replace equation lemmas of `tr`. -/
 
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
   pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
