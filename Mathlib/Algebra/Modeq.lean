@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Modeq
-import Mathbin.GroupTheory.QuotientGroup
+import Mathlib.Data.Int.ModEq
+import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Equality modulo an element
