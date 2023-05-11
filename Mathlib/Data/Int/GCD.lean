@@ -705,7 +705,8 @@ def proveNatCoprime' (x y : ℕ) : Q(Nat.coprime $x $y) ⊕ Q(¬ Nat.coprime $x 
     Sum.inr q(not_coprime_helper $pf $cdne)
 
 /-- Evaluates `Nat.coprime` for the given natural number literals. -/
-def proveNatCoprime (nx ny : Q(ℕ)) : Option (Q(Nat.coprime $nx $ny) ⊕ Q(¬ Nat.coprime $nx $ny)) := do
+def proveNatCoprime (nx ny : Q(ℕ)) :
+    Option (Q(Nat.coprime $nx $ny) ⊕ Q(¬ Nat.coprime $nx $ny)) := do
   let x ← nx.natLit?
   let y ← ny.natLit?
   return proveNatCoprime' x y
