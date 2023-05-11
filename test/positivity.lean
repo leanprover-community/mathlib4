@@ -292,7 +292,7 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 
 example [Zero β] [PartialOrder β] [NonnegHomClass F α β] (f : F) (x : α) : 0 ≤ f x := by positivity
 
-example : (0:ℝ) < ↑(3:ℝ≥0) := by positivity
+example : (0 : ℝ) < ↑(3 : ℝ≥0) := by positivity
 example (x : ℝ≥0) : (0:ℝ) ≤ ↑x := by positivity
 
 /- ## Tests that the tactic is agnostic on reversed inequalities -/
