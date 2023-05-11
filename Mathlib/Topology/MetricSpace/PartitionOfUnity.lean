@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.MetricSpace.EmetricParacompact
+import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!
@@ -29,11 +29,7 @@ lemma.
 metric space, partition of unity, locally finite
 -/
 
-set_option autoImplicit false -- **TODO: remove this later**
-
-open Topology ENNReal BigOperators NNReal Filter
-
-open Set Function Filter TopologicalSpace
+open Topology ENNReal BigOperators NNReal Filter Set Function TopologicalSpace
 
 variable {ι X : Type _}
 
@@ -72,7 +68,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
     (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∃ r : ℝ,
       ∀ᶠ y in 𝓝 x,
-        r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (hi : y ∈ K i), { r | closedBall y r ⊆ U i } :=
+        r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i } :=
   by
   have :=
     (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
@@ -84,7 +80,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
 
 theorem exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
-      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (hi : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
+      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <|
     OrdConnected.convex <|
       OrdConnected.preimage_ennreal_ofReal <|
