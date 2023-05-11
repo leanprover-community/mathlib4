@@ -18,16 +18,6 @@ section Ord
 
 variable [Ord β]
 
-/-- An auxiliary function for `argmins` which represents a step in processing the input array. It
-maintains an accumulated array of minimal elements and the minimum value encountered so far. -/
-private def argminsAux (f : α → β) : Array α × β → α → Array α × β
-| (minimals, minVal), x =>
-  let fx := f x
-  match compare minVal fx with
-  | .lt => (minimals, minVal)
-  | .eq => (minimals.push x, minVal)
-  | .gt => (#[x], fx)
-
 /-- Collect the elements of an array `a` that attain a minimal value under the function `f`.
 
 * `#[[1], [1,1], [3], [5,2,3]].argmins List.length` ⇒ `#[[1], [3]]`
@@ -38,5 +28,15 @@ def argmins (a : Array α) (f : α → β) : Array α :=
   match a[0]? with
   | some x => a[1:].foldl (argminsAux f) (#[x], f x) |>.1
   | none   => #[]
+where
+  /-- An auxiliary function for `argmins` which represents a step in processing the input array. It
+  maintains an accumulated array of minimal elements and the minimum value encountered so far. -/
+  argminsAux (f : α → β) : Array α × β → α → Array α × β
+  | (minimals, minVal), x =>
+    let fx := f x
+    match compare minVal fx with
+    | .lt => (minimals, minVal)
+    | .eq => (minimals.push x, minVal)
+    | .gt => (#[x], fx)
 
 end Ord
