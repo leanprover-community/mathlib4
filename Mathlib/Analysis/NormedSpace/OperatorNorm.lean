@@ -2149,7 +2149,11 @@ variable [RingHomIsometric σ₂₁]
 set_option synthInstance.etaExperiment true in
 protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
     AntilipschitzWith ‖(e.symm : F →SL[σ₂₁] E)‖₊ e :=
-  e.symm.lipschitz.to_rightInverse e.left_inv
+  -- Porting note: was just:
+  -- e.symm.lipschitz.to_rightInverse e.left_inv
+  -- but this gives the mysterious failure
+  -- `failed to synthesize instance SeminormedAddCommGroup (F ≃SL[σ₂₁] E)`
+  (e.symm.lipschitz : LipschitzWith ‖(e.symm : F →SL[σ₂₁] E)‖₊ e.symm).to_rightInverse e.left_inv
 #align continuous_linear_equiv.antilipschitz ContinuousLinearEquiv.antilipschitz
 
 set_option synthInstance.etaExperiment true in
