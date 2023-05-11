@@ -16,8 +16,8 @@ of an expression as possible.
 open Lean Elab Parser Meta Tactic
 
 /--
-Auxiliary definition for `Lean.Expr.liftLets`. Takes a list of the current fvars so
-that it can be threaded through the computation.
+Auxiliary definition for `Lean.Expr.liftLets`. Takes a list of the accumulated fvars.
+This list is used during the computation to merge let bindings.
 -/
 private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
     (f : Array Expr → Expr → MetaM Expr) : MetaM Expr := do
@@ -25,10 +25,10 @@ private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
   | .letE n t v b _ =>
     t.liftLetsAux fvars fun fvars t' =>
       v.liftLetsAux fvars fun fvars v' => do
-        -- Eliminate the let binding if there is already one of the same name and value.
+        -- Eliminate the let binding if there is already one of the same type and value.
         let fvar? ← fvars.findM? (fun fvar => do
           let decl ← fvar.fvarId!.getDecl
-          return decl.userName == n && decl.value? == some v')
+          return decl.type == t' && decl.value? == some v')
         if let some fvar' := fvar? then
           (b.instantiate1 fvar').liftLetsAux fvars f
         else
@@ -41,9 +41,10 @@ private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
     t.liftLetsAux fvars fun fvars t => do
       -- Enter the binding, do liftLets, and lift out liftable lets
       let e' ← withLocalDecl n i t fun fvar => do
-        (b.instantiate1 fvar).liftLetsAux #[] fun fvars2 b => do
+        (b.instantiate1 fvar).liftLetsAux fvars fun fvars2 b => do
           -- See which bindings can't be migrated out
           let deps ← collectForwardDeps #[fvar] false
+          let fvars2 := fvars2[fvars.size:].toArray
           let (fvars2, fvars2') := fvars2.partition deps.contains
           mkLetFVars fvars2' (← mkLambdaFVars #[fvar] (← mkLetFVars fvars2 b))
       -- Re-enter the new lets; we do it this way to keep the local context clean
@@ -52,9 +53,10 @@ private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
     t.liftLetsAux fvars fun fvars t => do
       -- Enter the binding, do liftLets, and lift out liftable lets
       let e' ← withLocalDecl n i t fun fvar => do
-        (b.instantiate1 fvar).liftLetsAux #[] fun fvars2 b => do
+        (b.instantiate1 fvar).liftLetsAux fvars fun fvars2 b => do
           -- See which bindings can't be migrated out
           let deps ← collectForwardDeps #[fvar] false
+          let fvars2 := fvars2[fvars.size:].toArray
           let (fvars2, fvars2') := fvars2.partition deps.contains
           mkLetFVars fvars2' (← mkForallFVars #[fvar] (← mkLetFVars fvars2 b))
       -- Re-enter the new lets; we do it this way to keep the local context clean
@@ -73,7 +75,7 @@ where
 All top-level `let`s are added to the local context, and then `f` is called with the list
 of local bindings (each an fvar) and the new expression.
 
-Let bindings are merged if they have the same name and value.
+Let bindings are merged if they have the same type and value.
 
 Use `e.liftLets mkLetFVars` to get a defeq expression with all `let`s lifted as far as possible. -/
 def Lean.Expr.liftLets (e : Expr) (f : Array Expr → Expr → MetaM Expr) : MetaM Expr :=
@@ -94,7 +96,7 @@ example : (let x := 1; x) = 1 := by
   sorry
 ```
 
-During the lifting process, let bindings are merged if they have the same name and value.
+During the lifting process, let bindings are merged if they have the same type and value.
 -/
 syntax (name := lift_lets) "lift_lets" (ppSpace location)? : tactic
 

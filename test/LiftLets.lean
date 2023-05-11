@@ -9,8 +9,8 @@ example : (let x := 1; x) = 1 := by
 
 example : (let x := 1; x) = (let y := 1; y) := by
   lift_lets
-  guard_target =ₛ let x := 1; let y := 1; x = y
-  intro _x _y
+  guard_target =ₛ let x := 1; x = x
+  intro _x
   rfl
 
 example : (let x := (let y := 1; y + 1); x + 1) = 3 := by
@@ -67,9 +67,9 @@ example : (let x := 1; x) = (let x := 1; x) := by
   guard_target =ₛ let x := 1; x = x
   rfl
 
-example : (let x := 1; x) = (let y := 1; y) := by
+example : (let x := 2; x) = (let y := 1; y + 1) := by
   lift_lets
-  guard_target =ₛ let x := 1; let y := 1; x = y
+  guard_target =ₛ let x := 2; let y := 1; x = y + 1
   rfl
 
 example (h : (let x := 1; x) = y) : True := by
@@ -84,3 +84,9 @@ example (h : (let x := 1; x) = y) : True := by
   guard_hyp x : Nat := 1
   guard_hyp h :ₛ x = y
   trivial
+
+example : let x := 1; ∀ n, let y := 1; x + n = y + n := by
+  lift_lets
+  guard_target =ₛ let x := 1; ∀ n, x + n = x + n
+  intros x n
+  rfl
