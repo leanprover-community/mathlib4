@@ -8,15 +8,9 @@ Authors: Thomas Murrills
 
 This file supplements functions like `min` and `max` on `Array`s.
 
-We introduce functions like `argmin`, which collects the elements of an array that are minimal
-under some given function.
-
-We try to use `Ord` instances where possible to stay consistent with functions like `Array.min`,
-but do also provide functions for e.g. `Preorder`s.
-
 -/
 
--- TODO(Thomas): add the rest
+-- TODO(Thomas): complete the suite of extremizing functions
 
 namespace Array
 
