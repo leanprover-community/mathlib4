@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Group.Arithmetic
+import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # Pointwise set operations on `measurable_set`s
@@ -34,8 +34,7 @@ theorem MeasurableSet.const_smul {G α : Type _} [Group G] [MulAction G α] [Mea
 
 theorem MeasurableSet.const_smul_of_ne_zero {G₀ α : Type _} [GroupWithZero G₀] [MulAction G₀ α]
     [MeasurableSpace G₀] [MeasurableSpace α] [MeasurableSMul G₀ α] {s : Set α}
-    (hs : MeasurableSet s) {a : G₀} (ha : a ≠ 0) : MeasurableSet (a • s) :=
-  by
+    (hs : MeasurableSet s) {a : G₀} (ha : a ≠ 0) : MeasurableSet (a • s) := by
   rw [← preimage_smul_inv₀ ha]
   exact measurable_const_smul _ hs
 #align measurable_set.const_smul_of_ne_zero MeasurableSet.const_smul_of_ne_zero
