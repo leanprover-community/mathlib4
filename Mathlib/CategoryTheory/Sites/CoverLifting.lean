@@ -201,6 +201,25 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   · simp only [eq, Quiver.Hom.unop_op, pulledbackFamily_apply, Functor.map_comp, unop_comp,
       Category.assoc]
     sorry -- porting note -- Lean 3 proof was finished by now
+    /-
+    --More details: here is how to make partial progress. Delete the `simp only`
+    -- and the `sorry` above, hen then try
+    rw [pulledbackFamily_apply, pulledbackFamily_apply]
+    -- because `simp only` is only applying it once, for some reason.
+    -- But now the next step in the Lean 3 proof is
+    simp_rw [Functor.map_comp]
+    -- and in Lean 4 it refuses to apply to `G.map (fV' ≫ Quiver.Hom.unop f.right)`
+    -- because the motive isn't type correct. Note that there is a metavariable
+    -- in the goal, but you can remove it by switching the order of these last
+    -- two "bullet point" goals with `swap` and then solving the second one first.
+    -- A working Lean 3 proof is
+    /-
+    { rw [pulledback_family_apply, pulledback_family_apply],
+    simp_rw [functor.map_comp],
+    simp_rw [category.assoc],
+    simp only [eq, quiver.hom.unop_op, unop_comp] },
+    -/
+    -/
   · change S (G.map _ ≫ Y.hom.unop)
     simpa only [Functor.map_comp, Category.assoc] using hV'
 set_option linter.uppercaseLean3 false in
