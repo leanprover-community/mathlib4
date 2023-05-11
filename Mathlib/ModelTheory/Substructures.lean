@@ -18,24 +18,24 @@ This file defines substructures of first-order structures in a similar manner to
 substructures appearing in the algebra library.
 
 ## Main Definitions
-* A `first_order.language.substructure` is defined so that `L.substructure M` is the type of all
+* A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
 substructures of the `L`-structure `M`.
-* `first_order.language.substructure.closure` is defined so that if `s : set M`, `closure L s` is
+* `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
 the least substructure of `M` containing `s`.
-* `first_order.language.substructure.comap` is defined so that `s.comap f` is the preimage of the
+* `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
 substructure `s` under the homomorphism `f`, as a substructure.
-* `first_order.language.substructure.map` is defined so that `s.map f` is the image of the
+* `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
 substructure `s` under the homomorphism `f`, as a substructure.
-* `first_order.language.hom.range` is defined so that `f.map` is the range of the
+* `FirstOrder.Language.Hom.range` is defined so that `f.map` is the range of the
 the homomorphism `f`, as a substructure.
-* `first_order.language.hom.dom_restrict` and `first_order.language.hom.cod_restrict` restrict
+* `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
 the domain and codomain respectively of first-order homomorphisms to substructures.
-* `first_order.language.embedding.dom_restrict` and `first_order.language.embedding.cod_restrict`
+* `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
 restrict the domain and codomain respectively of first-order embeddings to substructures.
-* `first_order.language.substructure.inclusion` is the inclusion embedding between substructures.
+* `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
 
 ## Main Results
-* `L.substructure M` forms a `complete_lattice`.
+* `L.Substructure M` forms a `CompleteLattice`.
 
 -/
 
@@ -100,13 +100,18 @@ structure Substructure where
   carrier : Set M
   fun_mem : ∀ {n}, ∀ f : L.Functions n, ClosedUnder f carrier
 #align first_order.language.substructure FirstOrder.Language.Substructure
+#align first_order.language.substructure.carrier FirstOrder.Language.Substructure.carrier
+#align first_order.language.substructure.fun_mem FirstOrder.Language.Substructure.fun_mem
 
 variable {L} {M}
 
 namespace Substructure
 
-instance : SetLike (L.Substructure M) M :=
-  ⟨Substructure.carrier, fun p q h => by cases p <;> cases q <;> congr ⟩
+attribute [coe] Substructure.carrier
+
+instance instSetLike : SetLike (L.Substructure M) M :=
+  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr ⟩
+#align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
@@ -129,18 +134,18 @@ theorem ext {S T : L.Substructure M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 /-- Copy a substructure replacing `carrier` with a set that is equal to it. -/
 protected def copy (S : L.Substructure M) (s : Set M) (hs : s = S) : L.Substructure M where
   carrier := s
-  fun_mem n f := hs.symm ▸ S.fun_mem f
+  fun_mem _ f := hs.symm ▸ S.fun_mem _ f
 #align first_order.language.substructure.copy FirstOrder.Language.Substructure.copy
 
 end Substructure
 
 variable {S : L.Substructure M}
 
-theorem Term.realize_mem {α : Type _} (t : L.term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
+theorem Term.realize_mem {α : Type _} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
   induction' t with a n f ts ih
   · exact h a
-  · exact substructure.fun_mem _ _ _ ih
+  · exact Substructure.fun_mem _ _ _ ih
 #align first_order.language.term.realize_mem FirstOrder.Language.Term.realize_mem
 
 namespace Substructure
@@ -154,17 +159,19 @@ theorem copy_eq {s : Set M} (hs : s = S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align first_order.language.substructure.copy_eq FirstOrder.Language.Substructure.copy_eq
 
-theorem constants_mem (c : L.Constants) : ↑c ∈ S :=
+theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
   mem_carrier.2 (S.fun_mem c _ Fin.elim0)
 #align first_order.language.substructure.constants_mem FirstOrder.Language.Substructure.constants_mem
 
 /-- The substructure `M` of the structure `M`. -/
-instance : Top (L.Substructure M) :=
+instance instTop : Top (L.Substructure M) :=
   ⟨{  carrier := Set.univ
-      fun_mem := fun n f x h => Set.mem_univ _ }⟩
+      fun_mem := fun {_} _ _ _ => Set.mem_univ _ }⟩
+#align first_order.language.substructure.has_top FirstOrder.Language.Substructure.instTop
 
-instance : Inhabited (L.Substructure M) :=
+instance instInhabited : Inhabited (L.Substructure M) :=
   ⟨⊤⟩
+#align first_order.language.substructure.inhabited FirstOrder.Language.Substructure.instInhabited
 
 @[simp]
 theorem mem_top (x : M) : x ∈ (⊤ : L.Substructure M) :=
@@ -177,13 +184,15 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
 #align first_order.language.substructure.coe_top FirstOrder.Language.Substructure.coe_top
 
 /-- The inf of two substructures is their intersection. -/
-instance : Inf (L.Substructure M) :=
+instance instInf : Inf (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
-    { carrier := S₁ ∩ S₂
-      fun_mem := fun n f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
+    { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
+      fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
+#align first_order.language.substructure.has_inf FirstOrder.Language.Substructure.instInf
 
 @[simp]
-theorem coe_inf (p p' : L.Substructure M) : ((p ⊓ p' : L.Substructure M) : Set M) = p ∩ p' :=
+theorem coe_inf (p p' : L.Substructure M) :
+    ((p ⊓ p' : L.Substructure M) : Set M) = (p : Set M) ∩ (p' : Set M) :=
   rfl
 #align first_order.language.substructure.coe_inf FirstOrder.Language.Substructure.coe_inf
 
@@ -192,20 +201,21 @@ theorem mem_inf {p p' : L.Substructure M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p �
   Iff.rfl
 #align first_order.language.substructure.mem_inf FirstOrder.Language.Substructure.mem_inf
 
-instance : InfSet (L.Substructure M) :=
+instance instInfSet : InfSet (L.Substructure M) :=
   ⟨fun s =>
-    { carrier := ⋂ t ∈ s, ↑t
-      fun_mem := fun n f =>
+    { carrier := ⋂ t ∈ s, (t : Set M)
+      fun_mem := fun {n} f =>
         ClosedUnder.infₛ
           (by
             rintro _ ⟨t, rfl⟩
             by_cases h : t ∈ s
             · simpa [h] using t.fun_mem f
             · simp [h]) }⟩
+#align first_order.language.substructure.has_Inf FirstOrder.Language.Substructure.instInfSet
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (L.Substructure M)) :
-    ((infₛ S : L.Substructure M) : Set M) = ⋂ s ∈ S, ↑s :=
+    ((infₛ S : L.Substructure M) : Set M) = ⋂ s ∈ S, (s : Set M) :=
   rfl
 #align first_order.language.substructure.coe_Inf FirstOrder.Language.Substructure.coe_infₛ
 
@@ -214,36 +224,38 @@ theorem mem_infₛ {S : Set (L.Substructure M)} {x : M} : x ∈ infₛ S ↔ ∀
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_infₛ
 
 theorem mem_infᵢ {ι : Sort _} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [infᵢ, mem_Inf, Set.forall_range_iff]
+  by simp only [infᵢ, mem_infₛ, Set.forall_range_iff]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_infᵢ
 
 @[simp, norm_cast]
-theorem coe_infᵢ {ι : Sort _} {S : ι → L.Substructure M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
-  simp only [infᵢ, coe_Inf, Set.binterᵢ_range]
+theorem coe_infᵢ {ι : Sort _} {S : ι → L.Substructure M} :
+    ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
+  simp only [infᵢ, coe_infₛ, Set.binterᵢ_range]
 #align first_order.language.substructure.coe_infi FirstOrder.Language.Substructure.coe_infᵢ
 
 /-- Substructures of a structure form a complete lattice. -/
-instance : CompleteLattice (L.Substructure M) :=
-  {
-    completeLatticeOfInf (L.Substructure M) fun s =>
-      IsGLB.of_image (fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
+instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
+  { completeLatticeOfInf (L.Substructure M) fun _ =>
+      IsGLB.of_image
+        (fun {S T : L.Substructure M} => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
         isGLB_binfᵢ with
     le := (· ≤ ·)
     lt := (· < ·)
     top := ⊤
-    le_top := fun S x hx => mem_top x
+    le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
     infₛ := InfSet.infₛ
-    le_inf := fun a b c ha hb x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun a b x => And.left
-    inf_le_right := fun a b x => And.right }
+    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun _ _ _ => And.right }
+#align first_order.language.substructure.complete_lattice FirstOrder.Language.Substructure.instCompleteLattice
 
 variable (L)
 
-/-- The `L.substructure` generated by a set. -/
-def closure : LowerAdjoint (coe : L.Substructure M → Set M) :=
-  ⟨fun s => infₛ { S | s ⊆ S }, fun s S =>
-    ⟨Set.Subset.trans fun x hx => mem_infₛ.2 fun S hS => hS hx, fun h => infₛ_le h⟩⟩
+/-- The `L.Substructure` generated by a set. -/
+def closure : LowerAdjoint ((↑) : L.Substructure M → Set M) :=
+  ⟨fun s => infₛ { S | s ⊆ S }, fun _ _ =>
+    ⟨Set.Subset.trans fun _x hx => mem_infₛ.2 fun _S hS => hS hx, fun h => infₛ_le h⟩⟩
 #align first_order.language.substructure.closure FirstOrder.Language.Substructure.closure
 
 variable {L} {s : Set M}
@@ -264,7 +276,7 @@ theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s :=
 
 @[simp]
 theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
-  congr rfl ((closure L).eq_of_le Set.Subset.rfl fun x xS => mem_closure.2 fun T hT => hT xS)
+  congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 #align first_order.language.substructure.closed FirstOrder.Language.Substructure.closed
 
 open Set
@@ -278,7 +290,7 @@ theorem closure_le : closure L s ≤ S ↔ s ⊆ S :=
 /-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure L s ≤ closure L t`. -/
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
-  (closure L).Monotone h
+  (closure L).monotone h
 #align first_order.language.substructure.closure_mono FirstOrder.Language.Substructure.closure_mono
 
 theorem closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure L s) : closure L s = S :=
@@ -286,31 +298,31 @@ theorem closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure L s) : closure L
 #align first_order.language.substructure.closure_eq_of_le FirstOrder.Language.Substructure.closure_eq_of_le
 
 theorem coe_closure_eq_range_term_realize :
-    (closure L s : Set M) = range (@Term.realize L _ _ _ (coe : s → M)) := by
-  let S : L.substructure M := ⟨range (term.realize coe), fun n f x hx => _⟩
-  · change _ = (S : Set M)
-    rw [← SetLike.ext'_iff]
-    refine' closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_infₛ fun S' hS' => _)
-    · rintro _ ⟨t, rfl⟩
-      exact t.realize_mem _ fun i => hS' i.2
-  · simp only [mem_range] at *
+    (closure L s : Set M) = range (@Term.realize L _ _ _ ((↑) : s → M)) := by
+  let S : L.Substructure M := ⟨range (Term.realize (L := L) ((↑) : s → M)), fun {n} f x hx => by
+    simp only [mem_range] at *
     refine' ⟨func f fun i => Classical.choose (hx i), _⟩
-    simp only [term.realize, fun i => Classical.choose_spec (hx i)]
+    simp only [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
+  change _ = (S : Set M)
+  rw [← SetLike.ext'_iff]
+  refine' closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_infₛ fun S' hS' => _)
+  · rintro _ ⟨t, rfl⟩
+    exact t.realize_mem _ fun i => hS' i.2
 #align first_order.language.substructure.coe_closure_eq_range_term_realize FirstOrder.Language.Substructure.coe_closure_eq_range_term_realize
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
-  rw [← SetLike.coe_sort_coe, substructure.coe_closure_eq_range_term_realize]
+  rw [← SetLike.coe_sort_coe, Substructure.coe_closure_eq_range_term_realize]
   exact small_range _
 #align first_order.language.substructure.small_closure FirstOrder.Language.Substructure.small_closure
 
 theorem mem_closure_iff_exists_term {x : M} :
-    x ∈ closure L s ↔ ∃ t : L.term s, t.realize (coe : s → M) = x := by
+    x ∈ closure L s ↔ ∃ t : L.Term s, t.realize ((↑) : s → M) = x := by
   rw [← SetLike.mem_coe, coe_closure_eq_range_term_realize, mem_range]
 #align first_order.language.substructure.mem_closure_iff_exists_term FirstOrder.Language.Substructure.mem_closure_iff_exists_term
 
-theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} (#closure L s) ≤ (#L.term s) := by
+theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} (#closure L s) ≤ (#L.Term s) := by
   rw [← SetLike.coe_sort_coe, coe_closure_eq_range_term_realize]
-  rw [← Cardinal.lift_id'.{w, max u w} (#L.term s)]
+  rw [← Cardinal.lift_id'.{w, max u w} (#L.Term s)]
   exact Cardinal.mk_range_le_lift
 #align first_order.language.substructure.lift_card_closure_le_card_term FirstOrder.Language.Substructure.lift_card_closure_le_card_term
 
@@ -318,17 +330,17 @@ theorem lift_card_closure_le :
     Cardinal.lift.{u, w} (#closure L s) ≤
       max ℵ₀ (Cardinal.lift.{u, w} (#s) + Cardinal.lift.{w, u} (#Σi, L.Functions i)) := by
   rw [← lift_umax]
-  refine' lift_card_closure_le_card_term.trans (term.card_le.trans _)
-  rw [mk_sum, lift_umax]
+  refine' lift_card_closure_le_card_term.trans (Term.card_le.trans _)
+  rw [mk_sum, lift_umax.{w, u}]
 #align first_order.language.substructure.lift_card_closure_le FirstOrder.Language.Substructure.lift_card_closure_le
 
 variable (L)
 
-theorem Set.Countable.substructure_closure [Countable (Σl, L.Functions l)] (h : s.Countable) :
-    Countable.{w + 1} (closure L s) := by
+theorem _root_.Set.Countable.substructure_closure
+    [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
-  rw [← mk_le_aleph_0_iff, ← lift_le_aleph_0]
-  exact lift_card_closure_le_card_term.trans mk_le_aleph_0
+  rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
+  exact lift_card_closure_le_card_term.trans mk_le_aleph0
 #align set.countable.substructure_closure Set.Countable.substructure_closure
 
 variable {L} (S)
@@ -338,27 +350,27 @@ is preserved under function symbols, then `p` holds for all elements of the clos
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure L s) (Hs : ∀ x ∈ s, p x)
     (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x :=
-  (@closure_le L M _ ⟨setOf p, fun n => Hfun⟩ _).2 Hs h
+  (@closure_le L M _ ⟨setOf p, fun {_} => Hfun⟩ _).2 Hs h
 #align first_order.language.substructure.closure_induction FirstOrder.Language.Substructure.closure_induction
 
-/-- If `s` is a dense set in a structure `M`, `substructure.closure L s = ⊤`, then in order to prove
+/-- If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
 that some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify
 that `p` is preserved under function symbols. -/
 @[elab_as_elim]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s = ⊤)
     (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x := by
-  have : ∀ x ∈ closure L s, p x := fun x hx => closure_induction hx Hs fun n => Hfun
+  have : ∀ x ∈ closure L s, p x := fun x hx => closure_induction hx Hs fun {n} => Hfun
   simpa [hs] using this x
 #align first_order.language.substructure.dense_induction FirstOrder.Language.Substructure.dense_induction
 
 variable (L) (M)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure L M _) coe where
+protected def gi : GaloisInsertion (@closure L M _) (↑) where
   choice s _ := closure L s
   gc := (closure L).gc
-  le_l_u s := subset_closure
-  choice_eq s h := rfl
+  le_l_u _ := subset_closure
+  choice_eq _ _ := rfl
 #align first_order.language.substructure.gi FirstOrder.Language.Substructure.gi
 
 variable {L} {M}
@@ -389,7 +401,8 @@ theorem closure_unionᵢ {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ 
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
-  exact substructure.small_closure
+  haveI : Small.{u} (∅ : Set M) := small_subsingleton _
+  exact Substructure.small_closure
 #align first_order.language.substructure.small_bot FirstOrder.Language.Substructure.small_bot
 
 /-!
@@ -401,7 +414,7 @@ instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
 @[simps]
 def comap (φ : M →[L] N) (S : L.Substructure N) : L.Substructure M where
   carrier := φ ⁻¹' S
-  fun_mem n f x hx := by
+  fun_mem {n} f x hx := by
     rw [mem_preimage, φ.map_fun]
     exact S.fun_mem f (φ ∘ x) hx
 #align first_order.language.substructure.comap FirstOrder.Language.Substructure.comap
@@ -425,17 +438,18 @@ theorem comap_id (S : L.Substructure P) : S.comap (Hom.id _ _) = S :=
 @[simps]
 def map (φ : M →[L] N) (S : L.Substructure M) : L.Substructure N where
   carrier := φ '' S
-  fun_mem n f x hx :=
+  fun_mem {n} f x hx :=
     (mem_image _ _ _).1
       ⟨funMap f fun i => Classical.choose (hx i),
         S.fun_mem f _ fun i => (Classical.choose_spec (hx i)).1, by
-        simp only [hom.map_fun, SetLike.mem_coe]
+        simp only [Hom.map_fun, SetLike.mem_coe]
         exact congr rfl (funext fun i => (Classical.choose_spec (hx i)).2)⟩
 #align first_order.language.substructure.map FirstOrder.Language.Substructure.map
 
 @[simp]
-theorem mem_map {f : M →[L] N} {S : L.Substructure M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
-  mem_image_iff_bex
+theorem mem_map {f : M →[L] N} {S : L.Substructure M} {y : N} :
+    y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+  Iff.rfl
 #align first_order.language.substructure.mem_map FirstOrder.Language.Substructure.mem_map
 
 theorem mem_map_of_mem (f : M →[L] N) {S : L.Substructure M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
@@ -443,7 +457,7 @@ theorem mem_map_of_mem (f : M →[L] N) {S : L.Substructure M} {x : M} (hx : x �
 #align first_order.language.substructure.mem_map_of_mem FirstOrder.Language.Substructure.mem_map_of_mem
 
 theorem apply_coe_mem_map (f : M →[L] N) (S : L.Substructure M) (x : S) : f x ∈ S.map f :=
-  mem_map_of_mem f x.Prop
+  mem_map_of_mem f x.prop
 #align first_order.language.substructure.apply_coe_mem_map FirstOrder.Language.Substructure.apply_coe_mem_map
 
 theorem map_map (g : N →[L] P) (f : M →[L] N) : (S.map f).map g = S.map (g.comp f) :=
@@ -455,7 +469,7 @@ theorem map_le_iff_le_comap {f : M →[L] N} {S : L.Substructure M} {T : L.Subst
   image_subset_iff
 #align first_order.language.substructure.map_le_iff_le_comap FirstOrder.Language.Substructure.map_le_iff_le_comap
 
-theorem gc_map_comap (f : M →[L] N) : GaloisConnection (map f) (comap f) := fun S T =>
+theorem gc_map_comap (f : M →[L] N) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 #align first_order.language.substructure.gc_map_comap FirstOrder.Language.Substructure.gc_map_comap
 
@@ -1002,4 +1016,3 @@ end Substructure
 end Language
 
 end FirstOrder
-
