@@ -109,19 +109,21 @@ partial def _root_.Lean.MVarId.relCongr
     MetaM (Array MVarId) := do
   withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
-  -- A. If there is no template, try to resolve the goal by the provided `assumption` tactic, and
-  -- continue on if this fails.
   | none =>
+    -- A. If there is no template, try to resolve the goal by the provided `assumption` tactic, and
+    -- continue on if this fails.
     try assumption g; return #[]
     catch _ => pure ()
-  -- B. If there is a template, (i) if the template is `?_` then try to resolve the goal by the
-  -- provided `assumption` tactic; if this fails, stop and report the existing goal.
-  | some (.mvar mvarId) =>
-    if let .syntheticOpaque ← mvarId.getKind then
-      try assumption g; return #[]
-      catch _ => return #[g]
-  -- B. If there is a template, (ii) if the template is *not* `?_` then continue on.
-  | some _ => pure ()
+  | some tpl =>
+    -- B. If there is a template:
+    -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
+    -- then try to resolve the goal by the provided `assumption` tactic;
+    -- if this fails, stop and report the existing goal.
+    if let .mvar mvarId := tpl.getAppFn then
+      if let .syntheticOpaque ← mvarId.getKind then
+        try assumption g; return #[]
+        catch _ => return #[g]
+    -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
     | throwError "rel_congr failed, not a relation"

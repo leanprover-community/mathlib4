@@ -129,8 +129,7 @@ example {a b c d e : ℝ} (h1 : 0 ≤ b) (h2 : 0 ≤ c) (hac : a + 1 ≤ c + 1) 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
-  -- FIXME `rel_congr ∑ i in s, ?_` does not work
-  rel_congr s.sum ?_
+  rel_congr ∑ _i in s, ?_
   rename_i i hi
   linarith [h i hi]
 
@@ -138,6 +137,6 @@ axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?m.84728 and the relation LE.le"
-    (rel_congr f ?_)
+    "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?a and the relation LE.le"
+    (rel_congr f ?a)
   exact h
