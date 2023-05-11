@@ -8,11 +8,11 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Subobject
-import Mathbin.CategoryTheory.Limits.EssentiallySmall
-import Mathbin.CategoryTheory.Preadditive.Injective
-import Mathbin.CategoryTheory.Preadditive.Generator
-import Mathbin.CategoryTheory.Abelian.Opposite
+import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Limits.EssentiallySmall
+import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.CategoryTheory.Preadditive.Generator
+import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
@@ -36,8 +36,7 @@ namespace CategoryTheory.Abelian
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
-    ∃ G : C, Injective G ∧ IsCoseparator G :=
-  by
+    ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : well_powered C := well_powered_of_is_detector G hG.is_detector
   haveI : has_products_of_shape (subobject (op G)) C := has_products_of_shape_of_small _ _
   let T : C := injective.under (pi_obj fun P : subobject (op G) => unop P)
@@ -59,8 +58,7 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
 #align category_theory.abelian.has_injective_coseparator CategoryTheory.Abelian.has_injective_coseparator
 
 theorem has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
-    (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G :=
-  by
+    (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G := by
   obtain ⟨T, hT₁, hT₂⟩ := has_injective_coseparator (op G) ((is_separator_op_iff _).2 hG)
   exact ⟨unop T, inferInstance, (is_separator_unop_iff _).2 hT₂⟩
 #align category_theory.abelian.has_projective_separator CategoryTheory.Abelian.has_projective_separator
