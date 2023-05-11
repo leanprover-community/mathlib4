@@ -557,52 +557,29 @@ theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy
   mul_right_injective₀ d0.ne' <| by simp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
 #align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
 
-theorem nat_coprime_helper_zero_left (x : ℕ) (h : 1 < x) : ¬Nat.coprime 0 x :=
-  mt (Nat.coprime_zero_left _).1 <| ne_of_gt h
-#align tactic.norm_num.nat_coprime_helper_zero_left Tactic.NormNum.nat_coprime_helper_zero_left
+theorem not_coprime_helper {x y d : Nat} (h : Nat.gcd x y = d) (h' : Nat.beq d 1 = false) :
+    ¬ Nat.coprime x y :=
+  by cases h; exact fun h'' => Nat.ne_of_beq_eq_false h' (Nat.coprime_iff_gcd_eq_one.mp h'')
 
-theorem nat_coprime_helper_zero_right (x : ℕ) (h : 1 < x) : ¬Nat.coprime x 0 :=
-  mt (Nat.coprime_zero_right _).1 <| ne_of_gt h
-#align tactic.norm_num.nat_coprime_helper_zero_right Tactic.NormNum.nat_coprime_helper_zero_right
+theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
+    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
+    Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
 
-theorem nat_coprime_helper_1 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
-    (h : tx + 1 = ty) : Nat.coprime x y :=
-  nat_gcd_helper_1 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
-#align tactic.norm_num.nat_coprime_helper_1 Tactic.NormNum.nat_coprime_helper_1
+theorem int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
+    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
+    Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
 
-theorem nat_coprime_helper_2 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
-    (h : ty + 1 = tx) : Nat.coprime x y :=
-  nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
-#align tactic.norm_num.nat_coprime_helper_2 Tactic.NormNum.nat_coprime_helper_2
-
-theorem nat_not_coprime_helper (d x y u v : ℕ) (hu : d * u = x) (hv : d * v = y) (h : 1 < d) :
-    ¬Nat.coprime x y :=
-  Nat.not_coprime_of_dvd_of_dvd h ⟨_, hu.symm⟩ ⟨_, hv.symm⟩
-#align tactic.norm_num.nat_not_coprime_helper Tactic.NormNum.nat_not_coprime_helper
-
-theorem int_gcd_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
-    (h : Nat.gcd nx ny = d) : Int.gcd x y = d := by rwa [← hx, ← hy, Int.coe_nat_gcd]
-#align tactic.norm_num.int_gcd_helper Tactic.NormNum.int_gcd_helper
-
-theorem int_gcd_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd (-x) y = d :=
- by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
-#align tactic.norm_num.int_gcd_helper_neg_left Tactic.NormNum.int_gcd_helper_neg_left
-
-theorem int_gcd_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd x (-y) = d :=
- by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
-#align tactic.norm_num.int_gcd_helper_neg_right Tactic.NormNum.int_gcd_helper_neg_right
-
-theorem int_lcm_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
-    (h : Nat.lcm nx ny = d) : Int.lcm x y = d := by rwa [← hx, ← hy, Int.coe_nat_lcm]
-#align tactic.norm_num.int_lcm_helper Tactic.NormNum.int_lcm_helper
-
-theorem int_lcm_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm (-x) y = d :=
- by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
-#align tactic.norm_num.int_lcm_helper_neg_left Tactic.NormNum.int_lcm_helper_neg_left
-
-theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm x (-y) = d :=
- by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
-#align tactic.norm_num.int_lcm_helper_neg_right Tactic.NormNum.int_lcm_helper_neg_right
+#noalign tactic.norm_num.nat_coprime_helper_zero_left
+#noalign tactic.norm_num.nat_coprime_helper_zero_right
+#noalign tactic.norm_num.nat_coprime_helper_1
+#noalign tactic.norm_num.nat_coprime_helper_2
+#noalign tactic.norm_num.nat_not_coprime_helper
+#noalign tactic.norm_num.int_gcd_helper''
+#noalign tactic.norm_num.int_gcd_helper_neg_left
+#noalign tactic.norm_num.int_gcd_helper_neg_right
+#noalign tactic.norm_num.int_lcm_helper
+#noalign tactic.norm_num.int_lcm_helper_neg_left
+#noalign tactic.norm_num.int_lcm_helper_neg_right
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
@@ -720,10 +697,6 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
   let pf' : Q(IsNat (Nat.lcm $x $y) $cd) := q(isNat_lcm $p $q $pf)
   return .isNat sℕ cd pf'
 
-theorem not_coprime_helper {x y d : Nat} (h : Nat.gcd x y = d) (h' : Nat.beq d 1 = false) :
-    ¬ Nat.coprime x y :=
-  by cases h; exact fun h'' => Nat.ne_of_beq_eq_false h' (Nat.coprime_iff_gcd_eq_one.mp h'')
-
 /-- Helper for `proveNatCoprime`. Evaluates `Nat.coprime` given the given natural numbers. -/
 def proveNatCoprime' (x y : ℕ) : MetaM (Q(Nat.coprime $x $y) ⊕ Q(¬ Nat.coprime $x $y)) := do
   let ⟨cd, pf⟩ ← proveNatGCD' x y
@@ -755,21 +728,14 @@ def evalNatCoprime : NormNumExt where eval {u α} e := do
     have pf' : Q(¬ Nat.coprime $x $y) := q(isNat_not_coprime $p $q $pf)
     return .isFalse pf'
 
-theorem int_gcd_helper'' {x y : ℤ} {x' y' d : ℕ}
-    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
-    Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
-
-theorem int_lcm_helper'' {x y : ℤ} {x' y' d : ℕ}
-    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
-    Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
-
+/-- Given two integers, return their GCD and an equality proof. -/
 def proveIntGCD' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.gcd $x $y = $d)) := do
   let x' : ℕ := x.natAbs
   let y' : ℕ := y.natAbs
   have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
   have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
   let ⟨d, pf⟩ ← proveNatGCD' x.natAbs y.natAbs
-  have pf' : Q(Int.gcd $x $y = $d) := q(int_gcd_helper'' $hx $hy $pf)
+  have pf' : Q(Int.gcd $x $y = $d) := q(int_gcd_helper $hx $hy $pf)
   return ⟨d, pf'⟩
 #align tactic.norm_num.prove_gcd_int Tactic.NormNum.proveIntGCD'
 
@@ -786,13 +752,14 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
   have pf' : Q(IsNat (Int.gcd $x $y) $cd) := q(isInt_gcd $p $q $pf)
   return .isNat sℕ (mkRawNatLit cd) pf'
 
+/-- Given two integers numbers, return their LCM and an equality proof. -/
 def proveIntLCM' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.lcm $x $y = $d)) := do
   let x' : ℕ := x.natAbs
   let y' : ℕ := y.natAbs
   have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
   have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
   let ⟨d, pf⟩ ← proveNatLCM' x.natAbs y.natAbs
-  have pf' : Q(Int.lcm $x $y = $d) := q(int_lcm_helper'' $hx $hy $pf)
+  have pf' : Q(Int.lcm $x $y = $d) := q(int_lcm_helper $hx $hy $pf)
   return ⟨d, pf'⟩
 #align tactic.norm_num.prove_lcm_int Tactic.NormNum.proveIntLCM'
 
