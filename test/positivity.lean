@@ -1,14 +1,15 @@
 import Mathlib.Algebra.Abs
-import Mathlib.Data.Rat.Order
-import Mathlib.Tactic.Positivity
 import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.Real.NNReal
+import Mathlib.Tactic.Positivity
 
 /-! # Tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 
-open Function
+open Function NNReal
 
 variable {ι α β : Type _}
 
@@ -253,7 +254,7 @@ example (n : ℕ) : 0 < n.succ := by positivity
 
 example {a : ℕ} : 0 ≤ a := by positivity
 -- example {a : ℚ≥0} : 0 ≤ a := by positivity
--- example {a : ℝ≥0} : 0 ≤ a := by positivity
+example {a : ℝ≥0} : 0 ≤ a := by positivity
 -- example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
 /- ### Coercions -/
@@ -268,8 +269,8 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 -- example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
 -- example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
 -- example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
--- example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
--- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
+example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
+example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity
 -- -- example {r : ℝ≥0} : (0 : ereal) ≤ r := by positivity -- TODO: Handle `coe_trans`
 -- -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ereal) < r := by positivity
@@ -280,13 +281,16 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 -- example {r : ℝ≥0∞} : (0 : ereal) ≤ r := by positivity
 -- example {r : ℝ≥0∞} (hr : 0 < r) : (0 : ereal) < r := by positivity
 
--- example {α : Type _} [ordered_ring α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+-- example {α : Type _} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
 
 /- ## Other extensions -/
 
 example [Zero β] [PartialOrder β] [NonnegHomClass F α β] (f : F) (x : α) : 0 ≤ f x := by positivity
+
+example : (0:ℝ) < ↑(3:ℝ≥0) := by positivity
+example (x : ℝ≥0) : (0:ℝ) ≤ ↑x := by positivity
 
 /- ## Tests that the tactic is agnostic on reversed inequalities -/
 
