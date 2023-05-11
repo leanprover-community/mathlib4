@@ -1,10 +1,13 @@
 import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type _} [Category C] [Category A]
-  (F : C ⥤ A) (M G : Type _) [AddMonoid M] [AddGroup G] [HasShift C M] [HasShift C G]
+variable {C D A : Type _} [Category C] [Category D] [Category A]
+  (F : C ⥤ A) {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
+  (M G : Type _) [AddMonoid M] [AddGroup G] [HasShift C M] [HasShift C G]
+  [HasShift D M]
 
 namespace CategoryTheory
 
@@ -225,6 +228,30 @@ variable {M}
 @[simp]
 lemma tautological_sequence (n : M) :
     @Functor.shift _ _ _ _ _ _ _ _ (tautological F M) n = shiftFunctor C n ⋙ F := rfl
+
+variable (M) {F}
+
+def leftComp [π.HasCommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
+  sequence n := π ⋙ H.shift n
+  isoZero := isoWhiskerLeft π (H.isoShiftZero M) ≪≫ e
+  shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (π.commShiftIso n) _ ≪≫ Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft π (H.shiftIso n a a' ha')
+  shiftIso_zero a := by
+    ext K
+    dsimp
+    simp only [shiftIso_zero_hom_app, id_obj, id_comp, comp_id, ← Functor.map_comp,
+      commShiftIso_zero, CommShift.iso_zero_hom_app, assoc, Iso.inv_hom_id_app]
+  shiftIso_add n m a a' a'' ha' ha'':= by
+    ext K
+    dsimp
+    simp only [H.shiftIso_add_hom_app n m a a' a'' ha' ha'', assoc,
+      commShiftIso_add, CommShift.iso_add_hom_app, ← Functor.map_comp_assoc,
+      id_comp, Iso.inv_hom_id_app, comp_obj, comp_id]
+    simp only [map_comp, assoc, shiftIso_hom_naturality_assoc]
+
+instance [π.HasCommShift M] [H.ShiftSequence M] : (π ⋙ H).ShiftSequence M :=
+  leftComp (Iso.refl _) _
 
 end ShiftSequence
 
