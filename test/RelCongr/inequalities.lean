@@ -107,7 +107,6 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
     A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
   intro A
   rel_congr
-  -- FIXME notice how the same goal is reported twice in the infoview
   exact le_sum hn'
 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :

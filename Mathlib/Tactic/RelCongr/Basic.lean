@@ -142,7 +142,7 @@ partial def _root_.Lean.MVarId.relCongr
           subgoals := subgoals ++ (← mvarId.relCongr tpl discharger assumption)
         let mut out := #[]
         for g in gs do
-          if !(← g.isAssigned) then
+          if !(← g.isAssigned) && !subgoals.contains g then
             try discharger g
             catch _ => out := out.push g
         return out ++ subgoals
