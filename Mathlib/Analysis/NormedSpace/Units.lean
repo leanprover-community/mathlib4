@@ -19,20 +19,18 @@ normed ring (Banach algebras being a notable special case).
 
 ## Main results
 
-The constructions `one_sub`, `add` and `unit_of_nearby` state, in varying forms, that perturbations
-of a unit are units.  The latter two are not stated in their optimal form; more precise versions
-would use the spectral radius.
+The constructions `Units.oneSub`, `Units.add`, and `Units.ofNearby` state, in varying forms, that
+perturbations of a unit are units. The latter two are not stated in their optimal form; more precise
+versions would use the spectral radius.
 
-The first main result is `is_open`:  the group of units of a complete normed ring is an open subset
-of the ring.
+The first main result is `Units.isOpen`: the group of units of a complete normed ring is an open
+subset of the ring.
 
-The function `inverse` (defined in `algebra.ring`), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is
-a unit and 0 if not.  The other major results of this file (notably `inverse_add`,
-`inverse_add_norm` and `inverse_add_norm_diff_nth_order`) cover the asymptotic properties of
-`inverse (x + t)` as `t → 0`.
-
+The function `Ring.inverse` (defined elsewhere), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is a
+unit and `0` if not.  The other major results of this file (notably `NormedRing.inverse_add`,
+`NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
+properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
-
 
 noncomputable section
 
@@ -119,7 +117,8 @@ theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.
   rw [← inverse_unit (Units.oneSub t h), Units.oneSub_val]
 #align normed_ring.inverse_one_sub NormedRing.inverse_one_sub
 
-/-- The formula `inverse (x + t) = inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently small. -/
+/-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
+small. -/
 theorem inverse_add (x : Rˣ) :
     ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) = inverse (1 + ↑x⁻¹ * t) * ↑x⁻¹ := by
   nontriviality R
@@ -146,7 +145,8 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
 
 
 /-- The formula
-`inverse (x + t) = (∑ i in range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * inverse (x + t)`
+`Ring.inverse (x + t) =
+  (∑ i in Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
 holds for `t` sufficiently small. -/
 theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) =
@@ -177,7 +177,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   linarith
 #align normed_ring.inverse_one_sub_norm NormedRing.inverse_one_sub_norm
 
-/-- The function `λ t, inverse (x + t)` is O(1) as `t → 0`. -/
+/-- The function `fun t ↦ inverse (x + t)` is O(1) as `t → 0`. -/
 theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0] fun _t => (1 : ℝ) := by
   refine EventuallyEq.trans_isBigO (inverse_add x) (one_mul (1 : ℝ) ▸ ?_)
   simp only [← sub_neg_eq_add, ← neg_mul]
@@ -187,7 +187,7 @@ theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0
 #align normed_ring.inverse_add_norm NormedRing.inverse_add_norm
 
 /-- The function
-`λ t, inverse (x + t) - (∑ i in range n, (- x⁻¹ * t) ^ i) * x⁻¹`
+`fun t ↦ Ring.inverse (x + t) - (∑ i in Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹`
 is `O(t ^ n)` as `t → 0`. -/
 theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
     (fun t : R => inverse (↑x + t) - (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
@@ -199,15 +199,13 @@ theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
   exact ((isBigO_refl _ _).norm_right.const_mul_left _).pow _
 #align normed_ring.inverse_add_norm_diff_nth_order NormedRing.inverse_add_norm_diff_nth_order
 
-/-- The function `λ t, inverse (x + t) - x⁻¹` is `O(t)` as `t → 0`. -/
+/-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹` is `O(t)` as `t → 0`. -/
 theorem inverse_add_norm_diff_first_order (x : Rˣ) :
     (fun t : R => inverse (↑x + t) - ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ := by
   simpa using inverse_add_norm_diff_nth_order x 1
 #align normed_ring.inverse_add_norm_diff_first_order NormedRing.inverse_add_norm_diff_first_order
 
-/-- The function
-`λ t, inverse (x + t) - x⁻¹ + x⁻¹ * t * x⁻¹`
-is `O(t ^ 2)` as `t → 0`. -/
+/-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹ + x⁻¹ * t * x⁻¹` is `O(t ^ 2)` as `t → 0`. -/
 theorem inverse_add_norm_diff_second_order (x : Rˣ) :
     (fun t : R => inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ ^ 2 := by
   convert inverse_add_norm_diff_nth_order x 2 using 2
@@ -215,7 +213,7 @@ theorem inverse_add_norm_diff_second_order (x : Rˣ) :
     ← sub_sub, neg_mul, sub_neg_eq_add]
 #align normed_ring.inverse_add_norm_diff_second_order NormedRing.inverse_add_norm_diff_second_order
 
-/-- The function `inverse` is continuous at each unit of `R`. -/
+/-- The function `Ring.inverse` is continuous at each unit of `R`. -/
 theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
   have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
