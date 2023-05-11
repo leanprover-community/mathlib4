@@ -19,6 +19,12 @@ namespace Functor
 -- homology sequence associated to a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧`
 -- will be like `H^n X ⟶ H^n Y ⟶ H^n Z ⟶ H^(n+1) X` rather than
 -- `H^0 (X⟦n⟧) ⟶ H^0 (Y⟦n⟧]) ⟶ H^0 (Z⟦n⟧]) ⟶ H^0 (X⟦n+1⟧]))`.
+--
+-- similarly, when `RF : C ⥤ DerivedCategory A` is a
+-- triangulated functor, `RF ⋙ H^0` shall come together
+-- with the sequence of $R^n F$ which are the `RF ⋙ H^n`,
+-- see `ShiftSequence.leftComp`.
+--
 
 class ShiftSequence where
   sequence : M → C ⥤ A

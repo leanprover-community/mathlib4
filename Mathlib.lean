@@ -156,6 +156,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
+import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.ImageToKernel
@@ -687,6 +688,7 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
+import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
