@@ -1082,7 +1082,7 @@ private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
 def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← withReducible (whnf e) | throwError "not NNReal.toReal"
+  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.toReal"
   let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
   let ra ← core zα' pα' a

@@ -364,7 +364,7 @@ open Lean Meta Qq Function
 positive. -/
 @[positivity NNReal.sqrt _]
 def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← withReducible (whnf e) | throwError "not NNReal.sqrt"
+  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.sqrt"
   let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
   let ra ← core zα' pα' a
@@ -377,7 +377,7 @@ def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
 its input is. -/
 @[positivity Real.sqrt _]
 def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(Real))) ← withReducible (whnf e) | throwError "not Real.sqrt"
+  let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
   let ra ← core zα' pα' a

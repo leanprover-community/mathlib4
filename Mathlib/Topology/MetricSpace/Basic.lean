@@ -280,7 +280,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
 def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (.app _ a) b ← withReducible (whnf e) | throwError "not dist"
+  let .app (.app _ a) b ← whnfR e | throwError "not dist"
   let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
   pure (.nonnegative p)
 
@@ -2780,7 +2780,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
 def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ s ← withReducible (whnf e) | throwError "not Metric.diam"
+  let .app _ s ← whnfR e | throwError "not Metric.diam"
   let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
   pure (.nonnegative p)
 

@@ -162,7 +162,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity FunLike.coe _ _]
 def evalMap : PositivityExt where eval {_ β} _ _ e := do
-  let .app (.app _ f) a ← withReducible (whnf e)
+  let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
   let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, f, a]
   pure (.nonnegative pa)
