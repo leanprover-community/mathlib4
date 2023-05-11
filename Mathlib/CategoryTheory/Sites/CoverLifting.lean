@@ -141,7 +141,7 @@ def pulledbackFamily (Y : StructuredArrow (op U) G.op) :=
   ((x.pullback Y.hom.unop).functorPullback G).compPresheafMap
     (show _ ⟶ _ from whiskerRight ((Ran.adjunction A G.op).counit.app ℱ.val) (coyoneda.obj (op X)))
 set_option linter.uppercaseLean3 false in
-#align CategoryTheory.Ran_is_sheaf_of_cover_lifting.pulledback_family CategoryTheory.RanIsSheafOfCoverLifting.pulledbackFamily
+#align category_theory.Ran_is_sheaf_of_cover_lifting.pulledback_family CategoryTheory.RanIsSheafOfCoverLifting.pulledbackFamily
 
 @[simp]
 theorem pulledbackFamily_apply (Y : StructuredArrow (op U) G.op) {W} {f : W ⟶ _} (Hf) :
