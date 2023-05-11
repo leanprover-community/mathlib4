@@ -191,34 +191,11 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   rw [eq] at hV'
   convert getSection_isAmalgamation hu ℱ hS hx Y (fV' ≫ f.right.unop) _ using 1
   · aesop_cat
-  · simp only [eq, Quiver.Hom.unop_op, pulledbackFamily_apply, Functor.map_comp, unop_comp,
-      Category.assoc]
-    sorry
-    /-
-    --sorry -- porting note -- Lean 3 proof was finished by now
-    --More details: here is how to make partial progress. Comment out the `simp only`
-    -- and the `sorry` above, and then try (e.g. by uncommenting the `/- -/` on lines 197
-    -- and 219)
-    rw [pulledbackFamily_apply, pulledbackFamily_apply]
-    -- because `simp only` is only applying it once, for some reason.
-    -- Note: this seems to generate some extra goals in Lean 4, let's just focus
-    -- on the first one.
-    -- Now the next step in the Lean 3 proof is
-    simp_rw [Functor.map_comp]
-    -- and in Lean 4 it refuses to apply to `G.map (fV' ≫ Quiver.Hom.unop f.right)`
-    -- because the motive isn't type correct. Note that there is a metavariable
-    -- in the goal, but you can remove it by switching the order of these last
-    -- two "bullet point" goals with `swap` and then solving the second one first.
-    -- A working Lean 3 proof is
-    /-
-    { rw [pulledback_family_apply, pulledback_family_apply],
-    simp_rw [functor.map_comp],
-    simp_rw [category.assoc],
-    simp only [eq, quiver.hom.unop_op, unop_comp] },
-    -/
-    -/
-  · change S (G.map _ ≫ Y.hom.unop)
-    simpa only [Functor.map_comp, Category.assoc] using hV'
+  · rw [pulledbackFamily_apply, pulledbackFamily_apply]
+    · congr 2
+      simp [eq]
+    · change S (G.map _ ≫ Y.hom.unop)
+      simpa only [Functor.map_comp, Category.assoc] using hV'
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section_commute CategoryTheory.RanIsSheafOfCoverLifting.getSection_commute
 
