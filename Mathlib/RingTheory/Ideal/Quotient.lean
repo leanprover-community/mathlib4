@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -215,17 +215,29 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
 
 open Classical
 
-/-- quotient by maximal ideal is a field. def rather than instance, since users will have
-computable inverses in some applications.
+/-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
+since users will have computable inverses in some applications.
+
+See note [reducible non-instances]. -/
+@[reducible]
+protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
+    GroupWithZero (R ⧸ I) :=
+  { Quotient.commRing I,
+    Quotient.isDomain
+      I with
+    inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
+    mul_inv_cancel := fun a (ha : a ≠ 0) ↦
+      show a * dite _ _ _ = _ by rw [dif_neg ha] ; exact Classical.choose_spec (exists_inv ha)
+    inv_zero := dif_pos rfl }
+#align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
+
+/-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users
+will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
+
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I,
-    Quotient.isDomain I with
-    inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
-    mul_inv_cancel := fun a (ha : a ≠ 0) =>
-      show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
-    inv_zero := dif_pos rfl }
+  { Quotient.commRing I, Quotient.groupWithZero I with }
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/

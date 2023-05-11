@@ -394,9 +394,8 @@ instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSM
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (MonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
