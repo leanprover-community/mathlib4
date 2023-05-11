@@ -226,7 +226,8 @@ alias Modeq.sub_iff_left ↔ sub_left_cancel sub
 alias Modeq.sub_iff_right ↔ sub_right_cancel _
 #align add_comm_group.modeq.sub_right_cancel AddCommGroup.Modeq.sub_right_cancel
 
-attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
+-- porting note: doesn't work
+-- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
 
 protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
   modeq_rfl.add h
