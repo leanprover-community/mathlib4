@@ -127,5 +127,4 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   -- FIXME `rel_congr ∑ i in s, ?_` does not work
   rel_congr s.sum ?_
   rename_i i hi
-  rw [← lt_succ]
-  apply h i hi
+  linarith [h i hi]
