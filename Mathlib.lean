@@ -646,6 +646,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
@@ -655,6 +656,7 @@ import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
@@ -745,6 +747,7 @@ import Mathlib.Computability.Ackermann
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
+import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Partrec
