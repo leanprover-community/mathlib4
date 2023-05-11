@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Group.Arithmetic
+import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -191,8 +191,7 @@ theorem toEquiv_mulLeft₀ {g : G₀} (hg : g ≠ 0) : (mulLeft₀ g hg).toEquiv
 
 /-- If `G₀` is a group with zero with measurable multiplication, then right multiplication by a
 nonzero element `g : G₀` is a measurable automorphism of `G₀`. -/
-def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀
-    where
+def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   toEquiv := Equiv.mulRight₀ g hg
   measurable_to_fun := measurable_mul_const g
   measurable_inv_fun := measurable_mul_const g⁻¹
@@ -223,8 +222,7 @@ end Mul
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
 @[to_additive "Negation as a measurable automorphism of an additive group.",
   simps (config := { fullyApplied := false }) toEquiv apply]
-def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G
-    where
+def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G
   measurable_to_fun := measurable_inv
   measurable_inv_fun := measurable_inv
@@ -240,8 +238,7 @@ theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
 
 /-- `equiv.div_right` as a `measurable_equiv`. -/
 @[to_additive " `equiv.sub_right` as a `measurable_equiv` "]
-def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G
-    where
+def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divRight g
   measurable_to_fun := measurable_div_const' g
   measurable_inv_fun := measurable_mul_const g
@@ -250,8 +247,7 @@ def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G
 
 /-- `equiv.div_left` as a `measurable_equiv` -/
 @[to_additive " `equiv.sub_left` as a `measurable_equiv` "]
-def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G
-    where
+def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divLeft g
   measurable_to_fun := measurable_id.const_div g
   measurable_inv_fun := measurable_inv.mul_const g
