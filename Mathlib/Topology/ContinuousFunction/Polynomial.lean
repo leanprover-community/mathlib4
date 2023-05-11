@@ -136,6 +136,7 @@ variable [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
 The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some topological semiring
 `R`.
 -/
+noncomputable -- Porting note: added noncomputable
 def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
   (⊤ : Subalgebra R R[X]).map (Polynomial.toContinuousMapOnAlgHom X)
 #align polynomial_functions polynomialFunctions
