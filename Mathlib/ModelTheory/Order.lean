@@ -15,19 +15,19 @@ import Mathlib.ModelTheory.Semantics
 This file defines ordered first-order languages and structures, as well as their theories.
 
 ## Main Definitions
-* `first_order.language.order` is the language consisting of a single relation representing `≤`.
-* `first_order.language.order_Structure` is the structure on an ordered type, assigning the symbol
+* `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
+* `FirstOrder.Language.orderStructure` is the structure on an ordered type, assigning the symbol
 representing `≤` to the actual relation `≤`.
-* `first_order.language.is_ordered` points out a specific symbol in a language as representing `≤`.
-* `first_order.language.ordered_structure` indicates that the `≤` symbol in an ordered language
+* `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
+* `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
 is interpreted as the actual relation `≤` in a particular structure.
-* `first_order.language.linear_order_theory` and similar define the theories of preorders,
+* `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
 partial orders, and linear orders.
-* `first_order.language.DLO` defines the theory of dense linear orders without endpoints, a
+* `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
 particularly useful example in model theory.
 
 ## Main Results
-* `partial_order`s model the theory of partial orders, `linear_order`s model the theory of
+* `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
 linear orders, and dense linear orders without endpoints model `Theory.DLO`.
 
 -/
@@ -38,6 +38,8 @@ universe u v w w'
 namespace FirstOrder
 
 namespace Language
+
+set_option linter.uppercaseLean3 false
 
 open FirstOrder
 
@@ -56,11 +58,13 @@ instance orderStructure [LE M] : Language.order.Structure M :=
 
 namespace Order
 
-instance : IsRelational Language.order :=
+instance Language.instIsRelational : IsRelational Language.order :=
   Language.isRelational_mk₂
+#align first_order.language.order.first_order.language.is_relational FirstOrder.Language.Order.Language.instIsRelational
 
-instance : Subsingleton (Language.order.Relations n) :=
+instance Language.instSubsingleton : Subsingleton (Language.order.Relations n) :=
   Language.subsingleton_mk₂_relations
+#align first_order.language.order.relations.subsingleton FirstOrder.Language.Order.Language.instSubsingleton
 
 end Order
 
@@ -76,22 +80,22 @@ section IsOrdered
 variable [IsOrdered L]
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ ≤ t₂`. -/
-def Term.le (t₁ t₂ : L.term (Sum α (Fin n))) : L.BoundedFormula α n :=
+def Term.le (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
   leSymb.boundedFormula₂ t₁ t₂
 #align first_order.language.term.le FirstOrder.Language.Term.le
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ < t₂`. -/
-def Term.lt (t₁ t₂ : L.term (Sum α (Fin n))) : L.BoundedFormula α n :=
+def Term.lt (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
   t₁.le t₂ ⊓ ∼(t₂.le t₁)
 #align first_order.language.term.lt FirstOrder.Language.Term.lt
 
 variable (L)
 
-/-- The language homomorphism sending the unique symbol `≤` of `language.order` to `≤` in an ordered
+/-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
  language. -/
-def orderLhom : Language.order →ᴸ L :=
+def orderLHom : Language.order →ᴸ L :=
   LHom.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => leSymb
-#align first_order.language.order_Lhom FirstOrder.Language.orderLhom
+#align first_order.language.order_Lhom FirstOrder.Language.orderLHom
 
 end IsOrdered
 
@@ -99,18 +103,19 @@ instance : IsOrdered Language.order :=
   ⟨Unit.unit⟩
 
 @[simp]
-theorem orderLhom_leSymb [L.IsOrdered] :
-    (orderLhom L).onRelation leSymb = (leSymb : L.Relations 2) :=
+theorem orderLHom_leSymb [L.IsOrdered] :
+    (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl
-#align first_order.language.order_Lhom_le_symb FirstOrder.Language.orderLhom_leSymb
+#align first_order.language.order_Lhom_le_symb FirstOrder.Language.orderLHom_leSymb
 
 @[simp]
-theorem orderLhom_order : orderLhom Language.order = LHom.id Language.order :=
+theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
   LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)
-#align first_order.language.order_Lhom_order FirstOrder.Language.orderLhom_order
+#align first_order.language.order_Lhom_order FirstOrder.Language.orderLHom_order
 
-instance : IsOrdered (L.Sum Language.order) :=
+instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
   ⟨Sum.inr IsOrdered.leSymb⟩
+#align first_order.language.sum.is_ordered FirstOrder.Language.sum.instIsOrdered
 
 section
 
@@ -118,17 +123,17 @@ variable (L) [IsOrdered L]
 
 /-- The theory of preorders. -/
 def preorderTheory : L.Theory :=
-  {leSymb.Reflexive, leSymb.Transitive}
+  {leSymb.reflexive, leSymb.transitive}
 #align first_order.language.preorder_theory FirstOrder.Language.preorderTheory
 
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
-  {leSymb.Reflexive, leSymb.antisymmetric, leSymb.Transitive}
+  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
 #align first_order.language.partial_order_theory FirstOrder.Language.partialOrderTheory
 
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
-  {leSymb.Reflexive, leSymb.antisymmetric, leSymb.Transitive, leSymb.Total}
+  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
 #align first_order.language.linear_order_theory FirstOrder.Language.linearOrderTheory
 
 /-- A sentence indicating that an order has no top element:
@@ -150,9 +155,9 @@ def denselyOrderedSentence : L.Sentence :=
 #align first_order.language.densely_ordered_sentence FirstOrder.Language.denselyOrderedSentence
 
 /-- The theory of dense linear orders without endpoints. -/
-def dLO : L.Theory :=
+def dlo : L.Theory :=
   L.linearOrderTheory ∪ {L.noTopOrderSentence, L.noBotOrderSentence, L.denselyOrderedSentence}
-#align first_order.language.DLO FirstOrder.Language.dLO
+#align first_order.language.DLO FirstOrder.Language.dlo
 
 end
 
@@ -160,43 +165,40 @@ variable (L M)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
 abbrev OrderedStructure [IsOrdered L] [LE M] [L.Structure M] : Prop :=
-  LHom.IsExpansionOn (orderLhom L) M
+  LHom.IsExpansionOn (orderLHom L) M
 #align first_order.language.ordered_structure FirstOrder.Language.OrderedStructure
 
 variable {L M}
 
 @[simp]
 theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
-    L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLhom L) M :=
+    L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
   Iff.rfl
 #align first_order.language.ordered_structure_iff FirstOrder.Language.orderedStructure_iff
 
 instance orderedStructure_lE [LE M] : OrderedStructure Language.order M := by
-  rw [ordered_structure_iff, order_Lhom_order]
-  exact Lhom.id_is_expansion_on M
+  rw [orderedStructure_iff, orderLHom_order]
+  exact LHom.id_isExpansionOn M
 #align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_lE
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
-  simp only [preorder_theory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, relations.realize_reflexive, rel_map_apply₂, forall_eq,
-    relations.realize_transitive]
+  simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
+    Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 #align first_order.language.model_preorder FirstOrder.Language.model_preorder
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
-  simp only [partial_order_theory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, relations.realize_reflexive, rel_map_apply₂, relations.realize_antisymmetric,
-    forall_eq, relations.realize_transitive]
+  simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
 #align first_order.language.model_partial_order FirstOrder.Language.model_partialOrder
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderTheory := by
-  simp only [linear_order_theory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, relations.realize_reflexive, rel_map_apply₂, relations.realize_antisymmetric,
-    relations.realize_transitive, forall_eq, relations.realize_total]
+  simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    Relations.realize_transitive, forall_eq, Relations.realize_total]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
 #align first_order.language.model_linear_order FirstOrder.Language.model_linearOrder
 
@@ -294,4 +296,3 @@ instance model_dLO [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder
 end Language
 
 end FirstOrder
-
