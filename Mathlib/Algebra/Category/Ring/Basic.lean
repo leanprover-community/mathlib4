@@ -51,18 +51,35 @@ instance bundledHom : BundledHom AssocRingHom where
 set_option linter.uppercaseLean3 false in
 #align SemiRing.bundled_hom SemiRingCat.bundledHom
 
+deriving instance LargeCategory for SemiRingCat
+
 --Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
-
-deriving instance LargeCategory for SemiRingCat
 
 instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
   infer_instance
 
-instance : CoeSort SemiRingCat (Type _) := by
-  dsimp [SemiRingCat]
-  infer_instance
+instance : CoeSort SemiRingCat (Type _) where
+  coe X := X.α
+
+instance (X : SemiRingCat) : Semiring X := X.str
+
+-- porting note: this instance was not necessary in mathlib
+instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X →+* Y) := f
+
+-- porting note: added
+lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
+@[simp] lemma forget_map (f : X ⟶ Y) : (forget SemiRingCat).map f = (f : X → Y) := rfl
+
+lemma ext {X Y : SemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  RingHom.ext w
 
 /-- Construct a bundled SemiRing from the underlying type and typeclass. -/
 def of (R : Type u) [Semiring R] : SemiRingCat :=
@@ -70,45 +87,19 @@ def of (R : Type u) [Semiring R] : SemiRingCat :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of SemiRingCat.of
 
-/-- Typecheck a `ring_hom` as a morphism in `SemiRing`. -/
-def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
-  f
-set_option linter.uppercaseLean3 false in
-#align SemiRing.of_hom SemiRingCat.ofHom
-
--- Porting note: needed for several lemmas below.
--- I assume this is correct, given the useful bits of `FunLike` are now part of
---  `bundledHom` in some sense.
-instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
-  ConcreteCategory.hasCoeToFun
-
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
---     ofHom f x = f x :=
---   rfl
--- set_option linter.uppercaseLean3 false in
-#noalign SemiRing.of_hom_apply
-
-instance : Inhabited SemiRingCat :=
-  ⟨of PUnit⟩
-
-instance (R : SemiRingCat) : Semiring R :=
-  R.str
-
 @[simp]
 theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
+instance : Inhabited SemiRingCat :=
+  ⟨of PUnit⟩
+
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
   BundledHom.mkHasForget₂
     (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
-    (fun {X Y} =>
-      -- Porting note: without these lets, the following line fails.
-      letI : Semiring X := X.2
-      letI : Semiring Y := Y.2
+    (fun {_ _} =>
       RingHom.toMonoidHom)
     (fun _ => rfl) -- (fun R₁ R₂ => RingHom.toMonoidHom) fun _ _ _ => rfl
 set_option linter.uppercaseLean3 false in
@@ -122,6 +113,19 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat
       map := fun {R₁ R₂} f => RingHom.toAddMonoidHom (α := R₁) (β := R₂) f }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_AddCommMon SemiRingCat.hasForgetToAddCommMonCat
+
+/-- Typecheck a `RingHom` as a morphism in `SemiRing`. -/
+def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
+  f
+set_option linter.uppercaseLean3 false in
+#align SemiRing.of_hom SemiRingCat.ofHom
+
+@[simp]
+theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    ofHom f x = f x :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
 end SemiRingCat
 
@@ -144,9 +148,26 @@ instance : ConcreteCategory RingCat := by
   dsimp [RingCat]
   infer_instance
 
-instance : CoeSort RingCat (Type _) := by
-  dsimp [RingCat]
-  infer_instance
+instance : CoeSort RingCat (Type _) where
+  coe X := X.α
+
+instance (X : RingCat) : Ring X := X.str
+
+-- porting note: this instance was not necessary in mathlib
+instance {X Y : RingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X →+* Y) := f
+
+-- porting note: added
+lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
+@[simp] lemma forget_map (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
+
+lemma ext {X Y : RingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  RingHom.ext w
 
 /-- Construct a bundled `Ring` from the underlying type and typeclass. -/
 def of (R : Type u) [Ring R] : RingCat :=
@@ -159,9 +180,6 @@ def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
 #align Ring.of_hom RingCat.ofHom
-
-instance {R S : RingCat} : CoeFun (R ⟶ S) (fun _ => R → S) :=
-  ConcreteCategory.hasCoeToFun
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -216,9 +234,26 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type _) := by
-  dsimp [CommSemiRingCat]
-  infer_instance
+instance : CoeSort CommSemiRingCat (Type _) where
+  coe X := X.α
+
+instance (X : CommSemiRingCat) : CommSemiring X := X.str
+
+-- porting note: this instance was not necessary in mathlib
+instance {X Y : CommSemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X →+* Y) := f
+
+-- porting note: added
+lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
+@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommSemiRingCat).map f = (f : X → Y) := rfl
+
+lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  RingHom.ext w
 
 /-- Construct a bundled `CommSemiRing` from the underlying type and typeclass. -/
 def of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
@@ -231,9 +266,6 @@ def ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of 
   f
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.of_hom CommSemiRing.ofHom
-
-instance {X Y : CommSemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
-  ConcreteCategory.hasCoeToFun
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -288,9 +320,26 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type _) := by
-  dsimp [CommRingCat]
-  infer_instance
+instance : CoeSort CommRingCat (Type _) where
+  coe X := X.α
+
+instance (X : CommRingCat) : CommRing X := X.str
+
+-- porting note: this instance was not necessary in mathlib
+instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X →+* Y) := f
+
+-- porting note: added
+lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+-- porting note: added
+@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommRingCat).map f = (f : X → Y) := rfl
+
+lemma ext {X Y : CommRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  RingHom.ext w
 
 /-- Construct a bundled `CommRing` from the underlying type and typeclass. -/
 def of (R : Type u) [CommRing R] : CommRingCat :=
@@ -303,9 +352,6 @@ def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of
   f
 set_option linter.uppercaseLean3 false in
 #align CommRing.of_hom CommRingCat.ofHom
-
-instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
-  ConcreteCategory.hasCoeToFun
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -343,11 +389,7 @@ instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f :
 
 end CommRingCat
 
--- This example verifies an improvement possible in Lean 3.8.
--- Before that, to have `add_ring_hom.map_zero` usable by `simp` here,
--- we had to mark all the concrete category `has_coe_to_sort` instances reducible.
--- Now, it just works.
--- Porting note: ^^^ no it doesn't :( (with Lean4/Mathlib4)
+-- We verify that simp lemmas apply when coercing morphisms to functions.
 example {R S : CommRingCat} (i : R ⟶ S) (r : R) (h : r = 0) : i r = 0 := by simp [h]
 
 namespace RingEquiv
@@ -360,10 +402,6 @@ def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of
     where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  -- Porting note: aesop_cat fails here, but `tidy` was able to close the goal.
-  -- It seems that morphism applications are not being simplified away properly.
-  hom_inv_id := by ext x ; exact e.symm_apply_apply x
-  inv_hom_id := by ext x ; exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
 #align ring_equiv.to_Ring_iso RingEquiv.toRingCatIso
 
@@ -373,10 +411,6 @@ def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) : CommRingCat.of 
     where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  -- Porting note: aesop_cat fails here, but `tidy` was able to close the goal.
-  -- It seems that morphism applications are not being simplified away properly.
-  hom_inv_id := by ext x ; exact e.symm_apply_apply x
-  inv_hom_id := by ext x ; exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
 #align ring_equiv.to_CommRing_iso RingEquiv.toCommRingCatIso
 
