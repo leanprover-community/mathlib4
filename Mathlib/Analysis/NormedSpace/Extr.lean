@@ -43,7 +43,6 @@ theorem IsMaxFilter.norm_add_sameRay (h : IsMaxFilter (norm ∘ f) l c) (hy : Sa
       ‖f x + y‖ ≤ ‖f x‖ + ‖y‖ := norm_add_le _ _
       _ ≤ ‖f c‖ + ‖y‖ := (add_le_add_right hx _)
       _ = ‖f c + y‖ := hy.norm_add.symm
-
 #align is_max_filter.norm_add_same_ray IsMaxFilter.norm_add_sameRay
 
 /-- If `f : α → E` is a function such that `norm ∘ f` has a maximum along a filter `l` at a point

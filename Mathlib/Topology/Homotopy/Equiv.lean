@@ -29,12 +29,11 @@ locale.
 
 -/
 
+universe u v w x
 
-universe u v w
+variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
-variable {X : Type u} {Y : Type v} {Z : Type w}
-
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace ContinuousMap
 
@@ -162,6 +161,24 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
 
 theorem symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
 #align continuous_map.homotopy_equiv.symm_trans ContinuousMap.HomotopyEquiv.symm_trans
+
+/-- If `X` is homotopy equivalent to `Y` and `Z` is homotopy equivalent to `Z'`, then `X × Z` is
+homotopy equivalent to `Z × Z'`. -/
+def prodCongr (h₁ : X ≃ₕ Y) (h₂ : Z ≃ₕ Z') : (X × Z) ≃ₕ (Y × Z') where
+  toFun := h₁.toFun.prodMap h₂.toFun
+  invFun := h₁.invFun.prodMap h₂.invFun
+  left_inv := h₁.left_inv.prodMap h₂.left_inv
+  right_inv := h₁.right_inv.prodMap h₂.right_inv
+
+/-- If `X i` is homotopy equivalent to `Y i` for each `i`, then the space of functions (a.k.a. the
+indexed product) `∀ i, X i` is homotopy equivalent to `∀ i, Y i`. -/
+def piCongrRight {ι : Type _} {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] (h : ∀ i, X i ≃ₕ Y i) :
+    (∀ i, X i) ≃ₕ (∀ i, Y i) where
+  toFun := .piMap fun i ↦ (h i).toFun
+  invFun := .piMap fun i ↦ (h i).invFun
+  left_inv := .piMap fun i ↦ (h i).left_inv
+  right_inv := .piMap fun i ↦ (h i).right_inv
 
 end HomotopyEquiv
 

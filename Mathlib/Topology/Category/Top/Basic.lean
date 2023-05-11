@@ -64,7 +64,7 @@ instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
 -- Porting note: simp can prove this; removed simp
-theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶  X) x = x := rfl
+theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
@@ -81,21 +81,25 @@ def of (X : Type u) [TopologicalSpace X] : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align Top.of TopCat.of
 
-instance (X : TopCat) : TopologicalSpace X :=
+instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- Porting note: cannot see through forget
-instance (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
-  change TopologicalSpace X
-  infer_instance
+-- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
+@[reducible]
+instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+  X.str
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 
-instance : Inhabited TopCat :=
+instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
+
+-- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
+lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) :
+  f x = ContinuousMap.toFun f x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

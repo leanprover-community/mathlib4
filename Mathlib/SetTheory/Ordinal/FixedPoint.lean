@@ -691,8 +691,8 @@ theorem mul_eq_right_iff_opow_omega_dvd {a b : Ordinal} : a * b = b ↔ (a^omega
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega]
 #align ordinal.mul_eq_right_iff_opow_omega_dvd Ordinal.mul_eq_right_iff_opow_omega_dvd
 
-theorem mul_le_right_iff_opow_omega_dvd {a b : Ordinal} (ha : 0 < a) : a * b ≤ b ↔ (a^omega) ∣ b :=
-  by
+theorem mul_le_right_iff_opow_omega_dvd {a b : Ordinal} (ha : 0 < a) :
+    a * b ≤ b ↔ (a^omega) ∣ b := by
   rw [← mul_eq_right_iff_opow_omega_dvd]
   exact (mul_isNormal ha).le_iff_eq
 #align ordinal.mul_le_right_iff_opow_omega_dvd Ordinal.mul_le_right_iff_opow_omega_dvd

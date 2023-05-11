@@ -71,7 +71,7 @@ variable (C : Type u) [Category.{v} C]
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
     products and coproducts, and every monomorphism and every epimorphism is normal. -/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, NormalMonoCategory C,
-  NormalEpiCategory C where
+    NormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -314,7 +314,6 @@ theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ 
     _ = prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f ≫ σ := by rw [lift_map_assoc]
     _ = prod.lift (𝟙 X) 0 ≫ σ ≫ g := by rw [← hg, CokernelCofork.π_ofπ]
     _ = g := by rw [← Category.assoc, lift_σ, Category.id_comp]
-
 #align category_theory.non_preadditive_abelian.σ_comp CategoryTheory.NonPreadditiveAbelian.σ_comp
 
 section

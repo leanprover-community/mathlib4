@@ -114,9 +114,9 @@ attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
-instance : Inv αˣ :=
+instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
-attribute [instance] AddUnits.instNegAddUnits
+attribute [instance] AddUnits.instNeg
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` and
 `Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
@@ -139,7 +139,6 @@ theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
-
 #align add_units.ext AddUnits.ext
 
 @[to_additive (attr := norm_cast)]
@@ -164,7 +163,7 @@ attribute [instance] AddUnits.instDecidableEqAddUnits
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
-#align add_units.mk_coe Units.mk_val
+#align add_units.mk_coe AddUnits.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
 @[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]

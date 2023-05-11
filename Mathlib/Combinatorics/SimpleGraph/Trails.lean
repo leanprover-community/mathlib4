@@ -164,9 +164,8 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
 #align simple_graph.walk.is_eulerian.card_filter_odd_degree SimpleGraph.Walk.IsEulerian.card_filter_odd_degree
 
 theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p : G.Walk u v}
-    (ht : p.IsEulerian) :
-    Fintype.card { v : V | Odd (G.degree v) } = 0 ∨ Fintype.card { v : V | Odd (G.degree v) } = 2 :=
-  by
+    (ht : p.IsEulerian) : Fintype.card { v : V | Odd (G.degree v) } = 0 ∨
+      Fintype.card { v : V | Odd (G.degree v) } = 2 := by
   rw [← Set.toFinset_card]
   apply IsEulerian.card_filter_odd_degree ht
   ext v
