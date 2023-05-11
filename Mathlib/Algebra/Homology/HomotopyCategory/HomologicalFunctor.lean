@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftHomologyFunctorIso
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.Refinements

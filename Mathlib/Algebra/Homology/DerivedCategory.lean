@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
@@ -15,10 +16,8 @@ def subcategoryAcyclic :
   Functor.homologicalKernel (newHomologyFunctor C (ComplexShape.up ℤ) 0)
 
 lemma mem_subCategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
-    X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((newHomologyFunctor _ _ n).obj X) := by
-  dsimp [subcategoryAcyclic, Functor.homologicalKernel]
-  simp only [← fun n => ((shiftFunctorHomologyIso C n 0 n (zero_add n)).app X).isZero_iff]
-  rfl
+    X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((newHomologyFunctor _ _ n).obj X) :=
+  Functor.mem_homologicalKernel_iff _ X
 
 def qis : MorphismProperty (HomotopyCategory C (ComplexShape.up ℤ)) := (subcategoryAcyclic C).W
 
@@ -26,9 +25,7 @@ lemma mem_qis_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y)
     qis _ f ↔ ∀ (n : ℤ), IsIso ((newHomologyFunctor _ _ n).map f) := by
   dsimp only [qis, subcategoryAcyclic]
   rw [← Functor.IsHomological.W_eq_homologicalKernelW]
-  dsimp only [Functor.IsHomological.W]
-  simp only [← fun n => NatIso.isIso_map_iff ((shiftFunctorHomologyIso C n 0 n (zero_add n))) f]
-  rfl
+  apply Functor.IsHomological.mem_W_iff
 
 lemma mem_qis_iff' {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     qis C ((quotient _ _).map f) ↔
@@ -169,6 +166,15 @@ instance : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh (HomotopyCategory.qis C)
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
 
+noncomputable instance :
+    (homologyFunctor C 0).ShiftSequence ℤ :=
+  Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
+    (homologyFunctor C) (homologyFunctorFactorsh C)
+      ⟨⟨(inferInstance :
+          Full (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.qis C) C))⟩,
+        (inferInstance :
+          Faithful (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.qis C) C))⟩
+
 variable {C}
 
 lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
@@ -224,6 +230,36 @@ lemma triangleOfSES_distinguished :
     triangleOfSES hS ∈ distTriang (DerivedCategory C) := by
   rw [mem_distTriang_iff]
   exact ⟨_, _, S.f, ⟨(triangleOfSESIso hS).symm⟩⟩
+
+namespace HomologySequence
+
+variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _)
+  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+noncomputable def δ : (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
+  (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
+
+def comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
+  (homologyFunctor C 0).comp_homology_sequence_δ _ hT _ _ h
+
+def δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
+  (homologyFunctor C 0).homology_sequence_δ_comp _ hT _ _ h
+
+lemma exact₂ :
+  (ShortComplex.mk ((homologyFunctor C n₀).map T.mor₁) ((homologyFunctor C n₀).map T.mor₂)
+    (by simp only [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT,
+      Functor.map_zero])).Exact :=
+  (homologyFunctor C 0).homology_sequence_exact₂ _ hT _
+
+lemma exact₃ :
+  (ShortComplex.mk _ _ (comp_δ T hT n₀ n₁ h)).Exact :=
+  (homologyFunctor C 0).homology_sequence_exact₃ _ hT _ _ h
+
+lemma exact₁ :
+  (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
+  (homologyFunctor C 0).homology_sequence_exact₁ _ hT _ _ h
+
+end HomologySequence
 
 end
 
