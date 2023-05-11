@@ -179,6 +179,8 @@ end Nat
 
 namespace Int
 
+theorem gcd_def (i j : ℤ) : gcd i j = Nat.gcd i.natAbs j.natAbs := rfl
+
 protected theorem coe_nat_gcd (m n : ℕ) : Int.gcd ↑m ↑n = Nat.gcd m n :=
   rfl
 #align int.coe_nat_gcd Int.coe_nat_gcd
@@ -604,53 +606,28 @@ theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : I
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-
--- /-- Evaluates the `int.gcd` function. -/
--- unsafe def prove_gcd_int (zc nc : instance_cache) :
---     expr → expr → tactic (instance_cache × instance_cache × expr × expr)
---   | x, y =>
---     match match_neg x with
---     | some x => do
---       let (zc, nc, d, p) ← prove_gcd_int x y
---       pure (zc, nc, d, q(int_gcd_helper_neg_left).mk_app [x, y, d, p])
---     | none =>
---       match match_neg y with
---       | some y => do
---         let (zc, nc, d, p) ← prove_gcd_int x y
---         pure (zc, nc, d, q(int_gcd_helper_neg_right).mk_app [x, y, d, p])
---       | none => do
---         let (zc, nc, nx, px) ← prove_nat_uncast zc nc x
---         let (zc, nc, ny, py) ← prove_nat_uncast zc nc y
---         let (nc, d, p) ← prove_gcd_nat nc nx ny
---         pure (zc, nc, d, q(int_gcd_helper).mk_app [x, y, nx, ny, d, px, py, p])
--- #align tactic.norm_num.prove_gcd_int tactic.norm_num.prove_gcd_int
-
--- /-- Evaluates the `int.lcm` function. -/
--- unsafe def prove_lcm_int (zc nc : instance_cache) :
---     expr → expr → tactic (instance_cache × instance_cache × expr × expr)
---   | x, y =>
---     match match_neg x with
---     | some x => do
---       let (zc, nc, d, p) ← prove_lcm_int x y
---       pure (zc, nc, d, q(int_lcm_helper_neg_left).mk_app [x, y, d, p])
---     | none =>
---       match match_neg y with
---       | some y => do
---         let (zc, nc, d, p) ← prove_lcm_int x y
---         pure (zc, nc, d, q(int_lcm_helper_neg_right).mk_app [x, y, d, p])
---       | none => do
---         let (zc, nc, nx, px) ← prove_nat_uncast zc nc x
---         let (zc, nc, ny, py) ← prove_nat_uncast zc nc y
---         let (nc, d, p) ← prove_lcm_nat nc nx ny
---         pure (zc, nc, d, q(int_lcm_helper).mk_app [x, y, nx, ny, d, px, py, p])
--- #align tactic.norm_num.prove_lcm_int tactic.norm_num.prove_lcm_int
-
 theorem isNat_gcd : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.gcd nx ny = z → IsNat (Nat.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 theorem isNat_lcm : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.lcm nx ny = z → IsNat (Nat.lcm x y) z
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
+
+theorem isNat_coprime : {x y nx ny : ℕ} →
+    IsNat x nx → IsNat y ny → Nat.coprime nx ny → Nat.coprime x y
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => h
+
+theorem isNat_not_coprime : {x y nx ny : ℕ} →
+    IsNat x nx → IsNat y ny → ¬ Nat.coprime nx ny → ¬ Nat.coprime x y
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => h
+
+theorem isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
+    IsInt x nx → IsInt y ny → Int.gcd nx ny = z → IsNat (Int.gcd x y) z
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
+
+theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
+    IsInt x nx → IsInt y ny → Int.lcm nx ny = z → IsNat (Int.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 /-- Supporting definition for `proveNatGCD`. Returns the GCD and an equality proof. -/
@@ -770,24 +747,69 @@ def evalNatCoprime : NormNumExt where eval {u α} e := do
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nx, p⟩ ← deriveNat x sℕ
   let ⟨ny, q⟩ ← deriveNat y sℕ
-  -- TODO use p and q to transfer result
   match ← proveNatCoprime nx ny with
-  | .inl pf => return .isTrue pf
-  | .inr pf => return .isFalse pf
+  | .inl pf =>
+    have pf' : Q(Nat.coprime $x $y) := q(isNat_coprime $p $q $pf)
+    return .isTrue pf'
+  | .inr pf =>
+    have pf' : Q(¬ Nat.coprime $x $y) := q(isNat_not_coprime $p $q $pf)
+    return .isFalse pf'
 
+theorem int_gcd_helper'' {x y : ℤ} {x' y' d : ℕ}
+    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
+    Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
 
--- /-- Evaluates the `gcd`, `lcm`, and `coprime` functions. -/
--- unsafe def eval_gcd : NormNumExt where eval {α} e := fun
---   | q(Int.gcd $(ex) $(ey)) => do
---     let zc ← mk_instance_cache q(ℤ)
---     let nc ← mk_instance_cache q(ℕ)
---     (Prod.snd ∘ Prod.snd) <$> prove_gcd_int zc nc ex ey
---   | q(Int.lcm $(ex) $(ey)) => do
---     let zc ← mk_instance_cache q(ℤ)
---     let nc ← mk_instance_cache q(ℕ)
---     (Prod.snd ∘ Prod.snd) <$> prove_lcm_int zc nc ex ey
---   | _ => failed
--- #align tactic.norm_num.eval_gcd tactic.norm_num.eval_gcd
+theorem int_lcm_helper'' {x y : ℤ} {x' y' d : ℕ}
+    (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
+    Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
+
+def proveIntGCD' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.gcd $x $y = $d)) := do
+  let x' : ℕ := x.natAbs
+  let y' : ℕ := y.natAbs
+  have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
+  have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
+  let ⟨d, pf⟩ ← proveNatGCD' x.natAbs y.natAbs
+  have pf' : Q(Int.gcd $x $y = $d) := q(int_gcd_helper'' $hx $hy $pf)
+  return ⟨d, pf'⟩
+#align tactic.norm_num.prove_gcd_int Tactic.NormNum.proveIntGCD'
+
+/-- Evaluates the `Int.gcd` function. -/
+@[norm_num Int.gcd _ _]
+def evalIntGCD : NormNumExt where eval {u α} e := do
+  let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let ⟨cx, nx, p⟩ ← (← derive x).toInt
+  let ⟨cy, ny, q⟩ ← (← derive y).toInt
+  let ⟨cd, pf⟩ ← proveIntGCD' cx cy
+  have pf : Q(Int.gcd $nx $ny = $cd) := pf
+  have pf' : Q(IsNat (Int.gcd $x $y) $cd) := q(isInt_gcd $p $q $pf)
+  return .isNat sℕ (mkRawNatLit cd) pf'
+
+def proveIntLCM' (x y : ℤ) : MetaM ((d : ℕ) × Q(Int.lcm $x $y = $d)) := do
+  let x' : ℕ := x.natAbs
+  let y' : ℕ := y.natAbs
+  have hx : Q(($x).natAbs = $x') := (q(Eq.refl $x') : Expr)
+  have hy : Q(($y).natAbs = $y') := (q(Eq.refl $y') : Expr)
+  let ⟨d, pf⟩ ← proveNatLCM' x.natAbs y.natAbs
+  have pf' : Q(Int.lcm $x $y = $d) := q(int_lcm_helper'' $hx $hy $pf)
+  return ⟨d, pf'⟩
+#align tactic.norm_num.prove_lcm_int Tactic.NormNum.proveIntLCM'
+
+/-- Evaluates the `Int.lcm` function. -/
+@[norm_num Int.lcm _ _]
+def evalIntLCM : NormNumExt where eval {u α} e := do
+  let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let ⟨cx, nx, p⟩ ← (← derive x).toInt
+  let ⟨cy, ny, q⟩ ← (← derive y).toInt
+  let ⟨cd, pf⟩ ← proveIntLCM' cx cy
+  have pf : Q(Int.lcm $nx $ny = $cd) := pf
+  have pf' : Q(IsNat (Int.lcm $x $y) $cd) := q(isInt_lcm $p $q $pf)
+  return .isNat sℕ (mkRawNatLit cd) pf'
+
+#noalign tactic.norm_num.eval_gcd
 
 end NormNum
 
