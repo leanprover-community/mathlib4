@@ -14,11 +14,11 @@ import Mathlib.Analysis.Convex.PartitionOfUnity
 /-!
 # Lemmas about (e)metric spaces that need partition of unity
 
-The main lemma in this file (see `metric.exists_continuous_real_forall_closed_ball_subset`) says the
-following. Let `X` be a metric space. Let `K : ι → set X` be a locally finite family of closed sets,
-let `U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
+The main lemma in this file (see `Metric.exists_continuous_real_forall_closedBall_subset`) says the
+following. Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets,
+let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, → ℝ)` such that for any `i` and `x ∈ K i`, we have
-`metric.closed_ball x (δ x) ⊆ U i`. We also formulate versions of this lemma for extended metric
+`Metric.closedBall x (δ x) ⊆ U i`. We also formulate versions of this lemma for extended metric
 spaces and for different codomains (`ℝ`, `ℝ≥0`, and `ℝ≥0∞`).
 
 We also prove a few auxiliary lemmas to be used later in a proof of the smooth version of this
@@ -37,10 +37,10 @@ namespace EMetric
 
 variable [EMetricSpace X] {K : ι → Set X} {U : ι → Set X}
 
-/-- Let `K : ι → set X` be a locally finitie family of closed sets in an emetric space. Let
-`U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then for any point
+/-- Let `K : ι → Set X` be a locally finitie family of closed sets in an emetric space. Let
+`U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then for any point
 `x : X`, for sufficiently small `r : ℝ≥0∞` and for `y` sufficiently close to `x`, for all `i`, if
-`y ∈ K i`, then `emetric.closed_ball y r ⊆ U i`. -/
+`y ∈ K i`, then `EMetric.closedBall y r ⊆ U i`. -/
 theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
@@ -88,10 +88,10 @@ theorem exists_forall_closedBall_subset_aux₂ (y : X) :
           ordConnected_interᵢ fun (_ : y ∈ K i) => ordConnected_setOf_closedBall_subset y (U i)
 #align emetric.exists_forall_closed_ball_subset_aux₂ EMetric.exists_forall_closedBall_subset_aux₂
 
-/-- Let `X` be an extended metric space. Let `K : ι → set X` be a locally finite family of closed
-sets, let `U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
+/-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
+sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`,
-we have `emetric.closed_ball x (ennreal.of_real (δ x)) ⊆ U i`. -/
+we have `EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i`. -/
 theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (ENNReal.ofReal <| δ x) ⊆ U i :=
@@ -101,10 +101,10 @@ theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K
       (exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
 #align emetric.exists_continuous_real_forall_closed_ball_subset EMetric.exists_continuous_real_forall_closedBall_subset
 
-/-- Let `X` be an extended metric space. Let `K : ι → set X` be a locally finite family of closed
-sets, let `U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
+/-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
+sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`,
-we have `emetric.closed_ball x (δ x) ⊆ U i`. -/
+we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
 theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
@@ -114,10 +114,10 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
   simpa only [← ENNReal.ofReal_coe_nnreal] using hδ i x hi
 #align emetric.exists_continuous_nnreal_forall_closed_ball_subset EMetric.exists_continuous_nNReal_forall_closedBall_subset
 
-/-- Let `X` be an extended metric space. Let `K : ι → set X` be a locally finite family of closed
-sets, let `U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
+/-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
+sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ≥0∞)` such that for any `i` and `x ∈ K i`,
-we have `emetric.closed_ball x (δ x) ⊆ U i`. -/
+we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
 theorem exists_continuous_eNNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0∞), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
@@ -131,10 +131,10 @@ namespace Metric
 
 variable [MetricSpace X] {K : ι → Set X} {U : ι → Set X}
 
-/-- Let `X` be a metric space. Let `K : ι → set X` be a locally finite family of closed sets, let
-`U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
+/-- Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets, let
+`U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`, we have
-`metric.closed_ball x (δ x) ⊆ U i`. -/
+`Metric.closedBall x (δ x) ⊆ U i`. -/
 theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
@@ -144,10 +144,10 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
   exact hδ i x hx
 #align metric.exists_continuous_nnreal_forall_closed_ball_subset Metric.exists_continuous_nNReal_forall_closedBall_subset
 
-/-- Let `X` be a metric space. Let `K : ι → set X` be a locally finite family of closed sets, let
-`U : ι → set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
+/-- Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets, let
+`U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`, we have
-`metric.closed_ball x (δ x) ⊆ U i`. -/
+`Metric.closedBall x (δ x) ⊆ U i`. -/
 theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
