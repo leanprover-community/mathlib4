@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Data.TypeMax
+import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 
 /-!
 # Injective modules
@@ -154,6 +154,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
     (fun X Y h =>
       ExtensionOf.ext (by rw [h]) fun x y h' => by
+        -- Porting note: induction didn't handle dependent rw like in Lean 3
         have : {x y : N} → (h'' : x = y) → (hx : x ∈ X.toLinearPMap.domain) →
           (hy : y ∈ Y.toLinearPMap.domain) → X.toLinearPMap ⟨x,hx⟩ = Y.toLinearPMap ⟨y,hy⟩ := by
             rw [h]
@@ -263,6 +264,9 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
   rw [Submodule.mem_span_singleton] at b_mem
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
+set_option align.precheck false in
+set_option linter.uppercaseLean3 false in
+#align module.Baer.extension_of_max_adjoin.aux1 Module.Baer.extensionOfMax_adjoin.aux1
 
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`.-/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
@@ -286,7 +290,7 @@ set_option linter.uppercaseLean3 false in
 variable (f)
 
 set_option synthInstance.etaExperiment true in
--- Porting note: we don't have colon ideals!?
+-- TODO: refactor to use colon ideals?
 /-- The ideal `I = {r | r • y ∈ N}`-/
 def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)
@@ -345,9 +349,9 @@ set_option synthInstance.etaExperiment true in
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
     (hr : r • y ∈ (extensionOfMax i f).domain) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     (extensionOfMax i f).toLinearPMap ⟨r • y, hr⟩ := by
+    -- porting note: in mathlib3 `AddHom.coe_mk` was not needed
   simp only [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h _ _ hr,
-    ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, Subtype.coe_mk]
-  dsimp only [AddHom.coe_mk]
+    ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, Subtype.coe_mk, AddHom.coe_mk]
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to_eq Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo_eq
 
@@ -408,7 +412,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
       map_smul' := fun r a => by
         dsimp
         have eq1 :
-          r • (a:N) =
+          r • (a : N) =
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
@@ -439,8 +443,8 @@ theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
   refine' Submodule.eq_top_iff'.mpr fun y => _
   dsimp
-  rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin]
-  rw [Submodule.mem_sup]
+  rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
+    Submodule.mem_sup]
   exact ⟨0, Submodule.zero_mem _, y, Submodule.mem_span_singleton_self _, zero_add _⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_to_submodule_eq_top Module.Baer.extensionOfMax_to_submodule_eq_top
@@ -458,6 +462,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
             congr
           map_smul' := fun r x => by
             rw [← LinearPMap.map_smul]
+            -- Porting note: used to be congr
             dsimp },
         fun x => ((extensionOfMax i f).is_extension x).symm⟩ }
 set_option linter.uppercaseLean3 false in
