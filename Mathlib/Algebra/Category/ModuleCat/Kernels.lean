@@ -15,6 +15,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
 -/
 
+set_option linter.uppercaseLean3 false
 
 open CategoryTheory CategoryTheory.Limits
 
