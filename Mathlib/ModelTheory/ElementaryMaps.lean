@@ -27,8 +27,9 @@ elementary embedding of any structure into a model of its elementary diagram.
 ## Main Results
 * The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
 gives a simple criterion for an embedding to be elementary.
-* The Tarski-Vaught Test for substructures: `FirstOrder.Language.Substructure.isElementary_of_exists`
-gives a simple criterion for a substructure to be elementary.
+* The Tarski-Vaught Test for substructures:
+`FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
+substructure to be elementary.
  -/
 
 
