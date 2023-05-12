@@ -191,10 +191,6 @@ initialize registerBuiltinAttribute {
     relCongrExt.add ((relName, head), { declName := decl, mainSubgoals, varyingArgs }) kind
 }
 
-syntax "rel_congr_discharger" : tactic
-
-syntax "rel" " [" term,* "] " : tactic
-
 initialize registerTraceClass `Meta.rel
 
 /-- The core of the `rel_congr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
@@ -369,6 +365,8 @@ def _root_.Lean.MVarId.relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit
       catch _ => s.restore
     throwError "rel_assumption failed"
 
+syntax "rel_congr_discharger" : tactic
+
 /-- The `rel_congr` tactic applies "relational congruence" rules, reducing a relational goal
 between a LHS and RHS matching the same pattern to relational subgoals between the differing
 inputs to the pattern.  For example,
@@ -431,13 +429,47 @@ elab "rel_congr" template:(colGt term)? : tactic => do
   -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
   replaceMainGoal (← g.relCongr template disch assum).toList
 
+syntax "rel" " [" term,* "]" : tactic
 
--- def Lean.MVarId.rel (attr : Array Name) (add : List Term) (m : MessageData)
---     (disch : MVarId → MetaM (Option (List MVarId)) := fun _ => pure none)
---     (proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none)
---     (g : MVarId) :
---     MetaM (List MVarId) := do
---   let cfg : SolveByElim.Config := { RelConfig with discharge := disch, proc := proc }
---   let [] ← SolveByElim.solveByElim.processSyntax cfg true false add [] (attr.map mkIdent) [g]
---     | throwError m
---   return []
+/-- The `rel` tactic applies "relational congruence" rules to solve a relational goal by
+"substitution".  For example,
+```
+example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
+    x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  rel [h1, h2]
+```
+In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c` of
+the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
+
+Relevant "relational congruence" lemmas are declared using the attribute `@[rel_congr]`.  For
+example, the first example constructs the proof term
+```
+add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
+```
+using the relational congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.  If there are
+no applicable relational congruence lemmas, the tactic fails.
+
+The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
+side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
+`rel_congr_discharger`, which wraps `positivity` but can also be extended. If the side goals cannot
+be discharged in this way, the tactic fails. -/
+elab_rules : tactic
+  | `(tactic| rel [$hyps,*]) => do
+    let hyps ← hyps.getElems.mapM (elabTerm · none)
+    let g ← getMainGoal
+    g.withContext do
+    let .app (.app _rel lhs) rhs ← withReducible g.getType'
+      | throwError "rel failed, goal not a relation"
+    unless ← isDefEq (← inferType lhs) (← inferType rhs) do
+      throwError "rel failed, goal not a relation"
+    -- The core tactic `Lean.MVarId.relCongr` will be run with discharger `rel_congr_discharger`
+    let disch g := Term.TermElabM.run' do
+      let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
+        | failure
+    -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
+    -- consisting of running `Lean.MVarId.relAssumption` (trying a term together with limited
+    -- forward-reasoning on that term) on each of the listed terms.
+    let assum g := g.relAssumption hyps
+    -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
+    let #[] ← g.relCongr none disch assum
+      | throwError "rel failed, cannot prove goal by 'substituting' the listed relationships"

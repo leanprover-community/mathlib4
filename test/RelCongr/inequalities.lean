@@ -22,6 +22,7 @@ notation "ℝ" => Real
 example {x : ℤ} (hx : x ≥ 12) : x * x ^ 2 ≥ 12 * x ^ 2 := by rel_congr
 
 example {x y : ℤ} (hx : x ≥ 12) : y + x * x ≥ y + 12 * x := by rel_congr
+example {x y : ℤ} (hx : x ≥ 12) : y + x * x ≥ y + 12 * x := by rel [hx]
 
 example {x : ℤ} (hx : x > 12) : x * x ^ 2 > 12 * x ^ 2 := by rel_congr
 
@@ -31,10 +32,14 @@ example {x y : ℤ} (hx : x > 12) : y + x * x > y + 12 * x := by rel_congr
 example {n m : ℤ} (hn : n ≥ 10) : n * n ^ 3 - m ≥ 10 * n ^ 3 - m := by rel_congr
 
 example {k m n : ℤ} (hn : n ≥ 10) : m + 7 * n * n ^ 2 - k ≥ m + 7 * 10 * n ^ 2 - k := by rel_congr
+example {k m n : ℤ} (hn : n ≥ 10) : m + 7 * n * n ^ 2 - k ≥ m + 7 * 10 * n ^ 2 - k := by rel [hn]
 
 example {x : ℤ} (hx : x ≥ 12) : x ≥ 12 := by rel_congr
 
 example {x y : ℤ} (hx : x ≥ 12) : y + 8 * x ≥ y + 8 * 12 := by rel_congr
+
+example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) : x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  rel [h1, h2]
 
 -- not solved by `nlinarith` because of the cube and the absolute value
 example {a b c x  y : ℤ} (hb : b ≥ 4) (hxy : x ≤ y) :
@@ -81,6 +86,10 @@ example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by rel_congr
 
 -- another priority test
 example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by rel_congr
+
+example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
+  success_if_fail_with_msg "rel failed, goal not a relation" (rel [hx])
+  exact h
 
 /-! ## Non-finishing examples -/
 
