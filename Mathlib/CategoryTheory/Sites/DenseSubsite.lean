@@ -181,6 +181,11 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 pp_extended_field_notation Functor.op
 pp_extended_field_notation Functor.preimage
 
+@[app_unexpander Quiver.Hom.op] def
+  unexpandQuiver.Hom.op : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).op $(X)*)
+  | _                 => throw ()
+
 /-- (Implementation). The `pushforward_family` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
@@ -194,17 +199,10 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
   refine' congr_fun _ x
-  /-
-  3 ⊢ ℱ.map (nonempty.some h₁).map.op ≫ (G.op ⋙ ℱ).map (G.preimage (f ≫ g₁ ≫ (nonempty.some h₁).lift)).op ≫ α.app (op Y) = λ (x : ℱ.obj (op X)), (ℱ.map (nonempty.some h₂).map.op ≫ (G.op ⋙ ℱ).map (G.preimage (f ≫ g₂ ≫ (nonempty.some h₂).lift)).op ≫ α.app (op Y)) x
-  -/
-  simp only [Quiver.Hom.unop_op, Functor.comp_map, ← op_comp, ← Category.assoc, Functor.op_map, ←
-    ℱ.map_comp, G.image_preimage]
-  /-
-  3 ⊢ ℱ.map (((f ≫ g₁) ≫ (nonempty.some h₁).lift) ≫ (nonempty.some h₁).map).op ≫ α.app (op Y) = ℱ.map (((f ≫ g₂) ≫ (nonempty.some h₂).lift) ≫ (nonempty.some h₂).map).op ≫ α.app (op Y)
-  4 ⊢ (ℱ.map (Quiver.Hom.op (Nonempty.some h₁).map) ≫ ℱ.map (Quiver.Hom.op ((f ≫ g₁) ≫ (Nonempty.some h₁).lift))) ≫
-    α.app (op Y) =
-  (ℱ.map (Quiver.Hom.op (Nonempty.some h₂).map) ≫ ℱ.map (Quiver.Hom.op ((f ≫ g₂) ≫ (Nonempty.some h₂).lift))) ≫
-    α.app (op Y)-/
+  -- porting note: these next 3 tactics (simp, rw, simp) were just one big `simp only` in Lean 3
+  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op]
+  rw [← ℱ.map_comp, ← ℱ.map_comp] -- `simp only ℱ.map_comp` does nothing
+  simp only [← op_comp, G.image_preimage]
   congr 3
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.CoverDense.Types.pushforwardFamily_compatible
