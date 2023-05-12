@@ -22,8 +22,8 @@ This file introduces the Scott topology on a preorder.
   the least upper bound of a directed set `d` lies in `u` then `d` has non-empty intersection with
   `u`.
 - `ScottTopology'` - the Scott topology is defined as the join of the topology of upper sets and the
-  topological space where a set `u` is open if, when the least upper bound of a directed set `d`
-  lies in `u` then there is a tail of `d` which is a subset of `u`.
+  Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
+  bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
 
 ## Main statements
 
@@ -81,6 +81,11 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
+/--
+The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
+the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
+subset of `u`.
+-/
 def ScottHausdorffTopology : TopologicalSpace α :=
 { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
@@ -113,9 +118,8 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w }
 
 /--
-The Scott topology is defined as the join of the topology of upper sets and the topological space
-where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
-is a tail of `d` which is a subset of `u`.
+The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
+topology.
 -/
 def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔ ScottHausdorffTopology
 
