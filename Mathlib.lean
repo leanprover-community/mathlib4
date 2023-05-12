@@ -143,7 +143,7 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Homology.DerivedCategory
+import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
@@ -1999,7 +1999,6 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Zify.Attr
-import Mathlib.test
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable

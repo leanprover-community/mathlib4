@@ -33,7 +33,10 @@ variable {F G K L : CochainComplex C ℤ} (n m : ℤ)
 
 namespace HomComplex
 
-structure Triplet (n : ℤ) := (p : ℤ) (q : ℤ) (hpq : p + n = q)
+structure Triplet (n : ℤ) where
+  p : ℤ
+  q : ℤ
+  hpq : p + n = q
 
 variable (F G)
 
