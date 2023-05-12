@@ -94,8 +94,12 @@ variable {R : Type u} [CommMonoid R]
 -- The target
 variable {R' : Type v} [CommMonoidWithZero R']
 
+@[coe]
+nonrec def toFun' (χ : MulChar R R') : R → R' :=
+  χ.toFun
+
 instance coeToFun : CoeFun (MulChar R R') fun _ => R → R' :=
-  ⟨fun χ => χ.toFun⟩
+  ⟨MulChar.toFun'⟩
 #align mul_char.coe_to_fun MulChar.coeToFun
 
 /-- See note [custom simps projection] -/
@@ -349,8 +353,14 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
-    apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
+    -- Porting note: was
+    -- apply_fun (χ a * ·) using IsUnit.mul_right_injective h
+    apply IsUnit.mul_right_injective h
+    dsimp only
+    -- Porting note: was
+    -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
+    erw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha]
+    exact (MulChar.map_one χ).symm
   · revert ha
     nontriviality R
     intro ha
@@ -365,11 +375,13 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 #align mul_char.inv_apply' MulChar.inv_apply'
 
 /-- The product of a character with its inverse is the trivial character. -/
-@[simp]
+-- Porting note: @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
-  simp only [Ring.inverse_mul_cancel _ (IsUnit.map _ x.isUnit)]
+  -- Porting note: was
+  -- simp only [Ring.inverse_mul_cancel _ (IsUnit.map _ x.isUnit)]
+  erw [Ring.inverse_mul_cancel _ (IsUnit.map χ x.isUnit)]
   rw [one_apply_coe]
 #align mul_char.inv_mul MulChar.inv_mul
 
@@ -483,7 +495,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · rw [h₂, (by norm_cast : (-1 : R') = (-1 : R'ˣ)), Ring.inverse_unit (-1 : R'ˣ)]
+  · -- Porting note: was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by rw [Units.val_neg, Units.val_one]
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
     rfl
 #align mul_char.is_quadratic.inv MulChar.IsQuadratic.inv
 
@@ -526,8 +540,10 @@ theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
     (hχ : χ.IsNontrivial) : (∑ a, χ a) = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
+  -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
-  exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
+  refine Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => ?_
+  exact (map_mul χ (b : R) x).symm
 #align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
@@ -536,11 +552,11 @@ theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
-      Finset.sum_congr rfl fun a _ => _
+      Finset.sum_congr rfl fun a _ => ?_
     _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole
-    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := _
+    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
-  · split_ifs with h h
+  · split_ifs with h
     · exact one_apply_coe h.unit
     · exact map_nonunit _ h
   · congr
