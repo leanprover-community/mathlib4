@@ -17,7 +17,7 @@ import Mathlib.Tactic.RSuffices
 /-!
 
 The object `homology f g w`, where `w : f ≫ g = 0`, can be identified with either a
-cokernel or a kernel. The isomorphism with a cokernel is `homology_iso_cokernel_lift`, which
+cokernel or a kernel. The isomorphism with a cokernel is `homologyIsoCokernelLift`, which
 was obtained elsewhere. In the case of an abelian category, this file shows the isomorphism
 with a kernel as well.
 
@@ -47,18 +47,18 @@ variable {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0)
 namespace CategoryTheory.Abelian
 
 /-- The cokernel of `kernel.lift g f w`. This is isomorphic to `homology f g w`.
-  See `homology_iso_cokernel_lift`. -/
+  See `homologyIsoCokernelLift`. -/
 abbrev homologyC : A :=
   cokernel (kernel.lift g f w)
 #align category_theory.abelian.homology_c CategoryTheory.Abelian.homologyC
 
 /-- The kernel of `cokernel.desc f g w`. This is isomorphic to `homology f g w`.
-  See `homology_iso_kernel_desc`. -/
+  See `homologyIsoKernelDesc`. -/
 abbrev homologyK : A :=
   kernel (cokernel.desc f g w)
 #align category_theory.abelian.homology_k CategoryTheory.Abelian.homologyK
 
-/-- The canonical map from `homology_c` to `homology_k`.
+/-- The canonical map from `homologyC` to `homologyK`.
   This is an isomorphism, and it is used in obtaining the API for `homology f g w`
   in the bottom of this file. -/
 abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
