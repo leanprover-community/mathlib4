@@ -580,7 +580,8 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 end bit0_bit1
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
-theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] : ∀ m n, ((m * n : ℤ) : α) = m • n :=
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+    ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
   fun m =>
   Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
     by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]
