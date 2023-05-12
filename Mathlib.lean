@@ -153,6 +153,7 @@ import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.IndicatorFunction
@@ -162,6 +163,7 @@ import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.LinearRecurrence
+import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
@@ -274,6 +276,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.BooleanRing
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Defs
@@ -407,6 +410,7 @@ import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Polynomials
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
@@ -414,8 +418,10 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.Generator
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
@@ -502,6 +508,7 @@ import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Idempotents.Basic
+import Mathlib.CategoryTheory.Idempotents.Biproducts
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
@@ -940,6 +947,8 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
+import Mathlib.Data.IsROrC.Attr
+import Mathlib.Data.IsROrC.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
 import Mathlib.Data.LazyList.Basic
