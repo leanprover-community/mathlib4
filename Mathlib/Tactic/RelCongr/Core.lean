@@ -261,9 +261,8 @@ partial def _root_.Lean.MVarId.relCongr
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
       return (none, !(← isDefEq lhsArg rhsArg))
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
-  -- supposed to vary, according to the template (if there is one) to vary, and in the absence of
-  -- a template to record which arguments to the head function differ between the two sides of the
-  -- goal.
+  -- supposed to vary, according to the template (if there is one), and in the absence of a template
+  -- to record which arguments to the head function differ between the two sides of the goal.
   let varyingArgs := tplArgs.map (·.2)
   if varyingArgs.all not then
     throwError "try refl"
@@ -283,7 +282,7 @@ partial def _root_.Lean.MVarId.relCongr
       | .error e =>
         -- If the `apply` fails, go on to try to apply the next matching lemma.
         -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
-        -- error message the first failure, so stash that.
+        -- error message on the first failure, so stash that.
         ex? := ex? <|> (some (← saveState, e))
         s.restore
       | .ok gs =>
@@ -291,10 +290,10 @@ partial def _root_.Lean.MVarId.relCongr
         let args := e.getAppArgs
         let mut subgoals := #[]
         -- If the `apply` succeeds, iterate over `(i, j)` belonging to the lemma's `mainSubgoal`
-        -- list: here `i` is an index in the lemma's array of arguments, and `j` is an index in the
-        -- array of arguments to the head function in the conclusion of the lemma (this should be
-        -- the same as the head function of the LHS and RHS of our goal), such that the `i`-th
-        -- argument to the lemma is a relation between the LHS and RHS `j`-th inputs to the head
+        -- list: here `i` is an index in the lemma's array of antecedents, and `j` is an index in
+        -- the array of arguments to the head function in the conclusion of the lemma (this should
+        -- be the same as the head function of the LHS and RHS of our goal), such that the `i`-th
+        -- antecedent to the lemma is a relation between the LHS and RHS `j`-th inputs to the head
         -- function in the goal.
         for (i, j) in lem.mainSubgoals do
           -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
@@ -311,7 +310,7 @@ partial def _root_.Lean.MVarId.relCongr
           -- appropriate template
           subgoals := subgoals ++ (← mvarId.relCongr tpl discharger assumption)
         let mut out := #[]
-        -- Also try to the discharger on any "side" (i.e., non-"main") goals which were not resolved
+        -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
         -- by the `apply`.
         for g in gs do
           if !(← g.isAssigned) && !subgoals.contains g then
@@ -392,8 +391,8 @@ example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
   linarith
 ```
 
-Relevant "relational congruence" lemmas are declared using the attribute `@[rel_congr]`.  For
-example, the first example constructs the proof term
+The "relational congruence" rules used are the library lemmas which have been tagged with the
+attribute `@[rel_congr]`.  For example, the first example constructs the proof term
 ```
 add_le_add (mul_le_mul_of_nonneg_left _ (pow_bit0_nonneg x 1)) _
 ```
@@ -441,8 +440,8 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c` of
 the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
 
-Relevant "relational congruence" lemmas are declared using the attribute `@[rel_congr]`.  For
-example, the first example constructs the proof term
+The "relational congruence" rules used are the library lemmas which have been tagged with the
+attribute `@[rel_congr]`.  For example, the first example constructs the proof term
 ```
 add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
 ```
