@@ -28,7 +28,7 @@ This file defines equality modulo an element in a commutative group.
 
 Delete `Int.ModEq` in favour of `AddCommGroup.ModEq`. Generalise `SModEq` to `AddSubgroup` and
 redefine `AddCommGroup.ModEq` using it. Once this is done, we can rename `AddCommGroup.ModEq`
-to `add_subgroup.modeq` and multiplicativise it. Longer term, we could generalise to submonoids and
+to `AddSubgroup.ModEq` and multiplicativise it. Longer term, we could generalise to submonoids and
 also unify with `Nat.ModEq`.
 -/
 
@@ -43,14 +43,13 @@ variable [AddCommGroup α] {p a a₁ a₂ b b₁ b₂ c : α} {n : ℕ} {z : ℤ
 
 /-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
 
-Equivalently (as shown in `algebra.order.to_interval_mod`), `b` does not lie in the open interval
-`(a, a + p)` modulo `p`, or `to_Ico_mod hp a` disagrees with `to_Ioc_mod hp a` at `b`, or
-`to_Ico_div hp a` disagrees with `to_Ioc_div hp a` at `b`. -/
+Equivalently (as shown in `Algebra.Order.ToIntervalMod`), `b` does not lie in the open interval
+`(a, a + p)` modulo `p`, or `toIcoMod hp a` disagrees with `toIocMod hp a` at `b`, or
+`toIcoDiv hp a` disagrees with `toIocDiv hp a` at `b`. -/
 def ModEq (p a b : α) : Prop :=
   ∃ z : ℤ, b - a = z • p
 #align add_comm_group.modeq AddCommGroup.ModEq
 
--- mathport name: «expr ≡ [PMOD ]»
 notation:50 a " ≡ " b " [PMOD " p "]" => ModEq p a b
 
 @[refl, simp]
