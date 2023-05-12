@@ -1594,6 +1594,7 @@ import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Order
 import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Substructures
 import Mathlib.ModelTheory.Syntax
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
