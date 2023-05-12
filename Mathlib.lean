@@ -328,6 +328,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.BooleanRing
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Defs
@@ -434,6 +435,7 @@ import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Polynomials
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
@@ -441,6 +443,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Images
@@ -709,6 +712,7 @@ import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
+import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.LeftExact
@@ -994,6 +998,8 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
+import Mathlib.Data.IsROrC.Attr
+import Mathlib.Data.IsROrC.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
 import Mathlib.Data.LazyList.Basic
