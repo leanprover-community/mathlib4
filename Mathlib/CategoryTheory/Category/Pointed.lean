@@ -104,7 +104,7 @@ set_option linter.uppercaseLean3 false in
 #align Pointed.large_category Pointed.largeCategory
 
 instance concreteCategory : ConcreteCategory Pointed where
-  Forget :=
+  forget :=
     { obj := Pointed.X
       map := @Hom.toFun }
   forget_faithful := ⟨@Hom.ext⟩
