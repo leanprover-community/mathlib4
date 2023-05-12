@@ -448,10 +448,11 @@ instance : Semiring (A ⊗[R] B) :=
     add_comm := add_comm
     nsmul_succ := AddMonoid.nsmul_succ
     natCast_succ := AddMonoidWithOne.natCast_succ
-    zero_mul := by sorry
-    mul_zero := by sorry
-    left_distrib := by sorry
-    right_distrib := by sorry }
+    zero_mul := fun a => show mul 0 a = 0 by rw [map_zero, LinearMap.zero_apply]
+    mul_zero := fun a => show mul a 0 = 0 by rw [map_zero]
+    left_distrib := fun a b c => show mul a (b + c) = mul a b + mul a c by rw [map_add]
+    right_distrib := fun a b c => show mul (a + b) c = mul a c + mul b c
+      by rw [map_add, LinearMap.add_apply] }
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
