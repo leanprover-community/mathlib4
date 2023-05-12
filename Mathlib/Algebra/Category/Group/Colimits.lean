@@ -137,23 +137,38 @@ instance : AddCommGroup (ColimitType F) where
       apply Quot.sound
       · exact Relation.add_1 _ _ _ r
   zero_add x := by
-    refine' x.induction_on
-  add_zero x := by
-    refine' x.induction_on
-  add_left_neg x := by
-    refine' x.induction_on
-  add_comm x y := by
-    refine' x.induction_on
-  add_assoc x y z := by
-    induction x
-    induction y
-    induction z
-    dsimp
+    refine x.induction_on ?_
+    dsimp [(· + ·)]
+    intros
     apply Quot.sound
-    apply relation.add_assoc
-    rfl
-    rfl
-    rfl
+    apply Relation.zero_add
+  add_zero x := by
+    refine x.induction_on ?_
+    dsimp [(· + ·)]
+    intros
+    apply Quot.sound
+    apply Relation.add_zero
+  add_left_neg x := by
+    refine x.induction_on ?_
+    dsimp [(· + ·)]
+    intros
+    apply Quot.sound
+    apply Relation.add_left_neg
+  add_comm x y := by
+    refine x.induction_on ?_
+    refine y.induction_on ?_
+    dsimp [(· + ·)]
+    intros
+    apply Quot.sound
+    apply Relation.add_comm
+  add_assoc x y z := by
+    refine x.induction_on ?_
+    refine y.induction_on ?_
+    refine z.induction_on ?_
+    dsimp [(· + ·)]
+    intros
+    apply Quot.sound
+    apply Relation.add_assoc
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
@@ -178,15 +193,15 @@ def colimit : AddCommGroupCat :=
 
 /-- The function from a given abelian group in the diagram to the colimit abelian group. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
-  Quot.mk _ (of j x)
+  Quot.mk _ (Prequotient.of j x)
 #align AddCommGroup.colimits.cocone_fun AddCommGroupCat.Colimits.coconeFun
 
 /-- The group homomorphism from a given abelian group in the diagram to the colimit abelian
 group. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_zero' := by apply Quot.sound <;> apply relation.zero
-  map_add' := by intros <;> apply Quot.sound <;> apply relation.add
+  map_zero' := by apply Quot.sound; apply Relation.zero
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 #align AddCommGroup.colimits.cocone_morphism AddCommGroupCat.Colimits.coconeMorphism
 
 @[simp]
@@ -194,7 +209,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
-  apply Relation.Map
+  apply Relation.map
 #align AddCommGroup.colimits.cocone_naturality AddCommGroupCat.Colimits.cocone_naturality
 
 @[simp]
@@ -216,8 +231,8 @@ cocone. -/
 def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | Prequotient.of j x => (s.ι.app j) x
   | zero => 0
-  | neg x => -descFunLift x
-  | add x y => descFunLift x + descFunLift y
+  | neg x => -descFunLift s x
+  | add x y => descFunLift s x + descFunLift s y
 #align AddCommGroup.colimits.desc_fun_lift AddCommGroupCat.Colimits.descFunLift
 
 /-- The function from the colimit abelian group to the cone point of any other cocone. -/
@@ -225,53 +240,41 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact descFunLift F s
   · intro x y r
-    induction' r <;> try dsimp
-    -- refl
-    · rfl
-    -- symm
-    · exact r_ih.symm
-    -- trans
-    · exact Eq.trans r_ih_h r_ih_k
-    -- map
-    · simp
-    -- zero
-    · simp
-    -- neg
-    · simp
-    -- add
-    · simp
-    -- neg_1
-    · rw [r_ih]
-    -- add_1
-    · rw [r_ih]
-    -- add_2
-    · rw [r_ih]
-    -- zero_add
-    · rw [zero_add]
-    -- add_zero
-    · rw [add_zero]
-    -- add_left_neg
-    · rw [add_left_neg]
-    -- add_comm
-    · rw [add_comm]
-    -- add_assoc
-    · rw [add_assoc]
+    induction r with
+    | refl => rfl
+    | symm _ _ _ r_ih => exact r_ih.symm
+    | trans _ _ _ _ _ r_ih_h r_ih_k => exact Eq.trans r_ih_h r_ih_k
+    | map => simp
+    | zero => simp
+    | neg => simp
+    | add => simp
+    | neg_1 _ _ _ r_ih => dsimp; rw [r_ih]
+    | add_1 _ _ _ _ r_ih => dsimp; rw [r_ih]
+    | add_2 _ _ _ _ r_ih => dsimp; rw [r_ih]
+    | zero_add => dsimp; rw [zero_add]
+    | add_zero => dsimp; rw [add_zero]
+    | add_left_neg => dsimp; rw [add_left_neg]
+    | add_comm => dsimp; rw [add_comm]
+    | add_assoc => dsimp; rw [add_assoc]
 #align AddCommGroup.colimits.desc_fun AddCommGroupCat.Colimits.descFun
 
 /-- The group homomorphism from the colimit abelian group to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
-  map_add' x y := by induction x <;> induction y <;> rfl
+  map_add' x y := by
+    refine x.induction_on ?_
+    refine y.induction_on ?_
+    rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
-    ext
-    induction x
-    induction x
+    ext x
+    refine x.induction_on ?_
+    refine x.induction_on ?_
     · have w' :=
         congr_fun (congr_arg (fun f : F.obj x_j ⟶ s.X => (f : F.obj x_j → s.X)) (w x_j)) x_x
       erw [w']
@@ -285,16 +288,16 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 instance hasColimits_addCommGroupCat : HasColimits AddCommGroupCat
     where has_colimits_of_shape J 𝒥 :=
     { has_colimit := fun F =>
-        has_colimit.mk
-          { Cocone := colimit_cocone F
-            IsColimit := colimit_cocone_is_colimit F } }
+        HasColimit.mk
+          { cocone := colimitCocone F
+            isColimit := colimitCoconeIsColimit F } }
 #align AddCommGroup.colimits.has_colimits_AddCommGroup AddCommGroupCat.Colimits.hasColimits_addCommGroupCat
 
 end AddCommGroupCat.Colimits
 
 namespace AddCommGroupCat
 
-open quotientAddGroup
+open QuotientAddGroup
 
 /-- The categorical cokernel of a morphism in `AddCommGroup`
 agrees with the usual group-theoretical quotient.
@@ -304,9 +307,9 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
   hom :=
     cokernel.desc f (mk' _)
       (by
-        ext
+        ext x
         apply Quotient.sound
-        apply left_rel_apply.mpr
+        apply leftRel_apply.mpr
         fconstructor
         exact -x
         simp only [add_zero, AddMonoidHom.map_neg])
@@ -314,7 +317,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
     QuotientAddGroup.lift _ (cokernel.π f)
       (by
         intro x H_1
-        cases H_1
+        cases' H_1 with x H_1_h
         induction H_1_h
         simp only [cokernel.condition_apply, zero_apply])
   -- obviously can take care of the next goals, but it is really slow
