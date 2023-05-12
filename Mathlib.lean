@@ -1592,6 +1592,7 @@ import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.ModelTheory.Order
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Syntax
 import Mathlib.NumberTheory.ADEInequality
