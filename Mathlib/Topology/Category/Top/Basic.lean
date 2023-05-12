@@ -169,7 +169,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
-  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  simp only [←Functor.map_comp]
   exact openEmbedding_iff_comp_isIso f g
 
 -- Porting note: simpNF requested partially simped version below
@@ -186,7 +186,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
-  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  simp only [←Functor.map_comp]
   exact openEmbedding_iff_isIso_comp f g
 
 end TopCat
