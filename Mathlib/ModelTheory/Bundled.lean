@@ -125,7 +125,8 @@ end Inhabited
 variable {T}
 
 /-- Maps a bundled model along a bijection. -/
-def EquivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) : ModelType.{u, v, w'} T where
+def EquivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
+    ModelType.{u, v, w'} T where
   Carrier := N
   struc := e.inducedStructure
   is_model := @Equiv.theory_model L M N _ e.inducedStructure T e.inducedStructureEquiv _
@@ -175,7 +176,8 @@ instance leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType)
   (LHom.sumInl : L →ᴸ L.sum L').reduct M
 #align first_order.language.Theory.Model.left_Structure FirstOrder.Language.Theory.ModelType.leftStructure
 
-instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L'.Structure M :=
+instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) :
+    L'.Structure M :=
   (LHom.sumInr : L' →ᴸ L.sum L').reduct M
 #align first_order.language.Theory.Model.right_Structure FirstOrder.Language.Theory.ModelType.rightStructure
 
@@ -217,7 +219,8 @@ def ElementarilyEquivalent.ToModel {M : T.ModelType} {N : Type _} [LN : L.Struct
 #align first_order.language.elementarily_equivalent.to_Model FirstOrder.Language.ElementarilyEquivalent.ToModel
 
 /-- An elementary substructure of a bundled model as a bundled model. -/
-def ElementarySubstructure.ToModel {M : T.ModelType} (S : L.ElementarySubstructure M) : T.ModelType :=
+def ElementarySubstructure.ToModel {M : T.ModelType} (S : L.ElementarySubstructure M) :
+    T.ModelType :=
   S.elementarilyEquivalent.symm.ToModel T
 #align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.ToModel
 
