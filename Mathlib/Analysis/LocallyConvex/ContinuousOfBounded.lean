@@ -30,9 +30,7 @@ continuous linear maps will require importing `analysis/locally_convex/bounded` 
 -/
 
 
-open TopologicalSpace Bornology Filter
-
-open Topology Pointwise
+open TopologicalSpace Bornology Filter Topology Pointwise
 
 variable {𝕜 𝕜' E F : Type _}
 
@@ -49,7 +47,7 @@ variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Continu
 /-- Construct a continuous linear map from a linear map `f : E →ₗ[𝕜] F` and the existence of a
 neighborhood of zero that gets mapped into a bounded set in `F`. -/
 def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
-    (h : ∃ (V : Set E)(hV : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)) : E →L[𝕜] F :=
+    (h : ∃ (V : Set E) (_ : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)) : E →L[𝕜] F :=
   ⟨f, by
     -- It suffices to show that `f` is continuous at `0`.
     refine' continuous_of_continuousAt_zero f _
@@ -68,9 +66,9 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
         x⁻¹ • V ⊆ x⁻¹ • f ⁻¹' (f '' V) := Set.smul_set_mono (Set.subset_preimage_image (⇑f) V)
         _ ⊆ x⁻¹ • f ⁻¹' (x • U) := (Set.smul_set_mono (Set.preimage_mono h))
         _ = f ⁻¹' (x⁻¹ • x • U) := by
-          ext <;> simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]
+          ext
+          simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
-        
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
     refine' mem_of_superset _ this
     convert set_smul_mem_nhds_smul hV (inv_ne_zero x_ne)
@@ -78,14 +76,14 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
 #align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage
 
 theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
-    {h : ∃ (V : Set E)(hV : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} :
+    {h : ∃ (V : Set E) (_ : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} :
     (f.clmOfExistsBoundedImage h : E →ₗ[𝕜] F) = f :=
   rfl
 #align linear_map.clm_of_exists_bounded_image_coe LinearMap.clmOfExistsBoundedImage_coe
 
 @[simp]
 theorem LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
-    {h : ∃ (V : Set E)(hV : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} {x : E} :
+    {h : ∃ (V : Set E) (_ : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} {x : E} :
     f.clmOfExistsBoundedImage h x = f x :=
   rfl
 #align linear_map.clm_of_exists_bounded_image_apply LinearMap.clmOfExistsBoundedImage_apply
@@ -105,10 +103,10 @@ variable [IsROrC 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
 variable {σ : 𝕜 →+* 𝕜'}
 
 theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
-    (hf : ∀ (s : Set E) (hs : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : ContinuousAt f 0 :=
+    (hf : ∀ (s : Set E) (_ : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : ContinuousAt f 0 :=
   by
   -- Assume that f is not continuous at 0
-  by_contra
+  by_contra h
   -- We use a decreasing balanced basis for 0 : E and a balanced basis for 0 : F
   -- and reformulate non-continuity in terms of these bases
   rcases(nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
@@ -120,7 +118,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       simp only [Ne.def, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
       -- `b (n + 1) ⊆ b n` follows from `antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
-      refine' subset_trans _ h
+      refine' _root_.trans _ h
       rintro y ⟨x, hx, hy⟩
       -- Since `b (n + 1)` is balanced `(n+1)⁻¹ b (n + 1) ⊆ b (n + 1)`
       rw [← hy]
@@ -132,20 +130,20 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication
     have hcont : ContinuousAt (fun x : E => (n : 𝕜) • x) 0 :=
-      (continuous_const_smul (n : 𝕜)).ContinuousAt
+      (continuous_const_smul (n : 𝕜)).continuousAt
     simp only [ContinuousAt, map_zero, smul_zero] at hcont
-    rw [bE.1.tendsto_left_iffₓ] at hcont
+    rw [bE.1.tendsto_left_iff] at hcont
     rcases hcont (b n) (bE1 n).1 with ⟨i, _, hi⟩
     refine' ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, _⟩⟩
     simp [← mul_smul, hn]
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg  at h
-  rcases h with ⟨V, ⟨hV, hV'⟩, h⟩
+  rcases h with ⟨V, ⟨hV, -⟩, h⟩
   simp only [id.def, forall_true_left] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(λ n, n • u n)` converges to `0`
-  have h_tendsto : tendsto (fun n : ℕ => (n : 𝕜) • u n) at_top (𝓝 (0 : E)) := by
+  have h_tendsto : Tendsto (fun n : ℕ => (n : 𝕜) • u n) atTop (𝓝 (0 : E)) := by
     apply bE.tendsto
     intro n
     by_cases h : n = 0
@@ -156,8 +154,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rw [← hu1, ← mul_smul]
     simp only [h, mul_inv_cancel, Ne.def, Nat.cast_eq_zero, not_false_iff, one_smul]
   -- The image `(λ n, n • u n)` is von Neumann bounded:
-  have h_bounded : is_vonN_bounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
-    h_tendsto.cauchy_seq.totally_bounded_range.is_vonN_bounded 𝕜
+  have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
+    h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded it absorbs `V`
   rcases hf _ h_bounded hV with ⟨r, hr, h'⟩
   cases' exists_nat_gt r with n hn
@@ -180,9 +178,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
 
 /-- If `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous. -/
 theorem LinearMap.continuous_of_locally_bounded [UniformAddGroup F] (f : E →ₛₗ[σ] F)
-    (hf : ∀ (s : Set E) (hs : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : Continuous f :=
-  (uniformContinuous_of_continuousAt_zero f <| f.continuousAt_zero_of_locally_bounded hf).Continuous
+    (hf : ∀ (s : Set E) (_ : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : Continuous f :=
+  (uniformContinuous_of_continuousAt_zero f <| f.continuousAt_zero_of_locally_bounded hf).continuous
 #align linear_map.continuous_of_locally_bounded LinearMap.continuous_of_locally_bounded
 
 end IsROrC
-
