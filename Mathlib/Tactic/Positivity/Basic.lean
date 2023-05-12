@@ -396,6 +396,6 @@ def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
 
 /-- Extension for Nat.factorial. -/
 @[positivity Nat.factorial _]
-def evalFactorial: PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.factorial"
+def evalFactorial: PositivityExt where eval {_ _} _ _ e := do
+  let .app _ (a : Q(Nat)) ← whnfR e | throwError "not Nat.factorial"
   pure (.positive (q(Nat.factorial_pos $a) : Expr))
