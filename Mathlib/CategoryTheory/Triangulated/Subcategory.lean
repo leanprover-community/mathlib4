@@ -98,7 +98,7 @@ variable (C : Type _) [Category C] [HasZeroObject C] [HasShift C ℤ]
 
 structure Subcategory where
   set : Set C
-  zero : (0 : C) ∈ set
+  zero : 0 ∈ set
   shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set
   ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set
 
