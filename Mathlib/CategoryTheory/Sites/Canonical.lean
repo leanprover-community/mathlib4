@@ -16,17 +16,17 @@ import Mathlib.CategoryTheory.Sites.SheafOfTypes
 We define the finest (largest) Grothendieck topology for which a given presheaf `P` is a sheaf.
 This is well defined since if `P` is a sheaf for a topology `J`, then it is a sheaf for any
 coarser (smaller) topology. Nonetheless we define the topology explicitly by specifying its sieves:
-A sieve `S` on `X` is covering for `finest_topology_single P` iff
+A sieve `S` on `X` is covering for `finestTopologySingle P` iff
   for any `f : Y ⟶ X`, `P` satisfies the sheaf axiom for `S.pullback f`.
 Showing that this is a genuine Grothendieck topology (namely that it satisfies the transitivity
 axiom) forms the bulk of this file.
 
-This generalises to a set of presheaves, giving the topology `finest_topology Ps` which is the
+This generalises to a set of presheaves, giving the topology `finestTopology Ps` which is the
 finest topology for which every presheaf in `Ps` is a sheaf.
-Using `Ps` as the set of representable presheaves defines the `canonical_topology`: the finest
+Using `Ps` as the set of representable presheaves defines the `canonicalTopology`: the finest
 topology for which every representable is a sheaf.
 
-A Grothendieck topology is called `subcanonical` if it is smaller than the canonical topology,
+A Grothendieck topology is called `Subcanonical` if it is smaller than the canonical topology,
 equivalently it is subcanonical iff every representable presheaf is a sheaf.
 
 ## References
@@ -58,55 +58,66 @@ To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that
 `U`, that `P` is a sheaf for each sieve in `B`, and that it is separated for any pullback of any
 sieve in `B`.
 
-This is mostly an auxiliary lemma to show `is_sheaf_for_trans`.
+This is mostly an auxiliary lemma to show `isSheafFor_trans`.
 Adapted from [Elephant], Lemma C2.1.7(i) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709/
 -/
 theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
-    (hU : Presieve.IsSheafFor P U) (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf))
-    (hB' :
-      ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y), Presieve.IsSeparatedFor P ((B h).pullback g)) :
-    Presieve.IsSheafFor P (Sieve.bind U B) := by
+    (hU : Presieve.IsSheafFor P (U : Presieve X))
+    (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf : Presieve Y))
+    (hB' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y),
+      Presieve.IsSeparatedFor P (((B h).pullback g) : Presieve Z)) :
+    Presieve.IsSheafFor P (Sieve.bind (U : Presieve X) B : Presieve X) := by
   intro s hs
-  let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), presieve.family_of_elements P (B hf) := fun Y f hf Z g hg =>
-    s _ (presieve.bind_comp _ _ hg)
+  let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.FamilyOfElements P (B hf : Presieve Y) :=
+    fun Y f hf Z g hg => s _ (Presieve.bind_comp _ _ hg)
   have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible := by
     intro Y f H Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
     apply hs
-    apply reassoc_of comm
-  let t : presieve.family_of_elements P U := fun Y f hf => (hB hf).amalgamate (y hf) (hy hf)
+    apply reassoc_of% comm
+  let t : Presieve.FamilyOfElements P (U : Presieve X) :=
+    fun Y f hf => (hB hf).amalgamate (y hf) (hy hf)
   have ht : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).IsAmalgamation (t f hf) := fun Y f hf =>
-    (hB hf).IsAmalgamation _
-  have hT : t.compatible := by
-    rw [presieve.compatible_iff_sieve_compatible]
+    (hB hf).isAmalgamation _
+  have hT : t.Compatible := by
+    rw [Presieve.compatible_iff_sieveCompatible]
     intro Z W f h hf
-    apply (hB (U.downward_closed hf h)).IsSeparatedFor.ext
+    apply (hB (U.downward_closed hf h)).isSeparatedFor.ext
     intro Y l hl
     apply (hB' hf (l ≫ h)).ext
     intro M m hm
     have : bind U B (m ≫ l ≫ h ≫ f) := by
-      have : bind U B _ := presieve.bind_comp f hf hm
-      simpa using this
+      -- porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
+      -- using `by exact`
+      have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
+      -- porting note: was `simpa using this`, see also following porting notes
+      -- for similar problems with simp
+      convert this using 1
+      simp
+    -- porting note: without this strange `change _ = _`, the `trans` refused to work
+    change _ = _
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
-      rw [op_comp, functor_to_types.map_comp_apply] at this
+      rw [op_comp, FunctorToTypes.map_comp_apply] at this
       rw [this]
       change s _ _ = s _ _
-      simp
-    · have : s _ _ = _ := (ht hf _ hm).symm
-      simp only [assoc] at this
-      rw [this]
+      -- porting note: the proof was `by simp`; here, `congr 1 ; simp only [assoc]` would also work
+      conv_lhs => congr ; rw [assoc]
+    · have h : s _ _ = _ := (ht hf _ hm).symm
+      -- porting note: this was done by `simp only [assoc] at`
+      conv_lhs at h => congr ; rw [assoc, assoc]
+      rw [h]
       simp
   refine' ⟨hU.amalgamate t hT, _, _⟩
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
-    rw [op_comp, functor_to_types.map_comp_apply, presieve.is_sheaf_for.valid_glue _ _ _ hg]
+    rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
     apply ht hg _ hf
   · intro y hy
-    apply hU.is_separated_for.ext
+    apply hU.isSeparatedFor.ext
     intro Y f hf
-    apply (hB hf).IsSeparatedFor.ext
+    apply (hB hf).isSeparatedFor.ext
     intro Z g hg
-    rw [← functor_to_types.map_comp_apply, ← op_comp, hy _ (presieve.bind_comp _ _ hg),
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, hy _ (Presieve.bind_comp _ _ hg),
       hU.valid_glue _ _ hf, ht hf _ hg]
 #align category_theory.sheaf.is_sheaf_for_bind CategoryTheory.Sheaf.isSheafFor_bind
 
@@ -115,27 +126,29 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
 * `P` is a sheaf for the pullback of `S` along any arrow in `R`
 * `P` is separated for the pullback of `R` along any arrow in `S`.
 
-This is mostly an auxiliary lemma to construct `finest_topology`.
+This is mostly an auxiliary lemma to construct `finestTopology`.
 Adapted from [Elephant], Lemma C2.1.7(ii) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709
 -/
-theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X) (hR : Presieve.IsSheafFor P R)
-    (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : S f), Presieve.IsSeparatedFor P (R.pullback f))
-    (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : R f), Presieve.IsSheafFor P (S.pullback f)) :
-    Presieve.IsSheafFor P S := by
-  have : (bind R fun Y f hf => S.pullback f : presieve X) ≤ S := by
+theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
+    (hR : Presieve.IsSheafFor P (R : Presieve X))
+    (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : S f), Presieve.IsSeparatedFor P (R.pullback f : Presieve Y))
+    (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : R f), Presieve.IsSheafFor P (S.pullback f : Presieve Y)) :
+    Presieve.IsSheafFor P (S : Presieve X) := by
+  have : (bind R fun Y f _ => S.pullback f : Presieve X) ≤ S := by
     rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
     apply hf
-  apply presieve.is_sheaf_for_subsieve_aux P this
-  apply is_sheaf_for_bind _ _ _ hR hS
+  apply Presieve.isSheafFor_subsieve_aux P this
+  apply isSheafFor_bind _ _ _ hR hS
   · intro Y f hf Z g
     dsimp
     rw [← pullback_comp]
-    apply (hS (R.downward_closed hf _)).IsSeparatedFor
+    apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
-    have : sieve.pullback f (bind R fun T (k : T ⟶ X) (hf : R k) => pullback k S) = R.pullback f :=
+    have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) = R.pullback f :=
       by
-      ext (Z g)
+      ext Z
+      intro g
       constructor
       · rintro ⟨W, k, l, hl, _, comm⟩
         rw [pullback_apply, ← comm]
@@ -153,20 +166,20 @@ This is a special case of https://stacks.math.columbia.edu/tag/00Z9, but followi
 proof (see the comments there).
 -/
 def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
-  sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f)
+  sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
-    rw [sieve.pullback_top]
-    exact presieve.is_sheaf_for_top_sieve P
+    rw [Sieve.pullback_top]
+    exact Presieve.isSheafFor_top_sieve P
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
     apply hS
   transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
-    refine' is_sheaf_for_trans P (pullback g S) _ (hS Z g) _ _
-    · intro Y f hf
+    refine' isSheafFor_trans P (pullback g S) _ (hS Z g) _ _
+    · intro Y f _
       rw [← pullback_comp]
-      apply (hS _ _).IsSeparatedFor
+      apply (hS _ _).isSeparatedFor
     · intro Y f hf
       have := hR hf _ (𝟙 _)
       rw [pullback_id, pullback_comp] at this
@@ -210,7 +223,7 @@ def canonicalTopology (C : Type u) [Category.{v} C] : GrothendieckTopology C :=
 
 /-- `yoneda.obj X` is a sheaf for the canonical topology. -/
 theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yoneda.obj X) :=
-  fun Y S hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
+  fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 #align category_theory.sheaf.is_sheaf_yoneda_obj CategoryTheory.Sheaf.isSheaf_yoneda_obj
 
 /-- A representable functor is a sheaf for the canonical topology. -/
@@ -240,7 +253,7 @@ theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
 theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical J)
     (P : Cᵒᵖ ⥤ Type v) [P.Representable] : Presieve.IsSheaf J P :=
-  Presieve.isSheaf_of_le _ hJ (isSheaf_of_representable P)
+  Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 #align category_theory.sheaf.subcanonical.is_sheaf_of_representable CategoryTheory.Sheaf.Subcanonical.isSheaf_of_representable
 
 end Subcanonical
@@ -248,4 +261,3 @@ end Subcanonical
 end Sheaf
 
 end CategoryTheory
-
