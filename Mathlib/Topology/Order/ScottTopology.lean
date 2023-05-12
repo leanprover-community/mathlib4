@@ -8,8 +8,9 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Order.Directed
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Basic
-import Mathlib.Topology.Order
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Order
+import Mathlib.Topology.Order.LowerTopology
 
 /-!
 # Scott topology
@@ -368,3 +369,17 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
 
 end complete_lattice
+
+lemma UpperSet_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+upperSetTopology ≤ ‹TopologicalSpace α› := by
+  rw [ScottTopology.topology_eq α, ScottTopology']
+  apply le_sup_left
+
+lemma Scott_Hausdorff_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
+  rw [ScottTopology.topology_eq α, ScottTopology']
+  apply le_sup_right
+
+lemma Scott_Hausdorff_le_Lower [Preorder α] [TopologicalSpace α] [LowerTopology α] :
+ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
+  fun _ h => ScottHausdorffTopology.Lower_IsOpen _ (LowerTopology.isLowerSet_of_isOpen h)
