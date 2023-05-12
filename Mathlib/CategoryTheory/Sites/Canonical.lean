@@ -145,8 +145,8 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     rw [← pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
-    have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) = R.pullback f :=
-      by
+    have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
+        R.pullback f := by
       ext Z
       intro g
       constructor
