@@ -8,8 +8,8 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.LocallyConvex.Bounded
-import Mathbin.Data.IsROrC.Basic
+import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Data.IsROrC.Basic
 
 /-!
 # Continuity and Von Neumann boundedness
@@ -50,8 +50,7 @@ variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Continu
 neighborhood of zero that gets mapped into a bounded set in `F`. -/
 def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     (h : ∃ (V : Set E)(hV : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)) : E →L[𝕜] F :=
-  ⟨f,
-    by
+  ⟨f, by
     -- It suffices to show that `f` is continuous at `0`.
     refine' continuous_of_continuousAt_zero f _
     rw [continuousAt_def, f.map_zero]
@@ -114,8 +113,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- and reformulate non-continuity in terms of these bases
   rcases(nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [id.def] at bE
-  have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n :=
-    by
+  have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
     refine' bE.1.to_hasBasis _ _
     · intro n _
       use n + 1
@@ -147,8 +145,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(λ n, n • u n)` converges to `0`
-  have h_tendsto : tendsto (fun n : ℕ => (n : 𝕜) • u n) at_top (𝓝 (0 : E)) :=
-    by
+  have h_tendsto : tendsto (fun n : ℕ => (n : 𝕜) • u n) at_top (𝓝 (0 : E)) := by
     apply bE.tendsto
     intro n
     by_cases h : n = 0
