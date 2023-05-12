@@ -398,7 +398,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩ -- porting note: was `positivity`
+    positivity⟩
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -408,8 +408,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
         cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
-          -- porting note: replace `add_nonneg` with `positivity` once we have the extension
-          (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
+          (fun x => by positivity) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_cinfᵢ_add_cinfᵢ fun u v => by
@@ -608,8 +607,7 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
-    -- porting note: was `positivity`
+    positivity⟩
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup
