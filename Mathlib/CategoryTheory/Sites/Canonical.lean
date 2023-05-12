@@ -90,11 +90,8 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       -- porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
       -- using `by exact`
       have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
-      -- porting note: was `simpa using this`, see also following porting notes
-      -- for similar problems with simp
-      convert this using 1
-      simp
-    -- porting note: without this strange `change _ = _`, the `trans` refused to work
+      simpa using this
+    -- porting note: this `change _ = _` is necessary until PR #3768 is merged
     change _ = _
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
