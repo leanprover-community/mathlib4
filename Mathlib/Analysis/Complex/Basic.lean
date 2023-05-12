@@ -38,7 +38,7 @@ We also register the fact that `ℂ` is an `is_R_or_C` field.
 -/
 
 
-assert_not_exists Absorbs
+-- porting note: todo: restore assert_not_exists Absorbs
 
 noncomputable section
 
@@ -54,9 +54,10 @@ theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
   rfl
 #align complex.norm_eq_abs Complex.norm_eq_abs
 
-theorem norm_exp_of_real_mul_i (t : ℝ) : ‖exp (t * I)‖ = 1 := by
-  simp only [norm_eq_abs, abs_exp_of_real_mul_I]
-#align complex.norm_exp_of_real_mul_I Complex.norm_exp_of_real_mul_i
+theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
+  simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
+set_option linter.uppercaseLean3 false in
+#align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
 
 instance : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
@@ -65,31 +66,25 @@ instance : NormedAddCommGroup ℂ :=
       neg' := abs.map_neg
       eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
 
-instance : NormedField ℂ :=
-  { Complex.field,
-    Complex.normedAddCommGroup with
-    norm := abs
-    dist_eq := fun _ _ => rfl
-    norm_mul' := map_mul abs }
+instance : NormedField ℂ where
+  dist_eq _ _ := rfl
+  norm_mul' := map_mul abs
 
-instance : DenselyNormedField ℂ
-    where lt_norm_lt r₁ r₂ h₀ hr :=
-    let ⟨x, h⟩ := NormedField.exists_lt_norm_lt ℝ h₀ hr
-    have this : ‖(‖x‖ : ℂ)‖ = ‖‖x‖‖ := by simp only [norm_eq_abs, abs_of_real, Real.norm_eq_abs]
-    ⟨‖x‖, by rwa [this, norm_norm]⟩
+instance : DenselyNormedField ℂ where
+  lt_norm_lt r₁ r₂ h₀ hr :=
+    let ⟨x, h⟩ := exists_between hr
+    ⟨x, by rwa [norm_eq_abs, abs_ofReal, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 instance {R : Type _} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
-    rw [norm_eq_abs, norm_eq_abs, ← algebraMap_smul ℝ r x, Algebra.smul_def, map_mul, ←
-      norm_algebraMap' ℝ r, coe_algebra_map, abs_of_real]
-    rfl
-  toAlgebra := Complex.algebra
+    rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
+      norm_algebraMap']
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `module.complex_to_real` is a normed space. -/
-instance (priority := 900) NormedSpace.complexToReal : NormedSpace ℝ E :=
+instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
 
@@ -148,7 +143,7 @@ theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := 
   rw [nndist_comm, nndist_conj_self]
 #align complex.nndist_self_conj Complex.nndist_self_conj
 
-@[simp]
+@[simp 1100]
 theorem comap_abs_nhds_zero : Filter.comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
 #align complex.comap_abs_nhds_zero Complex.comap_abs_nhds_zero
@@ -157,23 +152,24 @@ theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
   abs_ofReal _
 #align complex.norm_real Complex.norm_real
 
-@[simp]
+@[simp 1100]
 theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
-  rw [← of_real_rat_cast]
+  rw [← ofReal_rat_cast]
   exact norm_real _
 #align complex.norm_rat Complex.norm_rat
 
-@[simp]
+@[simp 1100]
 theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
   abs_of_nat _
 #align complex.norm_nat Complex.norm_nat
 
-@[simp]
+@[simp 1100]
 theorem norm_int {n : ℤ} : ‖(n : ℂ)‖ = |n| := by
-  simp (config := { singlePass := true }) [← Rat.cast_coe_int]
+  rw [← Rat.cast_coe_int, norm_rat]; simp
 #align complex.norm_int Complex.norm_int
 
-theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by simp [hn]
+theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
+  simp [hn]
 #align complex.norm_int_of_nonneg Complex.norm_int_of_nonneg
 
 @[continuity]
@@ -183,7 +179,7 @@ theorem continuous_abs : Continuous abs :=
 
 @[continuity]
 theorem continuous_normSq : Continuous normSq := by
-  simpa [← norm_sq_eq_abs] using continuous_abs.pow 2
+  simpa [← normSq_eq_abs] using continuous_abs.pow 2
 #align complex.continuous_norm_sq Complex.continuous_normSq
 
 @[simp, norm_cast]
@@ -207,7 +203,7 @@ theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : 
 #align complex.nnnorm_eq_one_of_pow_eq_one Complex.nnnorm_eq_one_of_pow_eq_one
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
-  congr_arg coe (nnnorm_eq_one_of_pow_eq_one h hn)
+  congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
 #align complex.norm_eq_one_of_pow_eq_one Complex.norm_eq_one_of_pow_eq_one
 
 theorem equivRealProd_apply_le (z : ℂ) : ‖equivRealProd z‖ ≤ abs z := by
@@ -417,35 +413,27 @@ theorem ofRealClm_apply (x : ℝ) : ofRealClm x = x :=
 #align complex.of_real_clm_apply Complex.ofRealClm_apply
 
 noncomputable instance : IsROrC ℂ where
-  re := ⟨Complex.re, Complex.zero_re, Complex.add_re⟩
-  im := ⟨Complex.im, Complex.zero_im, Complex.add_im⟩
+  re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
+  im := ⟨⟨Complex.im, Complex.zero_im⟩, Complex.add_im⟩
   I := Complex.I
-  i_re_ax := by simp only [AddMonoidHom.coe_mk, Complex.I_re]
-  i_mul_i_ax := by simp only [Complex.I_mul_I, eq_self_iff_true, or_true_iff]
-  re_add_im_ax z := by
-    simp only [AddMonoidHom.coe_mk, Complex.re_add_im, Complex.coe_algebraMap,
-      Complex.ofReal_eq_coe]
-  of_real_re_ax r := by
-    simp only [AddMonoidHom.coe_mk, Complex.ofReal_re, Complex.coe_algebraMap,
-      Complex.ofReal_eq_coe]
-  of_real_im_ax r := by
-    simp only [AddMonoidHom.coe_mk, Complex.ofReal_im, Complex.coe_algebraMap,
-      Complex.ofReal_eq_coe]
-  mul_re_ax z w := by simp only [Complex.mul_re, AddMonoidHom.coe_mk]
-  mul_im_ax z w := by simp only [AddMonoidHom.coe_mk, Complex.mul_im]
-  conj_re_ax z := rfl
-  conj_im_ax z := rfl
-  conj_i_ax := by simp only [Complex.conj_I, RingHom.coe_mk]
-  norm_sq_eq_def_ax z := by
-    simp only [← Complex.normSq_eq_abs, ← Complex.normSq_apply, AddMonoidHom.coe_mk,
-      Complex.norm_eq_abs]
-  mul_im_i_ax z := by simp only [mul_one, AddMonoidHom.coe_mk, Complex.I_im]
+  I_re_ax := I_re
+  I_mul_I_ax := .inr Complex.I_mul_I
+  re_add_im_ax := re_add_im
+  ofReal_re_ax := ofReal_re
+  ofReal_im_ax := ofReal_im
+  mul_re_ax := mul_re
+  mul_im_ax := mul_im
+  conj_re_ax _ := rfl
+  conj_im_ax _ := rfl
+  conj_I_ax := conj_I
+  norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
+  mul_im_I_ax _ := mul_one _
 
-theorem IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
+theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
 #align is_R_or_C.re_eq_complex_re IsROrC.re_eq_complex_re
 
-theorem IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
+theorem _root_.IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 #align is_R_or_C.im_eq_complex_im IsROrC.im_eq_complex_im
 
@@ -454,7 +442,7 @@ section ComplexOrder
 open ComplexOrder
 
 theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
-  rw [eq_re_of_real_le hz, IsROrC.norm_of_real, _root_.abs_of_nonneg (Complex.le_def.2 hz).1]
+  rw [eq_re_ofReal_le hz, IsROrC.norm_ofReal, _root_.abs_of_nonneg (Complex.le_def.2 hz).1]
 #align complex.eq_coe_norm_of_nonneg Complex.eq_coe_norm_of_nonneg
 
 end ComplexOrder
