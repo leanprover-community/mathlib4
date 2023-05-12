@@ -117,6 +117,17 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     . exact hb_w
     . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w }
 
+
+lemma ScottHausdorffTopology.Lower_IsOpen (s : Set α) (h : IsLowerSet s) :
+ScottHausdorffTopology.IsOpen s := by
+  intros d a hd _ hda ha
+  obtain ⟨b, hb⟩  := hd
+  use b
+  constructor
+  . exact hb
+  . apply Subset.trans (inter_subset_right (Ici b) d)
+      (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)
+
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
