@@ -308,7 +308,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 
 open Structure
 
-/-- Used for defining `FirstOrder.Language.Theory.Model.instInhabited`. -/
+/-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
 def Inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 #align first_order.language.inhabited.trivial_structure FirstOrder.Language.Inhabited.trivialStructure
