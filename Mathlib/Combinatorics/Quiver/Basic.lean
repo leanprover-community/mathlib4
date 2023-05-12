@@ -150,6 +150,8 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
 
+pp_extended_field_notation Quiver.Hom.op
+
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`.
 -/
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
