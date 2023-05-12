@@ -172,8 +172,7 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
     rw [@ScottTopology.ScottOpen_iff_upper_and_SOpen α _ S]
     constructor
     . exact h
-    . intro d d₁ d₂ d₃
-      apply (@LawsonOpen_implies_Sopen' _ _ l _ _ _ s) hs d d₁ d₂ d₃
+    . exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_Sopen' _ _ l _ _ _ s) hs d d₁ d₂ d₃
   . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
 
 end CompleteLattice
