@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.ModelTheory.Substructures
+import Mathlib.Data.Fintype.Basic
+import Mathlib.ModelTheory.Substructures
 
 /-!
 # Elementary Maps Between First-Order Structures
@@ -60,8 +60,7 @@ variable {L} {M} {N}
 
 namespace ElementaryEmbedding
 
-instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N
-    where
+instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -118,8 +117,7 @@ theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
 #align first_order.language.elementary_embedding.elementarily_equivalent FirstOrder.Language.ElementaryEmbedding.elementarilyEquivalent
 
 @[simp]
-theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ :=
-  by
+theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
   have h :=
     φ.map_formula ((var 0).equal (var 1) : L.formula (Fin 2)) fun i => if i = 0 then x else y
@@ -135,8 +133,7 @@ instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
 
 @[simp]
 theorem map_fun (φ : M ↪ₑ[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
-    φ (funMap f x) = funMap f (φ ∘ x) :=
-  by
+    φ (funMap f x) = funMap f (φ ∘ x) := by
   have h := φ.map_formula (formula.graph f) (Fin.cons (fun_map f x) x)
   rw [formula.realize_graph, Fin.comp_cons, formula.realize_graph] at h
   rw [eq_comm, h]
@@ -149,8 +146,7 @@ theorem map_rel (φ : M ↪ₑ[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n �
   h
 #align first_order.language.elementary_embedding.map_rel FirstOrder.Language.ElementaryEmbedding.map_rel
 
-instance strongHomClass : StrongHomClass L (M ↪ₑ[L] N) M N
-    where
+instance strongHomClass : StrongHomClass L (M ↪ₑ[L] N) M N where
   map_fun := map_fun
   map_rel := map_rel
 #align first_order.language.elementary_embedding.strong_hom_class FirstOrder.Language.ElementaryEmbedding.strongHomClass
@@ -161,8 +157,7 @@ theorem map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
 #align first_order.language.elementary_embedding.map_constants FirstOrder.Language.ElementaryEmbedding.map_constants
 
 /-- An elementary embedding is also a first-order embedding. -/
-def toEmbedding (f : M ↪ₑ[L] N) : M ↪[L] N
-    where
+def toEmbedding (f : M ↪ₑ[L] N) : M ↪[L] N where
   toFun := f
   inj' := f.Injective
 #align first_order.language.elementary_embedding.to_embedding FirstOrder.Language.ElementaryEmbedding.toEmbedding
@@ -248,8 +243,7 @@ abbrev elementaryDiagram : L[[M]].Theory :=
 @[simps]
 def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type _) [L.Structure N] [L[[M]].Structure N]
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
-  ⟨(coe : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x =>
-    by
+  ⟨(coe : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
     refine'
       trans _
         ((realize_iff_of_model_complete_theory M N
@@ -274,8 +268,7 @@ theorem is_elementary_of_exists (f : M ↪[L] N)
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),
         φ.realize default (Fin.snoc (f ∘ x) a : _ → N) →
           ∃ b : M, φ.realize default (Fin.snoc (f ∘ x) (f b) : _ → N)) :
-    ∀ {n} (φ : L.Formula (Fin n)) (x : Fin n → M), φ.realize (f ∘ x) ↔ φ.realize x :=
-  by
+    ∀ {n} (φ : L.Formula (Fin n)) (x : Fin n → M), φ.realize (f ∘ x) ↔ φ.realize x := by
   suffices h :
     ∀ (n : ℕ) (φ : L.bounded_formula Empty n) (xs : Fin n → M),
       φ.realize (f ∘ default) (f ∘ xs) ↔ φ.realize default xs
@@ -347,16 +340,14 @@ namespace Substructure
 @[simp]
 theorem realize_boundedFormula_top {α : Type _} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
-    φ.realize v xs ↔ φ.realize ((coe : _ → M) ∘ v) (coe ∘ xs) :=
-  by
+    φ.realize v xs ↔ φ.realize ((coe : _ → M) ∘ v) (coe ∘ xs) := by
   rw [← substructure.top_equiv.realize_bounded_formula φ]
   simp
 #align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
 
 @[simp]
 theorem realize_formula_top {α : Type _} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
-    φ.realize v ↔ φ.realize ((coe : (⊤ : L.Substructure M) → M) ∘ v) :=
-  by
+    φ.realize v ↔ φ.realize ((coe : (⊤ : L.Substructure M) → M) ∘ v) := by
   rw [← substructure.top_equiv.realize_formula φ]
   simp
 #align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
@@ -386,8 +377,7 @@ instance : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
   ⟨ElementarySubstructure.toSubstructure⟩
 
 instance : SetLike (L.ElementarySubstructure M) M :=
-  ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, ht2⟩ h =>
-    by
+  ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, ht2⟩ h => by
     congr
     exact h⟩
 
@@ -401,8 +391,7 @@ theorem isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).I
 #align first_order.language.elementary_substructure.is_elementary FirstOrder.Language.ElementarySubstructure.isElementary
 
 /-- The natural embedding of an `L.substructure` of `M` into `M`. -/
-def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M
-    where
+def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   toFun := coe
   map_formula' := S.IsElementary
 #align first_order.language.elementary_substructure.subtype FirstOrder.Language.ElementarySubstructure.subtype
