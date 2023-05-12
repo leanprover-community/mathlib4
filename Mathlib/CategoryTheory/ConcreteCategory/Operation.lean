@@ -275,23 +275,14 @@ end Operation₂
 @[simps]
 def addCommGroupCat_zero : Operation₀ AddCommGroupCat.{u} where
   app M _ := (0 : M)
-  naturality M N f := by
-    ext
-    exact (AddCommGroupCat.Hom.map_zero f).symm
 
 @[simps]
 def addCommGroupCat_neg : Operation₁ AddCommGroupCat.{u} where
   app M (x : M) := -x
-  naturality M N f := by
-    ext x
-    exact (AddMonoidHom.map_neg (show AddMonoidHom M N from f) x).symm
 
 @[simps]
 def addCommGroupCat_add : Operation₂ AddCommGroupCat.{u} where
   app M := fun ⟨(x : M), (y : M)⟩ => x + y
-  naturality M N f := by
-    ext
-    exact (AddCommGroupCat.Hom.map_add _ _ _).symm
 
 lemma addCommGroupCat_add_assoc : addCommGroupCat_add.assoc := by
   apply NatTrans.ext

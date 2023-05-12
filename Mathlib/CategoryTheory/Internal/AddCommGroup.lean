@@ -280,7 +280,6 @@ noncomputable def functor : Internal.Ab C ⥤ Internal AddCommGroupCat C where
     apply NatTrans.ext
     ext ⟨X⟩ (f : X ⟶ G₁.obj)
     dsimp
-    simp only [AddCommGroupCat.comp_apply]
     erw [AddCommGroupCatObjOperations.Hom.internal_app_apply,
       AddCommGroupCatObjOperations.Hom.internal_app_apply,
       AddCommGroupCatObjOperations.Hom.internal_app_apply]
@@ -298,7 +297,6 @@ noncomputable def inverse : Internal AddCommGroupCat C ⥤ Internal.Ab C where
     ext
     dsimp
     apply Functor.map_comp
-
 
 noncomputable def inverseCompForgetIso :
     inverse C ⋙ Internal.Ab.forget _ ≅ objFunctor _ _ :=
