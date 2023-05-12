@@ -210,6 +210,15 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
     · rw [Set.mem_singleton_iff] at hx
       rw [hx]
       simp [hf₁] -- Porting note: Originally `norm_num [hf₀]`
+  continuous_toFun := by
+    -- Porting note: was `continuity` in auto-param
+    refine continuous_const.path_eval ?_
+    apply Continuous.subtype_mk
+    apply Continuous.add <;> apply Continuous.mul
+    · exact continuous_induced_dom.comp (unitInterval.continuous_symm.comp continuous_fst)
+    · continuity
+    · continuity
+    · continuity
 #align path.homotopy.reparam Path.Homotopy.reparam
 
 /-- Suppose `F : Homotopy p q`. Then we have a `Homotopy p.symm q.symm` by reversing the second
