@@ -8,8 +8,8 @@ Authors: Johan Commelin, Andrew Yang, Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.ShortExact.Preadditive
-import Mathbin.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.Algebra.Homology.ShortExact.Preadditive
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
 /-!
 # Short exact sequences in abelian categories
@@ -54,8 +54,7 @@ together with proofs that `f` is mono and `g` is epi.
 
 The morphism `i` is then automatically an isomorphism. -/
 def Splitting.mk' (h : ShortExact f g) (i : B ⟶ A ⊞ C) (h1 : f ≫ i = biprod.inl)
-    (h2 : i ≫ biprod.snd = g) : Splitting f g
-    where
+    (h2 : i ≫ biprod.snd = g) : Splitting f g where
   Iso := by
     refine' @as_iso _ _ _ _ i (id _)
     refine'
@@ -74,8 +73,7 @@ together with proofs that `f` is mono and `g` is epi.
 
 The morphism `i` is then automatically an isomorphism. -/
 def Splitting.mk'' (h : ShortExact f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫ i = f)
-    (h2 : i ≫ g = biprod.snd) : Splitting f g
-    where
+    (h2 : i ≫ g = biprod.snd) : Splitting f g where
   Iso := by
     refine' (@as_iso _ _ _ _ i (id _)).symm
     refine'
