@@ -107,3 +107,9 @@ theorem zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 <
 attribute [rel_congr]
   pow_lt_pow pow_lt_pow' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
   pow_lt_pow_of_lt_left zpow_lt_zpow' -- tt ^ ff
+
+/-! # coercions -/
+
+@[rel_congr]
+theorem Nat.cast_le_cast [OrderedSemiring α] [CharZero α] {x y : ℕ} (h : x ≤ y) : (x:α) ≤ y :=
+  Nat.cast_le.mpr h
