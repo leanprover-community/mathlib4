@@ -192,13 +192,12 @@ variable {α}
 def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
   WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma isOpen_iff_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
-↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
-  → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by erw [topology_eq α]; rfl
+lemma isOpen_iff_upper_and_Scott_Hausdorff_Open (u : Set α) : IsOpen u
+↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_inaccessible_by_directed_joins (u : Set α) :
 IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
-  rw [isOpen_iff_upper_and_LUB_mem_implies_tail_subset]
+  rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
   constructor
   . refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
@@ -242,7 +241,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     contradiction
 
 lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
-  ((isOpen_iff_upper_and_LUB_mem_implies_tail_subset s).mp h).left
+  ((isOpen_iff_upper_and_Scott_Hausdorff_Open s).mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   ((isClosed_iff_lower_and_subset_implies_LUB_mem s).mp h).left
@@ -337,7 +336,7 @@ variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
-  rw [ScottTopology.isOpen_iff_upper_and_LUB_mem_implies_tail_subset]
+  rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
