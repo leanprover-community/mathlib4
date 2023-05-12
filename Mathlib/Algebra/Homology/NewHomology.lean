@@ -266,6 +266,16 @@ lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap
 
 instance [CategoryWithHomology C] : (newHomologyFunctor C c i).Additive where
 
+variable (C c)
+
+def qis [CategoryWithHomology C] : MorphismProperty (HomologicalComplex C c) :=
+  fun _ _ f => ∀ (i : ι), IsIso (homologyMap f i)
+
+lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
+    homotopyEquivalences C c ⊆ qis C c := by
+  rintro X Y _ ⟨e, rfl⟩ i
+  exact IsIso.of_iso (e.toHomologyIso i)
+
 end HomologicalComplex
 
 namespace HomotopyCategory

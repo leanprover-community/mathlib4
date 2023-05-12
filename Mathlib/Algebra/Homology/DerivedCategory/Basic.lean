@@ -2,6 +2,8 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
+import Mathlib.CategoryTheory.Localization.Composition
 
 open CategoryTheory Category Limits Pretriangulated
 
@@ -195,6 +197,17 @@ lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
   dsimp only [Q, Functor.comp]
   rw [← HomotopyCategory.mem_qis_iff', isIso_Qh_map_iff]
 
+instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := by
+  refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _)
+    (HomologicalComplex.homotopyEquivalences _ _) Qh (HomotopyCategory.qis C) _ _ _ _
+  . intro X Y f hf
+    exact (isIso_Q_map_iff f).2 hf
+  . apply HomologicalComplex.homotopyEquivalences_subset_qis
+  . rintro ⟨K : CochainComplex C ℤ⟩ ⟨L : CochainComplex C ℤ⟩ f hf
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+    apply MorphismProperty.map_mem_map
+    simpa only [HomotopyCategory.mem_qis_iff'] using hf
+
 section
 
 variable {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
@@ -239,10 +252,10 @@ variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _)
 noncomputable def δ : (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
   (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
-def comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
+lemma comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
   (homologyFunctor C 0).comp_homology_sequence_δ _ hT _ _ h
 
-def δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
+lemma δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
   (homologyFunctor C 0).homology_sequence_δ_comp _ hT _ _ h
 
 lemma exact₂ :
@@ -271,5 +284,3 @@ def newExt (n : ℕ) (X Y : C) : Type (max u v) :=
   (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
 
 end CategoryTheory.Abelian
-
--- TODO: prevent projections "_as" for @[simps] in `DerivedCategory C`

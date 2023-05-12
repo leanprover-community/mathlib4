@@ -36,7 +36,7 @@ namespace Functor
 
 namespace IsLocalization
 
-lemma comp {C₁ C₂ C₃ E : Type _} [Category C₁] [Category C₂] [Category C₃] [Category E]
+lemma comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C₃]
   (L₁ : C₁ ⥤ C₂) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ C₃) (W₂ : MorphismProperty C₂) [L₂.IsLocalization W₂]
   (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))

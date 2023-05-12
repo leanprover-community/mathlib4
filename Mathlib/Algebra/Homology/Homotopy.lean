@@ -10,6 +10,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Tactic.Abel
+import Mathlib.CategoryTheory.MorphismProperty
 
 /-!
 # Chain homotopies
@@ -790,6 +791,12 @@ def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
     rw [← Functor.map_comp, homology_map_eq_of_homotopy f.homotopyInvHomId,
       CategoryTheory.Functor.map_id]
 #align homology_obj_iso_of_homotopy_equiv homologyObjIsoOfHomotopyEquiv
+
+variable (V c)
+
+def HomologicalComplex.homotopyEquivalences :
+    MorphismProperty (HomologicalComplex V c) := fun X Y f =>
+  ∃ (e : HomotopyEquiv X Y), e.hom = f
 
 end
 

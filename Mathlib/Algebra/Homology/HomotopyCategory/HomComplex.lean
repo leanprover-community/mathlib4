@@ -122,9 +122,13 @@ lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q  : ℤ) (hpq
 
 def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p => φ.f p)
 
+variable (F G)
+
 @[simp]
 lemma ofHom_zero : ofHom (0 : F ⟶ G) = 0 := by
   simp only [ofHom, HomologicalComplex.zero_f_apply, ofHoms_zero]
+
+variable {F G}
 
 @[simp]
 lemma ofHom_v (φ : F ⟶ G) (p : ℤ) : (ofHom φ).v p p (add_zero p) = φ.f p := by
@@ -140,12 +144,28 @@ lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q  : ℤ) (hpq : p + 0 = q) :
     F.d p' p ≫ (ofHom φ).v p q hpq = F.d p' q ≫ φ.f q := by
   simp only [ofHom, d_comp_ofHoms_v]
 
+@[simp]
+lemma ofHom_add (φ₁ φ₂ : F ⟶ G) :
+    Cochain.ofHom (φ₁ + φ₂) = Cochain.ofHom φ₁ + Cochain.ofHom φ₂ := by aesop_cat
+
+@[simp]
+lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
+    Cochain.ofHom (φ₁ - φ₂) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by aesop_cat
+
+@[simp]
+lemma ofHom_neg (φ : F ⟶ G) :
+    Cochain.ofHom (-φ) = -Cochain.ofHom φ := by aesop_cat
+
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
 
 @[simp]
 lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
     ofHomotopy (Homotopy.ofEq h) = 0 := by rfl
+
+@[simp]
+lemma ofHomotopy_refl (φ : F ⟶ G) :
+    ofHomotopy (Homotopy.refl φ) = 0 := by rfl
 
 @[reassoc]
 lemma v_comp_XIsoOfEq_hom
