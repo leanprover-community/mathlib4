@@ -8,7 +8,7 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Pseudoelements
+import Mathlib.CategoryTheory.Abelian.Pseudoelements
 
 /-!
 # The four and five lemmas
