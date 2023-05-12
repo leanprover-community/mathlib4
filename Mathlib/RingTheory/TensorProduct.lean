@@ -450,6 +450,7 @@ instance : Semiring (A ⊗[R] B) :=
     natCast_succ := AddMonoidWithOne.natCast_succ
     zero_mul := fun a => show mul 0 a = 0 by rw [map_zero, LinearMap.zero_apply]
     mul_zero := fun a => show mul a 0 = 0 by rw [map_zero]
+    -- port note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
     left_distrib := fun a b c => show mul a (b + c) = mul a b + mul a c by rw [map_add]
     right_distrib := fun a b c => show mul (a + b) c = mul a c + mul b c
       by rw [map_add, LinearMap.add_apply] }
