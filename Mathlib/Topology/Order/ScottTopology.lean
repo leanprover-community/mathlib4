@@ -18,6 +18,9 @@ This file introduces the Scott topology on a preorder.
 
 ## Main definitions
 
+- `inaccessible_by_directed_joins` - a set `u` is said to be inaccessible by directed joins if, when
+  the least upper bound of a directed set `d` lies in `u` then `d` has non-empty intersection with
+  `u`.
 - `ScottTopology'` - the Scott topology is defined as the join of the topology of upper sets and the
   topological space where a set `u` is open if, when the least upper bound of a directed set `d`
   lies in `u` then there is a tail of `d` which is a subset of `u`.
@@ -65,6 +68,9 @@ section preorder
 variable {α} {β}
 
 variable [Preorder α] [Preorder β]
+
+def inaccessible_by_directed_joins (u : Set α) : Prop :=
+  ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
 /--
 The set of upper sets forms a topology
@@ -189,9 +195,8 @@ lemma isOpen_iff_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
 ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
   → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by erw [topology_eq α]; rfl
 
-lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set α) :
-IsOpen u ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
-a ∈ u → (d ∩ u).Nonempty) := by
+lemma isOpen_iff_upper_and_inaccessible_by_directed_joins (u : Set α) :
+IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
   rw [isOpen_iff_upper_and_LUB_mem_implies_tail_subset]
   constructor
   . refine' And.imp_right _
@@ -217,7 +222,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
   ↔ (IsLowerSet s ∧
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
-  rw [← isOpen_compl_iff, isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty,
+  rw [← isOpen_compl_iff, isOpen_iff_upper_and_inaccessible_by_directed_joins,
     isLowerSet_compl.symm, compl_compl]
   apply and_congr_right'
   constructor
@@ -279,11 +284,11 @@ lemma continuous_monotone {f : α → β}
   . intro h
     rw [continuous_def]
     intros u hu
-    rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+    rw [isOpen_iff_upper_and_inaccessible_by_directed_joins]
     constructor
     . exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
-      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
+      rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at hu
       exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
           (h hd₁ hd₂ hd₃) ha
@@ -299,7 +304,7 @@ lemma continuous_monotone {f : α → β}
         rw [isOpen_compl_iff, ← closure_singleton]
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
-      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
+      rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at s2
       obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ h
       simp at h_1_right
       rw [upperBounds] at hb
@@ -341,7 +346,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
 (u : Set α) : IsOpen u ↔
 (IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u →
 (d∩u).Nonempty) := by
-  rw [ScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+  rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
