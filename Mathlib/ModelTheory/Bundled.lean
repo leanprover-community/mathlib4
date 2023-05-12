@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.ModelTheory.ElementaryMaps
-import Mathbin.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # Bundled First-Order Structures
@@ -61,8 +61,7 @@ namespace FirstOrder
 namespace Language
 
 /-- The equivalence relation on bundled `L.Structure`s indicating that they are isomorphic. -/
-instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure)
-    where
+instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
   R M N := Nonempty (M ≃[L] N)
   iseqv :=
     ⟨fun M => ⟨Equiv.refl L M⟩, fun M N => Nonempty.map Equiv.symm, fun M N P =>
@@ -121,8 +120,7 @@ end Inhabited
 variable {T}
 
 /-- Maps a bundled model along a bijection. -/
-def equivInduced {M : ModelCat.{u, v, w} T} {N : Type w'} (e : M ≃ N) : ModelCat.{u, v, w'} T
-    where
+def equivInduced {M : ModelCat.{u, v, w} T} {N : Type w'} (e : M ≃ N) : ModelCat.{u, v, w'} T where
   carrier := N
   struc := e.inducedStructure
   is_model := @Equiv.theory_model L M N _ e.inducedStructure T e.inducedStructureEquiv _
@@ -147,8 +145,7 @@ def ulift (M : ModelCat.{u, v, w} T) : ModelCat.{u, v, max w w'} T :=
 
 /-- The reduct of any model of `φ.on_Theory T` is a model of `T`. -/
 @[simps]
-def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelCat) : T.ModelCat
-    where
+def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelCat) : T.ModelCat where
   carrier := M
   struc := φ.reduct M
   nonempty' := M.nonempty'
@@ -161,8 +158,7 @@ def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelCat) : T
 noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.Injective)
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => φ.onFunction f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => φ.onRelation r)]
-    (M : T.ModelCat) [Inhabited M] : (φ.onTheory T).ModelCat
-    where
+    (M : T.ModelCat) [Inhabited M] : (φ.onTheory T).ModelCat where
   carrier := M
   struc := φ.defaultExpansion M
   nonempty' := M.nonempty'
@@ -181,8 +177,7 @@ instance rightStructure {L' : Language} {T : (L.Sum L').Theory} (M : T.ModelCat)
 
 /-- A model of a theory is also a model of any subtheory. -/
 @[simps]
-def subtheoryModel (M : T.ModelCat) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelCat
-    where
+def subtheoryModel (M : T.ModelCat) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelCat where
   carrier := M
   is_model := ⟨fun φ hφ => realize_sentence_of_mem T (h hφ)⟩
 #align first_order.language.Theory.Model.subtheory_Model FirstOrder.Language.Theory.ModelCat.subtheoryModel

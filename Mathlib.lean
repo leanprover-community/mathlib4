@@ -1580,6 +1580,7 @@ import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
+import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Syntax
