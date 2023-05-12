@@ -262,8 +262,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical
     have :
-      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = Finset.val :=
-      by
+      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = Finset.val := by
       funext
       simp [Finsupp.toMultiset_sum_single]
     rw [degrees, support_esymm, sup_image, this]

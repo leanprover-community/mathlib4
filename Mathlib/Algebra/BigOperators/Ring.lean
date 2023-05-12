@@ -227,8 +227,7 @@ section CommRing
 variable {R : Type _} [CommRing R]
 
 theorem prod_range_cast_nat_sub (n k : ℕ) :
-    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) :=
-  by
+    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   cases' le_or_lt k n with hkn hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm

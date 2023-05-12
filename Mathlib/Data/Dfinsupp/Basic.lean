@@ -991,8 +991,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
 theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (f + single i b)) : p f :=
   Dfinsupp.induction f h0 fun i b f h1 h2 h3 =>
-    have h4 : f + single i b = single i b + f :=
-      by
+    have h4 : f + single i b = single i b + f := by
       ext j; by_cases H : i = j
       · subst H
         simp [h1]
@@ -1291,16 +1290,11 @@ theorem support_smul {γ : Type w} [Semiring γ] [∀ i, AddCommMonoid (β i)] [
 
 instance [∀ i, Zero (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (Π₀ i, β i) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ i ∈ f.support, f i = g i)
-    ⟨fun ⟨h₁, h₂⟩ =>
-      ext fun i =>
-        if h : i ∈ f.support then h₂ i h
-        else by
-          have hf : f i = 0 := by rwa [mem_support_iff, not_not] at h
-          have hg : g i = 0 := by rwa [h₁, mem_support_iff, not_not] at h
-          rw [hf, hg],
-      by
-      rintro rfl
-      simp⟩
+    ⟨fun ⟨h₁, h₂⟩ => ext fun i => if h : i ∈ f.support then h₂ i h else by
+      have hf : f i = 0 := by rwa [mem_support_iff, not_not] at h
+      have hg : g i = 0 := by rwa [h₁, mem_support_iff, not_not] at h
+      rw [hf, hg],
+     by rintro rfl; simp⟩
 
 section Equiv
 
@@ -1535,18 +1529,16 @@ noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)]
     (f : Π₀ (i) (j), δ i j) :
     Π₀ i : Σi, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
-  support' :=
-    f.support'.map fun s =>
-      ⟨Multiset.bind s.1 fun i => ((f i).support.map ⟨Sigma.mk i, sigma_mk_injective⟩).val, fun i =>
-        by
-        simp_rw [Multiset.mem_bind, map_val, Multiset.mem_map, Function.Embedding.coeFn_mk, ←
-          Finset.mem_def, mem_support_toFun]
-        obtain hi | (hi : f i.1 = 0) := s.prop i.1
-        · by_cases hi' : f i.1 i.2 = 0
-          · exact Or.inr hi'
-          · exact Or.inl ⟨_, hi, i.2, hi', Sigma.eta _⟩
-        · right
-          rw [hi, zero_apply]⟩
+  support' := f.support'.map fun s => ⟨Multiset.bind s.1 fun i =>
+    ((f i).support.map ⟨Sigma.mk i, sigma_mk_injective⟩).val, fun i => by
+      simp_rw [Multiset.mem_bind, map_val, Multiset.mem_map, Function.Embedding.coeFn_mk, ←
+        Finset.mem_def, mem_support_toFun]
+      obtain hi | (hi : f i.1 = 0) := s.prop i.1
+      · by_cases hi' : f i.1 i.2 = 0
+        · exact Or.inr hi'
+        · exact Or.inl ⟨_, hi, i.2, hi', Sigma.eta _⟩
+      · right
+        rw [hi, zero_apply]⟩
 #align dfinsupp.sigma_uncurry Dfinsupp.sigmaUncurry
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/

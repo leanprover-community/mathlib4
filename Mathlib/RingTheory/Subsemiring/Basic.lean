@@ -550,11 +550,10 @@ theorem coe_map (f : R →+* S) (s : Subsemiring R) : (s.map f : Set S) = f '' s
 #align subsemiring.coe_map Subsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  by
-    -- Porting note: was `exact Set.mem_image_iff_bex`
-    convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
-    simp
+theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
+  -- Porting note: was `exact Set.mem_image_iff_bex`
+  convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
+  simp
 #align subsemiring.mem_map Subsemiring.mem_map
 
 @[simp]
@@ -893,8 +892,8 @@ theorem mem_closure_iff {s : Set R} {x} :
 #align subsemiring.mem_closure_iff Subsemiring.mem_closure_iff
 
 @[simp]
-theorem closure_addSubmonoid_closure {s : Set R} : closure ↑(AddSubmonoid.closure s) = closure s :=
-  by
+theorem closure_addSubmonoid_closure {s : Set R} :
+    closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
   refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩

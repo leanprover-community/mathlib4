@@ -28,9 +28,9 @@ absorbs `s`.
 
 ## Main results
 
-* `Bornology.isVonNBounded.of_topological_space_le`: A coarser topology admits more
+* `Bornology.IsVonNBounded.of_topologicalSpace_le`: A coarser topology admits more
 von Neumann-bounded sets.
-* `Bornology.isVonNBounded.image`: A continuous linear image of a bounded set is bounded.
+* `Bornology.IsVonNBounded.image`: A continuous linear image of a bounded set is bounded.
 * `Bornology.isVonNBounded_iff_smul_tendsto_zero`: Given any sequence `ε` of scalars which tends
   to `𝓝[≠] 0`, we have that a set `S` is bounded if and only if for any sequence `x : ℕ → S`,
   `ε • x` tends to 0. This shows that bounded sets are completely determined by sequences, which is

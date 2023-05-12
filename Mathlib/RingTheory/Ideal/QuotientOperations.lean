@@ -273,8 +273,7 @@ def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈
       -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       have : algebraMap R₁ (A ⧸ I) r = algebraMap A (A ⧸ I) (algebraMap R₁ A r) := by
         simp_rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
       rw [this, Ideal.Quotient.algebraMap_eq, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,

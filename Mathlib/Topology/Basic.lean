@@ -1154,13 +1154,12 @@ theorem mapClusterPt_iff {ι : Type _} (x : α) (F : Filter ι) (u : ι → α) 
 #align map_cluster_pt_iff mapClusterPt_iff
 
 theorem mapClusterPt_of_comp {ι δ : Type _} {F : Filter ι} {φ : δ → ι} {p : Filter δ} {x : α}
-    {u : ι → α} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) : MapClusterPt x F u :=
-  by
+    {u : ι → α} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
+    MapClusterPt x F u := by
   have :=
     calc
       map (u ∘ φ) p = map u (map φ p) := map_map
       _ ≤ map u F := map_mono h
-
   have : map (u ∘ φ) p ≤ 𝓝 x ⊓ map u F := le_inf H this
   exact neBot_of_le this
 #align map_cluster_pt_of_comp mapClusterPt_of_comp

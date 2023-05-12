@@ -64,8 +64,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
   set h : α → β := s.piecewise f g'
   have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
-  have : Injective h :=
-    by
+  have : Injective h := by
     refine' (injective_piecewise_iff _).2 ⟨hf.injOn _, _, _⟩
     · intro x hx y hy hxy
       obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]

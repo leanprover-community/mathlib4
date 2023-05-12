@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.algebra.subalgebra.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -122,6 +122,8 @@ theorem range_le : Set.range (algebraMap R A) ≤ S :=
 theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
   (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem r) hx
 #align subalgebra.smul_mem Subalgebra.smul_mem
+
+instance : SMulMemClass (Subalgebra R A) R A where smul_mem r _x hx := smul_mem _ hx r
 
 protected theorem one_mem : (1 : A) ∈ S :=
   one_mem S
@@ -892,8 +894,7 @@ theorem infᵢ_toSubmodule {ι : Sort _} (S : ι → Subalgebra R A) :
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) :=
-  suffices (ofId R A).range = (⊥ : Subalgebra R A)
-    by
+  suffices (ofId R A).range = (⊥ : Subalgebra R A) by
     rw [← this, ← SetLike.mem_coe, AlgHom.coe_range]
     rfl
   le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)

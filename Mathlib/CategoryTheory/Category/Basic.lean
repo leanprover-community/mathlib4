@@ -294,16 +294,12 @@ theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f �
 #align category_theory.cancel_mono CategoryTheory.cancel_mono
 
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_epi f` here.
-  convert @cancel_epi _ _ _ _ _ f _ h (𝟙 Y)
+  convert cancel_epi f
   simp
 #align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
 
 theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_mono f` here.
-  convert @cancel_mono _ _ _ _ _ f _ g (𝟙 X)
+  convert cancel_mono f
   simp
 #align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id
 
