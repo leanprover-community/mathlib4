@@ -134,7 +134,7 @@ elab_rules : tactic
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
           return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
-      (atTarget := evalTactic <| ← `(tactic| show $newType))
+      (atTarget := evalTactic <| ← `(tactic| refine_lift show $newType from ?_))
       (failed := fun _ ↦ throwError "change tactic failed")
 
 /--
@@ -154,6 +154,11 @@ elab "show' " e:term : tactic => Term.withoutErrToSorry <| withoutRecover do
     catch _ =>
       restoreState s
   throwError "no goals unify with given term"
+
+/- Override the `show` tactic from core Lean to reflect its docstring.
+If `show'` fails, then it will fall back on core's `show`, which assumes it's working
+with the main goal. -/
+macro_rules | `(tactic| show $e) => `(tactic| show' $e)
 
 /--
 `case : t => tac` finds the first goal that unifies with `t` and then solves it
