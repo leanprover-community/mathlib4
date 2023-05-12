@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
+! leanprover-community/mathlib commit 2d44d6823a96f9c79b7d1ab185918377be663424
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
+import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Order.CompleteLattice
@@ -20,7 +21,7 @@ import Mathlib.Order.Hom.Lattice
 -/
 
 
-variable {F α β γ ι : Type _}
+variable {F α β γ ι κ : Type _}
 
 namespace Finset
 
@@ -472,7 +473,7 @@ theorem inf_mem (s : Set α) (w₁ : ⊤ ∈ s) (w₂ : ∀ (x) (_ : x ∈ s) (y
 #align finset.inf_mem Finset.inf_mem
 
 @[simp]
-theorem inf_eq_top_iff (f : β → α) (S : Finset β) : S.inf f = ⊤ ↔ ∀ s ∈ S, f s = ⊤ :=
+protected theorem inf_eq_top_iff (f : β → α) (S : Finset β) : S.inf f = ⊤ ↔ ∀ s ∈ S, f s = ⊤ :=
   @Finset.sup_eq_bot_iff αᵒᵈ _ _ _ _ _
 #align finset.inf_eq_top_iff Finset.inf_eq_top_iff
 
@@ -508,7 +509,7 @@ variable [DistribLattice α]
 
 section OrderBot
 
-variable [OrderBot α] {s : Finset β} {f : β → α} {a : α}
+variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
 
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
     a ⊓ s.sup f = s.sup fun i => a ⊓ f i := by
@@ -523,19 +524,24 @@ theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
   simp_rw [_root_.inf_comm]
 #align finset.sup_inf_distrib_right Finset.sup_inf_distrib_right
 
-protected theorem disjoint_sup_right : Disjoint a (s.sup f) ↔ ∀ i ∈ s, Disjoint a (f i) := by
-  simp only [disjoint_iff, sup_inf_distrib_left, sup_eq_bot_iff]
+protected theorem disjoint_sup_right : Disjoint a (s.sup f) ↔ ∀ ⦃i⦄, i ∈ s → Disjoint a (f i) := by
+  simp only [disjoint_iff, sup_inf_distrib_left, Finset.sup_eq_bot_iff]
 #align finset.disjoint_sup_right Finset.disjoint_sup_right
 
-protected theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ i ∈ s, Disjoint (f i) a := by
-  simp only [disjoint_iff, sup_inf_distrib_right, sup_eq_bot_iff]
+protected theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ ⦃i⦄, i ∈ s → Disjoint (f i) a := by
+  simp only [disjoint_iff, sup_inf_distrib_right, Finset.sup_eq_bot_iff]
 #align finset.disjoint_sup_left Finset.disjoint_sup_left
+
+theorem sup_inf_sup (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
+    s.sup f ⊓ t.sup g = (s ×ᶠ t).sup fun i => f i.1 ⊓ g i.2 := by
+  simp_rw [Finset.sup_inf_distrib_right, Finset.sup_inf_distrib_left, sup_product_left]
+#align finset.sup_inf_sup Finset.sup_inf_sup
 
 end OrderBot
 
 section OrderTop
 
-variable [OrderTop α]
+variable [OrderTop α] {f : ι → α} {g : κ → α} {s : Finset ι} {t : Finset κ} {a : α}
 
 theorem inf_sup_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
     a ⊔ s.inf f = s.inf fun i => a ⊔ f i :=
@@ -547,7 +553,62 @@ theorem inf_sup_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
   @sup_inf_distrib_right αᵒᵈ _ _ _ _ _ _
 #align finset.inf_sup_distrib_right Finset.inf_sup_distrib_right
 
+protected theorem codisjoint_inf_right :
+    Codisjoint a (s.inf f) ↔ ∀ ⦃i⦄, i ∈ s → Codisjoint a (f i) :=
+  @Finset.disjoint_sup_right αᵒᵈ _ _ _ _ _ _
+#align finset.codisjoint_inf_right Finset.codisjoint_inf_right
+
+protected theorem codisjoint_inf_left :
+    Codisjoint (s.inf f) a ↔ ∀ ⦃i⦄, i ∈ s → Codisjoint (f i) a :=
+  @Finset.disjoint_sup_left αᵒᵈ _ _ _ _ _ _
+#align finset.codisjoint_inf_left Finset.codisjoint_inf_left
+
+/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+theorem inf_sup_inf (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
+    s.inf f ⊔ t.inf g = (s ×ᶠ t).inf fun i => f i.1 ⊔ g i.2 :=
+  @sup_inf_sup αᵒᵈ _ _ _ _ _ _ _ _
+#align finset.inf_sup_inf Finset.inf_sup_inf
+
 end OrderTop
+
+section BoundedOrder
+
+variable [BoundedOrder α] [DecidableEq ι]
+
+--TODO: Extract out the obvious isomorphism `(insert i s).pi t ≃ t i ×ˢ s.pi t` from this proof
+theorem inf_sup {κ : ι → Type _} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
+    (s.inf fun i => (t i).sup (f i)) =
+      (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 :=
+  by
+  induction' s using Finset.induction with i s hi ih
+  · simp
+  rw [inf_insert, ih, attach_insert, sup_inf_sup]
+  refine' eq_of_forall_ge_iff fun c => _
+  simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,
+    inf_insert, inf_image]
+  refine'
+    ⟨fun h g hg =>
+      h (g i <| mem_insert_self _ _) (fun j hj => g j <| mem_insert_of_mem hj)
+        (hg _ <| mem_insert_self _ _) fun j hj => hg _ <| mem_insert_of_mem hj,
+      fun h a g ha hg => _⟩
+  -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
+  have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
+  -- porting note: `simpa` doesn't support placeholders in proof terms
+  have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
+      else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
+  simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  rw [mem_insert] at hj
+  obtain (rfl | hj) := hj
+  · simpa
+  · simpa [ne_of_mem_of_not_mem hj hi] using hg _ _
+#align finset.inf_sup Finset.inf_sup
+
+theorem sup_inf {κ : ι → Type _} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
+    (s.sup fun i => (t i).inf (f i)) = (s.pi t).inf fun g => s.attach.sup fun i => f _ <| g _ i.2 :=
+  @inf_sup αᵒᵈ _ _ _ _ _ _ _ _
+#align finset.sup_inf Finset.sup_inf
+
+end BoundedOrder
 
 end DistribLattice
 
@@ -575,6 +636,31 @@ theorem inf_sdiff_right (hs : s.Nonempty) (f : ι → α) (a : α) :
   · rw [inf_singleton, inf_singleton]
   · rw [inf_cons, inf_cons, h, inf_sdiff]
 #align finset.inf_sdiff_right Finset.inf_sdiff_right
+
+theorem inf_himp_right (s : Finset ι) (f : ι → α) (a : α) :
+    (s.inf fun b => f b ⇨ a) = s.sup f ⇨ a :=
+  @sup_sdiff_left αᵒᵈ _ _ _ _ _
+#align finset.inf_himp_right Finset.inf_himp_right
+
+theorem sup_himp_right (hs : s.Nonempty) (f : ι → α) (a : α) :
+    (s.sup fun b => f b ⇨ a) = s.inf f ⇨ a :=
+  @inf_sdiff_left αᵒᵈ _ _ _ hs _ _
+#align finset.sup_himp_right Finset.sup_himp_right
+
+theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
+    (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
+  @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
+#align finset.sup_himp_left Finset.sup_himp_left
+
+@[simp]
+protected theorem compl_sup (s : Finset ι) (f : ι → α) : s.sup fᶜ = s.inf fun i => f iᶜ :=
+  map_finset_sup (OrderIso.compl α) _ _
+#align finset.compl_sup Finset.compl_sup
+
+@[simp]
+protected theorem compl_inf (s : Finset ι) (f : ι → α) : s.inf fᶜ = s.sup fun i => f iᶜ :=
+  map_finset_inf (OrderIso.compl α) _ _
+#align finset.compl_inf Finset.compl_inf
 
 end BooleanAlgebra
 
