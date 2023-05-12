@@ -345,7 +345,7 @@ noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
         dsimp
         ext
         simp only [Category.assoc, imageToKernel_arrow]
-        erw [kernelSubobject_arrow', kernelComparison_comp_ι, imageSubobject_arrow']
+        erw [kernelSubobject_arrow', imageSubobject_arrow']
         simp [← F.map_comp]))
 #align category_theory.functor.homology_iso CategoryTheory.Functor.homologyIso
 
@@ -363,12 +363,15 @@ noncomputable def homologyFunctorIso (i : ι) :
       simp only [homology.map, ← Category.assoc, cokernel.π_desc]
       simp only [Category.assoc, cokernelComparison_map_desc, cokernel.π_desc,
         π_comp_cokernelComparison, ← F.map_comp]
+      rw [π_comp_cokernelComparison]
       erw [← kernelSubobjectIso_comp_kernel_map_assoc]
       simp only [HomologicalComplex.Hom.sqFrom_right, HomologicalComplex.Hom.sqFrom_left,
         F.mapHomologicalComplex_map_f, F.map_comp]
       dsimp [HomologicalComplex.dFrom, HomologicalComplex.Hom.next]
-      rw [kernel_map_comp_preserves_kernel_iso_inv_assoc, ← F.map_comp_assoc,
-        ← kernel_map_comp_kernelSubobjectIso_inv]
+      rw [kernel_map_comp_preserves_kernel_iso_inv_assoc]
+      conv_lhs => erw [← F.map_comp_assoc]
+      rotate_right; simp
+      rw [← kernel_map_comp_kernelSubobjectIso_inv]
       any_goals simp)
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homologyFunctorIso
 
