@@ -8,9 +8,9 @@ Authors: Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homotopy.Basic
-import Mathbin.Topology.PathConnected
-import Mathbin.Analysis.Convex.Basic
+import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.PathConnected
+import Mathlib.Analysis.Convex.Basic
 
 /-!
 # Homotopy between paths
@@ -67,16 +67,14 @@ theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]
-theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ :=
-  by
+theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ := by
   simp_rw [← p₀.source]
   apply ContinuousMap.HomotopyRel.eq_fst
   simp
 #align path.homotopy.source Path.Homotopy.source
 
 @[simp]
-theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
-  by
+theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ := by
   simp_rw [← p₁.target]
   apply ContinuousMap.HomotopyRel.eq_snd
   simp
@@ -84,23 +82,20 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
 
 /-- Evaluating a path homotopy at an intermediate point, giving us a `path`.
 -/
-def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁
-    where
+def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
   toFun := F.toHomotopy.curry t
   source' := by simp
   target' := by simp
 #align path.homotopy.eval Path.Homotopy.eval
 
 @[simp]
-theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ :=
-  by
+theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
   ext t
   simp [eval]
 #align path.homotopy.eval_zero Path.Homotopy.eval_zero
 
 @[simp]
-theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ :=
-  by
+theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
   ext t
   simp [eval]
 #align path.homotopy.eval_one Path.Homotopy.eval_one
@@ -170,12 +165,10 @@ variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 Furthermore, suppose `F : homotopy p₀ q₀` and `G : homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
 -/
-def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁)
-    where
+def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁) where
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
-  continuous_toFun :=
-    by
+  continuous_toFun := by
     refine'
       continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
         (F.to_homotopy.continuous.comp (by continuity)).ContinuousOn
@@ -215,8 +208,7 @@ end
 Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the convexity of `I`.
 -/
 def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
-    Homotopy p (p.reparam f hf hf₀ hf₁)
-    where
+    Homotopy p (p.reparam f hf hf₀ hf₁) where
   toFun x :=
     p
       ⟨σ x.1 * x.2 + x.1 * f x.2,
@@ -237,8 +229,7 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
 argument.
 -/
 @[simps]
-def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm
-    where
+def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm where
   toFun x := F ⟨x.1, σ x.2⟩
   map_zero_left' := by simp [Path.symm]
   map_one_left' := by simp [Path.symm]
@@ -257,8 +248,7 @@ Given `F : homotopy p q`, and `f : C(X, Y)`, we can define a homotopy from `p.ma
 -/
 @[simps]
 def map {p q : Path x₀ x₁} (F : p.Homotopy q) (f : C(X, Y)) :
-    Homotopy (p.map f.Continuous) (q.map f.Continuous)
-    where
+    Homotopy (p.map f.Continuous) (q.map f.Continuous) where
   toFun := f ∘ F
   map_zero_left' := by simp
   map_one_left' := by simp
@@ -350,8 +340,7 @@ theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.Continuou
   rfl
 #align path.homotopic.map_lift Path.Homotopic.map_lift
 
-theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) : HEq ⟦p₁⟧ ⟦p₂⟧ :=
-  by
+theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) : HEq ⟦p₁⟧ ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
   rw [heq_iff_eq]; congr ; ext t; exact hp t
@@ -367,8 +356,7 @@ namespace ContinuousMap.Homotopy
 `f x` to `g x`
 -/
 def evalAt {X : Type _} {Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
-    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x)
-    where
+    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
