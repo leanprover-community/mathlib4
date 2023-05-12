@@ -33,6 +33,15 @@ namespace RelSeries
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
+instance : Preorder (RelSeries r) :=
+  Preorder.lift fun x => x.length
+
+lemma le_def (x y : RelSeries r) : x ≤ y ↔ x.length ≤ y.length :=
+  Iff.rfl
+
+lemma lt_def (x y : RelSeries r) : x < y ↔ x.length < y.length :=
+  Iff.rfl
+
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
@@ -48,11 +57,11 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
   default := singleton r default
 
 instance [Nonempty α] : Nonempty (RelSeries r) :=
-Nonempty.map (singleton r) inferInstance
+  Nonempty.map (singleton r) inferInstance
 
 variable {r}
 
-lemma StrictMono [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
+lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     r (x i) (x j) := by
   induction i using Fin.inductionOn generalizing j with
   | h0 => induction j using Fin.inductionOn with
@@ -79,14 +88,9 @@ lemma StrictMono [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h 
         exact x.step _
       . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
 
-lemma Monotone [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
-    r (x i) (x j) ∨ x i = x j := by
-  rw [le_iff_lt_or_eq] at h
-  rcases h with (h|h)
-  . left
-    apply x.StrictMono h
-  . right
-    rw [h]
+lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
+    r (x i) (x j) ∨ x i = x j :=
+  (le_iff_lt_or_eq.mp h).by_cases (Or.intro_left _ $ x.rel_of_lt .) (Or.intro_right _ $ . ▸ rfl)
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -113,23 +117,11 @@ variable (α) [Preorder α]
 If `α` is a preordered set, a series ordered by less than is a relation series of the less than
 relation.
 -/
-structure LTSeries extends RelSeries ((. < .) : Rel α α)
+abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 
 namespace LTSeries
 
-instance : Preorder (LTSeries α) :=
-  Preorder.lift fun x => x.length
-
 variable {α}
-
-instance : CoeFun (LTSeries α) (fun x ↦ Fin (x.length + 1) → α) :=
-{ coe := fun x => x.toFun }
-
-lemma le_def (x y : LTSeries α) : x ≤ y ↔ x.length ≤ y.length :=
-  Iff.rfl
-
-lemma lt_def (x y : LTSeries α) : x < y ↔ x.length < y.length :=
-  Iff.rfl
 
 lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
     p.length = (⊤ : LTSeries α).length :=
@@ -139,16 +131,14 @@ lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.
   le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 lemma StrictMono (x : LTSeries α) : StrictMono x :=
-  fun _ _ h => x.toRelSeries.StrictMono h
+  fun _ _ h => x.rel_of_lt h
 
 section PartialOrder
 
 variable {β : Type _} [PartialOrder β]
 
 lemma Monotone (x : LTSeries β) : Monotone x :=
-  fun _ _ h => by
-  rw [le_iff_lt_or_eq]
-  exact x.toRelSeries.Monotone h
+  fun _ _ h => le_iff_lt_or_eq.mpr $ x.rel_or_eq_of_le h
 
 end PartialOrder
 
