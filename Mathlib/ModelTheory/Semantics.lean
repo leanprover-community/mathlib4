@@ -824,10 +824,10 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.realize_sentence_of_mem FirstOrder.Language.Theory.realize_sentence_of_mem
 
 @[simp]
-theorem Lhom.onTheory_model [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] (T : L.Theory) :
+theorem LHom.onTheory_model [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] (T : L.Theory) :
     M ⊨ φ.onTheory T ↔ M ⊨ T := by simp [Theory.model_iff, LHom.onTheory]
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lhom.on_Theory_model FirstOrder.Language.Lhom.onTheory_model
+#align first_order.language.Lhom.on_Theory_model FirstOrder.Language.LHom.onTheory_model
 
 variable {T}
 
