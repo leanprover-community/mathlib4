@@ -263,7 +263,7 @@ def Homotopic (p₀ p₁ : Path x₀ x₁) : Prop :=
   Nonempty (p₀.Homotopy p₁)
 #align path.homotopic Path.Homotopic
 
-namespace homotopic
+namespace Homotopic
 
 @[refl]
 theorem refl (p : Path x₀ x₁) : p.Homotopic p :=
@@ -343,7 +343,7 @@ theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, 
   rw [heq_iff_eq]; congr ; ext t; exact hp t
 #align path.homotopic.hpath_hext Path.Homotopic.hpath_hext
 
-end homotopic
+end Homotopic
 
 end Path
 
