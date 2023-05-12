@@ -47,7 +47,7 @@ def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
 #align chain_complex.truncate_to ChainComplex.truncateTo
 
 -- PROJECT when `V` is abelian (but not generally?)
--- `[∀ n, exact (C.d (n+2) (n+1)) (C.d (n+1) n)] [epi (C.d 1 0)]` iff `quasi_iso (C.truncate_to)`
+-- `[∀ n, Exact (C.d (n+2) (n+1)) (C.d (n+1) n)] [Epi (C.d 1 0)]` iff `QuasiIso (C.truncate_to)`
 variable [HasZeroMorphisms V]
 
 /-- We can "augment" a chain complex by inserting an arbitrary object in degree zero
@@ -144,15 +144,15 @@ def augmentTruncate (C : ChainComplex V ℕ) :
   hom :=
     { f := fun i => by cases i <;> exact 𝟙 _
       comm' := fun i j => by
-        rcases i with (_ | _ | i) <;> cases j <;>
-          · dsimp
-            simp }
+        -- Porting note: was an rcases n with (_|_|n) but that was causing issues
+        match i with
+        | 0 | 1 | n+2 => cases' j with j <;> dsimp [augment, truncate] <;> simp }
   inv :=
     { f := fun i => by cases i <;> exact 𝟙 _
       comm' := fun i j => by
-        rcases i with (_ | _ | i) <;> cases j <;>
-          · dsimp
-            simp }
+        -- Porting note: was an rcases n with (_|_|n) but that was causing issues
+        match i with
+        | 0 | 1 | n+2 => cases' j with j <;> dsimp [augment, truncate] <;> simp }
   hom_inv_id := by
     ext i
     cases i <;>
@@ -192,7 +192,7 @@ theorem augmentTruncate_inv_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
 /-- A chain map from a chain complex to a single object chain complex in degree zero
 can be reinterpreted as a chain complex.
 
-Ths is the inverse construction of `truncate_to`.
+Ths is the inverse construction of `truncateTo`.
 -/
 def toSingle₀AsComplex [HasZeroObject V] (C : ChainComplex V ℕ) (X : V)
     (f : C ⟶ (single₀ V).obj X) : ChainComplex V ℕ :=
@@ -337,13 +337,16 @@ def augmentTruncate (C : CochainComplex V ℕ) :
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            simp }
+            -- Porting note: simp can't handle this now but aesop does
+            aesop }
   inv :=
     { f := fun i => by cases i <;> exact 𝟙 _
       comm' := fun i j => by
-        rcases j with (_ | _ | j) <;> cases i <;>
+        rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
-            simp }
+            -- Porting note: simp can't handle this now but aesop does
+            aesop
+    }
   hom_inv_id := by
     ext i
     cases i <;>
@@ -383,7 +386,7 @@ theorem augmentTruncate_inv_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
 /-- A chain map from a single object cochain complex in degree zero to a cochain complex
 can be reinterpreted as a cochain complex.
 
-Ths is the inverse construction of `to_truncate`.
+Ths is the inverse construction of `toTruncate`.
 -/
 def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
     (f : (single₀ V).obj X ⟶ C) : CochainComplex V ℕ :=
@@ -392,3 +395,4 @@ def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
 #align cochain_complex.from_single₀_as_complex CochainComplex.fromSingle₀AsComplex
 
 end CochainComplex
+
