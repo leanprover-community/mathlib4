@@ -231,7 +231,7 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 --   [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
--- example (n : ℕ) : 0 < n! := by positivity
+example (n : ℕ) : 0 < n! := by positivity
 -- example (n k : ℕ) : 0 < n.asc_factorial k := by positivity
 
 -- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
