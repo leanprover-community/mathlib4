@@ -138,6 +138,38 @@ elab_rules : tactic
       (failed := fun _ ↦ throwError "change tactic failed")
 
 /--
+`show' t` finds the first goal whose target unifies with `t`. It makes that the main goal,
+performs the unification, and replaces the target with the unified version of `t`.
+
+(Note: This is what the Lean documentation claims that `show t` does.)
+-/
+elab "show' " e:term : tactic => Term.withoutErrToSorry <| withoutRecover do
+  let gs ← getUnsolvedGoals
+  for g in gs do
+    let s ← saveState
+    try
+      setGoals (g :: gs.erase g)
+      evalTactic <| ← `(tactic| refine_lift show $e from ?_)
+      return
+    catch _ =>
+      restoreState s
+  throwError "no goals unify with given term"
+
+/--
+`case : t => tac` finds the first goal that unifies with `t` and then solves it
+using `tac`, or else fails.
+-/
+syntax (name := casePatt) "case" " : " term " => " tacticSeq : tactic
+
+@[tactic casePatt]
+def evalCasePatt : Tactic
+  | stx@`(tactic| case : $e =>%$arr $tac) => do
+    evalTactic <| ← `(tactic| show' $e)
+    withCaseRef arr tac do
+      closeUsingOrAdmit (withTacticInfoContext stx (evalTactic tac))
+  | _ => throwUnsupportedSyntax
+
+/--
 `by_cases p` makes a case distinction on `p`,
 resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
 -/
