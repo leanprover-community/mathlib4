@@ -71,9 +71,9 @@ The advantage of this approach is that the lemmas with fewer "varying" input pai
 fewer side conditions, so the tactic becomes more useful by special-casing them.
 
 There can also be more than one relational congruence lemma dealing with the same relation, head
-function and "varying"/non-"varying" configuration, for example with purely notational head functions
-which have different theories when different typeclass assumptions apply.  For example, the
-following lemma is stored with the same `@[rel_congr]` data as `mul_le_mul` above, and the two
+function and "varying"/non-"varying" configuration, for example with purely notational head
+functions which have different theories when different typeclass assumptions apply.  For example,
+the following lemma is stored with the same `@[rel_congr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
 theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -197,6 +197,11 @@ syntax "rel" " [" term,* "] " : tactic
 
 initialize registerTraceClass `Meta.rel
 
+/-- The core of the `rel_congr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
+look up any relevant @[rel_congr] lemmas, try to apply them, run the discharger on side goals which
+are generated and recursively run this same tactic on "main" goals which are generated. If there is
+a user-provided template, first check that the template asks us to descend this far into the match.
+-/
 partial def _root_.Lean.MVarId.relCongr
     (g : MVarId) (template : Option Expr)
     (discharger : MVarId → MetaM Unit)
@@ -335,22 +340,30 @@ partial def _root_.Lean.MVarId.relCongr
 
 open Elab Tactic
 
-def myExact (g : MVarId) (e : Expr) : MetaM Unit := do
+def _root_.Lean.MVarId.exact (g : MVarId) (e : Expr) : MetaM Unit := do
   let .true ← isDefEq (← g.getType) (← inferType e) | failure
   g.checkNotAssigned `myExact
   g.assign e
 
-def relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit :=
+/-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
+either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
+these hypotheses. -/
+def _root_.Lean.MVarId.relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit :=
   withReducible do
     let s ← saveState
     withTraceNode `Meta.rel (fun _ => return m!"rel_assumption: ⊢ {← g.getType}") do
+    -- Iterate over a list of terms
     for h in hs do
       try
-        try myExact g h catch _ =>
-          try g.symm >>= fun g ↦ myExact g h catch _ =>
-            try myExact g (← mkAppM ``le_of_lt #[h]) catch _ =>
+        -- See if the term is exactly the goal
+        try g.exact h catch _ =>
+          -- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`
+          try g.symm >>= fun g ↦ g.exact h catch _ =>
+            -- See if the term is `a < b` and the goal is `a ≤ b`
+            try g.exact (← mkAppM ``le_of_lt #[h]) catch _ =>
+              -- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive
               let m ← mkFreshExprMVar none
-              myExact g (← mkAppOptM ``Eq.subst #[h, m])
+              g.exact (← mkAppOptM ``Eq.subst #[h, m])
               g.rfl
         return
       catch _ => s.restore
@@ -397,17 +410,25 @@ elab "rel_congr" template:(colGt term)? : tactic => do
   g.withContext do
   let .app (.app _rel lhs) _rhs ← withReducible g.getType'
     | throwError "rel_congr failed, not a relation"
+  -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
   let template ← template.mapM fun e => do
     Term.elabTerm e (← inferType lhs)
+  -- The core tactic `Lean.MVarId.relCongr` will be run with discharger `rel_congr_discharger`
   let disch g := Term.TermElabM.run' do
     let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
       | failure
+  -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
+  -- consisting of running `Lean.MVarId.relAssumption` (trying a term together with limited
+  -- forward-reasoning on that term) on each nontrivial hypothesis.
   let assum g := do
     let mut hs := #[]
+    -- collect the nontrivial hypotheses
     for h in ← getLCtx do
       if !h.isImplementationDetail then
         hs := hs.push (.fvar h.fvarId)
-    relAssumption hs g
+    -- run `Lean.MVarId.relAssumption` on each one
+    g.relAssumption hs
+  -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
   replaceMainGoal (← g.relCongr template disch assum).toList
 
 
