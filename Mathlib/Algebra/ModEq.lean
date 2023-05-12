@@ -190,7 +190,6 @@ namespace ModEq
 protected theorem add_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
   (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
-
 #align add_comm_group.modeq.add_iff_left AddCommGroup.ModEq.add_iff_left
 
 @[simp]
