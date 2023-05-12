@@ -114,7 +114,7 @@ notation3 "⨆ "(...)", "r:(scoped f => supᵢ f) => r
 @[app_unexpander supᵢ]
 def supᵢ.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨆ $x:ident, $p)
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨆ $x:ident : $ty:term, $p)
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨆ ($x:ident : $ty:term), $p)
   | _ => throw ()
 
 /-- Indexed infimum. -/
@@ -124,7 +124,7 @@ notation3 "⨅ "(...)", "r:(scoped f => infᵢ f) => r
 @[app_unexpander infᵢ]
 def infᵢ.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨅ $x:ident, $p)
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨅ $x:ident : $ty:term, $p)
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨅ ($x:ident : $ty:term), $p)
   | _ => throw ()
 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
