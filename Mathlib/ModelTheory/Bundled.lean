@@ -94,10 +94,8 @@ attribute [coe] ModelType.Carrier
 instance instCoeSort : CoeSort T.ModelType (Type w) :=
   ⟨ModelType.Carrier⟩
 #align first_order.language.Theory.Model.has_coe_to_sort FirstOrder.Language.Theory.ModelType.instCoeSort
-@[simp]
-theorem carrier_eq_coe (M : T.ModelType) : M.Carrier = M :=
-  rfl
-#align first_order.language.Theory.Model.carrier_eq_coe FirstOrder.Language.Theory.ModelType.carrier_eq_coe
+
+#noalign first_order.language.Theory.Model.carrier_eq_coe
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
