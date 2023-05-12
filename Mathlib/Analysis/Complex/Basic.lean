@@ -8,11 +8,11 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Complex.Module
-import Mathbin.Data.Complex.Exponential
-import Mathbin.Data.IsROrC.Basic
-import Mathbin.Topology.Algebra.InfiniteSum.Module
-import Mathbin.Topology.Instances.RealVectorSpace
+import Mathlib.Data.Complex.Module
+import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.IsROrC.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Normed space structure on `ℂ`.
@@ -78,10 +78,8 @@ instance : DenselyNormedField ℂ
     have this : ‖(‖x‖ : ℂ)‖ = ‖‖x‖‖ := by simp only [norm_eq_abs, abs_of_real, Real.norm_eq_abs]
     ⟨‖x‖, by rwa [this, norm_norm]⟩
 
-instance {R : Type _} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
-    where
-  norm_smul_le r x :=
-    by
+instance {R : Type _} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+  norm_smul_le r x := by
     rw [norm_eq_abs, norm_eq_abs, ← algebraMap_smul ℝ r x, Algebra.smul_def, map_mul, ←
       norm_algebraMap' ℝ r, coe_algebra_map, abs_of_real]
     rfl
@@ -99,8 +97,7 @@ theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 #align complex.dist_eq Complex.dist_eq
 
-theorem dist_eq_re_im (z w : ℂ) : dist z w = Real.sqrt ((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) :=
-  by
+theorem dist_eq_re_im (z w : ℂ) : dist z w = Real.sqrt ((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
   rfl
 #align complex.dist_eq_re_im Complex.dist_eq_re_im
@@ -161,8 +158,7 @@ theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
 #align complex.norm_real Complex.norm_real
 
 @[simp]
-theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| :=
-  by
+theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
   rw [← of_real_rat_cast]
   exact norm_real _
 #align complex.norm_rat Complex.norm_rat
@@ -205,8 +201,7 @@ theorem nnnorm_int (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ :=
   Subtype.ext <| by simp only [coe_nnnorm, norm_int, Int.norm_eq_abs]
 #align complex.nnnorm_int Complex.nnnorm_int
 
-theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  by
+theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 := by
   refine' (@pow_left_inj NNReal _ _ _ _ zero_le' zero_le' hn.bot_lt).mp _
   rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 #align complex.nnnorm_eq_one_of_pow_eq_one Complex.nnnorm_eq_one_of_pow_eq_one
@@ -304,15 +299,13 @@ theorem imClm_apply (z : ℂ) : (imClm : ℂ → ℝ) z = z.im :=
 
 theorem restrictScalars_one_smul_right' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smul_right x : ℂ →L[ℂ] E) =
-      reClm.smul_right x + I • imClm.smul_right x :=
-  by
+      reClm.smul_right x + I • imClm.smul_right x := by
   ext ⟨a, b⟩
   simp [mk_eq_add_mul_I, add_smul, mul_smul, smul_comm I]
 #align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smul_right'
 
 theorem restrictScalars_one_smulRight (x : ℂ) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smul_right x : ℂ →L[ℂ] ℂ) = x • 1 :=
-  by
+    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smul_right x : ℂ →L[ℂ] ℂ) = x • 1 := by
   ext1 z
   dsimp
   apply mul_comm
@@ -366,8 +359,7 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 /-- The only continuous ring homomorphisms from `ℂ` to `ℂ` are the identity and the complex
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
-    f = RingHom.id ℂ ∨ f = conj :=
-  by
+    f = RingHom.id ℂ ∨ f = conj := by
   refine'
     (real_alg_hom_eq_id_or_conj <| AlgHom.mk' f <| map_real_smul f hf).imp (fun h => _) fun h => _
   all_goals convert congr_arg AlgHom.toRingHom h; ext1; rfl
@@ -403,8 +395,7 @@ theorem continuous_of_real : Continuous (coe : ℝ → ℂ) :=
 #align complex.continuous_of_real Complex.continuous_of_real
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
-theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal :=
-  by
+theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal := by
   convert congr_arg AlgHom.toRingHom
       (Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) <| Algebra.ofId ℝ ℂ)
   ext1; rfl
@@ -425,8 +416,7 @@ theorem ofRealClm_apply (x : ℝ) : ofRealClm x = x :=
   rfl
 #align complex.of_real_clm_apply Complex.ofRealClm_apply
 
-noncomputable instance : IsROrC ℂ
-    where
+noncomputable instance : IsROrC ℂ where
   re := ⟨Complex.re, Complex.zero_re, Complex.add_re⟩
   im := ⟨Complex.im, Complex.zero_im, Complex.add_im⟩
   I := Complex.I
@@ -546,8 +536,7 @@ theorem summable_of_real {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔
 #align is_R_or_C.summable_of_real IsROrC.summable_of_real
 
 @[norm_cast]
-theorem of_real_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, f a :=
-  by
+theorem of_real_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, f a := by
   by_cases h : Summable f
   · exact ContinuousLinearMap.map_tsum of_real_clm h
   ·
@@ -574,8 +563,7 @@ theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, 
 variable {𝕜}
 
 theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
-    HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) :=
-  by
+    HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
   refine' ⟨fun h => ⟨has_sum_re _ h, has_sum_im _ h⟩, _⟩
   rintro ⟨h₁, h₂⟩
   rw [← IsROrC.re_add_im c]
