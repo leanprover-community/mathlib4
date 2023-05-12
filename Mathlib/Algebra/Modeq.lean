@@ -46,12 +46,12 @@ variable [AddCommGroup α] {p a a₁ a₂ b b₁ b₂ c : α} {n : ℕ} {z : ℤ
 Equivalently (as shown in `algebra.order.to_interval_mod`), `b` does not lie in the open interval
 `(a, a + p)` modulo `p`, or `to_Ico_mod hp a` disagrees with `to_Ioc_mod hp a` at `b`, or
 `to_Ico_div hp a` disagrees with `to_Ioc_div hp a` at `b`. -/
-def Modeq (p a b : α) : Prop :=
+def ModEq (p a b : α) : Prop :=
   ∃ z : ℤ, b - a = z • p
-#align add_comm_group.modeq AddCommGroup.Modeq
+#align add_comm_group.modeq AddCommGroup.ModEq
 
 -- mathport name: «expr ≡ [PMOD ]»
-notation:50 a " ≡ " b " [PMOD " p "]" => Modeq p a b
+notation:50 a " ≡ " b " [PMOD " p "]" => ModEq p a b
 
 @[refl, simp]
 theorem modeq_refl (a : α) : a ≡ a [PMOD p] :=
@@ -63,46 +63,46 @@ theorem modeq_rfl : a ≡ a [PMOD p] :=
 #align add_comm_group.modeq_rfl AddCommGroup.modeq_rfl
 
 theorem modeq_comm : a ≡ b [PMOD p] ↔ b ≡ a [PMOD p] :=
-  (Equiv.neg _).exists_congr_left.trans <| by simp [Modeq, ← neg_eq_iff_eq_neg]
+  (Equiv.neg _).exists_congr_left.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 #align add_comm_group.modeq_comm AddCommGroup.modeq_comm
 
-alias modeq_comm ↔ Modeq.symm _
-#align add_comm_group.modeq.symm AddCommGroup.Modeq.symm
+alias modeq_comm ↔ ModEq.symm _
+#align add_comm_group.modeq.symm AddCommGroup.ModEq.symm
 
-attribute [symm] Modeq.symm
+attribute [symm] ModEq.symm
 
 @[trans]
-theorem Modeq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
+theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
   ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
-#align add_comm_group.modeq.trans AddCommGroup.Modeq.trans
+#align add_comm_group.modeq.trans AddCommGroup.ModEq.trans
 
-instance : IsRefl _ (Modeq p) :=
+instance : IsRefl _ (ModEq p) :=
   ⟨modeq_refl⟩
 
 @[simp]
 theorem neg_modeq_neg : -a ≡ -b [PMOD p] ↔ a ≡ b [PMOD p] :=
-  modeq_comm.trans <| by simp [Modeq, neg_add_eq_sub]
+  modeq_comm.trans <| by simp [ModEq, neg_add_eq_sub]
 #align add_comm_group.neg_modeq_neg AddCommGroup.neg_modeq_neg
 
-alias neg_modeq_neg ↔ Modeq.of_neg Modeq.neg
-#align add_comm_group.modeq.of_neg AddCommGroup.Modeq.of_neg
-#align add_comm_group.modeq.neg AddCommGroup.Modeq.neg
+alias neg_modeq_neg ↔ ModEq.of_neg ModEq.neg
+#align add_comm_group.modeq.of_neg AddCommGroup.ModEq.of_neg
+#align add_comm_group.modeq.neg AddCommGroup.ModEq.neg
 
 @[simp]
 theorem modeq_neg : a ≡ b [PMOD -p] ↔ a ≡ b [PMOD p] :=
-  modeq_comm.trans <| by simp [Modeq, ← neg_eq_iff_eq_neg]
+  modeq_comm.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 #align add_comm_group.modeq_neg AddCommGroup.modeq_neg
 
-alias modeq_neg ↔ Modeq.of_neg' Modeq.neg'
-#align add_comm_group.modeq.of_neg' AddCommGroup.Modeq.of_neg'
-#align add_comm_group.modeq.neg' AddCommGroup.Modeq.neg'
+alias modeq_neg ↔ ModEq.of_neg' ModEq.neg'
+#align add_comm_group.modeq.of_neg' AddCommGroup.ModEq.of_neg'
+#align add_comm_group.modeq.neg' AddCommGroup.ModEq.neg'
 
 theorem modeq_sub (a b : α) : a ≡ b [PMOD b - a] :=
   ⟨1, (one_smul _ _).symm⟩
 #align add_comm_group.modeq_sub AddCommGroup.modeq_sub
 
 @[simp]
-theorem modeq_zero : a ≡ b [PMOD 0] ↔ a = b := by simp [Modeq, sub_eq_zero, eq_comm]
+theorem modeq_zero : a ≡ b [PMOD 0] ↔ a = b := by simp [ModEq, sub_eq_zero, eq_comm]
 #align add_comm_group.modeq_zero AddCommGroup.modeq_zero
 
 @[simp]
@@ -131,41 +131,41 @@ theorem nsmul_add_modeq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
   ⟨-n, by simp [← sub_sub]⟩
 #align add_comm_group.nsmul_add_modeq AddCommGroup.nsmul_add_modeq
 
-namespace Modeq
+namespace ModEq
 
 protected theorem add_zsmul (z : ℤ) : a ≡ b [PMOD p] → a + z • p ≡ b [PMOD p] :=
   (add_zsmul_modeq _).trans
-#align add_comm_group.modeq.add_zsmul AddCommGroup.Modeq.add_zsmul
+#align add_comm_group.modeq.add_zsmul AddCommGroup.ModEq.add_zsmul
 
 protected theorem zsmul_add (z : ℤ) : a ≡ b [PMOD p] → z • p + a ≡ b [PMOD p] :=
   (zsmul_add_modeq _).trans
-#align add_comm_group.modeq.zsmul_add AddCommGroup.Modeq.zsmul_add
+#align add_comm_group.modeq.zsmul_add AddCommGroup.ModEq.zsmul_add
 
 protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
   (add_nsmul_modeq _).trans
-#align add_comm_group.modeq.add_nsmul AddCommGroup.Modeq.add_nsmul
+#align add_comm_group.modeq.add_nsmul AddCommGroup.ModEq.add_nsmul
 
 protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
   (nsmul_add_modeq _).trans
-#align add_comm_group.modeq.nsmul_add AddCommGroup.Modeq.nsmul_add
+#align add_comm_group.modeq.nsmul_add AddCommGroup.ModEq.nsmul_add
 
 protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
   ⟨m * z, by rwa [mul_smul]⟩
-#align add_comm_group.modeq.of_zsmul AddCommGroup.Modeq.of_zsmul
+#align add_comm_group.modeq.of_zsmul AddCommGroup.ModEq.of_zsmul
 
 protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
   ⟨m * n, by rwa [mul_smul, coe_nat_zsmul]⟩
-#align add_comm_group.modeq.of_nsmul AddCommGroup.Modeq.of_nsmul
+#align add_comm_group.modeq.of_nsmul AddCommGroup.ModEq.of_nsmul
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=
   Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
-#align add_comm_group.modeq.zsmul AddCommGroup.Modeq.zsmul
+#align add_comm_group.modeq.zsmul AddCommGroup.ModEq.zsmul
 
 protected theorem nsmul : a ≡ b [PMOD p] → n • a ≡ n • b [PMOD n • p] :=
   Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
-#align add_comm_group.modeq.nsmul AddCommGroup.Modeq.nsmul
+#align add_comm_group.modeq.nsmul AddCommGroup.ModEq.nsmul
 
-end Modeq
+end ModEq
 
 @[simp]
 theorem zsmul_modeq_zsmul [NoZeroSMulDivisors ℤ α] (hn : z ≠ 0) :
@@ -179,92 +179,92 @@ theorem nsmul_modeq_nsmul [NoZeroSMulDivisors ℕ α] (hn : n ≠ 0) :
   exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
 #align add_comm_group.nsmul_modeq_nsmul AddCommGroup.nsmul_modeq_nsmul
 
-alias zsmul_modeq_zsmul ↔ Modeq.zsmul_cancel _
-#align add_comm_group.modeq.zsmul_cancel AddCommGroup.Modeq.zsmul_cancel
+alias zsmul_modeq_zsmul ↔ ModEq.zsmul_cancel _
+#align add_comm_group.modeq.zsmul_cancel AddCommGroup.ModEq.zsmul_cancel
 
-alias nsmul_modeq_nsmul ↔ Modeq.nsmul_cancel _
-#align add_comm_group.modeq.nsmul_cancel AddCommGroup.Modeq.nsmul_cancel
+alias nsmul_modeq_nsmul ↔ ModEq.nsmul_cancel _
+#align add_comm_group.modeq.nsmul_cancel AddCommGroup.ModEq.nsmul_cancel
 
-namespace Modeq
+namespace ModEq
 
 @[simp]
 protected theorem add_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, Modeq]
+  (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
 
-#align add_comm_group.modeq.add_iff_left AddCommGroup.Modeq.add_iff_left
+#align add_comm_group.modeq.add_iff_left AddCommGroup.ModEq.add_iff_left
 
 @[simp]
 protected theorem add_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.addRight m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, Modeq]
-#align add_comm_group.modeq.add_iff_right AddCommGroup.Modeq.add_iff_right
+  (Equiv.addRight m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
+#align add_comm_group.modeq.add_iff_right AddCommGroup.ModEq.add_iff_right
 
 @[simp]
 protected theorem sub_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.subLeft m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, Modeq]
-#align add_comm_group.modeq.sub_iff_left AddCommGroup.Modeq.sub_iff_left
+  (Equiv.subLeft m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
+#align add_comm_group.modeq.sub_iff_left AddCommGroup.ModEq.sub_iff_left
 
 @[simp]
 protected theorem sub_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, Modeq]
-#align add_comm_group.modeq.sub_iff_right AddCommGroup.Modeq.sub_iff_right
+  (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
+#align add_comm_group.modeq.sub_iff_right AddCommGroup.ModEq.sub_iff_right
 
-alias Modeq.add_iff_left ↔ add_left_cancel add
-#align add_comm_group.modeq.add_left_cancel AddCommGroup.Modeq.add_left_cancel
-#align add_comm_group.modeq.add AddCommGroup.Modeq.add
+alias ModEq.add_iff_left ↔ add_left_cancel add
+#align add_comm_group.modeq.add_left_cancel AddCommGroup.ModEq.add_left_cancel
+#align add_comm_group.modeq.add AddCommGroup.ModEq.add
 
-alias Modeq.add_iff_right ↔ add_right_cancel _
-#align add_comm_group.modeq.add_right_cancel AddCommGroup.Modeq.add_right_cancel
+alias ModEq.add_iff_right ↔ add_right_cancel _
+#align add_comm_group.modeq.add_right_cancel AddCommGroup.ModEq.add_right_cancel
 
-alias Modeq.sub_iff_left ↔ sub_left_cancel sub
-#align add_comm_group.modeq.sub_left_cancel AddCommGroup.Modeq.sub_left_cancel
-#align add_comm_group.modeq.sub AddCommGroup.Modeq.sub
+alias ModEq.sub_iff_left ↔ sub_left_cancel sub
+#align add_comm_group.modeq.sub_left_cancel AddCommGroup.ModEq.sub_left_cancel
+#align add_comm_group.modeq.sub AddCommGroup.ModEq.sub
 
-alias Modeq.sub_iff_right ↔ sub_right_cancel _
-#align add_comm_group.modeq.sub_right_cancel AddCommGroup.Modeq.sub_right_cancel
+alias ModEq.sub_iff_right ↔ sub_right_cancel _
+#align add_comm_group.modeq.sub_right_cancel AddCommGroup.ModEq.sub_right_cancel
 
 -- porting note: doesn't work
 -- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
 
 protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
   modeq_rfl.add h
-#align add_comm_group.modeq.add_left AddCommGroup.Modeq.add_left
+#align add_comm_group.modeq.add_left AddCommGroup.ModEq.add_left
 
 protected theorem sub_left (c : α) (h : a ≡ b [PMOD p]) : c - a ≡ c - b [PMOD p] :=
   modeq_rfl.sub h
-#align add_comm_group.modeq.sub_left AddCommGroup.Modeq.sub_left
+#align add_comm_group.modeq.sub_left AddCommGroup.ModEq.sub_left
 
 protected theorem add_right (c : α) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
   h.add modeq_rfl
-#align add_comm_group.modeq.add_right AddCommGroup.Modeq.add_right
+#align add_comm_group.modeq.add_right AddCommGroup.ModEq.add_right
 
 protected theorem sub_right (c : α) (h : a ≡ b [PMOD p]) : a - c ≡ b - c [PMOD p] :=
   h.sub modeq_rfl
-#align add_comm_group.modeq.sub_right AddCommGroup.Modeq.sub_right
+#align add_comm_group.modeq.sub_right AddCommGroup.ModEq.sub_right
 
 protected theorem add_left_cancel' (c : α) : c + a ≡ c + b [PMOD p] → a ≡ b [PMOD p] :=
   modeq_rfl.add_left_cancel
-#align add_comm_group.modeq.add_left_cancel' AddCommGroup.Modeq.add_left_cancel'
+#align add_comm_group.modeq.add_left_cancel' AddCommGroup.ModEq.add_left_cancel'
 
 protected theorem add_right_cancel' (c : α) : a + c ≡ b + c [PMOD p] → a ≡ b [PMOD p] :=
   modeq_rfl.add_right_cancel
-#align add_comm_group.modeq.add_right_cancel' AddCommGroup.Modeq.add_right_cancel'
+#align add_comm_group.modeq.add_right_cancel' AddCommGroup.ModEq.add_right_cancel'
 
 protected theorem sub_left_cancel' (c : α) : c - a ≡ c - b [PMOD p] → a ≡ b [PMOD p] :=
   modeq_rfl.sub_left_cancel
-#align add_comm_group.modeq.sub_left_cancel' AddCommGroup.Modeq.sub_left_cancel'
+#align add_comm_group.modeq.sub_left_cancel' AddCommGroup.ModEq.sub_left_cancel'
 
 protected theorem sub_right_cancel' (c : α) : a - c ≡ b - c [PMOD p] → a ≡ b [PMOD p] :=
   modeq_rfl.sub_right_cancel
-#align add_comm_group.modeq.sub_right_cancel' AddCommGroup.Modeq.sub_right_cancel'
+#align add_comm_group.modeq.sub_right_cancel' AddCommGroup.ModEq.sub_right_cancel'
 
-end Modeq
+end ModEq
 
 theorem modeq_sub_iff_add_modeq' : a ≡ b - c [PMOD p] ↔ c + a ≡ b [PMOD p] := by
-  simp [Modeq, sub_sub]
+  simp [ModEq, sub_sub]
 #align add_comm_group.modeq_sub_iff_add_modeq' AddCommGroup.modeq_sub_iff_add_modeq'
 
 theorem modeq_sub_iff_add_modeq : a ≡ b - c [PMOD p] ↔ a + c ≡ b [PMOD p] :=
@@ -292,7 +292,7 @@ theorem add_modeq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [
 #align add_comm_group.add_modeq_right AddCommGroup.add_modeq_right
 
 theorem modeq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
-  simp_rw [Modeq, sub_eq_iff_eq_add']
+  simp_rw [ModEq, sub_eq_iff_eq_add']
 #align add_comm_group.modeq_iff_eq_add_zsmul AddCommGroup.modeq_iff_eq_add_zsmul
 
 theorem not_modeq_iff_ne_add_zsmul : ¬a ≡ b [PMOD p] ↔ ∀ z : ℤ, b ≠ a + z • p := by
@@ -313,7 +313,7 @@ end AddCommGroup
 
 @[simp]
 theorem modeq_iff_int_modeq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
-  simp [Modeq, dvd_iff_exists_eq_mul_left, Int.modEq_iff_dvd]
+  simp [ModEq, dvd_iff_exists_eq_mul_left, Int.modEq_iff_dvd]
 #align add_comm_group.modeq_iff_int_modeq AddCommGroup.modeq_iff_int_modeq
 
 section AddCommGroupWithOne
@@ -322,7 +322,7 @@ variable [AddCommGroupWithOne α] [CharZero α]
 
 @[simp, norm_cast]
 theorem int_cast_modeq_int_cast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
-  simp_rw [Modeq, ← Int.cast_mul_eq_zsmul_cast]
+  simp_rw [ModEq, ← Int.cast_mul_eq_zsmul_cast]
   norm_cast
 #align add_comm_group.int_cast_modeq_int_cast AddCommGroup.int_cast_modeq_int_cast
 
@@ -332,13 +332,13 @@ theorem nat_cast_modeq_nat_cast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a �
     Int.cast_ofNat]
 #align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.nat_cast_modeq_nat_cast
 
-alias int_cast_modeq_int_cast ↔ Modeq.of_int_cast Modeq.int_cast
-#align add_comm_group.modeq.of_int_cast AddCommGroup.Modeq.of_int_cast
-#align add_comm_group.modeq.int_cast AddCommGroup.Modeq.int_cast
+alias int_cast_modeq_int_cast ↔ ModEq.of_int_cast ModEq.int_cast
+#align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_int_cast
+#align add_comm_group.modeq.int_cast AddCommGroup.ModEq.int_cast
 
-alias nat_cast_modeq_nat_cast ↔ _root_.Nat.ModEq.of_nat_cast Modeq.nat_cast
+alias nat_cast_modeq_nat_cast ↔ _root_.Nat.ModEq.of_nat_cast ModEq.nat_cast
 #align nat.modeq.of_nat_cast Nat.ModEq.of_nat_cast
-#align add_comm_group.modeq.nat_cast AddCommGroup.Modeq.nat_cast
+#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.nat_cast
 
 end AddCommGroupWithOne
 
