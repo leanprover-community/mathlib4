@@ -131,8 +131,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 
 @[simp]
 theorem map_op_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 :=
-  by
+    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
   induction x using MulOpposite.rec'
   simp
@@ -140,8 +139,7 @@ theorem map_op_one :
 
 @[simp]
 theorem comap_op_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 :=
-  by
+    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   ext
   simp
 #align submodule.comap_op_one Submodule.comap_op_one
@@ -175,9 +173,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
-  simp_rw [← LinearMap.mulLeft_toAddMonoidHom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
-    map₂]
-  rw [supᵢ_toAddSubmonoid]
+  rw [map₂, supᵢ_toAddSubmonoid]
   rfl
 #align submodule.mul_to_add_submonoid Submodule.mul_toAddSubmonoid
 
@@ -258,7 +254,7 @@ theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
 #align submodule.sup_mul Submodule.sup_mul
 
 theorem mul_subset_mul : (↑M : Set A) * (↑N : Set A) ⊆ (↑(M * N) : Set A) :=
-  image2_subset_map₂ (LinearMap.Algebra.lmul R A).toLinearMap M N
+  image2_subset_map₂ (Algebra.lmul R A).toLinearMap M N
 #align submodule.mul_subset_mul Submodule.mul_subset_mul
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
@@ -266,8 +262,7 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
   calc
     map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
       map_supᵢ _ _
-    _ = map f.toLinearMap M * map f.toLinearMap N :=
-      by
+    _ = map f.toLinearMap M * map f.toLinearMap N := by
       apply congr_arg supₛ
       ext S
       constructor <;> rintro ⟨y, hy⟩
@@ -281,7 +276,6 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
-
 #align submodule.map_mul Submodule.map_mul
 
 theorem map_op_mul :
@@ -388,13 +382,13 @@ variable {M N P}
 
 theorem mem_span_singleton_mul {x y : A} : x ∈ span R {y} * P ↔ ∃ z ∈ P, y * z = x := by
   --porting note: need both `*` and `Mul.mul`
-  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map, exists_prop]
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map]
   rfl
 #align submodule.mem_span_singleton_mul Submodule.mem_span_singleton_mul
 
 theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P, z * y = x := by
   --porting note: need both `*` and `Mul.mul`
-  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip, exists_prop]
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip]
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
@@ -432,8 +426,7 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 #align submodule.pow_mem_pow Submodule.pow_mem_pow
 
-theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n :=
-  by
+theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction' n with n ih
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
@@ -642,13 +635,13 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
+    simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
   mul_smul s t P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
+    simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hSMul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
   zero_smul P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
+    simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _
 #align submodule.module_set Submodule.moduleSet
 

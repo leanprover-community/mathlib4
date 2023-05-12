@@ -293,7 +293,6 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ᶠ g, p x) ↔ ∀ᶠ y : β × α in g ×ᶠ f, p y.swap := by
   rw [prod_comm]; rfl
-
 #align filter.eventually_swap_iff Filter.eventually_swap_iff
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
@@ -507,8 +506,8 @@ theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 #align filter.coprod_ne_bot_right Filter.coprod_neBot_right
 
-theorem principal_coprod_principal (s : Set α) (t : Set β) : (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) :=
-  by
+theorem principal_coprod_principal (s : Set α) (t : Set β) :
+    (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 #align filter.principal_coprod_principal Filter.principal_coprod_principal

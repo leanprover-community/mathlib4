@@ -7,6 +7,51 @@ import Mathlib.Data.Fintype.Card
 
 open Function
 
+example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
+  apply_fun f
+  · guard_target = f x = f y
+    assumption
+  · guard_target = Injective f
+    sorry
+
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
+  apply_fun f ?foo
+  guard_target = f ?foo x = f ?foo y
+  case foo => exact 1
+  · exact h
+  · apply hinj
+
+-- Uses `refine`-style rules for placeholders:
+example (f : ℕ → ℕ → ℕ) : x = y := by
+  fail_if_success apply_fun f _
+  sorry
+
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
+  apply_fun f _ using hinj
+  -- Solves for the hole using unification since it makes use of the `using` clause.
+  guard_target = f 1 x = f 1 y
+  assumption
+
+-- A test to show a perhaps unexpected consequence of how injectivity is auto-proved:
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
+  apply_fun f _
+  -- Solves for the hole using unification since `hinj` is pulled in by `assumption`.
+  guard_target = f 1 x = f 1 y
+  assumption
+
+-- A test to show a perhaps unexpected consequence of how injectivity is auto-proved:
+example (f : ℕ → ℕ) (h : f x = f y) (hinj : Injective f) : x = y := by
+  apply_fun _
+  guard_target = f x = f y
+  assumption
+
+-- Make sure named holes generate new goals for `≠`
+example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
+  apply_fun f ?foo
+  guard_target = f ?foo x ≠ f ?foo y
+  case foo => exact 1
+  assumption
+
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
@@ -43,6 +88,10 @@ example (n m : ℕ) (f : ℕ → ℕ) (h : f n ≠ f m) : n ≠ m := by
   apply_fun f
   exact h
 
+example (n m : ℕ) (f : ℕ ≃ ℕ) (h : f n ≠ f m) : n ≠ m := by
+  apply_fun f
+  exact h
+
 example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m) : n = m := by
   apply_fun f
   assumption
@@ -53,6 +102,18 @@ example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m)
 
 example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f ∧ true) (h : f n = f m) : n = m := by
   apply_fun f using w.1
+  assumption
+
+example (f : ℕ ≃ ℕ) (h : f x = f y) : x = y := by
+  apply_fun f
+  assumption
+
+example (f : ℕ ≃ ℕ) (h : f x = f y) : x = y := by
+  apply_fun f using f.injective
+  assumption
+
+example {x y : ℕ} (h : Equiv.refl ℕ x = Equiv.refl ℕ y) : x = y := by
+  apply_fun Equiv.refl ℕ
   assumption
 
 example (a b : List α) (P : a = b) : True := by
@@ -159,3 +220,15 @@ example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   apply_fun Fintype.card at h
   guard_hyp h : Fintype.card α = Fintype.card β
   trivial
+
+-- Check that metavariables in the goal do not prevent apply_fun from detecting the relation
+example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
+  change _
+  -- now the goal is a metavariable
+  apply_fun f
+  exact h
+
+-- Check that lack of WHNF does not prevent apply_fun_from detecting the relation
+example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
+  apply_fun f
+  exact h

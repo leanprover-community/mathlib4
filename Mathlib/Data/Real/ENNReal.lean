@@ -927,6 +927,9 @@ theorem coe_infₛ {s : Set ℝ≥0} : s.Nonempty → (↑(infₛ s) : ℝ≥0�
   WithTop.coe_infₛ
 #align ennreal.coe_Inf ENNReal.coe_infₛ
 
+theorem coe_infᵢ {ι} [Nonempty ι] (f : ι → ℝ≥0) : (↑(infᵢ f) : ℝ≥0∞) = ⨅ i, ↑(f i) :=
+  WithTop.coe_infᵢ f
+
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
@@ -1828,8 +1831,7 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
@@ -1842,8 +1844,7 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
@@ -2297,6 +2298,15 @@ end Real
 section infᵢ
 
 variable {ι : Sort _} {f g : ι → ℝ≥0∞}
+
+theorem toNNReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toNNReal = ⨅ i, (f i).toNNReal := by
+  cases isEmpty_or_nonempty ι
+  · rw [infᵢ_of_empty, top_toNNReal, NNReal.infᵢ_empty]
+  · lift f to ι → ℝ≥0 using hf
+    simp only [← coe_infᵢ, toNNReal_coe]
+
+theorem toReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toReal = ⨅ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_infᵢ hf, NNReal.coe_infᵢ]
 
 theorem infᵢ_add : infᵢ f + a = ⨅ i, f i + a :=
   le_antisymm (le_infᵢ fun _ => add_le_add (infᵢ_le _ _) <| le_rfl)

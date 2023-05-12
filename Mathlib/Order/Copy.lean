@@ -78,7 +78,6 @@ def DistribLattice.copy (c : DistribLattice α)
   · intros; simp [eq_le, eq_inf]
   · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
   · intros; simp [eq_le, eq_inf, eq_sup, le_sup_inf]
-
 #align distrib_lattice.copy DistribLattice.copy
 
 --Porting note: original proof uses
@@ -182,5 +181,4 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
   · intro _ _ hb h; subst_vars; exact csupₛ_le _ _ hb h
   · intro _ _ hb h; subst_vars; exact cinfₛ_le _ _ hb h
   · intro _ _ hb h; subst_vars; exact le_cinfₛ _ _ hb h
-
 #align conditionally_complete_lattice.copy ConditionallyCompleteLattice.copy

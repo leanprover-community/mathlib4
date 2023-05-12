@@ -107,30 +107,26 @@ theorem fib_pos {n : ℕ} (n_pos : 0 < n) : 0 < fib n :=
   calc
     0 < fib 1 := by decide
     _ ≤ fib n := fib_mono n_pos
-
 #align nat.fib_pos Nat.fib_pos
 
 theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib n := by
   rw [fib_add_two, add_tsub_cancel_right]
 #align nat.fib_add_two_sub_fib_add_one Nat.fib_add_two_sub_fib_add_one
 
-theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) :=
-  by
+theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
   rw [← tsub_pos_iff_lt, add_comm 2, fib_add_two_sub_fib_add_one]
   apply fib_pos (succ_pos n)
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
 /-- `fib (n + 2)` is strictly monotone. -/
-theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) :=
-  by
+theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
   refine' strictMono_nat_of_lt_succ fun n => _
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
-theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n :=
-  by
+theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
   ·-- 5 ≤ fib 5
     rfl
@@ -139,13 +135,11 @@ theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n :=
     calc
       n ≤ fib n := IH
       _ < fib (n + 1) := fib_lt_fib_succ (le_trans (by decide) five_le_n)
-
 #align nat.le_fib_self Nat.le_fib_self
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
-theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) :=
-  by
+theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) := by
   induction' n with n ih
   · simp
   · rw [fib_add_two]
@@ -154,8 +148,7 @@ theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) :=
 #align nat.fib_coprime_fib_succ Nat.fib_coprime_fib_succ
 
 /-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
-theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) :=
-  by
+theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
   induction' n with n ih generalizing m
   · simp
   · intros
@@ -165,8 +158,7 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     ring
 #align nat.fib_add Nat.fib_add
 
-theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) :=
-  by
+theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
   · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
@@ -174,8 +166,7 @@ theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) 
     ring
 #align nat.fib_two_mul Nat.fib_two_mul
 
-theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
-  by
+theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [two_mul, fib_add]
   ring
 #align nat.fib_two_mul_add_one Nat.fib_two_mul_add_one
@@ -224,8 +215,7 @@ def fastFib (n : ℕ) : ℕ :=
 theorem fast_fib_aux_bit_ff (n : ℕ) :
     fastFibAux (bit false n) =
       let p := fastFibAux n
-      (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) :=
-  by
+      (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) := by
   rw [fastFibAux, binaryRec_eq]
   · rfl
   · simp
@@ -234,15 +224,13 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
 theorem fast_fib_aux_bit_tt (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
-      (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) :=
-  by
+      (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) := by
   rw [fastFibAux, binaryRec_eq]
   · rfl
   · simp
 #align nat.fast_fib_aux_bit_tt Nat.fast_fib_aux_bit_tt
 
-theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) :=
-  by
+theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   apply Nat.binaryRec _ (fun b n' ih => _) n
   · simp [fastFibAux]
   · intro b
@@ -264,16 +252,13 @@ theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (
   replace h := Nat.succ_pred_eq_of_pos h; rw [← h, succ_eq_add_one]
   calc
     gcd (fib m) (fib (n.pred + 1 + m)) =
-        gcd (fib m) (fib n.pred * fib m + fib (n.pred + 1) * fib (m + 1)) :=
-      by
+        gcd (fib m) (fib n.pred * fib m + fib (n.pred + 1) * fib (m + 1)) := by
         rw [← fib_add n.pred _]
         ring_nf
-    _ = gcd (fib m) (fib (n.pred + 1) * fib (m + 1)) :=
-      by
+    _ = gcd (fib m) (fib (n.pred + 1) * fib (m + 1)) := by
         rw [add_comm, gcd_add_mul_right_right (fib m) _ (fib n.pred)]
     _ = gcd (fib m) (fib (n.pred + 1)) :=
       coprime.gcd_mul_right_cancel_right (fib (n.pred + 1)) (coprime.symm (fib_coprime_fib_succ m))
-
 #align nat.gcd_fib_add_self Nat.gcd_fib_add_self
 
 theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) = gcd (fib m) (fib n)
@@ -303,22 +288,18 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.Nat.antidiagonal n, choose p.1 p.2 :=
-  two_step_induction rfl rfl fun n h1 h2 =>
-    by
+  two_step_induction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
 
-theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 :=
-  by
+theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
   induction' n with n ih
   · simp
-  ·
-    calc
+  · calc
       fib (n + 2) = fib n + fib (n + 1) := fib_add_two
       _ = (fib n + ∑ k in Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
       _ = (∑ k in Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
-
 #align nat.fib_succ_eq_succ_sum Nat.fib_succ_eq_succ_sum
 
 end Nat

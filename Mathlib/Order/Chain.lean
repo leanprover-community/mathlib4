@@ -167,7 +167,6 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s (choose h) :=
     @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
-
 #align succ_chain_spec succChain_spec
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=

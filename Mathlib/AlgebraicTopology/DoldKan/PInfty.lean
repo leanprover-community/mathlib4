@@ -83,10 +83,10 @@ theorem QInfty_f_0 : (QInfty.f 0 : X _[0] ⟶ X _[0]) = 0 := by
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f_0 AlgebraicTopology.DoldKan.QInfty_f_0
 
-theorem qInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
+theorem QInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Q_infty_f AlgebraicTopology.DoldKan.qInfty_f
+#align algebraic_topology.dold_kan.Q_infty_f AlgebraicTopology.DoldKan.QInfty_f
 
 @[reassoc (attr := simp)]
 theorem PInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
