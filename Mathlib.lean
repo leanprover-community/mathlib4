@@ -1591,6 +1591,7 @@ import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Syntax
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
