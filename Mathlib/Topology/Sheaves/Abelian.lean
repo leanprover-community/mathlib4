@@ -17,9 +17,9 @@ import Mathlib.CategoryTheory.Sites.LeftExact
 /-!
 # Category of sheaves is abelian
 Let `C, D` be categories and `J` be a grothendieck topology on `C`, when `D` is abelian and
-sheafification is possible in `C`, `Sheaf J D` is abelian as well (`Sheaf_is_abelian`).
+sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbelian`).
 
-Hence, `presheaf_to_Sheaf` is an additive functor (`presheaf_to_Sheaf_additive`).
+Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 
 -/
 
@@ -34,42 +34,49 @@ section Abelian
 
 universe w v u
 
-variable {C : Type max v u} [Category.{v} C]
+-- porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
+--   solves some problems
+variable {C : Type u} [Category.{v} C]
 
 variable {D : Type w} [Category.{max v u} D] [Abelian D]
 
 variable {J : GrothendieckTopology C}
 
+-- porting note: this `Abelian` instance is no longer necessary,
+-- maybe because I have made `C` more universe polymorphic
+--
 -- This needs to be specified manually because of universe level.
-instance : Abelian (Cᵒᵖ ⥤ D) :=
-  @Abelian.functorCategoryAbelian.{v} Cᵒᵖ _ D _ _
+--instance : Abelian (Cᵒᵖ ⥤ D) :=
+--  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
 -- This also needs to be specified manually, but I don't know why.
-instance : HasFiniteProducts (Sheaf J D) where out j := { HasLimit := fun F => by infer_instance }
+instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
+  out j := { has_limit := fun F => by infer_instance }
 
 -- sheafification assumptions
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.cover X), HasMultiequalizer (S.index P)]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
-variable [∀ X : C, HasColimitsOfShape (J.cover X)ᵒᵖ D]
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 
-variable [∀ X : C, PreservesColimitsOfShape (J.cover X)ᵒᵖ (forget D)]
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 variable [ReflectsIsomorphisms (forget D)]
 
 instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
+set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_is_abelian CategoryTheory.sheafIsAbelian
 
-attribute [local instance] preserves_binary_biproducts_of_preserves_binary_products
+attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
 
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
+set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_additive CategoryTheory.presheafToSheaf_additive
 
 end Abelian
 
 end CategoryTheory
-
