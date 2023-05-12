@@ -22,14 +22,14 @@ This file defines equality modulo an element in a commutative group.
 
 ## See also
 
-`smodeq` is a generalisation to arbitrary submodules.
+`SModEq` is a generalisation to arbitrary submodules.
 
 ## TODO
 
-Delete `int.modeq` in favour of `add_comm_group.modeq`. Generalise `smodeq` to `add_subgroup` and
-redefine `add_comm_group.modeq` using it. Once this is done, we can rename `add_comm_group.modeq`
+Delete `Int.ModEq` in favour of `AddCommGroup.ModEq`. Generalise `SModEq` to `AddSubgroup` and
+redefine `AddCommGroup.ModEq` using it. Once this is done, we can rename `AddCommGroup.ModEq`
 to `add_subgroup.modeq` and multiplicativise it. Longer term, we could generalise to submonoids and
-also unify with `nat.modeq`.
+also unify with `Nat.ModEq`.
 -/
 
 
