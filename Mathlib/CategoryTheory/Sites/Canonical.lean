@@ -8,7 +8,7 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # The canonical topology on a category
@@ -66,13 +66,11 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     (hU : Presieve.IsSheafFor P U) (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf))
     (hB' :
       ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y), Presieve.IsSeparatedFor P ((B h).pullback g)) :
-    Presieve.IsSheafFor P (Sieve.bind U B) :=
-  by
+    Presieve.IsSheafFor P (Sieve.bind U B) := by
   intro s hs
   let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), presieve.family_of_elements P (B hf) := fun Y f hf Z g hg =>
     s _ (presieve.bind_comp _ _ hg)
-  have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible :=
-    by
+  have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible := by
     intro Y f H Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
     apply hs
     apply reassoc_of comm
@@ -86,8 +84,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     intro Y l hl
     apply (hB' hf (l ≫ h)).ext
     intro M m hm
-    have : bind U B (m ≫ l ≫ h ≫ f) :=
-      by
+    have : bind U B (m ≫ l ≫ h ≫ f) := by
       have : bind U B _ := presieve.bind_comp f hf hm
       simpa using this
     trans s (m ≫ l ≫ h ≫ f) this
@@ -125,10 +122,8 @@ https://math.stackexchange.com/a/358709
 theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X) (hR : Presieve.IsSheafFor P R)
     (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : S f), Presieve.IsSeparatedFor P (R.pullback f))
     (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : R f), Presieve.IsSheafFor P (S.pullback f)) :
-    Presieve.IsSheafFor P S :=
-  by
-  have : (bind R fun Y f hf => S.pullback f : presieve X) ≤ S :=
-    by
+    Presieve.IsSheafFor P S := by
+  have : (bind R fun Y f hf => S.pullback f : presieve X) ≤ S := by
     rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
     apply hf
   apply presieve.is_sheaf_for_subsieve_aux P this
@@ -157,8 +152,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X) (hR : Presieve
 This is a special case of https://stacks.math.columbia.edu/tag/00Z9, but following a different
 proof (see the comments there).
 -/
-def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C
-    where
+def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f)
   top_mem' X Y f := by
     rw [sieve.pullback_top]
@@ -166,8 +160,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
     apply hS
-  transitive' X S hS R hR Z g :=
-    by
+  transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
     refine' is_sheaf_for_trans P (pullback g S) _ (hS Z g) _ _
@@ -199,8 +192,7 @@ theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) 
 Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `finest_topology Ps`.
 -/
 theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
-    (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps :=
-  by
+    (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
   rintro X S hS _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩
   intro Y f
   -- this can't be combined with the previous because the `subst` is applied at the end
