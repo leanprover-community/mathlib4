@@ -164,8 +164,8 @@ theorem condition_ι : ι f g w ≫ cokernel.desc f g w = 0 := by
 #align homology.condition_ι homology.condition_ι
 
 @[ext]
-theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W) (h : π' f g w ≫ a = π' f g w ≫ b) : a = b :=
-  by
+theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W)
+    (h : π' f g w ≫ a = π' f g w ≫ b) : a = b := by
   dsimp [π'] at h
   apply_fun fun e => (homologyIsoCokernelLift f g w).inv ≫ e
   swap
@@ -208,9 +208,8 @@ section
 variable {X' Y' Z' : A} (f' : X' ⟶ Y') (g' : Y' ⟶ Z') (w' : f' ≫ g' = 0)
 
 @[reassoc (attr := simp)]
-theorem π'_map (α β h) :
-    π' _ _ _ ≫ map w w' α β h = kernel.map _ _ α.right β.right (by simp [h, β.w.symm]) ≫ π' _ _ _ :=
-  by
+theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
+    kernel.map _ _ α.right β.right (by simp [h, β.w.symm]) ≫ π' _ _ _ := by
   apply_fun fun e => (kernelSubobjectIso _).hom ≫ e
   swap
   · intro i j hh
@@ -280,7 +279,8 @@ theorem map_eq_lift_desc'_left (α β h) :
 
 theorem map_eq_desc'_lift_right (α β h) :
     map w w' α β h =
-      homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ α.right ≫ cokernel.π _) (by simp [h]))
+      homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ α.right ≫ cokernel.π _)
+        (by simp [h]))
         (by
           ext
           simp only [Category.assoc, zero_comp, lift_ι, kernel.lift_ι_assoc]
@@ -373,3 +373,4 @@ noncomputable def homologyFunctorIso (i : ι) :
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homologyFunctorIso
 
 end CategoryTheory.Functor
+
