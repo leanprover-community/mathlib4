@@ -91,6 +91,12 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
   success_if_fail_with_msg "rel failed, goal not a relation" (rel [hx])
   exact h
 
+example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) : x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  success_if_fail_with_msg
+    "rel failed, cannot prove goal by 'substituting' the listed relationships"
+    (rel [h1])
+  rel [h1, h2]
+
 /-! ## Non-finishing examples -/
 
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
@@ -150,6 +156,13 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   rename_i i hi
   linarith [h i hi]
 
+-- this tests templates with binders
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
+    ∑ i in s, (3 + f i ^ 2) ≤ ∑ i in s, (3 + g i ^ 2) := by
+  rel_congr ∑ _i in s, (3 + ?_)
+  rename_i i hi
+  linarith [h i hi]
+
 axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
@@ -157,3 +170,9 @@ example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
     "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?a and the relation LE.le"
     (rel_congr f ?a)
   exact h
+
+example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
+  success_if_fail_with_msg
+    "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?a and the relation LE.le"
+    (rel_congr (f ?a) ^ 2)
+  rel_congr
