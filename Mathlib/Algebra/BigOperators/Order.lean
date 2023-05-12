@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
-import Mathlib.Tactic.RelCongr.Basic
+import Mathlib.Tactic.RelCongr.Core
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.

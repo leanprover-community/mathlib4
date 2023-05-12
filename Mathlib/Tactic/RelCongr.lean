@@ -1,8 +1,30 @@
+/-
+Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Heather Macbeth
+-/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.RelCongr.Basic
+import Mathlib.Tactic.RelCongr.Core
+
+/-! # Setup for the `rel_congr` tactic
+
+The core implementation of the `rel_congr` ("relational congruence") tactic is in the file
+`Tactic.RelCongr.Core`.  In this file we set it up for use across the library by tagging a minimal
+set of lemmas with the attribute `@[rel_congr]` and by listing `positivity` as a first-pass
+discharger for side goals. -/
 
 macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
+
+/-! # ≤, - -/
+
+attribute [rel_congr]
+  neg_le_neg -- tt
+
+/-! # <, - -/
+
+attribute [rel_congr]
+  neg_lt_neg -- tt
 
 /-! # ≤, + -/
 

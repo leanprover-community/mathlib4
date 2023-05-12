@@ -10,7 +10,7 @@ Authors: Chris Hughes
 -/
 import Std.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.RelCongr.Basic
+import Mathlib.Tactic.RelCongr.Core
 import Mathlib.Tactic.Ring
 
 /-!

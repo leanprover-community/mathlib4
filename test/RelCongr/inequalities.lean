@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.RelCongr.Lemmas
+import Mathlib.Tactic.RelCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Inequality tests for the `rel_congr` tactic -/

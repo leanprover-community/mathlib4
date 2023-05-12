@@ -11,7 +11,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
-import Mathlib.Tactic.RelCongr.Basic
+import Mathlib.Tactic.RelCongr.Core
 
 /-!
 # Extended non-negative reals
