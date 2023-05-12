@@ -41,9 +41,7 @@ Minkowski functional, gauge
 -/
 
 
-open NormedField Set
-
-open Pointwise
+open NormedField Set Pointwise
 
 noncomputable section
 
@@ -126,7 +124,7 @@ theorem gauge_empty : gauge (∅ : Set E) = 0 := by
 
 theorem gauge_of_subset_zero (h : s ⊆ 0) : gauge s = 0 := by
   obtain rfl | rfl := subset_singleton_iff_eq.1 h
-  exacts[gauge_empty, gauge_zero']
+  exacts [gauge_empty, gauge_zero']
 #align gauge_of_subset_zero gauge_of_subset_zero
 
 /-- The gauge is always nonnegative. -/
