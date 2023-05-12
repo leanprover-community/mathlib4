@@ -240,20 +240,19 @@ theorem π'_map (α β h) :
     simp
 #align homology.π'_map homology.π'_map
 
--- Porting FIXME: understand timeout here:
-set_option maxHeartbeats 0 in
+-- Porting note: need to fill in f,g,f',g' in the next few results or time out
 theorem map_eq_desc'_lift_left (α β h) :
     map w w' α β h =
-      homology.desc' _ _ _ (homology.lift _ _ _ (kernel.ι _ ≫ β.left ≫ cokernel.π _) (by simp))
-        (by
+      homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ β.left ≫ cokernel.π _)
+      (by simp)) (by
           ext
-          simp only [← h, category.assoc, zero_comp, lift_ι, kernel.lift_ι_assoc]
-          erw [← reassoc_of α.w]
+          simp only [← h, Category.assoc, zero_comp, lift_ι, kernel.lift_ι_assoc]
+          erw [← reassoc_of% α.w]
           simp) := by
   apply homology.hom_from_ext
   simp only [π'_map, π'_desc']
   dsimp [π', lift]
-  rw [iso.eq_comp_inv]
+  rw [Iso.eq_comp_inv]
   dsimp [homologyIsoKernelDesc]
   ext
   simp [h]
@@ -261,11 +260,11 @@ theorem map_eq_desc'_lift_left (α β h) :
 
 theorem map_eq_lift_desc'_left (α β h) :
     map w w' α β h =
-      homology.lift _ _ _
-        (homology.desc' _ _ _ (kernel.ι _ ≫ β.left ≫ cokernel.π _)
+      homology.lift f' g' _
+        (homology.desc' f g _ (kernel.ι _ ≫ β.left ≫ cokernel.π _)
           (by
             simp only [kernel.lift_ι_assoc, ← h]
-            erw [← reassoc_of α.w]
+            erw [← reassoc_of% α.w]
             simp))
         (by
           ext
@@ -277,11 +276,11 @@ theorem map_eq_lift_desc'_left (α β h) :
 
 theorem map_eq_desc'_lift_right (α β h) :
     map w w' α β h =
-      homology.desc' _ _ _ (homology.lift _ _ _ (kernel.ι _ ≫ α.right ≫ cokernel.π _) (by simp [h]))
+      homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ α.right ≫ cokernel.π _) (by simp [h]))
         (by
           ext
-          simp only [category.assoc, zero_comp, lift_ι, kernel.lift_ι_assoc]
-          erw [← reassoc_of α.w]
+          simp only [Category.assoc, zero_comp, lift_ι, kernel.lift_ι_assoc]
+          erw [← reassoc_of% α.w]
           simp) := by
   rw [map_eq_desc'_lift_left]
   ext
@@ -290,11 +289,11 @@ theorem map_eq_desc'_lift_right (α β h) :
 
 theorem map_eq_lift_desc'_right (α β h) :
     map w w' α β h =
-      homology.lift _ _ _
-        (homology.desc' _ _ _ (kernel.ι _ ≫ α.right ≫ cokernel.π _)
+      homology.lift f' g' _
+        (homology.desc' f g _ (kernel.ι _ ≫ α.right ≫ cokernel.π _)
           (by
             simp only [kernel.lift_ι_assoc]
-            erw [← reassoc_of α.w]
+            erw [← reassoc_of% α.w]
             simp))
         (by
           ext
@@ -310,7 +309,7 @@ theorem map_ι (α β h) :
       ι f g w ≫ cokernel.map f f' α.left β.left (by simp [h, β.w.symm]) := by
   rw [map_eq_lift_desc'_left, lift_ι]
   ext
-  simp only [← category.assoc]
+  simp only [← Category.assoc]
   rw [π'_ι, π'_desc', category.assoc, category.assoc, cokernel.π_desc]
 #align homology.map_ι homology.map_ι
 
@@ -323,20 +322,22 @@ namespace CategoryTheory.Functor
 variable {ι : Type _} {c : ComplexShape ι} {B : Type _} [Category B] [Abelian B] (F : A ⥤ B)
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
+-- Porting note: remove this
+set_option maxHeartbeats 400000 in
 /-- When `F` is an exact additive functor, `F(Hᵢ(X)) ≅ Hᵢ(F(X))` for `X` a complex. -/
 noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
-    F.obj (C.homology j) ≅ ((F.mapHomologicalComplex _).obj C).homology j :=
-  (PreservesCokernel.iso _ _).trans
+    F.obj (C.homology j) ≅ ((F.mapHomologicalComplex c).obj C).homology j :=
+  (PreservesCokernel.iso F _).trans
     (cokernel.mapIso _ _
       ((F.mapIso (imageSubobjectIso _)).trans
-        ((PreservesImage.iso _ _).symm.trans (imageSubobjectIso _).symm))
+        ((PreservesImage.iso F _).symm.trans (imageSubobjectIso _).symm))
       ((F.mapIso (kernelSubobjectIso _)).trans
-        ((PreservesKernel.iso _ _).trans (kernelSubobjectIso _).symm))
+        ((PreservesKernel.iso F _).trans (kernelSubobjectIso _).symm))
       (by
         dsimp
         ext
-        simp only [category.assoc, imageToKernel_arrow]
-        erw [kernel_subobject_arrow', kernel_comparison_comp_ι, image_subobject_arrow']
+        simp only [Category.assoc, imageToKernel_arrow]
+        erw [kernelSubobject_arrow', kernelComparison_comp_ι, imageSubobject_arrow']
         simp [← F.map_comp]))
 #align category_theory.functor.homology_iso CategoryTheory.Functor.homologyIso
 
@@ -347,13 +348,13 @@ noncomputable def homologyFunctorIso (i : ι) :
     (by
       intro X Y f
       dsimp
-      rw [← iso.inv_comp_eq, ← category.assoc, ← iso.eq_comp_inv]
+      rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
       refine' coequalizer.hom_ext _
-      dsimp [homology_iso]
-      simp only [homology.map, ← category.assoc, cokernel.π_desc]
-      simp only [category.assoc, cokernel_comparison_map_desc, cokernel.π_desc,
-        π_comp_cokernel_comparison, ← F.map_comp]
-      erw [← kernel_subobject_iso_comp_kernel_map_assoc]
+      dsimp [homologyIso]
+      simp only [homology.map, ← Category.assoc, cokernel.π_desc]
+      simp only [Category.assoc, cokernelComparison_map_desc, cokernel.π_desc,
+        π_comp_cokernelComparison, ← F.map_comp]
+      erw [← kernelSubobjectIso_comp_kernel_map_assoc]
       simp only [HomologicalComplex.Hom.sqFrom_right, HomologicalComplex.Hom.sqFrom_left,
         F.map_homological_complex_map_f, F.map_comp]
       dsimp only [HomologicalComplex.dFrom, HomologicalComplex.Hom.next]
