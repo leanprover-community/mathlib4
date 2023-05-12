@@ -18,10 +18,10 @@ This files proves that for `E` and `F` two topological vector spaces over `ℝ` 
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
 (this is `LinearMap.continuous_of_locally_bounded`).
 
-We keep this file separate from `analysis/locally_convex/bounded` in order not to import
-`analysis/NormedSpace/IsROrC` there, because defining the strong topology on the space of
-continuous linear maps will require importing `analysis/locally_convex/bounded` in
-`analysis/NormedSpace/operator_norm`.
+We keep this file separate from `Analysis/LocallyConvex/Bounded` in order not to import
+`Analysis/NormedSpace/IsROrC` there, because defining the strong topology on the space of
+continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` in
+`Analysis/NormedSpace/OperatorNorm`.
 
 ## References
 
@@ -137,7 +137,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine' ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, _⟩⟩
     simp [← mul_smul, hn]
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
-  push_neg  at h
+  push_neg at h
   rcases h with ⟨V, ⟨hV, -⟩, h⟩
   simp only [id.def, forall_true_left] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
