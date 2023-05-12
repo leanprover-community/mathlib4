@@ -16,12 +16,12 @@ import Mathlib.Data.IsROrC.Basic
 
 This files proves that for `E` and `F` two topological vector spaces over `ℝ` or `ℂ`,
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
-(this is `linear_map.continuous_of_locally_bounded`).
+(this is `LinearMap.continuous_of_locally_bounded`).
 
 We keep this file separate from `analysis/locally_convex/bounded` in order not to import
-`analysis/normed_space/is_R_or_C` there, because defining the strong topology on the space of
+`analysis/NormedSpace/IsROrC` there, because defining the strong topology on the space of
 continuous linear maps will require importing `analysis/locally_convex/bounded` in
-`analysis/normed_space/operator_norm`.
+`analysis/NormedSpace/operator_norm`.
 
 ## References
 
@@ -116,7 +116,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     · intro n _
       use n + 1
       simp only [Ne.def, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
-      -- `b (n + 1) ⊆ b n` follows from `antitone`.
+      -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine' _root_.trans _ h
       rintro y ⟨x, hx, hy⟩
