@@ -99,12 +99,12 @@ instance instCoeSort : CoeSort T.ModelType (Type w) :=
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
-def Of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : T.ModelType :=
+def of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : T.ModelType :=
   ⟨M⟩
-#align first_order.language.Theory.Model.of FirstOrder.Language.Theory.ModelType.Of
+#align first_order.language.Theory.Model.of FirstOrder.Language.Theory.ModelType.of
 
 @[simp]
-theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (Of T M : Type w) = M :=
+theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : Type w) = M :=
   rfl
 #align first_order.language.Theory.Model.coe_of FirstOrder.Language.Theory.ModelType.coe_of
 
@@ -117,7 +117,7 @@ section Inhabited
 attribute [local instance] Inhabited.trivialStructure
 
 instance instInhabited : Inhabited (ModelType.{u, v, w} (∅ : L.Theory)) :=
-  ⟨ModelType.Of _ PUnit⟩
+  ⟨ModelType.of _ PUnit⟩
 #align first_order.language.Theory.Model.inhabited FirstOrder.Language.Theory.ModelType.instInhabited
 
 end Inhabited
@@ -125,42 +125,42 @@ end Inhabited
 variable {T}
 
 /-- Maps a bundled model along a bijection. -/
-def EquivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
+def equivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
     ModelType.{u, v, w'} T where
   Carrier := N
   struc := e.inducedStructure
   is_model := @Equiv.theory_model L M N _ e.inducedStructure T e.inducedStructureEquiv _
   nonempty' := e.symm.nonempty
-#align first_order.language.Theory.Model.equiv_induced FirstOrder.Language.Theory.ModelType.EquivInduced
+#align first_order.language.Theory.Model.equiv_induced FirstOrder.Language.Theory.ModelType.equivInduced
 
 instance of_small (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :
-    Small.{w'} (ModelType.Of T M) :=
+    Small.{w'} (ModelType.of T M) :=
   h
 #align first_order.language.Theory.Model.of_small FirstOrder.Language.Theory.ModelType.of_small
 
 /-- Shrinks a small model to a particular universe. -/
-noncomputable def Shrink (M : ModelType.{u, v, w} T) [Small.{w'} M] : ModelType.{u, v, w'} T :=
-  EquivInduced (equivShrink M)
-#align first_order.language.Theory.Model.shrink FirstOrder.Language.Theory.ModelType.Shrink
+noncomputable def shrink (M : ModelType.{u, v, w} T) [Small.{w'} M] : ModelType.{u, v, w'} T :=
+  equivInduced (equivShrink M)
+#align first_order.language.Theory.Model.shrink FirstOrder.Language.Theory.ModelType.shrink
 
 /-- Lifts a model to a particular universe. -/
-def ULift (M : ModelType.{u, v, w} T) : ModelType.{u, v, max w w'} T :=
-  EquivInduced (Equiv.ulift.{w', w}.symm : M ≃ _)
-#align first_order.language.Theory.Model.ulift FirstOrder.Language.Theory.ModelType.ULift
+def ulift (M : ModelType.{u, v, w} T) : ModelType.{u, v, max w w'} T :=
+  equivInduced (Equiv.ulift.{w', w}.symm : M ≃ _)
+#align first_order.language.Theory.Model.ulift FirstOrder.Language.Theory.ModelType.ulift
 
 /-- The reduct of any model of `φ.onTheory T` is a model of `T`. -/
 @[simps]
-def Reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : T.ModelType where
+def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : T.ModelType where
   Carrier := M
   struc := φ.reduct M
   nonempty' := M.nonempty'
   is_model := (@LHom.onTheory_model L L' M (φ.reduct M) _ φ _ T).1 M.is_model
-#align first_order.language.Theory.Model.reduct FirstOrder.Language.Theory.ModelType.Reduct
+#align first_order.language.Theory.Model.reduct FirstOrder.Language.Theory.ModelType.reduct
 
-/-- When `φ` is injective, `DefaultExpansion` expands a model of `T` to a model of `φ.onTheory T`
+/-- When `φ` is injective, `defaultExpansion` expands a model of `T` to a model of `φ.onTheory T`
   arbitrarily. -/
 @[simps]
-noncomputable def DefaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.Injective)
+noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.Injective)
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => φ.onFunction f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => φ.onRelation r)]
     (M : T.ModelType) [Inhabited M] : (φ.onTheory T).ModelType where
@@ -170,7 +170,7 @@ noncomputable def DefaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.In
   is_model :=
     (@LHom.onTheory_model L L' M _ (φ.defaultExpansion M) φ (h.isExpansionOn_default M) T).2
       M.is_model
-#align first_order.language.Theory.Model.default_expansion FirstOrder.Language.Theory.ModelType.DefaultExpansion
+#align first_order.language.Theory.Model.default_expansion FirstOrder.Language.Theory.ModelType.defaultExpansion
 
 instance leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L.Structure M :=
   (LHom.sumInl : L →ᴸ L.sum L').reduct M
@@ -183,13 +183,13 @@ instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType
 
 /-- A model of a theory is also a model of any subtheory. -/
 @[simps]
-def SubtheoryModel (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelType where
+def subtheoryModel (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelType where
   Carrier := M
   is_model := ⟨fun _φ hφ => realize_sentence_of_mem T (h hφ)⟩
-#align first_order.language.Theory.Model.subtheory_Model FirstOrder.Language.Theory.ModelType.SubtheoryModel
+#align first_order.language.Theory.Model.subtheory_Model FirstOrder.Language.Theory.ModelType.subtheoryModel
 
 instance subtheoryModel_models (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) :
-    M.SubtheoryModel h ⊨ T :=
+    M.subtheoryModel h ⊨ T :=
   M.is_model
 #align first_order.language.Theory.Model.subtheory_Model_models FirstOrder.Language.Theory.ModelType.subtheoryModel_models
 
@@ -198,36 +198,36 @@ end ModelType
 variable {T}
 
 /-- Bundles `M ⊨ T` as a `T.ModelType`. -/
-def Model.Bundled {M : Type w} [LM : L.Structure M] [ne : Nonempty M] (h : M ⊨ T) : T.ModelType :=
-  @ModelType.Of L T M LM h ne
-#align first_order.language.Theory.model.bundled FirstOrder.Language.Theory.Model.Bundled
+def Model.bundled {M : Type w} [LM : L.Structure M] [ne : Nonempty M] (h : M ⊨ T) : T.ModelType :=
+  @ModelType.of L T M LM h ne
+#align first_order.language.Theory.model.bundled FirstOrder.Language.Theory.Model.bundled
 
 @[simp]
-theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.Bundled : Type w) = M :=
+theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bundled : Type w) = M :=
   rfl
 #align first_order.language.Theory.coe_of FirstOrder.Language.Theory.coe_of
 
 end Theory
 
 /-- A structure that is elementarily equivalent to a model, bundled as a model. -/
-def ElementarilyEquivalent.ToModel {M : T.ModelType} {N : Type _} [LN : L.Structure N]
+def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type _} [LN : L.Structure N]
     (h : M ≅[L] N) : T.ModelType where
   Carrier := N
   struc := LN
   nonempty' := h.nonempty
   is_model := h.theory_model
-#align first_order.language.elementarily_equivalent.to_Model FirstOrder.Language.ElementarilyEquivalent.ToModel
+#align first_order.language.elementarily_equivalent.to_Model FirstOrder.Language.ElementarilyEquivalent.toModel
 
 /-- An elementary substructure of a bundled model as a bundled model. -/
-def ElementarySubstructure.ToModel {M : T.ModelType} (S : L.ElementarySubstructure M) :
+def ElementarySubstructure.toModel {M : T.ModelType} (S : L.ElementarySubstructure M) :
     T.ModelType :=
-  S.elementarilyEquivalent.symm.ToModel T
-#align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.ToModel
+  S.elementarilyEquivalent.symm.toModel T
+#align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.toModel
 
-instance ElementarySubstructure.ToModel.instSmall {M : T.ModelType}
-    (S : L.ElementarySubstructure M) [h : Small S] : Small (S.ToModel T) :=
+instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
+    (S : L.ElementarySubstructure M) [h : Small S] : Small (S.toModel T) :=
   h
-#align first_order.language.to_Model.small FirstOrder.Language.ElementarySubstructure.ToModel.instSmall
+#align first_order.language.to_Model.small FirstOrder.Language.ElementarySubstructure.toModel.instSmall
 
 end Language
 
