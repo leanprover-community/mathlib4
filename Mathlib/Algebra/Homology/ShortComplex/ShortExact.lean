@@ -3,11 +3,13 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 namespace CategoryTheory
 
-open Category Limits ZeroObject Preadditive
+open Category Limits ZeroObject
 
 variable {C D : Type _} [Category C] [Category D]
 
 namespace ShortComplex
+
+section
 
 variable
   [HasZeroMorphisms C] [HasZeroMorphisms D]
@@ -95,6 +97,24 @@ lemma ShortExact.map_of_exact (hS : S.ShortExact)
   have := preserves_mono_of_preservesLimit F S.f
   have := preserves_epi_of_preservesColimit F S.g
   exact hS.map F
+
+end
+
+section Preadditive
+
+variable [Preadditive C]
+
+lemma isIso₂_of_shortExact_of_isIso₁₃ [Balanced C] {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) [IsIso φ.τ₁] [IsIso φ.τ₃] : IsIso φ.τ₂ := by
+  have := h₁.mono_f
+  have := h₂.mono_f
+  have := h₁.epi_g
+  have := h₂.epi_g
+  have := mono_τ₂_of_exact_of_mono φ h₁.exact
+  have := epi_τ₂_of_exact_of_epi φ h₂.exact
+  apply isIso_of_mono_of_epi
+
+end Preadditive
 
 end ShortComplex
 

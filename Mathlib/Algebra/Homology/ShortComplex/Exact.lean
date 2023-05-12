@@ -55,7 +55,7 @@ lemma exact_iff_isZero_leftHomology [S.HasHomology] :
     S.Exact ↔ IsZero S.leftHomology :=
   LeftHomologyData.exact_iff _
 
-lemma exact_iff_is_zero_right_homology [S.HasHomology] :
+lemma exact_iff_isZero_right_homology [S.HasHomology] :
     S.Exact ↔ IsZero S.rightHomology :=
   RightHomologyData.exact_iff _
 
@@ -564,6 +564,29 @@ lemma g_desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
   Cofork.IsColimit.π_desc (hS.gIsCokernel)
 
 end Exact
+
+lemma mono_τ₂_of_exact_of_mono {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.Exact) [Mono S₁.f] [Mono S₂.f] [Mono φ.τ₁] [Mono φ.τ₃] : Mono φ.τ₂ := by
+  rw [mono_iff_cancel_zero]
+  intro A x₂ hx₂
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S₁.f = x₂ := ⟨_, h₁.lift_f x₂
+    (by simp only [← cancel_mono φ.τ₃, assoc, zero_comp, ← φ.comm₂₃, reassoc_of% hx₂])⟩
+  suffices x₁ = 0 by rw [← hx₁, this, zero_comp]
+  simp only [← cancel_mono φ.τ₁, ← cancel_mono S₂.f, assoc, φ.comm₁₂, zero_comp,
+    reassoc_of% hx₁, hx₂]
+
+lemma mono_τ₂_of_exact_of_mono' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.Exact) (hf₁ : Mono S₁.f) (hf₂ : Mono S₂.f) (hτ₁ : Mono φ.τ₁) (hτ₂ : Mono φ.τ₃) :
+    Mono φ.τ₂ := by
+  apply mono_τ₂_of_exact_of_mono φ h₁
+
+attribute [local instance] balanced_opposite
+
+lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₂ : S₂.Exact) [Epi S₁.g] [Epi S₂.g] [Epi φ.τ₁] [Epi φ.τ₃] : Epi φ.τ₂ := by
+  have := mono_τ₂_of_exact_of_mono' (opMap φ) h₂.op (op_mono_of_epi S₂.g)
+    (op_mono_of_epi S₁.g) (op_mono_of_epi φ.τ₃) (op_mono_of_epi φ.τ₁)
+  exact unop_epi_of_mono (opMap φ).τ₂
 
 end Balanced
 
