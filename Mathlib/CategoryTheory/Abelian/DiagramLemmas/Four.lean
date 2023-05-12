@@ -63,7 +63,7 @@ universe v u
 
 variable {V : Type u} [Category.{v} V] [Abelian V]
 
-attribute [local instance] preadditive.has_equalizers_of_has_kernels
+attribute [local instance] Preadditive.hasEqualizers_of_hasKernels
 
 open Pseudoelement
 
@@ -78,8 +78,6 @@ variable {f' : A' ⟶ B'} {g' : B' ⟶ C'} {h' : C' ⟶ D'}
 variable {α : A ⟶ A'} {β : B ⟶ B'} {γ : C ⟶ C'} {δ : D ⟶ D'}
 
 variable (comm₁ : α ≫ f' = f ≫ β) (comm₂ : β ≫ g' = g ≫ γ) (comm₃ : γ ≫ h' = h ≫ δ)
-
-include comm₁ comm₂ comm₃
 
 section
 
@@ -102,31 +100,28 @@ theorem mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono �
     have : h c = 0 :=
       suffices δ (h c) = 0 from zero_of_map_zero _ (pseudo_injective_of_mono _) _ this
       calc
-        δ (h c) = h' (γ c) := by rw [← comp_apply, ← comm₃, comp_apply]
+        δ (h c) = h' (γ c) := by rw [← Pseudoelement.comp_apply, ← comm₃, Pseudoelement.comp_apply]
         _ = h' 0 := by rw [hc]
         _ = 0 := apply_zero _
-        
     Exists.elim ((pseudo_exact_of_exact hgh).2 _ this) fun b hb =>
       have : g' (β b) = 0 :=
         calc
-          g' (β b) = γ (g b) := by rw [← comp_apply, comm₂, comp_apply]
+          g' (β b) = γ (g b) := by rw [← Pseudoelement.comp_apply, comm₂, Pseudoelement.comp_apply]
           _ = γ c := by rw [hb]
           _ = 0 := hc
-          
       Exists.elim ((pseudo_exact_of_exact hf'g').2 _ this) fun a' ha' =>
         Exists.elim (pseudo_surjective_of_epi α a') fun a ha =>
           have : f a = b :=
             suffices β (f a) = β b from pseudo_injective_of_mono _ this
             calc
-              β (f a) = f' (α a) := by rw [← comp_apply, ← comm₁, comp_apply]
+              β (f a) = f' (α a) := by
+                rw [← Pseudoelement.comp_apply, ← comm₁, Pseudoelement.comp_apply]
               _ = f' a' := by rw [ha]
               _ = β b := ha'
-              
           calc
             c = g b := hb.symm
             _ = g (f a) := by rw [this]
             _ = 0 := (pseudo_exact_of_exact hfg).1 _
-            
 #align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono
 
 end
@@ -148,29 +143,31 @@ A' --f'-> B' --g'-> C' --h'-> D'
 ```
 -/
 theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) : Epi β :=
-  Preadditive.epi_of_cancel_zero _ fun R r hβr =>
+  Preadditive.epi_of_cancel_zero _ fun {R} r hβr => by
     have hf'r : f' ≫ r = 0 :=
       Limits.zero_of_epi_comp α <|
         calc
-          α ≫ f' ≫ r = f ≫ β ≫ r := by rw [reassoc_of comm₁]
+          α ≫ f' ≫ r = f ≫ β ≫ r := by rw [reassoc_of% comm₁]
           _ = f ≫ 0 := by rw [hβr]
           _ = 0 := HasZeroMorphisms.comp_zero _ _
-          
     let y : R ⟶ pushout r g' := pushout.inl
     let z : C' ⟶ pushout r g' := pushout.inr
+    -- Porting note: Added instance for `Mono (cokernel.desc f' g' hf'g'.w)`
+    have : Mono (cokernel.desc f' g' hf'g'.w) := mono_cokernel_desc_of_exact _ _ hf'g'
     have : Mono y :=
       mono_inl_of_factor_thru_epi_mono_factorization r g' (cokernel.π f')
         (cokernel.desc f' g' hf'g'.w) (by simp) (cokernel.desc f' r hf'r) (by simp) _
         (colimit.isColimit _)
     have hz : g ≫ γ ≫ z = 0 :=
       calc
-        g ≫ γ ≫ z = β ≫ g' ≫ z := by rw [← reassoc_of comm₂]
+        g ≫ γ ≫ z = β ≫ g' ≫ z := by rw [← reassoc_of% comm₂]
         _ = β ≫ r ≫ y := by rw [← pushout.condition]
-        _ = 0 ≫ y := by rw [reassoc_of hβr]
+        _ = 0 ≫ y := by rw [reassoc_of% hβr]
         _ = 0 := HasZeroMorphisms.zero_comp _ _
-        
     let v : pushout r g' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inl
     let w : D' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inr
+    -- Porting note: Added instance for `Mono (cokernel.desc g h hgh.w)`
+    have : Mono (cokernel.desc g h hgh.w) := mono_cokernel_desc_of_exact _ _ hgh
     have : Mono v :=
       mono_inl_of_factor_thru_epi_mono_factorization _ _ (cokernel.π g)
         (cokernel.desc g h hgh.w ≫ δ) (by simp) (cokernel.desc _ _ hz) (by simp) _
@@ -178,16 +175,14 @@ theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) 
     have hzv : z ≫ v = h' ≫ w :=
       (cancel_epi γ).1 <|
         calc
-          γ ≫ z ≫ v = h ≫ δ ≫ w := by rw [← category.assoc, pushout.condition, category.assoc]
-          _ = γ ≫ h' ≫ w := by rw [reassoc_of comm₃]
-          
+          γ ≫ z ≫ v = h ≫ δ ≫ w := by rw [← Category.assoc, pushout.condition, Category.assoc]
+          _ = γ ≫ h' ≫ w := by rw [reassoc_of% comm₃]
     suffices (r ≫ y) ≫ v = 0 from zero_of_comp_mono _ (zero_of_comp_mono _ this)
     calc
-      (r ≫ y) ≫ v = g' ≫ z ≫ v := by rw [pushout.condition, category.assoc]
+      (r ≫ y) ≫ v = g' ≫ z ≫ v := by rw [pushout.condition, Category.assoc]
       _ = g' ≫ h' ≫ w := by rw [hzv]
       _ = 0 ≫ w := (hg'h'.w_assoc _)
       _ = 0 := HasZeroMorphisms.zero_comp _ _
-      
 #align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono
 
 end
@@ -201,8 +196,6 @@ variable (hfg : Exact f g) (hgh : Exact g h) (hhi : Exact h i)
 variable (hf'g' : Exact f' g') (hg'h' : Exact g' h') (hh'i' : Exact h' i')
 
 variable [IsIso α] [IsIso β] [IsIso δ] [IsIso ε]
-
-include comm₄ hfg hgh hhi hf'g' hg'h' hh'i'
 
 /-- The five lemma. For names of objects and morphisms, refer to the following diagram:
 
@@ -220,10 +213,9 @@ theorem isIso_of_isIso_of_isIso_of_isIso_of_isIso : IsIso γ :=
     apply mono_of_epi_of_mono_of_mono comm₁ comm₂ comm₃ hfg hgh hf'g' <;> infer_instance
   have : Epi γ := by
     apply epi_of_epi_of_epi_of_mono comm₂ comm₃ comm₄ hhi hg'h' hh'i' <;> infer_instance
-  is_iso_of_mono_of_epi _
+  isIso_of_mono_of_epi _
 #align category_theory.abelian.is_iso_of_is_iso_of_is_iso_of_is_iso_of_is_iso CategoryTheory.Abelian.isIso_of_isIso_of_isIso_of_isIso_of_isIso
 
 end Five
 
 end CategoryTheory.Abelian
-
