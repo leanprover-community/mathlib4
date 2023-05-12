@@ -1062,8 +1062,55 @@ protected def Eventually (p : α → Prop) (f : Filter α) : Prop :=
   { x | p x } ∈ f
 #align filter.eventually Filter.Eventually
 
+section Notation
+open Lean
+
+syntax _root_.Lean.eventuallyBinders :=
+  bracketedExplicitBinders <|> unbracketedExplicitBinders
+
+open TSyntax.Compat in
+def _root_.Lean.expandEventuallyBindersAux (combinator : Syntax) (idents : Array Syntax)
+    (type? : Option Syntax) (filter : Syntax) (body : Syntax) : MacroM Syntax :=
+  let rec loop (i : Nat) (acc : Syntax) := do
+    match i with
+    | 0   => pure acc
+    | i+1 =>
+      let ident := idents[i]![0]
+      let acc ← match ident.isIdent, type? with
+        | true,  none      => `($combinator (fun $ident => $acc) $filter)
+        | true,  some type => `($combinator (fun $ident : $type => $acc) $filter)
+        | false, none      => `($combinator (fun _ => $acc) $filter)
+        | false, some type => `($combinator (fun _ : $type => $acc) $filter)
+      loop i acc
+  loop idents.size body
+
+def _root_.Lean.expandEventuallyBinders (combinatorDeclName : Name) (eventuallyBinders : Syntax)
+    (body : Syntax) (filter : Syntax) : MacroM Syntax := do
+  let combinator := mkCIdentFrom (← getRef) combinatorDeclName
+  let eventuallyBinders := eventuallyBinders[0]
+  if eventuallyBinders.getKind == ``Lean.unbracketedExplicitBinders then
+    let idents := eventuallyBinders[0].getArgs
+    let type?  := if eventuallyBinders[1].isNone then none else some eventuallyBinders[1][1]
+    expandEventuallyBindersAux combinator idents type? body filter
+  else
+    let idents := eventuallyBinders[1].getArgs
+    let type   := eventuallyBinders[3]
+    expandEventuallyBindersAux combinator idents (some type) body filter
+
+open TSyntax.Compat in
 @[inherit_doc Filter.Eventually]
-notation3 "∀ᶠ "(...)" in "f", "r:(scoped p => Filter.Eventually p f) => r
+macro "∀ᶠ " xs:eventuallyBinders " in " f:term ", " t:term : term =>
+  expandEventuallyBinders ``Filter.Eventually xs f t
+
+@[app_unexpander Filter.Eventually] def _root_.unexpandEventually : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $f) =>
+    match p with
+    | `(fun $x:ident => $b) => `(∀ᶠ $x:ident in $f, $b)
+    | `(fun ($x:ident : $t) => $b) => `(∀ᶠ ($x:ident : $t) in $f, $b)
+    | _ => throw ()
+  | _ => throw ()
+
+end Notation
 
 theorem eventually_iff {f : Filter α} {P : α → Prop} : (∀ᶠ x in f, P x) ↔ { x | P x } ∈ f :=
   Iff.rfl
@@ -1094,7 +1141,7 @@ protected theorem Eventually.and {p q : α → Prop} {f : Filter α} :
   inter_mem
 #align filter.eventually.and Filter.Eventually.and
 
-@[simp] theorem eventually_true (f : Filter α) : ∀ᶠ _x in f, True := univ_mem
+@[simp] theorem eventually_true (f : Filter α) : ∀ᶠ _ in f, True := univ_mem
 #align filter.eventually_true Filter.eventually_true
 
 theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
@@ -1102,12 +1149,12 @@ theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x)
 #align filter.eventually_of_forall Filter.eventually_of_forall
 
 @[simp]
-theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _x in f, False) ↔ f = ⊥ :=
+theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔ f = ⊥ :=
   empty_mem_iff_bot
 #align filter.eventually_false_iff_eq_bot Filter.eventually_false_iff_eq_bot
 
 @[simp]
-theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _x in f, p) ↔ p :=
+theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _ in f, p) ↔ p :=
   by_cases (fun h : p => by simp [h]) fun h => by simpa [h] using t.ne
 #align filter.eventually_const Filter.eventually_const
 
@@ -1249,8 +1296,23 @@ protected def Frequently (p : α → Prop) (f : Filter α) : Prop :=
   ¬∀ᶠ x in f, ¬p x
 #align filter.frequently Filter.Frequently
 
+section Notation
+open Lean
+
+open TSyntax.Compat in
 @[inherit_doc Filter.Frequently]
-notation3 "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
+macro "∃ᶠ " xs:eventuallyBinders " in " f:term ", " t:term : term =>
+  expandEventuallyBinders ``Filter.Frequently xs f t
+
+@[app_unexpander Filter.Frequently] def _root_.unexpandFrequently : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $f) =>
+    match p with
+    | `(fun $x:ident => $b) => `(∃ᶠ $x:ident in $f, $b)
+    | `(fun ($x:ident : $t) => $b) => `(∃ᶠ ($x:ident : $t) in $f, $b)
+    | _ => throw ()
+  | _ => throw ()
+
+end Notation
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
     ∃ᶠ x in f, p x :=
@@ -1322,16 +1384,16 @@ theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x
 #align filter.not_frequently Filter.not_frequently
 
 @[simp]
-theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _x in f, True) ↔ NeBot f := by
+theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ NeBot f := by
   simp [Filter.Frequently, -not_eventually, eventually_false_iff_eq_bot, neBot_iff]
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
-theorem frequently_false (f : Filter α) : ¬∃ᶠ _x in f, False := by simp
+theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp
 #align filter.frequently_false Filter.frequently_false
 
 @[simp]
-theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _x in f, p) ↔ p :=
+theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _ in f, p) ↔ p :=
   by_cases (fun h : p => by simpa [h] ) fun h => by simp [h]
 #align filter.frequently_const Filter.frequently_const
 

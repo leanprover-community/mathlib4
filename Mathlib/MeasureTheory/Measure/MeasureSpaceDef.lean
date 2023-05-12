@@ -359,17 +359,52 @@ def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
   sets_of_superset hs hst := measure_mono_null (Set.compl_subset_compl.2 hst) hs
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
+section Notation
+open Lean
+
 -- mathport name: «expr∀ᵐ ∂ , »
-notation3"∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
+open TSyntax.Compat in
+@[inherit_doc Filter.Eventually]
+macro "∀ᵐ " xs:eventuallyBinders " ∂" μ:term ", " t:term : term =>
+  `(∀ᶠ $xs in Measure.ae $μ, $t)
+
+@[app_unexpander Filter.Eventually] def _root_.unexpandEventuallyAE : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $f) =>
+    match f with
+    | `(Measure.ae $μ) =>
+      match p with
+      | `(fun $x:ident => $b) => `(∀ᵐ $x:ident ∂$μ, $b)
+      | `(fun ($x:ident : $t) => $b) => `(∀ᵐ ($x:ident : $t) ∂$μ, $b)
+      | _ => throw ()
+    | _ => throw ()
+  | _ => throw ()
 
 -- mathport name: «expr∃ᵐ ∂ , »
-notation3"∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
+open TSyntax.Compat in
+@[inherit_doc Filter.Frequently]
+macro "∃ᵐ " xs:eventuallyBinders " ∂" μ:term ", " t:term : term =>
+  `(∃ᶠ $xs in Measure.ae $μ, $t)
+
+@[app_unexpander Filter.Frequently] def _root_.unexpandFrequentlyAE : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $f) =>
+    match f with
+    | `(Measure.ae $μ) =>
+      match p with
+      | `(fun $x:ident => $b) => `(∃ᵐ $x:ident ∂$μ, $b)
+      | `(fun ($x:ident : $t) => $b) => `(∃ᵐ ($x:ident : $t) ∂$μ, $b)
+      | _ => throw ()
+    | _ => throw ()
+  | _ => throw ()
 
 -- mathport name: «expr =ᵐ[ ] »
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => f =ᶠ[Measure.ae μ] g
+@[inherit_doc Filter.EventuallyEq]
+notation:50 f " =ᵐ[" μ:50 "] " g:50 => EventuallyEq (Measure.ae μ) f g
 
 -- mathport name: «expr ≤ᵐ[ ] »
-notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => f ≤ᶠ[Measure.ae μ] g
+@[inherit_doc Filter.EventuallyLE]
+notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => EventuallyLE (Measure.ae μ) f g
+
+end Notation
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ (sᶜ) = 0 :=
   Iff.rfl
