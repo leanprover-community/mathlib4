@@ -322,7 +322,8 @@ variable [AddCommGroupWithOne α] [CharZero α]
 
 @[simp, norm_cast]
 theorem int_cast_modeq_int_cast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
-  simp_rw [Modeq, ← Int.cast_mul_eq_zsmul_cast] <;> norm_cast
+  simp_rw [Modeq, ← Int.cast_mul_eq_zsmul_cast]
+  norm_cast
 #align add_comm_group.int_cast_modeq_int_cast AddCommGroup.int_cast_modeq_int_cast
 
 @[simp, norm_cast]
