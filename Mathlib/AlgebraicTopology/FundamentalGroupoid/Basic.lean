@@ -91,31 +91,32 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   continuous_toFun := by continuity
   map_zero_left := by simp [reflTransSymmAux]
   map_one_left x := by
-    sorry <;>
-    · dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
-      change _ = ite _ _ _
-      split_ifs with h
-      · rw [Path.extend, Set.IccExtend_of_mem]
-        · norm_num
-        · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
-          exact ⟨unitInterval.nonneg x, h⟩
-      · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
-        · simp
-          congr 1
-          apply  congr_arg p
-          ext
-          norm_num [sub_sub_eq_add_sub]
-        · rw [unitInterval.two_mul_sub_one_mem_iff]
-          exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
+    dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
+    change _ = ite _ _ _
+    split_ifs with h
+    · rw [Path.extend, Set.IccExtend_of_mem]
+      · norm_num
+      · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
+        exact ⟨unitInterval.nonneg x, h⟩
+    · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
+      · simp only [Set.Icc.coe_one, one_mul, coe_mk_mk, Function.comp_apply]
+        congr 1
+        ext
+        -- Porting note: norm_num ignores arguments.
+        simp [sub_sub_eq_add_sub]
+        norm_num
+      · rw [unitInterval.two_mul_sub_one_mem_iff]
+        exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
   prop' t x hx := by
-    -- sorry
-    simp at hx
-    simp
+    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hx
+    simp only [ContinuousMap.coe_mk, coe_toContinuousMap, Path.refl_apply]
     cases hx with
     | inl hx
     | inr hx =>
-        rw [hx]
-        simp [reflTransSymmAux]
+      rw [hx]
+      simp only [reflTransSymmAux, Set.Icc.coe_zero, Set.Icc.coe_one, one_div, mul_one,
+        inv_nonneg, mul_zero, sub_zero, sub_self, Path.source, Path.target, and_self]
+      norm_num
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
@@ -146,10 +147,16 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
-theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by norm_num [transReflReparamAux]
+theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
+  -- Porting note: norm_num ignores arguments.
+  simp [transReflReparamAux]
+  norm_num
 #align path.homotopy.trans_refl_reparam_aux_zero Path.Homotopy.transReflReparamAux_zero
 
-theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by norm_num [transReflReparamAux]
+theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
+  -- Porting note: norm_num ignores arguments.
+  simp [transReflReparamAux]
+  norm_num
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
@@ -158,9 +165,11 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
-  simp only [Path.trans_apply, not_le, coe_to_fun, Function.comp_apply]
+  simp only [Path.trans_apply, not_le, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
   split_ifs
   · rfl
+  · rfl
+  · simp
   · simp
 #align path.homotopy.trans_refl_reparam Path.Homotopy.trans_refl_reparam
 
@@ -193,12 +202,14 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
   refine'
         continuous_if_le _ _ (Continuous.continuousOn _)
           (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _)
-              _).ContinuousOn
+              _).continuousOn
           _ <;>
       [continuity, continuity, continuity, continuity, continuity, continuity, continuity, skip,
       skip] <;>
     · intro x hx
-      norm_num [hx]
+      -- Porting note: norm_num ignores arguments.
+      simp [hx]
+      norm_num
 #align path.homotopy.continuous_trans_assoc_reparam_aux Path.Homotopy.continuous_transAssocReparamAux
 
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
@@ -207,11 +218,15 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  norm_num [transAssocReparamAux]
+  -- Porting note: norm_num ignores arguments.
+  simp [transAssocReparamAux]
+  norm_num
 #align path.homotopy.trans_assoc_reparam_aux_zero Path.Homotopy.transAssocReparamAux_zero
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
-  norm_num [transAssocReparamAux]
+  -- Porting note: norm_num ignores arguments.
+  simp [transAssocReparamAux]
+  norm_num
 #align path.homotopy.trans_assoc_reparam_aux_one Path.Homotopy.transAssocReparamAux_one
 
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
@@ -321,7 +336,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
     { obj := f
-      map := fun p => p.mapFn f
+      map := fun p => Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
       map_comp := fun x y z p q =>
         Quotient.inductionOn₂ p q fun a b => by
