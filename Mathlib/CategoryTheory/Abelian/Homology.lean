@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.Tactic.RSuffices
+import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 
@@ -360,10 +361,11 @@ noncomputable def homologyFunctorIso (i : ι) :
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
       refine' coequalizer.hom_ext _
       dsimp [homologyIso]
-      simp only [homology.map, ← Category.assoc, cokernel.π_desc]
-      simp only [Category.assoc, cokernelComparison_map_desc, cokernel.π_desc,
-        π_comp_cokernelComparison, ← F.map_comp]
-      rw [π_comp_cokernelComparison]
+      simp only [PreservesCokernel.iso_inv]
+      dsimp [homology.map]
+      simp only [← Category.assoc, cokernel.π_desc]
+      simp only [Category.assoc, cokernelComparison_map_desc, cokernel.π_desc]
+      simp only [π_comp_cokernelComparison, ← F.map_comp]
       erw [← kernelSubobjectIso_comp_kernel_map_assoc]
       simp only [HomologicalComplex.Hom.sqFrom_right, HomologicalComplex.Hom.sqFrom_left,
         F.mapHomologicalComplex_map_f, F.map_comp]
