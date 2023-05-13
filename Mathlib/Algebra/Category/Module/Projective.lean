@@ -63,7 +63,6 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
         Epi :=
           (epi_iff_range_eq_top _).mpr
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by simp [Basis.constr]⟩) }⟩
-            Lean 3 names are usually lowercase. This might be a typo.
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
