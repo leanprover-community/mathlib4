@@ -14,10 +14,10 @@ import Mathlib.ModelTheory.ElementaryMaps
 # Skolem Functions and Downward Löwenheim–Skolem
 
 ## Main Definitions
-* `first_order.language.skolem₁` is a language consisting of Skolem functions for another language.
+* `FirstOrder.Language.skolem₁` is a language consisting of Skolem functions for another language.
 
 ## Main Results
-* `first_order.language.exists_elementary_substructure_card_eq` is the Downward Löwenheim–Skolem
+* `FirstOrder.Language.exists_elementarySubstructure_card_eq` is the Downward Löwenheim–Skolem
   theorem: If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (# s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.
@@ -46,20 +46,21 @@ Called `skolem₁` because it is the first step in building a Skolemization of a
 def skolem₁ : Language :=
   ⟨fun n => L.BoundedFormula Empty (n + 1), fun _ => Empty⟩
 #align first_order.language.skolem₁ FirstOrder.Language.skolem₁
+#align first_order.language.skolem₁_functions FirstOrder.Language.skolem₁_Functions
 
 variable {L}
 
 theorem card_functions_sum_skolem₁ :
-    (#Σn, (L.Sum L.skolem₁).Functions n) = (#Σn, L.BoundedFormula Empty (n + 1)) := by
-  simp only [card_functions_sum, skolem₁_functions, lift_id', mk_sigma, sum_add_distrib']
+    (#Σ n, (L.sum L.skolem₁).Functions n) = (#Σ n, L.BoundedFormula Empty (n + 1)) := by
+  simp only [card_functions_sum, skolem₁_Functions, lift_id', mk_sigma, sum_add_distrib']
   rw [add_comm, add_eq_max, max_eq_left]
+  · rw [← mk_sigma]
+    exact infinite_iff.1 (Infinite.of_injective (fun n => ⟨n, ⊥⟩) fun x y xy => (Sigma.mk.inj xy).1)
   · refine' sum_le_sum _ _ fun n => _
     rw [← lift_le, lift_lift, lift_mk_le]
     refine' ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => _⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
     rfl
-  · rw [← mk_sigma]
-    exact infinite_iff.1 (Infinite.of_injective (fun n => ⟨n, ⊥⟩) fun x y xy => (Sigma.mk.inj xy).1)
 #align first_order.language.card_functions_sum_skolem₁ FirstOrder.Language.card_functions_sum_skolem₁
 
 theorem card_functions_sum_skolem₁_le : (#Σn, (L.Sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
@@ -159,4 +160,3 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
 end Language
 
 end FirstOrder
-
