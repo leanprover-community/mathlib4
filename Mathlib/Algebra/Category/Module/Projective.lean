@@ -8,7 +8,7 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
@@ -26,7 +26,7 @@ open CategoryTheory.Limits
 
 open LinearMap
 
-open ModuleCat
+open Module
 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
@@ -67,4 +67,3 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
 end ModuleCat
-
