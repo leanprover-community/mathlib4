@@ -180,8 +180,7 @@ end
 -- porting note: commenting out redundant binder annotation update
 -- variable {B}
 
-instance homCategory (a b : B) : Category (Hom a b)
-    where
+instance homCategory (a b : B) : Category (Hom a b) where
   Hom f g := Quot (@Rel _ _ _ _ f g)
   id f := Quot.mk Rel (Hom₂.id f)
   comp := @fun f g h => Quot.map₂ Hom₂.vcomp Rel.vcomp_right Rel.vcomp_left
@@ -197,8 +196,7 @@ instance homCategory (a b : B) : Category (Hom a b)
 #align category_theory.free_bicategory.hom_category CategoryTheory.FreeBicategory.homCategory
 
 /-- Bicategory structure on the free bicategory. -/
-instance bicategory : Bicategory (FreeBicategory B)
-    where
+instance bicategory : Bicategory (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
   id  := fun a : B => Hom.id a
   comp := @fun a b c => Hom.comp
@@ -394,8 +392,7 @@ theorem liftHom₂_congr {a b : B} {f g : Hom a b} {η θ : Hom₂ f g} (H : Rel
 `free_bicategory B` to `C`.
 -/
 @[simps]
-def lift : Pseudofunctor (FreeBicategory B) C
-    where
+def lift : Pseudofunctor (FreeBicategory B) C where
   obj := F.obj
   map := liftHom F
   map₂ a b f g := Quot.lift (liftHom₂ F) fun η θ H => liftHom₂_congr F H

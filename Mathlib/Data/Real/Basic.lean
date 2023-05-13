@@ -88,8 +88,7 @@ private irreducible_def neg : ℝ → ℝ
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
--- TODO irreducible_def
-private noncomputable def inv' : ℝ → ℝ
+private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
 instance : Zero ℝ :=
@@ -875,6 +874,12 @@ theorem infₛ_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ 
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
   exacts[infₛ_empty.ge, le_cinfₛ hS₂ hS]
 #align real.Inf_nonneg Real.infₛ_nonneg
+
+/-- As `0` is the default value for `Real.infₛ` of the empty set, it suffices to show that `f i` is
+bounded below by `0` to show that `0 ≤ infᵢ f`.
+-/
+theorem infᵢ_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ infᵢ f :=
+  infₛ_nonneg _ <| Set.forall_range_iff.2 hf
 
 /--
 As `0` is the default value for `Real.infₛ` of the empty set or sets which are not bounded below, it

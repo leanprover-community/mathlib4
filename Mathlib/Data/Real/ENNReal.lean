@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Set.Intervals.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -152,6 +153,9 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
+theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
+theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
+
 /-- `to_nnreal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
@@ -293,6 +297,20 @@ theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
 @[simp] theorem top_ne_ofReal {r : ℝ} : ∞ ≠ ENNReal.ofReal r := top_ne_coe
 #align ennreal.top_ne_of_real ENNReal.top_ne_ofReal
 
+@[simp]
+theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
+  ⟨fun h => by
+    rw [← h]
+    exact ofReal_ne_top, ofReal_toReal⟩
+#align ennreal.of_real_to_real_eq_iff ENNReal.ofReal_toReal_eq_iff
+
+@[simp]
+theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
+  ⟨fun h => by
+    rw [← h]
+    exact toReal_nonneg, toReal_ofReal⟩
+#align ennreal.to_real_of_real_eq_iff ENNReal.toReal_ofReal_eq_iff
+
 @[simp] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
 #align ennreal.zero_ne_top ENNReal.zero_ne_top
 
@@ -316,6 +334,8 @@ theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
 
 theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
+
+theorem coe_strictMono : StrictMono some := fun _ _ => coe_lt_coe.2
 
 @[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_eq_coe
 #align ennreal.coe_eq_zero ENNReal.coe_eq_zero
@@ -674,6 +694,10 @@ theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_coe_nat n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
+@[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ENNReal.toReal (OfNat.ofNat n) = OfNat.ofNat n :=
+  toReal_nat n
+
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 #align ennreal.le_coe_iff ENNReal.le_coe_iff
 
@@ -902,6 +926,9 @@ theorem coe_supₛ {s : Set ℝ≥0} : BddAbove s → (↑(supₛ s) : ℝ≥0�
 theorem coe_infₛ {s : Set ℝ≥0} : s.Nonempty → (↑(infₛ s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
   WithTop.coe_infₛ
 #align ennreal.coe_Inf ENNReal.coe_infₛ
+
+theorem coe_infᵢ {ι} [Nonempty ι] (f : ι → ℝ≥0) : (↑(infᵢ f) : ℝ≥0∞) = ⨅ i, ↑(f i) :=
+  WithTop.coe_infᵢ f
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
@@ -1804,8 +1831,7 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
@@ -1818,8 +1844,7 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
@@ -1920,6 +1945,12 @@ theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 #align ennreal.to_real_mono ENNReal.toReal_mono
 
+-- porting note: new lemma
+theorem toReal_mono' (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.toReal ≤ b.toReal := by
+  rcases eq_or_ne a ∞ with rfl | ha
+  · exact toReal_nonneg
+  · exact toReal_mono (mt ht ha) h
+
 @[simp]
 theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal ↔ a < b := by
   lift a to ℝ≥0 using ha
@@ -1931,9 +1962,26 @@ theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 #align ennreal.to_real_strict_mono ENNReal.toReal_strict_mono
 
-theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal := by
-  simpa [← ENNReal.coe_le_coe, hb, ne_top_of_le_ne_top hb h]
+theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
+  toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
+
+-- porting note: new lemma
+/-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
+    a.toReal ≤ b.toReal + c.toReal := by
+  refine le_trans (toReal_mono' hle ?_) toReal_add_le
+  simpa only [add_eq_top, or_imp] using And.intro hb hc
+
+-- porting note: new lemma
+/-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+    a.toReal ≤ b.toReal + c.toReal :=
+  toReal_le_add' hle (flip absurd hb) (flip absurd hc)
 
 @[simp]
 theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ b.toNNReal ↔ a ≤ b :=
@@ -2251,6 +2299,15 @@ section infᵢ
 
 variable {ι : Sort _} {f g : ι → ℝ≥0∞}
 
+theorem toNNReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toNNReal = ⨅ i, (f i).toNNReal := by
+  cases isEmpty_or_nonempty ι
+  · rw [infᵢ_of_empty, top_toNNReal, NNReal.infᵢ_empty]
+  · lift f to ι → ℝ≥0 using hf
+    simp only [← coe_infᵢ, toNNReal_coe]
+
+theorem toReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toReal = ⨅ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_infᵢ hf, NNReal.coe_infᵢ]
+
 theorem infᵢ_add : infᵢ f + a = ⨅ i, f i + a :=
   le_antisymm (le_infᵢ fun _ => add_le_add (infᵢ_le _ _) <| le_rfl)
     (tsub_le_iff_right.1 <| le_infᵢ fun _ => tsub_le_iff_right.2 <| infᵢ_le _ _)
@@ -2325,7 +2382,7 @@ theorem mul_infᵢ_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x �
     x * infᵢ f = ⨅ i, x * f i := by simpa only [mul_comm] using infᵢ_mul_of_ne h0 h
 #align ennreal.mul_infi_of_ne ENNReal.mul_infᵢ_of_ne
 
-/-! `supr_mul`, `mul_supr` and variants are in `topology.instances.ennreal`. -/
+/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
 
 end infᵢ
 

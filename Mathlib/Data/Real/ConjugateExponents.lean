@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.conjugate_exponents
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -73,8 +73,8 @@ theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
 theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
-  rw [← eq_sub_iff_add_eq', one_div, inv_eq_iff_inv_eq] at this
-  field_simp [← this, h.ne_zero]
+  rw [← eq_sub_iff_add_eq', one_div, inv_eq_iff_eq_inv] at this
+  field_simp [this, h.ne_zero]
 #align real.is_conjugate_exponent.conj_eq Real.IsConjugateExponent.conj_eq
 
 theorem conjugate_eq : conjugateExponent p = q := h.conj_eq.symm
@@ -101,15 +101,15 @@ theorem div_conj_eq_sub_one : p / q = p - 1 := by
   rw [h.sub_one_mul_conj]
 #align real.is_conjugate_exponent.div_conj_eq_sub_one Real.IsConjugateExponent.div_conj_eq_sub_one
 
-theorem one_lt_nNReal : 1 < Real.toNNReal p := by
+theorem one_lt_nnreal : 1 < Real.toNNReal p := by
   rw [← Real.toNNReal_one, Real.toNNReal_lt_toNNReal_iff h.pos]
   exact h.one_lt
-#align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nNReal
+#align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nnreal
 
-theorem inv_add_inv_conj_nNReal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
+theorem inv_add_inv_conj_nnreal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
   rw [← Real.toNNReal_one, ← Real.toNNReal_div' h.nonneg, ← Real.toNNReal_div' h.symm.nonneg,
       ← Real.toNNReal_add h.one_div_nonneg h.symm.one_div_nonneg, h.inv_add_inv_conj]
-#align real.is_conjugate_exponent.inv_add_inv_conj_nnreal Real.IsConjugateExponent.inv_add_inv_conj_nNReal
+#align real.is_conjugate_exponent.inv_add_inv_conj_nnreal Real.IsConjugateExponent.inv_add_inv_conj_nnreal
 
 theorem inv_add_inv_conj_ennreal : 1 / ENNReal.ofReal p + 1 / ENNReal.ofReal q = 1 := by
   rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_div_of_pos h.pos,
@@ -134,4 +134,3 @@ theorem isConjugateExponent_one_div {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hab :
 #align real.is_conjugate_exponent_one_div Real.isConjugateExponent_one_div
 
 end Real
-

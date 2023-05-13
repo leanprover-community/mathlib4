@@ -711,3 +711,6 @@ by create_polyrith_test
 -- example (a : ℕ) : a = 0 := by
 --   have := True.intro
 --   polyrith -- polyrith did not find any relevant hypotheses and the goal is not provable by ring
+
+-- example (y a : ℤ) (k : ℕ) (h : a ^ k = 0) : a ^ k * y = 0 := by
+--   polyrith

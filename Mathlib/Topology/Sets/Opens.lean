@@ -331,7 +331,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_unionᵢ {ι : Type _} (b : ι → 
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_unionᵢ_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert hb
+  · convert (config := {transparency := .default}) hb
     ext
     simp
   · exact hb'

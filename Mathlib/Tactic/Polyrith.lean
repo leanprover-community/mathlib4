@@ -141,7 +141,9 @@ partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | ~q(($a : ℕ) • ($b : «$α»)) => pure <| (← parse sℕ .nat a).mul (← parse sα c b)
     | _ => els
   | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
-    | ~q($a ^ $b) => pure <| (← parse sα c a).pow (← parse sℕ .nat b)
+    | ~q($a ^ $b) =>
+      try pure <| (← parse sα c a).pow (.const (← (← NormNum.derive (u := .zero) b).toRat))
+      catch _ => els
     | _ => els
   | ``Neg.neg, some _ => match e with
     | ~q(-$a) => pure <| (← parse sα c a).neg
@@ -162,10 +164,11 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
-  let .sort (.succ u) ← whnf (← inferType α) | fail
-  have α : Q(Type u) := α
+  let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
+  let some v := u.dec | throwError "not a type{indentExpr α}"
+  have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec

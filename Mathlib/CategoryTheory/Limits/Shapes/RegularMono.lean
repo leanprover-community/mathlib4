@@ -71,8 +71,7 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
   right := h
   w := equalizer.condition g h
   isLimit :=
-    Fork.IsLimit.mk _ (fun s => limit.lift _ s) (by simp) fun s m w =>
-      by
+    Fork.IsLimit.mk _ (fun s => limit.lift _ s) (by simp) fun s m w => by
       apply equalizer.hom_ext
       simp [← w]
 #align category_theory.equalizer_regular CategoryTheory.equalizerRegular
@@ -106,8 +105,8 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   Z := hr.Z
   left := k ≫ hr.left
   right := k ≫ hr.right
-  w := by 
-    repeat (rw [← Category.assoc, ← eq_whisker comm]) 
+  w := by
+    repeat (rw [← Category.assoc, ← eq_whisker comm])
     simp only [Category.assoc, hr.w]
   isLimit := by
     apply Fork.IsLimit.mk' _ _
@@ -173,14 +172,14 @@ def regularMonoOfMono [RegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMo
 #align category_theory.regular_mono_of_mono CategoryTheory.regularMonoOfMono
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
-    RegularMonoCategory C where 
+    RegularMonoCategory C where
   regularMonoOfMono f _ := by
     haveI := isSplitMono_of_mono f
     infer_instance
 #align category_theory.regular_mono_category_of_split_mono_category CategoryTheory.regularMonoCategoryOfSplitMonoCategory
 
 instance (priority := 100) strongMonoCategory_of_regularMonoCategory [RegularMonoCategory C] :
-    StrongMonoCategory C where 
+    StrongMonoCategory C where
   strongMono_of_mono f _ := by
     haveI := regularMonoOfMono f
     infer_instance
@@ -279,8 +278,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
   StrongEpi.mk'
     (by
       intro A B z hz u v sq
-      have : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ u = RegularEpi.right ≫ u :=
-        by
+      have : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ u = RegularEpi.right ≫ u := by
         apply (cancel_mono z).1
         simp only [Category.assoc, sq.w, RegularEpi.w_assoc]
       obtain ⟨t, ht⟩ := RegularEpi.desc' f u this
@@ -315,9 +313,8 @@ def regularEpiOfEpi [RegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f 
 #align category_theory.regular_epi_of_epi CategoryTheory.regularEpiOfEpi
 
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
-    RegularEpiCategory C where 
-  regularEpiOfEpi f _ :=
-    by
+    RegularEpiCategory C where
+  regularEpiOfEpi f _ := by
     haveI := isSplitEpi_of_epi f
     infer_instance
 #align category_theory.regular_epi_category_of_split_epi_category CategoryTheory.regularEpiCategoryOfSplitEpiCategory
@@ -330,4 +327,3 @@ instance (priority := 100) strongEpiCategory_of_regularEpiCategory [RegularEpiCa
 #align category_theory.strong_epi_category_of_regular_epi_category CategoryTheory.strongEpiCategory_of_regularEpiCategory
 
 end CategoryTheory
-

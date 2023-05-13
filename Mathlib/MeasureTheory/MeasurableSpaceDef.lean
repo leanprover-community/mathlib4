@@ -11,6 +11,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.Measurability
 
 /-!
 # Measurable spaces and measurable functions
@@ -27,10 +28,6 @@ measurable subset is measurable.
 also `m₂`-measurable (that is, `m₁` is a subset of `m₂`). In particular, any
 collection of subsets of `α` generates a smallest σ-algebra which
 contains all of them.
-
-Do not add measurability lemmas (which could be tagged with
-@[measurability]) to this file, since the measurability tactic is downstream
-from here. Use `Mathlib.MeasureTheory.MeasurableSpace` instead.
 
 ## References
 
@@ -82,13 +79,14 @@ open MeasureTheory
 
 section
 
-@[simp]
+@[simp, measurability]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
   MeasurableSpace.measurableSet_empty _
 #align measurable_set.empty MeasurableSet.empty
 
 variable {m : MeasurableSpace α}
 
+@[measurability]
 protected theorem MeasurableSet.compl : MeasurableSet s → MeasurableSet (sᶜ) :=
   MeasurableSpace.measurableSet_compl _ s
 #align measurable_set.compl MeasurableSet.compl
@@ -102,12 +100,12 @@ theorem MeasurableSet.compl_iff : MeasurableSet (sᶜ) ↔ MeasurableSet s :=
   ⟨.of_compl, .compl⟩
 #align measurable_set.compl_iff MeasurableSet.compl_iff
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.univ : MeasurableSet (univ : Set α) :=
   .of_compl <| by simp
 #align measurable_set.univ MeasurableSet.univ
 
-@[nontriviality]
+@[nontriviality, measurability]
 theorem Subsingleton.measurableSet [Subsingleton α] {s : Set α} : MeasurableSet s :=
   Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align subsingleton.measurable_set Subsingleton.measurableSet
@@ -116,6 +114,7 @@ theorem MeasurableSet.congr {s t : Set α} (hs : MeasurableSet s) (h : s = t) : 
   rwa [← h]
 #align measurable_set.congr MeasurableSet.congr
 
+@[measurability]
 protected theorem MeasurableSet.unionᵢ [Countable ι] ⦃f : ι → Set α⦄
     (h : ∀ b, MeasurableSet (f b)) : MeasurableSet (⋃ b, f b) := by
   cases isEmpty_or_nonempty ι
@@ -159,6 +158,7 @@ theorem Set.Finite.measurableSet_unionₛ {s : Set (Set α)} (hs : s.Finite)
   MeasurableSet.unionₛ hs.countable h
 #align set.finite.measurable_set_sUnion Set.Finite.measurableSet_unionₛ
 
+@[measurability]
 theorem MeasurableSet.interᵢ [Countable ι] {f : ι → Set α} (h : ∀ b, MeasurableSet (f b)) :
     MeasurableSet (⋂ b, f b) :=
   .of_compl <| by rw [compl_interᵢ]; exact .unionᵢ fun b => (h b).compl
@@ -190,33 +190,33 @@ theorem Set.Finite.measurableSet_interₛ {s : Set (Set α)} (hs : s.Finite)
   MeasurableSet.interₛ hs.countable h
 #align set.finite.measurable_set_sInter Set.Finite.measurableSet_interₛ
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.union {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₂) := by
   rw [union_eq_unionᵢ]
   exact .unionᵢ (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 #align measurable_set.union MeasurableSet.union
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.inter {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∩ s₂) := by
   rw [inter_eq_compl_compl_union_compl]
   exact (h₁.compl.union h₂.compl).compl
 #align measurable_set.inter MeasurableSet.inter
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.diff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ \ s₂) :=
   h₁.inter h₂.compl
 #align measurable_set.diff MeasurableSet.diff
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.symmDiff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∆ s₂) :=
   (h₁.diff h₂).union (h₂.diff h₁)
 #align measurable_set.symm_diff MeasurableSet.symmDiff
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t)
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
@@ -228,14 +228,14 @@ theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s
   exacts[hs h, ht h]
 #align measurable_set.ite' MeasurableSet.ite'
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
   cases i
   exacts[h₂, h₁]
 #align measurable_set.cond MeasurableSet.cond
 
-@[simp]
+@[simp, measurability]
 protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
@@ -284,9 +284,11 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
+@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 #align measurable_set_eq measurableSet_eq
 
+@[measurability]
 protected theorem MeasurableSet.insert {s : Set α} (hs : MeasurableSet s) (a : α) :
     MeasurableSet (insert a s) :=
   .union (.singleton a) hs
@@ -308,6 +310,7 @@ theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s 
   Finite.induction_on hs MeasurableSet.empty fun _ _ hsm => hsm.insert _
 #align set.finite.measurable_set Set.Finite.measurableSet
 
+@[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
   s.finite_toSet.measurableSet
 #align finset.measurable_set Finset.measurableSet
@@ -470,7 +473,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
   this ▸ Iff.rfl
 #align measurable_space.measurable_set_bot_iff MeasurableSpace.measurableSet_bot_iff
 
-@[simp] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
+@[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
 @[simp, nolint simpNF] -- porting note: todo: `simpNF` claims that this lemma doesn't simplify LHS
@@ -539,9 +542,11 @@ end MeasureTheory
 
 section MeasurableFunctions
 
+@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 #align measurable_id measurable_id
 
+@[measurability]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 #align measurable_id' measurable_id'
 
@@ -551,7 +556,13 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
   fun _ h => hf (hg h)
 #align measurable.comp Measurable.comp
 
-@[simp]
+-- This is needed due to reducibility issues with the `measurability` tactic.
+@[measurability]
+protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
+    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+
+@[simp, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 #align measurable_const measurable_const

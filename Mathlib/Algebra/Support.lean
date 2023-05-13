@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.support
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -89,7 +89,6 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
   simp (config := { contextual := true }) only [ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
-
 #align function.mul_support_eq_iff Function.mulSupport_eq_iff
 #align function.support_eq_iff Function.support_eq_iff
 
@@ -121,8 +120,8 @@ theorem mulSupport_nonempty_iff {f : α → M} : (mulSupport f).Nonempty ↔ f �
 #align function.support_nonempty_iff Function.support_nonempty_iff
 
 @[to_additive]
-theorem range_subset_insert_image_mulSupport (f : α → M) : range f ⊆ insert 1 (f '' mulSupport f) :=
-  by
+theorem range_subset_insert_image_mulSupport (f : α → M) :
+    range f ⊆ insert 1 (f '' mulSupport f) := by
   simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using
     fun x (hx : x ∈ mulSupport f) => mem_image_of_mem f hx
 #align function.range_subset_insert_image_mul_support Function.range_subset_insert_image_mulSupport
@@ -301,6 +300,50 @@ theorem mulSupport_div : (mulSupport fun x => f x / g x) ⊆ mulSupport f ∪ mu
 #align function.support_sub Function.support_sub
 
 end DivisionMonoid
+
+section ZeroOne
+
+variable (R) [Zero R] [One R] [NeZero (1 : R)]
+
+@[simp]
+theorem support_one : support (1 : α → R) = univ :=
+  support_const one_ne_zero
+#align function.support_one Function.support_one
+
+@[simp]
+theorem mulSupport_zero : mulSupport (0 : α → R) = univ :=
+  mulSupport_const zero_ne_one
+#align function.mul_support_zero Function.mulSupport_zero
+
+end ZeroOne
+
+section AddMonoidWithOne
+
+variable [AddMonoidWithOne R] [CharZero R] {n : ℕ}
+
+theorem support_nat_cast (hn : n ≠ 0) : support (n : α → R) = univ :=
+  support_const <| Nat.cast_ne_zero.2 hn
+#align function.support_nat_cast Function.support_nat_cast
+
+theorem mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → R) = univ :=
+  mulSupport_const <| Nat.cast_ne_one.2 hn
+#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+
+end AddMonoidWithOne
+
+section AddGroupWithOne
+
+variable [AddGroupWithOne R] [CharZero R] {n : ℤ}
+
+theorem support_int_cast (hn : n ≠ 0) : support (n : α → R) = univ :=
+  support_const <| Int.cast_ne_zero.2 hn
+#align function.support_int_cast Function.support_int_cast
+
+theorem mulSupport_int_cast (hn : n ≠ 1) : mulSupport (n : α → R) = univ :=
+  mulSupport_const <| Int.cast_ne_one.2 hn
+#align function.mul_support_int_cast Function.mulSupport_int_cast
+
+end AddGroupWithOne
 
 theorem support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module algebra.star.prod
-! leanprover-community/mathlib commit 247a102b14f3cebfee126293341af5f6bed00237
+! leanprover-community/mathlib commit 9abfa6f0727d5adc99067e325e15d1a9de17fd8e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -40,6 +40,9 @@ theorem snd_star [Star R] [Star S] (x : R × S) : (star x).2 = star x.2 :=
 theorem star_def [Star R] [Star S] (x : R × S) : star x = (star x.1, star x.2) :=
   rfl
 #align prod.star_def Prod.star_def
+
+instance [Star R] [Star S] [TrivialStar R] [TrivialStar S] : TrivialStar (R × S)
+    where star_trivial _ := Prod.ext (star_trivial _) (star_trivial _)
 
 instance [InvolutiveStar R] [InvolutiveStar S] : InvolutiveStar (R × S)
     where star_involutive _ := Prod.ext (star_star _) (star_star _)

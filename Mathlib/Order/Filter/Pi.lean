@@ -43,7 +43,6 @@ def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
 instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
     IsCountablyGenerated (pi f) :=
   infᵢ.isCountablyGenerated _
-
 #align filter.pi.is_countably_generated Filter.pi.isCountablyGenerated
 
 theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
@@ -115,8 +114,8 @@ theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : �
 #align filter.has_basis_pi Filter.hasBasis_pi
 
 @[simp]
-theorem pi_inf_principal_univ_pi_eq_bot : pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ :=
-  by
+theorem pi_inf_principal_univ_pi_eq_bot :
+    pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ := by
   constructor
   · simp only [inf_principal_eq_bot, mem_pi]
     contrapose!

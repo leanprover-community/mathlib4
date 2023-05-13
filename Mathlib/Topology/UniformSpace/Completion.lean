@@ -117,18 +117,17 @@ private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
 
 private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) ≤ (𝓤 α).lift' gen :=
   calc
-    (((𝓤 α).lift' gen).lift' fun s => compRel s s) = (𝓤 α).lift' fun s => compRel (gen s) (gen s) :=
-      by
-        rw [lift'_lift'_assoc]
-        . exact monotone_gen
-        . exact monotone_id.compRel monotone_id
+    (((𝓤 α).lift' gen).lift' fun s => compRel s s) =
+        (𝓤 α).lift' fun s => compRel (gen s) (gen s) := by
+      rw [lift'_lift'_assoc]
+      · exact monotone_gen
+      · exact monotone_id.compRel monotone_id
     _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
       lift'_mono' fun s _hs => compRel_gen_gen_subset_gen_compRel
-    _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen :=
-      by
-        rw [lift'_lift'_assoc]
-        . exact monotone_id.compRel monotone_id
-        . exact monotone_gen
+    _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
+      rw [lift'_lift'_assoc]
+      · exact monotone_id.compRel monotone_id
+      · exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
 instance : UniformSpace (CauchyFilter α) :=
@@ -546,6 +545,7 @@ theorem uniformContinuous_extension : UniformContinuous (Completion.extension f)
   cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
+@[continuity]
 theorem continuous_extension : Continuous (Completion.extension f) :=
   cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension
@@ -588,6 +588,7 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 #align uniform_space.completion.uniform_continuous_map UniformSpace.Completion.uniformContinuous_map
 
+@[continuity]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map

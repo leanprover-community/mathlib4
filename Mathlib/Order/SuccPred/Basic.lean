@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.succ_pred.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -425,15 +425,15 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   · exact ⟨le_succ a, le_rfl⟩
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
-theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
+theorem _root_.Covby.succ_eq (h : a ⋖ b) : succ a = b :=
   (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
-#align covby.succ_eq Order.Covby.succ_eq
+#align covby.succ_eq Covby.succ_eq
 
-theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
+theorem _root_.Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.succ_eq h).ge
   · exact le_succ _
-#align wcovby.le_succ Order.Wcovby.le_succ
+#align wcovby.le_succ Wcovby.le_succ
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
@@ -781,15 +781,15 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem _root_.Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
-#align covby.pred_eq Order.Covby.pred_eq
+#align covby.pred_eq Covby.pred_eq
 
-theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem _root_.Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.pred_eq h).le
   · exact pred_le _
-#align wcovby.pred_le Order.Wcovby.pred_le
+#align wcovby.pred_le Wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -1105,6 +1105,14 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
   rfl
 #align with_top.pred_coe WithTop.pred_coe
 
+@[simp]
+theorem pred_untop :
+    ∀ (a : WithTop α) (ha : a ≠ ⊤),
+      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+  | ⊤, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_top.pred_untop WithTop.pred_untop
+
 end Pred
 
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
@@ -1207,6 +1215,14 @@ theorem succ_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) :=
 theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
   rfl
 #align with_bot.succ_coe WithBot.succ_coe
+
+@[simp]
+theorem succ_unbot :
+    ∀ (a : WithBot α) (ha : a ≠ ⊥),
+      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+  | ⊥, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_bot.succ_unbot WithBot.succ_unbot
 
 end Succ
 

@@ -115,7 +115,8 @@ theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f 
   rfl
 #align is_free_group.lift_symm_apply IsFreeGroup.lift_symm_apply
 
-@[ext]
+@[ext 1050] --Porting note: increased priority, but deliberately less than for example
+--`FreeProduct.ext_hom`
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom

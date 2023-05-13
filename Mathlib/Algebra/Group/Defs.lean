@@ -63,6 +63,10 @@ class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hSMul : α → β → γ
 
+attribute [notation_class  smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
+attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
+
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type _) (P : Type _) where
   vadd : G → P → P
@@ -84,23 +88,23 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1) SMul] Pow
-attribute [to_additive (reorder := 1)] HPow
-attribute [to_additive existing (reorder := 1 5) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 4) smul] Pow.pow
+attribute [to_additive (reorder := 1 2) SMul] Pow
+attribute [to_additive (reorder := 1 2)] HPow
+attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-attribute [to_additive existing (reorder := 1)] instHPow
+attribute [to_additive existing (reorder := 1 2)] instHPow
 
 universe u
 
 variable {G : Type _}
 
 /-- Class of types that have an inversion operation. -/
-@[to_additive]
+@[to_additive, notation_class]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
@@ -1175,3 +1179,42 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
+
+/-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
+files.
+
+Note: the lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
+argument order of these projections doesn't match the argument order of `^`.
+The `nsmul`/`zsmul` lemmas will be correct. -/
+initialize_simps_projections Semigroup
+initialize_simps_projections AddSemigroup
+initialize_simps_projections CommSemigroup
+initialize_simps_projections AddCommSemigroup
+initialize_simps_projections LeftCancelSemigroup
+initialize_simps_projections AddLeftCancelSemigroup
+initialize_simps_projections RightCancelSemigroup
+initialize_simps_projections AddRightCancelSemigroup
+initialize_simps_projections Monoid
+initialize_simps_projections AddMonoid
+initialize_simps_projections CommMonoid
+initialize_simps_projections AddCommMonoid
+initialize_simps_projections LeftCancelMonoid
+initialize_simps_projections AddLeftCancelMonoid
+initialize_simps_projections RightCancelMonoid
+initialize_simps_projections AddRightCancelMonoid
+initialize_simps_projections CancelMonoid
+initialize_simps_projections AddCancelMonoid
+initialize_simps_projections CancelCommMonoid
+initialize_simps_projections AddCancelCommMonoid
+initialize_simps_projections DivInvMonoid
+initialize_simps_projections SubNegMonoid
+initialize_simps_projections DivInvOneMonoid
+initialize_simps_projections SubNegZeroMonoid
+initialize_simps_projections DivisionMonoid
+initialize_simps_projections SubtractionMonoid
+initialize_simps_projections DivisionCommMonoid
+initialize_simps_projections SubtractionCommMonoid
+initialize_simps_projections Group
+initialize_simps_projections AddGroup
+initialize_simps_projections CommGroup
+initialize_simps_projections AddCommGroup

@@ -241,7 +241,6 @@ theorem SetIndependent.disjoint_supₛ {x : α} {y : Set α} (hx : x ∈ s) (hy 
 -- Porting note: needed to use `_H`
 def Independent {ι : Sort _} {α : Type _} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j)
-
 #align complete_lattice.independent CompleteLattice.Independent
 
 theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :

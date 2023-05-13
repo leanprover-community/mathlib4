@@ -27,7 +27,7 @@ If the binary product of `X` with a strict initial object exists, it is also ini
 
 To show a category `C` with an initial object has strict initial objects, the most convenient way
 is to show any morphism to the (chosen) initial object is an isomorphism and use
-`has_strict_initial_objects_of_initial_is_strict`.
+`hasStrictInitialObjects_of_initial_is_strict`.
 
 The dual notion (strict terminal objects) occurs much less frequently in practice so is ignored.
 
@@ -84,16 +84,15 @@ theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A �
   ⟨hI.strict_hom_ext⟩
 #align category_theory.limits.is_initial.subsingleton_to CategoryTheory.Limits.IsInitial.subsingleton_to
 
-instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C
-    where isInitial_mono_from := fun _ hI =>
-    { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
+instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
+  isInitial_mono_from := fun _ hI => { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
 #align category_theory.limits.initial_mono_of_strict_initial_objects CategoryTheory.Limits.initial_mono_of_strict_initial_objects
 
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I := by
-   have := hI.isIso_to (prod.snd : X ⨯ I ⟶ I)
-   exact asIso prod.snd
+  have := hI.isIso_to (prod.snd : X ⨯ I ⟶ I)
+  exact asIso prod.snd
 #align category_theory.limits.mul_is_initial CategoryTheory.Limits.mulIsInitial
 
 @[simp]
@@ -164,7 +163,7 @@ end
 has strict initial objects. -/
 theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
     (h : ∀ (A) (f : A ⟶ ⊥_ C), IsIso f) : HasStrictInitialObjects C :=
-  { out := @fun I A f hI =>
+  { out := fun {I A} f hI =>
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 #align category_theory.limits.has_strict_initial_objects_of_initial_is_strict CategoryTheory.Limits.hasStrictInitialObjects_of_initial_is_strict
@@ -211,14 +210,9 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by
   classical
     refine' ⟨⟨limit.lift _ ⟨_, ⟨_, _⟩⟩, _, _⟩⟩
-    ·
-      exact fun j =>
+    · exact fun j =>
         dite (j = i)
-          (fun h =>
-            eqToHom
-              (by
-                cases h
-                rfl))
+          (fun h => eqToHom (by cases h; rfl))
           fun h => (H _ h).from _
     · intro j k f
       split_ifs with h h_1 h_1
@@ -267,7 +261,7 @@ end
 has strict terminal objects. -/
 theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f : I ⟶ A), IsIso f) :
     HasStrictTerminalObjects C :=
-  { out := @fun I' A f hI' =>
+  { out := fun {I' A} f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
 #align category_theory.limits.has_strict_terminal_objects_of_terminal_is_strict CategoryTheory.Limits.hasStrictTerminalObjects_of_terminal_is_strict

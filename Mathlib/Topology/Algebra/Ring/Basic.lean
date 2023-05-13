@@ -95,7 +95,8 @@ variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 
 namespace Subsemiring
 
-instance (S : Subsemiring α) : TopologicalSemiring S :=
+-- Porting note: named instance because generated name was huge
+instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 end Subsemiring

@@ -111,12 +111,12 @@ noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α]
     CompleteDistribLattice α :=
   { toCompleteLattice α with
     infᵢ_sup_le_sup_infₛ := fun a s => by
-      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
+      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
       rw [Finset.inf_eq_infᵢ]
       simp_rw [Set.mem_toFinset]
       rfl
     inf_supₛ_le_supᵢ_inf := fun a s => by
-      convert (Finset.sup_inf_distrib_left s.toFinset id a).le
+      convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
       rw [Finset.sup_eq_supᵢ]
       simp_rw [Set.mem_toFinset]
       rfl }
@@ -137,12 +137,12 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
   { Fintype.toCompleteLattice α,
     ‹BooleanAlgebra α› with
     infᵢ_sup_le_sup_infₛ := fun a s => by
-      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
+      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
       rw [Finset.inf_eq_infᵢ]
       simp_rw [Set.mem_toFinset]
       rfl
     inf_supₛ_le_supᵢ_inf := fun a s => by
-      convert (Finset.sup_inf_distrib_left s.toFinset id a).le
+      convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
       rw [Finset.sup_eq_supᵢ]
       simp_rw [Set.mem_toFinset]
       rfl }

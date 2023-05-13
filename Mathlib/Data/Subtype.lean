@@ -59,8 +59,8 @@ protected theorem «exists» {q : { a // p a } → Prop} : (∃ x, q x) ↔ ∃ 
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 #align subtype.exists Subtype.exists
 
-/-- An alternative version of `subtype.exists`. This one is useful if Lean cannot figure out `q`
-  when using `subtype.exists` from right to left. -/
+/-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
+  when using `Subtype.exists` from right to left. -/
 protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
   (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
 #align subtype.exists' Subtype.exists'

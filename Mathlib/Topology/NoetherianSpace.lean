@@ -86,23 +86,22 @@ instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace
 
 variable (α)
 
-example (α : Type _) : Set α ≃o (Set α)ᵒᵈ := by refine' OrderIso.compl (Set α)
-
 open List in
 theorem noetherianSpace_TFAE :
     TFAE [NoetherianSpace α,
       WellFounded fun s t : Closeds α => s < t,
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
-  have h12 : NoetherianSpace α ↔ WellFounded fun s t : Closeds α => s < t
+  tfae_have 1 ↔ 2
   · refine' (noetherianSpace_iff α).trans (Surjective.wellFounded_iff Opens.compl_bijective.2 _)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
-  rw [← h12]
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
-  · exact id
+  tfae_have 1 ↔ 4
+  · exact noetherianSpace_iff_opens α
+  tfae_have 1 → 3
   · exact @NoetherianSpace.isCompact α _
+  tfae_have 3 → 4
   · exact fun h s => h s
-  · exact (noetherianSpace_iff_opens α).2
+  tfae_finish
 #align topological_space.noetherian_space_tfae TopologicalSpace.noetherianSpace_TFAE
 
 variable {α}

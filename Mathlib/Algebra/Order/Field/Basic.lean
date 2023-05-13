@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit 5a82b0671532663333e205f422124a98bdfe673f
+! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -511,21 +511,24 @@ theorem one_half_pos : (0 : α) < 1 / 2 :=
   half_pos zero_lt_one
 #align one_half_pos one_half_pos
 
-theorem div_two_lt_of_pos (h : 0 < a) : a / 2 < a := by
-  rw [div_lt_iff (zero_lt_two' α)]
-  exact lt_mul_of_one_lt_right h one_lt_two
-#align div_two_lt_of_pos div_two_lt_of_pos
+@[simp]
+theorem half_le_self_iff : a / 2 ≤ a ↔ 0 ≤ a := by
+  rw [div_le_iff (zero_lt_two' α), mul_two, le_add_iff_nonneg_left]
+#align half_le_self_iff half_le_self_iff
 
-theorem half_lt_self : 0 < a → a / 2 < a :=
-  div_two_lt_of_pos
+@[simp]
+theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
+  rw [div_lt_iff (zero_lt_two' α), mul_two, lt_add_iff_pos_left]
+#align half_lt_self_iff half_lt_self_iff
+
+alias half_le_self_iff ↔ _ half_le_self
+#align half_le_self half_le_self
+
+alias half_lt_self_iff ↔ _ half_lt_self
 #align half_lt_self half_lt_self
 
-theorem half_le_self (ha_nonneg : 0 ≤ a) : a / 2 ≤ a := by
-  by_cases h0 : a = 0
-  · simp [h0]
-  · rw [← Ne.def] at h0
-    exact (half_lt_self (lt_of_le_of_ne ha_nonneg h0.symm)).le
-#align half_le_self half_le_self
+alias half_lt_self ← div_two_lt_of_pos
+#align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
   half_lt_self zero_lt_one
@@ -581,7 +584,7 @@ theorem StrictMono.div_const {β : Type _} [Preorder β] {f : β → α} (hf : S
 #align strict_mono.div_const StrictMono.div_const
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.toDenselyOrdered : DenselyOrdered α where
+instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrdered α where
   dense a₁ a₂ h :=
     ⟨(a₁ + a₂) / 2,
       calc
@@ -592,7 +595,7 @@ instance (priority := 100) LinearOrderedField.toDenselyOrdered : DenselyOrdered 
         (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_lt zero_lt_two (add_lt_add_right h _)
         _ = a₂ := add_self_div_two a₂
         ⟩
-#align linear_ordered_field.to_densely_ordered LinearOrderedField.toDenselyOrdered
+#align linear_ordered_field.to_densely_ordered LinearOrderedSemiField.toDenselyOrdered
 
 theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
   Eq.symm <| Monotone.map_min fun _ _ => div_le_div_of_le hc
@@ -630,11 +633,11 @@ theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fu
 #align inv_strict_anti_on inv_strictAntiOn
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
-  convert one_div_pow_le_one_div_pow_of_le a1 mn <;> simp
+  convert one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
 #align inv_pow_le_inv_pow_of_le inv_pow_le_inv_pow_of_le
 
 theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)⁻¹ < (a ^ m)⁻¹ := by
-  convert one_div_pow_lt_one_div_pow_of_lt a1 mn <;> simp
+  convert one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
 #align inv_pow_lt_inv_pow_of_lt inv_pow_lt_inv_pow_of_lt
 
 theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
@@ -741,6 +744,10 @@ theorem lt_div_iff_of_neg (hc : c < 0) : a < b / c ↔ b < a * c :=
 theorem lt_div_iff_of_neg' (hc : c < 0) : a < b / c ↔ b < c * a := by
   rw [mul_comm, lt_div_iff_of_neg hc]
 #align lt_div_iff_of_neg' lt_div_iff_of_neg'
+
+theorem div_le_one_of_ge (h : b ≤ a) (hb : b ≤ 0) : a / b ≤ 1 := by
+  simpa only [neg_div_neg_eq] using div_le_one_of_le (neg_le_neg h) (neg_nonneg_of_nonpos hb)
+#align div_le_one_of_ge div_le_one_of_ge
 
 /-! ### Bi-implications of inequalities using inversions -/
 
@@ -915,7 +922,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- move `1 / a` to the left and `2⁻¹` to the right.
   rw [le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
-  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
+  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ←two_mul, mul_inv_cancel two_ne_zero]
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
@@ -996,12 +1003,5 @@ theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
 
 theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 #align abs_one_div abs_one_div
-
-theorem pow_minus_two_nonneg : 0 ≤ a ^ (-2 : ℤ) := by
-  simp only [inv_nonneg, zpow_neg]
-  change 0 ≤ a ^ ((2 : ℕ) : ℤ)
-  rw [zpow_ofNat]
-  apply sq_nonneg
-#align pow_minus_two_nonneg pow_minus_two_nonneg
 
 end

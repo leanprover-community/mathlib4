@@ -60,7 +60,7 @@ theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
 theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
   rw [← isOpen_compl_iff]
-  convert ultrafilter_isOpen_basic (sᶜ)
+  convert ultrafilter_isOpen_basic (sᶜ) using 1
   ext u
   exact Ultrafilter.compl_mem_iff_not_mem.symm
 #align ultrafilter_is_closed_basic ultrafilter_isClosed_basic
@@ -196,8 +196,7 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
   unique limit of the ultrafilter `b.map f` in `γ`. -/
 theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} :
     Ultrafilter.extend f b = c ↔ ↑(b.map f) ≤ 𝓝 c :=
-  ⟨fun h =>
-    by
+  ⟨fun h => by
     -- Write b as an ultrafilter limit of pure ultrafilters, and use
     -- the facts that ultrafilter.extend is a continuous extension of f.
     let b' : Ultrafilter (Ultrafilter α) := b.map pure
@@ -304,8 +303,7 @@ theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x)
 #align convergent_eqv_pure convergent_eqv_pure
 
 theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech α) :=
-  continuous_iff_ultrafilter.mpr fun x g gx =>
-    by
+  continuous_iff_ultrafilter.mpr fun x g gx => by
     have : (g.map pure).toFilter ≤ 𝓝 g := by
       rw [ultrafilter_converges_iff]
       exact (bind_pure _).symm

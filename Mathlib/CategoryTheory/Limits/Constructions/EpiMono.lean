@@ -41,7 +41,7 @@ theorem preserves_mono_of_preservesLimit {X Y : C} (f : X ⟶ Y) [PreservesLimit
 #align category_theory.preserves_mono_of_preserves_limit CategoryTheory.preserves_mono_of_preservesLimit
 
 instance (priority := 100) preservesMonomorphisms_of_preservesLimitsOfShape
-    [PreservesLimitsOfShape WalkingCospan F] : F.PreservesMonomorphisms where 
+    [PreservesLimitsOfShape WalkingCospan F] : F.PreservesMonomorphisms where
   preserves f _ := preserves_mono_of_preservesLimit F f
 #align category_theory.preserves_monomorphisms_of_preserves_limits_of_shape CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape
 
@@ -54,7 +54,7 @@ theorem reflects_mono_of_reflectsLimit {X Y : C} (f : X ⟶ Y) [ReflectsLimit (c
 #align category_theory.reflects_mono_of_reflects_limit CategoryTheory.reflects_mono_of_reflectsLimit
 
 instance (priority := 100) reflectsMonomorphisms_of_reflectsLimitsOfShape
-    [ReflectsLimitsOfShape WalkingCospan F] : F.ReflectsMonomorphisms where 
+    [ReflectsLimitsOfShape WalkingCospan F] : F.ReflectsMonomorphisms where
   reflects f _ := reflects_mono_of_reflectsLimit F f
 #align category_theory.reflects_monomorphisms_of_reflects_limits_of_shape CategoryTheory.reflectsMonomorphisms_of_reflectsLimitsOfShape
 
@@ -67,7 +67,7 @@ theorem preserves_epi_of_preservesColimit {X Y : C} (f : X ⟶ Y) [PreservesColi
 #align category_theory.preserves_epi_of_preserves_colimit CategoryTheory.preserves_epi_of_preservesColimit
 
 instance (priority := 100) preservesEpimorphisms_of_preservesColimitsOfShape
-    [PreservesColimitsOfShape WalkingSpan F] : F.PreservesEpimorphisms where 
+    [PreservesColimitsOfShape WalkingSpan F] : F.PreservesEpimorphisms where
   preserves f _ := preserves_epi_of_preservesColimit F f
 #align category_theory.preserves_epimorphisms_of_preserves_colimits_of_shape CategoryTheory.preservesEpimorphisms_of_preservesColimitsOfShape
 
@@ -82,9 +82,8 @@ theorem reflects_epi_of_reflectsColimit {X Y : C} (f : X ⟶ Y) [ReflectsColimit
 #align category_theory.reflects_epi_of_reflects_colimit CategoryTheory.reflects_epi_of_reflectsColimit
 
 instance (priority := 100) reflectsEpimorphisms_of_reflectsColimitsOfShape
-    [ReflectsColimitsOfShape WalkingSpan F] : F.ReflectsEpimorphisms where 
+    [ReflectsColimitsOfShape WalkingSpan F] : F.ReflectsEpimorphisms where
   reflects f _ := reflects_epi_of_reflectsColimit F f
 #align category_theory.reflects_epimorphisms_of_reflects_colimits_of_shape CategoryTheory.reflectsEpimorphisms_of_reflectsColimitsOfShape
 
 end CategoryTheory
-

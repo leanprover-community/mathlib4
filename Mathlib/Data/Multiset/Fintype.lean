@@ -147,8 +147,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
   intro x
   by_cases hx : x ∈ m₁
   · apply Nat.le_of_pred_lt
-    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset :=
-      by
+    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset := by
       rw [Multiset.mem_toEnumFinset]
       exact Nat.pred_lt (ne_of_gt (Multiset.count_pos.mpr hx))
     simpa only [Multiset.mem_toEnumFinset] using h this

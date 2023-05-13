@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.algebra.subalgebra.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -18,7 +18,7 @@ import Mathlib.RingTheory.Ideal.Operations
 
 In this file we define `Subalgebra`s and the usual operations on them (`map`, `comap`).
 
-More lemmas about `adjoin` can be found in `ring_theory.adjoin`.
+More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 -/
 
 
@@ -122,6 +122,8 @@ theorem range_le : Set.range (algebraMap R A) ≤ S :=
 theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
   (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem r) hx
 #align subalgebra.smul_mem Subalgebra.smul_mem
+
+instance : SMulMemClass (Subalgebra R A) R A where smul_mem r _x hx := smul_mem _ hx r
 
 protected theorem one_mem : (1 : A) ∈ S :=
   one_mem S
@@ -892,8 +894,7 @@ theorem infᵢ_toSubmodule {ι : Sort _} (S : ι → Subalgebra R A) :
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) :=
-  suffices (ofId R A).range = (⊥ : Subalgebra R A)
-    by
+  suffices (ofId R A).range = (⊥ : Subalgebra R A) by
     rw [← this, ← SetLike.mem_coe, AlgHom.coe_range]
     rfl
   le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)
@@ -1080,8 +1081,7 @@ theorem coe_inclusion {S T : Subalgebra R A} (h : S ≤ T) (s : S) : (inclusion 
 This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.ofEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T :=
-  { LinearEquiv.ofEq _ _
-      (congr_arg toSubmodule h) with
+  { LinearEquiv.ofEq _ _ (congr_arg toSubmodule h) with
     toFun := fun x => ⟨x, h ▸ x.2⟩
     invFun := fun x => ⟨x, h.symm ▸ x.2⟩
     map_mul' := fun _ _ => rfl
@@ -1106,7 +1106,6 @@ section Prod
 
 variable (S₁ : Subalgebra R B)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product of two subalgebras is a subalgebra. -/
 def prod : Subalgebra R (A × B) :=
   { S.toSubsemiring.prod S₁.toSubsemiring with
@@ -1114,7 +1113,6 @@ def prod : Subalgebra R (A × B) :=
     algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
 #align subalgebra.prod Subalgebra.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = S ×ˢ S₁ :=
   rfl
@@ -1242,7 +1240,7 @@ end SuprLift
 /-! ## Actions by `Subalgebra`s
 
 These are just copies of the definitions about `Subsemiring` starting from
-`subring.mul_action`.
+`Subring.mulAction`.
 -/
 
 
@@ -1257,15 +1255,15 @@ instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 #align subalgebra.smul_def Subalgebra.smul_def
 
-instance sMulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
+instance smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
     SMulCommClass S α β :=
   S.toSubsemiring.smulCommClass_left
-#align subalgebra.smul_comm_class_left Subalgebra.sMulCommClass_left
+#align subalgebra.smul_comm_class_left Subalgebra.smulCommClass_left
 
-instance sMulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
+instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
     SMulCommClass α S β :=
   S.toSubsemiring.smulCommClass_right
-#align subalgebra.smul_comm_class_right Subalgebra.sMulCommClass_right
+#align subalgebra.smul_comm_class_right Subalgebra.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
@@ -1458,6 +1456,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type _} [CommRing S] [Alge
   exact ⟨⟨_, hn i⟩, rfl⟩
 #align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
 
+set_option synthInstance.etaExperiment true in
 theorem mem_of_span_eq_top_of_smul_pow_mem {S : Type _} [CommRing S] [Algebra R S]
     (S' : Subalgebra R S) (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :

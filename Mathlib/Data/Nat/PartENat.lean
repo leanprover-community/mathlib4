@@ -397,10 +397,9 @@ theorem eq_top_iff_forall_le (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
 theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
   PartENat.casesOn x
     (by simp only [iff_true_iff, le_top, natCast_lt_top, ← @Nat.cast_zero PartENat])
-    fun n =>
-    by
-    rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
-    rfl
+    fun n => by
+      rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
+      rfl
 #align part_enat.pos_iff_one_le PartENat.pos_iff_one_le
 
 instance isTotal: IsTotal PartENat (· ≤ ·) where
@@ -409,7 +408,7 @@ instance isTotal: IsTotal PartENat (· ≤ ·) where
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 
-noncomputable instance linearOrder: LinearOrder PartENat :=
+noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
     le_total := IsTotal.total
     decidable_le := Classical.decRel _
@@ -754,15 +753,11 @@ noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
 
 end WithTopEquiv
 
--- Porting note: `Nat.lt_wfRel` changed in core,
--- the last line of the mathlib3 proof was:
--- `exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel)`
 theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    refine InvImage.wf _ (WithTop.wellFounded_lt ?_)
-    exact IsWellFounded.fix.proof_1 fun y x => y < x
+    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=

@@ -152,7 +152,7 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
 
-`Cocone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cocones.obj X`.
+`Cocone F` is equivalent, via `Cone.equiv` below, to `Σ X, F.cocones.obj X`.
 -/
 structure Cocone (F : J ⥤ C) where
   /-- An object of `C` -/
@@ -175,7 +175,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
   }⟩
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
-@[reassoc]
+@[reassoc (attr := simp 1001)]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
@@ -283,7 +283,6 @@ end Cocone
 
 /-- A cone morphism between two cones for the same diagram is a morphism of the cone points which
 commutes with the cone legs. -/
-@[ext]
 structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   Hom : A.pt ⟶ B.pt
@@ -305,6 +304,15 @@ instance Cone.category : Category (Cone F) where
   comp f g := { Hom := f.Hom ≫ g.Hom }
   id B := { Hom := 𝟙 B.pt }
 #align category_theory.limits.cone.category CategoryTheory.Limits.Cone.category
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+  cases f
+  cases g
+  congr
 
 namespace Cones
 
@@ -479,7 +487,6 @@ end Cones
 
 /-- A cocone morphism between two cocones for the same diagram is a morphism of the cocone points
 which commutes with the cocone legs. -/
-@[ext]
 structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   Hom : A.pt ⟶ B.pt
@@ -500,6 +507,15 @@ instance Cocone.category : Category (Cocone F) where
   comp f g := { Hom := f.Hom ≫ g.Hom }
   id B := { Hom := 𝟙 B.pt }
 #align category_theory.limits.cocone.category CategoryTheory.Limits.Cocone.category
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+  cases f
+  cases g
+  congr
 
 namespace Cocones
 
@@ -704,11 +720,15 @@ def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cones.functoriality F H).obj c
 #align category_theory.functor.map_cone CategoryTheory.Functor.mapCone
 
+pp_extended_field_notation Functor.mapCone
+
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
 #align category_theory.functor.map_cocone CategoryTheory.Functor.mapCocone
+
+pp_extended_field_notation Functor.mapCocone
 
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially.  -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
@@ -926,7 +946,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   counitIso :=
     NatIso.ofComponents
       (fun c => by
-        induction c using Opposite.rec
+        induction c using Opposite.rec'
         dsimp
         apply Iso.op
         exact
@@ -954,13 +974,7 @@ end
 section
 
 variable {F : J ⥤ Cᵒᵖ}
-/- Porting note: removed a few simps configs
-`@[simps (config :=
-      { rhsMd := semireducible
-        simpRhs := true })]`
-and replace with `@[simps]`-/
--- Here and below we only automatically generate the `@[simp]` lemma for the `X` field,
--- as we can write a simpler `rfl` lemma for the components of the natural transformation by hand.
+
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
 @[simps!]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where

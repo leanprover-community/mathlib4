@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module algebra.ring.equiv
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -75,13 +75,13 @@ class RingEquivClass (F : Type _) (R S : outParam (Type _)) [Mul R] [Add R] [Mul
 namespace RingEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass {_ : Mul R} {_ : Add R}
-    {_ : Mul S} {_ : Add S} [h : RingEquivClass F R S] : AddEquivClass F R S :=
+instance (priority := 100) toAddEquivClass [Mul R] [Add R]
+    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
   { h with coe := h.coe }
 #align ring_equiv_class.to_add_equiv_class RingEquivClass.toAddEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toRingHomClass {_ : NonAssocSemiring R} {_ : NonAssocSemiring S}
+instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
     [h : RingEquivClass F R S] : RingHomClass F R S :=
   { h with
     coe := h.coe
@@ -91,8 +91,8 @@ instance (priority := 100) toRingHomClass {_ : NonAssocSemiring R} {_ : NonAssoc
 #align ring_equiv_class.to_ring_hom_class RingEquivClass.toRingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toNonUnitalRingHomClass {_ : NonUnitalNonAssocSemiring R}
-    {_ : NonUnitalNonAssocSemiring S} [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
+instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
+    [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
   { h with
     coe := h.coe
     coe_injective' := FunLike.coe_injective
@@ -132,12 +132,18 @@ instance : RingEquivClass (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign ring_equiv.to_equiv_eq_coe
+@[simp]
+theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
+  rfl
+#align ring_equiv.to_equiv_eq_coe RingEquiv.toEquiv_eq_coe
+
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
 #noalign ring_equiv.to_fun_eq_coe
--- Porting note: `coe_toEquiv` no longer needed in Lean4
-#noalign ring_equiv.coe_to_equiv
+
+@[simp]
+theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
+  rfl
+#align ring_equiv.coe_to_equiv RingEquiv.coe_toEquiv
 
 /-- A ring isomorphism preserves multiplication. -/
 protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
@@ -156,8 +162,11 @@ theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
--- Porting note: `coe_mk` no longer needed in Lean4
-#noalign ring_equiv.coe_mk
+@[simp]
+theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
+  rfl
+#align ring_equiv.coe_mk RingEquiv.coe_mkₓ
+
 -- Porting note: `toEquiv_mk` no longer needed in Lean4
 #noalign ring_equiv.to_equiv_mk
 
@@ -573,6 +582,10 @@ variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 #align ring_equiv.map_neg_one RingEquiv.map_neg_one
+
+theorem map_eq_neg_one_iff {x : R} : f x = -1 ↔ x = -1 := by
+  rw [← neg_eq_iff_eq_neg, ← neg_eq_iff_eq_neg, ← map_neg, RingEquiv.map_eq_one_iff]
+#align ring_equiv.map_eq_neg_one_iff RingEquiv.map_eq_neg_one_iff
 
 end Ring
 

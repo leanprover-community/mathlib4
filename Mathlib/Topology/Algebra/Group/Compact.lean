@@ -48,7 +48,7 @@ theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group [T2Space 
   let F := Homeomorph.mulLeft (x * y⁻¹)
   refine' ⟨F '' K, _, K.isCompact.image F.continuous⟩
   suffices F.symm ⁻¹' K ∈ 𝓝 x by
-    convert this
+    convert this using 1
     apply Equiv.image_eq_preimage
   apply ContinuousAt.preimage_mem_nhds F.symm.continuous.continuousAt
   have : F.symm x = y := by simp only [Homeomorph.mulLeft_symm, mul_inv_rev,
@@ -70,8 +70,7 @@ instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G
   continuous_smul := by
     let F : G × G ⧸ Γ → G ⧸ Γ := fun p => p.1 • p.2
     change Continuous F
-    have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) :=
-      by
+    have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) := by
       change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
       refine' continuous_coinduced_rng.comp continuous_mul
     exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H

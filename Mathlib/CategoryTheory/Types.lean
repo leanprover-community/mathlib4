@@ -11,6 +11,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Set.Basic
 
 /-!
 # The category `Type`.
@@ -53,6 +54,13 @@ instance types : LargeCategory (Type u)
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 #align category_theory.types_hom CategoryTheory.types_hom
+
+-- porting note: this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- because of its "if all else fails, apply all `ext` lemmas" policy,
+-- which apparently we want to move away from.
+@[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
+  funext x
+  exact h x
 
 theorem types_id (X : Type u) : 𝟙 X = id :=
   rfl
@@ -118,6 +126,12 @@ We later use these to define limits in `Type` and in many concrete categories.
 def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
   { u | ∀ {j j'} (f : j ⟶ j'), F.map f (u j) = u j' }
 #align category_theory.functor.sections CategoryTheory.Functor.sections
+
+-- porting note: added this simp lemma
+@[simp]
+lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
+  {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
+  s.property f
 
 end Functor
 
@@ -336,6 +350,8 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
+
+pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=

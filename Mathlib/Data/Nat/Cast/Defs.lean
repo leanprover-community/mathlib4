@@ -39,12 +39,6 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 
 #align nat.cast Nat.cast
 
--- see note [coercion into rings]
-instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
-
--- see note [coercion into rings]
-instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
-
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 
@@ -115,8 +109,8 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 #align nat.cast_zero Nat.cast_zero
 
--- Lemmas about nat.succ need to get a low priority, so that they are tried last.
--- This is because `nat.succ _` matches `1`, `3`, `x+1`, etc.
+-- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
+-- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
 @[simp 500, norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=

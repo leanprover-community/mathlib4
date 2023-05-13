@@ -8,6 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Aesop
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.HigherOrder

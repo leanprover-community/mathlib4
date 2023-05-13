@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.big_operators.finsupp
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Order
@@ -80,7 +80,6 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
       prod_of_support_subset _ support_single_subset h fun x hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
-
 #align finsupp.prod_single_index Finsupp.prod_single_index
 #align finsupp.sum_single_index Finsupp.sum_single_index
 
@@ -478,7 +477,7 @@ theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     (∑ j : α, (single j m) i) = m := by
 -- Porting note: rewrite due to leaky classical in lean3
-  simp_rw [single, coe_mk, Finset.sum_pi_single]
+  simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
 #align finsupp.sum_univ_single' Finsupp.sum_univ_single'
@@ -602,6 +601,25 @@ theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 :
     exact h2
 #align finsupp.prod_dvd_prod_of_subset_of_dvd Finsupp.prod_dvd_prod_of_subset_of_dvd
 
+lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s, M) :
+    indicator s f = ∑ x in s.attach, single ↑x (f x x.2) := by
+  rw [← sum_single (indicator s f), sum, sum_subset (support_indicator_subset _ _), ← sum_attach]
+  · refine' Finset.sum_congr rfl (fun _ _ => _)
+    rw [indicator_of_mem]
+  · intro i _ hi
+    rw [not_mem_support_iff.mp hi, single_zero]
+#align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_single
+
+@[to_additive (attr := simp)]
+lemma prod_indicator_index [Zero M] [CommMonoid N]
+    {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
+    (indicator s f).prod h = ∏ x in s.attach, h ↑x (f x x.2) := by
+  rw [prod_of_support_subset _ (support_indicator_subset _ _) h h_zero, ← prod_attach]
+  refine' Finset.prod_congr rfl (fun _ _ => _)
+  rw [indicator_of_mem]
+#align finsupp.prod_indicator_index Finsupp.prod_indicator_index
+#align finsupp.sum_indicator_index Finsupp.sum_indicator_index
+
 end Finsupp
 
 theorem Finset.sum_apply' : (∑ k in s, f k) i = ∑ k in s, f k i :=
@@ -644,7 +662,6 @@ namespace Nat
 theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=
  Finset.prod_pos fun a ha => pos_iff_ne_zero.mpr (pow_ne_zero _ fun H => by subst H; exact hf ha)
-
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat

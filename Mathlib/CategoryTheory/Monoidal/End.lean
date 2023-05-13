@@ -33,10 +33,9 @@ variable (C : Type u) [Category.{v} C]
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
 -/
-def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C)
-    where
+def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
-  tensorHom := @fun F G F' G' α β => α ◫ β
+  tensorHom α β := α ◫ β
   tensorUnit' := 𝟭 C
   associator F G H := Functor.associator F G H
   leftUnitor F := Functor.leftUnitor F
@@ -56,8 +55,7 @@ attribute [local instance] endofunctorMonoidalCategory
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   {-- We could avoid needing to do this explicitly by
       -- constructing a partially applied analogue of `associatorNatIso`.
-      tensoringRight
-      C with
+      tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y =>
       { app := fun Z => (α_ Z X Y).hom
@@ -65,7 +63,7 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
           dsimp [endofunctorMonoidalCategory]
           rw [associator_naturality]
           simp }
-    μ_natural := @fun X Y X' Y' f g => by
+    μ_natural := fun f g => by
       ext Z
       dsimp [endofunctorMonoidalCategory]
       simp only [← id_tensor_comp_tensor_id g f, id_tensor_comp, ← tensor_id, Category.assoc,
@@ -134,7 +132,7 @@ theorem μ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
   (F.toLaxMonoidalFunctor.μ m n).naturality f
 #align category_theory.μ_naturality CategoryTheory.μ_naturality
 
--- This is a simp lemma in the reverse direction via `nat_trans.naturality`.
+-- This is a simp lemma in the reverse direction via `NatTrans.naturality`.
 @[reassoc]
 theorem μ_inv_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
     (F.μIso m n).inv.app X ≫ (F.obj n).map ((F.obj m).map f) =
@@ -225,9 +223,8 @@ theorem ε_app_obj (n : M) (X : C) :
     F.ε.app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (F.μIso n (𝟙_ M)).inv.app X := by
   refine' Eq.trans _ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
-  convert right_unitality_app F n X
-  · simp
-  · simp
+  convert right_unitality_app F n X using 1
+  simp
 #align category_theory.ε_app_obj CategoryTheory.ε_app_obj
 
 @[simp]
@@ -293,13 +290,12 @@ theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) :
 
 @[simp]
 theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
-   (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (F.μ m₁ (𝟙_ M ⊗ m₂)).app X ≫
-   (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (F.μIso (m₁ ⊗ 𝟙_ M) m₂).inv.app X =
-      (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
-        (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) :=
-  by
+    (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (F.μ m₁ (𝟙_ M ⊗ m₂)).app X ≫
+    (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (F.μIso (m₁ ⊗ 𝟙_ M) m₂).inv.app X =
+    (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
+    (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) := by
   rw [← obj_ε_inv_app_assoc, ← Functor.map_comp]
-  congr ; simp
+  congr; simp
 #align category_theory.obj_μ_zero_app CategoryTheory.obj_μ_zero_app
 
 /-- If `m ⊗ n ≅ 𝟙_M`, then `F.obj m` is a left inverse of `F.obj n`. -/

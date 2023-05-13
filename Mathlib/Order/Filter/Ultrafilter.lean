@@ -399,8 +399,7 @@ theorem exists_ultrafilter_of_finite_inter_nonempty (S : Set (Set α))
     generate_neBot_iff.2 fun _ hts ht =>
       ht.coe_toFinset ▸ cond ht.toFinset (ht.coe_toFinset.symm ▸ hts)
   ⟨of (generate S), fun _ ht => (of_le <| generate S) <| GenerateSets.basic ht⟩
-#align ultrafilter.exists_ultrafilter_of_finite_inter_nonempty
-  Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty
+#align ultrafilter.exists_ultrafilter_of_finite_inter_nonempty Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty
 
 end Ultrafilter
 
@@ -481,10 +480,12 @@ theorem hyperfilter_le_cofinite : ↑(hyperfilter α) ≤ @cofinite α :=
   Ultrafilter.of_le cofinite
 #align filter.hyperfilter_le_cofinite Filter.hyperfilter_le_cofinite
 
+theorem _root_.Nat.hyperfilter_le_atTop : (hyperfilter ℕ).toFilter ≤ atTop :=
+  hyperfilter_le_cofinite.trans_eq Nat.cofinite_eq_atTop
+
 @[simp]
 theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
   (NeBot.ne inferInstance).symm
-
 #align filter.bot_ne_hyperfilter Filter.bot_ne_hyperfilter
 
 theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
@@ -517,8 +518,7 @@ variable {m : α → β} {s : Set α} {g : Ultrafilter β}
 
 theorem comap_inf_principal_neBot_of_image_mem (h : m '' s ∈ g) : (Filter.comap m g ⊓ 𝓟 s).NeBot :=
   Filter.comap_inf_principal_neBot_of_image_mem g.neBot h
-#align ultrafilter.comap_inf_principal_ne_bot_of_image_mem
-  Ultrafilter.comap_inf_principal_neBot_of_image_mem
+#align ultrafilter.comap_inf_principal_ne_bot_of_image_mem Ultrafilter.comap_inf_principal_neBot_of_image_mem
 
 /-- Ultrafilter extending the inf of a comapped ultrafilter and a principal ultrafilter. -/
 noncomputable def ofComapInfPrincipal (h : m '' s ∈ g) : Ultrafilter α :=
@@ -542,7 +542,6 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = (Filter.map m <| Filter.comap m g) ⊓ (𝓟 <| m '' s) := by rw [map_principal]
     _ ≤ ↑g ⊓ (𝓟 <| m '' s) := inf_le_inf_right _ map_comap_le
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
-
 #align ultrafilter.of_comap_inf_principal_eq_of_map Ultrafilter.ofComapInfPrincipal_eq_of_map
 
 end Ultrafilter

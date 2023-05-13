@@ -182,7 +182,7 @@ theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
-    simp only [map, pairwise_cons, mem_map', forall_exists_index, and_imp,
+    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, pairwise_map]
 #align list.pairwise_map List.pairwise_map'
 
@@ -267,7 +267,7 @@ theorem pairwise_join {L : List (List α)} :
 theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β} :
     List.Pairwise R (l.bind f) ↔
       (∀ a ∈ l, Pairwise R (f a)) ∧ Pairwise (fun a₁ a₂ => ∀ x ∈ f a₁, ∀ y ∈ f a₂, R x y) l :=
-  by simp [List.bind, List.pairwise_join, List.mem_map', List.pairwise_map]
+  by simp [List.bind, List.pairwise_join, List.mem_map, List.pairwise_map]
 #align list.pairwise_bind List.pairwise_bind
 
 #align list.pairwise_reverse List.pairwise_reverse
@@ -373,13 +373,11 @@ theorem pwFilter_map (f : β → α) :
     ∀ l : List β, pwFilter R (map f l) = map f (pwFilter (fun x y => R (f x) (f y)) l)
   | [] => rfl
   | x :: xs =>
-    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then
-      by
+    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then by
       have h' : ∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun b hb => h _ (by rw [pwFilter_map f xs]; apply mem_map_of_mem _ hb)
       rw [map, pwFilter_cons_of_pos h, pwFilter_cons_of_pos h', pwFilter_map f xs, map]
-    else
-      by
+    else by
       have h' : ¬∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun hh =>
         h fun a ha => by
@@ -415,8 +413,7 @@ theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
 #align list.pairwise_pw_filter List.pairwise_pwFilter
 
 theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
-  ⟨fun e => e ▸ pairwise_pwFilter l, fun p =>
-    by
+  ⟨fun e => e ▸ pairwise_pwFilter l, fun p => by
     induction' l with x l IH; · rfl
     cases' pairwise_cons.1 p with al p
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩

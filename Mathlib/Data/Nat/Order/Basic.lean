@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -181,7 +181,6 @@ theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
     m + n > 0 + n := Nat.add_lt_add_right h n
     _ = n := Nat.zero_add n
     _ ≥ 0 := zero_le n
-
 #align nat.add_pos_left Nat.add_pos_left
 
 theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
@@ -211,7 +210,6 @@ theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m
   cases n <;>
   simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
     succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
-
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
@@ -288,21 +286,6 @@ theorem sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 :=
 #align nat.sub_succ' Nat.sub_succ'
 
 /-! ### `mul` -/
-
-
-theorem mul_eq_one_iff : ∀ {m n : ℕ}, m * n = 1 ↔ m = 1 ∧ n = 1
-  | 0, 0 => by decide
-  | 0, 1 => by decide
-  | 1, 0 => by decide
-  | m + 2, 0 => by simp
-  | 0, n + 2 => by simp
-  | m + 1, n + 1 =>
-    ⟨fun h => by
-      simp only [succ_mul, mul_succ, add_succ, one_mul, mul_one, (add_assoc _ _ _).symm,
-          ← succ_eq_add_one, add_eq_zero_iff, (show 1 = succ 0 from rfl), succ_inj'] at h
-      simp [h],
-      fun h => by simp only [h, mul_one]⟩
-#align nat.mul_eq_one_iff Nat.mul_eq_one_iff
 
 theorem succ_mul_pos (m : ℕ) (hn : 0 < n) : 0 < succ m * n :=
   mul_pos (succ_pos m) hn
@@ -411,7 +394,6 @@ protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
         _ = m := mod_add_div _ _
         _ ≤ k * n := h) k0
-
 #align nat.div_le_of_le_mul' Nat.div_le_of_le_mul'
 
 protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
@@ -420,7 +402,6 @@ protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
       calc
         m = 1 * m := (one_mul _).symm
         _ ≤ n * m := Nat.mul_le_mul_right _ n0
-
 #align nat.div_le_self' Nat.div_le_self'
 
 protected theorem div_lt_of_lt_mul (h : m < n * k) : m / n < k :=
@@ -447,8 +428,6 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
-
-
 #align nat.div_mul_div_le_div Nat.div_mul_div_le_div
 
 theorem eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 :=
@@ -563,7 +542,6 @@ theorem div_mul_div_comm (hmn : n ∣ m) (hkl : l ∣ k) : m / n * (k / l) = m *
       repeat' assumption
       -- Porting note: this line was `cc` in Lean3
       simp only [mul_comm, mul_left_comm, mul_assoc]
-
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -215,13 +215,8 @@ theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
   @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
-theorem Perm.eq_singleton {a : α} {l : List α} (p : l ~ [a]) : l = [a] :=
-  perm_singleton.1 p
-#align list.perm.eq_singleton List.Perm.eq_singleton
-
-theorem Perm.singleton_eq {a : α} {l : List α} (p : [a] ~ l) : [a] = l :=
-  p.symm.eq_singleton.symm
-#align list.perm.singleton_eq List.Perm.singleton_eq
+alias perm_singleton ↔ Perm.eq_singleton _
+alias singleton_perm ↔ Perm.singleton_eq _
 
 theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
@@ -735,7 +730,6 @@ theorem Subperm.exists_of_length_lt {l₁ l₂ : List α} :
       · exact ⟨a, s.eq_of_length h ▸ Subperm.refl _⟩
     · exact (IH <| Nat.lt_of_succ_lt_succ h).imp fun a s =>
           (swap _ _ _).subperm_right.1 <| (subperm_cons _).2 s
-
 #align list.subperm.exists_of_length_lt List.Subperm.exists_of_length_lt
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ := by
@@ -1167,7 +1161,6 @@ theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : �
   exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
-
 #align list.perm.take_inter List.Perm.take_inter
 
 theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
@@ -1378,7 +1371,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
     · rw [takeWhile]
-      simp only [mem_map', cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
+      simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
 #align list.count_permutations'_aux_self List.count_permutations'Aux_self
 
@@ -1411,7 +1404,7 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
   induction' s with y s IH
   · simp
   · simp only [not_or, mem_cons] at hx
-    simp only [permutations'Aux, nodup_cons, mem_map', cons.injEq, exists_eq_right_right, not_and]
+    simp only [permutations'Aux, nodup_cons, mem_map, cons.injEq, exists_eq_right_right, not_and]
     refine' ⟨fun _ => Ne.symm hx.left, _⟩
     rw [nodup_map_iff]
     · exact IH hx.right

@@ -64,7 +64,7 @@ theorem map_sub_range' (a) :
     ∀ (s n : ℕ) (_ : a ≤ s), map (fun x => x - a) (range' s n) = range' (s - a) n
   | s, 0, _ => rfl
   | s, n + 1, h => by
-    convert congr_arg (cons (s - a)) (map_sub_range' _ (s + 1) n (Nat.le_succ_of_le h))
+    convert congr_arg (cons (s - a)) (map_sub_range' _ (s + 1) n (Nat.le_succ_of_le h)) using 1
     rw [Nat.succ_sub h]
     rfl
 #align list.map_sub_range' List.map_sub_range'

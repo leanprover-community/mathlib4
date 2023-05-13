@@ -317,8 +317,7 @@ For a total union version, see `mem_generatePiSystem_unionᵢ_elim`. -/
 theorem mem_generatePiSystem_unionᵢ_elim' {α β} {g : β → Set (Set α)} {s : Set β}
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
-  have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) :=
-    by
+  have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
     suffices h1 : (⋃ b : Subtype s, (g ∘ Subtype.val) b) = ⋃ b ∈ s, g b
     · rwa [h1]
     ext x
@@ -340,7 +339,7 @@ theorem mem_generatePiSystem_unionᵢ_elim' {α β} {g : β → Set (Set α)} {s
         rw [Subtype.val_injective.extend_apply]
         apply id
   · intros b h_b
-    simp_rw [Finset.mem_image, exists_prop, Subtype.exists, exists_and_right, exists_eq_right]
+    simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     cases' h_b with h_b_w h_b_h
     have h_b_alt : b = (Subtype.mk b h_b_w).val := rfl
@@ -404,15 +403,10 @@ theorem piUnionᵢInter_singleton_left (s : ι → Set α) (S : Set ι) :
   simp_rw [piUnionᵢInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
   refine' ⟨fun h => _, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  -- Porting note: Here was `congr'`.
-  refine' ⟨t, htS, Set.interᵢ_congr fun i => Set.ext fun x => _⟩
-  simp_rw [Set.mem_interᵢ]
-  exact
-    ⟨fun h hit => by
-      rw [← hft_eq i hit]
-      exact h hit, fun h hit => by
-      rw [hft_eq i hit]
-      exact h hit⟩
+  refine' ⟨t, htS, _⟩
+  congr! 3
+  apply hft_eq
+  assumption
 #align pi_Union_Inter_singleton_left piUnionᵢInter_singleton_left
 
 theorem generateFrom_piUnionᵢInter_singleton_left (s : ι → Set α) (S : Set ι) :
@@ -438,8 +432,7 @@ theorem isPiSystem_piUnionᵢInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPi
   have hp_union_ss : ↑(p1 ∪ p2) ⊆ S := by
     simp only [hp1S, hp2S, Finset.coe_union, union_subset_iff, and_self_iff]
   use p1 ∪ p2, hp_union_ss, g
-  have h_inter_eq : t1 ∩ t2 = ⋂ i ∈ p1 ∪ p2, g i :=
-    by
+  have h_inter_eq : t1 ∩ t2 = ⋂ i ∈ p1 ∪ p2, g i := by
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
@@ -594,8 +587,8 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
   exact d.has_unionᵢ (pairwise_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 #align measurable_space.dynkin_system.has_union MeasurableSpace.DynkinSystem.has_union
 
-theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) : d.Has (s₁ \ s₂) :=
-  by
+theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
+    d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
   simp [diff_eq, compl_inter]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)

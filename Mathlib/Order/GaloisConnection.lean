@@ -535,7 +535,6 @@ theorem l_sup_u [SemilatticeSup α] [SemilatticeSup β] (gi : GaloisInsertion l 
   calc
     l (u a ⊔ u b) = l (u a) ⊔ l (u b) := gi.gc.l_sup
     _ = a ⊔ b := by simp only [gi.l_u_eq]
-
 #align galois_insertion.l_sup_u GaloisInsertion.l_sup_u
 
 theorem l_supᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -543,7 +542,6 @@ theorem l_supᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInserti
   calc
     l (⨆ i : ι, u (f i)) = ⨆ i : ι, l (u (f i)) := gi.gc.l_supᵢ
     _ = ⨆ i : ι, f i := congr_arg _ <| funext fun i => gi.l_u_eq (f i)
-
 #align galois_insertion.l_supr_u GaloisInsertion.l_supᵢ_u
 
 theorem l_bsupᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -560,7 +558,6 @@ theorem l_inf_u [SemilatticeInf α] [SemilatticeInf β] (gi : GaloisInsertion l 
   calc
     l (u a ⊓ u b) = l (u (a ⊓ b)) := congr_arg l gi.gc.u_inf.symm
     _ = a ⊓ b := by simp only [gi.l_u_eq]
-
 #align galois_insertion.l_inf_u GaloisInsertion.l_inf_u
 
 theorem l_infᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -568,7 +565,6 @@ theorem l_infᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInserti
   calc
     l (⨅ i : ι, u (f i)) = l (u (⨅ i : ι, f i)) := congr_arg l gi.gc.u_infᵢ.symm
     _ = ⨅ i : ι, f i := gi.l_u_eq _
-
 #align galois_insertion.l_infi_u GaloisInsertion.l_infᵢ_u
 
 theorem l_binfᵢ_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -585,7 +581,6 @@ theorem l_infᵢ_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : G
   calc
     l (⨅ i, f i) = l (⨅ i : ι, u (l (f i))) := by simp [hf]
     _ = ⨅ i, l (f i) := gi.l_infᵢ_u _
-
 #align galois_insertion.l_infi_of_ul_eq_self GaloisInsertion.l_infᵢ_of_ul_eq_self
 
 theorem l_binfᵢ_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)

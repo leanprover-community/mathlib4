@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module algebra.order.nonneg.field
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit b3f4f007a962e3787aa0f3b5c7942a1317f7d88e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Nonneg.Ring
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -99,35 +99,5 @@ instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
   inferInstance
 #align nonneg.linear_ordered_comm_group_with_zero Nonneg.linearOrderedCommGroupWithZero
-
-/-! ### Floor -/
-
-
-instance archimedean [OrderedAddCommMonoid α] [Archimedean α] : Archimedean { x : α // 0 ≤ x } :=
-  ⟨fun x y hy =>
-    let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
-    ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
-#align nonneg.archimedean Nonneg.archimedean
-
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
-    FloorSemiring { r : α // 0 ≤ r } where
-  floor a := ⌊(a : α)⌋₊
-  ceil a := ⌈(a : α)⌉₊
-  floor_of_neg ha := FloorSemiring.floor_of_neg ha
-  gc_floor ha := FloorSemiring.gc_floor (Subtype.coe_le_coe.2 ha)
-  gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
-#align nonneg.floor_semiring Nonneg.floorSemiring
-
-@[norm_cast]
-theorem nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
-    ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
-  rfl
-#align nonneg.nat_floor_coe Nonneg.nat_floor_coe
-
-@[norm_cast]
-theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
-    ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
-  rfl
-#align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe
 
 end Nonneg

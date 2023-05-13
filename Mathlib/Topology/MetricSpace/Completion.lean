@@ -169,8 +169,7 @@ protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p 
 #align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
-instance : MetricSpace (Completion α)
-    where
+instance : MetricSpace (Completion α) where
   dist_self := Completion.dist_self
   eq_of_dist_eq_zero := Completion.eq_of_dist_eq_zero _ _
   dist_comm := Completion.dist_comm
@@ -191,3 +190,25 @@ protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y 
 #align uniform_space.completion.edist_eq UniformSpace.Completion.edist_eq
 
 end UniformSpace.Completion
+
+open UniformSpace Completion NNReal
+
+theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+    {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
+  LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
+    (isClosed_le (by continuity) (by continuity)) <| by
+      simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
+
+theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
+    (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
+  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+
+theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+    (h : Isometry f) : Isometry (Completion.extension f) :=
+  Isometry.of_dist_eq fun x y => induction_on₂ x y
+    (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
+      simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
+
+theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
+    (h : Isometry f) : Isometry (Completion.map f) :=
+  (coe_isometry.comp h).completion_extension

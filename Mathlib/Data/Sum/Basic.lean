@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module data.sum.basic
-! leanprover-community/mathlib commit f4ecb599422baaf39055d8278c7d9ef3b5b72b88
+! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -109,12 +109,10 @@ variable {x y : Sum α β}
 
 @[simp] theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
   cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
-
 #align sum.get_left_eq_none_iff Sum.getLeft_eq_none_iff
 
 @[simp] theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
   cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
-
 #align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
 
 @[simp] lemma getLeft_eq_some_iff {a : α} : x.getLeft = a ↔ x = inl a := by
@@ -401,19 +399,16 @@ theorem liftRel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
   ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inl⟩
-
 #align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
 
 @[simp]
 theorem not_liftRel_inl_inr : ¬LiftRel r s (inl a) (inr d) :=
   fun.
-
 #align sum.not_lift_rel_inl_inr Sum.not_liftRel_inl_inr
 
 @[simp]
 theorem not_liftRel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
   fun.
-
 #align sum.not_lift_rel_inr_inl Sum.not_liftRel_inr_inl
 
 @[simp]
@@ -421,7 +416,6 @@ theorem liftRel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
   ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inr⟩
-
 #align sum.lift_rel_inr_inr Sum.liftRel_inr_inr
 
 instance [∀ a c, Decidable (r a c)] [∀ b d, Decidable (s b d)] :
@@ -459,7 +453,6 @@ theorem liftRel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
   ⟨fun h ↦ by
     rw [← swap_swap x, ← swap_swap y]
     exact h.swap, LiftRel.swap⟩
-
 #align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
 
 end LiftRel
@@ -514,7 +507,6 @@ protected theorem LiftRel.lex {a b : Sum α β} (h : LiftRel r s a b) : Lex r s 
 #align sum.lift_rel.lex Sum.LiftRel.lex
 
 theorem liftRel_subrelation_lex : Subrelation (LiftRel r s) (Lex r s) := LiftRel.lex
-
 #align sum.lift_rel_subrelation_lex Sum.liftRel_subrelation_lex
 
 theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r₁ s₁ x y) :
@@ -588,11 +580,46 @@ theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f)
     ⟨inr x, congr_arg inr hx⟩
 #align function.surjective.sum_map Function.Surjective.sum_map
 
+theorem Bijective.sum_map {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
+    Bijective (Sum.map f g) :=
+  ⟨hf.injective.sum_map hg.injective, hf.surjective.sum_map hg.surjective⟩
+#align function.bijective.sum_map Function.Bijective.sum_map
+
 end Function
 
 namespace Sum
 
 open Function
+
+@[simp]
+theorem map_injective {f : α → γ} {g : β → δ} :
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
+  ⟨fun h =>
+    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha : _), fun b₁ b₂ hb =>
+      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb : _)⟩,
+    fun h => h.1.sum_map h.2⟩
+#align sum.map_injective Sum.map_injective
+
+@[simp]
+theorem map_surjective {f : α → γ} {g : β → δ} :
+    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g :=
+  ⟨ fun h => ⟨
+      (fun c => by
+        obtain ⟨a | b, h⟩ := h (inl c)
+        · exact ⟨a, inl_injective h⟩
+        · cases h),
+      (fun d => by
+        obtain ⟨a | b, h⟩ := h (inr d)
+        · cases h
+        · exact ⟨b, inr_injective h⟩)⟩,
+    fun h => h.1.sum_map h.2⟩
+#align sum.map_surjective Sum.map_surjective
+
+@[simp]
+theorem map_bijective {f : α → γ} {g : β → δ} :
+    Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
+  (map_injective.and map_surjective).trans <| and_and_and_comm
+#align sum.map_bijective Sum.map_bijective
 
 theorem elim_const_const (c : γ) :
     Sum.elim (const _ c : α → γ) (const _ c : β → γ) = const _ c := by

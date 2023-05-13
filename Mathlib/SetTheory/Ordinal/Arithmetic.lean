@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
+! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -279,8 +279,7 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
 @[simp]
 theorem lift_isLimit (o) : IsLimit (lift o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
-    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h =>
-      by
+    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
       obtain ⟨a', rfl⟩ := lift_down h.le
       rw [← lift_succ, lift_lt]
       exact H a' (lift_lt.1 h)⟩
@@ -606,6 +605,7 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
   eq_of_forall_ge_iff fun d => by rw [sub_le, sub_le, sub_le, add_assoc]
 #align ordinal.sub_sub Ordinal.sub_sub
 
+@[simp]
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 #align ordinal.add_sub_add_cancel Ordinal.add_sub_add_cancel
@@ -679,8 +679,7 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   inductionOn a fun α _ _ =>
-    inductionOn b fun β _ _ =>
-      by
+    inductionOn b fun β _ _ => by
       simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
       rw [or_comm]
       exact isEmpty_prod
@@ -992,8 +991,7 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
   | a, _, c, ⟨b, rfl⟩ =>
-    ⟨fun ⟨d, e⟩ => ⟨d - b, by rw [mul_sub, ← e, add_sub_cancel]⟩, fun ⟨d, e⟩ =>
-      by
+    ⟨fun ⟨d, e⟩ => ⟨d - b, by rw [mul_sub, ← e, add_sub_cancel]⟩, fun ⟨d, e⟩ => by
       rw [e, ← mul_add]
       apply dvd_mul_right⟩
 #align ordinal.dvd_add_iff Ordinal.dvd_add_iff
@@ -1030,6 +1028,10 @@ instance mod : Mod Ordinal :=
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
   rfl
 #align ordinal.mod_def Ordinal.mod_def
+
+theorem mod_le (a b : Ordinal) : a % b ≤ a :=
+  sub_le_self a _
+#align ordinal.mod_le Ordinal.mod_le
 
 @[simp]
 theorem mod_zero (a : Ordinal) : a % 0 = a := by simp only [mod_def, div_zero, zero_mul, sub_zero]
@@ -1075,6 +1077,29 @@ theorem mod_eq_zero_of_dvd {a b : Ordinal} (H : b ∣ a) : a % b = 0 := by
 theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
   ⟨mod_eq_zero_of_dvd, dvd_of_mod_eq_zero⟩
 #align ordinal.dvd_iff_mod_eq_zero Ordinal.dvd_iff_mod_eq_zero
+
+@[simp]
+theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x :=  by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]
+#align ordinal.mul_add_mod_self Ordinal.mul_add_mod_self
+
+@[simp]
+theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
+  simpa using mul_add_mod_self x y 0
+#align ordinal.mul_mod Ordinal.mul_mod
+
+theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
+  nth_rw 2 [← div_add_mod a b]
+  rcases h with ⟨d, rfl⟩
+  rw [mul_assoc, mul_add_mod_self]
+#align ordinal.mod_mod_of_dvd Ordinal.mod_mod_of_dvd
+
+@[simp]
+theorem mod_mod (a b : Ordinal) : a % b % b = a % b :=
+  mod_mod_of_dvd a dvd_rfl
+#align ordinal.mod_mod Ordinal.mod_mod
 
 /-! ### Families of ordinals
 
@@ -1457,8 +1482,8 @@ theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     bsup.{_, v} o₁ f = bsup.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.bsup_congr Ordinal.bsup_congr
 
 theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
@@ -1563,9 +1588,9 @@ theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a)
-  -- Porting note: `eq_iff_iff` & `(· ∘ ·)` are required.
-  simp only [eq_iff_iff, (· ∘ ·), succ_le_iff]
+  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
+  -- Porting note: `comp_apply` is required.
+  simp only [comp_apply, succ_le_iff]
 #align ordinal.lsub_le_iff Ordinal.lsub_le_iff
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
@@ -1774,14 +1799,14 @@ theorem blsub_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     blsub.{_, v} o₁ f = blsub.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.blsub_congr Ordinal.blsub_congr
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
     blsub.{_, v} o f ≤ a ↔ ∀ i h, f i h < a := by
-  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a)
-  simp [succ_le_iff]
+  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a) using 2
+  simp_rw [succ_le_iff]
 #align ordinal.blsub_le_iff Ordinal.blsub_le_iff
 
 theorem blsub_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} : (∀ i h, f i h < a) → blsub o f ≤ a :=
@@ -1904,8 +1929,7 @@ theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
 
 theorem blsub_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : blsub.{u, max v w} o f ≤ blsub.{v, max u w} o' g :=
-  bsup_le_of_brange_subset.{u, v, w} fun a ⟨b, hb, hb'⟩ =>
-    by
+  bsup_le_of_brange_subset.{u, v, w} fun a ⟨b, hb, hb'⟩ => by
     obtain ⟨c, hc, hc'⟩ := h ⟨b, hb, rfl⟩
     simp_rw [← hc'] at hb'
     exact ⟨c, hc, hb'⟩
@@ -2032,9 +2056,8 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
       fun a => Classical.choose_spec (H a)
     apply_fun f  at h'
     rwa [Hf, Hf, typein_inj] at h'
-  -- Porting note: `convert` & `rw` → `have` & `rwa`
-  have hg' := Cardinal.mk_le_of_injective hg
-  rwa [Cardinal.mk_ord_out (succ (#ι))] at hg'
+  convert Cardinal.mk_le_of_injective hg
+  rw [Cardinal.mk_ord_out (succ (#ι))]
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
@@ -2059,7 +2082,8 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
-  convert ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt]))
+  convert (config := {transparency := .default})
+    ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt])) using 2
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 #align ordinal.ne_bmex Ordinal.ne_bmex
@@ -2087,8 +2111,7 @@ theorem bmex_monotone {o o' : Ordinal.{u}}
 #align ordinal.bmex_monotone Ordinal.bmex_monotone
 
 theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
-    bmex.{_, u} o f < (succ o.card).ord :=
-  by
+    bmex.{_, u} o f < (succ o.card).ord := by
   rw [← mk_ordinal_out]
   exact mex_lt_ord_succ_mk (familyOfBFamily o f)
 #align ordinal.bmex_lt_ord_succ_card Ordinal.bmex_lt_ord_succ_card
@@ -2354,10 +2377,9 @@ open Ordinal
 @[simp]
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
   le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h =>
-      by
+    le_of_forall_lt fun o h => by
       rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, ← lift_aleph0.{0, u}, lift_lt, ← typein_enum (· < ·) h']
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
       exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 #align cardinal.ord_aleph_0 Cardinal.ord_aleph0
 

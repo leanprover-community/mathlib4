@@ -450,8 +450,8 @@ theorem infₛ_toSetoid (S : Set (Con M)) : (infₛ S).toSetoid = infₛ (toSeto
     under the map to the underlying binary relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying binary relation."]
-theorem infₛ_def (S : Set (Con M)) : ⇑(infₛ S) = infₛ (@Set.image (Con M) (M → M → Prop) (↑) S) :=
-  by
+theorem infₛ_def (S : Set (Con M)) :
+    ⇑(infₛ S) = infₛ (@Set.image (Con M) (M → M → Prop) (↑) S) := by
   ext
   simp only [infₛ_image, infᵢ_apply, infᵢ_Prop_eq]
   rfl
@@ -564,8 +564,7 @@ theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
 @[to_additive sup_eq_addConGen "The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'."]
-theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y :=
-  by
+theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
   rw [conGen_eq]
   apply congr_arg infₛ
   simp only [le_def, or_imp, ← forall_and]
@@ -586,8 +585,8 @@ theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_
 @[to_additive supₛ_eq_addConGen "The supremum of a set of additive congruence relations `S` equals
 the smallest additive congruence relation containing the binary relation 'there exists `c ∈ S`
 such that `x` is related to `y` by `c`'."]
-theorem supₛ_eq_conGen (S : Set (Con M)) : supₛ S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y :=
-  by
+theorem supₛ_eq_conGen (S : Set (Con M)) :
+    supₛ S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
   apply congr_arg infₛ
   ext
@@ -962,8 +961,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
     are equal on elements that are coercions from the monoid. -/
 @[to_additive "Homomorphisms on the quotient of an AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
-theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g :=
-  by
+theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
   exact FunLike.ext_iff.2 h
@@ -1291,8 +1289,8 @@ that takes elements `x y : M` with proofs of `c (x * y) 1` and `c (y * x) 1`, an
 of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. -/
 @[to_additive]
 def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
-    (Hf : ∀ x y hxy hyx x' y' hxy' hyx', c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α :=
-  by
+    (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
+      c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine'
     @Con.hrecOn₂ M M _ _ c c (fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)

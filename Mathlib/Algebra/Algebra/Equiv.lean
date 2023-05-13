@@ -56,10 +56,9 @@ class AlgEquivClass (F : Type _) (R A B : outParam (Type _)) [CommSemiring R] [S
 
 namespace AlgEquivClass
 
--- Porting note: Replaced instances [...] with {_ : ...} below to make them not dangerous
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ : CommSemiring R} {_ : Semiring A}
-    {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} [h : AlgEquivClass F R A B] :
+instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
   { h with
     coe := (⇑)
@@ -68,8 +67,8 @@ instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ : CommSemiring R}
     map_one := map_one }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type _) {_ : CommSemiring R}
-    {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B}
+instance (priority := 100) toLinearEquivClass (F R A B : Type _) [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
@@ -129,6 +128,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
+-- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
+/-- See Note [custom simps projection] -/
+def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
+  e
+
 -- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) :
@@ -175,9 +179,12 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 #align alg_equiv.mk_coe AlgEquiv.mk_coe
 
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_fun_eq_coe
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_equiv_eq_coe
+#noalign alg_equiv.to_fun_eq_coe
+
+@[simp]
+theorem toEquiv_eq_coe : e.toEquiv = e :=
+  rfl
+#align alg_equiv.to_equiv_eq_coe AlgEquiv.toEquiv_eq_coe
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
@@ -189,9 +196,9 @@ theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 #align alg_equiv.coe_ring_equiv AlgEquiv.coe_ringEquiv
 
-theorem coe_ring_equiv' : (e.toRingEquiv : A₁ → A₂) = e :=
+theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
-#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ring_equiv'
+#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ringEquiv'
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
@@ -289,9 +296,9 @@ instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
 @[simp]
-theorem refl_to_algHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
+theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
   rfl
-#align alg_equiv.refl_to_alg_hom AlgEquiv.refl_to_algHom
+#align alg_equiv.refl_to_alg_hom AlgEquiv.refl_toAlgHom
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -302,8 +309,7 @@ theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
       change _ = e _
@@ -331,7 +337,7 @@ theorem coe_coe_symm_apply_coe_apply {F : Type _} [AlgEquivClass F R A₁ A₂] 
 
 -- Porting note: `simp` normal form of `invFun_eq_symm`
 @[simp]
-theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.toEquiv.symm = e.symm :=
+theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
   rfl
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
@@ -369,14 +375,14 @@ theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :
 #align alg_equiv.refl_symm AlgEquiv.refl_symm
 
 --this should be a simp lemma but causes a lint timeout
-theorem to_ringEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
+theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
   rfl
-#align alg_equiv.to_ring_equiv_symm AlgEquiv.to_ringEquiv_symm
+#align alg_equiv.to_ring_equiv_symm AlgEquiv.toRingEquiv_symm
 
 @[simp]
-theorem symm_to_ringEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
+theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
   rfl
-#align alg_equiv.symm_to_ring_equiv AlgEquiv.symm_to_ringEquiv
+#align alg_equiv.symm_to_ring_equiv AlgEquiv.symm_toRingEquiv
 
 /-- Algebra equivalences are transitive. -/
 @[trans]
@@ -564,9 +570,9 @@ def toLinearMap : A₁ →ₗ[R] A₂ :=
 #align alg_equiv.to_linear_map AlgEquiv.toLinearMap
 
 @[simp]
-theorem to_algHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinearMap :=
+theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinearMap :=
   rfl
-#align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.to_algHom_toLinearMap
+#align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
 
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
@@ -672,8 +678,7 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
 
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups -/
 @[simps apply]
-def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ[R] A₂
-    where
+def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ[R] A₂ where
   toFun ψ := ϕ.symm.trans (ψ.trans ϕ)
   invFun ψ := ϕ.trans (ψ.trans ϕ.symm)
   left_inv ψ := by
@@ -706,9 +711,8 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
 
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
-This generalizes `function.End.apply_mul_action`. -/
-instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁
-    where
+This generalizes `Function.End.applyMulAction`. -/
+instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· <| ·)
   smul_zero := AlgEquiv.map_zero
   smul_add := AlgEquiv.map_add

@@ -30,8 +30,8 @@ class my_has_scalar (M : Type u) (α : Type v) :=
 (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-attribute [to_additive (reorder := 1) my_has_scalar] my_has_pow
-attribute [to_additive (reorder := 1 4)] my_has_pow.pow
+attribute [to_additive (reorder := 1 2) my_has_scalar] my_has_pow
+attribute [to_additive (reorder:= 1 2, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -99,16 +99,16 @@ theorem bar11_works : bar11 = foo11 := by rfl
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
 
-@[to_additive (reorder := 1 4) bar13]
+@[to_additive (reorder:= 1 2, 4 5) bar13]
 lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ y := rfl
 
-@[to_additive (reorder := 1 4) bar14]
+@[to_additive (reorder:= 1 2, 4 5) bar14]
 def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
 
-@[to_additive (reorder := 1 4) bar15]
+@[to_additive (reorder:= 1 2, 4 5) bar15]
 lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
 
-@[to_additive (reorder := 1 4) bar16]
+@[to_additive (reorder:= 1 2, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
 initialize testExt : SimpExtension ←
@@ -149,6 +149,11 @@ def foo20 := 1
 example {x} (h : 1 = x) : foo20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : bar20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
+
+@[to_additive bar21]
+def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
+
+run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
@@ -307,6 +312,13 @@ theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a *
 @[to_additive]
 theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
   simp [isUnit'_iff_exists_inv, mul_comm]
+
+/-! Test a permutation with a cycle of length > 2. -/
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
+
 
 def Ones : ℕ → Q(Nat)
 | 0     => q(1)
