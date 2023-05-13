@@ -429,14 +429,14 @@ theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactE
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
       -- s is the Sup of the spans of its elements.
-      have sSup : s = sSup (sp '' ↑s) := by
+      have sSup' : s = sSup (sp '' ↑s) := by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
       -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
-      obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup)
+      obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
       have ssup : s = u.sup id := by
         suffices : u.sup id ≤ s
         exact le_antisymm husup this
-        rw [sSup, Finset.sup_id_eq_sSup]
+        rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan

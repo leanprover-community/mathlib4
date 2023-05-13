@@ -685,13 +685,13 @@ theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [P
 alias toIcoMod_inj ↔ _ AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
 #align add_comm_group.modeq.to_Ico_mod_eq_to_Ico_mod AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
 
-theorem Ico_eq_locus_Ioc_eq_unionᵢ_Ioo :
+theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
     { b | toIcoMod hp a b = toIocMod hp a b } = ⋃ z : ℤ, Set.Ioo (a + z • p) (a + p + z • p) := by
   ext1;
-  simp_rw [Set.mem_setOf, Set.mem_unionᵢ, ← Set.sub_mem_Ioo_iff_left, ←
+  simp_rw [Set.mem_setOf, Set.mem_iUnion, ← Set.sub_mem_Ioo_iff_left, ←
     not_modEq_iff_toIcoMod_eq_toIocMod, modEq_iff_not_forall_mem_Ioo_mod hp, not_forall,
     Classical.not_not]
-#align Ico_eq_locus_Ioc_eq_Union_Ioo Ico_eq_locus_Ioc_eq_unionᵢ_Ioo
+#align Ico_eq_locus_Ioc_eq_Union_Ioo Ico_eq_locus_Ioc_eq_iUnion_Ioo
 
 theorem toIocDiv_wcovby_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
   suffices toIocDiv hp a b = toIcoDiv hp a b ∨ toIocDiv hp a b + 1 = toIcoDiv hp a b by
@@ -1057,38 +1057,38 @@ section LinearOrderedAddCommGroup
 
 variable {α : Type _} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
-theorem unionᵢ_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p)) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_unionᵢ.mpr _
+theorem iUnion_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p)) = univ := by
+  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
   refine' ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, _⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
   convert sub_le_iff_le_add.mp hr using 1; abel
-#align Union_Ioc_add_zsmul unionᵢ_Ioc_add_zsmul
+#align Union_Ioc_add_zsmul iUnion_Ioc_add_zsmul
 
-theorem unionᵢ_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p)) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_unionᵢ.mpr _
+theorem iUnion_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p)) = univ := by
+  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
   refine' ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, _⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
   convert sub_lt_iff_lt_add.mp hr using 1; abel
-#align Union_Ico_add_zsmul unionᵢ_Ico_add_zsmul
+#align Union_Ico_add_zsmul iUnion_Ico_add_zsmul
 
-theorem unionᵢ_Icc_add_zsmul : (⋃ n : ℤ, Icc (a + n • p) (a + (n + 1) • p)) = univ := by
-  simpa only [unionᵢ_Ioc_add_zsmul hp a, univ_subset_iff] using
-    unionᵢ_mono fun n : ℤ => (Ioc_subset_Icc_self : Ioc (a + n • p) (a + (n + 1) • p) ⊆ Icc _ _)
-#align Union_Icc_add_zsmul unionᵢ_Icc_add_zsmul
+theorem iUnion_Icc_add_zsmul : (⋃ n : ℤ, Icc (a + n • p) (a + (n + 1) • p)) = univ := by
+  simpa only [iUnion_Ioc_add_zsmul hp a, univ_subset_iff] using
+    iUnion_mono fun n : ℤ => (Ioc_subset_Icc_self : Ioc (a + n • p) (a + (n + 1) • p) ⊆ Icc _ _)
+#align Union_Icc_add_zsmul iUnion_Icc_add_zsmul
 
-theorem unionᵢ_Ioc_zsmul : (⋃ n : ℤ, Ioc (n • p) ((n + 1) • p)) = univ := by
-  simpa only [zero_add] using unionᵢ_Ioc_add_zsmul hp 0
-#align Union_Ioc_zsmul unionᵢ_Ioc_zsmul
+theorem iUnion_Ioc_zsmul : (⋃ n : ℤ, Ioc (n • p) ((n + 1) • p)) = univ := by
+  simpa only [zero_add] using iUnion_Ioc_add_zsmul hp 0
+#align Union_Ioc_zsmul iUnion_Ioc_zsmul
 
-theorem unionᵢ_Ico_zsmul : (⋃ n : ℤ, Ico (n • p) ((n + 1) • p)) = univ := by
-  simpa only [zero_add] using unionᵢ_Ico_add_zsmul hp 0
-#align Union_Ico_zsmul unionᵢ_Ico_zsmul
+theorem iUnion_Ico_zsmul : (⋃ n : ℤ, Ico (n • p) ((n + 1) • p)) = univ := by
+  simpa only [zero_add] using iUnion_Ico_add_zsmul hp 0
+#align Union_Ico_zsmul iUnion_Ico_zsmul
 
-theorem unionᵢ_Icc_zsmul : (⋃ n : ℤ, Icc (n • p) ((n + 1) • p)) = univ := by
-  simpa only [zero_add] using unionᵢ_Icc_add_zsmul hp 0
-#align Union_Icc_zsmul unionᵢ_Icc_zsmul
+theorem iUnion_Icc_zsmul : (⋃ n : ℤ, Icc (n • p) ((n + 1) • p)) = univ := by
+  simpa only [zero_add] using iUnion_Icc_add_zsmul hp 0
+#align Union_Icc_zsmul iUnion_Icc_zsmul
 
 end LinearOrderedAddCommGroup
 
@@ -1097,36 +1097,36 @@ section LinearOrderedRing
 variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
 
 set_option synthInstance.etaExperiment true in
-theorem unionᵢ_Ioc_add_int_cast : (⋃ n : ℤ, Ioc (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Ioc_add_int_cast : (⋃ n : ℤ, Ioc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
-    unionᵢ_Ioc_add_zsmul zero_lt_one a
-#align Union_Ioc_add_int_cast unionᵢ_Ioc_add_int_cast
+    iUnion_Ioc_add_zsmul zero_lt_one a
+#align Union_Ioc_add_int_cast iUnion_Ioc_add_int_cast
 
 set_option synthInstance.etaExperiment true in
-theorem unionᵢ_Ico_add_int_cast : (⋃ n : ℤ, Ico (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Ico_add_int_cast : (⋃ n : ℤ, Ico (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
-    unionᵢ_Ico_add_zsmul zero_lt_one a
-#align Union_Ico_add_int_cast unionᵢ_Ico_add_int_cast
+    iUnion_Ico_add_zsmul zero_lt_one a
+#align Union_Ico_add_int_cast iUnion_Ico_add_int_cast
 
 set_option synthInstance.etaExperiment true in
-theorem unionᵢ_Icc_add_int_cast : (⋃ n : ℤ, Icc (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Icc_add_int_cast : (⋃ n : ℤ, Icc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
-    unionᵢ_Icc_add_zsmul zero_lt_one a
-#align Union_Icc_add_int_cast unionᵢ_Icc_add_int_cast
+    iUnion_Icc_add_zsmul zero_lt_one a
+#align Union_Icc_add_int_cast iUnion_Icc_add_int_cast
 
 variable (α)
 
-theorem unionᵢ_Ioc_int_cast : (⋃ n : ℤ, Ioc (n : α) (n + 1)) = Set.univ := by
-  simpa only [zero_add] using unionᵢ_Ioc_add_int_cast (0 : α)
-#align Union_Ioc_int_cast unionᵢ_Ioc_int_cast
+theorem iUnion_Ioc_int_cast : (⋃ n : ℤ, Ioc (n : α) (n + 1)) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ioc_add_int_cast (0 : α)
+#align Union_Ioc_int_cast iUnion_Ioc_int_cast
 
-theorem unionᵢ_Ico_int_cast : (⋃ n : ℤ, Ico (n : α) (n + 1)) = Set.univ := by
-  simpa only [zero_add] using unionᵢ_Ico_add_int_cast (0 : α)
-#align Union_Ico_int_cast unionᵢ_Ico_int_cast
+theorem iUnion_Ico_int_cast : (⋃ n : ℤ, Ico (n : α) (n + 1)) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ico_add_int_cast (0 : α)
+#align Union_Ico_int_cast iUnion_Ico_int_cast
 
-theorem unionᵢ_Icc_int_cast : (⋃ n : ℤ, Icc (n : α) (n + 1)) = Set.univ := by
-  simpa only [zero_add] using unionᵢ_Icc_add_int_cast (0 : α)
-#align Union_Icc_int_cast unionᵢ_Icc_int_cast
+theorem iUnion_Icc_int_cast : (⋃ n : ℤ, Icc (n : α) (n + 1)) = Set.univ := by
+  simpa only [zero_add] using iUnion_Icc_add_int_cast (0 : α)
+#align Union_Icc_int_cast iUnion_Icc_int_cast
 
 end LinearOrderedRing
 
