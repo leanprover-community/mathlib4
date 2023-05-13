@@ -173,26 +173,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _) := rfl
 
--- TODO move
-pp_extended_field_notation Functor.op
-pp_extended_field_notation Functor.preimage
-
--- TODO use new `pp_extended_field_notation`?
-@[app_unexpander Quiver.Hom.op] def
-  unexpandQuiver.Hom.op : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).op $(X)*)
-  | _                 => throw ()
-
--- TODO use new `pp_extended_field_notation`?
-attribute [nolint docBlame] CategoryTheory.CoverDense.Types.unexpandQuiver.Hom.op
-
--- TODO use new `pp_extended_field_notation`?
-@[app_unexpander Quiver.Hom.unop] def
-  unexpandQuiver.Hom.unop : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).unop $(X)*)
-  | _                 => throw ()
-
-attribute [nolint docBlame] CategoryTheory.CoverDense.Types.unexpandQuiver.Hom.unop
 /-- (Implementation). The `pushforward_family` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
@@ -207,8 +187,10 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   erw [← α.naturality (G.preimage _).op]
   refine' congr_fun _ x
   -- porting note: these next 3 tactics (simp, rw, simp) were just one big `simp only` in Lean 3
+  -- but I can't get `simp` to do the `rw` line.
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op]
-  rw [← ℱ.map_comp, ← ℱ.map_comp] -- `simp only ℱ.map_comp` does nothing
+  rw [← ℱ.map_comp, ← ℱ.map_comp] -- `simp only [← ℱ.map_comp]` does nothing, even if I add
+  -- the relevant explicit inputs
   simp only [← op_comp, G.image_preimage]
   congr 3
   simp [e]
@@ -384,7 +366,8 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
   have : ∀ X : Dᵒᵖ, IsIso ((sheafHom H i.hom).app X) := by
     intro X
     -- porting note: somehow `apply` in Lean 3 is leaving a typeclass goal,
-    -- perhaps due to elaboration order. I reorder the proof.
+    -- perhaps due to elaboration order. The corresponding `apply` in Lean 4 fails
+    -- because the instance can't yet be synthezised. I hence reorder the proof.
     suffices IsIso (yoneda.map ((sheafHom H i.hom).app X)) by
       apply isIso_of_reflects_iso _ yoneda
     use (sheafYonedaHom H i.inv).app X
