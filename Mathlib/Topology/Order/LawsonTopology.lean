@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 
-import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.ScottTopology
---import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lawson topology
