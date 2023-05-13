@@ -8,9 +8,9 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Order.Directed
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Basic
-import Mathlib.Topology.Order
-import Mathlib.Topology.Order.STopology
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Order
+import Mathlib.Topology.Order.LowerTopology
 
 /-!
 # Scott topology
@@ -19,9 +19,12 @@ This file introduces the Scott topology on a preorder.
 
 ## Main definitions
 
+- `inaccessible_by_directed_joins` - a set `u` is said to be inaccessible by directed joins if, when
+  the least upper bound of a directed set `d` lies in `u` then `d` has non-empty intersection with
+  `u`.
 - `ScottTopology'` - the Scott topology is defined as the join of the topology of upper sets and the
-  topological space where a set `u` is open if, when the least upper bound of a directed set `d`
-  lies in `u` then there is a tail of `d` which is a subset of `u`.
+  Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
+  bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
 
 ## Main statements
 
@@ -31,7 +34,7 @@ This file introduces the Scott topology on a preorder.
   monotone.
 - `ScottTopology.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least
   upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
-- `ScottTopology.T0space` - the Scott topology on a partial order is T₀.
+- `ScottTopology.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
 
@@ -67,8 +70,8 @@ variable {α} {β}
 
 variable [Preorder α] [Preorder β]
 
-lemma isUpperSet_iff_forall_le  {s : Set α} : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a ≤ b →
-  a ∈ s → b ∈ s := Iff.rfl
+def inaccessible_by_directed_joins (u : Set α) : Prop :=
+  ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
 /--
 The set of upper sets forms a topology
@@ -82,13 +85,57 @@ def upperSetTopology : TopologicalSpace α :=
 
 
 /--
-The Scott topology is defined as the join of the topology of upper sets and the topological space
-where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
-is a tail of `d` which is a subset of `u`.
+The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
+the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
+subset of `u`.
 -/
-def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔ (@STopology α _)
+def ScottHausdorffTopology : TopologicalSpace α :=
+{ IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
+    a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
+  isOpen_univ := by
+    intros d _ hd₁ _ _ _
+    cases' hd₁ with b hb
+    use b
+    constructor
+    . exact hb
+    . exact (Ici b ∩ d).subset_univ,
+  isOpen_inter := by
+    intros s t hs ht d a hd₁ hd₂ hd₃ ha
+    obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
+    obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
+    obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
+    refine ⟨c, hc_w, ?_⟩
+    . calc
+        Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
+        { apply inter_subset_inter_left d
+          apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
+        _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
+        _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
+  isOpen_unionₛ := by
+    intros s h d a hd₁ hd₂ hd₃ ha
+    obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
+    obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
+    use b
+    constructor
+    . exact hb_w
+    . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w }
 
-lemma S_le_Scott' : (@STopology α _) ≤ (ScottTopology') := le_sup_right
+
+lemma ScottHausdorffTopology.Lower_IsOpen (s : Set α) (h : IsLowerSet s) :
+ScottHausdorffTopology.IsOpen s := by
+  intros d a hd _ hda ha
+  obtain ⟨b, hb⟩  := hd
+  use b
+  constructor
+  . exact hb
+  . apply Subset.trans (inter_subset_right (Ici b) d)
+      (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)
+
+/--
+The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
+topology.
+-/
+def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔ ScottHausdorffTopology
 
 end preorder
 
@@ -163,13 +210,12 @@ variable {α}
 def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
   WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma ScottOpen_iff_upper_and_SOpen (u : Set α) : IsOpen u
-↔ (IsUpperSet u ∧ STopology.IsOpen u) := by erw [topology_eq α]; rfl
+lemma isOpen_iff_upper_and_Scott_Hausdorff_Open (u : Set α) : IsOpen u
+↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) := by erw [topology_eq α]; rfl
 
-lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set α) :
-IsOpen u ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
-a ∈ u → (d ∩ u).Nonempty) := by
-  rw [ScottOpen_iff_upper_and_SOpen]
+lemma isOpen_iff_upper_and_inaccessible_by_directed_joins (u : Set α) :
+IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
+  rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
   constructor
   . refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
@@ -194,7 +240,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
   ↔ (IsLowerSet s ∧
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
-  rw [← isOpen_compl_iff, isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty,
+  rw [← isOpen_compl_iff, isOpen_iff_upper_and_inaccessible_by_directed_joins,
     isLowerSet_compl.symm, compl_compl]
   apply and_congr_right'
   constructor
@@ -213,7 +259,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     contradiction
 
 lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
-  ((ScottOpen_iff_upper_and_SOpen s).mp h).left
+  ((isOpen_iff_upper_and_Scott_Hausdorff_Open s).mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   ((isClosed_iff_lower_and_subset_implies_LUB_mem s).mp h).left
@@ -246,8 +292,7 @@ lemma continuous_monotone {f : α → β}
   have s1 : IsOpen u
   { rw [isOpen_compl_iff, ← closure_singleton]
     exact isClosed_closure }
-  have u3 : b ∈ (f⁻¹'  u) :=
-    isUpperSet_iff_forall_le.mp (isOpen_isUpperSet (IsOpen.preimage hf s1)) hab h
+  have u3 : b ∈ (f⁻¹'  u) := isOpen_isUpperSet (IsOpen.preimage hf s1) hab h
   have c1 : f b ∈ (Iic (f b))ᶜ := by
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
@@ -257,11 +302,11 @@ lemma continuous_monotone {f : α → β}
   . intro h
     rw [continuous_def]
     intros u hu
-    rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+    rw [isOpen_iff_upper_and_inaccessible_by_directed_joins]
     constructor
     . exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
-      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
+      rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at hu
       exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
           (h hd₁ hd₂ hd₃) ha
@@ -277,7 +322,7 @@ lemma continuous_monotone {f : α → β}
         rw [isOpen_compl_iff, ← closure_singleton]
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
-      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
+      rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at s2
       obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ h
       simp at h_1_right
       rw [upperBounds] at hb
@@ -313,7 +358,7 @@ variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
-  rw [ScottTopology.ScottOpen_iff_upper_and_SOpen]
+  rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
@@ -323,10 +368,24 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
 (u : Set α) : IsOpen u ↔
 (IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u →
 (d∩u).Nonempty) := by
-  rw [ScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+  rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
   . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
 
 end complete_lattice
+
+lemma UpperSet_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+upperSetTopology ≤ ‹TopologicalSpace α› := by
+  rw [ScottTopology.topology_eq α, ScottTopology']
+  apply le_sup_left
+
+lemma Scott_Hausdorff_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
+  rw [ScottTopology.topology_eq α, ScottTopology']
+  apply le_sup_right
+
+lemma Scott_Hausdorff_le_Lower [Preorder α] [TopologicalSpace α] [LowerTopology α] :
+ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
+  fun _ h => ScottHausdorffTopology.Lower_IsOpen _ (LowerTopology.isLowerSet_of_isOpen h)
