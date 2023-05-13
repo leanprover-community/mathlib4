@@ -80,6 +80,8 @@ example {x : ℝ} (h : x ≤ 3) : x / 10 ≤ 3 / 10 := by rel_congr
 
 example {x : ℝ} (h : x ≤ 3) : 1 / 10 * x ≤ 1 / 10 * 3 := by rel_congr
 
+example (a b c d : ℕ) (h1 : a ≤ b) (h2 : c ≤ d) : a * c ≤ b * d := by rel_congr
+
 -- this tests that the tactic prioritizes applying hypotheses (such as, here, `0 ≤ a ^ 6`) over the
 -- greedy application of nonnegativity lemmas
 example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by rel_congr
@@ -108,11 +110,11 @@ example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
   rel_congr x ^ 2 * ?_ + 5
   linarith
 
-example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by rel_congr ; apply abs_add
+example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by rel_congr; apply abs_add
 
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ?_ + _ ; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ?_ + (A : ℝ) ; apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr; apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ?_ + _; apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by rel_congr ?_ + (A : ℝ); apply abs_add
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   rel_congr
@@ -126,7 +128,7 @@ example {n' : ℕ} (hn': 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' 
   · linarith
 
 example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
-    let A := F n' ;
+    let A := F n';
     A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
   intro A
   rel_congr
@@ -176,3 +178,8 @@ example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
     "rel_congr failed, no @[rel_congr] lemma applies for the template portion f ?a and the relation LE.le"
     (rel_congr (f ?a) ^ 2)
   rel_congr
+
+example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i in s, f i ≤ ∑ i in s, f (2 * i) := by
+  rel_congr
+  apply h
+  assumption
