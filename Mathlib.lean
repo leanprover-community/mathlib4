@@ -1062,6 +1062,7 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.NormNum
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
@@ -1072,7 +1073,6 @@ import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
