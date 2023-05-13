@@ -13,11 +13,10 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum
 
 /-!
-# Primality prover
+# `norm_num` extensions on natural numbers
 
 This file provides a `norm_num` extention to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
-
 -/
 
 open Nat Qq Lean Meta
