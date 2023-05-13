@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Bipointed
-import Mathbin.Algebra.Category.Mon.Basic
+import Mathlib.CategoryTheory.Category.Bipointed
+import Mathlib.Algebra.Category.Mon.Basic
 
 /-!
 # The category of groups with zero
@@ -43,8 +43,7 @@ def of (α : Type _) [GroupWithZero α] : GroupWithZeroCat :=
 instance : Inhabited GroupWithZeroCat :=
   ⟨of (WithZero PUnit)⟩
 
-instance : LargeCategory.{u} GroupWithZeroCat
-    where
+instance : LargeCategory.{u} GroupWithZeroCat where
   Hom X Y := MonoidWithZeroHom X Y
   id X := MonoidWithZeroHom.id X
   comp X Y Z f g := g.comp f
@@ -52,8 +51,7 @@ instance : LargeCategory.{u} GroupWithZeroCat
   comp_id' X Y := MonoidWithZeroHom.id_comp
   assoc' W X Y Z _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
-instance : ConcreteCategory GroupWithZeroCat
-    where
+instance : ConcreteCategory GroupWithZeroCat where
   forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
   forget_faithful := ⟨fun X Y f g h => FunLike.coe_injective h⟩
 
@@ -71,8 +69,7 @@ instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β
-    where
+def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
