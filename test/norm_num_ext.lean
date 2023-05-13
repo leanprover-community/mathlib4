@@ -72,6 +72,8 @@ example : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num only
 
 example : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num only
 
+example : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num only
+
 /-
 example : ¬ Nat.Prime 0 := by norm_num
 example : ¬ Nat.Prime 1 := by norm_num
