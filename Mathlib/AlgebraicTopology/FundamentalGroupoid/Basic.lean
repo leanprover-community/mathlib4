@@ -139,7 +139,8 @@ theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
     [continuity, continuity, continuity, continuity, skip]
   intro x hx
-  norm_num [hx]
+  -- Porting note: norm_num ignores arguments.
+  simp [hx]
 #align path.homotopy.continuous_trans_refl_reparam_aux Path.Homotopy.continuous_transReflReparamAux
 
 theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
@@ -288,36 +289,37 @@ namespace FundamentalGroupoid
 instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   h
 
-attribute [local reducible] FundamentalGroupoid
+attribute [reducible] FundamentalGroupoid
 
 attribute [local instance] Path.Homotopic.setoid
 
 instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x y
   id x := ⟦Path.refl x⟧
-  comp x y z := Path.Homotopic.Quotient.comp
-  id_comp x y f :=
+  comp {x y z} := Path.Homotopic.Quotient.comp
+  id_comp {x y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦(Path.refl x).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
-  comp_id x y f :=
+  comp_id {x y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.trans (Path.refl y)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc w x y z f g h :=
-    Quotient.induction_on₃ f g h fun p q r =>
+  assoc {w x y z} f g h :=
+    Quotient.inductionOn₃ f g h fun p q r =>
       show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
         Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
-  inv x y p :=
+  inv {x y} p :=
     Quotient.lift (fun l : Path x y => ⟦l.symm⟧)
       (by
         rintro a b ⟨h⟩
-        rw [Quotient.eq']
+        simp only
+        rw [Quotient.eq]
         exact ⟨h.symm₂⟩)
       p
-  inv_comp x y f :=
+  inv_comp {x y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.symm.trans a⟧ = ⟦Path.refl y⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
-  comp_inv x y f :=
+  comp_inv {x y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.trans a.symm⟧ = ⟦Path.refl x⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
@@ -338,7 +340,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     { obj := f
       map := fun p => Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
-      map_comp := fun x y z p q =>
+      map_comp := fun {x y z} p q =>
         Quotient.inductionOn₂ p q fun a b => by
           simp [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift] }
   map_id := by
