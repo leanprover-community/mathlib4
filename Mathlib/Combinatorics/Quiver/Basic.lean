@@ -157,6 +157,8 @@ pp_extended_field_notation Quiver.Hom.op
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
 
+pp_extended_field_notation Quiver.Hom.unop
+
 /-- A type synonym for a quiver with no arrows. -/
 -- Porting note: no has_nonempty_instance linter yet
 -- @[nolint has_nonempty_instance]
