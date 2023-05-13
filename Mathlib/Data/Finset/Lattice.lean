@@ -578,8 +578,7 @@ variable [BoundedOrder α] [DecidableEq ι]
 --TODO: Extract out the obvious isomorphism `(insert i s).pi t ≃ t i ×ˢ s.pi t` from this proof
 theorem inf_sup {κ : ι → Type _} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     (s.inf fun i => (t i).sup (f i)) =
-      (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 :=
-  by
+      (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 := by
   induction' s using Finset.induction with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
