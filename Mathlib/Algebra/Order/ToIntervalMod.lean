@@ -660,8 +660,8 @@ theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp 
   (modEq_iff_toIcoMod_ne_toIocMod _).not_left
 #align add_comm_group.not_modeq_iff_to_Ico_mod_eq_to_Ioc_mod AddCommGroup.not_modEq_iff_toIcoMod_eq_toIocMod
 
-theorem not_modEq_iff_toIcoDiv_eq_toIocDiv : ¬a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b :=
-  by
+theorem not_modEq_iff_toIcoDiv_eq_toIocDiv :
+    ¬a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b := by
   rw [not_modEq_iff_toIcoMod_eq_toIocMod hp, toIcoMod, toIocMod, sub_right_inj,
     (zsmul_strictMono_left hp).injective.eq_iff]
 #align add_comm_group.not_modeq_iff_to_Ico_div_eq_to_Ioc_div AddCommGroup.not_modEq_iff_toIcoDiv_eq_toIocDiv
@@ -864,7 +864,8 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
   suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁
   · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
-    simpa [hd]
+    rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
+    assumption -- Porting note: was `simpa`
   cases' le_or_lt x₃' (x₁ + p) with h₃₁ h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
     · exact hIoc₂₁.symm.trans_ge h₃₁
