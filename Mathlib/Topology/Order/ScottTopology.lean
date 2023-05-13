@@ -82,8 +82,6 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
-
-
 /--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
 the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
@@ -197,7 +195,7 @@ section preorder
 
 variable [Preorder α]
 
-variable [S : TopologicalSpace α] [ScottTopology α]
+variable [TopologicalSpace α] [ScottTopology α]
 
 variable (α)
 
@@ -329,12 +327,6 @@ lemma continuous_monotone {f : α → β}
       simp at hb
       have c1: f c ≤ b := hb _ h_1_left
       contradiction
-
-/-
-lemma S_le_Scott : (@STopology α _) ≤ S := by
-  rw [@ScottTopology.topology_eq α _ S _, ScottTopology']
-  apply le_sup_right
--/
 
 end preorder
 
