@@ -13,6 +13,7 @@ import Mathlib.Combinatorics.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types

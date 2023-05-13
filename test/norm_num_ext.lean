@@ -5,13 +5,13 @@ Authors: Mario Carneiro
 -/
 --import Mathlib.Algebra.BigOperators.NormNum
 --import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Int.GCD
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Factors
 --import Mathlib.Data.Nat.SqrtNormNum
 --import Mathlib.Analysis.SpecialFunctions.Pow
 --import Mathlib.NumberTheory.LegendreSymbol.NormNum
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Tests for `norm_num` extensions
