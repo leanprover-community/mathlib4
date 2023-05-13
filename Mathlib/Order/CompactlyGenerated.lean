@@ -177,8 +177,8 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type _} [CompleteLattice �
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
   by_contra h
-  have sSup : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
-  replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup, h⟩
+  have sSup' : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
+  replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
   obtain ⟨x, hxs, hkx⟩ := hk s hemp hdir sSup.symm.le
   obtain hxk := hbelow x hxs
   exact hxk.ne (hxk.le.antisymm hkx)
