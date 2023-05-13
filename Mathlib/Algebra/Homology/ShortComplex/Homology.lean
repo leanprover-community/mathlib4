@@ -442,7 +442,7 @@ lemma leftRightHomologyComparison'_eq₁ (h₁ : S.LeftHomologyData) (h₂ : S.R
     (by rw [← cancel_epi h₁.π, LeftHomologyData.π_descH_assoc, assoc,
       RightHomologyData.p_g', LeftHomologyData.wi, comp_zero]) := rfl
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma π_leftRightHomologyComparison'_ι (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p :=
   by simp only [leftRightHomologyComparison'_eq₁,
@@ -462,7 +462,7 @@ noncomputable def leftRightHomologyComparison [S.HasLeftHomology] [S.HasRightHom
     S.leftHomology ⟶ S.rightHomology :=
   leftRightHomologyComparison' _ _
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma π_leftRightHomologyComparison_ι [S.HasLeftHomology] [S.HasRightHomology] :
     S.leftHomologyπ ≫ S.leftRightHomologyComparison ≫ S.rightHomologyι =
       S.iCycles ≫ S.pCyclesCo :=
@@ -661,6 +661,8 @@ noncomputable def homologyFunctor [CategoryWithHomology C] :
   obj S := S.homology
   map f := homologyMap f
 
+variable {C}
+
 instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
     (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (homologyMap' φ h₁ h₂) := by
@@ -685,7 +687,7 @@ instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S�
 
 section
 
-variable {C} (S) {A : C}
+variable (S) {A : C}
 variable [HasHomology S]
 
 noncomputable def homologyπ : S.cycles ⟶ S.homology :=
@@ -694,25 +696,25 @@ noncomputable def homologyπ : S.cycles ⟶ S.homology :=
 noncomputable def homologyι : S.homology ⟶ S.cyclesCo :=
   S.rightHomologyIso.inv ≫ S.rightHomologyι
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma homologyπ_comp_leftHomologyIso_inv:
     S.homologyπ ≫ S.leftHomologyIso.inv = S.leftHomologyπ := by
   dsimp only [homologyπ]
   simp only [assoc, Iso.hom_inv_id, comp_id]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma rightHomologyIso_hom_comp_homologyι :
     S.rightHomologyIso.hom ≫ S.homologyι = S.rightHomologyι := by
   dsimp only [homologyι]
   simp only [Iso.hom_inv_id_assoc]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma toCycles_comp_homologyπ :
     S.toCycles ≫ S.homologyπ = 0 := by
   dsimp only [homologyπ]
   simp only [toCycles_comp_leftHomology_π_assoc, zero_comp]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma homologyι_comp_fromCyclesCo :
     S.homologyι ≫ S.fromCyclesCo = 0 := by
   dsimp only [homologyι]
@@ -742,24 +744,24 @@ noncomputable def liftHomology (k : A ⟶ S.cyclesCo) (hk : k ≫ S.fromCyclesCo
     A ⟶ S.homology :=
   S.homologyIsKernel.lift (KernelFork.ofι k hk)
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma π_descHomology (k : S.cycles ⟶ A) (hk : S.toCycles ≫ k = 0) :
   S.homologyπ ≫ S.descHomology k hk = k :=
 Cofork.IsColimit.π_desc S.homologyIsCokernel
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma liftHomology_ι (k : A ⟶ S.cyclesCo) (hk : k ≫ S.fromCyclesCo = 0) :
   S.liftHomology k hk ≫ S.homologyι = k :=
   Fork.IsLimit.lift_ι S.homologyIsKernel
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma homologyπ_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] :
     S₁.homologyπ ≫ homologyMap φ = cyclesMap φ ≫ S₂.homologyπ := by
   simp only [← cancel_mono S₂.leftHomologyIso.inv, assoc, ← leftHomologyIso_inv_naturality φ,
     homologyπ_comp_leftHomologyIso_inv, ← leftHomologyπ_naturality]
   simp only [homologyπ, assoc, Iso.hom_inv_id_assoc, leftHomologyπ_naturality]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] :
     homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.cyclesCoMap φ  := by
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
@@ -892,6 +894,8 @@ lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] : (homologyMap φ).op
   simp only [assoc, rightHomologyMap'_op, op_comp, ← leftHomologyMap'_comp_assoc, id_comp,
     opMap_id, comp_id, HomologyData.op_left]
 
+variable (C)
+
 noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => Iso.symm S.unop.homologyOpIso) (by simp)
@@ -911,22 +915,20 @@ lemma homologyι_descCyclesCo_π_eq_zero_of_boundary [S.HasHomology]
   dsimp only [homologyι]
   rw [assoc, S.rightHomologyι_descCyclesCo_π_eq_zero_of_boundary k x hx, comp_zero]
 
+lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
+    [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (cyclesMap φ)) (h₂ : Epi φ.τ₁) :
+    IsIso (homologyMap φ) := by
+  have h : S₂.toCycles ≫ inv (cyclesMap φ) ≫ S₁.homologyπ = 0 := by
+    simp only [← cancel_epi φ.τ₁, ← toCycles_naturality_assoc,
+      IsIso.hom_inv_id_assoc, toCycles_comp_homologyπ, comp_zero]
+  have ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
+  dsimp at hz
+  refine' ⟨⟨z, _, _⟩⟩
+  . rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
+      IsIso.hom_inv_id_assoc, comp_id]
+  . rw [← cancel_epi S₂.homologyπ, reassoc_of% hz,
+      homologyπ_naturality, IsIso.inv_hom_id_assoc, comp_id]
+
 end ShortComplex
 
 end CategoryTheory
-
---namespace left_homology_data
---
---lemma ext_iff {A : C} (h : S.left_homology_data) [S.has_homology] (f₁ f₂ : S.homology ⟶ A) :
---  f₁ = f₂ ↔ h.π ≫ h.homology_iso.inv ≫ f₁ = h.π ≫ h.homology_iso.inv ≫ f₂ :=
---by rw [← cancel_epi h.homology_iso.inv, cancel_epi h.π]
---
---end left_homology_data
---
---namespace right_homology_data
---
---lemma ext_iff {A : C} (h : S.right_homology_data) [S.has_homology] (f₁ f₂ : A ⟶ S.homology) :
---  f₁ = f₂ ↔ f₁ ≫ h.homology_iso.hom ≫ h.ι = f₂ ≫ h.homology_iso.hom ≫ h.ι :=
---by simp only [← cancel_mono h.homology_iso.hom, ← cancel_mono h.ι, assoc]
---
---end right_homology_data

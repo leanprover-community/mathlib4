@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.HomotopyCategory
 
 open CategoryTheory Category Limits
@@ -101,9 +101,15 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : �
     rw [this, zero_comp]
 
 @[reassoc (attr := simp)]
-lemma toCycles_comp_homology_π (i j : ι) [K.HasHomology j]:
+lemma toCycles_comp_homologyπ (i j : ι) [K.HasHomology j]:
     K.toCycles i j ≫ K.homologyπ j = 0 :=
   K.liftCycles_homologyπ_eq_zero_of_boundary (K.d i j) (c.next j) rfl (𝟙 _) (by simp)
+
+noncomputable def homologyIsCokernel (i j : ι) (hi : c.prev j = i) [K.HasHomology j] :
+    IsColimit (CokernelCofork.ofπ (K.homologyπ j) (K.toCycles_comp_homologyπ i j)) := by
+  subst hi
+  exact IsColimit.ofIsoColimit ((K.sc j).homologyIsCokernel)
+    (Cofork.ext (Iso.refl _) (by dsimp [homologyπ] ; simp))
 
 variable {K L M} (i)
 
@@ -184,6 +190,86 @@ noncomputable def newHomologyFunctorIso [CategoryWithHomology C] :
 
 /- TODO : adapt more of the homology of ShortComplex API to this situation, including the
 dual versions cyclesCo, etc... -/
+
+
+@[simps!]
+noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+    shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k :=
+  NatIso.ofComponents (fun K => ShortComplex.mkIso (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
+    (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
+variable {C c} (K L)
+
+lemma isZero_homology_iff (i : ι) [K.HasHomology i] :
+    IsZero (K.newHomology i) ↔ (K.sc i).Exact := by
+  dsimp only [newHomology]
+  rw [← ShortComplex.exact_iff_isZero_homology]
+
+lemma isZero_homology_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] :
+    IsZero (K.newHomology j) ↔ (K.sc' i j k).Exact := by
+  rw [isZero_homology_iff]
+  exact ShortComplex.exact_iff_of_iso ((natIsoSc' C c i j k hi hk).app K)
+
+lemma isIso_iCycles_of_zero (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    IsIso (K.iCycles i) := by
+  subst hj
+  exact ShortComplex.isIso_iCycles_of_zero _ h
+
+lemma isIso_liftCycles_of_zero (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    IsIso (K.liftCycles (𝟙 (K.X i)) j hj (by rw [h, comp_zero])) := by
+  have := K.isIso_iCycles_of_zero i j hj h
+  exact IsIso.of_isIso_fac_right (K.liftCycles_i _ _ _ _)
+
+variable {K L}
+
+noncomputable def homologyMapArrowIso (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+    Arrow.mk (homologyMap φ j) ≅
+      Arrow.mk (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  refine' Arrow.isoMk
+    (ShortComplex.homologyMapIso ((natIsoSc' C c i j k hi hk).app K))
+    (ShortComplex.homologyMapIso ((natIsoSc' C c i j k hi hk).app L)) _
+  dsimp [homologyMap]
+  simp only [← ShortComplex.homologyMap_comp]
+  congr 1
+  exact ((natIsoSc' C c i j k hi hk).hom.naturality φ).symm
+
+lemma isIso_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  IsIso (homologyMap φ j) ↔
+    IsIso (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.RespectsIso.arrow_mk_iso_iff
+    (MorphismProperty.RespectsIso.isomorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+lemma mono_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  Mono (homologyMap φ j) ↔
+    Mono (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.RespectsIso.arrow_mk_iso_iff
+    (MorphismProperty.RespectsIso.monomorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+lemma epi_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  Epi (homologyMap φ j) ↔
+    Epi (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.RespectsIso.arrow_mk_iso_iff
+    (MorphismProperty.RespectsIso.epimorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (i j : ι) (hi : c.prev j = i)
+    [K.HasHomology j] [L.HasHomology j]
+    (h₁ : IsIso (cyclesMap φ j)) (h₂ : Epi (φ.f i)) :
+    IsIso (homologyMap φ j) := by
+  subst hi
+  exact ShortComplex.isIso_homologyMap_of_isIso_cyclesMap_of_epi _ h₁ h₂
 
 end
 

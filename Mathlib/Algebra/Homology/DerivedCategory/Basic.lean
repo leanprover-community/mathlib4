@@ -197,6 +197,10 @@ lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
   dsimp only [Q, Functor.comp]
   rw [← HomotopyCategory.mem_qis_iff', isIso_Qh_map_iff]
 
+lemma isIso_Q_map_iff' {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ HomologicalComplex.qis _ _ φ :=
+  isIso_Q_map_iff φ
+
 instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := by
   refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _)
     (HomologicalComplex.homotopyEquivalences _ _) Qh (HomotopyCategory.qis C) _ _ _ _
