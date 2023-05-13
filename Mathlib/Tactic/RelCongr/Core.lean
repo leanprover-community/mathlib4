@@ -202,7 +202,7 @@ partial def _root_.Lean.MVarId.relCongr
     (g : MVarId) (template : Option Expr)
     (discharger : MVarId → MetaM Unit)
     (assumption : MVarId → MetaM Unit := fun g => g.assumption) :
-    MetaM (Array MVarId) := do
+    MetaM (Array MVarId) := g.withContext do
   withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
   | none =>
