@@ -37,50 +37,52 @@ theorem Nullhomotopic.comp_right {f : C(X, Y)} (hf : f.Nullhomotopic) (g : C(Y, 
     (g.comp f).Nullhomotopic := by
   cases' hf with y hy
   use g y
-  exact homotopic.hcomp hy (homotopic.refl g)
+  exact Homotopic.hcomp hy (Homotopic.refl g)
 #align continuous_map.nullhomotopic.comp_right ContinuousMap.Nullhomotopic.comp_right
 
 theorem Nullhomotopic.comp_left {f : C(Y, Z)} (hf : f.Nullhomotopic) (g : C(X, Y)) :
     (f.comp g).Nullhomotopic := by
   cases' hf with y hy
   use y
-  exact homotopic.hcomp (homotopic.refl g) hy
+  exact Homotopic.hcomp (Homotopic.refl g) hy
 #align continuous_map.nullhomotopic.comp_left ContinuousMap.Nullhomotopic.comp_left
 
 end ContinuousMap
 
 open ContinuousMap
 
-open ContinuousMap
-
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`hequiv_unit] [] -/
 /-- A contractible space is one that is homotopy equivalent to `unit`. -/
 class ContractibleSpace (X : Type _) [TopologicalSpace X] : Prop where
-  hequiv_unit : Nonempty (X ≃ₕ Unit)
+  hequiv_unit' : Nonempty (X ≃ₕ Unit)
 #align contractible_space ContractibleSpace
+
+-- Porting note: added to work around lack of infer kinds
+theorem ContractibleSpace.hequiv_unit (X : Type _) [TopologicalSpace X] [ContractibleSpace X] :
+    Nonempty (X ≃ₕ Unit) :=
+  ContractibleSpace.hequiv_unit'
+#align contractible_space.hequiv_unit ContractibleSpace.hequiv_unit
 
 theorem id_nullhomotopic (X : Type _) [TopologicalSpace X] [ContractibleSpace X] :
     (ContinuousMap.id X).Nullhomotopic := by
   obtain ⟨hv⟩ := ContractibleSpace.hequiv_unit X
-  use hv.inv_fun ()
+  use hv.invFun ()
   convert hv.left_inv.symm
-  ext; simp; congr
 #align id_nullhomotopic id_nullhomotopic
 
 theorem contractible_iff_id_nullhomotopic (Y : Type _) [TopologicalSpace Y] :
     ContractibleSpace Y ↔ (ContinuousMap.id Y).Nullhomotopic := by
-  constructor;
+  constructor
   · intro
     apply id_nullhomotopic
   rintro ⟨p, h⟩
-  refine_struct
-    {
-      hequiv_unit :=
+  refine
+    { hequiv_unit' :=
         ⟨{  toFun := ContinuousMap.const _ ()
-            invFun := ContinuousMap.const _ p }⟩ }
-  · exact h.symm;
-  · convert homotopic.refl (ContinuousMap.id Unit)
-    ext
+            invFun := ContinuousMap.const _ p
+            left_inv := ?_
+            right_inv := ?_ }⟩ }
+  · exact h.symm
+  · convert Homotopic.refl (ContinuousMap.id Unit)
 #align contractible_iff_id_nullhomotopic contractible_iff_id_nullhomotopic
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
@@ -92,16 +94,12 @@ protected theorem ContinuousMap.HomotopyEquiv.contractibleSpace [ContractibleSpa
 
 protected theorem ContinuousMap.HomotopyEquiv.contractibleSpace_iff (e : X ≃ₕ Y) :
     ContractibleSpace X ↔ ContractibleSpace Y :=
-  ⟨by
-    intro h
-    exact e.symm.contractible_space, by
-    intro h
-    exact e.contractible_space⟩
+  ⟨fun _ => e.symm.contractibleSpace, fun _ => e.contractibleSpace⟩
 #align continuous_map.homotopy_equiv.contractible_space_iff ContinuousMap.HomotopyEquiv.contractibleSpace_iff
 
 protected theorem Homeomorph.contractibleSpace [ContractibleSpace Y] (e : X ≃ₜ Y) :
     ContractibleSpace X :=
-  e.toHomotopyEquiv.ContractibleSpace
+  e.toHomotopyEquiv.contractibleSpace
 #align homeomorph.contractible_space Homeomorph.contractibleSpace
 
 protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
@@ -113,8 +111,7 @@ namespace ContractibleSpace
 
 instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X
-  have : ∀ x, Joined p x := fun x => ⟨(h.eval_at x).symm⟩
+  have : ∀ x, Joined p x := fun x => ⟨(h.evalAt x).symm⟩
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
 
 end ContractibleSpace
-
