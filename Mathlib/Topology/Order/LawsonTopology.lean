@@ -6,7 +6,7 @@ Authors: Christopher Hoskin
 
 import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.ScottTopology
-import Mathlib.Tactic.LibrarySearch
+--import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lawson topology
@@ -136,21 +136,23 @@ lemma Scott_le_Lawson : L ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
   apply inf_le_right
 
-lemma S_le_Lawson : (@STopology α _) ≤ L := by
-  rw [@LawsonTopology.topology_eq α _ L _,  LawsonTopology']
-  rw [le_inf_iff]
+lemma Scott_Hausdorff_le_Lawson : (@ScottHausdorffTopology α _) ≤ L := by
+  rw [@LawsonTopology.topology_eq α _ L _,  LawsonTopology', le_inf_iff,
+    ← @LowerTopology.topology_eq α _ l _, ← @ScottTopology.topology_eq α _ S _]
   constructor
-  . exact @LowerTopology.STopology_le' α _ l _
-  . exact S_le_Scott'
+  . exact @Scott_Hausdorff_le_Lower  α _ l _
+  . exact Scott_Hausdorff_le_Scott
 
 open Topology
 
-lemma LawsonOpen_implies_Sopen : IsOpen[L] ≤ IsOpen[STopology] := by
+lemma LawsonOpen_implies_ScottHausdorffOpen : IsOpen[L] ≤ IsOpen[ScottHausdorffTopology] := by
   rw [←TopologicalSpace.le_def]
-  exact (@S_le_Lawson _ _ l _ _ _)
+  apply (@Scott_Hausdorff_le_Lawson _ L l _ _ _)
 
-lemma LawsonOpen_implies_Sopen' (s : Set α) : IsOpen[L] s → IsOpen[STopology] s := by
-  apply (@LawsonOpen_implies_Sopen _ _ l)
+
+lemma LawsonOpen_implies_ScottHausdorffOpen' (s : Set α) :
+IsOpen[L] s → IsOpen[ScottHausdorffTopology] s := by
+  apply (@LawsonOpen_implies_ScottHausdorffOpen _ _ l)
 
 end csh
 
@@ -169,10 +171,11 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
   IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
   . intro hs
-    rw [@ScottTopology.ScottOpen_iff_upper_and_SOpen α _ S]
+    rw [@ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open α _ S]
     constructor
     . exact h
-    . exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_Sopen' _ _ l _ _ _ s) hs d d₁ d₂ d₃
+    . exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s)
+        hs d d₁ d₂ d₃
   . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
 
 end CompleteLattice

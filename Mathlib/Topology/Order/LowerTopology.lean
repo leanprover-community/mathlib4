@@ -10,7 +10,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Topology.Order.STopology
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
@@ -64,7 +63,6 @@ variable [Preorder α]
 def LowerTopology' : TopologicalSpace α := generateFrom { s | ∃ a, Ici aᶜ = s }
 
 end preorder
-
 
 /-- Type synonym for a preorder equipped with the lower topology. -/
 def WithLowerTopology := α
@@ -133,12 +131,14 @@ instance : Preorder (WithLowerTopology α) :=
 instance : TopologicalSpace (WithLowerTopology α) := LowerTopology'
 
 theorem isOpen_preimage_ofLower (S : Set α) :
-    IsOpen (WithLowerTopology.ofLower ⁻¹' S) ↔ LowerTopology'.IsOpen S :=
+    IsOpen (WithLowerTopology.ofLower ⁻¹' S) ↔
+      LowerTopology'.IsOpen S :=
   Iff.rfl
 #align with_lower_topology.is_open_preimage_of_lower WithLowerTopology.isOpen_preimage_ofLower
 
 theorem isOpen_def (T : Set (WithLowerTopology α)) :
-    IsOpen T ↔ LowerTopology'.IsOpen (WithLowerTopology.toLower ⁻¹' T) :=
+    IsOpen T ↔
+      LowerTopology'.IsOpen (WithLowerTopology.toLower ⁻¹' T) :=
   Iff.rfl
 #align with_lower_topology.is_open_def WithLowerTopology.isOpen_def
 
@@ -165,7 +165,7 @@ def lowerBasis (α : Type _) [Preorder α] :=
 section Preorder
 
 variable (α)
-variable [Preorder α] [l : TopologicalSpace α] [LowerTopology α] {s : Set α}
+variable [Preorder α] [TopologicalSpace α] [LowerTopology α] {s : Set α}
 
 lemma topology_eq : ‹_› = LowerTopology' := topology_eq_lowerTopology
 
@@ -242,12 +242,6 @@ lemma continuous_of_Ici [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClos
   refine continuous_generateFrom ?_
   rintro _ ⟨a, rfl⟩
   exact (h a).isOpen_compl
-
-lemma STopology_le :  (@STopology α _) ≤  l := fun _ h => Lower_IsOpen _ (isLowerSet_of_isOpen h)
-
-lemma STopology_le' :  (@STopology α _) ≤  LowerTopology' := by
-  rw [← @LowerTopology.topology_eq α _ l _]
-  exact STopology_le
 
 end Preorder
 

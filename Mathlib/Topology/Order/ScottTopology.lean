@@ -330,9 +330,11 @@ lemma continuous_monotone {f : α → β}
       have c1: f c ≤ b := hb _ h_1_left
       contradiction
 
+/-
 lemma S_le_Scott : (@STopology α _) ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, ScottTopology']
   apply le_sup_right
+-/
 
 end preorder
 
