@@ -50,6 +50,7 @@ variable {R : Type u} [Ring R] {M : ModuleCat.{max u v} R}
 theorem projective_of_free {ι : Type _} (b : Basis ι R M) : Projective M :=
   Projective.of_iso (ModuleCat.ofSelfIso _)
     (IsProjective.iff_projective.mp (Module.Projective.of_basis b))
+set_option linter.uppercaseLean3 false in
 #align Module.projective_of_free ModuleCat.projective_of_free
 
 /-- The category of modules has enough projectives, since every module is a quotient of a free
@@ -62,6 +63,8 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
         Epi :=
           (epi_iff_range_eq_top _).mpr
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by simp [Basis.constr]⟩) }⟩
+            Lean 3 names are usually lowercase. This might be a typo.
+set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
 end ModuleCat
