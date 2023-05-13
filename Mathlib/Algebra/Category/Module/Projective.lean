@@ -8,7 +8,7 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.GroupCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
