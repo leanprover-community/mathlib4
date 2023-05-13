@@ -31,7 +31,7 @@ attribute [local instance]
   CategoryTheory.ConcreteCategory.hasCoeToSort CategoryTheory.ConcreteCategory.hasCoeToFun
 
 -- porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.Forget.obj x) := by
+instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.forget.obj x) := by
   change (Fintype (Fin _))
   infer_instance
 
@@ -65,7 +65,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj :
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]
       apply h
-      simp only [CategoryTheory.forget_obj_eq_coe, Finset.mem_univ, forall_true_left,
+      simp only [Finset.mem_univ, forall_true_left,
         ge_iff_le, Finset.le_eq_subset, Finset.inf_eq_inter, Finset.mem_inter,
         Finset.mem_filter, true_and] at he
       rw [← he.1, he.2]⟩
@@ -115,7 +115,7 @@ def toTop : SimplexCategory ⥤ TopCat where
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]
       apply h
-      simp only [CategoryTheory.forget_obj_eq_coe, Finset.mem_univ, forall_true_left,
+      simp only [Finset.mem_univ, forall_true_left,
         ge_iff_le, Finset.le_eq_subset, Finset.inf_eq_inter, Finset.mem_inter,
         Finset.mem_filter, true_and] at he
       rw [← he.1, he.2]

@@ -303,7 +303,6 @@ theorem agree : f.range.carrier = { x | h x = g x } := by
         simp only [← fromCoset_eq_of_mem_range _ (Subgroup.mul_mem _ ⟨a, rfl⟩ m)]
         congr
         rw [leftCoset_assoc _ (f a) y]
-        rfl
       · rw [h_apply_fromCoset_nin_range f (f a) ⟨_, rfl⟩ _ m]
         simp only [leftCoset_assoc]
     · rw [g_apply_infinity, h_apply_infinity f (f a) ⟨_, rfl⟩]
@@ -324,7 +323,6 @@ theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ G
   have : f a ∈ { b | h b = g b } := by
     rw [←agree]
     use a
-    rfl
   rw [this]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq
 
@@ -353,7 +351,7 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
 #align Group.surjective_of_epi GroupCat.surjective_of_epi
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
-  ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective _⟩
+  ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
 #align Group.epi_iff_surjective GroupCat.epi_iff_surjective
 
 theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
@@ -454,8 +452,6 @@ theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
 @[to_additive]
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, MonoidHom.range_top_iff_surjective]
-  -- Porting note: extra rfl forces the issue
-  rfl
 #align CommGroup.epi_iff_surjective CommGroupCat.epi_iff_surjective
 #align AddCommGroup.epi_iff_surjective AddCommGroupCat.epi_iff_surjective
 
@@ -474,4 +470,3 @@ instance forget_commGroupCat_preserves_epi : (forget CommGroupCat).PreservesEpim
 end CommGroupCat
 
 end
-
