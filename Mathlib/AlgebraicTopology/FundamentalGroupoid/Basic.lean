@@ -89,28 +89,33 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
   toFun x := p ⟨reflTransSymmAux x, reflTransSymmAux_mem_I x⟩
   continuous_toFun := by continuity
-  map_zero_left' := by norm_num [refl_trans_symm_aux]
-  map_one_left' x := by
-    dsimp only [refl_trans_symm_aux, Path.coe_toContinuousMap, Path.trans]
-    change _ = ite _ _ _
-    split_ifs
-    · rw [Path.extend, Set.IccExtend_of_mem]
-      · norm_num
-      · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
-        exact ⟨unitInterval.nonneg x, h⟩
-    · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
-      · congr 1
-        ext
-        norm_num [sub_sub_eq_add_sub]
-      · rw [unitInterval.two_mul_sub_one_mem_iff]
-        exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
+  map_zero_left := by simp [reflTransSymmAux]
+  map_one_left x := by
+    sorry <;>
+    · dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
+      change _ = ite _ _ _
+      split_ifs with h
+      · rw [Path.extend, Set.IccExtend_of_mem]
+        · norm_num
+        · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
+          exact ⟨unitInterval.nonneg x, h⟩
+      · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
+        · simp
+          congr 1
+          apply  congr_arg p
+          ext
+          norm_num [sub_sub_eq_add_sub]
+        · rw [unitInterval.two_mul_sub_one_mem_iff]
+          exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
   prop' t x hx := by
-    cases hx
-    · rw [hx]
-      simp [refl_trans_symm_aux]
-    · rw [Set.mem_singleton_iff] at hx
-      rw [hx]
-      norm_num [refl_trans_symm_aux]
+    -- sorry
+    simp at hx
+    simp
+    cases hx with
+    | inl hx
+    | inr hx =>
+        rw [hx]
+        simp [reflTransSymmAux]
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
