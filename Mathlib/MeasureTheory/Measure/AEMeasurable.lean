@@ -241,7 +241,7 @@ protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :
 
 end AEMeasurable
 
-theorem aemeasurable_const' (h : ∀ᵐ x y ∂μ, f x = f y) : AEMeasurable f μ := by
+theorem aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ := by
   rcases eq_or_ne μ 0 with (rfl | hμ)
   · exact aemeasurable_zero_measure
   · haveI := ae_neBot.2 hμ

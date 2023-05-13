@@ -363,10 +363,8 @@ section Notation
 open Lean
 
 -- mathport name: «expr∀ᵐ ∂ , »
-open TSyntax.Compat in
 @[inherit_doc Filter.Eventually]
-macro "∀ᵐ " xs:eventuallyBinders " ∂" μ:term ", " t:term : term =>
-  `(∀ᶠ $xs in Measure.ae $μ, $t)
+notation3"∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
 @[app_unexpander Filter.Eventually] def _root_.unexpandEventuallyAE : Lean.PrettyPrinter.Unexpander
   | `($(_) $p $f) =>
@@ -380,10 +378,8 @@ macro "∀ᵐ " xs:eventuallyBinders " ∂" μ:term ", " t:term : term =>
   | _ => throw ()
 
 -- mathport name: «expr∃ᵐ ∂ , »
-open TSyntax.Compat in
 @[inherit_doc Filter.Frequently]
-macro "∃ᵐ " xs:eventuallyBinders " ∂" μ:term ", " t:term : term =>
-  `(∃ᶠ $xs in Measure.ae $μ, $t)
+notation3"∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
 @[app_unexpander Filter.Frequently] def _root_.unexpandFrequentlyAE : Lean.PrettyPrinter.Unexpander
   | `($(_) $p $f) =>

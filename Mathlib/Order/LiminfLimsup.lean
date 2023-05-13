@@ -818,7 +818,7 @@ theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
     (h : ∃ᶠ a in f, u a ≤ x) : liminf u f ≤ x := by
   rw [liminf_eq]
   refine' supₛ_le fun b hb => _
-  have hbx : ∃ᶠ _ in f, b ≤ x := by
+  have hbx : ∃ᶠ _a in f, b ≤ x := by
     revert h
     rw [← not_imp_not, not_frequently, not_frequently]
     exact fun h => hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
