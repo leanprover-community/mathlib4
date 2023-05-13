@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj := fun g =>
   ⟨fun i => ∑ j in Finset.univ.filter fun k => f k = i, g j, by
     simp only [Finset.sum_congr, toTopObj, Set.mem_setOf]
-    rw [← Finset.sum_bunionᵢ]
+    rw [← Finset.sum_biUnion]
     have hg := g.2
     dsimp [toTopObj] at hg
     convert hg
@@ -106,7 +106,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     dsimp
     simp only [TopCat.comp_app]
     simp only [TopCat.hom_apply, coe_toTopMap]
-    erw [← Finset.sum_bunionᵢ]
+    erw [← Finset.sum_biUnion]
     . apply Finset.sum_congr
       . exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
       . tauto

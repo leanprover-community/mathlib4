@@ -190,15 +190,15 @@ theorem fg_finset_sup {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (
   Finset.sup_induction fg_bot (fun _ ha _ hb => ha.sup hb) h
 #align submodule.fg_finset_sup Submodule.fg_finset_sup
 
-theorem fg_bsupᵢ {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
-    (⨆ i ∈ s, N i).Fg := by simpa only [Finset.sup_eq_supᵢ] using fg_finset_sup s N h
-#align submodule.fg_bsupr Submodule.fg_bsupᵢ
+theorem fg_biSup {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
+    (⨆ i ∈ s, N i).Fg := by simpa only [Finset.sup_eq_iSup] using fg_finset_sup s N h
+#align submodule.fg_bsupr Submodule.fg_biSup
 
-theorem fg_supᵢ {ι : Type _} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).Fg) :
-    (supᵢ N).Fg := by
+theorem fg_iSup {ι : Type _} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).Fg) :
+    (iSup N).Fg := by
   cases nonempty_fintype ι
-  simpa using fg_bsupᵢ Finset.univ N fun i _ => h i
-#align submodule.fg_supr Submodule.fg_supᵢ
+  simpa using fg_biSup Finset.univ N fun i _ => h i
+#align submodule.fg_supr Submodule.fg_iSup
 
 variable {P : Type _} [AddCommMonoid P] [Module R P]
 
@@ -259,8 +259,8 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     choose t htf hts using hsb
     -- Porting note: `refine'` doesn't work here
     refine
-      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_unionᵢ fun i => (htf i).image _, ?_⟩
-    simp_rw [span_unionᵢ, span_image, hts, Submodule.supᵢ_map_single]
+      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
+    simp_rw [span_iUnion, span_image, hts, Submodule.iSup_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
 /-- Porting note: helping Lean find the coercion to functions below -/
@@ -396,11 +396,11 @@ theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algeb
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
-theorem Fg.stablizes_of_supᵢ_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ →o Submodule R M)
-    (H : supᵢ N = M') : ∃ n, M' = N n := by
+theorem Fg.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ →o Submodule R M)
+    (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
   have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
-    (Submodule.mem_supᵢ_of_chain N s).mp
+    (Submodule.mem_iSup_of_chain N s).mp
       (by
         rw [H, ← hS]
         exact Submodule.subset_span s.2)
@@ -412,8 +412,8 @@ theorem Fg.stablizes_of_supᵢ_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ �
     intro s hs
     exact N.2 (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
   · rw [← H]
-    exact le_supᵢ _ _
-#align submodule.fg.stablizes_of_supr_eq Submodule.Fg.stablizes_of_supᵢ_eq
+    exact le_iSup _ _
+#align submodule.fg.stablizes_of_supr_eq Submodule.Fg.stablizes_of_iSup_eq
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactElement s := by
@@ -424,25 +424,25 @@ theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactE
     have supr_rw : ∀ t : Finset M, (⨆ x ∈ t, sp x) = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
     constructor
     · rintro ⟨t, rfl⟩
-      rw [span_eq_supᵢ_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_supᵢ t sp]
+      rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
       apply CompleteLattice.finset_sup_compact_of_compact
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
       -- s is the Sup of the spans of its elements.
-      have sSup : s = supₛ (sp '' ↑s) := by
-        rw [supₛ_eq_supᵢ, supᵢ_image, ← span_eq_supᵢ_of_singleton_spans, eq_comm, span_eq]
+      have sSup : s = sSup (sp '' ↑s) := by
+        rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
       -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
       obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup)
       have ssup : s = u.sup id := by
         suffices : u.sup id ≤ s
         exact le_antisymm husup this
-        rw [sSup, Finset.sup_id_eq_supₛ]
-        exact supₛ_le_supₛ huspan
+        rw [sSup, Finset.sup_id_eq_sSup]
+        exact sSup_le_sSup huspan
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan
       obtain ⟨t, ⟨-, rfl⟩⟩ := this
-      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
-        span_eq_supᵢ_of_singleton_spans, eq_comm] at ssup
+      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_iSup, supr_rw, ←
+        span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
