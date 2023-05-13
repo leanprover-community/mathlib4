@@ -14,7 +14,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Data.IsROrC.Basic
 
 /-!
-# The Minkowksi functional
+# The Minkowski functional
 
 This file defines the Minkowski functional, aka gauge.
 
@@ -26,9 +26,9 @@ induces the equivalence of seminorms and locally convex topological vector space
 ## Main declarations
 
 For a real vector space,
-* `gauge`: Aka Minkowksi functional. `gauge s x` is the least (actually, an infimum) `r` such
+* `gauge`: Aka Minkowski functional. `gauge s x` is the least (actually, an infimum) `r` such
   that `x ∈ r • s`.
-* `gauge_seminorm`: The Minkowski functional as a seminorm, when `s` is symmetric, convex and
+* `gaugeSeminorm`: The Minkowski functional as a seminorm, when `s` is symmetric, convex and
   absorbent.
 
 ## References
@@ -77,7 +77,7 @@ theorem gauge_def' : gauge s x = infₛ ({ r ∈ Set.Ioi (0 : ℝ) | r⁻¹ • 
 private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • s } :=
   ⟨0, fun _ hr => hr.1.le⟩
 
-/-- If the given subset is `absorbent` then the set we take an infimum over in `gauge` is nonempty,
+/-- If the given subset is `Absorbent` then the set we take an infimum over in `gauge` is nonempty,
 which is useful for proving many properties about the gauge.  -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
@@ -283,7 +283,6 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
     rwa [smul_inv₀, smul_assoc, ← h, inv_smul_smul₀ ha'.ne']
   · rintro ⟨r, ⟨hr, hx⟩, rfl⟩
     rw [mem_Ioi] at hr⊢
-    have := smul_pos ha' hr
     refine' ⟨smul_pos (inv_pos.2 ha') hr, r⁻¹ • x, hx, _⟩
     rw [smul_inv₀, smul_assoc, inv_inv]
 #align gauge_smul_left_of_nonneg gauge_smul_left_of_nonneg
