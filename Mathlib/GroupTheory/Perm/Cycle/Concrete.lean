@@ -133,11 +133,12 @@ namespace Cycle
 
 variable [DecidableEq α] (s s' : Cycle α)
 
-/-- A cycle `s : Cycle α` , given `Nodup s` can be interpreted as a `Equiv.Perm α`
+/-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as a `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
-def formPerm : ∀ (s : Cycle α) (h : Nodup s), Equiv.Perm α :=
-  fun s => Quotient.hrecOn s (fun l h => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
+def formPerm : ∀ (s : Cycle α) (_ : Nodup s), Equiv.Perm α :=
+  fun s => Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
+    apply Function.hfunext
     ext
     · exact h.nodup_iff
     · intro h₁ h₂ _
