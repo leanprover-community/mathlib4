@@ -211,19 +211,11 @@ def evalNatCoprime : NormNumExt where eval {u α} e := do
     have pf' : Q(¬ Nat.coprime $x $y) := q(isNat_not_coprime $p $q $pf)
     return .isFalse pf'
 
-/-- Given a raw integer literal, give its absolute value as a raw natural number literal.
-Panics if argument is not a raw integer literal. -/
-private def rawIntLitAbs (e : Q(ℤ)) : Q(ℕ) :=
-  if e.isAppOfArity ``Int.ofNat 1 || e.isAppOfArity ``Int.negOfNat 1 then
-    e.appArg!
-  else
-    panic! "not a raw integer literal"
-
 /-- Given two integers, return their GCD and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntGCD (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.gcd $ex $ey = $ed) :=
-  let ex' : Q(ℕ) := rawIntLitAbs ex
-  let ey' : Q(ℕ) := rawIntLitAbs ey
+  let ex' : Q(ℕ) := ex.intLitNatAbs!
+  let ey' : Q(ℕ) := ey.intLitNatAbs!
   have hx : Q(($ex).natAbs = $ex') := (q(Eq.refl $ex') : Expr)
   have hy : Q(($ey).natAbs = $ey') := (q(Eq.refl $ey') : Expr)
   let ⟨ed, pf⟩ := proveNatGCD ex' ey'
@@ -247,8 +239,8 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
 /-- Given two integers, return their LCM and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntLCM (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.lcm $ex $ey = $ed) :=
-  let ex' : Q(ℕ) := rawIntLitAbs ex
-  let ey' : Q(ℕ) := rawIntLitAbs ey
+  let ex' : Q(ℕ) := ex.intLitNatAbs!
+  let ey' : Q(ℕ) := ey.intLitNatAbs!
   have hx : Q(($ex).natAbs = $ex') := (q(Eq.refl $ex') : Expr)
   have hy : Q(($ey).natAbs = $ey') := (q(Eq.refl $ey') : Expr)
   let ⟨ed, pf⟩ := proveNatLCM ex' ey'
