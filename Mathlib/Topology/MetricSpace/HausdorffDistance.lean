@@ -462,6 +462,11 @@ def infDist (x : α) (s : Set α) : ℝ :=
   ENNReal.toReal (infEdist x s)
 #align metric.inf_dist Metric.infDist
 
+theorem infDist_eq_infᵢ : infDist x s = ⨅ y : s, dist x y := by
+  rw [infDist, infEdist, infᵢ_subtype', ENNReal.toReal_infᵢ]
+  · simp only [dist_edist]
+  · exact fun _ ↦ edist_ne_top _ _
+
 /-- The minimal distance is always nonnegative -/
 theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
 #align metric.inf_dist_nonneg Metric.infDist_nonneg

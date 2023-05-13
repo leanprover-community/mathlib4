@@ -108,17 +108,19 @@ deriving Nonempty
 Creates a `DeclCache`.
 The cached structure `α` is initialized with `empty`,
 and then `addLibraryDecl` is called for every imported constant, and the result is cached.
+After all imported constants have been added, we run `post`.
 When `get` is called, `addDecl` is also called for every constant in the current file.
 -/
 def DeclCache.mk (profilingName : String) (empty : α)
     (addDecl : Name → ConstantInfo → α → MetaM α)
-    (addLibraryDecl : Name → ConstantInfo → α → MetaM α := addDecl) : IO (DeclCache α) := do
+    (addLibraryDecl : Name → ConstantInfo → α → MetaM α := addDecl)
+    (post : α → MetaM α := fun a => pure a) : IO (DeclCache α) := do
   let cache ← Cache.mk do
     profileitM Exception profilingName (← getOptions) do
     let mut a := empty
     for (n, c) in (← getEnv).constants.map₁.toList do
       a ← addLibraryDecl n c a
-    return a
+    return (← post a)
   pure { cache := cache, addDecl := addDecl }
 
 /--
@@ -147,6 +149,7 @@ from a function that returns a collection of keys and values for each declaratio
 -/
 def DiscrTreeCache.mk [BEq α] (profilingName : String)
     (processDecl : Name → ConstantInfo → MetaM (Array (Array (DiscrTree.Key true) × α)))
+    (post? : Option (Array α → Array α) := none)
     (init : Option (DiscrTree α true) := none) :
     IO (DiscrTreeCache α) :=
   let updateTree := fun name constInfo tree => do
@@ -155,9 +158,12 @@ def DiscrTreeCache.mk [BEq α] (profilingName : String)
     return (← updateTree name constInfo tree₁, tree₂)
   let addLibraryDecl := fun name constInfo (tree₁, tree₂) => do
     return (tree₁, ← updateTree name constInfo tree₂)
+  let post := match post? with
+  | some f => fun (T₁, T₂) => return (T₁, T₂.mapArrays f)
+  | none => fun T => pure T
   match init with
   | some t => return ⟨← Cache.mk (pure ({}, t)), addDecl, addLibraryDecl⟩
-  | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl
+  | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl (post := post)
 
 /--
 Get matches from both the discrimination tree for declarations in the current file,
@@ -170,4 +176,6 @@ and then call `DiscrTree.getMatch` multiple times.
 -/
 def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α) := do
   let (locals, imports) ← c.get
-  return (← locals.getMatch e) ++ (← imports.getMatch e)
+  -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
+  -- Hence we reverse this list, so we try out more specific lemmas earlier.
+  return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse

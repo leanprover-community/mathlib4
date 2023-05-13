@@ -57,6 +57,8 @@ import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
@@ -77,6 +79,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
+import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.PushNeg
@@ -92,6 +95,7 @@ import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
+import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
@@ -104,6 +108,7 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.Slice
+import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread

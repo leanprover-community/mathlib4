@@ -466,7 +466,6 @@ instance nonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
           simp only [add_smul, smul_add, add_mul]
           abel }
 
-set_option synthInstance.etaExperiment true in
 instance monoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Monoid (Unitization R A) :=
   { Unitization.mulOneClass with
@@ -651,8 +650,6 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
       φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A) =
         ψ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)) :
     φ = ψ :=
-    -- porting note: this is due to lean4#2074 and it succeeds with
-    -- `set_option synthInstance.etaExperiment true`
   algHom_ext (NonUnitalAlgHom.congr_fun h) (by simp [AlgHom.commutes])
 #align unitization.alg_hom_ext' Unitization.algHom_ext'
 

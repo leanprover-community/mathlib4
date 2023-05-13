@@ -45,7 +45,7 @@ A "modifier" for a declaration.
 -/
 inductive DeclMod
 | none | symm | mp | mpr
-deriving DecidableEq
+deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
   toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
@@ -84,6 +84,14 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
   DiscrTreeCache.mk "librarySearch: init cache" processLemma
+    -- Sort so lemmas with longest names come first.
+    -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
+    -- means that the results come in "batches", with more specific matches *later*.
+    -- Thus we're going to call reverse on the result of `DiscrTree.getMatch`,
+    -- so if we want to try lemmas with shorter names first,
+    -- we need to put them into the `DiscrTree` backwards.
+    (post? := some fun A =>
+      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 > q.1) |>.map (·.2))
 
 open System (FilePath)
 
@@ -234,12 +242,6 @@ def librarySearch (goal : MVarId) (required : List Expr)
       setMCtx ctx
       return none)
 
-/-- Log a message if it looks like we ran out of time. -/
-def reportOutOfHeartbeats (stx : Syntax) : MetaM Unit := do
-  if (← heartbeatsPercent) ≥ 90 then
-    logInfoAt stx ("`library_search` stopped because it was running out of time.\n" ++
-      "You may get better results using `set_option maxHeartbeats 0`.")
-
 open Lean.Parser.Tactic
 
 -- TODO: implement the additional options for `library_search` from Lean 3,
@@ -260,7 +262,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal required then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addRefineSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
@@ -275,7 +277,7 @@ elab tk:"library_search%" : term <= expectedType => do
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
     if let some suggestions ← librarySearch introdGoal [] then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
@@ -305,7 +307,7 @@ elab_rules : tactic |
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
     if let some _ ← librarySearch goal [] then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
