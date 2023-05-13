@@ -695,6 +695,7 @@ import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Subobject.Types
 import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
