@@ -675,7 +675,7 @@ def proveNatLCM' (x y : ℕ) : ((d : ℕ) × Q(Nat.lcm $x $y = $d)) :=
     have pm : Q(Nat.mul $d $m = $n) := (q(Eq.refl $n) : Expr)
     ⟨m, q(nat_lcm_helper $x $y $d $m $n $pd (Eq.mp Nat.blt_eq $p0) $pxy $pm)⟩
 
-/-- Given natural number literals `nx` and `ny`, return their GCD as a natural number literal
+/-- Given natural number literals `nx` and `ny`, return their LCM as a natural number literal
 and an equality proof. -/
 def proveNatLCM (nx ny : Q(ℕ)) : Option ((d : Q(ℕ)) × Q(Nat.lcm $nx $ny = $d)) := do
   let x ← nx.natLit?
@@ -751,7 +751,7 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
   have pf' : Q(IsNat (Int.gcd $x $y) $cd) := q(isInt_gcd $p $q $pf)
   return .isNat sℕ (mkRawNatLit cd) pf'
 
-/-- Given two integers numbers, return their LCM and an equality proof. -/
+/-- Given two integers, return their LCM and an equality proof. -/
 def proveIntLCM' (x y : ℤ) : (d : ℕ) × Q(Int.lcm $x $y = $d) :=
   let x' : ℕ := x.natAbs
   let y' : ℕ := y.natAbs
