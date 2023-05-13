@@ -8,8 +8,8 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homotopy.Path
-import Mathbin.Topology.Homotopy.Equiv
+import Mathlib.Topology.Homotopy.Path
+import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Contractible spaces
@@ -60,8 +60,7 @@ class ContractibleSpace (X : Type _) [TopologicalSpace X] : Prop where
 #align contractible_space ContractibleSpace
 
 theorem id_nullhomotopic (X : Type _) [TopologicalSpace X] [ContractibleSpace X] :
-    (ContinuousMap.id X).Nullhomotopic :=
-  by
+    (ContinuousMap.id X).Nullhomotopic := by
   obtain ⟨hv⟩ := ContractibleSpace.hequiv_unit X
   use hv.inv_fun ()
   convert hv.left_inv.symm
@@ -69,8 +68,7 @@ theorem id_nullhomotopic (X : Type _) [TopologicalSpace X] [ContractibleSpace X]
 #align id_nullhomotopic id_nullhomotopic
 
 theorem contractible_iff_id_nullhomotopic (Y : Type _) [TopologicalSpace Y] :
-    ContractibleSpace Y ↔ (ContinuousMap.id Y).Nullhomotopic :=
-  by
+    ContractibleSpace Y ↔ (ContinuousMap.id Y).Nullhomotopic := by
   constructor;
   · intro
     apply id_nullhomotopic
@@ -113,8 +111,7 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 
 namespace ContractibleSpace
 
-instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X :=
-  by
+instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X
   have : ∀ x, Joined p x := fun x => ⟨(h.eval_at x).symm⟩
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
