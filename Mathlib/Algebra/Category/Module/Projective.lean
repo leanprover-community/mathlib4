@@ -8,10 +8,10 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.EpiMono
-import Mathbin.Algebra.Module.Projective
-import Mathbin.CategoryTheory.Preadditive.Projective
-import Mathbin.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Module.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
 /-!
 # The category of `R`-modules has enough projectives.
@@ -30,8 +30,7 @@ open ModuleCat
 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
-    [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) :=
-  by
+    [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
   refine' ⟨fun h => _, fun h => _⟩
   · letI : Module.Projective R ↥(ModuleCat.of R P) := h
     exact
