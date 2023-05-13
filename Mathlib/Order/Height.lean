@@ -98,7 +98,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
     rw [chainHeight_eq_supᵢ_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((WithTop.supr_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp ((WithTop.supᵢ_coe_eq_top _).mp ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
   · rw [ENat.supᵢ_coe_lt_top] at ha
