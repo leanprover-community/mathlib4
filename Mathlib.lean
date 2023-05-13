@@ -2081,6 +2081,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Path
+import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal

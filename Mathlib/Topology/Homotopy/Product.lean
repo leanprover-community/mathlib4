@@ -8,8 +8,8 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Constructions
-import Mathbin.Topology.Homotopy.Path
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Product of homotopies
@@ -69,8 +69,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align continuous_map.homotopy.pi ContinuousMap.Homotopy.piₓ'. -/
 /-- The product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps]
-def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g)
-    where
+def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
   toFun t i := homotopies i t
   map_zero_left' t := by
     ext i
@@ -180,8 +179,7 @@ def proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient 
 /-- Lemmas showing projection is the inverse of pi -/
 @[simp]
 theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) :
-    proj i (pi paths) = paths i :=
-  by
+    proj i (pi paths) = paths i := by
   apply Quotient.induction_on_pi paths
   intro ; unfold proj
   rw [pi_lift, ← Path.Homotopic.map_lift]
@@ -189,8 +187,7 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
 #align path.homotopic.proj_pi Path.Homotopic.proj_pi
 
 @[simp]
-theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p :=
-  by
+theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
   apply Quotient.inductionOn p
   intro ; unfold proj
   simp_rw [← Path.Homotopic.map_lift]
@@ -229,8 +226,7 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
 
 /-- Products commute with path composition.
     This is `trans_prod_eq_prod_trans` descended to the quotient.-/
-theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) :=
-  by
+theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   apply Quotient.induction_on₂ q₁ q₂
   apply Quotient.induction_on₂ r₁ r₂
   intros
@@ -253,8 +249,7 @@ def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient 
 
 /-- Lemmas showing projection is the inverse of product -/
 @[simp]
-theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ :=
-  by
+theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
   apply Quotient.induction_on₂ q₁ q₂
   intro p₁ p₂
   unfold proj_left
@@ -263,8 +258,7 @@ theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ :=
 #align path.homotopic.proj_left_prod Path.Homotopic.projLeft_prod
 
 @[simp]
-theorem projRight_prod : projRight (prod q₁ q₂) = q₂ :=
-  by
+theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
   apply Quotient.induction_on₂ q₁ q₂
   intro p₁ p₂
   unfold proj_right
@@ -274,8 +268,7 @@ theorem projRight_prod : projRight (prod q₁ q₂) = q₂ :=
 
 @[simp]
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
-    prod (projLeft p) (projRight p) = p :=
-  by
+    prod (projLeft p) (projRight p) = p := by
   apply Quotient.inductionOn p
   intro p'
   unfold proj_left; unfold proj_right
