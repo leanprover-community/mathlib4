@@ -14,7 +14,7 @@ import Mathlib.Topology.Homotopy.Equiv
 /-!
 # Contractible spaces
 
-In this file, we define `contractible_space`, a space that is homotopy equivalent to `unit`.
+In this file, we define `ContractibleSpace`, a space that is homotopy equivalent to `Unit`.
 -/
 
 
@@ -51,7 +51,7 @@ end ContinuousMap
 
 open ContinuousMap
 
-/-- A contractible space is one that is homotopy equivalent to `unit`. -/
+/-- A contractible space is one that is homotopy equivalent to `Unit`. -/
 class ContractibleSpace (X : Type _) [TopologicalSpace X] : Prop where
   hequiv_unit' : Nonempty (X ≃ₕ Unit)
 #align contractible_space ContractibleSpace
