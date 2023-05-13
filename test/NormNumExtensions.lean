@@ -5,17 +5,6 @@ import Mathlib.Data.Nat.NormNum
 -- set_option profiler true
 -- set_option trace.profiler true
 -- set_option trace.Tactic.norm_num true
-/-
-2 ^ 19 - 1
-attempt 1: 3000ms
-speed-up `n<k*k`: 1580ms
-speed-up `n%k`: 298ms
-speed-up not prime k: 154ms
-Lean 3: 330ms
-Lean 3 `2 ^ 25 - 39`: 3300ms (excluding type-checking, I think. Lean 4: 700ms + 130ms type-checking
-checking that `(2 ^ 19 - 1) * (2 ^ 25 - 39)` is not prime: Lean 3 300ms, Lean 4 90ms
--/
-
 
 example : ¬ Nat.Prime 0 := by norm_num
 example : ¬ Nat.Prime 1 := by norm_num

@@ -11,8 +11,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Propose
+
 /-!
 # Primality prover
 
@@ -29,7 +28,6 @@ namespace Mathlib.Meta.NormNum
 def MinFacHelper (n k : ℕ) : Prop :=
   2 < k ∧ k % 2 = 1 ∧ k ≤ minFac n
 
-set_option maxHeartbeats 0 in
 theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
   rcases eq_zero_or_pos n with rfl|h
@@ -102,10 +100,6 @@ theorem isNat_minFac_4 : {n : ℕ} → {n' : ℕ} → {k : ℕ} →
       _ ≤ n.minFac := h1.2.2
       _ ≤ m        := Nat.minFac_le_of_dvd hm h2mn
 
-@[elab_as_elim]
-theorem isNat.natElim {p : ℕ → Prop} : {n : ℕ} → {n' : ℕ} → IsNat n n' → p n' → p n
-  | _, _, ⟨rfl⟩, h => h
-
 theorem not_prime_of_lt_two (h : n < 2) : ¬ n.Prime :=
   fun hn => hn.two_le.not_lt h
 
@@ -145,34 +139,6 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 
 open NormNum
-
-/-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
-  Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
-  then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
-  in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
-@[reducible]
-def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
-Q(Bool.rec (¬ $p) ($p) $b)
-
-/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
-and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
-def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
-  let .isBool b prf ← derive (α := (q(Prop) : Q(Type))) p | failure
-  pure ⟨b, prf⟩
-
-/-- Obtain a `Result` from a `BoolResult`. -/
-def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) :
-  Result q(Prop) :=
-  Result'.isBool b prf
-
-/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
-and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
-def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
-    MetaM ((b : Bool) × BoolResult p' b) := do
-  let ⟨b, pb⟩ ← deriveBool p
-  match b with
-  | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
-  | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. -/
 def deriveNotPrime (n d : ℕ) : MetaM <| Q(¬ Nat.Prime $n) := do
