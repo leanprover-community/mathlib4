@@ -431,11 +431,7 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 
 theorem smul_supᵢ [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {ι} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
-  ext fun s => by
-  rw [smul_apply, ← smul_one_mul, supᵢ]
-  simp only [supᵢ_apply, smul_apply, ← smul_one_mul c (f _ _)]
-  rw [←supᵢ, ←ENNReal.mul_supᵢ]
-  simp
+  ext fun s => by simp only [smul_apply, supᵢ_apply, ENNReal.smul_supᵢ]
 #align measure_theory.outer_measure.smul_supr MeasureTheory.OuterMeasure.smul_supᵢ
 
 end Supremum
@@ -1314,6 +1310,16 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 #align measure_theory.extend_eq_top MeasureTheory.extend_eq_top
+
+theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+    c • extend m = extend fun s h => c • m s h := by
+  ext1 s
+  dsimp [extend]
+  by_cases h : P s
+  · simp [h]
+  · simp [h, ENNReal.smul_top, hc]
+#align measure_theory.smul_extend MeasureTheory.smul_extend
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_infᵢ_iff]

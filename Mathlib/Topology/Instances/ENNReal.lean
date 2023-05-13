@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module topology.instances.ennreal
-! leanprover-community/mathlib commit 90ac7a91781abbb5f0206888d68bd095f88c4229
+! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -656,6 +656,16 @@ theorem supᵢ_mul {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : sup�
   rw [mul_comm, mul_supᵢ]; congr; funext; rw [mul_comm]
 #align ennreal.supr_mul ENNReal.supᵢ_mul
 
+theorem smul_supᵢ {ι : Sort _} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
+    (c : R) : (c • ⨆ i, f i) = ⨆ i, c • f i := by
+  simp only [← smul_one_mul c (f _), ← smul_one_mul c (supᵢ _), ENNReal.mul_supᵢ]
+#align ennreal.smul_supr ENNReal.smul_supᵢ
+
+theorem smul_supₛ {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
+    c • supₛ s = ⨆ i ∈ s, c • i := by
+  simp_rw [← smul_one_mul c (supₛ _), ENNReal.mul_supₛ, smul_one_mul]
+#align ennreal.smul_Sup ENNReal.smul_supₛ
+
 theorem supᵢ_div {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : supᵢ f / a = ⨆ i, f i / a :=
   supᵢ_mul
 #align ennreal.supr_div ENNReal.supᵢ_div
@@ -899,6 +909,10 @@ protected theorem tsum_mul_right : (∑' i, f i * a) = (∑' i, f i) * a := by
   simp [mul_comm, ENNReal.tsum_mul_left]
 #align ennreal.tsum_mul_right ENNReal.tsum_mul_right
 
+protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (a : R) :
+    (∑' i, a • f i) = a • ∑' i, f i := by
+  simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
+#align ennreal.tsum_const_smul ENNReal.tsum_const_smul
 @[simp]
 theorem tsum_supᵢ_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _h : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
