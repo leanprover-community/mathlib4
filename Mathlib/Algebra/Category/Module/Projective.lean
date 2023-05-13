@@ -32,10 +32,8 @@ open Module
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
   refine' ⟨fun h => _, fun h => _⟩
-  · letI : Module.Projective R ↥(ModuleCat.of R P) := h
-    exact
-      ⟨fun E X f e epi =>
-        Module.projective_lifting_property _ _ ((ModuleCat.epi_iff_surjective _).mp epi)⟩
+  · letI : Module.Projective R (ModuleCat.of R P) := h
+    exact ⟨fun E X epi => Module.projective_lifting_property _ _ ((ModuleCat.epi_iff_surjective _).mp epi)⟩
   · refine' Module.Projective.of_lifting_property _
     intro E X mE mX sE sX f g s
     haveI : epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
