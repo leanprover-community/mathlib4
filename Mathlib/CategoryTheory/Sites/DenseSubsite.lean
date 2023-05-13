@@ -11,8 +11,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-set_option autoImplicit false -- TODO remove
--- TODO update module doc
 /-!
 # Dense subsites
 
@@ -26,15 +24,15 @@ we would need, and some sheafification would be needed for here and there.
 
 ## Main results
 
-- `category_theory.cover_dense.presheaf_hom`: If `G : C ⥤ (D, K)` is full and cover-dense,
+- `CategoryTheory.CoverDense.Types.presheafHom`: If `G : C ⥤ (D, K)` is full and cover-dense,
   then given any presheaf `ℱ` and sheaf `ℱ'` on `D`, and a morphism `α : G ⋙ ℱ ⟶ G ⋙ ℱ'`,
   we may glue them together to obtain a morphism of presheaves `ℱ ⟶ ℱ'`.
-- `category_theory.cover_dense.sheaf_iso`: If `ℱ` above is a sheaf and `α` is an iso,
+- `CategoryTheory.CoverDense.sheafIso`: If `ℱ` above is a sheaf and `α` is an iso,
   then the result is also an iso.
-- `category_theory.cover_dense.iso_of_restrict_iso`: If `G : C ⥤ (D, K)` is full and cover-dense,
+- `CategoryTheory.CoverDense.iso_of_restrict_iso`: If `G : C ⥤ (D, K)` is full and cover-dense,
   then given any sheaves `ℱ, ℱ'` on `D`, and a morphism `α : ℱ ⟶ ℱ'`, then `α` is an iso if
   `G ⋙ ℱ ⟶ G ⋙ ℱ'` is iso.
-- `category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting`:
+- `CategoryTheory.CoverDense.sheafEquivOfCoverPreservingCoverLifting`:
   If `G : (C, J) ⥤ (D, K)` is fully-faithful, cover-lifting, cover-preserving, and cover-dense,
   then it will induce an equivalence of categories of sheaves valued in a complete category.
 
@@ -66,11 +64,10 @@ structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) w
   map : G.obj obj ⟶ U
   fac : lift ≫ map = f := by aesop_cat
 #align category_theory.presieve.cover_by_image_structure CategoryTheory.Presieve.CoverByImageStructure
+attribute [nolint docBlame] Presieve.CoverByImageStructure.obj Presieve.CoverByImageStructure.lift
+  Presieve.CoverByImageStructure.map Presieve.CoverByImageStructure.fac
 
-restate_axiom Presieve.CoverByImageStructure.fac
-
--- TODO ask about `reassoc.1`
-attribute [simp, reassoc] Presieve.CoverByImageStructure.fac
+attribute [reassoc (attr := simp)] Presieve.CoverByImageStructure.fac
 
 /-- For a functor `G : C ⥤ D`, and an object `U : D`, `presieve.cover_by_image G U` is the presieve
 of `U` consisting of those arrows that factor through images of `G`.
@@ -100,6 +97,8 @@ This definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Def
 structure CoverDense (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   is_cover : ∀ U : D, Sieve.coverByImage G U ∈ K U
 #align category_theory.cover_dense CategoryTheory.CoverDense
+
+attribute [nolint docBlame] CategoryTheory.CoverDense.is_cover
 
 open Presieve Opposite
 
@@ -185,11 +184,15 @@ pp_extended_field_notation Functor.preimage
   | _                 => throw ()
 
 -- TODO use new `pp_extended_field_notation`?
+attribute [nolint docBlame] CategoryTheory.CoverDense.Types.unexpandQuiver.Hom.op
+
+-- TODO use new `pp_extended_field_notation`?
 @[app_unexpander Quiver.Hom.unop] def
   unexpandQuiver.Hom.unop : Lean.PrettyPrinter.Unexpander
   | `($_ $F $(X)*)  => set_option hygiene false in `($(F).unop $(X)*)
   | _                 => throw ()
 
+attribute [nolint docBlame] CategoryTheory.CoverDense.Types.unexpandQuiver.Hom.unop
 /-- (Implementation). The `pushforward_family` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
@@ -256,8 +259,8 @@ theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
 (Implementation). The maps given in `app_iso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
 @[simps]
-noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) (X : D) :
-    ℱ.val.obj (op X) ≅ ℱ'.val.obj (op X) where
+noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
+    (X : D) : ℱ.val.obj (op X) ≅ ℱ'.val.obj (op X) where
   hom := appHom H i.hom X
   inv := appHom H i.inv X
   hom_inv_id := by
@@ -272,8 +275,8 @@ noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val �
     simp
 #align category_theory.cover_dense.types.app_iso CategoryTheory.CoverDense.Types.appIso
 
-/-- Given an natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types, where `G` is full
-and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation between sheaves.
+/-- Given an natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types, where `G` is
+full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation between sheaves.
 -/
 @[simps]
 noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⟶ ℱ'.val where
@@ -286,8 +289,8 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ �
     -- porting note: Lean 3 proof continued with a rewrite but we're done here
 #align category_theory.cover_dense.types.presheaf_hom CategoryTheory.CoverDense.Types.presheafHom
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full and
-cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between presheaves.
+/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
+and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
 noncomputable def presheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
@@ -295,12 +298,12 @@ noncomputable def presheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.
   NatIso.ofComponents (fun X => appIso H i (unop X)) @(presheafHom H i.hom).naturality
 #align category_theory.cover_dense.types.presheaf_iso CategoryTheory.CoverDense.Types.presheafIso
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full and
-cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between sheaves.
+/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
+and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between sheaves.
 -/
 @[simps]
-noncomputable def sheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) : ℱ ≅ ℱ'
-    where
+noncomputable def sheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
+    ℱ ≅ ℱ' where
   hom := ⟨(presheafIso H i).hom⟩
   inv := ⟨(presheafIso H i).inv⟩
   hom_inv_id := by
@@ -346,7 +349,8 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 /--
 (Implementation). `sheaf_coyoneda_hom` but the order of the arguments of the functor are swapped.
 -/
-noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
+noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
+    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
   let α := sheafCoyonedaHom H α
   refine'
     { app := _
@@ -538,9 +542,12 @@ noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf 
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app ℱ)) :=
       IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app ℱ.val)
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  -- porting note: a bunch of instances are not synthesized in lean 4 for some reason
   haveI : IsIso α.counit := NatIso.isIso_of_isIso_app _
-  haveI : Full (Sites.pullback A Hd.compatiblePreserving Hp) := CoverDense.Sites.Pullback.full J Hd Hp
-  haveI : Faithful (Sites.pullback A Hd.compatiblePreserving Hp) := CoverDense.Sites.Pullback.faithful J Hd Hp
+  haveI : Full (Sites.pullback A Hd.compatiblePreserving Hp) :=
+    CoverDense.Sites.Pullback.full J Hd Hp
+  haveI : Faithful (Sites.pullback A Hd.compatiblePreserving Hp) :=
+    CoverDense.Sites.Pullback.faithful J Hd Hp
   haveI : IsIso α.unit := CategoryTheory.unit_isIso_of_L_fully_faithful α
   exact
     { functor := Sites.pullback A Hd.compatiblePreserving Hp
