@@ -1597,6 +1597,7 @@ import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.Encoding
+import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Order
 import Mathlib.ModelTheory.Semantics
