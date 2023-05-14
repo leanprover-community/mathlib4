@@ -150,8 +150,6 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
 #align category_theory.cover_dense.sheaf_eq_amalgamation CategoryTheory.CoverDense.sheaf_eq_amalgamation
 
--- porting note: removed `include H`
-
 variable [Full G]
 
 namespace Types
@@ -166,6 +164,9 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     FamilyOfElements ℱ'.val (coverByImage G X) := fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _)
 #align category_theory.cover_dense.types.pushforward_family CategoryTheory.CoverDense.Types.pushforwardFamily
+
+-- porting note: there are various `include` and `omit`s in this file  (e.g. one is removed here),
+-- none of which are needed in Lean 4.
 
 -- porting note: `pushforward_family` was tagged `@[simp]` in Lean 3 so we add the
 -- equation lemma
@@ -420,6 +421,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   rw [← G.image_preimage hf.some.map]
   symm
   apply α.naturality (G.preimage hf.some.map).op
+  -- porting note; Lean 3 needed a random `infer_instance` for cleanup here; not necessary in lean 4
 #align category_theory.cover_dense.sheaf_hom_restrict_eq CategoryTheory.CoverDense.sheafHom_restrict_eq
 
 /-- If the pullback map is obtained via whiskering,
