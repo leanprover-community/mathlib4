@@ -137,15 +137,15 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
 
 theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
   induction' n with n ih generalizing k
-  · rw [zero_add] at hnk 
+  · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
   · cases k
-    · rw [Nat.succ_add_eq_succ_add] at hnk 
+    · rw [Nat.succ_add_eq_succ_add] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
     · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
-      · rwa [Nat.succ_add_eq_succ_add] at hnk 
-      · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk 
-        exact (nat.odd_add.mp hnk).mpr even_two
+      · rwa [Nat.succ_add_eq_succ_add] at hnk
+      · rw [Nat.succ_add, Nat.add_succ, Nat.succ_eq_one_add, Nat.succ_eq_one_add, ← add_assoc, one_add_one_eq_two, add_comm] at hnk
+        exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
 end Coeff
@@ -200,7 +200,7 @@ theorem coeff_hermite_explicit :
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
   cases' le_or_lt k n with h_le h_lt
-  · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk 
+  · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     rw [(by linarith : n = 2 * m + k), Nat.add_sub_cancel,
       Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
