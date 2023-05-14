@@ -88,8 +88,8 @@ theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (
   simp [coeff_derivative]
 #align polynomial.coeff_hermite_succ_zero Polynomial.coeff_hermite_succ_zero
 
-theorem coeff_hermite_succ_succ (n k : ℕ) :
-  coeff (hermite (n + 1)) (k + 1) = coeff (hermite n) k - (k + 2) * coeff (hermite n) (k + 2) := by
+theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) = 
+    coeff (hermite n) k - (k + 2) * coeff (hermite n) (k + 2) := by
   rw [hermite_succ, coeff_sub, coeff_X_mul, coeff_derivative, mul_comm]
   norm_cast
 #align polynomial.coeff_hermite_succ_succ Polynomial.coeff_hermite_succ_succ
