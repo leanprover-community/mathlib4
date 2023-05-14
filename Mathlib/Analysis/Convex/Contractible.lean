@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Star
-import Mathbin.Topology.Homotopy.Contractible
+import Mathlib.Analysis.Convex.Star
+import Mathlib.Topology.Homotopy.Contractible
 
 /-!
 # A convex set is contractible
@@ -24,8 +24,7 @@ variable {E : Type _} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Cont
 
 /-- A non-empty star convex set is a contractible space. -/
 protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
-    ContractibleSpace s :=
-  by
+    ContractibleSpace s := by
   refine'
     (contractible_iff_id_nullhomotopic _).2
       ⟨⟨x, h.mem hne⟩, ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • p.2, _⟩, _⟩, fun x => _, fun x => _⟩⟩⟩
