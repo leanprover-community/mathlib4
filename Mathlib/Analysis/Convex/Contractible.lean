@@ -26,11 +26,11 @@ variable {E : Type _} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Cont
 protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
     ContractibleSpace s := by
   refine'
-    (contractible_iff_id_nullhomotopic _).2
-      ⟨⟨x, h.mem hne⟩, ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • p.2, _⟩, _⟩, fun x => _, fun x => _⟩⟩⟩
+    (contractible_iff_id_nullhomotopic s).2
+      ⟨⟨x, h.mem hne⟩,
+        ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), _⟩, _⟩, fun x => _, fun x => _⟩⟩⟩
   · exact h p.2.2 p.1.2.1 (sub_nonneg.2 p.1.2.2) (add_sub_cancel'_right _ _)
-  ·
-    exact
+  · exact
       ((continuous_subtype_val.fst'.smul continuous_const).add
             ((continuous_const.sub continuous_subtype_val.fst').smul
               continuous_subtype_val.snd')).subtype_mk
@@ -44,12 +44,11 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
 /-- A non-empty convex set is a contractible space. -/
 protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
     ContractibleSpace s :=
-  let ⟨x, hx⟩ := hne
-  (hs.StarConvex hx).ContractibleSpace hne
+  let ⟨_, hx⟩ := hne
+  (hs.starConvex hx).contractibleSpace hne
 #align convex.contractible_space Convex.contractibleSpace
 
 instance (priority := 100) RealTopologicalVectorSpace.contractibleSpace : ContractibleSpace E :=
   (Homeomorph.Set.univ E).contractibleSpace_iff.mp <|
-    convex_univ.ContractibleSpace Set.univ_nonempty
+    convex_univ.contractibleSpace Set.univ_nonempty
 #align real_topological_vector_space.contractible_space RealTopologicalVectorSpace.contractibleSpace
-
