@@ -131,10 +131,10 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
 
 theorem isSatisfiable_directed_union_iff {ι : Type _} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
-  refine' ⟨fun h' i => h'.mono (Set.subset_unionᵢ _ _), fun h' => _⟩
+  refine' ⟨fun h' i => h'.mono (Set.subset_iUnion _ _), fun h' => _⟩
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   intro T0 hT0
-  obtain ⟨i, hi⟩ := h.exists_mem_subset_of_finset_subset_bunionᵢ hT0
+  obtain ⟨i, hi⟩ := h.exists_mem_subset_of_finset_subset_biUnion hT0
   exact (h' i).mono hi
 #align first_order.language.Theory.is_satisfiable_directed_union_iff FirstOrder.Language.Theory.isSatisfiable_directed_union_iff
 
@@ -161,7 +161,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (
     (M : Type w') [L.Structure M] [M ⊨ T] [Infinite M] :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   classical
-    rw [distinctConstantsTheory_eq_unionᵢ, Set.union_unionᵢ, isSatisfiable_directed_union_iff]
+    rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
     · exact fun t =>
         isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
           ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
@@ -189,20 +189,20 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   rw [lift_lift]
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
-theorem isSatisfiable_unionᵢ_iff_isSatisfiable_unionᵢ_finset {ι : Type _} (T : ι → L.Theory) :
+theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type _} (T : ι → L.Theory) :
     IsSatisfiable (⋃ i, T i) ↔ ∀ s : Finset ι, IsSatisfiable (⋃ i ∈ s, T i) := by
   classical
     refine'
-      ⟨fun h s => h.mono (Set.unionᵢ_mono fun _ => Set.unionᵢ_subset_iff.2 fun _ => refl _),
+      ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
         fun h => _⟩
     rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
-    rw [Set.unionᵢ_eq_unionᵢ_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_bunionᵢ (by
+    rw [Set.iUnion_eq_iUnion_finset] at hs
+    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
       exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
-        Set.unionᵢ_mono fun _ => Set.unionᵢ_mono' fun h1 => ⟨h h1, refl _⟩) hs
+        Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
     exact (h t).mono ht
-#align first_order.language.Theory.is_satisfiable_Union_iff_is_satisfiable_Union_finset FirstOrder.Language.Theory.isSatisfiable_unionᵢ_iff_isSatisfiable_unionᵢ_finset
+#align first_order.language.Theory.is_satisfiable_Union_iff_is_satisfiable_Union_finset FirstOrder.Language.Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset
 
 end Theory
 
