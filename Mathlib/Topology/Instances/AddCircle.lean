@@ -292,23 +292,23 @@ end Continuity
 /-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → add_circle p` is
 the entire space. -/
 @[simp]
-theorem coe_image_Ico_eq : (coe : 𝕜 → AddCircle p) '' Ico a (a + p) = univ := by
+theorem coe_image_Ico_eq : ((↑) : 𝕜 → AddCircle p) '' Ico a (a + p) = univ := by
   rw [image_eq_range]
-  exact (equiv_Ico p a).symm.range_eq_univ
+  exact (equivIco p a).symm.range_eq_univ
 #align add_circle.coe_image_Ico_eq AddCircle.coe_image_Ico_eq
 
 /-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → add_circle p` is
 the entire space. -/
 @[simp]
-theorem coe_image_Ioc_eq : (coe : 𝕜 → AddCircle p) '' Ioc a (a + p) = univ := by
+theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = univ := by
   rw [image_eq_range]
-  exact (equiv_Ioc p a).symm.range_eq_univ
+  exact (equivIoc p a).symm.range_eq_univ
 #align add_circle.coe_image_Ioc_eq AddCircle.coe_image_Ioc_eq
 
 /-- The image of the closed interval `[0, p]` under the quotient map `𝕜 → add_circle p` is the
 entire space. -/
 @[simp]
-theorem coe_image_Icc_eq : (coe : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
+theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
   eq_top_mono (image_subset _ Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
 #align add_circle.coe_image_Icc_eq AddCircle.coe_image_Icc_eq
 
@@ -384,10 +384,10 @@ variable (p)
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, addOrderOf_nsmul'']
-  · rw [add_order_of_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
-    exacts[n.gcd_dvd_left m, hp]
-  · rw [← addOrderOf_pos_iff, add_order_of_period_div hn]
-    exacts[hn, hp]
+  · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
+    exact n.gcd_dvd_left m
+  · rw [← addOrderOf_pos_iff, addOrderOf_period_div hn]
+    exact hn
 #align add_circle.gcd_mul_add_order_of_div_eq AddCircle.gcd_mul_addOrderOf_div_eq
 
 variable {p}
@@ -412,15 +412,14 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
     norm_cast
     exact q.pos.ne.symm
   rw [← @Rat.num_den q, Rat.cast_mk_of_ne_zero _ _ this, Int.cast_ofNat, Rat.num_den,
-    addOrderOf_div_of_gcd_eq_one' q.pos q.cop]
-  infer_instance
+    addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 #align add_circle.add_order_of_coe_rat AddCircle.addOrderOf_coe_rat
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
-  refine' ⟨QuotientAddGroup.induction_on' u fun k hk => _, _⟩; swap
+  refine' ⟨QuotientAddGroup.induction_on' u fun k hk => _, _⟩
   · rintro ⟨m, h₀, h₁, rfl⟩
-    exact add_order_of_div_of_gcd_eq_one h h₁
+    exact addOrderOf_div_of_gcd_eq_one h h₁
   have h0 := addOrderOf_nsmul_eq_zero (k : AddCircle p)
   rw [hk, ← coe_nsmul, coe_eq_zero_iff] at h0
   obtain ⟨a, ha⟩ := h0
@@ -431,7 +430,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have he := _; refine' ⟨(a % n).toNat, _, _, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
-  · have := (gcd_mul_add_order_of_div_eq p _ h).trans ((congr_arg addOrderOf he).trans hk).symm
+  · have := (gcd_mul_addOrderOf_div_eq p _ h).trans ((congr_arg addOrderOf he).trans hk).symm
     rw [he, Nat.mul_left_eq_self_iff] at this
     · exact this
     · rwa [hk]
@@ -454,23 +453,23 @@ satisfies `0 ≤ m < n`. -/
 def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n } ≃ { m | m < n ∧ m.gcd n = 1 } :=
   Equiv.symm <|
-    Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.Prop.2⟩)
+    Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
         · simp_rw [Subtype.ext_iff, Subtype.coe_mk] at h
-          rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, coe_coe, coe_coe, ← Int.cast_ofNat m₁,
+          rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_ofNat m₁,
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
             nsmul_eq_mul, ← coe_nat_zsmul, smul_smul,
-            (zsmul_strictMono_left hp.out).Injective.eq_iff, mul_comm] at hm
+            (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
           refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
           exacts[m₁.2.1, m₂.2.1]
-        obtain ⟨m, hmn, hg, he⟩ := (add_order_of_eq_pos_iff hn).mp u.2
+        obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
         exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 #align add_circle.set_add_order_of_equiv AddCircle.setAddOrderOfEquiv
 
@@ -507,12 +506,12 @@ variable (p : ℝ)
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
   rw [← isCompact_univ_iff, ← coe_image_Icc_eq p 0]
-  exact is_compact_Icc.image (AddCircle.continuous_mk' p)
+  exact isCompact_Icc.image (AddCircle.continuous_mk' p)
 #align add_circle.compact_space AddCircle.compactSpace
 
 /-- The action on `ℝ` by right multiplication of its the subgroup `zmultiples p` (the multiples of
 `p:ℝ`) is properly discontinuous. -/
-instance : ProperlyDiscontinuousVAdd (zmultiples p).opposite ℝ :=
+instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :=
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
 
