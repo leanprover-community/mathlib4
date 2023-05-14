@@ -402,8 +402,8 @@ theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_supᵢ_iff.symm)
-  exact isOpen_supᵢ_iff
+  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
+  exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 
 theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
@@ -415,7 +415,7 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]
-  exact isOpen_supᵢ_iff
+  exact isOpen_iSup_iff
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
@@ -433,4 +433,3 @@ theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
 #align Top.coequalizer_is_open_iff TopCat.coequalizer_isOpen_iff
 
 end TopCat
-
