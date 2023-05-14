@@ -136,12 +136,11 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
     ∏ i in range n, (a - 2 ^ i) ≤ ∏ _i in range n, a := by
-  rel_congr
+  rel_congr with i
   · intro i hi
     simp only [mem_range] at hi
     linarith [ha i hi]
-  · rename_i i _ -- FIXME would be nice not to need to do this, maybe syntax `rel_congr with i`?
-    have : 0 ≤ 2 ^ i := by positivity
+  · have : 0 ≤ 2 ^ i := by positivity
     linarith
 
 -- this tests that the match goes only as deep as is indicated by the template
@@ -154,15 +153,13 @@ example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
-  rel_congr ∑ _i in s, ?_
-  rename_i i hi
+  rel_congr ∑ _i in s, ?_ with i hi
   linarith [h i hi]
 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, (3 + f i ^ 2) ≤ ∑ i in s, (3 + g i ^ 2) := by
-  rel_congr ∑ _i in s, (3 + ?_)
-  rename_i i hi
+  rel_congr ∑ _i in s, (3 + ?_) with i hi
   linarith [h i hi]
 
 axiom f : ℕ → ℕ

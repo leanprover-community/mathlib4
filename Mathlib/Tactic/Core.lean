@@ -98,6 +98,30 @@ the tactic is applied recursively to the generated subgoals until it eventually 
 macro "repeat1 " seq:tacticSeq : tactic => `(tactic| (($seq); repeat $seq))
 
 end Parser.Tactic
+
+open private getIntrosSize from Lean.Meta.Tactic.Intro in
+def MVarId.introsWithBinderIdents
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
+  let type ← g.getType
+  let type ← instantiateMVars type
+  let n := getIntrosSize type
+  if n == 0 then
+    return (ids, #[], g)
+  let mut ids := ids
+  let mut names := #[]
+  for _ in [0:n] do
+    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
+    ids := ids.tail
+  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
+    match stx.raw with
+    | `(binderIdent| $n:ident) => n.getId
+    | _ => `_
+  g.withContext do
+    for n in names, fvar in xs do
+      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
+  return (ids, xs, g)
+
 end Lean
 
 namespace Lean.Elab.Tactic
