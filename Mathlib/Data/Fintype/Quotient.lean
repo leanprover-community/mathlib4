@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Quotients of families indexed by a finite type
@@ -31,8 +31,7 @@ quotient of the product of the setoids indexed by `l`. -/
 def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
   | [], f => ⟦fun i => False.elim⟧
-  | i :: l, f =>
-    by
+  | i :: l, f => by
     refine'
       Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
@@ -64,8 +63,7 @@ def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → 
     [S : ∀ i, Setoid (α i)] (f : ∀ i, Quotient (S i)) : @Quotient (∀ i, α i) (by infer_instance) :=
   Quotient.liftOn
     (@Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
-      Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) fun a b h =>
-      by
+      Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) fun a b h => by
       have := fun a => Quotient.finChoiceAux_eq a fun i h => Quotient.out (f i)
       simp [Quotient.out_eq] at this
       simp [this]
@@ -76,8 +74,7 @@ def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → 
 #align quotient.fin_choice Quotient.finChoice
 
 theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
-    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ :=
-  by
+    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
   let q
   swap
   change Quotient.liftOn q _ _ = _
