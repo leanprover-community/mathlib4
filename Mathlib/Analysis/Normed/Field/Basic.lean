@@ -286,11 +286,12 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
+set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [SeminormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : SeminormedRing s :=
+instance Subalgebra.seminormedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [SeminormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedRing s :=
   { s.toSubmodule.seminormedAddCommGroup, s.toRing with
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 #align subalgebra.semi_normed_ring Subalgebra.seminormedRing
@@ -298,8 +299,8 @@ instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.normedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [NormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : NormedRing s :=
+instance Subalgebra.normedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [NormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   { s.seminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing
@@ -472,8 +473,8 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_tendsto_zero.2 <| by
-        have : ∀ e : α × α, ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
-          by
+        have : ∀ e : α × α,
+            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
@@ -482,26 +483,15 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        -- porting note: the new `convert` sucks, it's way too dumb without using the type
-        -- of the goal to figure out how to match things up. The rest of this proof was:
-        /- convert
+        convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        show tendsto _ _ _
+        -- Porting note: `show` used to select a goal to work on
+        rotate_right
+        show Tendsto _ _ _
         exact tendsto_const_nhds
-        simp -/
-        rw [←zero_add 0]
-        refine Tendsto.add ?_ ?_
-        · rw [←mul_zero (‖x.fst‖)]
-          refine Filter.Tendsto.mul ?_ ?_
-          · exact (continuous_fst.tendsto x).norm
-          · rw [←norm_zero (E := α), ←sub_self x.snd]
-            exact ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm
-        · rw [←zero_mul (‖x.snd‖)]
-          refine' Filter.Tendsto.mul _ tendsto_const_nhds
-          rw [←norm_zero (E := α), ←sub_self x.fst]
-          exact ((continuous_fst.tendsto x).sub tendsto_const_nhds).norm⟩
+        simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -602,8 +592,8 @@ theorem nnnorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnnormHom : α →*₀ ℝ≥0)
 #align nnnorm_zpow nnnorm_zpow
 
-theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) : dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) :=
-  by
+theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+    dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by
   rw [dist_eq_norm, inv_sub_inv' hz hw, norm_mul, norm_mul, norm_inv, norm_inv, mul_comm ‖z‖⁻¹,
     mul_assoc, dist_eq_norm', div_eq_mul_inv, mul_inv]
 #align dist_inv_inv₀ dist_inv_inv₀
@@ -635,8 +625,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
   refine' ⟨fun r r0 => tendsto_iff_norm_tendsto_zero.2 _⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
-  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε :=
-    by
+  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
     filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr]with e he
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
@@ -1007,6 +996,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
+set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
@@ -1023,10 +1013,12 @@ namespace SubringClass
 
 variable {S R : Type _} [SetLike S R]
 
+set_option synthInstance.etaExperiment true in
 instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
+set_option synthInstance.etaExperiment true in
 instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing

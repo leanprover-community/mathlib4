@@ -36,7 +36,7 @@ instance mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZe
     zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.mul_action_with_zero Prod.mulActionWithZero
 
-instance module {_ : Semiring R} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
+instance module [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
     Module R (M × N) :=
   { Prod.distribMulAction with
     add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩

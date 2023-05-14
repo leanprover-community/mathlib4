@@ -324,7 +324,7 @@ theorem TendstoUniformly.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' �
 `p ×ᶠ p'`. -/
 theorem tendsto_prod_filter_iff {c : β} :
     Tendsto (↿F) (p ×ᶠ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
-  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff, map_map, le_def, mem_map]
+  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff]
   rfl
 #align tendsto_prod_filter_iff tendsto_prod_filter_iff
 
@@ -650,32 +650,32 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
 #align tendsto_locally_uniformly_on.mono TendstoLocallyUniformlyOn.mono
 
 -- porting note: generalized from `Type` to `Sort`
-theorem tendstoLocallyUniformlyOn_unionᵢ {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
     (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
-  (isOpen_unionᵢ hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>
-    let ⟨i, hi⟩ := mem_unionᵢ.1 hx
+  (isOpen_iUnion hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>
+    let ⟨i, hi⟩ := mem_iUnion.1 hx
     (hS i).tendstoLocallyUniformlyOn_iff_forall_tendsto.1 (h i) _ hi
-#align tendsto_locally_uniformly_on_Union tendstoLocallyUniformlyOn_unionᵢ
+#align tendsto_locally_uniformly_on_Union tendstoLocallyUniformlyOn_iUnion
 
-theorem tendstoLocallyUniformlyOn_bunionᵢ {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_biUnion {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
     (h : ∀ i ∈ s, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i ∈ s, S i) :=
-  tendstoLocallyUniformlyOn_unionᵢ (fun i => isOpen_unionᵢ (hS i)) fun i =>
-   tendstoLocallyUniformlyOn_unionᵢ (hS i) (h i)
-#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_bunionᵢ
+  tendstoLocallyUniformlyOn_iUnion (fun i => isOpen_iUnion (hS i)) fun i =>
+   tendstoLocallyUniformlyOn_iUnion (hS i) (h i)
+#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_biUnion
 
-theorem tendstoLocallyUniformlyOn_unionₛ (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
+theorem tendstoLocallyUniformlyOn_sUnion (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
     (h : ∀ s ∈ S, TendstoLocallyUniformlyOn F f p s) : TendstoLocallyUniformlyOn F f p (⋃₀ S) := by
-  rw [unionₛ_eq_bunionᵢ]
-  exact tendstoLocallyUniformlyOn_bunionᵢ hS h
-#align tendsto_locally_uniformly_on_sUnion tendstoLocallyUniformlyOn_unionₛ
+  rw [sUnion_eq_biUnion]
+  exact tendstoLocallyUniformlyOn_biUnion hS h
+#align tendsto_locally_uniformly_on_sUnion tendstoLocallyUniformlyOn_sUnion
 
 theorem TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂)
     (h₁ : TendstoLocallyUniformlyOn F f p s₁) (h₂ : TendstoLocallyUniformlyOn F f p s₂) :
     TendstoLocallyUniformlyOn F f p (s₁ ∪ s₂) := by
-  rw [← unionₛ_pair]
-  refine' tendstoLocallyUniformlyOn_unionₛ _ _ _ <;> simp [*]
+  rw [← sUnion_pair]
+  refine' tendstoLocallyUniformlyOn_sUnion _ _ _ <;> simp [*]
 #align tendsto_locally_uniformly_on.union TendstoLocallyUniformlyOn.union
 
 -- porting note: tendstoLocallyUniformlyOn_univ moved up
@@ -695,7 +695,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
   rw [← eventually_all] at hU
   refine' hU.mono fun i hi x => _
   specialize ht (mem_univ x)
-  simp only [exists_prop, mem_unionᵢ, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
+  simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
   obtain ⟨y, ⟨hy₁, hy₂⟩, hy₃⟩ := ht
   exact hi ⟨⟨y, hy₁⟩, hy₂⟩ x hy₃
 #align tendsto_locally_uniformly_iff_tendsto_uniformly_of_compact_space tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace

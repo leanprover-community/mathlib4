@@ -200,6 +200,14 @@ example (n : ℕ) (hn : 0 < n) : True := by
   guard_hyp hn : 0 < (n : ℕ)
   trivial
 
+example (n : ℕ) : n = 0 ∨ ∃ p : ℕ+, n = p := by
+  by_cases hn : 0 < n
+  · lift n to ℕ+ using hn
+    right
+    exact ⟨n, rfl⟩
+  · left
+    exact Nat.eq_zero_of_nonpos _ hn
+
 example (n : ℤ) (hn : 0 < n) : True := by
   lift n to ℕ+
   · guard_target =ₛ 0 < n
