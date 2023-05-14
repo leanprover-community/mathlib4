@@ -13,12 +13,6 @@ import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
---import algebra.homology.homotopy
---import algebra.homology.additive
---import algebra.category.Group.abelian
---import algebra.homology.short_exact.preadditive
---import for_mathlib.algebra.homology.homological_complex_X_iso_of_eq
-
 open CategoryTheory Category Preadditive Limits
 
 universe v u
