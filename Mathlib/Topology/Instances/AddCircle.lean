@@ -553,9 +553,8 @@ local notation "𝕋" => AddCircle p
 
 /-- The relation identifying the endpoints of `Icc a (a + p)`. -/
 inductive EndpointIdent : Icc a (a + p) → Icc a (a + p) → Prop
-  |
-  mk :
-    endpoint_ident ⟨a, left_mem_Icc.mpr <| le_add_of_nonneg_right hp.out.le⟩
+  | mk :
+    EndpointIdent ⟨a, left_mem_Icc.mpr <| le_add_of_nonneg_right hp.out.le⟩
       ⟨a + p, right_mem_Icc.mpr <| le_add_of_nonneg_right hp.out.le⟩
 #align add_circle.endpoint_ident AddCircle.EndpointIdent
 
@@ -578,7 +577,7 @@ def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
       · revert x
         exact this
       · rw [← Quot.sound endpoint_ident.mk]
-        exact this _ _ (lt_add_of_pos_right a hp.out).Ne
+        exact this _ _ (lt_add_of_pos_right a hp.out).ne
       intro x hx h
       congr
       ext1
@@ -594,11 +593,12 @@ theorem equivIccQuot_comp_mk_eq_toIcoMod :
 theorem equivIccQuot_comp_mk_eq_toIocMod :
     equivIccQuot p a ∘ Quotient.mk'' = fun x =>
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
-  rw [equiv_Icc_quot_comp_mk_eq_to_Ico_mod]; funext
+  rw [equivIccQuot_comp_mk_eq_toIcoMod]
+  funext x
   by_cases a ≡ x [PMOD p]
-  · simp_rw [(modeq_iff_to_Ico_mod_eq_left hp.out).1 h, (modeq_iff_to_Ioc_mod_eq_right hp.out).1 h]
-    exact Quot.sound endpoint_ident.mk
-  · simp_rw [(not_modeq_iff_to_Ico_mod_eq_to_Ioc_mod hp.out).1 h]
+  · simp_rw [(modEq_iff_toIcoMod_eq_left hp.out).1 h, (modEq_iff_toIocMod_eq_right hp.out).1 h]
+    exact Quot.sound EndpointIdent.mk
+  · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]
 #align add_circle.equiv_Icc_quot_comp_mk_eq_to_Ioc_mod AddCircle.equivIccQuot_comp_mk_eq_toIocMod
 
 /-- The natural map from `[a, a + p] ⊂ 𝕜` with endpoints identified to `𝕜 / ℤ • p`, as a
@@ -606,7 +606,7 @@ homeomorphism of topological spaces. -/
 def homeoIccQuot : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
   toEquiv := equivIccQuot p a
   continuous_toFun := by
-    simp_rw [quotient_map_quotient_mk.continuous_iff, continuous_iff_continuousAt,
+    simp_rw [quotientMap_quotient_mk'.continuous_iff, continuous_iff_continuousAt,
       continuousAt_iff_continuous_left_right]
     intro x; constructor
     on_goal 1 => erw [equiv_Icc_quot_comp_mk_eq_to_Ioc_mod]
@@ -639,8 +639,8 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
-  refine' Continuous.comp _ (homeo_Icc_quot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuous_on_iff_continuous_restrict.mp hc)
+  refine' Continuous.comp _ (homeoIccQuot p a).continuous_toFun
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
 #align add_circle.lift_Ico_continuous AddCircle.liftIco_continuous
 
 section ZeroBased
