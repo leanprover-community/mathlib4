@@ -319,7 +319,7 @@ noncomputable def functorTruncLE (n : ℤ) : CochainComplex C ℤ ⥤ CochainCom
   map φ := truncLEmap φ n
 
 @[simps]
-noncomputable def functorTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _ where
+noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _ where
   app K := K.truncLEι n
 
 lemma qis_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
@@ -343,5 +343,51 @@ noncomputable def functorTruncLE (n : ℤ) : DerivedCategory C ⥤ DerivedCatego
 noncomputable def functorTruncLEFactors (n : ℤ) :
     Q ⋙ functorTruncLE C n ≅ CochainComplex.functorTruncLE C n ⋙ Q :=
   Localization.fac _ _ _
+
+noncomputable instance : Localization.Lifting Q (HomologicalComplex.qis C _)
+    (CochainComplex.functorTruncLE C n ⋙ Q) (functorTruncLE C n) :=
+  ⟨functorTruncLEFactors C n⟩
+
+noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _  :=
+  Localization.liftNatTrans Q (HomologicalComplex.qis C _)
+    (CochainComplex.functorTruncLE C n ⋙ Q) Q _ _
+      (whiskerRight (CochainComplex.natTransTruncLEι C n) Q)
+
+noncomputable def QCompFunctorTruncLECompHomologyFunctorIso (n i : ℤ) :
+    Q ⋙ functorTruncLE C n ⋙ homologyFunctor C i ≅
+      CochainComplex.functorTruncLE C n ⋙
+        HomologicalComplex.newHomologyFunctor _ _ i :=
+  (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (functorTruncLEFactors C n) _ ≪≫ Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (homologyFunctorFactors _ i)
+
+variable {C}
+
+lemma isZero_homology_truncLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) :
+    IsZero ((functorTruncLE C n ⋙ homologyFunctor C i).obj X) := by
+  obtain ⟨K, rfl⟩ := Q_obj_surjective X
+  exact IsZero.of_iso (K.isZero_homology_truncLE n i hi)
+    ((QCompFunctorTruncLECompHomologyFunctorIso C n i).app K)
+
+noncomputable abbrev truncLEι (X : DerivedCategory C) (n : ℤ) :=
+  (natTransTruncLEι C n).app X
+
+lemma truncLEι_app (K : CochainComplex C ℤ) (n : ℤ) :
+    (Q.obj K).truncLEι n =
+      (functorTruncLEFactors C n).hom.app K ≫ Q.map (K.truncLEι n) := by
+  dsimp [truncLEι, natTransTruncLEι]
+  rw [Localization.liftNatTrans_app]
+  dsimp only [Localization.Lifting.iso, Localization.Lifting.iso']
+  simp
+
+lemma isIso_homologyMap_truncLEι (X : DerivedCategory C) (n i : ℤ) (hi : i ≤ n) :
+    IsIso ((homologyFunctor C i).map (X.truncLEι n)) := by
+  obtain ⟨K, rfl⟩ := Q_obj_surjective X
+  rw [truncLEι_app, Functor.map_comp]
+  have : IsIso ((homologyFunctor C i).map ((functorTruncLEFactors C n).hom.app K)) := inferInstance
+  have : IsIso ((homologyFunctor C i).map (Q.map (K.truncLEι n))) := by
+    erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncLEι n)]
+    exact K.isIso_homologyMap_truncLEι n i hi
+  apply IsIso.comp_isIso
 
 end DerivedCategory

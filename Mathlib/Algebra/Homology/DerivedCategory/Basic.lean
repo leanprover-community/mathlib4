@@ -94,6 +94,11 @@ instance : EssSurj (Functor.mapArrow (Qh : _ ⥤ DerivedCategory C)) := by
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
 
+lemma Q_obj_surjective (X : DerivedCategory C) :
+    ∃ (K : CochainComplex C ℤ), X = Q.obj K := by
+  obtain ⟨⟨⟨K⟩⟩⟩ := X
+  exact ⟨K, rfl⟩
+
 noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).HasCommShift ℤ := by
   dsimp only [Q]
   infer_instance
@@ -157,6 +162,12 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
   HomotopyCategory.newHomologyFunctor C _ n := Localization.fac _ _ _
 
 attribute [irreducible] homologyFunctor homologyFunctorFactorsh
+
+noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n ≅
+    HomologicalComplex.newHomologyFunctor _ _ n :=
+  Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (homologyFunctorFactorsh C n) ≪≫
+    HomotopyCategory.newHomologyFunctorFactors _ _ _
 
 instance : (homologyFunctor C n).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_fac_of_essSurj _ _ _
