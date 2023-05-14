@@ -230,24 +230,24 @@ theorem zpowers_one_eq_bot : Subgroup.zpowers (1 : G) = ⊥ :=
 theorem centralizer_closure (S : Set G) :
     (closure S).centralizer = ⨅ g ∈ S, (zpowers g).centralizer :=
   le_antisymm
-      (le_infᵢ fun _ => le_infᵢ fun hg => centralizer_le <| zpowers_le.2 <| subset_closure hg) <|
+      (le_iInf fun _ => le_iInf fun hg => centralizer_le <| zpowers_le.2 <| subset_closure hg) <|
     le_centralizer_iff.1 <|
       (closure_le _).2 fun g =>
-        SetLike.mem_coe.2 ∘ zpowers_le.1 ∘ le_centralizer_iff.1 ∘ infᵢ_le_of_le g ∘ infᵢ_le _
+        SetLike.mem_coe.2 ∘ zpowers_le.1 ∘ le_centralizer_iff.1 ∘ iInf_le_of_le g ∘ iInf_le _
 #align subgroup.centralizer_closure Subgroup.centralizer_closure
 #align add_subgroup.centralizer_closure AddSubgroup.centralizer_closure
 
 @[to_additive]
-theorem center_eq_infᵢ (S : Set G) (hS : closure S = ⊤) :
+theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g ∈ S, centralizer (zpowers g) := by
   rw [← centralizer_top, ← hS, centralizer_closure]
-#align subgroup.center_eq_infi Subgroup.center_eq_infᵢ
-#align add_subgroup.center_eq_infi AddSubgroup.center_eq_infᵢ
+#align subgroup.center_eq_infi Subgroup.center_eq_iInf
+#align add_subgroup.center_eq_infi AddSubgroup.center_eq_iInf
 
 @[to_additive]
 theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g : S, centralizer (zpowers (g : G)) :=
-  by rw [center_eq_infᵢ S hS, ← infᵢ_subtype'']
+  by rw [center_eq_iInf S hS, ← iInf_subtype'']
 #align subgroup.center_eq_infi' Subgroup.center_eq_infi'
 #align add_subgroup.center_eq_infi' AddSubgroup.center_eq_infi'
 

@@ -413,7 +413,7 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type _} [Nontriviall
     change IsCompactOperator (u : M₁ →ₛₗ[σ₁₂] M₂)
     rw [isCompactOperator_iff_isCompact_closure_image_closedBall (u : M₁ →ₛₗ[σ₁₂] M₂) zero_lt_one]
     exact isCompact_of_totallyBounded_isClosed this.closure isClosed_closure
-  rw [totallyBounded_iff_subset_finite_unionᵢ_nhds_zero]
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
   rcases exists_nhds_zero_half hU with ⟨V, hV, hVU⟩
   let SV : Set M₁ × Set M₂ := ⟨closedBall 0 1, -V⟩
@@ -421,15 +421,15 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type _} [Nontriviall
       (ContinuousLinearMap.hasBasis_nhds_zero.mem_of_mem
         ⟨NormedSpace.isVonNBounded_closedBall _ _ _, neg_mem_nhds_zero M₂ hV⟩) with
     ⟨v, hv, huv⟩
-  rcases totallyBounded_iff_subset_finite_unionᵢ_nhds_zero.mp
+  rcases totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
       (hv.isCompact_closure_image_closedBall 1).totallyBounded V hV with
     ⟨T, hT, hTv⟩
   have hTv : v '' closedBall 0 1 ⊆ _ := subset_closure.trans hTv
   refine' ⟨T, hT, _⟩
-  rw [image_subset_iff, preimage_unionᵢ₂] at hTv⊢
+  rw [image_subset_iff, preimage_iUnion₂] at hTv⊢
   intro x hx
   specialize hTv hx
-  rw [mem_unionᵢ₂] at hTv⊢
+  rw [mem_iUnion₂] at hTv⊢
   rcases hTv with ⟨t, ht, htx⟩
   refine' ⟨t, ht, _⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx⊢

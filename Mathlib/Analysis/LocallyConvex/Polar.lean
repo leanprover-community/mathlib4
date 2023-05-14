@@ -26,7 +26,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 ## Main statements
 
-* `LinearMap.polar_eq_interᵢ`: The polar as an intersection.
+* `LinearMap.polar_eq_iInter`: The polar as an intersection.
 * `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
 * `LinearMap.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
 
@@ -75,10 +75,10 @@ theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
-theorem polar_eq_interᵢ {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
+theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
-  simp only [polar_mem_iff, Set.mem_interᵢ, Set.mem_setOf_eq]
-#align linear_map.polar_eq_Inter LinearMap.polar_eq_interᵢ
+  simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
+#align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
 
 /-- The map `B.polar : set E → set F` forms an order-reversing Galois connection with
 `B.flip.polar : set F → set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
@@ -89,9 +89,9 @@ theorem polar_gc :
 #align linear_map.polar_gc LinearMap.polar_gc
 
 @[simp]
-theorem polar_unionᵢ {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
-  B.polar_gc.l_supᵢ
-#align linear_map.polar_Union LinearMap.polar_unionᵢ
+theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
+  B.polar_gc.l_iSup
+#align linear_map.polar_Union LinearMap.polar_iUnion
 
 @[simp]
 theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
@@ -127,8 +127,8 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 /-- The polar set is closed in the weak topology induced by `B.flip`. -/
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
-  rw [polar_eq_interᵢ]
-  refine' isClosed_interᵢ fun x => isClosed_interᵢ fun _ => _
+  rw [polar_eq_iInter]
+  refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
 

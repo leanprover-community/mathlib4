@@ -182,21 +182,21 @@ theorem mulSupport_min [LinearOrder M] (f g : α → M) :
 #align function.support_min Function.support_min
 
 @[to_additive]
-theorem mulSupport_supᵢ [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
+theorem mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     (mulSupport fun x => ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
   rw [mulSupport_subset_iff']
-  simp only [mem_unionᵢ, not_exists, nmem_mulSupport]
+  simp only [mem_iUnion, not_exists, nmem_mulSupport]
   intro x hx
-  simp only [hx, csupᵢ_const]
-#align function.mul_support_supr Function.mulSupport_supᵢ
-#align function.support_supr Function.support_supᵢ
+  simp only [hx, ciSup_const]
+#align function.mul_support_supr Function.mulSupport_iSup
+#align function.support_supr Function.support_iSup
 
 @[to_additive]
-theorem mulSupport_infᵢ [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
+theorem mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     (mulSupport fun x => ⨅ i, f i x) ⊆ ⋃ i, mulSupport (f i) :=
-  @mulSupport_supᵢ _ Mᵒᵈ ι ⟨(1 : M)⟩ _ _ f
-#align function.mul_support_infi Function.mulSupport_infᵢ
-#align function.support_infi Function.support_infᵢ
+  @mulSupport_iSup _ Mᵒᵈ ι ⟨(1 : M)⟩ _ _ f
+#align function.mul_support_infi Function.mulSupport_iInf
+#align function.support_infi Function.support_iInf
 
 @[to_additive]
 theorem mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : α → M) :
@@ -394,20 +394,20 @@ theorem support_div [GroupWithZero G₀] (f g : α → G₀) :
 theorem mulSupport_prod [CommMonoid M] (s : Finset α) (f : α → β → M) :
     (mulSupport fun x => ∏ i in s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) := by
   rw [mulSupport_subset_iff']
-  simp only [mem_unionᵢ, not_exists, nmem_mulSupport]
+  simp only [mem_iUnion, not_exists, nmem_mulSupport]
   exact fun x => Finset.prod_eq_one
 #align function.mul_support_prod Function.mulSupport_prod
 #align function.support_sum Function.support_sum
 
 theorem support_prod_subset [CommMonoidWithZero A] (s : Finset α) (f : α → β → A) :
     (support fun x => ∏ i in s, f i x) ⊆ ⋂ i ∈ s, support (f i) := fun _ hx =>
-  mem_interᵢ₂.2 fun _ hi H => hx <| Finset.prod_eq_zero hi H
+  mem_iInter₂.2 fun _ hi H => hx <| Finset.prod_eq_zero hi H
 #align function.support_prod_subset Function.support_prod_subset
 
 theorem support_prod [CommMonoidWithZero A] [NoZeroDivisors A] [Nontrivial A] (s : Finset α)
     (f : α → β → A) : (support fun x => ∏ i in s, f i x) = ⋂ i ∈ s, support (f i) :=
   Set.ext fun x => by
-    simp [support, Ne.def, Finset.prod_eq_zero_iff, mem_setOf_eq, Set.mem_interᵢ, not_exists]
+    simp [support, Ne.def, Finset.prod_eq_zero_iff, mem_setOf_eq, Set.mem_iInter, not_exists]
 #align function.support_prod Function.support_prod
 
 theorem mulSupport_one_add [One R] [AddLeftCancelMonoid R] (f : α → R) :

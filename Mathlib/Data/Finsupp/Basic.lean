@@ -539,8 +539,8 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.bunionᵢ_mono fun a _ => support_single_subset) <| by
-      rw [Finset.bunionᵢ_singleton]
+    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+      rw [Finset.biUnion_singleton]
 #align finsupp.map_domain_support Finsupp.mapDomain_support
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -1280,9 +1280,9 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
 
 theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.bunionᵢ_singleton]
+  rw [← Finset.biUnion_singleton]
   refine' Finset.Subset.trans support_sum _
-  refine' Finset.bunionᵢ_mono fun a _ => support_single_subset
+  refine' Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
 end CurryUncurry

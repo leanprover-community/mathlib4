@@ -39,9 +39,7 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
   invFun φ := φ.app (ModuleCat.of R R) (1 : R)
   left_inv := by
     intro r
-    dsimp
-    erw [AddCommGroupCat.ofHom_apply]
-    simp only [DistribMulAction.toAddMonoidHom_apply, smul_eq_mul, mul_one]
+    simp
   right_inv := by
     intro φ
     apply NatTrans.ext

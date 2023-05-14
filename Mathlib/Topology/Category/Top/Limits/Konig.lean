@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Kyle Miller
 
 ! This file was ported from Lean 3 source module topology.category.Top.limits
 ! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
@@ -137,10 +137,10 @@ theorem partialSections.closed [I : ∀ j : J, T2Space (F.obj j)] {G : Finset J}
     partialSections F H =
       ⋂ (f : FiniteDiagramArrow G) (_hf : f ∈ H), { u | F.map f.2.2.2.2 (u f.1) = u f.2.1 } := by
     ext1
-    simp only [Set.mem_interᵢ, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl
   rw [this]
-  apply isClosed_binterᵢ
+  apply isClosed_biInter
   intro f _
   -- Porting note: can't see through forget
   have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) := I f.snd.fst
@@ -157,7 +157,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty 
     Nonempty (TopCat.limitCone F).pt := by
   classical
     obtain ⟨u : (j : J) → (F.obj j).α, hu⟩ :=
-      IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed
+      IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
         (fun (G : FiniteDiagram J) => partialSections F G.2)
         (partialSections.directed F) (fun G => partialSections.nonempty F G.2)
         (fun G => IsClosed.isCompact (partialSections.closed F G.2))
