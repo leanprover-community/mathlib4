@@ -9,7 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The category of groups with zero
@@ -30,7 +30,7 @@ def GroupWithZeroCat :=
 namespace GroupWithZeroCat
 
 instance : CoeSort GroupWithZeroCat (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 instance (X : GroupWithZeroCat) : GroupWithZero X :=
   X.str
@@ -46,19 +46,21 @@ instance : Inhabited GroupWithZeroCat :=
 instance : LargeCategory.{u} GroupWithZeroCat where
   Hom X Y := MonoidWithZeroHom X Y
   id X := MonoidWithZeroHom.id X
-  comp X Y Z f g := g.comp f
-  id_comp' X Y := MonoidWithZeroHom.comp_id
-  comp_id' X Y := MonoidWithZeroHom.id_comp
-  assoc' W X Y Z _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
+  comp f g := g.comp f
+  id_comp := MonoidWithZeroHom.comp_id
+  comp_id := MonoidWithZeroHom.id_comp
+  assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
-instance : ConcreteCategory GroupWithZeroCat where
-  forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
-  forget_faithful := ⟨fun X Y f g h => FunLike.coe_injective h⟩
+instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
+  forget := { obj := fun G => G
+              map := fun f => f.toFun }
+  forget_faithful := ⟨ fun h => _ ⟩
+--  forget_faithful := ⟨fun X Y f g h => FunLike.coe_injective h⟩
 
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed
     where forget₂ :=
-    { obj := fun X => ⟨X, 0, 1⟩
-      map := fun X Y f => ⟨f, f.map_zero', f.map_one'⟩ }
+      { obj := fun X => ⟨X, 0, 1⟩
+        map := fun X Y f => ⟨f, f.map_zero', f.map_one'⟩ }
 #align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
 
 instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat
@@ -81,4 +83,3 @@ def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
 #align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
 
 end GroupWithZeroCat
-
