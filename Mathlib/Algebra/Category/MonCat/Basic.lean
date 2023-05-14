@@ -94,7 +94,7 @@ lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
+@[to_additive (attr := simp)] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
