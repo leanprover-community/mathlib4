@@ -86,6 +86,8 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
       toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
+  -- Porting note: added
+  have : ContinuousNeg 𝕜 := TopologicalAddGroup.toContinuousNeg
   exact
     (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
       (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
@@ -119,13 +121,30 @@ theorem continuousAt_toIocMod : ContinuousAt (toIocMod hp a) x :=
 
 end Continuity
 
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_coe_t[has_coe_t] 𝕜 -/
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `circle` and `real.angle`. -/
 @[nolint unusedArguments]
 def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
-  𝕜 ⧸ zmultiples p deriving AddCommGroup, TopologicalSpace, TopologicalAddGroup, Inhabited,
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_coe_t[has_coe_t] 𝕜»
+  𝕜 ⧸ zmultiples p
 #align add_circle AddCircle
+
+-- Porting note: the following section replaces a failing `deriving` statement
+section instances
+
+variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
+
+instance : AddCommGroup (AddCircle p) :=
+  inferInstanceAs (AddCommGroup (𝕜 ⧸ zmultiples p))
+instance : TopologicalSpace (AddCircle p) :=
+  inferInstanceAs (TopologicalSpace (𝕜 ⧸ zmultiples p))
+instance : TopologicalAddGroup (AddCircle p) :=
+  inferInstanceAs (TopologicalAddGroup (𝕜 ⧸ zmultiples p))
+instance : Inhabited (AddCircle p) :=
+  inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
+
+-- instance : Coe (AddCircle p) 𝕜 :=
+  -- inferInstanceAs (Coe (𝕜 ⧸ zmultiples p) 𝕜)
+
+end instances
 
 namespace AddCircle
 
