@@ -85,6 +85,8 @@ structure ModelType where
 #align first_order.language.Theory.Model.is_model FirstOrder.Language.Theory.ModelType.is_model
 #align first_order.language.Theory.Model.nonempty' FirstOrder.Language.Theory.ModelType.nonempty'
 
+-- Porting note: In Lean4, other instances precedes `FirstOrder.Language.Theory.ModelType.struc`,
+-- it's issues in `ModelTheory.Satisfiability`. So, we increase these priorities.
 attribute [instance 2000] ModelType.struc ModelType.is_model ModelType.nonempty'
 
 namespace ModelType
