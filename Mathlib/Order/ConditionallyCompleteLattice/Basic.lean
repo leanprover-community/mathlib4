@@ -126,15 +126,15 @@ theorem WithTop.coe_supᵢ [Preorder α] [SupSet α] (f : ι → α) (h : BddAbo
 #align with_top.coe_supr WithTop.coe_supᵢ
 
 @[simp]
-theorem WithBot.supₛ_empty {α : Type _} [SupSet α] : supₛ (∅ : Set (WithBot α)) = ⊥ :=
+theorem WithBot.csupₛ_empty {α : Type _} [SupSet α] : supₛ (∅ : Set (WithBot α)) = ⊥ :=
   if_pos <| Set.empty_subset _
-#align with_bot.cSup_empty WithBot.supₛ_empty
+#align with_bot.cSup_empty WithBot.csupₛ_empty
 
 @[simp]
-theorem WithBot.supᵢ_empty {α : Type _} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
+theorem WithBot.csupᵢ_empty {α : Type _} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
     (⨆ i, f i) = ⊥ :=
   @WithTop.infᵢ_empty _ αᵒᵈ _ _ _
-#align with_bot.csupr_empty WithBot.supᵢ_empty
+#align with_bot.csupr_empty WithBot.csupᵢ_empty
 
 @[norm_cast]
 theorem WithBot.coe_supₛ' [SupSet α] {s : Set α} (hs : s.Nonempty) :
@@ -1489,7 +1489,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
           -- porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
-          simp only [h, preimage_empty, WithBot.supₛ_empty]
+          simp only [h, preimage_empty, WithBot.csupₛ_empty]
         · exfalso
           apply h₂
           use ⊥
@@ -1531,7 +1531,7 @@ noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type _}
   { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder
 
-theorem WithTop.supr_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
+theorem WithTop.supᵢ_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : (⨆ x, (f x : WithTop α)) = ⊤ ↔ ¬BddAbove (Set.range f) := by
   rw [supᵢ_eq_top, not_bddAbove_iff]
   refine' ⟨fun hf r => _, fun hf a ha => _⟩
@@ -1539,12 +1539,12 @@ theorem WithTop.supr_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyComple
     exact ⟨f i, ⟨i, rfl⟩, WithTop.coe_lt_coe.mp hi⟩
   · rcases hf (a.untop ha.ne) with ⟨-, ⟨i, rfl⟩, hi⟩
     exact ⟨i, by simpa only [WithTop.coe_untop _ ha.ne] using WithTop.coe_lt_coe.mpr hi⟩
-#align with_top.supr_coe_eq_top WithTop.supr_coe_eq_top
+#align with_top.supr_coe_eq_top WithTop.supᵢ_coe_eq_top
 
-theorem WithTop.supr_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
+theorem WithTop.supᵢ_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : (⨆ x, (f x : WithTop α)) < ⊤ ↔ BddAbove (Set.range f) :=
-  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans not_not
-#align with_top.supr_coe_lt_top WithTop.supr_coe_lt_top
+  lt_top_iff_ne_top.trans <| (WithTop.supᵢ_coe_eq_top f).not.trans not_not
+#align with_top.supr_coe_lt_top WithTop.supᵢ_coe_lt_top
 
 end WithTopBot
 
