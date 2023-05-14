@@ -103,7 +103,6 @@ theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
   calc
     |a - b| = |(-(b - a))| := congr_arg _ (neg_sub b a).symm
     _ = |b - a| := abs_neg (b - a)
-
 #align abs_sub_comm abs_sub_comm
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)] {a b c : α}
@@ -155,11 +154,9 @@ theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
       _ ≤ a := h
-
   · calc
       -|a| = - -a := congr_arg Neg.neg (abs_of_nonpos h)
       _ ≤ a := (neg_neg a).le
-
 #align neg_abs_le_self neg_abs_le_self
 
 theorem add_abs_nonneg (a : α) : 0 ≤ a + |a| := by
@@ -313,7 +310,6 @@ theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _
-
 #align abs_sub_abs_le_abs_sub abs_sub_abs_le_abs_sub
 
 theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
@@ -360,7 +356,6 @@ theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
   calc
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
     _ ≤ |a - b| + |b - c| := abs_add _ _
-
 #align abs_sub_le abs_sub_le
 
 theorem abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=

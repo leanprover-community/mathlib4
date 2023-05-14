@@ -17,7 +17,7 @@ import Mathlib.Data.Seq.Computation
 /-!
 # Possibly infinite lists
 
-This file provides a `Seq α` type repesenting possibly infinite lists (referred here as sequences).
+This file provides a `Seq α` type representing possibly infinite lists (referred here as sequences).
   It is encoded as an infinite stream of options such that if `f n = none`, then
   `f m = none` for all `m ≥ n`.
 -/
@@ -343,8 +343,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 #align stream.seq.corec Stream'.Seq.corec
 
 @[simp]
-theorem corec_eq (f : β → Option (α × β)) (b : β) : destruct (corec f b) = omap (corec f) (f b) :=
-  by
+theorem corec_eq (f : β → Option (α × β)) (b : β) :
+    destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, nth]
   dsimp
   -- porting note: next two lines were `change`...`with`...

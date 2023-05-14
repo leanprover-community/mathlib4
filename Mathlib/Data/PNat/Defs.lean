@@ -211,7 +211,6 @@ instance : WellFoundedRelation ℕ+ :=
 def strongInductionOn {p : ℕ+ → Sort _} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by _ => n.1
-
 #align pnat.strong_induction_on PNat.strongInductionOn
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
@@ -260,11 +259,9 @@ theorem mod_coe (m k : ℕ+) :
   | zero =>
     rw [if_pos rfl]
     rfl
-
   | succ n =>
     rw [if_neg n.succ_ne_zero]
     rfl
-
 #align pnat.mod_coe PNat.mod_coe
 
 theorem div_coe (m k : ℕ+) :
@@ -274,11 +271,9 @@ theorem div_coe (m k : ℕ+) :
   | zero =>
     rw [if_pos rfl]
     rfl
-
   | succ n =>
     rw [if_neg n.succ_ne_zero]
     rfl
-
 #align pnat.div_coe PNat.div_coe
 
 /-- If `h : k | m`, then `k * (div_exact m k) = m`. Note that this is not equal to `m / k`. -/

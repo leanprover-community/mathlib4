@@ -87,9 +87,8 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 
 --porting note: linter suggested to change left hand side
 @[simp]
-theorem op_geom_sum₂ (x y : α) (n : ℕ) :
-    ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i = ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):=
-  by
+theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
+    ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
   simp only [op_sum, op_mul, op_pow]
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
@@ -155,7 +154,6 @@ theorem geom_sum₂_self {α : Type _} [CommRing α] (x : α) (n : ℕ) :
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
-
 #align geom_sum₂_self geom_sum₂_self
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
@@ -228,8 +226,8 @@ theorem mul_geom_sum [Ring α] (x : α) (n : ℕ) : ((x - 1) * ∑ i in range n,
   op_injective <| by simpa using geom_sum_mul (op x) n
 #align mul_geom_sum mul_geom_sum
 
-theorem geom_sum_mul_neg [Ring α] (x : α) (n : ℕ) : (∑ i in range n, x ^ i) * (1 - x) = 1 - x ^ n :=
-  by
+theorem geom_sum_mul_neg [Ring α] (x : α) (n : ℕ) :
+    (∑ i in range n, x ^ i) * (1 - x) = 1 - x ^ n := by
   have := congr_arg Neg.neg (geom_sum_mul x n)
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
@@ -277,8 +275,7 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute 
   rw [sum_Ico_eq_sub _ hmn]
   have :
     (∑ k in range m, x ^ k * y ^ (n - 1 - k)) =
-      ∑ k in range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) :=
-    by
+      ∑ k in range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) := by
     refine' sum_congr rfl fun j j_in => _
     rw [← pow_add]
     congr
@@ -415,14 +412,12 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
         (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
       by rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
-    _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-    by
+    _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
       refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _
       rw [pow_succ', mul_comm b]
       rw [← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
     _ = a * b - a / b ^ n := add_tsub_add_eq_tsub_left _ _ _
-
 #align nat.pred_mul_geom_sum_le Nat.pred_mul_geom_sum_le
 
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
@@ -442,19 +437,15 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
-    (a + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i :=
-    by
+    (a + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i := by
       rw [pow_zero, Nat.div_one]
-    _ = ∑ i in range n.succ, a / b ^ i :=
-    by
+    _ = ∑ i in range n.succ, a / b ^ i := by
       rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
       exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
-    _ = (a * 1 + a * (b - 1)) / (b - 1) :=
-    by
+    _ = (a * 1 + a * (b - 1)) / (b - 1) := by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
-
 #align nat.geom_sum_Ico_le Nat.geom_sum_Ico_le
 
 section Order

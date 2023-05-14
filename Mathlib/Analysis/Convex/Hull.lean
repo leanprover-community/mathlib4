@@ -133,9 +133,8 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 
 @[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
-  refine'
-    (convexHull_min _ <| convex_segment _ _).antisymm
-      (segment_subset_convexHull (mem_insert _ _) <| mem_insert_of_mem _ <| mem_singleton _)
+  refine (convexHull_min ?_ <| convex_segment _ _).antisymm
+    (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
@@ -204,17 +203,15 @@ section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] (s : Set E)
 
-theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) : f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
-  by
+theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) :
+    f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
   apply Set.Subset.antisymm
   · rw [Set.image_subset_iff]
     refine' convexHull_min _ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  ·
-    exact
-      convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
-        ((convex_convexHull 𝕜 s).affine_image f)
+  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+      ((convex_convexHull 𝕜 s).affine_image f)
 #align affine_map.image_convex_hull AffineMap.image_convexHull
 
 theorem convexHull_subset_affineSpan : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=

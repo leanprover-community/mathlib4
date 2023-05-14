@@ -290,7 +290,6 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : (∑' n : ℕ, r ^ n) = (1 - r
     calc
       (n : ℝ≥0∞) = ∑ i in range n, 1 := by rw [sum_const, nsmul_one, card_range]
       _ ≤ ∑ i in range n, r ^ i := sum_le_sum fun k _ => one_le_pow_of_one_le' hr k
-
 #align ennreal.tsum_geometric ENNReal.tsum_geometric
 
 end Geometric

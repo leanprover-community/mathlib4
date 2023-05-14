@@ -666,7 +666,6 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
     mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
-
 #align free_group.red.exact FreeGroup.Red.exact
 #align free_add_group.red.exact FreeAddGroup.Red.exact
 
@@ -995,14 +994,19 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
-    simp
+    simp only [quot_mk_eq_mk, map.mk, sum_mk, List.map_map]
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
         cases b <;> simp [zpow_add] at ih⊢ <;> rw [ih] <;> rfl)
   right_inv x :=
-    Int.induction_on x (by simp) (fun i ih => by simp at ih; simp [zpow_add, ih]) fun i ih => by
-      simp at ih; simp [zpow_add, ih, sub_eq_add_neg]
+    Int.induction_on x (by simp)
+      (fun i ih => by
+        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp [zpow_add, ih])
+      (fun i ih => by
+        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
 section Category
@@ -1428,7 +1432,6 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
     _ = norm x + norm y := List.length_append _ _
-
 #align free_group.norm_mul_le FreeGroup.norm_mul_le
 #align free_add_group.norm_add_le FreeAddGroup.norm_add_le
 
