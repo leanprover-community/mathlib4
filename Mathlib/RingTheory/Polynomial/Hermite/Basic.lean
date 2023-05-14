@@ -112,14 +112,14 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
--- Porting note: On line 116, the coercion from WithBot ℕ to ℕ was specified manually
--- because it was not automatic
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero, WithBot.coe_lt_coe]
+  simp_rw [degree_le_iff_coeff_zero]
+   -- porting note: mathlib3 also had `simp_rw [WithBot.coe_lt_coe]` but it's not firing
+   -- so we add it manually later
   · rintro m hnm
-    exact coeff_hermite_of_lt ((@WithBot.coe_lt_coe _ n m _).1 hnm)
+    exact coeff_hermite_of_lt (WithBot.coe_lt_coe.1 hnm)
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
 
