@@ -87,8 +87,8 @@ theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x 
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
       toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
   exact
-    (continuous_sub_left _).ContinuousAt.comp_continuousWithinAt <|
-      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuous_within_at fun y => neg_le_neg
+    (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
+      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
 #align continuous_left_to_Ioc_mod continuous_left_toIocMod
 
 variable {x} (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a)
@@ -121,7 +121,7 @@ end Continuity
 
 /- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_coe_t[has_coe_t] 𝕜 -/
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `circle` and `real.angle`. -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p deriving AddCommGroup, TopologicalSpace, TopologicalAddGroup, Inhabited,
   «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_coe_t[has_coe_t] 𝕜»
@@ -177,17 +177,13 @@ theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
   rw [coe_add, ← eq_sub_iff_add_eq', sub_self, coe_period]
 #align add_circle.coe_add_period AddCircle.coe_add_period
 
-@[continuity, nolint unused_arguments]
+@[continuity, nolint unusedArguments]
 protected theorem continuous_mk' :
     Continuous (QuotientAddGroup.mk' (zmultiples p) : 𝕜 → AddCircle p) :=
   continuous_coinduced_rng
 #align add_circle.continuous_mk' AddCircle.continuous_mk'
 
-variable [hp : Fact (0 < p)]
-
-include hp
-
-variable (a : 𝕜) [Archimedean 𝕜]
+variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 instance : CircularOrder (AddCircle p) :=
   quotientAddGroup.circularOrder
@@ -261,8 +257,6 @@ theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
 
 variable {x : AddCircle p} (hx : x ≠ a)
 
-include hx
-
 theorem continuousAt_equivIco : ContinuousAt (equivIco p a) x := by
   induction x using QuotientAddGroup.induction_on'
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
@@ -327,8 +321,6 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
 
 variable [hp : Fact (0 < p)]
 
-include hp
-
 section FloorRing
 
 variable [FloorRing 𝕜]
@@ -384,7 +376,7 @@ variable {p}
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  convert gcd_mul_add_order_of_div_eq p m hn
+  convert gcd_mul_addOrderOf_div_eq p m hn
   rw [h, one_mul]
 #align add_circle.add_order_of_div_of_gcd_eq_one AddCircle.addOrderOf_div_of_gcd_eq_one
 
@@ -392,17 +384,17 @@ theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.na
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   induction m
   · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h⊢
-    exact add_order_of_div_of_gcd_eq_one hn h
+    exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]
-    exact add_order_of_div_of_gcd_eq_one hn h
+    exact addOrderOf_div_of_gcd_eq_one hn h
 #align add_circle.add_order_of_div_of_gcd_eq_one' AddCircle.addOrderOf_div_of_gcd_eq_one'
 
 theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) = q.den := by
-  have : (↑(q.denom : ℤ) : 𝕜) ≠ 0 := by
+  have : (↑(q.den : ℤ) : 𝕜) ≠ 0 := by
     norm_cast
     exact q.pos.ne.symm
   rw [← @Rat.num_den q, Rat.cast_mk_of_ne_zero _ _ this, Int.cast_ofNat, Rat.num_den,
-    add_order_of_div_of_gcd_eq_one' q.pos q.cop]
+    addOrderOf_div_of_gcd_eq_one' q.pos q.cop]
   infer_instance
 #align add_circle.add_order_of_coe_rat AddCircle.addOrderOf_coe_rat
 
@@ -476,7 +468,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_set_of, Nat.card_congr (set_add_order_of_equiv p hn),
+  · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 #align add_circle.card_add_order_of_eq_totient AddCircle.card_addOrderOf_eq_totient
@@ -485,7 +477,7 @@ theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n }.Finite :=
   finite_coe_iff.mp <|
     Nat.finite_of_card_ne_zero <| by
-      simpa only [coe_set_of, card_add_order_of_eq_totient p] using (Nat.totient_pos hn).ne'
+      simpa only [coe_setOf, card_addOrderOf_eq_totient p] using (Nat.totient_pos hn).ne'
 #align add_circle.finite_set_of_add_order_eq AddCircle.finite_setOf_add_order_eq
 
 end FiniteOrderPoints
@@ -540,9 +532,6 @@ namespace AddCircle
 variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p a : 𝕜)
   [hp : Fact (0 < p)]
 
-include hp
-
--- mathport name: expr𝕋
 local notation "𝕋" => AddCircle p
 
 /-- The relation identifying the endpoints of `Icc a (a + p)`. -/
@@ -560,7 +549,7 @@ identifying the endpoints. -/
 def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
   toFun x := Quot.mk _ <| inclusion Ico_subset_Icc_self (equivIco _ _ x)
   invFun x :=
-    Quot.liftOn x coe <| by
+    Quot.liftOn x (↑) <| by
       rintro _ _ ⟨_⟩
       exact (coe_add_period p a).symm
   left_inv := (equivIco p a).symm_apply_apply
@@ -632,7 +621,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 
 theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
-  rw [lift_Ico_eq_lift_Icc hf]
+  rw [liftIco_eq_lift_Icc hf]
   refine' Continuous.comp _ (homeo_Icc_quot p a).continuous_toFun
   exact continuous_coinduced_dom.mpr (continuous_on_iff_continuous_restrict.mp hc)
 #align add_circle.lift_Ico_continuous AddCircle.liftIco_continuous
@@ -653,4 +642,3 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
-
