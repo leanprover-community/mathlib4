@@ -466,7 +466,7 @@ theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
   rw [infDist, infEdist, iInf_subtype', ENNReal.toReal_iInf]
   · simp only [dist_edist]
   · exact fun _ ↦ edist_ne_top _ _
-#align metric.inf_dist_eq_infi Metric.infDist_eq_infᵢ
+#align metric.inf_dist_eq_infi Metric.infDist_eq_iInf
 
 /-- The minimal distance is always nonnegative -/
 theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
