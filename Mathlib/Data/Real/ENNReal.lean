@@ -2316,7 +2316,8 @@ theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: ← sInf_image' had to be replaced by ← image_eq_range
+  -- porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- in a different order.
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
 #align ennreal.to_nnreal_Inf ENNReal.toNNReal_sInf
 
@@ -2325,17 +2326,15 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   simp_rw [toNNReal_coe]
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
-  · -- porting note: using all three lemmas in a single rewrite used to work but now doesn't,
-    -- probably because ENNReal does not reduce to WithTop NNReal
-    rw [NNReal.iSup_of_not_bddAbove h]
-    convert top_toNNReal
-    exact (WithTop.iSup_coe_eq_top f).mpr h
+  · -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
+    erw [NNReal.iSup_of_not_bddAbove h, (WithTop.iSup_coe_eq_top f).mpr h, top_toNNReal]
 #align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: ← sSup_image' had to replaced by ← image_eq_range
+  -- porting note: `← sSnf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 #align ennreal.to_nnreal_Sup ENNReal.toNNReal_sSup
 
