@@ -51,33 +51,54 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   comp_id := MonoidWithZeroHom.id_comp
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
+-- porting note: was not necessary in mathlib
+-- proof from instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
+instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
+  ⟨ fun f => f.toFun, fun f g h => by
+    cases f
+    cases g
+    congr
+    apply FunLike.coe_injective'
+    exact h
+     ⟩
+
+-- porting note: added
+lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
+
+-- porting note: added
+lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget := { obj := fun G => G
               map := fun f => f.toFun }
-  forget_faithful := ⟨ fun h => _ ⟩
---  forget_faithful := ⟨fun X Y f g h => FunLike.coe_injective h⟩
+  forget_faithful := ⟨ fun h => FunLike.coe_injective h ⟩
+
+-- porting note: added
+@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+
 
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed
     where forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
-        map := fun X Y f => ⟨f, f.map_zero', f.map_one'⟩ }
+        map := fun f => ⟨f, f.map_zero', f.map_one'⟩
+        }
 #align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
 
 instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat
     where forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y => MonoidWithZeroHom.toMonoidHom }
+      { obj := fun X => ⟨ X , _ ⟩
+        map := fun f => f.toMonoidHom }
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
-  Hom := e
+  hom := e.toFun
   inv := e.symm
-  hom_inv_id' := by
+  hom_inv_id := by
     ext
     exact e.symm_apply_apply _
-  inv_hom_id' := by
+  inv_hom_id := by
     ext
     exact e.apply_symm_apply _
 #align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
