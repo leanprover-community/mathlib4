@@ -35,7 +35,7 @@ Additional useful definitions:
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
 * `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
-* `Metric.diam s` : The `supᵢ` of the distances of members of `s`.
+* `Metric.diam s` : The `iSup` of the distances of members of `s`.
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
 TODO (anyone): Add "Main results" section.
@@ -464,14 +464,14 @@ theorem ball_eq_ball' (ε : ℝ) (x : α) :
 #align metric.ball_eq_ball' Metric.ball_eq_ball'
 
 @[simp]
-theorem unionᵢ_ball_nat (x : α) : (⋃ n : ℕ, ball x n) = univ :=
-  unionᵢ_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
-#align metric.Union_ball_nat Metric.unionᵢ_ball_nat
+theorem iUnion_ball_nat (x : α) : (⋃ n : ℕ, ball x n) = univ :=
+  iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
+#align metric.Union_ball_nat Metric.iUnion_ball_nat
 
 @[simp]
-theorem unionᵢ_ball_nat_succ (x : α) : (⋃ n : ℕ, ball x (n + 1)) = univ :=
-  unionᵢ_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
-#align metric.Union_ball_nat_succ Metric.unionᵢ_ball_nat_succ
+theorem iUnion_ball_nat_succ (x : α) : (⋃ n : ℕ, ball x (n + 1)) = univ :=
+  iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
+#align metric.Union_ball_nat_succ Metric.iUnion_ball_nat_succ
 
 /-- `closed_ball x ε` is the set of all points `y` with `dist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ) :=
@@ -585,7 +585,7 @@ theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ :
 #align metric.ball_subset_ball Metric.ball_subset_ball
 
 theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := by
-  ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_interᵢ₂]; rfl
+  ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
 #align metric.closed_ball_eq_bInter_ball Metric.closedBall_eq_bInter_ball
 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
@@ -649,13 +649,13 @@ theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε
 #align metric.dist_lt_add_of_nonempty_ball_inter_ball Metric.dist_lt_add_of_nonempty_ball_inter_ball
 
 @[simp]
-theorem unionᵢ_closedBall_nat (x : α) : (⋃ n : ℕ, closedBall x n) = univ :=
-  unionᵢ_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
-#align metric.Union_closed_ball_nat Metric.unionᵢ_closedBall_nat
+theorem iUnion_closedBall_nat (x : α) : (⋃ n : ℕ, closedBall x n) = univ :=
+  iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
+#align metric.Union_closed_ball_nat Metric.iUnion_closedBall_nat
 
-theorem unionᵢ_inter_closedBall_nat (s : Set α) (x : α) : (⋃ n : ℕ, s ∩ closedBall x n) = s := by
-  rw [← inter_unionᵢ, unionᵢ_closedBall_nat, inter_univ]
-#align metric.Union_inter_closed_ball_nat Metric.unionᵢ_inter_closedBall_nat
+theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : (⋃ n : ℕ, s ∩ closedBall x n) = s := by
+  rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
+#align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
   rw [← add_sub_cancel'_right ε₁ ε₂]
@@ -876,7 +876,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
   refine' ⟨range (Subtype.val ∘ Finv), finite_range _, fun x xs => _⟩
   let x' := Finv (F ⟨x, xs⟩)
   have : F x' = F ⟨x, xs⟩ := Function.invFun_eq ⟨⟨x, xs⟩, rfl⟩
-  simp only [Set.mem_unionᵢ, Set.mem_range]
+  simp only [Set.mem_iUnion, Set.mem_range]
   exact ⟨_, ⟨F ⟨x, xs⟩, rfl⟩, hF _ _ this.symm⟩
 #align metric.totally_bounded_of_finite_discretization Metric.totallyBounded_of_finite_discretization
 
@@ -1152,13 +1152,13 @@ distance coincide. -/
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     (⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε }) =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
-  simp only [le_antisymm_iff, le_infᵢ_iff, le_principal_iff]
+  simp only [le_antisymm_iff, le_iInf_iff, le_principal_iff]
   refine ⟨fun ε hε => ?_, fun ε hε => ?_⟩
   · rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hε with ⟨ε', ε'0, ε'ε⟩
-    refine mem_infᵢ_of_mem (ε' : ℝ) (mem_infᵢ_of_mem (ENNReal.coe_pos.1 ε'0) ?_)
+    refine mem_iInf_of_mem (ε' : ℝ) (mem_iInf_of_mem (ENNReal.coe_pos.1 ε'0) ?_)
     exact fun x hx => lt_trans (ENNReal.coe_lt_coe.2 hx) ε'ε
   · lift ε to ℝ≥0 using le_of_lt hε
-    refine mem_infᵢ_of_mem (ε : ℝ≥0∞) (mem_infᵢ_of_mem (ENNReal.coe_pos.2 hε) ?_)
+    refine mem_iInf_of_mem (ε : ℝ≥0∞) (mem_iInf_of_mem (ENNReal.coe_pos.2 hε) ?_)
     exact fun _ => ENNReal.coe_lt_coe.1
 
 theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by
@@ -1388,7 +1388,7 @@ theorem Real.dist_le_of_mem_Icc_01 {x y : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) (hy 
 
 instance : OrderTopology ℝ :=
   orderTopology_of_nhds_abs fun x => by
-    simp only [nhds_basis_ball.eq_binfᵢ, ball, Real.dist_eq, abs_sub_comm]
+    simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
 
 theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
   Set.ext fun y => by
@@ -1586,15 +1586,15 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
       rintro _ ⟨⟨m, n⟩, _, rfl⟩
       exact le_of_lt (hR m n)
     -- Prove that it bounds the distances of points in the Cauchy sequence
-    have ub : ∀ m n N, N ≤ m → N ≤ n → dist (s m) (s n) ≤ supₛ (S N) := fun m n N hm hn =>
-      le_csupₛ (hS N) ⟨⟨_, _⟩, ⟨hm, hn⟩, rfl⟩
+    have ub : ∀ m n N, N ≤ m → N ≤ n → dist (s m) (s n) ≤ sSup (S N) := fun m n N hm hn =>
+      le_csSup (hS N) ⟨⟨_, _⟩, ⟨hm, hn⟩, rfl⟩
     have S0m : ∀ n, (0 : ℝ) ∈ S n := fun n => ⟨⟨n, n⟩, ⟨le_rfl, le_rfl⟩, dist_self _⟩
-    have S0 := fun n => le_csupₛ (hS n) (S0m n)
+    have S0 := fun n => le_csSup (hS n) (S0m n)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
-    refine' ⟨fun N => supₛ (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => _⟩
+    refine' ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => _⟩
     refine' (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => _
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
-    refine' lt_of_le_of_lt (csupₛ_le ⟨_, S0m _⟩ _) (half_lt_self ε0)
+    refine' lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ _) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')), fun ⟨b, _, b_bound, b_lim⟩ =>
     cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
@@ -1613,7 +1613,7 @@ def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β)
   edist x y := edist (f x) (f y)
   edist_dist x y := edist_dist _ _
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
-  uniformity_dist := (uniformity_basis_dist.comap _).eq_binfᵢ
+  uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
     simp only [← isBounded_def, isBounded_iff, ball_image_iff, mem_setOf]
@@ -2141,8 +2141,8 @@ instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
   -- add an instance for `SigmaCompactSpace`.
   suffices SigmaCompactSpace α by exact EMetric.secondCountable_of_sigmaCompact α
   rcases em (Nonempty α) with (⟨⟨x⟩⟩ | hn)
-  · exact ⟨⟨fun n => closedBall x n, fun n => isCompact_closedBall _ _, unionᵢ_closedBall_nat _⟩⟩
-  · exact ⟨⟨fun _ => ∅, fun _ => isCompact_empty, unionᵢ_eq_univ_iff.2 fun x => (hn ⟨x⟩).elim⟩⟩
+  · exact ⟨⟨fun n => closedBall x n, fun n => isCompact_closedBall _ _, iUnion_closedBall_nat _⟩⟩
+  · exact ⟨⟨fun _ => ∅, fun _ => isCompact_empty, iUnion_eq_univ_iff.2 fun x => (hn ⟨x⟩).elim⟩⟩
 #align second_countable_of_proper secondCountable_of_proper
 
 theorem tendsto_dist_right_cocompact_atTop [ProperSpace α] (x : α) :
@@ -2259,7 +2259,7 @@ theorem secondCountable_of_almost_dense_set
   refine' EMetric.secondCountable_of_almost_dense_set fun ε ε0 => _
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
   choose s hsc y hys hyx using H ε' (by exact_mod_cast ε'0)
-  refine' ⟨s, hsc, unionᵢ₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
+  refine' ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
   exact_mod_cast hyx x
 #align metric.second_countable_of_almost_dense_set Metric.secondCountable_of_almost_dense_set
 
@@ -2276,10 +2276,10 @@ theorem lebesgue_number_lemma_of_metric {s : Set α} {ι} {c : ι → Set α} (h
     ⟨i, fun _y hy => hi (hδ (mem_ball'.mp hy))⟩⟩
 #align lebesgue_number_lemma_of_metric lebesgue_number_lemma_of_metric
 
-theorem lebesgue_number_lemma_of_metric_unionₛ {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
-  rw [unionₛ_eq_unionᵢ] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
-#align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_unionₛ
+  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
+#align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_sUnion
 
 namespace Metric
 
@@ -2376,10 +2376,10 @@ theorem Bounded.union (hs : Bounded s) (ht : Bounded t) : Bounded (s ∪ t) :=
 #align metric.bounded.union Metric.Bounded.union
 
 /-- A finite union of bounded sets is bounded -/
-theorem bounded_bunionᵢ {I : Set β} {s : β → Set α} (H : I.Finite) :
+theorem bounded_biUnion {I : Set β} {s : β → Set α} (H : I.Finite) :
     Bounded (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, Bounded (s i) := by
-  simp only [bounded_iff_isBounded, isBounded_bunionᵢ H]
-#align metric.bounded_bUnion Metric.bounded_bunionᵢ
+  simp only [bounded_iff_isBounded, isBounded_biUnion H]
+#align metric.bounded_bUnion Metric.bounded_biUnion
 
 protected theorem Bounded.prod [PseudoMetricSpace β] {s : Set α} {t : Set β} (hs : Bounded s)
     (ht : Bounded t) : Bounded (s ×ˢ t) := by
@@ -2392,7 +2392,7 @@ theorem _root_.TotallyBounded.bounded {s : Set α} (h : TotallyBounded s) : Boun
   -- We cover the totally bounded set by finitely many balls of radius 1,
   -- and then argue that a finite union of bounded sets is bounded
   let  ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
-  Bounded.mono subs <| (bounded_bunionᵢ fint).2 fun _ _ => bounded_ball
+  Bounded.mono subs <| (bounded_biUnion fint).2 fun _ _ => bounded_ball
 #align totally_bounded.bounded TotallyBounded.bounded
 
 /-- A compact set is bounded -/
@@ -2730,7 +2730,7 @@ theorem diam_ball {r : ℝ} (h : 0 ≤ r) : diam (ball x r) ≤ 2 * r :=
 
 /-- If a family of complete sets with diameter tending to `0` is such that each finite intersection
 is nonempty, then the total intersection is also nonempty. -/
-theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → Set α}
+theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set α}
     (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n))
     (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
     (⋂ n, s n).Nonempty := by
@@ -2739,7 +2739,7 @@ theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → S
     intro n N hn
     apply mem_of_subset_of_mem _ (h N).choose_spec
     intro x hx
-    simp only [mem_interᵢ] at hx
+    simp only [mem_iInter] at hx
     exact hx n hn
   have : CauchySeq u := by
     apply cauchySeq_of_le_tendsto_0 _ _ h'
@@ -2747,19 +2747,19 @@ theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → S
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
     cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
-  refine' ⟨x, mem_interᵢ.2 fun n => _⟩
+  refine' ⟨x, mem_iInter.2 fun n => _⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n]with p hp
   exact I n p hp
-#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ
+#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_iInter_of_nonempty_biInter
 
 /-- In a complete space, if a family of closed sets with diameter tending to `0` is such that each
 finite intersection is nonempty, then the total intersection is also nonempty. -/
-theorem nonempty_interᵢ_of_nonempty_binterᵢ [CompleteSpace α] {s : ℕ → Set α}
+theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
-  (hs 0).isComplete.nonempty_interᵢ_of_nonempty_binterᵢ hs h's h h'
-#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_interᵢ_of_nonempty_binterᵢ
+  (hs 0).isComplete.nonempty_iInter_of_nonempty_biInter hs h's h h'
+#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_iInter_of_nonempty_biInter
 
 end Diam
 

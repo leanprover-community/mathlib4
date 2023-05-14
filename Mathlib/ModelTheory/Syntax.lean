@@ -91,7 +91,7 @@ open Finset
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinset
+  | func _f ts => univ.biUnion fun i => (ts i).varFinset
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
 --Porting note: universes in different order
@@ -100,7 +100,7 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | var (Sum.inl i) => {i}
   | var (Sum.inr _i) => ∅
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 #align first_order.language.term.var_finset_left FirstOrder.Language.Term.varFinsetLeft
 
 --Porting note: universes in different order
@@ -147,7 +147,7 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
     func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
+      (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVar
 
 --Porting note: universes in different order
@@ -158,7 +158,7 @@ def restrictVarLeft [DecidableEq α] {γ : Type _} :
   | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
     func F fun i =>
-      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_bunionᵢ_of_mem
+      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
         (fun i => varFinsetLeft (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var_left FirstOrder.Language.Term.restrictVarLeft
 
@@ -429,7 +429,7 @@ open Finset
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
   | _n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
-  | _n, rel _R ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | _n, rel _R ts => univ.biUnion fun i => (ts i).varFinsetLeft
   | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
   | _n, all f => f.freeVarFinset
 #align first_order.language.bounded_formula.free_var_finset FirstOrder.Language.BoundedFormula.freeVarFinset
@@ -488,7 +488,7 @@ def restrictFreeVar [DecidableEq α] :
       (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
   | _n, rel R ts, f =>
     rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
+      (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
     (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
       (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
@@ -1133,23 +1133,23 @@ theorem directed_distinctConstantsTheory :
   Monotone.directed_le monotone_distinctConstantsTheory
 #align first_order.language.directed_distinct_constants_theory FirstOrder.Language.directed_distinctConstantsTheory
 
-theorem distinctConstantsTheory_eq_unionᵢ (s : Set α) :
+theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
         L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by
   classical
     simp only [distinctConstantsTheory]
-    rw [← image_unionᵢ, ← unionᵢ_inter]
+    rw [← image_iUnion, ← iUnion_inter]
     refine' congr rfl (congr (congr rfl _) rfl)
     ext ⟨i, j⟩
-    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_unionᵢ,
+    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
     refine' ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, _⟩, ⟨h.2, _⟩⟩, _⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩
       exact ⟨is, js⟩
-#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_unionᵢ
+#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_iUnion
 
 end Cardinality
 

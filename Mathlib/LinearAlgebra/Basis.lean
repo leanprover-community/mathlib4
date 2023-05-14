@@ -1557,8 +1557,8 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) where
-  eq_supₛ_atoms W := by
-    refine ⟨_, submodule_eq_supₛ_le_nonzero_spans W, ?_⟩
+  eq_sSup_atoms W := by
+    refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
 

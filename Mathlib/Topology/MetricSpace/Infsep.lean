@@ -52,13 +52,13 @@ variable [EDist α] {x y : α} {s t : Set α}
 
 theorem le_einfsep_iff {d} :
     d ≤ s.einfsep ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), d ≤ edist x y := by
-  simp_rw [einfsep, le_infᵢ_iff]
+  simp_rw [einfsep, le_iInf_iff]
 #align set.le_einfsep_iff Set.le_einfsep_iff
 
 theorem einfsep_zero :
     s.einfsep = 0 ↔
       ∀ (C) (_hC : 0 < C), ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), edist x y < C :=
-  by simp_rw [einfsep, ← _root_.bot_eq_zero, infᵢ_eq_bot, infᵢ_lt_iff]
+  by simp_rw [einfsep, ← _root_.bot_eq_zero, iInf_eq_bot, iInf_lt_iff]
 #align set.einfsep_zero Set.einfsep_zero
 
 theorem einfsep_pos :
@@ -70,12 +70,12 @@ theorem einfsep_pos :
 
 theorem einfsep_top :
     s.einfsep = ∞ ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), edist x y = ∞ := by
-  simp_rw [einfsep, infᵢ_eq_top]
+  simp_rw [einfsep, iInf_eq_top]
 #align set.einfsep_top Set.einfsep_top
 
 theorem einfsep_lt_top :
     s.einfsep < ∞ ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), edist x y < ∞ := by
-  simp_rw [einfsep, infᵢ_lt_iff]
+  simp_rw [einfsep, iInf_lt_iff]
 #align set.einfsep_lt_top Set.einfsep_lt_top
 
 theorem einfsep_ne_top :
@@ -85,7 +85,7 @@ theorem einfsep_ne_top :
 
 theorem einfsep_lt_iff {d} :
     s.einfsep < d ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_h : x ≠ y), edist x y < d := by
-  simp_rw [einfsep, infᵢ_lt_iff]
+  simp_rw [einfsep, iInf_lt_iff]
 #align set.einfsep_lt_iff Set.einfsep_lt_iff
 
 theorem nontrivial_of_einfsep_lt_top (hs : s.einfsep < ∞) : s.Nontrivial := by
@@ -137,16 +137,16 @@ theorem einfsep_singleton : ({x} : Set α).einfsep = ∞ :=
   subsingleton_singleton.einfsep
 #align set.einfsep_singleton Set.einfsep_singleton
 
-theorem einfsep_unionᵢ_mem_option {ι : Type _} (o : Option ι) (s : ι → Set α) :
+theorem einfsep_iUnion_mem_option {ι : Type _} (o : Option ι) (s : ι → Set α) :
     (⋃ i ∈ o, s i).einfsep = ⨅ i ∈ o, (s i).einfsep := by cases o <;> simp
-#align set.einfsep_Union_mem_option Set.einfsep_unionᵢ_mem_option
+#align set.einfsep_Union_mem_option Set.einfsep_iUnion_mem_option
 
 theorem einfsep_anti (hst : s ⊆ t) : t.einfsep ≤ s.einfsep :=
   le_einfsep fun _x hx _y hy => einfsep_le_edist_of_mem (hst hx) (hst hy)
 #align set.einfsep_anti Set.einfsep_anti
 
 theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_hxy : x ≠ y), edist x y := by
-  simp_rw [le_infᵢ_iff]
+  simp_rw [le_iInf_iff]
   refine' fun _ hy hxy => einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
 #align set.einfsep_insert_le Set.einfsep_insert_le
 
@@ -167,11 +167,11 @@ theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist 
   le_antisymm (le_inf (einfsep_pair_le_left hxy) (einfsep_pair_le_right hxy)) le_einfsep_pair
 #align set.einfsep_pair_eq_inf Set.einfsep_pair_eq_inf
 
-theorem einfsep_eq_infᵢ : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α × α) := by
+theorem einfsep_eq_iInf : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α × α) := by
   refine' eq_of_forall_le_iff fun _ => _
-  simp_rw [le_einfsep_iff, le_infᵢ_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
+  simp_rw [le_einfsep_iff, le_iInf_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
-#align set.einfsep_eq_infi Set.einfsep_eq_infᵢ
+#align set.einfsep_eq_infi Set.einfsep_eq_iInf
 
 theorem einfsep_of_fintype [DecidableEq α] [Fintype s] :
     s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
@@ -226,16 +226,16 @@ theorem einfsep_insert : einfsep (insert x s) =
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff]
   rintro y (rfl | hy) z (rfl | hz) hyz
   · exact False.elim (hyz rfl)
-  · exact Or.inl (infᵢ_le_of_le _ (infᵢ₂_le hz hyz))
+  · exact Or.inl (iInf_le_of_le _ (iInf₂_le hz hyz))
   · rw [edist_comm]
-    exact Or.inl (infᵢ_le_of_le _ (infᵢ₂_le hy hyz.symm))
+    exact Or.inl (iInf_le_of_le _ (iInf₂_le hy hyz.symm))
   · exact Or.inr (einfsep_le_edist_of_mem hy hz hyz)
 #align set.einfsep_insert Set.einfsep_insert
 
 theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     einfsep ({x, y, z} : Set α) = edist x y ⊓ edist x z ⊓ edist y z := by
-  simp_rw [einfsep_insert, infᵢ_insert, infᵢ_singleton, einfsep_singleton, inf_top_eq,
-    cinfᵢ_pos hxy, cinfᵢ_pos hyz, cinfᵢ_pos hxz]
+  simp_rw [einfsep_insert, iInf_insert, iInf_singleton, einfsep_singleton, inf_top_eq,
+    ciInf_pos hxy, ciInf_pos hyz, ciInf_pos hxz]
 #align set.einfsep_triple Set.einfsep_triple
 
 theorem le_einfsep_pi_of_le {π : β → Type _} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
@@ -447,7 +447,7 @@ theorem Nontrivial.infsep_anti (hs : s.Nontrivial) (hst : s ⊆ t) : t.infsep �
   ENNReal.toReal_mono hs.einfsep_ne_top (einfsep_anti hst)
 #align set.nontrivial.infsep_anti Set.Nontrivial.infsep_anti
 
-theorem infsep_eq_infᵢ [Decidable s.Nontrivial] :
+theorem infsep_eq_iInf [Decidable s.Nontrivial] :
     s.infsep = if s.Nontrivial then ⨅ d : s.offDiag, (uncurry dist) (d : α × α) else 0 := by
   split_ifs with hs
   · have hb : BddBelow (uncurry dist '' s.offDiag) := by
@@ -456,15 +456,15 @@ theorem infsep_eq_infᵢ [Decidable s.Nontrivial] :
       rcases h with ⟨_, _, _, rfl⟩
       exact dist_nonneg
     refine' eq_of_forall_le_iff fun _ => _
-    simp_rw [hs.le_infsep_iff, le_cinfᵢ_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,
+    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,
       mem_offDiag, Prod.forall, uncurry_apply_pair, and_imp]
   · exact (not_nontrivial_iff.mp hs).infsep_zero
-#align set.infsep_eq_infi Set.infsep_eq_infᵢ
+#align set.infsep_eq_infi Set.infsep_eq_iInf
 
-theorem Nontrivial.infsep_eq_infᵢ (hs : s.Nontrivial) :
+theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
     s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
-  classical rw [Set.infsep_eq_infᵢ, if_pos hs]
-#align set.nontrivial.infsep_eq_infi Set.Nontrivial.infsep_eq_infᵢ
+  classical rw [Set.infsep_eq_iInf, if_pos hs]
+#align set.nontrivial.infsep_eq_infi Set.Nontrivial.infsep_eq_iInf
 
 theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] : s.infsep =
     if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
