@@ -304,8 +304,7 @@ variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 -- Porting note: needed to rename this from sign to SignType.sign to avoid ambiguity with Int.sign
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h =>
-    by
+  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)

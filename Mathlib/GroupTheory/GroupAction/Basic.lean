@@ -190,7 +190,6 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : β} [Fintype (orbit α a)] :
     calc
       x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
       _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
-
 #align mul_action.mem_fixed_points_iff_card_orbit_eq_one MulAction.mem_fixedPoints_iff_card_orbit_eq_one
 #align add_action.mem_fixed_points_iff_card_orbit_eq_zero AddAction.mem_fixedPoints_iff_card_orbit_eq_zero
 
@@ -227,7 +226,6 @@ theorem smul_orbit (a : α) (b : β) : a • orbit α b = orbit α b :=
     calc
       orbit α b = a • a⁻¹ • orbit α b := (smul_inv_smul _ _).symm
       _ ⊆ a • orbit α b := Set.image_subset _ (smul_orbit_subset _ _)
-
 #align mul_action.smul_orbit MulAction.smul_orbit
 #align add_action.vadd_orbit AddAction.vadd_orbit
 
@@ -237,7 +235,6 @@ theorem orbit_smul (a : α) (b : β) : orbit α (a • b) = orbit α b :=
     calc
       orbit α b = orbit α (a⁻¹ • a • b) := by rw [inv_smul_smul]
       _ ⊆ orbit α (a • b) := orbit_smul_subset _ _
-
 #align mul_action.orbit_smul MulAction.orbit_smul
 #align add_action.orbit_vadd AddAction.orbit_vadd
 
@@ -402,7 +399,6 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
     _ ≃ Σω : Ω, ω.orbit :=
       Equiv.sigmaCongrRight fun _ =>
         Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
-
 #align mul_action.self_equiv_sigma_orbits' MulAction.selfEquivSigmaOrbits'
 #align add_action.self_equiv_sigma_orbits' AddAction.selfEquivSigmaOrbits'
 

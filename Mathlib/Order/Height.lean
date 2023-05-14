@@ -98,7 +98,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
     rw [chainHeight_eq_supᵢ_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((WithTop.supr_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp ((WithTop.supᵢ_coe_eq_top _).mp ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
   · rw [ENat.supᵢ_coe_lt_top] at ha
@@ -328,8 +328,7 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     refine' le_trans _ (add_le_add hl₁ hl₂)
-    simp_rw [← WithTop.coe_add, ← Nat.cast_add, WithTop.coe_le_coe, ← Multiset.coe_card,
-      ← Multiset.card_add, ← Multiset.coe_filter]
+    simp_rw [← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add, ← Multiset.coe_filter]
     rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
     exacts [le_add_right rfl.le, hl.2]
 #align set.chain_height_union_le Set.chainHeight_union_le

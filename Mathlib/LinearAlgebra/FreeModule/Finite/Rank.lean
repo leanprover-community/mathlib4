@@ -93,12 +93,14 @@ theorem finrank_eq_card_chooseBasisIndex :
   simp [finrank, rank_eq_card_chooseBasisIndex]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 
+set_option synthInstance.etaExperiment true in
 /-- The finrank of `(ι →₀ R)` is `Fintype.card ι`. -/
 @[simp]
 theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ R) = card ι := by
   rw [finrank, rank_finsupp_self, ← mk_toNat_eq_card, toNat_lift]
 #align finite_dimensional.finrank_finsupp FiniteDimensional.finrank_finsupp
 
+set_option synthInstance.etaExperiment true in
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
 theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι := by
   set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074

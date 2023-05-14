@@ -182,7 +182,6 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
   calc
     edist (f x) (f y) ≤ K * edist x y := hf x y
     _ < d := ENNReal.mul_lt_of_lt_div' h
-
 #align lipschitz_with.edist_lt_of_edist_lt_div LipschitzWith.edist_lt_of_edist_lt_div
 
 /-- A Lipschitz function is uniformly continuous -/
@@ -229,7 +228,6 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
     _ ≤ Kf * (Kg * edist x y) := (ENNReal.mul_left_mono (hg _ _))
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
-
 #align lipschitz_with.comp LipschitzWith.comp
 
 theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {s : Set α}
@@ -604,7 +602,6 @@ theorem continuousOn_prod_of_continuousOn_lipschitz_on [PseudoEMetricSpace α] [
       edist_triangle _ _ _
     _ < ε / 2 + ε / 2 := (ENNReal.add_lt_add ((hb _ hbt).edist_lt_of_edist_lt_div has hx hax) hby)
     _ = ε := ENNReal.add_halves ε
-
 #align continuous_on_prod_of_continuous_on_lipschitz_on continuousOn_prod_of_continuousOn_lipschitz_on
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”

@@ -54,7 +54,6 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         norm_cast
         rw [sq]
         exact tsub_le_self
-
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 end Finpartition

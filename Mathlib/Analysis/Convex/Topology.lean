@@ -28,9 +28,7 @@ We prove the following facts:
 -- Porting note: this does not exist in Lean 4:
 --assert_not_exists Norm
 
-open Metric Set
-
-open Pointwise Convex
+open Metric Set Pointwise Convex
 
 variable {ι 𝕜 E : Type _}
 
@@ -71,7 +69,7 @@ theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
       (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
 #align is_closed_std_simplex isClosed_stdSimplex
 
-/-- `std_simplex ℝ ι` is compact. -/
+/-- `stdSimplex ℝ ι` is compact. -/
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
   Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
 #align is_compact_std_simplex isCompact_stdSimplex
@@ -252,18 +250,20 @@ open AffineMap
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
 `interior s`. -/
-protected theorem Convex.strict_convex' {s : Set E} (hs : Convex 𝕜 s)
+protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ∃ c : 𝕜, lineMap x y c ∈ interior s) :
     StrictConvex 𝕜 s := by
   refine' strictConvex_iff_openSegment_subset.2 _
   intro x hx y hy hne
-  by_cases hx' : x ∈ interior s; · exact hs.openSegment_interior_self_subset_interior hx' hy
-  by_cases hy' : y ∈ interior s; · exact hs.openSegment_self_interior_subset_interior hx hy'
+  by_cases hx' : x ∈ interior s
+  · exact hs.openSegment_interior_self_subset_interior hx' hy
+  by_cases hy' : y ∈ interior s
+  · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
   refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset.2 ⟨hc, union_subset _ _⟩)
-  exacts[hs.openSegment_self_interior_subset_interior hx hc,
+  exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
-#align convex.strict_convex' Convex.strict_convex'
+#align convex.strict_convex' Convex.strictConvex'
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points `x`, `y` of
 `s \ interior s`, the segment with endpoints `x`, `y` has nonempty intersection with
@@ -271,7 +271,7 @@ protected theorem Convex.strict_convex' {s : Set E} (hs : Convex 𝕜 s)
 protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ([x -[𝕜] y] \ frontier s).Nonempty) :
     StrictConvex 𝕜 s := by
-  refine' hs.strict_convex' <| h.imp_on fun x hx y hy _ => _
+  refine' hs.strictConvex' <| h.imp_on fun x hx y hy _ => _
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
   refine' ⟨c, hs.segment_subset hx.1 hy.1 _, hcs⟩
@@ -307,8 +307,8 @@ the result includes the closure of the original set.
 
 TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
 theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs : Convex ℝ s)
-    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : closure s ⊆ homothety x t '' interior s :=
-  by
+    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) :
+    closure s ⊆ homothety x t '' interior s := by
   intro y hy
   have hne : t ≠ 0 := (one_pos.trans ht).ne'
   refine'

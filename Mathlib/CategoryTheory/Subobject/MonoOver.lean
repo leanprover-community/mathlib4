@@ -423,24 +423,23 @@ section Exists
 
 variable [HasImages C]
 
--- porting note: renamed `exists` as `exists_` because it is a reserved word
 /-- In the case where `f` is not a monomorphism but `C` has images,
 we can still take the "forward map" under it, which agrees with `mono_over.map f`.
 -/
-def exists_ (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
+def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
-#align category_theory.mono_over.exists CategoryTheory.MonoOver.exists_
+#align category_theory.mono_over.exists CategoryTheory.MonoOver.exists
 
-instance faithful_exists (f : X ⟶ Y) : Faithful (exists_ f) where
+instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 #align category_theory.mono_over.faithful_exists CategoryTheory.MonoOver.faithful_exists
 
-/-- When `f : X ⟶ Y` is a monomorphism, `exists_ f` agrees with `map f`.
+/-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
-def existsIsoMap (f : X ⟶ Y) [Mono f] : exists_ f ≅ map f :=
+def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
   NatIso.ofComponents
     (by
       intro Z
-      suffices : (forget _).obj ((exists_ f).obj Z) ≅ (forget _).obj ((map f).obj Z)
+      suffices : (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z)
       apply (forget _).preimageIso this
       apply Over.isoMk _ _
       apply imageMonoIsoSource (Z.arrow ≫ f)
@@ -449,7 +448,7 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : exists_ f ≅ map f :=
 #align category_theory.mono_over.exists_iso_map CategoryTheory.MonoOver.existsIsoMap
 
 /-- `exists` is adjoint to `pullback` when images exist -/
-def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : exists_ f ⊣ pullback f :=
+def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   Adjunction.restrictFullyFaithful (forget X) (𝟭 _) ((Over.mapPullbackAdj f).comp imageForgetAdj)
     (Iso.refl _) (Iso.refl _)
 #align category_theory.mono_over.exists_pullback_adj CategoryTheory.MonoOver.existsPullbackAdj

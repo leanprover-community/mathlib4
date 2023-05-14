@@ -128,8 +128,8 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-theorem eq (H K : Subgroup G) (a b : G) : mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k :=
-  by
+theorem eq (H K : Subgroup G) (a b : G) :
+    mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
   apply rel_iff
 #align doset.eq Doset.eq
@@ -197,8 +197,8 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset Doset.doset_union_leftCoset
 
-theorem left_bot_eq_left_quot (H : Subgroup G) : Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H):=
-  by
+theorem left_bot_eq_left_quot (H : Subgroup G) :
+    Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext

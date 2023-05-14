@@ -530,7 +530,6 @@ theorem image.eq_fac [HasEqualizers C] (h : f = f') :
   apply image.ext
   dsimp [asIso,image.eqToIso, image.eqToHom]
   rw [image.lift_fac] -- Porting note: simp did not fire with this it seems
-
 #align category_theory.limits.image.eq_fac CategoryTheory.Limits.image.eq_fac
 
 end
@@ -1049,8 +1048,7 @@ variable {C D : Type _} [Category C] [Category D]
 
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
-  ⟨fun {X} {Y} f =>
-    by
+  ⟨fun {X} {Y} f => by
     let em : StrongEpiMonoFactorisation (F.inv.map f) :=
       (HasStrongEpiMonoFactorisations.has_fac (F.inv.map f)).some
     haveI : Mono (F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y) := mono_comp _ _

@@ -154,6 +154,7 @@ section Ring
 
 variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
 
+set_option synthInstance.etaExperiment true in
 /-- Free modules are projective. -/
 theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.

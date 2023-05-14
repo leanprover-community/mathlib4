@@ -82,7 +82,6 @@ theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : (#WType β)
                   exact
                     power_le_power_left
                       (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) (zero_le _))
-
 #align W_type.cardinal_mk_le_max_aleph_0_of_finite WType.cardinal_mk_le_max_aleph0_of_finite
 
 end WType
