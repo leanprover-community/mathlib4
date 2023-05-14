@@ -15,8 +15,8 @@ import Mathlib.Topology.Algebra.Ring.Basic
 /-!
 # Category of topological commutative rings
 
-We introduce the category `TopCommRing` of topological commutative rings together with the relevant
-forgetful functors to topological spaces and commutative rings.
+We introduce the category `TopCommRingCat` of topological commutative rings together with the
+relevant forgetful functors to topological spaces and commutative rings.
 -/
 
 
@@ -60,7 +60,8 @@ instance : ConcreteCategory TopCommRingCat.{u} where
       map := fun f => f.val }
   forget_faithful := sorry -- Porting note: TODO fix sorry. Old proof was `forget_faithful := { }`
 
-/-- Construct a bundled `TopCommRing` from the underlying type and the appropriate typeclasses. -/
+/-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
+-/
 def of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopCommRingCat :=
   ⟨X⟩
 #align TopCommRing.of TopCommRingCat.of
@@ -79,43 +80,43 @@ instance forgetCommRing (R : TopCommRingCat) : CommRing ((forget TopCommRingCat)
   R.isCommRing
 #align TopCommRing.forget_comm_ring TopCommRingCat.forgetCommRing
 
-instance forget_topologicalRing (R : TopCommRingCat) :
+instance forgetTopologicalRing (R : TopCommRingCat) :
     TopologicalRing ((forget TopCommRingCat).obj R) :=
   R.isTopologicalRing
-#align TopCommRing.forget_topological_ring TopCommRingCat.forget_topologicalRing
+#align TopCommRing.forget_topological_ring TopCommRingCat.forgetTopologicalRing
 
-instance hasForgetToCommRing : HasForget₂ TopCommRingCat CommRingCat :=
+instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
   HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
-#align TopCommRing.has_forget_to_CommRing TopCommRingCat.hasForgetToCommRing
+#align TopCommRing.has_forget_to_CommRing TopCommRingCat.hasForgetToCommRingCat
 
-instance forgetToCommRingTopologicalSpace (R : TopCommRingCat) :
+instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
     TopologicalSpace ((forget₂ TopCommRingCat CommRingCat).obj R) :=
   R.isTopologicalSpace
-#align TopCommRing.forget_to_CommRing_topological_space TopCommRingCat.forgetToCommRingTopologicalSpace
+#align TopCommRing.forget_to_CommRing_topological_space TopCommRingCat.forgetToCommRingCatTopologicalSpace
 
-/-- The forgetful functor to Top. -/
-instance hasForgetToTop : HasForget₂ TopCommRingCat TopCat :=
+/-- The forgetful functor to `TopCat`. -/
+instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
   HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => ⟨⇑f.1, f.2⟩) HEq.rfl
-#align TopCommRing.has_forget_to_Top TopCommRingCat.hasForgetToTop
+#align TopCommRing.has_forget_to_Top TopCommRingCat.hasForgetToTopCat
 
-instance forgetToTopCommRingCat (R : TopCommRingCat) :
+instance forgetToTopCatCommRing (R : TopCommRingCat) :
     CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isCommRing
-#align TopCommRing.forget_to_Top_comm_ring TopCommRingCat.forgetToTopCommRingCat
+#align TopCommRing.forget_to_Top_comm_ring TopCommRingCat.forgetToTopCatCommRing
 
-instance forget_to_topCat_topologicalRing (R : TopCommRingCat) :
+instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
     TopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isTopologicalRing
-#align TopCommRing.forget_to_Top_topological_ring TopCommRingCat.forget_to_topCat_topologicalRing
+#align TopCommRing.forget_to_Top_topological_ring TopCommRingCat.forgetToTopCatTopologicalRing
 
 /-- The forgetful functors to `Type` do not reflect isomorphisms,
-but the forgetful functor from `TopCommRing` to `Top` does.
+but the forgetful functor from `TopCommRingCat` to `TopCat` does.
 -/
 instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
   reflects {X Y} f _ := by
-    -- We have an isomorphism in `Top`,
+    -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)
-    -- and a `ring_equiv`.
+    -- and a `RingEquiv`.
     let e_Ring : X ≃+* Y := { f.1, ((forget TopCat).mapIso i_Top).toEquiv with }
     -- Putting these together we obtain the isomorphism we're after:
     exact
