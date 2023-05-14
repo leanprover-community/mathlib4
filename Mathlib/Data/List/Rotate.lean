@@ -180,8 +180,7 @@ theorem rotate_length_mul (l : List α) (n : ℕ) : l.rotate (l.length * n) = l 
 theorem prod_rotate_eq_one_of_prod_eq_one [Group α] :
     ∀ {l : List α} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
   | [], _, _ => by simp
-  | a :: l, hl, n =>
-    by
+  | a :: l, hl, n => by
     have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
     rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl;
       rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq, ←
@@ -223,8 +222,8 @@ theorem rotate_singleton (x : α) (n : ℕ) : [x].rotate n = [x] :=
 #align list.rotate_singleton List.rotate_singleton
 
 theorem zipWith_rotate_distrib {α β γ : Type _} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
-    (h : l.length = l'.length) : (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) :=
-  by
+    (h : l.length = l'.length) :
+    (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
     rotate_eq_drop_append_take_mod, h, zipWith_append, ← zipWith_distrib_drop, ←
     zipWith_distrib_take, List.length_zipWith, h, min_self]

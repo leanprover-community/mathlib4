@@ -223,8 +223,8 @@ variable [TopologicalSpace β] [LinearOrderedField β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
-    SuperpolynomialDecay l k f ↔ ∀ z : ℕ, IsBoundedUnder (· ≤ ·) l fun a : α => |k a ^ z * f a| :=
-  by
+    SuperpolynomialDecay l k f ↔
+    ∀ z : ℕ, IsBoundedUnder (· ≤ ·) l fun a : α => |k a ^ z * f a| := by
   refine'
     ⟨fun h z => Tendsto.isBoundedUnder_le (Tendsto.abs (h z)), fun h =>
       (superpolynomialDecay_iff_abs_tendsto_zero l k f).2 fun z => _⟩
@@ -257,8 +257,8 @@ theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
 variable {f}
 
 theorem SuperpolynomialDecay.param_zpow_mul (hk : Tendsto k l atTop)
-    (hf : SuperpolynomialDecay l k f) (z : ℤ) : SuperpolynomialDecay l k fun a => k a ^ z * f a :=
-  by
+    (hf : SuperpolynomialDecay l k f) (z : ℤ) :
+    SuperpolynomialDecay l k fun a => k a ^ z * f a := by
   rw [superpolynomialDecay_iff_zpow_tendsto_zero _ hk] at hf⊢
   refine' fun z' => (hf <| z' + z).congr' ((hk.eventually_ne_atTop 0).mono fun x hx => _)
   simp [zpow_add₀ hx, mul_assoc, Pi.mul_apply]

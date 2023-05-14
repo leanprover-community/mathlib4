@@ -1190,11 +1190,8 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rw [← span_image, Submodule.coeSubtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
-    have h₃ :
-      (x : M) ∈
-        map (Submodule.subtype (span R (range v)))
-          (span R (Set.range fun i => Subtype.mk (v i) _)) :=
-      by
+    have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
+        (span R (Set.range fun i => Subtype.mk (v i) _)) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -1560,8 +1557,8 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) where
-  eq_supₛ_atoms W := by
-    refine ⟨_, submodule_eq_supₛ_le_nonzero_spans W, ?_⟩
+  eq_sSup_atoms W := by
+    refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
 

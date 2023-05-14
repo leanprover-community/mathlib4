@@ -85,23 +85,22 @@ theorem pairwiseDisjoint_map_sigmaMk :
 #align finset.pairwise_disjoint_map_sigma_mk Finset.pairwiseDisjoint_map_sigmaMk
 
 @[simp]
-theorem disjUnionᵢ_map_sigma_mk :
-    s.disjUnionᵢ (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
+theorem disjiUnion_map_sigma_mk :
+    s.disjiUnion (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
       s.sigma t :=
   rfl
-#align finset.disj_Union_map_sigma_mk Finset.disjUnionᵢ_map_sigma_mk
+#align finset.disj_Union_map_sigma_mk Finset.disjiUnion_map_sigma_mk
 
-theorem sigma_eq_bunionᵢ [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    s.sigma t = s.bunionᵢ fun i => (t i).map <| Embedding.sigmaMk i := by
+theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
+    s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
-#align finset.sigma_eq_bUnion Finset.sigma_eq_bunionᵢ
+#align finset.sigma_eq_bUnion Finset.sigma_eq_biUnion
 
 variable (s t) (f : (Σi, α i) → β)
 
 theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
-    (s.sigma t).sup f = s.sup fun i => (t i).sup fun b => f ⟨i, b⟩ :=
-  by
+    (s.sigma t).sup f = s.sup fun i => (t i).sup fun b => f ⟨i, b⟩ := by
   simp only [le_antisymm_iff, Finset.sup_le_iff, mem_sigma, and_imp, Sigma.forall]
   exact
     ⟨fun i a hi ha => (le_sup hi).trans' <| le_sup (f := fun a => f ⟨i, a⟩) ha, fun i hi a ha =>
@@ -127,8 +126,7 @@ def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) 
 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
-    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1)(hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) :=
-  by
+    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1)(hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
   obtain ⟨⟨i, a⟩, j, b⟩ := a, b
   obtain rfl | h := Decidable.eq_or_ne i j
   · constructor
@@ -147,8 +145,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
 #align finset.mem_sigma_lift Finset.mem_sigmaLift
 
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
-    (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b :=
-  by
+    (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by
   rw [sigmaLift, dif_pos rfl, mem_map]
   refine' ⟨_, fun hx => ⟨_, hx, rfl⟩⟩
   rintro ⟨x, hx, _, rfl⟩

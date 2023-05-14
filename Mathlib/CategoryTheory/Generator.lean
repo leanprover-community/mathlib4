@@ -165,8 +165,8 @@ theorem IsCodetecting.isCoseparating [HasCoequalizers C] {𝒢 : Set C} :
 
 end
 
-theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) : IsDetecting 𝒢 :=
-  by
+theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) :
+    IsDetecting 𝒢 := by
   intro X Y f hf
   refine'
     (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => h𝒢 _ _ fun G hG i => _⟩, ⟨fun g h hgh => _⟩⟩

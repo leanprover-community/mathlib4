@@ -59,8 +59,7 @@ inductive GameAdd : α × β → α × β → Prop
 #align prod.game_add Prod.GameAdd
 
 theorem gameAdd_iff {rα rβ} {x y : α × β} :
-    GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 :=
-  by
+    GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 := by
   constructor
   · rintro (@⟨a₁, a₂, b, h⟩ | @⟨a, b₁, b₂, h⟩)
     exacts[Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
@@ -157,16 +156,14 @@ namespace Sym2
 def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
   Sym2.lift₂
     ⟨fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),
-      fun a₁ b₁ a₂ b₂ =>
-      by
-      dsimp
-      rw [Prod.gameAdd_swap_swap_mk _ _ b₁ b₂ a₁ a₂, Prod.gameAdd_swap_swap_mk _ _ a₁ b₂ b₁ a₂]
-      simp [or_comm]⟩
+      fun a₁ b₁ a₂ b₂ => by
+        dsimp
+        rw [Prod.gameAdd_swap_swap_mk _ _ b₁ b₂ a₁ a₂, Prod.gameAdd_swap_swap_mk _ _ a₁ b₂ b₁ a₂]
+        simp [or_comm]⟩
 #align sym2.game_add Sym2.GameAdd
 
 theorem gameAdd_iff :
-    ∀ {x y : α × α}, GameAdd rα ⟦x⟧ ⟦y⟧ ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y :=
-  by
+    ∀ {x y : α × α}, GameAdd rα ⟦x⟧ ⟦y⟧ ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y := by
   rintro ⟨_, _⟩ ⟨_, _⟩
   rfl
 #align sym2.game_add_iff Sym2.gameAdd_iff
@@ -190,22 +187,20 @@ theorem GameAdd.snd {a b₁ b₂ : α} (h : rα b₁ b₂) : GameAdd rα ⟦(a, 
   (Prod.GameAdd.snd h).to_sym2
 #align sym2.game_add.snd Sym2.GameAdd.snd
 
-theorem GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(a₁, b)⟧ ⟦(b, a₂)⟧ :=
-  by
+theorem GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(a₁, b)⟧ ⟦(b, a₂)⟧ := by
   rw [Sym2.eq_swap]
   exact GameAdd.snd h
 #align sym2.game_add.fst_snd Sym2.GameAdd.fst_snd
 
-theorem GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(b, a₁)⟧ ⟦(a₂, b)⟧ :=
-  by
+theorem GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(b, a₁)⟧ ⟦(a₂, b)⟧ := by
   rw [Sym2.eq_swap]
   exact GameAdd.fst h
 #align sym2.game_add.snd_fst Sym2.GameAdd.snd_fst
 
 end Sym2
 
-theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) : Acc (Sym2.GameAdd rα) ⟦(a, b)⟧ :=
-  by
+theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
+    Acc (Sym2.GameAdd rα) ⟦(a, b)⟧ := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
   refine' Acc.intro _ fun s => _

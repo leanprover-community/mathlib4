@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
+! leanprover-community/mathlib commit 4e529b03dd62b7b7d13806c3fb974d9d4848910e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -563,7 +563,7 @@ theorem support_smul {S₁ : Type _} [SMulZeroClass S₁ R] {a : S₁} {f : MvPo
 #align mv_polynomial.support_smul MvPolynomial.support_smul
 
 theorem support_sum {α : Type _} {s : Finset α} {f : α → MvPolynomial σ R} :
-    (∑ x in s, f x).support ⊆ s.bunionᵢ fun x => (f x).support :=
+    (∑ x in s, f x).support ⊆ s.biUnion fun x => (f x).support :=
   Finsupp.support_finset_sum
 #align mv_polynomial.support_sum MvPolynomial.support_sum
 
@@ -592,7 +592,7 @@ theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ �
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
 theorem support_mul (p q : MvPolynomial σ R) :
-    (p * q).support ⊆ p.support.bunionᵢ fun a => q.support.bunionᵢ fun b => {a + b} := by
+    (p * q).support ⊆ p.support.biUnion fun a => q.support.biUnion fun b => {a + b} := by
   convert AddMonoidAlgebra.support_mul p q
 #align mv_polynomial.support_mul MvPolynomial.support_mul
 
@@ -771,7 +771,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
     intro hm
     apply h
     have H := support_mul _ _ hm
-    simp only [Finset.mem_bunionᵢ] at H
+    simp only [Finset.mem_biUnion] at H
     rcases H with ⟨j, _hj, i', hi', H⟩
     rw [support_monomial, if_neg hr, Finset.mem_singleton] at hi'
     subst i'
@@ -1639,6 +1639,43 @@ theorem aevalTower_ofId :
 #align mv_polynomial.aeval_tower_of_id MvPolynomial.aevalTower_ofId
 
 end AevalTower
+
+section EvalMem
+
+variable {S subS : Type _} [CommSemiring S] [SetLike subS S] [SubsemiringClass subS S]
+
+theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
+    (hs : ∀ i ∈ p.support, f (p.coeff i) ∈ s) {v : σ → S} (hv : ∀ i, v i ∈ s) :
+    MvPolynomial.eval₂ f v p ∈ s := by
+  classical
+    replace hs : ∀ i, f (p.coeff i) ∈ s
+    · intro i
+      by_cases hi : i ∈ p.support
+      · exact hs i hi
+      · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
+        exact zero_mem s
+    induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
+    · simpa using hs 0
+    rw [eval₂_add, eval₂_monomial]
+    refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+    · have := hs a -- Porting note: was `simpa only [...]`
+      rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
+        if_pos rfl] at this
+    have := hs i
+    rw [coeff_add, coeff_monomial] at this
+    split_ifs at this with h
+    · subst h
+      rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
+      exact zero_mem _
+    · rwa [if_neg h, zero_add] at this
+#align mv_polynomial.eval₂_mem MvPolynomial.eval₂_mem
+
+theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}
+    (hv : ∀ i, v i ∈ s) : MvPolynomial.eval v p ∈ s :=
+  eval₂_mem hs hv
+#align mv_polynomial.eval_mem MvPolynomial.eval_mem
+
+end EvalMem
 
 end CommSemiring
 

@@ -892,8 +892,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   let g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
-    False.elim <|
-      by
+    False.elim <| by
       let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
@@ -1029,6 +1028,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
 
 variable {R : Type}
 
+set_option synthInstance.etaExperiment true in
 @[ext]
 theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
   ext ⟨x_re, x_im⟩
@@ -1037,6 +1037,7 @@ theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrt
 
 variable [CommRing R]
 
+set_option synthInstance.etaExperiment true in
 /-- The unique `RingHom` from `ℤ√d` to a ring `R`, constructed by replacing `√d` with the provided
 root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of `√d` in `R`. -/
 @[simps]
