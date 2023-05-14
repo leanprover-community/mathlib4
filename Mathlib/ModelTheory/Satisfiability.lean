@@ -17,24 +17,24 @@ import Mathlib.ModelTheory.Skolem
 This file deals with the satisfiability of first-order theories, as well as equivalence over them.
 
 ## Main Definitions
-* `first_order.language.Theory.is_satisfiable`: `T.is_satisfiable` indicates that `T` has a nonempty
+* `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
 model.
-* `first_order.language.Theory.is_finitely_satisfiable`: `T.is_finitely_satisfiable` indicates that
+* `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
 every finite subset of `T` is satisfiable.
-* `first_order.language.Theory.is_complete`: `T.is_complete` indicates that `T` is satisfiable and
+* `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
 models each sentence or its negation.
-* `first_order.language.Theory.semantically_equivalent`: `T.semantically_equivalent φ ψ` indicates
+* `FirstOrder.Language.Theory.SemanticallyEquivalent`: `T.SemanticallyEquivalent φ ψ` indicates
 that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
-* `cardinal.categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
+* `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
 
 ## Main Results
-* The Compactness Theorem, `first_order.language.Theory.is_satisfiable_iff_is_finitely_satisfiable`,
+* The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
 shows that a theory is satisfiable iff it is finitely satisfiable.
-* `first_order.language.complete_theory.is_complete`: The complete theory of a structure is
+* `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
 complete.
-* `first_order.language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
+* `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
 infinite model has arbitrarily large models.
-* `first_order.language.Theory.exists_elementary_embedding_card_eq`: The Upward Löwenheim–Skolem
+* `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
 Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
 `M`, then `M` has an elementary extension of cardinality `κ`.
 
@@ -44,6 +44,8 @@ of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any univer
 
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 universe u v w w'
 
@@ -68,19 +70,18 @@ def IsSatisfiable : Prop :=
 
 /-- A theory is finitely satisfiable if all of its finite subtheories are satisfiable. -/
 def IsFinitelySatisfiable : Prop :=
-  ∀ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T → (T0 : L.Theory).IsSatisfiable
+  ∀ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T → IsSatisfiable (T0 : L.Theory)
 #align first_order.language.Theory.is_finitely_satisfiable FirstOrder.Language.Theory.IsFinitelySatisfiable
 
 variable {T} {T' : L.Theory}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Model.isSatisfiable (M : Type w) [n : Nonempty M] [S : L.Structure M] [M ⊨ T] :
+theorem Model.isSatisfiable (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] :
     T.IsSatisfiable :=
-  ⟨((⊥ : Substructure _ (ModelType.of T M)).elementarySkolem₁Reduct.toModel T).Shrink⟩
+  ⟨((⊥ : Substructure _ (ModelType.of T M)).elementarySkolem₁Reduct.toModel T).shrink⟩
 #align first_order.language.Theory.model.is_satisfiable FirstOrder.Language.Theory.Model.isSatisfiable
 
 theorem IsSatisfiable.mono (h : T'.IsSatisfiable) (hs : T ⊆ T') : T.IsSatisfiable :=
-  ⟨(Theory.Model.mono (ModelType.is_model h.some) hs).Bundled⟩
+  ⟨(Theory.Model.mono (ModelType.is_model h.some) hs).bundled⟩
 #align first_order.language.Theory.is_satisfiable.mono FirstOrder.Language.Theory.IsSatisfiable.mono
 
 theorem isSatisfiable_empty (L : Language.{u, v}) : IsSatisfiable (∅ : L.Theory) :=
@@ -95,28 +96,27 @@ theorem isSatisfiable_of_isSatisfiable_onTheory {L' : Language.{w, w'}} (φ : L 
 theorem isSatisfiable_onTheory_iff {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h : φ.Injective) :
     (φ.onTheory T).IsSatisfiable ↔ T.IsSatisfiable := by
   classical
-    refine' ⟨is_satisfiable_of_is_satisfiable_on_Theory φ, fun h' => _⟩
+    refine' ⟨isSatisfiable_of_isSatisfiable_onTheory φ, fun h' => _⟩
     haveI : Inhabited h'.some := Classical.inhabited_of_nonempty'
-    exact model.is_satisfiable (h'.some.default_expansion h)
+    exact Model.isSatisfiable (h'.some.defaultExpansion h)
 #align first_order.language.Theory.is_satisfiable_on_Theory_iff FirstOrder.Language.Theory.isSatisfiable_onTheory_iff
 
 theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitelySatisfiable :=
   fun _ => h.mono
 #align first_order.language.Theory.is_satisfiable.is_finitely_satisfiable FirstOrder.Language.Theory.IsSatisfiable.isFinitelySatisfiable
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The Compactness Theorem of first-order logic: A theory is satisfiable if and only if it is
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
   ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h => by
     classical
-      set M : ∀ T0 : Finset T, Type max u v := fun T0 =>
-        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some with hM
-      let M' := Filter.Product (↑(Ultrafilter.of (Filter.atTop : Filter (Finset T)))) M
+      set M : Finset T → Type max u v := fun T0 : Finset T =>
+        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
+      let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
       have h' : M' ⊨ T := by
         refine' ⟨fun φ hφ => _⟩
-        rw [ultraproduct.sentence_realize]
+        rw [Ultraproduct.sentence_realize]
         refine'
           Filter.Eventually.filter_mono (Ultrafilter.of_le _)
             (Filter.eventually_atTop.2
@@ -126,69 +126,66 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
         simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
           Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
         exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
-      exact ⟨Model.of T M'⟩⟩
+      exact ⟨ModelType.of T M'⟩⟩
 #align first_order.language.Theory.is_satisfiable_iff_is_finitely_satisfiable FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable
 
 theorem isSatisfiable_directed_union_iff {ι : Type _} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
   refine' ⟨fun h' i => h'.mono (Set.subset_unionᵢ _ _), fun h' => _⟩
-  rw [is_satisfiable_iff_is_finitely_satisfiable, is_finitely_satisfiable]
+  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   intro T0 hT0
-  obtain ⟨i, hi⟩ := h.exists_mem_subset_of_finset_subset_bUnion hT0
+  obtain ⟨i, hi⟩ := h.exists_mem_subset_of_finset_subset_bunionᵢ hT0
   exact (h' i).mono hi
 #align first_order.language.Theory.is_satisfiable_directed_union_iff FirstOrder.Language.Theory.isSatisfiable_directed_union_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s : Set α)
     (M : Type w') [Nonempty M] [L.Structure M] [M ⊨ T]
     (h : Cardinal.lift.{w'} (#s) ≤ Cardinal.lift.{w} (#M)) :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   haveI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
   rw [Cardinal.lift_mk_le'] at h
-  letI : (constants_on α).Structure M := constants_on.Structure (Function.extend coe h.some default)
-  have : M ⊨ (L.Lhom_with_constants α).onTheory T ∪ L.distinct_constants_theory s := by
-    refine' ((Lhom.on_Theory_model _ _).2 inferInstance).union _
-    rw [model_distinct_constants_theory]
+  letI : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
+  have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
+    refine' ((LHom.onTheory_model _ _).2 inferInstance).union _
+    rw [model_distinctConstantsTheory]
     refine' fun a as b bs ab => _
     rw [← Subtype.coe_mk a as, ← Subtype.coe_mk b bs, ← Subtype.ext_iff]
     exact
       h.some.injective
-        ((subtype.coe_injective.extend_apply h.some default ⟨a, as⟩).symm.trans
-          (ab.trans (subtype.coe_injective.extend_apply h.some default ⟨b, bs⟩)))
-  exact model.is_satisfiable M
+        ((Subtype.coe_injective.extend_apply h.some default ⟨a, as⟩).symm.trans
+          (ab.trans (Subtype.coe_injective.extend_apply h.some default ⟨b, bs⟩)))
+  exact Model.isSatisfiable M
 #align first_order.language.Theory.is_satisfiable_union_distinct_constants_theory_of_card_le FirstOrder.Language.Theory.isSatisfiable_union_distinctConstantsTheory_of_card_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (s : Set α)
     (M : Type w') [L.Structure M] [M ⊨ T] [Infinite M] :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   classical
-    rw [distinct_constants_theory_eq_Union, Set.union_unionᵢ, is_satisfiable_directed_union_iff]
-    ·
-      exact fun t =>
-        is_satisfiable_union_distinct_constants_theory_of_card_le T _ M
-          ((lift_le_aleph_0.2 (finset_card_lt_aleph_0 _).le).trans
-            (aleph_0_le_lift.2 (aleph_0_le_mk M)))
-    · refine' (monotone_const.union (monotone_distinct_constants_theory.comp _)).directed_le
+    rw [distinctConstantsTheory_eq_unionᵢ, Set.union_unionᵢ, isSatisfiable_directed_union_iff]
+    · exact fun t =>
+        isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
+          ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
+            (aleph0_le_lift.2 (aleph0_le_mk M)))
+    · apply Monotone.directed_le
+      refine' monotone_const.union (monotone_distinctConstantsTheory.comp _)
       simp only [Finset.coe_map, Function.Embedding.coe_subtype]
-      exact set.monotone_image.comp fun _ _ => Finset.coe_subset.2
+      exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
+        Set.monotone_image fun _ _ => Finset.coe_subset.2
 #align first_order.language.Theory.is_satisfiable_union_distinct_constants_theory_of_infinite FirstOrder.Language.Theory.isSatisfiable_union_distinctConstantsTheory_of_infinite
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Any theory with an infinite model has arbitrarily large models. -/
 theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) (M : Type w')
     [L.Structure M] [M ⊨ T] [Infinite M] :
     ∃ N : ModelType.{_, _, max u v w} T, Cardinal.lift.{max u v w} κ ≤ (#N) := by
   obtain ⟨N⟩ :=
-    is_satisfiable_union_distinct_constants_theory_of_infinite T (Set.univ : Set κ.out) M
-  refine' ⟨(N.is_model.mono (Set.subset_union_left _ _)).Bundled.reduct _, _⟩
-  haveI : N ⊨ distinct_constants_theory _ _ := N.is_model.mono (Set.subset_union_right _ _)
-  simp only [Model.reduct_carrier, coe_of, Model.carrier_eq_coe]
-  refine' trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
+    isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
+  refine' ⟨(N.is_model.mono (Set.subset_union_left _ _)).bundled.reduct _, _⟩
+  haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono (Set.subset_union_right _ _)
+  rw [ModelType.reduct_Carrier, coe_of]
+  refine' _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
   rw [← mk_univ]
-  refine' (card_le_of_model_distinct_constants_theory L Set.univ N).trans (lift_le.1 _)
+  refine'
+    (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{_, max u v w}.1 _)
   rw [lift_lift]
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
@@ -198,15 +195,13 @@ theorem isSatisfiable_unionᵢ_iff_isSatisfiable_unionᵢ_finset {ι : Type _} (
     refine'
       ⟨fun h s => h.mono (Set.unionᵢ_mono fun _ => Set.unionᵢ_subset_iff.2 fun _ => refl _),
         fun h => _⟩
-    rw [is_satisfiable_iff_is_finitely_satisfiable]
+    rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
     rw [Set.unionᵢ_eq_unionᵢ_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_bunionᵢ _ hs
-    · exact (h t).mono ht
-    ·
-      exact
-        Monotone.directed_le fun t1 t2 h =>
-          Set.unionᵢ_mono fun _ => Set.unionᵢ_mono' fun h1 => ⟨h h1, refl _⟩
+    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_bunionᵢ (by
+      exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
+        Set.unionᵢ_mono fun _ => Set.unionᵢ_mono' fun h1 => ⟨h h1, refl _⟩) hs
+    exact (h t).mono ht
 #align first_order.language.Theory.is_satisfiable_Union_iff_is_satisfiable_Union_finset FirstOrder.Language.Theory.isSatisfiable_unionᵢ_iff_isSatisfiable_unionᵢ_finset
 
 end Theory
@@ -221,30 +216,32 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} (#M)) :
     ∃ N : Bundled L.Structure, Nonempty (N ↪ₑ[L] M) ∧ (#N) = κ := by
-  obtain ⟨S, _, hS⟩ := exists_elementary_substructure_card_eq L ∅ κ h1 (by simp) h2 h3
+  obtain ⟨S, _, hS⟩ := exists_elementarySubstructure_card_eq L ∅ κ h1 (by simp) h2 h3
   have : Small.{w} S := by
     rw [← lift_inj.{_, w + 1}, lift_lift, lift_lift] at hS
     exact small_iff_lift_mk_lt_univ.2 (lt_of_eq_of_lt hS κ.lift_lt_univ')
   refine'
     ⟨(equivShrink S).bundledInduced L,
       ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,
-      lift_inj.1 (trans _ hS)⟩
+      lift_inj.1 (_root_.trans _ hS)⟩
   simp only [Equiv.bundledInduced_α, lift_mk_shrink']
 #align first_order.language.exists_elementary_embedding_card_eq_of_le FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+section
+attribute [-instance] withConstantsStructure
+
 /-- The Upward Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
 and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h2 : Cardinal.lift.{w} (#M) ≤ Cardinal.lift.{w'} κ) :
     ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ (#N) = κ := by
-  obtain ⟨N0, hN0⟩ := (L.elementary_diagram M).exists_large_model_of_infinite_model κ M
-  let f0 := elementary_embedding.of_models_elementary_diagram L M N0
+  obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
+  let f0 := ElementaryEmbedding.ofModelsElementaryDiagram L M N0
   rw [← lift_le.{max w w', max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
-    exists_elementary_embedding_card_eq_of_le (L[[M]]) N0 κ
-      (aleph_0_le_lift.1 ((aleph_0_le_lift.2 (aleph_0_le_mk M)).trans h2)) _ (hN0.trans _)
+    exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
+      (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2)) _ (hN0.trans _)
   · letI := (Lhom_with_constants L M).reduct N
     haveI h : N ⊨ L.elementary_diagram M :=
       (NN0.Theory_model_iff (L.elementary_diagram M)).2 inferInstance
@@ -256,6 +253,8 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
     exact ⟨h2, h1⟩
   · rw [← lift_umax', lift_id]
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
+
+end
 
 /-- The Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
 and an infinite `L`-structure `M`, then there is an elementary embedding in the appropriate
@@ -703,4 +702,3 @@ theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsCompl
 #align cardinal.empty_infinite_Theory_is_complete Cardinal.empty_infinite_Theory_isComplete
 
 end Cardinal
-
