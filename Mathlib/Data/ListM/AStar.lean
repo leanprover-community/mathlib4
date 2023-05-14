@@ -201,7 +201,8 @@ However if the heuristic is "admissible" but not "consistent",
 (In practice, the heuristic is often neither consistent nor admissible,
 and you will need to test whether `optimal` is suitable for your requirements.)
 
-Returns a monadic lazy list consisting of triples (priority, vertex, path).
+Returns a monadic lazy list consisting of triples `(priority, vertex, path)`
+for each vertex we explore an edge from. `path` is the best path so far to that vertex.
 -/
 def aStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
     ListM m (P × V × List E) :=
@@ -222,6 +223,9 @@ ListM.iterate (do update Γ optimal; readMin)
 Perform A^* search on a graph,
 starting at a vertex `src` and ending when reaching a vertex satisfying `goal`.
 
+Note that the `goal` is probably also implicitly described in the `Γ : GraphData m P V E`
+argument, as it produces the heuristic estimates of distance to goal.
+
 Returns a list of edges, wrapped in the same monad the graph edges are generated in.
 -/
 def aStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
@@ -230,6 +234,7 @@ aStarSearchPaths Γ optimal src |>.filter (goal ·.2.1) |>.map (·.2.2) |>.head
 
 -- PROJECT rather than computing distances, compute lower bounds on distances,
 -- which are refined when a vertex reaches the head of the queue.
+
 -- PROJECT bidirectional A^* search?
 
 end ListM
