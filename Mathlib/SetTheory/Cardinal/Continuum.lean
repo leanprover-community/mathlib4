@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.continuum
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
+! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -45,6 +45,30 @@ theorem two_power_aleph0 : 2 ^ aleph0.{u} = continuum.{u} :=
 theorem lift_continuum : lift.{v} 𝔠 = 𝔠 := by
   rw [← two_power_aleph0, lift_two_power, lift_aleph0, two_power_aleph0]
 #align cardinal.lift_continuum Cardinal.lift_continuum
+
+@[simp]
+theorem continuum_le_lift {c : Cardinal.{u}} : 𝔠 ≤ lift.{v} c ↔ 𝔠 ≤ c := by
+  -- porting note: added explicit universes
+  rw [← lift_continuum.{u,v}, lift_le]
+#align cardinal.continuum_le_lift Cardinal.continuum_le_lift
+
+@[simp]
+theorem lift_le_continuum {c : Cardinal.{u}} : lift.{v} c ≤ 𝔠 ↔ c ≤ 𝔠 := by
+  -- porting note: added explicit universes
+  rw [← lift_continuum.{u,v}, lift_le]
+#align cardinal.lift_le_continuum Cardinal.lift_le_continuum
+
+@[simp]
+theorem continuum_lt_lift {c : Cardinal.{u}} : 𝔠 < lift.{v} c ↔ 𝔠 < c := by
+  -- porting note: added explicit universes
+  rw [← lift_continuum.{u,v}, lift_lt]
+#align cardinal.continuum_lt_lift Cardinal.continuum_lt_lift
+
+@[simp]
+theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 := by
+  -- porting note: added explicit universes
+  rw [← lift_continuum.{u,v}, lift_lt]
+#align cardinal.lift_lt_continuum Cardinal.lift_lt_continuum
 
 /-!
 ### Inequalities

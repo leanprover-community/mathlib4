@@ -100,8 +100,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  change y - (y + z) ∈ p'
-  rwa [sub_add_eq_sub_sub, sub_self, zero_sub, neg_mem_iff (H := p') (x := z)]
+  simp only [mem_comap, map_sub, coeSubtype, coe_ofLe, sub_add_cancel', neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.

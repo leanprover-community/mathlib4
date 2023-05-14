@@ -88,8 +88,7 @@ private irreducible_def neg : ℝ → ℝ
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
--- TODO irreducible_def
-private noncomputable def inv' : ℝ → ℝ
+private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
 instance : Zero ℝ :=

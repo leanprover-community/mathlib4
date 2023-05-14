@@ -131,7 +131,6 @@ theorem toLex_strictMono : @StrictMono _ _ _ (Prod.Lex.preorder α β) (toLex : 
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)
   · exact left _ _ ha
-
 #align prod.lex.to_lex_strict_mono Prod.Lex.toLex_strictMono
 
 end Preorder

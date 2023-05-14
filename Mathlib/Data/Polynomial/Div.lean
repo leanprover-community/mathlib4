@@ -298,8 +298,7 @@ theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
 
 theorem degree_divByMonic_lt (p : R[X]) {q : R[X]} (hq : Monic q) (hp0 : p ≠ 0)
     (h0q : 0 < degree q) : degree (p /ₘ q) < degree p :=
-  if hpq : degree p < degree q then
-    by
+  if hpq : degree p < degree q then by
     haveI := Nontrivial.of_polynomial_ne hp0
     rw [(divByMonic_eq_zero_iff hq).2 hpq, degree_eq_natDegree hp0]
     exact WithBot.bot_lt_coe _
@@ -429,8 +428,7 @@ theorem modByMonic_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p %ₘ (X - C a) = C (
       eval_C, sub_self, MulZeroClass.zero_mul, sub_zero]
   have : degree (p %ₘ (X - C a)) < 1 :=
     degree_X_sub_C a ▸ degree_modByMonic_lt p (monic_X_sub_C a)
-  have : degree (p %ₘ (X - C a)) ≤ 0 :=
-    by
+  have : degree (p %ₘ (X - C a)) ≤ 0 := by
     revert this
     cases degree (p %ₘ (X - C a))
     · exact fun _ => bot_le
@@ -527,7 +525,7 @@ theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiplicity_X_sub_C_finite Polynomial.multiplicity_X_sub_C_finite
 
-/- Porting note: stripping out classical for decidability instance parameter might 
+/- Porting note: stripping out classical for decidability instance parameter might
 make for better ergnomics -/
 /-- The largest power of `X - C a` which divides `p`.
 This is computable via the divisibility algorithm `Polynomial.decidableDvdMonic`. -/
@@ -539,7 +537,7 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     Nat.find (multiplicity_X_sub_C_finite a h0)
 #align polynomial.root_multiplicity Polynomial.rootMultiplicity
 
-/- Porting note: added the following due to diamand with decidableProp and 
+/- Porting note: added the following due to diamand with decidableProp and
 decidableDvdMonic see also [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
 non-defeq.20aliased.20instance) -/
@@ -547,7 +545,7 @@ theorem rootMultiplicity_eq_nat_find_of_nonzero {p : R[X]} (p0 : p ≠ 0) {a : R
     rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
   dsimp [rootMultiplicity]
   rw [dif_neg p0]
-  convert rfl 
+  convert rfl
 
 theorem rootMultiplicity_eq_multiplicity (p : R[X]) (a : R) :
     rootMultiplicity a p =

@@ -197,7 +197,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
 @[reducible]
-def IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
+def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     where
   default := indiscrete ha.1
   uniq P := by
@@ -209,7 +209,7 @@ def IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     obtain ⟨c, hc⟩ := P.parts_nonempty ha.1
     simp_rw [← h c hc]
     exact hc
-#align is_atom.unique_finpartition Finpartition.IsAtom.uniqueFinpartition
+#align is_atom.unique_finpartition IsAtom.uniqueFinpartition
 
 instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
   @Fintype.ofSurjective { p : Finset α // p.SupIndep id ∧ p.sup id = a ∧ ⊥ ∉ p } (Finpartition a) _

@@ -371,7 +371,7 @@ theorem minimalPeriod_id : minimalPeriod id x = 1 :=
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 #align function.minimal_period_id Function.minimalPeriod_id
 
-theorem is_fixed_point_iff_minimalPeriod_eq_one : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
+theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← iterate_one f]
     refine' Function.IsPeriodicPt.isFixedPt _
@@ -380,7 +380,7 @@ theorem is_fixed_point_iff_minimalPeriod_eq_one : minimalPeriod f x = 1 ↔ IsFi
   · exact
       ((h.isPeriodicPt 1).minimalPeriod_le Nat.one_pos).antisymm
         (Nat.succ_le_of_lt ((h.isPeriodicPt 1).minimalPeriod_pos Nat.one_pos))
-#align function.is_fixed_point_iff_minimal_period_eq_one Function.is_fixed_point_iff_minimalPeriod_eq_one
+#align function.is_fixed_point_iff_minimal_period_eq_one Function.minimalPeriod_eq_one_iff_isFixedPt
 
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
@@ -416,7 +416,7 @@ theorem minimalPeriod_eq_minimalPeriod_iff {g : β → β} {y : β} :
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
     (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
   (hp.out.eq_one_or_self_of_dvd _ hper.minimalPeriod_dvd).resolve_left
-    (mt is_fixed_point_iff_minimalPeriod_eq_one.1 hfix)
+    (mt minimalPeriod_eq_one_iff_isFixedPt.1 hfix)
 #align function.minimal_period_eq_prime Function.minimalPeriod_eq_prime
 
 theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPeriodicPt f (p ^ k) x)
@@ -439,7 +439,7 @@ theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Function.Comm
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Function.Commute f g)
     (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
-  apply dvd_antisymm h.minimalPeriod_of_comp_dvd_mul
+  apply h.minimalPeriod_of_comp_dvd_mul.antisymm
   suffices :
     ∀ {f g : α → α},
       Commute f g →

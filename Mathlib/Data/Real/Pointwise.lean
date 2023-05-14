@@ -14,7 +14,7 @@ import Mathlib.Data.Real.Basic
 /-!
 # Pointwise operations on sets of reals
 
-This file relates `Inf (a • s)`/`Sup (a • s)` with `a • Inf s`/`a • Sup s` for `s : Set ℝ`.
+This file relates `infₛ (a • s)`/`supₛ (a • s)` with `a • infₛ s`/`a • supₛ s` for `s : Set ℝ`.
 
 From these, it relates `⨅ i, a • f i` / `⨆ i, a • f i` with `a • (⨅ i, f i)` / `a • (⨆ i, f i)`,
 and provides lemmas about distributing `*` over `⨅` and `⨆`.

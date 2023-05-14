@@ -38,11 +38,9 @@ theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔  [[x, y]
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <|
-      (Surjective.forall toDual.surjective).2 fun x =>
-      by
-      rw [mem_ordConnectedComponent, dual_uIcc]
-      rfl
+  ext <| (Surjective.forall toDual.surjective).2 fun x => by
+    rw [mem_ordConnectedComponent, dual_uIcc]
+    rfl
 #align set.dual_ord_connected_component Set.dual_ordConnectedComponent
 
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
@@ -93,7 +91,6 @@ theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz
-
 #align set.mem_ord_connected_component_trans Set.mem_ordConnectedComponent_trans
 
 theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
@@ -150,7 +147,6 @@ theorem dual_ordConnectedSection (s : Set α) :
   ext x
   simp [dual_ordConnectedComponent]
   tauto
-
 #align set.dual_ord_connected_section Set.dual_ordConnectedSection
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
@@ -165,8 +161,7 @@ theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSec
       (mem_ordConnectedComponent_trans
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ordConnectedProj _ _))
-#align set.eq_of_mem_ord_connected_section_of_uIcc_subset
-  Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
+#align set.eq_of_mem_ord_connected_section_of_uIcc_subset Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
 
 /-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
@@ -216,8 +211,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
 -- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
     cases' ha with ha ha'
     cases' hb with hb hb'
-    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
-      by
+    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
       rw [ordSeparatingSet_comm, uIcc_comm] at hb'
       calc
         [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
