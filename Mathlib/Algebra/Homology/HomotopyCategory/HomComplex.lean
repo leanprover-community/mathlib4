@@ -180,7 +180,6 @@ lemma v_comp_XIsoOfEq_inv
 protected def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ := Cochain.mk (fun p q hpq => z₁.v p (p+n₁) rfl ≫ z₂.v (p+n₁) q (by linarith))
 
---notation a " ≫[":81 b "] " c:80 => Cochain.comp a c b
 notation a " ≫[" b "] " c:80 => Cochain.comp a c b
 
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)

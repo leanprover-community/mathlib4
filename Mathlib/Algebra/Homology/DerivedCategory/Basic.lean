@@ -3,6 +3,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
+import Mathlib.Algebra.GradedType
 import Mathlib.CategoryTheory.Localization.Composition
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject
@@ -344,12 +345,42 @@ end DerivedCategory
 namespace CategoryTheory.Abelian
 
 variable {C}
+variable (X Y Z : C) (n : ℕ)
 
-def newExt (n : ℕ) (X Y : C) : Type (max u v) :=
+def newExt : Type (max u v) :=
   (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
 
-noncomputable instance (n : ℕ) (X Y : C) : AddCommGroup (newExt n X Y) := by
+variable {X Y Z}
+
+noncomputable def newExt.ofHom (f : X ⟶ Y) : newExt X Y 0 :=
+  (DerivedCategory.singleFunctor _ 0).map f ≫ (shiftFunctorZero _ ℤ).inv.app _
+
+noncomputable instance : AddCommGroup (newExt X Y n) := by
   dsimp [newExt]
   infer_instance
+
+noncomputable instance : HasGradedHSMul (newExt Y Z) (newExt X Y) (newExt X Z) where
+  γhsmul' a b c h α β := β ≫ (α⟦(b : ℤ)⟧') ≫
+    (shiftFunctorAdd' (DerivedCategory C) (a : ℤ) (b : ℤ) (c : ℤ)
+      (by rw [← h, Nat.cast_add])).inv.app _
+
+noncomputable example {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
+    newExt X Z n := α •[hpq] β
+
+noncomputable example (f : newExt Y Z n) (g : X ⟶ Y) : newExt X Z n :=
+  f •[add_zero n] (newExt.ofHom g)
+
+lemma newExt.γhsmul_eq {a b : ℕ} (α : newExt Y Z a) (β : newExt X Y b) (n : ℕ) (hab : a + b = n) :
+    α •[hab] β = β ≫ (α⟦(b : ℤ)⟧') ≫
+      (shiftFunctorAdd' (DerivedCategory C) (a : ℤ) (b : ℤ) (n : ℤ)
+        (by rw [← hab, Nat.cast_add])).inv.app _ := rfl
+
+lemma newExt.ofHom_comp (g : Y ⟶ Z) (f : X ⟶ Y) :
+    newExt.ofHom (f ≫ g) = newExt.ofHom g •[add_zero _] newExt.ofHom f := by
+  dsimp [ofHom]
+  rw [newExt.γhsmul_eq, Functor.map_comp, assoc, assoc]
+  erw [← NatTrans.naturality_assoc, shiftFunctorAdd'_add_zero_inv_app,
+    Iso.inv_hom_id_app]
+  simp only [Functor.id_map, assoc, comp_id]
 
 end CategoryTheory.Abelian
