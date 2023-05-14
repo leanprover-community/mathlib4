@@ -176,7 +176,7 @@ instance : RingHomSurjective (mk I) :=
 theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
     mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
-  simp only [mem_preimage, mem_image, mem_unionᵢ, Ideal.Quotient.eq]
+  simp only [mem_preimage, mem_image, mem_iUnion, Ideal.Quotient.eq]
   exact
     ⟨fun ⟨a, a_in, h⟩ => ⟨⟨_, I.neg_mem h⟩, a, a_in, by simp⟩, fun ⟨⟨i, hi⟩, a, ha, Eq⟩ =>
       ⟨a, ha, by rw [← Eq, sub_add_eq_sub_sub_swap, sub_self, zero_sub]; exact I.neg_mem hi⟩⟩
@@ -465,7 +465,7 @@ theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j �
   Remainder Theorem. It is bijective if the ideals `f i` are comaximal. -/
 def quotientInfToPiQuotient (f : ι → Ideal R) : (R ⧸ ⨅ i, f i) →+* ∀ i, R ⧸ f i :=
   Quotient.lift (⨅ i, f i) (Pi.ringHom fun i : ι => (Quotient.mk (f i) : _)) fun r hr => by
-    rw [Submodule.mem_infᵢ] at hr
+    rw [Submodule.mem_iInf] at hr
     ext i
     exact Quotient.eq_zero_iff_mem.2 (hr i)
 #align ideal.quotient_inf_to_pi_quotient Ideal.quotientInfToPiQuotient
@@ -475,7 +475,7 @@ theorem quotientInfToPiQuotient_bijective [Finite ι] {f : ι → Ideal R}
   ⟨fun x y =>
     Quotient.inductionOn₂' x y fun r s hrs =>
       Quotient.eq.2 <|
-        (Submodule.mem_infᵢ _).2 fun i =>
+        (Submodule.mem_iInf _).2 fun i =>
           Quotient.eq.1 <|
             show quotientInfToPiQuotient f (Quotient.mk'' r) i = _ by rw [hrs]; rfl,
     fun g =>
@@ -500,7 +500,7 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ 
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · rwa [sup_comm]
-  (Ideal.quotEquivOfEq (by simp [infᵢ, inf_comm])).trans <|
+  (Ideal.quotEquivOfEq (by simp [iInf, inf_comm])).trans <|
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 

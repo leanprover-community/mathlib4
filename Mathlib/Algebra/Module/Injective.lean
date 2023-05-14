@@ -180,20 +180,20 @@ set_option linter.uppercaseLean3 false in
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   {
-    LinearPMap.supₛ _
+    LinearPMap.sSup _
       (IsChain.directedOn <|
         chain_linearPMap_of_chain_extensionOf
           hchain) with
     le :=
       le_trans hnonempty.some.le <|
-        (LinearPMap.le_supₛ _ <|
+        (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
       symm
       generalize_proofs _ h1
       exact
-        LinearPMap.supₛ_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
+        LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.max Module.Baer.ExtensionOf.max
@@ -201,7 +201,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) (a : ExtensionOf i f) (ha : a ∈ c) :
     a ≤ ExtensionOf.max hchain hnonempty :=
-  LinearPMap.le_supₛ (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
+  LinearPMap.le_sSup (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
     (Set.mem_image _ _ _).mpr ⟨a, ha, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.le_max Module.Baer.ExtensionOf.le_max
@@ -469,4 +469,3 @@ set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
 end Module.Baer
-

@@ -288,17 +288,17 @@ theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
 
 variable {s t}
 
-theorem bunionᵢ_image_left : (s.bunionᵢ fun a => t.image <| f a) = image₂ f s t :=
+theorem biUnion_image_left : (s.biUnion fun a => t.image <| f a) = image₂ f s t :=
   coe_injective <| by
     push_cast
-    exact Set.unionᵢ_image_left _
-#align finset.bUnion_image_left Finset.bunionᵢ_image_left
+    exact Set.iUnion_image_left _
+#align finset.bUnion_image_left Finset.biUnion_image_left
 
-theorem bunionᵢ_image_right : (t.bunionᵢ fun b => s.image fun a => f a b) = image₂ f s t :=
+theorem biUnion_image_right : (t.biUnion fun b => s.image fun a => f a b) = image₂ f s t :=
   coe_injective <| by
     push_cast
-    exact Set.unionᵢ_image_right _
-#align finset.bUnion_image_right Finset.bunionᵢ_image_right
+    exact Set.iUnion_image_right _
+#align finset.bUnion_image_right Finset.biUnion_image_right
 
 /-!
 ### Algebraic replacement rules

@@ -143,7 +143,7 @@ theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {s : Set α} (h : �
     {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v := by
   induction' t with _ _ _ _ ih
   · rfl
-  · simp_rw [varFinset, Finset.coe_bunionᵢ, Set.unionᵢ_subset_iff] at h
+  · simp_rw [varFinset, Finset.coe_biUnion, Set.iUnion_subset_iff] at h
     exact congr rfl (funext fun i => ih i (h i (Finset.mem_univ i)))
 #align first_order.language.term.realize_restrict_var FirstOrder.Language.Term.realize_restrictVar
 
@@ -154,7 +154,7 @@ theorem realize_restrictVarLeft [DecidableEq α] {γ : Type _} {t : L.Term (Sum 
       t.realize (Sum.elim v xs) := by
   induction' t with a _ _ _ ih
   · cases a <;> rfl
-  · simp_rw [varFinsetLeft, Finset.coe_bunionᵢ, Set.unionᵢ_subset_iff] at h
+  · simp_rw [varFinsetLeft, Finset.coe_biUnion, Set.iUnion_subset_iff] at h
     exact congr rfl (funext fun i => ih i (h i (Finset.mem_univ i)))
 #align first_order.language.term.realize_restrict_var_left FirstOrder.Language.Term.realize_restrictVarLeft
 

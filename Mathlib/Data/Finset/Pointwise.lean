@@ -1677,10 +1677,10 @@ theorem smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • 
 #align finset.vadd_finset_subset_vadd Finset.vadd_finset_subset_vadd
 
 @[to_additive (attr := simp)]
-theorem bunionᵢ_smul_finset (s : Finset α) (t : Finset β) : s.bunionᵢ (· • t) = s • t :=
-  bunionᵢ_image_left
-#align finset.bUnion_smul_finset Finset.bunionᵢ_smul_finset
-#align finset.bUnion_vadd_finset Finset.bunionᵢ_vadd_finset
+theorem biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
+  biUnion_image_left
+#align finset.bUnion_smul_finset Finset.biUnion_smul_finset
+#align finset.bUnion_vadd_finset Finset.biUnion_vadd_finset
 
 end SMul
 
@@ -1840,10 +1840,10 @@ theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
 #align finset.op_vadd_finset_subset_add Finset.op_vadd_finset_subset_add
 
 @[to_additive (attr := simp)]
-theorem bunionᵢ_op_smul_finset (s t : Finset α) : (t.bunionᵢ fun a => op a • s) = s * t :=
-  bunionᵢ_image_right
-#align finset.bUnion_op_smul_finset Finset.bunionᵢ_op_smul_finset
-#align finset.bUnion_op_vadd_finset Finset.bunionᵢ_op_vadd_finset
+theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
+  biUnion_image_right
+#align finset.bUnion_op_smul_finset Finset.biUnion_op_smul_finset
+#align finset.bUnion_op_vadd_finset Finset.biUnion_op_vadd_finset
 
 @[to_additive]
 theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
