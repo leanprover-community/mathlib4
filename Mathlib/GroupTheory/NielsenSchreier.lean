@@ -8,10 +8,10 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Action
-import Mathbin.Combinatorics.Quiver.Arborescence
-import Mathbin.Combinatorics.Quiver.ConnectedComponent
-import Mathbin.GroupTheory.IsFreeGroup
+import Mathlib.CategoryTheory.Action
+import Mathlib.Combinatorics.Quiver.Arborescence
+import Mathlib.Combinatorics.Quiver.ConnectedComponent
+import Mathlib.GroupTheory.IsFreeGroup
 
 /-!
 # The Nielsen-Schreier theorem
@@ -107,8 +107,7 @@ purposes.
 Analogous to the fact that a covering space of a graph is a graph. (A free groupoid is like a graph,
 and a groupoid of elements is like a covering space.) -/
 instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulAction G A] :
-    IsFreeGroupoid (ActionCategory G A)
-    where
+    IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
   of a b e := ⟨IsFreeGroup.of e, e.property⟩
@@ -191,8 +190,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (e «expr ∈ » wide_subquiver_symmetrify[quiver.wide_subquiver_symmetrify] T a b) -/
 /-- Turning an edge in the spanning tree into a loop gives the indentity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (_ : e ∈ wideSubquiverSymmetrify T a b) :
-    loopOfHom T (of e) = 𝟙 (root' T) :=
-  by
+    loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loop_of_hom, ← category.assoc, is_iso.comp_inv_eq, category.id_comp]
   cases H
   · rw [tree_hom_eq T (path.cons default ⟨Sum.inl e, H⟩), hom_of_path]
@@ -229,8 +227,7 @@ def endIsFree : IsFreeGroup (End (root' T)) :=
         if h : e ∈ wide_subquiver_symmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
       refine' ⟨F'.map_End _, _, _⟩
-      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loop_of_hom T q) = (F'.map q : X)
-          by
+      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loop_of_hom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           rw [functor.map_End_apply, this, hF']
           exact dif_neg h
@@ -272,8 +269,7 @@ private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
 from `a` to `b` in the generating quiver. -/
 theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
-    Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) :=
-  by
+    Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by
   rintro ⟨p⟩
   rw [← @weakly_connected_component.eq (generators G), eq_comm, ← free_group.of_injective.eq_iff, ←
     mul_inv_eq_one]
