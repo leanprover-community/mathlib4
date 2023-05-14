@@ -6,7 +6,7 @@ open Lean ListM AStar
 def wall : Int × Int → Bool :=
 fun ⟨x, y⟩ => x ≤ 3 || y ≤ 3 || x ≥ 20 || y ≥ 20 || (x ≥ 6 && y ≥ 6)
 
-unsafe def LWallGraph : GraphData MetaM Nat (Int × Int) ((Int × Int) × (Int × Int)) :=
+def LWallGraph : GraphData MetaM Nat (Int × Int) ((Int × Int) × (Int × Int)) :=
 { s := (·.1),
   t := (·.2),
   nbhd := fun ⟨x, y⟩ => ListM.ofList

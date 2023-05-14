@@ -9,8 +9,8 @@ import Mathlib.Data.ListM.Basic
 /-!
 # A^* search
 
-This implementation is only intending for use in meta code, rather than algorithmic analysis.
-It uses unsafe code freely. Someone might enjoy writing a "mathematical" version.
+This implementation is only intended for use in meta code, rather than algorithmic analysis.
+Someone might enjoy writing a "mathematical" version.
 -/
 
 open Std
@@ -31,7 +31,7 @@ structure Path where
 Data associated to a vertex during A^* search.
 We record the best seen path so far, and track which edges are `explored` and `remaining`.
 -/
-unsafe structure VertexData where
+structure VertexData where
   bestPath : Path P V E
   heuristicPrio : P
   totalPrio : P
@@ -46,7 +46,7 @@ We additionally maintain vertex data
 (consisting of priority, best yet path, and explored/remaining edges)
 for each vertex visited so far.
 -/
-unsafe structure State where
+structure State where
   queue : RBMap P (List V) compare
   data : HashMap V (VertexData m P V E)
 
@@ -58,7 +58,7 @@ the edges leaving each vertex (as a lazy list),
 the weight of each each,
 and the heuristic distance to a goal for each vertex.
 -/
-unsafe structure GraphData where
+structure GraphData where
   s : E → V
   t : E → V
   nbhd : V → ListM m E
@@ -66,12 +66,12 @@ unsafe structure GraphData where
   heuristic : V → P
 
 /-- State monad for A^* search. -/
-unsafe abbrev M := StateT (State m P V E) m
+abbrev M := StateT (State m P V E) m
 
 variable {m P V E}
 
 /-- Add an edge to a path. -/
-unsafe def cons (Γ : GraphData m P V E) (e : E) (p : Path P V E) : Path P V E :=
+def cons (Γ : GraphData m P V E) (e : E) (p : Path P V E) : Path P V E :=
 { prio := Γ.weight e + p.prio,
   to := Γ.t e,
   edges := e :: p.edges }
@@ -88,7 +88,7 @@ Record a new path.
   * And, if we are searching for optimal solutions,
     recursively record all paths obtained by adding a previously explored edge to this path.
 -/
-unsafe def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
+def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
     (M m P V E) PUnit := do
   let σ ← get
   let v := path.to
@@ -121,7 +121,7 @@ unsafe def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V
         recordPath Γ optimal (cons Γ e path)
 
 /-- Return the vertex data for the first vertex in the priority queue. -/
-unsafe def readMin : (M m P V E) (VertexData m P V E) := do
+def readMin : (M m P V E) (VertexData m P V E) := do
   let σ ← get
   match σ.queue.min with
   | none => failure
@@ -135,7 +135,7 @@ unsafe def readMin : (M m P V E) (VertexData m P V E) := do
 
 /-- Obtain the next remaining edge leaving the highest priority vertex in the queue,
 updating the `explored` and `remaining` fields of `VertexData` at the same time. -/
-unsafe def nextEdge : (M m P V E) (VertexData m P V E × E) := do
+def nextEdge : (M m P V E) (VertexData m P V E × E) := do
   let σ ← get
   match σ.queue.min with
   | none => failure
@@ -159,7 +159,7 @@ unsafe def nextEdge : (M m P V E) (VertexData m P V E × E) := do
 /-- Perform one step of A^* search:
 mark the next edge leaving the highest priority vertex `v` as explored,
 and record the path obtained by adding the edge to the best yet path to `v`. -/
-unsafe def update (Γ : GraphData m P V E) (optimal : Bool) :
+def update (Γ : GraphData m P V E) (optimal : Bool) :
     (M m P V E) PUnit := do
   let (d, e) ← nextEdge
   recordPath Γ optimal (cons Γ e d.bestPath)
@@ -185,7 +185,7 @@ and you will need to test whether `optimal` is suitable for your requirements.)
 
 Returns a monadic lazy list consisting of triples (priority, vertex, path).
 -/
-unsafe def AStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
+def AStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
     ListM m (P × V × List E) :=
 let p := Γ.heuristic v
 let d : VertexData m P V E :=
@@ -206,7 +206,7 @@ starting at a vertex `src` and ending when reaching a vertex satisfying `goal`.
 
 Returns a list of edges, wrapped in the same monad the graph edges are generated in.
 -/
-unsafe def AStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
+def AStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
     m (List E) :=
 AStarSearchPaths Γ optimal src |>.filter (goal ·.2.1) |>.map (·.2.2) |>.head
 
