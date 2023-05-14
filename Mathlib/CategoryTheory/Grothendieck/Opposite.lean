@@ -20,13 +20,14 @@ and it may be interesting to try to generalize some of the development there.
 
 ## Implementation notes
 
-Porting note: after the port this should be combined into `Grothendieck.lean`.
-
+Porting note: after the port this should be combined into `Grothendieck/Basic.lean`.
 
 -/
 
 
 universe u
+
+open Opposite
 
 namespace CategoryTheory
 
@@ -46,9 +47,9 @@ gives a category whose
 -- @[nolint has_nonempty_instance]
 structure opGrothendieck where
   /-- The underlying object in `Cᵒᵖ` -/
-  base : Cᵒᵖ
+  base : C
   /-- The object in the fiber of the base object. -/
-  fiber : F.obj base
+  fiber : F.obj (op base)
 
 namespace opGrothendieck
 
@@ -59,12 +60,12 @@ variable {F}
 -/
 structure Hom (X Y : opGrothendieck F) where
   /-- The morphism between base objects. -/
-  base : Y.base ⟶ X.base
+  base : X.base ⟶ Y.base
   /-- The morphism from the pushforward to the source fiber object to the target fiber object. -/
-  fiber : X.fiber ⟶ (F.map base).obj Y.fiber
+  fiber : X.fiber ⟶ (F.map base.op).obj Y.fiber
 
 @[ext]
-theorem ext {X Y : opGrothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
+theorem ext' {X Y : opGrothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
     (w_fiber : f.fiber ≫ eqToHom (by rw [w_base]) = g.fiber) : f = g := by
   cases f; cases g
   congr
@@ -85,9 +86,9 @@ instance (X : opGrothendieck F) : Inhabited (Hom X X) :=
 -/
 @[simps]
 def comp {X Y Z : opGrothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
-  base := g.base ≫ f.base
+  base := f.base ≫ g.base
   fiber :=
-    f.fiber ≫ (F.map _).map g.fiber ≫ eqToHom (by erw [Functor.map_comp, Functor.comp_obj])
+    f.fiber ≫ (F.map _).map g.fiber ≫ eqToHom (by erw [op_comp, Functor.map_comp, Functor.comp_obj])
 
 attribute [local simp] eqToHom_map
 
@@ -101,7 +102,7 @@ instance : Category (opGrothendieck F) where
     dsimp; ext; swap
     · simp
     · dsimp
-      rw [← NatIso.naturality_2 (eqToIso (F.map_id X.base)) f.fiber]
+      rw [← NatIso.naturality_2 (eqToIso (F.map_id _)) f.fiber]
       simp
   assoc := @fun W X Y Z f g h => by
     dsimp; ext; swap
@@ -122,14 +123,16 @@ theorem id_fiber' (X : opGrothendieck F) :
 
 @[simp]
 theorem comp_base' {X Y Z : opGrothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Hom.base (f ≫ g) = g.base ≫ f.base :=
-  comp_base _ _
+  (f ≫ g).base = f.base ≫ g.base := rfl
 
 @[simp]
 theorem comp_fiber' {X Y Z : opGrothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Hom.fiber (f ≫ g) =
-      f.fiber ≫ (F.map _).map g.fiber ≫ eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) :=
-  comp_fiber _ _
+  (f ≫ g).fiber = f.fiber ≫ (F.map _).map g.fiber ≫
+    eqToHom (by erw [op_comp, Functor.map_comp, Functor.comp_obj]) := rfl
+
+@[ext]
+theorem ext {X Y : opGrothendieck F} (f g : X ⟶ Y) (w_base : f.base = g.base)
+    (w_fiber : f.fiber ≫ eqToHom (by rw [w_base]) = g.fiber) : f = g := ext' f g w_base w_fiber
 
 theorem congr {X Y : opGrothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = g.fiber ≫ eqToHom (by subst h; rfl) := by
@@ -146,8 +149,8 @@ open Opposite
 /-- The forgetful functor from `opGrothendieck F` to the source category. -/
 @[simps!]
 def forget : opGrothendieck F ⥤ C where
-  obj X := unop X.1
-  map := @fun X Y f => f.1.unop
+  obj X := X.1
+  map := @fun X Y f => f.1
 
 end
 
