@@ -343,12 +343,16 @@ section FloorRing
 
 variable [FloorRing 𝕜]
 
+-- Porting note: fails to find `Archimedean 𝕜`
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
+-- Porting note: fails to find `Archimedean 𝕜`
+set_option synthInstance.etaExperiment true in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -606,14 +610,16 @@ homeomorphism of topological spaces. -/
 def homeoIccQuot : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
   toEquiv := equivIccQuot p a
   continuous_toFun := by
-    simp_rw [quotientMap_quotient_mk'.continuous_iff, continuous_iff_continuousAt,
+    -- Porting note: was `simp_rw`
+    rw [quotientMap_quotient_mk'.continuous_iff]
+    simp_rw [continuous_iff_continuousAt,
       continuousAt_iff_continuous_left_right]
     intro x; constructor
-    on_goal 1 => erw [equiv_Icc_quot_comp_mk_eq_to_Ioc_mod]
-    on_goal 2 => erw [equiv_Icc_quot_comp_mk_eq_to_Ico_mod]
+    on_goal 1 => erw [equivIccQuot_comp_mk_eq_toIocMod]
+    on_goal 2 => erw [equivIccQuot_comp_mk_eq_toIcoMod]
     all_goals
-      apply continuous_quot_mk.continuous_at.comp_continuous_within_at
-      rw [inducing_coe.continuous_within_at_iff]
+      apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
+      rw [inducing_subtype_val.continuousWithinAt_iff]
     · apply continuous_left_toIocMod
     · apply continuous_right_toIcoMod
   continuous_invFun :=
