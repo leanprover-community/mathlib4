@@ -33,42 +33,36 @@ universe v u
 
 namespace MonCat
 
+set_option linter.uppercaseLean3 false -- `Mon`
+
 variable {J : Type v} [SmallCategory J]
 
 @[to_additive]
 instance monoidObj (F : J ⥤ MonCat.{max v u}) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
   change Monoid (F.obj j)
   infer_instance
-set_option linter.uppercaseLean3 false in
 #align Mon.monoid_obj MonCat.monoidObj
-set_option linter.uppercaseLean3 false in
 #align AddMon.add_monoid_obj AddMonCat.addMonoidObj
 
 /-- The flat sections of a functor into `Mon` form a submonoid of all sections.
 -/
 @[to_additive
       "The flat sections of a functor into `AddMon` form an additive submonoid of all sections."]
-def sectionsSubmonoid (F : J ⥤ MonCat.{max v u}) : Submonoid (∀ j, F.obj j)
-    where
+def sectionsSubmonoid (F : J ⥤ MonCat.{max v u}) : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
-  mul_mem' {a} {b} ah bh {j} {j'} f :=
-    by
+  mul_mem' {a} {b} ah bh {j} {j'} f := by
     simp only [Functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
     dsimp [Functor.sections] at ah bh
     rw [← ah f, ← bh f, MonCat.Hom.map_mul]
-set_option linter.uppercaseLean3 false in
 #align Mon.sections_submonoid MonCat.sectionsSubmonoid
-set_option linter.uppercaseLean3 false in
 #align AddMon.sections_add_submonoid AddMonCat.sectionsAddSubmonoid
 
 @[to_additive]
 instance limitMonoid (F : J ⥤ MonCat.{max v u}) :
     Monoid (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).pt :=
   (sectionsSubmonoid.{v, u} F).toMonoid
-set_option linter.uppercaseLean3 false in
 #align Mon.limit_monoid MonCat.limitMonoid
-set_option linter.uppercaseLean3 false in
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
 
 -- set_option pp.universes true
@@ -86,9 +80,7 @@ def limitπMonoidHom (F : J ⥤ MonCat.{max v u}) (j : J) :
   { toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j,
     map_one' := rfl
     map_mul' := fun _ _ => rfl }
-set_option linter.uppercaseLean3 false in
 #align Mon.limit_π_monoid_hom MonCat.limitπMonoidHom
-set_option linter.uppercaseLean3 false in
 #align AddMon.limit_π_add_monoid_hom AddMonCat.limitπAddMonoidHom
 
 namespace HasLimits
@@ -127,13 +119,12 @@ open HasLimits
 
 /-- The category of monoids has all limits. -/
 @[to_additive "The category of additive monoids has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v} MonCat.{max v u}
-    where HasLimitsOfShape J 𝒥 :=
-    {
-      HasLimit := fun F =>
-        has_limit.mk
-          { Cone := limit_cone F
-            IsLimit := limit_cone_is_limit F } }
+instance hasLimitsOfSize : HasLimitsOfSize.{v} MonCat.{max v u} where
+  has_limits_of_shape J 𝒥 :=
+    { has_limit := fun F =>
+        HasLimit.mk
+          { cone := limitCone F
+            isLimit := limitConeIsLimit F } }
 #align Mon.has_limits_of_size MonCat.hasLimitsOfSize
 #align AddMon.has_limits_of_size AddMonCat.hasLimitsOfSize
 
@@ -146,14 +137,13 @@ instance hasLimits : HasLimits MonCat.{u} :=
 /-- The forgetful functor from monoids to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
-@[to_additive
-      "The forgetful functor from additive monoids to types preserves all limits.\n\nThis means the underlying type of a limit can be computed as a limit in the category of types."]
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v} (forget MonCat.{max v u})
-    where PreservesLimitsOfShape J 𝒥 :=
-    {
-      PreservesLimit := fun F =>
-        preserves_limit_of_preserves_limit_cone (limit_cone_is_limit F)
-          (types.limit_cone_is_limit (F ⋙ forget _)) }
+@[to_additive "The forgetful functor from additive monoids to types preserves all limits.\n\n
+This means the underlying type of a limit can be computed as a limit in the category of types."]
+instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v} (forget MonCat.{max v u}) where
+  preservesLimitsOfShape {J} 𝒥 :=
+    { preservesLimit := fun {F} =>
+        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+          (Types.limitConeIsLimit (F ⋙ forget _)) }
 #align Mon.forget_preserves_limits_of_size MonCat.forgetPreservesLimitsOfSize
 #align AddMon.forget_preserves_limits_of_size AddMonCat.forgetPreservesLimitsOfSize
 
@@ -189,18 +179,19 @@ instance limitCommMonoid (F : J ⥤ CommMonCat.{max v u}) :
 
 All we need to do is notice that the limit point has a `comm_monoid` instance available,
 and then reuse the existing limit. -/
-@[to_additive
-      "We show that the forgetful functor `AddCommMon ⥤ AddMon` creates limits.\n\nAll we need to do is notice that the limit point has an `add_comm_monoid` instance available,\nand then reuse the existing limit."]
+@[to_additive "We show that the forgetful functor `AddCommMon ⥤ AddMon` creates limits.\n\n
+All we need to do is notice that the limit point has an `add_comm_monoid` instance available,\n
+and then reuse the existing limit."]
 instance (F : J ⥤ CommMonCat.{max v u}) : CreatesLimit F (forget₂ CommMonCat MonCat.{max v u}) :=
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
         { pt := CommMonCat.of (Types.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app := MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat MonCat.{max v u})
-              naturality' :=
+              naturality :=
                 (MonCat.HasLimits.limitCone
                       (F ⋙ forget₂ CommMonCat MonCat.{max v u})).π.naturality } }
-      validLift := by apply is_limit.unique_up_to_iso (MonCat.HasLimits.limitConeIsLimit _) t
+      validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{max v u})
           (MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
@@ -208,8 +199,8 @@ instance (F : J ⥤ CommMonCat.{max v u}) : CreatesLimit F (forget₂ CommMonCat
 /-- A choice of limit cone for a functor into `CommMon`.
 (Generally, you'll just want to use `limit F`.)
 -/
-@[to_additive
-      "A choice of limit cone for a functor into `CommMon`. (Generally, you'll just want\nto use `limit F`.)"]
+@[to_additive "A choice of limit cone for a functor into `CommMon`. (Generally, you'll just want\n
+to use `limit F`.)"]
 def limitCone (F : J ⥤ CommMonCat.{max v u}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommMonCat MonCat.{max v u}))
 #align CommMon.limit_cone CommMonCat.limitCone
@@ -227,9 +218,9 @@ def limitConeIsLimit (F : J ⥤ CommMonCat.{max v u}) : IsLimit (limitCone F) :=
 
 /-- The category of commutative monoids has all limits. -/
 @[to_additive "The category of commutative monoids has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommMonCat.{max v u}
-    where HasLimitsOfShape J 𝒥 :=
-    { HasLimit := fun F => has_limit_of_created F (forget₂ CommMonCat MonCat.{max v u}) }
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommMonCat.{max v u} where
+  has_limits_of_shape J 𝒥 :=
+    { has_limit := fun F => hasLimit_of_created F (forget₂ CommMonCat MonCat.{max v u}) }
 #align CommMon.has_limits_of_size CommMonCat.hasLimitsOfSize
 #align AddCommMon.has_limits_of_size AddCommMonCat.hasLimitsOfSize
 
@@ -242,11 +233,13 @@ instance hasLimits : HasLimits CommMonCat.{u} :=
 /-- The forgetful functor from commutative monoids to monoids preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of monoids. -/
-@[to_additive AddCommMonCat.forget₂AddMonPreservesLimits
-      "The forgetful functor from additive\ncommutative monoids to additive monoids preserves all limits.\n\nThis means the underlying type of a limit can be computed as a limit in the category of additive\nmonoids."]
+@[to_additive AddCommMonCat.forget₂AddMonPreservesLimits "The forgetful functor from additive\n
+commutative monoids to additive monoids preserves all limits.\n\n
+This means the underlying type of a limit can be computed as a limit in the category of additive\n
+monoids."]
 instance forget₂MonPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ CommMonCat MonCat.{max v u})
-    where PreservesLimitsOfShape J 𝒥 := { PreservesLimit := fun F => by infer_instance }
+    PreservesLimitsOfSize.{v, v} (forget₂ CommMonCat MonCat.{max v u}) where
+  preservesLimitsOfShape {J} 𝒥 := { preservesLimit := fun {F} => by infer_instance }
 #align CommMon.forget₂_Mon_preserves_limits_of_size CommMonCat.forget₂MonPreservesLimitsOfSize
 #align AddCommMon.forget₂_AddMon_preserves_limits AddCommMonCat.forget₂AddMonPreservesLimits
 
@@ -259,13 +252,14 @@ instance forget₂MonPreservesLimits : PreservesLimits (forget₂ CommMonCat Mon
 /-- The forgetful functor from commutative monoids to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
-@[to_additive
-      "The forgetful functor from additive commutative monoids to types preserves all\nlimits.\n\nThis means the underlying type of a limit can be computed as a limit in the category of types."]
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget CommMonCat.{max v u})
-    where PreservesLimitsOfShape J 𝒥 :=
-    {
-      PreservesLimit := fun F =>
-        limits.comp_preserves_limit (forget₂ CommMonCat MonCat) (forget MonCat) }
+@[to_additive "The forgetful functor from additive commutative monoids to types preserves all\n
+limits.\n\n
+This means the underlying type of a limit can be computed as a limit in the category of types."]
+instance forgetPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{v, v} (forget CommMonCat.{max v u}) where
+  preservesLimitsOfShape {J} 𝒥 :=
+    { preservesLimit := fun {F} =>
+        Limits.compPreservesLimit (forget₂ CommMonCat MonCat) (forget MonCat) }
 #align CommMon.forget_preserves_limits_of_size CommMonCat.forgetPreservesLimitsOfSize
 #align AddCommMon.forget_preserves_limits_of_size AddCommMonCat.forgetPreservesLimitsOfSize
 
