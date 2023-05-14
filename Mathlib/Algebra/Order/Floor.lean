@@ -991,7 +991,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
 theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
-  simp only [mem_preimage, mem_unionᵢ, mem_inter_iff]
+  simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine' ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, _⟩
   rintro ⟨m, hms, hm0, hm1⟩
   obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
@@ -1000,7 +1000,7 @@ theorem preimage_fract (s : Set α) :
 
 theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - m) '' s ∩ Ico 0 1 := by
   ext x
-  simp only [mem_image, mem_inter_iff, mem_unionᵢ]; constructor
+  simp only [mem_image, mem_inter_iff, mem_iUnion]; constructor
   · rintro ⟨y, hy, rfl⟩
     exact ⟨⌊y⌋, ⟨y, hy, rfl⟩, fract_nonneg y, fract_lt_one y⟩
   · rintro ⟨m, ⟨y, hys, rfl⟩, h0, h1⟩

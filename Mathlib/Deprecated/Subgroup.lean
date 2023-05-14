@@ -113,24 +113,24 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 #align is_add_subgroup.inter IsAddSubgroup.inter
 
 @[to_additive]
-theorem IsSubgroup.interᵢ {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
-    IsSubgroup (Set.interᵢ s) :=
-  { IsSubmonoid.interᵢ fun y => (hs y).toIsSubmonoid with
+theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
+    IsSubgroup (Set.iInter s) :=
+  { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
     inv_mem := fun h =>
-      Set.mem_interᵢ.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_interᵢ.1 h y) }
-#align is_subgroup.Inter IsSubgroup.interᵢ
-#align is_add_subgroup.Inter IsAddSubgroup.interᵢ
+      Set.mem_iInter.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
+#align is_subgroup.Inter IsSubgroup.iInter
+#align is_add_subgroup.Inter IsAddSubgroup.iInter
 
 @[to_additive]
-theorem isSubgroup_unionᵢ_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
+theorem isSubgroup_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
   { inv_mem := fun ha =>
-      let ⟨i, hi⟩ := Set.mem_unionᵢ.1 ha
-      Set.mem_unionᵢ.2 ⟨i, (hs i).inv_mem hi⟩
-    toIsSubmonoid := isSubmonoid_unionᵢ_of_directed (fun i => (hs i).toIsSubmonoid) directed }
-#align is_subgroup_Union_of_directed isSubgroup_unionᵢ_of_directed
-#align is_add_subgroup_Union_of_directed isAddSubgroup_unionᵢ_of_directed
+      let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
+      Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
+    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
+#align is_subgroup_Union_of_directed isSubgroup_iUnion_of_directed
+#align is_add_subgroup_Union_of_directed isAddSubgroup_iUnion_of_directed
 
 end Group
 
@@ -690,7 +690,7 @@ theorem conjugatesOf_subset {t : Set G} (ht : IsNormalSubgroup t) {a : G} (h : a
 
 theorem conjugatesOfSet_subset' {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
     conjugatesOfSet s ⊆ t :=
-  Set.unionᵢ₂_subset fun _ H => conjugatesOf_subset ht (h H)
+  Set.iUnion₂_subset fun _ H => conjugatesOf_subset ht (h H)
 #align group.conjugates_of_set_subset' Group.conjugatesOfSet_subset'
 
 /-- The normal closure of a set s is the subgroup closure of all the conjugates of

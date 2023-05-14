@@ -146,7 +146,7 @@ theorem induced_of_isLimit {F : J ⥤ TopCatMax.{v, u}} (C : Cone F) (hC : IsLim
   let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
   refine' homeo.inducing.induced.trans _
   change induced homeo (⨅ j : J, _) = _
-  simp [induced_infᵢ, induced_compose]
+  simp [induced_iInf, induced_compose]
   rfl
 #align Top.induced_of_is_limit TopCat.induced_of_isLimit
 
