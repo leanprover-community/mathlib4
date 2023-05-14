@@ -26,7 +26,7 @@ open CategoryTheory.Limits
 
 open LinearMap
 
-open Module
+open ModuleCat
 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
@@ -36,10 +36,9 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
     exact ⟨fun E X epi => Module.projective_lifting_property _ _ ((ModuleCat.epi_iff_surjective _).mp epi)⟩
   · refine' Module.Projective.of_lifting_property.{u,v} _
     intro E X mE mX sE sX f g s
-    haveI : Epi (ModuleCat.asHom f) := (ModuleCat.epi_iff_surjective (ModuleCat.asHom f)).mpr s
+    haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
     letI : Projective (ModuleCat.of R P) := h
-    exact ⟨Projective.factorThru (ModuleCat.asHom g) (ModuleCat.asHom f),
-      Projective.factorThru_comp (ModuleCat.asHom g) (ModuleCat.asHom f)⟩
+    exact ⟨Projective.factorThru (↟g) (↟f), Projective.factorThru_comp (↟g) (↟f)⟩
 #align is_projective.iff_projective IsProjective.iff_projective
 
 namespace ModuleCat
