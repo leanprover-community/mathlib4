@@ -126,15 +126,15 @@ theorem WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
-theorem WithBot.sSup_empty {α : Type _} [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
+theorem WithBot.csSup_empty {α : Type _} [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   if_pos <| Set.empty_subset _
-#align with_bot.cSup_empty WithBot.sSup_empty
+#align with_bot.cSup_empty WithBot.csSup_empty
 
 @[simp]
-theorem WithBot.iSup_empty {α : Type _} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
+theorem WithBot.ciSup_empty {α : Type _} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
     (⨆ i, f i) = ⊥ :=
   @WithTop.iInf_empty _ αᵒᵈ _ _ _
-#align with_bot.csupr_empty WithBot.iSup_empty
+#align with_bot.csupr_empty WithBot.ciSup_empty
 
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) :
@@ -1489,7 +1489,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
           -- porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
-          simp only [h, preimage_empty, WithBot.sSup_empty]
+          simp only [h, preimage_empty, WithBot.csSup_empty]
         · exfalso
           apply h₂
           use ⊥
