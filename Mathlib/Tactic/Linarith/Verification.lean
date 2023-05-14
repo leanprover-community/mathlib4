@@ -7,6 +7,7 @@ Ported by: Scott Morrison
 
 import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Util.Qq
 
 /-!
 # Deriving a proof of false
@@ -35,14 +36,6 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     let _x : Q(Nat.AtLeastTwo $lit) :=
       (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
     q(OfNat.ofNat $lit)
-
-/-- Analogue of `inferTypeQ`, but that gets universe levels right for our application. -/
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
-def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
-  let α ← inferType e
-  let .sort (.succ u) ← instantiateMVars (← whnf (← inferType α))
-    | throwError "not a type{indentExpr α}"
-  pure ⟨u, α, e⟩
 
 end Qq
 
@@ -167,7 +160,7 @@ def addNegEqProofs : List Expr → MetaM (List Expr)
 def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
-  synthesizeUsing q($e = 0) tac
+  synthesizeUsing' q($e = 0) tac
 
 /-! #### The main method -/
 
@@ -205,6 +198,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     trace[linarith.detail] "... finished `addNegEqProofs`."
     let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
     trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
+    trace[linarith.detail] (← inputs.mapM inferType)
     let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
     trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
     trace[linarith.detail] "{comps}"
@@ -213,9 +207,9 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     let certificate : Std.HashMap Nat Nat ← try
       oracle comps max_var
     catch e =>
-      trace[linarith] m!"{e.toMessageData}"
+      trace[linarith] e.toMessageData
       throwError "linarith failed to find a contradiction"
-    trace[linarith] m!"linarith has found a contradiction: {certificate.toList}"
+    trace[linarith] "linarith has found a contradiction: {certificate.toList}"
     let enum_inputs := inputs.enum
     -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
     let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)

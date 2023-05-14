@@ -113,7 +113,6 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
     simp [set, length, @length_set m, Nat.max_succ_succ]
-
 #align list.func.length_set List.Func.length_set
 
 -- porting note : @[simp] has been removed since `#lint` says this is

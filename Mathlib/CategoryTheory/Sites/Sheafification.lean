@@ -403,7 +403,6 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
           exact hf)
   use e0, 𝟙 _
   ext IV
-  --dsimp only [Meq.refine_apply, Meq.pullback_apply, w]
   let IA : B.Arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f,
     ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
   let IB : S.Arrow := IA.fromMiddle
@@ -663,6 +662,14 @@ theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono 
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
+
+-- porting note: added to ease the port of CategoryTheory.Sites.LeftExact
+-- in mathlib, this was `by refl`, but here it would timeout
+@[simps! hom_app inv_app]
+noncomputable
+def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
+    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
+  NatIso.ofComponents (fun P => Iso.refl _) (by simp)
 
 variable {J D}
 

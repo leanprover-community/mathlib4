@@ -167,7 +167,6 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s (choose h) :=
     @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
-
 #align succ_chain_spec succChain_spec
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
@@ -221,8 +220,8 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (_ : C
     · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   case union s _ ih =>
-    refine' or_iff_not_imp_left.2 fun hn => unionₛ_subset fun a ha => _
-    exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_unionₛ_of_mem ha
+    refine' or_iff_not_imp_left.2 fun hn => sUnion_subset fun a ha => _
+    exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_sUnion_of_mem ha
 
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
@@ -235,13 +234,13 @@ private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : C
   case union s hs ih =>
     apply Or.imp_left h.antisymm'
     apply by_contradiction
-    simp only [unionₛ_subset_iff, not_or, not_forall, exists_prop, and_imp, forall_exists_index]
+    simp only [sUnion_subset_iff, not_or, not_forall, exists_prop, and_imp, forall_exists_index]
     intro c₃ hc₃ h₁ h₂
     obtain h | h := chainClosure_succ_total_aux hc₁ (hs c₃ hc₃) fun c₄ => ih _ hc₃
     · exact h₁ (subset_succChain.trans h)
     obtain h' | h' := ih c₃ hc₃ hc₁ h
     · exact h₁ h'.subset
-    · exact h₂ (h'.trans <| subset_unionₛ_of_mem hc₃)
+    · exact h₂ (h'.trans <| subset_sUnion_of_mem hc₃)
 
 theorem ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂) :
     c₁ ⊆ c₂ ∨ c₂ ⊆ c₁ :=
@@ -253,13 +252,13 @@ theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainC
     (hc : SuccChain r c₂ = c₂) : c₁ ⊆ c₂ := by
   induction hc₁
   case succ s₁ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h => h ▸ hc.subset) id
-  case union s _ ih => exact unionₛ_subset ih
+  case union s _ ih => exact sUnion_subset ih
 #align chain_closure.succ_fixpoint ChainClosure.succ_fixpoint
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
     SuccChain r c = c ↔ c = maxChain r :=
-  ⟨fun h => (subset_unionₛ_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
-    fun h => subset_succChain.antisymm' <| (subset_unionₛ_of_mem hc.succ).trans h.symm.subset⟩
+  ⟨fun h => (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
+    fun h => subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
 #align chain_closure.succ_fixpoint_iff ChainClosure.succ_fixpoint_iff
 
 theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by

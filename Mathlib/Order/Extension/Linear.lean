@@ -33,12 +33,12 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine' ⟨supₛ c, _, fun z hz => le_supₛ hz⟩
+    refine' ⟨sSup c, _, fun z hz => le_sSup hz⟩
     refine'
         { refl := _
           trans := _
           antisymm := _ } <;>
-      simp_rw [binary_relation_supₛ_iff]
+      simp_rw [binary_relation_sSup_iff]
     · intro x
       exact ⟨s, hs, refl x⟩
     · rintro x y z ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
