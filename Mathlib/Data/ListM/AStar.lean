@@ -21,6 +21,8 @@ namespace ListM
 
 namespace AStar
 
+section GraphData
+
 /-- Representation of a path in a graph for A^* search. We cache the priority. -/
 structure Path where
   prio : P
@@ -28,15 +30,51 @@ structure Path where
   edges : List E
 
 /--
+Data structure encoding a graph for A^* search.
+
+This records the source and target of each directed edge,
+the edges leaving each vertex (as a lazy list),
+the weight of each edge,
+and the heuristic distance to a goal for each vertex.
+-/
+structure GraphData where
+  s : E → V
+  t : E → V
+  nbhd : V → ListM m E
+  weight : E → P
+  heuristic : V → P
+
+variable {m P V E}
+
+/-- Add an edge to a path. -/
+def cons (Γ : GraphData m P V E) (e : E) (p : Path P V E) : Path P V E :=
+{ prio := Γ.weight e + p.prio,
+  to := Γ.t e,
+  edges := e :: p.edges }
+
+end GraphData
+
+/--
 Data associated to a vertex during A^* search.
 We record the best seen path so far, and track which edges are `explored` and `remaining`.
 -/
-structure VertexData where
+structure VertexData [Inhabited P] [Inhabited V] [Inhabited E] where
   bestPath : Path P V E
   heuristicPrio : P
   totalPrio : P
   explored : List E
   remaining : ListM m E
+
+variable [Inhabited P] [Inhabited V] [Inhabited E]
+
+/-- This inhabited instance doesn't really make sense,
+but is needed to write `partial` functions below. -/
+instance : Inhabited (VertexData m P V E) :=
+  ⟨{ bestPath := { prio := default, to := default, edges := [] },
+     heuristicPrio := default
+     totalPrio := default
+     explored := []
+     remaining := .nil }⟩
 
 /--
 Mutable state during A^* search.
@@ -50,31 +88,10 @@ structure State where
   queue : RBMap P (List V) compare
   data : HashMap V (VertexData m P V E)
 
-/--
-Data structure encoding a graph for A^* search.
-
-This records the source and target of each directed edge,
-the edges leaving each vertex (as a lazy list),
-the weight of each each,
-and the heuristic distance to a goal for each vertex.
--/
-structure GraphData where
-  s : E → V
-  t : E → V
-  nbhd : V → ListM m E
-  weight : E → P
-  heuristic : V → P
-
 /-- State monad for A^* search. -/
 abbrev M := StateT (State m P V E) m
 
 variable {m P V E}
-
-/-- Add an edge to a path. -/
-def cons (Γ : GraphData m P V E) (e : E) (p : Path P V E) : Path P V E :=
-{ prio := Γ.weight e + p.prio,
-  to := Γ.t e,
-  edges := e :: p.edges }
 
 /--
 Record a new path.
@@ -88,7 +105,7 @@ Record a new path.
   * And, if we are searching for optimal solutions,
     recursively record all paths obtained by adding a previously explored edge to this path.
 -/
-def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
+partial def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
     (M m P V E) PUnit := do
   let σ ← get
   let v := path.to
@@ -121,7 +138,7 @@ def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
         recordPath Γ optimal (cons Γ e path)
 
 /-- Return the vertex data for the first vertex in the priority queue. -/
-def readMin : (M m P V E) (VertexData m P V E) := do
+partial def readMin : M m P V E (VertexData m P V E) := do
   let σ ← get
   match σ.queue.min with
   | none => failure
@@ -135,7 +152,7 @@ def readMin : (M m P V E) (VertexData m P V E) := do
 
 /-- Obtain the next remaining edge leaving the highest priority vertex in the queue,
 updating the `explored` and `remaining` fields of `VertexData` at the same time. -/
-def nextEdge : (M m P V E) (VertexData m P V E × E) := do
+partial def nextEdge : M m P V E (VertexData m P V E × E) := do
   let σ ← get
   match σ.queue.min with
   | none => failure
@@ -167,6 +184,7 @@ def update (Γ : GraphData m P V E) (optimal : Bool) :
 end AStar
 
 variable {m P V E}
+variable [Inhabited P] [Inhabited V] [Inhabited E]
 
 open AStar
 
@@ -185,7 +203,7 @@ and you will need to test whether `optimal` is suitable for your requirements.)
 
 Returns a monadic lazy list consisting of triples (priority, vertex, path).
 -/
-def AStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
+def aStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
     ListM m (P × V × List E) :=
 let p := Γ.heuristic v
 let d : VertexData m P V E :=
@@ -195,10 +213,10 @@ let d : VertexData m P V E :=
     explored := [],
     remaining := Γ.nbhd v }
 let σ : State m P V E :=
-  { queue := single 0 [v],
+  { queue := RBMap.single 0 [v],
     data := HashMap.empty.insert v d }
 ListM.iterate (do update Γ optimal; readMin)
-  |>.run' σ |>.map fun d => ⟨d.totalPrio, d.bestPath.to, d.bestPath.edges⟩
+  |>.runState' σ |>.map fun d => ⟨d.totalPrio, d.bestPath.to, d.bestPath.edges⟩
 
 /--
 Perform A^* search on a graph,
@@ -206,10 +224,12 @@ starting at a vertex `src` and ending when reaching a vertex satisfying `goal`.
 
 Returns a list of edges, wrapped in the same monad the graph edges are generated in.
 -/
-def AStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
+def aStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
     m (List E) :=
-AStarSearchPaths Γ optimal src |>.filter (goal ·.2.1) |>.map (·.2.2) |>.head
+aStarSearchPaths Γ optimal src |>.filter (goal ·.2.1) |>.map (·.2.2) |>.head
 
+-- PROJECT rather than computing distances, compute lower bounds on distances,
+-- which are refined when a vertex reaches the head of the queue.
 -- PROJECT bidirectional A^* search?
 
 end ListM
