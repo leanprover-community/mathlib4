@@ -547,7 +547,8 @@ theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
     HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
   refine' ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, _⟩
   rintro ⟨h₁, h₂⟩
-  simpa only [re_add_im] using ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
+  simpa only [re_add_im] using
+    ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
 #align is_R_or_C.has_sum_iff IsROrC.hasSum_iff
 
 end tsum
@@ -580,7 +581,7 @@ theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (
   IsROrC.hasSum_conj' _
 #align complex.has_sum_conj' Complex.hasSum_conj'
 
-@[simp]
+-- Porting note: @[simp] unneeded due to `IsROrC.summable_conj`
 theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
   IsROrC.summable_conj _
 #align complex.summable_conj Complex.summable_conj
