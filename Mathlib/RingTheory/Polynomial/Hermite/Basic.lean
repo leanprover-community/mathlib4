@@ -15,24 +15,24 @@ import Mathlib.Data.Nat.Factorial.DoubleFactorial
 /-!
 # Hermite polynomials
 
-This file defines `polynomial.hermite n`, the nth probabilist's Hermite polynomial.
+This file defines `Polynomial.hermite n`, the nth probabilist's Hermite polynomial.
 
 ## Main definitions
 
-* `polynomial.hermite n`: the `n`th probabilist's Hermite polynomial,
-  defined recursively as a `polynomial ℤ`
+* `Polynomial.hermite n`: the `n`th probabilist's Hermite polynomial,
+  defined recursively as a `Polynomial ℤ`
 
 ## Results
 
-* `polynomial.hermite_succ`: the recursion `hermite (n+1) = (x - d/dx) (hermite n)`
-* `polynomial.coeff_hermite_explicit`: a closed formula for (nonvanishing) coefficients in terms
+* `Polynomial.hermite_succ`: the recursion `hermite (n+1) = (x - d/dx) (hermite n)`
+* `Polynomial.coeff_hermite_explicit`: a closed formula for (nonvanishing) coefficients in terms
   of binomial coefficients and double factorials.
-* `polynomial.coeff_hermite_of_odd_add`: for `n`,`k` where `n+k` is odd, `(hermite n).coeff k` is
+* `Polynomial.coeff_hermite_of_odd_add`: for `n`,`k` where `n+k` is odd, `(hermite n).coeff k` is
   zero.
-* `polynomial.coeff_hermite_of_even_add`: a closed formula for `(hermite n).coeff k` when `n+k` is
-  even, equivalent to `polynomial.coeff_hermite_explicit`.
-* `polynomial.monic_hermite`: for all `n`, `hermite n` is monic.
-* `polynomial.degree_hermite`: for all `n`, `hermite n` has degree `n`.
+* `Polynomial.coeff_hermite_of_even_add`: a closed formula for `(hermite n).coeff k` when `n+k` is
+  even, equivalent to `Polynomial.coeff_hermite_explicit`.
+* `Polynomial.monic_hermite`: for all `n`, `hermite n` is monic.
+* `Polynomial.degree_hermite`: for all `n`, `hermite n` has degree `n`.
 
 ## References
 
@@ -55,11 +55,13 @@ noncomputable def hermite : ℕ → Polynomial ℤ
 
 /-- The recursion `hermite (n+1) = (x - d/dx) (hermite n)` -/
 @[simp]
-theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - Polynomial.derivative (hermite n) := by
+theorem hermite_succ (n : ℕ) :
+    hermite (n + 1) = X * hermite n - Polynomial.derivative (hermite n) := by
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - Polynomial.derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) :
+    hermite n = ((fun p => X * p - Polynomial.derivative p)^[n]) 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -76,7 +78,7 @@ theorem hermite_one : hermite 1 = X := by
   simp only [map_one, mul_one, derivative_one, sub_zero]
 #align polynomial.hermite_one Polynomial.hermite_one
 
-/-! ### Lemmas about `polynomial.coeff` -/
+/-! ### Lemmas about `Polynomial.coeff` -/
 
 
 section Coeff
@@ -110,7 +112,7 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
--- Porting note: On line 114, the coercion from ℕ to WithBot ℕ was specified manually
+-- Porting note: On line 116, the coercion from WithBot ℕ to ℕ was specified manually
 -- because it was not automatic
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
@@ -144,7 +146,8 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
     · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
       · rwa [Nat.succ_add_eq_succ_add] at hnk
-      · rw [Nat.succ_add, Nat.add_succ, Nat.succ_eq_one_add, Nat.succ_eq_one_add, ← add_assoc, one_add_one_eq_two, add_comm] at hnk
+      · rw [Nat.succ_add, Nat.add_succ, Nat.succ_eq_one_add, Nat.succ_eq_one_add, ← add_assoc,
+        one_add_one_eq_two, add_comm] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
