@@ -313,6 +313,18 @@ def fin {m : Type → Type} [Monad m] (n : Nat) : ListM m (Fin n) :=
 def ofArray {m : Type → Type} [Monad m] {α : Type} (L : Array α) : ListM m α :=
   fin L.size |>.map L.get
 
+/-- Group the elements of a lazy list into chunks of a given size.
+If the lazy list if finite, the last chunk may be smaller (possibly even length 0). -/
+partial def chunk (L : ListM m α) (n : Nat) : ListM m (Array α) :=
+  go n #[] L
+where
+  go (r : Nat) (acc : Array α) (M : ListM m α) : ListM m (Array α) :=
+    match r with
+    | 0 => cons (pure (some acc, go n #[] M))
+    | r+1 => squash do match ← M.uncons with
+      | none => return cons (pure (some acc, .nil))
+      | some (a, M') => return go r (acc.push a) M'
+
 /-- Add one element to the end of a monadic lazy list. -/
 def concat : ListM m α → α → ListM m α
   | L, a => (ListM.ofList [L, ListM.ofList [a]]).join

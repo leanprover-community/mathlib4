@@ -34,18 +34,6 @@ namespace ListM
 
 variable [Monad m]
 
-/-- Group the elements of a lazy list into chunks of a given size.
-If the lazy list if finite, the last chunk may be smaller (possibly even length 0). -/
-partial def chunk (L : ListM m α) (n : Nat) : ListM m (Array α) :=
-  go n #[] L
-where
-  go (r : Nat) (acc : Array α) (M : ListM m α) : ListM m (Array α) :=
-    match r with
-    | 0 => cons (pure (some acc, go n #[] M))
-    | r+1 => squash do match ← M.uncons with
-      | none => return cons (pure (some acc, .nil))
-      | some (a, M') => return go r (acc.push a) M'
-
 /--
 Map a monadic function over a lazy list,
 using a high priority task to read elements from the lazy list,
