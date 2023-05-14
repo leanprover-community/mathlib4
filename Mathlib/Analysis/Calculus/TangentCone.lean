@@ -48,10 +48,10 @@ variable {E : Type _} [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
 def tangentConeAt (s : Set E) (x : E) : Set E :=
-  { y : E |
-    ∃ (c : ℕ → 𝕜)(d : ℕ → E),
-      (∀ᶠ n in atTop, x + d n ∈ s) ∧
-        Tendsto (fun n => ‖c n‖) atTop atTop ∧ Tendsto (fun n => c n • d n) atTop (𝓝 y) }
+  { y : E | ∃ (c : ℕ → 𝕜) (d : ℕ → E),
+    (∀ᶠ n in atTop, x + d n ∈ s) ∧
+    Tendsto (fun n => ‖c n‖) atTop atTop ∧
+    Tendsto (fun n => c n • d n) atTop (𝓝 y) }
 #align tangent_cone_at tangentConeAt
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
@@ -125,8 +125,8 @@ theorem tangentConeAt.lim_zero {α : Type _} (l : Filter α) {c : α → 𝕜} {
   exact D
 #align tangent_cone_at.lim_zero tangentConeAt.lim_zero
 
-theorem tangent_cone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x :=
-  by
+theorem tangent_cone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
+    tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   refine' ⟨c, d, _, ctop, clim⟩
   suffices : Tendsto (fun n => x + d n) atTop (𝓝[t] x)
@@ -199,8 +199,7 @@ theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _
       ⟨z, hz, hzs⟩
     exact ⟨z - x j, by simpa using hzs, by simpa using hz⟩
   choose! d' hd's hcd' using this
-  refine'
-    ⟨c, fun n => Function.update (d' n) i (d n), hd.mono fun n hn j _ => _, hc,
+  refine' ⟨c, fun n => Function.update (d' n) i (d n), hd.mono fun n hn j _ => _, hc,
       tendsto_pi_nhds.2 fun j => _⟩
   · rcases em (j = i) with (rfl | hj) <;> simp [*]
   · rcases em (j = i) with (rfl | hj)
@@ -271,10 +270,12 @@ theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
   simp
 #align unique_diff_within_at_univ uniqueDiffWithinAt_univ
 
-theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) := fun _ _ => uniqueDiffWithinAt_univ
+theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
+  fun _ _ => uniqueDiffWithinAt_univ
 #align unique_diff_on_univ uniqueDiffOn_univ
 
-theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) := fun _ hx => hx.elim
+theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
+  fun _ hx => hx.elim
 #align unique_diff_on_empty uniqueDiffOn_empty
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
@@ -326,8 +327,8 @@ theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDi
   fun x hx => (hs x hx.1).inter (IsOpen.mem_nhds ht hx.2)
 #align unique_diff_on.inter UniqueDiffOn.inter
 
-theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s := fun _ hx =>
-  IsOpen.uniqueDiffWithinAt hs hx
+theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
+  fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
 #align is_open.unique_diff_on IsOpen.uniqueDiffOn
 
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
@@ -337,9 +338,8 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   rw [uniqueDiffWithinAt_iff] at hs ht⊢
   rw [closure_prod_eq]
   refine' ⟨_, hs.2, ht.2⟩
-  have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) :=
-    Submodule.span_mono
-      (union_subset (subset_tangent_cone_prod_left ht.2) (subset_tangent_cone_prod_right hs.2))
+  have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := Submodule.span_mono
+    (union_subset (subset_tangent_cone_prod_left ht.2) (subset_tangent_cone_prod_right hs.2))
   rw [LinearMap.span_inl_union_inr, SetLike.le_def] at this
   exact (hs.1.prod ht.1).mono this
 #align unique_diff_within_at.prod UniqueDiffWithinAt.prod
@@ -348,13 +348,12 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
-    simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h⊢
-    refine' ⟨(dense_pi univ fun i _ => (h i).1).mono _, fun i _ => (h i).2⟩
-    norm_cast
-    simp only [← Submodule.supᵢ_map_single, supᵢ_le_iff, LinearMap.map_span, Submodule.span_le, ←
-      mapsTo']
-    exact fun i =>
-      (mapsTo_tangent_cone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
+  simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h⊢
+  refine' ⟨(dense_pi univ fun i _ => (h i).1).mono _, fun i _ => (h i).2⟩
+  norm_cast
+  simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
+    ← mapsTo']
+  exact fun i => (mapsTo_tangent_cone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 #align unique_diff_within_at.univ_pi UniqueDiffWithinAt.univ_pi
 
 theorem UniqueDiffWithinAt.pi (ι : Type _) [Finite ι] (E : ι → Type _)
@@ -362,22 +361,23 @@ theorem UniqueDiffWithinAt.pi (ι : Type _) [Finite ι] (E : ι → Type _)
     (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
   classical
-    rw [← Set.univ_pi_piecewise_univ]
-    refine' UniqueDiffWithinAt.univ_pi ι E _ _ fun i => _
-    by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
+  rw [← Set.univ_pi_piecewise_univ]
+  refine' UniqueDiffWithinAt.univ_pi ι E _ _ fun i => _
+  by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
 #align unique_diff_within_at.pi UniqueDiffWithinAt.pi
 
 /-- The product of two sets of unique differentiability is a set of unique differentiability. -/
 theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDiffOn 𝕜 t) :
-    UniqueDiffOn 𝕜 (s ×ˢ t) := fun ⟨x, y⟩ h => UniqueDiffWithinAt.prod (hs x h.1) (ht y h.2)
+    UniqueDiffOn 𝕜 (s ×ˢ t) :=
+  fun ⟨x, y⟩ h => UniqueDiffWithinAt.prod (hs x h.1) (ht y h.2)
 #align unique_diff_on.prod UniqueDiffOn.prod
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
 theorem UniqueDiffOn.pi (ι : Type _) [Finite ι] (E : ι → Type _) [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (I : Set ι)
-    (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) := fun x hx =>
-  UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
+    (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
+  fun x hx => UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
 #align unique_diff_on.pi UniqueDiffOn.pi
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
@@ -408,7 +408,8 @@ theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (inter
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability. -/
 theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
-    UniqueDiffOn ℝ s := fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
+    UniqueDiffOn ℝ s :=
+  fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 #align unique_diff_on_convex uniqueDiffOn_convex
 
 theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
