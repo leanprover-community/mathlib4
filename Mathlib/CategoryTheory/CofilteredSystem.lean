@@ -21,14 +21,14 @@ This file deals with properties of cofiltered (and inverse) systems.
 
 Given a functor `F : J ⥤ Type v`:
 
-* For `j : J`, `F.eventual_range j` is the intersections of all ranges of morphisms `F.map f`
+* For `j : J`, `F.eventualRange j` is the intersections of all ranges of morphisms `F.map f`
   where `f` has codomain `j`.
-* `F.is_mittag_leffler` states that the functor `F` satisfies the Mittag-Leffler
+* `F.IsMittagLeffler` states that the functor `F` satisfies the Mittag-Leffler
   condition: the ranges of morphisms `F.map f` (with `f` having codomain `j`) stabilize.
-* If `J` is cofiltered `F.to_eventual_ranges` is the subfunctor of `F` obtained by restriction
-  to `F.eventual_range`.
-* `F.to_preimages` restricts a functor to preimages of a given set in some `F.obj i`. If `J` is
-  cofiltered, then it is Mittag-Leffler if `F` is, see `is_mittag_leffler.to_preimages`.
+* If `J` is cofiltered `F.toEventualRanges` is the subfunctor of `F` obtained by restriction
+  to `F.eventualRange`.
+* `F.toPreimages` restricts a functor to preimages of a given set in some `F.obj i`. If `J` is
+  cofiltered, then it is Mittag-Leffler if `F` is, see `IsMittagLeffler.toPreimages`.
 
 ## Main statements
 
@@ -36,10 +36,10 @@ Given a functor `F : J ⥤ Type v`:
   `F.obj j` is nonempty and finite, `F.sections` is nonempty.
 * `nonempty_sections_of_finite_inverse_system` is a specialization of the above to `J` being a
    directed set (and `F : Jᵒᵖ ⥤ Type v`).
-* `is_mittag_leffler_of_exists_finite_range` shows that if `J` is cofiltered and for all `j`,
+* `isMittagLeffler_of_exists_finite_range` shows that if `J` is cofiltered and for all `j`,
   there exists some `i` and `f : i ⟶ j` such that the range of `F.map f` is finite, then
   `F` is Mittag-Leffler.
-* `to_eventual_ranges_surjective` shows that if `F` is Mittag-Leffler, then `F.to_eventual_ranges`
+* `surjective_toEventualRanges` shows that if `F` is Mittag-Leffler, then `F.toEventualRanges`
   has all morphisms `F.map f` surjective.
 
 ## Todo
@@ -65,8 +65,8 @@ section FiniteKonig
 
 /-- This bootstraps `nonempty_sections_of_finite_inverse_system`. In this version,
 the `F` functor is between categories of the same universe, and it is an easy
-corollary to `Top.nonempty_limit_cone_of_compact_t2_inverse_system`. -/
-theorem NonemptySectionsOfFiniteCofilteredSystem.init {J : Type u} [SmallCategory J]
+corollary to `TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system`. -/
+theorem nonempty_sections_of_finite_inverse_system.init {J : Type u} [SmallCategory J]
     [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
@@ -75,7 +75,7 @@ theorem NonemptySectionsOfFiniteCofilteredSystem.init {J : Type u} [SmallCategor
   haveI : ∀ j, Nonempty (F'.obj j) := hne
   obtain ⟨⟨u, hu⟩⟩ := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u} F'
   exact ⟨u, hu⟩
-#align nonempty_sections_of_finite_cofiltered_system.init NonemptySectionsOfFiniteCofilteredSystem.init
+#align nonempty_sections_of_finite_cofiltered_system.init nonempty_sections_of_finite_inverse_system.init
 
 /-- The cofiltered limit of nonempty finite types is nonempty.
 
@@ -93,7 +93,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   cases isEmpty_or_nonempty J
   · fconstructor <;> apply isEmptyElim
   haveI : IsCofiltered J := ⟨⟩
-  obtain ⟨u, hu⟩ := NonemptySectionsOfFiniteCofilteredSystem.init F'
+  obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system.init F'
   -- Step 3: interpret the results
   use fun j => (u ⟨j⟩).down
   intro j j' f
@@ -116,8 +116,7 @@ theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [Is
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := by
   cases isEmpty_or_nonempty J
-  · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩
-    -- TODO: this should be a global instance
+  · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩ -- TODO: this should be a global instance
     exact ⟨isEmptyElim, by apply isEmptyElim⟩
   · exact nonempty_sections_of_finite_cofiltered_system _
 #align nonempty_sections_of_finite_inverse_system nonempty_sections_of_finite_inverse_system
@@ -131,8 +130,7 @@ namespace Functor
 variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
-of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`.
--/
+of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
 def eventualRange (j : J) :=
   ⋂ (i) (f : i ⟶ j), range (F.map f)
 #align category_theory.functor.eventual_range CategoryTheory.Functor.eventualRange
@@ -145,9 +143,8 @@ theorem mem_eventualRange_iff {x : F.obj j} :
 /-- The functor `F : J ⥤ Type v` satisfies the Mittag-Leffler condition if for all `j : J`,
 there exists some `i : J` and `f : i ⟶ j` such that for all `k : J` and `g : k ⟶ j`, the range
 of `F.map f` is contained in that of `F.map g`;
-in other words (see `is_mittag_leffler_iff_eventual_range`), the eventual range at `j` is attained
-by some `f : i ⟶ j`.
--/
+in other words (see `isMittagLeffler_iff_eventualRange`), the eventual range at `j` is attained
+by some `f : i ⟶ j`. -/
 def IsMittagLeffler : Prop :=
   ∀ j : J, ∃ (i : _)(f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ j), range (F.map f) ⊆ range (F.map g)
 #align category_theory.functor.is_mittag_leffler CategoryTheory.Functor.IsMittagLeffler
@@ -275,8 +272,7 @@ theorem isMittagLeffler_of_exists_finite_range
   rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 #align category_theory.functor.is_mittag_leffler_of_exists_finite_range CategoryTheory.Functor.isMittagLeffler_of_exists_finite_range
 
-/-- The subfunctor of `F` obtained by restricting to the eventual range at each index.
--/
+/-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps]
 def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
@@ -295,8 +291,7 @@ instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.to
 #align category_theory.functor.to_eventual_ranges_finite CategoryTheory.Functor.toEventualRanges_finite
 
 /-- The sections of the functor `F : J ⥤ Type v` are in bijection with the sections of
-`F.eventual_ranges`.
--/
+`F.toEventualRanges`. -/
 def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections where
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
@@ -309,17 +304,15 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
     rfl
 #align category_theory.functor.to_eventual_ranges_sections_equiv CategoryTheory.Functor.toEventualRangesSectionsEquiv
 
-/--
-If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a surjective
-functor.
--/
+/-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
+surjective functor. -/
 theorem surjective_toEventualRanges (h : F.IsMittagLeffler) ⦃i j⦄ (f : i ⟶ j) :
     (F.toEventualRanges.map f).Surjective := fun ⟨x, hx⟩ => by
   obtain ⟨y, hy, rfl⟩ := h.subset_image_eventualRange F f hx
   exact ⟨⟨y, hy⟩, rfl⟩
 #align category_theory.functor.surjective_to_eventual_ranges CategoryTheory.Functor.surjective_toEventualRanges
 
-/-- If `F` is nonempty at each index and Mittag-Leffler, then so is `F.to_eventual_ranges`. -/
+/-- If `F` is nonempty at each index and Mittag-Leffler, then so is `F.toEventualRanges`. -/
 theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (F.obj j)] (j : J) :
     Nonempty (F.toEventualRanges.obj j) := by
   let ⟨i, f, h⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
