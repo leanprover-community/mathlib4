@@ -931,6 +931,7 @@ theorem coe_iSup {ι : Sort _} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
     (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=
   WithTop.coe_iSup _ hf
 #align ennreal.coe_supr ENNReal.coe_iSup
+
 @[norm_cast]
 theorem coe_iInf {ι : Sort _} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
   WithTop.coe_iInf f
