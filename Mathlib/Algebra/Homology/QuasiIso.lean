@@ -74,21 +74,21 @@ variable {W : Type _} [Category W] [Preadditive W] [HasCokernels W] [HasImages W
   [HasZeroObject W] [HasImageMaps W]
 
 /-- An homotopy equivalence is a quasi-isomorphism. -/
-theorem to_quasiIso {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso e.hom :=
+theorem toQuasiIso {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso e.hom :=
   ⟨fun i => by
     refine' ⟨⟨(homologyFunctor W c i).map e.inv, _⟩⟩
     simp only [← Functor.map_comp, ← (homologyFunctor W c i).map_id]
     constructor <;> apply homology_map_eq_of_homotopy
     exacts[e.homotopyHomInvId, e.homotopyInvHomId]⟩
-#align homotopy_equiv.to_quasi_iso HomotopyEquiv.to_quasiIso
+#align homotopy_equiv.to_quasi_iso HomotopyEquiv.toQuasiIso
 
-theorem to_quasiIso_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :
-    (@asIso _ _ _ _ _ (e.to_quasiIso.1 i)).inv = (homologyFunctor W c i).map e.inv := by
+theorem toQuasiIso_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :
+    (@asIso _ _ _ _ _ (e.toQuasiIso.1 i)).inv = (homologyFunctor W c i).map e.inv := by
   symm
-  have := e.to_quasiIso.IsIso i -- Porting note: Added this to get `asIso_hom` to work.
+  haveI := e.toQuasiIso.1 i -- Porting note: Added this to get `asIso_hom` to work.
   simp only [← Iso.hom_comp_eq_id, asIso_hom, ← Functor.map_comp, ← (homologyFunctor W c i).map_id,
     homology_map_eq_of_homotopy e.homotopyHomInvId _]
-#align homotopy_equiv.to_quasi_iso_inv HomotopyEquiv.to_quasiIso_inv
+#align homotopy_equiv.to_quasi_iso_inv HomotopyEquiv.toQuasiIso_inv
 
 end
 
@@ -105,7 +105,7 @@ section
 variable {X : ChainComplex W ℕ} {Y : W} (f : X ⟶ (ChainComplex.single₀ _).obj Y) [hf : QuasiIso f]
 
 /-- If a chain map `f : X ⟶ Y[0]` is a quasi-isomorphism, then the cokernel of the differential
-`d : X₁ → X₀` is isomorphic to `Y.` -/
+`d : X₁ → X₀` is isomorphic to `Y`. -/
 noncomputable def toSingle₀CokernelAtZeroIso : cokernel (X.d 1 0) ≅ Y :=
   X.homologyZeroIso.symm.trans
     ((@asIso _ _ _ _ _ (hf.1 0)).trans ((ChainComplex.homologyFunctor0Single₀ W).app Y))
@@ -113,7 +113,7 @@ noncomputable def toSingle₀CokernelAtZeroIso : cokernel (X.d 1 0) ≅ Y :=
 
 theorem toSingle₀CokernelAtZeroIso_hom_eq [hf : QuasiIso f] :
     f.toSingle₀CokernelAtZeroIso.hom =
-      cokernel.desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl] <;> exact comp_zero) := by
+      cokernel.desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl]; exact comp_zero) := by
   ext
   dsimp only [toSingle₀CokernelAtZeroIso, ChainComplex.homologyZeroIso, homologyOfZeroRight,
     homology.mapIso, ChainComplex.homologyFunctor0Single₀, cokernel.map]
@@ -125,8 +125,8 @@ theorem toSingle₀CokernelAtZeroIso_hom_eq [hf : QuasiIso f] :
 theorem to_single₀_epi_at_zero [hf : QuasiIso f] : Epi (f.f 0) := by
   constructor
   intro Z g h Hgh
-  rw [← cokernel.π_desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl]; exact comp_zero), ←
-    toSingle₀CokernelAtZeroIso_hom_eq] at Hgh
+  rw [← cokernel.π_desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl]; exact comp_zero),
+    ← toSingle₀CokernelAtZeroIso_hom_eq] at Hgh
   rw [(@cancel_epi _ _ _ _ _ _ (epi_comp _ _) _ _).1 Hgh]
 #align homological_complex.hom.to_single₀_epi_at_zero HomologicalComplex.Hom.to_single₀_epi_at_zero
 
@@ -135,11 +135,9 @@ theorem to_single₀_exact_d_f_at_zero [hf : QuasiIso f] : Exact (X.d 1 0) (f.f 
   have h : X.d 1 0 ≫ f.f 0 = 0 := by
     simp only [← f.2 1 0 rfl, ChainComplex.single₀_obj_X_d, comp_zero]
   refine' ⟨h, Nonempty.intro (homologyIsoKernelDesc _ _ _ ≪≫ _)⟩
-  · suffices IsIso (cokernel.desc _ _ h) by
-      haveI := this
-      apply kernel.ofMono
-    rw [← toSingle₀CokernelAtZeroIso_hom_eq]
-    infer_instance
+  suffices IsIso (cokernel.desc _ _ h) by apply kernel.ofMono
+  rw [← toSingle₀CokernelAtZeroIso_hom_eq]
+  infer_instance
 #align homological_complex.hom.to_single₀_exact_d_f_at_zero HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero
 
 theorem to_single₀_exact_at_succ [hf : QuasiIso f] (n : ℕ) :
@@ -157,7 +155,7 @@ section
 variable {X : CochainComplex W ℕ} {Y : W} (f : (CochainComplex.single₀ _).obj Y ⟶ X)
 
 /-- If a cochain map `f : Y[0] ⟶ X` is a quasi-isomorphism, then the kernel of the differential
-`d : X₀ → X₁` is isomorphic to `Y.` -/
+`d : X₀ → X₁` is isomorphic to `Y`. -/
 noncomputable def fromSingle₀KernelAtZeroIso [hf : QuasiIso f] : kernel (X.d 0 1) ≅ Y :=
   X.homologyZeroIso.symm.trans
     ((@asIso _ _ _ _ _ (hf.1 0)).symm.trans ((CochainComplex.homologyFunctor0Single₀ W).app Y))
@@ -173,8 +171,7 @@ theorem fromSingle₀KernelAtZeroIso_inv_eq [hf : QuasiIso f] :
     kernel.lift_ι]
   dsimp
   simp only [Category.assoc, homology.π_map, cokernelZeroIsoTarget_hom,
-    cokernelIsoOfEq_hom_comp_desc, kernelSubobject_arrow, homology.π_map_assoc,
-    IsIso.inv_comp_eq]
+    cokernelIsoOfEq_hom_comp_desc, kernelSubobject_arrow, homology.π_map_assoc, IsIso.inv_comp_eq]
   simp [homology.π, kernelSubobjectMap_comp, Iso.refl_hom (X.X 0), Category.comp_id]
 #align homological_complex.hom.from_single₀_kernel_at_zero_iso_inv_eq HomologicalComplex.Hom.fromSingle₀KernelAtZeroIso_inv_eq
 
@@ -191,11 +188,9 @@ theorem from_single₀_exact_f_d_at_zero [hf : QuasiIso f] : Exact (f.f 0) (X.d 
   have h : f.f 0 ≫ X.d 0 1 = 0 := by
     simp only [HomologicalComplex.Hom.comm, CochainComplex.single₀_obj_X_d, zero_comp]
   refine' ⟨h, Nonempty.intro (homologyIsoCokernelLift _ _ _ ≪≫ _)⟩
-  · suffices IsIso (kernel.lift (X.d 0 1) (f.f 0) h) by
-      haveI := this
-      apply cokernel.ofEpi
-    rw [← fromSingle₀KernelAtZeroIso_inv_eq f]
-    infer_instance
+  suffices IsIso (kernel.lift (X.d 0 1) (f.f 0) h) by apply cokernel.ofEpi
+  rw [← fromSingle₀KernelAtZeroIso_inv_eq f]
+  infer_instance
 #align homological_complex.hom.from_single₀_exact_f_d_at_zero HomologicalComplex.Hom.from_single₀_exact_f_d_at_zero
 
 theorem from_single₀_exact_at_succ [hf : QuasiIso f] (n : ℕ) :
