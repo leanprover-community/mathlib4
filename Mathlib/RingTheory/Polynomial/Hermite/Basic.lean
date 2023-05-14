@@ -47,7 +47,7 @@ open Polynomial
 
 namespace Polynomial
 
-/-- the nth probabilist's Hermite polynomial -/
+/-- the probabilists' Hermite polynomials. -/
 noncomputable def hermite : ℕ → Polynomial ℤ
   | 0 => 1
   | n + 1 => X * hermite n - Polynomial.derivative (hermite n)
