@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.ListM.Basic
+import Mathlib.Data.ListM.Parallel
 import Mathlib.Control.Basic
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
@@ -66,3 +67,21 @@ do guard (n % 2 = 0)
     guard (n = 5)
     pure n
   guard $ n = 5
+
+partial def collatz (n : Nat) : Nat :=
+  go 0 n
+where go (s n : Nat) :=
+  if n ≤ 1 then
+    s
+  else
+    go (s+1) (if n % 2 = 0 then n / 2 else 3 * n + 1)
+
+-- set_option profiler true in -- around 8.3s
+-- #eval do
+--   let R : ListM MetaM Nat := ListM.range |>.parallelMap collatz (chunkSize := 1000)
+--   _ ← R.takeAsArray 1000000
+
+-- set_option profiler true in -- around 77s
+-- #eval do
+--   let R : ListM MetaM Nat := ListM.range |>.map collatz
+--   _ ← R.takeAsArray 1000000

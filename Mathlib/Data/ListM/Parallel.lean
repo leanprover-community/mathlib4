@@ -34,16 +34,17 @@ namespace ListM
 
 variable [Monad m]
 
-partial def chunk (L : ListM m α) (n : Nat) : ListM m (List α) :=
-  go n [] L
+/-- Group the elements of a lazy list into chunks of a given size.
+If the lazy list if finite, the last chunk may be smaller (possibly even length 0). -/
+partial def chunk (L : ListM m α) (n : Nat) : ListM m (Array α) :=
+  go n #[] L
 where
-  go (r : Nat) (acc : List α) (M : ListM m α) : ListM m (List α) :=
+  go (r : Nat) (acc : Array α) (M : ListM m α) : ListM m (Array α) :=
     match r with
-    | 0 => cons (pure (some acc.reverse, go n [] M))
+    | 0 => cons (pure (some acc, go n #[] M))
     | r+1 => squash do match ← M.uncons with
-      | none => return cons (pure (some acc.reverse, .nil))
-      | some (a, M') => return go r (a :: acc) M'
-
+      | none => return cons (pure (some acc, .nil))
+      | some (a, M') => return go r (acc.push a) M'
 
 /--
 Map a monadic function over a lazy list,
@@ -66,10 +67,10 @@ partial def parallelMapM [MonadTask m] [MonadLiftT BaseIO m]
     core L f
   else
     let L' := L.chunk chunkSize
-    let f' : List α → m (List β) := fun as => as.mapM f
+    let f' : Array α → m (Array β) := fun as => as.mapM f
     ((core L' f').map fun e => match e with
     | .error e => pure (.error e)
-    | .ok l => ListM.ofList (l.map .ok)).join
+    | .ok l => ListM.ofArray (l.map .ok)).join
 where
   core {α' β'} (L' : ListM m α') (f' : α' → m β') : ListM m (Except IO.Error β') :=
     squash do
@@ -137,6 +138,9 @@ Works at most `numThreads` steps ahead of the consumer.
 When `outOfOrder = false` (the default behaviour),
 the elements are produced in the same order as the original list.
 When `outOfOrder = true`, elements will be produced in the order their computations complete.
+
+When `chunkSize > 1`, elements are read and processed in chunks,
+reducing parallelism.
 -/
 def parallelMap [Monad m] [MonadTask m] [MonadLiftT BaseIO m] (L : ListM m α)
     (f : α → β) (numThreads : Nat := 32) (chunkSize : Nat := 1) (outOfOrder : Bool := false) :

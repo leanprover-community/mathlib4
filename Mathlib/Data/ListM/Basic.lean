@@ -110,10 +110,17 @@ private local instance [Monad n] : Inhabited (δ → (α → δ → n (ForInStep
 instance [Monad m] [MonadLiftT m n] : ForIn n (ListM m α) α where
   forIn := ListM.forIn
 
-/-- Construct a `ListM` recursively. -/
+/-- Construct a `ListM` recursively. Failures from `f` will result in `uncons` failing.  -/
 partial def fix [Monad m] (f : α → m α) (x : α) : ListM m α :=
   cons' x <| squash <| fix f <$> f x
 #align tactic.mllist.fix ListM.fix
+
+/-- Construct a `ListM` recursively. If `f` returns `none` the list will terminate. -/
+partial def fix? [Monad m] (f : α → m (Option α)) (x : α) : ListM m α :=
+  cons' x <| squash <| do
+    match ← f x with
+    | none => return .nil
+    | some x' => return fix? f x'
 
 variable [Monad m]
 
@@ -197,12 +204,27 @@ def folds (f : β → α → β) (init : β) (L : ListM m α) : ListM m β :=
   L.foldsM (fun b a => pure (f b a)) init
 
 /-- Take the first `n` elements, as a list inside the monad. -/
-partial def takeAsList (xs : ListM m α) : Nat → m (List α)
-  | 0 => pure []
-  | n+1 => do match ← xs.uncons with
-    | none => pure []
-    | some (x, xs) => return x :: (← xs.takeAsList n)
+partial def takeAsList (xs : ListM m α) (n : Nat) : m (List α) :=
+  go n [] xs
+where
+  go (r : Nat) (acc : List α) (xs : ListM m α) : m (List α) :=
+    match r with
+    | 0 => pure acc.reverse
+    | r+1 => do match ← xs.uncons with
+      | none => pure acc.reverse
+      | some (x, xs) => go r (x :: acc) xs
 #align tactic.mllist.take ListM.takeAsList
+
+/-- Take the first `n` elements, as an array inside the monad. -/
+partial def takeAsArray (xs : ListM m α) (n : Nat) : m (Array α) :=
+  go n #[] xs
+where
+  go (r : Nat) (acc : Array α) (xs : ListM m α) : m (Array α) :=
+    match r with
+    | 0 => pure acc
+    | r+1 => do match ← xs.uncons with
+      | none => pure acc
+      | some (x, xs) => go r (acc.push x) xs
 
 /-- Take the first `n` elements. -/
 partial def take (xs : ListM m α) : Nat → ListM m α
@@ -280,6 +302,16 @@ def enum : ListM m α → ListM m (Nat × α) :=
 def range {m : Type → Type} [Monad m] : ListM m Nat :=
   ListM.fix (fun n => pure (n + 1)) 0
 #align tactic.mllist.range ListM.range
+
+/-- Iterate through the elements of `Fin n`. -/
+def fin {m : Type → Type} [Monad m] (n : Nat) : ListM m (Fin n) :=
+  match n with
+  | 0 => .nil
+  | n+1 => fix? (fun i => if i < n then return some (i+1) else return none) 0
+
+/-- Convert an array to a monadic lazy list. -/
+def ofArray {m : Type → Type} [Monad m] {α : Type} (L : Array α) : ListM m α :=
+  fin L.size |>.map L.get
 
 /-- Add one element to the end of a monadic lazy list. -/
 def concat : ListM m α → α → ListM m α
