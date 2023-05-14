@@ -85,7 +85,7 @@ structure ModelType where
 #align first_order.language.Theory.Model.is_model FirstOrder.Language.Theory.ModelType.is_model
 #align first_order.language.Theory.Model.nonempty' FirstOrder.Language.Theory.ModelType.nonempty'
 
-attribute [instance] ModelType.struc ModelType.is_model ModelType.nonempty'
+attribute [instance 2000] ModelType.struc ModelType.is_model ModelType.nonempty'
 
 namespace ModelType
 
