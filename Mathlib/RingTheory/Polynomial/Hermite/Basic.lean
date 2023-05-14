@@ -15,11 +15,11 @@ import Mathlib.Data.Nat.Factorial.DoubleFactorial
 /-!
 # Hermite polynomials
 
-This file defines `Polynomial.hermite n`, the nth probabilist's Hermite polynomial.
+This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polynomial.
 
 ## Main definitions
 
-* `Polynomial.hermite n`: the `n`th probabilist's Hermite polynomial,
+* `Polynomial.hermite n`: the `n`th probabilists' Hermite polynomial,
   defined recursively as a `Polynomial ℤ`
 
 ## Results
