@@ -205,14 +205,14 @@ theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _
         (eventually_nhds_norm_smul_sub_lt (c n) (x j) (pow_pos one_half_pos n)) with
       ⟨z, hz, hzs⟩
     exact ⟨z - x j, by simpa using hzs, by simpa using hz⟩
-  choose! d' hd's hcd'
+  choose! d' hd's hcd' using this
   refine'
-    ⟨c, fun n => Function.update (d' n) i (d n), hd.mono fun n hn j hj' => _, hc,
+    ⟨c, fun n => Function.update (d' n) i (d n), hd.mono fun n hn j _ => _, hc,
       tendsto_pi_nhds.2 fun j => _⟩
   · rcases em (j = i) with (rfl | hj) <;> simp [*]
   · rcases em (j = i) with (rfl | hj)
     · simp [hy]
-    · suffices tendsto (fun n => c n • d' n j) at_top (𝓝 0) by simpa [hj]
+    · suffices Tendsto (fun n => c n • d' n j) atTop (𝓝 0) by simpa [hj]
       refine' squeeze_zero_norm (fun n => (hcd' n j hj).le) _
       exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
 #align maps_to_tangent_cone_pi mapsTo_tangent_cone_pi
