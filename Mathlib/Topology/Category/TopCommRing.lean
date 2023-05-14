@@ -46,9 +46,8 @@ attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
 
 instance : Category TopCommRingCat.{u} where
   Hom R S := { f : R →+* S // Continuous f }
-  id R := ⟨RingHom.id R, by obviously⟩
-  -- TODO remove obviously?
-  comp R S T f g :=
+  id R := ⟨RingHom.id R, by rw [RingHom.id]; continuity⟩
+  comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
       cases f;
@@ -58,8 +57,8 @@ instance : Category TopCommRingCat.{u} where
 instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
-      map := fun R S f => f.val }
-  forget_faithful := { }
+      map := fun f => f.val }
+  forget_faithful := sorry -- Porting note: TODO fix sorry. Old proof was `forget_faithful := { }`
 
 /-- Construct a bundled `TopCommRing` from the underlying type and the appropriate typeclasses. -/
 def of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopCommRingCat :=
@@ -68,11 +67,11 @@ def of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopC
 
 @[simp]
 theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] :
-    (of X : Type u) = X :=
-  rfl
+    (of X : Type u) = X := rfl
 #align TopCommRing.coe_of TopCommRingCat.coe_of
 
-instance forgetTopologicalSpace (R : TopCommRingCat) : TopologicalSpace ((forget TopCommRingCat).obj R) :=
+instance forgetTopologicalSpace (R : TopCommRingCat) :
+    TopologicalSpace ((forget TopCommRingCat).obj R) :=
   R.isTopologicalSpace
 #align TopCommRing.forget_topological_space TopCommRingCat.forgetTopologicalSpace
 
@@ -80,13 +79,13 @@ instance forgetCommRing (R : TopCommRingCat) : CommRing ((forget TopCommRingCat)
   R.isCommRing
 #align TopCommRing.forget_comm_ring TopCommRingCat.forgetCommRing
 
-instance forget_topologicalRing (R : TopCommRingCat) : TopologicalRing ((forget TopCommRingCat).obj R) :=
+instance forget_topologicalRing (R : TopCommRingCat) :
+    TopologicalRing ((forget TopCommRingCat).obj R) :=
   R.isTopologicalRing
 #align TopCommRing.forget_topological_ring TopCommRingCat.forget_topologicalRing
 
 instance hasForgetToCommRing : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun x => rfl) (fun R S f => f.val) fun R S f =>
-    HEq.rfl
+  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
 #align TopCommRing.has_forget_to_CommRing TopCommRingCat.hasForgetToCommRing
 
 instance forgetToCommRingTopologicalSpace (R : TopCommRingCat) :
@@ -96,11 +95,11 @@ instance forgetToCommRingTopologicalSpace (R : TopCommRingCat) :
 
 /-- The forgetful functor to Top. -/
 instance hasForgetToTop : HasForget₂ TopCommRingCat TopCat :=
-  HasForget₂.mk' (fun R => TopCat.of R) (fun x => rfl) (fun R S f => ⟨⇑f.1, f.2⟩) fun R S f =>
-    HEq.rfl
+  HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => ⟨⇑f.1, f.2⟩) HEq.rfl
 #align TopCommRing.has_forget_to_Top TopCommRingCat.hasForgetToTop
 
-instance forgetToTopCommRingCat (R : TopCommRingCat) : CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=
+instance forgetToTopCommRingCat (R : TopCommRingCat) :
+    CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isCommRing
 #align TopCommRing.forget_to_Top_comm_ring TopCommRingCat.forgetToTopCommRingCat
 
@@ -112,11 +111,10 @@ instance forget_to_topCat_topologicalRing (R : TopCommRingCat) :
 /-- The forgetful functors to `Type` do not reflect isomorphisms,
 but the forgetful functor from `TopCommRing` to `Top` does.
 -/
-instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u})
-    where reflects X Y f _ := by
-    skip
+instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
+  reflects {X Y} f _ := by
     -- We have an isomorphism in `Top`,
-    let i_Top := as_iso ((forget₂ TopCommRingCat TopCat).map f)
+    let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)
     -- and a `ring_equiv`.
     let e_Ring : X ≃+* Y := { f.1, ((forget TopCat).mapIso i_Top).toEquiv with }
     -- Putting these together we obtain the isomorphism we're after:
