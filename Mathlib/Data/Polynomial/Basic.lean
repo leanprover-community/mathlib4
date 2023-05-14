@@ -325,7 +325,7 @@ instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 #align polynomial.smul_comm_class Polynomial.smulCommClass
 
-instance isScalarTower [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
+instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
   [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩

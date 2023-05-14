@@ -215,6 +215,9 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
 
 open Classical
 
+-- porting note: the original proof uses `(by infer_instance : MonoidWithZero (R ⧸ I))`;
+-- this doesn't work, `(inferInstance : MonoidWithZero (R ⧸ I))` does, but the statement with
+-- `..Quotient.commRing I` feels nicer.
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 
@@ -223,11 +226,10 @@ See note [reducible non-instances]. -/
 protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
   { Quotient.commRing I,
-    Quotient.isDomain
-      I with
+    Quotient.isDomain I with
     inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
-    mul_inv_cancel := fun a (ha : a ≠ 0) ↦
-      show a * dite _ _ _ = _ by rw [dif_neg ha] ; exact Classical.choose_spec (exists_inv ha)
+    mul_inv_cancel := fun a (ha : a ≠ 0) =>
+      show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl }
 #align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
 
