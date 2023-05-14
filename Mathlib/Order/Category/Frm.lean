@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.Lat
-import Mathbin.Order.Hom.CompleteLattice
-import Mathbin.Topology.Category.CompHaus.Basic
-import Mathbin.Topology.Sets.Opens
+import Mathlib.Order.Category.Lat
+import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # The category of frames
@@ -76,8 +76,7 @@ instance hasForgetToLat : HasForget₂ Frm LatCat
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
@@ -92,8 +91,7 @@ end Frm
 
 /-- The forgetful functor from `Topᵒᵖ` to `Frm`. -/
 @[simps]
-def topOpToFrame : TopCatᵒᵖ ⥤ Frm
-    where
+def topOpToFrame : TopCatᵒᵖ ⥤ Frm where
   obj X := Frm.of (Opens (unop X : TopCat))
   map X Y f := Opens.comap <| Quiver.Hom.unop f
   map_id' X := Opens.comap_id
