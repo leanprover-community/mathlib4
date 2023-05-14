@@ -110,7 +110,7 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
--- Porting note: On line 113, the coercion from ℕ to WithBot ℕ was specified manually
+-- Porting note: On line 114, the coercion from ℕ to WithBot ℕ was specified manually
 -- because it was not automatic
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
