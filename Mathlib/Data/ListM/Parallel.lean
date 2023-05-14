@@ -32,6 +32,19 @@ instance : MonadTask MetaM where
 
 namespace ListM
 
+variable [Monad m]
+
+partial def chunk (L : ListM m α) (n : Nat) : ListM m (List α) :=
+  go n [] L
+where
+  go (r : Nat) (acc : List α) (M : ListM m α) : ListM m (List α) :=
+    match r with
+    | 0 => cons (pure (some acc.reverse, go n [] M))
+    | r+1 => squash do match ← M.uncons with
+      | none => return cons (pure (some acc.reverse, .nil))
+      | some (a, M') => return go r (a :: acc) M'
+
+
 /--
 Map a monadic function over a lazy list,
 using a high priority task to read elements from the lazy list,
@@ -42,26 +55,38 @@ Works at most `numThreads` steps ahead of the consumer.
 When `outOfOrder = false` (the default behaviour),
 the elements are produced in the same order as the original list.
 When `outOfOrder = true`, elements will be produced in the order their computations complete.
+
+When `chunkSize > 1`, elements are read and processed in chunks,
+reducing parallelism.
 -/
-partial def parallelMapM [Monad m] [MonadTask m] [MonadLiftT BaseIO m]
-    (L : ListM m α) (f : α → m β) (numThreads : Nat := 32) (outOfOrder : Bool := false) :
-    ListM m (Except IO.Error β) :=
-  squash do
-    return run (← unconsAsTask L) []
+partial def parallelMapM [MonadTask m] [MonadLiftT BaseIO m]
+    (L : ListM m α) (f : α → m β) (numThreads : Nat := 32) (chunkSize : Nat := 1)
+    (outOfOrder : Bool := false) : ListM m (Except IO.Error β) :=
+  if chunkSize ≤ 1 then
+    core L f
+  else
+    let L' := L.chunk chunkSize
+    let f' : List α → m (List β) := fun as => as.mapM f
+    ((core L' f').map fun e => match e with
+    | .error e => pure (.error e)
+    | .ok l => ListM.ofList (l.map .ok)).join
 where
-  unconsAsTask (L : ListM m α) : m (Task (Option (α × ListM m α))) := do
-    let t ← MonadTask.asTask (prio := .max) L.uncons
+  core {α' β'} (L' : ListM m α') (f' : α' → m β') : ListM m (Except IO.Error β') :=
+    squash do
+      return run f' (← unconsAsTask L') []
+  unconsAsTask {α'} (L' : ListM m α') : m (Task (Option (α' × ListM m α'))) := do
+    let t ← MonadTask.asTask (prio := .max) L'.uncons
     return t.map fun e => match e with
     | .ok r => r
     | .error _ => none
   /- `uncons?` is none iff we've reached the end of the list. -/
-  run (uncons? : Option (Task (Option (α × ListM m α)))) (pool : List (Task (Except _ β))) :
-      ListM m (Except _ β) :=
+  run {α' β'} (f' : α' → m β') (uncons? : Option (Task (Option (α' × ListM m α'))))
+      (pool : List (Task (Except _ β'))) : ListM m (Except _ β') :=
     if uncons?.isNone || pool.length >= numThreads then
       -- We don't need to grow the pool.
       match pool with
       | [] => ListM.nil
-      | hd::tl => cons do pure (← IO.wait hd, run uncons? tl)
+      | hd::tl => cons do pure (← IO.wait hd, run f' uncons? tl)
     else
       -- We'd like to grow the pool if possible.
       let uncons := uncons?.get!
@@ -69,37 +94,37 @@ where
         if ← IO.hasFinished uncons then
           match uncons.get with
           -- We've exhausted the list, so just try again with `uncons? = none`.
-          | none => return run none pool
+          | none => return run f' none pool
           -- Create a new task for unconsing the tail,
           -- and a new task for the next function application.
           | some (a, L') => do
-              return run (← unconsAsTask L') (pool ++ [← MonadTask.asTask (f a)])
+              return run f' (← unconsAsTask L') (pool ++ [← MonadTask.asTask (f' a)])
         else
           -- The unconsing task is still running.
           match pool with
           | [] => do
               -- If the pool is empty, we have no choice but to wait for unconsing.
               let u ← IO.wait uncons
-              return run (some (Task.pure u)) pool
+              return run f' (some (Task.pure u)) pool
           | hd::tl => do
               if outOfOrder then
                 -- We use `IO.waitAny` to wait for either unconsing, or any task in the list.
-               let w : List (Task (Option (α × ListM m α) ⊕ (Nat × Except _ β))) :=
+               let w : List (Task (Option (α' × ListM m α') ⊕ (Nat × Except _ β'))) :=
                  (uncons.map Sum.inl) :: pool.enum.map (fun (i, t) => t.map fun e => Sum.inr (i, e))
                 match ← IO.waitAny w with
-                | Sum.inl a => return run (some (Task.pure a)) pool
+                | Sum.inl a => return run f' (some (Task.pure a)) pool
                 | Sum.inr (i, e) =>
-                    let r := run uncons? (pool.eraseIdx i)
+                    let r := run f' uncons? (pool.eraseIdx i)
                     return cons do pure (e, r)
               else
                 -- Otherwise, we use `IO.waitAny` to wait for either unconsing,
                 -- or the first task in the list.
-                let w : List (Task (Option (α × ListM m α) ⊕ (Except _ β))) :=
+                let w : List (Task (Option (α' × ListM m α') ⊕ (Except _ β'))) :=
                   [uncons.map Sum.inl, hd.map Sum.inr]
                 match ← IO.waitAny w with
-                | Sum.inl a => return run (some (Task.pure a)) pool
+                | Sum.inl a => return run f' (some (Task.pure a)) pool
                 | Sum.inr e =>
-                    let r := run uncons? tl
+                    let r := run f' uncons? tl
                     return cons do pure (e, r)
 
 /--
@@ -114,7 +139,9 @@ the elements are produced in the same order as the original list.
 When `outOfOrder = true`, elements will be produced in the order their computations complete.
 -/
 def parallelMap [Monad m] [MonadTask m] [MonadLiftT BaseIO m] (L : ListM m α)
-    (f : α → β) (numThreads : Nat := 32) (outOfOrder : Bool := false) : ListM m β :=
-  L.parallelMapM (fun a => pure (f a)) numThreads outOfOrder |>.filterMap fun r => match r with
-  | .ok r => some r
-  | .error (_ : IO.Error) => none
+    (f : α → β) (numThreads : Nat := 32) (chunkSize : Nat := 1) (outOfOrder : Bool := false) :
+    ListM m β :=
+  L.parallelMapM (fun a => pure (f a)) numThreads chunkSize outOfOrder |>.filterMap
+    fun r => match r with
+    | .ok r => some r
+    | .error (_ : IO.Error) => none
