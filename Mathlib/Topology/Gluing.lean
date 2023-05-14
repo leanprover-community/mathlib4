@@ -105,8 +105,8 @@ theorem π_surjective : Function.Surjective 𝖣.π :=
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
-  rw [← (homeo_of_iso (multicoequalizer.iso_coequalizer 𝖣.diagram).symm).isOpen_preimage]
-  rw [coequalizer_is_open_iff, colimit_isOpen_iff.{u}]
+  rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
+  rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
   constructor
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; exact h j
