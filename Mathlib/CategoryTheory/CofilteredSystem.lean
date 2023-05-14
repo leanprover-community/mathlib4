@@ -66,7 +66,7 @@ section FiniteKonig
 /-- This bootstraps `nonempty_sections_of_finite_inverse_system`. In this version,
 the `F` functor is between categories of the same universe, and it is an easy
 corollary to `TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system`. -/
-theorem nonempty_sections_of_finite_inverse_system.init {J : Type u} [SmallCategory J]
+theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCategory J]
     [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
@@ -75,7 +75,7 @@ theorem nonempty_sections_of_finite_inverse_system.init {J : Type u} [SmallCateg
   haveI : ∀ j, Nonempty (F'.obj j) := hne
   obtain ⟨⟨u, hu⟩⟩ := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u} F'
   exact ⟨u, hu⟩
-#align nonempty_sections_of_finite_cofiltered_system.init nonempty_sections_of_finite_inverse_system.init
+#align nonempty_sections_of_finite_cofiltered_system.init nonempty_sections_of_finite_cofiltered_system.init
 
 /-- The cofiltered limit of nonempty finite types is nonempty.
 
@@ -93,7 +93,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   cases isEmpty_or_nonempty J
   · fconstructor <;> apply isEmptyElim
   haveI : IsCofiltered J := ⟨⟩
-  obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system.init F'
+  obtain ⟨u, hu⟩ := nonempty_sections_of_finite_cofiltered_system.init F'
   -- Step 3: interpret the results
   use fun j => (u ⟨j⟩).down
   intro j j' f
