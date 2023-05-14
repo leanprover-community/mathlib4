@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.defs
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit b599f4e4e5cf1fbcb4194503671d3d9e569c1fce
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -67,6 +67,8 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 
 -- Porting note: this instance is not used,
 -- and causes timeouts when interacting with etaExperiment.
+-- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
+-- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
@@ -77,6 +79,7 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 
 -- Porting note: this instance is not used,
 -- and causes timeouts when interacting with etaExperiment.
+-- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
