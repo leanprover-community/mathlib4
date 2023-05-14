@@ -8,9 +8,9 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.ModelTheory.Quotients
-import Mathbin.Order.Filter.Germ
-import Mathbin.Order.Filter.Ultrafilter
+import Mathlib.ModelTheory.Quotients
+import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Ultrafilter
 
 /-! # Ultraproducts and Łoś's Theorem
 
@@ -53,8 +53,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
     toStructure :=
       { funMap := fun n f x a => funMap f fun i => x i a
         rel_map := fun n r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
-    fun_equiv := fun n f x y xy =>
-      by
+    fun_equiv := fun n f x y xy => by
       refine' mem_of_superset (Inter_mem.2 xy) fun a ha => _
       simp only [Set.mem_interᵢ, Set.mem_setOf_eq] at ha
       simp only [Set.mem_setOf_eq, ha]
@@ -85,8 +84,7 @@ theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
 #align first_order.language.ultraproduct.fun_map_cast FirstOrder.Language.Ultraproduct.funMap_cast
 
 theorem term_realize_cast {β : Type _} (x : β → ∀ a, M a) (t : L.term β) :
-    (t.realize fun i => (x i : (u : Filter α).product M)) = fun a => t.realize fun i => x i a :=
-  by
+    (t.realize fun i => (x i : (u : Filter α).product M)) = fun a => t.realize fun i => x i a := by
   convert@term.realize_quotient_mk L _ ((u : Filter α).productSetoid M)
       (ultraproduct.setoid_prestructure M u) _ t x
   ext a
@@ -101,8 +99,7 @@ variable [∀ a : α, Nonempty (M a)]
 theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormula β n)
     (x : β → ∀ a, M a) (v : Fin n → ∀ a, M a) :
     (φ.realize (fun i : β => (x i : (u : Filter α).product M)) fun i => v i) ↔
-      ∀ᶠ a : α in u, φ.realize (fun i : β => x i a) fun i => v i a :=
-  by
+      ∀ᶠ a : α in u, φ.realize (fun i : β => x i a) fun i => v i a := by
   letI := (u : Filter α).productSetoid M
   induction' φ with _ _ _ _ _ _ _ _ m _ _ ih ih' k φ ih
   · simp only [bounded_formula.realize, eventually_const]
@@ -125,8 +122,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
     have h' :
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
-          Fin.snoc (fun i : Fin k => v i a) (m a) :=
-      by
+          Fin.snoc (fun i : Fin k => v i a) (m a) := by
       refine' fun m a => funext (Fin.reverseInduction _ fun i hi => _)
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
@@ -147,8 +143,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
 
 theorem realize_formula_cast {β : Type _} (φ : L.Formula β) (x : β → ∀ a, M a) :
     (φ.realize fun i => (x i : (u : Filter α).product M)) ↔
-      ∀ᶠ a : α in u, φ.realize fun i => x i a :=
-  by
+      ∀ᶠ a : α in u, φ.realize fun i => x i a := by
   simp_rw [formula.realize, ← bounded_formula_realize_cast φ x, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 #align first_order.language.ultraproduct.realize_formula_cast FirstOrder.Language.Ultraproduct.realize_formula_cast
