@@ -913,6 +913,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
     (∑' i, a • f i) = a • ∑' i, f i := by
   simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
 #align ennreal.tsum_const_smul ENNReal.tsum_const_smul
+
 @[simp]
 theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _h : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
