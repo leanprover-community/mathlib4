@@ -5,7 +5,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
 import Mathlib.CategoryTheory.Localization.Composition
 
-open CategoryTheory Category Limits Pretriangulated
+open CategoryTheory Category Limits Pretriangulated ZeroObject
 
 universe v u
 
@@ -79,6 +79,14 @@ instance : Qh.IsLocalization (HomotopyCategory.qis C) := by
   dsimp only [Qh, DerivedCategory]
   infer_instance
 
+instance : (HomotopyCategory.qis C).HasLeftCalculusOfFractions := by
+  dsimp only [HomotopyCategory.qis]
+  infer_instance
+
+instance : (HomotopyCategory.qis C).HasRightCalculusOfFractions := by
+  dsimp only [HomotopyCategory.qis]
+  infer_instance
+
 noncomputable instance : (Qh : _ ⥤ DerivedCategory C).HasCommShift ℤ := by
   dsimp only [Qh, DerivedCategory]
   infer_instance
@@ -90,6 +98,11 @@ instance : (Qh : _ ⥤ DerivedCategory C).IsTriangulated := by
 instance : EssSurj (Functor.mapArrow (Qh : _ ⥤ DerivedCategory C)) := by
   dsimp only [Qh, DerivedCategory, HomotopyCategory.qis]
   infer_instance
+
+lemma Qh_obj_surjective (X : DerivedCategory C) :
+    ∃ (K : HomotopyCategory _ _), X = Qh.obj K := by
+  obtain ⟨⟨K⟩⟩ := X
+  exact ⟨K, rfl⟩
 
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
@@ -222,6 +235,41 @@ instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := 
     obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
     apply MorphismProperty.map_mem_map
     simpa only [HomotopyCategory.mem_qis_iff'] using hf
+
+lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
+    IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
+  constructor
+  . intro hf n
+    infer_instance
+  . intro hf
+    obtain ⟨K, rfl⟩ := Qh_obj_surjective K
+    obtain ⟨L, rfl⟩ := Qh_obj_surjective L
+    obtain ⟨Z, g, s, hs, rfl⟩ :=
+      MorphismProperty.HasLeftCalculusOfFractions.fac Qh
+        (HomotopyCategory.qis C) f
+    have : IsIso (Qh.map g) := by
+      rw [isIso_Qh_map_iff, HomotopyCategory.mem_qis_iff]
+      intro n
+      rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) g]
+      simp only [Functor.map_comp] at hf
+      exact @IsIso.of_isIso_comp_right _ _ _ _ _ _ _ _ (hf n)
+    infer_instance
+
+lemma isZero_iff (K : DerivedCategory C) :
+    IsZero K ↔ ∀ (n : ℤ), IsZero ((homologyFunctor C n).obj K) := by
+  constructor
+  . intro hK n
+    rw [IsZero.iff_id_eq_zero, ← ((homologyFunctor C n).map_id K),
+      (IsZero.iff_id_eq_zero K).1 hK, Functor.map_zero]
+  . intro hK
+    have : IsIso (0 : K ⟶ 0) := by
+      rw [isIso_iff]
+      intro n
+      refine' ⟨0, _, _⟩
+      . apply (hK n).eq_of_src
+      . rw [zero_comp, ← (homologyFunctor C n).map_id, id_zero,
+          Functor.map_zero]
+    exact IsZero.of_iso (isZero_zero _) (asIso (0 : K ⟶ 0))
 
 section
 

@@ -372,6 +372,11 @@ lemma isZero_homology_truncLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) :
 noncomputable abbrev truncLEι (X : DerivedCategory C) (n : ℤ) :=
   (natTransTruncLEι C n).app X
 
+@[reassoc (attr := simp)]
+lemma truncLEι_naturality {X Y : DerivedCategory C} (f : X ⟶ Y) (n : ℤ) :
+    (functorTruncLE C n).map f ≫ Y.truncLEι n = X.truncLEι n ≫ f :=
+  (natTransTruncLEι C n).naturality f
+
 lemma truncLEι_app (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).truncLEι n =
       (functorTruncLEFactors C n).hom.app K ≫ Q.map (K.truncLEι n) := by
@@ -389,5 +394,21 @@ lemma isIso_homologyMap_truncLEι (X : DerivedCategory C) (n i : ℤ) (hi : i �
     erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncLEι n)]
     exact K.isIso_homologyMap_truncLEι n i hi
   apply IsIso.comp_isIso
+
+lemma isIso_truncLEι_iff (X : DerivedCategory C) (n : ℤ) :
+    IsIso (X.truncLEι n) ↔ ∀ (i : ℤ) (_ : n < i), IsZero ((homologyFunctor C i).obj X) := by
+  constructor
+  . intro hX i hi
+    exact IsZero.of_iso (isZero_homology_truncLE _ _ _ hi)
+      ((homologyFunctor C i).mapIso (asIso (truncLEι X n)).symm)
+  . intro hX
+    rw [isIso_iff]
+    intro i
+    by_cases hi : i ≤ n
+    . exact X.isIso_homologyMap_truncLEι _ _ hi
+    . simp only [not_le] at hi
+      refine' ⟨0, _, _⟩
+      . apply (X.isZero_homology_truncLE n i hi).eq_of_src
+      . apply (hX i hi).eq_of_src
 
 end DerivedCategory

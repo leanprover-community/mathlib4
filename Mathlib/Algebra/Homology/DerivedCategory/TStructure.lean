@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.CategoryTheory.Triangulated.TStructure
 
-open CategoryTheory Category Pretriangulated Triangulated Limits
+open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
 namespace DerivedCategory
 
@@ -9,9 +9,9 @@ variable {C : Type _} [Category C] [Abelian C]
 
 namespace TStructure
 
-/-def t : TStructure (DerivedCategory C) where
-  setLE n := fun K => ∀ (i : ℤ) (hi : n < i), IsZero ((homologyFunctor C i).obj K)
-  setGE n := fun K => ∀ (i : ℤ) (hi : i < n), IsZero ((homologyFunctor C i).obj K)
+def t : TStructure (DerivedCategory C) where
+  setLE n := fun K => ∀ (i : ℤ) (_ : n < i), IsZero ((homologyFunctor C i).obj K)
+  setGE n := fun K => ∀ (i : ℤ) (_ : i < n), IsZero ((homologyFunctor C i).obj K)
   setLE_respectsIso n := ⟨fun X Y e hX i hi =>
     IsZero.of_iso (hX i hi) ((homologyFunctor C i).mapIso e.symm)⟩
   setGE_respectsIso n := ⟨fun X Y e hX i hi =>
@@ -21,7 +21,17 @@ namespace TStructure
   shift_mem_setLE n a n' hn' X hX i hi :=
     IsZero.of_iso (hX (a + i) (by linarith)) (((homologyFunctor C 0).shiftIso a i _ rfl).app X)
   zero' X Y f hX hY := by
-    sorry
+    have hY' : Y.truncLEι 0 = 0 := by
+      apply IsZero.eq_of_src
+      rw [isZero_iff]
+      intro i
+      by_cases hi : 0 < i
+      . exact isZero_homology_truncLE _ _ _ hi
+      . simp only [not_lt] at hi
+        have := Y.isIso_homologyMap_truncLEι _ _ hi
+        exact IsZero.of_iso (hY _ (by linarith)) (asIso ((homologyFunctor C i).map (Y.truncLEι 0)))
+    have := (X.isIso_truncLEι_iff 0).2 hX
+    rw [← cancel_epi (X.truncLEι 0), comp_zero, ← truncLEι_naturality, hY', comp_zero]
   setLE_zero_subset X hX i hi := hX i (by linarith)
   setGE_one_subset X hX i hi := hX i (by linarith)
   exists_triangle_zero_one X := by
@@ -45,7 +55,7 @@ namespace TStructure
             zero_comp, HomologySequence.δ_comp _ mem]
         . apply IsZero.eq_of_tgt
           apply isZero_homology_truncLE
-          linarith-/
+          linarith
 
 end TStructure
 
