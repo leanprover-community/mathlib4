@@ -141,8 +141,7 @@ instance : TopologicalAddGroup (AddCircle p) :=
 instance : Inhabited (AddCircle p) :=
   inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
 
--- instance : Coe (AddCircle p) 𝕜 :=
-  -- inferInstanceAs (Coe (𝕜 ⧸ zmultiples p) 𝕜)
+instance : Coe 𝕜 (AddCircle p) := ⟨QuotientAddGroup.mk⟩
 
 end instances
 
@@ -183,7 +182,7 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
   · replace hx : 0 < n
     · contrapose! hx
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.to_nat, by rw [← coe_nat_zsmul, Int.toNat_of_nonneg hx.le]⟩
+    exact ⟨n.toNat, by rw [← coe_nat_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 #align add_circle.coe_eq_zero_of_pos_iff AddCircle.coe_eq_zero_of_pos_iff
 
@@ -237,26 +236,26 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
     (x : AddCircle p) = y ↔ x = y := by
   refine' ⟨fun h => _, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
-  apply_fun equiv_Ico p a  at h
-  rw [← (equiv_Ico p a).right_inv ⟨x, hx⟩, ← (equiv_Ico p a).right_inv ⟨y, hy⟩]
+  apply_fun equivIco p a  at h
+  rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
   exact h
 #align add_circle.coe_eq_coe_iff_of_mem_Ico AddCircle.coe_eq_coe_iff_of_mem_Ico
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) : liftIco p a f ↑x = f x :=
   by
-  have : (equiv_Ico p a) x = ⟨x, hx⟩ := by
+  have : (equivIco p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
-  rw [lift_Ico, comp_apply, this]
+  rw [liftIco, comp_apply, this]
   rfl
 #align add_circle.lift_Ico_coe_apply AddCircle.liftIco_coe_apply
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : liftIoc p a f ↑x = f x :=
   by
-  have : (equiv_Ioc p a) x = ⟨x, hx⟩ := by
+  have : (equivIoc p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
-  rw [lift_Ioc, comp_apply, this]
+  rw [liftIoc, comp_apply, this]
   rfl
 #align add_circle.lift_Ioc_coe_apply AddCircle.liftIoc_coe_apply
 
