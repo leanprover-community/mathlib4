@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.Lat
+import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Sets.Opens
@@ -16,7 +16,7 @@ import Mathlib.Topology.Sets.Opens
 /-!
 # The category of frames
 
-This file defines `Frm`, the category of frames.
+This file defines `FrmCat`, the category of frames.
 
 ## References
 
@@ -29,54 +29,54 @@ universe u
 open CategoryTheory Opposite Order TopologicalSpace
 
 /-- The category of frames. -/
-def Frm :=
+def FrmCat :=
   Bundled Frame
-#align Frm Frm
+#align Frm FrmCat
 
-namespace Frm
+namespace FrmCat
 
-instance : CoeSort Frm (Type _) :=
+instance : CoeSort FrmCat (Type _) :=
   Bundled.hasCoeToSort
 
-instance (X : Frm) : Frame X :=
+instance (X : FrmCat) : Frame X :=
   X.str
 
-/-- Construct a bundled `Frm` from a `frame`. -/
-def of (α : Type _) [Frame α] : Frm :=
+/-- Construct a bundled `FrmCat` from a `Frame`. -/
+def of (α : Type _) [Frame α] : FrmCat :=
   Bundled.of α
-#align Frm.of Frm.of
+#align Frm.of FrmCat.of
 
 @[simp]
 theorem coe_of (α : Type _) [Frame α] : ↥(of α) = α :=
   rfl
-#align Frm.coe_of Frm.coe_of
+#align Frm.coe_of FrmCat.coe_of
 
-instance : Inhabited Frm :=
+instance : Inhabited FrmCat :=
   ⟨of PUnit⟩
 
-/-- An abbreviation of `frame_hom` that assumes `frame` instead of the weaker `complete_lattice`.
+/-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `completeLattice`.
 Necessary for the category theory machinery. -/
 abbrev Hom (α β : Type _) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
-#align Frm.hom Frm.Hom
+#align Frm.hom FrmCat.Hom
 
 instance bundledHom : BundledHom Hom :=
   ⟨fun α β [Frame α] [Frame β] => (coeFn : FrameHom α β → α → β), fun α [Frame α] => FrameHom.id α,
     fun α β γ [Frame α] [Frame β] [Frame γ] => FrameHom.comp, fun α β [Frame α] [Frame β] =>
     FunLike.coe_injective⟩
-#align Frm.bundled_hom Frm.bundledHom
+#align Frm.bundled_hom FrmCat.bundledHom
 
-deriving instance LargeCategory, ConcreteCategory for Frm
+deriving instance LargeCategory, ConcreteCategory for FrmCat
 
-instance hasForgetToLat : HasForget₂ Frm LatCat
+instance hasForgetToLat : HasForget₂ FrmCat LatCat
     where forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun X Y => FrameHom.toLatticeHom }
-#align Frm.has_forget_to_Lat Frm.hasForgetToLat
+#align Frm.has_forget_to_Lat FrmCat.hasForgetToLat
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where
+def Iso.mk {α β : FrmCat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
@@ -85,20 +85,19 @@ def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id' := by
     ext
     exact e.apply_symm_apply _
-#align Frm.iso.mk Frm.Iso.mk
+#align Frm.iso.mk FrmCat.Iso.mk
 
-end Frm
+end FrmCat
 
-/-- The forgetful functor from `Topᵒᵖ` to `Frm`. -/
+/-- The forgetful functor from `TopCatᵒᵖ` to `FrmCat`. -/
 @[simps]
-def topOpToFrame : TopCatᵒᵖ ⥤ Frm where
-  obj X := Frm.of (Opens (unop X : TopCat))
+def topCatOpToFrameCat : TopCatᵒᵖ ⥤ FrmCat where
+  obj X := FrmCat.of (Opens (unop X : TopCat))
   map X Y f := Opens.comap <| Quiver.Hom.unop f
   map_id' X := Opens.comap_id
-#align Top_op_to_Frame topOpToFrame
+#align Top_op_to_Frame topCatOpToFrameCat
 
--- Note, `CompHaus` is too strong. We only need `t0_space`.
+-- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topOpToFrame.{u}) :=
   ⟨fun X Y f g h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
 #align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful
-
