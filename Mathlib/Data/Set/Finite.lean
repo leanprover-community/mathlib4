@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit c941bb9426d62e266612b6d99e6c9fc93e7a1d07
+! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1204,7 +1204,6 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
     _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
-
 #align set.card_image_of_inj_on Set.card_image_of_inj_on
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
@@ -1367,11 +1366,6 @@ theorem infinite_of_injective_forall_mem [Infinite α] {s : Set β} {f : α → 
   exact (infinite_range_of_injective hi).mono hf
 #align set.infinite_of_injective_forall_mem Set.infinite_of_injective_forall_mem
 
-theorem Infinite.exists_nat_lt {s : Set ℕ} (hs : s.Infinite) (n : ℕ) : ∃ m ∈ s, n < m :=
-  let ⟨m, hm⟩ := (hs.diff <| Set.finite_le_nat n).nonempty
-  ⟨m, by simpa using hm⟩
-#align set.infinite.exists_nat_lt Set.Infinite.exists_nat_lt
-
 theorem Infinite.exists_not_mem_finset {s : Set α} (hs : s.Infinite) (f : Finset α) :
     ∃ a ∈ s, a ∉ f :=
   let ⟨a, has, haf⟩ := (hs.diff (toFinite f)).nonempty
@@ -1392,6 +1386,23 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
 
 /-! ### Order properties -/
 
+section Preorder
+
+variable [Preorder α] [Nonempty α] {s : Set α}
+
+theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
+  inhabit α
+  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun n a => (h a).choose
+  have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
+  exact infinite_of_injective_forall_mem
+    (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
+#align set.infinite_of_forall_exists_gt Set.infinite_of_forall_exists_gt
+
+theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
+  @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
+#align set.infinite_of_forall_exists_lt Set.infinite_of_forall_exists_lt
+
+end Preorder
 
 theorem finite_isTop (α : Type _) [PartialOrder α] : { x : α | IsTop x }.Finite :=
   (subsingleton_isTop α).finite

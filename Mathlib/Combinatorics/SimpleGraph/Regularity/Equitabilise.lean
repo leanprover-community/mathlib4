@@ -63,10 +63,8 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
   -- Some easy facts about it
-  obtain ⟨hn₀, hn₁, hn₂, hn₃⟩ :
-    0 < n ∧ n ≤ m + 1 ∧ n ≤ a * m + b * (m + 1) ∧
-      ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n :=
-    by
+  obtain ⟨hn₀, hn₁, hn₂, hn₃⟩ : 0 < n ∧ n ≤ m + 1 ∧ n ≤ a * m + b * (m + 1) ∧
+      ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n := by
     rw [hn, ← hs]
     split_ifs with h <;> rw [tsub_mul, one_mul]
     · refine' ⟨m_pos, le_succ _, le_add_right (le_mul_of_pos_left ‹0 < a›), _⟩
@@ -91,7 +89,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
     · exact fun x hx => (card_le_of_subset <| sdiff_subset _ _).trans (lt_succ_iff.1 <| h _ hx)
-    simp_rw [extend_parts, filter_insert, htn, hn, m.succ_ne_self.symm.ite_eq_right_iff]
+    simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]

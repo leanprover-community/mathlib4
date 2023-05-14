@@ -1376,9 +1376,7 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
 @[to_additive "An additive submonoid is either the trivial additive submonoid or nontrivial."]
 theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
-  have := Classical.em (∀ (x : M), x ∈ S → x = 1)
-  simp_rw [not_forall, not_imp, bex_def] at this
-  simp [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, this]
+  simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← not_imp, Classical.em]
 #align submonoid.bot_or_nontrivial Submonoid.bot_or_nontrivial
 #align add_submonoid.bot_or_nontrivial AddSubmonoid.bot_or_nontrivial
 

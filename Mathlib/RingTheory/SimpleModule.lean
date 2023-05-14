@@ -133,8 +133,8 @@ namespace LinearMap
 
 -- Porting note: cannot coerce to function or synth OfNat
 set_option synthInstance.etaExperiment true in
-theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) : Function.Injective f ∨ f = 0 :=
-  by
+theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) :
+    Function.Injective f ∨ f = 0 := by
   rw [← ker_eq_bot, ← ker_eq_top]
   apply eq_bot_or_eq_top
 #align linear_map.injective_or_eq_zero LinearMap.injective_or_eq_zero

@@ -43,7 +43,6 @@ structure IsUnital (m : X → X → X) (e : X) extends IsLeftId _ m e, IsRightId
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
 theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=
   IsUnital.mk ⟨MulOneClass.one_mul⟩ ⟨MulOneClass.mul_one⟩
-
 #align eckmann_hilton.mul_one_class.is_unital EckmannHilton.MulOneClass.isUnital
 #align eckmann_hilton.add_zero_class.is_unital EckmannHilton.AddZeroClass.IsUnital
 

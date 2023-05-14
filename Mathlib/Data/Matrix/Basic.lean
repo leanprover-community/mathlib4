@@ -382,7 +382,7 @@ theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n 
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  Pi.IsSMulRegular.pi fun _ => Pi.IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
 #align is_smul_regular.matrix IsSMulRegular.matrix
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :

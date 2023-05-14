@@ -496,8 +496,8 @@ def distortion (I : Box ι) : ℝ≥0 :=
 #align box_integral.box.distortion BoxIntegral.Box.distortion
 
 theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
-    (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) : distortion I = distortion J :=
-  by
+    (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) :
+    distortion I = distortion J := by
   simp only [distortion, nndist_pi_def, Real.nndist_eq', h, map_div₀]
   congr 1 with i
   have : 0 < r := by

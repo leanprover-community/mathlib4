@@ -113,8 +113,7 @@ theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : T
 
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α := by
-  have : ∀ x y : α, HasLimit (pair x y) :=
-    by
+  have : ∀ x y : α, HasLimit (pair x y) := by
     letI := hasFiniteLimits_of_hasFiniteLimits_of_size.{u} α
     infer_instance
   apply hasBinaryProducts_of_hasLimit_pair
@@ -134,8 +133,7 @@ theorem prod_eq_inf [SemilatticeInf α] [OrderTop α] (x y : α) : Limits.prod x
 
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α := by
-  have : ∀ x y : α, HasColimit (pair x y) :=
-    by
+  have : ∀ x y : α, HasColimit (pair x y) := by
     letI := hasFiniteColimits_of_hasFiniteColimits_of_size.{u} α
     infer_instance
   apply hasBinaryCoproducts_of_hasColimit_pair
@@ -165,7 +163,6 @@ theorem pullback_eq_inf [SemilatticeInf α] [OrderTop α] {x y z : α} (f : x �
     _ = z ⊓ (x ⊓ (y ⊓ ⊤)) := rfl
     _ = z ⊓ (x ⊓ y) := by rw [inf_top_eq]
     _ = x ⊓ y := inf_eq_right.mpr (inf_le_of_left_le f.le)
-
 #align category_theory.limits.complete_lattice.pullback_eq_inf CategoryTheory.Limits.CompleteLattice.pullback_eq_inf
 
 /-- The pushout in the category of a `SemilatticeSup` with `OrderBot` is the same as the supremum
@@ -180,7 +177,6 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
     _ = z ⊔ (x ⊔ (y ⊔ ⊥)) := rfl
     _ = z ⊔ (x ⊔ y) := by rw [sup_bot_eq]
     _ = x ⊔ y := sup_eq_right.mpr (le_sup_of_le_left f.le)
-
 #align category_theory.limits.complete_lattice.pushout_eq_sup CategoryTheory.Limits.CompleteLattice.pushout_eq_sup
 
 end Semilattice
