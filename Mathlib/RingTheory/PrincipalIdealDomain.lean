@@ -508,13 +508,13 @@ set_option synthInstance.etaExperiment true in
 theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
     (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
-  refine' ⟨supₛ c, _, fun J hJ => le_supₛ hJ⟩
+  refine' ⟨sSup c, _, fun J hJ => le_sSup hJ⟩
   rintro ⟨x, hx⟩
-  have hxmem : x ∈ supₛ c := hx.symm ▸ Submodule.mem_span_singleton_self x
-  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_supₛ_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
-  have hsupₛJ : supₛ c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_supₛ hJc)
+  have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
+  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
+  have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
   specialize hs hJc
-  rw [← hsupₛJ, hx, nonPrincipals_def] at hs
+  rw [← hsSupJ, hx, nonPrincipals_def] at hs
   exact hs ⟨⟨x, rfl⟩⟩
 #align non_principals_zorn nonPrincipals_zorn
 
