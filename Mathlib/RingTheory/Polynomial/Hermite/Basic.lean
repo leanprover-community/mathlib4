@@ -50,16 +50,16 @@ namespace Polynomial
 /-- the nth probabilist's Hermite polynomial -/
 noncomputable def hermite : ℕ → Polynomial ℤ
   | 0 => 1
-  | n + 1 => X * hermite n - (hermite n).derivative
+  | n + 1 => X * hermite n - Polynomial.derivative (hermite n)
 #align polynomial.hermite Polynomial.hermite
 
 /-- The recursion `hermite (n+1) = (x - d/dx) (hermite n)` -/
 @[simp]
-theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - (hermite n).derivative := by
+theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - Polynomial.derivative (hermite n) := by
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - p.derivative)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - Polynomial.derivative p)^[n]) 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -126,7 +126,7 @@ theorem natDegree_hermite {n : ℕ} : (hermite n).natDegree = n :=
 
 @[simp]
 theorem leadingCoeff_hermite (n : ℕ) : (hermite n).leadingCoeff = 1 := by
-  rw [← coeff_nat_degree, nat_degree_hermite, coeff_hermite_self]
+  rw [← coeff_natDegree, natDegree_hermite, coeff_hermite_self]
 #align polynomial.leading_coeff_hermite Polynomial.leadingCoeff_hermite
 
 theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
@@ -216,4 +216,3 @@ theorem coeff_hermite (n k : ℕ) :
 end CoeffExplicit
 
 end Polynomial
-
