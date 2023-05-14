@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit 172bf2812857f5e56938cc148b7a539f52f84ca9
+! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
+import Mathlib.Logic.Relation
+import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -344,6 +345,9 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
   IsAsymm.isIrrefl
+
+instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
+  ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]

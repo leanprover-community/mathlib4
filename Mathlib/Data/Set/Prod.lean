@@ -420,7 +420,7 @@ theorem prod_eq_prod_iff :
 
 @[simp]
 theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ := by
-  simp_rw [prod_eq_prod_iff, ht.ne_empty, eq_self_iff_true, and_true_iff, or_iff_left_iff_imp,
+  simp_rw [prod_eq_prod_iff, ht.ne_empty, and_true_iff, or_iff_left_iff_imp,
     or_false_iff]
   rintro ⟨rfl, rfl⟩
   rfl

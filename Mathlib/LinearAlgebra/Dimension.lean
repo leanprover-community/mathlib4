@@ -64,7 +64,7 @@ For modules over rings with invariant basis number
 For vector spaces (i.e. modules over a field), we have
 
 * `rank_quotient_add_rank`: if `V₁` is a submodule of `V`, then
-  `module.rank (V/V₁) + module.rank V₁ = module.rank V`.
+  `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
 * `rank_range_add_rank_ker`: the rank-nullity theorem.
 
 ## Implementation notes
@@ -127,9 +127,9 @@ set_option synthInstance.etaExperiment true in -- Porting note: gets around lean
 theorem LinearMap.lift_rank_le_of_injective (f : M →ₗ[R] M') (i : Injective f) :
     Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R M') := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v', v'} _),
-    Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v, v} _)]
-  apply csupᵢ_mono' (Cardinal.bddAbove_range.{v', v} _)
+  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range.{v', v'} _),
+    Cardinal.lift_iSup (Cardinal.bddAbove_range.{v, v} _)]
+  apply ciSup_mono' (Cardinal.bddAbove_range.{v', v} _)
   rintro ⟨s, li⟩
   refine' ⟨⟨f '' s, _⟩, Cardinal.lift_mk_le'.mpr ⟨(Equiv.Set.image f s i).toEmbedding⟩⟩
   exact (li.map' _ <| LinearMap.ker_eq_bot.mpr i).image
@@ -145,7 +145,7 @@ theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
     Module.rank R M ≤ n := by
   rw [Module.rank_def]
-  apply csupᵢ_le'
+  apply ciSup_le'
   rintro ⟨s, li⟩
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
 #align rank_le rank_le
@@ -158,13 +158,13 @@ set_option synthInstance.etaExperiment true in -- Porting note: gets around lean
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v', v'} _)]
-  apply csupᵢ_le'
+  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range.{v', v'} _)]
+  apply ciSup_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine' le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+    refine' le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -265,7 +265,7 @@ theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
   · simp only [Cardinal.lift_le, Module.rank_def]
     apply le_trans
     swap
-    · exact le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
+    · exact le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
     · exact le_rfl
 #align cardinal_lift_le_rank_of_linear_independent cardinal_lift_le_rank_of_linearIndependent
 
@@ -289,7 +289,7 @@ variable (R M)
 @[simp]
 theorem rank_punit : Module.rank R PUnit = 0 := by
   rw [← bot_eq_zero, ← le_bot_iff, Module.rank_def]
-  apply csupᵢ_le'
+  apply ciSup_le'
   rintro ⟨s, li⟩
   rw [le_bot_iff, bot_eq_zero, Cardinal.mk_emptyCollection_iff, Subtype.coe_mk]
   by_contra h
@@ -328,6 +328,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [IsNoetherian R M] {s : Set
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 #align linear_independent.set_finite_of_is_noetherian LinearIndependent.set_finite_of_isNoetherian
 
+set_option synthInstance.etaExperiment true in
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
 -- (simply because any linearly independent set can be extended to a basis),
@@ -376,7 +377,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     (⋃ k, ((b.repr (v k)).support : Set ι)) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_unionᵢ, not_exists_not,
+  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b b'` which is not in the support of any of the `v i`.
   obtain ⟨b', w⟩ := h
@@ -490,7 +491,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
   have : Nonempty { s : Set M // LinearIndependent R ((↑) : s → M) } :=
     ⟨⟨∅, linearIndependent_empty _ _⟩⟩
-  rw [Module.rank_def, csupᵢ_eq_of_forall_le_of_forall_lt_exists_gt]
+  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
   · rintro ⟨s, hs⟩
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
@@ -549,6 +550,7 @@ variable {R : Type u} [Ring R] [InvariantBasisNumber R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
+set_option synthInstance.etaExperiment true in
 /-- The dimension theorem: if `v` and `v'` are two bases, their index types
 have the same cardinalities. -/
 theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
@@ -595,6 +597,7 @@ variable {R : Type u} [Ring R] [RankCondition R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
+set_option synthInstance.etaExperiment true in
 /-- An auxiliary lemma for `Basis.le_span`.
 
 If `R` satisfies the rank condition,
@@ -627,6 +630,7 @@ theorem basis_le_span' {ι : Type _} (b : Basis ι R M) {w : Set M} [Fintype w] 
   exact Basis.le_span'' b s
 #align basis_le_span' basis_le_span'
 
+set_option synthInstance.etaExperiment true in
 -- Note that if `R` satisfies the strong rank condition,
 -- this also follows from `linearIndependent_le_span` below.
 /-- If `R` satisfies the rank condition,
@@ -649,11 +653,11 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
       rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single_ne_zero _ one_ne_zero] at this
       · subst b
-        rcases mem_unionᵢ.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
-        exact mem_unionᵢ.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
+        rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
+        exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
     refine' le_of_not_lt fun IJ => _
     suffices (#⋃ j, S' j) < (#range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
-    refine' lt_of_le_of_lt (le_trans Cardinal.mk_unionᵢ_le_sum_mk
+    refine' lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
       (Cardinal.sum_le_sum _ (fun _ => ℵ₀) _)) _
     · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
     · simpa
@@ -669,6 +673,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M]
 
 open Submodule
 
+set_option synthInstance.etaExperiment true in
 -- An auxiliary lemma for `linearIndependent_le_span'`,
 -- with the additional assumption that the linearly independent family is finite.
 theorem linearIndependent_le_span_aux' {ι : Type _} [Fintype ι] (v : ι → M)
@@ -769,6 +774,7 @@ theorem linearIndependent_le_basis {ι : Type _} (b : Basis ι R M) {κ : Type _
     exact linearIndependent_le_infinite_basis b v i
 #align linear_independent_le_basis linearIndependent_le_basis
 
+set_option synthInstance.etaExperiment true in
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
 theorem Basis.card_le_card_of_linearIndependent_aux {R : Type _} [Ring R] [StrongRankCondition R]
@@ -798,14 +804,14 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : (#ι) = Module.ran
   apply le_antisymm
   · trans
     swap
-    · apply le_csupᵢ (Cardinal.bddAbove_range.{v, v} _)
+    · apply le_ciSup (Cardinal.bddAbove_range.{v, v} _)
       exact
         ⟨Set.range v, by
           convert v.reindexRange.linearIndependent
           ext
           simp⟩
     · exact (Cardinal.mk_range_eq v v.injective).ge
-  · apply csupᵢ_le'
+  · apply ciSup_le'
     rintro ⟨s, li⟩
     apply linearIndependent_le_basis v _ li
 #align basis.mk_eq_rank'' Basis.mk_eq_rank''
@@ -918,6 +924,7 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
 
 variable (R)
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem rank_self : Module.rank R R = 1 := by
   rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_punit]
@@ -1004,7 +1011,7 @@ theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
 #align linear_equiv.nonempty_equiv_iff_rank_eq LinearEquiv.nonempty_equiv_iff_rank_eq
 
 /-- If `M` and `N` are free, then the rank of `M × N` is
-`(module.rank R M).lift + (module.rank R N).lift`. -/
+`(Module.rank R M).lift + (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_prod : Module.rank K (V × V') =
     Cardinal.lift.{v'} (Module.rank K V) + Cardinal.lift.{v, v'} (Module.rank K V') := by
@@ -1051,6 +1058,7 @@ theorem rank_fun' : Module.rank K (η → K) = Fintype.card η := by
   rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one, Cardinal.natCast_inj]
 #align rank_fun' rank_fun'
 
+set_option synthInstance.etaExperiment true in
 theorem rank_fin_fun (n : ℕ) : Module.rank K (Fin n → K) = n := by simp [rank_fun']
 #align rank_fin_fun rank_fin_fun
 
@@ -1271,14 +1279,14 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
     intro v hv
     obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk] at hr
+    simp_rw [Subtype.ext_iff, coe_smul] at hr
     exact hr
   · rintro ⟨v₀, hv₀, h⟩
     use ⟨v₀, hv₀⟩
     rintro ⟨v, hv⟩
     obtain ⟨r, hr⟩ := h v hv
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk]
+    simp_rw [Subtype.ext_iff, coe_smul]
     exact hr
 #align rank_submodule_le_one_iff rank_submodule_le_one_iff
 

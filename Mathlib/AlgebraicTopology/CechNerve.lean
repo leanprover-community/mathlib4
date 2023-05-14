@@ -387,7 +387,7 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
       fac := fun s j => Option.casesOn j (Subsingleton.elim _ _) fun j => limit.lift_π _ _
       uniq := fun s f h => by
         dsimp
-        ext ⟨j⟩
+        ext j
         dsimp only [Limits.Pi.lift]
         rw [limit.lift_π]
         dsimp

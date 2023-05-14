@@ -502,14 +502,17 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
 
+set_option synthInstance.etaExperiment true in
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul Matrix.inv_smul
 
+set_option synthInstance.etaExperiment true in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul' Matrix.inv_smul'
 
+set_option synthInstance.etaExperiment true in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine' inv_eq_left_inv _
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -586,6 +589,7 @@ theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   · simp [nonsing_inv_apply_not_isUnit _ h]
 #align matrix.inv_inv_inv Matrix.inv_inv_inv
 
+set_option synthInstance.etaExperiment true in
 theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ := by
   simp only [inv_def]
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, det_mul, adjugate_mul_distrib,

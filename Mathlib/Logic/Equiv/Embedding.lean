@@ -36,8 +36,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
     ⟨fun x =>
       match x with
       | Sum.inl a => f a
-      | Sum.inr b => g b,
-      by
+      | Sum.inr b => g b, by
       rintro (a₁ | b₁) (a₂ | b₂) f_eq <;>
         simp only [Equiv.coe_fn_symm_mk, Sum.elim_inl, Sum.elim_inr] at f_eq
       · rw [f.injective f_eq]

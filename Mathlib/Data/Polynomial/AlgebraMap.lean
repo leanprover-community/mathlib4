@@ -44,14 +44,12 @@ variable [Semiring A] [Algebra R A]
 instance algebraOfAlgebra : Algebra R A[X]
     where
   smul_def' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
       exact Algebra.smul_def' _ _
   commutes' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
@@ -64,8 +62,7 @@ theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
 
 @[simp]
 theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
-  show toFinsupp (C (algebraMap _ _ r)) = _
-    by
+  show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 #align polynomial.to_finsupp_algebra_map Polynomial.toFinsupp_algebraMap

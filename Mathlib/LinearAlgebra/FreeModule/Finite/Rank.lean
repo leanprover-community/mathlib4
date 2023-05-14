@@ -64,7 +64,7 @@ theorem rank_lt_aleph0 : Module.rank R M < ℵ₀ := by
   letI := nontrivial_of_invariantBasisNumber R
   -- porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine' (csupᵢ_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
+  refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 FiniteDimensional.rank_lt_aleph0
 
@@ -93,12 +93,14 @@ theorem finrank_eq_card_chooseBasisIndex :
   simp [finrank, rank_eq_card_chooseBasisIndex]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 
+set_option synthInstance.etaExperiment true in
 /-- The finrank of `(ι →₀ R)` is `Fintype.card ι`. -/
 @[simp]
 theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ R) = card ι := by
   rw [finrank, rank_finsupp_self, ← mk_toNat_eq_card, toNat_lift]
 #align finite_dimensional.finrank_finsupp FiniteDimensional.finrank_finsupp
 
+set_option synthInstance.etaExperiment true in
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
 theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι := by
   set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074

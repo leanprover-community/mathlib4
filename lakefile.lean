@@ -2,13 +2,17 @@ import Lake
 
 open Lake DSL
 
-def moreLeanArgs := #[
-  "-DwarningAsError=true",
+def moreServerArgs := #[
   "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
 ]
 
+-- These settings only apply during `lake build`, but not in VSCode editor.
+def moreLeanArgs := #[
+  "-DwarningAsError=true"
+] ++ moreServerArgs
+
 package mathlib where
-  moreServerArgs := moreLeanArgs
+  moreServerArgs := moreServerArgs
 
 @[default_target]
 lean_lib Mathlib where
@@ -32,3 +36,6 @@ lean_lib Cache where
 
 lean_exe cache where
   root := `Cache.Main
+
+lean_lib MathlibExtras where
+  roots := #[`MathlibExtras]
