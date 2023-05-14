@@ -26,7 +26,7 @@ the least substructure of `M` containing `s`.
 substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
 substructure `s` under the homomorphism `f`, as a substructure.
-* `FirstOrder.Language.Hom.range` is defined so that `f.map` is the range of the
+* `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
 the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
 the domain and codomain respectively of first-order homomorphisms to substructures.
@@ -663,7 +663,7 @@ instance inducedStructure {S : L.Substructure M} : L.Structure S where
 set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.induced_Structure FirstOrder.Language.Substructure.inducedStructure
 
-/-- The natural embedding of an `L.substructure` of `M` into `M`. -/
+/-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
 def subtype (S : L.Substructure M) : S ↪[L] M where
   toFun := (↑)
   inj' := Subtype.coe_injective
