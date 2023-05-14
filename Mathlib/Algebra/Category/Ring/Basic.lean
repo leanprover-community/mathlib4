@@ -140,7 +140,7 @@ namespace RingCat
 instance : BundledHom.ParentProjection @Ring.toSemiring :=
   ⟨⟩
 
--- Porting note: Another place where mathlib4 had derived a concrete category
+-- Porting note: Another place where mathlib had derived a concrete category
 -- but this does not work here, so we add the instance manually.
 deriving instance LargeCategory for RingCat
 
