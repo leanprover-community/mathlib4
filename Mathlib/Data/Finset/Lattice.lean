@@ -275,7 +275,7 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ (x) (_ : x ∈ s) (y
 #align finset.sup_mem Finset.sup_mem
 
 @[simp]
-theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
+protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
   classical induction' S using Finset.induction with a S _ hi <;> simp [*]
 #align finset.sup_eq_bot_iff Finset.sup_eq_bot_iff
 
@@ -563,7 +563,6 @@ protected theorem codisjoint_inf_left :
   @Finset.disjoint_sup_left αᵒᵈ _ _ _ _ _ _
 #align finset.codisjoint_inf_left Finset.codisjoint_inf_left
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem inf_sup_inf (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
     s.inf f ⊔ t.inf g = (s ×ᶠ t).inf fun i => f i.1 ⊔ g i.2 :=
   @sup_inf_sup αᵒᵈ _ _ _ _ _ _ _ _
@@ -575,7 +574,7 @@ section BoundedOrder
 
 variable [BoundedOrder α] [DecidableEq ι]
 
---TODO: Extract out the obvious isomorphism `(insert i s).pi t ≃ t i ×ˢ s.pi t` from this proof
+--TODO: Extract out the obvious isomorphism `(insert i s).pi t ≃ t i ×ᶠ s.pi t` from this proof
 theorem inf_sup {κ : ι → Type _} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     (s.inf fun i => (t i).sup (f i)) =
       (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 := by
