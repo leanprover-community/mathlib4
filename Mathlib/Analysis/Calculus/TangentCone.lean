@@ -15,23 +15,23 @@ import Mathlib.Analysis.SpecificLimits.Basic
 /-!
 # Tangent cone
 
-In this file, we define two predicates `unique_diff_within_at 𝕜 s x` and `unique_diff_on 𝕜 s`
+In this file, we define two predicates `UniqueDiffWithinAt 𝕜 s x` and `UniqueDiffOn 𝕜 s`
 ensuring that, if a function has two derivatives, then they have to coincide. As a direct
 definition of this fact (quantifying on all target types and all functions) would depend on
 universes, we use a more intrinsic definition: if all the possible tangent directions to the set
 `s` at the point `x` span a dense subset of the whole subset, it is easy to check that the
 derivative has to be unique.
 
-Therefore, we introduce the set of all tangent directions, named `tangent_cone_at`,
-and express `unique_diff_within_at` and `unique_diff_on` in terms of it.
+Therefore, we introduce the set of all tangent directions, named `tangentConeAt`,
+and express `UniqueDiffWithinAt` and `UniqueDiffOn` in terms of it.
 One should however think of this definition as an implementation detail: the only reason to
-introduce the predicates `unique_diff_within_at` and `unique_diff_on` is to ensure the uniqueness
+introduce the predicates `UniqueDiffWithinAt` and `UniqueDiffOn` is to ensure the uniqueness
 of the derivative. This is why their names reflect their uses, and not how they are defined.
 
 ## Implementation details
 
-Note that this file is imported by `fderiv.lean`. Hence, derivatives are not defined yet. The
-property of uniqueness of the derivative is therefore proved in `fderiv.lean`, but based on the
+Note that this file is imported by `Fderiv.Basic`. Hence, derivatives are not defined yet. The
+property of uniqueness of the derivative is therefore proved in `Fderiv.Basic`, but based on the
 properties of the tangent cone we prove here.
 -/
 
@@ -56,10 +56,9 @@ def tangentConeAt (s : Set E) (x : E) : Set E :=
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,
-hence this name. The uniqueness it asserts is proved in `unique_diff_within_at.eq` in `fderiv.lean`.
+hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in `Fderiv.Basic`.
 To avoid pathologies in dimension 0, we also require that `x` belongs to the closure of `s` (which
-is automatic when `E` is not `0`-dimensional).
- -/
+is automatic when `E` is not `0`-dimensional). -/
 @[mk_iff uniqueDiffWithinAt_iff]
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
   dense_tangent_cone : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
@@ -67,9 +66,9 @@ structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
 #align unique_diff_within_at UniqueDiffWithinAt
 
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
-the whole space.  The main role of this property is to ensure that the differential along `s` is
-unique, hence this name. The uniqueness it asserts is proved in `unique_diff_on.eq` in
-`fderiv.lean`. -/
+the whole space. The main role of this property is to ensure that the differential along `s` is
+unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq` in
+`Fderiv.Basic`. -/
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt 𝕜 s x
 #align unique_diff_on UniqueDiffOn
@@ -146,8 +145,6 @@ theorem tangent_cone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ 
   tangent_cone_congr (nhdsWithin_restrict' _ ht).symm
 #align tangent_cone_inter_nhds tangent_cone_inter_nhds
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
     LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
@@ -168,8 +165,6 @@ theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t)
     exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
 #align subset_tangent_cone_prod_left subset_tangent_cone_prod_left
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
 theorem subset_tangent_cone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
@@ -190,8 +185,6 @@ theorem subset_tangent_cone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s
     exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
 #align subset_tangent_cone_prod_right subset_tangent_cone_prod_right
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
@@ -263,10 +256,9 @@ end TangentCone
 section UniqueDiff
 
 /-!
-### Properties of `unique_diff_within_at` and `unique_diff_on`
+### Properties of `UniqueDiffWithinAt` and `UniqueDiffOn`
 
-This section is devoted to properties of the predicates
-`unique_diff_within_at` and `unique_diff_on`. -/
+This section is devoted to properties of the predicates `UniqueDiffWithinAt` and `UniqueDiffOn`. -/
 
 
 theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
@@ -338,8 +330,6 @@ theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s := fun _ hx =>
   IsOpen.uniqueDiffWithinAt hs hx
 #align is_open.unique_diff_on IsOpen.uniqueDiffOn
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
 theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt 𝕜 s x)
@@ -377,7 +367,6 @@ theorem UniqueDiffWithinAt.pi (ι : Type _) [Finite ι] (E : ι → Type _)
     by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
 #align unique_diff_within_at.pi UniqueDiffWithinAt.pi
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product of two sets of unique differentiability is a set of unique differentiability. -/
 theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDiffOn 𝕜 t) :
     UniqueDiffOn 𝕜 (s ×ˢ t) := fun ⟨x, y⟩ h => UniqueDiffWithinAt.prod (hs x h.1) (ht y h.2)
