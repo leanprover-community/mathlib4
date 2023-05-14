@@ -132,10 +132,9 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
 
-@[simp]
-theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
+theorem data_singleton (c : Char) : (String.singleton c).data = [c] :=
   rfl
-#align string.to_list_singleton String.toList_singleton
+#align string.to_list_singleton String.data_singleton
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
 | ⟨s⟩, h => by
@@ -191,9 +190,9 @@ theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = 
 #align list.as_string_inj List.asString_inj
 
 @[simp]
-theorem String.length_toList (s : String) : s.toList.length = s.length := by
-  rw [← String.asString_inv_toList s, List.toList_inv_asString, List.length_asString]
-#align string.length_to_list String.length_toList
+theorem String.length_data (s : String) : s.data.length = s.length :=
+  rfl
+#align string.length_to_list String.length_data
 
 theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
   rw [← asString_inv_toList s, asString_inj, asString_inv_toList s]
