@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Category of topological commutative rings
@@ -42,21 +42,18 @@ instance : CoeSort TopCommRing (Type u) :=
 
 attribute [instance] is_comm_ring is_topological_space is_topological_ring
 
-instance : Category TopCommRing.{u}
-    where
+instance : Category TopCommRing.{u} where
   Hom R S := { f : R →+* S // Continuous f }
   id R := ⟨RingHom.id R, by obviously⟩
   -- TODO remove obviously?
   comp R S T f g :=
-    ⟨g.val.comp f.val,
-      by
+    ⟨g.val.comp f.val, by
       -- TODO automate
       cases f;
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 
-instance : ConcreteCategory TopCommRing.{u}
-    where
+instance : ConcreteCategory TopCommRing.{u} where
   forget :=
     { obj := fun R => R
       map := fun R S f => f.val }
