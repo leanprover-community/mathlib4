@@ -284,7 +284,13 @@ end DerivedCategory
 
 namespace CategoryTheory.Abelian
 
+variable {C}
+
 def newExt (n : ℕ) (X Y : C) : Type (max u v) :=
   (DerivedCategory.singleFunctor _ 0).obj X ⟶ ((DerivedCategory.singleFunctor _ 0).obj Y)⟦(n : ℤ)⟧
+
+noncomputable instance (n : ℕ) (X Y : C) : AddCommGroup (newExt n X Y) := by
+  dsimp [newExt]
+  infer_instance
 
 end CategoryTheory.Abelian
