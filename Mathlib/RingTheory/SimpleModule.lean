@@ -101,19 +101,19 @@ theorem isAtom : IsAtom m :=
 
 end IsSimpleModule
 
-theorem is_semisimple_of_supₛ_simples_eq_top
-    (h : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
-  complementedLattice_of_supₛ_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
-#align is_semisimple_of_Sup_simples_eq_top is_semisimple_of_supₛ_simples_eq_top
+theorem is_semisimple_of_sSup_simples_eq_top
+    (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
+  complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
+#align is_semisimple_of_Sup_simples_eq_top is_semisimple_of_sSup_simples_eq_top
 
 namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
-theorem supₛ_simples_eq_top : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
+theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simp_rw [isSimpleModule_iff_isAtom]
-  exact supₛ_atoms_eq_top
-#align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.supₛ_simples_eq_top
+  exact sSup_atoms_eq_top
+#align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
 
 instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
@@ -122,12 +122,12 @@ instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
 
 end IsSemisimpleModule
 
-theorem is_semisimple_iff_top_eq_supₛ_simples :
-    supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
-  ⟨is_semisimple_of_supₛ_simples_eq_top, by
+theorem is_semisimple_iff_top_eq_sSup_simples :
+    sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
+  ⟨is_semisimple_of_sSup_simples_eq_top, by
     intro
-    exact IsSemisimpleModule.supₛ_simples_eq_top⟩
-#align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_supₛ_simples
+    exact IsSemisimpleModule.sSup_simples_eq_top⟩
+#align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
 
 namespace LinearMap
 
