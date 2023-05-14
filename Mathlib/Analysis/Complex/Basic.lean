@@ -296,11 +296,12 @@ theorem restrictScalars_one_smul_right' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
       reClm.smulRight x + I • imClm.smulRight x := by
   ext ⟨a, b⟩
-  -- simp [mk_eq_add_mul_I, add_smul, mul_smul, smul_comm I]
+  simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 #align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smul_right'
 
 theorem restrictScalars_one_smulRight (x : ℂ) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) = x • 1 := by
+    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =
+    x • (1 : ℂ →L[ℝ] ℂ) := by
   ext1 z
   dsimp
   apply mul_comm
@@ -599,7 +600,7 @@ theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ S
 #align complex.summable_of_real Complex.summable_ofReal
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, f a :=
+theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
   IsROrC.ofReal_tsum _ _
 #align complex.of_real_tsum Complex.ofReal_tsum
 
@@ -627,4 +628,3 @@ theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
 end tsum
 
 end Complex
-
