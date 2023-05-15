@@ -132,6 +132,7 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
 
+@[simp]
 theorem data_singleton (c : Char) : (String.singleton c).data = [c] :=
   rfl
 #align string.to_list_singleton String.data_singleton
