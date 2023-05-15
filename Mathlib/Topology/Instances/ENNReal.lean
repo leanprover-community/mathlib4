@@ -658,17 +658,14 @@ theorem iSup_mul {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f
 
 theorem smul_iSup {ι : Sort _} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
     (c : R) : (c • ⨆ i, f i) = ⨆ i, c • f i := by
-  -- Porting note: was one `simp only`
-  simp only [← smul_one_mul c (f _)]
-  rw [← smul_one_mul c (iSup _)]
-  simp only [ENNReal.mul_iSup]
+  -- Porting note: replaced `iSup _` with `iSup f`
+  simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup f), ENNReal.mul_iSup]
 #align ennreal.smul_supr ENNReal.smul_iSup
 
 theorem smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
     c • sSup s = ⨆ i ∈ s, c • i := by
-  -- Porting note: was one `simp_rw`
-  rw [← smul_one_mul c (sSup _)]
-  simp_rw [ENNReal.mul_sSup, smul_one_mul]
+  -- Porting note: replaced `_` with `s`
+  simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
 #align ennreal.smul_Sup ENNReal.smul_sSup
 
 theorem iSup_div {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f / a = ⨆ i, f i / a :=
