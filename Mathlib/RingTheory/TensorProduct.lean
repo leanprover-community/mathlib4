@@ -11,6 +11,7 @@ Authors: Scott Morrison, Johan Commelin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.Tactic
 
 /-!
 # The tensor product of R-algebras
@@ -1061,7 +1062,6 @@ theorem basisAux_map_smul (r : R) (x : R ⊗[k] M) : basisAux R b (r • x) = r 
 variable (R)
 
 -- porting note: need to make a universe explicit. Is there a problem with `basisAux`?
-set_option synthInstance.etaExperiment true in
 /-- Given a `k`-algebra `R`, this is the `R`-basis of `R ⊗[k] M` induced by a `k`-basis of `M`. -/
 noncomputable def basis : Basis ι R (R ⊗[k] M) where
   repr := { basisAux.{u_5} R b with map_smul' := basisAux_map_smul b }
@@ -1079,7 +1079,11 @@ theorem basis_repr_tmul (r : R) (m : M) :
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [Basis, Equiv.uniqueProd_symm_apply, basisAux]
-  sorry
+  -- porting note: that line did it in Lean 3
+  suffices r • ((1 : R) ⊗ₜ[k] b i) = r ⊗ₜ[k] b i by
+    convert this
+    sorry
+  simp [smul_tmul']
 
 #align algebra.tensor_product.basis_repr_symm_apply Algebra.TensorProduct.basis_repr_symm_apply
 
