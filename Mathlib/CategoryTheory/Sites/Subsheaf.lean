@@ -160,7 +160,7 @@ def Subpresheaf.sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) wher
 /-- Given a `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
 `G` consisting of the restrictions of `s` -/
 def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
-    (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun V i hi => ⟨F.map i.op s, hi⟩
+    (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_of_section CategoryTheory.GrothendieckTopology.Subpresheaf.familyOfElementsOfSection
 
 theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
@@ -278,32 +278,37 @@ theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
 /-- The lift of a presheaf morphism onto the sheafification subpresheaf.  -/
 noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toPresheaf ⟶ F' where
-  app U s := (h _ s.prop).amalgamate _ ((G.family_of_elements_compatible ↑s).compPresheafMap f)
+  app U s := (h (G.sieveOfSection s.1) s.prop).amalgamate
+    (_) ((G.family_of_elements_compatible s.1).compPresheafMap f)
   naturality := by
     intro U V i
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
-    refine' (Presieve.IsSheafFor.valid_glue _ _ _ hj).trans _
+    refine' (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
+      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans _
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
-    refine' Eq.trans _ (presieve.is_sheaf_for.valid_glue _ _ _ _).symm
-    · dsimp at hj⊢
-      rwa [functor_to_types.map_comp_apply]
-    · dsimp [presieve.family_of_elements.comp_presheaf_map]
-      congr 1
-      ext1
-      exact (functor_to_types.map_comp_apply _ _ _ _).symm
+    refine' Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
+      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) _).symm
+    swap -- porting note: need to swap two goals otherwise the first goal needs to be proven
+    -- inside the second goal any way
+    · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
+      rwa [FunctorToTypes.map_comp_apply]
+    · dsimp [Presieve.FamilyOfElements.compPresheafMap]
+      exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
 #align category_theory.grothendieck_topology.subpresheaf.sheafify_lift CategoryTheory.GrothendieckTopology.Subpresheaf.sheafifyLift
 
 theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     Subpresheaf.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
   ext (U s)
-  apply (h _ ((Subpresheaf.hom_of_le (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
+  apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
   intro V i hi
   have := elementwise_of% f.naturality
-  exact (presieve.is_sheaf_for.valid_glue _ _ _ hi).trans (this _ _)
+  -- porting note: filled in some underscores where Lean3 could automatically fill.
+  exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : G ≤ sheafify J G)).app U s).2)
+    ((G.family_of_elements_compatible _).compPresheafMap _) _ hi).trans (this _ _)
 #align category_theory.grothendieck_topology.subpresheaf.to_sheafify_lift CategoryTheory.GrothendieckTopology.Subpresheaf.to_sheafifyLift
 
 theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
@@ -321,12 +326,12 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
 theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toPresheaf) : G.sheafify J ≤ G' := by
   intro U x hx
-  convert((G.sheafifyLift (Subpresheaf.hom_of_le h) hG').app U ⟨x, hx⟩).2
+  convert((G.sheafifyLift (Subpresheaf.homOfLe h) hG').app U ⟨x, hx⟩).2
   apply (hF _ hx).isSeparatedFor.ext
   intro V i hi
   have :=
     congr_arg (fun f : G.toPresheaf ⟶ G'.toPresheaf => (NatTrans.app f (op V) ⟨_, hi⟩).1)
-      (G.to_sheafifyLift (Subpresheaf.hom_of_le h) hG')
+      (G.to_sheafifyLift (Subpresheaf.homOfLe h) hG')
   convert this.symm
   erw [← Subpresheaf.nat_trans_naturality]
   rfl
@@ -338,8 +343,8 @@ section Image
 @[simps]
 def imagePresheaf (f : F' ⟶ F) : Subpresheaf F where
   obj U := Set.range (f.app U)
-  map U V i := by
-    rintro _ ⟨x, rfl⟩
+  map := by
+    rintro U V i _ ⟨x, rfl⟩
     have := elementwise_of% f.naturality
     exact ⟨_, this i x⟩
 #align category_theory.grothendieck_topology.image_presheaf CategoryTheory.GrothendieckTopology.imagePresheaf
@@ -377,7 +382,7 @@ theorem toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf
 #align category_theory.grothendieck_topology.to_image_presheaf_ι CategoryTheory.GrothendieckTopology.toImagePresheaf_ι
 
 theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
-    imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U x hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
+    imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
 #align category_theory.grothendieck_topology.image_presheaf_comp_le CategoryTheory.GrothendieckTopology.imagePresheaf_comp_le
 
 instance {F F' : Cᵒᵖ ⥤ Type max v w} (f : F ⟶ F') [hf : Mono f] : IsIso (toImagePresheaf f) := by
