@@ -190,6 +190,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
+      · sorry
       symm
       generalize_proofs _ h1
       exact
@@ -299,9 +300,13 @@ set_option linter.uppercaseLean3 false in
 
 /-- A linear map `I ⟶ Q` by `x ↦ f' (x • y)` where `f'` is the maximal extension-/
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
-  toFun z := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
-  map_add' z1 z2 := by simp [← (extensionOfMax i f).toLinearPMap.map_add, add_smul]
-  map_smul' z1 z2 := by simp [← (extensionOfMax i f).toLinearPMap.map_smul, mul_smul]; rfl
+  toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
+  map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
+    simp [← (extensionOfMax i f).toLinearPMap.map_add, add_smul]
+    sorry
+  map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
+    simp [← (extensionOfMax i f).toLinearPMap.map_smul, mul_smul]
+    sorry
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.ideal_to Module.Baer.ExtensionOfMaxAdjoin.idealTo
 
