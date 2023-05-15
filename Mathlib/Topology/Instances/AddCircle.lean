@@ -354,19 +354,21 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
--- Porting note: fails to find `Archimedean 𝕜`
+/- Porting note: without `etaExperiment`, fails to find `Archimedean 𝕜`. With `etaExperiment`,
+needs extra heartbeats to find `Zero ℤ`, see Lean4 PR #2210. -/
 set_option synthInstance.etaExperiment true in
+set_option synthInstance.maxHeartbeats 100000 in
+set_option maxHeartbeats 600000 in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
-    simp only [algebraMap.coe_zero, QuotientAddGroup.mk_zero, inv_zero, MulZeroClass.zero_mul]
-  div_cancel n x hn := by
-    replace hn : (n : 𝕜) ≠ 0;
+    simp only [algebraMap.coe_zero, Int.cast_zero, inv_zero, zero_mul, QuotientAddGroup.mk_zero]
+  div_cancel {n} x hn := by
+    replace hn : (n : 𝕜) ≠ 0
     · norm_cast
-      assumption
-    change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equiv_Ico p 0 x)) = x
+    change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equivIco p 0 x)) = x
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel hn, one_mul]
-    exact (equiv_Ico p 0).symm_apply_apply x
+    exact (equivIco p 0).symm_apply_apply x
 
 end FloorRing
 
