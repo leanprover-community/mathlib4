@@ -18,14 +18,14 @@ This file defines the space of complete types over a first-order theory.
 ## Main Definitions
 * `FirstOrder.Language.Theory.CompleteType`:
   `T.CompleteType α` consists of complete types over the theory `T` with variables `α`.
-* `FirstOrder.Language.Theory.type_of` is the type of a given tuple.
-* `FirstOrder.Language.Theory.realized_types`: `T.realized_types M α` is the set of
-  types in `T.complete_type α` that are realized in `M` - that is, the type of some tuple in `M`.
+* `FirstOrder.Language.Theory.typeOf` is the type of a given tuple.
+* `FirstOrder.Language.Theory.realizedTypes`: `T.realizedTypes M α` is the set of
+  types in `T.CompleteType α` that are realized in `M` - that is, the type of some tuple in `M`.
 
 ## Main Results
-* `FirstOrder.Language.Theory.complete_type.nonempty_iff`:
-  The space `T.complete_type α` is nonempty exactly when `T` is satisfiable.
-* `FirstOrder.Language.Theory.complete_type.exists_Model_is_realized_in`: Every type is realized in
+* `FirstOrder.Language.Theory.CompleteType.nonempty_iff`:
+  The space `T.CompleteType α` is nonempty exactly when `T` is satisfiable.
+* `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized in
 some model.
 
 ## Implementation Notes
@@ -58,7 +58,7 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
   consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
   toTheory : L[[α]].Theory
-  subset' : (L.lhomWithConstants α).onTheory T ⊆ to_Theory
+  subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal
 #align first_order.language.Theory.complete_type FirstOrder.Language.Theory.CompleteType
 #align first_order.language.Theory.complete_type.to_Theory FirstOrder.Language.Theory.CompleteType.toTheory
@@ -120,68 +120,67 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
   refine'
     ⟨fun h =>
-      ⟨⟨L[[α]].completeTheory h.some, (subset_union_left _ S).trans CompleteTheory.subset,
-          completeTheory.isMaximal _ _⟩,
-        (subset_union_right ((L.Lhom_with_constants α).onTheory T) _).trans complete_theory.subset⟩,
+      ⟨⟨L[[α]].completeTheory h.some, (subset_union_left _ S).trans completeTheory.subset,
+          completeTheory.isMaximal (L[[α]]) h.some⟩,
+        (subset_union_right ((L.lhomWithConstants α).onTheory T) _).trans completeTheory.subset⟩,
       _⟩
   rintro ⟨p, hp⟩
-  exact p.is_maximal.1.mono (union_subset p.subset hp)
+  exact p.isMaximal.1.mono (union_subset p.subset hp)
 #align first_order.language.Theory.complete_type.set_of_subset_eq_empty_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_empty_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
-    { p : T.CompleteType α | φ ∈ p } = univ ↔ (L.lhomWithConstants α).onTheory T ⊨ φ := by
-  rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_set_of_mem, ← set_of_subset_eq_empty_iff]
+    { p : T.CompleteType α | φ ∈ p } = Set.univ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
+  rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_setOf_mem, ← setOf_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.set_of_mem_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_mem_eq_univ_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
-    { p : T.CompleteType α | S ⊆ ↑p } = univ ↔
-      ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ φ := by
-  have h : { p : T.complete_type α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) := by
+    { p : T.CompleteType α | S ⊆ ↑p } = Set.univ ↔
+      ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
+  have h : { p : T.CompleteType α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) := by
     ext
     simp [subset_def]
-  simp_rw [h, sInter_eq_univ, ← set_of_mem_eq_univ_iff]
+  simp_rw [h, sInter_eq_univ, ← setOf_mem_eq_univ_iff]
   refine' ⟨fun h φ φS => h _ ⟨_, φS, rfl⟩, _⟩
   rintro h _ ⟨φ, h1, rfl⟩
   exact h _ h1
 #align first_order.language.Theory.complete_type.set_of_subset_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_univ_iff
 
 theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
-  rw [← is_satisfiable_on_Theory_iff (Lhom_with_constants_injective L α)]
-  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne.def, not_iff_comm, ←
-    union_empty ((L.Lhom_with_constants α).onTheory T), ← set_of_subset_eq_empty_iff]
+  rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
+  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne.def, not_iff_comm,
+    ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOf_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.nonempty_iff FirstOrder.Language.Theory.CompleteType.nonempty_iff
 
-instance : Nonempty (CompleteType ∅ α) :=
+instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
+#align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
 theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) = { p | (⋃ i : ι, S i) ⊆ p } := by
+    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) =
+      { p : T.CompleteType α | (⋃ i : ι, S i) ⊆ p } := by
   ext
-  simp only [mem_Inter, mem_set_of_eq, Union_subset_iff]
+  simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset
 
-theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentence} :
+theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset (L[[α]]).Sentence} :
     t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
-  simp_rw [subset_def, ← SetLike.mem_coe, p.is_maximal.mem_iff_models, models_sentence_iff,
-    sentence.realize, formula.realize, bounded_formula.realize_foldr_inf, Finset.mem_toList]
+  simp_rw [subset_def, ← SetLike.mem_coe, p.isMaximal.mem_iff_models, models_sentence_iff,
+    Sentence.Realize, Formula.Realize, BoundedFormula.realize_foldr_inf, Finset.mem_toList]
   exact ⟨fun h φ hφ M => h _ _ hφ, fun h M φ hφ => h _ hφ _⟩
 #align first_order.language.Theory.complete_type.to_list_foldr_inf_mem FirstOrder.Language.Theory.CompleteType.toList_foldr_inf_mem
 
 end CompleteType
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 variable {M : Type w'} [L.Structure M] [Nonempty M] [M ⊨ T] (T)
 
 /-- The set of all formulas true at a tuple in a structure forms a complete type. -/
 def typeOf (v : α → M) : T.CompleteType α :=
-  haveI : (constants_on α).Structure M := constants_on.Structure v
+  haveI : (constantsOn α).Structure M := constantsOn.structure v
   { toTheory := L[[α]].completeTheory M
-    subset' := model_iff_subset_complete_theory.1 ((Lhom.on_Theory_model _ T).2 inferInstance)
-    is_maximal' := complete_theory.is_maximal _ _ }
+    subset' := model_iff_subset_completeTheory.1 ((LHom.onTheory_model _ T).2 inferInstance)
+    isMaximal' := completeTheory.isMaximal _ _ }
 #align first_order.language.Theory.type_of FirstOrder.Language.Theory.typeOf
 
 namespace CompleteType
@@ -190,12 +189,12 @@ variable {T} {v : α → M}
 
 @[simp]
 theorem mem_typeOf {φ : L[[α]].Sentence} :
-    φ ∈ T.typeOf v ↔ (Formula.equivSentence.symm φ).realize v :=
-  letI : (constants_on α).Structure M := constants_on.Structure v
-  mem_complete_theory.trans (formula.realize_equiv_sentence_symm _ _ _).symm
+    φ ∈ T.typeOf v ↔ (Formula.equivSentence.symm φ).Realize v :=
+  letI : (constantsOn α).Structure M := constantsOn.structure v
+  mem_completeTheory.trans (Formula.realize_equivSentence_symm _ _ _).symm
 #align first_order.language.Theory.complete_type.mem_type_of FirstOrder.Language.Theory.CompleteType.mem_typeOf
 
-theorem formula_mem_typeOf {φ : L.Formula α} : Formula.equivSentence φ ∈ T.typeOf v ↔ φ.realize v :=
+theorem formula_mem_typeOf {φ : L.Formula α} : Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v :=
   by simp
 #align first_order.language.Theory.complete_type.formula_mem_type_of FirstOrder.Language.Theory.CompleteType.formula_mem_typeOf
 
@@ -212,14 +211,15 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
 
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
-  obtain ⟨M⟩ := p.is_maximal.1
-  refine' ⟨(M.subtheory_Model p.subset).reduct (L.Lhom_with_constants α), fun a => (L.con a : M), _⟩
+  obtain ⟨M⟩ := p.isMaximal.1
+  refine' ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), _⟩
   refine' SetLike.ext fun φ => _
-  simp only [complete_type.mem_type_of]
+  simp only [CompleteType.mem_typeOf]
   refine'
-    (formula.realize_equiv_sentence_symm_con _ _).trans
-      (trans (trans _ (p.is_maximal.is_complete.realize_sentence_iff φ M))
-        (p.is_maximal.mem_iff_models φ).symm)
+    (@Formula.realize_equivSentence_symm_con _
+      ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ M.struc _ φ).trans
+      (_root_.trans (_root_.trans _ (p.isMaximal.isComplete.realize_sentence_iff φ M))
+        (p.isMaximal.mem_iff_models φ).symm)
   rfl
 #align first_order.language.Theory.exists_Model_is_realized_in FirstOrder.Language.Theory.exists_modelType_is_realized_in
 
