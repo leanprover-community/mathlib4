@@ -363,7 +363,7 @@ theorem imagePresheaf_id : imagePresheaf (𝟙 F) = ⊤ := by
 /-- A morphism factors through the image presheaf. -/
 @[simps!]
 def toImagePresheaf (f : F' ⟶ F) : F' ⟶ (imagePresheaf f).toPresheaf :=
-  (imagePresheaf f).lift f fun U x => Set.mem_range_self _
+  (imagePresheaf f).lift f fun _ _ => Set.mem_range_self _
 #align category_theory.grothendieck_topology.to_image_presheaf CategoryTheory.GrothendieckTopology.toImagePresheaf
 
 variable (J)
@@ -385,13 +385,19 @@ theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
     imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
 #align category_theory.grothendieck_topology.image_presheaf_comp_le CategoryTheory.GrothendieckTopology.imagePresheaf_comp_le
 
-instance {F F' : Cᵒᵖ ⥤ Type max v w} (f : F ⟶ F') [hf : Mono f] : IsIso (toImagePresheaf f) := by
+instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ Type max v w} (f : F ⟶ F') [hf : Mono f] :
+  IsIso (toImagePresheaf f) := by
   have : ∀ (X : Cᵒᵖ), IsIso ((toImagePresheaf f).app X) := by
     intro X
     rw [isIso_iff_bijective]
     constructor
     · intro x y e
-      have := (NatTrans.mono_iff_mono_app _ _).mp hf X
+      -- port note: need to fill in the class instance manually
+      have := (@NatTrans.mono_iff_mono_app Cᵒᵖ _ (Type max v w) _ (fun a b =>
+        @CategoryTheory.Limits.hasColimitsOfShapeOfHasColimitsOfSize (Type (max v w)) _
+        (CategoryTheory.Discrete.{v} (a ⟶ b))
+        (CategoryTheory.discreteCategory (a ⟶ b))
+        Limits.Types.hasColimitsOfSize.{v, w}) F F' f).mp hf X
       rw [mono_iff_injective] at this
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
@@ -443,13 +449,13 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := by
   rw [← NatTrans.naturality, ← NatTrans.naturality]
   have E : (toImageSheaf f).val.app (op V) y = (imageSheaf f).val.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
-  have := congr_arg (fun f : F ⟶ G' => (Sheaf.hom.val f).app _ y) e
+  have := congr_arg (fun f : F ⟶ G' => (Sheaf.Hom.val f).app _ y) e
   dsimp at this⊢
   convert this <;> exact E.symm
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/
 def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.MonoFactorisation f where
-  i := imageSheaf f
+  I := imageSheaf f
   m := imageSheafι f
   e := toImageSheaf f
 #align category_theory.grothendieck_topology.image_mono_factorization CategoryTheory.GrothendieckTopology.imageMonoFactorization
@@ -457,26 +463,34 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type max v u)} (f : F ⟶ F') :
     Limits.ImageFactorisation f where
-  f := imageMonoFactorization f
-  IsImage :=
+  F := imageMonoFactorization f
+  isImage :=
     { lift := fun I => by
-        haveI := (Sheaf.hom.mono_iff_presheaf_mono J _ _).mp I.m_mono
-        refine' ⟨subpresheaf.hom_of_le _ ≫ inv (to_image_presheaf I.m.1)⟩
-        apply subpresheaf.sheafify_le
+        -- port note: the following to instance can be synthesized by Lean, but is still required
+        -- for the `M` instance
+        haveI : Limits.PreservesLimits (forget (Type max v w)) := inferInstance
+        haveI : ReflectsIsomorphisms (forget (Type max v w)) := inferInstance
+        -- port note: need to manually specify this instance for sheafification to work
+        haveI : (X : C) → Limits.PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget (Type max v w)) :=
+           fun X => Limits.PreservesColimitsOfSize.preservesColimitsOfShape
+        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J _ _).mp I.m_mono
+        haveI := @isIso_toImagePresheaf.{u, v, u} C _ _ _ _ M
+        refine' ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩
+        apply Subpresheaf.sheafify_le
         · conv_lhs => rw [← I.fac]
-          apply image_presheaf_comp_le
-        · rw [← is_sheaf_iff_is_sheaf_of_type]
+          apply imagePresheaf_comp_le
+        · rw [← isSheaf_iff_isSheaf_of_type]
           exact F'.2
-        · apply presieve.is_sheaf_iso J (as_iso <| to_image_presheaf I.m.1)
-          rw [← is_sheaf_iff_is_sheaf_of_type]
+        · apply Presieve.isSheaf_iso J (asIso <| toImagePresheaf I.m.1)
+          rw [← isSheaf_iff_isSheaf_of_type]
           exact I.I.2
       lift_fac := fun I => by
         ext1
-        dsimp [image_mono_factorization]
+        dsimp [imageMonoFactorization]
         generalize_proofs h
-        rw [← subpresheaf.hom_of_le_ι h, category.assoc]
+        rw [← Subpresheaf.homOfLe_ι h, Category.assoc]
         congr 1
-        rw [is_iso.inv_comp_eq, to_image_presheaf_ι] }
+        rw [IsIso.inv_comp_eq, toImagePresheaf_ι] }
 #align category_theory.grothendieck_topology.image_factorization CategoryTheory.GrothendieckTopology.imageFactorization
 
 instance : Limits.HasImages (Sheaf J (Type max v u)) :=
