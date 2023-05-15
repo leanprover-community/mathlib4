@@ -192,7 +192,7 @@ instance : LinearOrder String where
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  decidable_le := String.decidableLE
+  decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
     simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
     split_ifs <;>

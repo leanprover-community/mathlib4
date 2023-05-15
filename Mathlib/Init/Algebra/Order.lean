@@ -133,7 +133,7 @@ theorem le_of_eq_or_lt {a b : α} (h : a = b ∨ a < b) : a ≤ b := match h wit
 | (Or.inl h) => le_of_eq h
 | (Or.inr h) => le_of_lt h
 
-instance decidableLT_of_decidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
+instance decidableLTOfdecidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
   DecidableRel (. < . : α → α → Prop)
 | a, b =>
   if hab : a ≤ b then
@@ -167,7 +167,7 @@ theorem le_antisymm_iff {a b : α} : a = b ↔ a ≤ b ∧ b ≤ a :=
 theorem lt_of_le_of_ne {a b : α} : a ≤ b → a ≠ b → a < b :=
 λ h₁ h₂ => lt_of_le_not_le h₁ $ mt (le_antisymm h₁) h₂
 
-instance decidableEq_of_decidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
+instance decidableEqOfDecidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
   DecidableEq α
 | a, b =>
   if hab : a ≤ b then
@@ -238,10 +238,10 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidable_le : DecidableRel (. ≤ . : α → α → Prop)
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidable_eq : DecidableEq α := @decidableEq_of_decidableLE _ _ decidable_le
+  decidable_eq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidable_le
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidable_lt : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLT_of_decidableLE _ _ decidable_le
+    @decidableLTOfdecidableLE _ _ decidable_le
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
@@ -255,7 +255,7 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
 
 variable [LinearOrder α]
 
-attribute [local instance] LinearOrder.decidable_le
+attribute [local instance] LinearOrder.decidableLE
 
 theorem le_total : ∀ a b : α, a ≤ b ∨ b ≤ a :=
 LinearOrder.le_total
@@ -322,13 +322,13 @@ theorem lt_iff_not_ge (x y : α) : x < y ↔ ¬ x ≥ y :=
 @[simp] theorem not_le {a b : α} : ¬ a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 instance (a b : α) : Decidable (a < b) :=
-LinearOrder.decidable_lt a b
+LinearOrder.decidableLT a b
 
 instance (a b : α) : Decidable (a ≤ b) :=
-LinearOrder.decidable_le a b
+LinearOrder.decidableLE a b
 
 instance (a b : α) : Decidable (a = b) :=
-LinearOrder.decidable_eq a b
+LinearOrder.decidableEq a b
 
 theorem eq_or_lt_of_not_lt {a b : α} (h : ¬ a < b) : a = b ∨ b < a :=
 if h₁ : a = b then Or.inl h₁
