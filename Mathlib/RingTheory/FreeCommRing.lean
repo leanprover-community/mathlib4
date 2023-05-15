@@ -114,22 +114,19 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     { toFun := fun s => (s.toAdd.map f).prod
       map_mul' := fun x y =>
         calc
-          _ = Multiset.prod (Multiset.map f x + Multiset.map f y) :=
-            by
+          _ = Multiset.prod (Multiset.map f x + Multiset.map f y) := by
             rw [← Multiset.map_add]
             rfl
           _ = _ := Multiset.prod_add _ _
-
       map_one' := rfl }
   invFun F x := F (Multiplicative.ofAdd ({x} : Multiset α))
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
-  right_inv F :=
-    MonoidHom.ext fun x =>
-      let F' := MonoidHom.toAdditive'' F
-      let x' := Multiplicative.toAdd x
-      show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
-        erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
-        exact F.congr_arg (Multiset.sum_map_singleton x')
+  right_inv F := MonoidHom.ext fun x =>
+    let F' := MonoidHom.toAdditive'' F
+    let x' := Multiplicative.toAdd x
+    show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
+      erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
+      exact F.congr_arg (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to a additive group homomorphism `free_comm_ring α → R`.
 For a version producing a bundled homomorphism, see `lift_hom`. -/
@@ -317,13 +314,11 @@ def coeRingHom : FreeRing α →+* FreeCommRing α :=
 #align free_ring.coe_ring_hom FreeRing.coeRingHom
 
 @[simp, norm_cast]
-protected theorem coe_zero : ↑(0 : FreeRing α) = (0 : FreeCommRing α) :=
-  rfl
+protected theorem coe_zero : ↑(0 : FreeRing α) = (0 : FreeCommRing α) := rfl
 #align free_ring.coe_zero FreeRing.coe_zero
 
 @[simp, norm_cast]
-protected theorem coe_one : ↑(1 : FreeRing α) = (1 : FreeCommRing α) :=
-  rfl
+protected theorem coe_one : ↑(1 : FreeRing α) = (1 : FreeCommRing α) := rfl
 #align free_ring.coe_one FreeRing.coe_one
 
 variable {α}
@@ -334,8 +329,8 @@ protected theorem coe_of (a : α) : ↑(FreeRing.of a) = FreeCommRing.of a :=
 #align free_ring.coe_of FreeRing.coe_of
 
 @[simp, norm_cast]
-protected theorem coe_neg (x : FreeRing α) : ↑(-x) = -(x : FreeCommRing α) :=
-  (FreeRing.lift _).map_neg _
+protected theorem coe_neg (x : FreeRing α) : ↑(-x) = -(x : FreeCommRing α) := by
+  rw [map_neg]
 #align free_ring.coe_neg FreeRing.coe_neg
 
 @[simp, norm_cast]
@@ -344,8 +339,8 @@ protected theorem coe_add (x y : FreeRing α) : ↑(x + y) = (x : FreeCommRing �
 #align free_ring.coe_add FreeRing.coe_add
 
 @[simp, norm_cast]
-protected theorem coe_sub (x y : FreeRing α) : ↑(x - y) = (x : FreeCommRing α) - y :=
-  (FreeRing.lift _).map_sub _ _
+protected theorem coe_sub (x y : FreeRing α) : ↑(x - y) = (x : FreeCommRing α) - y := by
+  rw [map_sub]
 #align free_ring.coe_sub FreeRing.coe_sub
 
 @[simp, norm_cast]
@@ -384,22 +379,20 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the
     free commutative ring on `α` is an isomorphism of rings. -/
 def subsingletonEquivFreeCommRing [Subsingleton α] : FreeRing α ≃+* FreeCommRing α :=
-  RingEquiv.ofBijective (coeRingHom _)
-    (by
-      have :
-        (coeRingHom _ : FreeRing α → FreeCommRing α) =
-          Functor.mapEquiv FreeAbelianGroup (Multiset.subsingletonEquiv α) :=
-        coe_eq α
-      rw [this]
-      apply Equiv.bijective)
+  RingEquiv.ofBijective (coeRingHom _) (by
+    have : (coeRingHom _ : FreeRing α → FreeCommRing α) =
+        Functor.mapEquiv FreeAbelianGroup (Multiset.subsingletonEquiv α) :=
+      coe_eq α
+    rw [this]
+    apply Equiv.bijective)
 #align free_ring.subsingleton_equiv_free_comm_ring FreeRing.subsingletonEquivFreeCommRing
 
 instance [Subsingleton α] : CommRing (FreeRing α) :=
   { inferInstanceAs (Ring (FreeRing α)) with
     mul_comm := fun x y => by
       rw [← (subsingletonEquivFreeCommRing α).symm_apply_apply (y * x),
-        (subsingletonEquivFreeCommRing α).map_mul, mul_comm, ←
-        (subsingletonEquivFreeCommRing α).map_mul,
+        (subsingletonEquivFreeCommRing α).map_mul, mul_comm,
+        ← (subsingletonEquivFreeCommRing α).map_mul,
         (subsingletonEquivFreeCommRing α).symm_apply_apply] }
 
 end FreeRing
@@ -409,10 +402,7 @@ end FreeRing
 def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ :=
   RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
     (MvPolynomial.eval₂Hom (Int.castRingHom (FreeCommRing α)) FreeCommRing.of)
-    (by
-      ext
-      simp)
-    (by ext <;> simp)
+    (by ext; simp) (by ext <;> simp)
 #align free_comm_ring_equiv_mv_polynomial_int freeCommRingEquivMvPolynomialInt
 
 /-- The free commutative ring on the empty type is isomorphic to `ℤ`. -/
