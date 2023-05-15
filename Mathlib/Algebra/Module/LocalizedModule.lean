@@ -356,8 +356,8 @@ instance : SMul (Localization S) (LocalizedModule S M)
         ring_nf  at eq1'⊢
         rw [eq1']))
 
-theorem mk_smul_mk (r : R) (m : M) (s t : S) : Localization.mk r s • mk m t = mk (r • m) (s * t) :=
-  by
+theorem mk_smul_mk (r : R) (m : M) (s t : S) :
+    Localization.mk r s • mk m t = mk (r • m) (s * t) := by
   dsimp only [HSMul.hSMul, SMul.smul]
   rw [Localization.liftOn_mk, liftOn_mk]
 #align localized_module.mk_smul_mk LocalizedModule.mk_smul_mk
@@ -681,8 +681,9 @@ noncomputable def lift (g : M →ₗ[R] M'')
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
 `lift g m s = s⁻¹ • g m`.
 -/
-theorem lift_mk (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
-    (m : M) (s : S) : LocalizedModule.lift S g h (LocalizedModule.mk m s) = (h s).unit⁻¹.val (g m) :=
+theorem lift_mk
+    (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit (algebraMap R (Module.End R M'') x)) (m : M) (s : S) :
+    LocalizedModule.lift S g h (LocalizedModule.mk m s) = (h s).unit⁻¹.val (g m) :=
   rfl
 #align localized_module.lift_mk LocalizedModule.lift_mk
 
