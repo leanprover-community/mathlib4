@@ -2024,8 +2024,8 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidable_le := Localization.decidableLE
-    decidable_lt := Localization.decidableLT  -- porting note: was wrong in mathlib3
+    decidableLE := Localization.decidableLE
+    decidableLT := Localization.decidableLT  -- porting note: was wrong in mathlib3
     decidable_eq := Localization.decidableEq }
 
 end Localization

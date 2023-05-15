@@ -427,7 +427,7 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    decidable_le := instDecidableRelSumLex,
+    decidableLE := instDecidableRelSumLex,
     decidable_eq := instDecidableEqSum }
 #align sum.lex.linear_order Sum.Lex.linearOrder
 
