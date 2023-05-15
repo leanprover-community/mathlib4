@@ -628,17 +628,17 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
   | { le := A_le, lt := A_lt,
-      decidableLE := A_decidable_le, decidableEq := A_decidable_eq, decidableLT := A_decidable_lt
+      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
     { le := B_le, lt := B_lt,
-      decidableLE := B_decidable_le, decidableEq := B_decidable_eq, decidableLT := B_decidable_lt
+      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h
-    obtain rfl : A_decidable_le = B_decidableLE := Subsingleton.elim _ _
-    obtain rfl : A_decidable_eq = B_decidableEq := Subsingleton.elim _ _
-    obtain rfl : A_decidable_lt = B_decidableLT := Subsingleton.elim _ _
+    obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
+    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
+    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -1043,9 +1043,9 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidable_le
-    decidableLT := decidable_lt
-    decidableEq := decidable_eq
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1090,9 +1090,9 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidable_le
-    decidableLT := decidable_lt
-    decidableEq := decidable_eq
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
