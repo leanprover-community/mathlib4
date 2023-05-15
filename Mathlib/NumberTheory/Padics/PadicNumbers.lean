@@ -388,7 +388,7 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
       have hcfg : (f + g).norm = g.norm := norm_equiv hfg'
       have hcl : f.norm = 0 := (norm_zero_iff f).2 hf
       have : max f.norm g.norm = g.norm := by rw [hcl]; exact max_eq_right (norm_nonneg _)
-      rw [this, hcfg]; apply le_refl
+      rw [this, hcfg]
     else
       if hg : g ≈ 0 then by
         have hfg' : f + g ≈ f := by
@@ -397,7 +397,7 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
         have hcfg : (f + g).norm = f.norm := norm_equiv hfg'
         have hcl : g.norm = 0 := (norm_zero_iff g).2 hg
         have : max f.norm g.norm = f.norm := by rw [hcl]; exact max_eq_left (norm_nonneg _)
-        rw [this, hcfg]; apply le_refl
+        rw [this, hcfg]
       else norm_nonarchimedean_aux hfg hf hg
 #align padic_seq.norm_nonarchimedean PadicSeq.norm_nonarchimedean
 
@@ -521,7 +521,7 @@ theorem mk_eq {f g : PadicSeq p} : mk f = mk g ↔ f ≈ g :=
 
 theorem const_equiv {q r : ℚ} : const (padicNorm p) q ≈ const (padicNorm p) r ↔ q = r :=
   ⟨fun heq ↦ eq_of_sub_eq_zero <| const_limZero.1 heq, fun heq ↦ by
-    rw [heq]; apply Setoid.refl _⟩
+    rw [heq]⟩
 #align padic.const_equiv Padic.const_equiv
 
 @[norm_cast]
@@ -918,29 +918,17 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
       _ = padicNorm p k := (padicNormE.eq_padicNorm _)
-      _ = 1 := _
-    rw [padicNorm]
-    split_ifs with H
-    · exfalso
-      apply h
-      norm_cast  at H
-      rw [H]
-      apply dvd_zero
-    · norm_cast  at H⊢
-      convert zpow_zero _
-      rw [neg_eq_zero, padicValRat.of_int]
-      norm_cast
-      apply padicValInt.eq_zero_of_not_dvd h
+      _ = 1 := by exact_mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
     rw [padicNormE.mul]
     calc
       _ ≤ ‖(p : ℚ_[p])‖ * 1 :=
         mul_le_mul le_rfl (by simpa using norm_int_le_one _) (norm_nonneg _) (norm_nonneg _)
-      _ < 1 := _
-    · rw [mul_one, padicNormE.norm_p]
-      apply inv_lt_one
-      exact_mod_cast hp.1.one_lt
+      _ < 1 := by
+        rw [mul_one, padicNormE.norm_p]
+        apply inv_lt_one
+        exact_mod_cast hp.1.one_lt
 #align padic_norm_e.norm_int_lt_one_iff_dvd padicNormE.norm_int_lt_one_iff_dvd
 
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
