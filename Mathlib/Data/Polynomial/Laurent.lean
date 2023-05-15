@@ -89,8 +89,12 @@ abbrev LaurentPolynomial (R : Type _) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 #align laurent_polynomial LaurentPolynomial
 
--- mathport name: «expr [T;T⁻¹]»
 local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
+
+-- Porting note: `ext` no longer applies `Finsupp.ext` automatically
+@[ext]
+theorem ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
+  Finsupp.ext h
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
@@ -101,7 +105,8 @@ def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
 theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
-    toLaurent p = p.toFinsupp.mapDomain Nat.cast := rfl
+    toLaurent p = p.toFinsupp.mapDomain (↑) :=
+  rfl
 #align polynomial.to_laurent_apply Polynomial.toLaurent_apply
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
@@ -112,8 +117,8 @@ def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
 @[simp]
-theorem Polynomial.toLaurentAlg_apply [CommSemiring R] (f : R[X]) :
-    toLaurentAlg f = toLaurent f := rfl
+theorem Polynomial.toLaurentAlg_apply [CommSemiring R] (f : R[X]) : toLaurentAlg f = toLaurent f :=
+  rfl
 #align polynomial.to_laurent_alg_apply Polynomial.toLaurentAlg_apply
 
 namespace LaurentPolynomial
@@ -122,7 +127,8 @@ section Semiring
 
 variable [Semiring R]
 
-theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) := rfl
+theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) :=
+  rfl
 #align laurent_polynomial.single_zero_one_eq_one LaurentPolynomial.single_zero_one_eq_one
 
 /-!  ### The functions `C` and `T`. -/
@@ -136,14 +142,16 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.C LaurentPolynomial.C
 
 theorem algebraMap_apply {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
-    algebraMap R (LaurentPolynomial A) r = C (algebraMap R A r) := rfl
+    algebraMap R (LaurentPolynomial A) r = C (algebraMap R A r) :=
+  rfl
 #align laurent_polynomial.algebra_map_apply LaurentPolynomial.algebraMap_apply
 
 /-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[T;T⁻¹]`.
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
 -/
-theorem C_eq_algebraMap {R : Type _} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r := rfl
+theorem C_eq_algebraMap {R : Type _} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
+  rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.C_eq_algebra_map LaurentPolynomial.C_eq_algebraMap
 
@@ -162,17 +170,18 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T LaurentPolynomial.T
 
 @[simp]
-theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 := rfl
+theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=
+  rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_zero LaurentPolynomial.T_zero
 
 theorem T_add (m n : ℤ) : (T (m + n) : R[T;T⁻¹]) = T m * T n := by
+  -- Porting note: was `convert single_mul_single.symm`
   simp [T, single_mul_single]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_add LaurentPolynomial.T_add
 
-theorem T_sub (m n : ℤ) : (T (m - n) : R[T;T⁻¹]) = T m * T (-n) := by
-  rw [← T_add, sub_eq_add_neg]
+theorem T_sub (m n : ℤ) : (T (m - n) : R[T;T⁻¹]) = T m * T (-n) := by rw [← T_add, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_sub LaurentPolynomial.T_sub
 
@@ -192,6 +201,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem single_eq_C_mul_T (r : R) (n : ℤ) :
     (Finsupp.single n r : R[T;T⁻¹]) = (C r * T n : R[T;T⁻¹]) := by
+  -- Porting note: was `convert single_mul_single.symm`
   simp [C, T, single_mul_single]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C_mul_T LaurentPolynomial.single_eq_C_mul_T
@@ -199,51 +209,51 @@ set_option linter.uppercaseLean3 false in
 -- This lemma locks in the right changes and is what Lean proved directly.
 -- The actual `simp`-normal form of a Laurent monomial is `C a * T n`, whenever it can be reached.
 @[simp]
-theorem Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
+theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
     (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n :=
-  show Finsupp.mapDomain Nat.cast (monomial n r).toFinsupp = (C r * T n : R[T;T⁻¹]) by
+  show Finsupp.mapDomain (↑) (monomial n r).toFinsupp = (C r * T n : R[T;T⁻¹]) by
     rw [toFinsupp_monomial, Finsupp.mapDomain_single, single_eq_C_mul_T]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_C_mul_T LaurentPolynomial.Polynomial.toLaurent_C_mul_T
+#align polynomial.to_laurent_C_mul_T Polynomial.toLaurent_C_mul_T
 
 @[simp]
-theorem Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
+theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
   convert Polynomial.toLaurent_C_mul_T 0 r
   simp only [Int.ofNat_zero, T_zero, mul_one]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_C LaurentPolynomial.Polynomial.toLaurent_C
+#align polynomial.to_laurent_C Polynomial.toLaurent_C
 
 @[simp]
-theorem Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) = T 1 := by
+theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) = T 1 := by
   have : (Polynomial.X : R[X]) = monomial 1 1 := by simp [← C_mul_X_pow_eq_monomial]
   simp [this, Polynomial.toLaurent_C_mul_T]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_X LaurentPolynomial.Polynomial.toLaurent_X
+#align polynomial.to_laurent_X Polynomial.toLaurent_X
 
 -- @[simp] -- Porting note: simp can prove this
-theorem Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T⁻¹]) 1 = 1 :=
+theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T⁻¹]) 1 = 1 :=
   map_one Polynomial.toLaurent
-#align polynomial.to_laurent_one LaurentPolynomial.Polynomial.toLaurent_one
+#align polynomial.to_laurent_one Polynomial.toLaurent_one
 
 -- @[simp] -- Porting note: simp can prove this
-theorem Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
+theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
   simp only [_root_.map_mul, Polynomial.toLaurent_C]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_C_mul_eq LaurentPolynomial.Polynomial.toLaurent_C_mul_eq
+#align polynomial.to_laurent_C_mul_eq Polynomial.toLaurent_C_mul_eq
 
 -- @[simp] -- Porting note: simp can prove this
-theorem Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
+theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
   simp only [map_pow, Polynomial.toLaurent_X, T_pow, mul_one]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_X_pow LaurentPolynomial.Polynomial.toLaurent_X_pow
+#align polynomial.to_laurent_X_pow Polynomial.toLaurent_X_pow
 
 -- @[simp] -- Porting note: simp can prove this
-theorem Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
+theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
   simp only [_root_.map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
 set_option linter.uppercaseLean3 false in
-#align polynomial.to_laurent_C_mul_X_pow LaurentPolynomial.Polynomial.toLaurent_C_mul_X_pow
+#align polynomial.to_laurent_C_mul_X_pow Polynomial.toLaurent_C_mul_X_pow
 
 instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
@@ -253,7 +263,8 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.invertible_T LaurentPolynomial.invertibleT
 
 @[simp]
-theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) := rfl
+theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
+  rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.inv_of_T LaurentPolynomial.invOf_T
 
@@ -281,8 +292,9 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
       rw [Finset.sum_insert ns]
       exact h_add A ih
   convert B p.support
-  refine' ext (fun (a : ℤ) => _)
+  ext a
   simp_rw [← single_eq_C_mul_T]
+  -- Porting note: did not make progress in `simp_rw`
   rw [Finset.sum_apply']
   simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
   split_ifs with h
@@ -298,7 +310,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
     M p := by
-  refine' p.induction_on (fun a => _) (@fun p q => h_add p q) _ _ <;>
+  refine' p.induction_on (fun a => _) (fun {p q} => h_add p q) _ _ <;>
       try exact fun n f _ => h_C_mul_T _ f
   convert h_C_mul_T 0 a
   exact (mul_one _).symm
@@ -314,7 +326,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
-  Commute.eq (commute_T n f)
+  (commute_T n f).eq
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_mul LaurentPolynomial.T_mul
 
@@ -360,26 +372,26 @@ theorem leftInverse_trunc_toLaurent :
 #align laurent_polynomial.left_inverse_trunc_to_laurent LaurentPolynomial.leftInverse_trunc_toLaurent
 
 @[simp]
-theorem Polynomial.trunc_toLaurent (f : R[X]) : trunc (toLaurent f) = f :=
+theorem _root_.Polynomial.trunc_toLaurent (f : R[X]) : trunc (toLaurent f) = f :=
   leftInverse_trunc_toLaurent _
-#align polynomial.trunc_to_laurent LaurentPolynomial.Polynomial.trunc_toLaurent
+#align polynomial.trunc_to_laurent Polynomial.trunc_toLaurent
 
-theorem Polynomial.toLaurent_injective :
+theorem _root_.Polynomial.toLaurent_injective :
     Function.Injective (Polynomial.toLaurent : R[X] → R[T;T⁻¹]) :=
   leftInverse_trunc_toLaurent.injective
-#align polynomial.to_laurent_injective LaurentPolynomial.Polynomial.toLaurent_injective
+#align polynomial.to_laurent_injective Polynomial.toLaurent_injective
 
 @[simp]
-theorem Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
+theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
   ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
-#align polynomial.to_laurent_inj LaurentPolynomial.Polynomial.toLaurent_inj
+#align polynomial.to_laurent_inj Polynomial.toLaurent_inj
 
-theorem Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 :=
+theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 :=
   (map_ne_zero_iff _ Polynomial.toLaurent_injective).symm
-#align polynomial.to_laurent_ne_zero LaurentPolynomial.Polynomial.toLaurent_ne_zero
+#align polynomial.to_laurent_ne_zero Polynomial.toLaurent_ne_zero
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ)(f' : R[X]), toLaurent f' = f * T n := by
-  refine' f.induction_on' _ fun n a => _ <;> clear f
+  refine f.induction_on' ?_ fun n a => ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
     refine' ⟨m + n, fn * X ^ n + gn * X ^ m, _⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
@@ -420,6 +432,8 @@ set_option linter.uppercaseLean3 false in
 section Support
 
 theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp.support (C a * T n) ⊆ {n} := by
+  -- Porting note: was
+  -- simpa only [← single_eq_C_mul_T] using support_single_subset
   rw [← single_eq_C_mul_T]
   exact support_single_subset
 set_option linter.uppercaseLean3 false in
@@ -467,14 +481,15 @@ def degree (f : R[T;T⁻¹]) : WithBot ℤ :=
 #align laurent_polynomial.degree LaurentPolynomial.degree
 
 @[simp]
-theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ := rfl
+theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
+  rfl
 #align laurent_polynomial.degree_zero LaurentPolynomial.degree_zero
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine' ⟨fun h => _, fun h => by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
-  refine' ext (fun (n : ℤ) => _)
+  ext n
   refine' not_not.mp fun f0 => _
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne.def, WithBot.coe_ne_bot] at h
   exact h n f0
@@ -487,6 +502,7 @@ open Classical
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
   rw [degree]
+  -- Porting note: was `convert Finset.max_singleton`
   have : Finsupp.support (C a * T n) = {n} := by
     refine' support_eq_singleton.mpr _
     rw [← single_eq_C_mul_T]
@@ -496,8 +512,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T LaurentPolynomial.degree_C_mul_T
 
-theorem degree_C_mul_T_ite (n : ℤ) (a : R) : (degree (C a * T n) : WithBot ℤ) =
-    ite (a = 0) (⊥ : WithBot ℤ) n := by
+theorem degree_C_mul_T_ite (n : ℤ) (a : R) : degree (C a * T n) = ite (a = 0) ⊥ ↑n := by
   split_ifs with h <;>
     simp only [h, map_zero, MulZeroClass.zero_mul, degree_zero, degree_C_mul_T, Ne.def,
       not_false_iff]
@@ -571,7 +586,8 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.algebra_map_X_pow LaurentPolynomial.algebraMap_X_pow
 
 @[simp]
-theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toLaurent f := rfl
+theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toLaurent f :=
+  rfl
 #align laurent_polynomial.algebra_map_eq_to_laurent LaurentPolynomial.algebraMap_eq_toLaurent
 
 theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T;T⁻¹] :=
@@ -585,7 +601,7 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
       refine' ⟨(f, ⟨_, this⟩), _⟩
       simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
         add_left_neg, T_zero, mul_one]
-    eq_iff_exists' := @fun f g => by
+    eq_iff_exists' := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       refine' ⟨_, _⟩
       · rintro rfl
