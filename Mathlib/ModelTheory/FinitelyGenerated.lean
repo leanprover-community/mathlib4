@@ -16,10 +16,10 @@ This file defines what it means for a first-order (sub)structure to be finitely 
 generated, similarly to other finitely-generated objects in the algebra library.
 
 ## Main Definitions
-* `first_order.language.substructure.FG` indicates that a substructure is finitely generated.
-* `first_order.language.Structure.FG` indicates that a structure is finitely generated.
-* `first_order.language.substructure.CG` indicates that a substructure is countably generated.
-* `first_order.language.Structure.CG` indicates that a structure is countably generated.
+* `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
+* `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
+* `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
+* `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
 
 
 ## TODO
@@ -212,7 +212,7 @@ theorem fg_def : FG L M ↔ (⊤ : L.Substructure M).FG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align first_order.language.Structure.fg_def FirstOrder.Language.Structure.fg_def
 
-/-- An equivalent expression of `Structure.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Structure.fg` in terms of `Set.Finite` instead of `Finset`. -/
 theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.Substructure M) := by
   rw [fg_def, Substructure.fg_def]
 #align first_order.language.Structure.fg_iff FirstOrder.Language.Structure.fg_iff
