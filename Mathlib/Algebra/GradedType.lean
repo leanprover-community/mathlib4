@@ -26,6 +26,20 @@ class IsAssocGradedHSMul where
         α •[show a + bc = abc by rw [← hbc, ← add_assoc, hab, habc]] (β •[hbc] γ)
 
 @[simp]
+lemma γhsmul_assoc_of_first_degree_eq_zero
+    [IsAssocGradedHSMul X Y Z XY YZ XYZ]
+    {b c : M} (α : X 0) (β : Y b) (γ : Z c) (bc : M) (hbc : b + c = bc) :
+  (α •[zero_add _] β) •[hbc] γ = α •[zero_add _] β •[hbc] γ := by
+  apply IsAssocGradedHSMul.γhsmul_assoc
+
+@[simp]
+lemma γhsmul_assoc_of_second_degree_eq_zero
+    [IsAssocGradedHSMul X Y Z XY YZ XYZ]
+    {a c : M} (α : X a) (β : Y 0) (γ : Z c) (ac : M) (hac : a + c = ac) :
+  (α •[add_zero _] β) •[hac] γ = α •[hac] β •[zero_add _] γ := by
+  apply IsAssocGradedHSMul.γhsmul_assoc
+
+@[simp]
 lemma γhsmul_assoc_of_third_degree_eq_zero
     [IsAssocGradedHSMul X Y Z XY YZ XYZ]
     {a b : M} (α : X a) (β : Y b) (γ : Z 0) (ab : M) (hab : a + b = ab) :

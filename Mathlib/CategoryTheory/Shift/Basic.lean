@@ -192,6 +192,20 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 #align category_theory.shift_functor_zero CategoryTheory.shiftFunctorZero
 
+variable {A}
+
+def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
+  eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
+variable (A)
+
+@[simp]
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C (0 : A) rfl = shiftFunctorZero C A := by
+  ext1
+  dsimp only [shiftFunctorZero']
+  simp
+
 variable {C A}
 
 lemma ShiftMkCore.shiftFunctor_eq (h : ShiftMkCore C A) (a : A) :
