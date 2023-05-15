@@ -120,26 +120,26 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
     exact Set.image_swap_prod _ _
 #align finset.image_swap_product Finset.image_swap_product
 
-theorem product_eq_bunionᵢ [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ᶠ t = s.bunionᵢ fun a => t.image fun b => (a, b) :=
+theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
+    s ×ᶠ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
-#align finset.product_eq_bUnion Finset.product_eq_bunionᵢ
+#align finset.product_eq_bUnion Finset.product_eq_biUnion
 
-theorem product_eq_bunionᵢ_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ᶠ t = t.bunionᵢ fun b => s.image fun a => (a, b) :=
+theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
+    s ×ᶠ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
-#align finset.product_eq_bUnion_right Finset.product_eq_bunionᵢ_right
+#align finset.product_eq_bUnion_right Finset.product_eq_biUnion_right
 
 /-- See also `Finset.sup_product_left`. -/
 @[simp]
-theorem product_bunionᵢ [DecidableEq γ] (s : Finset α) (t : Finset β) (f : α × β → Finset γ) :
-    (s ×ᶠ t).bunionᵢ f = s.bunionᵢ fun a => t.bunionᵢ fun b => f (a, b) := by
-  classical simp_rw [product_eq_bunionᵢ, bunionᵢ_bunionᵢ, image_bunionᵢ]
-#align finset.product_bUnion Finset.product_bunionᵢ
+theorem product_biUnion [DecidableEq γ] (s : Finset α) (t : Finset β) (f : α × β → Finset γ) :
+    (s ×ᶠ t).biUnion f = s.biUnion fun a => t.biUnion fun b => f (a, b) := by
+  classical simp_rw [product_eq_biUnion, biUnion_biUnion, image_biUnion]
+#align finset.product_bUnion Finset.product_biUnion
 
 @[simp]
 theorem card_product (s : Finset α) (t : Finset β) : card (s ×ᶠ t) = card s * card t :=
