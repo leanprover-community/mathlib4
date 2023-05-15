@@ -49,6 +49,14 @@ theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
   (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ hv hu h
 #align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
 
+theorem nat_gcd_helper_1' (x y a b : ℕ) (h : Nat.beq (y * b) (x * a + 1) = true) :
+    Nat.gcd x y = 1 :=
+  nat_gcd_helper_1 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
+
+theorem nat_gcd_helper_2' (x y a b : ℕ) (h : Nat.beq (x * a) (y * b + 1) = true) :
+    Nat.gcd x y = 1 :=
+  nat_gcd_helper_2 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
+
 theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (d0 : Nat.beq d 0 = false)
     (dm : Nat.beq (x * y) (d * m) = true) : Nat.lcm x y = m :=
@@ -149,11 +157,19 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
       have ea' : Q(ℕ) := mkRawNatLit a.natAbs
       have eb' : Q(ℕ) := mkRawNatLit b.natAbs
       if a ≥ 0 then
-        have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + $ed) = true) := (q(Eq.refl true) : Expr)
-        ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
+        if d = 1 then
+          have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + 1) = true) := (q(Eq.refl true) : Expr)
+          ⟨mkRawNatLit 1, q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
+        else
+          have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + $ed) = true) := (q(Eq.refl true) : Expr)
+          ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
       else
-        have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + $ed) = true) := (q(Eq.refl true) : Expr)
-        ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
+        if d = 1 then
+          have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + 1) = true) := (q(Eq.refl true) : Expr)
+          ⟨mkRawNatLit 1, q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
+        else
+          have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + $ed) = true) := (q(Eq.refl true) : Expr)
+          ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
 #align tactic.norm_num.prove_gcd_nat Tactic.NormNum.proveNatGCD
 
 @[norm_num Nat.gcd _ _]

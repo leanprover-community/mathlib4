@@ -32,47 +32,46 @@ example : Nat.sqrt 120 = 10 := by norm_num
 example : Nat.sqrt 121 = 11 := by norm_num
 -/
 
-example : Nat.coprime 1 2 := by norm_num only
-example : Nat.coprime 2 1 := by norm_num only
-example : ¬ Nat.coprime 0 0 := by norm_num only
-example : ¬ Nat.coprime 0 3 := by norm_num only
-example : ¬ Nat.coprime 2 0 := by norm_num only
-example : Nat.coprime 2 3 := by norm_num only
-example : ¬ Nat.coprime 2 4 := by norm_num only
+theorem ex11 : Nat.coprime 1 2 := by norm_num1
+theorem ex12 : Nat.coprime 2 1 := by norm_num1
+theorem ex13 : ¬ Nat.coprime 0 0 := by norm_num1
+theorem ex14 : ¬ Nat.coprime 0 3 := by norm_num1
+theorem ex15 : ¬ Nat.coprime 2 0 := by norm_num1
+theorem ex16 : Nat.coprime 2 3 := by norm_num1
+theorem ex16' : Nat.coprime 3 2 := by norm_num1
+theorem ex17 : ¬ Nat.coprime 2 4 := by norm_num1
 
-example : Nat.gcd 1 2 = 1 := by norm_num only
-example : Nat.gcd 2 1 = 1 := by norm_num only
-example : Nat.gcd 0 0 = 0 := by norm_num only
-example : Nat.gcd 0 3 = 3 := by norm_num only
-example : Nat.gcd 2 0 = 2 := by norm_num only
-example : Nat.gcd 2 3 = 1 := by norm_num only
-example : Nat.gcd 2 4 = 2 := by norm_num only
+theorem ex21 : Nat.gcd 1 2 = 1 := by norm_num1
+theorem ex22 : Nat.gcd 2 1 = 1 := by norm_num1
+theorem ex23 : Nat.gcd 0 0 = 0 := by norm_num1
+theorem ex24 : Nat.gcd 0 3 = 3 := by norm_num1
+theorem ex25 : Nat.gcd 2 0 = 2 := by norm_num1
+theorem ex26 : Nat.gcd 2 3 = 1 := by norm_num1
+theorem ex27 : Nat.gcd 2 4 = 2 := by norm_num1
 
-example : Nat.lcm 1 2 = 2 := by norm_num only
-example : Nat.lcm 2 1 = 2 := by norm_num only
-example : Nat.lcm 0 0 = 0 := by norm_num only
-example : Nat.lcm 0 3 = 0 := by norm_num only
-example : Nat.lcm 2 0 = 0 := by norm_num only
-example : Nat.lcm 2 3 = 6 := by norm_num only
-example : Nat.lcm 2 4 = 4 := by norm_num only
+theorem ex31 : Nat.lcm 1 2 = 2 := by norm_num1
+theorem ex32 : Nat.lcm 2 1 = 2 := by norm_num1
+theorem ex33 : Nat.lcm 0 0 = 0 := by norm_num1
+theorem ex34 : Nat.lcm 0 3 = 0 := by norm_num1
+theorem ex35 : Nat.lcm 2 0 = 0 := by norm_num1
+theorem ex36 : Nat.lcm 2 3 = 6 := by norm_num1
+theorem ex37 : Nat.lcm 2 4 = 4 := by norm_num1
 
-example : Int.gcd 2 3 = 1 := by norm_num only
-example : Int.gcd (-2) 3 = 1 := by norm_num only
-example : Int.gcd 2 (-3) = 1 := by norm_num only
-example : Int.gcd (-2) (-3) = 1 := by norm_num only
+theorem ex41 : Int.gcd 2 3 = 1 := by norm_num1
+theorem ex42 : Int.gcd (-2) 3 = 1 := by norm_num1
+theorem ex43 : Int.gcd 2 (-3) = 1 := by norm_num1
+theorem ex44 : Int.gcd (-2) (-3) = 1 := by norm_num1
 
-example : Int.lcm 2 3 = 6 := by norm_num only
-example : Int.lcm (-2) 3 = 6 := by norm_num only
-example : Int.lcm 2 (-3) = 6 := by norm_num only
-example : Int.lcm (-2) (-3) = 6 := by norm_num only
+theorem ex51 : Int.lcm 2 3 = 6 := by norm_num1
+theorem ex52 : Int.lcm (-2) 3 = 6 := by norm_num1
+theorem ex53 : Int.lcm 2 (-3) = 6 := by norm_num1
+theorem ex54 : Int.lcm (-2) (-3) = 6 := by norm_num1
 
-example : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num only
-
-example : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num only
-
-example : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num only
-
-example : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num only
+theorem ex61 : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num1
+theorem ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num1
+theorem ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := by norm_num1
+theorem ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num1
+theorem ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num1
 
 /-
 example : ¬ Nat.Prime 0 := by norm_num
@@ -107,65 +106,65 @@ example : Nat.factors 221 = [13, 17] := by norm_num
 -/
 
 -- randomized tests
-example : Nat.gcd 35 29 = 1 := by norm_num only
-example : Int.gcd 35 29 = 1 := by norm_num only
-example : Nat.lcm 35 29 = 1015 := by norm_num only
-example : Int.gcd 35 29 = 1 := by norm_num only
-example : Nat.coprime 35 29 := by norm_num only
+example : Nat.gcd 35 29 = 1 := by norm_num1
+example : Int.gcd 35 29 = 1 := by norm_num1
+example : Nat.lcm 35 29 = 1015 := by norm_num1
+example : Int.gcd 35 29 = 1 := by norm_num1
+example : Nat.coprime 35 29 := by norm_num1
 
-example : Nat.gcd 80 2 = 2 := by norm_num only
-example : Int.gcd 80 2 = 2 := by norm_num only
-example : Nat.lcm 80 2 = 80 := by norm_num only
-example : Int.gcd 80 2 = 2 := by norm_num only
-example : ¬ Nat.coprime 80 2 := by norm_num only
+example : Nat.gcd 80 2 = 2 := by norm_num1
+example : Int.gcd 80 2 = 2 := by norm_num1
+example : Nat.lcm 80 2 = 80 := by norm_num1
+example : Int.gcd 80 2 = 2 := by norm_num1
+example : ¬ Nat.coprime 80 2 := by norm_num1
 
-example : Nat.gcd 19 17 = 1 := by norm_num only
-example : Int.gcd 19 17 = 1 := by norm_num only
-example : Nat.lcm 19 17 = 323 := by norm_num only
-example : Int.gcd 19 17 = 1 := by norm_num only
-example : Nat.coprime 19 17 := by norm_num only
+example : Nat.gcd 19 17 = 1 := by norm_num1
+example : Int.gcd 19 17 = 1 := by norm_num1
+example : Nat.lcm 19 17 = 323 := by norm_num1
+example : Int.gcd 19 17 = 1 := by norm_num1
+example : Nat.coprime 19 17 := by norm_num1
 
-example : Nat.gcd 11 18 = 1 := by norm_num only
-example : Int.gcd 11 18 = 1 := by norm_num only
-example : Nat.lcm 11 18 = 198 := by norm_num only
-example : Int.gcd 11 18 = 1 := by norm_num only
-example : Nat.coprime 11 18 := by norm_num only
+example : Nat.gcd 11 18 = 1 := by norm_num1
+example : Int.gcd 11 18 = 1 := by norm_num1
+example : Nat.lcm 11 18 = 198 := by norm_num1
+example : Int.gcd 11 18 = 1 := by norm_num1
+example : Nat.coprime 11 18 := by norm_num1
 
-example : Nat.gcd 23 73 = 1 := by norm_num only
-example : Int.gcd 23 73 = 1 := by norm_num only
-example : Nat.lcm 23 73 = 1679 := by norm_num only
-example : Int.gcd 23 73 = 1 := by norm_num only
-example : Nat.coprime 23 73 := by norm_num only
+example : Nat.gcd 23 73 = 1 := by norm_num1
+example : Int.gcd 23 73 = 1 := by norm_num1
+example : Nat.lcm 23 73 = 1679 := by norm_num1
+example : Int.gcd 23 73 = 1 := by norm_num1
+example : Nat.coprime 23 73 := by norm_num1
 
-example : Nat.gcd 73 68 = 1 := by norm_num only
-example : Int.gcd 73 68 = 1 := by norm_num only
-example : Nat.lcm 73 68 = 4964 := by norm_num only
-example : Int.gcd 73 68 = 1 := by norm_num only
-example : Nat.coprime 73 68 := by norm_num only
+example : Nat.gcd 73 68 = 1 := by norm_num1
+example : Int.gcd 73 68 = 1 := by norm_num1
+example : Nat.lcm 73 68 = 4964 := by norm_num1
+example : Int.gcd 73 68 = 1 := by norm_num1
+example : Nat.coprime 73 68 := by norm_num1
 
-example : Nat.gcd 28 16 = 4 := by norm_num only
-example : Int.gcd 28 16 = 4 := by norm_num only
-example : Nat.lcm 28 16 = 112 := by norm_num only
-example : Int.gcd 28 16 = 4 := by norm_num only
-example : ¬ Nat.coprime 28 16 := by norm_num only
+example : Nat.gcd 28 16 = 4 := by norm_num1
+example : Int.gcd 28 16 = 4 := by norm_num1
+example : Nat.lcm 28 16 = 112 := by norm_num1
+example : Int.gcd 28 16 = 4 := by norm_num1
+example : ¬ Nat.coprime 28 16 := by norm_num1
 
-example : Nat.gcd 44 98 = 2 := by norm_num only
-example : Int.gcd 44 98 = 2 := by norm_num only
-example : Nat.lcm 44 98 = 2156 := by norm_num only
-example : Int.gcd 44 98 = 2 := by norm_num only
-example : ¬ Nat.coprime 44 98 := by norm_num only
+example : Nat.gcd 44 98 = 2 := by norm_num1
+example : Int.gcd 44 98 = 2 := by norm_num1
+example : Nat.lcm 44 98 = 2156 := by norm_num1
+example : Int.gcd 44 98 = 2 := by norm_num1
+example : ¬ Nat.coprime 44 98 := by norm_num1
 
-example : Nat.gcd 21 79 = 1 := by norm_num only
-example : Int.gcd 21 79 = 1 := by norm_num only
-example : Nat.lcm 21 79 = 1659 := by norm_num only
-example : Int.gcd 21 79 = 1 := by norm_num only
-example : Nat.coprime 21 79 := by norm_num only
+example : Nat.gcd 21 79 = 1 := by norm_num1
+example : Int.gcd 21 79 = 1 := by norm_num1
+example : Nat.lcm 21 79 = 1659 := by norm_num1
+example : Int.gcd 21 79 = 1 := by norm_num1
+example : Nat.coprime 21 79 := by norm_num1
 
-example : Nat.gcd 93 34 = 1 := by norm_num only
-example : Int.gcd 93 34 = 1 := by norm_num only
-example : Nat.lcm 93 34 = 3162 := by norm_num only
-example : Int.gcd 93 34 = 1 := by norm_num only
-example : Nat.coprime 93 34 := by norm_num only
+example : Nat.gcd 93 34 = 1 := by norm_num1
+example : Int.gcd 93 34 = 1 := by norm_num1
+example : Nat.lcm 93 34 = 3162 := by norm_num1
+example : Int.gcd 93 34 = 1 := by norm_num1
+example : Nat.coprime 93 34 := by norm_num1
 
 /-
 example : ¬ Nat.Prime 912 := by norm_num
