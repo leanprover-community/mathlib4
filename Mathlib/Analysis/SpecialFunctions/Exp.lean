@@ -15,8 +15,8 @@ import Mathlib.Analysis.SpecificLimits.Normed
 /-!
 # Complex and real exponential
 
-In this file we prove continuity of `complex.exp` and `real.exp`. We also prove a few facts about
-limits of `real.exp` at infinity.
+In this file we prove continuity of `Complex.exp` and `Real.exp`. We also prove a few facts about
+limits of `Real.exp` at infinity.
 
 ## Tags
 
@@ -277,7 +277,7 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     · rw [neg_zero]
 #align real.tendsto_div_pow_mul_exp_add_at_top Real.tendsto_div_pow_mul_exp_add_atTop
 
-/-- `real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
+/-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
@@ -383,7 +383,7 @@ theorem isLittleO_one_exp_comp {f : α → ℝ} :
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
 #align real.is_o_one_exp_comp Real.isLittleO_one_exp_comp
 
-/-- `real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
+/-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 @[simp]
 theorem isBigO_one_exp_comp {f : α → ℝ} :
@@ -392,7 +392,7 @@ theorem isBigO_one_exp_comp {f : α → ℝ} :
 set_option linter.uppercaseLean3 false in
 #align real.is_O_one_exp_comp Real.isBigO_one_exp_comp
 
-/-- `real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
+/-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 theorem isBigO_exp_comp_one {f : α → ℝ} :
     (fun x => exp (f x)) =O[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l f := by
@@ -400,7 +400,7 @@ theorem isBigO_exp_comp_one {f : α → ℝ} :
 set_option linter.uppercaseLean3 false in
 #align real.is_O_exp_comp_one Real.isBigO_exp_comp_one
 
-/-- `real.exp (f x)` is bounded away from zero and infinity along a filter `l` if and only if
+/-- `Real.exp (f x)` is bounded away from zero and infinity along a filter `l` if and only if
 `|f x|` is bounded from above along this filter. -/
 @[simp]
 theorem isTheta_exp_comp_one {f : α → ℝ} :
@@ -440,12 +440,12 @@ theorem tendsto_exp_nhds_zero_iff {α : Type _} {l : Filter α} {f : α → ℂ}
   rfl
 #align complex.tendsto_exp_nhds_zero_iff Complex.tendsto_exp_nhds_zero_iff
 
-/-- `complex.abs (complex.exp z) → ∞` as `complex.re z → ∞`. TODO: use `bornology.cobounded`. -/
+/-- `Complex.abs (complex.exp z) → ∞` as `Complex.re z → ∞`. TODO: use `Bornology.cobounded`. -/
 theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (comap abs atTop) :=
   comap_exp_comap_abs_atTop ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_top Complex.tendsto_exp_comap_re_atTop
 
-/-- `complex.exp z → 0` as `complex.re z → -∞`.-/
+/-- `Complex.exp z → 0` as `Complex.re z → -∞`.-/
 theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_bot Complex.tendsto_exp_comap_re_atBot
