@@ -277,9 +277,9 @@ theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
   letI := Classical.decEq n
-  simp_rw [range_eq_map, ← supᵢ_range_stdBasis, Submodule.map_supᵢ, range_eq_map, ←
+  simp_rw [range_eq_map, ← iSup_range_stdBasis, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
-    Matrix.mulVecLin_apply, M.mulVec_stdBasis_apply, supᵢ_span, range_eq_unionᵢ]
+    Matrix.mulVecLin_apply, M.mulVec_stdBasis_apply, iSup_span, range_eq_iUnion]
 #align matrix.range_mul_vec_lin Matrix.range_mulVecLin
 
 variable [DecidableEq n]
@@ -673,8 +673,8 @@ theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
 
 @[simp]
 theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l R M₁)
-    (b' : Basis l R M₂) : LinearMap.toMatrix b' b (b'.equiv b (Equiv.refl l) : M₂ →ₗ[R] M₁) = 1 :=
-  by
+    (b' : Basis l R M₂) :
+    LinearMap.toMatrix b' b (b'.equiv b (Equiv.refl l) : M₂ →ₗ[R] M₁) = 1 := by
   ext (i j)
   simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 #align linear_map.to_matrix_basis_equiv LinearMap.toMatrix_basis_equiv
@@ -829,8 +829,8 @@ theorem Matrix.toLin_finTwoProd (a b c d : R) :
 
 @[simp]
 theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
-    LinearMap.toMatrix v₁ v₁ (DistribMulAction.toLinearMap R M₁ x) = Matrix.diagonal fun _ => x :=
-  by
+    LinearMap.toMatrix v₁ v₁ (DistribMulAction.toLinearMap R M₁ x) =
+    Matrix.diagonal fun _ => x := by
   ext
   rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, LinearEquiv.map_smul,
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
@@ -977,7 +977,6 @@ variable {M M₁ M₂ : Type _} [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 
-set_option synthInstance.etaExperiment true in
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
@@ -988,7 +987,6 @@ def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R 
     commutes' := LinearMap.toMatrix'_algebraMap }
 #align alg_equiv_matrix' algEquivMatrix'
 
-set_option synthInstance.etaExperiment true in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
 def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=

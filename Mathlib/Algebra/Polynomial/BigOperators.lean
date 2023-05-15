@@ -66,8 +66,7 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
   by_cases h : l.sum = 0
   · simp [h]
   · rw [degree_eq_natDegree h]
-    suffices (l.map natDegree).maximum = ((l.map natDegree).foldr max 0 : ℕ)
-      by
+    suffices (l.map natDegree).maximum = ((l.map natDegree).foldr max 0 : ℕ) by
       rw [this]
       simpa [this, Nat.cast_withBot] using natDegree_list_sum_le l
     rw [← List.foldr_max_of_ne_nil]
@@ -96,8 +95,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
   · have hl' : ∀ p ∈ tl, natDegree p ≤ n := fun p hp => hl p (List.mem_cons_of_mem _ hp)
     simp only [List.prod_cons, List.map, List.length]
     rw [add_mul, one_mul, add_comm, ← IH hl', mul_comm tl.length]
-    have h : natDegree tl.prod ≤ n * tl.length :=
-      by
+    have h : natDegree tl.prod ≤ n * tl.length := by
       refine' (natDegree_list_prod_le _).trans _
       rw [← tl.length_map natDegree, mul_comm]
       refine' List.sum_le_card_nsmul _ _ _
@@ -196,8 +194,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     t.prod.natDegree = (t.map natDegree).sum := by
   nontriviality R
   apply natDegree_multiset_prod'
-  suffices (t.map fun f => leadingCoeff f).prod = 1
-    by
+  suffices (t.map fun f => leadingCoeff f).prod = 1 by
     rw [this]
     simp
   convert prod_replicate (Multiset.card t) (1 : R)
@@ -323,8 +320,8 @@ theorem natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
   intro x hx; simp [h x hx]
 #align polynomial.nat_degree_prod Polynomial.natDegree_prod
 
-theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) : natDegree t.prod = (t.map natDegree).sum :=
-  by
+theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
+    natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']
   simp_rw [Ne.def, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
@@ -352,8 +349,8 @@ the product of the leading coefficients.
 See `Polynomial.leadingCoeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
-theorem leadingCoeff_multiset_prod : t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod :=
-  by
+theorem leadingCoeff_multiset_prod :
+    t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
   rfl
 #align polynomial.leading_coeff_multiset_prod Polynomial.leadingCoeff_multiset_prod

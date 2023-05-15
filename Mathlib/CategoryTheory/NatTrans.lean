@@ -59,14 +59,7 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 #align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
 #align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
 
-/--
-This unexpander will pretty print `η.app X` properly.
-Without this, we would have `NatTrans.app η X`.
--/
-@[app_unexpander NatTrans.app] def
-  unexpandNatTransApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
-  | _            => throw ()
+pp_extended_field_notation NatTrans.app
 
 -- TODO Perhaps we should just turn on `ext` in aesop?
 attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext

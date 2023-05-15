@@ -139,9 +139,8 @@ theorem iff_quotient_mvPolynomial :
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
-theorem iff_quotient_mvPolynomial' :
-    FiniteType R A ↔ ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f :=
-  by
+theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
+    ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
@@ -255,8 +254,8 @@ alias of_finite ← _root_.RingHom.Finite.to_finiteType
 #align ring_hom.finite.to_finite_type RingHom.Finite.to_finiteType
 
 set_option synthInstance.etaExperiment true in
-theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) : g.FiniteType :=
-  by
+theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
+    g.FiniteType := by
   let _ := f.toAlgebra
   let _ := g.toAlgebra
   let _ := (g.comp f).toAlgebra
@@ -357,7 +356,7 @@ theorem support_gen_of_gen {S : Set (AddMonoidAlgebra R M)} (hS : Algebra.adjoin
   have hincl :
     of' R M '' f.support ⊆ ⋃ (g : AddMonoidAlgebra R M) (_H : g ∈ S), of' R M '' g.support := by
     intro s hs
-    exact Set.mem_unionᵢ₂.2 ⟨f, ⟨hf, hs⟩⟩
+    exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)
 #align add_monoid_algebra.support_gen_of_gen AddMonoidAlgebra.support_gen_of_gen
 
@@ -368,7 +367,7 @@ theorem support_gen_of_gen' {S : Set (AddMonoidAlgebra R M)} (hS : Algebra.adjoi
   suffices (of' R M '' ⋃ f ∈ S, (f.support : Set M)) = ⋃ f ∈ S, of' R M '' (f.support : Set M) by
     rw [this]
     exact support_gen_of_gen hS
-  simp only [Set.image_unionᵢ]
+  simp only [Set.image_iUnion]
 #align add_monoid_algebra.support_gen_of_gen' AddMonoidAlgebra.support_gen_of_gen'
 
 end Semiring
@@ -383,9 +382,9 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (AddMonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
   letI : DecidableEq M := Classical.decEq M
-  use Finset.bunionᵢ S fun f => f.support
-  have : (Finset.bunionᵢ S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
-    simp only [Finset.set_bunionᵢ_coe, Finset.coe_bunionᵢ]
+  use Finset.biUnion S fun f => f.support
+  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+    simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
 #align add_monoid_algebra.exists_finset_adjoin_eq_top AddMonoidAlgebra.exists_finset_adjoin_eq_top
@@ -450,8 +449,8 @@ variable (R M)
 
 /-- If an additive monoid `M` is finitely generated then `AddMonoidAlgebra R M` is of finite
 type. -/
-instance finiteType_of_fg [CommRing R] [h : AddMonoid.Fg M] : FiniteType R (AddMonoidAlgebra R M) :=
-  by
+instance finiteType_of_fg [CommRing R] [h : AddMonoid.Fg M] :
+    FiniteType R (AddMonoidAlgebra R M) := by
   obtain ⟨S, hS⟩ := h.out
   exact (FiniteType.mvPolynomial R (S : Set M)).of_surjective
       (MvPolynomial.aeval fun s : (S : Set M) => of' R M ↑s)
@@ -516,10 +515,10 @@ theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R 
   --Porting note: ⋃ notation did not work here. Was
   -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
-      Set.unionᵢ fun (g : MonoidAlgebra R M)
-        => Set.unionᵢ fun (_ : g ∈ S) => (of R M '' g.support) := by
+      Set.iUnion fun (g : MonoidAlgebra R M)
+        => Set.iUnion fun (_ : g ∈ S) => (of R M '' g.support) := by
     intro s hs
-    exact Set.mem_unionᵢ₂.2 ⟨f, ⟨hf, hs⟩⟩
+    exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)
 #align monoid_algebra.support_gen_of_gen MonoidAlgebra.support_gen_of_gen
 
@@ -530,7 +529,7 @@ theorem support_gen_of_gen' {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R
   suffices (of R M '' ⋃ f ∈ S, (f.support : Set M)) = ⋃ f ∈ S, of R M '' (f.support : Set M) by
     rw [this]
     exact support_gen_of_gen hS
-  simp only [Set.image_unionᵢ]
+  simp only [Set.image_iUnion]
 #align monoid_algebra.support_gen_of_gen' MonoidAlgebra.support_gen_of_gen'
 
 end Semiring
@@ -545,9 +544,9 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
   letI : DecidableEq M := Classical.decEq M
-  use Finset.bunionᵢ S fun f => f.support
-  have : (Finset.bunionᵢ S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
-    simp only [Finset.set_bunionᵢ_coe, Finset.coe_bunionᵢ]
+  use Finset.biUnion S fun f => f.support
+  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+    simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
 #align monoid_algebra.exists_finset_adjoin_eq_top MonoidAlgebra.exists_finset_adjoin_eq_top

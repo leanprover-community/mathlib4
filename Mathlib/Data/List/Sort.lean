@@ -145,7 +145,7 @@ section Monotone
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
-  simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, Relator.LiftFun]
+  simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.cast _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is

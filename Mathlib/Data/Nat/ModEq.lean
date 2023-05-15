@@ -328,9 +328,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
   else
     if hm : m = 0 then ⟨b, by rw [hm, gcd_zero_right] at h; constructor; exact h.symm; rfl⟩
     else
-      ⟨let (c, d) := xgcd n m
-       Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m),
-       by
+      ⟨let (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
         rw [xgcd_val]
         dsimp
         rw [modEq_iff_dvd, modEq_iff_dvd,
@@ -341,7 +339,6 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
           exact fun _ => hm
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
-
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
             refine' dvd_add _ (dvd_mul_of_dvd_left _ _) <;>
           try norm_cast

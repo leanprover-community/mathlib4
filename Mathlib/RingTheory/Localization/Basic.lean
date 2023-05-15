@@ -457,8 +457,8 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
 #align is_localization.mk'_add IsLocalization.mk'_add
 
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
-    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ = z₂ ↔ w + g y * z₁ = g y * z₂ :=
-  by
+    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
+    z₂ ↔ w + g y * z₁ = g y * z₂ := by
   rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.restrict M) h y),
     mul_assoc, ← mul_add, Units.inv_mul_eq_iff_eq_mul, Units.inv_mul_cancel_left,
     IsUnit.coe_liftRight]

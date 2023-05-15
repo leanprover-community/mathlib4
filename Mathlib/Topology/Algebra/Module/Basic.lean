@@ -1134,10 +1134,10 @@ theorem coe_prodMap [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f�
 #align continuous_linear_map.coe_prod_map ContinuousLinearMap.coe_prodMap
 
 @[simp, norm_cast]
-theorem coe_prod_map [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
+theorem coe_prodMap' [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
     (f₂ : M₃ →L[R₁] M₄) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
-#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prod_map
+#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prodMap'
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 def coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f₁ : M₁ →L[R₁] M₃)
@@ -1259,22 +1259,21 @@ theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) =
   ext fun _c => rfl
 #align continuous_linear_map.proj_pi ContinuousLinearMap.proj_pi
 
-theorem infᵢ_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
-  LinearMap.infᵢ_ker_proj
-#align continuous_linear_map.infi_ker_proj ContinuousLinearMap.infᵢ_ker_proj
+theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
+  LinearMap.iInf_ker_proj
+#align continuous_linear_map.infi_ker_proj ContinuousLinearMap.iInf_ker_proj
 
 variable (R φ)
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
-def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i
     where
-  toLinearEquiv := LinearMap.infᵢKerProjEquiv R φ hd hu
+  toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
-    continuous_pi fun i =>
-      by
+    continuous_pi fun i => by
       have :=
         @continuous_subtype_val _ _ fun x =>
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
@@ -1290,7 +1289,7 @@ def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Dis
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
         split_ifs <;> [apply continuous_apply, exact continuous_zero])
       _
-#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.infᵢKerProjEquiv
+#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.iInfKerProjEquiv
 
 end Pi
 
@@ -2811,4 +2810,3 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
-

@@ -219,8 +219,8 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 #align int.modeq.of_mul_right Int.ModEq.of_mul_right
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
-theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) : a ≡ b [ZMOD m / gcd m c] :=
-  by
+theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
+    a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
@@ -303,8 +303,8 @@ theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
   ⟨a % b, emod_nonneg _ (ne_of_gt hb),
     by
-    have : a % b < |b| := emod_lt _ (ne_of_gt hb)
-    rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
+      have : a % b < |b| := emod_lt _ (ne_of_gt hb)
+      rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 #align int.exists_unique_equiv Int.exists_unique_equiv
 
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=

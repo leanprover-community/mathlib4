@@ -160,7 +160,7 @@ def addNegEqProofs : List Expr → MetaM (List Expr)
 def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
-  synthesizeUsing q($e = 0) tac
+  synthesizeUsing' q($e = 0) tac
 
 /-! #### The main method -/
 
@@ -198,6 +198,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     trace[linarith.detail] "... finished `addNegEqProofs`."
     let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
     trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
+    trace[linarith.detail] (← inputs.mapM inferType)
     let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
     trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
     trace[linarith.detail] "{comps}"
