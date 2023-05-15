@@ -80,15 +80,13 @@ def IsFreeGroupoid.Generators (G) [Groupoid G] :=
    to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
 class IsFreeGroupoid (G) [Groupoid.{v} G] where
   quiverGenerators : Quiver.{v + 1} (IsFreeGroupoid.Generators G)
-  of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → (@Quiver.Hom G Groupoid.toCategory.toQuiver a b)
+  of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → ((show G from a) ⟶ b)
   unique_lift :
     ∀ {X : Type v} [Group X] (f : Labelling (IsFreeGroupoid.Generators G) X),
       ∃! F : G ⥤ CategoryTheory.SingleObj X, ∀ (a b) (g : a ⟶ b), F.map (of g) = f g
 #align is_free_groupoid IsFreeGroupoid
 
 namespace IsFreeGroupoid
-
-#check @of
 
 attribute [instance] quiverGenerators
 
@@ -112,7 +110,6 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  -- of a b e := ⟨IsFreeGroup.of e, e.property⟩
   of := fun (e : { e // _}) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
@@ -158,7 +155,7 @@ variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
   (T : WideSubquiver (Symmetrify <| Generators G)) [Arborescence T]
 
 /-- The root of `T`, except its type is `G` instead of the type synonym `T`. -/
---  Porting note: private
+--  Porting note: removed private
 def root' : G :=
   show T from root T
 #align is_free_groupoid.spanning_tree.root' IsFreeGroupoid.SpanningTree.root'
@@ -215,8 +212,8 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ Categor
   map p := f (loopOfHom T p)
   map_id := by
     intro a
-    dsimp only
-    rw [loopOfHom, Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
+    dsimp only [loopOfHom]
+    rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
   map_comp := by
     intros
     rw [comp_as_mul, ← f.map_mul]
@@ -245,9 +242,7 @@ def endIsFree : IsFreeGroup (End (root' T)) :=
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
         induction' p with b c p e ih
-        · dsimp
-          rw [homOfPath, F'.map_id, id_as_one]
-        dsimp
+        · rw [homOfPath, F'.map_id, id_as_one]
         rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
         rcases e with ⟨e | e, eT⟩
         · rw [hF']
@@ -271,7 +266,7 @@ def endIsFree : IsFreeGroup (End (root' T)) :=
 end SpanningTree
 
 /-- Another name for the identity function `G → G`, to help type checking. -/
--- Porting note: private
+-- Porting note: removed private
 def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
