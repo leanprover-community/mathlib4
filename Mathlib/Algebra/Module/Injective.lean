@@ -305,12 +305,12 @@ def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →�
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
     -- porting note: a single simp took care of the goal before reenableeta
-    simp [← (extensionOfMax i f).toLinearPMap.map_add]
+    simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
     -- porting note: a single simp took care of the goal before reenableeta
-    simp [← (extensionOfMax i f).toLinearPMap.map_smul]
+    simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
     congr 2
     apply mul_smul
 set_option linter.uppercaseLean3 false in
