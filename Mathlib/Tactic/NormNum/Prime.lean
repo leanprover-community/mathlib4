@@ -10,7 +10,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
-import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -89,19 +89,27 @@ theorem isNat_minFac_3 : {n : ℕ} → {n' : ℕ} → {k : ℕ} → {k' : ℕ} �
     exact ⟨le_antisymm (minFac_le_of_dvd h1.1.le h2) h1.2.2⟩
 
 theorem isNat_minFac_4 : {n : ℕ} → {n' : ℕ} → {k : ℕ} →
-    IsNat n n' → MinFacHelper n' k → n' < k * k → IsNat (minFac n) n'
+    IsNat n n' → MinFacHelper n' k → (k * k).ble n' = false → IsNat (minFac n) n'
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
     rw [Nat.prime_def_le_sqrt]
     refine ⟨h1.one_lt, λ m hm hmn h2mn ↦ ?_⟩
     exact lt_irrefl m <| calc
       m ≤ sqrt n   := hmn
-      _ < k        := sqrt_lt.mpr h2
+      _ < k        := sqrt_lt.mpr (ble_eq_false.mp h2)
       _ ≤ n.minFac := h1.2.2
       _ ≤ m        := Nat.minFac_le_of_dvd hm h2mn
 
-theorem not_prime_of_lt_two (h : n < 2) : ¬ n.Prime :=
-  fun hn => hn.two_le.not_lt h
+theorem isNat_prime_1 : {n : ℕ} → {n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
+  | _, _, ⟨rfl⟩, h, hn => hn.two_le.not_lt <| ble_eq_false.1 h
+
+theorem isNat_prime_2 : {n : ℕ} → {n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n →
+  n.Prime
+  | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
+
+theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = false)
+  (h₂ : b.ble 1 = false) : ¬ n.Prime :=
+  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
 
 /-- A partial proof of `factors`. Asserts that `l` is a sorted list of primes, lower bounded by a
 prime `p`, which multiplies to `n`. -/
@@ -147,8 +155,7 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
   let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
   let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
   let r' : Q(Nat.ble $d' 1 = false) := (q(Eq.refl false) : Expr)
-  return q(Nat.not_prime_mul' $prf (isNat_lt_true (.raw_refl _) (.raw_refl _) $r)
-    (isNat_lt_true (.raw_refl _) (.raw_refl _) $r'))
+  return q(not_prime_mul_of_ble $prf $r $r')
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
@@ -164,7 +171,7 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
     -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
     if n' < k * k then
       let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
-      return ⟨nn, q(isNat_minFac_4 $pn $prf (isNat_lt_true (.raw_refl _) (.raw_refl _) $r))⟩
+      return ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
     -- the following branch is not necessary for the correctness, but makes the algorithm 2x faster
     let d : ℕ := k.minFac
     if d < k then
@@ -172,7 +179,7 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
       let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
       let pd := deriveNotPrime k d ek
       have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_2 $pk' $pd $prf)
-      return ← aux (k + 2) prf'
+      return aux (k + 2) prf'
     -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
     if n' % k = 0 then
       let r : Q($nn % $ek = 0) := (q(Eq.refl 0) : Expr)
@@ -183,14 +190,14 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
     let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
     have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_3 $pk' $r $prf)
     aux (k + 2) prf'
-  let rec core : MetaM (Result (q(Nat.minFac $n) : Q(ℕ))) := do
+  let rec core : MetaM <| Result q(Nat.minFac $n) := do
     let ⟨bp, pp⟩ ← deriveBool q($nn = 1)
     match bp with
-    | true  => return .isNat sℕ q(1) (q(isNat_minFac_1 $pn $pp) : Q(IsNat (minFac $n) 1))
+    | true  => return .isNat sℕ q(1) q(isNat_minFac_1 $pn $pp)
     | false =>
     let ⟨bq, pq⟩ ← deriveBool q($nn % 2 = 0)
     match bq with
-    | true  => return .isNat sℕ q(2) (q(isNat_minFac_2 $pn $pq) : Q(IsNat (minFac $n) 2))
+    | true  => return .isNat sℕ q(2) q(isNat_minFac_2 $pn $pq)
     | false =>
     let ⟨c, pc⟩ := aux 3 q(minFacHelper_0 $nn $pp $pq)
     return .isNat sℕ c pc
@@ -207,14 +214,14 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
     if n' < 2 then
       let r : Q(Nat.ble 2 $nn = false) := (q(Eq.refl false) : Expr)
-      return .isFalse q(not_prime_of_lt_two (isNat_lt_true $pn (.raw_refl _) $r))
+      return .isFalse q(isNat_prime_1 $pn $r)
     let d := n'.minFac
     if d < n' then
       let prf : Q(¬ Nat.Prime $nn) := deriveNotPrime n' d nn
       return .isFalse q(isNat.natElim $pn $prf)
     let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
     let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
-    return .isTrue q(Nat.prime_def_minFac.mpr ⟨isNat_le_true (.raw_refl _) $pn $r, $p2n⟩)
+    return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 
 end Mathlib.Meta.NormNum

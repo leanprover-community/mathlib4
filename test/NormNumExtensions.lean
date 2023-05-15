@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.NormNum
+import Mathlib.Tactic.NormNum.Prime
 
 /-! # Testing extensions of `norm_num` -/
 
