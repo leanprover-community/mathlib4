@@ -98,14 +98,6 @@ theorem isNat_lcm : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.lcm nx ny = z → IsNat (Nat.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isNat_coprime : {x y nx ny : ℕ} →
-    IsNat x nx → IsNat y ny → Nat.coprime nx ny → Nat.coprime x y
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => h
-
-theorem isNat_not_coprime : {x y nx ny : ℕ} →
-    IsNat x nx → IsNat y ny → ¬ Nat.coprime nx ny → ¬ Nat.coprime x y
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => h
-
 theorem isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
     IsInt x nx → IsInt y ny → Int.gcd nx ny = z → IsNat (Int.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
