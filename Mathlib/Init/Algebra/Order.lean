@@ -10,8 +10,8 @@ Authors: Leonardo de Moura
 
 porting note: imports are taken from the ad-hoc port
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Logic
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.SplitIfs
