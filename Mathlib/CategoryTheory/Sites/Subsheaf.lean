@@ -78,8 +78,8 @@ def Subpresheaf.toPresheaf : Cᵒᵖ ⥤ Type w where
     simp only [FunctorToTypes.map_comp_apply]
 #align category_theory.grothendieck_topology.subpresheaf.to_presheaf CategoryTheory.GrothendieckTopology.Subpresheaf.toPresheaf
 
-instance {U} : Coe (G.toPresheaf.obj U) (F.obj U) :=
-   coeSubtype
+instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
+  coe := Subtype.val
 
 /-- The inclusion of a subpresheaf to the original presheaf. -/
 @[simps]
@@ -87,7 +87,7 @@ def Subpresheaf.ι : G.toPresheaf ⟶ F where app U x := x
 #align category_theory.grothendieck_topology.subpresheaf.ι CategoryTheory.GrothendieckTopology.Subpresheaf.ι
 
 instance : Mono G.ι :=
-  ⟨@fun H f₁ f₂ e =>
+  ⟨@fun _ f₁ f₂ e =>
     NatTrans.ext f₁ f₂ <|
       funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
 
@@ -98,7 +98,7 @@ def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
-  ⟨fun H f₁ f₂ e =>
+  ⟨fun f₁ f₂ e =>
     NatTrans.ext f₁ f₂ <|
       funext fun U =>
         funext fun x =>
@@ -112,9 +112,9 @@ theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le_ι CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe_ι
 
 instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
-  apply (config := { instances := false }) nat_iso.is_iso_of_is_iso_app
+  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   · intro X
-    rw [is_iso_iff_bijective]
+    rw [isIso_iff_bijective]
     exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
 theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
@@ -123,8 +123,8 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     infer_instance
   · intro H
     ext (U x)
-    apply (iff_true_iff _).mpr
-    rw [← is_iso.inv_hom_id_apply (G.ι.app U) x]
+    apply iff_true_iff.mpr
+    rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 #align category_theory.grothendieck_topology.subpresheaf.eq_top_iff_is_iso CategoryTheory.GrothendieckTopology.Subpresheaf.eq_top_iff_isIso
 
@@ -166,9 +166,9 @@ def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
 theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  ext1
+  refine Subtype.ext ?_ -- port note: `ext1` does not work here
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
-  rw [← functor_to_types.map_comp_apply, ← functor_to_types.map_comp_apply, ← op_comp, ← op_comp, e]
+  rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_compatible CategoryTheory.GrothendieckTopology.Subpresheaf.family_of_elements_compatible
 
 theorem Subpresheaf.nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
@@ -191,7 +191,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
 theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
-  convert J.top_mem _
+  convert J.top_mem U.unop -- porting note: `U.unop` can not be inferred now
   rw [eq_top_iff]
   rintro V i -
   exact G.map i.op hs
@@ -216,9 +216,9 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   intro U S hS x hx
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
   have := fun {V} {i : V ⟶ U} (hi : S' i) => hi
-  choose W i₁ i₂ hi₂ h₁ h₂
-  dsimp [-sieve.bind_apply] at *
-  let x'' : presieve.family_of_elements F S' := fun V i hi => F.map (i₁ hi).op (x _ (hi₂ hi))
+  choose W i₁ i₂ hi₂ h₁ h₂ using this
+  dsimp [-Sieve.bind_apply] at *
+  let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ hi).op (x _ (hi₂ hi))
   have H : ∀ s, x.is_amalgamation s ↔ x''.is_amalgamation s.1 := by
     intro s
     constructor
