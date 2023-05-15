@@ -778,7 +778,10 @@ variable (R A)
 /-- The base ring is a left identity for the tensor product of algebra, up to algebra isomorphism.
 -/
 protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
-  algEquivOfLinearEquivTensorProduct (TensorProduct.lid R A) (by simp [mul_smul])
+  algEquivOfLinearEquivTensorProduct (TensorProduct.lid R A) (by
+    simp only [mul_smul, lid_tmul, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
+    simp_rw [← mul_smul, mul_comm]
+    simp)
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.lid Algebra.TensorProduct.lid
 
@@ -790,7 +793,10 @@ theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r �
 /-- The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[R] A :=
-  algEquivOfLinearEquivTensorProduct (TensorProduct.rid R A) (by simp [mul_smul])
+  algEquivOfLinearEquivTensorProduct (TensorProduct.rid R A) (by
+    simp [mul_smul]
+    simp_rw [← mul_smul, mul_comm]
+    simp)
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
