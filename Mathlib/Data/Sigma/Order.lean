@@ -183,7 +183,7 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
     le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    decidable_eq := Sigma.instDecidableEqSigma,
+    decidableEq := Sigma.instDecidableEqSigma,
     decidableLE := Lex.decidable _ _ }
 #align sigma.lex.linear_order Sigma.Lex.linearOrder
 

@@ -2026,6 +2026,6 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         exact le_total _ _
     decidableLE := Localization.decidableLE
     decidableLT := Localization.decidableLT  -- porting note: was wrong in mathlib3
-    decidable_eq := Localization.decidableEq }
+    decidableEq := Localization.decidableEq }
 
 end Localization

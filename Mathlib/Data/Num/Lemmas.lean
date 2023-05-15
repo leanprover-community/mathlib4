@@ -468,7 +468,7 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       apply mul_lt_mul_of_pos_right
     decidableLT := Num.decidableLT
     decidableLE := Num.decidableLE
-    decidable_eq := instDecidableEqNum
+    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -648,7 +648,7 @@ instance linearOrder : LinearOrder PosNum where
     apply le_total
   decidableLT := by infer_instance
   decidableLE := by infer_instance
-  decidable_eq := by infer_instance
+  decidableEq := by infer_instance
 #align pos_num.linear_order PosNum.linearOrder
 
 @[simp]
@@ -1462,7 +1462,7 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_eq := instDecidableEqZNum
+  decidableEq := instDecidableEqZNum
   decidableLE := ZNum.decidableLE
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder

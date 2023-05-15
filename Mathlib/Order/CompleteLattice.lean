@@ -393,7 +393,7 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableLE : DecidableRel (. ≤ . : α → α → Prop)
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEq_of_decidableLE _ _ decidable_le
+  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (. < . : α → α → Prop) :=
     @decidableLTOfdecidableLE _ _ decidableLE

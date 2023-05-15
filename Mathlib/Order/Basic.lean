@@ -632,7 +632,7 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
     { le := B_le, lt := B_lt,
-      decidableLE := B_decidableLE, decidableEQ := B_decidableEq, decidableLT := B_decidableLT
+      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h

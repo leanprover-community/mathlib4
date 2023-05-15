@@ -277,7 +277,7 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLTOfDecidableLE _ _ decidableLE
+    @decidableLTOfdecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
