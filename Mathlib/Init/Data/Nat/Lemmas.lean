@@ -33,7 +33,7 @@ instance linearOrder : LinearOrder ℕ where
   lt_iff_le_not_le := @Nat.lt_iff_le_not_le
   decidableLT := inferInstance
   decidableLE := inferInstance
-  decidable_eq := inferInstance
+  decidableEq := inferInstance
 
 /- TODO(Leo): sub + inequalities -/
 
