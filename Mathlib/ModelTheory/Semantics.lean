@@ -864,10 +864,10 @@ theorem model_iff_subset_completeTheory : M ⊨ T ↔ T ⊆ L.completeTheory M :
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_iff_subset_complete_theory FirstOrder.Language.Theory.model_iff_subset_completeTheory
 
-theorem CompleteTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
+theorem completeTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
   model_iff_subset_completeTheory.1 MT
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Theory.complete_theory.subset FirstOrder.Language.Theory.CompleteTheory.subset
+#align first_order.language.Theory.complete_theory.subset FirstOrder.Language.Theory.completeTheory.subset
 
 end Theory
 
