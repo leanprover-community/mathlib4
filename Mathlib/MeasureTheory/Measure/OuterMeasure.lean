@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
