@@ -1183,7 +1183,7 @@ protected def module : Module (A ⊗[R] B) M where
     · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
       simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
-    · intro z w hz hw
+    · intro z w _ _
       simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
     · intro a b
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
@@ -1192,27 +1192,27 @@ protected def module : Module (A ⊗[R] B) M where
       simp only [moduleAux_apply, mul_smul]
       rw [smul_comm a₁ b₂] -- porting note; was one `simp only` not two and a `rw` in mathlib3
     · intro z w hz hw a b
-      --simp only at hz hw
-      simp only [(· • ·)]
+      --porting note: was one `simp only` but random stuff doesn't work
+      simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply]
-      rw [mul_add]
-      -- rw [moduleAux_apply]
-      simp only [hz, hw]
-      simp only [map_add, LinearMap.add_apply]
-      simp only [mul_add, hz, hw, map_add, LinearMap.add_apply]
-      rw [mul_add, map_add]
-      simp only [LinearMap.add_apply]
-      simp only [moduleAux_apply]
-      simp only [mul_add, hz, hw, map_add, LinearMap.add_apply]
-
-    · intro z w hz hw
+      rw [mul_add]  -- simp only doesn't work
+      simp only [LinearMap.map_add, LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
+    · intro z w _ _
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
-      simp only at hz hw
-      simp only [(· • ·), map_add, add_mul, LinearMap.add_apply, hz, hw]
-    · intro u v hu hv z w hz hw
-      simp only at hz hw
-      simp only [(· • ·), add_mul, hz, hw, map_add, LinearMap.add_apply]
+      simp only [(· • ·)] at hz hw
+      -- porting note: again I can't get `simp only` to do this
+      -- and I changed `map_add` to `LinearMap.map_add` here (and above)
+      simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      rw [add_mul, LinearMap.map_add]
+      simp only [(· • ·), add_mul, LinearMap.add_apply, hz, hw]
+    · intro u v _ _ z w hz hw
+      simp only [(· • ·)] at hz hw
+      -- porting note: no idea why this is such a struggle
+      simp only [(· • ·)]
+      rw [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw]
+      simp only [LinearMap.map_add, LinearMap.add_apply]
+      rw [add_add_add_comm]
 #align tensor_product.algebra.module TensorProduct.Algebra.module
 
 attribute [local instance] TensorProduct.Algebra.module
