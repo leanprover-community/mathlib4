@@ -104,10 +104,14 @@ def _root_.Lean.Expr.intLit! (e : Expr) : ℤ :=
     panic! "not a raw integer literal"
 
 /-- Extract the raw natlit representing the absolute value of a raw integer literal
-(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`). -/
-def _root_.Lean.Expr.intLitNatAbs! (e : Expr) : Q(ℕ) :=
-  if e.isAppOfArity ``Int.ofNat 1 || e.isAppOfArity ``Int.negOfNat 1 then
-    e.appArg!
+(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
+def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
+  if n.isAppOfArity ``Int.ofNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+  else if n.isAppOfArity ``Int.negOfNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩
   else
     panic! "not a raw integer literal"
 

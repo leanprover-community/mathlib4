@@ -245,10 +245,8 @@ def evalNatCoprime : NormNumExt where eval {u α} e := do
 /-- Given two integers, return their GCD and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntGCD (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.gcd $ex $ey = $ed) :=
-  let ex' : Q(ℕ) := ex.intLitNatAbs!
-  let ey' : Q(ℕ) := ey.intLitNatAbs!
-  have hx : Q(($ex).natAbs = $ex') := (q(Eq.refl $ex') : Expr)
-  have hy : Q(($ey).natAbs = $ey') := (q(Eq.refl $ey') : Expr)
+  let ⟨ex', hx⟩ := rawIntLitNatAbs ex
+  let ⟨ey', hy⟩ := rawIntLitNatAbs ey
   let ⟨ed, pf⟩ := proveNatGCD ex' ey'
   have pf' : Q(Int.gcd $ex $ey = $ed) := q(int_gcd_helper $hx $hy $pf)
   ⟨ed, pf'⟩
@@ -270,10 +268,8 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
 /-- Given two integers, return their LCM and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntLCM (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.lcm $ex $ey = $ed) :=
-  let ex' : Q(ℕ) := ex.intLitNatAbs!
-  let ey' : Q(ℕ) := ey.intLitNatAbs!
-  have hx : Q(($ex).natAbs = $ex') := (q(Eq.refl $ex') : Expr)
-  have hy : Q(($ey).natAbs = $ey') := (q(Eq.refl $ey') : Expr)
+  let ⟨ex', hx⟩ := rawIntLitNatAbs ex
+  let ⟨ey', hy⟩ := rawIntLitNatAbs ey
   let ⟨ed, pf⟩ := proveNatLCM ex' ey'
   have pf' : Q(Int.lcm $ex $ey = $ed) := q(int_lcm_helper $hx $hy $pf)
   ⟨ed, pf'⟩
