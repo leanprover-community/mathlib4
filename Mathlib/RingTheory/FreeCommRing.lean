@@ -373,17 +373,17 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
       @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
-  sorry
-  -- funext x
-  -- simp only [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Functor.map]
-  -- rw [← AddMonoidHom.coe_coe]
-  -- apply FreeAbelianGroup.lift.unique; intro L
-  -- simp_rw [FreeAbelianGroup.lift.of, (· ∘ ·)]
-  -- exact
-  --   FreeMonoid.recOn L rfl fun hd tl ih =>
-  --     by
-  --     rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
-  --     rfl
+  funext x
+  erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
+    FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]
+  dsimp [Functor.map]
+  rw [← AddMonoidHom.coe_coe]
+  apply FreeAbelianGroup.lift.unique; intro L
+  erw [FreeAbelianGroup.lift.of, Function.comp]
+  exact
+    FreeMonoid.recOn L rfl fun hd tl ih => by
+      rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
+      conv_lhs => reduce
 #align free_ring.coe_eq FreeRing.coe_eq
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the
