@@ -60,12 +60,12 @@ open Classical
 universe v u
 
 /- ./././Mathport/Syntax/Translate/Command.lean:229:11: unsupported: unusual advanced open style -/
-open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver
+open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver FreeGroup
 
 /-- `is_free_groupoid.generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
-@[nolint unused_arguments has_nonempty_instance]
+-- Porting note: @[nolint unused_arguments has_nonempty_instance]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
 #align is_free_groupoid.generators IsFreeGroupoid.Generators
@@ -80,7 +80,7 @@ def IsFreeGroupoid.Generators (G) [Groupoid G] :=
    to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
 class IsFreeGroupoid (G) [Groupoid.{v} G] where
   quiverGenerators : Quiver.{v + 1} (IsFreeGroupoid.Generators G)
-  of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → ((show G from a) ⟶ b)
+  of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → (@Quiver.Hom G Groupoid.toCategory.toQuiver a b)
   unique_lift :
     ∀ {X : Type v} [Group X] (f : Labelling (IsFreeGroupoid.Generators G) X),
       ∃! F : G ⥤ CategoryTheory.SingleObj X, ∀ (a b) (g : a ⟶ b), F.map (of g) = f g
@@ -88,7 +88,9 @@ class IsFreeGroupoid (G) [Groupoid.{v} G] where
 
 namespace IsFreeGroupoid
 
-attribute [instance] quiver_generators
+#check @of
+
+attribute [instance] quiverGenerators
 
 /-- Two functors from a free groupoid to a group are equal when they agree on the generating
 quiver. -/
@@ -97,7 +99,7 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
     (f g : G ⥤ CategoryTheory.SingleObj X) (h : ∀ (a b) (e : a ⟶ b), f.map (of e) = g.map (of e)) :
     f = g :=
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
-  trans (u _ h) (u _ fun _ _ _ => rfl).symm
+  _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
 #align is_free_groupoid.ext_functor IsFreeGroupoid.ext_functor
 
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
@@ -110,20 +112,22 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  of a b e := ⟨IsFreeGroup.of e, e.property⟩
+  -- of a b e := ⟨IsFreeGroup.of e, e.property⟩
+  of := fun (e : { e // _}) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
-    let f' : fgp.generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
-      ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, fgp.of e⟩
-    rcases fgp.unique_lift f' with ⟨F', hF', uF'⟩
+    let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
+      ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
+    rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine' ⟨uncurry F' _, _, _⟩
-    · suffices semidirect_product.right_hom.comp F' = MonoidHom.id _ by
-        exact monoid_hom.ext_iff.mp this
+    · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
+        -- Porting note: `MonoidHom.ext_iff` has been deprecated.
+        exact FunLike.ext_iff.mp this
       ext
       rw [MonoidHom.comp_apply, hF']
       rfl
-    · rintro ⟨⟨⟩, a : A⟩ ⟨⟨⟩, b⟩ ⟨e, h : fgp.of e • a = b⟩
-      change (F' (fgp.of _)).left _ = _
+    · rintro ⟨⟨⟩, a : A⟩ ⟨⟨⟩, b⟩ ⟨e, h : IsFreeGroup.of e • a = b⟩
+      change (F' (IsFreeGroup.of _)).left _ = _
       rw [hF']
       cases inv_smul_eq_iff.mpr h.symm
       rfl
@@ -135,12 +139,13 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
         · convert hE _ _ _
           rfl
         · rfl
-      apply functor.hext
+      apply Functor.hext
       · intro
         apply Unit.ext
-      · refine' action_category.cases _
+      · refine' ActionCategory.cases _
         intros
-        simp only [← this, uncurry_map, curry_apply_left, coe_back, hom_of_pair.val]
+        simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
+        rfl
 #align is_free_groupoid.action_groupoid_is_free IsFreeGroupoid.actionGroupoidIsFree
 
 namespace SpanningTree
@@ -153,16 +158,18 @@ variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
   (T : WideSubquiver (Symmetrify <| Generators G)) [Arborescence T]
 
 /-- The root of `T`, except its type is `G` instead of the type synonym `T`. -/
-private def root' : G :=
+--  Porting note: private
+def root' : G :=
   show T from root T
-#align is_free_groupoid.spanning_tree.root' is_free_groupoid.spanning_tree.root'
+#align is_free_groupoid.spanning_tree.root' IsFreeGroupoid.SpanningTree.root'
 
 -- this has to be marked noncomputable, see issue #451.
 -- It might be nicer to define this in terms of `compose_path`
 /-- A path in the tree gives a hom, by composition. -/
-noncomputable def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
-  | _, path.nil => 𝟙 _
-  | a, path.cons p f => hom_of_path p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
+-- noncomputable
+def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
+  | _, Path.nil => 𝟙 _
+  | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
 #align is_free_groupoid.spanning_tree.hom_of_path IsFreeGroupoid.SpanningTree.homOfPath
 
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
@@ -172,13 +179,13 @@ def treeHom (a : G) : root' T ⟶ a :=
 
 /-- Any path to `a` gives `tree_hom T a`, since paths in the tree are unique. -/
 theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
-  rw [tree_hom, Unique.default_eq]
+  rw [treeHom, Unique.default_eq]
 #align is_free_groupoid.spanning_tree.tree_hom_eq IsFreeGroupoid.SpanningTree.treeHom_eq
 
 @[simp]
 theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
   -- this should just be `tree_hom_eq T path.nil`, but Lean treats `hom_of_path` with suspicion.
-    trans
+    _root_.trans
     (treeHom_eq T Path.nil) rfl
 #align is_free_groupoid.spanning_tree.tree_hom_root IsFreeGroupoid.SpanningTree.treeHom_root
 
@@ -189,14 +196,14 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (e «expr ∈ » wide_subquiver_symmetrify[quiver.wide_subquiver_symmetrify] T a b) -/
 /-- Turning an edge in the spanning tree into a loop gives the indentity loop. -/
-theorem loopOfHom_eq_id {a b : Generators G} (e) (_ : e ∈ wideSubquiverSymmetrify T a b) :
+theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
-  rw [loop_of_hom, ← category.assoc, is_iso.comp_inv_eq, category.id_comp]
-  cases H
-  · rw [tree_hom_eq T (path.cons default ⟨Sum.inl e, H⟩), hom_of_path]
+  rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+  cases' H with H H
+  · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
-  · rw [tree_hom_eq T (path.cons default ⟨Sum.inr e, H⟩), hom_of_path]
-    simp only [is_iso.inv_hom_id, category.comp_id, category.assoc, tree_hom]
+  · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
+    simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 #align is_free_groupoid.spanning_tree.loop_of_hom_eq_id IsFreeGroupoid.SpanningTree.loopOfHom_eq_id
 
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -205,14 +212,15 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (_ : e ∈ wideSubquiverSymmetr
 def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ CategoryTheory.SingleObj X
     where
   obj _ := ()
-  map a b p := f (loopOfHom T p)
-  map_id' := by
+  map p := f (loopOfHom T p)
+  map_id := by
     intro a
-    rw [loop_of_hom, category.id_comp, is_iso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
-  map_comp' := by
+    dsimp only
+    rw [loopOfHom, Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
+  map_comp := by
     intros
     rw [comp_as_mul, ← f.map_mul]
-    simp only [is_iso.inv_hom_id_assoc, loop_of_hom, End.mul_def, category.assoc]
+    simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
 #align is_free_groupoid.spanning_tree.functor_of_monoid_hom IsFreeGroupoid.SpanningTree.functorOfMonoidHom
 
 /-- Given a free groupoid and an arborescence of its generating quiver, the vertex
@@ -220,63 +228,69 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ Categor
     in the complement of the tree. -/
 def endIsFree : IsFreeGroup (End (root' T)) :=
   IsFreeGroup.ofUniqueLift ((wideSubquiverEquivSetTotal <| wideSubquiverSymmetrify T)ᶜ : Set _)
-    (fun e => loopOfHom T (of e.val.Hom))
+    (fun e => loopOfHom T (of e.val.hom))
     (by
       intro X _ f
-      let f' : labelling (generators G) X := fun a b e =>
-        if h : e ∈ wide_subquiver_symmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
+      let f' : Labelling (Generators G) X := fun a b e =>
+        if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
-      refine' ⟨F'.map_End _, _, _⟩
-      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loop_of_hom T q) = (F'.map q : X) by
+      refine' ⟨F'.mapEnd _, _, _⟩
+      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          rw [functor.map_End_apply, this, hF']
+          erw [Functor.mapEnd_apply, this, hF']
           exact dif_neg h
-        intros
-        suffices ∀ {a} (p : Path (root' T) a), F'.map (hom_of_path T p) = 1 by
-          simp only [this, tree_hom, comp_as_mul, inv_as_inv, loop_of_hom, inv_one, mul_one,
-            one_mul, functor.map_inv, functor.map_comp]
+        intros x y q
+        suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
+          simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
+            one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
         induction' p with b c p e ih
-        · rw [hom_of_path, F'.map_id, id_as_one]
-        rw [hom_of_path, F'.map_comp, comp_as_mul, ih, mul_one]
+        · dsimp
+          rw [homOfPath, F'.map_id, id_as_one]
+        dsimp
+        rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
         rcases e with ⟨e | e, eT⟩
         · rw [hF']
           exact dif_pos (Or.inl eT)
         · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
           exact dif_pos (Or.inr eT)
       · intro E hE
-        ext
-        suffices (functor_of_monoid_hom T E).map x = F'.map x by
-          simpa only [loop_of_hom, functor_of_monoid_hom_map, is_iso.inv_id, tree_hom_root,
-            category.id_comp, category.comp_id] using this
+        ext x
+        suffices (functorOfMonoidHom T E).map x = F'.map x by
+          simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
+            Category.id_comp, Category.comp_id] using this
         congr
         apply uF'
         intro a b e
-        change E (loop_of_hom T _) = dite _ _ _
-        split_ifs
-        · rw [loop_of_hom_eq_id T e h, ← End.one_def, E.map_one]
+        change E (loopOfHom T _) = dite _ _ _
+        split_ifs with h
+        · rw [loopOfHom_eq_id T e h, ← End.one_def, E.map_one]
         · exact hE ⟨⟨a, b, e⟩, h⟩)
 #align is_free_groupoid.spanning_tree.End_is_free IsFreeGroupoid.SpanningTree.endIsFree
 
 end SpanningTree
 
 /-- Another name for the identity function `G → G`, to help type checking. -/
-private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
+-- Porting note: private
+def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
-#align is_free_groupoid.symgen is_free_groupoid.symgen
+#align is_free_groupoid.symgen IsFreeGroupoid.symgen
 
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
 from `a` to `b` in the generating quiver. -/
 theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
     Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by
   rintro ⟨p⟩
-  rw [← @weakly_connected_component.eq (generators G), eq_comm, ← free_group.of_injective.eq_iff, ←
-    mul_inv_eq_one]
-  let X := FreeGroup (weakly_connected_component <| generators G)
-  let f : G → X := fun g => FreeGroup.of (weakly_connected_component.mk g)
-  let F : G ⥤ CategoryTheory.SingleObj X := single_obj.difference_functor f
-  change F.map p = ((CategoryTheory.Functor.const G).obj ()).map p
+  rw [← @WeaklyConnectedComponent.eq (Generators G), eq_comm, ← FreeGroup.of_injective.eq_iff, ←
+    @mul_inv_eq_one (FreeGroup (WeaklyConnectedComponent (Generators G)))]
+  let X := FreeGroup (WeaklyConnectedComponent <| Generators G)
+  let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
+  let F : G ⥤ CategoryTheory.SingleObj X := SingleObj.differenceFunctor f
+  dsimp only []
+  change _ = ((CategoryTheory.Functor.const G).obj ()).map p
+
+  -- change (F.map p : Unit ⟶ Unit) = ((CategoryTheory.Functor.const G).obj ()).map p
   congr ; ext
   rw [functor.const_obj_map, id_as_one, difference_functor_map, mul_inv_eq_one]
   apply congr_arg FreeGroup.of
@@ -304,4 +318,3 @@ instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subg
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
 #align subgroup_is_free_of_is_free subgroupIsFreeOfIsFree
-
