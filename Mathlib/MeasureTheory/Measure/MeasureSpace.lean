@@ -1059,18 +1059,18 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
 end sInf
 
 @[simp]
-theorem MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
-    (⊤ : OuterMeasure α).toMeasure (by rw [outer_measure.top_caratheodory] <;> exact le_top) =
+theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
+    (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
       (⊤ : Measure α) :=
   top_unique fun s hs => by
     cases' s.eq_empty_or_nonempty with h h <;>
-      simp [h, to_measure_apply ⊤ _ hs, outer_measure.top_apply]
+      simp [h, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
 #align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
 
 @[simp]
 theorem toOuterMeasure_top [MeasurableSpace α] :
     (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) := by
-  rw [← outer_measure.to_measure_top, to_measure_to_outer_measure, outer_measure.trim_top]
+  rw [← OuterMeasure.toMeasure_top, toMeasure_toOuterMeasure, OuterMeasure.trim_top]
 #align measure_theory.measure.to_outer_measure_top MeasureTheory.Measure.toOuterMeasure_top
 
 @[simp]

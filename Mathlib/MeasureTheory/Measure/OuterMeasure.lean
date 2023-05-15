@@ -883,8 +883,7 @@ theorem le_bounded_by' {μ : OuterMeasure α} :
 #align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
 
 @[simp]
-theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ :=
-  by
+theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
   rw [eq_top_iff, le_bounded_by']
   intro s hs
   rw [top_apply hs]
@@ -892,10 +891,9 @@ theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ :=
 #align measure_theory.outer_measure.bounded_by_top MeasureTheory.OuterMeasure.boundedBy_top
 
 @[simp]
-theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 :=
-  by
+theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 := by
   rw [← coe_bot, eq_bot_iff]
-  apply bounded_by_le
+  apply boundedBy_le
 #align measure_theory.outer_measure.bounded_by_zero MeasureTheory.OuterMeasure.boundedBy_zero
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
@@ -1351,8 +1349,8 @@ theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s →
 #align measure_theory.extend_congr MeasureTheory.extend_congr
 
 @[simp]
-theorem extend_top {α : Type _} {P : α → Prop} : extend (fun s h => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
-  funext fun x => infᵢ_eq_top.mpr fun i => rfl
+theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+  funext fun _ => iInf_eq_top.mpr fun _ => rfl
 #align measure_theory.extend_top MeasureTheory.extend_top
 
 end Extend
