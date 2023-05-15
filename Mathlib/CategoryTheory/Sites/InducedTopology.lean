@@ -20,11 +20,11 @@ the collection of sieves on `C` whose image generates a covering sieve. This con
 make `C` both cover-lifting and cover-preserving.
 
 Some typical examples are full and cover-dense functors (for example the functor from a basis of a
-topological space `X` into `opens X`). The functor `over X ⥤ C` is also locally dense, and the
+topological space `X` into `Opens X`). The functor `Over X ⥤ C` is also locally dense, and the
 induced topology can then be used to construct the big sites associated to a scheme.
 
 Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small sites, we then have
-`Sheaf (H.induced_topology) A ≌ Sheaf K A`. This is known as the comparison lemma.
+`Sheaf (H.inducedTopology) A ≌ Sheaf K A`. This is known as the comparison lemma.
 
 ## References
 
