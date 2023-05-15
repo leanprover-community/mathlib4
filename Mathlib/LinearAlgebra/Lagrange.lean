@@ -288,8 +288,6 @@ open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 60000 in
 -- Porting note: The heartbeats were increased to find the instances needed for 'Finset.smul_sum'
 -- and 'smul_smul' on line 322.
 

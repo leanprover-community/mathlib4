@@ -307,7 +307,6 @@ structure Pregroupoid (H : Type _) [TopologicalSpace H] where
 -- failed to synthesize
 --   Subsingleton ((H → H) → Set H → Prop)
 -- (deterministic) timeout at 'typeclass', maximum number of heartbeats (20000) has been reached
---  (use 'set_option synthInstance.maxHeartbeats <num>' to set the limit)
 attribute [nolint simpNF] Pregroupoid.mk.injEq
 
 /-- Construct a groupoid of local homeos for which the map and its inverse have some property,

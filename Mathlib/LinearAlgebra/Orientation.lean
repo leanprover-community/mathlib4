@@ -120,7 +120,6 @@ variable {R : Type _} [StrictOrderedCommRing R]
 
 variable {M N : Type _} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-set_option maxHeartbeats 400000 in -- Porting note: added
 @[simp]
 protected theorem Orientation.map_neg {ι : Type _} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
     Orientation.map ι f (-x) = -Orientation.map ι f x :=
@@ -191,7 +190,6 @@ variable {ι : Type _}
 
 namespace Orientation
 
-set_option maxHeartbeats 350000 in -- Porting note: added
 /-- A module `M` over a linearly ordered commutative ring has precisely two "orientations" with
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/
@@ -229,7 +227,6 @@ theorem orientation_eq_iff_det_pos (e₁ e₂ : Basis ι R M) :
 
 #align basis.orientation_eq_iff_det_pos Basis.orientation_eq_iff_det_pos
 
-set_option maxHeartbeats 300000 in -- Porting note: added
 /-- Given a basis, any orientation equals the orientation given by that basis or its negation. -/
 theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     x = e.orientation ∨ x = -e.orientation := by
@@ -248,7 +245,6 @@ theorem orientation_ne_iff_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     h.symm ▸ (Module.Ray.ne_neg_self e.orientation).symm⟩
 #align basis.orientation_ne_iff_eq_neg Basis.orientation_ne_iff_eq_neg
 
-set_option maxHeartbeats 250000 in -- Porting note: added
 /-- Composing a basis with a linear equiv gives the same orientation if and only if the
 determinant is positive. -/
 theorem orientation_comp_linearEquiv_eq_iff_det_pos (e : Basis ι R M) (f : M ≃ₗ[R] M) :
@@ -257,7 +253,6 @@ theorem orientation_comp_linearEquiv_eq_iff_det_pos (e : Basis ι R M) (f : M �
     LinearEquiv.coe_det]
 #align basis.orientation_comp_linear_equiv_eq_iff_det_pos Basis.orientation_comp_linearEquiv_eq_iff_det_pos
 
-set_option maxHeartbeats 350000 in -- Porting note: added
 /-- Composing a basis with a linear equiv gives the negation of that orientation if and only if
 the determinant is negative. -/
 theorem orientation_comp_linearEquiv_eq_neg_iff_det_neg (e : Basis ι R M) (f : M ≃ₗ[R] M) :
@@ -266,7 +261,6 @@ theorem orientation_comp_linearEquiv_eq_neg_iff_det_neg (e : Basis ι R M) (f : 
     LinearEquiv.coe_det]
 #align basis.orientation_comp_linear_equiv_eq_neg_iff_det_neg Basis.orientation_comp_linearEquiv_eq_neg_iff_det_neg
 
-set_option maxHeartbeats 300000 in -- Porting note: added
 /-- Negating a single basis vector (represented using `units_smul`) negates the corresponding
 orientation. -/
 @[simp]
@@ -343,8 +337,6 @@ variable [Fintype ι] [_i : FiniteDimensional R M]
 
 open FiniteDimensional
 
-set_option maxHeartbeats 350000 in -- Porting note: added
-set_option synthInstance.maxHeartbeats 25000 in -- Porting note : added
 /-- If the index type has cardinality equal to the finite dimension, any two orientations are
 equal or negations. -/
 theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = finrank R M) :
@@ -366,7 +358,6 @@ theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fi
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
 #align orientation.ne_iff_eq_neg Orientation.ne_iff_eq_neg
 
-set_option synthInstance.maxHeartbeats 50000 in -- Porting note : added
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/
 theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
@@ -375,7 +366,6 @@ theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   e.map_orientation_eq_det_inv_smul x f
 #align orientation.map_eq_det_inv_smul Orientation.map_eq_det_inv_smul
 
-set_option maxHeartbeats 350000 in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, composing an alternating
 map with the same linear equiv on each argument gives the same orientation if and only if the
 determinant is positive. -/
@@ -390,7 +380,6 @@ theorem map_eq_iff_det_pos (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_self_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_iff_det_pos Orientation.map_eq_iff_det_pos
 
-set_option maxHeartbeats 550000 in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, composing an alternating
 map with the same linear equiv on each argument gives the negation of that orientation if and
 only if the determinant is negative. -/

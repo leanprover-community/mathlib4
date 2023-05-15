@@ -1078,7 +1078,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
 -- *TODO*: why are you still timing out?
-set_option maxHeartbeats 300000 in
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     mul := (· * ·)

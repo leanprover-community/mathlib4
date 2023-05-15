@@ -55,8 +55,8 @@ This definition is marked `reducible` so that typeclass instances can be shared 
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
-example : HasQuotient R (Ideal R) :=
-  inferInstance -- Submodule.hasQuotient
+instance : HasQuotient R (Ideal R) :=
+  Submodule.hasQuotient
 
 namespace Quotient
 
@@ -334,7 +334,6 @@ section Pi
 
 variable (ι : Type v)
 
--- set_option maxHeartbeats 300000 in
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=

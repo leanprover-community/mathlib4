@@ -332,7 +332,6 @@ variable {ι : Type _} {c : ComplexShape ι} {B : Type _} [Category B] [Abelian 
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 -- Porting note: not needed on reenableeta branch
-set_option maxHeartbeats 400000 in
 /-- When `F` is an exact additive functor, `F(Hᵢ(X)) ≅ Hᵢ(F(X))` for `X` a complex. -/
 noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
     F.obj (C.homology j) ≅ ((F.mapHomologicalComplex c).obj C).homology j :=
@@ -351,7 +350,6 @@ noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
 #align category_theory.functor.homology_iso CategoryTheory.Functor.homologyIso
 
 -- Porting note: not needed on reenableeta branch
-set_option maxHeartbeats 400000 in
 /-- If `F` is an exact additive functor, then `F` commutes with `Hᵢ` (up to natural isomorphism). -/
 noncomputable def homologyFunctorIso (i : ι) :
     homologyFunctor A c i ⋙ F ≅ F.mapHomologicalComplex c ⋙ homologyFunctor B c i :=

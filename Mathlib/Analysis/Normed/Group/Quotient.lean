@@ -498,7 +498,6 @@ theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r
   quotient_norm_mk_le I.toAddSubgroup r
 #align ideal.quotient.norm_mk_le Ideal.Quotient.norm_mk_le
 
-set_option maxHeartbeats 400000 in
 instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   dist_eq := dist_eq_norm
   mul_comm := _root_.mul_comm
@@ -523,7 +522,6 @@ instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (
 
 variable (𝕜 : Type _) [NormedField 𝕜]
 
-set_option maxHeartbeats 700000 in
 instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra

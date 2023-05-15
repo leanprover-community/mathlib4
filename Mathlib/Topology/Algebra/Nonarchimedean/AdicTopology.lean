@@ -55,7 +55,6 @@ open Topology Pointwise
 
 namespace Ideal
 
-set_option synthInstance.maxHeartbeats 40000 in -- Porting note : added
 theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
