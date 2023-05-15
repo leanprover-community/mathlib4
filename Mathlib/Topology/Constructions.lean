@@ -210,7 +210,7 @@ instance Sum.discreteTopology [TopologicalSpace α] [TopologicalSpace β] [hα :
 
 instance Sigma.discreteTopology {β : α → Type v} [∀ a, TopologicalSpace (β a)]
     [h : ∀ a, DiscreteTopology (β a)] : DiscreteTopology (Sigma β) :=
-  ⟨supᵢ_eq_bot.2 <| fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+  ⟨iSup_eq_bot.2 <| fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
 section Topα
@@ -274,10 +274,10 @@ instance : TopologicalSpace (CofiniteTopology α) where
     rintro hs ht ⟨x, hxs, hxt⟩
     rw [compl_inter]
     exact (hs ⟨x, hxs⟩).union (ht ⟨x, hxt⟩)
-  isOpen_unionₛ := by
+  isOpen_sUnion := by
     rintro s h ⟨x, t, hts, hzt⟩
-    rw [Set.compl_unionₛ]
-    exact Set.Finite.interₛ (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
+    rw [Set.compl_sUnion]
+    exact Set.Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
 theorem isOpen_iff {s : Set (CofiniteTopology α)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
   Iff.rfl
@@ -457,18 +457,18 @@ theorem continuous_inf_dom_right₂ {α β γ} {f : α → β → γ} {ta1 ta2 :
   exact @Continuous.comp _ _ _ (id _) (id _) _ _ _ h h_continuous_id
 #align continuous_inf_dom_right₂ continuous_inf_dom_right₂
 
-/-- A version of `continuous_infₛ_dom` for binary functions -/
-theorem continuous_infₛ_dom₂ {α β γ} {f : α → β → γ} {tas : Set (TopologicalSpace α)}
+/-- A version of `continuous_sInf_dom` for binary functions -/
+theorem continuous_sInf_dom₂ {α β γ} {f : α → β → γ} {tas : Set (TopologicalSpace α)}
     {tbs : Set (TopologicalSpace β)} {ta : TopologicalSpace α} {tb : TopologicalSpace β}
     {tc : TopologicalSpace γ} (ha : ta ∈ tas) (hb : tb ∈ tbs)
     (hf : Continuous fun p : α × β => f p.1 p.2) : by
-    haveI := infₛ tas; haveI := infₛ tbs;
+    haveI := sInf tas; haveI := sInf tbs;
       exact @Continuous _ _ _ tc fun p : α × β => f p.1 p.2 := by
-  have ha := continuous_infₛ_dom ha continuous_id
-  have hb := continuous_infₛ_dom hb continuous_id
-  have h_continuous_id := @Continuous.prod_map _ _ _ _ ta tb (infₛ tas) (infₛ tbs) _ _ ha hb
+  have ha := continuous_sInf_dom ha continuous_id
+  have hb := continuous_sInf_dom hb continuous_id
+  have h_continuous_id := @Continuous.prod_map _ _ _ _ ta tb (sInf tas) (sInf tbs) _ _ ha hb
   exact @Continuous.comp _ _ _ (id _) (id _) _ _ _ hf h_continuous_id
-#align continuous_Inf_dom₂ continuous_infₛ_dom₂
+#align continuous_Inf_dom₂ continuous_sInf_dom₂
 
 theorem Filter.Eventually.prod_inl_nhds {p : α → Prop} {a : α} (h : ∀ᶠ x in 𝓝 a, p x) (b : β) :
     ∀ᶠ x in 𝓝 (a, b), p (x : α × β).1 :=
@@ -628,21 +628,21 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun u hu =>
           have : (⋃ v ∈ t, u ×ˢ v) = Prod.fst ⁻¹' u := by
-            simp_rw [← prod_unionᵢ, ← unionₛ_eq_bunionᵢ, ht, prod_univ]
+            simp_rw [← prod_iUnion, ← sUnion_eq_biUnion, ht, prod_univ]
           show G.IsOpen (Prod.fst ⁻¹' u) by
             rw [← this]
             exact
-              isOpen_unionᵢ fun v =>
-                isOpen_unionᵢ fun hv => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩)
+              isOpen_iUnion fun v =>
+                isOpen_iUnion fun hv => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩)
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun v hv =>
           have : (⋃ u ∈ s, u ×ˢ v) = Prod.snd ⁻¹' v := by
-            simp_rw [← unionᵢ_prod_const, ← unionₛ_eq_bunionᵢ, hs, univ_prod]
+            simp_rw [← iUnion_prod_const, ← sUnion_eq_biUnion, hs, univ_prod]
           show G.IsOpen (Prod.snd ⁻¹' v) by
             rw [← this]
             exact
-              isOpen_unionᵢ fun u =>
-                isOpen_unionᵢ fun hu => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩))
+              isOpen_iUnion fun u =>
+                isOpen_iUnion fun hu => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩))
 #align prod_generate_from_generate_from_eq prod_generateFrom_generateFrom_eq
 
 -- todo: use the previous lemma?
@@ -1173,7 +1173,7 @@ variable {ι : Type _} {π : ι → Type _} {κ : Type _} [TopologicalSpace α]
   [∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
-  simp only [continuous_infᵢ_rng, continuous_induced_rng, comp]
+  simp only [continuous_iInf_rng, continuous_induced_rng, comp]
 #align continuous_pi_iff continuous_pi_iff
 
 @[continuity]
@@ -1183,7 +1183,7 @@ theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
 
 @[continuity]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
-  continuous_infᵢ_dom continuous_induced_dom
+  continuous_iInf_dom continuous_induced_dom
 #align continuous_apply continuous_apply
 
 @[continuity]
@@ -1202,7 +1202,7 @@ theorem Filter.Tendsto.apply {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i
 #align filter.tendsto.apply Filter.Tendsto.apply
 
 theorem nhds_pi {a : ∀ i, π i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
-  simp only [nhds_infᵢ, nhds_induced, Filter.pi]
+  simp only [nhds_iInf, nhds_induced, Filter.pi]
 #align nhds_pi nhds_pi
 
 theorem tendsto_pi_nhds {f : β → ∀ i, π i} {g : ∀ i, π i} {u : Filter β} :
@@ -1269,7 +1269,7 @@ theorem Continuous.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, Topol
 
 theorem isOpen_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hi : i.Finite)
     (hs : ∀ a ∈ i, IsOpen (s a)) : IsOpen (pi i s) := by
-  rw [pi_def]; exact isOpen_binterᵢ hi fun a ha => (hs _ ha).preimage (continuous_apply _)
+  rw [pi_def]; exact isOpen_biInter hi fun a ha => (hs _ ha).preimage (continuous_apply _)
 #align is_open_set_pi isOpen_set_pi
 
 theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
@@ -1277,7 +1277,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
       ∀ f, f ∈ s → ∃ (I : Finset ι)(u : ∀ a, Set (π a)),
         (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
   rw [isOpen_iff_nhds]
-  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff, exists_prop]
+  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
   refine ball_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
@@ -1301,11 +1301,10 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
 
 theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
     IsOpen s ↔
-      ∀ f, f ∈ s → ∃ u : ∀ a, Set (π a), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ Set.univ.pi u ⊆ s :=
-  by
+      ∀ f, f ∈ s → ∃ u : ∀ a, Set (π a), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ Set.univ.pi u ⊆ s := by
   cases nonempty_fintype ι
   rw [isOpen_iff_nhds]
-  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff, exists_prop]
+  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
   refine ball_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine
@@ -1320,7 +1319,7 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
 
 theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hs : ∀ a ∈ i, IsClosed (s a)) :
     IsClosed (pi i s) := by
-  rw [pi_def]; exact isClosed_binterᵢ fun a ha => (hs _ ha).preimage (continuous_apply _)
+  rw [pi_def]; exact isClosed_biInter fun a ha => (hs _ ha).preimage (continuous_apply _)
 #align is_closed_set_pi isClosed_set_pi
 
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (π i)} (a : ∀ i, π i) (hs : I.pi s ∈ 𝓝 a)
@@ -1330,7 +1329,7 @@ theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (π i)} (a : ∀ i,
 
 theorem set_pi_mem_nhds {i : Set ι} {s : ∀ a, Set (π a)} {x : ∀ a, π a} (hi : i.Finite)
     (hs : ∀ a ∈ i, s a ∈ 𝓝 (x a)) : pi i s ∈ 𝓝 x := by
-  rw [pi_def, binterᵢ_mem hi]
+  rw [pi_def, biInter_mem hi]
   exact fun a ha => (continuous_apply a).continuousAt (hs a ha)
 #align set_pi_mem_nhds set_pi_mem_nhds
 
@@ -1362,7 +1361,7 @@ theorem pi_generateFrom_eq {π : ι → Type _} {g : ∀ a, Set (Set (π a))} :
     rintro _ ⟨s, i, hi, rfl⟩
     letI := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
-  · refine le_infᵢ fun a => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
+  · refine le_iInf fun a => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
     refine GenerateOpen.basic _ ⟨update (fun a => univ) a s, {a}, ?_⟩
     simp [hs]
 #align pi_generate_from_eq pi_generateFrom_eq
@@ -1388,7 +1387,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
   · rintro s ⟨t, i, ht, rfl⟩
     letI := generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
-    choose c hcg hfc using fun a => unionₛ_eq_univ_iff.1 (hg a) (f a)
+    choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
     refine ⟨pi i t ∩ pi (↑iᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
     rw [← univ_pi_piecewise]
     refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
@@ -1398,7 +1397,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
 -- porting note: new lemma
 theorem induced_to_pi {X : Type _} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
-  erw [induced_infᵢ]
+  erw [induced_iInf]
   simp only [induced_compose]
   rfl
 
@@ -1407,10 +1406,10 @@ endowed with a family of maps `f i : X → π i` for every `i : ι`, hence induc
 map `g : X → Π i, π i`. This lemma shows that infimum of the topologies on `X` induced by
 the `f i` as `i : ι` varies is simply the topology on `X` induced by `g : X → Π i, π i`
 where `Π i, π i` is endowed with the usual product topology. -/
-theorem inducing_infᵢ_to_pi {X : Type _} (f : ∀ i, X → π i) :
+theorem inducing_iInf_to_pi {X : Type _} (f : ∀ i, X → π i) :
     @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
   letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
-#align inducing_infi_to_pi inducing_infᵢ_to_pi
+#align inducing_infi_to_pi inducing_iInf_to_pi
 
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]
 
@@ -1430,13 +1429,13 @@ variable {ι κ : Type _} {σ : ι → Type _} {τ : κ → Type _} [∀ i, Topo
 
 @[continuity]
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
-  continuous_supᵢ_rng continuous_coinduced_rng
+  continuous_iSup_rng continuous_coinduced_rng
 #align continuous_sigma_mk continuous_sigmaMk
 
--- porting note: the proof was `by simp only [isOpen_supᵢ_iff, isOpen_coinduced]`
+-- porting note: the proof was `by simp only [isOpen_iSup_iff, isOpen_coinduced]`
 theorem isOpen_sigma_iff {s : Set (Sigma σ)} : IsOpen s ↔ ∀ i, IsOpen (Sigma.mk i ⁻¹' s) := by
   delta instTopologicalSpaceSigma
-  rw [isOpen_supᵢ_iff]
+  rw [isOpen_iSup_iff]
   rfl
 #align is_open_sigma_iff isOpen_sigma_iff
 
@@ -1500,9 +1499,9 @@ theorem comap_sigmaMk_nhds (i : ι) (x : σ i) : comap (Sigma.mk i) (𝓝 ⟨i, 
 #align comap_sigma_mk_nhds comap_sigmaMk_nhds
 
 theorem isOpen_sigma_fst_preimage (s : Set ι) : IsOpen (Sigma.fst ⁻¹' s : Set (Σ a, σ a)) := by
-  rw [← bunionᵢ_of_singleton s, preimage_unionᵢ₂]
+  rw [← biUnion_of_singleton s, preimage_iUnion₂]
   simp only [← range_sigmaMk]
-  exact isOpen_bunionᵢ fun _ _ => isOpen_range_sigmaMk
+  exact isOpen_biUnion fun _ _ => isOpen_range_sigmaMk
 #align is_open_sigma_fst_preimage isOpen_sigma_fst_preimage
 
 /-- A map out of a sum type is continuous iff its restriction to each summand is. -/
@@ -1510,7 +1509,7 @@ theorem isOpen_sigma_fst_preimage (s : Set ι) : IsOpen (Sigma.fst ⁻¹' s : Se
 theorem continuous_sigma_iff {f : Sigma σ → α} :
     Continuous f ↔ ∀ i, Continuous fun a => f ⟨i, a⟩ := by
   delta instTopologicalSpaceSigma
-  rw [continuous_supᵢ_dom]
+  rw [continuous_iSup_dom]
   exact forall_congr' fun _ => continuous_coinduced_dom
 #align continuous_sigma_iff continuous_sigma_iff
 

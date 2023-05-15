@@ -49,7 +49,6 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-
 #align polynomial_module PolynomialModule
 
 variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
@@ -121,6 +120,7 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
     IsScalarTower S R (PolynomialModule R M) :=
   Finsupp.isScalarTower _ _
 
+set_option synthInstance.etaExperiment true in
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) := modulePolynomialOfEndo.isScalarTower _
@@ -197,7 +197,11 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     exacts [rfl, (zero_smul R _).symm]
 #align polynomial_module.smul_apply PolynomialModule.smul_apply
 
-
+-- Porting note: typeclass inference goes haywire in the next declaration,
+-- possibly due to either lean4#2074 or upstream workarounds for it.
+-- One way to prune the bad branches is:
+attribute [-instance] IsDomain.toCancelCommMonoidWithZero in
+set_option synthInstance.etaExperiment true in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with

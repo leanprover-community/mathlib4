@@ -183,7 +183,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
   | ⟨a⟩ =>
     ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
         (fun a b (h : Rel r a b) ↦ by
-          -- note we can't define a `rel.pow` as `rel` isn't reflexive so `rel r 1 1` isn't true
+          -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
           dsimp only
           induction n with
           | zero => rw [pow_zero, pow_zero]
@@ -340,7 +340,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instAddCommMonoid r
   __ := instMonoidWithZero r
 
-instance Ring {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+instance instRing {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
     add_left_neg := by
@@ -369,7 +369,7 @@ instance instCommSemiring {R : Type u₁} [CommSemiring R] (r : R → R → Prop
       simp [mul_quot, mul_comm] }
 
 instance {R : Type u₁} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
-  { RingQuot.instCommSemiring r, RingQuot.Ring r with }
+  { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
 instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
@@ -487,10 +487,10 @@ agrees with the quotient by the appropriate ideal.
 
 variable {B : Type u₁} [CommRing B]
 
-/-- The universal ring homomorphism from `RingQuot r` to `B ⧸ ideal.of_rel r`. -/
+/-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=
   lift ⟨Ideal.Quotient.mk (Ideal.ofRel r),
-        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_infₛ.mpr
+        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_sInf.mpr
           fun _ w ↦ w ⟨x, y, h, sub_add_cancel x y⟩⟩
 #align ring_quot.ring_quot_to_ideal_quotient RingQuot.ringQuotToIdealQuotient
 
@@ -564,7 +564,6 @@ private irreducible_def star' : RingQuot r → RingQuot r
 
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-
 #align ring_quot.star'_quot RingQuot.star'_quot
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/

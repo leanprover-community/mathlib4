@@ -690,7 +690,6 @@ theorem map_add' : ∀ (x y : R), v.asFun x ≤ v.asFun (x + y) ∨ v.asFun y �
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
   Valuation.map_add_le v hx hy
-
 #align add_valuation.map_le_add AddValuation.map_le_add
 
 theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=

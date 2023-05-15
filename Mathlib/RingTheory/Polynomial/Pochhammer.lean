@@ -96,8 +96,8 @@ theorem pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
-theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) :=
-  by
+theorem pochhammer_succ_right (n : ℕ) :
+    pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) := by
   suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + (n : ℕ[X]))
   · apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [pochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,

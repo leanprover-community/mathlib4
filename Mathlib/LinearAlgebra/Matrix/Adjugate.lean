@@ -175,7 +175,6 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
       congr with j
       congr
       apply Finset.sum_apply
-
 #align matrix.sum_cramer_apply Matrix.sum_cramer_apply
 
 theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) :
@@ -304,7 +303,6 @@ theorem adjugate_mul (A : Matrix n n α) : adjugate A ⬝ A = A.det • (1 : Mat
     adjugate A ⬝ A = (Aᵀ ⬝ adjugate Aᵀ)ᵀ := by
       rw [← adjugate_transpose, ← transpose_mul, transpose_transpose]
     _ = _ := by rw [mul_adjugate Aᵀ, det_transpose, transpose_smul, transpose_one]
-
 #align matrix.adjugate_mul Matrix.adjugate_mul
 
 theorem adjugate_smul (r : α) (A : Matrix n n α) :
@@ -379,6 +377,8 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type _} [CommSemiring R] [CommRing A
   f.toRingHom.map_adjugate _
 #align alg_hom.map_adjugate AlgHom.map_adjugate
 
+set_option synthInstance.maxHeartbeats 300000 in
+set_option maxHeartbeats 300000 in
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
   cases' (Fintype.card n).eq_zero_or_pos with h_card h_card
@@ -396,7 +396,6 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
     A'.det * A'.adjugate.det = (A' ⬝ adjugate A').det := (det_mul _ _).symm
     _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
     _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ, h_card]
-
 #align matrix.det_adjugate Matrix.det_adjugate
 
 @[simp]
@@ -504,7 +503,8 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
 #align matrix.det_smul_adjugate_adjugate Matrix.det_smul_adjugate_adjugate
 
 -- Porting note: rewrites are slow.
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 300000 in
 /-- Note that this is not true for `Fintype.card n = 1` since `1 - 2 = 0` and not `-1`. -/
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
