@@ -190,7 +190,10 @@ theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 #align add_circle.coe_period AddCircle.coe_period
 
-@[simp]
+/- Porting note: `simp` attribute removed because linter reports:
+simp can prove this:
+  by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
+-/
 theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
   rw [coe_add, ← eq_sub_iff_add_eq', sub_self, coe_period]
 #align add_circle.coe_add_period AddCircle.coe_add_period
@@ -579,16 +582,19 @@ def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
   right_inv :=
     Quot.ind <| by
       rintro ⟨x, hx⟩
-      have := _
       rcases ne_or_eq x (a + p) with (h | rfl)
       · revert x
-        exact this
-      · rw [← Quot.sound endpoint_ident.mk]
-        exact this _ _ (lt_add_of_pos_right a hp.out).ne
-      intro x hx h
-      congr
-      ext1
-      apply congr_arg Subtype.val ((equiv_Ico p a).right_inv ⟨x, hx.1, hx.2.lt_of_ne h⟩)
+        dsimp only
+        intro x hx h
+        congr
+        ext1
+        apply congr_arg Subtype.val ((equivIco p a).right_inv ⟨x, hx.1, hx.2.lt_of_ne h⟩)
+      · rw [← Quot.sound EndpointIdent.mk]
+        dsimp only
+        congr
+        ext1
+        apply congr_arg Subtype.val
+          ((equivIco p a).right_inv ⟨a, le_refl a, lt_add_of_pos_right a hp.out⟩)
 #align add_circle.equiv_Icc_quot AddCircle.equivIccQuot
 
 theorem equivIccQuot_comp_mk_eq_toIcoMod :
@@ -668,3 +674,4 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
+#lint
