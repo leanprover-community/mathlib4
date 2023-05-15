@@ -61,7 +61,7 @@ To avoid pathologies in dimension 0, we also require that `x` belongs to the clo
 is automatic when `E` is not `0`-dimensional). -/
 @[mk_iff uniqueDiffWithinAt_iff]
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
-  dense_tangent_cone : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
+  dense_tangentCone : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
   mem_closure : x ∈ closure s
 #align unique_diff_within_at UniqueDiffWithinAt
 
@@ -88,7 +88,7 @@ section TangentCone
 -- This section is devoted to the properties of the tangent cone.
 open NormedField
 
-theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ := by
+theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ := by
   refine' univ_subset_iff.1 fun y _ => _
   rcases exists_one_lt_norm 𝕜 with ⟨w, hw⟩
   refine' ⟨fun n => w ^ n, fun n => (w ^ n)⁻¹ • y, univ_mem' fun n => mem_univ _, _, _⟩
@@ -100,12 +100,12 @@ theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ := by
       apply pow_ne_zero
       simpa [norm_eq_zero] using (ne_of_lt (lt_trans zero_lt_one hw)).symm
     rw [smul_smul, this, one_smul]
-#align tangent_cone_univ tangent_cone_univ
+#align tangent_cone_univ tangentCone_univ
 
-theorem tangent_cone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
+theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
-#align tangent_cone_mono tangent_cone_mono
+#align tangent_cone_mono tangentCone_mono
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
@@ -125,7 +125,7 @@ theorem tangentConeAt.lim_zero {α : Type _} (l : Filter α) {c : α → 𝕜} {
   exact D
 #align tangent_cone_at.lim_zero tangentConeAt.lim_zero
 
-theorem tangent_cone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
+theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   refine' ⟨c, d, _, ctop, clim⟩
@@ -133,20 +133,20 @@ theorem tangent_cone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
   exact tendsto_principal.1 (tendsto_inf.1 this).2
   refine' (tendsto_inf.2 ⟨_, tendsto_principal.2 ds⟩).mono_right h
   simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
-#align tangent_cone_mono_nhds tangent_cone_mono_nhds
+#align tangent_cone_mono_nhds tangentCone_mono_nhds
 
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
-theorem tangent_cone_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
-  Subset.antisymm (tangent_cone_mono_nhds <| le_of_eq h) (tangent_cone_mono_nhds <| le_of_eq h.symm)
-#align tangent_cone_congr tangent_cone_congr
+theorem tangentCone_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
+  Subset.antisymm (tangentCone_mono_nhds <| le_of_eq h) (tangentCone_mono_nhds <| le_of_eq h.symm)
+#align tangent_cone_congr tangentCone_congr
 
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
-theorem tangent_cone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
-  tangent_cone_congr (nhdsWithin_restrict' _ ht).symm
-#align tangent_cone_inter_nhds tangent_cone_inter_nhds
+theorem tangentCone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
+  tangentCone_congr (nhdsWithin_restrict' _ ht).symm
+#align tangent_cone_inter_nhds tangentCone_inter_nhds
 
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
-theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
+theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
     LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rintro _ ⟨v, ⟨c, d, hd, hc, hy⟩, rfl⟩
   have : ∀ n, ∃ d', y + d' ∈ t ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n := by
@@ -163,10 +163,10 @@ theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t)
   · apply Tendsto.prod_mk_nhds hy _
     refine' squeeze_zero_norm (fun n => (hd' n).2.le) _
     exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
-#align subset_tangent_cone_prod_left subset_tangent_cone_prod_left
+#align subset_tangent_cone_prod_left subset_tangentCone_prod_left
 
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
-theorem subset_tangent_cone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s) :
+theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rintro _ ⟨w, ⟨c, d, hd, hc, hy⟩, rfl⟩
   have : ∀ n, ∃ d', x + d' ∈ s ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n := by
@@ -183,10 +183,10 @@ theorem subset_tangent_cone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s
   · apply Tendsto.prod_mk_nhds _ hy
     refine' squeeze_zero_norm (fun n => (hd' n).2.le) _
     exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
-#align subset_tangent_cone_prod_right subset_tangent_cone_prod_right
+#align subset_tangent_cone_prod_right subset_tangentCone_prod_right
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
-theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
+theorem mapsTo_tangentCone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     {i : ι} (hi : ∀ (j) (_ : j ≠ i), x j ∈ closure (s j)) :
     MapsTo (LinearMap.single i : E i →ₗ[𝕜] ∀ j, E j) (tangentConeAt 𝕜 (s i) (x i))
@@ -207,11 +207,11 @@ theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _
     · suffices Tendsto (fun n => c n • d' n j) atTop (𝓝 0) by simpa [hj]
       refine' squeeze_zero_norm (fun n => (hcd' n j hj).le) _
       exact tendsto_pow_atTop_nhds_0_of_lt_1 one_half_pos.le one_half_lt_one
-#align maps_to_tangent_cone_pi mapsTo_tangent_cone_pi
+#align maps_to_tangent_cone_pi mapsTo_tangentCone_pi
 
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
-theorem mem_tangent_cone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
+theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x := by
   let c := fun n : ℕ => (2 : ℝ) ^ (n + 1)
   let d := fun n : ℕ => (c n)⁻¹ • (y - x)
@@ -241,14 +241,14 @@ theorem mem_tangent_cone_of_openSegment_subset {s : Set G} {x y : G} (h : openSe
       exact pow_ne_zero _ (by norm_num)
     rw [this]
     apply tendsto_const_nhds
-#align mem_tangent_cone_of_open_segment_subset mem_tangent_cone_of_openSegment_subset
+#align mem_tangent_cone_of_open_segment_subset mem_tangentCone_of_openSegment_subset
 
 /-- If a subset of a real vector space contains a segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
-theorem mem_tangent_cone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
+theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
-  mem_tangent_cone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
-#align mem_tangent_cone_of_segment_subset mem_tangent_cone_of_segment_subset
+  mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
+#align mem_tangent_cone_of_segment_subset mem_tangentCone_of_segment_subset
 
 end TangentCone
 
@@ -266,7 +266,7 @@ theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 
 #align unique_diff_on.unique_diff_within_at UniqueDiffOn.uniqueDiffWithinAt
 
 theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
-  rw [uniqueDiffWithinAt_iff, tangent_cone_univ]
+  rw [uniqueDiffWithinAt_iff, tangentCone_univ]
   simp
 #align unique_diff_within_at_univ uniqueDiffWithinAt_univ
 
@@ -282,7 +282,7 @@ theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : �
     UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
   rw [mem_closure_iff_nhdsWithin_neBot] at h⊢
-  exact ⟨h.1.mono <| Submodule.span_mono <| tangent_cone_mono_nhds st, h.2.mono st⟩
+  exact ⟨h.1.mono <| Submodule.span_mono <| tangentCone_mono_nhds st, h.2.mono st⟩
 #align unique_diff_within_at.mono_nhds UniqueDiffWithinAt.mono_nhds
 
 theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t) :
@@ -339,7 +339,7 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   rw [closure_prod_eq]
   refine' ⟨_, hs.2, ht.2⟩
   have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := Submodule.span_mono
-    (union_subset (subset_tangent_cone_prod_left ht.2) (subset_tangent_cone_prod_right hs.2))
+    (union_subset (subset_tangentCone_prod_left ht.2) (subset_tangentCone_prod_right hs.2))
   rw [LinearMap.span_inl_union_inr, SetLike.le_def] at this
   exact (hs.1.prod ht.1).mono this
 #align unique_diff_within_at.prod UniqueDiffWithinAt.prod
@@ -353,7 +353,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
   norm_cast
   simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
     ← mapsTo']
-  exact fun i => (mapsTo_tangent_cone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
+  exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 #align unique_diff_within_at.univ_pi UniqueDiffWithinAt.univ_pi
 
 theorem UniqueDiffWithinAt.pi (ι : Type _) [Finite ι] (E : ι → Type _)
@@ -401,7 +401,7 @@ theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (inter
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy
   apply mem_of_superset ((isOpenMap_sub_right x).image_mem_nhds hy)
   rintro _ ⟨z, zs, rfl⟩
-  refine' mem_tangent_cone_of_openSegment_subset (Subset.trans _ interior_subset)
+  refine' mem_tangentCone_of_openSegment_subset (Subset.trans _ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
 #align unique_diff_within_at_convex uniqueDiffWithinAt_convex
 
