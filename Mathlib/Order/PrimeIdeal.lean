@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_proper Order.Ideal.PrimePair.I_isProper
 
 protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
-  IF.isCompl_I_F.Disjoint
+  IF.isCompl_I_F.disjoint
 #align order.ideal.prime_pair.disjoint Order.Ideal.PrimePair.disjoint
 
 theorem I_union_F : (IF.I : Set P) ∪ IF.F = Set.univ :=
@@ -242,4 +242,3 @@ set_option linter.uppercaseLean3 false in
 end PFilter
 
 end Order
-

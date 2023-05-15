@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 If `G` preserves limits, and `C` and `D` have limits, then for any diagram `F : J ⥤ C` we have a
 canonical isomorphism `preservesLimitsIso : G.obj (Limit F) ≅ Limit (F ⋙ G)`.
-We also show that we can commute `IsLimit.lift` of a preserved limit with `functor.map_cone`:
+We also show that we can commute `IsLimit.lift` of a preserved limit with `Functor.mapCone`:
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see

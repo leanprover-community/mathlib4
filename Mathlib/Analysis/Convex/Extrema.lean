@@ -49,7 +49,6 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
     ya • f a + yc • f a = f a := by rw [← add_smul, yac, one_smul]
     _ ≤ f (ya * a + yc * c) := hfy
     _ ≤ ya • f a + yc • f c := h_conv.2 (left_mem_Icc.2 a_lt_b.le) hc ya₀ yc₀.le yac
-
 #align is_min_on.of_is_local_min_on_of_convex_on_Icc IsMinOn.of_isLocalMinOn_of_convexOn_Icc
 
 /-- A local minimum of a convex function is a global minimum, restricted to a set `s`.

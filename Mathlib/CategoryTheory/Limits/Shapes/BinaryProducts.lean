@@ -587,13 +587,13 @@ def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
   ))
 #align category_theory.limits.coprod_is_coprod CategoryTheory.Limits.coprodIsCoprod
 
-@[ext]
+@[ext 1100]
 theorem prod.hom_ext {W X Y : C} [HasBinaryProduct X Y] {f g : W ⟶ X ⨯ Y}
     (h₁ : f ≫ prod.fst = g ≫ prod.fst) (h₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
   BinaryFan.IsLimit.hom_ext (limit.isLimit _) h₁ h₂
 #align category_theory.limits.prod.hom_ext CategoryTheory.Limits.prod.hom_ext
 
-@[ext]
+@[ext 1100]
 theorem coprod.hom_ext {W X Y : C} [HasBinaryCoproduct X Y] {f g : X ⨿ Y ⟶ W}
     (h₁ : coprod.inl ≫ f = coprod.inl ≫ g) (h₂ : coprod.inr ≫ f = coprod.inr ≫ g) : f = g :=
   BinaryCofan.IsColimit.hom_ext (colimit.isColimit _) h₁ h₂

@@ -70,8 +70,9 @@ namespace PFun
 
 variable {α β γ δ ε ι : Type _}
 
-instance : Inhabited (α →. β) :=
+instance inhabited : Inhabited (α →. β) :=
   ⟨fun _ => Part.none⟩
+#align pfun.inhabited PFun.inhabited
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
@@ -134,11 +135,13 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 #align pfun.as_subtype_eq_of_mem PFun.asSubtype_eq_of_mem
 
 /-- Turn a total function into a partial function. -/
+@[coe]
 protected def lift (f : α → β) : α →. β := fun a => Part.some (f a)
 #align pfun.lift PFun.lift
 
-instance : Coe (α → β) (α →. β) :=
+instance coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
+#align pfun.has_coe PFun.coe
 
 @[simp]
 theorem coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
@@ -219,16 +222,18 @@ theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g 
 def map (f : β → γ) (g : α →. β) : α →. γ := fun a => (g a).map f
 #align pfun.map PFun.map
 
-instance : Monad (PFun α) where
+instance monad : Monad (PFun α) where
   pure := PFun.pure
   bind := PFun.bind
   map := PFun.map
+#align pfun.monad PFun.monad
 
-instance : LawfulMonad (PFun α) := LawfulMonad.mk'
+instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
   (id_map := fun f => by funext a ; dsimp [Functor.map, PFun.map] ; cases f a; rfl)
   (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
+#align pfun.is_lawful_monad PFun.lawfulMonad
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
@@ -245,8 +250,7 @@ exists. By abusing notation to illustrate, either `f a` is in the `β` part of `
 case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is undefined as well), or
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
--- Porting note: had to mark `noncomputable`
-noncomputable def fix (f : α →. Sum β α) : α →. β := fun a =>
+def fix (f : α →. Sum β α) : α →. β := fun a =>
   Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
     WellFounded.fixF
       (fun a IH =>
@@ -323,9 +327,8 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 #align pfun.fix_fwd PFun.fix_fwd
 
 /-- A recursion principle for `PFun.fix`. -/
--- Porting note: had to add `noncomputable`
 @[elab_as_elim]
-noncomputable def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd;
   -- Porting note: revert/intro trick required to address `generalize_proofs` bug
@@ -351,7 +354,7 @@ theorem fixInduction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} {
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-noncomputable def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
+def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
     (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
   refine' fixInduction h fun a' h ih => _
@@ -593,7 +596,7 @@ theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
-  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right]
+  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, ← exists_and_right]
   rw [exists_comm]
   simp_rw [and_comm]
 #align pfun.dom_comp PFun.dom_comp
@@ -602,8 +605,7 @@ theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
   ext
-  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right, ←
-    exists_and_left]
+  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
   rw [exists_comm]
   simp_rw [and_assoc, and_comm]
 #align pfun.preimage_comp PFun.preimage_comp
@@ -612,8 +614,7 @@ theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
 theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
     a.bind (f.comp g) = (a.bind g).bind f := by
   ext c
-  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right, ←
-    exists_and_left]
+  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
   rw [exists_comm]
   simp_rw [and_assoc]
 #align part.bind_comp PFun.Part.bind_comp
