@@ -8,11 +8,10 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Logic
-import Leanbin.Init.Classical
-import Leanbin.Init.Meta.Name
-import Leanbin.Init.Algebra.Classes
+import Mathlib.Init.Logic
+import Mathlib.Init.Classical
+-- import Mathlib.Init.Meta.Name
+-- import Mathlib.Init.Algebra.Classes
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option default_priority -/
 /- Make sure instances defined in this file have lower priority than the ones
