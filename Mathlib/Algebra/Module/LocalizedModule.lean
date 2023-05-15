@@ -269,6 +269,18 @@ instance toSemiring {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])
+    left_distrib := by
+      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+      apply mk_eq.mpr _
+      use 1
+      simp only [one_mul, smul_add, mul_add, mul_smul_comm, smul_smul, ← mul_assoc,
+        mul_right_comm]
+    right_distrib := by
+      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+      apply mk_eq.mpr _
+      use 1
+      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
+        mul_right_comm]
     zero_mul := by
       rintro ⟨a, s⟩
       exact mk_eq.mpr ⟨1, by simp only [MulZeroClass.zero_mul, smul_zero]⟩
@@ -286,19 +298,7 @@ instance toSemiring {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
       exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
     mul_one := by
       rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩
-    left_distrib := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_add, mul_add, mul_smul_comm, smul_smul, ← mul_assoc,
-        mul_right_comm]
-    right_distrib := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
-        mul_right_comm] }
+      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩ }
 
 instance {A : Type _} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
@@ -317,9 +317,9 @@ instance {A : Type} [Ring A] [Algebra R A] {S : Submonoid R} :
   { show Semiring (LocalizedModule S A) by exact toSemiring with
     add_left_neg := add_left_neg' }
   -- Porting note: The following does not work.
-  -- { inferInstanceAs (AddCommGroup (LocalizedModule S A)),
-  --   inferInstanceAs (Monoid (LocalizedModule S A)) with
-  --   inferInstanceAs (Distrib (LocalizedModule S A)) with }
+  -- { show AddCommGroup (LocalizedModule S A) by infer_instance,
+  --   show Monoid (LocalizedModule S A) by infer_instance,
+  --   show Distrib (LocalizedModule S A) by infer_instance with }
 
 instance {A : Type _} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
