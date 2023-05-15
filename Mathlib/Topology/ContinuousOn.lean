@@ -74,7 +74,7 @@ theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
 
 theorem nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=
-  ((nhds_basis_opens a).inf_principal s).eq_binfᵢ
+  ((nhds_basis_opens a).inf_principal s).eq_biInf
 #align nhds_within_eq nhdsWithin_eq
 
 theorem nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
@@ -252,21 +252,21 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   rw [← inf_sup_left, sup_principal]
 #align nhds_within_union nhdsWithin_union
 
-theorem nhdsWithin_bunionᵢ {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
+theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
   Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
-    simp only [hT, nhdsWithin_union, supᵢ_insert, bunionᵢ_insert]
-#align nhds_within_bUnion nhdsWithin_bunionᵢ
+    simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+#align nhds_within_bUnion nhdsWithin_biUnion
 
-theorem nhdsWithin_unionₛ {S : Set (Set α)} (hS : S.Finite) (a : α) :
+theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
-  rw [unionₛ_eq_bunionᵢ, nhdsWithin_bunionᵢ hS]
-#align nhds_within_sUnion nhdsWithin_unionₛ
+  rw [sUnion_eq_biUnion, nhdsWithin_biUnion hS]
+#align nhds_within_sUnion nhdsWithin_sUnion
 
-theorem nhdsWithin_unionᵢ {ι} [Finite ι] (s : ι → Set α) (a : α) :
+theorem nhdsWithin_iUnion {ι} [Finite ι] (s : ι → Set α) (a : α) :
     𝓝[⋃ i, s i] a = ⨆ i, 𝓝[s i] a := by
-  rw [← unionₛ_range, nhdsWithin_unionₛ (finite_range s), supᵢ_range]
-#align nhds_within_Union nhdsWithin_unionᵢ
+  rw [← sUnion_range, nhdsWithin_sUnion (finite_range s), iSup_range]
+#align nhds_within_Union nhdsWithin_iUnion
 
 theorem nhdsWithin_inter (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓝[t] a := by
   delta nhdsWithin
@@ -325,8 +325,8 @@ theorem nhdsWithin_prod {α : Type _} [TopologicalSpace α] {β : Type _} [Topol
 theorem nhdsWithin_pi_eq' {ι : Type _} {α : ι → Type _} [∀ i, TopologicalSpace (α i)] {I : Set ι}
     (hI : I.Finite) (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
     𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_hi : i ∈ I), 𝓟 (s i)) := by
-  simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_infᵢ, pi_def, comap_principal, ←
-    infᵢ_principal_finite hI, ← infᵢ_inf_eq]
+  simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
+    iInf_principal_finite hI, ← iInf_inf_eq]
 #align nhds_within_pi_eq' nhdsWithin_pi_eq'
 
 theorem nhdsWithin_pi_eq {ι : Type _} {α : ι → Type _} [∀ i, TopologicalSpace (α i)] {I : Set ι}
@@ -334,10 +334,10 @@ theorem nhdsWithin_pi_eq {ι : Type _} {α : ι → Type _} [∀ i, TopologicalS
     𝓝[pi I s] x =
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
         ⨅ (i) (_hi : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
-  simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← infᵢ_principal_finite hI, comap_inf,
+  simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
     comap_principal, eval]
-  rw [infᵢ_split _ fun i => i ∈ I, inf_right_comm]
-  simp only [infᵢ_inf_eq]
+  rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
+  simp only [iInf_inf_eq]
 #align nhds_within_pi_eq nhdsWithin_pi_eq
 
 theorem nhdsWithin_pi_univ_eq {ι : Type _} {α : ι → Type _} [Finite ι] [∀ i, TopologicalSpace (α i)]
@@ -370,7 +370,7 @@ theorem Filter.Tendsto.if_nhdsWithin {f g : α → β} {p : α → Prop} [Decida
 
 theorem map_nhdsWithin (f : α → β) (a : α) (s : Set α) :
     map f (𝓝[s] a) = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (f '' (t ∩ s)) :=
-  ((nhdsWithin_basis_open a s).map f).eq_binfᵢ
+  ((nhdsWithin_basis_open a s).map f).eq_biInf
 #align map_nhds_within map_nhdsWithin
 
 theorem tendsto_nhdsWithin_mono_left {f : α → β} {a : α} {s t : Set α} {l : Filter β} (hst : s ⊆ t)
@@ -390,7 +390,7 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds {f : α → β} {a : α} {s : Set α}
 
 theorem eventually_mem_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α} {l : Filter β}
     (h : Tendsto f l (𝓝[s] a)) : ∀ᶠ i in l, f i ∈ s := by
-  simp_rw [nhdsWithin_eq, tendsto_infᵢ, mem_setOf_eq, tendsto_principal, mem_inter_iff,
+  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_setOf_eq, tendsto_principal, mem_inter_iff,
     eventually_and] at h
   exact (h univ ⟨mem_univ a, isOpen_univ⟩).2
 #align eventually_mem_of_tendsto_nhds_within eventually_mem_of_tendsto_nhdsWithin
@@ -1054,7 +1054,7 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr <| fun x _ => by
     delta ContinuousWithinAt
-    simp only [TopologicalSpace.nhds_generateFrom, tendsto_infᵢ, tendsto_principal, mem_setOf_eq,
+    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
     exact forall_congr' fun t => forall_swap
 

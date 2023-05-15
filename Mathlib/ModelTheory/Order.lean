@@ -28,7 +28,7 @@ particularly useful example in model theory.
 
 ## Main Results
 * `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
-linear orders, and dense linear orders without endpoints model `Theory.DLO`.
+linear orders, and dense linear orders without endpoints model `Language.dlo`.
 
 -/
 
