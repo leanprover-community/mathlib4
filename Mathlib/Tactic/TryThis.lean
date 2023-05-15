@@ -44,7 +44,7 @@ def addRewriteSuggestion (origTac : Syntax) (e : Expr) (symm : Bool) (type? : Op
   -- We resort to using `logInfoAt` here rather than `addSuggestion`,
   -- as I've never worked out how to have `addSuggestion` render comments.
   if let some type := type? then
-    logInfoAt origTac m!"{tac}\n-- {← ppExpr type}"
+    logInfoAt origTac m!"{tac}\n-- {← PrettyPrinter.ppExpr type}"
   else
     logInfoAt origTac m!"{tac}"
 
@@ -54,7 +54,7 @@ def addRefineSuggestion (origTac : Syntax) (e : Expr) : TermElabM Unit := do
   let stx ← delabToRefinableSyntax e
   let tac ← if e.hasExprMVar then `(tactic| refine $stx) else `(tactic| exact $stx)
   let subgoals := Std.Format.prefixJoin "\n-- ⊢ "
-    (← (← getMVars e).mapM fun g => do ppExpr (← g.getType)).toList
+    (← (← getMVars e).mapM fun g => do PrettyPrinter.ppExpr (← g.getType)).toList
   -- We resort to using `logInfoAt` here rather than `addSuggestion`,
   -- as I've never worked out how to have `addSuggestion` render comments.
   logInfoAt origTac m!"{tac}\n-- Remaining subgoals:{subgoals}"
