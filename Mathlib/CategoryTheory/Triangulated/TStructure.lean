@@ -1,7 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.RespectsIso
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LibrarySearch
 
 open CategoryTheory Category Limits
 
