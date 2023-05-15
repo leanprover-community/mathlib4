@@ -114,7 +114,7 @@ end LocallyCoverDense
 
 theorem CoverDense.locallyCoverDense [Full G] (H : CoverDense K G) : LocallyCoverDense K G := by
   intro X T
-  refine' K.superset_covering _ (K.bind_covering T.property fun Y f Hf => H.is_cover Y)
+  refine' K.superset_covering _ (K.bind_covering T.property fun Y f _ => H.is_cover Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
   constructor
