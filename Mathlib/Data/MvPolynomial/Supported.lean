@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.supported
-! leanprover-community/mathlib commit a26d17fcd679e43d380d0583b33c9eca5359d41e
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -44,8 +44,6 @@ noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
 #align mv_polynomial.supported MvPolynomial.supported
 
 variable {R}
-
-open Classical
 
 open Algebra
 

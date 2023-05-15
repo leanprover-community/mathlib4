@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module ring_theory.mv_polynomial.basic
-! leanprover-community/mathlib commit 019ead10c09bb91f49b1b7005d442960b1e0485f
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -40,8 +40,6 @@ Generalise to noncommutative (semi)rings
 
 
 noncomputable section
-
-open Classical
 
 open Set LinearMap Submodule
 
