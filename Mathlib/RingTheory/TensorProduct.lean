@@ -1033,13 +1033,15 @@ section Basis
 variable {k : Type _} [CommRing k] (R : Type _) [Ring R] [Algebra k R] {M : Type _}
   [AddCommMonoid M] [Module k M] {ι : Type _} (b : Basis ι k M)
 
-set_option synthInstance.etaExperiment true in
+-- porting note: need to make a universe explicit for some reason in the next declaration
+universe u_5
+
 /-- Given a `k`-algebra `R` and a `k`-basis of `M,` this is a `k`-linear isomorphism
 `R ⊗[k] M ≃ (ι →₀ R)` (which is in fact `R`-linear). -/
 noncomputable def basisAux : R ⊗[k] M ≃ₗ[k] ι →₀ R :=
-  TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique k R PUnit).symm b.repr ≪≫ₗ
+  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique k R PUnit.{u_5+1}).symm b.repr ≪≫ₗ
     (finsuppTensorFinsupp k R k PUnit ι).trans
-      (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (TensorProduct.rid k R))
+      (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid k R))
 #align algebra.tensor_product.basis_aux Algebra.TensorProduct.basisAux
 
 variable {R}
@@ -1058,10 +1060,11 @@ theorem basisAux_map_smul (r : R) (x : R ⊗[k] M) : basisAux R b (r • x) = r 
 
 variable (R)
 
+-- porting note: need to make a universe explicit. Is there a problem with `basisAux`?
 set_option synthInstance.etaExperiment true in
 /-- Given a `k`-algebra `R`, this is the `R`-basis of `R ⊗[k] M` induced by a `k`-basis of `M`. -/
 noncomputable def basis : Basis ι R (R ⊗[k] M) where
-  repr := { basisAux R b with map_smul' := basisAux_map_smul b }
+  repr := { basisAux.{u_5} R b with map_smul' := basisAux_map_smul b }
 #align algebra.tensor_product.basis Algebra.TensorProduct.basis
 
 variable {R}
@@ -1069,13 +1072,14 @@ variable {R}
 @[simp]
 theorem basis_repr_tmul (r : R) (m : M) :
     (basis R b).repr (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap k R) (map_zero _) (b.repr m) :=
-  basisAux_tmul _ _ _
+  basisAux_tmul b r m -- porting note: Lean 3 had _ _ _
 #align algebra.tensor_product.basis_repr_tmul Algebra.TensorProduct.basis_repr_tmul
 
 @[simp]
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [Basis, Equiv.uniqueProd_symm_apply, basisAux]
+
 #align algebra.tensor_product.basis_repr_symm_apply Algebra.TensorProduct.basis_repr_symm_apply
 
 end Basis
