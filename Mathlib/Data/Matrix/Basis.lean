@@ -202,8 +202,8 @@ theorem mul_same (k : n) (d : α) :
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) : stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 :=
-  by
+theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+    stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
   ext (a b)
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a

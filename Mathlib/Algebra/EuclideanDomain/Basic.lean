@@ -57,8 +57,7 @@ theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
     haveI := Classical.dec
     by_cases b0 : b = 0
-     --Porting note: `simp` doesn't prove `True` here for some reason
-    · simp only [b0, zero_mul] ; trivial
+    · simp only [b0, zero_mul]
     · rw [mul_div_cancel_left _ b0]⟩
 #align euclidean_domain.mod_eq_zero EuclideanDomain.mod_eq_zero
 

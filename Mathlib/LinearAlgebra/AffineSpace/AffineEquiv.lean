@@ -106,8 +106,7 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
   FunLike.hasCoeToFun
 
-@[nolint dangerousInstance] -- Porting note: this was not a problem in Lean 3
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
 
 @[simp]
@@ -221,11 +220,11 @@ def Simps.apply (e : P₁ ≃ᵃ[k] P₂) : P₁ → P₂ :=
 #align affine_equiv.simps.apply AffineEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
+def Simps.symm_apply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
   e.symm
-#align affine_equiv.simps.symm_apply AffineEquiv.Simps.symmApply
+#align affine_equiv.simps.symm_apply AffineEquiv.Simps.symm_apply
 
-initialize_simps_projections AffineEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply,
+initialize_simps_projections AffineEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
   linear → linear, as_prefix linear, -toEquiv)
 
 protected theorem bijective (e : P₁ ≃ᵃ[k] P₂) : Bijective e :=
@@ -452,7 +451,7 @@ variable (k)
 
 /-- The map `v ↦ v +ᵥ b` as an affine equivalence between a module `V` and an affine space `P` with
 tangent space `V`. -/
-@[simps! linear apply]
+@[simps! linear apply symm_apply]
 def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.vaddConst b
   linear := LinearEquiv.refl _ _

@@ -395,13 +395,12 @@ set_option synthInstance.etaExperiment true in
 theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type _} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   simp only [rootSet, ← Finset.mem_coe]
-  rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_bunionᵢ]
+  rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
 #align polynomial.root_set_prod Polynomial.rootSet_prod
 
 theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
-  ⟨-(p.coeff 0 / p.coeff 1),
-    by
+  ⟨-(p.coeff 0 / p.coeff 1), by
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [←h']

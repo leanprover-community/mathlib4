@@ -1,4 +1,4 @@
-status = ["Build", "Lint style"]
+status = ["Build", "Lint style", "Check all files imported"]
 use_squash_merge = true
 timeout_sec = 28800
 block_labels = ["not-ready-to-merge", "WIP", "blocked-by-other-PR", "merge-conflict"]

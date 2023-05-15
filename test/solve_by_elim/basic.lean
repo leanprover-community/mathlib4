@@ -73,8 +73,7 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
   fail_if_success solve_by_elim (config := .noBackTracking)
   solve_by_elim
 
-example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
-by
+example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := by
   fail_if_success solve_by_elim (config := {symm := false})
   solve_by_elim
 

@@ -83,8 +83,7 @@ theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
 @[simp]
 theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     rename g (rename f p) = rename (g ∘ f) p :=
-  show rename g (eval₂ C (X ∘ f) p) = _
-    by
+  show rename g (eval₂ C (X ∘ f) p) = _ by
     simp only [rename, aeval_eq_eval₂Hom]
     -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking

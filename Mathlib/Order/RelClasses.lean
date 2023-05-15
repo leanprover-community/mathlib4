@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit 172bf2812857f5e56938cc148b7a539f52f84ca9
+! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
+import Mathlib.Logic.Relation
+import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -345,6 +346,9 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
   IsAsymm.isIrrefl
 
+instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
+  ⟨i.wf.transGen⟩
+
 /-- A class for a well founded relation `<`. -/
 @[reducible]
 def WellFoundedLT (α : Type _) [LT α] : Prop :=
@@ -576,7 +580,7 @@ end Prod
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
-class IsNonstrictStrictOrder (α : Type _) (r s : α → α → Prop) where
+class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) where
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder
@@ -592,9 +596,6 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
 
--- The free parameter `r` is strictly speaking not uniquely determined by `s`, but in practice it
--- always has a unique instance, so this is not dangerous.
-@[nolint dangerousInstance]
 instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 

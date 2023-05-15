@@ -89,23 +89,22 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a 
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
 
-@[to_additive existing (reorder := 1) smul]
+@[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 #align ulift.has_pow ULift.pow
 
-@[to_additive existing (attr := simp) (reorder := 1) smul_down]
+@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
--- porting note: below errors: to_additive: can't transport `ULift.MulEquiv.ulift` to itself.
--- @[to_additive "The additive equivalence between `ULift α` and `α`."]
-def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
+@[to_additive "The additive equivalence between `ULift α` and `α`."]
+def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
-#align mul_equiv.ulift ULift.MulEquiv.ulift
+#align mul_equiv.ulift MulEquiv.ulift
 
 -- porting notes: below failed due to error above, manually added
 --@[to_additive]

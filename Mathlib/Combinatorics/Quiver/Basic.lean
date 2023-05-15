@@ -10,6 +10,7 @@ Ported by: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
+import Mathlib.Tactic.ProjectionNotation
 
 /-!
 # Quivers
@@ -65,6 +66,9 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
+pp_extended_field_notation Prefunctor.obj
+pp_extended_field_notation Prefunctor.map
+
 namespace Prefunctor
 
 @[ext]
@@ -104,6 +108,8 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp_obj Prefunctor.comp_obj
 #align prefunctor.comp_map Prefunctor.comp_map
 
+pp_extended_field_notation Prefunctor.comp
+
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     F.comp (id _) = F := rfl
@@ -136,18 +142,22 @@ namespace Quiver
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
 instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
-  ⟨fun a b => unop b ⟶ unop a⟩
+  ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 #align quiver.opposite Quiver.opposite
 
 /-- The opposite of an arrow in `V`.
 -/
-def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := f
+def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
+
+pp_extended_field_notation Quiver.Hom.op
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`.
 -/
-def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := f
+def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
+
+pp_extended_field_notation Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/
 -- Porting note: no has_nonempty_instance linter yet

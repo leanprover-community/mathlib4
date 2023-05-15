@@ -32,8 +32,7 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
   convert (config := { typeEqs := true }) (37, 57, 2, b)
 
-example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
-by
+example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ := by
   have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
   convert Set.preimage_empty
   rw [←Set.preimage_inter, this]
@@ -69,4 +68,11 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
   convert (config := .unfoldSameFun) h
   guard_target = n + n = 2 * n
+  sorry
+
+example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
+    ∀ ε > 0, q ε := by
+  convert h using 2 with ε hε
+  guard_hyp hε : ε > 0
+  guard_target = q ε ↔ p ε
   sorry
