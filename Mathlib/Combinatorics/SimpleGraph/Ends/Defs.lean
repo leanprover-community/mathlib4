@@ -82,7 +82,7 @@ theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) 
 
 namespace ComponentCompl
 
-/-- A `component_compl` specialization of `quot.lift`, where soundness has to be proved only
+/-- A `ComponentCompl` specialization of `Quot.lift`, where soundness has to be proved only
 for adjacent vertices.
 -/
 protected def lift {β : Sort _} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
@@ -191,7 +191,7 @@ theorem _root_.SimpleGraph.componentComplMk_mem_hom
 
 theorem hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ (C : Set V) ⊆ (D : Set V) :=
-  ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun v vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
+  ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun _ vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
 #align simple_graph.component_compl.hom_eq_iff_le SimpleGraph.ComponentCompl.hom_eq_iff_le
 
 theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
