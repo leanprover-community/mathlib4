@@ -327,21 +327,24 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
+  -- Porting note: added. Should move elsewhere after the port.
+  have : Function.Injective Int.ofNat := fun x y h => Int.ofNat_inj.mp h
   apply (toFinsuppIso R).injective
-  rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    comapDomain.addMonoidHom_apply, toFinsuppIso_apply]
+  rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
+  -- Porting note: was `rw`
+  erw [comapDomain.addMonoidHom_apply this]
+  rw [toFinsuppIso_apply]
+  -- Porting note: rewrote proof below relative to mathlib3.
   by_cases n0 : 0 ≤ n
   · lift n to ℕ using n0
-    erw [comapDomain_single, toFinsuppIso_symm_apply]
-    simp only [Int.coe_nat_nonneg, Int.toNat_coe_nat, if_true, toFinsuppIso_apply,
-      to_finsupp_monomial]
+    erw [comapDomain_single]
+    simp only [Nat.cast_nonneg, Int.toNat_ofNat, ite_true, toFinsupp_monomial]
   · lift -n to ℕ using (neg_pos.mpr (not_le.mp n0)).le with m
-    rw [toFinsuppIso_apply, toFinsupp_inj, if_neg n0]
-    erw [toFinsuppIso_symm_apply]
+    rw [toFinsupp_inj, if_neg n0]
     ext a
-    have := ((not_le.mp n0).trans_le (Int.ofNat_zero_le a)).ne'
-    simp only [coeff, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero, single_apply_eq_zero, this,
-      IsEmpty.forall_iff]
+    have := ((not_le.mp n0).trans_le (Int.ofNat_zero_le a)).ne
+    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
+      single_eq_of_ne this]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.trunc_C_mul_T LaurentPolynomial.trunc_C_mul_T
 
