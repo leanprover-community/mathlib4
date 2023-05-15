@@ -111,6 +111,7 @@ theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = fal
   (h₂ : b.ble 1 = false) : ¬ n.Prime :=
   not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
 
+/-
 /-- A partial proof of `factors`. Asserts that `l` is a sorted list of primes, lower bounded by a
 prime `p`, which multiplies to `n`. -/
 def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
@@ -145,6 +146,7 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
   have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
+-/
 
 open NormNum
 
