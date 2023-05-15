@@ -1157,6 +1157,7 @@ import Mathlib.Data.Polynomial.Identities
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.IntegralNormalization
+import Mathlib.Data.Polynomial.Laurent
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Mirror
 import Mathlib.Data.Polynomial.Module
