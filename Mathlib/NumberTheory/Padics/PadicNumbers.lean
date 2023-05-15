@@ -748,6 +748,13 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
       exact hN _ (le_of_max_le_left hi)⟩
 #align padic.complete' Padic.complete'
 
+theorem complete'' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE (f i - q : ℚ_[p]) < ε := by
+  obtain ⟨x, hx⟩ := complete' f
+  refine ⟨x, fun ε hε => ?_⟩
+  obtain ⟨N, hN⟩ := hx ε hε
+  refine ⟨N, fun i hi => ?_⟩
+  rw [padicNormE.map_sub]
+  exact hN i hi
 end Complete
 
 section NormedSpace
@@ -958,17 +965,17 @@ namespace Padic
 variable {p : ℕ} [hp : Fact p.Prime]
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option eqn_compiler.zeta -/
-set_option eqn_compiler.zeta true
+-- port note : remove `set_option eqn_compiler.zeta true`
 
-instance complete : CauSeq.IsComplete ℚ_[p] norm := by
-  constructor
-  intro f
-  have cau_seq_norm_e : IsCauSeq padicNormE f := by
-    intro ε hε
-    let h := isCauSeq f ε (by exact_mod_cast hε)
+instance complete : CauSeq.IsComplete ℚ_[p] norm where
+isComplete := fun f => by
+  have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
+    have h := isCauSeq f ε (by exact_mod_cast hε)
     dsimp [norm] at h
     exact_mod_cast h
-  cases' Padic.complete' ⟨f, cau_seq_norm_e⟩ with q hq
+  -- port note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
+  -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
+  cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
   exists q
   intro ε hε
   cases' exists_rat_btwn hε with ε' hε'
@@ -976,11 +983,11 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm := by
   cases' hq ε' hε'.1 with N hN
   exists N
   intro i hi
-  let h := hN i hi
+  have h := hN i hi
+  change norm (f i - q) < ε
+  refine lt_trans ?_ hε'.2
   dsimp [norm]
-  rw_mod_cast [padicNormE.map_sub]
-  refine' lt_trans _ hε'.2
-  exact_mod_cast hN i hi
+  exact_mod_cast h
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :
