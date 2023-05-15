@@ -63,7 +63,8 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 #align dfinsupp.order_embedding_to_fun Dfinsupp.orderEmbeddingToFun
 
 @[simp]
-theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} : orderEmbeddingToFun f i = f i :=
+theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
+    (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
 #align dfinsupp.order_embedding_to_fun_apply Dfinsupp.orderEmbeddingToFun_apply
 

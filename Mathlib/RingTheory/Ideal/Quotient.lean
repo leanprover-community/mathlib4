@@ -56,8 +56,8 @@ This definition is marked `reducible` so that typeclass instances can be shared 
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
-instance : HasQuotient R (Ideal R) :=
-  Submodule.hasQuotient
+example : HasQuotient R (Ideal R) :=
+  inferInstance -- Submodule.hasQuotient
 
 namespace Quotient
 
