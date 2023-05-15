@@ -93,7 +93,7 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
-    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (Pi.cons s a b) := by
+    (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
   refine'

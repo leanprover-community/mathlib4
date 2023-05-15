@@ -574,13 +574,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [SuccOrder α]
 
-theorem succ_eq_infᵢ (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
-  refine' le_antisymm (le_infᵢ fun b => le_infᵢ succ_le_of_lt) _
+theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
+  refine' le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) _
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
-  exact infᵢ₂_le _ (lt_succ_iff_ne_top.2 ha)
-#align order.succ_eq_infi Order.succ_eq_infᵢ
+  exact iInf₂_le _ (lt_succ_iff_ne_top.2 ha)
+#align order.succ_eq_infi Order.succ_eq_iInf
 
 end CompleteLattice
 
@@ -922,13 +922,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [PredOrder α]
 
-theorem pred_eq_supᵢ (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
-  refine' le_antisymm _ (supᵢ_le fun b => supᵢ_le le_pred_of_lt)
+theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
+  refine' le_antisymm _ (iSup_le fun b => iSup_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]
     exact bot_le
-  · exact @le_supᵢ₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
-#align order.pred_eq_supr Order.pred_eq_supᵢ
+  · exact @le_iSup₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
+#align order.pred_eq_supr Order.pred_eq_iSup
 
 end CompleteLattice
 

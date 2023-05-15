@@ -16,8 +16,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 This file bundles types together with their first-order structure.
 
 ## Main Definitions
-* `FirstOrder.language.Theory.ModelType` is the type of nonempty models of a particular theory.
-* `FirstOrder.language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
+* `FirstOrder.Language.Theory.ModelType` is the type of nonempty models of a particular theory.
+* `FirstOrder.Language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
 
 ## TODO
 * Define category structures on bundled structures and models.

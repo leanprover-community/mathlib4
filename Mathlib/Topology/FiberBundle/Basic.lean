@@ -349,8 +349,8 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   have sne : s.Nonempty := ⟨a, ha⟩
   have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
   have sbd : BddAbove s := ⟨b, hsb⟩
-  set c := supₛ s
-  have hsc : IsLUB s c := isLUB_csupₛ sne sbd
+  set c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup sne sbd
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   obtain ⟨-, ec : Trivialization F (π E), hec : Icc a c ⊆ ec.baseSet⟩ : c ∈ s := by
     cases' hc.1.eq_or_lt with heq hlt
@@ -574,7 +574,7 @@ variable (b : B) (a : F)
 
 theorem open_source' (i : ι) : IsOpen (Z.localTrivAsLocalEquiv i).source := by
   apply TopologicalSpace.GenerateOpen.basic
-  simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+  simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
   simp only [localTrivAsLocalEquiv_apply, prod_mk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
@@ -597,11 +597,11 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     rw [continuousOn_open_iff (Z.open_source' i)]
     intro s s_open
     apply TopologicalSpace.GenerateOpen.basic
-    simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+    simp only [exists_prop, mem_iUnion, mem_singleton_iff]
     exact ⟨i, s, s_open, rfl⟩
   continuous_invFun := by
     refine continuousOn_open_of_generateFrom fun t ht ↦ ?_
-    simp only [exists_prop, mem_unionᵢ, mem_singleton_iff] at ht
+    simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsLocalEquiv Z j).source ∩ localTrivAsLocalEquiv Z j ⁻¹' s := ht
     rw [ts]
@@ -808,11 +808,11 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace E
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @ContinuousOn _ _ _ a.totalSpaceTopology e.toLocalEquiv.symm e.target := by
   refine' fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono _) U h)
-  exact le_supᵢ₂ (α := TopologicalSpace (TotalSpace E)) e he
+  exact le_iSup₂ (α := TopologicalSpace (TotalSpace E)) e he
 #align fiber_prebundle.continuous_symm_of_mem_pretrivialization_atlas FiberPrebundle.continuous_symm_of_mem_pretrivializationAtlas
 
 theorem isOpen_source (e : Pretrivialization F (π E)) : IsOpen[a.totalSpaceTopology] e.source := by
-  refine isOpen_supᵢ_iff.mpr fun e' => isOpen_supᵢ_iff.mpr fun _ => ?_
+  refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
   refine' isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, _⟩)
   ext ⟨x, hx⟩
   simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
@@ -837,8 +837,8 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
     open_source := a.isOpen_source e,
     continuous_toFun := by
       refine continuousOn_iff'.mpr fun s hs => ⟨e ⁻¹' s ∩ e.source,
-        isOpen_supᵢ_iff.mpr fun e' => ?_, by rw [inter_assoc, inter_self]; rfl⟩
-      refine isOpen_supᵢ_iff.mpr fun he' => ?_
+        isOpen_iSup_iff.mpr fun e' => ?_, by rw [inter_assoc, inter_self]; rfl⟩
+      refine isOpen_iSup_iff.mpr fun he' => ?_
       rw [isOpen_coinduced, isOpen_induced_iff]
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
       have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
