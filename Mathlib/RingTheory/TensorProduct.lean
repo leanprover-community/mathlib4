@@ -851,28 +851,31 @@ theorem assoc_aux_2 (r : R) :
 
 variable (A B C)
 
+-- porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
 protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
   algEquivOfLinearEquivTripleTensorProduct
-    (TensorProduct.assoc.{u, v₁, v₂, v₃} R A B C : A ⊗ B ⊗ C ≃ₗ[R] A ⊗ (B ⊗ C))
-    (@Algebra.TensorProduct.assoc_aux_1.{u, v₁, v₂, v₃} R _ A _ _ B _ _ C _ _)
-    (@Algebra.TensorProduct.assoc_aux_2.{u, v₁, v₂, v₃} R _ A _ _ B _ _ C _ _)
+    (_root_.TensorProduct.assoc R A B C)
+    Algebra.TensorProduct.assoc_aux_1
+    Algebra.TensorProduct.assoc_aux_2
 #align algebra.tensor_product.assoc Algebra.TensorProduct.assoc
 
 variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
-    (TensorProduct.assoc R A B C : (A ⊗[R] B) ⊗[R] C → A ⊗[R] B ⊗[R] C) (a ⊗ₜ b ⊗ₜ c) =
+    (_root_.TensorProduct.assoc R A B C : (A ⊗[R] B) ⊗[R] C → A ⊗[R] B ⊗[R] C) (a ⊗ₜ b ⊗ₜ c) =
       a ⊗ₜ (b ⊗ₜ c) :=
   rfl
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
 
 end
 
+variable {R A}
+
 /-- The tensor product of a pair of algebra morphisms. -/
 def map (f : A →ₐ[R] B) (g : C →ₐ[R] D) : A ⊗[R] C →ₐ[R] B ⊗[R] D :=
-  algHomOfLinearMapTensorProduct (TensorProduct.map f.toLinearMap g.toLinearMap) (by simp)
+  algHomOfLinearMapTensorProduct (_root_.TensorProduct.map f.toLinearMap g.toLinearMap) (by simp)
     (by simp [AlgHom.commutes])
 #align algebra.tensor_product.map Algebra.TensorProduct.map
 
@@ -900,7 +903,7 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     rintro _ ⟨_, ⟨a, b, rfl⟩, rfl⟩
     rw [map_tmul, ← _root_.mul_one (f a), ← _root_.one_mul (g b), ← tmul_mul_tmul]
     exact mul_mem_sup (AlgHom.mem_range_self _ a) (AlgHom.mem_range_self _ b)
-  · rw [← map_comp_include_left f g, ← map_comp_include_right f g]
+  · rw [← map_comp_includeLeft f g, ← map_comp_includeRight f g]
     exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
 #align algebra.tensor_product.map_range Algebra.TensorProduct.map_range
 
@@ -997,7 +1000,7 @@ theorem productMap_right : (productMap f g).comp includeRight = g :=
 
 theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
   rw [productMap, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp, ← AlgHom.range_comp,
-    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_include_left, lmul'_comp_include_right,
+    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
 #align algebra.tensor_product.product_map_range Algebra.TensorProduct.productMap_range
 
@@ -1015,7 +1018,7 @@ variable [Algebra R S] [Algebra A S] [IsScalarTower R A S]
 
 /-- If `A`, `B` are `R`-algebras, `A'` is an `A`-algebra, then the product map of `f : A' →ₐ[A] S`
 and `g : B →ₐ[R] S` is an `A`-algebra homomorphism. -/
-@[simps]
+@[simps!]
 def productLeftAlgHom (f : A' →ₐ[A] S) (g : B →ₐ[R] S) : A' ⊗[R] B →ₐ[A] S :=
   { (productMap (f.restrictScalars R) g).toRingHom with
     commutes' := fun r => by
