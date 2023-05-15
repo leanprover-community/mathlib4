@@ -353,7 +353,6 @@ theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
   star_natCast _
 
 section
--- Porting note: This takes too long
 
 @[simp, norm_cast]
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=

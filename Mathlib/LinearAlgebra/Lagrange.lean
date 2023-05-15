@@ -288,9 +288,6 @@ open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
--- Porting note: The heartbeats were increased to find the instances needed for 'Finset.smul_sum'
--- and 'smul_smul' on line 322.
-
 /-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map  `v : ι → F` injective on
 `s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/

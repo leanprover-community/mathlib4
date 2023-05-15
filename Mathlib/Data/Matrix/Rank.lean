@@ -200,7 +200,6 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
--- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
@@ -245,7 +244,6 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_transpose_mul_self Matrix.ker_mulVecLin_transpose_mul_self
 
--- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _

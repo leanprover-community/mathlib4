@@ -504,7 +504,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
--- porting note: this is aesop_cat taking a long time auto-filling in fields
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=

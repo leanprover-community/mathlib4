@@ -389,7 +389,6 @@ def IsInternal {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 #align direct_sum.is_internal DirectSum.IsInternal
 
--- Porting note: This times out; lean4#2003 may fix this?
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]

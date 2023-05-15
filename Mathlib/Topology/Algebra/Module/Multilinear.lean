@@ -430,8 +430,6 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup M₂]
 
--- Porting note: this requires slightly more time to synthesize an instance.
--- I couldn't see what was wrong with turning on tracing.
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
