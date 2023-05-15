@@ -201,7 +201,7 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLTOfdecidableLE _ _ decidableLE
+    @decidableLTOfDecidableLE _ _ decidableLE
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=

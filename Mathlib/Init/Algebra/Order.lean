@@ -133,7 +133,7 @@ theorem le_of_eq_or_lt {a b : α} (h : a = b ∨ a < b) : a ≤ b := match h wit
 | (Or.inl h) => le_of_eq h
 | (Or.inr h) => le_of_lt h
 
-instance decidableLTOfdecidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
+instance decidableLTOfDecidableLE [DecidableRel (. ≤ . : α → α → Prop)] :
   DecidableRel (. < . : α → α → Prop)
 | a, b =>
   if hab : a ≤ b then
@@ -241,7 +241,7 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLTOfdecidableLE _ _ decidableLE
+    @decidableLTOfDecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
