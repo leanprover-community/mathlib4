@@ -38,7 +38,9 @@ variable {C : Type u} [Category.{v} C]
 
 /-- An algebra of an endofunctor; `str` stands for "structure morphism" -/
 structure Algebra (F : C ⥤ C) where
+  /-- carrier of the algebra -/
   a : C
+  /-- structure morphism of the algebra -/
   str : F.obj a ⟶ a
 #align category_theory.endofunctor.algebra CategoryTheory.Endofunctor.Algebra
 
@@ -63,7 +65,9 @@ F f |          | f
 /-- A morphism between algebras of endofunctor `F` -/
 @[ext]
 structure Hom (A₀ A₁ : Algebra F) where
+  /-- underlying morphism between the carriers -/
   f : A₀.1 ⟶ A₁.1
+  /-- compatibility condition -/
   h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat -- porting note: was `obviously`
 #align category_theory.endofunctor.algebra.hom CategoryTheory.Endofunctor.Algebra.Hom
 
@@ -292,7 +296,9 @@ end Algebra
 
 /-- A coalgebra of an endofunctor; `str` stands for "structure morphism" -/
 structure Coalgebra (F : C ⥤ C) where
+  /-- carrier of the coalgebra -/
   V : C
+  /-- structure morphism of the coalgebra -/
   str : V ⟶ F.obj V
 #align category_theory.endofunctor.coalgebra CategoryTheory.Endofunctor.Coalgebra
 
@@ -317,7 +323,9 @@ variable {F : C ⥤ C} (V : Coalgebra F) {V₀ V₁ V₂ : Coalgebra F}
 /-- A morphism between coalgebras of an endofunctor `F` -/
 @[ext]
 structure Hom (V₀ V₁ : Coalgebra F) where
+  /-- underlying morphism between two carriers -/
   f : V₀.1 ⟶ V₁.1
+  /-- compatibility condition -/
   h : V₀.str ≫ F.map f = f ≫ V₁.str := by aesop
 #align category_theory.endofunctor.coalgebra.hom CategoryTheory.Endofunctor.Coalgebra.Hom
 
@@ -500,8 +508,8 @@ theorem Algebra.homEquiv_naturality_str (adj : F ⊣ G) (A₁ A₂ : Algebra F) 
 #align category_theory.endofunctor.adjunction.algebra.hom_equiv_naturality_str CategoryTheory.Endofunctor.Adjunction.Algebra.homEquiv_naturality_str
 
 theorem Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coalgebra G) (f : V₁ ⟶ V₂) :
-    F.map f.f ≫ (adj.homEquiv V₂.V V₂.V).symm V₂.str = (adj.homEquiv V₁.V V₁.V).symm V₁.str ≫ f.f :=
-  by
+    F.map f.f ≫ (adj.homEquiv V₂.V V₂.V).symm V₂.str =
+    (adj.homEquiv V₁.V V₁.V).symm V₁.str ≫ f.f := by
   rw [← Adjunction.homEquiv_naturality_left_symm, ← Adjunction.homEquiv_naturality_right_symm,
     f.h]
 #align category_theory.endofunctor.adjunction.coalgebra.hom_equiv_naturality_str_symm CategoryTheory.Endofunctor.Adjunction.Coalgebra.homEquiv_naturality_str_symm
