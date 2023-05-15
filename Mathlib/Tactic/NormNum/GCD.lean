@@ -57,6 +57,30 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     rw [← Nat.eq_of_beq_eq_true dm, ← hd, Nat.gcd_mul_lcm]
 #align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
 
+theorem nat_coprime_helper_zero_left (x : ℕ) (h : Nat.beq x 1 = false) : ¬Nat.coprime 0 x :=
+  mt (Nat.coprime_zero_left _).1 <| Nat.ne_of_beq_eq_false h
+#align tactic.norm_num.nat_coprime_helper_zero_left Tactic.NormNum.nat_coprime_helper_zero_left
+
+theorem nat_coprime_helper_zero_right (x : ℕ) (h : Nat.beq x 1 = false) : ¬Nat.coprime x 0 :=
+  mt (Nat.coprime_zero_right _).1 <| Nat.ne_of_beq_eq_false h
+#align tactic.norm_num.nat_coprime_helper_zero_right Tactic.NormNum.nat_coprime_helper_zero_right
+
+theorem nat_coprime_helper_1 (x y a b : ℕ) (h : Nat.beq (y * b) (x * a + 1) = true) :
+    Nat.coprime x y :=
+  nat_gcd_helper_1 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
+#align tactic.norm_num.nat_coprime_helper_1 Tactic.NormNum.nat_coprime_helper_1
+
+theorem nat_coprime_helper_2 (x y a b : ℕ) (h : Nat.beq (x * a) (y * b + 1) = true) :
+    Nat.coprime x y :=
+  nat_gcd_helper_2 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
+#align tactic.norm_num.nat_coprime_helper_2 Tactic.NormNum.nat_coprime_helper_2
+
+theorem nat_not_coprime_helper (d x y : ℕ) (hu : x % d = 0) (hv : y % d = 0)
+    (h : Nat.ble 2 d = true) : ¬ Nat.coprime x y :=
+  Nat.not_coprime_of_dvd_of_dvd (Nat.le_of_ble_eq_true h)
+    (Nat.dvd_of_mod_eq_zero hu) (Nat.dvd_of_mod_eq_zero hv)
+#align tactic.norm_num.nat_not_coprime_helper Tactic.NormNum.nat_not_coprime_helper
+
 theorem not_coprime_helper {x y d : Nat} (h : Nat.gcd x y = d) (h' : Nat.beq d 1 = false) :
     ¬ Nat.coprime x y :=
   by cases h; exact fun h'' => Nat.ne_of_beq_eq_false h' (Nat.coprime_iff_gcd_eq_one.mp h'')
@@ -69,11 +93,6 @@ theorem int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
     Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
 
-#noalign tactic.norm_num.nat_coprime_helper_zero_left
-#noalign tactic.norm_num.nat_coprime_helper_zero_right
-#noalign tactic.norm_num.nat_coprime_helper_1
-#noalign tactic.norm_num.nat_coprime_helper_2
-#noalign tactic.norm_num.nat_not_coprime_helper
 #noalign tactic.norm_num.int_gcd_helper''
 #noalign tactic.norm_num.int_gcd_helper_neg_left
 #noalign tactic.norm_num.int_gcd_helper_neg_right
@@ -179,14 +198,33 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
 /-- Evaluates `Nat.coprime` for the given natural number literals.
 Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatCoprime (ex ey : Q(ℕ)) : Q(Nat.coprime $ex $ey) ⊕ Q(¬ Nat.coprime $ex $ey) :=
-  let ⟨ed, pf⟩ := proveNatGCD ex ey
-  match ed.natLit! with
-  | 1 =>
-    have pf' : Q(Nat.gcd $ex $ey = 1) := pf
-    Sum.inl q(Nat.coprime_iff_gcd_eq_one.mpr $pf')
-  | _ =>
-    have edne : Q(Nat.beq $ed 1 = false) := (q(Eq.refl false) : Expr)
-    Sum.inr q(not_coprime_helper $pf $edne)
+  match ex.natLit!, ey.natLit! with
+  | 0, 0 => Sum.inr <| show Q(¬ Nat.coprime 0 0) from q(Nat.not_coprime_zero_zero)
+  | 1, _ => Sum.inl <| show Q(Nat.coprime 1 $ey) from q(Nat.coprime_one_left $ey)
+  | _, 1 => Sum.inl <| show Q(Nat.coprime $ex 1) from q(Nat.coprime_one_right $ex)
+  | 0, _ => Sum.inr <| show Q(¬ Nat.coprime 0 $ey) from
+    have p : Q(Nat.beq $ey 1 = false) := (q(Eq.refl false) : Expr)
+    q(nat_coprime_helper_zero_left $ey $p)
+  | _, 0 => Sum.inr <| show Q(¬ Nat.coprime $ex 0) from
+    have p : Q(Nat.beq $ex 1 = false) := (q(Eq.refl false) : Expr)
+    q(nat_coprime_helper_zero_right $ex $p)
+  | x, y =>
+    let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
+    if d = 1 then
+      have ea' : Q(ℕ) := mkRawNatLit a.natAbs
+      have eb' : Q(ℕ) := mkRawNatLit b.natAbs
+      if a ≥ 0 then
+        have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + 1) = true) := (q(Eq.refl true) : Expr)
+        Sum.inl q(nat_coprime_helper_2 $ex $ey $ea' $eb' $pt)
+      else
+        have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + 1) = true) := (q(Eq.refl true) : Expr)
+        Sum.inl q(nat_coprime_helper_1 $ex $ey $ea' $eb' $pt)
+    else
+      have ed : Q(ℕ) := mkRawNatLit d
+      have pu : Q(Nat.mod $ex $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+      have pv : Q(Nat.mod $ey $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+      have pd : Q(Nat.ble 2 $ed = true) := (q(Eq.refl true) : Expr)
+      Sum.inr q(nat_not_coprime_helper $ed $ex $ey $pu $pv $pd)
 #align tactic.norm_num.prove_coprime_nat Tactic.NormNum.proveNatCoprime
 
 /-- Evaluates the `Nat.coprime` function. -/
