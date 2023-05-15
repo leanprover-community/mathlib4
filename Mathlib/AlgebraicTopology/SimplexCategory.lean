@@ -464,7 +464,7 @@ end Truncated
 section Concrete
 
 instance : ConcreteCategory.{0} SimplexCategory where
-  Forget :=
+  forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
   forget_faithful := ⟨fun h => by ext : 2 ; exact h⟩

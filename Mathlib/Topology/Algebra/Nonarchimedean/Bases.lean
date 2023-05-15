@@ -211,7 +211,6 @@ end RingSubgroupsBasis
 variable {ι R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
 
 -- Porting note: failed to synthesize instance `Module R A`
-set_option synthInstance.etaExperiment true
 
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and

@@ -22,15 +22,11 @@ though strictly unique nodes are only defined when v is injective on s.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
 the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
 are distinct.
-* `lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
+* `Lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
 and `0` at `v j` for `i ≠ j`.
-* `lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
+* `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
 Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
 associated with the _nodes_`x i`.
-* `lagrange.interpolate_at v f`, where `v : ι ↪ F` and `ι` is a fintype, and `f : F → F` is a
-function from the field to itself: this is the Lagrange interpolant that evaluates to `f (x i)`
-at `x i`, and so approximates the function `f`. This is just a special case of the general
-interpolation, where the values are given by a known function `f`.
 -/
 
 
@@ -258,20 +254,15 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
   rw [degree_eq_natDegree (basis_ne_zero hvs hi), natDegree_basis hvs hi]
 #align lagrange.degree_basis Lagrange.degree_basis
 
--- Porting note: On lines 271 and 274, the pattern in 'WithBot.coe_lt_coe' could not be found
--- with 'rw' but it can with 'apply'
-
+-- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     (∑ j in s, Lagrange.basis s v j) = 1 := by
   refine' eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) _) _ _
-  · rw [@Finset.sup_lt_iff (WithBot ℕ) ι _ _ s (fun b => degree (Lagrange.basis s v b)) ↑(card s)
-    (WithBot.bot_lt_coe s.card)]
+  · rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe s.card)]
     intro i hi
-    rw [degree_basis hvs hi]
-    apply (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
+    rw [degree_basis hvs hi, Nat.cast_withBot, WithBot.coe_lt_coe]
     exact Nat.pred_lt (card_ne_zero_of_mem hi)
-  · rw [degree_one, ← WithBot.coe_zero]
-    apply (@WithBot.coe_lt_coe _ 0 (card s) _).2
+  · rw [degree_one, ← WithBot.coe_zero, Nat.cast_withBot, WithBot.coe_lt_coe]
     exact Nonempty.card_pos hs
   · intro i hi
     rw [eval_finset_sum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
@@ -283,10 +274,10 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
 
 theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     basisDivisor x y + basisDivisor y x = 1 := by
-  classical rw [←
-      sum_basis (Set.injOn_of_injective Function.injective_id _) ⟨x, mem_insert_self _ {y}⟩,
-      sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
-      basis_pair_right hxy, id, id]
+  classical rw [
+    ← sum_basis (Set.injOn_of_injective Function.injective_id _) ⟨x, mem_insert_self _ {y}⟩,
+    sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
+    basis_pair_right hxy, id, id]
 #align lagrange.basis_divisor_add_symm Lagrange.basisDivisor_add_symm
 
 end Basis
@@ -296,12 +287,6 @@ section Interpolate
 open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
-
-set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 60000 in
--- Porting note: The heartbeats were increased to find the instances needed for 'Finset.smul_sum'
--- and 'smul_smul' on line 322.
 
 /-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map  `v : ι → F` injective on
 `s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
@@ -319,17 +304,13 @@ def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id 
   map_smul' c f := by
     simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
--- Porting note: The arguments for 'LinearMap' on line 310 had to be given explicitly because
+-- Porting note: The arguments for 'LinearMap' on line 301 had to be given explicitly because
 -- the instance 'Module F F[X]' could not be synthetized
-
-set_option synthInstance.etaExperiment true in
 
 -- Porting note: There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_empty'
 theorem interpolate_empty : interpolate ∅ v r = 0 := by rw [interpolate_apply, sum_empty]
 #align lagrange.interpolate_empty Lagrange.interpolate_empty
-
-set_option synthInstance.etaExperiment true in
 
 -- Porting note: There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_singleton'
@@ -337,14 +318,10 @@ theorem interpolate_singleton : interpolate {i} v r = C (r i) := by
   rw [interpolate_apply, sum_singleton, basis_singleton, mul_one]
 #align lagrange.interpolate_singleton Lagrange.interpolate_singleton
 
-set_option synthInstance.etaExperiment true in
-
 theorem interpolate_one (hvs : Set.InjOn v s) (hs : s.Nonempty) : interpolate s v 1 = 1 := by
   simp_rw [interpolate_apply, Pi.one_apply, map_one, one_mul]
   exact sum_basis hvs hs
 #align lagrange.interpolate_one Lagrange.interpolate_one
-
-set_option synthInstance.etaExperiment true in
 
 theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
     eval (v i) (interpolate s v r) = r i := by
@@ -353,8 +330,6 @@ theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
   refine' sum_eq_zero fun j H => _
   rw [eval_basis_of_ne (mem_erase.mp H).1 hi, MulZeroClass.mul_zero]
 #align lagrange.eval_interpolate_at_node Lagrange.eval_interpolate_at_node
-
-set_option synthInstance.etaExperiment true in
 
 theorem degree_interpolate_le (hvs : Set.InjOn v s) :
     (interpolate s v r).degree ≤ ↑(s.card - 1) := by
@@ -367,20 +342,16 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) :
   · rw [degree_C hr, zero_add]
 #align lagrange.degree_interpolate_le Lagrange.degree_interpolate_le
 
-set_option synthInstance.etaExperiment true in
-
--- Porting note: On line 379, the pattern in 'WithBot.coe_lt_coe' could not be found
--- with 'rw' but it can with 'apply'
+-- Porting note: Added `Nat.cast_withBot` rewrites
 theorem degree_interpolate_lt (hvs : Set.InjOn v s) : (interpolate s v r).degree < s.card := by
+  rw [Nat.cast_withBot]
   rcases eq_empty_or_nonempty s with (rfl | h)
   · rw [interpolate_empty, degree_zero, card_empty]
     exact WithBot.bot_lt_coe _
   · refine' lt_of_le_of_lt (degree_interpolate_le _ hvs) _
-    apply (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
+    rw [Nat.cast_withBot, WithBot.coe_lt_coe]
     exact Nat.sub_lt (Nonempty.card_pos h) zero_lt_one
 #align lagrange.degree_interpolate_lt Lagrange.degree_interpolate_lt
-
-set_option synthInstance.etaExperiment true in
 
 theorem degree_interpolate_erase_lt (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (interpolate (s.erase i) v r).degree < ↑(s.card - 1) := by
@@ -388,28 +359,20 @@ theorem degree_interpolate_erase_lt (hvs : Set.InjOn v s) (hi : i ∈ s) :
   exact degree_interpolate_lt _ (Set.InjOn.mono (coe_subset.mpr (erase_subset _ _)) hvs)
 #align lagrange.degree_interpolate_erase_lt Lagrange.degree_interpolate_erase_lt
 
-set_option synthInstance.etaExperiment true in
-
 theorem values_eq_on_of_interpolate_eq (hvs : Set.InjOn v s)
     (hrr' : interpolate s v r = interpolate s v r') : ∀ i ∈ s, r i = r' i := fun _ hi => by
   rw [← eval_interpolate_at_node r hvs hi, hrr', eval_interpolate_at_node r' hvs hi]
 #align lagrange.values_eq_on_of_interpolate_eq Lagrange.values_eq_on_of_interpolate_eq
-
-set_option synthInstance.etaExperiment true in
 
 theorem interpolate_eq_of_values_eq_on (hrr' : ∀ i ∈ s, r i = r' i) :
     interpolate s v r = interpolate s v r' :=
   sum_congr rfl fun i hi => by rw [hrr' _ hi]
 #align lagrange.interpolate_eq_of_values_eq_on Lagrange.interpolate_eq_of_values_eq_on
 
-set_option synthInstance.etaExperiment true in
-
 theorem interpolate_eq_iff_values_eq_on (hvs : Set.InjOn v s) :
     interpolate s v r = interpolate s v r' ↔ ∀ i ∈ s, r i = r' i :=
   ⟨values_eq_on_of_interpolate_eq _ _ hvs, interpolate_eq_of_values_eq_on _ _⟩
 #align lagrange.interpolate_eq_iff_values_eq_on Lagrange.interpolate_eq_iff_values_eq_on
-
-set_option synthInstance.etaExperiment true in
 
 theorem eq_interpolate {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt : f.degree < s.card) :
     f = interpolate s v fun i => f.eval (v i) :=
@@ -417,15 +380,11 @@ theorem eq_interpolate {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt : f.degree 
     (eval_interpolate_at_node (fun x ↦ eval (v x) f) hvs hi).symm
 #align lagrange.eq_interpolate Lagrange.eq_interpolate
 
-set_option synthInstance.etaExperiment true in
-
 theorem eq_interpolate_of_eval_eq {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt : f.degree < s.card)
     (eval_f : ∀ i ∈ s, f.eval (v i) = r i) : f = interpolate s v r := by
   rw [eq_interpolate hvs degree_f_lt]
   exact interpolate_eq_of_values_eq_on _ _ eval_f
 #align lagrange.eq_interpolate_of_eval_eq Lagrange.eq_interpolate_of_eval_eq
-
-set_option synthInstance.etaExperiment true in
 
 /-- This is the characteristic property of the interpolation: the interpolation is the
 unique polynomial of `degree < Fintype.card ι` which takes the value of the `r i` on the `v i`.
@@ -437,8 +396,6 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
   · rw [h]
     exact ⟨degree_interpolate_lt _ hvs, fun _ hi => eval_interpolate_at_node _ hvs hi⟩
 #align lagrange.eq_interpolate_iff Lagrange.eq_interpolate_iff
-
-set_option synthInstance.etaExperiment true in
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
 and polynomials of degree less than `Fintype.card ι`.-/
@@ -462,29 +419,21 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F
     exact dif_pos hi
 #align lagrange.fun_equiv_degree_lt Lagrange.funEquivDegreeLT
 
-set_option synthInstance.etaExperiment true in
-
--- Porting note: On lines 475 and 486, the patterns in 'Finset.sup_lt_iff' and
--- 'WithBot.add_lt_add_iff_right' could not be found with 'rw' or 'simp_rw' but they can
--- with 'apply'
+-- Porting note: Added `Nat.cast_withBot` rewrites
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
     interpolate t v r = ∑ i in s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
   symm
   refine' eq_interpolate_of_eval_eq _ hvt (lt_of_le_of_lt (degree_sum_le _ _) _) fun i hi => _
-  · apply (@Finset.sup_lt_iff _ _ _ _ s
-    (fun b ↦ degree ((interpolate (insert b (t \ s)) v) r * Lagrange.basis s v b)) _
-    (WithBot.bot_lt_coe t.card)).2
-    simp_rw [degree_mul]
+  · simp_rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe t.card), degree_mul]
     intro i hi
     have hs : 1 ≤ s.card := Nonempty.card_pos ⟨_, hi⟩
     have hst' : s.card ≤ t.card := card_le_of_subset hst
     have H : t.card = 1 + (t.card - s.card) + (s.card - 1) := by
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
-    rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add]
-    apply (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r))
-    (↑(1 + (card t - card s))) _ _ _ (@WithBot.coe_ne_bot _ (s.card - 1))).2
+    rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
+      WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (s.card - 1))]
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset.mpr ⟨hst hi, sdiff_subset _ _⟩)))
     rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
@@ -507,8 +456,6 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         eval_interpolate_at_node _ (hvt.mono (insert_subset.mpr ⟨hst hj, sdiff_subset _ _⟩))
           (mem_insert.mpr (Or.inr (mem_sdiff.mpr ⟨hi, hi'⟩)))
 #align lagrange.interpolate_eq_sum_interpolate_insert_sdiff Lagrange.interpolate_eq_sum_interpolate_insert_sdiff
-
-set_option synthInstance.etaExperiment true in
 
 theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s) (hj : j ∈ s)
     (hij : i ≠ j) :
@@ -633,8 +580,6 @@ theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s
   refine' inv_ne_zero (sub_ne_zero_of_ne (mt (hvs.eq_iff hi hj).mp hij.symm))
 #align lagrange.nodal_weight_ne_zero Lagrange.nodalWeight_ne_zero
 
-set_option synthInstance.etaExperiment true in
-
 theorem basis_eq_prod_sub_inv_mul_nodal_div (hi : i ∈ s) :
     Lagrange.basis s v i = C (nodalWeight s v i) * (nodal s v / (X - C (v i))) := by
   simp_rw [Lagrange.basis, basisDivisor, nodalWeight, prod_mul_distrib, map_prod, ←
@@ -648,15 +593,11 @@ theorem eval_basis_not_at_node (hi : i ∈ s) (hxi : x ≠ v i) :
     mul_assoc (x - v i)⁻¹, inv_mul_cancel (sub_ne_zero_of_ne hxi), one_mul]
 #align lagrange.eval_basis_not_at_node Lagrange.eval_basis_not_at_node
 
-set_option synthInstance.etaExperiment true in
-
 theorem interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C :
     interpolate s v r = ∑ i in s, C (nodalWeight s v i) * (nodal s v / (X - C (v i))) * C (r i) :=
   sum_congr rfl fun j hj => by rw [mul_comm, basis_eq_prod_sub_inv_mul_nodal_div hj]
 set_option linter.uppercaseLean3 false in
 #align lagrange.interpolate_eq_nodal_weight_mul_nodal_div_X_sub_C Lagrange.interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C
-
-set_option synthInstance.etaExperiment true in
 
 /-- This is the first barycentric form of the Lagrange interpolant. -/
 theorem eval_interpolate_not_at_node (hx : ∀ i ∈ s, x ≠ v i) :
@@ -673,8 +614,6 @@ theorem sum_nodalWeight_mul_inv_sub_ne_zero (hvs : Set.InjOn v s) (hx : ∀ i �
     simpa only [Pi.one_apply, interpolate_one hvs hs, eval_one, mul_one] using
       (eval_interpolate_not_at_node 1 hx).symm
 #align lagrange.sum_nodal_weight_mul_inv_sub_ne_zero Lagrange.sum_nodalWeight_mul_inv_sub_ne_zero
-
-set_option synthInstance.etaExperiment true in
 
 /-- This is the second barycentric form of the Lagrange interpolant. -/
 theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)

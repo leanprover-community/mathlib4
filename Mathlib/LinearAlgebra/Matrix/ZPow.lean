@@ -195,7 +195,6 @@ theorem zpow_one_add {A : M} (h : IsUnit A.det) (i : ℤ) : A ^ (1 + i) = A * A 
 #align matrix.zpow_one_add Matrix.zpow_one_add
 
 -- porting note: without etaExperiment it failes to synthesize DistribMulAction Rˣ R
-set_option synthInstance.etaExperiment true in
 theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det)
     (h : SemiconjBy A X Y) : ∀ m : ℤ, SemiconjBy A (X ^ m) (Y ^ m)
   | (n : ℕ) => by simp [h.pow_right n]
@@ -343,7 +342,6 @@ theorem transpose_zpow (A : M) : ∀ n : ℤ, (A ^ n)ᵀ = Aᵀ ^ n
 #align matrix.transpose_zpow Matrix.transpose_zpow
 
 -- porting note: without etaExperiment, conjTranspose_pow can't find the StarRing R instance.
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ ^ n
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, conjTranspose_pow]

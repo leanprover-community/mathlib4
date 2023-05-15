@@ -607,7 +607,6 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
 #align rel_embedding.prod_lex_mk_right_apply RelEmbedding.prodLexMkRight_apply
 
-set_option synthInstance.etaExperiment true
 /-- `Prod.map` as a relation embedding. -/
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where

@@ -320,8 +320,8 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
   simp only [setOf_forall]
   exact
-    isClosed_interᵢ fun x =>
-      isClosed_interᵢ fun y =>
+    isClosed_iInter fun x =>
+      isClosed_iInter fun y =>
         isClosed_eq (continuous_apply _)
           -- Porting note: proof was:
           -- `((continuous_apply _).mul (continuous_apply _))`
@@ -837,28 +837,28 @@ section LatticeOps
 variable {ι' : Sort _} [Mul M]
 
 @[to_additive]
-theorem continuousMul_infₛ {ts : Set (TopologicalSpace M)}
-    (h : ∀ t ∈ ts, @ContinuousMul M t _) : @ContinuousMul M (infₛ ts) _ :=
-  letI := infₛ ts
+theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}
+    (h : ∀ t ∈ ts, @ContinuousMul M t _) : @ContinuousMul M (sInf ts) _ :=
+  letI := sInf ts
   { continuous_mul :=
-      continuous_infₛ_rng.2 fun t ht =>
-        continuous_infₛ_dom₂ ht ht (@ContinuousMul.continuous_mul M t _ (h t ht)) }
-#align has_continuous_mul_Inf continuousMul_infₛ
-#align has_continuous_add_Inf continuousAdd_infₛ
+      continuous_sInf_rng.2 fun t ht =>
+        continuous_sInf_dom₂ ht ht (@ContinuousMul.continuous_mul M t _ (h t ht)) }
+#align has_continuous_mul_Inf continuousMul_sInf
+#align has_continuous_add_Inf continuousAdd_sInf
 
 @[to_additive]
-theorem continuousMul_infᵢ {ts : ι' → TopologicalSpace M}
+theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
     (h' : ∀ i, @ContinuousMul M (ts i) _) : @ContinuousMul M (⨅ i, ts i) _ := by
-  rw [← infₛ_range]
-  exact continuousMul_infₛ (Set.forall_range_iff.mpr h')
-#align has_continuous_mul_infi continuousMul_infᵢ
-#align has_continuous_add_infi continuousAdd_infᵢ
+  rw [← sInf_range]
+  exact continuousMul_sInf (Set.forall_range_iff.mpr h')
+#align has_continuous_mul_infi continuousMul_iInf
+#align has_continuous_add_infi continuousAdd_iInf
 
 @[to_additive]
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
-  rw [inf_eq_infᵢ]
-  refine' continuousMul_infᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' continuousMul_iInf fun b => _
   cases b <;> assumption
 #align has_continuous_mul_inf continuousMul_inf
 #align has_continuous_add_inf continuousAdd_inf

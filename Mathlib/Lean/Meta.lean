@@ -154,8 +154,6 @@ end Lean.Meta
 
 section SynthInstance
 
-/-- Elaborate the following term with `set_option synthInstance.etaExperiment true`. -/
-macro "eta_experiment% " a:term : term => `(term|set_option synthInstance.etaExperiment true in $a)
 
 end SynthInstance
 

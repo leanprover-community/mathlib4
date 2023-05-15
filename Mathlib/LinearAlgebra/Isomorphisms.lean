@@ -126,7 +126,6 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
 
 -- Porting note: cannot synth semilinearmapclass. Needs help with Submodule.Quotient.mk
 -- Porting note: using asFun to avoid timing out
-set_option synthInstance.etaExperiment true in
 @[simp, nolint simpNF] -- Porting note: The linter timeouts.
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := ofLe (le_sup_left : p ≤ p ⊔ p')
