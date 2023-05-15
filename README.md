@@ -66,7 +66,7 @@ Continue with "Getting started" below.
 If you already have a project and you want to use mathlib4, add these lines to your `lakefile.lean`:
 ```
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
+  "https://github.com/leanprover-community/mathlib4"
 ```
 Then run
 ```
