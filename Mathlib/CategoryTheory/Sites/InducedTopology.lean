@@ -102,12 +102,12 @@ def inducedTopology : GrothendieckTopology C where
 
 /-- `G` is cover-lifting wrt the induced topology. -/
 theorem inducedTopology_coverLifting : CoverLifting Hld.inducedTopology K G :=
-  ⟨fun _ S hS => Hld ⟨S, hS⟩⟩
+  ⟨@fun _ S hS => Hld ⟨S, hS⟩⟩
 #align category_theory.locally_cover_dense.induced_topology_cover_lifting CategoryTheory.LocallyCoverDense.inducedTopology_coverLifting
 
 /-- `G` is cover-preserving wrt the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving Hld.inducedTopology K G :=
-  ⟨fun _ S hS => hS⟩
+  ⟨@fun _ _ hS => hS⟩
 #align category_theory.locally_cover_dense.induced_topology_cover_preserving CategoryTheory.LocallyCoverDense.inducedTopology_coverPreserving
 
 end LocallyCoverDense
