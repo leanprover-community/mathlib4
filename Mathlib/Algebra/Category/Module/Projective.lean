@@ -18,6 +18,9 @@ import Mathlib.Data.Finsupp.Basic
 # The category of `R`-modules has enough projectives.
 -/
 
+@[nolint checkUnivs]
+abbrev ModuleCatMax.{u, v} := ModuleCat.{max u v}
+
 universe v u
 
 open CategoryTheory
@@ -27,6 +30,8 @@ open CategoryTheory.Limits
 open LinearMap
 
 open ModuleCat
+
+open scoped Module
 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
@@ -44,7 +49,7 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
 
 namespace ModuleCat
 
-variable {R : Type u} [Ring R] {M : ModuleCat.{max u v} R}
+variable {R : Type u} [Ring R] {M : ModuleCatMax.{u, v} R}
 
 -- We transport the corresponding result from `module.projective`.
 /-- Modules that have a basis are projective. -/
@@ -56,15 +61,25 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of modules has enough projectives, since every module is a quotient of a free
     module. -/
+
 instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
     where presentation M :=
-    ⟨{  p := ModuleCat.of R (M →₀ R)
-        projective := projective_of_free Finsupp.basisSingleOne
-        f := Finsupp.basisSingleOne.constr ℕ _root_.id
-        epi :=
-          (epi_iff_range_eq_top _).mpr
-            (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by simp [Basis.constr]⟩) }⟩
+    ⟨{  p := ModuleCat.of R (Finsupp R M) --(M →₀ R)
+        projective := projective_of_free.{u, v} Finsupp.basisSingleOne.{u, v}
+        f := sorry
+        epi := sorry }⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
+
+-- instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
+--     where presentation M :=
+--     ⟨{  p := ModuleCat.of R (Finsupp R M) --(M →₀ R)
+--         projective := projective_of_free Finsupp.basisSingleOne
+--         f := by Finsupp.basisSingleOne.constr ℕ _root_.id
+--         epi :=
+--           (epi_iff_range_eq_top _).mpr
+--             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by simp [Basis.constr]⟩) }⟩
+-- set_option linter.uppercaseLean3 false in
+-- #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
 end ModuleCat
