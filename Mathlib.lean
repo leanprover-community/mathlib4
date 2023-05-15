@@ -915,6 +915,7 @@ import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Small
 import Mathlib.Data.Fintype.Sort
@@ -1606,10 +1607,13 @@ import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.Graph
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Order
+import Mathlib.ModelTheory.Quotients
+import Mathlib.ModelTheory.Satisfiability
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Skolem
 import Mathlib.ModelTheory.Substructures
 import Mathlib.ModelTheory.Syntax
+import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
