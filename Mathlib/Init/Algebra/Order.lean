@@ -7,42 +7,44 @@ Authors: Leonardo de Moura
 ! leanprover-community/lean commit c2bcdbcbe741ed37c361a30d38e179182b989f76
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
--/
-import Mathlib.Init.Logic
-import Mathlib.Init.Classical
--- import Mathlib.Init.Meta.Name
--- import Mathlib.Init.Algebra.Classes
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option default_priority -/
-/- Make sure instances defined in this file have lower priority than the ones
-   defined for concrete structures -/
-/- Make sure instances defined in this file have lower priority than the ones
-   defined for concrete structures -/
+porting note: imprts are taken from the ad-hoc port
+-/
+import Mathlib.Init.Algebra.Classes
+import Mathlib.Init.Logic
+import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.SplitIfs
+
+/-!
+# Orders
+
+Defines classes for preorders, partial orders, and linear orders
+and proves some basic lemmas about them.
+-/
+
+/-
+TODO: Does Lean4 have an equivalent for this:
+  Make sure instances defined in this file have lower priority than the ones
+  defined for concrete structures
 set_option default_priority 100
+-/
 
 universe u
-
 variable {α : Type u}
-
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option auto_param.check_exists -/
-set_option auto_param.check_exists false
 
 section Preorder
 
 /-!
-### Definition of `preorder` and lemmas about types with a `preorder`
+### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
-
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic order_laws_tac -/
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type u) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
-  lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by
-    run_tac
-      order_laws_tac
+  lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 #align preorder Preorder
 
 variable [Preorder α]
@@ -56,32 +58,32 @@ theorem le_refl : ∀ a : α, a ≤ a :=
 /-- The relation `≤` on a preorder is transitive. -/
 @[trans]
 theorem le_trans : ∀ {a b c : α}, a ≤ b → b ≤ c → a ≤ c :=
-  Preorder.le_trans
+  Preorder.le_trans _ _ _
 #align le_trans le_trans
 
 theorem lt_iff_le_not_le : ∀ {a b : α}, a < b ↔ a ≤ b ∧ ¬b ≤ a :=
-  Preorder.lt_iff_le_not_le
+  Preorder.lt_iff_le_not_le _ _
 #align lt_iff_le_not_le lt_iff_le_not_le
 
 theorem lt_of_le_not_le : ∀ {a b : α}, a ≤ b → ¬b ≤ a → a < b
-  | a, b, hab, hba => lt_iff_le_not_le.mpr ⟨hab, hba⟩
+  | _a, _b, hab, hba => lt_iff_le_not_le.mpr ⟨hab, hba⟩
 #align lt_of_le_not_le lt_of_le_not_le
 
 theorem le_not_le_of_lt : ∀ {a b : α}, a < b → a ≤ b ∧ ¬b ≤ a
-  | a, b, hab => lt_iff_le_not_le.mp hab
+  | _a, _b, hab => lt_iff_le_not_le.mp hab
 #align le_not_le_of_lt le_not_le_of_lt
 
 theorem le_of_eq {a b : α} : a = b → a ≤ b := fun h => h ▸ le_refl a
 #align le_of_eq le_of_eq
 
 @[trans]
-theorem ge_trans : ∀ {a b c : α}, a ≥ b → b ≥ c → a ≥ c := fun a b c h₁ h₂ => le_trans h₂ h₁
+theorem ge_trans : ∀ {a b c : α}, a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
 #align ge_trans ge_trans
 
 theorem lt_irrefl : ∀ a : α, ¬a < a
-  | a, haa =>
+  | _a, haa =>
     match le_not_le_of_lt haa with
-    | ⟨h1, h2⟩ => False.ndrec _ (h2 h1)
+    | ⟨h1, h2⟩ => h2 h1
 #align lt_irrefl lt_irrefl
 
 theorem gt_irrefl : ∀ a : α, ¬a > a :=
@@ -90,13 +92,13 @@ theorem gt_irrefl : ∀ a : α, ¬a > a :=
 
 @[trans]
 theorem lt_trans : ∀ {a b c : α}, a < b → b < c → a < c
-  | a, b, c, hab, hbc =>
+  | _a, _b, _c, hab, hbc =>
     match le_not_le_of_lt hab, le_not_le_of_lt hbc with
-    | ⟨hab, hba⟩, ⟨hbc, hcb⟩ => lt_of_le_not_le (le_trans hab hbc) fun hca => hcb (le_trans hca hab)
+    | ⟨hab, _hba⟩, ⟨hbc, hcb⟩ => lt_of_le_not_le (le_trans hab hbc) fun hca => hcb (le_trans hca hab)
 #align lt_trans lt_trans
 
 @[trans]
-theorem gt_trans : ∀ {a b c : α}, a > b → b > c → a > c := fun a b c h₁ h₂ => lt_trans h₂ h₁
+theorem gt_trans : ∀ {a b c : α}, a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
 #align gt_trans gt_trans
 
 theorem ne_of_lt {a b : α} (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
@@ -109,19 +111,19 @@ theorem lt_asymm {a b : α} (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl
 #align lt_asymm lt_asymm
 
 theorem le_of_lt : ∀ {a b : α}, a < b → a ≤ b
-  | a, b, hab => (le_not_le_of_lt hab).left
+  | _a, _b, hab => (le_not_le_of_lt hab).left
 #align le_of_lt le_of_lt
 
 @[trans]
 theorem lt_of_lt_of_le : ∀ {a b c : α}, a < b → b ≤ c → a < c
-  | a, b, c, hab, hbc =>
+  | _a, _b, _c, hab, hbc =>
     let ⟨hab, hba⟩ := le_not_le_of_lt hab
     lt_of_le_not_le (le_trans hab hbc) fun hca => hba (le_trans hbc hca)
 #align lt_of_lt_of_le lt_of_lt_of_le
 
 @[trans]
 theorem lt_of_le_of_lt : ∀ {a b c : α}, a ≤ b → b < c → a < c
-  | a, b, c, hab, hbc =>
+  | _a, _b, _c, hab, hbc =>
     let ⟨hbc, hcb⟩ := le_not_le_of_lt hbc
     lt_of_le_not_le (le_trans hab hbc) fun hca => hcb (le_trans hca hab)
 #align lt_of_le_of_lt lt_of_le_of_lt
@@ -136,6 +138,16 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
   lt_of_lt_of_le h₂ h₁
 #align gt_of_ge_of_gt gt_of_ge_of_gt
 
+-- porting note: new
+instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
+instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
+
 theorem not_le_of_gt {a b : α} (h : a > b) : ¬a ≤ b :=
   (le_not_le_of_lt h).right
 #align not_le_of_gt not_le_of_gt
@@ -144,8 +156,8 @@ theorem not_lt_of_ge {a b : α} (h : a ≥ b) : ¬a < b := fun hab => not_le_of_
 #align not_lt_of_ge not_lt_of_ge
 
 theorem le_of_lt_or_eq : ∀ {a b : α}, a < b ∨ a = b → a ≤ b
-  | a, b, Or.inl hab => le_of_lt hab
-  | a, b, Or.inr hab => hab ▸ le_refl _
+  | _a, _b, Or.inl hab => le_of_lt hab
+  | _a, _b, Or.inr hab => hab ▸ le_refl _
 #align le_of_lt_or_eq le_of_lt_or_eq
 
 theorem le_of_eq_or_lt {a b : α} (h : a = b ∨ a < b) : a ≤ b :=
@@ -153,22 +165,21 @@ theorem le_of_eq_or_lt {a b : α} (h : a = b ∨ a < b) : a ≤ b :=
 #align le_of_eq_or_lt le_of_eq_or_lt
 
 /-- `<` is decidable if `≤` is. -/
-def decidableLtOfDecidableLe [@DecidableRel α (· ≤ ·)] : @DecidableRel α (· < ·)
+def decidableLTOfDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel α (· < ·)
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
       else isTrue <| lt_of_le_not_le hab hba
     else isFalse fun hab' => hab (le_of_lt hab')
-#align decidable_lt_of_decidable_le decidableLtOfDecidableLe
+#align decidable_lt_of_decidable_le decidableLTOfDecidableLE
 
 end Preorder
 
 section PartialOrder
 
 /-!
-### Definition of `partial_order` and lemmas about types with a partial order
+### Definition of `PartialOrder` and lemmas about types with a partial order
 -/
-
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
 class PartialOrder (α : Type u) extends Preorder α where
@@ -178,7 +189,7 @@ class PartialOrder (α : Type u) extends Preorder α where
 variable [PartialOrder α]
 
 theorem le_antisymm : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
-  PartialOrder.le_antisymm
+  PartialOrder.le_antisymm _ _
 #align le_antisymm le_antisymm
 
 theorem le_antisymm_iff {a b : α} : a = b ↔ a ≤ b ∧ b ≤ a :=
@@ -190,16 +201,16 @@ theorem lt_of_le_of_ne {a b : α} : a ≤ b → a ≠ b → a < b := fun h₁ h�
 #align lt_of_le_of_ne lt_of_le_of_ne
 
 /-- Equality is decidable if `≤` is. -/
-def decidableEqOfDecidableLe [@DecidableRel α (· ≤ ·)] : DecidableEq α
+def decidableEqOfDecidableLE [@DecidableRel α (· ≤ ·)] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
-      if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (HEq ▸ le_refl _)
-    else isFalse fun heq => hab (HEq ▸ le_refl _)
-#align decidable_eq_of_decidable_le decidableEqOfDecidableLe
+      if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
+    else isFalse fun heq => hab (heq ▸ le_refl _)
+#align decidable_eq_of_decidable_le decidableEqOfDecidableLE
 
 namespace Decidable
 
-variable [@DecidableRel α (· ≤ ·)]
+variable [@DecidableRel α (. ≤ .)]
 
 theorem lt_or_eq_of_le {a b : α} (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
@@ -230,9 +241,8 @@ end PartialOrder
 section LinearOrder
 
 /-!
-### Definition of `linear_order` and lemmas about types with a linear order
+### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
-
 
 /-- Default definition of `max`. -/
 def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
@@ -241,26 +251,44 @@ def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → 
 
 /-- Default definition of `min`. -/
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
-  if a ≤ b then a else b
-#align min_default minDefault
+if a ≤ b then a else b
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.interactive.reflexivity -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.interactive.reflexivity -/
+/-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
+introducing the arguments and trying the following approaches in order:
+
+1. seeing if `rfl` works
+2. seeing if the `compare` at hand is nonetheless essentially `compareOfLessAndEq`, but, because of
+implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
+`compareOfLessAndEq`
+3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
+  (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
+macro "compareOfLessAndEq_rfl" : tactic =>
+  `(tactic| (intros a b; first | rfl |
+    (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
+    (induction a <;> induction b <;> simp only [])))
+
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α where
-  le_total : ∀ a b : α, a ≤ b ∨ b ≤ a
-  decidableLe : DecidableRel (· ≤ ·)
-  DecidableEq : DecidableEq α := @decidableEqOfDecidableLe _ _ decidable_le
-  decidableLt : DecidableRel ((· < ·) : α → α → Prop) := @decidableLtOfDecidableLe _ _ decidable_le
-  max : α → α → α := @maxDefault α _ _
-  max_def : max = @maxDefault α _ decidable_le := by
-    run_tac
-      tactic.interactive.reflexivity
-  min : α → α → α := @minDefault α _ _
-  min_def : min = @minDefault α _ decidable_le := by
-    run_tac
-      tactic.interactive.reflexivity
+class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
+  /-- A linear order is total. -/
+  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+    @decidableLTOfDecidableLE _ _ decidableLE
+  min := fun a b => if a ≤ b then a else b
+  max := fun a b => if a ≤ b then b else a
+  /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
+  min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
+  /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
+  max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
+  compare a b := compareOfLessAndEq a b
+  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
+    compareOfLessAndEq_rfl
 #align linear_order LinearOrder
 
 variable [LinearOrder α]
@@ -350,10 +378,10 @@ theorem not_le {a b : α} : ¬a ≤ b ↔ b < a :=
 #align not_le not_le
 
 instance (a b : α) : Decidable (a < b) :=
-  LinearOrder.decidableLt a b
+  LinearOrder.decidableLT a b
 
 instance (a b : α) : Decidable (a ≤ b) :=
-  LinearOrder.decidableLe a b
+  LinearOrder.decidableLE a b
 
 instance (a b : α) : Decidable (a = b) :=
   LinearOrder.decidableEq a b
@@ -365,7 +393,7 @@ theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
 instance : IsTotalPreorder α (· ≤ ·)
     where
   trans := @le_trans _ _
-  Total := le_total
+  total := le_total
 
 -- TODO(Leo): decide whether we should keep this instance or not
 instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
