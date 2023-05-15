@@ -1040,7 +1040,7 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
   letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
   letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
   letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
     decidableLE := decidableLE
@@ -1087,7 +1087,7 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
   letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
   letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
     decidableLE := decidableLE
@@ -1360,7 +1360,7 @@ instance linearOrder: LinearOrder PUnit where
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidable_eq := inferInstance
+  decidableEq := inferInstance
   decidableLE := fun _ _ ↦ Decidable.isTrue trivial
   decidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial

@@ -225,7 +225,7 @@ instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
       letI : DecidableEq (Finset.Colex α) := inferInstanceAs (DecidableEq (Finset α))
       exact fun A B => inferInstanceAs (Decidable (A < B ∨ A = B))
     decidableLT := inferInstance
-    decidable_eq := inferInstanceAs (DecidableEq (Finset α))
+    decidableEq := inferInstanceAs (DecidableEq (Finset α))
     lt_iff_le_not_le := fun A B => by
       constructor
       · intro t

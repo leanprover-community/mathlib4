@@ -124,7 +124,7 @@ instance : LinearOrder SignType where
   le_antisymm := le_antisymm
   le_trans := le_trans
   decidableLE := Le.decidableRel
-  decidable_eq := SignType.decidableEq
+  decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1

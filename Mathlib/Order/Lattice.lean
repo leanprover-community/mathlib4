@@ -924,7 +924,7 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
   { ‹Lattice α› with
     decidableLE := ‹_›,
-    decidable_eq := ‹_›,
+    decidableEq := ‹_›,
     decidableLT := ‹_›,
     le_total := total_of (· ≤ ·),
     max := (· ⊔ ·),
