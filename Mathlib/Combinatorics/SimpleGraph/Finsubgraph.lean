@@ -8,8 +8,8 @@ Authors: Joanna Choules
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.CofilteredSystem
-import Mathbin.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Homomorphisms from finite subgraphs
@@ -104,8 +104,7 @@ theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.adj u v} :
 #align simple_graph.singleton_finsubgraph_le_adj_right SimpleGraph.singletonFinsubgraph_le_adj_right
 
 /-- Given a homomorphism from a subgraph to `F`, construct its restriction to a sub-subgraph. -/
-def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' →fg F) : G'' →fg F :=
-  by
+def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' →fg F) : G'' →fg F := by
   refine' ⟨fun ⟨v, hv⟩ => f.to_fun ⟨v, h.1 hv⟩, _⟩
   rintro ⟨u, hu⟩ ⟨v, hv⟩ huv
   exact f.map_rel' (h.2 huv)
@@ -121,15 +120,13 @@ def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgrap
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/
 theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
-    (h : ∀ G' : G.Subgraph, G'.verts.Finite → G'.coe →g F) : Nonempty (G →g F) :=
-  by
+    (h : ∀ G' : G.Subgraph, G'.verts.Finite → G'.coe →g F) : Nonempty (G →g F) := by
   -- Obtain a `fintype` instance for `W`.
   cases nonempty_fintype W
   -- Establish the required interface instances.
   haveI : ∀ G' : G.finsubgraphᵒᵖ, Nonempty ((finsubgraph_hom_functor G F).obj G') := fun G' =>
     ⟨h G'.unop G'.unop.property⟩
-  haveI : ∀ G' : G.finsubgraphᵒᵖ, Fintype ((finsubgraph_hom_functor G F).obj G') :=
-    by
+  haveI : ∀ G' : G.finsubgraphᵒᵖ, Fintype ((finsubgraph_hom_functor G F).obj G') := by
     intro G'
     haveI : Fintype ↥G'.unop.val.verts := G'.unop.property.fintype
     haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.fintype
