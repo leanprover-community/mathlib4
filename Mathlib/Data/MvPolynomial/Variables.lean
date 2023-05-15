@@ -87,6 +87,7 @@ section Degrees
 (For example, `degrees (x^2 * y + y^3)` would be `{x, x, y, y, y}`.)
 -/
 def degrees (p : MvPolynomial σ R) : Multiset σ :=
+  letI := Classical.decEq σ
   p.support.sup fun s : σ →₀ ℕ => toMultiset s
 #align mv_polynomial.degrees MvPolynomial.degrees
 
@@ -130,7 +131,8 @@ theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
   degrees_C 1
 #align mv_polynomial.degrees_one MvPolynomial.degrees_one
 
-theorem degrees_add (p q : MvPolynomial σ R) : (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
+theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
   refine' Finset.sup_le fun b hb => _
   have := Finsupp.support_add hb; rw [Finset.mem_union] at this
   cases' this with h h
@@ -138,7 +140,7 @@ theorem degrees_add (p q : MvPolynomial σ R) : (p + q).degrees ≤ p.degrees �
   · exact le_sup_of_le_right (Finset.le_sup h)
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
-theorem degrees_sum {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degrees_sum {ι : Type _} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (∑ i in s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
   refine' s.induction _ _
   · simp only [Finset.sum_empty, Finset.sup_empty, degrees_zero]
@@ -200,7 +202,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     all_goals rw [mem_degrees]; refine' ⟨d, _, hj⟩; assumption
 #align mv_polynomial.le_degrees_add MvPolynomial.le_degrees_add
 
-theorem degrees_add_of_disjoint {p q : MvPolynomial σ R}
+theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
     (h : Multiset.Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
   apply le_antisymm
   · apply degrees_add
@@ -256,6 +258,7 @@ section Vars
 
 /-- `vars p` is the set of variables appearing in the polynomial `p` -/
 def vars (p : MvPolynomial σ R) : Finset σ :=
+  letI := Classical.decEq σ
   p.degrees.toFinset
 #align mv_polynomial.vars MvPolynomial.vars
 
@@ -298,13 +301,15 @@ theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ
   rwa [← toFinset_toMultiset, Multiset.mem_toFinset] at h
 #align mv_polynomial.mem_support_not_mem_vars_zero MvPolynomial.mem_support_not_mem_vars_zero
 
-theorem vars_add_subset (p q : MvPolynomial σ R) : (p + q).vars ⊆ p.vars ∪ q.vars := by
+theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
   simp only [vars, Finset.mem_union, Multiset.mem_toFinset] at hx⊢
   simpa using Multiset.mem_of_le (degrees_add _ _) hx
 #align mv_polynomial.vars_add_subset MvPolynomial.vars_add_subset
 
-theorem vars_add_of_disjoint (h : Disjoint p.vars q.vars) : (p + q).vars = p.vars ∪ q.vars := by
+theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
+    (p + q).vars = p.vars ∪ q.vars := by
   apply Finset.Subset.antisymm (vars_add_subset p q)
   intro x hx
   simp only [vars, Multiset.disjoint_toFinset] at h hx⊢
@@ -314,7 +319,7 @@ theorem vars_add_of_disjoint (h : Disjoint p.vars q.vars) : (p + q).vars = p.var
 
 section Mul
 
-theorem vars_mul (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
+theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   intro i
   simp only [mem_vars, Finset.mem_union]
   rintro ⟨d, hd, hi⟩
@@ -353,7 +358,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
 /-- The variables of the product of a family of polynomials
 are a subset of the union of the sets of variables of each polynomial.
 -/
-theorem vars_prod {ι : Type _} {s : Finset ι} (f : ι → MvPolynomial σ R) :
+theorem vars_prod {ι : Type _} [DecidableEq σ] {s : Finset ι} (f : ι → MvPolynomial σ R) :
     (∏ i in s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
   induction s using Finset.induction_on with
   | empty => simp
@@ -386,7 +391,8 @@ section Sum
 
 variable {ι : Type _} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 
-theorem vars_sum_subset : (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
+theorem vars_sum_subset [DecidableEq σ] :
+    (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
   induction t using Finset.induction_on with
   | empty => simp
   | insert has hsum =>
@@ -396,7 +402,7 @@ theorem vars_sum_subset : (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => 
     assumption
 #align mv_polynomial.vars_sum_subset MvPolynomial.vars_sum_subset
 
-theorem vars_sum_of_disjoint (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
+theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
     (∑ i in t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   induction t using Finset.induction_on with
   | empty => simp
@@ -435,7 +441,8 @@ theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r �
   rw [vars_monomial hr, Finsupp.support_single_ne_zero _ he]
 #align mv_polynomial.vars_monomial_single MvPolynomial.vars_monomial_single
 
-theorem vars_eq_support_biUnion_support : p.vars = p.support.biUnion Finsupp.support := by
+theorem vars_eq_support_biUnion_support [DecidableEq σ] :
+    p.vars = p.support.biUnion Finsupp.support := by
   ext i
   rw [mem_vars, Finset.mem_biUnion]
   simp
@@ -452,6 +459,7 @@ section DegreeOf
 
 /-- `degreeOf n p` gives the highest power of X_n that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
+  letI := Classical.decEq σ
   p.degrees.count n
 #align mv_polynomial.degree_of MvPolynomial.degreeOf
 
@@ -479,7 +487,7 @@ theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_C MvPolynomial.degreeOf_C
 
-theorem degreeOf_X (i j : σ) [Nontrivial R] :
+theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
   by_cases c : i = j
   · simp only [c, if_true, eq_self_iff_true, degreeOf, degrees_X, Multiset.count_singleton]
@@ -834,7 +842,8 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
       · rfl⟩
 #align mv_polynomial.exists_rename_eq_of_vars_subset_range MvPolynomial.exists_rename_eq_of_vars_subset_range
 
-theorem vars_rename (f : σ → τ) (φ : MvPolynomial σ R) : (rename f φ).vars ⊆ φ.vars.image f := by
+theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
+    (rename f φ).vars ⊆ φ.vars.image f := by
   intro i hi
   simp only [vars, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
