@@ -92,7 +92,8 @@ theorem gt_irrefl : ∀ a : α, ¬a > a :=
 theorem lt_trans : ∀ {a b c : α}, a < b → b < c → a < c
   | _a, _b, _c, hab, hbc =>
     match le_not_le_of_lt hab, le_not_le_of_lt hbc with
-    | ⟨hab, _hba⟩, ⟨hbc, hcb⟩ => lt_of_le_not_le (le_trans hab hbc) fun hca => hcb (le_trans hca hab)
+    | ⟨hab, _hba⟩, ⟨hbc, hcb⟩ =>
+      lt_of_le_not_le (le_trans hab hbc) fun hca => hcb (le_trans hca hab)
 #align lt_trans lt_trans
 
 @[trans]
