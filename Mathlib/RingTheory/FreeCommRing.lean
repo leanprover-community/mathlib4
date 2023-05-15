@@ -397,13 +397,14 @@ def subsingletonEquivFreeCommRing [Subsingleton α] : FreeRing α ≃+* FreeComm
     apply Equiv.bijective)
 #align free_ring.subsingleton_equiv_free_comm_ring FreeRing.subsingletonEquivFreeCommRing
 
-instance [Subsingleton α] : CommRing (FreeRing α) :=
+instance instCommRing [Subsingleton α] : CommRing (FreeRing α) :=
   { inferInstanceAs (Ring (FreeRing α)) with
     mul_comm := fun x y => by
       rw [← (subsingletonEquivFreeCommRing α).symm_apply_apply (y * x),
         (subsingletonEquivFreeCommRing α).map_mul, mul_comm,
         ← (subsingletonEquivFreeCommRing α).map_mul,
         (subsingletonEquivFreeCommRing α).symm_apply_apply] }
+#align free_ring.comm_ring FreeRing.instCommRing
 
 end FreeRing
 
