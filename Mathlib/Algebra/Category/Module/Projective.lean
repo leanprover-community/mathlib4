@@ -17,10 +17,6 @@ import Mathlib.LinearAlgebra.FinsuppVectorSpace
 # The category of `R`-modules has enough projectives.
 -/
 
---porting note: see TopCatMax.
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{u, v} := ModuleCat.{max u v, u}
-
 universe v u
 
 open CategoryTheory
@@ -31,12 +27,15 @@ open LinearMap
 
 open ModuleCat
 
+open Module
+
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
   refine' ⟨fun h => _, fun h => _⟩
   · letI : Module.Projective R (ModuleCat.of R P) := h
-    exact ⟨fun E X epi => Module.projective_lifting_property _ _ ((ModuleCat.epi_iff_surjective _).mp epi)⟩
+    exact ⟨fun E X epi => Module.projective_lifting_property _ _
+      ((ModuleCat.epi_iff_surjective _).mp epi)⟩
   · refine' Module.Projective.of_lifting_property.{u,v} _
     intro E X mE mX sE sX f g s
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
@@ -46,15 +45,13 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
 
 namespace ModuleCat
 
-variable {R : Type u} [Ring R] {M : ModuleCatMax.{u, v} R}
-
-set_option pp.universes true
+variable {R : Type u} [Ring R] {M : ModuleCat.{max u v} R}
 
 -- We transport the corresponding result from `module.projective`.
 /-- Modules that have a basis are projective. -/
 theorem projective_of_free {ι : Type _} (b : Basis ι R M) : Projective M :=
   Projective.of_iso (ModuleCat.ofSelfIso _)
-    (IsProjective.iff_projective.mp (Module.Projective.of_basis b))
+    (IsProjective.iff_projective.{v, u}.mp (Module.Projective.of_basis b))
 set_option linter.uppercaseLean3 false in
 #align Module.projective_of_free ModuleCat.projective_of_free
 
