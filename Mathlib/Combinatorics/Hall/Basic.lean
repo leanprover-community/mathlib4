@@ -89,7 +89,6 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     rw [image_biUnion]
 #align hall_matchings_on.nonempty hallMatchingsOn.nonempty
 
--- TODO: This takes a long time to elaborate for an unknown reason.
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
 def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (Finset ι)ᵒᵖ ⥤ Type max u v
@@ -119,7 +118,7 @@ families of finite sets `t : ι → Finset α`.  It states that there is a
 set of distinct representatives if and only if every union of `k` of the
 sets has at least `k` elements.
 
-Recall that `s.bUnion t` is the union of all the sets `t i` for `i ∈ s`.
+Recall that `s.biUnion t` is the union of all the sets `t i` for `i ∈ s`.
 
 This theorem is bootstrapped from `Finset.all_card_le_biUnion_card_iff_exists_injective'`,
 which has the additional constraint that `ι` is a `Fintype`.
