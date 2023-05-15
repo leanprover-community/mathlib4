@@ -8,9 +8,9 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Hall.Finite
-import Mathbin.CategoryTheory.CofilteredSystem
-import Mathbin.Data.Rel
+import Mathlib.Combinatorics.Hall.Finite
+import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.Data.Rel
 
 /-!
 # Hall's Marriage Theorem
@@ -67,8 +67,7 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
-    (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' :=
-  by
+    (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
   refine' ⟨fun i => f.val ⟨i, h i.property⟩, _⟩
   cases' f.property with hinj hc
   refine' ⟨_, fun i => hc ⟨i, h i.property⟩⟩
@@ -103,8 +102,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     Finite (hallMatchingsOn t ι') := by
   classical
     rw [hallMatchingsOn]
-    let g : hallMatchingsOn t ι' → ι' → ι'.bUnion t :=
-      by
+    let g : hallMatchingsOn t ι' → ι' → ι'.bUnion t := by
       rintro f i
       refine' ⟨f.val i, _⟩
       rw [mem_bUnion]
@@ -129,16 +127,14 @@ which has the additional constraint that `ι` is a `fintype`.
 theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
-      ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x :=
-  by
+      ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   constructor
   · intro h
     -- Set up the functor
     haveI : ∀ ι' : (Finset ι)ᵒᵖ, Nonempty ((hallMatchingsFunctor t).obj ι') := fun ι' =>
       hallMatchingsOn.nonempty t h ι'.unop
     classical
-      haveI : ∀ ι' : (Finset ι)ᵒᵖ, Finite ((hallMatchingsFunctor t).obj ι') :=
-        by
+      haveI : ∀ ι' : (Finset ι)ᵒᵖ, Finite ((hallMatchingsFunctor t).obj ι') := by
         intro ι'
         rw [hallMatchingsFunctor]
         infer_instance
@@ -173,10 +169,8 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
 instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
-    [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) :=
-  by
-  have h : Rel.image r A = (A.bUnion fun a => (Rel.image r {a}).toFinset : Set β) :=
-    by
+    [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) := by
+  have h : Rel.image r A = (A.bUnion fun a => (Rel.image r {a}).toFinset : Set β) := by
     ext
     simp [Rel.image]
   rw [h]
@@ -195,11 +189,9 @@ Note: if `[fintype β]`, then there exist instances for `[∀ (a : α), fintype 
 theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
     [DecidableEq β] (r : α → β → Prop) [∀ a : α, Fintype (Rel.image r {a})] :
     (∀ A : Finset α, A.card ≤ Fintype.card (Rel.image r A)) ↔
-      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) :=
-  by
+      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
   let r' a := (Rel.image r {a}).toFinset
-  have h : ∀ A : Finset α, Fintype.card (Rel.image r A) = (A.biUnion r').card :=
-    by
+  have h : ∀ A : Finset α, Fintype.card (Rel.image r A) = (A.biUnion r').card := by
     intro A
     rw [← Set.toFinset_card]
     apply congr_arg
@@ -221,12 +213,10 @@ rather than `rel.image`.
 theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
     (r : α → β → Prop) [∀ a, DecidablePred (r a)] :
     (∀ A : Finset α, A.card ≤ (univ.filterₓ fun b : β => ∃ a ∈ A, r a b).card) ↔
-      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) :=
-  by
+      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
   haveI := Classical.decEq β
   let r' a := univ.filter fun b => r a b
-  have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' :=
-    by
+  have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' := by
     intro A
     ext b
     simp
