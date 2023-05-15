@@ -59,13 +59,15 @@ open Classical
 
 universe v u
 
-/- ./././Mathport/Syntax/Translate/Command.lean:229:11: unsupported: unusual advanced open style -/
+/- ./././Mathport/Syntax/Translate/Command.lean:229:11:
+unsupported: unusual advanced open style -/
 open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver FreeGroup
 
 /-- `is_free_groupoid.generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note: @[nolint unused_arguments has_nonempty_instance]
+-- Porting note: @[nolint has_nonempty_instance]
+@[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
 #align is_free_groupoid.generators IsFreeGroupoid.Generators
@@ -85,6 +87,8 @@ class IsFreeGroupoid (G) [Groupoid.{v} G] where
     ∀ {X : Type v} [Group X] (f : Labelling (IsFreeGroupoid.Generators G) X),
       ∃! F : G ⥤ CategoryTheory.SingleObj X, ∀ (a b) (g : a ⟶ b), F.map (of g) = f g
 #align is_free_groupoid IsFreeGroupoid
+
+attribute [nolint docBlame] IsFreeGroupoid.of IsFreeGroupoid.unique_lift
 
 namespace IsFreeGroupoid
 
@@ -155,15 +159,14 @@ variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
   (T : WideSubquiver (Symmetrify <| Generators G)) [Arborescence T]
 
 /-- The root of `T`, except its type is `G` instead of the type synonym `T`. -/
---  Porting note: removed private
-def root' : G :=
+private def root' : G :=
   show T from root T
-#align is_free_groupoid.spanning_tree.root' IsFreeGroupoid.SpanningTree.root'
+-- #align is_free_groupoid.spanning_tree.root' IsFreeGroupoid.SpanningTree.root'
 
 -- this has to be marked noncomputable, see issue #451.
 -- It might be nicer to define this in terms of `compose_path`
 /-- A path in the tree gives a hom, by composition. -/
--- noncomputable
+-- Porting note: removed noncomputable. This is already declared at the beginning of the section.
 def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
   | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
@@ -267,10 +270,10 @@ end SpanningTree
 
 /-- Another name for the identity function `G → G`, to help type checking. -/
 -- Porting note: removed private
-def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
+private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
-#align is_free_groupoid.symgen IsFreeGroupoid.symgen
+-- #align is_free_groupoid.symgen IsFreeGroupoid.symgen
 
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
 from `a` to `b` in the generating quiver. -/
