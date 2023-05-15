@@ -29,13 +29,13 @@ sum of `-∞` and the Krull dimension of any other varieties.
 variable (α : Type _) [Preorder α]
 
 /--
-Krull dimension of a preordered set `α` is the supremum of the right most index of all strict
-series of `α`. If there is no strict series `a₀ < a₁ < ... < aₙ` in `α`, then its Krull dimension
-is defined to be negative infinity; if the length of `a₀ < a₁ < ... < aₙ` is unbounded, its Krull
-dimension is defined to be positive infinity.
+Krull dimension of a preordered set `α` is the supremum of the right most index of all relation
+series of `α` order by `<`. If there is no strict series `a₀ < a₁ < ... < aₙ` in `α`, then its 
+Krull dimension is defined to be negative infinity; if the length of `a₀ < a₁ < ... < aₙ` is 
+unbounded, its Krull dimension is defined to be positive infinity.
 -/
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
-⨆ (p : LTSeries α), p.length
+  ⨆ (p : StrictSeries α), p.length
 
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
