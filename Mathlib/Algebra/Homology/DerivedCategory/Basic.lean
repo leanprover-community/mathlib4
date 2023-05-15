@@ -3,7 +3,6 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
-import Mathlib.Algebra.GradedType
 import Mathlib.CategoryTheory.Localization.Composition
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
