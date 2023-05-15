@@ -197,7 +197,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C)
     (U) : NatTrans.app (eqToHom (pushforward_eq' h ℱ)) U = ℱ.map (eqToHom (by rw [h])) := by
-  simpa [eqToHom_map]
+  rw [eqToHom_app, eqToHom_map]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq'_hom_app TopCat.Presheaf.pushforward_eq'_hom_app
 
@@ -236,7 +236,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
-  simp
+  simp [CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
@@ -253,7 +253,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
-  simp
+  simp [CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_inv_app' TopCat.Presheaf.Pushforward.id_inv_app'
 
@@ -323,20 +323,18 @@ set_option linter.uppercaseLean3 false in
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
 @[simps]
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
-    (H : IsOpen (f '' U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
-  let x : CostructuredArrow (Opens.map f).op (op U) := by
-    refine' @CostructuredArrow.mk _ _ _ _ _ (op (Opens.mk (f '' U.1) H)) _ _
-    exact (@homOfLE _ _ _ ((opens.map f).obj ⟨_, H⟩) (set.image_preimage.le_u_l _)).op
+    (H : IsOpen (f '' SetLike.coe U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
+  let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
+    (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
   have hx : IsTerminal x :=
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
         change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
         refine' (homOfLE _).op
-        exact (Set.image_subset f s.X.hom.unop.le).trans
-          (Set.image_preimage.l_u_le ↑(unop s.X.left))
+        apply (Set.image_subset f s.pt.hom.unop.le).trans
+        exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         simp }
-  exact IsColimit.coconePointUniqueUpToIso (colimit.is_colimit _)
-    (colimit_of_diagram_terminal hx _)
+  exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitOfDiagramTerminal hx _)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen
 
@@ -350,12 +348,13 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
     (fun U =>
       pullbackObjObjOfImageOpen (𝟙 _) ℱ (unop U) (by simpa using U.unop.2) ≪≫
         ℱ.mapIso (eqToIso (by simp)))
-    fun U V i => by
-    ext; simp
-    erw [colimit.pre_desc_assoc]
-    erw [colimit.ι_desc_assoc]
-    erw [colimit.ι_desc_assoc]
-    dsimp; simp only [← ℱ.map_comp]; congr
+    fun {U V} i => by
+      simp only [pullbackObj_obj]
+      ext; simp
+      erw [colimit.pre_desc_assoc]
+      erw [colimit.ι_desc_assoc]
+      erw [colimit.ι_desc_assoc]
+      dsimp; simp only [← ℱ.map_comp]; congr
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id TopCat.Presheaf.Pullback.id
 
@@ -363,7 +362,7 @@ theorem id_inv_app (U : Opens Y) :
     (id ℱ).inv.app (op U) =
       colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U))
         (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) := by
-  rw [← category.id_comp ((id ℱ).inv.app (op U)), ← nat_iso.app_inv, iso.comp_inv_eq]
+  rw [← Category.id_comp ((id ℱ).inv.app (op U)), ← NatIso.app_inv, Iso.comp_inv_eq]
   dsimp [id]
   rw [colimit.ι_desc_assoc]
   dsimp
@@ -400,7 +399,7 @@ theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presh
     erw [h (opens.op_map_id_obj U)]
     simpa [eq_to_hom_map]
   · intros
-    apply pushforward.id_eq
+    apply Pushforward.id_eq
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
 
@@ -428,13 +427,13 @@ set_option linter.uppercaseLean3 false in
 theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
-      ℱ.map (eqToHom (by simp [opens.map, Set.preimage_preimage])) ≫
+      ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
-  delta to_pushforward_of_iso
-  simp only [Equiv.toFun_as_coe, nat_trans.comp_app, equivalence.equivalence_mk'_unit,
-    eq_to_hom_map, eq_to_hom_op, eq_to_hom_trans, presheaf_equiv_of_iso_unit_iso_hom_app_app,
-    equivalence.to_adjunction, equivalence.equivalence_mk'_counit,
-    presheaf_equiv_of_iso_inverse_map_app, adjunction.mk_of_unit_counit_hom_equiv_apply]
+  delta toPushforwardOfIso
+  simp only [Equiv.toFun_as_coe, NatTrans.comp_app, Equivalence.Equivalence_mk'_unit,
+    eqToHom_map, eqToHom_op, eqToHom_trans, presheafEquivOfIso_unitIso_hom_app_app,
+    Equivalence.toAdjunction, Equivalence.Equivalence_mk'_counit,
+    presheafEquivOfIso_inverse_map_app, Adjunction.mkOfUnitCounit_homEquiv_apply]
   congr
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app
@@ -452,8 +451,8 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
-        𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) :=
-  by simpa [pushforwardToOfIso, Equivalence.toAdjunction]
+        𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
+  simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 
@@ -502,4 +501,3 @@ set_option linter.uppercaseLean3 false in
 end Presheaf
 
 end TopCat
-
