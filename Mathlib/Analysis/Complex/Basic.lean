@@ -229,7 +229,7 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
 instance : CompleteSpace ℂ :=
   (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
-/-- The natural `continuous_linear_equiv` from `ℂ` to `ℝ × ℝ`. -/
+/-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdClm : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
