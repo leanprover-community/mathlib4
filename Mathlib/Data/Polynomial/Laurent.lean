@@ -280,7 +280,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     (h_C_mul_T_Z : ∀ (n : ℕ) (a : R), M (C a * T (-n)) → M (C a * T (-n - 1))) : M p := by
   have A : ∀ {n : ℤ} {a : R}, M (C a * T n) := by
     intro n a
-    refine' Int.induction_on n _ _ _
+    refine Int.induction_on n ?_ ?_ ?_
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
