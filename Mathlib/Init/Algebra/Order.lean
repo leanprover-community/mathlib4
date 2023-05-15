@@ -292,7 +292,7 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
 
 variable [LinearOrder α]
 
-attribute [local instance] LinearOrder.decidableLe
+attribute [local instance] LinearOrder.decidableLE
 
 theorem le_total : ∀ a b : α, a ≤ b ∨ b ≤ a :=
   LinearOrder.le_total
