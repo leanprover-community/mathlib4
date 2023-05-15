@@ -16,28 +16,28 @@ import Mathlib.Algebra.Algebra.RestrictScalars
 # Localized Module
 
 Given a commutative ring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can localize
-`M` by `S`. This gives us a `localization S`-module.
+`M` by `S`. This gives us a `Localization S`-module.
 
 ## Main definitions
 
-* `localized_module.r` : the equivalence relation defining this localization, namely
+* `LocalizedModule.r` : the equivalence relation defining this localization, namely
   `(m, s) ≈ (m', s')` if and only if if there is some `u : S` such that `u • s' • m = u • s • m'`.
-* `localized_module M S` : the localized module by `S`.
-* `localized_module.mk`  : the canonical map sending `(m, s) : M × S ↦ m/s : localized_module M S`
-* `localized_module.lift_on` : any well defined function `f : M × S → α` respecting `r` descents to
-  a function `localized_module M S → α`
-* `localized_module.lift_on₂` : any well defined function `f : M × S → M × S → α` respecting `r`
-  descents to a function `localized_module M S → localized_module M S`
-* `localized_module.mk_add_mk` : in the localized module
+* `LocalizedModule M S` : the localized module by `S`.
+* `LocalizedModule.mk`  : the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
+* `LocalizedModule.liftOn` : any well defined function `f : M × S → α` respecting `r` descents to
+  a function `LocalizedModule M S → α`
+* `LocalizedModule.liftOn₂` : any well defined function `f : M × S → M × S → α` respecting `r`
+  descents to a function `LocalizedModule M S → LocalizedModule M S`
+* `LocalizedModule.mk_add_mk` : in the localized module
   `mk m s + mk m' s' = mk (s' • m + s • m') (s * s')`
-* `localized_module.mk_smul_mk` : in the localized module, for any `r : R`, `s t : S`, `m : M`,
-  we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : localization S` is localized ring
+* `LocalizedModule.mk_smul_mk` : in the localized module, for any `r : R`, `s t : S`, `m : M`,
+  we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
-* `localized_module.is_module` : `localized_module M S` is a `localization S`-module.
+* `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
 
 ## Future work
 
- * Redefine `localization` for monoids and rings to coincide with `localized_module`.
+ * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
 
 
@@ -73,8 +73,8 @@ instance r.setoid : Setoid (M × S) where
   iseqv := ⟨(r.isEquiv S M).refl, (r.isEquiv S M).symm _ _, (r.isEquiv S M).trans _ _ _⟩
 #align localized_module.r.setoid LocalizedModule.r.setoid
 
--- TODO: change `localization` to use `r'` instead of `r` so that the two types are also defeq,
--- `localization S = localized_module S R`.
+-- TODO: change `Localization` to use `r'` instead of `r` so that the two types are also defeq,
+-- `Localization S = LocalizedModule S R`.
 example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = LocalizedModule.r S R :=
   rfl
 
@@ -113,8 +113,8 @@ theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Pr
   exact h m m' s s'
 #align localized_module.induction_on₂ LocalizedModule.induction_on₂
 
-/-- If `f : M × S → α` respects the equivalence relation `localized_module.r`, then
-`f` descents to a map `localized_module M S → α`.
+/-- If `f : M × S → α` respects the equivalence relation `LocalizedModule.r`, then
+`f` descents to a map `LocalizedModule M S → α`.
 -/
 def liftOn {α : Type _} (x : LocalizedModule S M) (f : M × S → α)
     (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p') : α :=
@@ -125,8 +125,8 @@ theorem liftOn_mk {α : Type _} {f : M × S → α} (wd : ∀ (p p' : M × S), p
     (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
 #align localized_module.lift_on_mk LocalizedModule.liftOn_mk
 
-/-- If `f : M × S → M × S → α` respects the equivalence relation `localized_module.r`, then
-`f` descents to a map `localized_module M S → localized_module M S → α`.
+/-- If `f : M × S → M × S → α` respects the equivalence relation `LocalizedModule.r`, then
+`f` descents to a map `LocalizedModule M S → LocalizedModule M S → α`.
 -/
 def liftOn₂ {α : Type _} (x y : LocalizedModule S M) (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') : α :=
@@ -400,7 +400,7 @@ private theorem add_smul' (x y : Localization S) (z : LocalizedModule S M) :
   simp only [one_smul, add_smul, smul_add, ← mul_smul, Submonoid.smul_def, Submonoid.coe_mul,
     Submonoid.coe_one]
   rw [add_comm]
-  -- Commutativity of addition in the module is not applied by `ring`.
+  -- Commutativity of addition in the module is not applied by `Ring`.
   ring_nf
 -- #align localized_module.add_smul' localized_module.add_smul'
 
@@ -569,8 +569,8 @@ variable {M M' M'' : Type _} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid
 variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 
 /-- The characteristic predicate for localized module.
-`is_localized_module S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
-`localized_module S M`.
+`IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
+`LocalizedModule S M`.
 -/
 class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
@@ -591,7 +591,7 @@ namespace LocalizedModule
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
-there is a linear map `localized_module S M → M''`.
+there is a linear map `LocalizedModule S M → M''`.
 -/
 noncomputable def lift' (g : M →ₗ[R] M'')
     (h : ∀ x : S, IsUnit (algebraMap R (Module.End R M'') x)) : LocalizedModule S M → M'' :=
@@ -658,7 +658,7 @@ theorem lift'_smul (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
-there is a linear map `localized_module S M → M''`.
+there is a linear map `LocalizedModule S M → M''`.
 -/
 noncomputable def lift (g : M →ₗ[R] M'')
     (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) : LocalizedModule S M →ₗ[R] M''
@@ -689,7 +689,7 @@ theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible and
-`l` is another linear map `localized_module S M ⟶ M''` such that `l ∘ mk_linear_map = g` then
+`l` is another linear map `LocalizedModule S M ⟶ M''` such that `l ∘ mk_linear_map = g` then
 `l = lift g`
 -/
 theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
@@ -733,7 +733,7 @@ namespace IsLocalizedModule
 variable [IsLocalizedModule S f]
 
 /-- If `(M', f : M ⟶ M')` satisfies universal property of localized module, there is a canonical map
-`localized_module S M ⟶ M'`.
+`LocalizedModule S M ⟶ M'`.
 -/
 noncomputable def fromLocalizedModule' : LocalizedModule S M → M' := fun p =>
   p.liftOn (fun x => (IsLocalizedModule.map_units f x.2).unit⁻¹.val (f x.1))
@@ -783,7 +783,7 @@ theorem fromLocalizedModule'_smul (r : R) (x : LocalizedModule S M) :
 #align is_localized_module.from_localized_module'_smul IsLocalizedModule.fromLocalizedModule'_smul
 
 /-- If `(M', f : M ⟶ M')` satisfies universal property of localized module, there is a canonical map
-`localized_module S M ⟶ M'`.
+`LocalizedModule S M ⟶ M'`.
 -/
 noncomputable def fromLocalizedModule : LocalizedModule S M →ₗ[R] M' where
   toFun := fromLocalizedModule' S f
@@ -822,7 +822,7 @@ theorem fromLocalizedModule.bij : Function.Bijective <| fromLocalizedModule S f 
 
 /--
 If `(M', f : M ⟶ M')` satisfies universal property of localized module, then `M'` is isomorphic to
-`localized_module S M` as an `R`-module.
+`LocalizedModule S M` as an `R`-module.
 -/
 @[simps!]
 noncomputable def iso : LocalizedModule S M ≃ₗ[R] M' :=
@@ -1072,7 +1072,7 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
 
 section Algebra
 
--- Porting note: `infer_instance` fails.
+-- Porting note: `inferInstance` fails.
 local instance {R S : Type _} [CommRing R] [CommRing S] [Algebra R S] : Module R S :=
 Algebra.toModule
 
