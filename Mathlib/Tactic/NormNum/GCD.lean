@@ -131,22 +131,22 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
       have pq : Q(Nat.mod $ex $ey = 0) := (q(@Eq.refl Nat 0) : Expr)
       ⟨ey, q(nat_gcd_helper_dvd_right $ex $ey $pq)⟩
     else
-      have ed : Q(ℕ) := mkRawNatLit d
-      have pu : Q(Nat.mod $ex $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
-      have pv : Q(Nat.mod $ey $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
       have ea' : Q(ℕ) := mkRawNatLit a.natAbs
       have eb' : Q(ℕ) := mkRawNatLit b.natAbs
-      if a ≥ 0 then
-        if d = 1 then
+      if d = 1 then
+        if a ≥ 0 then
           have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + 1) = true) := (q(Eq.refl true) : Expr)
           ⟨mkRawNatLit 1, q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
         else
-          have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + $ed) = true) := (q(Eq.refl true) : Expr)
-          ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
-      else
-        if d = 1 then
           have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + 1) = true) := (q(Eq.refl true) : Expr)
           ⟨mkRawNatLit 1, q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
+      else
+        have ed : Q(ℕ) := mkRawNatLit d
+        have pu : Q(Nat.mod $ex $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+        have pv : Q(Nat.mod $ey $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+        if a ≥ 0 then
+          have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + $ed) = true) := (q(Eq.refl true) : Expr)
+          ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
         else
           have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + $ed) = true) := (q(Eq.refl true) : Expr)
           ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
