@@ -572,7 +572,7 @@ variable {α : Type _}
 
 open ComplexConjugate
 
-@[simp]
+-- Porting note: @[simp] unneeded due to `IsROrC.hasSum_conj`
 theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
   IsROrC.hasSum_conj _
 #align complex.has_sum_conj Complex.hasSum_conj
