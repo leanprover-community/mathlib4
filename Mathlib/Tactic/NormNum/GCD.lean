@@ -49,10 +49,12 @@ theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
   (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ hv hu h
 #align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
 
--- Porting note: the `dsimp only` was not necessary in Lean3.
-theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy : x * y = n)
-    (dm : d * m = n) : Nat.lcm x y = m :=
-  mul_right_injective₀ d0.ne' <| by dsimp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
+theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
+    (d0 : Nat.beq d 0 = false)
+    (dm : Nat.beq (x * y) (d * m) = true) : Nat.lcm x y = m :=
+  mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
+    dsimp only; -- Porting note: the `dsimp only` was not necessary in Lean3.
+    rw [← Nat.eq_of_beq_eq_true dm, ← hd, Nat.gcd_mul_lcm]
 #align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
 
 theorem not_coprime_helper {x y d : Nat} (h : Nat.gcd x y = d) (h' : Nat.beq d 1 = false) :
@@ -157,12 +159,10 @@ def proveNatLCM (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.lcm $ex $ey = $ed) :=
   | _, 1 => show (ed : Q(ℕ)) × Q(Nat.lcm $ex 1 = $ed) from ⟨ex, q(Nat.lcm_one_right $ex)⟩
   | x, y =>
     let ⟨ed, pd⟩ := proveNatGCD ex ey
-    have p0 : Q(Nat.blt 0 $ed = true) := (q(Eq.refl true) : Expr)
-    have en : Q(ℕ) := mkRawNatLit (x * y)
-    have pxy : Q(Nat.mul $ex $ey = $en) := (q(Eq.refl $en) : Expr)
+    have p0 : Q(Nat.beq $ed 0 = false) := (q(Eq.refl false) : Expr)
     have em : Q(ℕ) := mkRawNatLit (x * y / ed.natLit!)
-    have pm : Q(Nat.mul $ed $em = $en) := (q(Eq.refl $en) : Expr)
-    ⟨em, q(nat_lcm_helper $ex $ey $ed $em $en $pd (Eq.mp Nat.blt_eq $p0) $pxy $pm)⟩
+    have pm : Q(Nat.beq ($ex * $ey) ($ed * $em) = true) := (q(Eq.refl true) : Expr)
+    ⟨em, q(nat_lcm_helper $ex $ey $ed $em $pd $p0 $pm)⟩
 #align tactic.norm_num.prove_lcm_nat Tactic.NormNum.proveNatLCM
 
 /-- Evaluates the `Nat.lcm` function. -/
