@@ -22,19 +22,19 @@ This file gathers basic facts on complex numbers of an analytic nature.
 ## Main results
 
 This file registers `ℂ` as a normed field, expresses basic properties of the norm, and gives
-tools on the real vector space structure of `ℂ`. Notably, in the namespace `complex`,
+tools on the real vector space structure of `ℂ`. Notably, in the namespace `Complex`,
 it defines functions:
 
-* `re_clm`
-* `im_clm`
-* `of_real_clm`
-* `conj_cle`
+* `reClm`
+* `imClm`
+* `ofRealClm`
+* `conjCle`
 
 They are bundled versions of the real part, the imaginary part, the embedding of `ℝ` in `ℂ`, and
 the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
-isometries in `of_real_li` and `conj_lie`.
+isometries in `ofRealLi` and `conjLie`.
 
-We also register the fact that `ℂ` is an `is_R_or_C` field.
+We also register the fact that `ℂ` is an `IsROrC` field.
 -/
 
 
@@ -83,7 +83,7 @@ instance {R : Type _} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R �
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
-/-- The module structure from `module.complex_to_real` is a normed space. -/
+/-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
@@ -244,7 +244,7 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
   tendsto_norm_cocompact_atTop
 #align complex.tendsto_abs_cocompact_at_top Complex.tendsto_abs_cocompact_atTop
 
-/-- The `norm_sq` function on `ℂ` is proper. -/
+/-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
   by simpa [mul_self_abs]
     using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
@@ -272,7 +272,7 @@ theorem reClm_apply (z : ℂ) : (reClm : ℂ → ℝ) z = z.re :=
   rfl
 #align complex.re_clm_apply Complex.reClm_apply
 
-/-- Continuous linear map version of the real part function, from `ℂ` to `ℝ`. -/
+/-- Continuous linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imClm : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
 #align complex.im_clm Complex.imClm
@@ -558,10 +558,10 @@ end IsROrC
 namespace Complex
 
 /-!
-We have to repeat the lemmas about `is_R_or_C.re` and `is_R_or_C.im` as they are not syntactic
-matches for `complex.re` and `complex.im`.
+We have to repeat the lemmas about `IsROrC.re` and `IsROrC.im` as they are not syntactic
+matches for `Complex.re` and `Complex.im`.
 
-We do not have this problem with `of_real` and `conj`, although we repeat them anyway for
+We do not have this problem with `ofReal` and `conj`, although we repeat them anyway for
 discoverability and to avoid the need to unify `𝕜`.
 -/
 
