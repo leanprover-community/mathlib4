@@ -57,7 +57,8 @@ lemma ofHom_id : ofHom (𝟙 X) = 1 := rfl
 
 variable {X}
 
-noncomputable instance : HasGradedHSMul (newExt Y Z) (newExt X Y) (newExt X Z) where
+noncomputable instance : HasGradedHSMul (newExt Y Z) (newExt X Y)
+    (newExt X Z) where
   γhsmul' a b c h α β :=
     mk (α.hom •[show (a : ℤ) + b = c by rw [← h, Nat.cast_add]] β.hom)
 
