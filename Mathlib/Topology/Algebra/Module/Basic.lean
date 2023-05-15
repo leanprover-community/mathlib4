@@ -1259,19 +1259,19 @@ theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) =
   ext fun _c => rfl
 #align continuous_linear_map.proj_pi ContinuousLinearMap.proj_pi
 
-theorem infᵢ_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
-  LinearMap.infᵢ_ker_proj
-#align continuous_linear_map.infi_ker_proj ContinuousLinearMap.infᵢ_ker_proj
+theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
+  LinearMap.iInf_ker_proj
+#align continuous_linear_map.infi_ker_proj ContinuousLinearMap.iInf_ker_proj
 
 variable (R φ)
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
-def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i
     where
-  toLinearEquiv := LinearMap.infᵢKerProjEquiv R φ hd hu
+  toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i => by
       have :=
@@ -1289,7 +1289,7 @@ def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Dis
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
         split_ifs <;> [apply continuous_apply, exact continuous_zero])
       _
-#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.infᵢKerProjEquiv
+#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.iInfKerProjEquiv
 
 end Pi
 

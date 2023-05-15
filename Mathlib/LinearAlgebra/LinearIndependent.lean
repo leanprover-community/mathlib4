@@ -430,34 +430,34 @@ theorem linearIndependent_of_finite (s : Set M)
     linearIndependent_subtype.1 (H _ hl (Finset.finite_toSet _)) l (Subset.refl _)
 #align linear_independent_of_finite linearIndependent_of_finite
 
-theorem linearIndependent_unionᵢ_of_directed {η : Type _} {s : η → Set M} (hs : Directed (· ⊆ ·) s)
+theorem linearIndependent_iUnion_of_directed {η : Type _} {s : η → Set M} (hs : Directed (· ⊆ ·) s)
     (h : ∀ i, LinearIndependent R (fun x => x : s i → M)) :
     LinearIndependent R (fun x => x : (⋃ i, s i) → M) := by
   by_cases hη : Nonempty η
   · skip
     refine' linearIndependent_of_finite (⋃ i, s i) fun t ht ft => _
-    rcases finite_subset_unionᵢ ft ht with ⟨I, fi, hI⟩
+    rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩
     rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
-    exact (h i).mono (Subset.trans hI <| unionᵢ₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
-  · refine (linearIndependent_empty R M).mono (t := unionᵢ (s ·)) ?_
+    exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
+  · refine (linearIndependent_empty R M).mono (t := iUnion (s ·)) ?_
     rintro _ ⟨_, ⟨i, _⟩, _⟩
     exact hη ⟨i⟩
-#align linear_independent_Union_of_directed linearIndependent_unionᵢ_of_directed
+#align linear_independent_Union_of_directed linearIndependent_iUnion_of_directed
 
-theorem linearIndependent_unionₛ_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
+theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
-  rw [unionₛ_eq_unionᵢ];
-    exact linearIndependent_unionᵢ_of_directed hs.directed_val (by simpa using h)
-#align linear_independent_sUnion_of_directed linearIndependent_unionₛ_of_directed
+  rw [sUnion_eq_iUnion];
+    exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+#align linear_independent_sUnion_of_directed linearIndependent_sUnion_of_directed
 
-theorem linearIndependent_bunionᵢ_of_directed {η} {s : Set η} {t : η → Set M}
+theorem linearIndependent_biUnion_of_directed {η} {s : Set η} {t : η → Set M}
     (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndependent R (fun x => x : t a → M)) :
     LinearIndependent R (fun x => x : (⋃ a ∈ s, t a) → M) := by
-  rw [bunionᵢ_eq_unionᵢ]
+  rw [biUnion_eq_iUnion]
   exact
-    linearIndependent_unionᵢ_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
-#align linear_independent_bUnion_of_directed linearIndependent_bunionᵢ_of_directed
+    linearIndependent_iUnion_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
+#align linear_independent_bUnion_of_directed linearIndependent_biUnion_of_directed
 
 end Subtype
 
@@ -695,25 +695,25 @@ theorem LinearIndependent.union {s t : Set M} (hs : LinearIndependent R (fun x =
   (hs.sum_type ht <| by simpa).to_subtype_range' <| by simp
 #align linear_independent.union LinearIndependent.union
 
-theorem linearIndependent_unionᵢ_finite_subtype {ι : Type _} {f : ι → Set M}
+theorem linearIndependent_iUnion_finite_subtype {ι : Type _} {f : ι → Set M}
     (hl : ∀ i, LinearIndependent R (fun x => x : f i → M))
     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
     LinearIndependent R (fun x => x : (⋃ i, f i) → M) := by
-  rw [unionᵢ_eq_unionᵢ_finset f]
-  apply linearIndependent_unionᵢ_of_directed
+  rw [iUnion_eq_iUnion_finset f]
+  apply linearIndependent_iUnion_of_directed
   · apply directed_of_sup
-    exact fun t₁ t₂ ht => unionᵢ_mono fun i => unionᵢ_subset_unionᵢ_const fun h => ht h
+    exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
   induction' t using Finset.induction_on with i s his ih
   · refine' (linearIndependent_empty R M).mono _
     simp
-  · rw [Finset.set_bunionᵢ_insert]
+  · rw [Finset.set_biUnion_insert]
     refine' (hl _).union ih _
-    rw [span_unionᵢ₂]
+    rw [span_iUnion₂]
     exact hd i s s.finite_toSet his
-#align linear_independent_Union_finite_subtype linearIndependent_unionᵢ_finite_subtype
+#align linear_independent_Union_finite_subtype linearIndependent_iUnion_finite_subtype
 
-theorem linearIndependent_unionᵢ_finite {η : Type _} {ιs : η → Type _} {f : ∀ j : η, ιs j → M}
+theorem linearIndependent_iUnion_finite {η : Type _} {ιs : η → Type _} {f : ∀ j : η, ιs j → M}
     (hindep : ∀ j, LinearIndependent R (f j))
     (hd : ∀ i, ∀ t : Set η,
       t.Finite → i ∉ t → Disjoint (span R (range (f i))) (⨆ i ∈ t, span R (range (f i)))) :
@@ -730,14 +730,14 @@ theorem linearIndependent_unionᵢ_finite {η : Type _} {ιs : η → Type _} {f
         apply
           disjoint_def.1 (hd x₁ {y₁} (finite_singleton y₁) fun h => h_cases (eq_of_mem_singleton h))
             (f x₁ x₂) (subset_span (mem_range_self _))
-        rw [supᵢ_singleton]
+        rw [iSup_singleton]
         simp only at hxy
         rw [hxy]
         exact subset_span (mem_range_self y₂)
       exact False.elim ((hindep x₁).ne_zero _ h0)
-  rw [range_sigma_eq_unionᵢ_range]
-  apply linearIndependent_unionᵢ_finite_subtype (fun j => (hindep j).to_subtype_range) hd
-#align linear_independent_Union_finite linearIndependent_unionᵢ_finite
+  rw [range_sigma_eq_iUnion_range]
+  apply linearIndependent_iUnion_finite_subtype (fun j => (hindep j).to_subtype_range) hd
+#align linear_independent_Union_finite linearIndependent_iUnion_finite
 
 end Subtype
 
@@ -871,7 +871,7 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
-  simp only [mem_inf, mem_span_singleton, supᵢ_subtype', ← span_range_eq_supᵢ] at hm
+  simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
@@ -899,12 +899,12 @@ theorem exists_maximal_independent' (s : ι → M) :
     · simpa using hsupport
     haveI : IsRefl X r := ⟨fun _ => Set.Subset.refl _⟩
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support : Set ι) ⊆ I :=
-      hc.directedOn.exists_mem_subset_of_finset_subset_bunionᵢ hn hsupport
+      hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn hsupport
     exact linearIndependent_comp_subtype.mp I.2 f hI hsum
   have trans : Transitive r := fun I J K => Set.Subset.trans
   obtain ⟨⟨I, hli : indep I⟩, hmax : ∀ a, r ⟨I, hli⟩ a → r a ⟨I, hli⟩⟩ :=
     @exists_maximal_of_chains_bounded _ r
-      (fun c hc => ⟨⟨⋃ I ∈ c, (I : Set ι), key c hc⟩, fun I => Set.subset_bunionᵢ_of_mem⟩) @trans
+      (fun c hc => ⟨⟨⋃ I ∈ c, (I : Set ι), key c hc⟩, fun I => Set.subset_biUnion_of_mem⟩) @trans
   exact ⟨I, hli, fun J hsub hli => Set.Subset.antisymm hsub (hmax ⟨J, hli⟩ hsub)⟩
 #align exists_maximal_independent' exists_maximal_independent'
 
@@ -1290,9 +1290,9 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
     · refine' fun c hc cc _c0 => ⟨⋃₀ c, ⟨_, _⟩, fun x => _⟩
-      · exact unionₛ_subset fun x xc => (hc xc).1
-      · exact linearIndependent_unionₛ_of_directed cc.directedOn fun x xc => (hc xc).2
-      · exact subset_unionₛ_of_mem
+      · exact sUnion_subset fun x xc => (hc xc).1
+      · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
+      · exact subset_sUnion_of_mem
   rcases this with
     ⟨b, ⟨bt, bi⟩, sb, h⟩
   · refine' ⟨b, bt, sb, fun x xt => _, bi⟩

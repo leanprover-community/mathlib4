@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
+! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -578,6 +578,14 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 #align mul_bit1 mul_bit1
 
 end bit0_bit1
+
+/-- Note this holds in marginally more generality than `Int.cast_mul` -/
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+    ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
+  fun m =>
+  Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
+    by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]
+#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 @[simp]
 theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a

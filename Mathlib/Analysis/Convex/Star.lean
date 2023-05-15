@@ -110,14 +110,14 @@ theorem StarConvex.inter (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
   fun _ hy _ _ ha hb hab => ⟨hs hy.left ha hb hab, ht hy.right ha hb hab⟩
 #align star_convex.inter StarConvex.inter
 
-theorem starConvex_interₛ {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x s) :
+theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋂₀ S) := fun _ hy _ _ ha hb hab s hs => h s hs (hy s hs) ha hb hab
-#align star_convex_sInter starConvex_interₛ
+#align star_convex_sInter starConvex_sInter
 
-theorem starConvex_interᵢ {ι : Sort _} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
+theorem starConvex_iInter {ι : Sort _} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
-  interₛ_range s ▸ starConvex_interₛ <| forall_range_iff.2 h
-#align star_convex_Inter starConvex_interᵢ
+  sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
+#align star_convex_Inter starConvex_iInter
 
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
     StarConvex 𝕜 x (s ∪ t) := by
@@ -126,19 +126,19 @@ theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
   · exact Or.inr (ht hy ha hb hab)
 #align star_convex.union StarConvex.union
 
-theorem starConvex_unionᵢ {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
+theorem starConvex_iUnion {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
-  rw [mem_unionᵢ] at hy⊢
+  rw [mem_iUnion] at hy⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
-#align star_convex_Union starConvex_unionᵢ
+#align star_convex_Union starConvex_iUnion
 
-theorem starConvex_unionₛ {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
+theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by
-  rw [unionₛ_eq_unionᵢ]
-  exact starConvex_unionᵢ fun s => hS _ s.2
-#align star_convex_sUnion starConvex_unionₛ
+  rw [sUnion_eq_iUnion]
+  exact starConvex_iUnion fun s => hS _ s.2
+#align star_convex_sUnion starConvex_sUnion
 
 theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x s)
     (ht : StarConvex 𝕜 y t) : StarConvex 𝕜 (x, y) (s ×ˢ t) := fun _ hy _ _ ha hb hab =>

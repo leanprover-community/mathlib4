@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # A collection of specific limit computations
