@@ -7,8 +7,6 @@ Authors: Leonardo de Moura
 ! leanprover-community/lean commit c2bcdbcbe741ed37c361a30d38e179182b989f76
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
-
-porting note: imports are taken from the ad-hoc port
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Algebra.Classes
