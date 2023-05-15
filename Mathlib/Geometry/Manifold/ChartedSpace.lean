@@ -579,7 +579,7 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
   haveI : ∀ x : M, SecondCountableTopology (chartAt x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
   haveI := hsc.toEncodable
-  rw [bunionᵢ_eq_unionᵢ] at hs
+  rw [biUnion_eq_iUnion] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt (x : M)).open_source) hs
 #align charted_space.second_countable_of_countable_cover ChartedSpace.secondCountable_of_countable_cover
 
@@ -783,7 +783,7 @@ protected def toTopologicalSpace : TopologicalSpace M :=
 
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
-  simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+  simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine' ⟨e, he, univ, isOpen_univ, _⟩
   simp only [Set.univ_inter, Set.preimage_univ]
 #align charted_space_core.open_source' ChartedSpaceCore.open_source'
@@ -809,13 +809,13 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       intro s s_open
       rw [inter_comm]
       apply TopologicalSpace.GenerateOpen.basic
-      simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+      simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuous_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_open_of_generateFrom
       intro t ht
-      simp only [exists_prop, mem_unionᵢ, mem_singleton_iff] at ht
+      simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
       rw [ts]
       let f := e.symm.trans e'
@@ -838,7 +838,7 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
     chartAt := fun x ↦ c.localHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
-      simp only [mem_unionᵢ, mem_singleton_iff]
+      simp only [mem_iUnion, mem_singleton_iff]
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
 #align charted_space_core.to_charted_space ChartedSpaceCore.toChartedSpace
 
@@ -1057,7 +1057,7 @@ instance : ChartedSpace H s where
   chartAt x := @LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt x.1) s ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source x.1⟩
   chart_mem_atlas x := by
-    simp only [mem_unionᵢ, mem_singleton_iff]
+    simp only [mem_iUnion, mem_singleton_iff]
     use x
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
