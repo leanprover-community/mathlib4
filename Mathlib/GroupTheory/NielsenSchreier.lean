@@ -283,19 +283,16 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
     Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by
   rintro ⟨p⟩
   rw [← @WeaklyConnectedComponent.eq (Generators G), eq_comm, ← FreeGroup.of_injective.eq_iff, ←
-    @mul_inv_eq_one (FreeGroup (WeaklyConnectedComponent (Generators G)))]
+    mul_inv_eq_one]
   let X := FreeGroup (WeaklyConnectedComponent <| Generators G)
   let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
-  let F : G ⥤ CategoryTheory.SingleObj X := SingleObj.differenceFunctor f
-  dsimp only []
-  change _ = ((CategoryTheory.Functor.const G).obj ()).map p
-
-  -- change (F.map p : Unit ⟶ Unit) = ((CategoryTheory.Functor.const G).obj ()).map p
+  let F : G ⥤ CategoryTheory.SingleObj.{u} (X : Type u) := SingleObj.differenceFunctor f
+  change (F.map p) = ((@CategoryTheory.Functor.const G _ _ (SingleObj.category X)).obj ()).map p
   congr ; ext
-  rw [functor.const_obj_map, id_as_one, difference_functor_map, mul_inv_eq_one]
+  rw [Functor.const_obj_map, id_as_one, differenceFunctor_map, @mul_inv_eq_one _ _ (f _)]
   apply congr_arg FreeGroup.of
-  apply (weakly_connected_component.eq _ _).mpr
-  exact ⟨hom.to_path (Sum.inr e)⟩
+  apply (WeaklyConnectedComponent.eq _ _).mpr
+  exact ⟨Hom.toPath (Sum.inr (by assumption))⟩
 #align is_free_groupoid.path_nonempty_of_hom IsFreeGroupoid.path_nonempty_of_hom
 
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
