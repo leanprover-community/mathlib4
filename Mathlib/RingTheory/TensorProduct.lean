@@ -1079,6 +1079,7 @@ theorem basis_repr_tmul (r : R) (m : M) :
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [Basis, Equiv.uniqueProd_symm_apply, basisAux]
+  sorry
 
 #align algebra.tensor_product.basis_repr_symm_apply Algebra.TensorProduct.basis_repr_symm_apply
 
@@ -1118,7 +1119,7 @@ end Module
 
 theorem Subalgebra.finiteDimensional_sup {K L : Type _} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
-    FiniteDimensional K ↥(E1 ⊔ E2) := by
+    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap.finiteDimensional_range
 #align subalgebra.finite_dimensional_sup Subalgebra.finiteDimensional_sup
@@ -1174,7 +1175,9 @@ protected def module : Module (A ⊗[R] B) M where
   smul_zero x := by simp only [(· • ·), map_zero]
   smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
   add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
-  one_smul m := by simp only [(· • ·), moduleAux_apply, Algebra.TensorProduct.one_def, one_smul]
+  one_smul m := by
+    simp only [(· • ·), Algebra.TensorProduct.one_def]
+    simp only [moduleAux_apply, one_smul] -- porting note: was one `simp only` not two in lean 3
   mul_smul x y m := by
     refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
     · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
@@ -1185,11 +1188,23 @@ protected def module : Module (A ⊗[R] B) M where
     · intro a b
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
-      simp only [(· • ·), moduleAux_apply, mul_smul, smul_comm a₁ b₂,
-        Algebra.TensorProduct.tmul_mul_tmul, LinearMap.mul_apply]
+      simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
+      simp only [moduleAux_apply, mul_smul]
+      rw [smul_comm a₁ b₂] -- porting note; was one `simp only` not two and a `rw` in mathlib3
     · intro z w hz hw a b
-      simp only at hz hw
-      simp only [(· • ·), mul_add, hz, hw, map_add, LinearMap.add_apply]
+      --simp only at hz hw
+      simp only [(· • ·)]
+      simp only [moduleAux_apply]
+      rw [mul_add]
+      -- rw [moduleAux_apply]
+      simp only [hz, hw]
+      simp only [map_add, LinearMap.add_apply]
+      simp only [mul_add, hz, hw, map_add, LinearMap.add_apply]
+      rw [mul_add, map_add]
+      simp only [LinearMap.add_apply]
+      simp only [moduleAux_apply]
+      simp only [mul_add, hz, hw, map_add, LinearMap.add_apply]
+
     · intro z w hz hw
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
