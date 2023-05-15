@@ -607,9 +607,11 @@ instance : CommRing (A ⊗[R] B) :=
         · intro a₂ b₂
           simp [mul_comm]
         · intro a₂ b₂ ha hb
-          simp [mul_add, add_mul, ha, hb]
+          -- porting note: was `simp` not `rw`
+          rw [mul_add, add_mul, ha, hb]
       · intro x₁ x₂ h₁ h₂
-        simp [mul_add, add_mul, h₁, h₂] }
+        -- porting note: was `simp` not `rw`
+        rw [mul_add, add_mul, h₁, h₂] }
 
 section RightAlgebra
 
@@ -711,7 +713,7 @@ theorem algEquivOfLinearEquivTensorProduct_apply (f w₁ w₂ x) :
   rfl
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct_apply
 
-set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 2000000 in
 /-- Build an algebra equivalence from a linear equivalence out of a triple tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
@@ -738,18 +740,19 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
             · intros
               simp only [tmul_mul_tmul, w₁]
             · intro x₁ x₂ h₁ h₂
-              simp only [tmul_mul_tmul] at h₁ h₂
-              simp only [tmul_mul_tmul, mul_add, add_tmul, map_add, h₁, h₂]
+              simp only [tmul_mul_tmul] at h₁ h₂ ⊢
+              rw [mul_add, add_tmul, add_tmul, map_add, h₁, h₂, map_add, mul_add]
           · intro x₁ x₂ h₁ h₂
-            simp only [tmul_mul_tmul] at h₁ h₂
-            simp only [tmul_mul_tmul, add_mul, add_tmul, map_add, h₁, h₂]
+            simp only [tmul_mul_tmul] at h₁ h₂ ⊢
+            rw [add_mul, add_tmul, add_tmul, map_add, h₁, h₂, map_add, add_mul]
         · intro x₁ x₂ h₁ h₂
-          simp only [tmul_mul_tmul, map_add, mul_add, add_mul, h₁, h₂]
+          simp only [tmul_mul_tmul] at h₁ h₂ ⊢
+          rw [map_add, mul_add, map_add, h₁, h₂, mul_add]
       · intro x₁ x₂ h₁ h₂
-        simp only [tmul_mul_tmul, map_add, mul_add, add_mul, h₁, h₂]
+        simp only [tmul_mul_tmul] at h₁ h₂ ⊢
+        rw [map_add, add_mul, map_add, add_mul, h₁, h₂]
     commutes' := fun r => by simp [w₂] }
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
-
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f w₁ w₂ x) :
     (algEquivOfLinearEquivTripleTensorProduct f w₁ w₂ : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D) x = f x :=
