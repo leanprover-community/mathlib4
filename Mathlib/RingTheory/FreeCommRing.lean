@@ -313,11 +313,11 @@ def coeRingHom : FreeRing α →+* FreeCommRing α :=
   toFreeCommRing
 #align free_ring.coe_ring_hom FreeRing.coeRingHom
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_zero : ↑(0 : FreeRing α) = (0 : FreeCommRing α) := rfl
 #align free_ring.coe_zero FreeRing.coe_zero
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_one : ↑(1 : FreeRing α) = (1 : FreeCommRing α) := rfl
 #align free_ring.coe_one FreeRing.coe_one
 
@@ -328,22 +328,22 @@ protected theorem coe_of (a : α) : ↑(FreeRing.of a) = FreeCommRing.of a :=
   FreeRing.lift_of _ _
 #align free_ring.coe_of FreeRing.coe_of
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_neg (x : FreeRing α) : ↑(-x) = -(x : FreeCommRing α) := by
   rw [map_neg]
 #align free_ring.coe_neg FreeRing.coe_neg
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_add (x y : FreeRing α) : ↑(x + y) = (x : FreeCommRing α) + y :=
   (FreeRing.lift _).map_add _ _
 #align free_ring.coe_add FreeRing.coe_add
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_sub (x y : FreeRing α) : ↑(x - y) = (x : FreeCommRing α) - y := by
   rw [map_sub]
 #align free_ring.coe_sub FreeRing.coe_sub
 
-@[simp, norm_cast]
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: simp can prove this
 protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing α) * y :=
   (FreeRing.lift _).map_mul _ _
 #align free_ring.coe_mul FreeRing.coe_mul
