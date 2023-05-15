@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 
 /-!
 # Induced Topology
@@ -64,8 +64,7 @@ variable [Full G] [Faithful G] (Hld : LocallyCoverDense K G)
 include Hld
 
 theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
-    K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S :=
-  by
+    K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
   constructor
   · intro hS
     exact ⟨⟨_, hS⟩, (sieve.fully_faithful_functor_galois_coinsertion G X).u_l_eq S⟩
@@ -77,17 +76,14 @@ theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
 then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
 -/
 @[simps]
-def inducedTopology : GrothendieckTopology C
-    where
+def inducedTopology : GrothendieckTopology C where
   sieves X S := K _ (S.functorPushforward G)
   top_mem' X := by
     change K _ _
     rw [sieve.functor_pushforward_top]
     exact K.top_mem _
-  pullback_stable' X Y S f hS :=
-    by
-    have : S.pullback f = ((S.functor_pushforward G).pullback (G.map f)).functorPullback G :=
-      by
+  pullback_stable' X Y S f hS := by
+    have : S.pullback f = ((S.functor_pushforward G).pullback (G.map f)).functorPullback G := by
       conv_lhs => rw [← (sieve.fully_faithful_functor_galois_coinsertion G X).u_l_eq S]
       ext
       change (S.functor_pushforward G) _ ↔ (S.functor_pushforward G) _
@@ -117,8 +113,7 @@ theorem inducedTopology_coverPreserving : CoverPreserving Hld.inducedTopology K 
 
 end LocallyCoverDense
 
-theorem CoverDense.locallyCoverDense [Full G] (H : CoverDense K G) : LocallyCoverDense K G :=
-  by
+theorem CoverDense.locallyCoverDense [Full G] (H : CoverDense K G) : LocallyCoverDense K G := by
   intro X T
   refine' K.superset_covering _ (K.bind_covering T.property fun Y f Hf => H.is_cover Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
@@ -137,8 +132,7 @@ abbrev CoverDense.inducedTopology [Full G] [Faithful G] (H : CoverDense K G) :
 
 variable (J)
 
-theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) :=
-  by
+theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
   convert T.property
   ext (Z f)
