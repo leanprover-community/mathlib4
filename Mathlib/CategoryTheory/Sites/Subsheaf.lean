@@ -48,7 +48,11 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 compatible with the restriction maps `F.map i`. -/
 @[ext]
 structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
+  /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
+    `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
+  /-- If `G` is a sub-presheaf of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
+    `F i x` is in `F(V)`. -/
   map : ∀ {U V : Cᵒᵖ} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 #align category_theory.grothendieck_topology.subpresheaf CategoryTheory.GrothendieckTopology.Subpresheaf
 
@@ -141,8 +145,8 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 #align category_theory.grothendieck_topology.subpresheaf.lift CategoryTheory.GrothendieckTopology.Subpresheaf.lift
 
 @[reassoc (attr := simp)]
-theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : G.lift f hf ≫ G.ι = f :=
-  by
+theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
+  G.lift f hf ≫ G.ι = f := by
   ext
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.lift_ι CategoryTheory.GrothendieckTopology.Subpresheaf.lift_ι
@@ -220,15 +224,12 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   -- dependent functions. Thus everything follows need two additional explicit variables.
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
-  -- porting note: changed `let` to `set` with an additional proposition in context
-  -- so that `dsimp` could work later
-  set x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
-    with x''_def
+  let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
   have H : ∀ s, x.IsAmalgamation s ↔ x''.IsAmalgamation s.1 := by
     intro s
     constructor
     · intro H V i hi
-      dsimp only [x''_def]
+      dsimp only [show x'' = fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi)) from rfl]
       conv_lhs => rw [← h₂ _ _ hi]
       rw [← H _ (hi₂ _ _ hi)]
       exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _
@@ -249,7 +250,6 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
   refine' ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
-  show G.sieveOfSection t ∈ J _
   refine' J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
