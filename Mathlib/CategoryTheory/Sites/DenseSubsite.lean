@@ -316,8 +316,9 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
         f.unop ≫ appHom H (homOver α (unop X)) (unop U) x
     symm
     apply sheaf_eq_amalgamation
-    -- goes off track here
     apply H.is_cover
+    -- porting note: the following line closes a goal which didn't exist before reenableeta
+    exact pushforwardFamily_compatible H (homOver α Y.unop) (f.unop ≫ x)
     intro Y' f' hf'
     change unop X ⟶ ℱ.obj (op (unop _)) at x
     dsimp
