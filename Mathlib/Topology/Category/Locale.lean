@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.Frm
+import Mathlib.Order.Category.FrmCat
 
 /-!
 # The category of locales
@@ -21,9 +21,11 @@ universe u
 
 open CategoryTheory Opposite Order TopologicalSpace
 
+set_option linter.uppercaseLean3 false
+
 /-- The category of locales. -/
 def Locale :=
-  FrmCatᵒᵖderiving LargeCategory
+  FrmCatᵒᵖ deriving LargeCategory
 #align Locale Locale
 
 namespace Locale
@@ -34,7 +36,7 @@ instance : CoeSort Locale (Type _) :=
 instance (X : Locale) : Frame X :=
   X.unop.str
 
-/-- Construct a bundled `Locale` from a `frame`. -/
+/-- Construct a bundled `Locale` from a `Frame`. -/
 def of (α : Type _) [Frame α] : Locale :=
   op <| FrmCat.of α
 #align Locale.of Locale.of
@@ -51,15 +53,14 @@ end Locale
 
 /-- The forgetful functor from `Top` to `Locale` which forgets that the space has "enough points".
 -/
-@[simps]
+@[simps!]
 def topToLocale : TopCat ⥤ Locale :=
   topCatOpToFrameCat.rightOp
 #align Top_to_Locale topToLocale
 
--- Note, `CompHaus` is too strong. We only need `t0_space`.
+-- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) :=
-  ⟨fun X Y f g h => by
+  ⟨fun h => by
     dsimp at h
-    exact opens.comap_injective (Quiver.Hom.op_inj h)⟩
+    exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
 #align CompHaus_to_Locale.faithful CompHausToLocale.faithful
-
