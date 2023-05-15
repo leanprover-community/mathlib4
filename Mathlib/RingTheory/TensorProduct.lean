@@ -1078,14 +1078,8 @@ theorem basis_repr_tmul (r : R) (m : M) :
 @[simp]
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  simp [Basis, Equiv.uniqueProd_symm_apply, basisAux]
-  -- porting note: that line did it in Lean 3
-  suffices r • ((1 : R) ⊗ₜ[k] b i) = r ⊗ₜ[k] b i by
-    convert this
-    sorry
-  simp [smul_tmul']
-
-#align algebra.tensor_product.basis_repr_symm_apply Algebra.TensorProduct.basis_repr_symm_apply
+  rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
+  simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 end Basis
 
