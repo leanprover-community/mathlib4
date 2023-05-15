@@ -16,15 +16,17 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 This file defines first-order languages, structures, and theories in graph theory.
 
 ## Main Definitions
-* `first_order.language.graph` is the language consisting of a single relation representing
+* `FirstOrder.Language.graph` is the language consisting of a single relation representing
 adjacency.
-* `simple_graph.Structure` is the first-order structure corresponding to a given simple graph.
-* `first_order.language.Theory.simple_graph` is the theory of simple graphs.
-* `first_order.language.simple_graph_of_structure` gives the simple graph corresponding to a model
+* `SimpleGraph.structure` is the first-order structure corresponding to a given simple graph.
+* `FirstOrder.Language.Theory.simpleGraph` is the theory of simple graphs.
+* `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
 of the theory of simple graphs.
 
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 universe u v w w'
 
@@ -52,47 +54,47 @@ def adj : Language.graph.Relations 2 :=
 #align first_order.language.adj FirstOrder.Language.adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/
-def SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V :=
+def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V :=
   Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => G.Adj
 #align simple_graph.Structure SimpleGraph.structure
 
-namespace Graph
+namespace graph
 
-instance : IsRelational Language.graph :=
+instance instIsRelational : IsRelational Language.graph :=
   Language.isRelational_mk₂
+#align first_order.language.graph.first_order.language.is_relational FirstOrder.Language.graph.instIsRelational
 
-instance : Subsingleton (Language.graph.Relations n) :=
+instance instSubsingleton : Subsingleton (Language.graph.Relations n) :=
   Language.subsingleton_mk₂_relations
+#align first_order.language.graph.relations.subsingleton FirstOrder.Language.graph.instSubsingleton
 
-end Graph
+end graph
 
 /-- The theory of simple graphs. -/
 protected def Theory.simpleGraph : Language.graph.Theory :=
-  {adj.Irreflexive, adj.Symmetric}
+  {adj.irreflexive, adj.symmetric}
 #align first_order.language.Theory.simple_graph FirstOrder.Language.Theory.simpleGraph
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
       (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] :=
-  by simp [Theory.simple_graph]
+  by simp [Theory.simpleGraph]
 #align first_order.language.Theory.simple_graph_model_iff FirstOrder.Language.Theory.simpleGraph_model_iff
 
-instance simpleGraph_model (G : SimpleGraph V) : @Theory.Model _ V G.Structure Theory.simpleGraph :=
-  by
-  simp only [Theory.simple_graph_model_iff, rel_map_apply₂]
+instance simpleGraph_model (G : SimpleGraph V) :
+    @Theory.Model _ V G.structure Theory.simpleGraph := by
+  simp only [@Theory.simpleGraph_model_iff _ G.structure, relMap_apply₂]
   exact ⟨G.loopless, G.symm⟩
 #align first_order.language.simple_graph_model FirstOrder.Language.simpleGraph_model
 
 variable (V)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Any model of the theory of simple graphs represents a simple graph. -/
 @[simps]
-def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] : SimpleGraph V
-    where
+def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
+    SimpleGraph V where
   Adj x y := RelMap adj ![x, y]
   symm :=
     Relations.realize_symmetric.1
@@ -106,27 +108,27 @@ def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGrap
 variable {V}
 
 @[simp]
-theorem SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
-    @simpleGraphOfStructure V G.Structure _ = G := by
+theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
+    @simpleGraphOfStructure V G.structure _ = G := by
   ext
   rfl
 #align simple_graph.simple_graph_of_structure SimpleGraph.simpleGraphOfStructure
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
-    (simpleGraphOfStructure V).Structure = S := by
-  ext (n f xs)
-  · exact (is_relational.empty_functions n).elim f
-  · ext (n r xs)
+    (simpleGraphOfStructure V).structure = S := by
+  ext
+  case funMap n f xs =>
+    exact (IsRelational.empty_functions n).elim f
+  case RelMap n r xs =>
     rw [iff_eq_eq]
-    cases n
+    cases' n with n
     · exact r.elim
-    · cases n
+    · cases' n with n
       · exact r.elim
-      · cases n
+      · cases' n with n
         · cases r
-          change rel_map adj ![xs 0, xs 1] = _
+          change RelMap adj ![xs 0, xs 1] = _
           refine' congr rfl (funext _)
           simp [Fin.forall_fin_two]
         · exact r.elim
@@ -139,4 +141,3 @@ theorem Theory.simpleGraph_isSatisfiable : Theory.IsSatisfiable Theory.simpleGra
 end Language
 
 end FirstOrder
-
