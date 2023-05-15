@@ -25,8 +25,8 @@ This file defines the space of complete types over a first-order theory.
 ## Main Results
 * `FirstOrder.Language.Theory.CompleteType.nonempty_iff`:
   The space `T.CompleteType α` is nonempty exactly when `T` is satisfiable.
-* `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized in
-some model.
+* `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized
+in some model.
 
 ## Implementation Notes
 * Complete types are implemented as maximal consistent theories in an expanded language.
