@@ -22,13 +22,13 @@ $x_i\in X_i$ for each $i$: it is when for each $k$, the union of every
 $k$ of these subsets has at least $k$ elements.
 
 Rather than a list of finite subsets, one may consider indexed families
-`t : ι → finset α` of finite subsets with `ι` a `fintype`, and then the list
+`t : ι → Finset α` of finite subsets with `ι` a `Fintype`, and then the list
 of distinct representatives is given by an injective function `f : ι → α`
 such that `∀ i, f i ∈ t i`, called a *matching*.
-This version is formalized as `finset.all_card_le_bUnion_card_iff_exists_injective'`
+This version is formalized as `Finset.all_card_le_biUnion_card_iff_exists_injective'`
 in a separate module.
 
-The theorem can be generalized to remove the constraint that `ι` be a `fintype`.
+The theorem can be generalized to remove the constraint that `ι` be a `Fintype`.
 As observed in [Halpern1966], one may use the constrained version of the theorem
 in a compactness argument to remove this constraint.
 The formulation of compactness we use is that inverse limits of nonempty finite sets
@@ -39,10 +39,10 @@ The core of this module is constructing the inverse system: for every finite sub
 
 ## Main statements
 
-* `finset.all_card_le_bUnion_card_iff_exists_injective` is in terms of `t : ι → finset α`.
-* `fintype.all_card_le_rel_image_card_iff_exists_injective` is in terms of a relation
-  `r : α → β → Prop` such that `rel.image r {a}` is a finite set for all `a : α`.
-* `fintype.all_card_le_filter_rel_iff_exists_injective` is in terms of a relation
+* `Finset.all_card_le_biUnion_card_iff_exists_injective` is in terms of `t : ι → Finset α`.
+* `Fintype.all_card_le_rel_image_card_iff_exists_injective` is in terms of a relation
+  `r : α → β → Prop` such that `Rel.image r {a}` is a finite set for all `a : α`.
+* `Fintype.all_card_le_filter_rel_iff_exists_injective` is in terms of a relation
   `r : α → β → Prop` on finite types, with the Hall condition given in terms of
   `finset.univ.filter`.
 
@@ -60,7 +60,7 @@ open Finset
 
 universe u v
 
-/-- The set of matchings for `t` when restricted to a `finset` of `ι`. -/
+/-- The set of matchings for `t` when restricted to a `Finset` of `ι`. -/
 def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :=
   { f : ι' → α | Function.Injective f ∧ ∀ x, f x ∈ t x }
 #align hall_matchings_on hallMatchingsOn
@@ -90,7 +90,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
 #align hall_matchings_on.nonempty hallMatchingsOn.nonempty
 
 -- TODO: This takes a long time to elaborate for an unknown reason.
-/-- This is the `hall_matchings_on` sets assembled into a directed system.
+/-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
 def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (Finset ι)ᵒᵖ ⥤ Type max u v
     where
@@ -115,14 +115,14 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
 #align hall_matchings_on.finite hallMatchingsOn.finite
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
-families of finite sets `t : ι → finset α`.  It states that there is a
+families of finite sets `t : ι → Finset α`.  It states that there is a
 set of distinct representatives if and only if every union of `k` of the
 sets has at least `k` elements.
 
 Recall that `s.bUnion t` is the union of all the sets `t i` for `i ∈ s`.
 
-This theorem is bootstrapped from `finset.all_card_le_bUnion_card_iff_exists_injective'`,
-which has the additional constraint that `ι` is a `fintype`.
+This theorem is bootstrapped from `Finset.all_card_le_biUnion_card_iff_exists_injective'`,
+which has the additional constraint that `ι` is a `Fintype`.
 -/
 theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
     [DecidableEq α] (t : ι → Finset α) :
@@ -181,12 +181,12 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
 /-- This is a version of **Hall's Marriage Theorem** in terms of a relation
 between types `α` and `β` such that `α` is finite and the image of
 each `x : α` is finite (it suffices for `β` to be finite; see
-`fintype.all_card_le_filter_rel_iff_exists_injective`).  There is
+`Fintype.all_card_le_filter_rel_iff_exists_injective`).  There is
 a transversal of the relation (an injective function `α → β` whose graph is
 a subrelation of the relation) iff every subset of
 `k` terms of `α` is related to at least `k` terms of `β`.
 
-Note: if `[fintype β]`, then there exist instances for `[∀ (a : α), fintype (rel.image r {a})]`.
+Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype (Rel.image r {a})]`.
 -/
 theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
     [DecidableEq β] (r : α → β → Prop) [∀ a : α, Fintype (Rel.image r {a})] :
@@ -211,8 +211,8 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
 There is a transversal of the relation (an injective function `α → β` whose graph is a subrelation
 of the relation) iff every subset of `k` terms of `α` is related to at least `k` terms of `β`.
 
-It is like `fintype.all_card_le_rel_image_card_iff_exists_injective` but uses `finset.filter`
-rather than `rel.image`.
+It is like `Fintype.all_card_le_rel_image_card_iff_exists_injective` but uses `Finset.filter`
+rather than `Rel.image`.
 -/
 theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
     (r : α → β → Prop) [∀ a, DecidablePred (r a)] :
