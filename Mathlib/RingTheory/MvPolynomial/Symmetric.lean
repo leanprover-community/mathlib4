@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.mv_polynomial.symmetric
-! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
