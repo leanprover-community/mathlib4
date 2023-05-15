@@ -652,14 +652,12 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -983,7 +981,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
+--@[simp] porting note: simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
@@ -1031,7 +1029,7 @@ theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
     (e : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop)) : α ≃o β :=
-  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff]⟩
+  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff, e.injective.eq_iff]⟩
 #align order_iso.of_rel_iso_lt OrderIso.ofRelIsoLT
 
 @[simp]

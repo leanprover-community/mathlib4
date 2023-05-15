@@ -157,7 +157,6 @@ def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := transferNatTrans adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
-
 #align category_theory.transfer_nat_trans_self CategoryTheory.transferNatTransSelf
 
 theorem transferNatTransSelf_counit (f : L₂ ⟶ L₁) (X) :

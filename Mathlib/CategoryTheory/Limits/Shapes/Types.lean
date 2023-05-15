@@ -319,7 +319,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
 
 /-- The category of types has `Π j, f j` as the product of a type family `f : J → Type`.
 -/
-def productLimitCone {J : Type u} (F : J → Type max u v) :
+def productLimitCone {J : Type u} (F : J → TypeMax.{u, v}) :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
     { pt := ∀ j, F j
@@ -330,24 +330,20 @@ def productLimitCone {J : Type u} (F : J → Type max u v) :
 #align category_theory.limits.types.product_limit_cone CategoryTheory.Limits.Types.productLimitCone
 
 /-- The categorical product in `Type u` is the type theoretic product `Π j, F j`. -/
-noncomputable def productIso {J : Type u} (F : J → Type max u v) :
-  haveI : HasProduct F := hasLimit.{u,v} _; ∏ F ≅ ∀ j, F j :=
-  haveI : HasProduct F := hasLimit.{u,v} _; limit.isoLimitCone (productLimitCone.{u, v} F)
+noncomputable def productIso {J : Type u} (F : J → TypeMax.{u, v}) : ∏ F ≅ ∀ j, F j :=
+  limit.isoLimitCone (productLimitCone.{u, v} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
 -- porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma.
 @[simp]
-theorem productIso_hom_comp_eval {J : Type u} (F : J → Type max u v) (j : J) :
-     haveI : HasProduct F := hasLimit.{u,v} _;
+theorem productIso_hom_comp_eval {J : Type u} (F : J → TypeMax.{u, v}) (j : J) :
     ((productIso.{u, v} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type u} (F : J → Type max u v) (j : J) :
-    haveI : HasProduct F := hasLimit.{u,v} _;
+theorem productIso_inv_comp_π {J : Type u} (F : J → TypeMax.{u, v}) (j : J) :
     (productIso.{u, v} F).inv ≫ Pi.π F j = fun f => f j :=
-  haveI : HasProduct F := hasLimit.{u,v} _;
   limit.isoLimitCone_inv_π (productLimitCone.{u, v} F) ⟨j⟩
 #align category_theory.limits.types.product_iso_inv_comp_π CategoryTheory.Limits.Types.productIso_inv_comp_π
 
@@ -357,7 +353,7 @@ def coproductColimitCocone {J : Type u} (F : J → Type u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σj, F j
-      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}--{ app := fun j x => ⟨j.as, x⟩ } }
+      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}
   isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by

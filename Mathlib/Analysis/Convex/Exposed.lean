@@ -158,18 +158,18 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
       (add_le_add_iff_left (l₁ x)).1 (le_trans (add_le_add (hwB.2 x hxA) (hwC.2 y hy)) (hx w hwB.1))
 #align is_exposed.inter IsExposed.inter
 
-theorem interₛ [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
+theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | @insert C F _ hF' =>
-    rw [Finset.coe_insert, interₛ_insert]
+    rw [Finset.coe_insert, sInter_insert]
     obtain rfl | hFnemp := F.eq_empty_or_nonempty
-    · rw [Finset.coe_empty, interₛ_empty, inter_univ]
+    · rw [Finset.coe_empty, sInter_empty, inter_univ]
       exact hAF C (Finset.mem_singleton_self C)
     · exact (hAF C (Finset.mem_insert_self C F)).inter
         (hF' hFnemp fun B hB => hAF B (Finset.mem_insert_of_mem hB))
-#align is_exposed.sInter IsExposed.interₛ
+#align is_exposed.sInter IsExposed.sInter
 
 theorem inter_left (hC : IsExposed 𝕜 A C) (hCB : C ⊆ B) : IsExposed 𝕜 (A ∩ B) C := by
   rintro ⟨w, hw⟩

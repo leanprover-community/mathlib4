@@ -20,6 +20,10 @@ that tries to find a lemma which makes use of each of the local hypotheses `a, b
 
 The variant `propose : t using a, b, c` restricts to lemmas with type `t` (which may contain `_`).
 
+Note that in either variant `propose` does not look at the current goal at all.
+It is a relative of `library_search` but for *forward reasoning* (i.e. looking at the hypotheses)
+rather than backward reasoning.
+
 ```
 import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
@@ -95,6 +99,9 @@ which makes use of each of the local hypotheses `a, b, c`,
 and reports any results via trace messages.
 * `propose : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
 * `propose! using a, b, c` will also call `have` to add results to the local goal state.
+
+Note that `propose` (unlike `library_search`) does not inspect the goal at all,
+only the types of the lemmas in the `using` clause.
 
 `propose` should not be left in proofs; it is a search tool, like `library_search`.
 

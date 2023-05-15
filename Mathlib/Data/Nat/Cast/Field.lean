@@ -45,7 +45,6 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
   replace hd : (d : α) ≠ 0;
   · norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
-
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
 
 section LinearOrderedSemifield

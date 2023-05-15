@@ -214,14 +214,14 @@ theorem map_alternatingFaceMapComplex {D : Type _} [Category D] [Preadditive D] 
       rfl
 #align algebraic_topology.map_alternating_face_map_complex AlgebraicTopology.map_alternatingFaceMapComplex
 
-theorem karoubi_alternating_face_map_complex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
+theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
       P.p.app (op [n + 1]) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
   dsimp
   simp only [AlternatingFaceMapComplex.obj_d_eq, Karoubi.sum_hom, Preadditive.comp_sum,
     Karoubi.zsmul_hom, Preadditive.comp_zsmul]
   rfl
-#align algebraic_topology.karoubi_alternating_face_map_complex_d AlgebraicTopology.karoubi_alternating_face_map_complex_d
+#align algebraic_topology.karoubi_alternating_face_map_complex_d AlgebraicTopology.karoubi_alternatingFaceMapComplex_d
 
 namespace AlternatingFaceMapComplex
 

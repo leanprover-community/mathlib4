@@ -239,7 +239,7 @@ variable (β : Type)
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
-instance : ConcreteCategory (GradedObject β C) where Forget := total β C ⋙ forget C
+instance : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
 
 instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
 
