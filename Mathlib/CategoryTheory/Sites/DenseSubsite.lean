@@ -316,6 +316,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
         f.unop ≫ appHom H (homOver α (unop X)) (unop U) x
     symm
     apply sheaf_eq_amalgamation
+    -- goes off track here
     apply H.is_cover
     intro Y' f' hf'
     change unop X ⟶ ℱ.obj (op (unop _)) at x
