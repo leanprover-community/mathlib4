@@ -39,7 +39,7 @@ variable {C : Type u} [Category.{v} C]
 /-- An algebra of an endofunctor; `str` stands for "structure morphism" -/
 structure Algebra (F : C ⥤ C) where
   a : C
-  str : F.obj A ⟶ A
+  str : F.obj a ⟶ a
 #align category_theory.endofunctor.algebra CategoryTheory.Endofunctor.Algebra
 
 instance [Inhabited C] : Inhabited (Algebra (𝟭 C)) :=
