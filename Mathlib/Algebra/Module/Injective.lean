@@ -304,17 +304,15 @@ set_option linter.uppercaseLean3 false in
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
-    dsimp
-    rw [← (extensionOfMax i f).toLinearPMap.map_add]
+    -- porting note: a single simp took care of the goal before reenableeta
+    simp [← (extensionOfMax i f).toLinearPMap.map_add]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
-    dsimp
-    rw [← (extensionOfMax i f).toLinearPMap.map_smul]
-    congr 1
-    ext
-    change (z1 • z2 : R) • y = z1 • ((z2 : R) • y)
-    simp [mul_smul]
+    -- porting note: a single simp took care of the goal before reenableeta
+    simp [← (extensionOfMax i f).toLinearPMap.map_smul]
+    congr 2
+    apply mul_smul
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.ideal_to Module.Baer.ExtensionOfMaxAdjoin.idealTo
 
