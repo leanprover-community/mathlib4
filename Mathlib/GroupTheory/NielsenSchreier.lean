@@ -268,7 +268,6 @@ def endIsFree : IsFreeGroup (End (root' T)) :=
 end SpanningTree
 
 /-- Another name for the identity function `G → G`, to help type checking. -/
--- Porting note: removed private
 private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
