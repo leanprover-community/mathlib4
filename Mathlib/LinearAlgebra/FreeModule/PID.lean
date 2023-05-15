@@ -105,7 +105,8 @@ set_option synthInstance.etaExperiment true in
 theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
     x ∣ generator I ↔ I = Ideal.span {x} := by
   conv_rhs => rw [← span_singleton_generator I]
-  erw [Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated, ← mem_iff_generator_dvd]
+  rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
+    ← mem_iff_generator_dvd]
   exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
 #align dvd_generator_iff dvd_generator_iff
 
@@ -542,7 +543,7 @@ noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ide
   let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
   ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
     simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
-      (·∘·)]⟩
+      (· ∘ ·)]⟩
 #align ideal.smith_normal_form Ideal.smithNormalForm
 
 variable [Finite ι]
@@ -571,7 +572,7 @@ theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I 
     ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
       fun i ↦ by
         simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
-          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (·∘·)]⟩
+          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
 #align ideal.exists_smith_normal_form Ideal.exists_smith_normal_form
 
 set_option synthInstance.etaExperiment true in
