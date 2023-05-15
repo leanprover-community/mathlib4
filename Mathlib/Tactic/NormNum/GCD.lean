@@ -16,7 +16,7 @@ namespace Tactic
 
 namespace NormNum
 
-theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
+theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
   refine' Nat.dvd_antisymm _ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
   rw [← Int.coe_nat_dvd, ← h₃]
@@ -25,30 +25,31 @@ theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂
   · exact (Int.gcd_dvd_right _ _).mul_right _
 #align tactic.norm_num.int_gcd_helper' Tactic.NormNum.int_gcd_helper'
 
-theorem nat_gcd_helper_dvd_left (x y a : ℕ) (h : x * a = y) : Nat.gcd x y = x :=
-  Nat.gcd_eq_left ⟨a, h.symm⟩
+theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
+  Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
 #align tactic.norm_num.nat_gcd_helper_dvd_left Tactic.NormNum.nat_gcd_helper_dvd_left
 
-theorem nat_gcd_helper_dvd_right (x y a : ℕ) (h : y * a = x) : Nat.gcd x y = y :=
-  Nat.gcd_eq_right ⟨a, h.symm⟩
+theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :=
+  Nat.gcd_eq_right (Nat.dvd_of_mod_eq_zero h)
 #align tactic.norm_num.nat_gcd_helper_dvd_right Tactic.NormNum.nat_gcd_helper_dvd_right
 
-theorem nat_gcd_helper_2 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
+theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
+    (h : Nat.beq (x * a) (y * b + d) = true) : Nat.gcd x y = d := by
   rw [← Int.coe_nat_gcd];
-  apply
-    @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
-     ⟨_, hv.symm⟩)
+  apply int_gcd_helper' a (-b)
+    (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hu))
+    (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hv))
   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
-  norm_cast; rw [hx, hy, h]
+  norm_cast
+  exact Nat.eq_of_beq_eq_true h
 #align tactic.norm_num.nat_gcd_helper_2 Tactic.NormNum.nat_gcd_helper_2
 
-theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : tx + d = ty) : Nat.gcd x y = d :=
-  (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
+theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
+    (h : Nat.beq (y * b) (x * a + d) = true) : Nat.gcd x y = d :=
+  (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ hv hu h
 #align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
 
---Porting note: the `dsimp only` was not necessary in Lean3.
+-- Porting note: the `dsimp only` was not necessary in Lean3.
 theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy : x * y = n)
     (dm : d * m = n) : Nat.lcm x y = m :=
   mul_right_injective₀ d0.ne' <| by dsimp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
@@ -115,31 +116,23 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
-      have eq : Q(ℕ) := mkRawNatLit (y / x)
-      have pq : Q(Nat.mul $ex $eq = $ey) := (q(Eq.refl $ey) : Expr)
-      ⟨ex, q(nat_gcd_helper_dvd_left $ex $ey $eq $pq)⟩
+      have pq : Q(Nat.mod $ey $ex = 0) := (q(@Eq.refl Nat 0) : Expr)
+      ⟨ex, q(nat_gcd_helper_dvd_left $ex $ey $pq)⟩
     else if d = y then
-      have eq : Q(ℕ) := mkRawNatLit (x / y)
-      have pq : Q(Nat.mul $ey $eq = $ex) := (q(Eq.refl $ex) : Expr)
-      ⟨ey, q(nat_gcd_helper_dvd_right $ex $ey $eq $pq)⟩
+      have pq : Q(Nat.mod $ex $ey = 0) := (q(@Eq.refl Nat 0) : Expr)
+      ⟨ey, q(nat_gcd_helper_dvd_right $ex $ey $pq)⟩
     else
       have ed : Q(ℕ) := mkRawNatLit d
-      have eu : Q(ℕ) := mkRawNatLit (x / d)
-      have ev : Q(ℕ) := mkRawNatLit (y / d)
-      have pu : Q(Nat.mul $ed $eu = $ex) := (q(Eq.refl $ex) : Expr)
-      have pv : Q(Nat.mul $ed $ev = $ey) := (q(Eq.refl $ey) : Expr)
+      have pu : Q(Nat.mod $ex $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+      have pv : Q(Nat.mod $ey $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
       have ea' : Q(ℕ) := mkRawNatLit a.natAbs
       have eb' : Q(ℕ) := mkRawNatLit b.natAbs
-      have etx : Q(ℕ) := mkRawNatLit (x * a.natAbs)
-      have ety : Q(ℕ) := mkRawNatLit (y * b.natAbs)
-      have px : Q(Nat.mul $ex $ea' = $etx) := (q(Eq.refl $etx) : Expr)
-      have py : Q(Nat.mul $ey $eb' = $ety) := (q(Eq.refl $ety) : Expr)
       if a ≥ 0 then
-        have pt : Q(Nat.add $ety $ed = $etx) := (q(Eq.refl $etx) : Expr)
-        ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $eu $ev $etx $ety $pu $pv $px $py $pt)⟩
+        have pt : Q(Nat.beq ($ex * $ea') ($ey * $eb' + $ed) = true) := (q(Eq.refl true) : Expr)
+        ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
       else
-        have pt : Q(Nat.add $etx $ed = $ety) := (q(Eq.refl $ety) : Expr)
-        ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $eu $ev $etx $ety $pu $pv $px $py $pt)⟩
+        have pt : Q(Nat.beq ($ey * $eb') ($ex * $ea' + $ed) = true) := (q(Eq.refl true) : Expr)
+        ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
 #align tactic.norm_num.prove_gcd_nat Tactic.NormNum.proveNatGCD
 
 @[norm_num Nat.gcd _ _]
