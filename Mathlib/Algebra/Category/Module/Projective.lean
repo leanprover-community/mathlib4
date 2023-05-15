@@ -12,6 +12,7 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 # The category of `R`-modules has enough projectives.
@@ -26,8 +27,6 @@ open CategoryTheory.Limits
 open LinearMap
 
 open ModuleCat
-
-open Module
 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
