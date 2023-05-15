@@ -67,9 +67,10 @@ theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
   rw [← h2] at nk
   exact nk <| minFac_prime h.one_lt.ne'
 
-theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ n % k = 0)
+theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
   refine minFacHelper_1 e h λ h2 ↦ ?_
+  have nk := Nat.ne_of_beq_eq_false nk
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
 
@@ -139,10 +140,11 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
 
 open NormNum
 
-/-- Produce a proof that `n` is not prime from a factor `1 < d < n`. -/
-def deriveNotPrime (n d : ℕ) : MetaM <| Q(¬ Nat.Prime $n) := do
+/-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
+  that is the natural number literal `n`. -/
+def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| do
   let d' : ℕ := n / d
-  let prf : Q($d * $d' = $n) := (q(Eq.refl $n) : Expr)
+  let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
   let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
   let r' : Q(Nat.ble $d' 1 = false) := (q(Eq.refl false) : Expr)
   return q(Nat.not_prime_mul' $prf (isNat_lt_true (.raw_refl _) (.raw_refl _) $r)
@@ -155,34 +157,31 @@ def deriveNotPrime (n d : ℕ) : MetaM <| Q(¬ Nat.Prime $n) := do
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
-  let rec aux (k : ℕ) (prf : Q(MinFacHelper $nn $k)) :
-    MetaM <| (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) := do
-    -- remark: `deriveBool q($nn < $k * $k)` is 2x slower than the following test.
+  let rec aux (k : ℕ) (prf : Expr) :
+    (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) := Id.run do
+    have ek : Q(ℕ) := mkRawNatLit k
+    let prf : Q(MinFacHelper $nn $ek) := prf
+    -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
     if n' < k * k then
-      let r : Q(Nat.ble ($k * $k) $nn = false) := (q(Eq.refl false) : Expr)
+      let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
       return ⟨nn, q(isNat_minFac_4 $pn $prf (isNat_lt_true (.raw_refl _) (.raw_refl _) $r))⟩
     -- the following branch is not necessary for the correctness, but makes the algorithm 2x faster
     let d : ℕ := k.minFac
     if d < k then
-      let k' : ℕ := k + 2
-      let pk' : Q($k + 2 = $k') := (q(Eq.refl $k') : Expr)
-      let pd ← deriveNotPrime k d
-      have prf' : Q(MinFacHelper $nn $k') := q(minFacHelper_2 $pk' $pd $prf)
+      have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+      let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+      let pd := deriveNotPrime k d ek
+      have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_2 $pk' $pd $prf)
       return ← aux (k + 2) prf'
-    -- remark: `deriveBool q($nn % $k = 0)` is 5x slower than the following test
+    -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
     if n' % k = 0 then
-      let r : Q($nn % $k = 0) := (q(Eq.refl 0) : Expr)
-      let r' : Q(IsNat (minFac $n) $k) := q(isNat_minFac_3 $pn (.raw_refl _) $prf $r)
-      -- note: `q($k)` produces a `NatCast` expression, but we want a natural number literal here.
-      return ⟨mkRawNatLit k, r'⟩
-    let some (i : Q(@CharZero ℕ $sℕ)) ← inferCharZeroOfAddMonoidWithOne? | failure
-    let r : Q(Nat.beq ($nn % $k) 0 = false) := (q(Eq.refl false) : Expr)
-    let pq : Q(¬ $nn % $k = 0) :=
-    -- for some reason giving `instAddMonoidWithOneNat` explicitly is necessary.
-      q(@isNat_eq_false _ instAddMonoidWithOneNat $i _ _ _ _ (.raw_refl _) (.raw_refl _) $r)
-    let k' : ℕ := k + 2
-    let pk' : Q($k + 2 = $k') := (q(Eq.refl $k') : Expr)
-    have prf' : Q(MinFacHelper $nn $k') := q(minFacHelper_3 $pk' $pq $prf)
+      let r : Q($nn % $ek = 0) := (q(Eq.refl 0) : Expr)
+      let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 $pn (.raw_refl _) $prf $r)
+      return ⟨ek, r'⟩
+    let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+    have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+    let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+    have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_3 $pk' $r $prf)
     aux (k + 2) prf'
   let rec core : MetaM (Result (q(Nat.minFac $n) : Q(ℕ))) := do
     let ⟨bp, pp⟩ ← deriveBool q($nn = 1)
@@ -193,7 +192,7 @@ def deriveNotPrime (n d : ℕ) : MetaM <| Q(¬ Nat.Prime $n) := do
     match bq with
     | true  => return .isNat sℕ q(2) (q(isNat_minFac_2 $pn $pq) : Q(IsNat (minFac $n) 2))
     | false =>
-    let ⟨c, pc⟩ ← aux 3 q(minFacHelper_0 $nn $pp $pq)
+    let ⟨c, pc⟩ := aux 3 q(minFacHelper_0 $nn $pp $pq)
     return .isNat sℕ c pc
   core
 
@@ -211,41 +210,11 @@ def deriveNotPrime (n d : ℕ) : MetaM <| Q(¬ Nat.Prime $n) := do
       return .isFalse q(not_prime_of_lt_two (isNat_lt_true $pn (.raw_refl _) $r))
     let d := n'.minFac
     if d < n' then
-      let prf : Q(¬ Nat.Prime $nn) ← deriveNotPrime n' d
+      let prf : Q(¬ Nat.Prime $nn) := deriveNotPrime n' d nn
       return .isFalse q(isNat.natElim $pn $prf)
     let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
     let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
     return .isTrue q(Nat.prime_def_minFac.mpr ⟨isNat_le_true (.raw_refl _) $pn $r, $p2n⟩)
   core
-
-/-- The `norm_num` extension which identifies expressions of the form `a ∧ b`,
-such that `norm_num` successfully recognises `a` and `b`. -/
-@[norm_num _ ∧ _] def evalAnd : NormNumExt where eval {u α} e := do
-  let .app (.app (.const ``And _) (p : Q($α))) (q : Q($α)) ← whnfR e | failure
-  guard <| ← withNewMCtxDepth <| isDefEq α q(Prop)
-  have p : Q(Prop) := p; have q : Q(Prop) := q
-  let ⟨bp, pp⟩ ← deriveBool p
-  match bp with
-  | false => return .isFalse (q(not_and_of_not_left $q $pp) : Q(¬($p ∧ $q)))
-  | true =>
-    let ⟨bq, pq⟩ ← deriveBool q
-    match bq with
-    | false => return .isFalse (q(not_and_of_not_right $p $pq) : Q(¬($p ∧ $q)))
-    | true  => return .isTrue (q(⟨$pp, $pq⟩) : Q($p ∧ $q))
-
-/-- The `norm_num` extension which identifies expressions of the form `a ∨ b`,
-such that `norm_num` successfully recognises `a` and `b`. -/
-@[norm_num _ ∨ _] def evalOr : NormNumExt where eval {u α} e := do
-  let .app (.app (.const ``Or _) (p : Q($α))) (q : Q($α)) ← whnfR e | failure
-  guard <| ← withNewMCtxDepth <| isDefEq α q(Prop)
-  have p : Q(Prop) := p; have q : Q(Prop) := q
-  let ⟨bp, pp⟩ ← deriveBool p
-  match bp with
-  | true  => return .isTrue (q(Or.inl $pp) : Q($p ∨ $q))
-  | false =>
-    let ⟨bq, pq⟩ ← deriveBool q
-    match bq with
-    | true  => return .isTrue (q(Or.inr $pq) : Q($p ∨ $q))
-    | false => return .isFalse (q(not_or_of_not $pp $pq) : Q(¬($p ∨ $q)))
 
 end Mathlib.Meta.NormNum

@@ -2,9 +2,14 @@ import Mathlib.Data.Nat.NormNum
 
 /-! # Testing extensions of `norm_num` -/
 
--- set_option profiler true
--- set_option trace.profiler true
+set_option profiler true
+set_option trace.profiler true
 -- set_option trace.Tactic.norm_num true
+
+set_option maxRecDepth 8000 in
+example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
+set_option maxRecDepth 20000 in
+example : Nat.Prime (2 ^ 28 - 57) := by norm_num1
 
 example : ¬ Nat.Prime 0 := by norm_num
 example : ¬ Nat.Prime 1 := by norm_num
