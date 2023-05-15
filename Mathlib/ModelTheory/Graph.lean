@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.ModelTheory.Satisfiability
-import Mathbin.Combinatorics.SimpleGraph.Basic
+import Mathlib.ModelTheory.Satisfiability
+import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # First-Ordered Structures in Graph Theory
@@ -107,8 +107,7 @@ variable {V}
 
 @[simp]
 theorem SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
-    @simpleGraphOfStructure V G.Structure _ = G :=
-  by
+    @simpleGraphOfStructure V G.Structure _ = G := by
   ext
   rfl
 #align simple_graph.simple_graph_of_structure SimpleGraph.simpleGraphOfStructure
@@ -116,8 +115,7 @@ theorem SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
-    (simpleGraphOfStructure V).Structure = S :=
-  by
+    (simpleGraphOfStructure V).Structure = S := by
   ext (n f xs)
   · exact (is_relational.empty_functions n).elim f
   · ext (n r xs)
