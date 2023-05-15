@@ -8,7 +8,7 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.ModelTheory.Satisfiability
+import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Type Spaces
@@ -91,10 +91,8 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
 #align first_order.language.Theory.complete_type.mem_of_models FirstOrder.Language.Theory.CompleteType.mem_of_models
 
 theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.Not ∈ p ↔ ¬φ ∈ p :=
-  ⟨fun hf ht =>
-    by
-    have h : ¬is_satisfiable ({φ, φ.not} : L[[α]].Theory) :=
-      by
+  ⟨fun hf ht => by
+    have h : ¬is_satisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
       simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
@@ -111,8 +109,7 @@ theorem compl_setOf_mem {φ : L[[α]].Sentence} :
 
 theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = ∅ ↔
-      ¬((L.lhomWithConstants α).onTheory T ∪ S).IsSatisfiable :=
-  by
+      ¬((L.lhomWithConstants α).onTheory T ∪ S).IsSatisfiable := by
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
   refine'
     ⟨fun h =>
@@ -126,8 +123,7 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
-    { p : T.CompleteType α | φ ∈ p } = univ ↔ (L.lhomWithConstants α).onTheory T ⊨ φ :=
-  by
+    { p : T.CompleteType α | φ ∈ p } = univ ↔ (L.lhomWithConstants α).onTheory T ⊨ φ := by
   rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_set_of_mem, ← set_of_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.set_of_mem_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_mem_eq_univ_iff
@@ -135,10 +131,8 @@ theorem setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = univ ↔
-      ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ φ :=
-  by
-  have h : { p : T.complete_type α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) :=
-    by
+      ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ φ := by
+  have h : { p : T.complete_type α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) := by
     ext
     simp [subset_def]
   simp_rw [h, sInter_eq_univ, ← set_of_mem_eq_univ_iff]
@@ -147,8 +141,7 @@ theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
   exact h _ h1
 #align first_order.language.Theory.complete_type.set_of_subset_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_univ_iff
 
-theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable :=
-  by
+theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← is_satisfiable_on_Theory_iff (Lhom_with_constants_injective L α)]
   rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne.def, not_iff_comm, ←
     union_empty ((L.Lhom_with_constants α).onTheory T), ← set_of_subset_eq_empty_iff]
@@ -159,15 +152,13 @@ instance : Nonempty (CompleteType ∅ α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
 
 theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) = { p | (⋃ i : ι, S i) ⊆ p } :=
-  by
+    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) = { p | (⋃ i : ι, S i) ⊆ p } := by
   ext
   simp only [mem_Inter, mem_set_of_eq, Union_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset
 
 theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentence} :
-    t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p :=
-  by
+    t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
   simp_rw [subset_def, ← SetLike.mem_coe, p.is_maximal.mem_iff_models, models_sentence_iff,
     sentence.realize, formula.realize, bounded_formula.realize_foldr_inf, Finset.mem_toList]
   exact ⟨fun h φ hφ M => h _ _ hφ, fun h M φ hφ => h _ hφ _⟩
@@ -213,8 +204,7 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
 #align first_order.language.Theory.realized_types FirstOrder.Language.Theory.realizedTypes
 
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
-    ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α :=
-  by
+    ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.is_maximal.1
   refine' ⟨(M.subtheory_Model p.subset).reduct (L.Lhom_with_constants α), fun a => (L.con a : M), _⟩
   refine' SetLike.ext fun φ => _
