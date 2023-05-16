@@ -447,13 +447,11 @@ section ModByMonic
 
 variable {q : R[X]}
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
 theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
 #align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
 @[simp]
 theorem ker_modByMonicHom (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
@@ -549,8 +547,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
 set_option linter.uppercaseLean3 false in
 #align ideal.mem_map_C_iff Ideal.mem_map_C_iff
 
-
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
     LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
   ext
