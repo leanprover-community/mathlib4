@@ -1230,7 +1230,7 @@ def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) 
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
     -- Porting note: was `C.nonneg_total (b - a)`
     le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
-    decidable_le := fun a b => C.nonnegDecidable _ }
+    decidableLE := fun a b => C.nonnegDecidable _ }
 #align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
 
 end LinearOrderedAddCommGroup

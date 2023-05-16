@@ -62,7 +62,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   obtain ⟨g, gcombo, gsum, gpos⟩ := exists_nontrivial_relation_sum_zero_of_not_affine_ind h
   replace gpos := exists_pos_of_sum_zero_of_exists_nonzero g gsum gpos
   clear h
-  let s := @Finset.filter _ (fun z => 0 < g z) (fun _ => LinearOrder.decidable_lt _ _) t
+  let s := @Finset.filter _ (fun z => 0 < g z) (fun _ => LinearOrder.decidableLT _ _) t
   obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i := by
     apply s.exists_min_image fun z => f z / g z
     obtain ⟨x, hx, hgx⟩ : ∃ x ∈ t, 0 < g x := gpos
