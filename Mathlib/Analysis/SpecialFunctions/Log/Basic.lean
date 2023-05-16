@@ -8,8 +8,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Exp
-import Mathbin.Data.Nat.Factorization.Basic
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Real logarithm
@@ -49,8 +49,7 @@ theorem log_of_ne_zero (hx : x ≠ 0) : log x = expOrderIso.symm ⟨|x|, abs_pos
   dif_neg hx
 #align real.log_of_ne_zero Real.log_of_ne_zero
 
-theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ :=
-  by
+theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
   rw [log_of_ne_zero hx.ne']
   congr
   exact abs_of_pos hx
@@ -60,20 +59,17 @@ theorem exp_log_eq_abs (hx : x ≠ 0) : exp (log x) = |x| := by
   rw [log_of_ne_zero hx, ← coe_exp_order_iso_apply, OrderIso.apply_symm_apply, Subtype.coe_mk]
 #align real.exp_log_eq_abs Real.exp_log_eq_abs
 
-theorem exp_log (hx : 0 < x) : exp (log x) = x :=
-  by
+theorem exp_log (hx : 0 < x) : exp (log x) = x := by
   rw [exp_log_eq_abs hx.ne']
   exact abs_of_pos hx
 #align real.exp_log Real.exp_log
 
-theorem exp_log_of_neg (hx : x < 0) : exp (log x) = -x :=
-  by
+theorem exp_log_of_neg (hx : x < 0) : exp (log x) = -x := by
   rw [exp_log_eq_abs (ne_of_lt hx)]
   exact abs_of_neg hx
 #align real.exp_log_of_neg Real.exp_log_of_neg
 
-theorem le_exp_log (x : ℝ) : x ≤ exp (log x) :=
-  by
+theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
   by_cases h_zero : x = 0
   · rw [h_zero, log, dif_pos rfl, exp_zero]
     exact zero_le_one
@@ -108,8 +104,7 @@ theorem log_one : log 1 = 0 :=
 #align real.log_one Real.log_one
 
 @[simp]
-theorem log_abs (x : ℝ) : log (|x|) = log x :=
-  by
+theorem log_abs (x : ℝ) : log (|x|) = log x := by
   by_cases h : x = 0
   · simp [h]
   · rw [← exp_eq_exp, exp_log_eq_abs h, exp_log_eq_abs (abs_pos.2 h).ne', abs_abs]
@@ -142,8 +137,7 @@ theorem log_div (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y :=
 #align real.log_div Real.log_div
 
 @[simp]
-theorem log_inv (x : ℝ) : log x⁻¹ = -log x :=
-  by
+theorem log_inv (x : ℝ) : log x⁻¹ = -log x := by
   by_cases hx : x = 0; · simp [hx]
   rw [← exp_eq_exp, exp_log_eq_abs (inv_ne_zero hx), exp_neg, exp_log_eq_abs hx, abs_inv]
 #align real.log_inv Real.log_inv
@@ -152,8 +146,7 @@ theorem log_le_log (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := b
   rw [← exp_le_exp, exp_log h, exp_log h₁]
 #align real.log_le_log Real.log_le_log
 
-theorem log_lt_log (hx : 0 < x) : x < y → log x < log y :=
-  by
+theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
   intro h
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
@@ -174,8 +167,7 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 #align real.lt_log_iff_exp_lt Real.lt_log_iff_exp_lt
 
-theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x :=
-  by
+theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 #align real.log_pos_iff Real.log_pos_iff
@@ -184,8 +176,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
   (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
 #align real.log_pos Real.log_pos
 
-theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 :=
-  by
+theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 := by
   rw [← log_one]
   exact log_lt_log_iff h zero_lt_one
 #align real.log_neg_iff Real.log_neg_iff
@@ -204,8 +195,7 @@ theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
 theorem log_nonpos_iff (hx : 0 < x) : log x ≤ 0 ↔ x ≤ 1 := by rw [← not_lt, log_pos_iff hx, not_lt]
 #align real.log_nonpos_iff Real.log_nonpos_iff
 
-theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 :=
-  by
+theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [le_refl, zero_le_one]
   exact log_nonpos_iff hx
@@ -218,8 +208,7 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun x hx y hy hxy => log_lt_log hx hxy
 #align real.strict_mono_on_log Real.strictMonoOn_log
 
-theorem strictAntiOn_log : StrictAntiOn log (Set.Iio 0) :=
-  by
+theorem strictAntiOn_log : StrictAntiOn log (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
   rw [← log_abs y, ← log_abs x]
   refine' log_lt_log (abs_pos.2 hy.ne) _
@@ -239,8 +228,7 @@ theorem log_ne_zero_of_pos_of_ne_one {x : ℝ} (hx_pos : 0 < x) (hx : x ≠ 1) :
 #align real.log_ne_zero_of_pos_of_ne_one Real.log_ne_zero_of_pos_of_ne_one
 
 @[simp]
-theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 :=
-  by
+theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 := by
   constructor
   · intro h
     rcases lt_trichotomy x 0 with (x_lt_zero | rfl | x_gt_zero)
@@ -253,8 +241,7 @@ theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 :=
 #align real.log_eq_zero Real.log_eq_zero
 
 @[simp]
-theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x :=
-  by
+theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
   induction' n with n ih
   · simp
   rcases eq_or_ne x 0 with (rfl | hx)
@@ -263,29 +250,25 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x :=
 #align real.log_pow Real.log_pow
 
 @[simp]
-theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x :=
-  by
+theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   induction n
   · rw [Int.ofNat_eq_coe, zpow_ofNat, log_pow, Int.cast_ofNat]
   rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 #align real.log_zpow Real.log_zpow
 
-theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (sqrt x) = log x / 2 :=
-  by
+theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (sqrt x) = log x / 2 := by
   rw [eq_div_iff, mul_comm, ← Nat.cast_two, ← log_pow, sq_sqrt hx]
   exact two_ne_zero
 #align real.log_sqrt Real.log_sqrt
 
-theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 :=
-  by
+theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
   convert add_one_le_exp (log x)
   rw [exp_log hx]
 #align real.log_le_sub_one_of_pos Real.log_le_sub_one_of_pos
 
 /-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
-theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 :=
-  by
+theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by
   have : 0 < 1 / x := by simpa only [one_div, inv_pos] using h1
   replace := log_le_sub_one_of_pos this
   replace : log (1 / x) < 1 / x := by linarith
@@ -305,15 +288,13 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 #align real.tendsto_log_at_top Real.tendsto_log_atTop
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot :=
-  by
+theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   rw [← show _ = log from funext log_abs]
   refine' tendsto.comp _ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_at_bot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
-theorem continuousOn_log : ContinuousOn log ({0}ᶜ) :=
-  by
+theorem continuousOn_log : ContinuousOn log ({0}ᶜ) := by
   rw [continuousOn_iff_continuous_restrict, restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact exp_order_iso.symm.continuous.comp (continuous_subtype_coe.norm.subtype_mk _)
@@ -334,8 +315,7 @@ theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
 #align real.continuous_at_log Real.continuousAt_log
 
 @[simp]
-theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 :=
-  by
+theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   refine' ⟨_, continuous_at_log⟩
   rintro h rfl
   exact
@@ -346,8 +326,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 :=
 open BigOperators
 
 theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    log (∏ i in s, f i) = ∑ i in s, log (f i) :=
-  by
+    log (∏ i in s, f i) = ∑ i in s, log (f i) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp
   · rw [Finset.forall_mem_cons] at hf
@@ -371,8 +350,7 @@ theorem tendsto_pow_log_div_mul_add_atTop (a b : ℝ) (n : ℕ) (ha : a ≠ 0) :
     (by filter_upwards [eventually_gt_at_top (0 : ℝ)]with x hx using by simp [exp_log hx])
 #align real.tendsto_pow_log_div_mul_add_at_top Real.tendsto_pow_log_div_mul_add_atTop
 
-theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x => log x ^ n) =o[atTop] id :=
-  by
+theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x => log x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
   · simpa using tendsto_pow_log_div_mul_add_at_top 1 0 n one_ne_zero
   filter_upwards [eventually_ne_at_top (0 : ℝ)]with x h₁ h₂ using(h₁ h₂).elim
@@ -424,8 +402,7 @@ open Filter
 namespace Real
 
 theorem tendsto_log_comp_add_sub_log (y : ℝ) :
-    Tendsto (fun x : ℝ => log (x + y) - log x) atTop (𝓝 0) :=
-  by
+    Tendsto (fun x : ℝ => log (x + y) - log x) atTop (𝓝 0) := by
   refine' tendsto.congr' (_ : ∀ᶠ x : ℝ in at_top, log (1 + y / x) = _) _
   · refine'
       eventually.mp ((eventually_ne_at_top 0).And (eventually_gt_at_top (-y)))
