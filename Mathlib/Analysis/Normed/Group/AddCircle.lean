@@ -101,10 +101,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     ⟨0, by simp [mem_lowerBounds]⟩
   have h₂ : (abs '' { m : ℝ | (m : AddCircle (1 : ℝ)) = x }).Nonempty := ⟨|x|, ⟨x, rfl, rfl⟩⟩
   apply le_antisymm
-  · -- Split `simp only` to control the order of application
-    simp only [Real.norm_eq_abs]
-    rw [csInf_le_iff h₁ h₂]
-    simp only [le_min_iff]
+  · simp_rw [Real.norm_eq_abs, csInf_le_iff h₁ h₂, le_min_iff]
     intro b h
     refine'
       ⟨mem_lowerBounds.1 h _ ⟨fract x, _, abs_fract⟩,
@@ -158,8 +155,7 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
       exact this (-p) (neg_pos.mpr hp) hx
   clear hx
   intro p hp hx
-  -- Porting note: added type annotation
-  rcases eq_or_ne x (p / 2) with ((rfl : x = p / 2) | hx')
+  rcases eq_or_ne x (p / (2 : ℝ)) with (rfl | hx')
   · simp [abs_div, abs_two]
   suffices round (p⁻¹ * x) = 0 by simp [norm_eq, this]
   rw [round_eq_zero_iff]
@@ -215,8 +211,8 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     -- Porting note: was
     -- simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
     simp only [not_lt.mpr hε, ite_false, inter_eq_right_iff_subset]
-    rw [closedBall_eq_univ_of_half_period_le p hp (↑x : ℝ ⧸ zmultiples p) hε]
-    simp
+    rw [closedBall_eq_univ_of_half_period_le p hp (↑x : ℝ ⧸ zmultiples p) hε, preimage_univ]
+    apply subset_univ
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by
       simp [-zsmul_eq_mul, ← QuotientAddGroup.mk_zero, coe_real_preimage_closedBall_eq_iUnion,
         iUnion_inter, iUnion_ite, this, hε]
@@ -268,7 +264,7 @@ theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrde
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)
     (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_isOfFinAddOrder hu
-  replace hu : (addOrderOf u : ℝ) ≠ 0;
+  replace hu : (addOrderOf u : ℝ) ≠ 0
   · norm_cast
     exact (addOrderOf_pos_iff.mpr hu).ne'
   conv_lhs => rw [← mul_one p]
