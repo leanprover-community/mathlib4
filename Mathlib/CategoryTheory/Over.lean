@@ -330,8 +330,8 @@ namespace Under
 variable {X : T}
 
 @[ext]
-theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) : f = g :=
-  by
+theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
+    f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext

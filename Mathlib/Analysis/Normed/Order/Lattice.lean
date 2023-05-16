@@ -142,9 +142,8 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine' squeeze_zero (fun e => norm_nonneg _) this _
-  -- porting note: I wish `convert` were better at unification.
-  convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds (a := q.fst)).norm.add
-    ((continuous_snd.tendsto q).sub <| tendsto_const_nhds (a := q.snd)).norm
+  convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
+    ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
 #align normed_lattice_add_comm_group_has_continuous_inf NormedLatticeAddCommGroup.continuousInf
 
@@ -194,8 +193,7 @@ theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
 #align continuous_neg' continuous_neg'
 
 theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
-  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)}
-    by
+  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)} by
     rw [this]
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x

@@ -75,7 +75,7 @@ section instances
 variable [Ring R]
 
 -- Porting note: needs Lean4#2074
-instance : Module R R := Semiring.toModule
+local instance : Module R R := Semiring.toModule
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
@@ -83,7 +83,7 @@ instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGr
 #align ring.has_uniform_continuous_const_smul Ring.uniformContinuousConstSMul
 
 -- Porting note: needs Lean4#2074
-instance : Module Rᵐᵒᵖ R := Semiring.toOppositeModule
+local instance : Module Rᵐᵒᵖ R := Semiring.toOppositeModule
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=

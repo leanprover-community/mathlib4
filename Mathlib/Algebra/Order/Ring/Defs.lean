@@ -794,7 +794,7 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
-attribute [local instance] LinearOrderedSemiring.decidable_le LinearOrderedSemiring.decidable_lt
+attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
@@ -1013,7 +1013,7 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b c : α}
 
-attribute [local instance] LinearOrderedRing.decidable_le LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
