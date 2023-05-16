@@ -106,7 +106,6 @@ def toAffineIsometry : V →ᵃⁱ[𝕜] V₂ :=
   { f.toLinearMap.toAffineMap with norm_map := f.norm_map }
 #align linear_isometry.to_affine_isometry LinearIsometry.toAffineIsometry
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coe_toAffineIsometry : ⇑(f.toAffineIsometry : V →ᵃⁱ[𝕜] V₂) = f :=
   rfl
@@ -130,13 +129,11 @@ namespace AffineIsometry
 
 variable (f : P →ᵃⁱ[𝕜] P₂) (f₁ : P₁ →ᵃⁱ[𝕜] P₂)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem map_vadd (p : P) (v : V) : f (v +ᵥ p) = f.linearIsometry v +ᵥ f p :=
   f.toAffineMap.map_vadd p v
 #align affine_isometry.map_vadd AffineIsometry.map_vadd
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem map_vsub (p1 p2 : P) : f.linearIsometry (p1 -ᵥ p2) = f p1 -ᵥ f p2 :=
   f.toAffineMap.linearMap_vsub p1 p2
@@ -323,13 +320,11 @@ namespace AffineIsometryEquiv
 
 variable (e : P ≃ᵃⁱ[𝕜] P₂)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The underlying linear equiv of an affine isometry equiv is in fact a linear isometry equiv. -/
 protected def linearIsometryEquiv : V ≃ₗᵢ[𝕜] V₂ :=
   { e.linear with norm_map' := e.norm_map }
 #align affine_isometry_equiv.linear_isometry_equiv AffineIsometryEquiv.linearIsometryEquiv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEquiv := by
   ext
@@ -368,7 +363,6 @@ theorem coe_toAffineIsometry : ⇑e.toAffineIsometry = e :=
   rfl
 #align affine_isometry_equiv.coe_to_affine_isometry AffineIsometryEquiv.coe_toAffineIsometry
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Construct an affine isometry equivalence by verifying the relation between the map and its
 linear part at one base point. Namely, this function takes a map `e : P₁ → P₂`, a linear isometry
 equivalence `e' : V₁ ≃ᵢₗ[k] V₂`, and a point `p` such that for any other point `p'` we have
@@ -378,13 +372,11 @@ def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p : P₁) (h : ∀
   { AffineEquiv.mk' e e'.toLinearEquiv p h with norm_map := e'.norm_map }
 #align affine_isometry_equiv.mk' AffineIsometryEquiv.mk'
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coe_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) : ⇑(mk' e e' p h) = e :=
   rfl
 #align affine_isometry_equiv.coe_mk' AffineIsometryEquiv.coe_mk'
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linearIsometryEquiv_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) :
     (mk' e e' p h).linearIsometryEquiv = e' := by
@@ -396,26 +388,22 @@ end AffineIsometryEquiv
 
 namespace LinearIsometryEquiv
 
-variable (e : set_option synthInstance.etaExperiment true in V ≃ₗᵢ[𝕜] V₂)
+variable (e : V ≃ₗᵢ[𝕜] V₂)
 
-set_option synthInstance.etaExperiment true in
 /-- Reinterpret a linear isometry equiv as an affine isometry equiv. -/
 def toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂ :=
   { e.toLinearEquiv.toAffineEquiv with norm_map := e.norm_map }
 #align linear_isometry_equiv.to_affine_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv
 
-set_option synthInstance.etaExperiment true in
 -- @[simp] -- Porting note: simp-normal form is `coe_toAffineIsometryEquiv'`
 theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_to_affine_isometry_equiv LinearIsometryEquiv.coe_toAffineIsometryEquiv
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toAffineIsometryEquiv' : ⇑e.toLinearEquiv = e :=
   rfl
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
     e.toAffineIsometryEquiv.linearIsometryEquiv = e := by
@@ -423,7 +411,6 @@ theorem toAffineIsometryEquiv_linearIsometryEquiv :
   rfl
 #align linear_isometry_equiv.to_affine_isometry_equiv_linear_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv_linearIsometryEquiv
 
-set_option synthInstance.etaExperiment true in
 -- somewhat arbitrary choice of simp direction
 @[simp]
 theorem toAffineIsometryEquiv_toAffineEquiv :
@@ -431,7 +418,6 @@ theorem toAffineIsometryEquiv_toAffineEquiv :
   rfl
 #align linear_isometry_equiv.to_affine_isometry_equiv_to_affine_equiv LinearIsometryEquiv.toAffineIsometryEquiv_toAffineEquiv
 
-set_option synthInstance.etaExperiment true in
 -- somewhat arbitrary choice of simp direction
 @[simp]
 theorem toAffineIsometryEquiv_toAffineIsometry :
@@ -522,7 +508,6 @@ theorem toHomeomorph_refl : (refl 𝕜 P).toHomeomorph = Homeomorph.refl P :=
   rfl
 #align affine_isometry_equiv.to_homeomorph_refl AffineIsometryEquiv.toHomeomorph_refl
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The inverse `AffineIsometryEquiv`. -/
 def symm : P₂ ≃ᵃⁱ[𝕜] P :=
   { e.toAffineEquiv.symm with norm_map := e.linearIsometryEquiv.symm.norm_map }
@@ -624,13 +609,11 @@ theorem coe_inv (e : P ≃ᵃⁱ[𝕜] P) : ⇑e⁻¹ = e.symm :=
   rfl
 #align affine_isometry_equiv.coe_inv AffineIsometryEquiv.coe_inv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem map_vadd (p : P) (v : V) : e (v +ᵥ p) = e.linearIsometryEquiv v +ᵥ e p :=
   e.toAffineIsometry.map_vadd p v
 #align affine_isometry_equiv.map_vadd AffineIsometryEquiv.map_vadd
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem map_vsub (p1 p2 : P) : e.linearIsometryEquiv (p1 -ᵥ p2) = e p1 -ᵥ e p2 :=
   e.toAffineIsometry.map_vsub p1 p2
