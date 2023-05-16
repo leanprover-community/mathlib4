@@ -271,6 +271,10 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (i j : ι) (hi : c.prev j = i)
   subst hi
   exact ShortComplex.isIso_homologyMap_of_isIso_cyclesMap_of_epi _ h₁ h₂
 
+lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]:
+    IsZero (K.newHomology i) :=
+  ShortComplex.isZero_homology_of_isZero_X₂ _ (by exact hi)
+
 end
 
 end HomologicalComplex

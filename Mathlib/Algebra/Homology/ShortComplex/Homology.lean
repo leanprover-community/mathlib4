@@ -929,6 +929,11 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
   . rw [← cancel_epi S₂.homologyπ, reassoc_of% hz,
       homologyπ_naturality, IsIso.inv_hom_id_assoc, comp_id]
 
+lemma isZero_homology_of_isZero_X₂ (hS : IsZero S.X₂) [S.HasHomology] :
+    IsZero S.homology :=
+  IsZero.of_iso hS (HomologyData.ofZeros S (hS.eq_of_tgt _ _)
+    (hS.eq_of_src _ _)).left.homologyIso
+
 end ShortComplex
 
 end CategoryTheory
