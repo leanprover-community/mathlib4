@@ -1217,8 +1217,8 @@ theorem add_right [T2Space M] [ContinuousAdd N] (h₁ : v ⟂ᵥ w₁) (h₂ : v
   (add_left h₁.symm h₂.symm).symm
 #align measure_theory.vector_measure.mutually_singular.add_right MeasureTheory.VectorMeasure.MutuallySingular.add_right
 
-theorem smul_right {R : Type _} [Semiring R] [DistribMulAction R N] [ContinuousConstSMul R N] (r : R)
-    (h : v ⟂ᵥ w) : v ⟂ᵥ r • w :=
+theorem smul_right {R : Type _} [Semiring R] [DistribMulAction R N] [ContinuousConstSMul R N]
+    (r : R) (h : v ⟂ᵥ w) : v ⟂ᵥ r • w :=
   let ⟨s, hmeas, hs₁, hs₂⟩ := h
   ⟨s, hmeas, hs₁, fun t ht => by simp only [coe_smul, Pi.smul_apply, hs₂ t ht, smul_zero]⟩
 #align measure_theory.vector_measure.mutually_singular.smul_right MeasureTheory.VectorMeasure.MutuallySingular.smul_right
