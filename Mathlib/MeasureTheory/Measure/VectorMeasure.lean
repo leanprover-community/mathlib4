@@ -89,8 +89,8 @@ instance : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
 initialize_simps_projections VectorMeasure (measureOf' → apply)
 
 @[simp]
-theorem measure_of_eq_coe (v : VectorMeasure α M) : v.measureOf' = v := rfl
-#align measure_theory.vector_measure.measure_of_eq_coe MeasureTheory.VectorMeasure.measure_of_eq_coe
+theorem measureOf_eq_coe (v : VectorMeasure α M) : v.measureOf' = v := rfl
+#align measure_theory.vector_measure.measure_of_eq_coe MeasureTheory.VectorMeasure.measureOf_eq_coe
 
 @[simp]
 theorem empty (v : VectorMeasure α M) : v ∅ = 0 :=
@@ -822,7 +822,7 @@ variable {M : Type _} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 /-- Vector measures over a partially ordered monoid is partially ordered.
 
 This definition is consistent with `Measure.instPartialOrder`. -/
-instance : PartialOrder (VectorMeasure α M) where
+instance instPartialOrder : PartialOrder (VectorMeasure α M) where
   le v w := ∀ i, MeasurableSet i → v i ≤ w i
   le_refl v i _ := le_rfl
   le_trans u v w h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
@@ -1097,18 +1097,18 @@ theorem zero (v : VectorMeasure α N) : (0 : VectorMeasure α M) ≪ᵥ v :=
   fun s _ => VectorMeasure.zero_apply s
 #align measure_theory.vector_measure.absolutely_continuous.zero MeasureTheory.VectorMeasure.AbsolutelyContinuous.zero
 
-theorem negLeft {M : Type _} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
+theorem neg_left {M : Type _} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : -v ≪ᵥ w := by
   intro s hs
   rw [neg_apply, h hs, neg_zero]
-#align measure_theory.vector_measure.absolutely_continuous.neg_left MeasureTheory.VectorMeasure.AbsolutelyContinuous.negLeft
+#align measure_theory.vector_measure.absolutely_continuous.neg_left MeasureTheory.VectorMeasure.AbsolutelyContinuous.neg_left
 
-theorem negRight {N : Type _} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
+theorem neg_right {N : Type _} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : v ≪ᵥ -w := by
   intro s hs
   rw [neg_apply, neg_eq_zero] at hs
   exact h hs
-#align measure_theory.vector_measure.absolutely_continuous.neg_right MeasureTheory.VectorMeasure.AbsolutelyContinuous.negRight
+#align measure_theory.vector_measure.absolutely_continuous.neg_right MeasureTheory.VectorMeasure.AbsolutelyContinuous.neg_right
 
 theorem add [ContinuousAdd M] {v₁ v₂ : VectorMeasure α M} {w : VectorMeasure α N} (hv₁ : v₁ ≪ᵥ w)
     (hv₂ : v₂ ≪ᵥ w) : v₁ + v₂ ≪ᵥ w := by
@@ -1184,16 +1184,16 @@ theorem symm (h : v ⟂ᵥ w) : w ⟂ᵥ v :=
   ⟨sᶜ, hmeas.compl, hs₂, fun t ht => hs₁ _ (compl_compl s ▸ ht : t ⊆ s)⟩
 #align measure_theory.vector_measure.mutually_singular.symm MeasureTheory.VectorMeasure.MutuallySingular.symm
 
-theorem zeroRight : v ⟂ᵥ (0 : VectorMeasure α N) :=
+theorem zero_right : v ⟂ᵥ (0 : VectorMeasure α N) :=
   ⟨∅, MeasurableSet.empty, fun _ ht => (Set.subset_empty_iff.1 ht).symm ▸ v.empty,
     fun _ _ => zero_apply _⟩
-#align measure_theory.vector_measure.mutually_singular.zero_right MeasureTheory.VectorMeasure.MutuallySingular.zeroRight
+#align measure_theory.vector_measure.mutually_singular.zero_right MeasureTheory.VectorMeasure.MutuallySingular.zero_right
 
-theorem zeroLeft : (0 : VectorMeasure α M) ⟂ᵥ w :=
-  zeroRight.symm
-#align measure_theory.vector_measure.mutually_singular.zero_left MeasureTheory.VectorMeasure.MutuallySingular.zeroLeft
+theorem zero_left : (0 : VectorMeasure α M) ⟂ᵥ w :=
+  zero_right.symm
+#align measure_theory.vector_measure.mutually_singular.zero_left MeasureTheory.VectorMeasure.MutuallySingular.zero_left
 
-theorem addLeft [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v₂ ⟂ᵥ w) : v₁ + v₂ ⟂ᵥ w := by
+theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v₂ ⟂ᵥ w) : v₁ + v₂ ⟂ᵥ w := by
   obtain ⟨u, hmu, hu₁, hu₂⟩ := h₁
   obtain ⟨v, hmv, hv₁, hv₂⟩ := h₂
   refine' mk (u ∩ v) (hmu.inter hmv) (fun t ht _ => _) fun t ht hmt => _
@@ -1211,46 +1211,46 @@ theorem addLeft [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
         rcases ht hx with (hxu | hxv)
         exacts[False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
       · cases' hx with hx hx <;> exact hx.2
-#align measure_theory.vector_measure.mutually_singular.add_left MeasureTheory.VectorMeasure.MutuallySingular.addLeft
+#align measure_theory.vector_measure.mutually_singular.add_left MeasureTheory.VectorMeasure.MutuallySingular.add_left
 
-theorem addRight [T2Space M] [ContinuousAdd N] (h₁ : v ⟂ᵥ w₁) (h₂ : v ⟂ᵥ w₂) : v ⟂ᵥ w₁ + w₂ :=
-  (addLeft h₁.symm h₂.symm).symm
-#align measure_theory.vector_measure.mutually_singular.add_right MeasureTheory.VectorMeasure.MutuallySingular.addRight
+theorem add_right [T2Space M] [ContinuousAdd N] (h₁ : v ⟂ᵥ w₁) (h₂ : v ⟂ᵥ w₂) : v ⟂ᵥ w₁ + w₂ :=
+  (add_left h₁.symm h₂.symm).symm
+#align measure_theory.vector_measure.mutually_singular.add_right MeasureTheory.VectorMeasure.MutuallySingular.add_right
 
-theorem smulRight {R : Type _} [Semiring R] [DistribMulAction R N] [ContinuousConstSMul R N] (r : R)
+theorem smul_right {R : Type _} [Semiring R] [DistribMulAction R N] [ContinuousConstSMul R N] (r : R)
     (h : v ⟂ᵥ w) : v ⟂ᵥ r • w :=
   let ⟨s, hmeas, hs₁, hs₂⟩ := h
   ⟨s, hmeas, hs₁, fun t ht => by simp only [coe_smul, Pi.smul_apply, hs₂ t ht, smul_zero]⟩
-#align measure_theory.vector_measure.mutually_singular.smul_right MeasureTheory.VectorMeasure.MutuallySingular.smulRight
+#align measure_theory.vector_measure.mutually_singular.smul_right MeasureTheory.VectorMeasure.MutuallySingular.smul_right
 
-theorem smulLeft {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M] (r : R)
+theorem smul_left {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M] (r : R)
     (h : v ⟂ᵥ w) : r • v ⟂ᵥ w :=
-  (smulRight r h.symm).symm
-#align measure_theory.vector_measure.mutually_singular.smul_left MeasureTheory.VectorMeasure.MutuallySingular.smulLeft
+  (smul_right r h.symm).symm
+#align measure_theory.vector_measure.mutually_singular.smul_left MeasureTheory.VectorMeasure.MutuallySingular.smul_left
 
-theorem negLeft {M : Type _} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
+theorem neg_left {M : Type _} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ⟂ᵥ w) : -v ⟂ᵥ w := by
   obtain ⟨u, hmu, hu₁, hu₂⟩ := h
   refine' ⟨u, hmu, fun s hs => _, hu₂⟩
   rw [neg_apply v s, neg_eq_zero]
   exact hu₁ s hs
-#align measure_theory.vector_measure.mutually_singular.neg_left MeasureTheory.VectorMeasure.MutuallySingular.negLeft
+#align measure_theory.vector_measure.mutually_singular.neg_left MeasureTheory.VectorMeasure.MutuallySingular.neg_left
 
-theorem negRight {N : Type _} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
+theorem neg_right {N : Type _} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ⟂ᵥ w) : v ⟂ᵥ -w :=
-  h.symm.negLeft.symm
-#align measure_theory.vector_measure.mutually_singular.neg_right MeasureTheory.VectorMeasure.MutuallySingular.negRight
+  h.symm.neg_left.symm
+#align measure_theory.vector_measure.mutually_singular.neg_right MeasureTheory.VectorMeasure.MutuallySingular.neg_right
 
 @[simp]
 theorem neg_left_iff {M : Type _} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : -v ⟂ᵥ w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg v ▸ h.negLeft, negLeft⟩
+  ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
 #align measure_theory.vector_measure.mutually_singular.neg_left_iff MeasureTheory.VectorMeasure.MutuallySingular.neg_left_iff
 
 @[simp]
 theorem neg_right_iff {N : Type _} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : v ⟂ᵥ -w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg w ▸ h.negRight, negRight⟩
+  ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
 #align measure_theory.vector_measure.mutually_singular.neg_right_iff MeasureTheory.VectorMeasure.MutuallySingular.neg_right_iff
 
 end MutuallySingular
