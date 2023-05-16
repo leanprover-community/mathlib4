@@ -216,39 +216,29 @@ instance : AddCommMonoid (LocalizedModule S M) where
   nsmul_succ := nsmul_succ'
   add_comm := add_comm'
 
--- Porting note: prepared for `add_left_neg'`
-instance {M : Type _} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) :=
-  { show AddCommMonoid (LocalizedModule S M) by
-      infer_instance with
+instance {M : Type _} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
+  { show AddCommMonoid (LocalizedModule S M) by infer_instance with
     neg := fun p =>
       liftOn p (fun x => LocalizedModule.mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
         rw [mk_eq]
-        exact ⟨u, by simpa⟩ }
-
--- Porting note: This is stated as the separated lemma since it will be used twice.
-private theorem add_left_neg' {M : Type _} [AddCommGroup M] [Module R M]
-    (x : LocalizedModule S M) : -x + x = 0 := by
-  rcases x with ⟨m, s⟩
-  change
-    (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
-          rw [mk_eq]
-          exact ⟨u, by simpa⟩) +
-        mk m s =
-      0
-  rw [liftOn_mk, mk_add_mk]
-  simp
-
-instance {M : Type _} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
-  { show AddCommMonoid (LocalizedModule S M) by infer_instance,
-    show Neg (LocalizedModule S M) by infer_instance with
-    add_left_neg := add_left_neg' }
+        exact ⟨u, by simpa⟩
+    add_left_neg := by
+      rintro ⟨m, s⟩
+      change
+        (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
+              rw [mk_eq]
+              exact ⟨u, by simpa⟩) +
+            mk m s =
+          0
+      rw [liftOn_mk, mk_add_mk]
+      simp }
 
 theorem mk_neg {M : Type _} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-m) s = -mk m s :=
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
 set_option maxHeartbeats 400000 in
-instance toSemiring {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
+instance {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   { show (AddCommMonoid (LocalizedModule S A)) by infer_instance with
     mul := fun m₁ m₂ =>
@@ -304,12 +294,8 @@ instance {A : Type _} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
 
 instance {A : Type} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
-  { show Semiring (LocalizedModule S A) by exact toSemiring with
-    add_left_neg := add_left_neg' }
-  -- Porting note: The following does not work.
-  -- { show AddCommGroup (LocalizedModule S A) by infer_instance,
-  --   show Monoid (LocalizedModule S A) by infer_instance,
-  --   show Distrib (LocalizedModule S A) by infer_instance with }
+    { inferInstanceAs (AddCommGroup (LocalizedModule S A)),
+      inferInstanceAs (Semiring (LocalizedModule S A)) with }
 
 instance {A : Type _} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
