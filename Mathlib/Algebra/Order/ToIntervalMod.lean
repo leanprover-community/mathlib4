@@ -994,7 +994,6 @@ section LinearOrderedField
 
 variable {α : Type _} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
-set_option synthInstance.etaExperiment true in
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
@@ -1002,7 +1001,6 @@ theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   exact ⟨Int.sub_floor_div_mul_nonneg _ hp, Int.sub_floor_div_mul_lt _ hp⟩
 #align to_Ico_div_eq_floor toIcoDiv_eq_floor
 
-set_option synthInstance.etaExperiment true in
 theorem toIocDiv_eq_neg_floor (a b : α) : toIocDiv hp a b = -⌊(a + p - b) / p⌋ := by
   refine' toIocDiv_eq_of_sub_zsmul_mem_Ioc hp _
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
@@ -1013,12 +1011,10 @@ theorem toIocDiv_eq_neg_floor (a b : α) : toIocDiv hp a b = -⌊(a + p - b) / p
   exact Int.sub_floor_div_mul_lt _ hp
 #align to_Ioc_div_eq_neg_floor toIocDiv_eq_neg_floor
 
-set_option synthInstance.etaExperiment true in
 theorem toIcoDiv_zero_one (b : α) : toIcoDiv (zero_lt_one' α) 0 b = ⌊b⌋ := by
   simp [toIcoDiv_eq_floor]
 #align to_Ico_div_zero_one toIcoDiv_zero_one
 
-set_option synthInstance.etaExperiment true in
 theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
@@ -1026,12 +1022,10 @@ theorem toIcoMod_eq_add_fract_mul (a b : α) :
   ring
 #align to_Ico_mod_eq_add_fract_mul toIcoMod_eq_add_fract_mul
 
-set_option synthInstance.etaExperiment true in
 theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p := by
   simp [toIcoMod_eq_add_fract_mul]
 #align to_Ico_mod_eq_fract_mul toIcoMod_eq_fract_mul
 
-set_option synthInstance.etaExperiment true in
 theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
@@ -1039,7 +1033,6 @@ theorem toIocMod_eq_sub_fract_mul (a b : α) :
   ring
 #align to_Ioc_mod_eq_sub_fract_mul toIocMod_eq_sub_fract_mul
 
-set_option synthInstance.etaExperiment true in
 theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract b := by
   simp [toIcoMod_eq_add_fract_mul]
 #align to_Ico_mod_zero_one toIcoMod_zero_one
@@ -1096,19 +1089,16 @@ section LinearOrderedRing
 
 variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
 
-set_option synthInstance.etaExperiment true in
 theorem iUnion_Ioc_add_int_cast : (⋃ n : ℤ, Ioc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
 #align Union_Ioc_add_int_cast iUnion_Ioc_add_int_cast
 
-set_option synthInstance.etaExperiment true in
 theorem iUnion_Ico_add_int_cast : (⋃ n : ℤ, Ico (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
 #align Union_Ico_add_int_cast iUnion_Ico_add_int_cast
 
-set_option synthInstance.etaExperiment true in
 theorem iUnion_Icc_add_int_cast : (⋃ n : ℤ, Icc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a

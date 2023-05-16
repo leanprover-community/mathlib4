@@ -155,8 +155,6 @@ variable [CommRing A] [CommRing B] [CommRing C]
 
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
--- Porting note: failed to synthesize Noetherian instance on submodule
-set_option synthInstance.etaExperiment true in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.

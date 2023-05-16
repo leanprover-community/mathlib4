@@ -346,19 +346,12 @@ section FloorRing
 
 variable [FloorRing 𝕜]
 
--- Porting note: fails to find `Archimedean 𝕜`
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-/- Porting note: without `etaExperiment`, fails to find `Archimedean 𝕜`. With `etaExperiment`,
-needs extra heartbeats to find `Zero ℤ`, see Lean4 PR #2210. -/
-set_option synthInstance.etaExperiment true in
-set_option synthInstance.maxHeartbeats 100000 in
-set_option maxHeartbeats 600000 in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -676,4 +669,3 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
-#lint
