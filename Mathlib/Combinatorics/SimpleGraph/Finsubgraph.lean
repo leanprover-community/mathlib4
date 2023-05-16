@@ -54,7 +54,6 @@ abbrev FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=
   G'.val.coe →g F
 #align simple_graph.finsubgraph_hom SimpleGraph.FinsubgraphHom
 
--- mathport name: «expr →fg »
 local infixl:50 " →fg " => FinsubgraphHom
 
 instance : OrderBot G.Finsubgraph where
@@ -135,7 +134,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)
   refine' ⟨⟨fun v => _, _⟩⟩
-  ·-- Map each vertex using the homomorphism provided for its singleton subgraph.
+  · -- Map each vertex using the homomorphism provided for its singleton subgraph.
     exact
       (u (Opposite.op (singletonFinsubgraph v))).toFun
         ⟨v, by
