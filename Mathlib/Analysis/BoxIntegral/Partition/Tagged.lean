@@ -325,7 +325,7 @@ theorem isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock_single_iff BoxIntegral.TaggedPrepartition.isHenstock_single_iff
 
-@[simp]
+--@[simp] -- Porting note: Commented out, because `simp only [isHenstock_single_iff]` simplifies it
 theorem isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
   (isHenstock_single_iff (le_refl I) h).2 h
 set_option linter.uppercaseLean3 false in
