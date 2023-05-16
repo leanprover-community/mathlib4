@@ -45,7 +45,7 @@ namespace Configuration
 variable (P L : Type _) [Membership P L]
 
 /-- A type synonym. -/
-def Dual (P : Type _):=
+def Dual :=
   P
 #align configuration.dual Configuration.Dual
 
@@ -95,7 +95,7 @@ open HasPoints (mkPoint mkPoint_ax)
 
 open HasLines (mkLine mkLine_ax)
 
-instance [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
+instance Dual.Nondegenerate [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
   exists_point := @exists_line P L _ _
   exists_line := @exists_point P L _ _
   eq_or_eq := @fun l₁ l₂ p₁ p₂ h₁ h₂ h₃ h₄ => (@eq_or_eq P L _ _ p₁ p₂ l₁ l₂ h₁ h₃ h₂ h₄).symm
@@ -103,12 +103,12 @@ instance [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
 instance [HasPoints P L] : HasLines (Dual L) (Dual P) :=
   { Dual.Nondegenerate _ _ with
     mkLine := @mkPoint P L _ _
-    mkLine_ax := fun _ _ => mkPoint_ax }
+    mkLine_ax := @mkPoint_ax P L _ _ }
 
 instance [HasLines P L] : HasPoints (Dual L) (Dual P) :=
-  { Dual.nondegenerate _ _ with
+  { Dual.Nondegenerate _ _ with
     mkPoint := @mkLine P L _ _
-    mkPoint_ax := fun _ _ => mkLine_ax }
+    mkPoint_ax := @mkLine_ax P L _ _ }
 
 theorem HasPoints.existsUnique_point [HasPoints P L] (l₁ l₂ : L) (hl : l₁ ≠ l₂) :
     ∃! p, p ∈ l₁ ∧ p ∈ l₂ :=
