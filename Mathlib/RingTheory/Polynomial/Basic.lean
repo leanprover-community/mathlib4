@@ -730,7 +730,7 @@ set_option linter.uppercaseLean3 false in
 #align ideal.is_prime_map_C_of_is_prime Ideal.isPrime_map_C_of_isPrime
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
-    Submodule.Fg (I.degreeLE n) :=
+    Submodule.FG (I.degreeLE n) :=
   isNoetherian_submodule_left.1
     -- porting note: times out without explicit `R`.
     (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow (R := R)).symm⟩) _
