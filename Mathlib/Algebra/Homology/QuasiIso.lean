@@ -114,10 +114,10 @@ noncomputable def toSingle₀CokernelAtZeroIso : cokernel (X.d 1 0) ≅ Y :=
 theorem toSingle₀CokernelAtZeroIso_hom_eq [hf : QuasiIso f] :
     f.toSingle₀CokernelAtZeroIso.hom =
       cokernel.desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl]; exact comp_zero) := by
-  ext
+  apply coequalizer.hom_ext
   dsimp only [toSingle₀CokernelAtZeroIso, ChainComplex.homologyZeroIso, homologyOfZeroRight,
     homology.mapIso, ChainComplex.homologyFunctor0Single₀, cokernel.map]
-  dsimp
+  dsimp [asIso]
   simp only [cokernel.π_desc, Category.assoc, homology.map_desc, cokernel.π_desc_assoc]
   simp [homology.desc, Iso.refl_inv (X.X 0)]
 #align homological_complex.hom.to_single₀_cokernel_at_zero_iso_hom_eq HomologicalComplex.Hom.toSingle₀CokernelAtZeroIso_hom_eq
@@ -163,13 +163,13 @@ noncomputable def fromSingle₀KernelAtZeroIso [hf : QuasiIso f] : kernel (X.d 0
 
 theorem fromSingle₀KernelAtZeroIso_inv_eq [hf : QuasiIso f] :
     f.fromSingle₀KernelAtZeroIso.inv =
-      kernel.lift (X.d 0 1) (f.f 0) (by rw [f.2 0 1 rfl] <;> exact zero_comp) := by
-  ext
+      kernel.lift (X.d 0 1) (f.f 0) (by rw [f.2 0 1 rfl]; exact zero_comp) := by
+  apply equalizer.hom_ext
   dsimp only [fromSingle₀KernelAtZeroIso, CochainComplex.homologyZeroIso, homologyOfZeroLeft,
     homology.mapIso, CochainComplex.homologyFunctor0Single₀, kernel.map]
   simp only [Iso.trans_inv, Iso.app_inv, Iso.symm_inv, Category.assoc, equalizer_as_kernel,
     kernel.lift_ι]
-  dsimp
+  dsimp [asIso]
   simp only [Category.assoc, homology.π_map, cokernelZeroIsoTarget_hom,
     cokernelIsoOfEq_hom_comp_desc, kernelSubobject_arrow, homology.π_map_assoc, IsIso.inv_comp_eq]
   simp [homology.π, kernelSubobjectMap_comp, Iso.refl_hom (X.X 0), Category.comp_id]
