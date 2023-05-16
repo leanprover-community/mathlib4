@@ -174,6 +174,7 @@ import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
