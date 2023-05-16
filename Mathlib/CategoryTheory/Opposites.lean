@@ -190,6 +190,8 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ
   map := @fun X Y f => (F.map f.unop).op
 #align category_theory.functor.op CategoryTheory.Functor.op
 
+pp_extended_field_notation op
+
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/

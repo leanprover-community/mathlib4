@@ -226,7 +226,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := hD }
+    decidableLE := hD }
 set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 

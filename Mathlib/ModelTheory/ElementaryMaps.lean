@@ -415,7 +415,7 @@ theorem isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).I
   S.is_elementary'
 #align first_order.language.elementary_substructure.is_elementary FirstOrder.Language.ElementarySubstructure.isElementary
 
-/-- The natural embedding of an `L.substructure` of `M` into `M`. -/
+/-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
 def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   toFun := (↑)
   map_formula' := S.isElementary

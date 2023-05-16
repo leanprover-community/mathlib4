@@ -15,12 +15,11 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 In this file we define `μ - ν` to be the least measure `τ` such that `μ ≤ τ + ν`.
 It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
-Compare with `ENNReal.hasSub`.
+Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`.
 -/
-
 
 open Set
 
@@ -30,13 +29,13 @@ namespace Measure
 
 /-- The measure `μ - ν` is defined to be the least measure `τ` such that `μ ≤ τ + ν`.
 It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
-Compare with `ENNReal.hasSub`.
+Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
-noncomputable instance hasSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
+noncomputable instance instSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
-#align measure_theory.measure.has_sub MeasureTheory.Measure.hasSub
+#align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
 variable {α : Type _} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
@@ -90,9 +89,9 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
   have h_measure_sub_eq : μ - ν = measure_sub := by
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
-    · apply @sInf_le (Measure α) Measure.instCompleteSemilatticeInf
+    · apply sInf_le
       simp [le_refl, add_comm, h_measure_sub_add]
-    apply @le_sInf (Measure α) Measure.instCompleteSemilatticeInf
+    apply le_sInf
     intro d h_d
     rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d
     apply Measure.le_of_add_le_add_left h_d

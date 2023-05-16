@@ -47,7 +47,6 @@ These definitions are for sums over a `Finset`; versions for a
 -/
 
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 noncomputable section
 
