@@ -165,7 +165,6 @@ theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M �
   f.bijective_or_eq_zero.resolve_right h
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
--- Porting note: cannot coerce to function
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
