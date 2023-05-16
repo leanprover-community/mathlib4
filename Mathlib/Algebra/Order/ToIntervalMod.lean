@@ -793,7 +793,7 @@ end Zero
 
 /-- `toIcoMod` as an equiv from the quotient. -/
 @[simps symm_apply]
-def quotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ico a (a + p) where
+def QuotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ico a (a + p) where
   toFun b :=
     ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIcoMod_mem_Ico hp a⟩
   invFun := (↑)
@@ -803,23 +803,23 @@ def quotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ 
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIcoMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
-#align quotient_add_group.equiv_Ico_mod quotientAddGroup.equivIcoMod
+#align quotient_add_group.equiv_Ico_mod QuotientAddGroup.equivIcoMod
 
 @[simp]
-theorem quotientAddGroup.equivIcoMod_coe (a b : α) :
-    quotientAddGroup.equivIcoMod hp a ↑b = ⟨toIcoMod hp a b, toIcoMod_mem_Ico hp a _⟩ :=
+theorem QuotientAddGroup.equivIcoMod_coe (a b : α) :
+    QuotientAddGroup.equivIcoMod hp a ↑b = ⟨toIcoMod hp a b, toIcoMod_mem_Ico hp a _⟩ :=
   rfl
-#align quotient_add_group.equiv_Ico_mod_coe quotientAddGroup.equivIcoMod_coe
+#align quotient_add_group.equiv_Ico_mod_coe QuotientAddGroup.equivIcoMod_coe
 
 @[simp]
-theorem quotientAddGroup.equivIcoMod_zero (a : α) :
-    quotientAddGroup.equivIcoMod hp a 0 = ⟨toIcoMod hp a 0, toIcoMod_mem_Ico hp a _⟩ :=
+theorem QuotientAddGroup.equivIcoMod_zero (a : α) :
+    QuotientAddGroup.equivIcoMod hp a 0 = ⟨toIcoMod hp a 0, toIcoMod_mem_Ico hp a _⟩ :=
   rfl
-#align quotient_add_group.equiv_Ico_mod_zero quotientAddGroup.equivIcoMod_zero
+#align quotient_add_group.equiv_Ico_mod_zero QuotientAddGroup.equivIcoMod_zero
 
 /-- `toIocMod` as an equiv from the quotient. -/
 @[simps symm_apply]
-def quotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ioc a (a + p) where
+def QuotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ioc a (a + p) where
   toFun b :=
     ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIocMod_mem_Ioc hp a⟩
   invFun := (↑)
@@ -829,19 +829,19 @@ def quotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ 
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIocMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
-#align quotient_add_group.equiv_Ioc_mod quotientAddGroup.equivIocMod
+#align quotient_add_group.equiv_Ioc_mod QuotientAddGroup.equivIocMod
 
 @[simp]
-theorem quotientAddGroup.equivIocMod_coe (a b : α) :
-    quotientAddGroup.equivIocMod hp a ↑b = ⟨toIocMod hp a b, toIocMod_mem_Ioc hp a _⟩ :=
+theorem QuotientAddGroup.equivIocMod_coe (a b : α) :
+    QuotientAddGroup.equivIocMod hp a ↑b = ⟨toIocMod hp a b, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
-#align quotient_add_group.equiv_Ioc_mod_coe quotientAddGroup.equivIocMod_coe
+#align quotient_add_group.equiv_Ioc_mod_coe QuotientAddGroup.equivIocMod_coe
 
 @[simp]
-theorem quotientAddGroup.equivIocMod_zero (a : α) :
-    quotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
+theorem QuotientAddGroup.equivIocMod_zero (a : α) :
+    QuotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
-#align quotient_add_group.equiv_Ioc_mod_zero quotientAddGroup.equivIocMod_zero
+#align quotient_add_group.equiv_Ioc_mod_zero QuotientAddGroup.equivIocMod_zero
 
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
@@ -921,7 +921,7 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
   · rw [not_le] at h₁₂₃ h₂₃₄⊢
     exact (h₁₂₃.2.trans_le (toIcoMod_le_toIocMod _ x₃ x₂)).trans h₂₃₄.2
 
-namespace quotientAddGroup
+namespace QuotientAddGroup
 
 variable [hp' : Fact (0 < p)]
 
@@ -932,14 +932,14 @@ theorem btw_coe_iff' {x₁ x₂ x₃ : α} :
     Btw.btw (x₁ : α ⧸ AddSubgroup.zmultiples p) x₂ x₃ ↔
       toIcoMod hp'.out 0 (x₂ - x₁) ≤ toIocMod hp'.out 0 (x₃ - x₁) :=
   Iff.rfl
-#align quotient_add_group.btw_coe_iff' quotientAddGroup.btw_coe_iff'
+#align quotient_add_group.btw_coe_iff' QuotientAddGroup.btw_coe_iff'
 
 -- maybe harder to use than the primed one?
 theorem btw_coe_iff {x₁ x₂ x₃ : α} :
     Btw.btw (x₁ : α ⧸ AddSubgroup.zmultiples p) x₂ x₃ ↔
       toIcoMod hp'.out x₁ x₂ ≤ toIocMod hp'.out x₁ x₃ :=
   by rw [btw_coe_iff', toIocMod_sub_eq_sub, toIcoMod_sub_eq_sub, zero_add, sub_le_sub_iff_right]
-#align quotient_add_group.btw_coe_iff quotientAddGroup.btw_coe_iff
+#align quotient_add_group.btw_coe_iff QuotientAddGroup.btw_coe_iff
 
 instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where
   btw_refl x := show _ ≤ _ by simp [sub_self, hp'.out.le]
@@ -959,10 +959,10 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
       induction x₄ using QuotientAddGroup.induction_on'
       simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄⊢
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
-#align quotient_add_group.circular_preorder quotientAddGroup.circularPreorder
+#align quotient_add_group.circular_preorder QuotientAddGroup.circularPreorder
 
 instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
-  { quotientAddGroup.circularPreorder with
+  { QuotientAddGroup.circularPreorder with
     btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
       induction x₁ using QuotientAddGroup.induction_on'
       induction x₂ using QuotientAddGroup.induction_on'
@@ -977,9 +977,9 @@ instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
       induction x₃ using QuotientAddGroup.induction_on'
       simp_rw [btw_coe_iff]
       apply toIxxMod_total }
-#align quotient_add_group.circular_order quotientAddGroup.circularOrder
+#align quotient_add_group.circular_order QuotientAddGroup.circularOrder
 
-end quotientAddGroup
+end QuotientAddGroup
 
 end Circular
 
