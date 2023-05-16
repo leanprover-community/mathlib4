@@ -223,7 +223,7 @@ instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
     T2Space (E →SL[σ] F) :=
   strongTopology.t2Space σ F _
     (Set.eq_univ_of_forall fun x =>
-      Set.mem_unionₛ_of_mem (Set.mem_singleton x) (Bornology.isVonNBounded_singleton x))
+      Set.mem_sUnion_of_mem (Set.mem_singleton x) (Bornology.isVonNBounded_singleton x))
 
 set_option synthInstance.etaExperiment true in
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]

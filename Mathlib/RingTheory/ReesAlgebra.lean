@@ -116,7 +116,7 @@ theorem adjoin_monomial_eq_reesAlgebra :
 variable {I}
 
 set_option synthInstance.etaExperiment true in
-theorem reesAlgebra.fg (hI : I.Fg) : (reesAlgebra I).Fg := by
+theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
   classical
     obtain ⟨s, hs⟩ := hI
     rw [← adjoin_monomial_eq_reesAlgebra, ← hs]
