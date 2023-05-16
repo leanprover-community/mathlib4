@@ -223,6 +223,36 @@ lemma homology_sequence_exact₁ :
   . dsimp
     simp
 
+lemma homology_sequence_epi_shift_map_mor₁_iff :
+    Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 := by
+  constructor
+  . intro H
+    rw [← cancel_epi ((F.shift n₀).map T.mor₁), ← Functor.map_comp,
+      comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero, comp_zero]
+  . intro H
+    refine' (ShortComplex.exact_iff_epi _ _).1 ((F.homology_sequence_exact₂ _ hT n₀))
+    exact H
+
+lemma homology_sequence_mono_shift_map_mor₁_iff :
+    Mono ((F.shift n₁).map T.mor₁) ↔ F.homology_sequence_δ T n₀ n₁ h = 0 := by
+  constructor
+  . intro H
+    rw [← cancel_mono ((F.shift n₁).map T.mor₁), zero_comp, F.homology_sequence_δ_comp _ hT]
+  . intro H
+    refine' (ShortComplex.exact_iff_mono _ _).1 (F.homology_sequence_exact₁ _ hT _  _ h)
+    exact H
+
+lemma homology_sequence_isIso_shift_map_mor₁_iff :
+    IsIso ((F.shift n₁).map T.mor₁) ↔
+      F.homology_sequence_δ T n₀ n₁ h = 0 ∧ (F.shift n₁).map T.mor₂ = 0 := by
+  rw [← F.homology_sequence_mono_shift_map_mor₁_iff _ hT,
+    ← F.homology_sequence_epi_shift_map_mor₁_iff _ hT]
+  constructor
+  . intro h
+    exact ⟨inferInstance, inferInstance⟩
+  . rintro ⟨h₀, h₁⟩
+    apply isIso_of_mono_of_epi
+
 end
 
 lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :

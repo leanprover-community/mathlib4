@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
@@ -223,8 +223,13 @@ variable (K L)
 noncomputable def truncLEι (n : ℤ) : K.truncLE n ⟶ K where
   f i := K.truncLEιf n i
 
+variable {K L}
+
 @[reassoc (attr := simp)]
-lemma truncLEι_naturality : truncLEmap φ n ≫ truncLEι L n = truncLEι K n ≫ φ := by aesop_cat
+lemma truncLEι_naturality (n : ℤ) :
+  truncLEmap φ n ≫ truncLEι L n = truncLEι K n ≫ φ := by aesop_cat
+
+variable (K L)
 
 lemma isZero_homology_truncLE (n i : ℤ) (hi : n < i) :
     IsZero ((K.truncLE n).newHomology i) := by
@@ -329,6 +334,36 @@ lemma qis_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
   intro i _
   exact hf i
 
+instance : (K.truncLE n).IsStrictlyLE n := ⟨K.isZero_truncLEX n⟩
+
+lemma isIso_truncLEι_iff (n : ℤ) : IsIso (K.truncLEι n) ↔ K.IsStrictlyLE n := by
+  constructor
+  . intro hK
+    constructor
+    intro i hi
+    exact IsZero.of_iso (isZero_truncLEX _ _ _ hi)
+      ((eval _ _ i).mapIso (asIso (K.truncLEι n)).symm)
+  . intro hK
+    suffices ∀ (i : ℤ), IsIso ((K.truncLEι n).f i) by
+      apply HomologicalComplex.Hom.isIso_of_components
+    intro i
+    dsimp
+    by_cases hi : i < n
+    . rw [truncLEιf_eq_truncLEXIso_hom _ _ _ hi]
+      infer_instance
+    . obtain (hi'|rfl) := (not_lt.1 hi).lt_or_eq
+      . exact ⟨0, (K.isZero_truncLEX n i hi').eq_of_src _ _,
+          (K.isZero_of_isStrictlyLE n i hi').eq_of_src _ _⟩
+      . have := K.isIso_iCycles_of_zero n (n+1) (by simp)
+          (((K.isZero_of_isStrictlyLE n (n+1) (by simp))).eq_of_tgt _ _)
+        rw [K.truncLEιf_eq_of_eq n n rfl]
+        infer_instance
+
+
+instance (n : ℤ) [K.IsStrictlyLE n] : IsIso (K.truncLEι n) := by
+  rw [K.isIso_truncLEι_iff]
+  infer_instance
+
 variable {C}
 
 end CochainComplex
@@ -363,8 +398,10 @@ noncomputable def QCompFunctorTruncLECompHomologyFunctorIso (n i : ℤ) :
 
 variable {C}
 
+noncomputable abbrev truncLE (X : DerivedCategory C) (n : ℤ) := (functorTruncLE C n).obj X
+
 lemma isZero_homology_truncLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) :
-    IsZero ((functorTruncLE C n ⋙ homologyFunctor C i).obj X) := by
+    IsZero ((homologyFunctor C i).obj (X.truncLE n)) := by
   obtain ⟨K, rfl⟩ := Q_obj_surjective X
   exact IsZero.of_iso (K.isZero_homology_truncLE n i hi)
     ((QCompFunctorTruncLECompHomologyFunctorIso C n i).app K)
@@ -396,9 +433,11 @@ lemma isIso_homologyMap_truncLEι (X : DerivedCategory C) (n i : ℤ) (hi : i �
   apply IsIso.comp_isIso
 
 lemma isIso_truncLEι_iff (X : DerivedCategory C) (n : ℤ) :
-    IsIso (X.truncLEι n) ↔ ∀ (i : ℤ) (_ : n < i), IsZero ((homologyFunctor C i).obj X) := by
+    IsIso (X.truncLEι n) ↔ X.IsLE n := by
   constructor
-  . intro hX i hi
+  . intro hX
+    constructor
+    intro i hi
     exact IsZero.of_iso (isZero_homology_truncLE _ _ _ hi)
       ((homologyFunctor C i).mapIso (asIso (truncLEι X n)).symm)
   . intro hX
@@ -409,6 +448,55 @@ lemma isIso_truncLEι_iff (X : DerivedCategory C) (n : ℤ) :
     . simp only [not_le] at hi
       refine' ⟨0, _, _⟩
       . apply (X.isZero_homology_truncLE n i hi).eq_of_src
-      . apply (hX i hi).eq_of_src
+      . apply (X.isZero_of_isLE n i hi).eq_of_src
+
+lemma isZero_truncLE_iff (X : DerivedCategory C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    IsZero (X.truncLE n₀) ↔ X.IsGE n₁ := by
+  have h : ∀ (i : ℤ) (_ : i < n₁), (homologyFunctor C i).obj (X.truncLE n₀) ≅
+      (homologyFunctor C i).obj X:= fun i hi => by
+    have := X.isIso_homologyMap_truncLEι n₀ i (by linarith)
+    exact asIso ((homologyFunctor C i).map (X.truncLEι n₀))
+  constructor
+  . intro hX
+    constructor
+    intro i hi
+    refine' IsZero.of_iso _ (h i hi).symm
+    rw [IsZero.iff_id_eq_zero] at hX ⊢
+    rw [← (homologyFunctor C i).map_id, hX, Functor.map_zero]
+  . intro hX
+    rw [isZero_iff]
+    intro i
+    by_cases hi : i < n₁
+    . exact IsZero.of_iso (X.isZero_of_isGE n₁ i hi) (h i hi)
+    . exact X.isZero_homology_truncLE _ _ (by linarith)
+
+instance (X : DerivedCategory C) (n : ℤ) [X.IsLE n] : IsIso (X.truncLEι n) := by
+  rw [isIso_truncLEι_iff]
+  infer_instance
+
+instance (X : DerivedCategory C) (n : ℤ) : (X.truncLE n).IsLE n := by
+  obtain ⟨K, rfl⟩ := Q_obj_surjective X
+  have e : _ ≅ Q.obj (K.truncLE n) := (functorTruncLEFactors C n).app K
+  apply isLE_of_iso e.symm n
+
+lemma right_fac_of_isStrictlyLE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) (n : ℤ)
+    [X.IsStrictlyLE n] :
+    ∃ (X' : CochainComplex C ℤ) (_ : X'.IsStrictlyLE n) (s : X' ⟶ X) (hs : IsIso (Q.map s))
+      (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
+  obtain ⟨X', s, hs, g, rfl⟩ := right_fac X Y f
+  have : IsIso (Q.map (CochainComplex.truncLEmap s n)) := by
+    rw [isIso_Q_map_iff', CochainComplex.qis_truncLEmap_iff]
+    rw [isIso_Q_map_iff'] at hs
+    intro i _
+    exact hs i
+  refine' ⟨X'.truncLE n, inferInstance, CochainComplex.truncLEmap s n ≫ X.truncLEι n, _,
+      CochainComplex.truncLEmap g n ≫ Y.truncLEι n, _⟩
+  . rw [Q.map_comp]
+    infer_instance
+  . have eq := Q.congr_map (CochainComplex.truncLEι_naturality s n)
+    have eq' := Q.congr_map (CochainComplex.truncLEι_naturality g n)
+    simp only [Functor.map_comp] at eq eq'
+    simp only [Functor.map_comp, ← cancel_epi (Q.map (CochainComplex.truncLEmap s n) ≫
+      Q.map (CochainComplex.truncLEι X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
 
 end DerivedCategory

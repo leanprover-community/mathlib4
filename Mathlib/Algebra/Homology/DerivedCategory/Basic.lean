@@ -335,8 +335,45 @@ lemma exact₁ :
   (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
   (homologyFunctor C 0).homology_sequence_exact₁ _ hT _ _ h
 
+lemma epi_homologyMap_mor₁_iff :
+    Epi ((homologyFunctor C n₀).map T.mor₁) ↔ (homologyFunctor C n₀).map T.mor₂ = 0 :=
+  (homologyFunctor C 0).homology_sequence_epi_shift_map_mor₁_iff _ hT _
+
+lemma mono_homologyMap_mor₁_iff :
+    Mono ((homologyFunctor C n₁).map T.mor₁) ↔ δ T n₀ n₁ h  = 0 :=
+  (homologyFunctor C 0).homology_sequence_mono_shift_map_mor₁_iff _ hT _ _ h
+
+lemma isIso_homologyMap_mor₁_iff :
+    IsIso ((homologyFunctor C n₁).map T.mor₁) ↔
+      δ T n₀ n₁ h  = 0 ∧ (homologyFunctor C n₁).map T.mor₂ = 0 :=
+  (homologyFunctor C 0).homology_sequence_isIso_shift_map_mor₁_iff _ hT _ _ h
+
 end HomologySequence
 
 end
+
+lemma right_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
+    ∃ (X' : CochainComplex C ℤ) (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y),
+      f = inv (Q.map s) ≫ Q.map g := by
+  dsimp only [Q, Functor.comp] at f
+  obtain ⟨X', g', s', hs', fac⟩ :=
+    MorphismProperty.HasRightCalculusOfFractions.fac Qh (HomotopyCategory.qis C) f
+  rw [← isIso_Qh_map_iff] at hs'
+  obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
+  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g'
+  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s'
+  exact ⟨X', s, hs', g, fac⟩
+
+lemma left_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
+    ∃ (Y' : CochainComplex C ℤ) (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)),
+      f = Q.map g ≫ inv (Q.map s) := by
+  dsimp only [Q, Functor.comp] at f
+  obtain ⟨X', g', s', hs', fac⟩ :=
+    MorphismProperty.HasLeftCalculusOfFractions.fac Qh (HomotopyCategory.qis C) f
+  rw [← isIso_Qh_map_iff] at hs'
+  obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
+  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g'
+  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s'
+  exact ⟨X', g, s, hs', fac⟩
 
 end DerivedCategory

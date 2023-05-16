@@ -91,6 +91,11 @@ instance : Full (quotient V c) := Functor.fullOfSurjective _ (fun X Y f => by
 instance : EssSurj (quotient V c) :=
   Quotient.essSurj_functor _
 
+lemma quotient_obj_surjective (C : HomotopyCategory V c) : ∃ (K : HomologicalComplex V c),
+    C = (quotient V c).obj K := by
+  obtain ⟨K⟩ := C
+  exact ⟨K, rfl⟩
+
 -- porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
