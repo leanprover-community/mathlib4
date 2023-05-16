@@ -46,18 +46,14 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Classical Topology Filter
-
-open Set Filter
+open Classical Topology Filter Set
 
 namespace Complex
 
 @[continuity]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
-  exact (((continuous_id.neg.mul continuous_const).cexp.sub
-    (continuous_id.mul continuous_const).cexp).mul continuous_const).div_const 2
-  -- Porting note: was `continuity`
+  continuity
 #align complex.continuous_sin Complex.continuous_sin
 
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
@@ -67,9 +63,7 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 @[continuity]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
-  exact ((continuous_id.mul continuous_const).cexp.add
-    (continuous_id.neg.mul continuous_const).cexp).div_const 2
-  -- Porting note: was `continuity`
+  continuity
 #align complex.continuous_cos Complex.continuous_cos
 
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
@@ -79,15 +73,13 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 @[continuity]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
-  exact (continuous_id.cexp.sub continuous_id.neg.cexp).div_const 2
-  -- Porting note: was `continuity`
+  continuity
 #align complex.continuous_sinh Complex.continuous_sinh
 
 @[continuity]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
-  exact (continuous_id.cexp.add continuous_id.neg.cexp).div_const 2
-  -- Porting note: was `continuity`
+  continuity
 #align complex.continuous_cosh Complex.continuous_cosh
 
 end Complex
