@@ -152,11 +152,6 @@ def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Exp
 
 end Lean.Meta
 
-section SynthInstance
-
-
-end SynthInstance
-
 namespace Lean.Elab.Tactic
 
 /-- Analogue of `liftMetaTactic` for tactics that return a single goal. -/
