@@ -88,7 +88,8 @@ theorem support_neg : (-p).support = p.support :=
   Finsupp.support_neg p
 #align mv_polynomial.support_neg MvPolynomial.support_neg
 
-theorem support_sub (p q : MvPolynomial σ R) : (p - q).support ⊆ p.support ∪ q.support :=
+theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_sub
 #align mv_polynomial.support_sub MvPolynomial.support_sub
 
@@ -100,7 +101,8 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
-theorem degrees_sub (p q : MvPolynomial σ R) : (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
+theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
 #align mv_polynomial.degrees_sub MvPolynomial.degrees_sub
 
@@ -112,12 +114,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
 
-theorem vars_sub_subset : (p - q).vars ⊆ p.vars ∪ q.vars := by
+theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
 
 @[simp]
-theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars := by
+theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
+    (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_of_disjoint MvPolynomial.vars_sub_of_disjoint
@@ -180,6 +183,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
+  classical
   rw [degreeOf_lt_iff h]
   intro m hm
   by_contra' hc
