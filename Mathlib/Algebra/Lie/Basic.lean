@@ -224,9 +224,6 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
 instance LieRing.intLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 #align lie_ring.int_lie_algebra LieRing.intLieAlgebra
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 instance : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
@@ -264,9 +261,6 @@ instance : LieModule R L (M →ₗ[R] N)
     simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
 
 end BasicProperties
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
 structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]

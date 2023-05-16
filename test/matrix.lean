@@ -13,7 +13,7 @@ open Qq
 
 -- TODO: uncomment above imports when they are ported
 
-variables {α β : Type} [Semiring α] [Ring β]
+variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 

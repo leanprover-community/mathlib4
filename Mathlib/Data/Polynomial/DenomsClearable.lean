@@ -86,8 +86,6 @@ end DenomsClearable
 
 open RingHom
 
---Porting note: `etaExperiment` is required to synthesize the `RingHomClass (ℤ →+* K) ℤ K` instance
-set_option synthInstance.etaExperiment true in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
 `LinearOrderedField K`.

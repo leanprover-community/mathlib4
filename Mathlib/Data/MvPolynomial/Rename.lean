@@ -43,9 +43,6 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
--- porting note: this was not an instance in Lean 3, and was mis-ported.
-attribute [-instance] decidableEq_of_decidableLE
-
 open BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
