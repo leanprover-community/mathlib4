@@ -356,14 +356,15 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
     { obj := f
-      map := fun p => Path.Homotopic.Quotient.mapFn p f
+      map := fun {X Y} p => by simp only at X Y; exact Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
-      map_comp := fun {x y z} p q =>
-        Quotient.inductionOn₂ p q fun a b => by
+      map_comp := fun {x y z} p q => by
+        simp only at x y z
+        exact Quotient.inductionOn₂ p q fun a b => by
           simp [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift] }
   map_id := by
     intro X
-    change _ = (⟨_, _, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
+    change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext (x y p)
     refine' Quotient.inductionOn p fun q => _
