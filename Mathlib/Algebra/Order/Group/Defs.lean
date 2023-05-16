@@ -66,6 +66,10 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
+-- and causes timeouts when interacting with etaExperiment.
+-- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
+-- but without the motivation clearly explained.
+-- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
 -- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
 -- but without the motivation clearly explained.
@@ -77,6 +81,9 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
 
+-- Porting note: this instance is not used,
+-- and causes timeouts when interacting with etaExperiment.
+-- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
 -- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
@@ -1230,7 +1237,7 @@ def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) 
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
     -- Porting note: was `C.nonneg_total (b - a)`
     le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
-    decidable_le := fun a b => C.nonnegDecidable _ }
+    decidableLE := fun a b => C.nonnegDecidable _ }
 #align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
 
 end LinearOrderedAddCommGroup
