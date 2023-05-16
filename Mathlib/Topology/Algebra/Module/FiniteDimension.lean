@@ -153,7 +153,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       exact eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩
-    have hlφ : (l : E → 𝕜) = φ ∘ (LinearMap.ker l).mkQ := by ext <;> rfl
+    have hlφ : (l : E → 𝕜) = φ ∘ (LinearMap.ker l).mkQ := by ext; rfl
     -- Since the quotient map `E →ₗ[𝕜] (E ⧸ l.ker)` is continuous, the continuity of `l` will follow
     -- form the continuity of `φ`.
     suffices Continuous φ.toEquiv by
@@ -166,7 +166,8 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       refine'
         unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
           (continuousSMul_induced φ.symm.toLinearMap) _
-      rw [t2Space_iff]
+      -- Porting note: was `rw [t2Space_iff]`
+      refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
         @separated_by_continuous _ _ (induced _ _) _ _ _ continuous_induced_dom _ _
           (φ.toEquiv.symm.injective.ne hxy)
