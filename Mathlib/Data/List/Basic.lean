@@ -3230,7 +3230,6 @@ theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
   · cases' n with n
     . simp
     . simp [hl]
-      dsimp
 #align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}

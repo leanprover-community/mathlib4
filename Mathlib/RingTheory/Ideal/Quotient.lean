@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -42,9 +42,6 @@ open BigOperators
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
-
--- Porting note: we need η for TC
-set_option synthInstance.etaExperiment true
 
 -- Note that at present `Ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
@@ -215,17 +212,31 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
 
 open Classical
 
-/-- quotient by maximal ideal is a field. def rather than instance, since users will have
-computable inverses in some applications.
+-- porting note: the original proof uses `(by infer_instance : MonoidWithZero (R ⧸ I))`;
+-- this doesn't work, `(inferInstance : MonoidWithZero (R ⧸ I))` does, but the statement with
+-- `..Quotient.commRing I` feels nicer.
+/-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
+since users will have computable inverses in some applications.
+
 See note [reducible non-instances]. -/
 @[reducible]
-protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
+protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
+    GroupWithZero (R ⧸ I) :=
   { Quotient.commRing I,
     Quotient.isDomain I with
     inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl }
+#align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
+
+/-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users
+will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
+
+See note [reducible non-instances]. -/
+@[reducible]
+protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
+  { Quotient.commRing I, Quotient.groupWithZero I with }
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
@@ -321,7 +332,6 @@ section Pi
 
 variable (ι : Type v)
 
-set_option maxHeartbeats 300000 in
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
@@ -357,21 +367,19 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
-set_option synthInstance.etaExperiment false in -- Porting note: needed, otherwise type times out
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
-noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
-  refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
-  case toFun => set_option synthInstance.etaExperiment true in -- Porting note: to get `Module R R`
-    exact fun x ↦
+noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
+  toFun := fun x ↦
       Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
-  case invFun =>
-    exact fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨x⟩
+  map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  invFun := fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
+  left_inv := by
+    rintro ⟨x⟩
     exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  · intro x
+  right_inv := by
+    intro x
     ext i
     obtain ⟨_, _⟩ := @Quot.exists_rep _ _ (x i)
     convert Quotient.out_eq' (x i)

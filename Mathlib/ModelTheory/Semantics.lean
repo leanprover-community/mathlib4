@@ -19,27 +19,27 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## Main Definitions
 * `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
 variables `v`.
-* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.realize v xs` is the bounded
+* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
 formula `φ` evaluated at tuples of variables `v` and `xs`.
-* `FirstOrder.Language.Formula.Realize` is defined so that `φ.realize v` is the formula `φ`
+* `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
 evaluated at variables `v`.
-* `FirstOrder.Language.Sentence.Realize` is defined so that `φ.realize M` is the sentence `φ`
+* `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
 evaluated in the structure `M`. Also denoted `M ⊨ φ`.
-* `FirstOrder.Language.Theory.Model` is defined so that `T.model M` is true if and only if every
+* `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
 sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
 
 ## Main Results
 * `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
 formula has the same realization as the original formula.
-* Several results in this file show that syntactic constructions such as `relabel`, `castLe`,
-`lift_at`, `subst`, and the actions of language maps commute with realization of terms, formulas,
+* Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
+`liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
 sentences, and theories.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.boundedFormula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.boundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.boundedFormula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -864,10 +864,10 @@ theorem model_iff_subset_completeTheory : M ⊨ T ↔ T ⊆ L.completeTheory M :
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_iff_subset_complete_theory FirstOrder.Language.Theory.model_iff_subset_completeTheory
 
-theorem CompleteTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
+theorem completeTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
   model_iff_subset_completeTheory.1 MT
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Theory.complete_theory.subset FirstOrder.Language.Theory.CompleteTheory.subset
+#align first_order.language.Theory.complete_theory.subset FirstOrder.Language.Theory.completeTheory.subset
 
 end Theory
 

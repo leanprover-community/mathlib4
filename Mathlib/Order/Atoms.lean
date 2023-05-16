@@ -473,7 +473,7 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    decidable_le := fun a b =>
+    decidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
         if hb : b = ⊤ then isTrue (le_top.trans hb.ge)
