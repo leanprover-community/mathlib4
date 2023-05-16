@@ -438,7 +438,7 @@ def finitaryExtensiveTopCatAux (Z : TopCat.{u})
   · intro s
     ext ⟨⟨x, ⟨⟩⟩, hx⟩
     change dite _ _ _ = _
-    split_ifs
+    split_ifs with h
     · cases h.symm.trans hx
     · rfl
   · intro s m e₁ e₂
