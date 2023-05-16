@@ -42,13 +42,13 @@ variable [∀ i, Module.Finite R (M₁ i)] [∀ i, Module.Free R (M₁ i)]
 private theorem free_and_finite :
     Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) := by
   -- the `fin n` case is sufficient
-  suffices
+  suffices H :
     ∀ (n) (N : Fin n → Type _) [∀ i, AddCommGroup (N i)],
       ∀ [∀ i, Module R (N i)],
         ∀ [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)],
           Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) by
     cases nonempty_fintype ι
-    cases this _ (M₁ ∘ (Fintype.equivFin ι).symm)
+    cases' @H (Fintype.card ι) (fun x => M₁ ((Fintype.equivFin ι).symm x)) ?_ ?_ ?_ ?_ with l r
     have e := domDomCongrLinearEquiv' R M₁ M₂ (Fintype.equivFin ι)
     exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
   intro n N _ _ _ _
