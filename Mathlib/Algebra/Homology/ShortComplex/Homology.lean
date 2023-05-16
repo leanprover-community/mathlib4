@@ -929,6 +929,20 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
   . rw [← cancel_epi S₂.homologyπ, reassoc_of% hz,
       homologyπ_naturality, IsIso.inv_hom_id_assoc, comp_id]
 
+lemma isIso_homologyMap_of_isIso_cyclesCoMap_of_mono (φ : S₁ ⟶ S₂)
+    [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (cyclesCoMap φ)) (h₂ : Mono φ.τ₃) :
+    IsIso (homologyMap φ) := by
+  have h : (S₂.homologyι ≫ inv (cyclesCoMap φ)) ≫ S₁.fromCyclesCo = 0 := by
+    simp only [← cancel_mono φ.τ₃, zero_comp, assoc, ← fromCyclesCo_naturality,
+      IsIso.inv_hom_id_assoc, homologyι_comp_fromCyclesCo]
+  have ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
+  dsimp at hz
+  refine' ⟨⟨z, _, _⟩⟩
+  . rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,
+      IsIso.hom_inv_id, comp_id]
+  . rw [← cancel_mono S₂.homologyι, assoc, homologyι_naturality, reassoc_of% hz,
+      IsIso.inv_hom_id, comp_id, id_comp]
+
 lemma isZero_homology_of_isZero_X₂ (hS : IsZero S.X₂) [S.HasHomology] :
     IsZero S.homology :=
   IsZero.of_iso hS (HomologyData.ofZeros S (hS.eq_of_tgt _ _)

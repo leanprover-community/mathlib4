@@ -227,7 +227,7 @@ variable {K L}
 
 @[reassoc (attr := simp)]
 lemma truncLEι_naturality (n : ℤ) :
-  truncLEmap φ n ≫ truncLEι L n = truncLEι K n ≫ φ := by aesop_cat
+  truncLEmap φ n ≫ L.truncLEι n = K.truncLEι n ≫ φ := by aesop_cat
 
 variable (K L)
 
