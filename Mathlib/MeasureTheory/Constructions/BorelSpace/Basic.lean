@@ -291,30 +291,31 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
-  isOpen_interior.MeasurableSet
+  isOpen_interior.measurableSet
 #align measurable_set_interior measurableSet_interior
 
 theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
   rcases h with ⟨S, hSo, hSc, rfl⟩
-  exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).MeasurableSet
+  exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).measurableSet
+set_option linter.uppercaseLean3 false in
 #align is_Gδ.measurable_set IsGδ.measurableSet
 
 theorem measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
-  (isGδ_setOf_continuousAt f).MeasurableSet
+  (isGδ_setOf_continuousAt f).measurableSet
 #align measurable_set_of_continuous_at measurableSet_of_continuousAt
 
 theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
-  h.isOpen_compl.MeasurableSet.ofCompl
+  h.isOpen_compl.measurableSet.of_compl
 #align is_closed.measurable_set IsClosed.measurableSet
 
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
-  h.IsClosed.MeasurableSet
+  h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
 
 @[measurability]
 theorem measurableSet_closure : MeasurableSet (closure s) :=
-  isClosed_closure.MeasurableSet
+  isClosed_closure.measurableSet
 #align measurable_set_closure measurableSet_closure
 
 theorem measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
@@ -340,7 +341,7 @@ theorem measurable_of_is_closed' {f : δ → γ}
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
   refine' @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun i => _
-  exact i.2.2.MeasurableSet.principal_isMeasurablyGenerated
+  exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 #align nhds_is_measurably_generated nhds_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
@@ -348,14 +349,14 @@ each `a`. This cannot be an `instance` because it depends on a non-instance `hs 
 -/
 theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : MeasurableSet s) (a : α) :
     (𝓝[s] a).IsMeasurablyGenerated :=
-  haveI := hs.principal_is_measurably_generated
+  haveI := hs.principal_isMeasurablyGenerated
   Filter.inf_isMeasurablyGenerated _ _
 #align measurable_set.nhds_within_is_measurably_generated MeasurableSet.nhdsWithin_isMeasurablyGenerated
 
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.to_measurableSingletonClass [T1Space α] :
     MeasurableSingletonClass α :=
-  ⟨fun x => isClosed_singleton.MeasurableSet⟩
+  ⟨fun _ => isClosed_singleton.measurableSet⟩
 #align opens_measurable_space.to_measurable_singleton_class OpensMeasurableSpace.to_measurableSingletonClass
 
 instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable ι]
@@ -365,7 +366,7 @@ instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable �
   constructor
   have :
     Pi.topologicalSpace =
-      generate_from
+      generateFrom
         { t |
           ∃ (s : ∀ a, Set (π a))(i : Finset ι),
             (∀ a ∈ i, s a ∈ countable_basis (π a)) ∧ t = pi (↑i) s } :=
@@ -385,8 +386,8 @@ instance Prod.opensMeasurableSpace [SecondCountableTopology α] [SecondCountable
   apply generate_from_le
   rintro _ ⟨u, v, hu, hv, rfl⟩
   exact
-    (is_open_of_mem_countable_basis hu).MeasurableSet.Prod
-      (is_open_of_mem_countable_basis hv).MeasurableSet
+    (is_open_of_mem_countable_basis hu).measurableSet.Prod
+      (is_open_of_mem_countable_basis hv).measurableSet
 #align prod.opens_measurable_space Prod.opensMeasurableSpace
 
 variable {α' : Type _} [TopologicalSpace α'] [MeasurableSpace α']
@@ -403,7 +404,7 @@ theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : 
 
 theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : μ (frontier s) = 0) :
     NullMeasurableSet s μ :=
-  ⟨interior s, isOpen_interior.MeasurableSet, (interior_ae_eq_of_null_frontier h).symm⟩
+  ⟨interior s, isOpen_interior.measurableSet, (interior_ae_eq_of_null_frontier h).symm⟩
 #align null_measurable_set_of_null_frontier nullMeasurableSet_of_null_frontier
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
@@ -422,17 +423,17 @@ variable [Preorder α] [OrderClosedTopology α] {a b x : α}
 
 @[simp, measurability]
 theorem measurableSet_Ici : MeasurableSet (Ici a) :=
-  isClosed_Ici.MeasurableSet
+  isClosed_Ici.measurableSet
 #align measurable_set_Ici measurableSet_Ici
 
 @[simp, measurability]
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
-  isClosed_Iic.MeasurableSet
+  isClosed_Iic.measurableSet
 #align measurable_set_Iic measurableSet_Iic
 
 @[simp, measurability]
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
-  isClosed_Icc.MeasurableSet
+  isClosed_Icc.measurableSet
 #align measurable_set_Icc measurableSet_Icc
 
 instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
@@ -466,7 +467,7 @@ variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α]
 
 @[measurability]
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
-  OrderClosedTopology.isClosed_le'.MeasurableSet
+  OrderClosedTopology.isClosed_le'.measurableSet
 #align measurable_set_le' measurableSet_le'
 
 @[measurability]
@@ -486,17 +487,17 @@ open Interval
 
 @[simp, measurability]
 theorem measurableSet_Iio : MeasurableSet (Iio a) :=
-  isOpen_Iio.MeasurableSet
+  isOpen_Iio.measurableSet
 #align measurable_set_Iio measurableSet_Iio
 
 @[simp, measurability]
 theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
-  isOpen_Ioi.MeasurableSet
+  isOpen_Ioi.measurableSet
 #align measurable_set_Ioi measurableSet_Ioi
 
 @[simp, measurability]
 theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
-  isOpen_Ioo.MeasurableSet
+  isOpen_Ioo.measurableSet
 #align measurable_set_Ioo measurableSet_Ioo
 
 @[simp, measurability]
@@ -517,13 +518,13 @@ instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGene
   measurableSet_Iio.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Iio_is_measurably_generated nhdsWithin_Iio_isMeasurablyGenerated
 
-instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[a, b]] x) :=
+instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
   nhdsWithin_Icc_isMeasurablyGenerated
 #align nhds_within_uIcc_is_measurably_generated nhdsWithin_uIcc_isMeasurablyGenerated
 
 @[measurability]
 theorem measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α × α | p.1 < p.2 } :=
-  (isOpen_lt continuous_fst continuous_snd).MeasurableSet
+  (isOpen_lt continuous_fst continuous_snd).measurableSet
 #align measurable_set_lt' measurableSet_lt'
 
 @[measurability]
@@ -549,7 +550,7 @@ theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s :=
 #align set.ord_connected.measurable_set Set.OrdConnected.measurableSet
 
 theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
-  h.OrdConnected.MeasurableSet
+  h.OrdConnected.measurableSet
 #align is_preconnected.measurable_set IsPreconnected.measurableSet
 
 theorem generateFrom_Ico_mem_le_borel {α : Type _} [TopologicalSpace α] [LinearOrder α]
@@ -714,7 +715,7 @@ theorem ext_of_Ico {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [BorelSpace α] [NoMaxOrder α] (μ ν : Measure α) [LocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) : μ = ν :=
-  μ.ext_of_Ico' ν (fun a b hab => measure_Ico_lt_top.Ne) h
+  μ.ext_of_Ico' ν (fun a b hab => measure_Ico_lt_top.ne) h
 #align measure_theory.measure.ext_of_Ico MeasureTheory.Measure.ext_of_Ico
 
 /-- Two measures which are finite on closed-open intervals are equal if the agree on all
@@ -723,7 +724,7 @@ theorem ext_of_Ioc {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [BorelSpace α] [NoMinOrder α] (μ ν : Measure α) [LocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν :=
-  μ.ext_of_Ioc' ν (fun a b hab => measure_Ioc_lt_top.Ne) h
+  μ.ext_of_Ioc' ν (fun a b hab => measure_Ioc_lt_top.ne) h
 #align measure_theory.measure.ext_of_Ioc MeasureTheory.Measure.ext_of_Ioc
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-infinite right-closed
@@ -738,8 +739,8 @@ theorem ext_of_Iic {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
   rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic,
     measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic, h a, h b]
   · rw [← h a]
-    exact (measure_lt_top μ _).Ne
-  · exact (measure_lt_top μ _).Ne
+    exact (measure_lt_top μ _).ne
+  · exact (measure_lt_top μ _).ne
 #align measure_theory.measure.ext_of_Iic MeasureTheory.Measure.ext_of_Iic
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
@@ -807,11 +808,11 @@ theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f
 /-- A continuous function from an `opens_measurable_space` to a `borel_space`
 is ae-measurable. -/
 theorem Continuous.aEMeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
-  h.Measurable.AEMeasurable
+  h.measurable.AEMeasurable
 #align continuous.ae_measurable Continuous.aEMeasurable
 
 theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
-  hf.Continuous.Measurable
+  hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
 
 theorem Continuous.openPosMeasure_map {f : β → γ} (hf : Continuous f)
@@ -841,53 +842,53 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] : MeasurableMul γ
     where
-  measurable_const_mul c := (continuous_const.mul continuous_id).Measurable
-  measurable_mul_const c := (continuous_id.mul continuous_const).Measurable
+  measurable_const_mul c := (continuous_const.mul continuous_id).measurable
+  measurable_mul_const c := (continuous_id.mul continuous_const).measurable
 #align has_continuous_mul.has_measurable_mul ContinuousMul.measurableMul
 #align has_continuous_add.has_measurable_add ContinuousAdd.has_measurable_add
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] : MeasurableSub γ
     where
-  measurable_const_sub c := (continuous_const.sub continuous_id).Measurable
-  measurable_sub_const c := (continuous_id.sub continuous_const).Measurable
+  measurable_const_sub c := (continuous_const.sub continuous_id).measurable
+  measurable_sub_const c := (continuous_id.sub continuous_const).measurable
 #align has_continuous_sub.has_measurable_sub ContinuousSub.measurableSub
 
 @[to_additive]
 instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [TopologicalGroup γ] :
     MeasurableInv γ :=
-  ⟨continuous_inv.Measurable⟩
+  ⟨continuous_inv.measurable⟩
 #align topological_group.has_measurable_inv TopologicalGroup.measurableInv
 #align topological_add_group.has_measurable_neg TopologicalAddGroup.has_measurable_neg
 
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α :=
-  ⟨fun c => (continuous_const_smul _).Measurable, fun y =>
-    (continuous_id.smul continuous_const).Measurable⟩
+  ⟨fun c => (continuous_const_smul _).measurable, fun y =>
+    (continuous_id.smul continuous_const).measurable⟩
 #align has_continuous_smul.has_measurable_smul ContinuousSMul.measurableSMul
 
 section Lattice
 
 instance (priority := 100) ContinuousSup.measurableSup [Sup γ] [ContinuousSup γ] : MeasurableSup γ
     where
-  measurable_const_sup c := (continuous_const.sup continuous_id).Measurable
-  measurable_sup_const c := (continuous_id.sup continuous_const).Measurable
+  measurable_const_sup c := (continuous_const.sup continuous_id).measurable
+  measurable_sup_const c := (continuous_id.sup continuous_const).measurable
 #align has_continuous_sup.has_measurable_sup ContinuousSup.measurableSup
 
 instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopology γ] [Sup γ]
     [ContinuousSup γ] : MeasurableSup₂ γ :=
-  ⟨continuous_sup.Measurable⟩
+  ⟨continuous_sup.measurable⟩
 #align has_continuous_sup.has_measurable_sup₂ ContinuousSup.measurableSup₂
 
 instance (priority := 100) ContinuousInf.measurableInf [Inf γ] [ContinuousInf γ] : MeasurableInf γ
     where
-  measurable_const_inf c := (continuous_const.inf continuous_id).Measurable
-  measurable_inf_const c := (continuous_id.inf continuous_const).Measurable
+  measurable_const_inf c := (continuous_const.inf continuous_id).measurable
+  measurable_inf_const c := (continuous_id.inf continuous_const).measurable
 #align has_continuous_inf.has_measurable_inf ContinuousInf.measurableInf
 
 instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopology γ] [Inf γ]
     [ContinuousInf γ] : MeasurableInf₂ γ :=
-  ⟨continuous_inf.Measurable⟩
+  ⟨continuous_inf.measurable⟩
 #align has_continuous_inf.has_measurable_inf₂ ContinuousInf.measurableInf₂
 
 end Lattice
@@ -896,13 +897,13 @@ section Homeomorph
 
 @[measurability]
 protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
-  h.Continuous.Measurable
+  h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
 /-- A homeomorphism between two Borel spaces is a measurable equivalence.-/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
-  measurable_to_fun := h.Measurable
-  measurable_inv_fun := h.symm.Measurable
+  measurable_to_fun := h.measurable
+  measurable_inv_fun := h.symm.measurable
   toEquiv := h.toEquiv
 #align homeomorph.to_measurable_equiv Homeomorph.toMeasurableEquiv
 
@@ -921,26 +922,26 @@ end Homeomorph
 
 @[measurability]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
-  f.Continuous.Measurable
+  f.continuous.measurable
 #align continuous_map.measurable ContinuousMap.measurable
 
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f ({a}ᶜ)) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
-    (continuousOn_iff_continuous_restrict.1 hf).Measurable
+    (continuousOn_iff_continuous_restrict.1 hf).measurable
 #align measurable_of_continuous_on_compl_singleton measurable_of_continuousOn_compl_singleton
 
 theorem Continuous.measurable2 [SecondCountableTopology α] [SecondCountableTopology β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
     (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
-  h.Measurable.comp (hf.prod_mk hg)
+  h.measurable.comp (hf.prod_mk hg)
 #align continuous.measurable2 Continuous.measurable2
 
 theorem Continuous.ae_measurable2 [SecondCountableTopology α] [SecondCountableTopology β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => c (f a) (g a)) μ :=
-  h.Measurable.comp_aemeasurable (hf.prod_mk hg)
+  h.measurable.comp_aemeasurable (hf.prod_mk hg)
 #align continuous.ae_measurable2 Continuous.ae_measurable2
 
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
@@ -951,20 +952,20 @@ instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
     [ContinuousMul γ] : MeasurableMul₂ γ :=
-  ⟨continuous_mul.Measurable⟩
+  ⟨continuous_mul.measurable⟩
 #align has_continuous_mul.has_measurable_mul₂ ContinuousMul.measurableMul₂
 #align has_continuous_add.has_measurable_mul₂ ContinuousAdd.measurableMul₂
 
 instance (priority := 100) ContinuousSub.measurableSub₂ [SecondCountableTopology γ] [Sub γ]
     [ContinuousSub γ] : MeasurableSub₂ γ :=
-  ⟨continuous_sub.Measurable⟩
+  ⟨continuous_sub.measurable⟩
 #align has_continuous_sub.has_measurable_sub₂ ContinuousSub.measurableSub₂
 
 instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalSpace M]
     [SecondCountableTopology M] [MeasurableSpace M] [OpensMeasurableSpace M] [TopologicalSpace α]
     [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousSMul M α] :
     MeasurableSMul₂ M α :=
-  ⟨continuous_smul.Measurable⟩
+  ⟨continuous_smul.measurable⟩
 #align has_continuous_smul.has_measurable_smul₂ ContinuousSMul.measurableSMul₂
 
 end
@@ -1010,12 +1011,12 @@ protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embeddin
 
 protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.MeasurableEmbedding h.closed_range.MeasurableSet
+  h.toEmbedding.measurableEmbedding h.closed_range.measurableSet
 #align closed_embedding.measurable_embedding ClosedEmbedding.measurableEmbedding
 
 protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.MeasurableEmbedding h.open_range.MeasurableSet
+  h.toEmbedding.measurableEmbedding h.open_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
 
 section LinearOrder
@@ -1030,7 +1031,7 @@ theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
 
 theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : UpperSemicontinuous f) : Measurable f :=
-  measurable_of_Iio fun y => (hf.isOpen_preimage y).MeasurableSet
+  measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
 #align upper_semicontinuous.measurable UpperSemicontinuous.measurable
 
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
@@ -1041,7 +1042,7 @@ theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
 
 theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
-  measurable_of_Ioi fun y => (hf.isOpen_preimage y).MeasurableSet
+  measurable_of_Ioi fun y => (hf.isOpen_preimage y).measurableSet
 #align lower_semicontinuous.measurable LowerSemicontinuous.measurable
 
 theorem measurable_of_Iic {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iic x)) : Measurable f := by
@@ -1063,7 +1064,7 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   apply measurable_generateFrom
   rintro _ ⟨a, rfl⟩
   simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, set_of_exists]
-  exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).MeasurableSet
+  exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
 #align measurable.is_lub Measurable.isLUB
 
 private theorem ae_measurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : Measure δ} [Countable ι]
@@ -1120,7 +1121,7 @@ theorem Measurable.isGLB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   apply measurable_generateFrom
   rintro _ ⟨a, rfl⟩
   simp_rw [Set.preimage, mem_Iio, isGLB_lt_iff (hg _), exists_range_iff, set_of_exists]
-  exact MeasurableSet.iUnion fun i => hf i (isOpen_gt' _).MeasurableSet
+  exact MeasurableSet.iUnion fun i => hf i (isOpen_gt' _).measurableSet
 #align measurable.is_glb Measurable.isGLB
 
 theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
@@ -1152,7 +1153,7 @@ theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
 
 protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Monotone f) : Measurable f :=
-  suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).MeasurableSet
+  suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
   fun x => ordConnected_def.mpr fun a ha b hb c hc => lt_of_lt_of_le ha (hf hc.1)
 #align monotone.measurable Monotone.measurable
 
@@ -1160,7 +1161,7 @@ theorem aEMeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopolog
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : MonotoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
   have this : Monotone (f ∘ coe : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩ (hxy : x ≤ y) => hf hx hy hxy
-  aemeasurable_restrict_of_measurable_subtype hs this.Measurable
+  aemeasurable_restrict_of_measurable_subtype hs this.measurable
 #align ae_measurable_restrict_of_monotone_on aEMeasurable_restrict_of_monotoneOn
 
 protected theorem Antitone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
@@ -1366,8 +1367,8 @@ end ConditionallyCompleteLinearOrder
 /-- Convert a `homeomorph` to a `measurable_equiv`. -/
 def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
   toEquiv := h.toEquiv
-  measurable_to_fun := h.continuous_toFun.Measurable
-  measurable_inv_fun := h.continuous_invFun.Measurable
+  measurable_to_fun := h.continuous_toFun.measurable
+  measurable_inv_fun := h.continuous_invFun.measurable
 #align homemorph.to_measurable_equiv Homemorph.toMeasurableEquiv
 
 protected theorem IsFiniteMeasureOnCompacts.map {α : Type _} {m0 : MeasurableSpace α}
@@ -1507,17 +1508,17 @@ open Metric
 
 @[measurability]
 theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
-  Metric.isOpen_ball.MeasurableSet
+  Metric.isOpen_ball.measurableSet
 #align measurable_set_ball measurableSet_ball
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.MeasurableSet
+  Metric.isClosed_ball.measurableSet
 #align measurable_set_closed_ball measurableSet_closedBall
 
 @[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
-  (continuous_infDist_pt s).Measurable
+  (continuous_infDist_pt s).measurable
 #align measurable_inf_dist measurable_infDist
 
 @[measurability]
@@ -1528,7 +1529,7 @@ theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
 
 @[measurability]
 theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
-  (continuous_infNndist_pt s).Measurable
+  (continuous_infNndist_pt s).measurable
 #align measurable_inf_nndist measurable_infNndist
 
 @[measurability]
@@ -1543,7 +1544,7 @@ variable [SecondCountableTopology α]
 
 @[measurability]
 theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
-  continuous_dist.Measurable
+  continuous_dist.measurable
 #align measurable_dist measurable_dist
 
 @[measurability]
@@ -1554,7 +1555,7 @@ theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g
 
 @[measurability]
 theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
-  continuous_nndist.Measurable
+  continuous_nndist.measurable
 #align measurable_nndist measurable_nndist
 
 @[measurability]
@@ -1599,7 +1600,7 @@ its measure as `r` tends to `0`. -/
 theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
     [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [FiniteMeasureOnCompacts μ] {s : Set α}
     (hs : IsCompact s) : Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
-  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.Bounded.cthickening.measure_lt_top.Ne⟩
+  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.Bounded.cthickening.measure_lt_top.ne⟩
     hs.IsClosed
 #align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
@@ -1613,22 +1614,22 @@ open Emetric
 
 @[measurability]
 theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
-  EMetric.isOpen_ball.MeasurableSet
+  EMetric.isOpen_ball.measurableSet
 #align measurable_set_eball measurableSet_eball
 
 @[measurability]
 theorem measurable_edist_right : Measurable (edist x) :=
-  (continuous_const.edist continuous_id).Measurable
+  (continuous_const.edist continuous_id).measurable
 #align measurable_edist_right measurable_edist_right
 
 @[measurability]
 theorem measurable_edist_left : Measurable fun y => edist y x :=
-  (continuous_id.edist continuous_const).Measurable
+  (continuous_id.edist continuous_const).measurable
 #align measurable_edist_left measurable_edist_left
 
 @[measurability]
 theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
-  continuous_infEdist.Measurable
+  continuous_infEdist.measurable
 #align measurable_inf_edist measurable_infEdist
 
 @[measurability]
@@ -1641,7 +1642,7 @@ variable [SecondCountableTopology α]
 
 @[measurability]
 theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
-  continuous_edist.Measurable
+  continuous_edist.measurable
 #align measurable_edist measurable_edist
 
 @[measurability]
@@ -1730,7 +1731,7 @@ variable [MeasurableSpace α]
 
 @[measurability]
 theorem measurable_real_toNNReal : Measurable Real.toNNReal :=
-  continuous_real_toNNReal.Measurable
+  continuous_real_toNNReal.measurable
 #align measurable_real_to_nnreal measurable_real_toNNReal
 
 @[measurability]
@@ -1747,7 +1748,7 @@ theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMe
 
 @[measurability]
 theorem measurable_coe_nNReal_real : Measurable (coe : ℝ≥0 → ℝ) :=
-  NNReal.continuous_coe.Measurable
+  NNReal.continuous_coe.measurable
 #align measurable_coe_nnreal_real measurable_coe_nNReal_real
 
 @[measurability]
@@ -1764,25 +1765,25 @@ theorem AEMeasurable.coe_nNReal_real {f : α → ℝ≥0} {μ : Measure α} (hf 
 
 @[measurability]
 theorem measurable_coe_nNReal_eNNReal : Measurable (coe : ℝ≥0 → ℝ≥0∞) :=
-  ENNReal.continuous_coe.Measurable
+  ENNReal.continuous_coe.measurable
 #align measurable_coe_nnreal_ennreal measurable_coe_nNReal_eNNReal
 
 @[measurability]
 theorem Measurable.coe_nNReal_eNNReal {f : α → ℝ≥0} (hf : Measurable f) :
     Measurable fun x => (f x : ℝ≥0∞) :=
-  ENNReal.continuous_coe.Measurable.comp hf
+  ENNReal.continuous_coe.measurable.comp hf
 #align measurable.coe_nnreal_ennreal Measurable.coe_nNReal_eNNReal
 
 @[measurability]
 theorem AEMeasurable.coe_nNReal_eNNReal {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ :=
-  ENNReal.continuous_coe.Measurable.comp_aemeasurable hf
+  ENNReal.continuous_coe.measurable.comp_aemeasurable hf
 #align ae_measurable.coe_nnreal_ennreal AEMeasurable.coe_nNReal_eNNReal
 
 @[measurability]
 theorem Measurable.eNNReal_ofReal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => ENNReal.ofReal (f x) :=
-  ENNReal.continuous_ofReal.Measurable.comp hf
+  ENNReal.continuous_ofReal.measurable.comp hf
 #align measurable.ennreal_of_real Measurable.eNNReal_ofReal
 
 @[simp, norm_cast]
@@ -1841,7 +1842,7 @@ theorem measurable_of_measurable_nNReal_nNReal [MeasurableSpace β] {f : ℝ≥0
 
 @[measurability]
 theorem measurable_ofReal : Measurable ENNReal.ofReal :=
-  ENNReal.continuous_ofReal.Measurable
+  ENNReal.continuous_ofReal.measurable
 #align ennreal.measurable_of_real ENNReal.measurable_ofReal
 
 @[measurability]
@@ -1868,7 +1869,7 @@ instance : MeasurableSub₂ ℝ≥0∞ :=
       simp [← WithTop.coe_sub, continuous_sub.measurable.coe_nnreal_ennreal]⟩
 
 instance : MeasurableInv ℝ≥0∞ :=
-  ⟨continuous_inv.Measurable⟩
+  ⟨continuous_inv.measurable⟩
 
 end ENNReal
 
@@ -1950,7 +1951,7 @@ theorem AEMeasurable.nNReal_tsum {α : Type _} [MeasurableSpace α] {ι : Type _
 
 @[measurability]
 theorem measurable_coe_real_eReal : Measurable (coe : ℝ → EReal) :=
-  continuous_coe_real_ereal.Measurable
+  continuous_coe_real_ereal.measurable
 #align measurable_coe_real_ereal measurable_coe_real_eReal
 
 @[measurability]
@@ -1995,7 +1996,7 @@ theorem AEMeasurable.eReal_toReal {f : α → EReal} {μ : Measure α} (hf : AEM
 
 @[measurability]
 theorem measurable_coe_eNNReal_eReal : Measurable (coe : ℝ≥0∞ → EReal) :=
-  continuous_coe_ennreal_ereal.Measurable
+  continuous_coe_ennreal_ereal.measurable
 #align measurable_coe_ennreal_ereal measurable_coe_eNNReal_eReal
 
 @[measurability]
@@ -2016,7 +2017,7 @@ variable [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
 
 @[measurability]
 theorem measurable_norm : Measurable (norm : α → ℝ) :=
-  continuous_norm.Measurable
+  continuous_norm.measurable
 #align measurable_norm measurable_norm
 
 @[measurability]
@@ -2032,7 +2033,7 @@ theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f
 
 @[measurability]
 theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
-  continuous_nnnorm.Measurable
+  continuous_nnnorm.measurable
 #align measurable_nnnorm measurable_nnnorm
 
 @[measurability]
