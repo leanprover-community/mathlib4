@@ -8,11 +8,12 @@ Authors: Mario Carneiro
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Factors
---import Mathlib.Data.Nat.SqrtNormNum
 --import Mathlib.Analysis.SpecialFunctions.Pow
 --import Mathlib.NumberTheory.LegendreSymbol.NormNum
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.NatSqrt
+import Std.Tactic.ShowTerm
 
 /-!
 # Tests for `norm_num` extensions
@@ -20,18 +21,21 @@ import Mathlib.Tactic.NormNum.IsCoprime
 
 -- coverage tests
 
-/-
-example : Nat.sqrt 0 = 0 := by norm_num
-example : Nat.sqrt 1 = 1 := by norm_num
-example : Nat.sqrt 2 = 1 := by norm_num
-example : Nat.sqrt 3 = 1 := by norm_num
-example : Nat.sqrt 4 = 2 := by norm_num
-example : Nat.sqrt 9 = 3 := by norm_num
-example : Nat.sqrt 10 = 3 := by norm_num
-example : Nat.sqrt 100 = 10 := by norm_num
-example : Nat.sqrt 120 = 10 := by norm_num
-example : Nat.sqrt 121 = 11 := by norm_num
--/
+example : Nat.sqrt 0 = 0 := by norm_num1
+example : Nat.sqrt 1 = 1 := by norm_num1
+example : Nat.sqrt 2 = 1 := by norm_num1
+example : Nat.sqrt 3 = 1 := by norm_num1
+example : Nat.sqrt 4 = 2 := by norm_num1
+example : Nat.sqrt 8 = 2 := by norm_num1
+example : Nat.sqrt 9 = 3 := by norm_num1
+example : Nat.sqrt 10 = 3 := by norm_num1
+example : Nat.sqrt 99 = 9 := by norm_num1
+example : Nat.sqrt 100 = 10 := by norm_num1
+example : Nat.sqrt 120 = 10 := by norm_num1
+example : Nat.sqrt 121 = 11 := by norm_num1
+example : Nat.sqrt 122 = 11 := by norm_num1
+example : Nat.sqrt (123456^2) = 123456 := by norm_num1
+example : Nat.sqrt (123456^2 + 123456) = 123456 := by norm_num1
 
 theorem ex11 : Nat.coprime 1 2 := by norm_num1
 theorem ex12 : Nat.coprime 2 1 := by norm_num1
