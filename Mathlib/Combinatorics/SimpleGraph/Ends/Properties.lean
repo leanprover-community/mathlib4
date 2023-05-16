@@ -8,7 +8,7 @@ Authors: Anand Rao, Rémi Bottinelli
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Ends.Defs
+import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 
 /-!
 # Properties of the ends of graphs
