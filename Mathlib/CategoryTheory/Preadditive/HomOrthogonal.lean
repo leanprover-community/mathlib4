@@ -32,17 +32,15 @@ or otherwise if each endomorphism ring is commutative),
 then decompositions of an object as a biproduct of the family have uniquely defined multiplicities.
 We state this as:
 ```
-lemma hom_orthogonal.equiv_of_iso (o : hom_orthogonal s) {f : α → ι} {g : β → ι}
-  (i : ⨁ (λ a, s (f a)) ≅ ⨁ (λ b, s (g b))) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
+theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
+  (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
 ```
 
 This is preliminary to defining semisimple categories.
 -/
 
 
-open Classical Matrix
-
-open CategoryTheory.Limits
+open Classical Matrix CategoryTheory.Limits
 
 universe v u
 

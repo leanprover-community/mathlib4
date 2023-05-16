@@ -385,10 +385,10 @@ variable (L M)
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
   toSubstructure : L.Substructure M
-  is_elementary' : toSubstructure.IsElementary
+  isElementary' : toSubstructure.IsElementary
 #align first_order.language.elementary_substructure FirstOrder.Language.ElementarySubstructure
 #align first_order.language.elementary_substructure.to_substructure FirstOrder.Language.ElementarySubstructure.toSubstructure
-#align first_order.language.elementary_substructure.is_elementary' FirstOrder.Language.ElementarySubstructure.is_elementary'
+#align first_order.language.elementary_substructure.is_elementary' FirstOrder.Language.ElementarySubstructure.isElementary'
 
 variable {L M}
 
@@ -412,10 +412,10 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).IsElementary :=
-  S.is_elementary'
+  S.isElementary'
 #align first_order.language.elementary_substructure.is_elementary FirstOrder.Language.ElementarySubstructure.isElementary
 
-/-- The natural embedding of an `L.substructure` of `M` into `M`. -/
+/-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
 def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   toFun := (↑)
   map_formula' := S.isElementary
