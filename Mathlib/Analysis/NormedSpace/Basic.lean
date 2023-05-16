@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
+! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -82,7 +82,6 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : Bounded
   dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using norm_smul_le (x₁ - x₂) y
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-set_option synthInstance.etaExperiment true in
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
@@ -101,9 +100,8 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
 #align norm_zsmul norm_zsmul
 
 @[simp]
-theorem abs_norm_eq_norm (z : β) : |‖z‖| = ‖z‖ :=
-  (abs_eq (norm_nonneg z)).mpr (Or.inl rfl)
-#align abs_norm_eq_norm abs_norm_eq_norm
+theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
+#align abs_norm abs_norm
 
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
@@ -241,8 +239,8 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
       have : 0 < 1 + ‖x‖ ^ 2 := by positivity
       rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
-        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm_eq_norm x, ← sq_lt_sq,
-        abs_norm_eq_norm, Real.sq_sqrt this.le]
+        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
+        abs_norm, Real.sq_sqrt this.le]
       exact lt_one_add _⟩
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   left_inv x := by
@@ -594,7 +592,6 @@ instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
 #align normed_algebra.id NormedAlgebra.id
 
 -- Porting note: cannot synth scalar tower ℚ ℝ k
-set_option synthInstance.etaExperiment true in
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -635,7 +632,6 @@ instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebr
 
 end NormedAlgebra
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A non-unital algebra homomorphism from an `Algebra` to a `NormedAlgebra` induces a
 `NormedAlgebra` structure on the domain, using the `SeminormedRing.induced` norm.
 
@@ -653,7 +649,6 @@ def NormedAlgebra.induced {F : Type _} (α β γ : Type _) [NormedField α] [Rin
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
-set_option synthInstance.etaExperiment true in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type _} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val

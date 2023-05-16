@@ -103,8 +103,8 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    decidable_eq := PSigma.decidableEq, decidable_le := Lex.decidable _ _,
-    decidable_lt := Lex.decidable _ _ }
+    decidableEq := PSigma.decidableEq, decidableLE := Lex.decidable _ _,
+    decidableLT := Lex.decidable _ _ }
 #align psigma.lex.linear_order PSigma.Lex.linearOrder
 
 /-- The lexicographical linear order on a sigma type. -/

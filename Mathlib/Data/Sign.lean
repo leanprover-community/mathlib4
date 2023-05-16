@@ -123,8 +123,8 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidable_le := Le.decidableRel
-  decidable_eq := SignType.decidableEq
+  decidableLE := Le.decidableRel
+  decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
@@ -304,8 +304,7 @@ variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 -- Porting note: needed to rename this from sign to SignType.sign to avoid ambiguity with Int.sign
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h =>
-    by
+  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
@@ -397,7 +396,7 @@ variable [LinearOrderedRing α] {a b : α}
 
 /- I'm not sure why this is necessary, see https://leanprover.zulipchat.com/#narrow/stream/
 113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
-attribute [local instance] LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLT
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -465,7 +464,7 @@ variable [LinearOrderedAddCommGroup α]
 /- I'm not sure why this is necessary, see
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.20vs.20decidable_rel
 -/
-attribute [local instance] LinearOrderedAddCommGroup.decidable_lt
+attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 
 theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by

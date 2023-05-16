@@ -29,15 +29,9 @@ structures.
 * A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `FirstOrder.Language.ElementaryEmbedding`, denoted `M ↪ₑ[L] N`, is an embedding from the
-  `L`-structure `M` to the `L`-structure `N` that commutes with the realizations of all formulas.
 * A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-
-## TODO
-
-Use `[Countable L.symbols]` instead of `[L.countable]`.
 
 ## References
 For the Flypitch project:
@@ -296,18 +290,22 @@ class Structure where
   /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
   /-- Interpretation of the relation symbols -/
-  rel_map : ∀ {n}, L.Relations n → (Fin n → M) → Prop
+  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure FirstOrder.Language.Structure
+set_option linter.uppercaseLean3 false in
+#align first_order.language.Structure.fun_map FirstOrder.Language.Structure.funMap
+set_option linter.uppercaseLean3 false in
+#align first_order.language.Structure.rel_map FirstOrder.Language.Structure.RelMap
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
 open Structure
 
-/-- Used for defining `FirstOrder.Language.Theory.Model.inhabited`. -/
-def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
+/-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+def Inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
-#align first_order.language.inhabited.trivial_structure FirstOrder.Language.inhabited.trivialStructure
+#align first_order.language.inhabited.trivial_structure FirstOrder.Language.Inhabited.trivialStructure
 
 /-! ### Maps -/
 
@@ -327,7 +325,7 @@ structure Hom where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     intros; trivial
   /-- The homomorphism sends related elements to related elements -/
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r x → RelMap r (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.hom FirstOrder.Language.Hom
@@ -341,7 +339,7 @@ structure Embedding extends M ↪ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (toFun ∘ x) ↔ RelMap r x := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
@@ -355,7 +353,7 @@ structure Equiv extends M ≃ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (toFun ∘ x) ↔ RelMap r x := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
@@ -442,14 +440,14 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem relMap_apply₁ (r : r₁) (x : M) :
-    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
+    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₁ FirstOrder.Language.Structure.relMap_apply₁
 
 @[simp]
 theorem relMap_apply₂ (r : r₂) (x y : M) :
-    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
+    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₂ FirstOrder.Language.Structure.relMap_apply₂
@@ -461,7 +459,7 @@ end Structure
 class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r x → rel_map r (φ ∘ x)
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
@@ -469,7 +467,7 @@ class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
 class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r (φ ∘ x) ↔ rel_map r x
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
@@ -545,7 +543,7 @@ theorem map_constants (φ : M →[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r x → rel_map r (φ ∘ x) :=
+    RelMap r x → RelMap r (φ ∘ x) :=
   HomClass.map_rel φ r x
 #align first_order.language.hom.map_rel FirstOrder.Language.Hom.map_rel
 
@@ -631,7 +629,7 @@ theorem map_constants (φ : M ↪[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ↪[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r (φ ∘ x) ↔ rel_map r x :=
+    RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.embedding.map_rel FirstOrder.Language.Embedding.map_rel
 
@@ -801,7 +799,7 @@ theorem map_constants (φ : M ≃[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ≃[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r (φ ∘ x) ↔ rel_map r x :=
+    RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.equiv.map_rel FirstOrder.Language.Equiv.map_rel
 
@@ -908,7 +906,7 @@ variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure 
 
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap := Sum.elim funMap funMap
-  rel_map := Sum.elim rel_map rel_map
+  RelMap := Sum.elim RelMap RelMap
 set_option linter.uppercaseLean3 false in
 #align first_order.language.sum_Structure FirstOrder.Language.sumStructure
 
@@ -928,13 +926,13 @@ theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
 
 @[simp]
 theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
-    @rel_map (L₁.sum L₂) S _ n (Sum.inl R) = rel_map R :=
+    @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inl FirstOrder.Language.relMap_sum_inl
 
 @[simp]
 theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
-    @rel_map (L₁.sum L₂) S _ n (Sum.inr R) = rel_map R :=
+    @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inr FirstOrder.Language.relMap_sum_inr
 
@@ -976,12 +974,12 @@ instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] 
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
 
-/-- Makes a `Language.empty.hom` out of any function. -/
+/-- Makes a `Language.empty.Hom` out of any function. -/
 @[simps]
 def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 #align function.empty_hom Function.emptyHom
 
-/-- Makes a `Language.empty.embedding` out of any function. -/
+/-- Makes a `Language.empty.Embedding` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
@@ -994,7 +992,7 @@ theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f 
 theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
   rfl
 
-/-- Makes a `Language.empty.equiv` out of any function. -/
+/-- Makes a `Language.empty.Equiv` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
@@ -1024,7 +1022,7 @@ variable {L : Language} {M : Type _} {N : Type _} [L.Structure M]
 /-- A structure induced by a bijection. -/
 @[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
-  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => rel_map r (e.symm ∘ x)⟩
+  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure Equiv.inducedStructure
 

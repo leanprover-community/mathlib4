@@ -153,7 +153,7 @@ theorem degrees_sum {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R)
 theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
   refine' Finset.sup_le fun b hb => _
   have := support_mul p q hb
-  simp only [Finset.mem_bunionᵢ, Finset.mem_singleton] at this
+  simp only [Finset.mem_biUnion, Finset.mem_singleton] at this
   rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
   rw [Finsupp.toMultiset_add]
   exact add_le_add (Finset.le_sup h₁) (Finset.le_sup h₂)
@@ -356,11 +356,11 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
 are a subset of the union of the sets of variables of each polynomial.
 -/
 theorem vars_prod {ι : Type _} {s : Finset ι} (f : ι → MvPolynomial σ R) :
-    (∏ i in s, f i).vars ⊆ s.bunionᵢ fun i => (f i).vars := by
+    (∏ i in s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
   induction s using Finset.induction_on with
   | empty => simp
   | insert hs hsub =>
-    simp only [hs, Finset.bunionᵢ_insert, Finset.prod_insert, not_false_iff]
+    simp only [hs, Finset.biUnion_insert, Finset.prod_insert, not_false_iff]
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset_union (Finset.Subset.refl _) hsub
 #align mv_polynomial.vars_prod MvPolynomial.vars_prod
@@ -388,27 +388,27 @@ section Sum
 
 variable {ι : Type _} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 
-theorem vars_sum_subset : (∑ i in t, φ i).vars ⊆ Finset.bunionᵢ t fun i => (φ i).vars := by
+theorem vars_sum_subset : (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
   induction t using Finset.induction_on with
   | empty => simp
   | insert has hsum =>
-    rw [Finset.bunionᵢ_insert, Finset.sum_insert has]
+    rw [Finset.biUnion_insert, Finset.sum_insert has]
     refine'
       Finset.Subset.trans (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) _)
     assumption
 #align mv_polynomial.vars_sum_subset MvPolynomial.vars_sum_subset
 
 theorem vars_sum_of_disjoint (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
-    (∑ i in t, φ i).vars = Finset.bunionᵢ t fun i => (φ i).vars := by
+    (∑ i in t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   induction t using Finset.induction_on with
   | empty => simp
   | insert has hsum =>
-    rw [Finset.bunionᵢ_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
+    rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]
     simp only [Finset.disjoint_iff_ne] at h⊢
     intro v hv v2 hv2
-    rw [Finset.mem_bunionᵢ] at hv2
+    rw [Finset.mem_biUnion] at hv2
     rcases hv2 with ⟨i, his, hi⟩
     refine' h _ _ hv _ hi
     rintro rfl
@@ -437,11 +437,11 @@ theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r �
   rw [vars_monomial hr, Finsupp.support_single_ne_zero _ he]
 #align mv_polynomial.vars_monomial_single MvPolynomial.vars_monomial_single
 
-theorem vars_eq_support_bunionᵢ_support : p.vars = p.support.bunionᵢ Finsupp.support := by
+theorem vars_eq_support_biUnion_support : p.vars = p.support.biUnion Finsupp.support := by
   ext i
-  rw [mem_vars, Finset.mem_bunionᵢ]
+  rw [mem_vars, Finset.mem_biUnion]
   simp
-#align mv_polynomial.vars_eq_support_bUnion_support MvPolynomial.vars_eq_support_bunionᵢ_support
+#align mv_polynomial.vars_eq_support_bUnion_support MvPolynomial.vars_eq_support_biUnion_support
 
 end Map
 
@@ -622,8 +622,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h
-    have hbb : b ∈ (p + q).support :=
-      by
+    have hbb : b ∈ (p + q).support := by
       apply support_sdiff_support_subset_support_add
       rw [Finset.mem_sdiff]
       exact ⟨hb₁, hb⟩
@@ -640,7 +639,7 @@ theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
   Finset.sup_le fun n hn => by
     have := AddMonoidAlgebra.support_mul a b hn
-    simp only [Finset.mem_bunionᵢ, Finset.mem_singleton] at this
+    simp only [Finset.mem_biUnion, Finset.mem_singleton] at this
     rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
     rw [Finsupp.sum_add_index']
     · dsimp [totalDegree]
@@ -656,8 +655,8 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
   Finset.sup_mono support_smul
 #align mv_polynomial.total_degree_smul_le MvPolynomial.totalDegree_smul_le
 
-theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) : (a ^ n).totalDegree ≤ n * a.totalDegree :=
-  by
+theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
+    (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
   · simp only [Nat.zero_eq, MulZeroClass.zero_mul, pow_zero, totalDegree_one]
   rw [pow_succ]
@@ -776,8 +775,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     intro
     contradiction
   repeat'
-    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) :=
-      by
+    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne.def, Finsupp.support_eq_empty]
       rintro rfl
@@ -828,14 +826,14 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
   ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
     by
-    show (rename f).toRingHom.comp _ p = RingHom.id _ p
-    refine' hom_congr_vars _ _ _
-    · ext1
-      simp [algebraMap_eq]
-    · intro i hip _
-      rcases hf hip with ⟨i, rfl⟩
-      simp [partialInv_left hfi]
-    · rfl⟩
+      show (rename f).toRingHom.comp _ p = RingHom.id _ p
+      refine' hom_congr_vars _ _ _
+      · ext1
+        simp [algebraMap_eq]
+      · intro i hip _
+        rcases hf hip with ⟨i, rfl⟩
+        simp [partialInv_left hfi]
+      · rfl⟩
 #align mv_polynomial.exists_rename_eq_of_vars_subset_range MvPolynomial.exists_rename_eq_of_vars_subset_range
 
 theorem vars_rename (f : σ → τ) (φ : MvPolynomial σ R) : (rename f φ).vars ⊆ φ.vars.image f := by
