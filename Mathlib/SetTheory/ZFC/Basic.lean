@@ -1185,7 +1185,8 @@ theorem sUnion_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
 #align Set.sUnion_pair ZFSet.sUnion_pair
 
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
-  wellFounded_lift₂_iff.mpr PSet.mem_wf
+  (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
+    propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 #align Set.mem_wf ZFSet.mem_wf
 
 /-- Induction on the `∈` relation. -/
