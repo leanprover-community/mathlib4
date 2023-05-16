@@ -13,7 +13,6 @@ import Mathlib.Data.Nat.Factors
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.NatSqrt
-import Std.Tactic.ShowTerm
 
 /-!
 # Tests for `norm_num` extensions
