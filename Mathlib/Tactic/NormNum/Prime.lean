@@ -195,11 +195,11 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
   let rec core : MetaM <| Result q(Nat.minFac $n) := do
     let ⟨bp, pp⟩ ← deriveBool q($nn = 1)
     match bp with
-    | true  => return .isNat sℕ q(1) q(isNat_minFac_1 $pn $pp)
+    | true  => return .isNat sℕ (mkRawNatLit 1) q(isNat_minFac_1 $pn $pp)
     | false =>
     let ⟨bq, pq⟩ ← deriveBool q($nn % 2 = 0)
     match bq with
-    | true  => return .isNat sℕ q(2) q(isNat_minFac_2 $pn $pq)
+    | true  => return .isNat sℕ (mkRawNatLit 2) q(isNat_minFac_2 $pn $pq)
     | false =>
     let ⟨c, pc⟩ := aux 3 q(minFacHelper_0 $nn $pp $pq)
     return .isNat sℕ c pc
