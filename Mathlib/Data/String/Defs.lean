@@ -77,6 +77,8 @@ def getRest (s t : String) : Option String :=
   List.asString <$> s.toList.getRest t.toList
 #align string.get_rest String.getRest
 
+#align string.popn String.drop
+
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
   s.iter.curr
