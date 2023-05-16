@@ -468,6 +468,7 @@ def Padic (p : ℕ) [Fact p.Prime] :=
 #align padic Padic
 
 -- mathport name: «exprℚ_[ ]»
+/-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
 
 namespace Padic
@@ -656,7 +657,6 @@ open PadicSeq Padic
 
 variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (m n «expr ≥ » N) -/
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
     have : ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
@@ -811,8 +811,8 @@ namespace padicNormE
 section NormedSpace
 
 variable {p : ℕ} [hp : Fact p.Prime]
-
-@[simp]
+-- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+@[simp (high)]
 protected theorem mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
 #align padic_norm_e.mul padicNormE.mul
 
@@ -838,11 +838,10 @@ theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
 
 @[simp]
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
-  have p₀ : p ≠ 0 := hp.1.ne_zero
-  have p₁ : p ≠ 1 := hp.1.ne_one
   rw [← @Rat.cast_coe_nat ℝ _ p]
   rw [← @Rat.cast_coe_nat ℚ_[p] _ p]
-  simp [p₀, p₁, norm, padicNorm, padicValRat, padicValInt, zpow_neg, -Rat.cast_coe_nat]
+  simp [hp.1.ne_zero, hp.1.ne_one, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
+    -Rat.cast_coe_nat]
 #align padic_norm_e.norm_p padicNormE.norm_p
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
@@ -851,12 +850,14 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   exact_mod_cast hp.1.one_lt
 #align padic_norm_e.norm_p_lt_one padicNormE.norm_p_lt_one
 
-@[simp]
+-- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+@[simp (high)]
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 #align padic_norm_e.norm_p_zpow padicNormE.norm_p_zpow
 
-@[simp]
+-- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+@[simp (high)]
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_ofNat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
@@ -893,7 +894,7 @@ theorem eq_ratNorm (q : ℚ_[p]) : ‖q‖ = ratNorm q :=
   Classical.choose_spec (padicNormE.is_rat q)
 #align padic_norm_e.eq_rat_norm padicNormE.eq_ratNorm
 
-theorem norm_rat_le_one : ∀ {q : ℚ} (hq : ¬p ∣ q.den), ‖(q : ℚ_[p])‖ ≤ 1
+theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖ ≤ 1
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
@@ -964,8 +965,7 @@ namespace Padic
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option eqn_compiler.zeta -/
--- port note : remove `set_option eqn_compiler.zeta true`
+-- Porting note : remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
 isComplete := fun f => by
@@ -973,7 +973,7 @@ isComplete := fun f => by
     have h := isCauSeq f ε (by exact_mod_cast hε)
     dsimp [norm] at h
     exact_mod_cast h
-  -- port note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
+  -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
   -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
   cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
   exists q
@@ -991,12 +991,20 @@ isComplete := fun f => by
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :
-    ‖f.lim‖ ≤ a :=
-  let ⟨N, hN⟩ := Setoid.symm (CauSeq.equiv_lim f) _ ha
-  calc
-    ‖f.lim‖ = ‖f.lim - f N + f N‖ := by simp
-    _ ≤ max ‖f.lim - f N‖ ‖f N‖ := (padicNormE.nonarchimedean _ _)
-    _ ≤ a := max_le (le_of_lt (hN _ le_rfl)) (hf _)
+    ‖f.lim‖ ≤ a := by
+  -- Porting note: `Setoid.symm` cannot work out which `Setoid` to use, so instead swap the order
+  -- now, I use a rewrite to swap it later
+  obtain ⟨N, hN⟩ := (CauSeq.equiv_lim f) _ ha
+  rw [←sub_add_cancel f.lim (f N)]
+  refine le_trans (padicNormE.nonarchimedean _ _) ?_
+  rw [norm_sub_rev]
+  exact max_le (le_of_lt (hN _ le_rfl)) (hf _)
+  -- Porting note: the following nice `calc` block does not work
+  -- exact calc
+  --   ‖f.lim‖ = ‖f.lim - f N + f N‖ := sorry
+  --   ‖f.lim - f N + f N‖ ≤ max ‖f.lim - f N‖ ‖f N‖ := sorry -- (padicNormE.nonarchimedean _ _)
+  --   max ‖f.lim - f N‖ ‖f N‖ = max ‖f N - f.lim‖ ‖f N‖ := sorry -- by congr; rw [norm_sub_rev]
+  --   max ‖f N - f.lim‖ ‖f N‖ ≤ a := sorry -- max_le (le_of_lt (hN _ le_rfl)) (hf _)
 #align padic.padic_norm_e_lim_le Padic.padicNormE_lim_le
 
 open Filter Set
