@@ -369,12 +369,12 @@ theorem measurable_of_is_closed' {f : δ → γ}
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
-  refine' @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun i => _
+  refine' @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => _
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 #align nhds_is_measurably_generated nhds_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
-each `a`. This cannot be an `instance` because it depends on a non-instance `hs : measurable_set s`.
+each `a`. This cannot be an `instance` because it depends on a non-instance `hs : MeasurableSet s`.
 -/
 theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : MeasurableSet s) (a : α) :
     (𝓝[s] a).IsMeasurablyGenerated :=
@@ -383,10 +383,10 @@ theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : Measur
 #align measurable_set.nhds_within_is_measurably_generated MeasurableSet.nhdsWithin_isMeasurablyGenerated
 
 -- see Note [lower instance priority]
-instance (priority := 100) OpensMeasurableSpace.to_measurableSingletonClass [T1Space α] :
+instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
     MeasurableSingletonClass α :=
   ⟨fun _ => isClosed_singleton.measurableSet⟩
-#align opens_measurable_space.to_measurable_singleton_class OpensMeasurableSpace.to_measurableSingletonClass
+#align opens_measurable_space.to_measurable_singleton_class OpensMeasurableSpace.toMeasurableSingletonClass
 
 instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable ι]
     [t' : ∀ i, TopologicalSpace (π i)] [∀ i, MeasurableSpace (π i)]
@@ -579,7 +579,8 @@ theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
 
 theorem generateFrom_Ico_mem_le_borel {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderClosedTopology α] (s t : Set α) :
-    MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, ∃ h : l < u, Ico l u = S } ≤ borel α := by
+    MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, ∃ _h : l < u, Ico l u = S }
+      ≤ borel α := by
   apply generateFrom_le
   borelize α
   rintro _ ⟨a, -, b, -, -, rfl⟩
