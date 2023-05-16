@@ -295,15 +295,14 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
 theorem continuousOn_log : ContinuousOn log ({0}ᶜ) := by
-  rw [continuousOn_iff_continuous_restrict]
-  simp only [restrict]
+  simp only [continuousOn_iff_continuous_restrict, restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 #align real.continuous_on_log Real.continuousOn_log
 
 @[continuity]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => hx
+  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
 #align real.continuous_log Real.continuous_log
 
 @[continuity]
@@ -312,16 +311,15 @@ theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
 #align real.continuous_log' Real.continuous_log'
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
-  (continuousOn_log x hx).continuousAt <| IsOpen.mem_nhds isOpen_compl_singleton hx
+  (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
 #align real.continuous_at_log Real.continuousAt_log
 
 @[simp]
 theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   refine' ⟨_, continuousAt_log⟩
   rintro h rfl
-  exact
-    not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
-      (h.tendsto.mono_left inf_le_left)
+  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
+    (h.tendsto.mono_left inf_le_left)
 #align real.continuous_at_log_iff Real.continuousAt_log_iff
 
 open BigOperators
@@ -334,28 +332,31 @@ theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ 
     simp [ih hf.2, log_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
 #align real.log_prod Real.log_prod
 
+-- Porting note: new theorem
+protected theorem _root_.Finsupp.log_prod {α β : Type _} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
+    (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
+  log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
+
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  nth_rw 1 [← Nat.factorization_prod_pow_eq_self hn]
-  rw [Finsupp.prod, Nat.cast_prod, log_prod _ _ fun p hp => _, Finsupp.sum]
-  · simp_rw [Nat.cast_pow, log_pow]
-  · norm_cast
+  · simp -- relies on junk values of `log` and `Nat.factorization`
+  · simp only [← log_pow, ← Nat.cast_pow]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsupp_prod, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
-    exact pow_ne_zero _ (Nat.prime_of_mem_factorization hp).ne_zero
+    rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 #align real.log_nat_eq_sum_factorization Real.log_nat_eq_sum_factorization
 
 theorem tendsto_pow_log_div_mul_add_atTop (a b : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => log x ^ n / (a * x + b)) atTop (𝓝 0) :=
-  ((tendsto_div_pow_mul_exp_add_atTop a b n ha.symm).comp tendsto_log_atTop).congr'
-    (by filter_upwards [eventually_gt_atTop (0 : ℝ)]with x hx using by simp [exp_log hx])
+  ((tendsto_div_pow_mul_exp_add_atTop a b n ha.symm).comp tendsto_log_atTop).congr' <| by
+    filter_upwards [eventually_gt_atTop (0 : ℝ)] with x hx using by simp [exp_log hx]
 #align real.tendsto_pow_log_div_mul_add_at_top Real.tendsto_pow_log_div_mul_add_atTop
 
 theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x => log x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
   · simpa using tendsto_pow_log_div_mul_add_atTop 1 0 n one_ne_zero
-  filter_upwards [eventually_ne_atTop (0 : ℝ)]with x h₁ h₂ using(h₁ h₂).elim
+  filter_upwards [eventually_ne_atTop (0 : ℝ)] with x h₁ h₂ using (h₁ h₂).elim
 #align real.is_o_pow_log_id_at_top Real.isLittleO_pow_log_id_atTop
 
 theorem isLittleO_log_id_atTop : log =o[atTop] id :=
@@ -405,17 +406,12 @@ namespace Real
 
 theorem tendsto_log_comp_add_sub_log (y : ℝ) :
     Tendsto (fun x : ℝ => log (x + y) - log x) atTop (𝓝 0) := by
-  refine' Tendsto.congr' (_ : ∀ᶠ x : ℝ in atTop, log (1 + y / x) = log (x + y) - log x) _
-  · refine'
-      Eventually.mp ((eventually_ne_atTop 0).and (eventually_gt_atTop (-y)))
-        (eventually_of_forall fun x hx => _)
-    rw [← log_div _ hx.1]
-    · congr 1
-      field_simp [hx.1]
-    · linarith [hx.2]
-  · suffices Tendsto (fun x : ℝ => log (1 + y / x)) atTop (𝓝 (log (1 + 0))) by simpa
-    refine' Tendsto.log _ (by simp)
-    exact tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
+  have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0))
+  · exact tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
+  rw [← comap_exp_nhds_exp, exp_zero, tendsto_comap_iff, ← add_zero (1 : ℝ)]
+  refine' this.congr' _
+  filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_gt_atTop (-y)] with x hx₀ hxy
+  rw [comp_apply, exp_sub, exp_log, exp_log, one_add_div] <;> linarith
 #align real.tendsto_log_comp_add_sub_log Real.tendsto_log_comp_add_sub_log
 
 theorem tendsto_log_nat_add_one_sub_log : Tendsto (fun k : ℕ => log (k + 1) - log k) atTop (𝓝 0) :=
