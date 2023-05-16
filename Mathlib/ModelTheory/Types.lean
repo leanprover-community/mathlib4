@@ -209,6 +209,10 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
   Set.range (T.typeOf : (α → M) → T.CompleteType α)
 #align first_order.language.Theory.realized_types FirstOrder.Language.Theory.realizedTypes
 
+section
+-- Porting note: This instance interrupts synthesizing instances.
+attribute [-instance] FirstOrder.Language.withConstants_expansion
+
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.isMaximal.1
@@ -222,6 +226,8 @@ theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
         (p.isMaximal.mem_iff_models φ).symm)
   rfl
 #align first_order.language.Theory.exists_Model_is_realized_in FirstOrder.Language.Theory.exists_modelType_is_realized_in
+
+end
 
 end Theory
 
