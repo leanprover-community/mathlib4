@@ -3,7 +3,7 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
-! This file was ported from Lean 3 source module topology.category.Top.limits
+! This file was ported from Lean 3 source module topology.category.Top.limits.cofiltered
 ! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -67,7 +67,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         refine' ⟨j, V, hV, rfl⟩
     -- Using `D`, we can apply the characterization of the topological basis of a
     -- topology defined as an infimum...
-    convert isTopologicalBasis_infᵢ hT fun j (x : D.pt) => D.π.app j x using 1
+    convert isTopologicalBasis_iInf hT fun j (x : D.pt) => D.π.app j x using 1
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
@@ -101,7 +101,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
           · intro P he _
             simpa
           · intro hh2 hh3 hh4 hh5
-            rw [Finset.set_binterᵢ_insert]
+            rw [Finset.set_biInter_insert]
             refine' hh4 _ _ (hh5 _ (Finset.mem_insert_self _ _)) (hh1 _ hh3 hh4 _)
             intro e he
             exact hh5 e (Finset.mem_insert_of_mem he)
@@ -114,10 +114,10 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       · -- conclude...
         rw [h2]
         change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_he : e ∈ G), Vs e
-        rw [Set.preimage_interᵢ]
+        rw [Set.preimage_iInter]
         apply congrArg
         ext1 e
-        erw [Set.preimage_interᵢ]
+        erw [Set.preimage_iInter]
         apply congrArg
         ext1 he
         -- Porting note: needed more hand holding here
@@ -130,4 +130,3 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 
 end CofilteredLimit
-
