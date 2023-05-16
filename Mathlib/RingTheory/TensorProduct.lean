@@ -307,7 +307,6 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 variable (f g : M →ₗ[R] N)
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
   ext
@@ -316,7 +315,6 @@ theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A 
 
 #align linear_map.base_change_sub LinearMap.baseChange_sub
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
   ext
@@ -562,7 +560,6 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
   rfl
 #align algebra.tensor_product.include_right_apply Algebra.TensorProduct.includeRight_apply
 
-set_option synthInstance.etaExperiment true in
 theorem includeLeft_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
     (includeLeft.toRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
@@ -581,7 +578,6 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-set_option synthInstance.etaExperiment true in
 instance : Ring (A ⊗[R] B) :=
   { (by infer_instance : Semiring (A ⊗[R] B)) with
     add_left_neg := add_left_neg }
@@ -596,7 +592,6 @@ variable {A : Type v₁} [CommRing A] [Algebra R A]
 
 variable {B : Type v₂} [CommRing B] [Algebra R B]
 
-set_option synthInstance.etaExperiment true in
 instance : CommRing (A ⊗[R] B) :=
   { (by infer_instance : Ring (A ⊗[R] B)) with
     mul_comm := fun x y => by
@@ -616,7 +611,6 @@ instance : CommRing (A ⊗[R] B) :=
 
 section RightAlgebra
 
-set_option synthInstance.etaExperiment true in
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 @[reducible]
@@ -626,7 +620,6 @@ def rightAlgebra : Algebra B (A ⊗[R] B) :=
 
 attribute [local instance] TensorProduct.rightAlgebra
 
-set_option synthInstance.etaExperiment true in
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 #align algebra.tensor_product.right_is_scalar_tower Algebra.TensorProduct.right_isScalarTower
@@ -635,13 +628,11 @@ end RightAlgebra
 
 end CommRing
 
-set_option synthInstance.etaExperiment true in
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
 example {A : Type v₁} [Ring A] {B : Type v₂} [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
-set_option synthInstance.etaExperiment true in
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/
@@ -714,7 +705,6 @@ theorem algEquivOfLinearEquivTensorProduct_apply (f w₁ w₂ x) :
   rfl
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct_apply
 
-set_option maxHeartbeats 2000000 in
 /-- Build an algebra equivalence from a linear equivalence out of a triple tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
@@ -754,6 +744,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
         rw [map_add, add_mul, map_add, add_mul, h₁, h₂]
     commutes' := fun r => by simp [w₂] }
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
+
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f w₁ w₂ x) :
     (algEquivOfLinearEquivTripleTensorProduct f w₁ w₂ : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D) x = f x :=
