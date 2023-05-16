@@ -91,8 +91,11 @@ protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y �
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 #align submodule.quotient.eq Submodule.Quotient.eq
 
-instance : Zero (M ⧸ p) :=
-  ⟨mk 0⟩
+instance : Zero (M ⧸ p) where
+  -- Use Quotient.mk'' instead of mk here because mk is not reducible.
+  -- This would lead to non-defeq diamonds.
+  -- See also the same comment at the One instance for Con.
+  zero := Quotient.mk'' 0
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩

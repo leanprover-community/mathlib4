@@ -192,6 +192,10 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     apply Equiv.coe_fn_injective h₁
   map_mul := map_mul'
 
+@[to_additive] -- shortcut instance that doesn't generate any subgoals
+instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+  coe f := f
+
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
 @[to_additive (attr := simp)]

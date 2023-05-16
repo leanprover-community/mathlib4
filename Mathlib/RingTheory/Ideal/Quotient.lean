@@ -43,9 +43,6 @@ open BigOperators
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
 
--- Porting note: we need η for TC
-set_option synthInstance.etaExperiment true
-
 -- Note that at present `Ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
@@ -335,7 +332,6 @@ section Pi
 
 variable (ι : Type v)
 
-set_option maxHeartbeats 300000 in
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
@@ -371,21 +367,19 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
-set_option synthInstance.etaExperiment false in -- Porting note: needed, otherwise type times out
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
-noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
-  refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
-  case toFun => set_option synthInstance.etaExperiment true in -- Porting note: to get `Module R R`
-    exact fun x ↦
+noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
+  toFun := fun x ↦
       Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
-  case invFun =>
-    exact fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨x⟩
+  map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  invFun := fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
+  left_inv := by
+    rintro ⟨x⟩
     exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  · intro x
+  right_inv := by
+    intro x
     ext i
     obtain ⟨_, _⟩ := @Quot.exists_rep _ _ (x i)
     convert Quotient.out_eq' (x i)
