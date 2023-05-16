@@ -40,16 +40,16 @@ variable [HasZeroMorphisms C] [HasShift C ℤ]
 an object `X` equipped with
 a morphism `d : X ⟶ X⟦1⟧`, such that `d^2 = 0`.
 -/
-@[nolint has_nonempty_instance]
+-- Porting note: Removed `@[nolint has_nonempty_instance]`
 structure DifferentialObject where
   pt : C
-  d : X ⟶ X⟦1⟧
-  d_squared' : d ≫ d⟦(1 : ℤ)⟧' = 0 := by obviously
+  d : pt ⟶ pt⟦(1 : ℤ)⟧
+  d_squared' : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object CategoryTheory.DifferentialObject
 
-restate_axiom differential_object.d_squared'
+restate_axiom DifferentialObject.d_squared'
 
-attribute [simp] differential_object.d_squared
+attribute [simp] DifferentialObject.d_squared
 
 variable {C}
 
@@ -57,26 +57,28 @@ namespace DifferentialObject
 
 /-- A morphism of differential objects is a morphism commuting with the differentials.
 -/
-@[ext, nolint has_nonempty_instance]
+@[ext] -- Porting note: Removed `nolint has_nonempty_instance`
 structure Hom (X Y : DifferentialObject C) where
   f : X.pt ⟶ Y.pt
-  comm' : X.d ≫ f⟦1⟧' = f ≫ Y.d := by obviously
+  comm' : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object.hom CategoryTheory.DifferentialObject.Hom
 
-restate_axiom hom.comm'
+restate_axiom Hom.comm'
 
-attribute [simp, reassoc] hom.comm
+attribute [reassoc (attr := simp)] Hom.comm
 
 namespace Hom
 
 /-- The identity morphism of a differential object. -/
 @[simps]
-def id (X : DifferentialObject C) : Hom X X where f := 𝟙 X.pt
+def id (X : DifferentialObject C) : Hom X X where
+  f := 𝟙 X.pt
 #align category_theory.differential_object.hom.id CategoryTheory.DifferentialObject.Hom.id
 
 /-- The composition of morphisms of differential objects. -/
 @[simps]
-def comp {X Y Z : DifferentialObject C} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where f := f.f ≫ g.f
+def comp {X Y Z : DifferentialObject C} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
+  f := f.f ≫ g.f
 #align category_theory.differential_object.hom.comp CategoryTheory.DifferentialObject.Hom.comp
 
 end Hom
@@ -84,7 +86,7 @@ end Hom
 instance categoryOfDifferentialObjects : Category (DifferentialObject C) where
   Hom := Hom
   id := Hom.id
-  comp X Y Z f g := Hom.comp f g
+  comp f g := Hom.comp f g
 #align category_theory.differential_object.category_of_differential_objects CategoryTheory.DifferentialObject.categoryOfDifferentialObjects
 
 @[simp]
@@ -99,7 +101,9 @@ theorem comp_f {X Y Z : DifferentialObject C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f �
 
 @[simp]
 theorem eqToHom_f {X Y : DifferentialObject C} (h : X = Y) :
-    Hom.f (eqToHom h) = eqToHom (congr_arg _ h) := by subst h; rw [eq_to_hom_refl, eq_to_hom_refl];
+    Hom.f (eqToHom h) = eqToHom (congr_arg _ h) := by
+  subst h
+  rw [eqToHom_refl, eqToHom_refl]
   rfl
 #align category_theory.differential_object.eq_to_hom_f CategoryTheory.DifferentialObject.eqToHom_f
 
@@ -108,13 +112,15 @@ variable (C)
 /-- The forgetful functor taking a differential object to its underlying object. -/
 def forget : DifferentialObject C ⥤ C where
   obj X := X.pt
-  map X Y f := f.f
+  map f := f.f
 #align category_theory.differential_object.forget CategoryTheory.DifferentialObject.forget
 
 instance forget_faithful : Faithful (forget C) where
+  map_injective := Hom.ext _ _ -- Porting note: Added a definition for `map_injective`
 #align category_theory.differential_object.forget_faithful CategoryTheory.DifferentialObject.forget_faithful
 
-instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where Zero X Y := ⟨{ f := 0 }⟩
+instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where
+  Zero X Y := ⟨{ f := 0 }⟩
 #align category_theory.differential_object.has_zero_morphisms CategoryTheory.DifferentialObject.hasZeroMorphisms
 
 variable {C}
@@ -128,8 +134,11 @@ theorem zero_f (P Q : DifferentialObject C) : (0 : P ⟶ Q).f = 0 :=
 -/
 @[simps]
 def isoApp {X Y : DifferentialObject C} (f : X ≅ Y) : X.pt ≅ Y.pt :=
-  ⟨f.Hom.f, f.inv.f, by dsimp; rw [← comp_f, iso.hom_inv_id, id_f], by dsimp;
-    rw [← comp_f, iso.inv_hom_id, id_f]⟩
+  ⟨f.hom.f, f.inv.f, by
+    dsimp
+    rw [← comp_f, Iso.hom_inv_id, id_f], by
+    dsimp
+    rw [← comp_f, Iso.inv_hom_id, id_f]⟩
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
@@ -151,15 +160,22 @@ theorem isoApp_trans {X Y Z : DifferentialObject C} (f : X ≅ Y) (g : Y ≅ Z) 
 /-- An isomorphism of differential objects can be constructed
 from an isomorphism of the underlying objects that commutes with the differentials. -/
 @[simps]
-def mkIso {X Y : DifferentialObject C} (f : X.pt ≅ Y.pt) (hf : X.d ≫ f.Hom⟦1⟧' = f.Hom ≫ Y.d) :
+def mkIso {X Y : DifferentialObject C} (f : X.pt ≅ Y.pt) (hf : X.d ≫ f.hom⟦1⟧' = f.hom ≫ Y.d) :
     X ≅ Y where
-  Hom := ⟨f.Hom, hf⟩
+  hom := ⟨f.hom, hf⟩
   inv :=
-    ⟨f.inv, by dsimp;
-      rw [← functor.map_iso_inv, iso.comp_inv_eq, category.assoc, iso.eq_inv_comp,
-        functor.map_iso_hom, hf]⟩
-  hom_inv_id' := by ext1; dsimp; exact f.hom_inv_id
-  inv_hom_id' := by ext1; dsimp; exact f.inv_hom_id
+    ⟨f.inv, by
+      dsimp
+      rw [← Functor.mapIso_inv, Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp,
+        Functor.mapIso_hom, hf]⟩
+  hom_inv_id := by
+    apply Hom.ext -- Porting note: Originally `ext1`
+    dsimp
+    exact f.hom_inv_id
+  inv_hom_id := by
+    apply Hom.ext -- Porting note: Originally `ext1`
+    dsimp
+    exact f.inv_hom_id
 #align category_theory.differential_object.mk_iso CategoryTheory.DifferentialObject.mkIso
 
 end DifferentialObject
@@ -184,20 +200,26 @@ def mapDifferentialObject (F : C ⥤ D)
     { pt := F.obj X.pt
       d := F.map X.d ≫ η.app X.pt
       d_squared' := by
-        rw [functor.map_comp, ← functor.comp_map F (shift_functor D (1 : ℤ))]
+        rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D (1 : ℤ))]
         slice_lhs 2 3 => rw [← η.naturality X.d]
-        rw [functor.comp_map]
+        rw [Functor.comp_map]
         slice_lhs 1 2 => rw [← F.map_comp, X.d_squared, hF]
         rw [zero_comp, zero_comp] }
-  map X Y f :=
+  map f :=
     { f := F.map f.f
       comm' := by
         dsimp
-        slice_lhs 2 3 => rw [← functor.comp_map F (shift_functor D (1 : ℤ)), ← η.naturality f.f]
-        slice_lhs 1 2 => rw [functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
-        rw [category.assoc] }
-  map_id' := by intros; ext; simp
-  map_comp' := by intros; ext; simp
+        slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : ℤ)), ← η.naturality f.f]
+        slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
+        rw [Category.assoc] }
+  map_id := by
+    intros
+    apply DifferentialObject.Hom.ext -- Porting note: Originally `ext`
+    simp
+  map_comp := by
+    intros
+    apply DifferentialObject.Hom.ext -- Porting note: Originally `ext`
+    simp
 #align category_theory.functor.map_differential_object CategoryTheory.Functor.mapDifferentialObject
 
 end Functor
@@ -215,7 +237,8 @@ variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C ℤ]
 open scoped ZeroObject
 
 instance hasZeroObject : HasZeroObject (DifferentialObject C) := by
-  refine' ⟨⟨⟨0, 0⟩, fun X => ⟨⟨⟨⟨0⟩⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨⟨0⟩⟩, fun f => _⟩⟩⟩⟩ <;> ext
+  refine' ⟨⟨⟨0, 0, by aesop_cat⟩, fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩,
+    fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩⟩⟩ <;> apply DifferentialObject.Hom.ext <;> simp
 #align category_theory.differential_object.has_zero_object CategoryTheory.DifferentialObject.hasZeroObject
 
 end DifferentialObject
@@ -225,11 +248,12 @@ namespace DifferentialObject
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasZeroMorphisms C]
   [HasShift C ℤ]
 
-instance concreteCategoryOfDifferentialObjects : ConcreteCategory (DifferentialObject C)
-    where forget := forget C ⋙ CategoryTheory.forget C
+instance concreteCategoryOfDifferentialObjects : ConcreteCategory (DifferentialObject C) where
+  forget := forget C ⋙ CategoryTheory.forget C
 #align category_theory.differential_object.concrete_category_of_differential_objects CategoryTheory.DifferentialObject.concreteCategoryOfDifferentialObjects
 
-instance : HasForget₂ (DifferentialObject C) C where forget₂ := forget C
+instance : HasForget₂ (DifferentialObject C) C where
+  forget₂ := forget C
 
 end DifferentialObject
 
@@ -249,34 +273,43 @@ noncomputable section
 def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C where
   obj X :=
     { pt := X.pt⟦n⟧
-      d := X.d⟦n⟧' ≫ (shiftComm _ _ _).Hom
+      d := X.d⟦n⟧' ≫ (shiftComm _ _ _).hom
       d_squared' := by
-        rw [functor.map_comp, category.assoc, shift_comm_hom_comp_assoc, ← functor.map_comp_assoc,
-          X.d_squared, functor.map_zero, zero_comp] }
-  map X Y f :=
+        rw [Functor.map_comp, Category.assoc, shiftComm_hom_comp_assoc, ← Functor.map_comp_assoc,
+          X.d_squared, Functor.map_zero, zero_comp] }
+  map f :=
     { f := f.f⟦n⟧'
       comm' := by
         dsimp
-        erw [category.assoc, shift_comm_hom_comp, ← functor.map_comp_assoc, f.comm,
-          functor.map_comp_assoc]
+        erw [Category.assoc, shiftComm_hom_comp, ← Functor.map_comp_assoc, f.comm,
+          Functor.map_comp_assoc]
         rfl }
-  map_id' := by intro X; ext1; dsimp; rw [Functor.map_id]
-  map_comp' := by intro X Y Z f g; ext1; dsimp; rw [functor.map_comp]
+  map_id X := by
+    apply Hom.ext -- Porting note: Originally `ext1`
+    dsimp
+    rw [Functor.map_id]
+  map_comp f g := by
+    apply Hom.ext -- Porting note: Originally `ext1`
+    dsimp
+    rw [Functor.map_comp]
 #align category_theory.differential_object.shift_functor CategoryTheory.DifferentialObject.shiftFunctor
 
 /-- The shift functor on `differential_object C` is additive. -/
 @[simps]
-def shiftFunctorAdd (m n : ℤ) : shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
-  refine' nat_iso.of_components (fun X => mk_iso (shift_add X.pt _ _) _) _
+nonrec def shiftFunctorAdd (m n : ℤ) :
+    shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
+  refine' NatIso.ofComponents (fun X => mkIso (shiftAdd X.pt _ _) _) (fun f => _)
   · dsimp
-    rw [← cancel_epi ((shift_functor_add C m n).inv.app X.X)]
-    simp only [category.assoc, iso.inv_hom_id_app_assoc]
-    erw [← nat_trans.naturality_assoc]
+    rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.pt)]
+    simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
+    erw [← NatTrans.naturality_assoc]
     dsimp
-    simp only [functor.map_comp, category.assoc,
-      shift_functor_comm_hom_app_comp_shift_shift_functor_add_hom_app 1 m n X.X,
-      iso.inv_hom_id_app_assoc]
-  · intro X Y f; ext; dsimp; exact nat_trans.naturality _ _
+    simp only [Functor.map_comp, Category.assoc,
+      shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.pt,
+      Iso.inv_hom_id_app_assoc]
+  · apply Hom.ext -- Porting note: Originally `ext`
+    dsimp
+    exact NatTrans.naturality _ _
 #align category_theory.differential_object.shift_functor_add CategoryTheory.DifferentialObject.shiftFunctorAdd
 
 section
@@ -284,10 +317,10 @@ section
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps]
 def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject C) := by
-  refine' nat_iso.of_components (fun X => mk_iso ((shift_functor_zero C ℤ).app X.pt) _) _
-  · erw [← nat_trans.naturality]
+  refine' NatIso.ofComponents (fun X => mkIso ((shiftFunctorZero C ℤ).app X.pt) _) _
+  · erw [← NatTrans.naturality]
     dsimp
-    simp only [shift_functor_zero_hom_app_shift, category.assoc]
+    simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
   · tidy
 #align category_theory.differential_object.shift_zero CategoryTheory.DifferentialObject.shiftZero
 
@@ -295,24 +328,25 @@ end
 
 instance : HasShift (DifferentialObject C) ℤ :=
   hasShiftMk _ _
-    { f := shiftFunctor C
+    { F := shiftFunctor C
       zero := shiftZero C
       add := shiftFunctorAdd C
       assoc_hom_app := fun m₁ m₂ m₃ X => by
-        ext1
-        convert shift_functor_add_assoc_hom_app m₁ m₂ m₃ X.X
-        dsimp [shift_functor_add']
-        simpa
+        apply Hom.ext -- Porting note: Originally `ext1`
+        convert shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.pt
+        dsimp [shiftFunctorAdd']
+        simp
       zero_add_hom_app := fun n X => by
-        ext1
-        convert shift_functor_add_zero_add_hom_app n X.X
-        simpa
+        apply Hom.ext -- Porting note: Originally `ext1`
+        convert shiftFunctorAdd_zero_add_hom_app n X.pt
+        simp
       add_zero_hom_app := fun n X => by
-        ext1
-        convert shift_functor_add_add_zero_hom_app n X.X
-        simpa }
+        apply Hom.ext -- Porting note: Originally `ext1`
+        convert shiftFunctorAdd_add_zero_hom_app n X.pt
+        simp }
+
+end
 
 end DifferentialObject
 
 end CategoryTheory
-
