@@ -39,9 +39,7 @@ namespace Set
 
 variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure M]
 
-open FirstOrder
-
-open FirstOrder.Language FirstOrder.Language.Structure
+open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 variable {α : Type u₁} {β : Type _}
 
@@ -127,24 +125,24 @@ theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).union h
 #align set.definable_finset_sup Set.definable_finset_sup
 
-theorem definable_finset_binterᵢ {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biInter {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
-  rw [← Finset.inf_set_eq_interᵢ]
+  rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
-#align set.definable_finset_bInter Set.definable_finset_binterᵢ
+#align set.definable_finset_bInter Set.definable_finset_biInter
 
-theorem definable_finset_bunionᵢ {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
-  rw [← Finset.sup_set_eq_bunionᵢ]
+  rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
-#align set.definable_finset_bUnion Set.definable_finset_bunionᵢ
+#align set.definable_finset_bUnion Set.definable_finset_biUnion
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
-  rw [hφ]
-  rfl
+  ext v
+  rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
 #align set.definable.compl Set.Definable.compl
 
 @[simp]
@@ -173,7 +171,7 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     simp
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
-/-- This lemma is only intended as a helper for `definable.image_comp. -/
+/-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
@@ -223,7 +221,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine' fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext _⟩
           simp
-      refine' (congr rfl (ext _)).mp (definable_finset_binterᵢ h' Finset.univ)
+      refine' (congr rfl (ext _)).mp (definable_finset_biInter h' Finset.univ)
       simp
     refine' (congr rfl (ext fun x => _)).mp (h.inter h')
     simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,

@@ -151,7 +151,7 @@ whose quotient is the localization of `M` at `S`, defined as the unique congruen
 `(0, 0) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
 `(x₁, y₁) ∼ (x₂, y₂)` by `s`."]
 def r (S : Submonoid M) : Con (M × S) :=
-  infₛ { c | ∀ y : S, c 1 (y, y) }
+  sInf { c | ∀ y : S, c 1 (y, y) }
 #align localization.r Localization.r
 #align add_localization.r AddLocalization.r
 
@@ -189,8 +189,8 @@ equivalently as an infimum (see `Localization.r`) or explicitly
 expressed equivalently as an infimum (see `AddLocalization.r`) or explicitly
 (see `AddLocalization.r'`)."]
 theorem r_eq_r' : r S = r' S :=
-  le_antisymm (infₛ_le fun _ ↦ ⟨1, by simp⟩) <|
-    le_infₛ fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
+  le_antisymm (sInf_le fun _ ↦ ⟨1, by simp⟩) <|
+    le_sInf fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
       refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
       convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
@@ -2024,8 +2024,8 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidable_le := Localization.decidableLE
-    decidable_lt := Localization.decidableLT  -- porting note: was wrong in mathlib3
-    decidable_eq := Localization.decidableEq }
+    decidableLE := Localization.decidableLE
+    decidableLT := Localization.decidableLT  -- porting note: was wrong in mathlib3
+    decidableEq := Localization.decidableEq }
 
 end Localization
