@@ -270,6 +270,7 @@ abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
 -- Porting note: We've since turned on etaExperiment here,
 -- but there remain lots of notes below about clean up that is possible with etaExperiment,
 -- and we should follow these!
+-- These should all be done as part of cleanup after lean4#2210.
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]

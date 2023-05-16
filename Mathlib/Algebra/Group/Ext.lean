@@ -127,7 +127,7 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
-    @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
+    @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ _) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := congr_arg (·.npow) h_mon
   have : m₁.zpow = m₂.zpow := by
