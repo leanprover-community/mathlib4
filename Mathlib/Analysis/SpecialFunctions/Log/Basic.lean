@@ -14,9 +14,9 @@ import Mathlib.Data.Nat.Factorization.Basic
 /-!
 # Real logarithm
 
-In this file we define `real.log` to be the logarithm of a real number. As usual, we extend it from
-its domain `(0, +∞)` to a globally defined function. We choose to do it so that `log 0 = 0` and
-`log (-x) = log x`.
+In this file we define `Real.log` to be the logarithm of a real number. As usual, we extend it from
+its domain `(0, +∞)` to a globally defined function. We choose to do it so that `Real.log 0 = 0` and
+`Real.log (-x) = Real.log x`.
 
 We prove some basic properties of this function and show that it is continuous.
 
@@ -36,10 +36,10 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- The real logarithm function, equal to the inverse of the exponential for `x > 0`,
-to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extension to
-`(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
-the derivative of `log` is `1/x` away from `0`. -/
+/-- The real logarithm function, equal to the inverse of the exponential for `x > 0`, to `log |x|`
+for `x < 0`, and to `0` for `0`. We use this unconventional extension to `(-∞, 0]` as it gives the
+formula `Real.log (x * y) = Real.log x + Real.log y` for all nonzero `x` and `y`, and the derivative
+of `Real.log` is `1/x` away from `0`. -/
 -- porting note: was @[pp_nodot]
 noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
@@ -267,7 +267,7 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [exp_log hx]
 #align real.log_le_sub_one_of_pos Real.log_le_sub_one_of_pos
 
-/-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
+/-- Bound for `|Real.log x * x|` in the interval `(0, 1]`. -/
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by
   have : 0 < 1 / x := by simpa only [one_div, inv_pos] using h1
   replace := log_le_sub_one_of_pos this
