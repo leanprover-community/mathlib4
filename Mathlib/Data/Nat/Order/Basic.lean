@@ -175,6 +175,9 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
+#align nat.add_pos_left Nat.add_pos_left
+#align nat.add_pos_right Nat.add_pos_right
+
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
   Iff.intro
     (by
