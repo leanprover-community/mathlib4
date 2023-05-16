@@ -241,7 +241,15 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
-  · simp [h₂, h₃, -one_div]
+  · rfl
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
   · exfalso
     linarith
   · exfalso
@@ -249,13 +257,23 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   · have h : ¬(x : ℝ) + 1 / 4 ≤ 1 / 2 := by linarith
     have h' : 2 * ((x : ℝ) + 1 / 4) - 1 ≤ 1 / 2 := by linarith
     have h'' : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
-    simp only [h₄, h₁, h, h', h'', dif_neg (show ¬False from id), dif_pos True.intro, if_false,
+    simp [h₂, h₁, h, h', h'', dif_neg (show ¬False from id), dif_pos True.intro, if_false,
       if_true]
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
   · exfalso
     linarith
   · have h : ¬(1 / 2 : ℝ) * (x + 1) ≤ 1 / 2 := by linarith
     have h' : ¬2 * ((1 / 2 : ℝ) * (x + 1)) - 1 ≤ 1 / 2 := by linarith
-    simp only [h₁, h₅, h, h', if_false, dif_neg (show ¬False from id)]
+    simp only [h₁, h, h', if_false, dif_neg (show ¬False from id)]
     congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
