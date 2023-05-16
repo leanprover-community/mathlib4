@@ -301,7 +301,7 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
 theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
   | s, [] => by
     simp only [tails, mem_singleton]
-    exact ⟨fun h => h ▸ suffix_rfl, eq_nil_of_suffix_nil⟩
+    exact ⟨fun h => h.symm ▸ suffix_refl [], eq_nil_of_suffix_nil⟩
   | s, a :: t => by
     simp only [tails, mem_cons, mem_tails s t];
     exact
