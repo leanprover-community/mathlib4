@@ -228,7 +228,8 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
 #align first_order.language.exists_elementary_embedding_card_eq_of_le FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_le
 
 section
-attribute [-instance] withConstantsStructure
+-- Porting note: This instance interrupts synthesizing instances.
+attribute [-instance] FirstOrder.Language.withConstants_expansion
 
 /-- The Upward Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
 and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
@@ -237,7 +238,6 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
     (h2 : Cardinal.lift.{w} (#M) ≤ Cardinal.lift.{w'} κ) :
     ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ (#N) = κ := by
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
-  let _ := ElementaryEmbedding.ofModelsElementaryDiagram L M N0
   rw [← lift_le.{max w w', max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
     exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
