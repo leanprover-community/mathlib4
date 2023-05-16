@@ -14,7 +14,7 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 /-!
 # Homomorphisms from finite subgraphs
 
-This file defines the type of finite subgraphs of a `simple_graph` and proves a compactness result
+This file defines the type of finite subgraphs of a `SimpleGraph` and proves a compactness result
 for homomorphisms to a finite codomain.
 
 ## Main statements
@@ -121,7 +121,7 @@ def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgrap
 a homomorphism from the whole of `G` to `F`. -/
 theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     (h : ∀ G' : G.Subgraph, G'.verts.Finite → G'.coe →g F) : Nonempty (G →g F) := by
-  -- Obtain a `fintype` instance for `W`.
+  -- Obtain a `Fintype` instance for `W`.
   cases nonempty_fintype W
   -- Establish the required interface instances.
   haveI : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
