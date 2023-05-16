@@ -8,9 +8,9 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Exp
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Analysis.Normed.Field.UnitBall
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
 # The circle
@@ -140,8 +140,7 @@ theorem expMapCircle_add (x y : ℝ) : expMapCircle (x + y) = expMapCircle x * e
 /-- The map `λ t, exp (t * I)` from `ℝ` to the unit circle in `ℂ`, considered as a homomorphism of
 groups. -/
 @[simps]
-def expMapCircleHom : ℝ →+ Additive circle
-    where
+def expMapCircleHom : ℝ →+ Additive circle where
   toFun := Additive.ofMul ∘ expMapCircle
   map_zero' := expMapCircle_zero
   map_add' := expMapCircle_add
