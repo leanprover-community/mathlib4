@@ -105,17 +105,14 @@ theorem eq_nil_of_infix_nil (h : l <:+: []) : l = [] :=
   eq_nil_of_sublist_nil h.sublist
 #align list.eq_nil_of_infix_nil List.eq_nil_of_infix_nil
 
-@[simp]
 theorem infix_nil_iff : l <:+: [] ↔ l = [] :=
   ⟨fun h => eq_nil_of_sublist_nil h.sublist, fun h => h ▸ infix_rfl⟩
 #align list.infix_nil_iff List.infix_nil_iff
 
-@[simp]
 theorem prefix_nil_iff : l <+: [] ↔ l = [] :=
   ⟨fun h => eq_nil_of_infix_nil h.isInfix, fun h => h ▸ prefix_rfl⟩
 #align list.prefix_nil_iff List.prefix_nil_iff
 
-@[simp]
 theorem suffix_nil_iff : l <:+ [] ↔ l = [] :=
   ⟨fun h => eq_nil_of_infix_nil h.isInfix, fun h => h ▸ suffix_rfl⟩
 #align list.suffix_nil_iff List.suffix_nil_iff
