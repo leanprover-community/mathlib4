@@ -1171,7 +1171,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
-      { elems := univ.bunionᵢ fun y : β => (f ⁻¹' {y}).toFinset
+      { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }
     exact key.false
 #align finite.exists_infinite_fiber Finite.exists_infinite_fiber

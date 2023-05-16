@@ -29,15 +29,9 @@ structures.
 * A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `FirstOrder.Language.ElementaryEmbedding`, denoted `M ↪ₑ[L] N`, is an embedding from the
-  `L`-structure `M` to the `L`-structure `N` that commutes with the realizations of all formulas.
 * A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-
-## TODO
-
-Use `[Countable L.symbols]` instead of `[L.countable]`.
 
 ## References
 For the Flypitch project:
@@ -308,10 +302,10 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 
 open Structure
 
-/-- Used for defining `FirstOrder.Language.Theory.Model.inhabited`. -/
-def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
+/-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+def Inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
-#align first_order.language.inhabited.trivial_structure FirstOrder.Language.inhabited.trivialStructure
+#align first_order.language.inhabited.trivial_structure FirstOrder.Language.Inhabited.trivialStructure
 
 /-! ### Maps -/
 
@@ -980,12 +974,12 @@ instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] 
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
 
-/-- Makes a `Language.empty.hom` out of any function. -/
+/-- Makes a `Language.empty.Hom` out of any function. -/
 @[simps]
 def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 #align function.empty_hom Function.emptyHom
 
-/-- Makes a `Language.empty.embedding` out of any function. -/
+/-- Makes a `Language.empty.Embedding` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
@@ -998,7 +992,7 @@ theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f 
 theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
   rfl
 
-/-- Makes a `Language.empty.equiv` out of any function. -/
+/-- Makes a `Language.empty.Equiv` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
