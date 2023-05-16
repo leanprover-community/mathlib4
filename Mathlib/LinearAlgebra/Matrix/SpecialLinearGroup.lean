@@ -171,7 +171,7 @@ instance : Group (SpecialLinearGroup n R) :=
       ext1
       simp [adjugate_mul] }
 
-set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 0 in
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
@@ -213,13 +213,15 @@ def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
-theorem coe_toGL (A : SpecialLinearGroup n R) : ↑A.toGL = A.toLin'.toLinearMap :=
+-- Porting note: broken dot notation
+theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.coe_to_GL Matrix.SpecialLinearGroup.coe_toGL
 
 variable {S : Type _} [CommRing S]
 
+set_option maxHeartbeats 0 in
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
 @[simps]
