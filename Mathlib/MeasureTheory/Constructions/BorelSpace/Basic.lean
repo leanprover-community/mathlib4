@@ -198,31 +198,57 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
-def addBorelInstance (e : Expr) : TacticM Unit := do
-  throwError "addBorelInstance"
-  -- let n1 ← get_unused_name "_inst"
-  -- to_expr ``(borel $(e)) >>= pose n1
-  -- reset_instance_cache
-  -- let n2 ← get_unused_name "_inst"
-  -- let v ← to_expr ``((BorelSpace.mk rfl : BorelSpace $(e)))
-  -- note n2 none v
-  -- reset_instance_cache
+/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
+def addBorelInstance (e : Expr) : TacticM Unit :=
+  liftMetaTactic fun m₁ => do
+    let nm₁ ← getUnusedUserName `inst
+    let ms ← mkAppOptM ``MeasurableSpace #[e]
+    let bo ← mkAppOptM ``borel #[e, none]
+    let i₁ ← mkFreshFVarId
+    m₁.modifyDecl fun mdcl =>
+      { mdcl with
+        lctx := mdcl.lctx.mkLetDecl i₁ nm₁ ms bo,
+        localInstances := mdcl.localInstances.push
+          { className := ``MeasurableSpace,
+            fvar := bo } }
+    m₁.withContext do
+      let nm₂ ← getUnusedUserName `inst
+      let bs ← mkAppOptM ``BorelSpace #[e, none, none]
+      let rf ← mkEqRefl bo
+      let bm ← mkAppOptM ``BorelSpace.mk #[none, none, none, rf]
+      let i₂ ← mkFreshFVarId
+      m₁.modifyDecl fun mdcl =>
+        { mdcl with
+          lctx := mdcl.lctx.mkLetDecl i₂ nm₂ bs bm,
+          localInstances := mdcl.localInstances.push
+            { className := ``BorelSpace,
+              fvar := bm } }
+      return [m₁]
 
-/-- Given a type `α`, an assumption `i : MeasurableSpace α`, and an instance `[BorelSpace α]`,
-replace `i` with `borel α`. -/
-def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
-  let m ← mkFreshExprMVar (← mkEq (mkFVar i) (← mkAppOptM ``borel #[e, none]))
-  throwError "borelToRefl"
-  -- applyc `borel_space.measurable_eq
-  -- unfreezing ( tactic.subst i )
-  -- let n1 ← get_unused_name "_inst"
-  -- to_expr ` `( borel $ ( α ) ) >>= pose n1
-  -- reset_instance_cache
+/-- Given a type `e`, an assumption `i : MeasurableSpace α`, and an instance `[BorelSpace e]`,
+replace `i` with `borel e`. -/
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit :=
+  liftMetaTactic fun m₁ => do
+    let nm ← i.getUserName
+    let ms ← mkAppOptM ``MeasurableSpace #[e]
+    let bo ← mkAppOptM ``borel #[e, none]
+    let eq ← mkEq (mkFVar i) bo
+    let me ← mkAppOptM ``BorelSpace.measurable_eq #[e, none, none, none]
+    let m₂ ← m₁.assert .anonymous eq me
+    let (_, m₃) ← m₂.intro .anonymous
+    let m₄ ← subst m₃ i
+    let i₂ ← mkFreshFVarId
+    m₄.modifyDecl fun mdcl =>
+      { mdcl with
+        lctx := mdcl.lctx.mkLetDecl i₂ nm ms bo,
+        localInstances := mdcl.localInstances.push
+          { className := ``MeasurableSpace,
+            fvar := bo } }
+    return [m₄]
 
-/-- Given a type `α`, if there is an assumption `[i : MeasurableSpace α]`, then try to prove
-`[BorelSpace α]` and replace `i` with `borel α`. Otherwise, add instances
-`borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
+/-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
+`[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
+`borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
 def borelize (t : Syntax) : TacticM Unit := do
   let u ← mkFreshLevelMVar
   let e ← elabTermEnsuringType t (mkSort (mkLevelSucc u))
