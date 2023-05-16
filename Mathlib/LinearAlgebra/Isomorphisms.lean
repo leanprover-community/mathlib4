@@ -19,9 +19,6 @@ import Mathlib.LinearAlgebra.Quotient
 
 -/
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v
 
 variable {R M M₂ M₃ : Type _}
@@ -124,7 +121,6 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
--- Porting note: cannot synth semilinearmapclass. Needs help with Submodule.Quotient.mk
 -- Porting note: using asFun to avoid timing out
 @[simp, nolint simpNF] -- Porting note: The linter timeouts.
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
