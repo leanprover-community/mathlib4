@@ -82,7 +82,6 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : Bounded
   dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using norm_smul_le (x₁ - x₂) y
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-set_option synthInstance.etaExperiment true in
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
@@ -593,7 +592,6 @@ instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
 #align normed_algebra.id NormedAlgebra.id
 
 -- Porting note: cannot synth scalar tower ℚ ℝ k
-set_option synthInstance.etaExperiment true in
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -634,7 +632,6 @@ instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebr
 
 end NormedAlgebra
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A non-unital algebra homomorphism from an `Algebra` to a `NormedAlgebra` induces a
 `NormedAlgebra` structure on the domain, using the `SeminormedRing.induced` norm.
 
@@ -652,7 +649,6 @@ def NormedAlgebra.induced {F : Type _} (α β γ : Type _) [NormedField α] [Rin
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
-set_option synthInstance.etaExperiment true in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type _} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val

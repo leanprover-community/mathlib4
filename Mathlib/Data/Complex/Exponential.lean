@@ -1618,11 +1618,11 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
           mul_comm (n : α) n.factorial, mul_inv_cancel h₃, one_mul, mul_comm]
     _ ≤ n.succ / (n.factorial * n : α) := by
       refine' Iff.mpr (div_le_div_right (mul_pos _ _)) _
-      exact Nat.cast_pos.2 (Nat.factorial_pos _)
-      exact Nat.cast_pos.2 hn
-      exact
-        sub_le_self _
-          (mul_nonneg (Nat.cast_nonneg _) (pow_nonneg (inv_nonneg.2 (Nat.cast_nonneg _)) _))
+      · exact Nat.cast_pos.2 (Nat.factorial_pos _)
+      · exact Nat.cast_pos.2 hn
+      · exact
+          sub_le_self _
+            (mul_nonneg (Nat.cast_nonneg _) (pow_nonneg (inv_nonneg.2 (Nat.cast_nonneg _)) _))
 #align complex.sum_div_factorial_le Complex.sum_div_factorial_le
 
 theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -1856,7 +1856,6 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
     _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.cos_bound Real.cos_bound
 
-set_option maxHeartbeats 300000 in
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
     |sin x - (x - x ^ 3 / 6)| = Complex.abs (Complex.sin x - (x - x ^ 3 / 6 : ℝ)) := by
@@ -2040,7 +2039,7 @@ end Real
 namespace Tactic
 open Lean.Meta Qq
 
-/-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
+/-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
 def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
   let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
