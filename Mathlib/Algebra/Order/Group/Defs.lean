@@ -69,10 +69,6 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 -- and causes timeouts after lean4#2210.
 -- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
 -- but without the motivation clearly explained.
--- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
--- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
--- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
@@ -81,9 +77,6 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
 
--- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
--- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
 -- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
