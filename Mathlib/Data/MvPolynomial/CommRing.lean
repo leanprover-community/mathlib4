@@ -140,13 +140,11 @@ theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
 
-set_option synthInstance.etaExperiment true in
 theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.hom_C MvPolynomial.hom_C
 
-set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism f : Z[X_1, X_2, ...] → R
 is determined by the evaluations f(X_1), f(X_2), ... -/
 @[simp]

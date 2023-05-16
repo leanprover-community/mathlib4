@@ -1247,7 +1247,7 @@ theorem prod_range_add (f : ℕ → β) (n m : ℕ) :
     (∏ x in range (n + m), f x) = (∏ x in range n, f x) * ∏ x in range m, f (n + x) := by
   induction' m with m hm
   · simp
-  · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]; rfl
+  · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
 #align finset.prod_range_add Finset.prod_range_add
 #align finset.sum_range_add Finset.sum_range_add
 

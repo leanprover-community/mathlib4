@@ -119,7 +119,6 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 
-set_option synthInstance.etaExperiment true in
 /-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
@@ -187,7 +186,6 @@ end TsirelsonInequality
 
 open TsirelsonInequality
 
-set_option synthInstance.etaExperiment true in
 /-- In a noncommutative ordered `*`-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
