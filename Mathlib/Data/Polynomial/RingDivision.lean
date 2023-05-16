@@ -1201,10 +1201,6 @@ theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f :
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
-/- Porting note: resolving a diamond from Ring to NonAssocSemiRing in RingHom TC search
-This also works
-`attribute [-instance] Ring.toNonAssocRing`
--/
 theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
