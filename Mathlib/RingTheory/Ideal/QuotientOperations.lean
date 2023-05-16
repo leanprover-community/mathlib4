@@ -290,12 +290,10 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
--- Porting note: short circuit tc synth and use unification (_)
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    @AlgHom.toRingHom (R := R₁) (A := A ⧸ RingHom.ker f) (B := B) _ (_) _ (_) _ (kerLiftAlg f)
-      = RingHom.kerLift (R := A) (S := B)
-        (@AlgHom.toRingHom (R := R₁) (A := A) (B := B) _ _ _ _ _ f) := rfl
+    (kerLiftAlg f).toRingHom = RingHom.kerLift (f : A →+* B) :=
+  rfl
 #align ideal.ker_lift_alg_to_ring_hom Ideal.kerLiftAlg_toRingHom
 
 -- Porting note: short circuit tc synth and use unification (_)
