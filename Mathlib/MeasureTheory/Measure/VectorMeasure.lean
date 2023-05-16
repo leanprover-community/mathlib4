@@ -112,7 +112,7 @@ theorem of_disjoint_iUnion_nat [T2Space M] (v : VectorMeasure α M) {f : ℕ →
   (v.m_iUnion hf₁ hf₂).tsum_eq.symm
 #align measure_theory.vector_measure.of_disjoint_Union_nat MeasureTheory.VectorMeasure.of_disjoint_iUnion_nat
 
-theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) (↑) := fun v w h => by
+theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) (⇑) := fun v w h => by
   cases v
   cases w
   congr
@@ -253,7 +253,7 @@ variable {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R
 /-- Given a real number `r` and a signed measure `s`, `smul r s` is the signed
 measure corresponding to the function `r • s`. -/
 def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
-  measureOf' := r • ↑v
+  measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
   not_measurable' _ hi := by rw [Pi.smul_apply, v.not_measurable hi, smul_zero]
   m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
@@ -263,7 +263,7 @@ instance : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
 
 @[simp]
-theorem coe_smul (r : R) (v : VectorMeasure α M) : ⇑(r • v) = r • v := rfl
+theorem coe_smul (r : R) (v : VectorMeasure α M) : ⇑(r • v) = r • ⇑v := rfl
 #align measure_theory.vector_measure.coe_smul MeasureTheory.VectorMeasure.coe_smul
 
 theorem smul_apply (r : R) (v : VectorMeasure α M) (i : Set α) : (r • v) i = r • v i := rfl
@@ -311,10 +311,10 @@ theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w 
 instance : AddCommMonoid (VectorMeasure α M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
-/-- `(↑)` is an `AddMonoidHom`. -/
+/-- `(⇑)` is an `AddMonoidHom`. -/
 @[simps]
 def coeFnAddMonoidHom : VectorMeasure α M →+ Set α → M where
-  toFun := (↑)
+  toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
 #align measure_theory.vector_measure.coe_fn_add_monoid_hom MeasureTheory.VectorMeasure.coeFnAddMonoidHom
@@ -771,7 +771,6 @@ theorem map_smul {v : VectorMeasure α M} {f : α → β} (c : R) : (c • v).ma
   · simp only [map, dif_neg hf]
     -- `smul_zero` does not work since we do not require `ContinuousAdd`
     ext i
-    intro hi
     simp
 #align measure_theory.vector_measure.map_smul MeasureTheory.VectorMeasure.map_smul
 
@@ -785,7 +784,6 @@ theorem restrict_smul {v : VectorMeasure α M} {i : Set α} (c : R) :
   · simp only [restrict_not_measurable _ hi]
     -- `smul_zero` does not work since we do not require `ContinuousAdd`
     ext j
-    intro hj
     simp
 #align measure_theory.vector_measure.restrict_smul MeasureTheory.VectorMeasure.restrict_smul
 
