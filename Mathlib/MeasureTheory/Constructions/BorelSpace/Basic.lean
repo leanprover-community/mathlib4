@@ -9,13 +9,13 @@ Authors: Johannes Hölzl, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.MeasureTheory.Function.AeMeasurableSequence
+import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.Instances.Ereal
+import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
