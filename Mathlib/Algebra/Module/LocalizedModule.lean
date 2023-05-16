@@ -307,11 +307,6 @@ instance {A : Type _} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
 
--- Porting note: Manually added since `inferInstance` fails.
-@[nolint docBlame]
-local instance {A : Type _} [Ring A] [Algebra R A] : Module R A :=
-Algebra.toModule
-
 instance {A : Type} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   { show Semiring (LocalizedModule S A) by exact toSemiring with
@@ -1082,11 +1077,6 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
 #align is_localized_module.mk'_surjective IsLocalizedModule.mk'_surjective
 
 section Algebra
-
--- Porting note: Manually added since `inferInstance` fails.
-@[nolint docBlame]
-local instance {R S : Type _} [CommRing R] [CommRing S] [Algebra R S] : Module R S :=
-Algebra.toModule
 
 theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [Algebra R S]
     [Algebra R S'] (M : Submonoid R) (f : S →ₐ[R] S') (h₁ : ∀ x ∈ M, IsUnit (algebraMap R S' x))
