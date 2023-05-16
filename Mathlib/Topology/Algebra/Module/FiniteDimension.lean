@@ -392,7 +392,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -466,7 +466,7 @@ theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
 
-@[simp]
+@[simp 1100]
 theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL f (v i) = f i :=
   v.constr_basis 𝕜 _ _
 #align basis.constrL_basis Basis.constrL_basis
