@@ -302,14 +302,6 @@ structure Pregroupoid (H : Type _) [TopologicalSpace H] where
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
 #align pregroupoid Pregroupoid
 
--- Porting note:
--- simplify fails on left-hand side:
--- failed to synthesize
---   Subsingleton ((H → H) → Set H → Prop)
--- (deterministic) timeout at 'typeclass', maximum number of heartbeats (20000) has been reached
---  (use 'set_option synthInstance.maxHeartbeats <num>' to set the limit)
-attribute [nolint simpNF] Pregroupoid.mk.injEq
-
 /-- Construct a groupoid of local homeos for which the map and its inverse have some property,
 from a pregroupoid asserting that this property is stable under composition. -/
 def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
