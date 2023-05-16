@@ -136,7 +136,8 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
   the canonical map from ℕ to the underlying graded semiring.-/
-  intCast_negSucc_ofNat : ∀ n : ℕ, intCast (-(n + 1 : ℕ)) = -natCast (n + 1 : ℕ)
+  -- Porting note: -(n+1) -> Int.negSucc
+  intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 #align direct_sum.gring DirectSum.GRing
 
 /-- A graded version of `CommRing`. -/
@@ -192,8 +193,9 @@ def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
   { (inferInstance : AddCommMonoid _) with
     mul := fun a b => mulHom A a b
-    zero := 0
-    add := (· + ·)
+    -- Porting note: these are no longer needed
+    -- zero := 0
+    -- add := (· + ·)
     zero_mul := fun _ => by simp only [HMul.hMul, map_zero, AddMonoidHom.zero_apply]
     mul_zero := fun _ => by simp only [HMul.hMul, AddMonoidHom.map_zero]
     left_distrib := fun _ _ _ => by simp only [HMul.hMul, AddMonoidHom.map_add]
@@ -266,9 +268,10 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
 instance semiring : Semiring (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring _) with
     one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
+    -- Porting note: not required in now
+    -- mul := (· * ·)
+    -- zero := 0
+    -- add := (· + ·)
     one_mul := one_mul A
     mul_one := mul_one A
     mul_assoc := mul_assoc A
@@ -310,8 +313,17 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
     a * a'
       = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
-  simp [mulHom, toAddMonoid, Dfinsupp.liftAddHom_apply, Dfinsupp.sumAddHom_apply,
-    AddMonoidHom.dfinsupp_sum_apply, flip_apply, AddMonoidHom.dfinsupp_sumAddHom_apply]
+  -- Porting note: I have no idea how the proof from ml3 worked it used to be
+  -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
+  -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
+  rw [mulHom,toAddMonoid,Dfinsupp.liftAddHom_apply,Dfinsupp.sumAddHom_apply,
+    AddMonoidHom.dfinsupp_sum_apply]
+  apply congrArg _
+  funext x
+  simp_rw [flip_apply]
+  erw [Dfinsupp.sumAddHom_apply]
+  simp only [gMulHom, AddMonoidHom.dfinsupp_sum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
+  ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
 #align direct_sum.mul_eq_dfinsupp_sum DirectSum.mul_eq_dfinsupp_sum
 
 /-- A heavily unfolded version of the definition of multiplication -/
@@ -372,7 +384,11 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 /-- The `ring` derived from `gsemiring A`. -/
 instance ring : Ring (⨁ i, A i) :=
   { DirectSum.semiring A,
-    (inferInstance : AddCommGroup (⨁ i, A i)) with }
+    (inferInstance : AddCommGroup (⨁ i, A i)) with
+    toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
+    intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
+    intCast_negSucc := fun _ =>
+      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
 #align direct_sum.ring DirectSum.ring
 
 end Ring
