@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Quotient
-import Mathbin.Topology.Instances.AddCircle
+import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Topology.Instances.AddCircle
 
 /-!
 # The additive circle as a normed group
@@ -45,10 +45,8 @@ instance : NormedAddCommGroup (AddCircle p) :=
 
 @[simp]
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :
-    ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ :=
-  by
-  have aux : ∀ {a b c : ℝ}, a ∈ zmultiples b → c * a ∈ zmultiples (c * b) := fun a b c h =>
-    by
+    ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
+  have aux : ∀ {a b c : ℝ}, a ∈ zmultiples b → c * a ∈ zmultiples (c * b) := fun a b c h => by
     simp only [mem_zmultiples_iff] at h⊢
     obtain ⟨n, rfl⟩ := h
     exact ⟨n, (mul_smul_comm n c b).symm⟩
@@ -73,28 +71,23 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     exact aux hw
 #align add_circle.norm_coe_mul AddCircle.norm_coe_mul
 
-theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ :=
-  by
-  suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖
-    by
+theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ := by
+  suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖ by
     rw [← this, neg_one_mul]
     simp
   simp only [norm_coe_mul, abs_neg, abs_one, one_mul]
 #align add_circle.norm_neg_period AddCircle.norm_neg_period
 
 @[simp]
-theorem norm_eq_of_zero {x : ℝ} : ‖(x : AddCircle (0 : ℝ))‖ = |x| :=
-  by
+theorem norm_eq_of_zero {x : ℝ} : ‖(x : AddCircle (0 : ℝ))‖ = |x| := by
   suffices { y : ℝ | (y : AddCircle (0 : ℝ)) = (x : AddCircle (0 : ℝ)) } = {x} by
     rw [quotient_norm_eq, this, image_singleton, Real.norm_eq_abs, csInf_singleton]
   ext y
   simp [QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff, sub_eq_zero]
 #align add_circle.norm_eq_of_zero AddCircle.norm_eq_of_zero
 
-theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * p| :=
-  by
-  suffices ∀ x : ℝ, ‖(x : AddCircle (1 : ℝ))‖ = |x - round x|
-    by
+theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * p| := by
+  suffices ∀ x : ℝ, ‖(x : AddCircle (1 : ℝ))‖ = |x - round x| by
     rcases eq_or_ne p 0 with (rfl | hp)
     · simp
     intros
@@ -133,16 +126,14 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     simp
 #align add_circle.norm_eq AddCircle.norm_eq
 
-theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| :=
-  by
+theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
   conv_rhs =>
     congr
     rw [← abs_eq_self.mpr hp.le]
   rw [← abs_mul, mul_sub, mul_inv_cancel_left₀ hp.ne.symm, norm_eq, mul_comm p]
 #align add_circle.norm_eq' AddCircle.norm_eq'
 
-theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 :=
-  by
+theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 := by
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
   rw [norm_eq, ← mul_le_mul_left (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub, mul_left_comm,
@@ -151,18 +142,15 @@ theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| /
 #align add_circle.norm_le_half_period AddCircle.norm_le_half_period
 
 @[simp]
-theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 :=
-  by
+theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
   rcases eq_or_ne p 0 with (rfl | hp); · simp
   rw [norm_eq, ← mul_div_assoc, inv_mul_cancel hp, one_div, round_two_inv, algebraMap.coe_one,
     one_mul, (by linarith : p / 2 - p = -(p / 2)), abs_neg, abs_div, abs_two]
 #align add_circle.norm_half_period_eq AddCircle.norm_half_period_eq
 
-theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 :=
-  by
+theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
   refine' ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => _⟩
-  suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x|
-    by
+  suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
     rcases lt_trichotomy 0 p with (hp | rfl | hp)
     · rw [abs_eq_self.mpr hp.le] at hx
       exact this p hp hx
@@ -202,8 +190,7 @@ theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
 #align add_circle.coe_real_preimage_closed_ball_period_zero AddCircle.coe_real_preimage_closedBall_period_zero
 
 theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
-    coe ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε :=
-  by
+    coe ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε := by
   rcases eq_or_ne p 0 with (rfl | hp); · simp [Union_const]
   ext y
   simp only [dist_eq_norm, mem_preimage, mem_closed_ball, zsmul_eq_mul, mem_Union, Real.norm_eq_abs,
@@ -217,8 +204,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
 
 theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     (hs : s ⊆ closedBall x (|p| / 2)) :
-    coe ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s :=
-  by
+    coe ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s := by
   cases' le_or_lt (|p| / 2) ε with hε hε
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
@@ -262,15 +248,13 @@ variable {p} [hp : Fact (0 < p)]
 include hp
 
 theorem norm_div_nat_cast {m n : ℕ} :
-    ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) :=
-  by
+    ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
 #align add_circle.norm_div_nat_cast AddCircle.norm_div_nat_cast
 
 theorem exists_norm_eq_of_fin_add_order {u : AddCircle p} (hu : IsOfFinAddOrder u) :
-    ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) :=
-  by
+    ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by
   let n := addOrderOf u
   change ∃ k : ℕ, ‖u‖ = p * (k / n)
   obtain ⟨m, -, -, hm⟩ := exists_gcd_eq_one_of_is_of_fin_add_order hu
@@ -279,8 +263,7 @@ theorem exists_norm_eq_of_fin_add_order {u : AddCircle p} (hu : IsOfFinAddOrder 
 #align add_circle.exists_norm_eq_of_fin_add_order AddCircle.exists_norm_eq_of_fin_add_order
 
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)
-    (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ :=
-  by
+    (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_fin_add_order hu
   replace hu : (addOrderOf u : ℝ) ≠ 0;
   · norm_cast
