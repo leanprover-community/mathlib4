@@ -353,11 +353,14 @@ import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Split
+import Mathlib.Analysis.Calculus.TangentCone
+import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -470,6 +473,7 @@ import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -674,7 +678,9 @@ import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Plus
@@ -1155,6 +1161,7 @@ import Mathlib.Data.Polynomial.Identities
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.IntegralNormalization
+import Mathlib.Data.Polynomial.Laurent
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Mirror
 import Mathlib.Data.Polynomial.Module
@@ -1356,6 +1363,7 @@ import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.NielsenSchreier
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
@@ -1635,6 +1643,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.DistLatCat
+import Mathlib.Order.Category.FrmCat
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
@@ -2080,6 +2089,7 @@ import Mathlib.Topology.GDelta
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Inseparable

@@ -277,9 +277,9 @@ theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
   letI := Classical.decEq n
-  simp_rw [range_eq_map, ← supᵢ_range_stdBasis, Submodule.map_supᵢ, range_eq_map, ←
+  simp_rw [range_eq_map, ← iSup_range_stdBasis, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
-    Matrix.mulVecLin_apply, M.mulVec_stdBasis_apply, supᵢ_span, range_eq_unionᵢ]
+    Matrix.mulVecLin_apply, M.mulVec_stdBasis_apply, iSup_span, range_eq_iUnion]
 #align matrix.range_mul_vec_lin Matrix.range_mulVecLin
 
 variable [DecidableEq n]

@@ -210,7 +210,7 @@ theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fu
 /-- The union of all bounded set is the whole space. -/
 theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
-    Set.mem_unionₛ.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+    Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
 #align bornology.is_vonN_bounded_covers Bornology.isVonNBounded_covers
 
 variable (𝕜 E)
@@ -246,7 +246,7 @@ variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
-  rw [totallyBounded_iff_subset_finite_unionᵢ_nhds_zero] at hs
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
   intro U hU
   have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 (0, 0)) (𝓝 ((0 : E) + (0 : E))) :=
     tendsto_add
@@ -256,7 +256,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
   refine' Absorbs.mono_right _ hs
-  rw [ht.absorbs_unionᵢ]
+  rw [ht.absorbs_iUnion]
   have hx_fstsnd : x.fst + x.snd ⊆ U := by
     intro z hz
     rcases Set.mem_add.mp hz with ⟨z1, z2, hz1, hz2, hz⟩

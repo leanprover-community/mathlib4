@@ -12,10 +12,10 @@ import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# `UpperSet.Ici` etc as `Sup`/`Supₛ`/`Inf`/`Infₛ`-homomorphisms
+# `UpperSet.Ici` etc as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms
 
 In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.Ici` and
-`LowerSet.Iic` bundled as `SupHom`s, `InfHom`s, `SupₛHom`s, or `InfₛHom`s.
+`LowerSet.Iic` bundled as `SupHom`s, `InfHom`s, `sSupHom`s, or `sInfHom`s.
 -/
 
 
@@ -48,23 +48,23 @@ end SemilatticeSup
 
 variable [CompleteLattice α]
 
-/-- `UpperSet.Ici` as a `SupₛHom`. -/
-def iciSupₛHom : SupₛHom α (UpperSet α) :=
-  ⟨Ici, fun s => (Ici_supₛ s).trans supₛ_image.symm⟩
+/-- `UpperSet.Ici` as a `sSupHom`. -/
+def icisSupHom : sSupHom α (UpperSet α) :=
+  ⟨Ici, fun s => (Ici_sSup s).trans sSup_image.symm⟩
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.Ici_Sup_hom UpperSet.iciSupₛHomₓ
+#align upper_set.Ici_Sup_hom UpperSet.icisSupHomₓ
 
 @[simp]
-theorem coe_iciSupₛHom : (iciSupₛHom : α → UpperSet α) = Ici :=
+theorem coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.coe_Ici_Sup_hom UpperSet.coe_iciSupₛHomₓ
+#align upper_set.coe_Ici_Sup_hom UpperSet.coe_icisSupHomₓ
 
 @[simp]
-theorem iciSupₛHom_apply (a : α) : iciSupₛHom a = Ici a :=
+theorem icisSupHom_apply (a : α) : icisSupHom a = Ici a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.Ici_Sup_hom_apply UpperSet.iciSupₛHom_applyₓ
+#align upper_set.Ici_Sup_hom_apply UpperSet.icisSupHom_applyₓ
 
 end UpperSet
 
@@ -93,22 +93,22 @@ end SemilatticeInf
 
 variable [CompleteLattice α]
 
-/-- `LowerSet.Iic` as an `InfₛHom`. -/
-def iicInfₛHom : InfₛHom α (LowerSet α) :=
-  ⟨Iic, fun s => (Iic_infₛ s).trans infₛ_image.symm⟩
+/-- `LowerSet.Iic` as an `sInfHom`. -/
+def iicsInfHom : sInfHom α (LowerSet α) :=
+  ⟨Iic, fun s => (Iic_sInf s).trans sInf_image.symm⟩
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.Iic_Inf_hom LowerSet.iicInfₛHomₓ
+#align lower_set.Iic_Inf_hom LowerSet.iicsInfHomₓ
 
 @[simp]
-theorem coe_iicInfₛHom : (iicInfₛHom : α → LowerSet α) = Iic :=
+theorem coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicInfₛHomₓ
+#align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicsInfHomₓ
 
 @[simp]
-theorem iicInfₛHom_apply (a : α) : iicInfₛHom a = Iic a :=
+theorem iicsInfHom_apply (a : α) : iicsInfHom a = Iic a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.Iic_Inf_hom_apply LowerSet.iicInfₛHom_applyₓ
+#align lower_set.Iic_Inf_hom_apply LowerSet.iicsInfHom_applyₓ
 
 end LowerSet
