@@ -100,8 +100,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
 #align direct_sum.decomposition.induction_on DirectSum.Decomposition.inductionOn
 
 @[simp]
-theorem Decomposition.decompose'_eq : Decomposition.decompose' = decompose ℳ :=
-  rfl
+theorem Decomposition.decompose'_eq : Decomposition.decompose' = decompose ℳ := rfl
 #align direct_sum.decomposition.decompose'_eq DirectSum.Decomposition.decompose'_eq
 
 @[simp]
@@ -130,7 +129,8 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
--- @[simps (config := { fullyApplied := false })] -- Porting note : TODO
+-- Porting note : this causes a maximum recursion depth
+-- @[simps (config := { fullyApplied := false })]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
 #align direct_sum.decompose_add_equiv DirectSum.decomposeAddEquiv
@@ -230,7 +230,7 @@ variable [Decomposition ℳ]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
