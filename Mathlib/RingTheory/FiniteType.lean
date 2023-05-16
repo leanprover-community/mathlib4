@@ -633,7 +633,6 @@ variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M] (f
 
 noncomputable section
 
---Porting note: could not synthesize `Semiring (M →ₗ[R] M)` without this line
 /-- The structure of a module `M` over a ring `R` as a module over `R[X]` when given a
 choice of how `X` acts by choosing a linear map `f : M →ₗ[R] M` -/
 def modulePolynomialOfEndo : Module R[X] M :=
