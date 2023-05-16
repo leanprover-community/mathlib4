@@ -6,7 +6,7 @@ Authors: Kyle Miller, Mario Carneiro
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.NormNum
 
-/-! ### `norm_num` extension for `Nat.fib`
+/-! # `norm_num` extension for `Nat.fib`
 
 This `norm_num` extension uses a strategy parallel to that of `Nat.fastFib`, but it instead
 produces proofs of what `Nat.fib` evaluates to.
