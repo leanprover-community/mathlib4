@@ -74,7 +74,8 @@ Triangle with `homs = [f,g,h]` and `objs = [A,B,C]`
 A f B
   h g
     C
-``` -/
+```
+-/
 def subTriangle := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"triangle.sub"
 
 /-- Given a commutative triangle `f ≫ g = h` or `e ≡ h = f ≫ g`, return a triangle diagram.
