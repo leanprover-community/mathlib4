@@ -1421,7 +1421,7 @@ end
 
 -- Porting note: checked that lack of eta causes simp to fail, otherwise works
 -- This can probably be removed during lean4#2210 cleanup.
-@[simp, nolint simpNF]
+@[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) : g.comp (-f) = -g.comp f := by
   ext x

@@ -61,7 +61,7 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   zero_mem {s} := s.zero_mem'
 
 -- porting note: work around lean4#2074
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
+-- attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
@@ -572,7 +572,7 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
 #align star_subalgebra.adjoin_comm_semiring_of_comm StarSubalgebra.adjoinCommSemiringOfComm
 
 -- porting note: work around lean4#2074
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
+-- attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
