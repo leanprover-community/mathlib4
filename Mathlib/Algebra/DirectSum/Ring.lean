@@ -338,7 +338,7 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
 
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
-  { DirectSum.semiring (⨁ i, A i) with
+  { DirectSum.semiring A with
     one := 1
     mul := (· * ·)
     zero := 0
@@ -368,17 +368,11 @@ section Ring
 
 variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
+-- Porting note: overspecified fields in ml4
 /-- The `ring` derived from `gsemiring A`. -/
 instance ring : Ring (⨁ i, A i) :=
-  { DirectSum.semiring _,
-    (inferInstance : AddCommGroup (⨁ i, A i)) with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg
-    intCast := fun z => of _ _ (GRing.intCast z)
-    intCast_ofNat := fun z => congr_arg _ <| GRing.intCast_ofNat _}
+  { DirectSum.semiring A,
+    (inferInstance : AddCommGroup (⨁ i, A i)) with }
 #align direct_sum.ring DirectSum.ring
 
 end Ring
@@ -389,8 +383,8 @@ variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `comm_ring` derived from `gcomm_semiring A`. -/
 instance commRing : CommRing (⨁ i, A i) :=
-  { DirectSum.ring _,
-    DirectSum.commSemiring _ with
+  { DirectSum.ring A,
+    DirectSum.commSemiring A with
     one := 1
     mul := (· * ·)
     zero := 0
@@ -452,9 +446,10 @@ section Semiring
 variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 @[simp]
-theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of _ 0 (a ^ n) = of _ 0 a ^ n
+theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   | 0 => by rw [pow_zero, pow_zero, DirectSum.of_zero_one]
-  | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow]
+  -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
+  | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow _ n]
 #align direct_sum.of_zero_pow DirectSum.of_zero_pow
 
 instance : NatCast (A 0) :=
@@ -497,7 +492,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 instance GradeZero.commSemiring : CommSemiring (A 0) :=
   Function.Injective.commSemiring (of A 0) Dfinsupp.single_injective (of A 0).map_zero
     (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun x n => Dfinsupp.single_smul n x)
-    (fun x n => of_zero_pow _ _ _) (ofNatCast A)
+    (fun _ _ => of_zero_pow _ _ _) (ofNatCast A)
 #align direct_sum.grade_zero.comm_semiring DirectSum.GradeZero.commSemiring
 
 end CommSemiring
@@ -511,10 +506,10 @@ instance GradeZero.nonUnitalNonAssocRing : NonUnitalNonAssocRing (A 0) :=
   Function.Injective.nonUnitalNonAssocRing (of A 0) Dfinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub
     (fun x n =>
-      letI : ∀ i, DistribMulAction ℕ (A i) := fun i => inferInstance
+      letI : ∀ i, DistribMulAction ℕ (A i) := fun _ => inferInstance
       Dfinsupp.single_smul n x)
     fun x n =>
-    letI : ∀ i, DistribMulAction ℤ (A i) := fun i => inferInstance
+    letI : ∀ i, DistribMulAction ℤ (A i) := fun _ => inferInstance
     Dfinsupp.single_smul n x
 #align direct_sum.grade_zero.non_unital_non_assoc_ring DirectSum.GradeZero.nonUnitalNonAssocRing
 
@@ -528,7 +523,7 @@ instance : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
 @[simp]
-theorem ofIntCast (n : ℤ) : of A 0 n = n :=
+theorem ofIntCast (n : ℤ) : of A 0 n = n := by
   rfl
 #align direct_sum.of_int_cast DirectSum.ofIntCast
 
@@ -537,12 +532,12 @@ instance GradeZero.ring : Ring (A 0) :=
   Function.Injective.ring (of A 0) Dfinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub
     (fun x n =>
-      letI : ∀ i, DistribMulAction ℕ (A i) := fun i => inferInstance
+      letI : ∀ i, DistribMulAction ℕ (A i) := fun _ => inferInstance
       Dfinsupp.single_smul n x)
     (fun x n =>
-      letI : ∀ i, DistribMulAction ℤ (A i) := fun i => inferInstance
+      letI : ∀ i, DistribMulAction ℤ (A i) := fun _ => inferInstance
       Dfinsupp.single_smul n x)
-    (fun x n => of_zero_pow _ _ _) (ofNatCast A) (ofIntCast A)
+    (fun _ _ => of_zero_pow _ _ _) (ofNatCast A) (ofIntCast A)
 #align direct_sum.grade_zero.ring DirectSum.GradeZero.ring
 
 end Ring
@@ -556,12 +551,12 @@ instance GradeZero.commRing : CommRing (A 0) :=
   Function.Injective.commRing (of A 0) Dfinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub
     (fun x n =>
-      letI : ∀ i, DistribMulAction ℕ (A i) := fun i => inferInstance
+      letI : ∀ i, DistribMulAction ℕ (A i) := fun _ => inferInstance
       Dfinsupp.single_smul n x)
     (fun x n =>
-      letI : ∀ i, DistribMulAction ℤ (A i) := fun i => inferInstance
+      letI : ∀ i, DistribMulAction ℤ (A i) := fun _ => inferInstance
       Dfinsupp.single_smul n x)
-    (fun x n => of_zero_pow _ _ _) (ofNatCast A) (ofIntCast A)
+    (fun _ _ => of_zero_pow _ _ _) (ofNatCast A) (ofIntCast A)
 #align direct_sum.grade_zero.comm_ring DirectSum.GradeZero.commRing
 
 end CommRing
@@ -672,8 +667,8 @@ variable (ι)
 
 /-- A direct sum of copies of a `semiring` inherits the multiplication structure. -/
 instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
-    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun i : ι => R :=
-  { Mul.gMul ι with
+    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
+  { -- Porting note: removed Mul.gMul ι with and we seem ok
     mul_zero := mul_zero
     zero_mul := zero_mul
     mul_add := mul_add
@@ -682,7 +677,7 @@ instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type
 
 /-- A direct sum of copies of a `semiring` inherits the multiplication structure. -/
 instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
-    DirectSum.GSemiring fun i : ι => R :=
+    DirectSum.GSemiring fun _ : ι => R :=
   { NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι,
     Monoid.gMonoid ι with
     natCast := fun n => n
@@ -694,13 +689,13 @@ open DirectSum
 
 -- To check `has_mul.ghas_mul_mul` matches
 example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
-    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ i, R) = DirectSum.of _ (i + j) (a * b) := by
+    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _i, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `comm_semiring` inherits the commutative multiplication structure.
 -/
 instance CommSemiring.directSumGCommSemiring {R : Type _} [AddCommMonoid ι] [CommSemiring R] :
-    DirectSum.GCommSemiring fun i : ι => R :=
+    DirectSum.GCommSemiring fun _ : ι => R :=
   { CommMonoid.gCommMonoid ι, Semiring.directSumGSemiring ι with }
 #align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGCommSemiring
 
