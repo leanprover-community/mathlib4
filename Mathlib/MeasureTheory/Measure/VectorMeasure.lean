@@ -1387,14 +1387,14 @@ theorem toMeasureOfZeroLe_toSignedMeasure (hs : 0 ≤[Set.univ] s) :
     (s.toMeasureOfZeroLe Set.univ MeasurableSet.univ hs).toSignedMeasure = s := by
   ext i
   intro hi
-  simp [Measure.toSignedMeasure_apply_measurable hi, toMeasureOfZeroLe_apply _ _ _ hi]
+  simp [hi, toMeasureOfZeroLe_apply _ _ _ hi]
 #align measure_theory.signed_measure.to_measure_of_zero_le_to_signed_measure MeasureTheory.SignedMeasure.toMeasureOfZeroLe_toSignedMeasure
 
 theorem toMeasureOfLeZero_toSignedMeasure (hs : s ≤[Set.univ] 0) :
     (s.toMeasureOfLeZero Set.univ MeasurableSet.univ hs).toSignedMeasure = -s := by
   ext i
   intro hi
-  simp [Measure.toSignedMeasure_apply_measurable hi, toMeasureOfZeroLe_apply _ _ _ hi]
+  simp [hi, toMeasureOfLeZero_apply _ _ _ hi]
 #align measure_theory.signed_measure.to_measure_of_le_zero_to_signed_measure MeasureTheory.SignedMeasure.toMeasureOfLeZero_toSignedMeasure
 
 end SignedMeasure
@@ -1417,8 +1417,9 @@ theorem toSignedMeasure_toMeasureOfZeroLe :
       ((le_restrict_univ_iff_le _ _).2 (zero_le_toSignedMeasure μ)) = μ := by
   refine' Measure.ext fun i hi => _
   lift μ i to ℝ≥0 using (measure_lt_top _ _).ne with m hm
-  simp [SignedMeasure.toMeasureOfZeroLe_apply _ _ _ hi,
-    Measure.toSignedMeasure_apply_measurable hi, ← hm]
+  rw [SignedMeasure.toMeasureOfZeroLe_apply _ _ _ hi, coe_eq_coe]
+  congr
+  simp [hi, ← hm]
 #align measure_theory.measure.to_signed_measure_to_measure_of_zero_le MeasureTheory.Measure.toSignedMeasure_toMeasureOfZeroLe
 
 end Measure
