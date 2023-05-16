@@ -17,15 +17,15 @@ import Mathlib.Analysis.Complex.Basic
 
 This file defines vector valued measures, which are σ-additive functions from a set to a add monoid
 `M` such that it maps the empty set and non-measurable sets to zero. In the case
-that `M = ℝ`, we called the vector measure a signed measure and write `signed_measure α`.
-Similarly, when `M = ℂ`, we call the measure a complex measure and write `complex_measure α`.
+that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
+Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`.
 
 ## Main definitions
 
-* `measure_theory.vector_measure` is a vector valued, σ-additive function that maps the empty
+* `MeasureTheory.VectorMeasure` is a vector valued, σ-additive function that maps the empty
   and non-measurable set to zero.
-* `measure_theory.vector_measure.map` is the pushforward of a vector measure along a function.
-* `measure_theory.vector_measure.restrict` is the restriction of a vector measure on some set.
+* `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
+* `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
 
 ## Notation
 
@@ -37,7 +37,7 @@ Similarly, when `M = ℂ`, we call the measure a complex measure and write `comp
 We require all non-measurable sets to be mapped to zero in order for the extensionality lemma
 to only compare the underlying functions for measurable sets.
 
-We use `has_sum` instead of `tsum` in the definition of vector measures in comparison to `measure`
+We use `HasSum` instead of `tsum` in the definition of vector measures in comparison to `Measure`
 since this provides summablity.
 
 ## Tags
@@ -66,12 +66,12 @@ structure VectorMeasure (α : Type _) [MeasurableSpace α] (M : Type _) [AddComm
       Pairwise (Disjoint on f) → HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 #align measure_theory.vector_measure MeasureTheory.VectorMeasure
 
-/-- A `signed_measure` is a `ℝ`-vector measure. -/
+/-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type _) [MeasurableSpace α] :=
   VectorMeasure α ℝ
 #align measure_theory.signed_measure MeasureTheory.SignedMeasure
 
-/-- A `complex_measure` is a `ℂ`-vector_measure. -/
+/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
 abbrev ComplexMeasure (α : Type _) [MeasurableSpace α] :=
   VectorMeasure α ℂ
 #align measure_theory.complex_measure MeasureTheory.ComplexMeasure
@@ -319,7 +319,7 @@ theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w 
 instance : AddCommMonoid (VectorMeasure α M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
-/-- `coe_fn` is an `add_monoid_hom`. -/
+/-- `(↑)` is an `AddMonoidHom`. -/
 @[simps]
 def coeFnAddMonoidHom : VectorMeasure α M →+ Set α → M where
   toFun := (↑)
@@ -437,7 +437,7 @@ theorem toSignedMeasure_apply_measurable {μ : Measure α} [FiniteMeasure μ] {i
   if_pos hi
 #align measure_theory.measure.to_signed_measure_apply_measurable MeasureTheory.Measure.toSignedMeasure_apply_measurable
 
--- Without this lemma, `singular_part_neg` in `measure_theory.decomposition.lebesgue` is
+-- Without this lemma, `singularPart_neg` in `MeasureTheory.Decomposition.Lebesgue` is
 -- extremely slow
 theorem toSignedMeasure_congr {μ ν : Measure α} [FiniteMeasure μ] [FiniteMeasure ν] (h : μ = ν) :
     μ.toSignedMeasure = ν.toSignedMeasure := by
@@ -538,9 +538,9 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
 #align measure_theory.vector_measure.ennreal_to_measure_apply MeasureTheory.VectorMeasure.ennrealToMeasure_apply
 
-/-- The equiv between `vector_measure α ℝ≥0∞` and `measure α` formed by
-`measure_theory.vector_measure.ennreal_to_measure` and
-`measure_theory.measure.to_ennreal_vector_measure`. -/
+/-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
+`MeasureTheory.VectorMeasure.ennrealToMeasure` and
+`MeasureTheory.Measure.toEnnrealVectorMeasure`. -/
 @[simps]
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
@@ -606,7 +606,7 @@ section
 
 variable {N : Type _} [AddCommMonoid N] [TopologicalSpace N]
 
-/-- Given a vector measure `v` on `M` and a continuous add_monoid_hom `f : M → N`, `f ∘ v` is a
+/-- Given a vector measure `v` on `M` and a continuous `AddMonoidHom` `f : M → N`, `f ∘ v` is a
 vector measure on `N`. -/
 def mapRange (v : VectorMeasure α M) (f : M →+ N) (hf : Continuous f) : VectorMeasure α N where
   measureOf' s := f (v s)
@@ -645,7 +645,7 @@ theorem mapRange_add {v w : VectorMeasure α M} {f : M →+ N} (hf : Continuous 
   simp
 #align measure_theory.vector_measure.map_range_add MeasureTheory.VectorMeasure.mapRange_add
 
-/-- Given a continuous add_monoid_hom `f : M → N`, `map_range_hom` is the add_monoid_hom mapping the
+/-- Given a continuous `AddMonoidHom` `f : M → N`, `mapRangeHom` is the `AddMonoidHom` mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeHom (f : M →+ N) (hf : Continuous f) : VectorMeasure α M →+ VectorMeasure α N where
   toFun v := v.mapRange f hf
@@ -661,7 +661,7 @@ variable {R : Type _} [Semiring R] [Module R M] [Module R N]
 
 variable [ContinuousAdd M] [ContinuousAdd N] [ContinuousConstSMul R M] [ContinuousConstSMul R N]
 
-/-- Given a continuous linear map `f : M → N`, `map_rangeₗ` is the linear map mapping the
+/-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
@@ -740,7 +740,7 @@ theorem map_add (v w : VectorMeasure α M) (f : α → β) : (v + w).map f = v.m
   · simp [map, dif_neg hf]
 #align measure_theory.vector_measure.map_add MeasureTheory.VectorMeasure.map_add
 
-/-- `vector_measure.map` as an additive monoid homomorphism. -/
+/-- `VectorMeasure.map` as an additive monoid homomorphism. -/
 @[simps]
 def mapGm (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
   toFun v := v.map f
@@ -757,7 +757,7 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
   · simp [restrict_not_measurable _ hi]
 #align measure_theory.vector_measure.restrict_add MeasureTheory.VectorMeasure.restrict_add
 
-/-- `vector_measure.restrict` as an additive monoid homomorphism. -/
+/-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
 def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
   toFun v := v.restrict i
@@ -814,7 +814,7 @@ variable {M : Type _} [AddCommMonoid M] [TopologicalSpace M]
 
 variable {R : Type _} [Semiring R] [Module R M] [ContinuousConstSMul R M] [ContinuousAdd M]
 
-/-- `vector_measure.map` as a linear map. -/
+/-- `VectorMeasure.map` as a linear map. -/
 @[simps]
 def mapₗ (f : α → β) : VectorMeasure α M →ₗ[R] VectorMeasure β M where
   toFun v := v.map f
@@ -822,7 +822,7 @@ def mapₗ (f : α → β) : VectorMeasure α M →ₗ[R] VectorMeasure β M whe
   map_smul' _ _ := map_smul _
 #align measure_theory.vector_measure.mapₗ MeasureTheory.VectorMeasure.mapₗ
 
-/-- `vector_measure.restrict` as an additive monoid homomorphism. -/
+/-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
 def restrictₗ (i : Set α) : VectorMeasure α M →ₗ[R] VectorMeasure α M where
   toFun v := v.restrict i
@@ -838,7 +838,7 @@ variable {M : Type _} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 
 /-- Vector measures over a partially ordered monoid is partially ordered.
 
-This definition is consistent with `measure.partial_order`. -/
+This definition is consistent with `Measure.instPartialOrder`. -/
 instance : PartialOrder (VectorMeasure α M) where
   le v w := ∀ i, MeasurableSet i → v i ≤ w i
   le_refl v i _ := le_rfl
@@ -1163,15 +1163,13 @@ theorem ennrealToMeasure {μ : VectorMeasure α ℝ≥0∞} :
 
 end AbsolutelyContinuous
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » s) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » «expr ᶜ»(s)) -/
 /-- Two vector measures `v` and `w` are said to be mutually singular if there exists a measurable
 set `s`, such that for all `t ⊆ s`, `v t = 0` and for all `t ⊆ sᶜ`, `w t = 0`.
 
 We note that we do not require the measurability of `t` in the definition since this makes it easier
 to use. This is equivalent to the definition which requires measurability. To prove
-`mutually_singular` with the measurability condition, use
-`measure_theory.vector_measure.mutually_singular.mk`. -/
+`MutuallySingular` with the measurability condition, use
+`MeasureTheory.VectorMeasure.MutuallySingular.mk`. -/
 def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ (∀ (t) (_ : t ⊆ s), v t = 0) ∧ ∀ (t) (_ : t ⊆ sᶜ), w t = 0
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
@@ -1183,8 +1181,6 @@ namespace MutuallySingular
 
 variable {v v₁ v₂ : VectorMeasure α M} {w w₁ w₂ : VectorMeasure α N}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » s) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » «expr ᶜ»(s)) -/
 theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ (t) (_ : t ⊆ s), MeasurableSet t → v t = 0)
     (h₂ : ∀ (t) (_ : t ⊆ sᶜ), MeasurableSet t → w t = 0) : v ⟂ᵥ w := by
   refine' ⟨s, hs, fun t hst => _, fun t hst => _⟩ <;> by_cases ht : MeasurableSet t
@@ -1325,13 +1321,13 @@ open VectorMeasure
 
 open MeasureTheory
 
-/-- The underlying function for `signed_measure.to_measure_of_zero_le`. -/
+/-- The underlying function for `SignedMeasure.toMeasureOfZeroLe`. -/
 def toMeasureOfZeroLe' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j : Set α)
     (hj : MeasurableSet j) : ℝ≥0∞ :=
   @Coe.coe ℝ≥0 ℝ≥0∞ _ ⟨s.restrict i j, le_trans (by simp) (hi j hj)⟩
 #align measure_theory.signed_measure.to_measure_of_zero_le' MeasureTheory.SignedMeasure.toMeasureOfZeroLe'
 
-/-- Given a signed measure `s` and a positive measurable set `i`, `to_measure_of_zero_le`
+/-- Given a signed measure `s` and a positive measurable set `i`, `toMeasureOfZeroLe`
 provides the measure, mapping measurable sets `j` to `s (i ∩ j)`. -/
 def toMeasureOfZeroLe (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) :
     Measure α :=
@@ -1369,7 +1365,7 @@ theorem toMeasureOfZeroLe_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) (hj�
     s.restrict_apply hi₁ hj₁, Set.inter_comm]
 #align measure_theory.signed_measure.to_measure_of_zero_le_apply MeasureTheory.SignedMeasure.toMeasureOfZeroLe_apply
 
-/-- Given a signed measure `s` and a negative measurable set `i`, `to_measure_of_le_zero`
+/-- Given a signed measure `s` and a negative measurable set `i`, `toMeasureOfLeZero`
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
 def toMeasureOfLeZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :
     Measure α :=
@@ -1389,7 +1385,7 @@ theorem toMeasureOfLeZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
   · assumption
 #align measure_theory.signed_measure.to_measure_of_le_zero_apply MeasureTheory.SignedMeasure.toMeasureOfLeZero_apply
 
-/-- `signed_measure.to_measure_of_zero_le` is a finite measure. -/
+/-- `SignedMeasure.toMeasureOfZeroLe` is a finite measure. -/
 instance toMeasureOfZeroLe_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
     FiniteMeasure (s.toMeasureOfZeroLe i hi₁ hi) where
   measure_univ_lt_top := by
@@ -1397,7 +1393,7 @@ instance toMeasureOfZeroLe_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
     exact ENNReal.coe_lt_top
 #align measure_theory.signed_measure.to_measure_of_zero_le_finite MeasureTheory.SignedMeasure.toMeasureOfZeroLe_finite
 
-/-- `signed_measure.to_measure_of_le_zero` is a finite measure. -/
+/-- `SignedMeasure.toMeasureOfLeZero` is a finite measure. -/
 instance toMeasureOfLeZero_finite (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) :
     FiniteMeasure (s.toMeasureOfLeZero i hi₁ hi) where
   measure_univ_lt_top := by
