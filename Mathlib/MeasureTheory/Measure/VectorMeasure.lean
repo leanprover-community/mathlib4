@@ -1030,9 +1030,8 @@ theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ 0 < v j := by
   have hi₁ : MeasurableSet i := measurable_of_not_restrict_le_zero _ hi
   rw [restrict_le_restrict_iff _ _ hi₁] at hi
-  push_neg  at hi
-  obtain ⟨j, hj₁, hj₂, hj⟩ := hi
-  exact ⟨j, hj₁, hj₂, hj⟩
+  push_neg at hi
+  exact hi
 #align measure_theory.vector_measure.exists_pos_measure_of_not_restrict_le_zero MeasureTheory.VectorMeasure.exists_pos_measure_of_not_restrict_le_zero
 
 end
@@ -1319,27 +1318,24 @@ def toMeasureOfZeroLe' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j 
 /-- Given a signed measure `s` and a positive measurable set `i`, `toMeasureOfZeroLe`
 provides the measure, mapping measurable sets `j` to `s (i ∩ j)`. -/
 def toMeasureOfZeroLe (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) :
-    Measure α :=
-  Measure.ofMeasurable (s.toMeasureOfZeroLe' i hi₂)
-    (by
-      simp_rw [toMeasureOfZeroLe', s.restrict_apply hi₁ MeasurableSet.empty, Set.empty_inter i,
-        s.empty]
-      rfl)
-    (by
-      intro f hf₁ hf₂
-      have h₁ : ∀ n, MeasurableSet (i ∩ f n) := fun n => hi₁.inter (hf₁ n)
-      have h₂ : Pairwise (Disjoint on fun n : ℕ => i ∩ f n) := by
-        intro n m hnm
-        exact ((hf₂ hnm).inf_left' i).inf_right' i
-      simp only [toMeasureOfZeroLe', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁),
-        Set.inter_comm, Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe,
-        id.def]
-      have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
-        s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
-      rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
-      · refine' tsum_congr fun n => _
-        simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
-      · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable)
+    Measure α := by
+  refine' Measure.ofMeasurable (s.toMeasureOfZeroLe' i hi₂) _ _
+  · simp_rw [toMeasureOfZeroLe', s.restrict_apply hi₁ MeasurableSet.empty, Set.empty_inter i,
+      s.empty]
+    rfl
+  · intro f hf₁ hf₂
+    have h₁ : ∀ n, MeasurableSet (i ∩ f n) := fun n => hi₁.inter (hf₁ n)
+    have h₂ : Pairwise (Disjoint on fun n : ℕ => i ∩ f n) := by
+      intro n m hnm
+      exact ((hf₂ hnm).inf_left' i).inf_right' i
+    simp only [toMeasureOfZeroLe', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
+      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id.def]
+    have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
+      s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
+    rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
+    · refine' tsum_congr fun n => _
+      simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
+    · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable
 #align measure_theory.signed_measure.to_measure_of_zero_le MeasureTheory.SignedMeasure.toMeasureOfZeroLe
 
 variable (s : SignedMeasure α) {i j : Set α}
