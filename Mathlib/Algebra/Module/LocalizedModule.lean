@@ -162,7 +162,6 @@ instance : Add (LocalizedModule S M)
 
 theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s1 * s2) :=
--- Porting note: Simplified thanks to [linter.unreachableTactic].
   mk_eq.mpr <| ⟨1, rfl⟩
 #align localized_module.mk_add_mk LocalizedModule.mk_add_mk
 
