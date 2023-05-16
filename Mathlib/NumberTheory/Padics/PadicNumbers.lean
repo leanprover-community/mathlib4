@@ -176,8 +176,8 @@ theorem norm_nonneg (f : PadicSeq p) : 0 ≤ f.norm :=
 
 /-- An auxiliary lemma for manipulating sequence indices. -/
 theorem lift_index_left_left {f : PadicSeq p} (hf : ¬f ≈ 0) (v2 v3 : ℕ) :
-    padicNorm p (f (stationaryPoint hf)) = padicNorm p (f (max (stationaryPoint hf) (max v2 v3))) :=
-  by
+    padicNorm p (f (stationaryPoint hf)) =
+    padicNorm p (f (max (stationaryPoint hf) (max v2 v3))) := by
   apply stationaryPoint_spec hf
   · apply le_max_left
   · exact le_rfl
@@ -185,8 +185,8 @@ theorem lift_index_left_left {f : PadicSeq p} (hf : ¬f ≈ 0) (v2 v3 : ℕ) :
 
 /-- An auxiliary lemma for manipulating sequence indices. -/
 theorem lift_index_left {f : PadicSeq p} (hf : ¬f ≈ 0) (v1 v3 : ℕ) :
-    padicNorm p (f (stationaryPoint hf)) = padicNorm p (f (max v1 (max (stationaryPoint hf) v3))) :=
-  by
+    padicNorm p (f (stationaryPoint hf)) =
+    padicNorm p (f (max v1 (max (stationaryPoint hf) v3))) := by
   apply stationaryPoint_spec hf
   · apply le_trans
     · apply le_max_left _ v3
@@ -196,8 +196,8 @@ theorem lift_index_left {f : PadicSeq p} (hf : ¬f ≈ 0) (v1 v3 : ℕ) :
 
 /-- An auxiliary lemma for manipulating sequence indices. -/
 theorem lift_index_right {f : PadicSeq p} (hf : ¬f ≈ 0) (v1 v2 : ℕ) :
-    padicNorm p (f (stationaryPoint hf)) = padicNorm p (f (max v1 (max v2 (stationaryPoint hf)))) :=
-  by
+    padicNorm p (f (stationaryPoint hf)) =
+    padicNorm p (f (max v1 (max v2 (stationaryPoint hf)))) := by
   apply stationaryPoint_spec hf
   · apply le_trans
     · apply le_max_right v2
@@ -327,8 +327,8 @@ theorem norm_one : norm (1 : PadicSeq p) = 1 := by
 
 private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) (hfg : f ≈ g)
     (h : padicNorm p (f (stationaryPoint hf)) ≠ padicNorm p (g (stationaryPoint hg)))
-    (hlt : padicNorm p (g (stationaryPoint hg)) < padicNorm p (f (stationaryPoint hf))) : False :=
-  by
+    (hlt : padicNorm p (g (stationaryPoint hg)) < padicNorm p (f (stationaryPoint hf))) :
+    False := by
   have hpn : 0 < padicNorm p (f (stationaryPoint hf)) - padicNorm p (g (stationaryPoint hg)) :=
     sub_pos_of_lt hlt
   cases' hfg _ hpn with N hN
@@ -706,9 +706,9 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
   let ⟨N2, hN2⟩ := f.cauchy₂ hε3
   exists max N N2
   intro j hj
-  suffices padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε
-    by
-    ring_nf  at this⊢
+  suffices
+    padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε by
+    ring_nf at this ⊢
     rw [← padicNormE.eq_padic_norm']
     exact_mod_cast this
   · apply lt_of_le_of_lt
