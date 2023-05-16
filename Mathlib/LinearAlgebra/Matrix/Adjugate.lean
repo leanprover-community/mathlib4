@@ -45,8 +45,6 @@ cramer, cramer's rule, adjugate
 -/
 
 
--- Porting note: needed to make `cramer` function application work
-
 namespace Matrix
 
 universe u v w
