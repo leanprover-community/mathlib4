@@ -528,7 +528,7 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
       fun {K₁ K₂} f => by dsimp; ext; simp
   counitIso :=
     NatIso.ofComponents
-      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext ⟨j⟩; dsimp; simp))
+      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext j; dsimp; simp))
       fun {K₁ K₂} f => by dsimp; ext; simp
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 

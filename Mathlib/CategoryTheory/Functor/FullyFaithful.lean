@@ -89,6 +89,8 @@ def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   Full.preimage.{v₁, v₂} f
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
 
+pp_extended_field_notation preimage
+
 @[simp]
 theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f := by unfold preimage; aesop_cat

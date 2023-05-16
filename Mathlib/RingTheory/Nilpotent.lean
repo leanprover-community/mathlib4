@@ -100,17 +100,12 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type _
   exact (hx.map f).eq_zero
 #align is_reduced_of_injective isReduced_of_injective
 
--- Porting note: Added etaExperiment line to synthesize RingHomClass
-set_option synthInstance.etaExperiment true
-
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
     [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
 #align ring_hom.ker_is_radical_iff_reduced_of_surjective RingHom.ker_isRadical_iff_reduced_of_surjective
-
-set_option synthInstance.etaExperiment false
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/
@@ -201,18 +196,18 @@ theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
   Iff.rfl
 #align mem_nilradical mem_nilradical
 
-theorem nilradical_eq_infₛ (R : Type _) [CommSemiring R] :
-    nilradical R = infₛ { J : Ideal R | J.IsPrime } :=
-  (Ideal.radical_eq_infₛ ⊥).trans <| by simp_rw [and_iff_right bot_le]
-#align nilradical_eq_Inf nilradical_eq_infₛ
+theorem nilradical_eq_sInf (R : Type _) [CommSemiring R] :
+    nilradical R = sInf { J : Ideal R | J.IsPrime } :=
+  (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
+#align nilradical_eq_Inf nilradical_eq_sInf
 
 theorem nilpotent_iff_mem_prime : IsNilpotent x ↔ ∀ J : Ideal R, J.IsPrime → x ∈ J := by
-  rw [← mem_nilradical, nilradical_eq_infₛ, Submodule.mem_infₛ]
+  rw [← mem_nilradical, nilradical_eq_sInf, Submodule.mem_sInf]
   rfl
 #align nilpotent_iff_mem_prime nilpotent_iff_mem_prime
 
 theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :=
-  (nilradical_eq_infₛ R).symm ▸ infₛ_le H
+  (nilradical_eq_sInf R).symm ▸ sInf_le H
 #align nilradical_le_prime nilradical_le_prime
 
 @[simp]
