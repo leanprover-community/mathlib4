@@ -579,7 +579,7 @@ theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
 
 theorem generateFrom_Ico_mem_le_borel {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderClosedTopology α] (s t : Set α) :
-    MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, ∃ _h : l < u, Ico l u = S }
+    MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ico l u = S }
       ≤ borel α := by
   apply generateFrom_le
   borelize α
@@ -590,8 +590,8 @@ theorem generateFrom_Ico_mem_le_borel {α : Type _} [TopologicalSpace α] [Linea
 theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsBot x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → y ∈ s) :
-    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, ∃ _h : l < u, Ico l u = S } := by
-  set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, ∃ h : l < u, Ico l u = S }
+    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
+  set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S }
   refine' le_antisymm _ (generateFrom_Ico_mem_le_borel _ _)
   letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
@@ -627,14 +627,14 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type _} [TopologicalSpace 
 theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
     (hd : Dense s) :
-    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, ∃ _h : l < u, Ico l u = S } :=
+    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } :=
   hd.borel_eq_generateFrom_Ico_mem_aux (by simp) fun x y hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ico_mem Dense.borel_eq_generateFrom_Ico_mem
 
 theorem borel_eq_generateFrom_Ico (α : Type _) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
-    borel α = .generateFrom { S : Set α | ∃ (l u : α) (_h : l < u), Ico l u = S } := by
+    borel α = .generateFrom { S : Set α | ∃ (l u : α), l < u ∧ Ico l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
     (@dense_univ α _).borel_eq_generateFrom_Ico_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
@@ -643,8 +643,9 @@ theorem borel_eq_generateFrom_Ico (α : Type _) [TopologicalSpace α] [SecondCou
 theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
-    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, ∃ h : l < u, Ioc l u = S } := by
+    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
   convert hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
+    using 2
   · ext s
     constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
     exacts [⟨u, hu, l, hl, hlt, dual_Ico⟩, ⟨u, hu, l, hl, hlt, dual_Ioc⟩]
@@ -655,14 +656,14 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type _} [TopologicalSpace 
 theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type _} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMaxOrder α] {s : Set α}
     (hd : Dense s) :
-    borel α = generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, ∃ h : l < u, Ioc l u = S } :=
+    borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } :=
   hd.borel_eq_generateFrom_Ioc_mem_aux (by simp) fun x y hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ioc_mem Dense.borel_eq_generateFrom_Ioc_mem
 
 theorem borel_eq_generateFrom_Ioc (α : Type _) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
-    borel α = .generateFrom { S : Set α | ∃ (l u : _) (_h : l < u), Ioc l u = S } := by
+    borel α = .generateFrom { S : Set α | ∃ l u, l < u ∧ Ioc l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
     (@dense_univ α _).borel_eq_generateFrom_Ioc_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
@@ -672,14 +673,14 @@ namespace MeasureTheory.Measure
 
 /-- Two finite measures on a Borel space are equal if they agree on all closed-open intervals.  If
 `α` is a conditionally complete linear order with no top element,
-`measure_theory.measure..ext_of_Ico` is an extensionality lemma with weaker assumptions on `μ` and
+`MeasureTheory.Measure.ext_of_Ico` is an extensionality lemma with weaker assumptions on `μ` and
 `ν`. -/
 theorem ext_of_Ico_finite {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [FiniteMeasure μ] (hμν : μ univ = ν univ) (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) :
     μ = ν := by
   refine'
-    ext_of_generate_finite _ (borel_space.measurable_eq.trans (borel_eq_generateFrom_Ico α))
+    ext_of_generate_finite _ (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α))
       (isPiSystem_Ico (id : α → α) id) _ hμν
   · rintro - ⟨a, b, hlt, rfl⟩
     exact h hlt
@@ -687,7 +688,7 @@ theorem ext_of_Ico_finite {α : Type _} [TopologicalSpace α] {m : MeasurableSpa
 
 /-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If
 `α` is a conditionally complete linear order with no top element,
-`measure_theory.measure..ext_of_Ioc` is an extensionality lemma with weaker assumptions on `μ` and
+`MeasureTheory.Measure.ext_of_Ioc` is an extensionality lemma with weaker assumptions on `μ` and
 `ν`. -/
 theorem ext_of_Ioc_finite {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
@@ -704,13 +705,13 @@ theorem ext_of_Ico' {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMaxOrder α]
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ico a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) : μ = ν := by
-  rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, hst⟩
-  have : (⋃ (l ∈ s) (u ∈ s) (h : l < u), {Ico l u} : Set (Set α)).Countable :=
-    hsc.bUnion fun l hl => hsc.bUnion fun u hu => countable_Union fun _ => countable_singleton _
+  rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, _⟩
+  have : (⋃ (l ∈ s) (u ∈ s) (_h : l < u), {Ico l u} : Set (Set α)).Countable :=
+    hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
   simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
   refine'
-    measure.ext_of_generateFrom_of_cover_subset
-      (borel_space.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) _ this
+    Measure.ext_of_generateFrom_of_cover_subset
+      (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) _ this
       _ _ _
   · rintro _ ⟨l, -, u, -, h, rfl⟩
     exact ⟨l, u, h, rfl⟩
