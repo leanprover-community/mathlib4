@@ -43,8 +43,6 @@ open BigOperators
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
 
--- Porting note: we need η for TC
-
 -- Note that at present `Ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
@@ -380,7 +378,7 @@ noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → 
   left_inv := by
     rintro ⟨x⟩
     exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  right_inv:= by
+  right_inv := by
     intro x
     ext i
     obtain ⟨_, _⟩ := @Quot.exists_rep _ _ (x i)
