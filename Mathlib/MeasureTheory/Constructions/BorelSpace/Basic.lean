@@ -186,7 +186,7 @@ class BorelSpace (α : Type _) [TopologicalSpace α] [MeasurableSpace α] : Prop
 
 namespace Mathlib.Tactic
 
-open Lean Elab Tactic
+open Lean Elab Tactic Meta
 
 /-- The behaviour of `borelize α` depends on the existing assumptions on `α`.
 
@@ -199,35 +199,38 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
 /-- Add instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
-unsafe def addBorelInstance (e : expr) : TacticM Unit := do
-  let n1 ← get_unused_name "_inst"
-  to_expr ``(borel $(e)) >>= pose n1
-  reset_instance_cache
-  let n2 ← get_unused_name "_inst"
-  let v ← to_expr ``((BorelSpace.mk rfl : BorelSpace $(e)))
-  note n2 none v
-  reset_instance_cache
+def addBorelInstance (e : Expr) : TacticM Unit := do
+  throwError "addBorelInstance"
+  -- let n1 ← get_unused_name "_inst"
+  -- to_expr ``(borel $(e)) >>= pose n1
+  -- reset_instance_cache
+  -- let n2 ← get_unused_name "_inst"
+  -- let v ← to_expr ``((BorelSpace.mk rfl : BorelSpace $(e)))
+  -- note n2 none v
+  -- reset_instance_cache
 
 /-- Given a type `α`, an assumption `i : MeasurableSpace α`, and an instance `[BorelSpace α]`,
 replace `i` with `borel α`. -/
-unsafe def borelToRefl ( α i : expr ) : TacticM Unit := do
-  let n ← get_unused_name "h"
-  to_expr ` `( $ ( i ) = borel $ ( α ) ) >>= assert n
-  applyc `borel_space.measurable_eq
-  unfreezing ( tactic.subst i )
-  let n1 ← get_unused_name "_inst"
-  to_expr ` `( borel $ ( α ) ) >>= pose n1
-  reset_instance_cache
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+  let m ← mkFreshExprMVar (← mkEq (mkFVar i) (← mkAppOptM ``borel #[e, none]))
+  throwError "borelToRefl"
+  -- applyc `borel_space.measurable_eq
+  -- unfreezing ( tactic.subst i )
+  -- let n1 ← get_unused_name "_inst"
+  -- to_expr ` `( borel $ ( α ) ) >>= pose n1
+  -- reset_instance_cache
 
 /-- Given a type `α`, if there is an assumption `[i : MeasurableSpace α]`, then try to prove
 `[BorelSpace α]` and replace `i` with `borel α`. Otherwise, add instances
 `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
-unsafe def borelize (α : expr) : tactic Unit := do
-  let i ← optional (to_expr ``(MeasurableSpace $(α)) >>= find_assumption)
-  i (add_borel_instance α) (borel_to_refl α)
+def borelize (t : Syntax) : TacticM Unit := do
+  let u ← mkFreshLevelMVar
+  let e ← elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
+  i?.elim (addBorelInstance e) (borelToRefl e)
 
-macro_rules
-  | `(tactic| borelize $t:term $u:term*) => `(tactic| borelize $t; borelize $u:term*)
+elab_rules : tactic
+  | `(tactic| borelize $[$t:term]*) => t.forM borelize
 
 end Mathlib.Tactic
 
