@@ -86,7 +86,7 @@ def sUnion (S : Set (Set α)) : Set α :=
   sSup S
 #align set.sUnion Set.sUnion
 
-/-- Notation for Set.sUnion`. Union of a set of sets. -/
+/-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
 @[simp]
