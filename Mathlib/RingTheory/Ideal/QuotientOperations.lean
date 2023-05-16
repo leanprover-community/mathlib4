@@ -15,10 +15,6 @@ import Mathlib.RingTheory.Ideal.Quotient
 # More operations on modules and ideals related to quotients
 -/
 
-
--- Porting note: Without this line, timeouts occur (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w
 
 namespace RingHom
