@@ -666,14 +666,6 @@ theorem quotQuotEquivComm_algebraMap (x : R) :
   rfl
 #align double_quot.quot_quot_equiv_comm_algebra_map DoubleQuot.quotQuotEquivComm_algebraMap
 
--- Porting note: timing out due to Lean4#2074
-attribute [nolint simpNF] Ideal.kerLiftAlg_toRingHom
-Ideal.quotientKerAlgEquivOfRightInverse.apply
-Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
-DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
-DoubleQuot.quotQuotEquivComm_mk_mk
-Ideal.kerLiftAlg_mk
-
 end Algebra
 
 end DoubleQuot
