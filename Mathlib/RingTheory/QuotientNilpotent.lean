@@ -62,7 +62,8 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
       apply Ideal.pow_le_pow <| bound n
     · exact le_refl n.succ.succ
   · apply h₁
-    -- Porting note: cannot synth RingHomClass and etaExperiment causes linarith to fail in bound
+    -- Porting note: used to be by linarith?
+    -- Investigate this issue again after during lean4#2210 cleanup.
     rw [← @Ideal.map_pow S (S ⧸ I^2) (S →+* S ⧸ I^2) _ _ RingHom.instRingHomClassRingHom,
       Ideal.map_quotient_self]
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
@@ -70,7 +71,6 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
 example (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
--- Porting note: cannot synth RingHomClass
   refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I

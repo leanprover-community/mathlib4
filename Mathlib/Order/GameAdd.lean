@@ -227,6 +227,7 @@ namespace Sym2
 def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b := by
+  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
   dsimp only [GameAdd, lift₂, FunLike.coe, EquivLike.coe] at this
   exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
@@ -236,6 +237,7 @@ def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
 theorem GameAdd.fix_eq {C : α → α → Sort _} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
+  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   dsimp [GameAdd.fix]
   exact WellFounded.fix_eq _ _ _
 #align sym2.game_add.fix_eq Sym2.GameAdd.fix_eq

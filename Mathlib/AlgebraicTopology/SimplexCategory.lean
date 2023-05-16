@@ -583,6 +583,8 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
+  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
+  -- It could be investigated again to see if the original can be restored.
   ext x
   replace eq₁ := congr_arg (· x) eq₁
   replace eq₂ := congr_arg (· x) eq₂.symm

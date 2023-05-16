@@ -1415,8 +1415,6 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
 
 end Centralizer
 
--- Porting note: in the following proof, we manually add the instances `_i₁` and `_i₂`
--- Removing those lines and enabling `etaExperiment` on the next line gives a *broken* proof
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` in `S`, and `S'` a subalgebra of `S` that contains
 `lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
@@ -1425,7 +1423,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type _} [CommRing S] [Alge
     (e : (∑ i in ι', l i * s i) = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
   -- Porting note: needed to add this instance
-  let _i₁ : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
+  let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
   suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
     obtain ⟨x, rfl⟩ := this
     exact x.2
@@ -1447,8 +1445,6 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type _} [CommRing S] [Alge
   rintro ⟨_, _, ⟨i, hi, rfl⟩, rfl⟩
   change s' i ^ N • x ∈ _
   rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
-  -- Porting note: needed to add this instance
-  let _i₂ : SubmonoidClass (Subalgebra R S) S := Subalgebra.SubsemiringClass.toSubmonoidClass
   refine' Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') _
   exact ⟨⟨_, hn i⟩, rfl⟩
 #align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem

@@ -619,7 +619,7 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align is_R_or_C.norm_sq_div IsROrC.normSq_div
 
-@[simp, isROrC_simps]
+@[isROrC_simps] -- porting note: was `simp`
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 

@@ -665,7 +665,6 @@ section CommRing
 
 variable [CommRing R]
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) ↔ IsPrime P := by
@@ -984,7 +983,6 @@ theorem exists_irreducible_of_natDegree_ne_zero {R : Type u} [CommRing R] [IsDom
   exists_irreducible_of_natDegree_pos <| Nat.pos_of_ne_zero hf
 #align polynomial.exists_irreducible_of_nat_degree_ne_zero Polynomial.exists_irreducible_of_natDegree_ne_zero
 
--- Porting note: failed to synthesize  HPow (M →ₗ[R] M) ℕ ?m
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]

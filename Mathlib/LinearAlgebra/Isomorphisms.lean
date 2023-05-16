@@ -109,6 +109,7 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 -- Porting note: wrapper to help with tc synthesis timing out
+-- Try to remove these during lean4#2210 cleanup
 /-- These should be removed -/
 abbrev asFun (f : M ≃ₗ[R] M₂) : M → M₂ := f
 theorem asFun_coe (f : M ≃ₗ[R] M₂) : asFun f = f := rfl

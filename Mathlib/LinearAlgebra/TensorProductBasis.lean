@@ -39,18 +39,15 @@ def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
           Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid R R)).symm
 #align basis.tensor_product Basis.tensorProduct
 
--- Porting note: resolved diamond
 @[simp]
 theorem Basis.tensorProduct_apply (b : Basis ι R M) (c : Basis κ R N) (i : ι) (j : κ) :
     Basis.tensorProduct b c (i, j) = b i ⊗ₜ c j := by simp [Basis.tensorProduct]
 #align basis.tensor_product_apply Basis.tensorProduct_apply
 
--- Porting note: resolved diamond
 theorem Basis.tensorProduct_apply' (b : Basis ι R M) (c : Basis κ R N) (i : ι × κ) :
     Basis.tensorProduct b c i = b i.1 ⊗ₜ c i.2 := by simp [Basis.tensorProduct]
 #align basis.tensor_product_apply' Basis.tensorProduct_apply'
 
--- Porting note: resolved diamond
 @[simp]
 theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N) (m : M) (n : N)
     (i : ι) (j : κ) :

@@ -2409,7 +2409,6 @@ def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
     rfl
 #align continuous_linear_equiv.units_equiv ContinuousLinearEquiv.unitsEquiv
 
--- Porting note: mismatched types
 @[simp]
 theorem unitsEquiv_apply (f : (M →L[R] M)ˣ) (x : M) : unitsEquiv R M f x = (f : M →L[R] M) x :=
   rfl
