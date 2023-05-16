@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Multilinear.Basic
-import Mathbin.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-! # Multilinear maps over finite dimensional spaces
 
@@ -40,15 +40,13 @@ variable [∀ i, Module.Finite R (M₁ i)] [∀ i, Module.Free R (M₁ i)]
 
 -- the induction requires us to show both at once
 private theorem free_and_finite :
-    Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) :=
-  by
+    Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) := by
   -- the `fin n` case is sufficient
   suffices
     ∀ (n) (N : Fin n → Type _) [∀ i, AddCommGroup (N i)],
       ∀ [∀ i, Module R (N i)],
         ∀ [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)],
-          Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂)
-    by
+          Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) by
     cases nonempty_fintype ι
     cases this _ (M₁ ∘ (Fintype.equivFin ι).symm)
     have e := dom_dom_congr_linear_equiv' R M₁ M₂ (Fintype.equivFin ι)
@@ -61,8 +59,7 @@ private theorem free_and_finite :
         Module.Finite.equiv (const_linear_equiv_of_is_empty R N M₂)⟩
   · suffices
       Module.Free R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) ∧
-        Module.Finite R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂)
-      by
+        Module.Finite R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) by
       cases this
       exact
         ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv R N M₂),
