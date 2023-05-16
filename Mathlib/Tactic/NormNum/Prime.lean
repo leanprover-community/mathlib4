@@ -20,6 +20,7 @@ its minimal factor. Todo: compute the list of all factors.
 
 
 ## Implementation Notes
+
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression
 that is thousands of levels deep, and the Lean kernel seems to raise a stack overflow when
 type-checking that proof. We could try to produce a proof term that uses `let` expressions for
