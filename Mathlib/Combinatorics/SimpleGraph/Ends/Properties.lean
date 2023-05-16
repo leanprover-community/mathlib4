@@ -26,10 +26,9 @@ instance [Finite V] : IsEmpty G.end :=
   ⟨by
     rintro ⟨s, _⟩
     cases nonempty_fintype V
-    obtain ⟨v, h⟩ := (s <| Opposite.op Finset.univ).Nonempty
+    obtain ⟨v, h⟩ := (s <| Opposite.op Finset.univ).nonempty
     exact
-      set.disjoint_iff.mp (s _).disjoint_right
-        ⟨by simp only [Opposite.unop_op, Finset.coe_univ], h⟩⟩
+      Set.disjoint_iff.mp (s _).disjoint_right
+        ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩⟩
 
 end SimpleGraph
-
