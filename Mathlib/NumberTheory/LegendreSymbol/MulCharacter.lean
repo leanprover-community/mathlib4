@@ -8,9 +8,9 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.Algebra.EuclideanDomain.Instances
-import Mathbin.Data.Fintype.Units
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Data.Fintype.Units
 
 /-!
 # Multiplicative characters of finite rings and fields
@@ -112,8 +112,7 @@ variable (R R')
 /-- The trivial multiplicative character. It takes the value `0` on non-units and
 the value `1` on units. -/
 @[simps]
-noncomputable def trivial : MulChar R R'
-    where
+noncomputable def trivial : MulChar R R' where
   toFun := by classical exact fun x => if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
@@ -144,16 +143,14 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
 #align mul_char.coe_mk MulChar.coe_mk
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' :=
-  by
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
   cases χ
   cases χ'
   congr
   exact MonoidHom.ext h
 #align mul_char.ext' MulChar.ext'
 
-instance : MulCharClass (MulChar R R') R R'
-    where
+instance : MulCharClass (MulChar R R') R R' where
   coe χ := χ.toMonoidHom.toFun
   coe_injective' f g h := ext' fun a => congr_fun h a
   map_mul χ := χ.map_mul'
@@ -167,8 +164,7 @@ theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
 /-- Extensionality. Since `mul_char`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
 @[ext]
-theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :=
-  by
+theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' := by
   apply ext'
   intro a
   by_cases ha : IsUnit a
@@ -200,8 +196,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 #align mul_char.coe_to_unit_hom MulChar.coe_toUnitHom
 
 /-- Turn a homomorphism between unit groups into a `mul_char`. -/
-noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R'
-    where
+noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.Unit else 0
   map_one' := by
     have h1 : (is_unit_one.unit : Rˣ) = 1 := units.eq_iff.mp rfl
@@ -227,8 +222,7 @@ theorem ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : of_unit_hom f ↑a = f a :
 #align mul_char.of_unit_hom_coe MulChar.ofUnitHom_coe
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups. -/
-noncomputable def equivToUnitHom : MulChar R R' ≃ (Rˣ →* R'ˣ)
-    where
+noncomputable def equivToUnitHom : MulChar R R' ≃ (Rˣ →* R'ˣ) where
   toFun := to_unit_hom
   invFun := of_unit_hom
   left_inv := by
@@ -315,14 +309,12 @@ theorem coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
   rfl
 #align mul_char.coe_to_fun_mul MulChar.coeToFun_mul
 
-protected theorem one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ :=
-  by
+protected theorem one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
   ext
   simp
 #align mul_char.one_mul MulChar.one_mul
 
-protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ :=
-  by
+protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
   ext
   simp
 #align mul_char.mul_one MulChar.mul_one
@@ -375,8 +367,7 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 
 /-- The product of a character with its inverse is the trivial character. -/
 @[simp]
-theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 :=
-  by
+theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coe_to_fun_mul, Pi.mul_apply, inv_apply_eq_inv,
     Ring.inverse_mul_cancel _ (IsUnit.map _ x.is_unit), one_apply_coe]
@@ -401,16 +392,14 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
 #align mul_char.comm_group MulChar.commGroup
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n :=
-  by
+theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
   induction' n with n ih
   · rw [pow_zero, pow_zero, one_apply_coe]
   · rw [pow_succ, pow_succ, mul_apply, ih]
 #align mul_char.pow_apply_coe MulChar.pow_apply_coe
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n :=
-  by
+theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
   · exact pow_apply_coe χ n ha.unit
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
@@ -474,8 +463,7 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
 
 /-- Composition with an injective ring homomorphism preserves nontriviality. -/
 theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
-    (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial :=
-  by
+    (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
   obtain ⟨a, ha⟩ := hχ
   use a
   rw [ring_hom_comp_apply, ← RingHom.map_one f]
@@ -490,8 +478,7 @@ theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+
 #align mul_char.is_quadratic.comp MulChar.IsQuadratic.comp
 
 /-- The inverse of a quadratic character is itself. →  -/
-theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ :=
-  by
+theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]
   rcases hχ x with (h₀ | h₁ | h₂)
@@ -502,8 +489,7 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
 #align mul_char.is_quadratic.inv MulChar.IsQuadratic.inv
 
 /-- The square of a quadratic character is the trivial character. -/
-theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 :=
-  by
+theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
   convert mul_left_inv _
   rw [pow_two, hχ.inv]
 #align mul_char.is_quadratic.sq_eq_one MulChar.IsQuadratic.sq_eq_one
@@ -539,8 +525,7 @@ open BigOperators
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
 theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
-    (hχ : χ.IsNontrivial) : (∑ a, χ a) = 0 :=
-  by
+    (hχ : χ.IsNontrivial) : (∑ a, χ a) = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
   simp only [Finset.mul_sum, ← map_mul]
@@ -550,8 +535,7 @@ theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
 theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
-    (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ :=
-  by
+    (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => _
