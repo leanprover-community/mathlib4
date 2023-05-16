@@ -14,16 +14,16 @@ import Mathlib.Topology.Instances.AddCircle
 /-!
 # The additive circle as a normed group
 
-We define the normed group structure on `add_circle p`, for `p : ℝ`. For example if `p = 1` then:
-`‖(x : add_circle 1)‖ = |x - round x|` for any `x : ℝ` (see `unit_add_circle.norm_eq`).
+We define the normed group structure on `AddCircle p`, for `p : ℝ`. For example if `p = 1` then:
+`‖(x : AddCircle 1)‖ = |x - round x|` for any `x : ℝ` (see `UnitAddCircle.norm_eq`).
 
 ## Main definitions:
 
- * `add_circle.norm_eq`: a characterisation of the norm on `add_circle p`
+ * `AddCircle.norm_eq`: a characterisation of the norm on `AddCircle p`
 
 ## TODO
 
- * The fact `inner_product_geometry.angle (real.cos θ) (real.sin θ) = ‖(θ : real.angle)‖`
+ * The fact `inner_product_geometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : real.angle)‖`
 
 -/
 
