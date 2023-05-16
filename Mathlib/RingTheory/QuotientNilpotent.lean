@@ -15,7 +15,6 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 # Nilpotent elements in quotient rings
 -/
 
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type _} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
@@ -37,7 +36,6 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     P I := by
 -- Porting note: linarith misbehaving below
   have bound (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
   revert S
   -- Porting note: lean could previously figure out the motive
@@ -98,4 +96,3 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal 
       ring
     exact isUnit_of_mul_eq_one _ _ this
 #align is_nilpotent.is_unit_quotient_mk_iff IsNilpotent.isUnit_quotient_mk_iff
-
