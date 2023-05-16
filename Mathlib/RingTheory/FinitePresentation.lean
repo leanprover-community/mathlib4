@@ -149,14 +149,11 @@ theorem iff :
       ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R))(e : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
   constructor
   · rintro ⟨n, f, hf⟩
-    refine ⟨n, RingHom.ker f.toRingHom, ?_, hf.2⟩
-    -- convert Ideal.quotientKerAlgEquivOfSurjective hf.1
-    sorry
-    -- exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
+    exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
     exact equiv ((FinitePresentation.mvPolynomial R _).quotient hfg) e
 #align algebra.finite_presentation.iff Algebra.FinitePresentation.iff
--- #exit 0
+
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
 variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
@@ -166,20 +163,18 @@ theorem iff_quotient_mvPolynomial' :
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
     set ulift_var := MvPolynomial.renameEquiv R Equiv.ulift
-    sorry
     refine'
-      ⟨ULift (Fin n), inferInstance, f.comp ulift_var.to_alg_hom, hfs.comp ulift_var.surjective,
+      ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ _ hfk ulift_var.surjective⟩
     convert Submodule.fg_bot
-    exact RingHom.ker_coe_equiv ulift_var.to_ring_equiv
+    exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
-    sorry
     refine'
-      ⟨Fintype.card ι, f.comp Equiv.symm, hf.1.comp (AlgEquiv.symm Equiv).surjective,
+      ⟨Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective,
         Ideal.fg_ker_comp _ f _ hf.2 equiv.symm.surjective⟩
     convert Submodule.fg_bot
-    exact RingHom.ker_coe_equiv equiv.symm.to_ring_equiv
+    exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
 #align algebra.finite_presentation.iff_quotient_mv_polynomial' Algebra.FinitePresentation.iff_quotient_mvPolynomial'
 
 /-- If `A` is a finitely presented `R`-algebra, then `mv_polynomial (fin n) A` is finitely presented
