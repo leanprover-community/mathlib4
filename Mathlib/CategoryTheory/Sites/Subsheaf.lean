@@ -461,14 +461,8 @@ noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ 
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
-        -- port note: the following to instance can be synthesized by Lean, but is still required
-        -- for the `M` instance
-        haveI : Limits.PreservesLimits (forget (Type max v w)) := inferInstance
-        haveI : ReflectsIsomorphisms (forget (Type max v w)) := inferInstance
-        -- port note: need to manually specify this instance for sheafification to work
-        haveI : (X : C) → Limits.PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget TypeMax.{v, w}) :=
-           fun X => Limits.PreservesColimitsOfSize.preservesColimitsOfShape
-        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J _ _).mp I.m_mono
+        -- port note: need to specify the target category (TypeMax.{v, u}) for this to work.
+        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeMax.{v, u} _).mp I.m_mono
         haveI := isIso_toImagePresheaf I.m.1
         refine' ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩
         apply Subpresheaf.sheafify_le
