@@ -261,25 +261,25 @@ elab_rules : tactic
 end Mathlib.Tactic
 
 instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type _} [TopologicalSpace α]
-    [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ
-    where borel_le := h.borel_le
+    [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ where
+  borel_le := h.borel_le
 #align order_dual.opens_measurable_space OrderDual.opensMeasurableSpace
 
 instance (priority := 100) OrderDual.borelSpace {α : Type _} [TopologicalSpace α]
-    [MeasurableSpace α] [h : BorelSpace α] : BorelSpace αᵒᵈ where measurable_eq := h.measurable_eq
+    [MeasurableSpace α] [h : BorelSpace α] : BorelSpace αᵒᵈ where
+  measurable_eq := h.measurable_eq
 #align order_dual.borel_space OrderDual.borelSpace
 
 /-- In a `borel_space` all open sets are measurable. -/
-instance (priority := 100) BorelSpace.opens_measurable {α : Type _} [TopologicalSpace α]
+instance (priority := 100) BorelSpace.opensMeasurable {α : Type _} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] : OpensMeasurableSpace α :=
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
-#align borel_space.opens_measurable BorelSpace.opens_measurable
+#align borel_space.opens_measurable BorelSpace.opensMeasurable
 
 instance Subtype.borelSpace {α : Type _} [TopologicalSpace α] [MeasurableSpace α]
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
   ⟨by -- can golf with `borelize`: something like `borelize α; apply borel_comap`
-    rw [hα.1, Subtype.instMeasurableSpace, ← borel_comap]
-    rfl⟩
+    rw [hα.1]; unfold Subtype.instMeasurableSpace; rw [← borel_comap]⟩
 #align subtype.borel_space Subtype.borelSpace
 
 instance Subtype.opensMeasurableSpace {α : Type _} [TopologicalSpace α] [MeasurableSpace α]
