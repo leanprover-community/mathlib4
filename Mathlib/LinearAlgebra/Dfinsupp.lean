@@ -37,9 +37,6 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
--- Porting note: TODO Erase this line. Workaround for lean4#2074.
-attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
 
 variable [dec_ι : DecidableEq ι]
