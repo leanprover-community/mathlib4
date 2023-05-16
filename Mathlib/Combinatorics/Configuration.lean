@@ -98,7 +98,7 @@ open HasLines (mkLine mkLine_ax)
 instance [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
   exists_point := @exists_line P L _ _
   exists_line := @exists_point P L _ _
-  eq_or_eq l₁ l₂ p₁ p₂ h₁ h₂ h₃ h₄ := (@eq_or_eq P L _ _ p₁ p₂ l₁ l₂ h₁ h₃ h₂ h₄).symm
+  eq_or_eq := @fun l₁ l₂ p₁ p₂ h₁ h₂ h₃ h₄ => (@eq_or_eq P L _ _ p₁ p₂ l₁ l₂ h₁ h₃ h₂ h₄).symm
 
 instance [HasPoints P L] : HasLines (Dual L) (Dual P) :=
   { Dual.Nondegenerate _ _ with
