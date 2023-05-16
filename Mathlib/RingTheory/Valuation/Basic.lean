@@ -585,7 +585,6 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
     _ ≤ v (a + s) := aux (a + s) (-s) (by rwa [← Ideal.neg_mem_iff] at h)
 #align valuation.map_add_supp Valuation.map_add_supp
 
-set_option synthInstance.etaExperiment true in
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
@@ -690,7 +689,6 @@ theorem map_add' : ∀ (x y : R), v.asFun x ≤ v.asFun (x + y) ∨ v.asFun y �
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
   Valuation.map_add_le v hx hy
-
 #align add_valuation.map_le_add AddValuation.map_le_add
 
 theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=

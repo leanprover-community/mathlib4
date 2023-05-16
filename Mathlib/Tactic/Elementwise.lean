@@ -43,7 +43,7 @@ section theorems
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : (forget (Type u)).map f = f := rfl
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : ConcreteCategory.Forget.obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
 attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
 

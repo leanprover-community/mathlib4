@@ -91,8 +91,11 @@ protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y �
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 #align submodule.quotient.eq Submodule.Quotient.eq
 
-instance : Zero (M ⧸ p) :=
-  ⟨mk 0⟩
+instance : Zero (M ⧸ p) where
+  -- Use Quotient.mk'' instead of mk here because mk is not reducible.
+  -- This would lead to non-defeq diamonds.
+  -- See also the same comment at the One instance for Con.
+  zero := Quotient.mk'' 0
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
@@ -291,8 +294,7 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
 #align submodule.subsingleton_quotient_iff_eq_top Submodule.subsingleton_quotient_iff_eq_top
 
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
-   by
+  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h), by
     rintro rfl
     exact ⟨QuotientTop.unique⟩⟩
 #align submodule.unique_quotient_iff_eq_top Submodule.unique_quotient_iff_eq_top
@@ -399,7 +401,9 @@ theorem comap_map_mkQ : comap p.mkQ (map p.mkQ p') = p ⊔ p' := by simp [comap_
 
 @[simp]
 theorem map_mkQ_eq_top : map p.mkQ p' = ⊤ ↔ p ⊔ p' = ⊤ := by
-  simp only [map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
+  -- porting note: ambiguity of `map_eq_top_iff` is no longer automatically resolved by preferring
+  -- the current namespace
+  simp only [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
 #align submodule.map_mkq_eq_top Submodule.map_mkQ_eq_top
 
 variable (q : Submodule R₂ M₂)
@@ -497,7 +501,6 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p'
 of `M`. -/
 def comapMkQOrderEmbedding : Submodule R (M ⧸ p) ↪o Submodule R M :=
   (RelIso.toRelEmbedding <| comapMkQRelIso p).trans (Subtype.relEmbedding (· ≤ ·) _)
-
 #align submodule.comap_mkq.order_embedding Submodule.comapMkQOrderEmbedding
 
 @[simp]
@@ -509,8 +512,7 @@ theorem comapMkQOrderEmbedding_eq (p' : Submodule R (M ⧸ p)) :
 theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {s : Set M₂} (h₀ : s.Nonempty)
     (h₁ : s ⊆ range f) : span R (f ⁻¹' s) = (span R₂ s).comap f := by
   suffices (span R₂ s).comap f ≤ span R (f ⁻¹' s) by exact le_antisymm (span_preimage_le f s) this
-  have hk : ker f ≤ span R (f ⁻¹' s) :=
-    by
+  have hk : ker f ≤ span R (f ⁻¹' s) := by
     let y := Classical.choose h₀
     have hy : y ∈ s := Classical.choose_spec h₀
     rw [ker_le_iff]
@@ -535,8 +537,7 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
           hx with
     toFun := P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
-      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx =>
-        by
+      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
@@ -642,9 +643,7 @@ theorem coe_quotEquivOfEqBot_symm (hp : p = ⊥) :
 
 /-- Quotienting by equal submodules gives linearly equivalent quotients. -/
 def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
-  {
-    @Quotient.congr _ _ (quotientRel p) (quotientRel p') (Equiv.refl _) fun a b =>
-      by
+  { @Quotient.congr _ _ (quotientRel p) (quotientRel p') (Equiv.refl _) fun a b => by
       subst h
       rfl with
     map_add' := by

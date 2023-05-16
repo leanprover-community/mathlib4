@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit 485b24ed47b1b7978d38a1e445158c6224c3f42c
+! leanprover-community/mathlib commit e8cf0cfec5fcab9baf46dc17d30c5e22048468be
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -63,9 +63,16 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 #align directed_on.directed_coe DirectedOn.directed_val
 
-theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
+theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
 #align directed_on_range directedOn_range
+
+-- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
+alias directedOn_range ↔ Directed.directedOn_range _
+#align directed.directed_on_range Directed.directedOn_range
+
+-- porting note: `attribute [protected]` doesn't work
+-- attribute [protected] Directed.directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by

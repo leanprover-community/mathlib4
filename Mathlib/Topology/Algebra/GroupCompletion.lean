@@ -162,8 +162,7 @@ instance addGroup : AddGroup (Completion α) :=
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
         fun a ↦
-        show -(a : Completion α) + a = 0
-          by
+        show -(a : Completion α) + a = 0 by
           rw_mod_cast [add_left_neg]
           rfl }
 
