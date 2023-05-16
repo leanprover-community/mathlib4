@@ -184,70 +184,52 @@ class BorelSpace (α : Type _) [TopologicalSpace α] [MeasurableSpace α] : Prop
 #align borel_space BorelSpace
 #align borel_space.measurable_eq BorelSpace.measurable_eq
 
-namespace Tactic
+namespace Mathlib.Tactic
 
-/-- Add instances `borel α : measurable_space α` and `⟨rfl⟩ : borel_space α`. -/
-unsafe def add_borel_instance (α : expr) : tactic Unit := do
+open Lean Elab Tactic
+
+/-- The behaviour of `borelize α` depends on the existing assumptions on `α`.
+
+- if `α` is a topological space with instances `[MeasurableSpace α] [BorelSpace α]`, then
+  `borelize α` replaces the former instance by `borel α`;
+- otherwise, `borelize α` adds instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`.
+
+Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
+-/
+syntax "borelize" (ppSpace colGt term:max)* : tactic
+
+/-- Add instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
+unsafe def addBorelInstance (e : expr) : TacticM Unit := do
   let n1 ← get_unused_name "_inst"
-  to_expr ``(borel $(α)) >>= pose n1
+  to_expr ``(borel $(e)) >>= pose n1
   reset_instance_cache
   let n2 ← get_unused_name "_inst"
-  let v ← to_expr ``((BorelSpace.mk rfl : BorelSpace $(α)))
+  let v ← to_expr ``((BorelSpace.mk rfl : BorelSpace $(e)))
   note n2 none v
   reset_instance_cache
-#align tactic.add_borel_instance tactic.add_borel_instance
 
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      Given a type `α`, an assumption `i : measurable_space α`, and an instance `[borel_space α]`,
-      replace `i` with `borel α`. -/
-    unsafe
-  def
-    borel_to_refl
-    ( α i : expr ) : tactic Unit
-    :=
-      do
-        let n ← get_unused_name "h"
-          to_expr ` `( $ ( i ) = borel $ ( α ) ) >>= assert n
-          applyc `borel_space.measurable_eq
-          unfreezing ( tactic.subst i )
-          let n1 ← get_unused_name "_inst"
-          to_expr ` `( borel $ ( α ) ) >>= pose n1
-          reset_instance_cache
-#align tactic.borel_to_refl tactic.borel_to_refl
+/-- Given a type `α`, an assumption `i : MeasurableSpace α`, and an instance `[BorelSpace α]`,
+replace `i` with `borel α`. -/
+unsafe def borelToRefl ( α i : expr ) : TacticM Unit := do
+  let n ← get_unused_name "h"
+  to_expr ` `( $ ( i ) = borel $ ( α ) ) >>= assert n
+  applyc `borel_space.measurable_eq
+  unfreezing ( tactic.subst i )
+  let n1 ← get_unused_name "_inst"
+  to_expr ` `( borel $ ( α ) ) >>= pose n1
+  reset_instance_cache
 
-/-- Given a type `α`, if there is an assumption `[i : measurable_space α]`, then try to prove
-`[borel_space α]` and replace `i` with `borel α`. Otherwise, add instances
-`borel α : measurable_space α` and `⟨rfl⟩ : borel_space α`. -/
+/-- Given a type `α`, if there is an assumption `[i : MeasurableSpace α]`, then try to prove
+`[BorelSpace α]` and replace `i` with `borel α`. Otherwise, add instances
+`borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`. -/
 unsafe def borelize (α : expr) : tactic Unit := do
   let i ← optional (to_expr ``(MeasurableSpace $(α)) >>= find_assumption)
   i (add_borel_instance α) (borel_to_refl α)
-#align tactic.borelize tactic.borelize
 
-namespace Interactive
+macro_rules
+  | `(tactic| borelize $t:term $u:term*) => `(tactic| borelize $t; borelize $u:term*)
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-/-- The behaviour of `borelize α` depends on the existing assumptions on `α`.
-
-- if `α` is a topological space with instances `[measurable_space α] [borel_space α]`, then
-  `borelize α` replaces the former instance by `borel α`;
-- otherwise, `borelize α` adds instances `borel α : measurable_space α` and `⟨rfl⟩ : borel_space α`.
-
-Finally, `borelize [α, β, γ]` runs `borelize α, borelize β, borelize γ`.
--/
-unsafe def borelize (ts : parse pexpr_list_or_texpr) : tactic Unit :=
-  mapM' (fun t => to_expr t >>= tactic.borelize) ts
-#align tactic.interactive.borelize tactic.interactive.borelize
-
-add_tactic_doc
-  { Name := "borelize"
-    category := DocCategory.tactic
-    declNames := [`tactic.interactive.borelize]
-    tags := ["type class"] }
-
-end Interactive
-
-end Tactic
+end Mathlib.Tactic
 
 instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type _} [TopologicalSpace α]
     [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ
