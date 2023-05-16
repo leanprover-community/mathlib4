@@ -113,7 +113,8 @@ Square with `homs = [f,g,h,i]` and `objs = [A,B,C,D]`
 A f B
 i   g
 D h C
-``` -/
+```
+-/
 def subSquare := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"square.sub"
 
 /-- Given a commutative square `f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
