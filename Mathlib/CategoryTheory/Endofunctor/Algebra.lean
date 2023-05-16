@@ -68,7 +68,7 @@ structure Hom (A₀ A₁ : Algebra F) where
   /-- underlying morphism between the carriers -/
   f : A₀.1 ⟶ A₁.1
   /-- compatibility condition -/
-  h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat -- porting note: was `obviously`
+  h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat -- Porting note: was `obviously`
 #align category_theory.endofunctor.algebra.hom CategoryTheory.Endofunctor.Algebra.Hom
 
 -- Porting note: No need to restate axiom
@@ -122,7 +122,7 @@ theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
 
 /-- Algebras of an endofunctor `F` form a category -/
 instance (F : C ⥤ C) : Category (Algebra F) :=
--- port note: how to use empty constructor `{}` in Lean 4?
+-- Porting note: how to use empty constructor `{}` in Lean 4?
 { (inferInstance : CategoryStruct (Algebra F)) with
   id_comp := fun _ => Hom.ext _ _ <| by aesop_cat
   comp_id := fun _ => Hom.ext _ _ <| by aesop_cat
@@ -156,14 +156,15 @@ theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
       h := by
         rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
-        simp }, Hom.ext _ _ <| by aesop, Hom.ext _ _ <| by aesop⟩⟩ -- port note: `tidy` can't finish
+        simp }, Hom.ext _ _ <| by aesop, Hom.ext _ _ <| by aesop⟩⟩ 
+-- Porting note: `tidy` can't finish
 #align category_theory.endofunctor.algebra.iso_of_iso CategoryTheory.Endofunctor.Algebra.iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
 #align category_theory.endofunctor.algebra.forget_reflects_iso CategoryTheory.Endofunctor.Algebra.forget_reflects_iso
 
 instance forget_faithful : Faithful (forget F) where
--- port note: how to use empty constructor `{}` in Lean 4?
+-- Porting note: how to use empty constructor `{}` in Lean 4?
   map_injective h := Hom.ext _ _ h
 #align category_theory.endofunctor.algebra.forget_faithful CategoryTheory.Endofunctor.Algebra.forget_faithful
 
@@ -254,7 +255,7 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
   unitIso := functorOfNatTransId.symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransComp _ _
   counitIso :=
     (functorOfNatTransComp _ _).symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransId
-  -- port note : `aesop_cat` can't solve this on its own
+  -- Porting note : `aesop_cat` can't solve this on its own
   functor_unitIso_comp := fun X => Hom.ext _ _ <| by aesop_cat
 #align category_theory.endofunctor.algebra.equiv_of_nat_iso CategoryTheory.Endofunctor.Algebra.equivOfNatIso
 
@@ -329,7 +330,7 @@ structure Hom (V₀ V₁ : Coalgebra F) where
   h : V₀.str ≫ F.map f = f ≫ V₁.str := by aesop
 #align category_theory.endofunctor.coalgebra.hom CategoryTheory.Endofunctor.Coalgebra.Hom
 
--- port note: no need for restate_axiom any more
+-- Porting note: no need for restate_axiom any more
 -- restate_axiom hom.h'
 
 -- Porting note: Originally `[simp, reassoc.1]`
@@ -379,7 +380,7 @@ theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
 
 /-- Coalgebras of an endofunctor `F` form a category -/
 instance (F : C ⥤ C) : Category (Coalgebra F) :=
--- port note: how to use empty constructor `{}` in Lean 4?
+-- Porting note: how to use empty constructor `{}` in Lean 4?
 { (inferInstance : CategoryStruct (Coalgebra F)) with
   id_comp := fun _ => Hom.ext _ _ <| by aesop_cat
   comp_id := fun _ => Hom.ext _ _ <| by aesop_cat
@@ -414,13 +415,13 @@ theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
       h := by
         rw [IsIso.eq_inv_comp f.1, ← Category.assoc, ← f.h, Category.assoc]
         simp }, Hom.ext _ _ <| by aesop, Hom.ext _ _ <| by aesop⟩⟩
--- port note : `tidy` can not finish the goal
+-- Porting note : `tidy` can not finish the goal
 #align category_theory.endofunctor.coalgebra.iso_of_iso CategoryTheory.Endofunctor.Coalgebra.iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
 #align category_theory.endofunctor.coalgebra.forget_reflects_iso CategoryTheory.Endofunctor.Coalgebra.forget_reflects_iso
 
--- port note: how to use `{}` in Lean 4?
+-- Porting note: how to use `{}` in Lean 4?
 instance forget_faithful : Faithful (forget F) where
   map_injective := Hom.ext _ _
 #align category_theory.endofunctor.coalgebra.forget_faithful CategoryTheory.Endofunctor.Coalgebra.forget_faithful
@@ -547,7 +548,7 @@ def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
             erw [F.map_id, Category.id_comp, Category.comp_id]
             apply (adj.homEquiv _ _).left_inv A.str }
       naturality := fun A₁ A₂ f => by
-        -- port note: `ext` does not work
+        -- Porting note: `ext` does not work
         refine Algebra.Hom.ext _ _ ?_
         dsimp
         erw [Category.id_comp, Category.comp_id]
@@ -559,17 +560,17 @@ def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
             erw [F.map_id, Category.id_comp, Category.comp_id]
             apply ((adj.homEquiv _ _).left_inv A.str).symm }
       naturality := fun A₁ A₂ f => by
-        -- port note: `ext` does not work
+        -- Porting note: `ext` does not work
         refine Algebra.Hom.ext _ _ ?_
         dsimp
         erw [Category.comp_id, Category.id_comp]
         rfl }
   hom_inv_id := by
-    -- port note : `ext` does not see `Algebra.Hom.ext`
+    -- Porting note : `ext` does not see `Algebra.Hom.ext`
     refine NatTrans.ext _ _ (funext <| fun x => Algebra.Hom.ext _ _ <| ?_)
     exact Category.comp_id _
   inv_hom_id := by
-    -- port note : `ext` does not see `Algebra.Hom.ext`
+    -- Porting note : `ext` does not see `Algebra.Hom.ext`
     refine NatTrans.ext _ _ (funext <| fun x => Algebra.Hom.ext _ _ <| ?_)
     exact Category.comp_id _
 #align category_theory.endofunctor.adjunction.alg_coalg_equiv.unit_iso CategoryTheory.Endofunctor.Adjunction.AlgCoalgEquiv.unitIso
@@ -586,7 +587,7 @@ def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
             erw [G.map_id, Category.id_comp, Category.comp_id]
             apply (adj.homEquiv _ _).right_inv V.str }
       naturality := fun V₁ V₂ f => by
-        -- port note: `ext` does not work
+        -- Porting note: `ext` does not work
         refine Coalgebra.Hom.ext _ _ ?_
         dsimp
         erw [Category.comp_id, Category.id_comp]
@@ -599,17 +600,17 @@ def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
             rw [G.map_id, Category.comp_id, Category.id_comp]
             apply ((adj.homEquiv _ _).right_inv V.str).symm }
       naturality := fun V₁ V₂ f => by
-        -- port note : `ext` does not work
+        -- Porting note : `ext` does not work
         refine Coalgebra.Hom.ext _ _ ?_
         dsimp
         erw [Category.comp_id, Category.id_comp]
         rfl }
   hom_inv_id := by
-    -- port note : `ext` does not see `Coalgebra.Hom.ext`
+    -- Porting note : `ext` does not see `Coalgebra.Hom.ext`
     refine NatTrans.ext _ _ (funext <| fun x => Coalgebra.Hom.ext _ _ <| ?_)
     exact Category.comp_id _
   inv_hom_id := by
-    -- port note : `ext` does not see `Coalgebra.Hom.ext`
+    -- Porting note : `ext` does not see `Coalgebra.Hom.ext`
     refine NatTrans.ext _ _ (funext <| fun x => Coalgebra.Hom.ext _ _ <| ?_)
     exact Category.comp_id _
 #align category_theory.endofunctor.adjunction.alg_coalg_equiv.counit_iso CategoryTheory.Endofunctor.Adjunction.AlgCoalgEquiv.counitIso
@@ -622,7 +623,7 @@ def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   unitIso := AlgCoalgEquiv.unitIso adj
   counitIso := AlgCoalgEquiv.counitIso adj
   functor_unitIso_comp A := by
-    -- port note : `ext` does not work
+    -- Porting note : `ext` does not work
     refine Coalgebra.Hom.ext _ _ ?_
     exact Category.comp_id _
 #align category_theory.endofunctor.adjunction.algebra_coalgebra_equiv CategoryTheory.Endofunctor.Adjunction.algebraCoalgebraEquiv
