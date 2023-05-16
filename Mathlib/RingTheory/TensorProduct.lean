@@ -714,35 +714,23 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
         f ((a₁ * a₂) ⊗ₜ (b₁ * b₂) ⊗ₜ (c₁ * c₂)) = f (a₁ ⊗ₜ b₁ ⊗ₜ c₁) * f (a₂ ⊗ₜ b₂ ⊗ₜ c₂))
     (w₂ : ∀ r, f (((algebraMap R A) r ⊗ₜ[R] (1 : B)) ⊗ₜ[R] (1 : C)) = (algebraMap R D) r) :
     (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D :=
-  { f with
-    toFun := f
-    map_mul' := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp only [map_zero, MulZeroClass.zero_mul]
-      · intro ab₁ c₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp only [map_zero, MulZeroClass.mul_zero]
-        · intro ab₂ c₂
-          refine TensorProduct.induction_on ab₁ ?_ ?_ ?_
-          · simp only [zero_tmul, map_zero, MulZeroClass.zero_mul]
-          · intro a₁ b₁
-            refine TensorProduct.induction_on ab₂ ?_ ?_ ?_
-            · simp only [zero_tmul, map_zero, MulZeroClass.mul_zero]
-            · intros
-              simp only [tmul_mul_tmul, w₁]
-            · intro x₁ x₂ h₁ h₂
-              simp only [tmul_mul_tmul] at h₁ h₂ ⊢
-              rw [mul_add, add_tmul, add_tmul, map_add, h₁, h₂, map_add, mul_add]
-          · intro x₁ x₂ h₁ h₂
-            simp only [tmul_mul_tmul] at h₁ h₂ ⊢
-            rw [add_mul, add_tmul, add_tmul, map_add, h₁, h₂, map_add, add_mul]
-        · intro x₁ x₂ h₁ h₂
-          simp only [tmul_mul_tmul] at h₁ h₂ ⊢
-          rw [map_add, mul_add, map_add, h₁, h₂, mul_add]
-      · intro x₁ x₂ h₁ h₂
-        simp only [tmul_mul_tmul] at h₁ h₂ ⊢
-        rw [map_add, add_mul, map_add, add_mul, h₁, h₂]
-    commutes' := fun r => by simp [w₂] }
+-- porting note : build the whole algebra isomorphism times out, so I propose to define the version
+-- of tensoring three rings in terms of the version tensoring with two rings
+algEquivOfLinearEquivTensorProduct f (fun x₁ x₂ c₁ c₂ => by
+  refine TensorProduct.induction_on x₁ ?_ ?_ ?_ <;>
+  refine TensorProduct.induction_on x₂ ?_ ?_ ?_ <;>
+  simp only [zero_tmul, tmul_zero, tmul_mul_tmul, map_zero, zero_mul, mul_zero, mul_add, add_mul,
+    map_add, add_tmul, tmul_add, w₁] <;>
+  try
+    intros
+    trivial
+  . intros ab₁ ab₂ h₁ h₂ a b
+    rw [mul_add, add_tmul, map_add, h₁, h₂, map_add, mul_add]
+  . intros a b ab₁ ab₂ h₁ h₂
+    rw [add_mul, add_tmul, map_add, h₁, h₂, map_add, add_mul]
+  . intros ab₁ ab₂ _ _ x y hx hy
+    rw [add_mul, add_tmul, map_add, hx, hy, map_add, map_add, mul_add, mul_add, add_mul, mul_add])
+  w₂
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 
 @[simp]
