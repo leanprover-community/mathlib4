@@ -19,8 +19,9 @@ for homomorphisms to a finite codomain.
 
 ## Main statements
 
-* `simple_graph.exists_hom_of_all_finite_homs`: If every finite subgraph of a (possibly infinite)
-  graph `G` has a homomorphism to some finite graph `F`, then there is also a homomorphism `G →g F`.
+* `SimpleGraph.nonempty_hom_of_forall_finite_subgraph_hom`: If every finite subgraph of a (possibly
+  infinite) graph `G` has a homomorphism to some finite graph `F`, then there is also a homomorphism
+  `G →g F`.
 
 ## Notations
 
@@ -30,7 +31,7 @@ for homomorphisms to a finite codomain.
 ## Implementation notes
 
 The proof here uses compactness as formulated in `nonempty_sections_of_finite_inverse_system`. For
-finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraph_hom_functor` restricts homomorphisms
+finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restricts homomorphisms
 `G' →fg F` to domain `G''`.
 -/
 
