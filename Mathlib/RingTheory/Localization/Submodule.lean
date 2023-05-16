@@ -79,8 +79,8 @@ theorem coeSubmodule_mul (I J : Ideal R) :
 
 set_option synthInstance.etaExperiment true in
 theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R) :
-    Submodule.Fg (coeSubmodule S I) ↔ Submodule.Fg I :=
-  ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.Fg.map _⟩
+    Submodule.FG (coeSubmodule S I) ↔ Submodule.FG I :=
+  ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.FG.map _⟩
 #align is_localization.coe_submodule_fg IsLocalization.coeSubmodule_fg
 
 set_option synthInstance.etaExperiment true in

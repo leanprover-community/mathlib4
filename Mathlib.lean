@@ -1762,7 +1762,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Adjoin.Fg
+import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.ChainOfDivisors
@@ -1779,7 +1779,7 @@ import Mathlib.RingTheory.Flat
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.IdempotentFg
+import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
