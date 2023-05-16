@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.FiniteType
-import Mathbin.RingTheory.MvPolynomial.Tower
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.MvPolynomial.Tower
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -56,8 +56,7 @@ namespace FiniteType
 variable {R A B}
 
 /-- A finitely presented algebra is of finite type. -/
-theorem of_finitePresentation : FinitePresentation R A → FiniteType R A :=
-  by
+theorem of_finitePresentation : FinitePresentation R A → FiniteType R A := by
   rintro ⟨n, f, hf⟩
   apply finite_type.iff_quotient_mv_polynomial''.2
   exact ⟨n, f, hf.1⟩
@@ -71,8 +70,7 @@ variable {R A B}
 
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
-theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A :=
-  by
+theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
   refine' ⟨fun h => _, Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine' ⟨n, f, hf, _⟩
@@ -82,8 +80,7 @@ theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentati
 #align algebra.finite_presentation.of_finite_type Algebra.FinitePresentation.of_finiteType
 
 /-- If `e : A ≃ₐ[R] B` and `A` is finitely presented, then so is `B`. -/
-theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresentation R B :=
-  by
+theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresentation R B := by
   obtain ⟨n, f, hf⟩ := hfp
   use n, AlgHom.comp (↑e) f
   constructor
@@ -91,8 +88,7 @@ theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresent
   suffices hker : (AlgHom.comp (↑e) f).toRingHom.ker = f.to_ring_hom.ker
   · rw [hker]
     exact hf.2
-  · have hco : (AlgHom.comp (↑e) f).toRingHom = RingHom.comp (↑e.to_ring_equiv) f.to_ring_hom :=
-      by
+  · have hco : (AlgHom.comp (↑e) f).toRingHom = RingHom.comp (↑e.to_ring_equiv) f.to_ring_hom := by
       have h : (AlgHom.comp (↑e) f).toRingHom = e.to_alg_hom.to_ring_hom.comp f.to_ring_hom := rfl
       have h1 : ↑e.to_ring_equiv = e.to_alg_hom.toRingHom := rfl
       rw [h, h1]
@@ -144,8 +140,7 @@ theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f) (hker : f
 
 theorem iff :
     FinitePresentation R A ↔
-      ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R))(e : (_ ⧸ I) ≃ₐ[R] A), I.FG :=
-  by
+      ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R))(e : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
   constructor
   · rintro ⟨n, f, hf⟩
     exact ⟨n, f.to_ring_hom.ker, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
@@ -158,8 +153,7 @@ variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mv_polynomial' :
     FinitePresentation R A ↔
       ∃ (ι : Type u_2)(_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A),
-        Surjective f ∧ f.toRingHom.ker.FG :=
-  by
+        Surjective f ∧ f.toRingHom.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
     set ulift_var := MvPolynomial.renameEquiv R Equiv.ulift
@@ -181,8 +175,7 @@ theorem iff_quotient_mv_polynomial' :
 /-- If `A` is a finitely presented `R`-algebra, then `mv_polynomial (fin n) A` is finitely presented
 as `R`-algebra. -/
 theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation R A) (ι : Type _) [Finite ι] :
-    FinitePresentation R (MvPolynomial ι A) :=
-  by
+    FinitePresentation R (MvPolynomial ι A) := by
   rw [iff_quotient_mv_polynomial'] at hfp⊢
   classical
     obtain ⟨ι', _, f, hf_surj, hf_ker⟩ := hfp
@@ -202,8 +195,7 @@ theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation R A) (ι : 
 /-- If `A` is an `R`-algebra and `S` is an `A`-algebra, both finitely presented, then `S` is
   finitely presented as `R`-algebra. -/
 theorem trans [Algebra A B] [IsScalarTower R A B] (hfpA : FinitePresentation R A)
-    (hfpB : FinitePresentation A B) : FinitePresentation R B :=
-  by
+    (hfpB : FinitePresentation A B) : FinitePresentation R B := by
   obtain ⟨n, I, e, hfg⟩ := Iff.1 hfpB
   exact Equiv ((mv_polynomial_of_finite_presentation hfpA _).Quotient hfg) (e.restrict_scalars R)
 #align algebra.finite_presentation.trans Algebra.FinitePresentation.trans
@@ -226,8 +218,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     · obtain ⟨t, ht⟩ := hRA.out
       have := fun i : t => hf (algebraMap A B i)
       choose t' ht'
-      have ht'' : Algebra.adjoin R (algebraMap A AX '' t ∪ Set.range (X : _ → AX)) = ⊤ :=
-        by
+      have ht'' : Algebra.adjoin R (algebraMap A AX '' t ∪ Set.range (X : _ → AX)) = ⊤ := by
         rw [adjoin_union_eq_adjoin_adjoin, ← Subalgebra.restrictScalars_top R]
         congr 1
         swap
@@ -261,8 +252,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       have :
         x ∈
           (map (algebraMap R A) : _ →+* AX).srange.toAddSubmonoid ⊔
-            (Ideal.span s₀).toAddSubmonoid :=
-        by
+            (Ideal.span s₀).toAddSubmonoid := by
         have : x ∈ (⊤ : Subalgebra R AX) := trivial
         rw [← ht''] at this
         apply adjoin_induction this
@@ -291,8 +281,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := add_submonoid.mem_sup.mp this
       rw [map_add, aeval_map_algebra_map, ← aeval_unique, show aeval (f ∘ X) q = 0 from leI hq,
         add_zero] at hx
-      suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (map <| algebraMap R A)
-        by
+      suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (map <| algebraMap R A) by
         refine' add_mem _ hq
         rw [hs] at this
         exact this hx
@@ -325,8 +314,7 @@ theorem ker_fG_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       simp_rw [AlgHom.coe_toRingHom, hh]
       rw [AlgHom.comp_algebraMap, ← aeval_eq_eval₂_hom, ← aeval_unique]
     let s' := Set.range g' ∪ aeval_h '' s
-    have leI : Ideal.span s' ≤ f.to_ring_hom.ker :=
-      by
+    have leI : Ideal.span s' ≤ f.to_ring_hom.ker := by
       rw [Ideal.span_le]
       rintro _ (⟨i, rfl⟩ | ⟨x, hx, rfl⟩)
       · change f (g' i) = 0
@@ -338,10 +326,8 @@ theorem ker_fG_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         exact Ideal.subset_span hx
     apply leI.antisymm
     intro x hx
-    have : x ∈ aeval_h.range.to_add_submonoid ⊔ (Ideal.span s').toAddSubmonoid :=
-      by
-      have : x ∈ adjoin R (Set.range X : Set RXn) :=
-        by
+    have : x ∈ aeval_h.range.to_add_submonoid ⊔ (Ideal.span s').toAddSubmonoid := by
+      have : x ∈ adjoin R (Set.range X : Set RXn) := by
         rw [adjoin_range_X]
         trivial
       apply adjoin_induction this
@@ -368,8 +354,7 @@ theorem ker_fG_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     refine' add_mem _ hy
     simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
-    suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h
-      by
+    suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this
       rwa [hs]
     rw [Ideal.span_le]
@@ -382,8 +367,7 @@ theorem ker_fG_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
 /-- If `f : A →ₐ[R] B` is a sujection between finitely-presented `R`-algebras, then the kernel of
 `f` is finitely generated. -/
 theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    (hRA : FinitePresentation R A) (hRB : FinitePresentation R B) : f.toRingHom.ker.FG :=
-  by
+    (hRA : FinitePresentation R A) (hRB : FinitePresentation R B) : f.toRingHom.ker.FG := by
   obtain ⟨n, g, hg, hg'⟩ := hRA
   convert(ker_fg_of_mv_polynomial (f.comp g) (hf.comp hg) hRB).map g.to_ring_hom
   simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
@@ -447,8 +431,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f
     (g.comp f).FinitePresentation :=
   @Algebra.FinitePresentation.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
     {
-      smul_assoc := fun a b c =>
-        by
+      smul_assoc := fun a b c => by
         simp only [Algebra.smul_def, RingHom.map_mul, mul_assoc]
         rfl }
     hf hg
