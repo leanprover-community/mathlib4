@@ -120,7 +120,6 @@ section Image
 variable {𝕜₁ 𝕜₂ : Type _} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace E] [TopologicalSpace F]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A continuous linear image of a bounded set is bounded. -/
 theorem IsVonNBounded.image {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ] {s : Set E}
     (hs : IsVonNBounded 𝕜₁ s) (f : E →SL[σ] F) : IsVonNBounded 𝕜₂ (f '' s) := by
@@ -317,7 +316,6 @@ theorem vonNBornology_eq : Bornology.vonNBornology 𝕜 E = PseudoMetricSpace.to
   exact isVonNBounded_iff 𝕜 E s
 #align normed_space.vonN_bornology_eq NormedSpace.vonNBornology_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isBounded_iff_subset_smul_ball {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.ball (0 : E) 1 := by
   rw [← isVonNBounded_iff 𝕜]
@@ -330,7 +328,6 @@ theorem isBounded_iff_subset_smul_ball {s : Set E} :
     exact ((isVonNBounded_ball 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha
 #align normed_space.is_bounded_iff_subset_smul_ball NormedSpace.isBounded_iff_subset_smul_ball
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor

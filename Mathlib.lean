@@ -489,6 +489,7 @@ import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
@@ -725,6 +726,7 @@ import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.HalesJewett
+import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
 import Mathlib.Combinatorics.Partition
@@ -753,6 +755,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
@@ -1763,7 +1766,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Adjoin.Fg
+import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.ChainOfDivisors
@@ -1780,7 +1783,7 @@ import Mathlib.RingTheory.Flat
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.IdempotentFg
+import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
@@ -2097,6 +2100,7 @@ import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int

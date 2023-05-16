@@ -490,7 +490,6 @@ theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x))
   conjCle.hasSum'
 #align is_R_or_C.has_sum_conj' IsROrC.hasSum_conj'
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
   summable_star_iff
@@ -498,7 +497,6 @@ theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Sum
 
 variable {𝕜}
 
-set_option synthInstance.etaExperiment true in
 theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
 #align is_R_or_C.conj_tsum IsROrC.conj_tsum
