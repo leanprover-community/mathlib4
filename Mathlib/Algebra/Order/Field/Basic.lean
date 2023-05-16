@@ -574,7 +574,7 @@ theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
 
 theorem Monotone.div_const {β : Type _} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := by
-  haveI := @LinearOrder.decidable_le α _
+  haveI := @LinearOrder.decidableLE α _
   simpa only [div_eq_mul_inv] using (monotone_mul_right_of_nonneg (inv_nonneg.2 hc)).comp hf
 #align monotone.div_const Monotone.div_const
 

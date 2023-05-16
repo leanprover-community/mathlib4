@@ -253,14 +253,12 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_pow (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_pow IsROrC.ofReal_pow
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_prod {α : Type _} (s : Finset α) (f : α → ℝ) :
     ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod IsROrC.ofReal_prod
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_finsupp_prod {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
@@ -435,7 +433,6 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
   (is_real_TFAE z).out 0 3
 #align is_R_or_C.conj_eq_iff_im IsROrC.conj_eq_iff_im
 
-set_option synthInstance.etaExperiment true in
 -- porting note: @[simp] commented out because simpNF linter times out regardless of etaExperiment
 -- @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
@@ -444,7 +441,6 @@ theorem star_def : (Star.star : K → K) = conj :=
 
 variable (K)
 
-set_option synthInstance.etaExperiment true in
 /-- Conjugation as a ring equivalence. This is used to convert the inner product into a
 sesquilinear product. -/
 abbrev conjToRingEquiv : K ≃+* Kᵐᵒᵖ :=
@@ -623,11 +619,10 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align is_R_or_C.norm_sq_div IsROrC.normSq_div
 
-@[simp, isROrC_simps]
+@[isROrC_simps] -- porting note: was `simp`
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 
-set_option synthInstance.etaExperiment true in
 instance (priority := 100) : CstarRing K where
   norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
 
@@ -666,7 +661,6 @@ theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
     im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
   rw [← ofReal_ofNat, ofReal_mul_im]
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
@@ -978,11 +972,9 @@ theorem conjCle_apply : (conjCle : K → K) = conj :=
   rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
 
-set_option synthInstance.etaExperiment true in
 instance (priority := 100) : ContinuousStar K :=
   ⟨conjLie.continuous⟩
 
-set_option synthInstance.etaExperiment true in
 @[continuity]
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star
