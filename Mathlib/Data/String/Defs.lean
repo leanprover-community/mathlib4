@@ -77,11 +77,6 @@ def getRest (s t : String) : Option String :=
   List.asString <$> s.toList.getRest t.toList
 #align string.get_rest String.getRest
 
-/-- Removes the first `n` elements from the string `s`. -/
-def popn (s : String) (n : Nat) : String :=
-  ⟨s.toList.drop n⟩
-#align string.popn String.popn
-
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
   s.iter.curr
