@@ -202,8 +202,9 @@ prove `false` by calling `linarith` on each list in succession. It will stop at 
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
-  ls.firstM (fun L => proveFalseByLinarith cfg g L)
-    <|> throwError "linarith failed to find a contradiction\n{g}"
+  try
+    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+  catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
 
 /--

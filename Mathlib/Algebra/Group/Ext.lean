@@ -136,7 +136,7 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
   have : m₁.div = m₂.div := by
     ext (a b)
     exact @map_div' _ _
-      (@MonoidHom _ _ (_) _) (_) _
+      (@MonoidHom _ _ (_) _) (id _) _
       (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩

@@ -84,10 +84,10 @@ set_option linter.uppercaseLean3 false in
 instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- Porting note: cannot see through forget
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
-  change TopologicalSpace X
-  infer_instance
+-- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
+@[reducible]
+instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+  X.str
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
@@ -169,7 +169,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
-  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  simp only [←Functor.map_comp]
   exact openEmbedding_iff_comp_isIso f g
 
 -- Porting note: simpNF requested partially simped version below
@@ -186,7 +186,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
-  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  simp only [←Functor.map_comp]
   exact openEmbedding_iff_isIso_comp f g
 
 end TopCat

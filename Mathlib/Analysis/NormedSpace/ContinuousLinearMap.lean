@@ -30,7 +30,6 @@ This file is meant to be lightweight (it is imported by much of the analysis lib
 before adding imports!
 -/
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 open Metric ContinuousLinearMap
 
 open Set Real

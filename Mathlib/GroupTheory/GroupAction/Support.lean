@@ -58,8 +58,7 @@ variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCom
 
 -- TODO: This should work without `SMulCommClass`
 @[to_additive]
-theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g • b) :=
-  by
+theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g • b) := by
   rintro g' hg'
   rw [smul_comm, h]
   rintro a ha
