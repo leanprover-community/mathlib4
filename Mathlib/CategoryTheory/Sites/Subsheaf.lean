@@ -456,7 +456,7 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
 #align category_theory.grothendieck_topology.image_mono_factorization CategoryTheory.GrothendieckTopology.imageMonoFactorization
 
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
-noncomputable def imageFactorization {F F' : Sheaf J (Type max v u)} (f : F ⟶ F') :
+noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ F') :
     Limits.ImageFactorisation f where
   F := imageMonoFactorization f
   isImage :=
@@ -466,10 +466,10 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type max v u)} (f : F ⟶ 
         haveI : Limits.PreservesLimits (forget (Type max v w)) := inferInstance
         haveI : ReflectsIsomorphisms (forget (Type max v w)) := inferInstance
         -- port note: need to manually specify this instance for sheafification to work
-        haveI : (X : C) → Limits.PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget (Type max v w)) :=
+        haveI : (X : C) → Limits.PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget TypeMax.{v, w}) :=
            fun X => Limits.PreservesColimitsOfSize.preservesColimitsOfShape
         haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J _ _).mp I.m_mono
-        haveI := @isIso_toImagePresheaf.{u, v, u} C _ _ _ _ M
+        haveI := isIso_toImagePresheaf I.m.1
         refine' ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩
         apply Subpresheaf.sheafify_le
         · conv_lhs => rw [← I.fac]
