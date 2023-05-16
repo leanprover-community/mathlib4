@@ -466,9 +466,9 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       intro a b c
       transfer_rw
       apply mul_lt_mul_of_pos_right
-    decidable_lt := Num.decidableLT
-    decidable_le := Num.decidableLE
-    decidable_eq := instDecidableEqNum
+    decidableLT := Num.decidableLT
+    decidableLE := Num.decidableLE
+    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -646,9 +646,9 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_lt := by infer_instance
-  decidable_le := by infer_instance
-  decidable_eq := by infer_instance
+  decidableLT := by infer_instance
+  decidableLE := by infer_instance
+  decidableEq := by infer_instance
 #align pos_num.linear_order PosNum.linearOrder
 
 @[simp]
@@ -955,11 +955,13 @@ theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
 
 @[simp, norm_cast]
 theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
-  cases m <;> dsimp only [shiftl];
+  cases m <;> dsimp only [shiftl]
   · symm
     apply Nat.zero_shiftl
-  simp; induction' n with n IH; · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftl_succ]; rw [← IH]
+  simp only [cast_pos]
+  induction' n with n IH
+  · rfl
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftl_succ, IH]
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
@@ -967,7 +969,8 @@ theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
   cases' m with m <;> dsimp only [shiftr];
   · symm
     apply Nat.zero_shiftr
-  induction' n with n IH generalizing m; · cases m <;> rfl
+  induction' n with n IH generalizing m
+  · cases m <;> rfl
   cases' m with m m <;> dsimp only [PosNum.shiftr]
   · rw [Nat.shiftr_eq_div_pow]
     symm
@@ -1459,9 +1462,9 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_eq := instDecidableEqZNum
-  decidable_le := ZNum.decidableLE
-  decidable_lt := ZNum.decidableLT
+  decidableEq := instDecidableEqZNum
+  decidableLE := ZNum.decidableLE
+  decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
 instance addCommGroup : AddCommGroup ZNum where
@@ -1642,8 +1645,8 @@ namespace Num
 protected theorem div_zero (n : Num) : n / 0 = 0 :=
   show n.div 0 = 0 by
     cases n
-    rfl
-    simp [Num.div]
+    · rfl
+    · simp [Num.div]
 #align num.div_zero Num.div_zero
 
 @[simp, norm_cast]
@@ -1658,8 +1661,8 @@ theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
 protected theorem mod_zero (n : Num) : n % 0 = n :=
   show n.mod 0 = n by
     cases n
-    rfl
-    simp [Num.mod]
+    · rfl
+    · simp [Num.mod]
 #align num.mod_zero Num.mod_zero
 
 @[simp, norm_cast]
@@ -1678,7 +1681,8 @@ theorem gcd_to_nat_aux :
   | Nat.succ n, 0, b, _ab, _h => (Nat.gcd_zero_left _).symm
   | Nat.succ n, pos a, b, ab, h => by
     simp [gcdAux]
-    rw [Nat.gcd_rec, gcd_to_nat_aux, mod_to_nat]; · rfl
+    rw [Nat.gcd_rec, gcd_to_nat_aux, mod_to_nat]
+    · rfl
     · rw [← le_to_nat, mod_to_nat]
       exact le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))
     rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h⊢
