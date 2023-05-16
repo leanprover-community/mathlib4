@@ -185,7 +185,9 @@ theorem hasBasis_nhds (a : A) :
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  -- Check again during lean4#2210 cleanup.
+  let _ := hB.topology
   { B i with
     isOpen' := by
       letI := hB.topology
@@ -209,9 +211,6 @@ theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
 end RingSubgroupsBasis
 
 variable {ι R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
-
--- Porting note: failed to synthesize instance `Module R A`
-set_option synthInstance.etaExperiment true
 
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and

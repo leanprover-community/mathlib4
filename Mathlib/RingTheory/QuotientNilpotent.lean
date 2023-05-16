@@ -15,8 +15,6 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 # Nilpotent elements in quotient rings
 -/
 
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
-set_option synthInstance.etaExperiment true in
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type _} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
@@ -38,7 +36,6 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     P I := by
 -- Porting note: linarith misbehaving below
   have bound (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
   revert S
   -- Porting note: lean could previously figure out the motive
@@ -74,7 +71,6 @@ example (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
 -- Porting note: cannot synth RingHomClass
-set_option synthInstance.etaExperiment true in
   refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
@@ -100,4 +96,3 @@ set_option synthInstance.etaExperiment true in
       ring
     exact isUnit_of_mul_eq_one _ _ this
 #align is_nilpotent.is_unit_quotient_mk_iff IsNilpotent.isUnit_quotient_mk_iff
-

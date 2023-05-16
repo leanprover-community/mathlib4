@@ -61,7 +61,6 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   zero_mem {s} := s.zero_mem'
 
 -- porting note: work around lean4#2074
--- the following instance works with `set_option synthInstance.etaExperiment true`
 attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
@@ -573,7 +572,6 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
 #align star_subalgebra.adjoin_comm_semiring_of_comm StarSubalgebra.adjoinCommSemiringOfComm
 
 -- porting note: work around lean4#2074
--- the following instance works with `set_option synthInstance.etaExperiment true`
 attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of

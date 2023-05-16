@@ -211,7 +211,7 @@ theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
   ChainClosure.union fun _ => id
 #align chain_closure_max_chain chainClosure_maxChain
 
-private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (_ : ChainClosure r c₂)
+private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ SuccChain r c₃ ⊆ c₂) :
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁
@@ -226,17 +226,17 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (_ : C
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
   induction hc₂ generalizing c₁ hc₁
-  case succ c₂ hc₂ ih =>
-    refine' ((chainClosure_succ_total_aux hc₁ hc₂) fun c₁ => ih).imp h.antisymm' fun h₁ => _
+  case succ c₂ _ ih =>
+    refine' ((chainClosure_succ_total_aux hc₁) fun c₁ => ih).imp h.antisymm' fun h₁ => _
     obtain rfl | h₂ := ih hc₁ h₁
     · exact Subset.rfl
     · exact h₂.trans subset_succChain
-  case union s hs ih =>
+  case union s _ ih =>
     apply Or.imp_left h.antisymm'
     apply by_contradiction
     simp only [sUnion_subset_iff, not_or, not_forall, exists_prop, and_imp, forall_exists_index]
     intro c₃ hc₃ h₁ h₂
-    obtain h | h := chainClosure_succ_total_aux hc₁ (hs c₃ hc₃) fun c₄ => ih _ hc₃
+    obtain h | h := chainClosure_succ_total_aux hc₁ fun c₄ => ih _ hc₃
     · exact h₁ (subset_succChain.trans h)
     obtain h' | h' := ih c₃ hc₃ hc₁ h
     · exact h₁ h'.subset
@@ -244,7 +244,7 @@ private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : C
 
 theorem ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂) :
     c₁ ⊆ c₂ ∨ c₂ ⊆ c₁ :=
-  ((chainClosure_succ_total_aux hc₂ hc₁) fun _ hc₃ => chainClosure_succ_total hc₃ hc₁).imp_left
+  ((chainClosure_succ_total_aux hc₂) fun _ hc₃ => chainClosure_succ_total hc₃ hc₁).imp_left
     subset_succChain.trans
 #align chain_closure.total ChainClosure.total
 
