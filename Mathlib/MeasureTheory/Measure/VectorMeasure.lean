@@ -1313,7 +1313,7 @@ open MeasureTheory
 /-- The underlying function for `SignedMeasure.toMeasureOfZeroLe`. -/
 def toMeasureOfZeroLe' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j : Set α)
     (hj : MeasurableSet j) : ℝ≥0∞ :=
-  @Coe.coe ℝ≥0 ℝ≥0∞ _ ⟨s.restrict i j, le_trans (by simp) (hi j hj)⟩
+  ((↑) : ℝ≥0 → ℝ≥0∞) ⟨s.restrict i j, le_trans (by simp) (hi j hj)⟩
 #align measure_theory.signed_measure.to_measure_of_zero_le' MeasureTheory.SignedMeasure.toMeasureOfZeroLe'
 
 /-- Given a signed measure `s` and a positive measurable set `i`, `toMeasureOfZeroLe`
@@ -1339,13 +1339,13 @@ def toMeasureOfZeroLe (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
       · refine' tsum_congr fun n => _
         simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
-      · exact (NNReal.summable_mk h).2 (s.m_Union h₁ h₂).Summable)
+      · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable)
 #align measure_theory.signed_measure.to_measure_of_zero_le MeasureTheory.SignedMeasure.toMeasureOfZeroLe
 
 variable (s : SignedMeasure α) {i j : Set α}
 
 theorem toMeasureOfZeroLe_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
-    s.toMeasureOfZeroLe i hi₁ hi j = @Coe.coe ℝ≥0 ℝ≥0∞ _ ⟨s (i ∩ j), nonneg_of_zero_le_restrict
+    s.toMeasureOfZeroLe i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨s (i ∩ j), nonneg_of_zero_le_restrict
       s (zero_le_restrict_subset s hi₁ (Set.inter_subset_left _ _) hi)⟩ := by
   simp_rw [toMeasureOfZeroLe, Measure.ofMeasurable_apply _ hj₁, toMeasureOfZeroLe',
     s.restrict_apply hi₁ hj₁, Set.inter_comm]
@@ -1359,7 +1359,7 @@ def toMeasureOfLeZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
 #align measure_theory.signed_measure.to_measure_of_le_zero MeasureTheory.SignedMeasure.toMeasureOfLeZero
 
 theorem toMeasureOfLeZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
-    s.toMeasureOfLeZero i hi₁ hi j = @Coe.coe ℝ≥0 ℝ≥0∞ _ ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
+    s.toMeasureOfLeZero i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ (Set.inter_subset_left _ _)
       (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi))⟩ := by
   erw [toMeasureOfZeroLe_apply]
