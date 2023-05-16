@@ -165,6 +165,8 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
   mk_eq.mpr <| ⟨1, rfl⟩
 #align localized_module.mk_add_mk LocalizedModule.mk_add_mk
 
+/-- Porting note: Some auxiliary lemmas are declared with `private` in the original mathlib3 file.
+We take that policy here as well, and remove the `#align` lines accordingly. -/
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
   induction' x using LocalizedModule.induction_on with mx sx
   induction' y using LocalizedModule.induction_on with my sy
@@ -175,12 +177,10 @@ private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + 
   congr 1
   · rw [mul_assoc]
   · rw [eq_comm, mul_comm, add_assoc, mul_smul, mul_smul, ← mul_smul sx sz, mul_comm, mul_smul]
--- #align localized_module.add_assoc' localized_module.add_assoc'
 
 private theorem add_comm' (x y : LocalizedModule S M) : x + y = y + x :=
   LocalizedModule.induction_on₂ (fun m m' s s' => by rw [mk_add_mk, mk_add_mk, add_comm, mul_comm])
     x y
--- #align localized_module.add_comm' localized_module.add_comm'
 
 private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
   induction_on
@@ -188,7 +188,6 @@ private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
       rw [← zero_mk s, mk_add_mk, smul_zero, zero_add, mk_eq];
         exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
--- #align localized_module.zero_add' localized_module.zero_add'
 
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
   induction_on
@@ -196,18 +195,15 @@ private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
       rw [← zero_mk s, mk_add_mk, smul_zero, add_zero, mk_eq];
         exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
--- #align localized_module.add_zero' localized_module.add_zero'
 
 instance hasNatSmul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
 #align localized_module.has_nat_smul LocalizedModule.hasNatSmul
 
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
--- #align localized_module.nsmul_zero' localized_module.nsmul_zero'
 
 private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = x + n • x :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
--- #align localized_module.nsmul_succ' localized_module.nsmul_succ'
 
 instance : AddCommMonoid (LocalizedModule S M) where
   add := (· + ·)
@@ -359,7 +355,6 @@ theorem mk_smul_mk (r : R) (m : M) (s t : S) :
 private theorem one_smul' (m : LocalizedModule S M) : (1 : Localization S) • m = m := by
   induction' m using LocalizedModule.induction_on with m s
   rw [← Localization.mk_one, mk_smul_mk, one_smul, one_mul]
--- #align localized_module.one_smul' localized_module.one_smul'
 
 private theorem mul_smul' (x y : Localization S) (m : LocalizedModule S M) :
     (x * y) • m = x • y • m := by
@@ -368,7 +363,6 @@ private theorem mul_smul' (x y : Localization S) (m : LocalizedModule S M) :
   rcases data, data' with ⟨⟨r, s⟩, ⟨r', s'⟩⟩
   induction' m using LocalizedModule.induction_on with m t
   rw [Localization.mk_mul, mk_smul_mk, mk_smul_mk, mk_smul_mk, mul_smul, mul_assoc]
--- #align localized_module.mul_smul' localized_module.mul_smul'
 
 private theorem smul_add' (x : Localization S) (y z : LocalizedModule S M) :
     x • (y + z) = x • y + x • z := by
@@ -380,13 +374,11 @@ private theorem smul_add' (x : Localization S) (y z : LocalizedModule S M) :
   use 1
   simp only [one_smul, smul_add, ← mul_smul, Submonoid.smul_def, Submonoid.coe_mul]
   ring_nf
--- #align localized_module.smul_add' localized_module.smul_add'
 
 private theorem smul_zero' (x : Localization S) : x • (0 : LocalizedModule S M) = 0 := by
   induction' x using Localization.induction_on with data
   rcases data with ⟨r, s⟩
   rw [← zero_mk s, mk_smul_mk, smul_zero, zero_mk, zero_mk]
--- #align localized_module.smul_zero' localized_module.smul_zero'
 
 private theorem add_smul' (x y : Localization S) (z : LocalizedModule S M) :
     (x + y) • z = x • z + y • z := by
@@ -401,12 +393,10 @@ private theorem add_smul' (x y : Localization S) (z : LocalizedModule S M) :
   rw [add_comm]
   -- Commutativity of addition in the module is not applied by `Ring`.
   ring_nf
--- #align localized_module.add_smul' localized_module.add_smul'
 
 private theorem zero_smul' (x : LocalizedModule S M) : (0 : Localization S) • x = 0 := by
   induction' x using LocalizedModule.induction_on with m s
   rw [← Localization.mk_zero s, mk_smul_mk, zero_smul, zero_mk]
--- #align localized_module.zero_smul' localized_module.zero_smul'
 
 instance isModule : Module (Localization S) (LocalizedModule S M) where
   smul := (· • ·)
