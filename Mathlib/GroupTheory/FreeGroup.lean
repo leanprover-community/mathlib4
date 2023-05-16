@@ -1165,6 +1165,9 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
         simp [List.length] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
+        -- Porting note: needed to add this step in #3414 (reenableeta).
+        -- However it seems possible it is caused by a different change from
+        -- nightly-2023-05-16.
         cases this
       | cons hd tail =>
         cases' hd with y c
