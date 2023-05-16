@@ -55,7 +55,9 @@ namespace Complex
 @[continuity]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
-  continuity
+  exact (((continuous_id.neg.mul continuous_const).cexp.sub
+    (continuous_id.mul continuous_const).cexp).mul continuous_const).div_const 2
+  -- Porting note: was `continuity`
 #align complex.continuous_sin Complex.continuous_sin
 
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
@@ -65,7 +67,9 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 @[continuity]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
-  continuity
+  exact ((continuous_id.mul continuous_const).cexp.add
+    (continuous_id.neg.mul continuous_const).cexp).div_const 2
+  -- Porting note: was `continuity`
 #align complex.continuous_cos Complex.continuous_cos
 
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
@@ -75,13 +79,15 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 @[continuity]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
-  continuity
+  exact (continuous_id.cexp.sub continuous_id.neg.cexp).div_const 2
+  -- Porting note: was `continuity`
 #align complex.continuous_sinh Complex.continuous_sinh
 
 @[continuity]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
-  continuity
+  exact (continuous_id.cexp.add continuous_id.neg.cexp).div_const 2
+  -- Porting note: was `continuity`
 #align complex.continuous_cosh Complex.continuous_cosh
 
 end Complex
@@ -1053,13 +1059,13 @@ theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
 #align real.tan_int_mul_pi_sub Real.tan_int_mul_pi_sub
 
 theorem tendsto_sin_pi_div_two : Tendsto sin (𝓝[<] (π / 2)) (𝓝 1) := by
-  convert continuous_sin.continuousWithinAt
+  convert continuous_sin.continuousWithinAt.tendsto
   simp
 #align real.tendsto_sin_pi_div_two Real.tendsto_sin_pi_div_two
 
 theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt
+  · convert continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsWithin_Iio
         (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))]with x hx using cos_pos_of_mem_Ioo hx
@@ -1067,17 +1073,18 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
   convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
+    using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 #align real.tendsto_tan_pi_div_two Real.tendsto_tan_pi_div_two
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
-  convert continuous_sin.continuousWithinAt
+  convert continuous_sin.continuousWithinAt.tendsto using 2
   simp
 #align real.tendsto_sin_neg_pi_div_two Real.tendsto_sin_neg_pi_div_two
 
 theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt
+  · convert continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsWithin_Ioi
         (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))]with x hx using cos_pos_of_mem_Ioo hx
