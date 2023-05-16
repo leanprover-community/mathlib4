@@ -179,6 +179,18 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   . rw [← Set.mem_shift_iff, t.shift_setGE n₀ 1 (n₀ + 1) rfl]
     exact t.setGE_antitone (n₀ + 1) n₁ (by simpa only [Int.add_one_le_iff] using h) hY
 
+def heart : Set C := t.setLE 0 ∩ t.setGE 0
+
+def Heart := FullSubcategory t.heart
+
+instance : Category t.Heart := by
+  dsimp only [Heart]
+  infer_instance
+
+instance : Preadditive t.Heart := by
+  dsimp only [Heart]
+  infer_instance
+
 end TStructure
 
 end Triangulated
