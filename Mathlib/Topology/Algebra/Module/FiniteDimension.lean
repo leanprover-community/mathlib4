@@ -443,7 +443,7 @@ def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
   LinearMap.toContinuousLinearMap (v.constr 𝕜 f)
 #align basis.constrL Basis.constrL
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast`
 theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →ₗ[𝕜] F) = v.constr 𝕜 f :=
   rfl
 #align basis.coe_constrL Basis.coe_constrL
