@@ -17,6 +17,17 @@ import Mathlib.Tactic.NormNum.Basic
 
 This file provides a `norm_num` extention to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
+
+
+## Implementation Notes
+For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression
+that is thousands of levels deep, and the Lean kernel seems to raise a stack overflow when
+type-checking that proof. We could try to produce a proof term that uses `let` expressions for
+subproofs to mitigate this, but for much larger numbers we need a more efficient primality checker
+anyway.
+
+Note: `evalMinFac.aux` does not raise an stack overflow, which can be checked by replacing the
+`prf'` in the recursive call by something like `(.sort .zero)`
 -/
 
 open Nat Qq Lean Meta
@@ -167,26 +178,28 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
   let rec aux (k : ℕ) (prf : Expr) :
-    (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) := Id.run do
+    (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
     have ek : Q(ℕ) := mkRawNatLit k
     let prf : Q(MinFacHelper $nn $ek) := prf
     -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
     if n' < k * k then
       let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
-      return ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
+      ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
     -- the following branch is not necessary for the correctness, but makes the algorithm 2x faster
+    else
     let d : ℕ := k.minFac
     if d < k then
       have ek' : Q(ℕ) := mkRawNatLit <| k + 2
       let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
       let pd := deriveNotPrime k d ek
       have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_2 $pk' $pd $prf)
-      return aux (k + 2) prf'
+      aux (k + 2) prf'
     -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
-    if n' % k = 0 then
+    else if n' % k = 0 then
       let r : Q($nn % $ek = 0) := (q(Eq.refl 0) : Expr)
       let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 $pn (.raw_refl _) $prf $r)
-      return ⟨ek, r'⟩
+      ⟨ek, r'⟩
+    else
     let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
     have ek' : Q(ℕ) := mkRawNatLit <| k + 2
     let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)

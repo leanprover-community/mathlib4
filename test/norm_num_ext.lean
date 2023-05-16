@@ -13,8 +13,8 @@ import Mathlib.Tactic.NormNum.Prime
 Some tests of unported extensions are still commented out.
 -/
 
-set_option profiler true
-set_option trace.profiler true
+-- set_option profiler true
+-- set_option trace.profiler true
 -- set_option trace.Tactic.norm_num true
 
 -- coverage tests
@@ -95,7 +95,6 @@ example : Nat.Prime (2 ^ 19 - 1) := by norm_num1
 set_option maxRecDepth 8000 in
 example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
 example : ¬ Nat.Prime ((2 ^ 19 - 1) * (2 ^ 25 - 39)) := by norm_num1
--- example : Nat.Prime (2 ^ 28 - 57) := by norm_num1
 
 example : Nat.minFac 0 = 2 := by norm_num1
 example : Nat.minFac 1 = 1 := by norm_num1
