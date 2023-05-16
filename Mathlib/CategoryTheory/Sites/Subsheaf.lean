@@ -385,19 +385,14 @@ theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
     imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
 #align category_theory.grothendieck_topology.image_presheaf_comp_le CategoryTheory.GrothendieckTopology.imagePresheaf_comp_le
 
-instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ Type max v w} (f : F ⟶ F') [hf : Mono f] :
+instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F') [hf : Mono f] :
   IsIso (toImagePresheaf f) := by
   have : ∀ (X : Cᵒᵖ), IsIso ((toImagePresheaf f).app X) := by
     intro X
     rw [isIso_iff_bijective]
     constructor
     · intro x y e
-      -- port note: need to fill in the class instance manually
-      have := (@NatTrans.mono_iff_mono_app Cᵒᵖ _ (Type max v w) _ (fun a b =>
-        @CategoryTheory.Limits.hasColimitsOfShapeOfHasColimitsOfSize (Type (max v w)) _
-        (CategoryTheory.Discrete.{v} (a ⟶ b))
-        (CategoryTheory.discreteCategory (a ⟶ b))
-        Limits.Types.hasColimitsOfSize.{v, w}) F F' f).mp hf X
+      have := (NatTrans.mono_iff_mono_app _ _).mp hf X
       rw [mono_iff_injective] at this
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
