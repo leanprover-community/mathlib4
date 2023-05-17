@@ -101,16 +101,7 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
-/--
-A structure that holds the cached discrimination tree,
-and possibly a pointer to a memory region, if we unpickled the tree from disk.
--/
-structure CachedData where
-  pointer? : Option CompactedRegion
-  cache : DiscrTreeCache (Name × DeclMod)
-deriving Nonempty
-
-initialize cachedData : CachedData ← unsafe do
+initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
