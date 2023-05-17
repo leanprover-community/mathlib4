@@ -35,14 +35,23 @@ open CategoryTheory
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
 def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
-  @Aut (FundamentalGroupoid X) _ x deriving Group, Inhabited
+  @Aut (FundamentalGroupoid X) _ x
 #align fundamental_group FundamentalGroup
+
+instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
+  dsimp only [FundamentalGroup]
+  infer_instance
+
+instance (X : Type u) [TopologicalSpace X] (x : X) : Inhabited (FundamentalGroup X x) := by
+  dsimp only [FundamentalGroup]
+  infer_instance
 
 namespace FundamentalGroup
 
 attribute [local instance] Path.Homotopic.setoid
 
-attribute [local reducible] FundamentalGroupoid
+-- porting note: removed this attribute
+--attribute [local reducible] FundamentalGroupoid
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
@@ -60,7 +69,7 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
 abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) : x ⟶ x :=
-  p.Hom
+  p.hom
 #align fundamental_group.to_arrow FundamentalGroup.toArrow
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
@@ -69,14 +78,14 @@ abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Q
 #align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {X : TopCat} {x : X} (p : x ⟶ x) : FundamentalGroup X x :=
-  ⟨p, CategoryTheory.Groupoid.inv p⟩
+abbrev fromArrow {X : TopCat} {x : X} (p : x ⟶ x) : FundamentalGroup X x where
+  hom := p
+  inv := CategoryTheory.Groupoid.inv p
 #align fundamental_group.from_arrow FundamentalGroup.fromArrow
 
-/-- An element of the fundamental gorup, constructed from a quotient of homotopic paths. -/
+/-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
 abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
 #align fundamental_group.from_path FundamentalGroup.fromPath
 
 end FundamentalGroup
-
