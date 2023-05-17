@@ -46,12 +46,14 @@ noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
-    quotientSpanXSubCAlgEquiv x (Ideal.Quotient.mk _ p) = p.eval x := rfl
+    quotientSpanXSubCAlgEquiv x (Ideal.Quotient.mk _ p) = p.eval x :=
+  rfl
 #align polynomial.quotient_span_X_sub_C_alg_equiv_mk Polynomial.quotientSpanXSubCAlgEquiv_mk
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
-    (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y := rfl
+    (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
+  rfl
 #align polynomial.quotient_span_X_sub_C_alg_equiv_symm_apply Polynomial.quotientSpanXSubCAlgEquiv_symm_apply
 
 end Polynomial
