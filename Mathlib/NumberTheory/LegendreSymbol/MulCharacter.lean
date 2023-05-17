@@ -71,12 +71,13 @@ variable (R' : Type v) [CommMonoidWithZero R']
 A multiplicative character from a commutative monoid `R` to a commutative monoid with zero `R'`
 is a homomorphism of (multiplicative) monoids that sends non-units to zero. -/
 structure MulChar extends MonoidHom R R' where
+  /-- Require that non-units map to `0`. -/
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
-
 /-- This is the corresponding extension of `monoid_hom_class`. -/
 class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
+  /-- Require `χ` maps non-units to `0`. -/
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
 
@@ -94,6 +95,7 @@ variable {R : Type u} [CommMonoid R]
 -- The target
 variable {R' : Type v} [CommMonoidWithZero R']
 
+/-- The function associated to a multiplicative character. -/
 @[coe]
 nonrec def toFun' (χ : MulChar R R') : R → R' :=
   χ.toFun
