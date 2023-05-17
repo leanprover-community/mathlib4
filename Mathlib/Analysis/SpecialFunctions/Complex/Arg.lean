@@ -382,8 +382,8 @@ theorem arg_neg_eq_arg_add_pi_of_im_neg {x : ℂ} (hi : x.im < 0) : arg (-x) = a
   simp [neg_div, Real.arccos_neg, add_comm, ← sub_eq_add_neg]
 #align complex.arg_neg_eq_arg_add_pi_of_im_neg Complex.arg_neg_eq_arg_add_pi_of_im_neg
 
-theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} : arg (-x) = arg x - π ↔ 0 < x.im ∨ x.im = 0 ∧ x.re < 0 :=
-  by
+theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
+    arg (-x) = arg x - π ↔ 0 < x.im ∨ x.im = 0 ∧ x.re < 0 := by
   rcases lt_trichotomy x.im 0 with (hi | hi | hi)
   ·
     simp [hi, hi.ne, hi.not_lt, arg_neg_eq_arg_add_pi_of_im_neg, sub_eq_add_neg, ←
@@ -398,8 +398,8 @@ theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} : arg (-x) = arg x - π ↔ 0 < x.im
   · simp [hi, arg_neg_eq_arg_sub_pi_of_im_pos]
 #align complex.arg_neg_eq_arg_sub_pi_iff Complex.arg_neg_eq_arg_sub_pi_iff
 
-theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} : arg (-x) = arg x + π ↔ x.im < 0 ∨ x.im = 0 ∧ 0 < x.re :=
-  by
+theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
+    arg (-x) = arg x + π ↔ x.im < 0 ∨ x.im = 0 ∧ 0 < x.re := by
   rcases lt_trichotomy x.im 0 with (hi | hi | hi)
   · simp [hi, arg_neg_eq_arg_add_pi_of_im_neg]
   · rw [(ext rfl hi : x = x.re)]
