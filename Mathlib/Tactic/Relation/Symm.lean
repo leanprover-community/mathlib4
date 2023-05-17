@@ -72,7 +72,7 @@ def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MetaM α) : MetaM
 
 /-- Given a term `e : a ~ b`, construct a term in `b ~ a` using `@[symm]` lemmas. -/
 def symm (e : Expr) : MetaM Expr := do
-  symmAux (← whnfR (← instantiateMVars (← inferType e))) fun lem args body => do
+  symmAux (← instantiateMVars (← inferType e)) fun lem args body => do
     let .true ← isDefEq args.back e | failure
     mkExpectedTypeHint (mkAppN lem args) (← instantiateMVars body)
 
@@ -99,9 +99,8 @@ def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM 
 
 /-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable. -/
 def symm (g : MVarId) : MetaM MVarId := do
-  let gType ← withReducible g.getType'
-  g.symmAux gType fun lem args body g => do
-    let .true ← isDefEq gType body | failure
+  g.symmAux (← g.getType'') fun lem args body g => do
+    let .true ← isDefEq (← g.getType) body | failure
     g.assign (mkAppN lem args)
     return args.back.mvarId!
 
