@@ -34,6 +34,19 @@ open Nat Qq Lean Meta
 
 namespace Mathlib.Meta.NormNum
 
+theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = false)
+    (h₂ : b.ble 1 = false) : ¬ n.Prime :=
+  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
+
+/-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
+  that is the natural number literal `n`. -/
+def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| do
+  let d' : ℕ := n / d
+  let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
+  let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
+  let r' : Q(Nat.ble $d' 1 = false) := (q(Eq.refl false) : Expr)
+  return q(not_prime_mul_of_ble $prf $r $r')
+
 /-- A predicate representing partial progress in a proof of `min_fac`. -/
 def MinFacHelper (n k : ℕ) : Prop :=
   2 < k ∧ k % 2 = 1 ∧ k ≤ minFac n
@@ -109,64 +122,6 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
       _ ≤ n.minFac := h1.2.2
       _ ≤ m        := Nat.minFac_le_of_dvd hm h2mn
 
-theorem isNat_prime_1 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
-  | _, _, ⟨rfl⟩, h, hn => hn.two_le.not_lt <| ble_eq_false.1 h
-
-theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n → n.Prime
-  | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
-
-theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = false)
-    (h₂ : b.ble 1 = false) : ¬ n.Prime :=
-  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
-
-/-
-/-- A partial proof of `factors`. Asserts that `l` is a sorted list of primes, lower bounded by a
-prime `p`, which multiplies to `n`. -/
-def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
-  p.Prime → List.Chain (· ≤ ·) p l ∧ (∀ a ∈ l, Nat.Prime a) ∧ List.prod l = n
-
-theorem factorsHelper_nil (a : ℕ) : FactorsHelper 1 a [] := fun _ =>
-  ⟨List.Chain.nil, by rintro _ ⟨⟩, List.prod_nil⟩
-
-theorem factorsHelper_cons' (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h₂ : a ≤ b)
-    (h₃ : minFac b = b) (H : FactorsHelper m b l) : FactorsHelper n a (b :: l) := fun pa =>
-  have pb : b.Prime := Nat.prime_def_minFac.2 ⟨le_trans pa.two_le h₂, h₃⟩
-  let ⟨f₁, f₂, f₃⟩ := H pb
-  ⟨List.Chain.cons h₂ f₁,
-    fun c h => (List.eq_or_mem_of_mem_cons h).elim (fun e => e.symm ▸ pb) (f₂ _),
-    by rw [List.prod_cons, f₃, h₁]⟩
-
-theorem factorsHelper_cons (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h₂ : a < b)
-    (h₃ : minFac b = b) (H : FactorsHelper m b l) : FactorsHelper n a (b :: l) :=
-  factorsHelper_cons' _ _ _ _ _ h₁ h₂.le h₃ H
-
-theorem factorsHelper_sn (n a : ℕ) (h₁ : a < n) (h₂ : minFac n = n) : FactorsHelper n a [n] :=
-  factorsHelper_cons _ _ _ _ _ (mul_one _) h₁ h₂ (factorsHelper_nil _)
-
-theorem factorsHelper_same (n m a : ℕ) (l : List ℕ) (h : a * m = n) (H : FactorsHelper m a l) :
-    FactorsHelper n a (a :: l) := fun pa =>
-  factorsHelper_cons' _ _ _ _ _ h le_rfl (Nat.prime_def_minFac.1 pa).2 H pa
-
-theorem factorsHelper_same_sn (a : ℕ) : FactorsHelper a a [a] :=
-  factorsHelper_same _ _ _ _ (mul_one _) (factorsHelper_nil _)
-
-theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : Nat.factors n = l :=
-  let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
-  have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
-  (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
--/
-
-open NormNum
-
-/-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
-  that is the natural number literal `n`. -/
-def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| do
-  let d' : ℕ := n / d
-  let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
-  let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
-  let r' : Q(Nat.ble $d' 1 = false) := (q(Eq.refl false) : Expr)
-  return q(not_prime_mul_of_ble $prf $r $r')
-
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
   NormNumExt where eval {u α} e := do
@@ -215,6 +170,12 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
     return .isNat sℕ c pc
   core
 
+theorem isNat_prime_1 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
+  | _, _, ⟨rfl⟩, h, hn => hn.two_le.not_lt <| ble_eq_false.1 h
+
+theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n → n.Prime
+  | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
+
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
@@ -235,5 +196,42 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
     let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
     return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
+
+/-
+/-- A partial proof of `factors`. Asserts that `l` is a sorted list of primes, lower bounded by a
+prime `p`, which multiplies to `n`. -/
+def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
+  p.Prime → List.Chain (· ≤ ·) p l ∧ (∀ a ∈ l, Nat.Prime a) ∧ List.prod l = n
+
+theorem factorsHelper_nil (a : ℕ) : FactorsHelper 1 a [] := fun _ =>
+  ⟨List.Chain.nil, by rintro _ ⟨⟩, List.prod_nil⟩
+
+theorem factorsHelper_cons' (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h₂ : a ≤ b)
+    (h₃ : minFac b = b) (H : FactorsHelper m b l) : FactorsHelper n a (b :: l) := fun pa =>
+  have pb : b.Prime := Nat.prime_def_minFac.2 ⟨le_trans pa.two_le h₂, h₃⟩
+  let ⟨f₁, f₂, f₃⟩ := H pb
+  ⟨List.Chain.cons h₂ f₁,
+    fun c h => (List.eq_or_mem_of_mem_cons h).elim (fun e => e.symm ▸ pb) (f₂ _),
+    by rw [List.prod_cons, f₃, h₁]⟩
+
+theorem factorsHelper_cons (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h₂ : a < b)
+    (h₃ : minFac b = b) (H : FactorsHelper m b l) : FactorsHelper n a (b :: l) :=
+  factorsHelper_cons' _ _ _ _ _ h₁ h₂.le h₃ H
+
+theorem factorsHelper_sn (n a : ℕ) (h₁ : a < n) (h₂ : minFac n = n) : FactorsHelper n a [n] :=
+  factorsHelper_cons _ _ _ _ _ (mul_one _) h₁ h₂ (factorsHelper_nil _)
+
+theorem factorsHelper_same (n m a : ℕ) (l : List ℕ) (h : a * m = n) (H : FactorsHelper m a l) :
+    FactorsHelper n a (a :: l) := fun pa =>
+  factorsHelper_cons' _ _ _ _ _ h le_rfl (Nat.prime_def_minFac.1 pa).2 H pa
+
+theorem factorsHelper_same_sn (a : ℕ) : FactorsHelper a a [a] :=
+  factorsHelper_same _ _ _ _ (mul_one _) (factorsHelper_nil _)
+
+theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : Nat.factors n = l :=
+  let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
+  have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
+  (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
+-/
 
 end Mathlib.Meta.NormNum
