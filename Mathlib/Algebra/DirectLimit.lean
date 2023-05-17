@@ -51,9 +51,20 @@ variable (G : ι → Type w)
 /- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`map_map] [] -/
 /-- A directed system is a functor from a category (directed poset) to another category. -/
 class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
-  map_self : ∀ i x h, f i i h x = x
-  map_map : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
+  map_self' : ∀ i x h, f i i h x = x
+  map_map' : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
 #align directed_system DirectedSystem
+
+section
+
+variable {G} (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+theorem DirectedSystem.map_self i x h : f i i h x = x :=
+  DirectedSystem.map_self' i x h
+theorem DirectedSystem.map_map {i j k} (hij hjk x) :
+    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
+  DirectedSystem.map_map' hij hjk x
+
+end
 
 namespace Module
 
@@ -63,20 +74,18 @@ variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `directed_system.map_self` specialized to linear maps, as otherwise the
 `λ i j h, f i j h` can confuse the simplifier. -/
-theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
+nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align module.directed_system.map_self Module.DirectedSystem.map_self
 
 /-- A copy of `directed_system.map_map` specialized to linear maps, as otherwise the
 `λ i j h, f i j h` can confuse the simplifier. -/
-theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
+nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
 #align module.directed_system.map_map Module.DirectedSystem.map_map
 
 variable (G)
-
-include dec_ι
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
 def DirectLimit : Type max v w :=
@@ -89,13 +98,13 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance : AddCommGroup (DirectLimit G f) :=
+instance addCommGroup : AddCommGroup (DirectLimit G f) :=
   Quotient.addCommGroup _
 
-instance : Module R (DirectLimit G f) :=
+instance module : Module R (DirectLimit G f) :=
   Quotient.module _
 
-instance : Inhabited (DirectLimit G f) :=
+instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 variable (R ι)
@@ -121,7 +130,9 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
       DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x => ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [LinearMap.map_add, of_f, of_f, ihx, ihy] <;> rfl⟩
+        ⟨k, f i k hik x + f j k hjk y, by
+          rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          simp only [Submodule.Quotient.mk''_eq_mk, Quotient.mk_add]⟩
 #align module.direct_limit.exists_of Module.DirectLimit.exists_of
 
 @[elab_as_elim]
@@ -134,8 +145,6 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
 variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
 
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
-include Hg
 
 variable (R ι G f)
 
@@ -151,8 +160,6 @@ def lift : DirectLimit G f →ₗ[R] P :=
 
 variable {R ι G f}
 
-omit Hg
-
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
 #align module.direct_limit.lift_of Module.DirectLimit.lift_of
@@ -160,8 +167,8 @@ theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
 theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P) (x) :
     F x =
       lift R ι G f (fun i => F.comp <| of R ι G f i)
-        (fun i j hij x => by rw [LinearMap.comp_apply, of_f] <;> rfl) x :=
-  DirectLimit.induction_on x fun i x => by rw [lift_of] <;> rfl
+        (fun i j hij x => by rw [LinearMap.comp_apply, of_f]; rfl) x :=
+  DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
 section Totalize
@@ -169,8 +176,6 @@ section Totalize
 open Classical
 
 variable (G f)
-
-omit dec_ι
 
 /-- `totalize G f i j` is a linear map from `G i` to `G j`, for *every* `i` and `j`.
 If `i ≤ j`, then it is the map `f i j` that comes with the directed system `G`,
@@ -208,7 +213,7 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
 #align module.direct_limit.to_module_totalize_of_le Module.DirectLimit.toModule_totalize_of_le
 
 theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectSum ι G}
-    (H : Submodule.Quotient.mk x = (0 : DirectLimit G f)) :
+    (H : (Submodule.Quotient.mk x : DirectLimit G f) = (0 : DirectLimit G f)) :
     ∃ j,
       (∀ k ∈ x.support, k ≤ j) ∧
         DirectSum.toModule R ι (G j) (fun i => totalize G f i j) x = (0 : G j) :=
@@ -217,7 +222,6 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
       (fun x ⟨i, j, hij, y, hxy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, by
-          clear_
           subst hxy
           constructor
           · intro i0 hi0
@@ -238,8 +242,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (Dfinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
-          simp [LinearMap.map_add, hxi, hyj, to_module_totalize_of_le hik hi,
-            to_module_totalize_of_le hjk hj]⟩)
+          simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
+            toModule_totalize_of_le hjk hj]⟩)
       fun a x ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 #align module.direct_limit.of.zero_exact_aux Module.DirectLimit.of.zero_exact_aux
@@ -264,8 +268,6 @@ namespace AddCommGroup
 
 variable [∀ i, AddCommGroup (G i)]
 
-include dec_ι
-
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
   @Module.DirectLimit ℤ _ ι _ _ G _ _ fun i j hij => (f i j hij).toIntLinearMap
@@ -275,16 +277,12 @@ namespace DirectLimit
 
 variable (f : ∀ i j, i ≤ j → G i →+ G j)
 
-omit dec_ι
-
 protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
     DirectedSystem G fun i j hij => (f i j hij).toIntLinearMap :=
   h
 #align add_comm_group.direct_limit.directed_system AddCommGroup.DirectLimit.directedSystem
 
-include dec_ι
-
-attribute [local instance] direct_limit.directed_system
+attribute [local instance] DirectLimit.directedSystem
 
 instance : AddCommGroup (DirectLimit G f) :=
   Module.DirectLimit.addCommGroup G fun i j hij => (f i j hij).toIntLinearMap
@@ -376,7 +374,7 @@ instance : CommRing (DirectLimit G f) :=
   Ideal.Quotient.commRing _
 
 instance : Ring (DirectLimit G f) :=
-  CommRing.toRing _
+  CommRing.toRing
 
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
@@ -492,7 +490,8 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
 variable {G f f'}
 
 theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCommRing (Σi, G i)}
-    (H : Ideal.Quotient.mk _ x = (0 : DirectLimit G fun i j h => f' i j h)) :
+    (H : (Ideal.Quotient.mk _ x : DirectLimit G fun i j h => f' i j h)
+        = (0 : DirectLimit G fun i j h => f' i j h)) :
     ∃ j s,
       ∃ H : ∀ k : Σi, G i, k ∈ s → k.1 ≤ j,
         IsSupported x s ∧
@@ -730,4 +729,3 @@ end
 end DirectLimit
 
 end Field
-
