@@ -39,7 +39,7 @@ namespace Homotopy
 
 section
 
-/-- Auxilliary function for `refl_trans_symm` -/
+/-- Auxiliary function for `reflTransSymm`. -/
 def reflTransSymmAux (x : I × I) : ℝ :=
   if (x.2 : ℝ) ≤ 1 / 2 then x.1 * 2 * x.2 else x.1 * (2 - 2 * x.2)
 #align path.homotopy.refl_trans_symm_aux Path.Homotopy.reflTransSymmAux
@@ -130,7 +130,7 @@ end
 
 section TransRefl
 
-/-- Auxilliary function for `trans_refl_reparam` -/
+/-- Auxiliary function for `trans_refl_reparam`. -/
 def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 #align path.homotopy.trans_refl_reparam_aux Path.Homotopy.transReflReparamAux
@@ -176,8 +176,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   · simp
 #align path.homotopy.trans_refl_reparam Path.Homotopy.trans_refl_reparam
 
-/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (path.refl x₁)` to `p`.
--/
+/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by continuity) (Subtype.ext transReflReparamAux_zero)
@@ -185,8 +184,7 @@ def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
       rfl (trans_refl_reparam p).symm).symm
 #align path.homotopy.trans_refl Path.Homotopy.transRefl
 
-/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `(path.refl x₀).trans p` to `p`.
--/
+/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `(Path.refl x₀).trans p` to `p`. -/
 def reflTrans (p : Path x₀ x₁) : Homotopy ((Path.refl x₀).trans p) p :=
   (transRefl p.symm).symm₂.cast (by simp) (by simp)
 #align path.homotopy.refl_trans Path.Homotopy.reflTrans
@@ -195,19 +193,17 @@ end TransRefl
 
 section Assoc
 
-/-- Auxilliary function for `trans_assoc_reparam`. -/
+/-- Auxiliary function for `trans_assoc_reparam`. -/
 def transAssocReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 4 then 2 * t else if (t : ℝ) ≤ 1 / 2 then t + 1 / 4 else 1 / 2 * (t + 1)
 #align path.homotopy.trans_assoc_reparam_aux Path.Homotopy.transAssocReparamAux
 
 @[continuity]
 theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
-  refine'
-        continuous_if_le _ _ (Continuous.continuousOn _)
-          (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _)
-              _).continuousOn
-          _ <;>
-      [continuity, continuity, continuity, continuity, continuity, continuity, continuity, skip,
+  refine' continuous_if_le _ _ (Continuous.continuousOn _)
+      (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
+      _ <;>
+    [continuity, continuity, continuity, continuity, continuity, continuity, continuity, skip,
       skip] <;>
     · intro x hx
       -- Porting note: norm_num ignores arguments.
@@ -276,8 +272,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
 
-/-- For paths `p q r`, we have a homotopy from `(p.trans q).trans r` to `p.trans (q.trans r)`.
--/
+/-- For paths `p q r`, we have a homotopy from `(p.trans q).trans r` to `p.trans (q.trans r)`. -/
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
@@ -292,18 +287,14 @@ end Homotopy
 
 end Path
 
-/--
-The fundamental groupoid of a space `X` is defined to be a type synonym for `X`, and we subsequently
-put a `category_theory.groupoid` structure on it.
--/
-def FundamentalGroupoid (X : Type u) :=
-  X
+/-- The fundamental groupoid of a space `X` is defined to be a type synonym for `X`, and we
+subsequently put a `CategoryTheory.Groupoid` structure on it. -/
+def FundamentalGroupoid (X : Type u) := X
 #align fundamental_groupoid FundamentalGroupoid
 
 namespace FundamentalGroupoid
 
-instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) :=
-  h
+instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
 
 attribute [reducible] FundamentalGroupoid
 
@@ -340,16 +331,13 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
       show ⟦a.trans a.symm⟧ = ⟦Path.refl x⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
 
-theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q :=
-  rfl
+theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
 #align fundamental_groupoid.comp_eq FundamentalGroupoid.comp_eq
 
-theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ :=
-  rfl
+theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
-/-- The functor sending a topological space `X` to its fundamental groupoid.
--/
+/-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
@@ -387,26 +375,23 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
-    (πₘ f).map p = p.mapFn f :=
-  rfl
+    (πₘ f).map p = p.mapFn f := rfl
 #align fundamental_groupoid.map_eq FundamentalGroupoid.map_eq
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
 @[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X :=
-  x
+def toTop {X : TopCat} (x : πₓ X) : X := x
 #align fundamental_groupoid.to_top FundamentalGroupoid.toTop
 
 /-- Help the typechecker by converting a point in a topological space to a
-point in the fundamental groupoid of that space -/
+point in the fundamental groupoid of that space. -/
 @[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X :=
-  x
+def fromTop {X : TopCat} (x : X) : πₓ X := x
 #align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
-a topological space back to a path in that space (i.e., `path.homotopic.quotient`). -/
+a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
 @[reducible]
 def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
   p
@@ -415,8 +400,7 @@ def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotop
 /-- Help the typechecker by convering a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
 @[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ :=
-  p
+def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 
 end FundamentalGroupoid
