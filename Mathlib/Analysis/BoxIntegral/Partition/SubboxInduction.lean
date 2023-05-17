@@ -15,7 +15,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 # Induction on subboxes
 
 In this file we prove (see
-`box_integral.tagged_partition.exists_is_Henstock_is_subordinate_homothetic`) that for every box `I`
+`BoxIntegral.Box.exists_taggedPartition_isHenstock_isSubordinate_homothetic`) that for every box `I`
 in `ℝⁿ` and a function `r : ℝⁿ → ℝ` positive on `I` there exists a tagged partition `π` of `I` such
 that
 
@@ -74,7 +74,7 @@ namespace Box
 
 open Prepartition TaggedPrepartition
 
-/-- Let `p` be a predicate on `box ι`, let `I` be a box. Suppose that the following two properties
+/-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
 
 * Consider a smaller box `J ≤ I`. The hyperplanes passing through the center of `J` split it into
@@ -83,18 +83,14 @@ hold true.
   that for every box `J ≤ I` such that `z ∈ J.Icc ⊆ U`, if `J` is homothetic to `I` with a
   coefficient of the form `1 / 2 ^ m`, then `p` is true on `J`.
 
-Then `p I` is true. See also `box_integral.box.subbox_induction_on'` for a version using
-`box_integral.box.split_center_box` instead of `box_integral.prepartition.split_center`. -/
+Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on'` for a version using
+`BoxIntegral.Box.splitCenterBox` instead of `BoxIntegral.Prepartition.splitCenter`. -/
 @[elab_as_elim]
 theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
     (H_ind : ∀ J ≤ I, (∀ J' ∈ splitCenter J, p J') → p J)
-    (H_nhds :
-      ∀ z ∈ Box.Icc I,
-        ∃ U ∈ 𝓝[Box.Icc I] z,
-          ∀ J ≤ I,
-            ∀ (m : ℕ),
-              z ∈ Box.Icc J →
-                Box.Icc J ⊆ U → (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
+    (H_nhds : ∀ z ∈ Box.Icc I, ∃ U ∈ 𝓝[Box.Icc I] z, ∀ J ≤ I, ∀ (m : ℕ),
+      z ∈ Box.Icc J → Box.Icc J ⊆ U →
+        (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
     p I := by
   refine' subbox_induction_on' I (fun J hle hs => H_ind J hle fun J' h' => _) H_nhds
   rcases mem_splitCenter.1 h' with ⟨s, rfl⟩
@@ -112,20 +108,16 @@ This lemma implies that the Henstock filter is nontrivial, hence the Henstock in
 well-defined. -/
 theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
     (r : (ι → ℝ) → Ioi (0 : ℝ)) :
-    ∃ π : TaggedPrepartition I,
-      π.IsPartition ∧
-        π.IsHenstock ∧
-          π.IsSubordinate r ∧
-            (∀ J ∈ π, ∃ m : ℕ, ∀ i, (J : _).upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) ∧
-              π.distortion = I.distortion := by
+    ∃ π : TaggedPrepartition I, π.IsPartition ∧ π.IsHenstock ∧ π.IsSubordinate r ∧
+      (∀ J ∈ π, ∃ m : ℕ, ∀ i, (J : _).upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) ∧
+        π.distortion = I.distortion := by
   refine' subbox_induction_on I (fun J _ hJ => _) fun z _ => _
   · choose! πi hP hHen hr Hn _ using hJ
     choose! n hn using Hn
     have hP : ((splitCenter J).biUnionTagged πi).IsPartition :=
       (isPartition_splitCenter _).biUnionTagged hP
-    have hsub :
-      ∀ J' ∈ (splitCenter J).biUnionTagged πi,
-        ∃ n : ℕ, ∀ i, (J' : _).upper i - J'.lower i = (J.upper i - J.lower i) / 2 ^ n := by
+    have hsub : ∀ J' ∈ (splitCenter J).biUnionTagged πi, ∃ n : ℕ, ∀ i,
+        (J' : _).upper i - J'.lower i = (J.upper i - J.lower i) / 2 ^ n := by
       intro J' hJ'
       rcases (splitCenter J).mem_biUnionTagged.1 hJ' with ⟨J₁, h₁, h₂⟩
       refine' ⟨n J₁ J' + 1, fun i => _⟩
@@ -134,14 +126,12 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
     refine' TaggedPrepartition.distortion_of_const _ hP.nonempty_boxes fun J' h' => _
     rcases hsub J' h' with ⟨n, hn⟩
     exact Box.distortion_eq_of_sub_eq_div hn
-  · refine'
-      ⟨Box.Icc I ∩ closedBall z (r z), inter_mem_nhdsWithin _ (closedBall_mem_nhds _ (r z).coe_prop),
-        _⟩
+  · refine' ⟨Box.Icc I ∩ closedBall z (r z),
+      inter_mem_nhdsWithin _ (closedBall_mem_nhds _ (r z).coe_prop), _⟩
     intro J _ n Hmem HIcc Hsub
     rw [Set.subset_inter_iff] at HIcc
-    refine'
-      ⟨single _ _ le_rfl _ Hmem, isPartition_single _, isHenstock_single _,
-        (isSubordinate_single _ _).2 HIcc.2, _, distortion_single _ _⟩
+    refine' ⟨single _ _ le_rfl _ Hmem, isPartition_single _, isHenstock_single _,
+      (isSubordinate_single _ _).2 HIcc.2, _, distortion_single _ _⟩
     simp only [TaggedPrepartition.mem_single, forall_eq]
     refine' ⟨0, fun i => _⟩
     simp
@@ -165,21 +155,18 @@ exists a tagged prepartition `π'` of `I` such that
 -/
 theorem exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : Prepartition I) :
-    ∃ π' : TaggedPrepartition I,
-      π'.toPrepartition ≤ π ∧
-        π'.IsHenstock ∧ π'.IsSubordinate r ∧ π'.distortion = π.distortion ∧ π'.iUnion = π.iUnion :=
-  by
+    ∃ π' : TaggedPrepartition I, π'.toPrepartition ≤ π ∧ π'.IsHenstock ∧ π'.IsSubordinate r ∧
+      π'.distortion = π.distortion ∧ π'.iUnion = π.iUnion := by
   have := fun J => Box.exists_taggedPartition_isHenstock_isSubordinate_homothetic J r
   choose! πi πip πiH πir _ πid using this
-  refine'
-    ⟨π.biUnionTagged πi, biUnion_le _ _, isHenstock_biUnionTagged.2 fun J _ => πiH J,
-      isSubordinate_biUnionTagged.2 fun J _ => πir J, _, π.iUnion_biUnion_partition fun J _ => πip J⟩
+  refine' ⟨π.biUnionTagged πi, biUnion_le _ _, isHenstock_biUnionTagged.2 fun J _ => πiH J,
+    isSubordinate_biUnionTagged.2 fun J _ => πir J, _, π.iUnion_biUnion_partition fun J _ => πip J⟩
   rw [distortion_biUnionTagged]
   exact sup_congr rfl fun J _ => πid J
 set_option linter.uppercaseLean3 false in
 #align box_integral.prepartition.exists_tagged_le_is_Henstock_is_subordinate_Union_eq BoxIntegral.Prepartition.exists_tagged_le_isHenstock_isSubordinate_iUnion_eq
 
-/-- Given a prepartition `π` of a box `I` and a function `r : ℝⁿ → (0, ∞)`, `π.to_subordinate r`
+/-- Given a prepartition `π` of a box `I` and a function `r : ℝⁿ → (0, ∞)`, `π.toSubordinate r`
 is a tagged partition `π'` such that
 
 * each box of `π'` is included in some box of `π`;
@@ -224,8 +211,8 @@ end Prepartition
 
 namespace TaggedPrepartition
 
-/-- Given a tagged prepartition `π₁`, a prepartition `π₂` that covers exactly `I \ π₁.Union`, and
-a function `r : ℝⁿ → (0, ∞)`, returns the union of `π₁` and `π₂.to_subordinate r`. This partition
+/-- Given a tagged prepartition `π₁`, a prepartition `π₂` that covers exactly `I \ π₁.iUnion`, and
+a function `r : ℝⁿ → (0, ∞)`, returns the union of `π₁` and `π₂.toSubordinate r`. This partition
 `π` has the following properties:
 
 * `π` is a partition, i.e. it covers the whole `I`;
@@ -250,8 +237,7 @@ theorem isPartition_unionComplToSubordinate (π₁ : TaggedPrepartition I) (π�
 @[simp]
 theorem unionComplToSubordinate_boxes (π₁ : TaggedPrepartition I) (π₂ : Prepartition I)
     (hU : π₂.iUnion = ↑I \ π₁.iUnion) (r : (ι → ℝ) → Ioi (0 : ℝ)) :
-    (π₁.unionComplToSubordinate π₂ hU r).boxes = π₁.boxes ∪ (π₂.toSubordinate r).boxes :=
-  rfl
+    (π₁.unionComplToSubordinate π₂ hU r).boxes = π₁.boxes ∪ (π₂.toSubordinate r).boxes := rfl
 #align box_integral.tagged_prepartition.union_compl_to_subordinate_boxes BoxIntegral.TaggedPrepartition.unionComplToSubordinate_boxes
 
 @[simp]
