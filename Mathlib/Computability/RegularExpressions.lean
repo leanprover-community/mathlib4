@@ -456,9 +456,9 @@ theorem matches'_map (f : α → β) :
   | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]
-    rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
+    rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]
     simp_rw [← map_pow]
-    exact image_unionᵢ.symm
+    exact image_iUnion.symm
 #align regular_expression.matches_map RegularExpression.matches'_map
 
 end RegularExpression

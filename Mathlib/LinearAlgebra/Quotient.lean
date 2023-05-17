@@ -19,11 +19,6 @@ import Mathlib.LinearAlgebra.Span
 
 -/
 
-section deinstance_nonassocring
--- porting note: because we're missing lean4#2074 we need this, see:
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearAlgebra.2ESpan.20!4.232248
-attribute [-instance] Ring.toNonAssocRing
-
 -- For most of this file we work over a noncommutative ring
 section Ring
 
@@ -91,8 +86,11 @@ protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y �
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 #align submodule.quotient.eq Submodule.Quotient.eq
 
-instance : Zero (M ⧸ p) :=
-  ⟨mk 0⟩
+instance : Zero (M ⧸ p) where
+  -- Use Quotient.mk'' instead of mk here because mk is not reducible.
+  -- This would lead to non-defeq diamonds.
+  -- See also the same comment at the One instance for Con.
+  zero := Quotient.mk'' 0
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
@@ -692,5 +690,3 @@ def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q
 end Submodule
 
 end CommRing
-
-end deinstance_nonassocring

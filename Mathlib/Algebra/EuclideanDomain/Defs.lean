@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! leanprover-community/mathlib commit ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

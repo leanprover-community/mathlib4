@@ -76,13 +76,11 @@ end Homomorphism
 
 section Degree
 
-set_option synthInstance.etaExperiment true in
 /-- The submodule of polynomials of total degree less than or equal to `m`.-/
 def restrictTotalDegree : Submodule R (MvPolynomial σ R) :=
   Finsupp.supported _ _ { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
-set_option synthInstance.etaExperiment true in
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
 less than or equal to `m`.-/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
@@ -97,7 +95,6 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rfl
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
-set_option synthInstance.etaExperiment true in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, Finsupp.mem_supported]
