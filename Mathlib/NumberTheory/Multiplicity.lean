@@ -269,7 +269,6 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   calc
     x ^ 2 % (4 : ℕ) = 1 % (4 : ℕ) := _
     _ = 1 := by norm_num
-
   rw [← ZMod.int_cast_eq_int_cast_iff'] at hx⊢
   push_cast
   rw [← map_intCast (ZMod.castHom (show 2 ∣ 4 by norm_num) (ZMod 2)) x] at hx
@@ -319,7 +318,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hx_odd : Odd x := by rwa [Int.odd_iff_not_even, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by norm_num) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
-  cases n
+  cases' n with n
   · simp only [pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, Nat.zero_eq, add_top]
   have h : (multiplicity 2 n.succ).Dom := multiplicity.finite_nat_iff.mpr ⟨by norm_num, n.succ_pos⟩
   rcases multiplicity.eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
@@ -362,7 +361,6 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     · apply Prime.not_unit
       simp only [← Nat.prime_iff, Nat.prime_two]
     · exact two_ne_zero
-  · exact n
   · rw [← even_iff_two_dvd, ← Int.odd_iff_not_even]
     apply Odd.pow
     simp only [Int.odd_iff_not_even, even_iff_two_dvd, hx, not_false_iff]
@@ -381,7 +379,6 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     convert Int.two_pow_sub_pow hxy hx hn using 2
     rw [← multiplicity.Int.coe_nat_multiplicity]
     rfl
-    exact n
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_of_le_left' hyx n), multiplicity.zero,
       PartENat.top_add, PartENat.add_top]
@@ -410,7 +407,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
-  · exact multiplicity.Nat.pow_sub_pow hp.out hxy hx n
+  · exact multiplicity.Nat.pow_sub_pow hp.out hp1 hxy hx n
   · exact hn
   · exact Nat.sub_pos_of_lt hyx
   · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_of_lt_left hyx hn)
@@ -423,7 +420,7 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
     contradiction
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
-  · exact multiplicity.Nat.pow_add_pow hp.out hxy hx hn
+  · exact multiplicity.Nat.pow_add_pow hp.out hp1 hxy hx hn
   · exact Odd.pos hn
   · simp only [add_pos_iff, Nat.succ_pos', or_true_iff]
   · exact Nat.lt_add_left _ _ _ (pow_pos y.succ_pos _)
