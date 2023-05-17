@@ -96,7 +96,7 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
 private theorem vecCons2 (a : R) (v : Fin 2 → R) : vecCons a v 2 = v 1 := rfl
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
-@[simp]
+@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   rw [cross_apply, vec3_dotProduct]
   norm_num
@@ -104,7 +104,7 @@ theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
 #align dot_self_cross dot_self_cross
 
 /-- The cross product of two vectors is perpendicular to the second vector. -/
-@[simp]
+@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
   rw [← cross_anticomm, Matrix.dotProduct_neg, dot_self_cross, neg_zero]
 #align dot_cross_self dot_cross_self
