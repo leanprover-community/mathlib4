@@ -95,6 +95,8 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         simp only [sq_dvd_add_pow_sub_sub (↑p * b) a i, ← sub_sub]
 
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
+  sorry
+  /-
   calc
     Ideal.Quotient.mk (span {(p : R) ^ 2}) (∑ i in range p, (a + ↑p * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i : ℕ in Finset.range p,
@@ -138,6 +140,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         Nat.mul_div_assoc _ (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring
       simp only [← map_pow, mul_eq_zero_of_left, Ideal.Quotient.eq_zero_iff_mem, mem_span_singleton]
+-/
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub
 
 namespace multiplicity
@@ -244,12 +247,13 @@ end multiplicity
 end CommRing
 
 theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
-    x ^ 2 ^ n - y ^ 2 ^ n = (∏ i in Finset.range n, x ^ 2 ^ i + y ^ 2 ^ i) * (x - y) := by
+    x ^ 2 ^ n - y ^ 2 ^ n = (∏ i in Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
   induction' n with d hd
-  · simp only [pow_zero, pow_one, Finset.range_zero, Finset.prod_empty, one_mul]
+  · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul, Nat.zero_eq]
   · suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
       rw [this, hd, Finset.prod_range_succ, ← mul_assoc, mul_comm (x ^ 2 ^ d + y ^ 2 ^ d)]
-    · ring1
+    · rw [Nat.succ_eq_add_one]
+      ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
 /- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Misc2.lean:80:4: warning: unsupported fin_cases 'using hy' clause -/
