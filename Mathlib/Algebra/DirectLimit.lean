@@ -8,10 +8,10 @@ Authors: Kenny Lau, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Order
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.RingTheory.FreeCommRing
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.Data.Finset.Order
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.RingTheory.FreeCommRing
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # Direct limit of modules, abelian groups, rings, and fields.
@@ -198,8 +198,7 @@ open Classical
 theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     (hx : ∀ k ∈ x.support, k ≤ i) :
     DirectSum.toModule R ι (G j) (fun k => totalize G f k j) x =
-      f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) :=
-  by
+      f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @Dfinsupp.sum_single ι G _ _ _ x]
   unfold Dfinsupp.sum
   simp only [LinearMap.map_sum]
@@ -238,8 +237,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (Dfinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
-            fun hl => le_trans (hj _ hl) hjk,
-          by
+            fun hl => le_trans (hj _ hl) hjk, by
           simp [LinearMap.map_add, hxi, hyj, to_module_totalize_of_le hik hi,
             to_module_totalize_of_le hjk hj]⟩)
       fun a x ⟨i, hi, hxi⟩ =>
@@ -436,8 +434,7 @@ theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
       ⟨i, C x, by rw [map_C, h]⟩)
     (fun q₁ q₂ ⟨i₁, p₁, ih₁⟩ ⟨i₂, p₂, ih₂⟩ =>
       let ⟨i, h1, h2⟩ := exists_ge_ge i₁ i₂
-      ⟨i, p₁.map (f' i₁ i h1) + p₂.map (f' i₂ i h2),
-        by
+      ⟨i, p₁.map (f' i₁ i h1) + p₂.map (f' i₂ i h2), by
         rw [Polynomial.map_add, map_map, map_map, ← ih₁, ← ih₂]
         congr 2 <;> ext x <;> simp_rw [RingHom.comp_apply, of_f]⟩)
     fun n z ih =>
@@ -468,8 +465,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     (hj : ∀ z : Σi, G i, z ∈ s → z.1 ≤ j) (hk : ∀ z : Σi, G i, z ∈ t → z.1 ≤ k) (hjk : j ≤ k)
     (hst : s ⊆ t) :
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
-      lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) :=
-  by
+      lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
   ·
     rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
@@ -500,8 +496,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     ∃ j s,
       ∃ H : ∀ k : Σi, G i, k ∈ s → k.1 ≤ j,
         IsSupported x s ∧
-          lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) :=
-  by
+          lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
   refine' span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine'
@@ -558,8 +553,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     rw [(restriction _).map_zero, (FreeCommRing.lift _).map_zero]
   · rintro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
-    have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k :=
-      by
+    have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
       exact le_trans (hi z hz) hik
       exact le_trans (hj z hz) hjk
@@ -578,8 +572,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     rcases exists_finset_support x with ⟨s, hxs⟩
     rcases(s.image Sigma.fst).exists_le with ⟨i, hi⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
-    have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k :=
-      by
+    have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
       exacts[(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
     refine'
@@ -610,10 +603,8 @@ variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 from the components to the direct limits are injective. -/
 theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => f' i j h]
     (hf : ∀ i j hij, Function.Injective (f' i j hij)) (i) :
-    Function.Injective (of G (fun i j h => f' i j h) i) :=
-  by
-  suffices ∀ x, of G (fun i j h => f' i j h) i x = 0 → x = 0
-    by
+    Function.Injective (of G (fun i j h => f' i j h) i) := by
+  suffices ∀ x, of G (fun i j h => f' i j h) i x = 0 → x = 0 by
     intro x y hxy
     rw [← sub_eq_zero]
     apply this
@@ -688,8 +679,7 @@ namespace DirectLimit
 instance nontrivial [DirectedSystem G fun i j h => f' i j h] :
     Nontrivial (Ring.DirectLimit G fun i j h => f' i j h) :=
   ⟨⟨0, 1,
-      Nonempty.elim (by infer_instance) fun i : ι =>
-        by
+      Nonempty.elim (by infer_instance) fun i : ι => by
         change (0 : Ring.DirectLimit G fun i j h => f' i j h) ≠ 1
         rw [← (Ring.DirectLimit.of _ _ _).map_one]
         intro H; rcases Ring.DirectLimit.of.zero_exact H.symm with ⟨j, hij, hf⟩
