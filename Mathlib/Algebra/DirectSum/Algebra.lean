@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.Algebra.DirectSum.Ring
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.DirectSum.Ring
 
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 
@@ -63,8 +63,7 @@ end
 
 variable [Semiring B] [Galgebra R A] [Algebra R B]
 
-instance : Algebra R (⨁ i, A i)
-    where
+instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp Galgebra.toFun
   map_zero' := AddMonoidHom.map_zero _
   map_add' := AddMonoidHom.map_add _
@@ -73,16 +72,14 @@ instance : Algebra R (⨁ i, A i)
     simp only [AddMonoidHom.comp_apply]
     rw [of_mul_of]
     apply Dfinsupp.single_eq_of_sigma_eq (galgebra.map_mul a b)
-  commutes' r x :=
-    by
+  commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = add_monoid_hom.mul.flip (DirectSum.of _ _ _) x
     apply AddMonoidHom.congr_fun _ x
     ext (i xi) : 2
     dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.mul_apply, AddMonoidHom.flip_apply]
     rw [of_mul_of, of_mul_of]
     apply Dfinsupp.single_eq_of_sigma_eq (galgebra.commutes r ⟨i, xi⟩)
-  smul_def' r x :=
-    by
+  smul_def' r x := by
     change DistribMulAction.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
     apply AddMonoidHom.congr_fun _ x
     ext (i xi) : 2
@@ -142,8 +139,7 @@ end DirectSum
 -/
 @[simps]
 instance Algebra.directSumGalgebra {R A : Type _} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
-    [Semiring A] [Algebra R A] : DirectSum.Galgebra R fun i : ι => A
-    where
+    [Semiring A] [Algebra R A] : DirectSum.Galgebra R fun i : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one
   map_mul a b := Sigma.ext (zero_add _).symm (hEq_of_eq <| (algebraMap R A).map_mul a b)
