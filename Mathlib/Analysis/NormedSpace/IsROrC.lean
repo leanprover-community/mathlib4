@@ -8,9 +8,9 @@ Authors: Kalle Kytölä
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.IsROrC.Basic
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Analysis.NormedSpace.Pointwise
+import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.Pointwise
 
 /-!
 # Normed spaces over R or C
@@ -43,8 +43,7 @@ variable [NormedSpace 𝕜 E]
 
 /-- Lemma to normalize a vector in a normed space `E` over either `ℂ` or `ℝ` to unit length. -/
 @[simp]
-theorem norm_smul_inv_norm {x : E} (hx : x ≠ 0) : ‖(‖x‖⁻¹ : 𝕜) • x‖ = 1 :=
-  by
+theorem norm_smul_inv_norm {x : E} (hx : x ≠ 0) : ‖(‖x‖⁻¹ : 𝕜) • x‖ = 1 := by
   have : ‖x‖ ≠ 0 := by simp [hx]
   field_simp [norm_smul]
 #align norm_smul_inv_norm norm_smul_inv_norm
@@ -57,8 +56,7 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
 #align norm_smul_inv_norm' norm_smul_inv_norm'
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
-    (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ :=
-  by
+    (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0
   · rw [z_zero]
     simp only [LinearMap.map_zero, norm_zero, MulZeroClass.mul_zero]
@@ -68,8 +66,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     rw [mem_sphere_zero_iff_norm]
     exact norm_smul_inv_norm' r_pos.le z_zero
   have r_ne_zero : (r : 𝕜) ≠ 0 := is_R_or_C.of_real_ne_zero.mpr r_pos.ne'
-  have eq : f z = ‖z‖ / r * f z₁ :=
-    by
+  have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, LinearMap.map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel _ r_ne_zero, mul_inv_cancel, one_mul]
     simp only [z_zero, IsROrC.ofReal_eq_zero, norm_eq_zero, Ne.def, not_false_iff]
@@ -88,8 +85,7 @@ theorem LinearMap.bound_of_ball_bound' {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : 
 #align linear_map.bound_of_ball_bound' LinearMap.bound_of_ball_bound'
 
 theorem ContinuousLinearMap.op_norm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ)
-    (f : E →L[𝕜] 𝕜) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r :=
-  by
+    (f : E →L[𝕜] 𝕜) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r := by
   apply ContinuousLinearMap.op_norm_le_bound
   · apply div_nonneg _ r_pos.le
     exact
