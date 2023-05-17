@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.BoxIntegral.Box.SubboxInduction
-import Mathbin.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
+import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Induction on subboxes
@@ -45,8 +45,7 @@ variable {ι : Type _} [Fintype ι] {I J : Box ι}
 namespace Prepartition
 
 /-- Split a box in `ℝⁿ` into `2 ^ n` boxes by hyperplanes passing through its center. -/
-def splitCenter (I : Box ι) : Prepartition I
-    where
+def splitCenter (I : Box ι) : Prepartition I where
   boxes := Finset.univ.map (Box.splitCenterBoxEmb I)
   le_of_mem' := by simp [I.split_center_box_le]
   PairwiseDisjoint := by
@@ -96,8 +95,7 @@ theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
             ∀ (m : ℕ),
               z ∈ J.Icc →
                 J.Icc ⊆ U → (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
-    p I :=
-  by
+    p I := by
   refine' subbox_induction_on' I (fun J hle hs => H_ind J hle fun J' h' => _) H_nhds
   rcases mem_split_center.1 h' with ⟨s, rfl⟩
   exact hs s
@@ -119,8 +117,7 @@ theorem exists_tagged_partition_isHenstock_isSubordinate_homothetic (I : Box ι)
         π.IsHenstock ∧
           π.IsSubordinate r ∧
             (∀ J ∈ π, ∃ m : ℕ, ∀ i, (J : _).upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) ∧
-              π.distortion = I.distortion :=
-  by
+              π.distortion = I.distortion := by
   refine' subbox_induction_on I (fun J hle hJ => _) fun z hz => _
   · choose! πi hP hHen hr Hn Hd using hJ
     choose! n hn using Hn
@@ -128,8 +125,7 @@ theorem exists_tagged_partition_isHenstock_isSubordinate_homothetic (I : Box ι)
       (is_partition_split_center _).biUnionTagged hP
     have hsub :
       ∀ J' ∈ (split_center J).biUnionTagged πi,
-        ∃ n : ℕ, ∀ i, (J' : _).upper i - J'.lower i = (J.upper i - J.lower i) / 2 ^ n :=
-      by
+        ∃ n : ℕ, ∀ i, (J' : _).upper i - J'.lower i = (J.upper i - J.lower i) / 2 ^ n := by
       intro J' hJ'
       rcases(split_center J).mem_biUnionTagged.1 hJ' with ⟨J₁, h₁, h₂⟩
       refine' ⟨n J₁ J' + 1, fun i => _⟩
