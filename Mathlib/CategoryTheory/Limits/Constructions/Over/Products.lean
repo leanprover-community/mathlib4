@@ -17,14 +17,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 # Products in the over category
 
 Shows that products in the over category can be derived from wide pullbacks in the base category.
-The main result is `over_product_of_wide_pullback`, which says that if `C` has `J`-indexed wide
-pullbacks, then `over B` has `J`-indexed products.
+The main result is `over_product_of_widePullback`, which says that if `C` has `J`-indexed wide
+pullbacks, then `Over B` has `J`-indexed products.
 -/
 
 
-universe w v u
+universe w v u -- morphism levels before object levels. See note [category_theory universes].
 
--- morphism levels before object levels. See note [category_theory universes].
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w}
@@ -138,36 +137,36 @@ def conesEquiv (B : C) (F : Discrete J ⥤ Over B) :
 #align category_theory.over.construct_products.cones_equiv CategoryTheory.Over.ConstructProducts.conesEquiv
 
 /-- Use the above equivalence to prove we have a limit. -/
-theorem has_over_limit_discrete_of_wide_pullback_limit {B : C} (F : Discrete J ⥤ Over B)
+theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J ⥤ Over B)
     [HasLimit (widePullbackDiagramOfDiagramOver B F)] : HasLimit F :=
   HasLimit.mk
     { cone := _
       isLimit :=
         IsLimit.ofRightAdjoint (conesEquiv B F).functor
           (limit.isLimit (widePullbackDiagramOfDiagramOver B F)) }
-#align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_wide_pullback_limit
+#align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_widePullback_limit
 
 /-- Given a wide pullback in `C`, construct a product in `C/B`. -/
-theorem over_product_of_wide_pullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
+theorem over_product_of_widePullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
     HasLimitsOfShape (Discrete J) (Over B) :=
-  { has_limit := fun F => has_over_limit_discrete_of_wide_pullback_limit F }
-#align category_theory.over.construct_products.over_product_of_wide_pullback CategoryTheory.Over.ConstructProducts.over_product_of_wide_pullback
+  { has_limit := fun F => has_over_limit_discrete_of_widePullback_limit F }
+#align category_theory.over.construct_products.over_product_of_wide_pullback CategoryTheory.Over.ConstructProducts.over_product_of_widePullback
 
 /-- Given a pullback in `C`, construct a binary product in `C/B`. -/
-theorem over_binary_product_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
-  over_product_of_wide_pullback
-#align category_theory.over.construct_products.over_binary_product_of_pullback CategoryTheory.Over.ConstructProducts.over_binary_product_of_pullback
+theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
+  over_product_of_widePullback
+#align category_theory.over.construct_products.over_binary_product_of_pullback CategoryTheory.Over.ConstructProducts.over_binaryProduct_of_pullback
 
 /-- Given all wide pullbacks in `C`, construct products in `C/B`. -/
-theorem over_products_of_wide_pullbacks [HasWidePullbacks.{w} C] {B : C} :
-    HasProducts.{w} (Over B) := fun _ => over_product_of_wide_pullback
-#align category_theory.over.construct_products.over_products_of_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_products_of_wide_pullbacks
+theorem over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
+    HasProducts.{w} (Over B) := fun _ => over_product_of_widePullback
+#align category_theory.over.construct_products.over_products_of_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_products_of_widePullbacks
 
 /-- Given all finite wide pullbacks in `C`, construct finite products in `C/B`. -/
-theorem over_finite_products_of_finite_wide_pullbacks [HasFiniteWidePullbacks C] {B : C} :
+theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B : C} :
     HasFiniteProducts (Over B) :=
-  ⟨fun _ => over_product_of_wide_pullback⟩
-#align category_theory.over.construct_products.over_finite_products_of_finite_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_finite_products_of_finite_wide_pullbacks
+  ⟨fun _ => over_product_of_widePullback⟩
+#align category_theory.over.construct_products.over_finite_products_of_finite_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
 
 end ConstructProducts
 
@@ -176,7 +175,7 @@ end ConstructProducts
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by
-`over_product_of_wide_pullback` above.)
+`over_product_of_widePullback` above.)
 -/
 theorem over_hasTerminal (B : C) : HasTerminal (Over B) :=
   { has_limit := fun F =>
