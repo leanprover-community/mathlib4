@@ -63,7 +63,7 @@ def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
-      sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutativeOpt.sty"}
+      sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
       sub={sub} />
 
 /-! ## Commutative triangles -/

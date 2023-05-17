@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 */
 
+-- This is a Penrose (https://penrose.cs.cmu.edu/) domain file for commutative diagrams.
+
 -- Any subclass can be the endpoint of a k-cell.
 type Targettable
 

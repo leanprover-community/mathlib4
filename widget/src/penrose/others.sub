@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 */
 
+-- This is a Penrose (https://penrose.cs.cmu.edu/) substance file with example commutative diagrams.
+
 -- Product
 Object X,Y,Z,W
 Cell f := MakeCell(W, X)
@@ -107,3 +109,69 @@ Label j1 "j_1"
 Label j2 "j_2"
 Label h1 "h_1"
 Label h2 "h_2"
+
+-- Example from Awodey, "Cartesian Cubical Model Categories" (https://arxiv.org/pdf/2305.00893.pdf), p. 46
+Object A,B,C,D
+
+Cell AB := MakeCell(A,B)
+Cell BC := MakeCell(B,C)
+Cell DC := MakeCell(D,C)
+Cell AD := MakeCell(A,D)
+IsRightHorizontal(AB)
+IsDownVertical(BC)
+IsRightHorizontal(DC)
+IsDownVertical(AD)
+
+Object E,F,G,H
+
+Cell EF := MakeCell(E,F)
+Cell FG := MakeCell(F,G)
+Cell HG := MakeCell(H,G)
+Cell EH := MakeCell(E,H)
+IsRightHorizontal(EF)
+IsDownVertical(FG)
+IsRightHorizontal(HG)
+IsDownVertical(EH)
+
+Object X,Y
+
+Cell XY := MakeCell(X,Y)
+Cell XA := MakeCell(X,A)
+Cell YB := MakeCell(Y,B)
+
+IsRightHorizontal(XY)
+IsDownVertical(XA)
+IsDownVertical(YB)
+
+-- Connect the two squares
+Cell AE := MakeCell(A,E)
+Cell BF := MakeCell(B,F)
+Cell CG := MakeCell(C,G)
+Cell DH := MakeCell(D,H)
+-- Note: We only position two corners, the others are determined well enough.
+IsRightDownDiagonal(AE)
+IsRightDownDiagonal(BF)
+
+IsLabelRight(HG)
+IsLabelRight(DH)
+IsLabelRight(CG)
+
+IsDashed(AB)
+
+AutoLabel All
+Label A "(t^* A)_\epsilon"
+Label B "A_\epsilon"
+Label C "X^I"
+Label D "Y^I"
+
+Label E "t^*A"
+Label F "A"
+Label G "X"
+Label H "Y"
+
+Label X "(t^* A)^I"
+Label Y "A^I"
+
+Label HG "t"
+Label DH "\epsilon"
+Label CG "\epsilon"
