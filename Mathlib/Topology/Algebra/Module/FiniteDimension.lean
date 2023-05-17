@@ -17,8 +17,8 @@ import Mathlib.Topology.Algebra.Module.Determinant
 # Finite dimensional topological vector spaces over complete fields
 
 Let `𝕜` be a complete nontrivially normed field, and `E` a topological vector space (TVS) over
-`𝕜` (i.e we have `[add_comm_group E] [module 𝕜 E] [topological_space E] [topological_add_group E]`
-and `[has_continuous_smul 𝕜 E]`).
+`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
+and `[ContinuousSMul 𝕜 E]`).
 
 If `E` is finite dimensional and Hausdorff, then all linear maps from `E` to any other TVS are
 continuous.
@@ -27,22 +27,22 @@ When `E` is a normed space, this gets us the equivalence of norms in finite dime
 
 ## Main results :
 
-* `linear_map.continuous_iff_is_closed_ker` : a linear form is continuous if and only if its kernel
+* `LinearMap.continuous_iff_isClosed_ker` : a linear form is continuous if and only if its kernel
   is closed.
-* `linear_map.continuous_of_finite_dimensional` : a linear map on a finite-dimensional Hausdorff
+* `LinearMap.continuous_of_finiteDimensional` : a linear map on a finite-dimensional Hausdorff
   space over a complete field is continuous.
 
 ## TODO
 
-Generalize more of `analysis/normed_space/finite_dimension` to general TVSs.
+Generalize more of `Mathlib.Analysis.NormedSpace.FiniteDimension` to general TVSs.
 
 ## Implementation detail
 
 The main result from which everything follows is the fact that, if `ξ : ι → E` is a finite basis,
-then `ξ.equiv_fun : E →ₗ (ι → 𝕜)` is continuous. However, for technical reasons, it is easier to
-prove this when `ι` and `E` live ine the same universe. So we start by doing that as a private
-lemma, then we deduce `linear_map.continuous_of_finite_dimensional` from it, and then the general
-result follows as `continuous_equiv_fun_basis`.
+then `ξ.equivFun : E →ₗ (ι → 𝕜)` is continuous. However, for technical reasons, it is easier to
+prove this when `ι` and `E` live in the same universe. So we start by doing that as a private
+lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and then the general
+result follows as `continuous_equivFun_basis`.
 
 -/
 
