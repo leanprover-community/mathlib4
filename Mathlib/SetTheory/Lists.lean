@@ -203,8 +203,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
 #align lists'.mem_of_subset' Lists'.mem_of_subset'
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
-  ⟨fun H a => mem_of_subset' H, fun H =>
-    by
+  ⟨fun H a => mem_of_subset' H, fun H => by
     rw [← of_toList l₁]
     revert H; induction' toList l₁ with h t t_ih <;> intro H
     · exact Subset.nil

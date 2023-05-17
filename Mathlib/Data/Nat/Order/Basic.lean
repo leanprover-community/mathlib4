@@ -175,17 +175,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
-
-theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  calc
-    m + n > 0 + n := Nat.add_lt_add_right h n
-    _ = n := Nat.zero_add n
-    _ ≥ 0 := zero_le n
 #align nat.add_pos_left Nat.add_pos_left
-
-theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
-  rw [add_comm]
-  exact add_pos_left h m
 #align nat.add_pos_right Nat.add_pos_right
 
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=

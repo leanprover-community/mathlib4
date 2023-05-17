@@ -77,8 +77,8 @@ theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickenin
 
 theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
-  · rw [cthickening_eq_interᵢ_thickening hδ]
-    exact convex_interᵢ₂ fun _ _ => hs.thickening _
+  · rw [cthickening_eq_iInter_thickening hδ]
+    exact convex_iInter₂ fun _ _ => hs.thickening _
   · rw [cthickening_of_nonpos hδ]
     exact hs.closure
 #align convex.cthickening Convex.cthickening

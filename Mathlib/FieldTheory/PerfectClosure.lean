@@ -536,8 +536,8 @@ instance : PerfectRing (PerfectClosure K p) p where
       simp only [liftOn_mk, frobenius_mk]
       exact (Quot.sound <| R.intro _ _).symm
 
-theorem eq_pthRoot (x : ℕ × K) : mk K p x = (pthRoot (PerfectClosure K p) p^[x.1]) (of K p x.2) :=
-  by
+theorem eq_pthRoot (x : ℕ × K) :
+    mk K p x = (pthRoot (PerfectClosure K p) p^[x.1]) (of K p x.2) := by
   rcases x with ⟨m, x⟩
   induction' m with m ih
   · rfl

@@ -470,37 +470,37 @@ of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
   ωSup c := ⨆ i, c i
   ωSup_le := fun ⟨c, _⟩ s hs => by
-    simp only [supᵢ_le_iff, OrderHom.coe_fun_mk] at hs ⊢; intro i; apply hs i
-  le_ωSup := fun ⟨c, _⟩ i => by simp only [OrderHom.coe_fun_mk]; apply le_supᵢ_of_le i; rfl
+    simp only [iSup_le_iff, OrderHom.coe_fun_mk] at hs ⊢; intro i; apply hs i
+  le_ωSup := fun ⟨c, _⟩ i => by simp only [OrderHom.coe_fun_mk]; apply le_iSup_of_le i; rfl
 
 variable {α} {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
 
-theorem supₛ_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (supₛ s) := by
+theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
   intro c
   apply eq_of_forall_ge_iff
   intro z
   suffices (∀ f ∈ s, ∀ (n), (f : _) (c n) ≤ z) ↔ ∀ (n), ∀ f ∈ s, (f : _) (c n) ≤ z by
     simpa (config := { contextual := true }) [ωSup_le_iff, hs _ _ _] using this
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
-#align complete_lattice.Sup_continuous CompleteLattice.supₛ_continuous
+#align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
-theorem supᵢ_continuous {ι : Sort _} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
+theorem iSup_continuous {ι : Sort _} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
-  supₛ_continuous _ <| Set.forall_range_iff.2 h
-#align complete_lattice.supr_continuous CompleteLattice.supᵢ_continuous
+  sSup_continuous _ <| Set.forall_range_iff.2 h
+#align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
 
-theorem supₛ_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
-    Continuous' (supₛ s) := by
+theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
+    Continuous' (sSup s) := by
   lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
   simp only [Set.ball_image_iff, continuous'_coe] at hc
-  rw [supₛ_image]
+  rw [sSup_image]
   norm_cast
-  exact supᵢ_continuous fun f => supᵢ_continuous fun hf => hc f hf
-#align complete_lattice.Sup_continuous' CompleteLattice.supₛ_continuous'
+  exact iSup_continuous fun f => iSup_continuous fun hf => hc f hf
+#align complete_lattice.Sup_continuous' CompleteLattice.sSup_continuous'
 
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊔ g) := by
-  rw [← supₛ_pair]; apply supₛ_continuous
+  rw [← sSup_pair]; apply sSup_continuous
   rintro f (rfl | rfl | _) <;> assumption
 #align complete_lattice.sup_continuous CompleteLattice.sup_continuous
 
@@ -511,8 +511,8 @@ theorem top_continuous : Continuous (⊤ : α →o β) := by
 #align complete_lattice.top_continuous CompleteLattice.top_continuous
 
 theorem bot_continuous : Continuous (⊥ : α →o β) := by
-  rw [← supₛ_empty]
-  exact supₛ_continuous _ fun f hf => hf.elim
+  rw [← sSup_empty]
+  exact sSup_continuous _ fun f hf => hf.elim
 #align complete_lattice.bot_continuous CompleteLattice.bot_continuous
 
 end CompleteLattice

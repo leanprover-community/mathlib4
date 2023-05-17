@@ -175,18 +175,17 @@ theorem finset_prod_singleton {M ι : Type _} [CommMonoid M] (s : Finset ι) (I 
 #align set.finset_prod_singleton Set.finset_prod_singleton
 #align set.finset_sum_singleton Set.finset_sum_singleton
 
-/-- The n-ary version of `set.image_mul_prod`. -/
-@[to_additive "The n-ary version of `set.add_image_prod`. "]
+/-- The n-ary version of `Set.image_mul_prod`. -/
+@[to_additive "The n-ary version of `Set.add_image_prod`. "]
 theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
-    (fun f : ι → α => ∏ i in l, f i) '' (l : Set ι).pi S = ∏ i in l, S i :=
-  by
+    (fun f : ι → α => ∏ i in l, f i) '' (l : Set ι).pi S = ∏ i in l, S i := by
   ext
   simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
 #align set.image_finset_prod_pi Set.image_finset_prod_pi
 #align set.image_finset_sum_pi Set.image_finset_sum_pi
 
-/-- A special case of `set.image_finset_prod_pi` for `finset.univ`. -/
-@[to_additive "A special case of `set.image_finset_sum_pi` for `finset.univ`. "]
+/-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
+@[to_additive "A special case of `Set.image_finset_sum_pi` for `Finset.univ`. "]
 theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
     (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
   simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S

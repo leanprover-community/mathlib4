@@ -597,11 +597,8 @@ protected theorem cycle_g_cons (a : α) (a₁ : α) (l₁ : List α) (a₀ : α)
 theorem cycle_eq : ∀ (l : List α) (h : l ≠ []), cycle l h = l ++ₛ cycle l h
   | [], h => absurd rfl h
   | List.cons a l, _ =>
-    have gen :
-      ∀ l' a',
-        corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
-          (a'::l') ++ₛ corec Stream'.cycleF Stream'.cycleG (a, l, a, l) :=
-      by
+    have gen : ∀ l' a', corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
+        (a'::l') ++ₛ corec Stream'.cycleF Stream'.cycleG (a, l, a, l) := by
       intro l'
       induction' l' with a₁ l₁ ih
       · intros

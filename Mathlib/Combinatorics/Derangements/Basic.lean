@@ -57,19 +57,18 @@ fixed iff they are not in the subtype. -/
 protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
     derangements (Subtype p) ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
   calc
-    derangements (Subtype p) ≃
-        { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } // ∀ a, a ∈ fixedPoints f → ¬p a } :=
-      by
-        refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
-        · refine' hf ⟨a, ha⟩ (Subtype.ext _)
-          simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
-          Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
-          assumption
-        rintro hf ⟨a, ha⟩ hfa
-        refine' hf _ _ ha
-        simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
-        dsimp [IsFixedPt]
-        simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
+    derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
+        ∀ a, a ∈ fixedPoints f → ¬p a } := by
+      refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
+      · refine' hf ⟨a, ha⟩ (Subtype.ext _)
+        simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
+        Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
+        assumption
+      rintro hf ⟨a, ha⟩ hfa
+      refine' hf _ _ ha
+      simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
+      dsimp [IsFixedPt]
+      simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
     _ ≃ { f : Perm α // ∃ _h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
@@ -183,8 +182,7 @@ variable [DecidableEq α]
     of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
-  have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False :=
-    by
+  have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False := by
     rw [Equiv.RemoveNone.fiber_none]
     exact IsEmpty.false
   calc
