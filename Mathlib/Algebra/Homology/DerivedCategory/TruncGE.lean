@@ -305,9 +305,11 @@ lemma qis_truncGEmap_iff :
 variable (K)
 
 lemma qis_truncGEπ_iff :
-    qis _ _ (K.truncGEπ n) ↔ ∀ (i : ℤ) (_ : i < n), IsZero (K.newHomology i) := by
+    qis _ _ (K.truncGEπ n) ↔ K.IsGE n := by
   constructor
-  . intro h i hi
+  . intro h
+    constructor
+    intro i hi
     have h' := h i
     exact IsZero.of_iso (K.isZero_homology_truncGE _ _ hi)
       (asIso (homologyMap (truncGEπ K n) i))
@@ -316,8 +318,13 @@ lemma qis_truncGEπ_iff :
     . exact K.isIso_homologyMap_truncGEπ n i hi
     . simp only [not_le] at hi
       refine' ⟨⟨0, _, _⟩⟩
-      . apply (h i hi).eq_of_src
+      . apply (K.isZero_of_isGE n i hi).eq_of_src
       . apply (K.isZero_homology_truncGE n i hi).eq_of_src
+
+instance (n : ℤ) [K.IsGE n] : IsIso (DerivedCategory.Q.map (K.truncGEπ n)) := by
+  apply Localization.inverts DerivedCategory.Q (qis C _)
+  rw [qis_truncGEπ_iff]
+  infer_instance
 
 variable (C)
 
@@ -338,6 +345,20 @@ lemma qis_isInvertedBy_functorTruncGE_comp_Q (n : ℤ) :
   exact hf i
 
 instance : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
+
+instance (i : ℤ) [K.IsStrictlyLE i] : (K.truncGE n).IsStrictlyLE i := ⟨fun j hj => by
+  by_cases hj' : j < n
+  . exact K.isZero_truncGEX _ _ hj'
+  . rw [IsZero.iff_id_eq_zero, ← cancel_epi (K.truncGEπf n j)]
+    apply IsZero.eq_of_src
+    exact K.isZero_of_isStrictlyLE i j (by linarith)⟩
+
+instance (i : ℤ) [K.IsStrictlyGE i] : (K.truncGE n).IsStrictlyGE i := ⟨fun j hj => by
+  by_cases hj' : j < n
+  . exact K.isZero_truncGEX _ _ hj'
+  . rw [IsZero.iff_id_eq_zero, ← cancel_epi (K.truncGEπf n j)]
+    apply IsZero.eq_of_src
+    exact K.isZero_of_isStrictlyGE i j (by linarith)⟩
 
 lemma isIso_truncGEπ_iff (n : ℤ) : IsIso (K.truncGEπ n) ↔ K.IsStrictlyGE n := by
   constructor

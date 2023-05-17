@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
+import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.CategoryTheory.Triangulated.TStructure
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
@@ -38,7 +39,87 @@ def t : TStructure (DerivedCategory C) where
         apply IsZero.eq_of_tgt
         exact X.isZero_homology_truncLE 0 1 (by linarith)
 
-
 end TStructure
+
+lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
+    (X Y : CochainComplex C ℤ) (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
+    [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
+    ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
+    (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
+  obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE _ _ f b
+  have : IsIso (Q.map (CochainComplex.truncGEmap s a)) := by
+    rw [isIso_Q_map_iff'] at hs
+    rw [isIso_Q_map_iff', CochainComplex.qis_truncGEmap_iff]
+    intro i _
+    apply hs
+  refine' ⟨X'.truncGE a, inferInstance, inferInstance,
+    CochainComplex.truncGEmap s a ≫ inv (X.truncGEπ a), _,
+      CochainComplex.truncGEmap g a ≫ inv (Y.truncGEπ a), _⟩
+  . rw [Q.map_comp]
+    infer_instance
+  . simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
+      ← cancel_epi (Q.map s), IsIso.hom_inv_id_assoc]
+    simp only [← Functor.map_comp_assoc, ← CochainComplex.truncGEπ_naturality s a]
+    simp only [Functor.map_comp, assoc, IsIso.hom_inv_id_assoc]
+    simp only [← Functor.map_comp_assoc, CochainComplex.truncGEπ_naturality g a]
+    simp only [Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
+
+lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
+    (X Y : CochainComplex C ℤ) (a b : ℤ)
+    [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
+    ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
+    (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
+  obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE _ _ f a
+  have : IsIso (Q.map (CochainComplex.truncLEmap s b)) := by
+    rw [isIso_Q_map_iff'] at hs
+    rw [isIso_Q_map_iff', CochainComplex.qis_truncLEmap_iff]
+    intro i _
+    apply hs
+  refine' ⟨Y'.truncLE b, inferInstance, inferInstance,
+    inv (X.truncLEι b) ≫ CochainComplex.truncLEmap g b,
+    inv (Y.truncLEι b) ≫ CochainComplex.truncLEmap s b, _, _⟩
+  . rw [Q.map_comp]
+    infer_instance
+  . simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
+      ← cancel_mono (Q.map s), IsIso.inv_hom_id, comp_id]
+    simp only [← Functor.map_comp, ← CochainComplex.truncLEι_naturality s b]
+    simp only [Functor.map_comp, IsIso.inv_hom_id_assoc]
+    simp only [← Functor.map_comp, CochainComplex.truncLEι_naturality g b]
+    simp only [Functor.map_comp, IsIso.inv_hom_id_assoc]
+
+lemma exists_iso_Q_obj_of_isLE (X : DerivedCategory C) (n : ℤ) [X.IsLE n] :
+    ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyLE n), Nonempty (X ≅ Q.obj K) := by
+  obtain ⟨X, rfl⟩ := Q_obj_surjective X
+  have : X.IsLE n := by
+    rw [← isLE_Q_obj_iff]
+    infer_instance
+  exact ⟨X.truncLE n, inferInstance, ⟨(asIso (Q.map (X.truncLEι n))).symm⟩⟩
+
+lemma exists_iso_Q_obj_of_isGE (X : DerivedCategory C) (n : ℤ) [X.IsGE n] :
+    ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n), Nonempty (X ≅ Q.obj K) := by
+  obtain ⟨X, rfl⟩ := Q_obj_surjective X
+  have : X.IsGE n := by
+    rw [← isGE_Q_obj_iff]
+    infer_instance
+  exact ⟨X.truncGE n, inferInstance, ⟨(asIso (Q.map (X.truncGEπ n)))⟩⟩
+
+lemma exists_iso_Q_obj_of_isGE_of_isLE (X : DerivedCategory C) (a b : ℤ) [X.IsGE a] [X.IsLE b] :
+    ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE a) (_ : K.IsStrictlyLE b),
+      Nonempty (X ≅ Q.obj K) := by
+  obtain ⟨K, hK, ⟨e⟩⟩ := X.exists_iso_Q_obj_of_isLE b
+  have : K.IsGE a := by
+    rw [← isGE_Q_obj_iff]
+    exact isGE_of_iso e a
+  exact ⟨K.truncGE a, inferInstance, inferInstance, ⟨e ≪≫ asIso (Q.map (K.truncGEπ a))⟩⟩
+
+lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
+    ∃ (A : C), Nonempty (X ≅ (singleFunctor C n).obj A) := by
+  dsimp only [singleFunctor, Functor.comp_obj]
+  obtain ⟨Y, _, _, ⟨e⟩⟩ := X.exists_iso_Q_obj_of_isGE_of_isLE n n
+  obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
+  exact ⟨A, ⟨e ≪≫ Q.mapIso e'⟩⟩
+
+--instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h => by
+--  sorry⟩
 
 end DerivedCategory

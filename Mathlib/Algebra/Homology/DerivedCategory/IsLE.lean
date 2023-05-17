@@ -88,8 +88,33 @@ lemma isGE_shift [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' :
   IsZero.of_iso (K.isZero_of_isGE n (a+i) (by linarith))
     (((newHomologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
 
-end CochainComplex
+lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
+    ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) := by
+  refine' ⟨K.X n, ⟨_⟩⟩
+  refine' HomologicalComplex.Hom.isoOfComponents _ _
+  . intro i
+    by_cases i = n
+    . subst h
+      exact (singleObjXSelf _ _ _ _).symm
+    . refine' IsZero.isoZero _ ≪≫ (IsZero.isoZero _).symm
+      . by_cases hi' : i ≤ n
+        . refine' K.isZero_of_isStrictlyGE n i _
+          cases hi'.lt_or_eq <;> tauto
+        . exact K.isZero_of_isStrictlyLE n i (by linarith)
+      . dsimp
+        rw [if_neg h]
+        exact isZero_zero _
+  . intro i j (hij : i + 1 = j)
+    simp only [single_obj_d, comp_zero]
+    by_cases i < n
+    . apply (K.isZero_of_isStrictlyGE n i h).eq_of_src
+    . apply IsZero.eq_of_tgt
+      dsimp
+      rw [if_neg]
+      . exact isZero_zero _
+      . linarith
 
+end CochainComplex
 
 namespace DerivedCategory
 
@@ -114,6 +139,24 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsLE n] :
 instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsGE n] :
     (Q.obj K).IsGE n :=
   ⟨fun i hi => IsZero.of_iso (K.isZero_of_isGE n i hi) ((homologyFunctorFactors C i).app K)⟩
+
+lemma isLE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
+    (Q.obj K).IsLE n ↔ K.IsLE n := by
+  constructor
+  . intro
+    exact ⟨fun i hi => IsZero.of_iso (isZero_of_isLE _ n i hi)
+      ((homologyFunctorFactors C i).app K).symm⟩
+  . intro
+    infer_instance
+
+lemma isGE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
+    (Q.obj K).IsGE n ↔ K.IsGE n := by
+  constructor
+  . intro
+    exact ⟨fun i hi => IsZero.of_iso (isZero_of_isGE _ n i hi)
+      ((homologyFunctorFactors C i).app K).symm⟩
+  . intro
+    infer_instance
 
 lemma isLE_shift [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := ⟨fun i hi =>
   IsZero.of_iso (K.isZero_of_isLE n (a+i) (by linarith))
