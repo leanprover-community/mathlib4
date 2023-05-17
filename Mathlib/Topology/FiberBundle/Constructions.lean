@@ -293,7 +293,9 @@ end Prod
 
 section
 
-variable {B : Type _} (F : Type _) (E : B → Type _) {B' : Type _} (f : B' → B)
+universe u v w₁ w₂ U
+
+variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
 instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
   -- Porting note: Original proof was `delta_instance bundle.pullback`
@@ -345,9 +347,9 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
-variable {E F} [∀ _b, Zero (E _b)] {K : Type _} [ContinuousMapClass K B' B]
+variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [ContinuousMapClass K B' B]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 noncomputable def Trivialization.pullback (e : Trivialization F (π E)) (f : K) :
     Trivialization F (π ((f : B' → B) *ᵖ E)) where
@@ -367,11 +369,11 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π E)) (f : K) 
     simp_rw [Pullback.lift, e.symm_apply_apply_mk h, TotalSpace.eta]
   right_inv' x h := by
     simp_rw [mem_prod, mem_preimage, mem_univ, and_true_iff] at h
-    simp_rw [TotalSpace.proj_mk, Pullback.lift_mk, e.apply_mk_symm h, Prod.mk.eta]
+    simp_rw [TotalSpace.proj_mk, Pullback.lift_mk, e.apply_mk_symm h]
   open_source := by
     simp_rw [e.source_eq, ← preimage_comp]
     exact
-      ((map_continuous f).comp <| Pullback.continuous_proj E f).isOpen_preimage _ e.open_base_set
+      ((map_continuous f).comp <| Pullback.continuous_proj E f).isOpen_preimage _ e.open_baseSet
   open_target := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
   open_baseSet := (map_continuous f).isOpen_preimage _ e.open_baseSet
   continuous_toFun :=
@@ -385,14 +387,14 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π E)) (f : K) 
     dsimp only [TotalSpace.proj_mk]
     refine'
       continuousOn_fst.prod
-        (e.continuous_on_symm.comp ((map_continuous f).Prod_map continuous_id).ContinuousOn
-          subset.rfl)
+        (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
+          Subset.rfl)
   source_eq := by
     dsimp only
     rw [e.source_eq]
     rfl
   target_eq := rfl
-  proj_toFun y h := rfl
+  proj_toFun y _ := rfl
 #align trivialization.pullback Trivialization.pullback
 
 noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
