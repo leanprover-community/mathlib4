@@ -3,13 +3,13 @@ import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 universe v u
 
-namespace CategoryTheory
-
-open Category Preadditive DerivedCategory
-
-namespace Abelian
+open CategoryTheory Category Preadditive DerivedCategory Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
+
+namespace CategoryTheory
+
+namespace Abelian
 
 variable (X Y Z : C) (n : ℕ)
 
