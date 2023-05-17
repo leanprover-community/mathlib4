@@ -926,7 +926,7 @@ theorem dualAnnihilator_iSup_eq {ι : Type _} (U : ι → Submodule R M) :
 theorem dualCoannihilator_iSup_eq {ι : Type _} (U : ι → Submodule R (Module.Dual R M)) :
     (⨆ i : ι, U i).dualCoannihilator = ⨅ i : ι, (U i).dualCoannihilator :=
   (dualAnnihilator_gc R M).u_iInf
-#align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_supᵢ_eq
+#align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_iSup_eq
 
 /-- See also `subspace.dual_annihilator_inf_eq` for vector subspaces. -/
 theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
@@ -938,8 +938,8 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 /-- See also `subspace.dual_annihilator_infi_eq` for vector subspaces when `ι` is finite. -/
 theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
     (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
-  rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_supᵢ_eq]
-  apply infᵢ_mono
+  rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
+  apply iInf_mono
   exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)
 #align submodule.supr_dual_annihilator_le_infi Submodule.iSup_dualAnnihilator_le_iInf
 
@@ -1301,13 +1301,13 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
 -- `f.coker` is a projective `R`-module.
 theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M →ₗ[R] M')
-    (hf : Function.Surjective f.range.Subtype.dualMap) :
+    (hf : Function.Surjective f.range.subtype.dualMap) :
     LinearMap.range f.dualMap = f.ker.dualAnnihilator := by
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← LinearMap.range_eq_top, LinearMap.range_rangeRestrict]
-  have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.range_restrict rr_surj
+  have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
-  · change ((Submodule.subtype f.range).comp f.range_restrict).dualMap.range = _
+  · change ((Submodule.subtype f.range).comp f.rangeRestrict).dualMap.range = _
     rw [← LinearMap.dualMap_comp_dualMap, LinearMap.range_comp_of_range_eq_top]
     rwa [LinearMap.range_eq_top]
   · apply congr_arg
@@ -1334,7 +1334,7 @@ theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function
     Function.Surjective f.dualMap := by
   intro φ
   let f' := LinearEquiv.ofInjective f hf
-  use Subspace.dualLift (range f) (f'.symm.dual_map φ)
+  use Subspace.dualLift (range f) (f'.symm.dualMap φ)
   ext x
   rw [LinearMap.dualMap_apply, Subspace.dualLift_of_mem (mem_range_self f x),
     LinearEquiv.dualMap_apply]
@@ -1419,11 +1419,11 @@ theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K
   revert ι
   refine' @Finite.induction_empty_option _ _ _ _
   · intro α β h hyp W
-    rw [← h.infᵢ_comp, hyp (W ∘ h), ← h.supr_comp]
+    rw [← h.iInf_comp, hyp (W ∘ h), ← h.supr_comp]
   · intro W
     rw [iSup_of_empty', iInf_of_empty', sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
-    rw [iInf_option, supᵢ_option, dualAnnihilator_inf_eq, h]
+    rw [iInf_option, iSup_option, dualAnnihilator_inf_eq, h]
 #align subspace.dual_annihilator_infi_eq Subspace.dualAnnihilator_infᵢ_eq
 
 /-- For vector spaces, dual annihilators carry direct sum decompositions
