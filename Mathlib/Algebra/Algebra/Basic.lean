@@ -604,8 +604,8 @@ instance : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
-      Algebra.smul_def, Algebra.commutes, op_unop]
-  commutes' r := MulOpposite.rec' fun x => by
+      Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
+  commutes' r := MulOpposite.rec fun x => by
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
