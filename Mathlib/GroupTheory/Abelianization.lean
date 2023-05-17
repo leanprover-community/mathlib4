@@ -59,7 +59,7 @@ instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
 #align commutator_characteristic commutator_characteristic
 
-instance [Finite (commutatorSet G)] : Group.Fg (commutator G) := by
+instance [Finite (commutatorSet G)] : Group.FG (commutator G) := by
   rw [commutator_eq_closure]
   apply Group.closure_finite_fg
 
@@ -276,7 +276,7 @@ def closureCommutatorRepresentatives : Subgroup G :=
 #align closure_commutator_representatives closureCommutatorRepresentatives
 
 instance closureCommutatorRepresentatives_fg [Finite (commutatorSet G)] :
-    Group.Fg (closureCommutatorRepresentatives G) :=
+    Group.FG (closureCommutatorRepresentatives G) :=
   Group.closure_finite_fg _
 #align closure_commutator_representatives_fg closureCommutatorRepresentatives_fg
 

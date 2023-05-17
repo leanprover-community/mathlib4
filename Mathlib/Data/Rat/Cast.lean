@@ -434,7 +434,6 @@ end Rat
 
 open Rat
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
