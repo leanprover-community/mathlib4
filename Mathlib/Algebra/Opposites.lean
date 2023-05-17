@@ -49,31 +49,22 @@ universe u v
 
 open Function
 
+/-- Auxiliary type to implement MulOpposite and AddOpposite-/
+structure PreOpposite (α : Type u) : Type u where
+  /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
+  /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
+
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication.-/
-structure MulOpposite (α : Type u) : Type u where
-  /-- The element of `MulOpposite α` that represents `x : α`. -/ op ::
-  /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/ unop : α
-#align mul_opposite.op MulOpposite.op
-#align mul_opposite.unop MulOpposite.unop
+@[to_additive
+      "Additive opposite of a type. This type inherits all multiplicative structures on\n`α` and reverses left and right in addition."]
+def MulOpposite (α : Type u) : Type u :=
+  PreOpposite α
 #align mul_opposite MulOpposite
-
--- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
--- both tagged with it in mathlib3
-
-/-- Additive opposite of a type. This type inherits all multiplicative structures on
-      `α` and reverses left and right in addition. -/
-structure AddOpposite (α : Type u) : Type u where
-  /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/ op ::
-  /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/ unop : α
-#align add_opposite.unop AddOpposite.unop
-#align add_opposite.op AddOpposite.op
 #align add_opposite AddOpposite
-
 -- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
 -- both tagged with it in mathlib3
 
-attribute [to_additive] MulOpposite
 
 /-- Multiplicative opposite of a type. -/
 postfix:max "ᵐᵒᵖ" => MulOpposite
@@ -83,8 +74,21 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 
--- porting note: `simp` can prove this in Lean 4
-@[to_additive]
+/-- The element of `mul_opposite α` that represents `x : α`. -/
+@[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
+def op : α → αᵐᵒᵖ :=
+  PreOpposite.op'
+#align mul_opposite.op MulOpposite.op
+#align add_opposite.op AddOpposite.op
+
+/-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
+@[to_additive "The element of `α` represented by `x : αᵃᵒᵖ`."]
+def unop : αᵐᵒᵖ → α :=
+  PreOpposite.unop'
+#align mul_opposite.unop MulOpposite.unop
+#align add_opposite.unop AddOpposite.unop
+
+@[to_additive (attr := simp)]
 theorem unop_op (x : α) : unop (op x) = x := rfl
 #align mul_opposite.unop_op MulOpposite.unop_op
 #align add_opposite.unop_op AddOpposite.unop_op
@@ -160,9 +164,8 @@ theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
 #align mul_opposite.unop_surjective MulOpposite.unop_surjective
 #align add_opposite.unop_surjective AddOpposite.unop_surjective
 
--- porting note: `simp` can prove this
-@[to_additive]
-theorem op_inj {x y : α} : op x = op y ↔ x = y := by simp
+@[to_additive (attr := simp)]
+theorem op_inj {x y : α} : op x = op y ↔ x = y := iff_of_eq $ PreOpposite.op'.injEq _ _
 #align mul_opposite.op_inj MulOpposite.op_inj
 #align add_opposite.op_inj AddOpposite.op_inj
 
