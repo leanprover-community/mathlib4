@@ -85,14 +85,9 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj c :=
     { pt := Over.mk (c.π.app none)
       π :=
-        { app := fun ⟨j⟩ =>
-            Over.homMk (c.π.app (some j)) (by apply c.w (WidePullbackShape.Hom.term j))
+        { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note: Added a proof for `naturality`
-          naturality := fun X Y f => by
-            discrete_cases
-            rename_i f
-            dsimp at f ⊢
-            aesop_cat } }
+          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
   map f := { Hom := Over.homMk f.Hom }
 #align category_theory.over.construct_products.cones_equiv_functor CategoryTheory.Over.ConstructProducts.conesEquivFunctor
 
@@ -104,10 +99,9 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
   NatIso.ofComponents
-    (fun _ =>
-      Cones.ext
-        { hom := 𝟙 _
-          inv := 𝟙 _ } (by intro j; cases j <;> aesop_cat))
+    (fun _ => Cones.ext
+      { hom := 𝟙 _
+        inv := 𝟙 _ } (by rintro (j | j) <;> aesop_cat))
     (by aesop_cat)
 #align category_theory.over.construct_products.cones_equiv_unit_iso CategoryTheory.Over.ConstructProducts.conesEquivUnitIso
 
@@ -116,10 +110,9 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
   NatIso.ofComponents
-    (fun _ =>
-      Cones.ext
-        { hom := Over.homMk (𝟙 _)
-          inv := Over.homMk (𝟙 _) } (by aesop_cat))
+    (fun _ => Cones.ext
+      { hom := Over.homMk (𝟙 _)
+        inv := Over.homMk (𝟙 _) } (by aesop_cat))
     (by aesop_cat)
 #align category_theory.over.construct_products.cones_equiv_counit_iso CategoryTheory.Over.ConstructProducts.conesEquivCounitIso
 
@@ -141,9 +134,8 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J �
     [HasLimit (widePullbackDiagramOfDiagramOver B F)] : HasLimit F :=
   HasLimit.mk
     { cone := _
-      isLimit :=
-        IsLimit.ofRightAdjoint (conesEquiv B F).functor
-          (limit.isLimit (widePullbackDiagramOfDiagramOver B F)) }
+      isLimit := IsLimit.ofRightAdjoint (conesEquiv B F).functor
+        (limit.isLimit (widePullbackDiagramOfDiagramOver B F)) }
 #align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_widePullback_limit
 
 /-- Given a wide pullback in `C`, construct a product in `C/B`. -/
@@ -159,7 +151,8 @@ theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProdu
 
 /-- Given all wide pullbacks in `C`, construct products in `C/B`. -/
 theorem over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
-    HasProducts.{w} (Over B) := fun _ => over_product_of_widePullback
+    HasProducts.{w} (Over B) :=
+  fun _ => over_product_of_widePullback
 #align category_theory.over.construct_products.over_products_of_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_products_of_widePullbacks
 
 /-- Given all finite wide pullbacks in `C`, construct finite products in `C/B`. -/
@@ -177,26 +170,25 @@ way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by
 `over_product_of_widePullback` above.)
 -/
-theorem over_hasTerminal (B : C) : HasTerminal (Over B) :=
-  { has_limit := fun F =>
-      HasLimit.mk
-        { cone :=
-            { pt := Over.mk (𝟙 _)
-              π :=
-                { app := fun p => p.as.elim
-                  -- Porting note: Added a proof for `naturality`
-                  naturality := fun X => X.as.elim } }
-          isLimit :=
-            { lift := fun s => Over.homMk _
-              fac := fun _ j => j.as.elim
-              uniq := fun s m _ => by
-                simp only
-                ext
-                -- Porting note: Added a proof to `Over.homMk_left`
-                rw [Over.homMk_left _ (by dsimp; rw [Category.comp_id])]
-                have := m.w
-                dsimp at this
-                rwa [Category.comp_id, Category.comp_id] at this } } }
+theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
+  has_limit F := HasLimit.mk
+    { cone :=
+        { pt := Over.mk (𝟙 _)
+          π :=
+            { app := fun p => p.as.elim
+              -- Porting note: Added a proof for `naturality`
+              naturality := fun X => X.as.elim } }
+      isLimit :=
+        { lift := fun s => Over.homMk _
+          fac := fun _ j => j.as.elim
+          uniq := fun s m _ => by
+            simp only
+            ext
+            -- Porting note: Added a proof to `Over.homMk_left`
+            rw [Over.homMk_left _ (by dsimp; rw [Category.comp_id])]
+            have := m.w
+            dsimp at this
+            rwa [Category.comp_id, Category.comp_id] at this } }
 #align category_theory.over.over_has_terminal CategoryTheory.Over.over_hasTerminal
 
 end CategoryTheory.Over
