@@ -20,7 +20,7 @@ is measurable, and the range is finite. In this file, we define simple functions
 basic properties; and we construct a sequence of simple functions approximating an arbitrary Borel
 measurable function `f : α → ℝ≥0∞`.
 
-The theorem `measurable.ennreal_induction` shows that in order to prove something for an arbitrary
+The theorem `Measurable.ennreal_induction` shows that in order to prove something for an arbitrary
 measurable function into `ℝ≥0∞`, it is sufficient to show that the property holds for (multiples of)
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
@@ -864,7 +864,7 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
           ennreal_rat_embed b :=
         indicator_le_self _ _ a
       _ < ⊤ := ENNReal.coe_lt_top
-      
+
   · exact WithTop.zero_lt_top
 #align measure_theory.simple_func.eapprox_lt_top MeasureTheory.SimpleFunc.eapprox_lt_top
 
@@ -980,7 +980,7 @@ theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.li
     _ = ((pair f g).map Prod.fst).lintegral μ + ((pair f g).map Prod.snd).lintegral μ := by
       rw [map_lintegral, map_lintegral]
     _ = lintegral f μ + lintegral g μ := rfl
-    
+
 #align measure_theory.simple_func.add_lintegral MeasureTheory.SimpleFunc.add_lintegral
 
 theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
@@ -990,7 +990,7 @@ theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     _ = ∑ r in f.range, x * (r * μ (f ⁻¹' {r})) :=
       (Finset.sum_congr rfl fun a ha => mul_assoc _ _ _)
     _ = x * f.lintegral μ := Finset.mul_sum.symm
-    
+
 #align measure_theory.simple_func.const_mul_lintegral MeasureTheory.SimpleFunc.const_mul_lintegral
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/
@@ -1041,7 +1041,7 @@ theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : Measura
         forall_range_iff.2 fun b =>
           if hb : f b = 0 then by simp only [hb, MulZeroClass.zero_mul]
           else by rw [restrict_preimage_singleton _ hs hb, inter_comm]
-    
+
 #align measure_theory.simple_func.restrict_lintegral MeasureTheory.SimpleFunc.restrict_lintegral
 
 theorem lintegral_restrict {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (s : Set α) (μ : Measure α) :
@@ -1082,7 +1082,7 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
       exact le_sup_left
       exact le_sup_right
     _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]
-    
+
 #align measure_theory.simple_func.le_sup_lintegral MeasureTheory.SimpleFunc.le_sup_lintegral
 
 /-- `simple_func.lintegral` is monotone both in function and in measure. -/
@@ -1095,7 +1095,7 @@ theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ 
     _ = g.lintegral μ := by rw [sup_of_le_right hfg]
     _ ≤ g.lintegral ν :=
       Finset.sum_le_sum fun y hy => ENNReal.mul_left_mono <| hμν _ (g.measurableSet_preimage _)
-    
+
 #align measure_theory.simple_func.lintegral_mono MeasureTheory.SimpleFunc.lintegral_mono
 
 /-- `simple_func.lintegral` depends only on the measures of `f ⁻¹' {y}`. -/
@@ -1195,7 +1195,7 @@ protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMea
     μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
     _ ≤ μ (support f) + μ (support g) := (measure_union_le _ _)
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
-    
+
 #align measure_theory.simple_func.fin_meas_supp.pair MeasureTheory.SimpleFunc.FinMeasSupp.pair
 
 protected theorem map₂ [Zero δ] (hf : f.FinMeasSupp μ) {g : α →ₛ γ} (hg : g.FinMeasSupp μ)
@@ -1317,4 +1317,3 @@ theorem Measurable.eNNReal_induction {α} [MeasurableSpace α] {P : (α → ℝ�
       simple_func.induction (fun c s hs => h_ind c hs)
         (fun f g hfg hf hg => h_add hfg f.Measurable g.Measurable hf hg) (eapprox f n)
 #align measurable.ennreal_induction Measurable.eNNReal_induction
-
