@@ -17,7 +17,7 @@ import Mathlib.Topology.Algebra.Module.Determinant
 # Finite dimensional topological vector spaces over complete fields
 
 Let `𝕜` be a complete nontrivially normed field, and `E` a topological vector space (TVS) over
-`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
+`𝕜` (i.e we have `[AddCommGroupCat E] [ModuleCat 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
 and `[ContinuousSMul 𝕜 E]`).
 
 If `E` is finite dimensional and Hausdorff, then all linear maps from `E` to any other TVS are
@@ -200,7 +200,7 @@ theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : S
 variable [CompleteSpace 𝕜]
 
 /-- This version imposes `ι` and `E` to live in the same universe, so you should instead use
-`continuous_equiv_fun_basis` which gives the same result without universe restrictions. -/
+`continuous_equivFun_basis` which gives the same result without universe restrictions. -/
 private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
@@ -250,7 +250,7 @@ private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [F
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
     (f : E →ₗ[𝕜] F') : Continuous f := by
-  -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equiv_fun_basis`, and
+  -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- argue that all linear maps there are continuous.
   let b := Basis.ofVectorSpace 𝕜 E
   have A : Continuous b.equivFun := continuous_equivFun_basis_aux b
@@ -274,7 +274,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 /-- In finite dimensions over a non-discrete complete normed field, the canonical identification
 (in terms of a basis) with `𝕜^n` (endowed with the product topology) is continuous.
 This is the key fact wich makes all linear maps from a T2 finite dimensional TVS over such a field
-continuous (see `linear_map.continuous_of_finite_dimensional`), which in turn implies that all
+continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type _} [Fintype ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
