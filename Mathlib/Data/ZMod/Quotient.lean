@@ -8,6 +8,7 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.RingTheory.Int.Basic
@@ -108,11 +109,53 @@ open AddAction Subgroup AddSubgroup Function
 
 variable {α β : Type _} [Group α] (a : α) [MulAction α β] (b : β)
 
+-- porting note: mathlib3 used local attribute [semireducible] mul_opposite, so a lot of the
+-- quotients in the following proofs were defeq to each other. we probably need a lot of API
+-- to deal with Multiplicative (G ⧸ H), which would probably involve relating (Multiplicative α)ᵐᵒᵖ
+-- and Multiplicative (αᵃᵒᵖ) to compensate for this.
+
+-- porting note: this def did not exist in mathlib3 because the two sides were defeq (see above)
+noncomputable def quotientZpowersNatEquivZmod :
+    Multiplicative ℤ ⧸ zpowers (@Multiplicative.ofAdd ℤ n) ≃* Multiplicative (ℤ ⧸ zmultiples (n : ℤ)) :=
+  by
+    letI φ := AddMonoidHom.toMultiplicative <| mk' <| zmultiples (n : ℤ)
+    suffices kernel : φ.ker = zpowers (@Multiplicative.ofAdd ℤ n)
+    · rw [←kernel]
+      exact QuotientGroup.quotientKerEquivOfSurjective φ (mk'_surjective <| zmultiples (n : ℤ))
+    ext
+    simp only [MonoidHom.mem_ker, AddMonoidHom.toMultiplicative_apply_apply, mk'_apply,
+               ofAdd_eq_one, eq_zero_iff, mem_zmultiples_iff, mem_zpowers_iff]
+    apply Iff.intro <;>
+    · rintro ⟨k, pf⟩
+      use k
+      rw [((congrArg (Multiplicative.ofAdd) pf).trans <| ofAdd_toAdd _).symm]
+      rfl
+
+-- porting note: due to the semireducible trick, in mathlib3 this was just
+-- let f := zmultiples_quotient_stabilizer_equiv (additive.of_mul a) b in
+-- ⟨f.to_fun, f.inv_fun, f.left_inv, f.right_inv, f.map_add'⟩
 /-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimal_period ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
     zpowers a ⧸ stabilizer (zpowers a) b ≃* Multiplicative (ZMod (minimalPeriod ((· • ·) a) b)) :=
-  let f := zmultiplesQuotientStabilizerEquiv (Additive.ofMul a) b
-  ⟨f.toFun, f.invFun, f.left_inv, f.right_inv, f.map_add'⟩
+  (MulEquiv.ofBijective
+          (QuotientGroup.map _
+            (stabilizer (zpowers a) b)
+            (zpowersHom (zpowers a) ⟨a, mem_zpowers a⟩)
+            (by
+              rw [zpowers_le, Subgroup.mem_comap, mem_stabilizer_iff, zpowersHom_apply,
+                  toAdd_ofAdd, zpow_coe_nat]
+              simp only [← smul_iterate]
+              exact isPeriodicPt_minimalPeriod ((· • ·) a) b))
+          ⟨by
+            rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
+            refine' fun q => QuotientGroup.induction_on' q fun n hn => _
+            rw [Subgroup.mem_bot, QuotientGroup.eq_one_iff, mem_zpowers_iff]
+            have eq : a ^ (Multiplicative.toAdd n) • b = b := (QuotientGroup.eq_one_iff _).mp hn
+            rw [zpow_smul_eq_iff_minimalPeriod_dvd, dvd_iff_exists_eq_mul_left] at eq
+            rcases eq with ⟨c, rfl⟩; exact ⟨c, rfl⟩, fun q =>
+            QuotientGroup.induction_on' q fun ⟨_, n, rfl⟩ => ⟨n, rfl⟩⟩).symm.trans <|
+              (quotientZpowersNatEquivZmod _).trans
+              (AddEquiv.toMultiplicative <| Int.quotientZmultiplesNatEquivZmod _)
 #align mul_action.zpowers_quotient_stabilizer_equiv MulAction.zpowersQuotientStabilizerEquiv
 
 theorem zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a • ·) b)) :
@@ -189,7 +232,7 @@ variable {α : Type _} [Group α] (a : α)
 @[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]
 theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
-  rwa [Nat.card_zMod, orbit_subgroup_one_eq_self, eq_comm] at this
+  rwa [Nat.card_zmod, orbit_subgroup_one_eq_self, eq_comm] at this
 #align order_eq_card_zpowers' order_eq_card_zpowers'
 #align add_order_eq_card_zmultiples' add_order_eq_card_zmultiples'
 
