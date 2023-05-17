@@ -63,9 +63,8 @@ variable {abv}
 /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
 into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
 theorem exists_partition {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
-    (A : ι → R) (h : abv.IsAdmissible) :
-    ∃ t : ι → Fin (h.card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε :=
-  by
+    (A : ι → R) (h : abv.IsAdmissible) : ∃ t : ι → Fin (h.card ε),
+      ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
   obtain ⟨t, ht⟩ := h.exists_partition' (Fintype.card ι) hε hb (A ∘ e.symm)
   refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
@@ -90,8 +89,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   -- of more than `M^n` remainders where the first components lie close together:
   obtain ⟨s, s_inj, hs⟩ :
     ∃ s : Fin (M ^ n).succ → Fin (M ^ n.succ).succ,
-      Function.Injective s ∧ ∀ i₀ i₁, (abv (A (s i₁) 0 % b - A (s i₀) 0 % b) : ℝ) < abv b • ε :=
-    by
+      Function.Injective s ∧ ∀ i₀ i₁, (abv (A (s i₁) 0 % b - A (s i₀) 0 % b) : ℝ) < abv b • ε := by
     -- We can partition the `A`s into `M` subsets where
     -- the first components lie close together:
     obtain ⟨t, ht⟩ :
@@ -110,11 +108,8 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     · intro i j h
       ext
       exact Fin.mk.inj_iff.mp (List.nodup_iff_injective_get.mp (Finset.nodup_toList _) h)
-    have :
-      ∀ i h,
-        (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i h ∈
-          Finset.univ.filter fun x ↦ t x = s :=
-      by
+    have : ∀ i h, (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i h ∈
+        Finset.univ.filter fun x ↦ t x = s := by
       intro i h
       exact Finset.mem_toList.mp (List.get_mem _ i h)
     obtain ⟨_, h₀⟩ := Finset.mem_filter.mp (this i₀ _)

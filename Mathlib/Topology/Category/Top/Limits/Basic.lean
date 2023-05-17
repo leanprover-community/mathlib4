@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
 ! This file was ported from Lean 3 source module topology.category.Top.limits.basic
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
+! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -21,13 +21,7 @@ underlying types are just the limits in the category of types.
 -- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
-open TopologicalSpace
-
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
 /--
 Universe inequalities in Mathlib 3 are expressed through use of `max u v`. Unfortunately,
@@ -83,7 +77,7 @@ def limitConeInfi (F : J ⥤ TopCatMax.{v, u}) : Cone F where
       ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
   π :=
     { app := fun j =>
-        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (infᵢ_le _ _)⟩
+        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
 #align Top.limit_cone_infi TopCat.limitConeInfi
@@ -126,14 +120,14 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     rw [Category.id_comp]
   · exact
     continuous_iff_coinduced_le.mpr
-      (le_infᵢ fun j =>
+      (le_iInf fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
   · rfl
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u}
-    where has_limits_of_shape _ :=
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u} where
+  has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
           { cone := limitCone.{v,u} F
@@ -144,16 +138,15 @@ instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 #align Top.Top_has_limits TopCat.topCat_hasLimits
 
-instance forgetPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} forget where
+instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,v} F)
-          (Types.limitConeIsLimit.{v,v} (F ⋙ forget)) }
+        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
+          (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize.{u}
+  TopCat.forgetPreservesLimitsOfSize.{u,u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
@@ -168,7 +161,7 @@ def colimitCocone (F : J ⥤ TopCatMax.{v, u}) : Cocone F where
     { app := fun j =>
         ⟨(Types.colimitCocone (F ⋙ forget)).ι.app j, continuous_iff_coinduced_le.mpr <|
           -- Porting note: didn't need function before
-          le_supᵢ (fun j => coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
+          le_iSup (fun j => coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.colimitCocone (F ⋙ forget)).ι.naturality f) }
 #align Top.colimit_cocone TopCat.colimitCocone
@@ -183,14 +176,14 @@ def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCoco
     -- Porting note: it appears notation for forget breaks dot notation (also above)
     -- Porting note: previously function was inferred
       ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
-  · intro _ _ ⟨_,h⟩
+  · intro _ _ ⟨_, h⟩
     dsimp
     rw [h, Functor.comp_map, ← comp_apply, s.ι.naturality]
     dsimp
     rw [Category.comp_id]
   · exact
     continuous_iff_le_induced.mpr
-      (supᵢ_le fun j =>
+      (iSup_le fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
   · rfl
@@ -219,3 +212,27 @@ instance forgetPreservesColimitsOfSize :
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
+
+/-- The terminal object of `Top` is `PUnit`. -/
+def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
+#align Top.is_terminal_punit TopCat.isTerminalPUnit
+
+/-- The terminal object of `Top` is `PUnit`. -/
+def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso isTerminalPUnit
+#align Top.terminal_iso_punit TopCat.terminalIsoPUnit
+
+/-- The initial object of `Top` is `PEmpty`. -/
+def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
+  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
+    ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+  Limits.IsInitial.ofUnique _
+#align Top.is_initial_pempty TopCat.isInitialPEmpty
+
+/-- The initial object of `Top` is `PEmpty`. -/
+def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+  initialIsInitial.uniqueUpToIso isInitialPEmpty
+#align Top.initial_iso_pempty TopCat.initialIsoPEmpty

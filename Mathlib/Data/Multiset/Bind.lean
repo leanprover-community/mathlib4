@@ -192,8 +192,8 @@ theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
 #align multiset.sum_bind Multiset.sum_bind
 
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
-    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) : Rel p (s.bind f) (t.bind g) :=
-  by
+    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
+    Rel p (s.bind f) (t.bind g) := by
   apply rel_join
   rw [rel_map]
   exact hst.mono fun a _ b _ hr => h hr

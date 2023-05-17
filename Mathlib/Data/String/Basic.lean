@@ -19,9 +19,7 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
-open private utf8GetAux from Init.Data.String.Basic
-
-private lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
+lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
     utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
   apply utf8InductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i ↦
     utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p + n⟩ = utf8GetAux s i ⟨p⟩) <;>
@@ -194,7 +192,7 @@ instance : LinearOrder String where
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  decidable_le := String.decidableLE
+  decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
     simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
     split_ifs <;>
