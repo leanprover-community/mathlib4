@@ -34,7 +34,7 @@ open Nat Qq Lean Meta
 
 namespace Mathlib.Meta.NormNum
 
-theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = false)
+theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = false)
     (h₂ : b.ble 1 = false) : ¬ n.Prime :=
   not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
 
@@ -45,9 +45,9 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
   let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
   let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
   let r' : Q(Nat.ble $d' 1 = false) := (q(Eq.refl false) : Expr)
-  return q(not_prime_mul_of_ble $prf $r $r')
+  return q(not_prime_mul_of_ble _ _ _ $prf $r $r')
 
-/-- A predicate representing partial progress in a proof of `min_fac`. -/
+/-- A predicate representing partial progress in a proof of `minFac`. -/
 def MinFacHelper (n k : ℕ) : Prop :=
   2 < k ∧ k % 2 = 1 ∧ k ≤ minFac n
 
@@ -59,13 +59,14 @@ theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   · contradiction
   exact h
 
-theorem minFacHelper_0 (n : ℕ) (h1 : ¬ n = 1) (h2 : ¬ n % 2 = 0) : MinFacHelper n 3 := by
+theorem minFacHelper_0 (n : ℕ)
+    (h1 : Nat.ble (nat_lit 2) n = true) (h2 : nat_lit 1 = n % (nat_lit 2)) :
+    MinFacHelper n (nat_lit 3) := by
   refine ⟨by norm_num, by norm_num, ?_⟩
-  refine (le_minFac'.mpr λ p hp hpn ↦ ?_).resolve_left h1
-  rw [← Nat.dvd_iff_mod_eq_zero] at h2
+  refine (le_minFac'.mpr λ p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
   rcases hp.eq_or_lt with rfl|h
-  · exact (h2 hpn).elim
-  exact h
+  · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
+  · exact h
 
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   (np : minFac n ≠ k) : MinFacHelper n k' := by
@@ -98,16 +99,16 @@ theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = fal
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
 
-theorem isNat_minFac_1 : {a a' : ℕ} → IsNat a a' → a' = 1 → IsNat a.minFac 1
-  | _, _, ⟨rfl⟩, rfl => ⟨minFac_one⟩
+theorem isNat_minFac_1 : {a : ℕ} → IsNat a (nat_lit 1) → IsNat a.minFac 1
+  | _, ⟨rfl⟩ => ⟨minFac_one⟩
 
 theorem isNat_minFac_2 : {a a' : ℕ} → IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
   | a, _, ⟨rfl⟩, h => ⟨by rw [cast_ofNat, minFac_eq_two_iff, Nat.dvd_iff_mod_eq_zero, h]⟩
 
-theorem isNat_minFac_3 : {n n' k k' : ℕ} →
-    IsNat n n' → IsNat k k' → MinFacHelper n' k → n' % k = 0 → IsNat (minFac n) k'
-  | n, _, k, _, ⟨rfl⟩, ⟨rfl⟩, h1, h2 => by
-    rw [← Nat.dvd_iff_mod_eq_zero] at h2
+theorem isNat_minFac_3 : {n n' : ℕ} → (k : ℕ) →
+    IsNat n n' → MinFacHelper n' k → nat_lit 0 = n' % k → IsNat (minFac n) k
+  | n, _, k, ⟨rfl⟩, h1, h2 => by
+    rw [eq_comm, ← Nat.dvd_iff_mod_eq_zero] at h2
     exact ⟨le_antisymm (minFac_le_of_dvd h1.1.le h2) h1.2.2⟩
 
 theorem isNat_minFac_4 : {n n' k : ℕ} →
@@ -125,56 +126,59 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
   NormNumExt where eval {u α} e := do
-  let .app (.const `Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
+  let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
-  let rec aux (k : ℕ) (prf : Expr) :
-    (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
-    have ek : Q(ℕ) := mkRawNatLit k
-    let prf : Q(MinFacHelper $nn $ek) := prf
+  let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :
+      (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
+    let k := ek.natLit!
     -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
     if n' < k * k then
       let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
       ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
-    -- the following branch is not necessary for the correctness, but makes the algorithm 2x faster
     else
-    let d : ℕ := k.minFac
-    if d < k then
-      have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-      let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
-      let pd := deriveNotPrime k d ek
-      have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_2 $pk' $pd $prf)
-      aux (k + 2) prf'
-    -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
-    else if n' % k = 0 then
-      let r : Q($nn % $ek = 0) := (q(Eq.refl 0) : Expr)
-      let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 $pn (.raw_refl _) $prf $r)
-      ⟨ek, r'⟩
-    else
-    let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
-    have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-    let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
-    have prf' : Q(MinFacHelper $nn $ek') := q(minFacHelper_3 $pk' $r $prf)
-    aux (k + 2) prf'
+      let d : ℕ := k.minFac
+      -- the following branch is not necessary for the correctness,
+      -- but makes the algorithm 2x faster
+      if d < k then
+        have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        let pd := deriveNotPrime k d ek
+        aux ek' q(minFacHelper_2 $pk' $pd $prf)
+      -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
+      else if n' % k = 0 then
+        let r : Q(nat_lit 0 = $nn % $ek) := (q(Eq.refl 0) : Expr)
+        let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 _ $pn $prf $r)
+        ⟨ek, r'⟩
+      else
+        let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+        have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        aux ek' q(minFacHelper_3 $pk' $r $prf)
   let rec core : MetaM <| Result q(Nat.minFac $n) := do
-    let ⟨bp, pp⟩ ← deriveBool q($nn = 1)
-    match bp with
-    | true  => return .isNat sℕ (mkRawNatLit 1) q(isNat_minFac_1 $pn $pp)
-    | false =>
-    let ⟨bq, pq⟩ ← deriveBool q($nn % 2 = 0)
-    match bq with
-    | true  => return .isNat sℕ (mkRawNatLit 2) q(isNat_minFac_2 $pn $pq)
-    | false =>
-    let ⟨c, pc⟩ := aux 3 q(minFacHelper_0 $nn $pp $pq)
+    if n' = 1 then
+      let pn : Q(IsNat $n (nat_lit 1)) := pn
+      return .isNat sℕ q(nat_lit 1) q(isNat_minFac_1 $pn)
+    if n' % 2 = 0 then
+      let pq : Q($nn % 2 = 0) := (q(Eq.refl 0) : Expr)
+      return .isNat sℕ q(nat_lit 2) q(isNat_minFac_2 $pn $pq)
+    let pp : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
+    let pq : Q(1 = $nn % 2) := (q(Eq.refl (nat_lit 1)) : Expr)
+    let ⟨c, pc⟩ := aux q(nat_lit 3) q(minFacHelper_0 $nn $pp $pq)
     return .isNat sℕ c pc
   core
 
-theorem isNat_prime_1 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
-  | _, _, ⟨rfl⟩, h, hn => hn.two_le.not_lt <| ble_eq_false.1 h
+theorem isNat_prime_0 : {n : ℕ} → IsNat n (nat_lit 0) → ¬ n.Prime
+  | _, ⟨rfl⟩ => not_prime_zero
+
+theorem isNat_prime_1 : {n : ℕ} → IsNat n (nat_lit 1) → ¬ n.Prime
+  | _, ⟨rfl⟩ => not_prime_one
 
 theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n → n.Prime
   | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
+
+theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
@@ -185,16 +189,17 @@ theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → 
   -- note: if `n` is not prime, we don't have to verify the calculation of `n.minFac`, we just have
   -- to compute it, which is a lot quicker
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
-    if n' < 2 then
-      let r : Q(Nat.ble 2 $nn = false) := (q(Eq.refl false) : Expr)
-      return .isFalse q(isNat_prime_1 $pn $r)
-    let d := n'.minFac
-    if d < n' then
-      let prf : Q(¬ Nat.Prime $nn) := deriveNotPrime n' d nn
-      return .isFalse q(isNat.natElim $pn $prf)
-    let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
-    let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
-    return .isTrue q(isNat_prime_2 $pn $r $p2n)
+    match n' with
+    | 0 => let pn : Q(IsNat $n 0) := pn; return .isFalse q(isNat_prime_0 $pn)
+    | 1 => let pn : Q(IsNat $n 1) := pn; return .isFalse q(isNat_prime_1 $pn)
+    | _ =>
+      let d := n'.minFac
+      if d < n' then
+        let prf : Q(¬ Nat.Prime $nn) := deriveNotPrime n' d nn
+        return .isFalse q(isNat_not_prime $pn $prf)
+      let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
+      let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
+      return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 
 /-
@@ -233,5 +238,3 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 -/
-
-end Mathlib.Meta.NormNum
