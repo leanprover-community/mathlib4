@@ -166,15 +166,22 @@ theorem iff_quotient_mvPolynomial' :
     refine'
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ _ hfk ulift_var.surjective⟩
-    convert Submodule.fg_bot
-    exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
+    -- change Submodule.FG _
+    erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
+    exact Submodule.fg_bot
+    -- Porting note: was
+    -- convert Submodule.fg_bot
+    -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     refine'
       ⟨Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective,
         Ideal.fg_ker_comp _ f _ hf.2 equiv.symm.surjective⟩
-    convert Submodule.fg_bot
-    exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
+    erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
+    exact Submodule.fg_bot
+    -- Porting note: was
+    -- convert Submodule.fg_bot
+    -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
 #align algebra.finite_presentation.iff_quotient_mv_polynomial' Algebra.FinitePresentation.iff_quotient_mvPolynomial'
 
 /-- If `A` is a finitely presented `R`-algebra, then `mv_polynomial (fin n) A` is finitely presented
