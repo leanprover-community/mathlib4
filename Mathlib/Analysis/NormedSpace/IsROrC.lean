@@ -23,12 +23,12 @@ None.
 
 ## Main theorems
 
-* `continuous_linear_map.op_norm_bound_of_ball_bound`: A bound on the norms of values of a linear
+* `ContinuousLinearMap.op_norm_bound_of_ball_bound`: A bound on the norms of values of a linear
   map in a ball yields a bound on the operator norm.
 
 ## Notes
 
-This file exists mainly to avoid importing `is_R_or_C` in the main normed space theory files.
+This file exists mainly to avoid importing `IsROrC` in the main normed space theory files.
 -/
 
 
@@ -78,7 +78,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
   apply mul_le_mul norm_f_z₁ rfl.le (norm_nonneg z) ((norm_nonneg _).trans norm_f_z₁)
 #align linear_map.bound_of_sphere_bound LinearMap.bound_of_sphere_bound
 
-/-- `linear_map.bound_of_ball_bound` is a version of this over arbitrary nontrivially normed fields.
+/-- `LinearMap.bound_of_ball_bound` is a version of this over arbitrary nontrivially normed fields.
 It produces a less precise bound so we keep both versions. -/
 theorem LinearMap.bound_of_ball_bound' {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ :=
