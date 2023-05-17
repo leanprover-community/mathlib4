@@ -287,7 +287,15 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
-@[simp]
+-- Porting note: not sure about this simpNF
+-- The linter says:
+-- #check Ideal.kerLiftAlg_toRingHom.{u_3, u_2, u_1} /- Left-hand side simplifies from
+--   ↑(Ideal.kerLiftAlg f)
+-- to
+--   ↑(Ideal.kerLiftAlg f)
+-- using
+--   simp only [@AlgHom.toRingHom_eq_coe]
+@[simp, nolint simpNF]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
     (kerLiftAlg f).toRingHom = RingHom.kerLift (f : A →+* B) :=
   rfl
