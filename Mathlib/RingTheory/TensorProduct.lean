@@ -1059,11 +1059,16 @@ theorem basis_repr_tmul (r : R) (m : M) :
   basisAux_tmul b r m -- porting note: Lean 3 had _ _ _
 #align algebra.tensor_product.basis_repr_tmul Algebra.TensorProduct.basis_repr_tmul
 
-@[simp]
 theorem basis_repr_symm_apply (r : R) (i : ι) :
     (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
+
+-- Porting note: simpNF linter failed on `basis_repr_symm_apply`
+@[simp]
+theorem basis_repr_symm_apply' (r : R) (i : ι) :
+    r • Algebra.TensorProduct.basis R b i = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
+  rw [← basis_repr_symm_apply, Basis.repr_symm_apply, Finsupp.total_single]
 
 end Basis
 
