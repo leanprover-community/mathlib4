@@ -721,11 +721,13 @@ variable [DecidableEq ι] (h : DualBases e ε)
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   erw [LinearMap.map_sum]
-  simp only [h.eval, map_smul, smul_eq_mul]
+  simp_rw [map_smul]
+  -- Porting note: cannot get at •
+  -- simp only [h.eval, map_smul, smul_eq_mul]
   rw [Finset.sum_eq_single i]
-  · simp
-  · intro q q_in q_ne
-    simp [q_ne.symm]
+  · simp [h.eval, smul_eq_mul]
+  · intro q _ q_ne
+    simp [q_ne.symm, h.eval, smul_eq_mul]
   · intro p_not_in
     simp [Finsupp.not_mem_support_iff.1 p_not_in]
 #align module.dual_bases.dual_lc Module.DualBases.dual_lc
@@ -733,15 +735,16 @@ theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
 @[simp]
 theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
-  rw [h.coeffs_apply, dual_lc]
+-- Porting note: broken dot notation lean4#1910 h.dual_lc
+  rw [h.coeffs_apply, dual_lc h]
 #align module.dual_bases.coeffs_lc Module.DualBases.coeffs_lc
 
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
-  refine' eq_of_sub_eq_zero (h.total _)
-  intro i
-  simp [-sub_eq_add_neg, LinearMap.map_sub, h.dual_lc, sub_eq_zero]
+  refine' eq_of_sub_eq_zero (h.Total _)
+-- Porting note: broken dot notation lean4#1910 h.dual_lc
+  simp [LinearMap.map_sub, dual_lc h, sub_eq_zero]
 #align module.dual_bases.lc_coeffs Module.DualBases.lc_coeffs
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
@@ -775,7 +778,8 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   intro i hi
   rcases(Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
-  rwa [← lc_def, dual_lc] at hi
+-- Porting note: broken dot notation lean4#1910 h.dual_lc
+  rwa [← lc_def, dual_lc h] at hi
 #align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span
 
 theorem coe_dualBasis [Fintype ι] : ⇑h.basis.dualBasis = ε :=
@@ -1218,6 +1222,8 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
         ext ⟨φ, hφ⟩
         exact (mem_dualAnnihilator φ).mp hφ w hw)
 #align submodule.dual_copairing Submodule.dualCopairing
+
+#synth CoeFun (Dual R M) M (fun _ => R)
 
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
