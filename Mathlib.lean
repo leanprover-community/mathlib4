@@ -156,6 +156,7 @@ import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
