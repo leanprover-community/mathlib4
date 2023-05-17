@@ -94,54 +94,56 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       ↑p ^ 2 ∣ (↑p * b) ^ 2 := by simp only [mul_pow, dvd_mul_right]
       _ ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) := by
         simp only [sq_dvd_add_pow_sub_sub (↑p * b) a i, ← sub_sub]
-
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
-  sorry
-  /-
+  let s : R := (p : R)^2
   calc
-    Ideal.Quotient.mk (span {(p : R) ^ 2}) (∑ i in range p, (a + ↑p * b) ^ i * a ^ (p - 1 - i)) =
+    (Ideal.Quotient.mk (span {s})) (∑ i in range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i : ℕ in Finset.range p,
-          mk (span {(p : R) ^ 2}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) :=
+        mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) :=
       by simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
-        mk (span {↑p ^ 2})
+        mk (span {s})
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {↑p ^ 2}) (∑ x : ℕ in Finset.range p, a ^ (x + (p - 1 - x))) := by
+          mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring
       simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
+      congr
+      simp [pow_add a, mul_assoc]
     _ =
-        mk (span {↑p ^ 2})
+        mk (span {s})
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {↑p ^ 2}) (∑ x : ℕ in Finset.range p, a ^ (p - 1)) := by
-      rw [add_right_inj, Finset.sum_congr rfl]
-      intro x hx
-      rw [← Nat.add_sub_assoc _ x, Nat.add_sub_cancel_left]
-      exact Nat.le_pred_of_lt (finset.mem_range.mp hx)
+          mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (p - 1)) := by
+      rw [add_right_inj]
+      have : ∀ (x : ℕ), (hx : x ∈ range p) →  a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
+        intro x hx
+        rw [← Nat.add_sub_assoc _ x, Nat.add_sub_cancel_left]
+        exact Nat.le_pred_of_lt (Finset.mem_range.mp hx)
+      rw [Finset.sum_congr rfl this]
     _ =
-        mk (span {↑p ^ 2})
+        mk (span {s})
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {↑p ^ 2}) (↑p * a ^ (p - 1)) :=
+          mk (span {s}) (↑p * a ^ (p - 1)) :=
       by simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     _ =
-        mk (span {↑p ^ 2}) (↑p * b * ∑ x : ℕ in Finset.range p, a ^ (p - 2) * x) +
-          mk (span {↑p ^ 2}) (↑p * a ^ (p - 1)) := by
+        mk (span {s}) (↑p * b * ∑ x : ℕ in Finset.range p, a ^ (p - 2) * x) +
+          mk (span {s}) (↑p * a ^ (p - 1)) := by
       simp only [Finset.mul_sum, ← mul_assoc, ← pow_add]
       rw [Finset.sum_congr rfl]
       rintro (⟨⟩ | ⟨x⟩) hx
       · rw [Nat.cast_zero, MulZeroClass.mul_zero, MulZeroClass.mul_zero]
       · have : x.succ - 1 + (p - 1 - x.succ) = p - 2 := by
-          rw [← Nat.add_sub_assoc (Nat.le_pred_of_lt (finset.mem_range.mp hx))]
+          rw [← Nat.add_sub_assoc (Nat.le_pred_of_lt (Finset.mem_range.mp hx))]
           exact congr_arg Nat.pred (Nat.add_sub_cancel_left _ _)
         rw [this]
         ring1
-    _ = mk (span {↑p ^ 2}) (↑p * a ^ (p - 1)) := by
+    _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       simp only [add_left_eq_self, ← Finset.mul_sum]
       norm_cast
       simp only [Finset.sum_range_id, Nat.cast_mul, _root_.map_mul,
         Nat.mul_div_assoc _ (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring
       simp only [← map_pow, mul_eq_zero_of_left, Ideal.Quotient.eq_zero_iff_mem, mem_span_singleton]
--/
+      sorry
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub
 
 namespace multiplicity
