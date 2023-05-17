@@ -11,7 +11,6 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
-import Qq
 
 /-!
 # Matrix and vector notation
