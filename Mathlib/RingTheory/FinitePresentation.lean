@@ -191,15 +191,17 @@ theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation R A) (ι : 
   rw [iff_quotient_mvPolynomial'] at hfp⊢
   classical
     obtain ⟨ι', _, f, hf_surj, hf_ker⟩ := hfp
-    sorry
     let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom
     cases nonempty_fintype (Sum ι ι')
     refine'
       ⟨Sum ι ι', by infer_instance, g,
-        (MvPolynomial.map_surjective f.to_ring_hom hf_surj).comp (AlgEquiv.surjective _),
+        (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
         Ideal.fg_ker_comp _ _ _ _ (AlgEquiv.surjective _)⟩
-    · convert Submodule.fg_bot
-      exact RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv
+    · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
+      exact Submodule.fg_bot
+      -- Porting note: was
+      -- convert Submodule.fg_bot
+      -- exact RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv
     · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
       exact hf_ker.map MvPolynomial.C
 #align algebra.finite_presentation.mv_polynomial_of_finite_presentation Algebra.FinitePresentation.mvPolynomial_of_finitePresentation
