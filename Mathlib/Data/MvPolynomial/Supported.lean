@@ -60,7 +60,7 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
     (AlgEquiv.ofInjective (rename ((↑) : s → σ)) (rename_injective _ Subtype.val_injective)).symm
 #align mv_polynomial.supported_equiv_mv_polynomial MvPolynomial.supportedEquivMvPolynomial
 
---@[simp]  -- the `simpNF` linter complained about this lemma.
+--@[simp]  -- porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
     (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
