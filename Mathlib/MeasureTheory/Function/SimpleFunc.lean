@@ -46,9 +46,12 @@ if every preimage `f ⁻¹' {x}` is measurable, and the range is finite. This st
 a function with these properties. -/
 structure SimpleFunc.{u, v} (α : Type u) [MeasurableSpace α] (β : Type v) where
   toFun : α → β
-  measurableSet_fiber' : ∀ x, MeasurableSet (to_fun ⁻¹' {x})
-  finite_range' : (Set.range to_fun).Finite
+  measurableSet_fiber' : ∀ x, MeasurableSet (toFun ⁻¹' {x})
+  finite_range' : (Set.range toFun).Finite
 #align measure_theory.simple_func MeasureTheory.SimpleFunc
+#align measure_theory.simple_func.to_fun MeasureTheory.SimpleFunc.toFun
+#align measure_theory.simple_func.measurable_set_fiber' MeasureTheory.SimpleFunc.measurableSet_fiber'
+#align measure_theory.simple_func.finite_range' MeasureTheory.SimpleFunc.finite_range'
 
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
@@ -59,12 +62,14 @@ section Measurable
 
 variable [MeasurableSpace α]
 
-instance hasCoeToFun : CoeFun (α →ₛ β) fun _ => α → β :=
+attribute [coe] toFun
+
+instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
   ⟨toFun⟩
-#align measure_theory.simple_func.has_coe_to_fun MeasureTheory.SimpleFunc.hasCoeToFun
+#align measure_theory.simple_func.has_coe_to_fun MeasureTheory.SimpleFunc.instCoeFun
 
 theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
-  cases f <;> cases g <;> congr <;> exact H
+  cases f; cases g; congr
 #align measure_theory.simple_func.coe_injective MeasureTheory.SimpleFunc.coe_injective
 
 @[ext]
@@ -92,7 +97,7 @@ def ofIsEmpty [IsEmpty α] : α →ₛ β where
   finite_range' := by simp [range_eq_empty]
 #align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
 
-/-- Range of a simple function `α →ₛ β` as a `finset β`. -/
+/-- Range of a simple function `α →ₛ β` as a `Finset β`. -/
 protected def range (f : α →ₛ β) : Finset β :=
   f.finite_range.toFinset
 #align measure_theory.simple_func.range MeasureTheory.SimpleFunc.range
@@ -131,16 +136,17 @@ theorem preimage_eq_empty_iff (f : α →ₛ β) (b : β) : f ⁻¹' {b} = ∅ �
 
 theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirected β (· ≤ ·)] (f : α →ₛ β) :
     ∃ C, ∀ x, f x ≤ C :=
-  f.range.exists_le.imp fun C => forall_range_iff.1
+  f.range.exists_le.imp fun _ => forall_range_iff.1
 #align measure_theory.simple_func.exists_forall_le MeasureTheory.SimpleFunc.exists_forall_le
 
-/-- Constant function as a `simple_func`. -/
+/-- Constant function as a `SimpleFunc`. -/
 def const (α) {β} [MeasurableSpace α] (b : β) : α →ₛ β :=
-  ⟨fun a => b, fun x => MeasurableSet.const _, finite_range_const⟩
+  ⟨fun _ => b, fun _ => MeasurableSet.const _, finite_range_const⟩
 #align measure_theory.simple_func.const MeasureTheory.SimpleFunc.const
 
-instance [Inhabited β] : Inhabited (α →ₛ β) :=
+instance instInhabited [Inhabited β] : Inhabited (α →ₛ β) :=
   ⟨const _ default⟩
+#align measure_theory.simple_func.inhabited MeasureTheory.SimpleFunc.instInhabited
 
 theorem const_apply (a : α) (b : β) : (const α b) a = b :=
   rfl
@@ -153,7 +159,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
 
 @[simp]
 theorem range_const (α) [MeasurableSpace α] [Nonempty α] (b : β) : (const α b).range = {b} :=
-  Finset.coe_injective <| by simp
+  Finset.coe_injective <| by simp [Function.const]
 #align measure_theory.simple_func.range_const MeasureTheory.SimpleFunc.range_const
 
 theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).range ⊆ {b} :=
@@ -161,12 +167,12 @@ theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).ran
 #align measure_theory.simple_func.range_const_subset MeasureTheory.SimpleFunc.range_const_subset
 
 theorem simpleFunc_bot {α} (f : @SimpleFunc α ⊥ β) [Nonempty β] : ∃ c, ∀ x, f x = c := by
-  have hf_meas := @simple_func.measurable_set_fiber α _ ⊥ f
+  have hf_meas := @SimpleFunc.measurableSet_fiber α _ ⊥ f
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hf_meas
-  cases isEmpty_or_nonempty α
+  cases' isEmpty_or_nonempty α with h h
   · simp only [IsEmpty.forall_iff, exists_const]
   · specialize hf_meas (f h.some)
-    cases hf_meas
+    cases' hf_meas with hf_meas hf_meas
     · exfalso
       refine' Set.not_mem_empty h.some _
       rw [← hf_meas, Set.mem_preimage]
@@ -180,10 +186,11 @@ theorem simpleFunc_bot {α} (f : @SimpleFunc α ⊥ β) [Nonempty β] : ∃ c, �
 
 theorem simpleFunc_bot' {α} [Nonempty β] (f : @SimpleFunc α ⊥ β) :
     ∃ c, f = @SimpleFunc.const α _ ⊥ c := by
-  obtain ⟨c, h_eq⟩ := simple_func_bot f
+  letI : MeasurableSpace α := ⊥
+  obtain ⟨c, h_eq⟩ := simpleFunc_bot f
   refine' ⟨c, _⟩
   ext1 x
-  rw [h_eq x, simple_func.coe_const]
+  rw [h_eq x, SimpleFunc.coe_const, Function.const]
 #align measure_theory.simple_func.simple_func_bot' MeasureTheory.SimpleFunc.simpleFunc_bot'
 
 theorem measurableSet_cut (r : α → β → Prop) (f : α →ₛ β) (h : ∀ b, MeasurableSet { a | r a b }) :
@@ -195,7 +202,7 @@ theorem measurableSet_cut (r : α → β → Prop) (f : α →ₛ β) (h : ∀ b
   rw [this]
   exact
     MeasurableSet.biUnion f.finite_range.countable fun b _ =>
-      MeasurableSet.inter (h b) (f.measurable_set_fiber _)
+      MeasurableSet.inter (h b) (f.measurableSet_fiber _)
 #align measure_theory.simple_func.measurable_set_cut MeasureTheory.SimpleFunc.measurableSet_cut
 
 @[measurability]
@@ -210,10 +217,10 @@ protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurabl
 #align measure_theory.simple_func.measurable MeasureTheory.SimpleFunc.measurable
 
 @[measurability]
-protected theorem aEMeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
+protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
-  f.Measurable.AEMeasurable
-#align measure_theory.simple_func.ae_measurable MeasureTheory.SimpleFunc.aEMeasurable
+  f.measurable.aemeasurable
+#align measure_theory.simple_func.ae_measurable MeasureTheory.SimpleFunc.aemeasurable
 
 protected theorem sum_measure_preimage_singleton (f : α →ₛ β) {μ : Measure α} (s : Finset β) :
     (∑ y in s, μ (f ⁻¹' {y})) = μ (f ⁻¹' ↑s) :=
