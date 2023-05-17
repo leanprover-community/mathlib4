@@ -97,21 +97,25 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
   apply Quot.EqvGen_sound
-  induction' p with _ _ q f ih
+  induction' p with a b q f ih
   · apply EqvGen.refl
   · simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
-    · exact q ≫ q.reverse
+    -- Porting note : `Quiver.Path.*` and `Quiver.Hom.*` notation not working
+    · exact q ≫ Quiver.Path.reverse q
     · apply EqvGen.symm
       apply EqvGen.rel
-      have : Quotient.CompClosure redStep (q ≫ 𝟙 _ ≫ q.reverse)
-          (q ≫ (f.toPath ≫ (Quiver.reverse f).toPath) ≫ q.reverse) := by
-        apply quotient.comp_closure.intro
-        apply red_step.step
-      have that : q.cons f = q.comp f.to_path := by rfl
-      rw [that]
-      simp only [category.assoc, category.id_comp] at this⊢
-      simp only [category_struct.comp, Quiver.Path.comp_assoc] at this⊢
+      have : Quotient.CompClosure redStep (q ≫ 𝟙 _ ≫ Quiver.Path.reverse q)
+          (q ≫ (Quiver.Hom.toPath f ≫ Quiver.Hom.toPath (Quiver.reverse f)) ≫
+            Quiver.Path.reverse q) := by
+        apply Quotient.CompClosure.intro
+        apply redStep.step
+      simp only [Category.assoc, Category.id_comp] at this ⊢
+      -- Porting note : `simp` cannot see how `Quiver.Path.comp_assoc` is relevant, so change to
+      -- category notation
+      change Quotient.CompClosure redStep (q ≫ Quiver.Path.reverse q)
+        (Quiver.Path.cons q f ≫ (Quiver.Hom.toPath (Quiver.reverse f)) ≫ (Quiver.Path.reverse q))
+      simp only [←Category.assoc] at this ⊢
       exact this
     · exact ih
 #align category_theory.groupoid.free.congr_comp_reverse CategoryTheory.Groupoid.Free.congr_comp_reverse
@@ -156,8 +160,9 @@ variable {V' : Type u'} [Groupoid V'] (φ : V ⥤q V')
 def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
   Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
     rintro _ _ _ _ ⟨X, Y, f⟩
-    simp only [Quiver.Symmetrify.lift_reverse, Paths.lift_nil, Quiver.Path.comp_nil,
-      Paths.lift_cons, Paths.lift_toPath]
+    -- Porting note: `simp` does not work, so manually `rewrite`
+    erw [Paths.lift_nil, Paths.lift_cons, Quiver.Path.comp_nil, Paths.lift_toPath,
+      Quiver.Symmetrify.lift_reverse]
     symm
     apply Groupoid.comp_inv
 #align category_theory.groupoid.free.lift CategoryTheory.Groupoid.Free.lift
@@ -213,4 +218,3 @@ end Free
 end Groupoid
 
 end CategoryTheory
-
