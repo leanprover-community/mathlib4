@@ -1741,7 +1741,7 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   refine' ⟨⋂ i : t, U i, _, _, _⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
     refine' ⟨t, ht, U, hUf, rfl⟩
-  · haveI := ht.countable.toEncodable
+  · haveI := ht.countable.toEncodable.countable
     exact MeasurableSet.iInter fun i => (hU i).1
   · exact iInter_mono fun i => (hU i).2
 #align filter.infi_is_measurably_generated Filter.iInf_isMeasurablyGenerated
