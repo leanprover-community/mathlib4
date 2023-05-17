@@ -293,7 +293,6 @@ theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 #align matrix.transpose_nonsing_inv Matrix.transpose_nonsing_inv
 
-set_option synthInstance.etaExperiment true in
 theorem conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
   rw [inv_def, inv_def, conjTranspose_smul, det_conjTranspose, adjugate_conjTranspose,
     Ring.inverse_star]
@@ -502,17 +501,14 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
 
-set_option synthInstance.etaExperiment true in
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul Matrix.inv_smul
 
-set_option synthInstance.etaExperiment true in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul' Matrix.inv_smul'
 
-set_option synthInstance.etaExperiment true in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine' inv_eq_left_inv _
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -589,7 +585,6 @@ theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   · simp [nonsing_inv_apply_not_isUnit _ h]
 #align matrix.inv_inv_inv Matrix.inv_inv_inv
 
-set_option synthInstance.etaExperiment true in
 theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ := by
   simp only [inv_def]
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, det_mul, adjugate_mul_distrib,
@@ -604,7 +599,6 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
       Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse Xs]
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
@@ -613,7 +607,6 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
     h.mul_val_inv, one_smul]
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :

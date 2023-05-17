@@ -19,6 +19,12 @@ This file defines a bunch of functions for the `String` datatype.
 
 namespace String
 
+#align string.split_on String.splitOn
+#align string.is_prefix_of String.isPrefixOf
+#align string.starts_with String.startsWith
+#align string.ends_with String.endsWith
+#align string.is_nat String.isNat
+
 /-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
 def leftpad (n : Nat) (c : Char) (s : String) : String :=

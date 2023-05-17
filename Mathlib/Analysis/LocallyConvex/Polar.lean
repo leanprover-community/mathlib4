@@ -52,7 +52,6 @@ variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
@@ -140,7 +139,6 @@ variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 

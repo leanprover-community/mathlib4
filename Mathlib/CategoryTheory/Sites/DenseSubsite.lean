@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 /-!
 # Dense subsites
 
-We define `cover_dense` functors into sites as functors such that there exists a covering sieve
+We define `CoverDense` functors into sites as functors such that there exists a covering sieve
 that factors through images of the functor for each object in `D`.
 
 We will primarily consider cover-dense functors that are also full, since this notion is in general
@@ -69,14 +69,14 @@ attribute [nolint docBlame] Presieve.CoverByImageStructure.obj Presieve.CoverByI
 
 attribute [reassoc (attr := simp)] Presieve.CoverByImageStructure.fac
 
-/-- For a functor `G : C ⥤ D`, and an object `U : D`, `presieve.cover_by_image G U` is the presieve
+/-- For a functor `G : C ⥤ D`, and an object `U : D`, `Presieve.coverByImage G U` is the presieve
 of `U` consisting of those arrows that factor through images of `G`.
 -/
 def Presieve.coverByImage (G : C ⥤ D) (U : D) : Presieve U := fun _ f =>
   Nonempty (Presieve.CoverByImageStructure G f)
 #align category_theory.presieve.cover_by_image CategoryTheory.Presieve.coverByImage
 
-/-- For a functor `G : C ⥤ D`, and an object `U : D`, `sieve.cover_by_image G U` is the sieve of `U`
+/-- For a functor `G : C ⥤ D`, and an object `U : D`, `Sieve.coverByImage G U` is the sieve of `U`
 consisting of those arrows that factor through images of `G`.
 -/
 def Sieve.coverByImage (G : C ⥤ D) (U : D) : Sieve U :=
@@ -89,7 +89,7 @@ theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ 
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 #align category_theory.presieve.in_cover_by_image CategoryTheory.Presieve.in_coverByImage
 
-/-- A functor `G : (C, J) ⥤ (D, K)` is called `cover_dense` if for each object in `D`,
+/-- A functor `G : (C, J) ⥤ (D, K)` is called `CoverDense` if for each object in `D`,
   there exists a covering sieve in `D` that factors through images of `G`.
 
 This definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Definition 2.2.
@@ -174,7 +174,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _) := rfl
 
-/-- (Implementation). The `pushforward_family` defined is compatible. -/
+/-- (Implementation). The `pushforwardFamily` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
@@ -197,7 +197,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.CoverDense.Types.pushforwardFamily_compatible
 
-/-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforward_family`. -/
+/-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
   (ℱ'.cond _ (H.is_cover X)).amalgamate (pushforwardFamily α x)
     (pushforwardFamily_compatible H α x)
@@ -210,10 +210,11 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
   -- porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
   -- the type of the first input here even though it's obvious (there is a unique occurrence
   -- of x on each side of the equality)
-  refine' congr_fun (_ : (λ t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
-    (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
-      (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
-  (λ t => α.app (op Y) (ℱ.map (f.op) t))) x
+  refine' congr_fun (_ :
+    (fun t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
+      (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
+        (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
+    (fun t => α.app (op Y) (ℱ.map (f.op) t))) x
   rw [← G.image_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
   change ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ = ℱ.map f.op ≫ α.app (op Y)
   erw [← α.naturality (G.preimage _).op]
@@ -239,7 +240,7 @@ theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
 #align category_theory.cover_dense.types.app_hom_valid_glue CategoryTheory.CoverDense.Types.appHom_valid_glue
 
 /--
-(Implementation). The maps given in `app_iso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
+(Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
 @[simps]
 noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
@@ -317,6 +318,8 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     symm
     apply sheaf_eq_amalgamation
     apply H.is_cover
+    -- porting note: the following line closes a goal which didn't exist before reenableeta
+    · exact pushforwardFamily_compatible H (homOver α Y.unop) (f.unop ≫ x)
     intro Y' f' hf'
     change unop X ⟶ ℱ.obj (op (unop _)) at x
     dsimp
@@ -330,7 +333,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 #align category_theory.cover_dense.sheaf_coyoneda_hom CategoryTheory.CoverDense.sheafCoyonedaHom
 
 /--
-(Implementation). `sheaf_coyoneda_hom` but the order of the arguments of the functor are swapped.
+(Implementation). `sheafCoyonedaHom` but the order of the arguments of the functor are swapped.
 -/
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
@@ -374,9 +377,9 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
     use (sheafYonedaHom H i.inv).app X
     constructor <;> ext x : 2 <;>
       simp only [sheafHom, NatTrans.comp_app, NatTrans.id_app, Functor.image_preimage]
-    exact ((Types.presheafIso H (isoOver i (unop x))).app X).hom_inv_id
-    exact ((Types.presheafIso H (isoOver i (unop x))).app X).inv_hom_id
-    -- porting note: Lean 4 proof is finished, Lean 3 needed `infer_instance`
+    · exact ((Types.presheafIso H (isoOver i (unop x))).app X).hom_inv_id
+    · exact ((Types.presheafIso H (isoOver i (unop x))).app X).inv_hom_id
+    -- porting note: Lean 4 proof is finished, Lean 3 needed `inferInstance`
   haveI : IsIso (sheafHom H i.hom) := by apply NatIso.isIso_of_isIso_app
   apply asIso (sheafHom H i.hom)
 #align category_theory.cover_dense.presheaf_iso CategoryTheory.CoverDense.presheafIso
@@ -397,7 +400,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op
     apply (presheafIso H i).inv_hom_id
 #align category_theory.cover_dense.sheaf_iso CategoryTheory.CoverDense.sheafIso
 
-/-- The constructed `sheaf_hom α` is equal to `α` when restricted onto `C`.
+/-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`.
 -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     whiskerLeft G.op (sheafHom H α) = α := by
@@ -410,7 +413,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (G.obj (unop X))) from _) = _
   apply sheaf_eq_amalgamation ℱ' (H.is_cover _)
   -- porting note: next line was not needed in mathlib3
-  { exact (pushforwardFamily_compatible H _ _) }
+  · exact (pushforwardFamily_compatible H _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
   simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, coyoneda_obj_map, op_comp,
@@ -421,7 +424,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   rw [← G.image_preimage hf.some.map]
   symm
   apply α.naturality (G.preimage hf.some.map).op
-  -- porting note; Lean 3 needed a random `infer_instance` for cleanup here; not necessary in lean 4
+  -- porting note; Lean 3 needed a random `inferInstance` for cleanup here; not necessary in lean 4
 #align category_theory.cover_dense.sheaf_hom_restrict_eq CategoryTheory.CoverDense.sheafHom_restrict_eq
 
 /-- If the pullback map is obtained via whiskering,
@@ -438,7 +441,7 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom H (whiskerLeft G.op α) =
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (unop X)) from _) = _
   apply sheaf_eq_amalgamation ℱ' (H.is_cover _)
   -- porting note: next line was not needed in mathlib3
-  { exact (pushforwardFamily_compatible H _ _) }
+  · exact (pushforwardFamily_compatible H _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
   dsimp
@@ -490,7 +493,7 @@ instance Sites.Pullback.faithful [Faithful G] (Hp : CoverPreserving J K G) :
   map_injective := by
     intro ℱ ℱ' α β e
     ext1
-    apply_fun fun e => e.val  at e
+    apply_fun fun e => e.val at e
     dsimp at e
     rw [← H.sheafHom_eq α.val, ← H.sheafHom_eq β.val, e]
 #align category_theory.cover_dense.sites.pullback.faithful CategoryTheory.CoverDense.Sites.Pullback.faithful

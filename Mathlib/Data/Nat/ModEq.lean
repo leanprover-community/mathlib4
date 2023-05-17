@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Tactic.NormNum
 
 /-!
 # Congruences modulo a natural number

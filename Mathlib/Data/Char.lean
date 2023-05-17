@@ -39,7 +39,7 @@ instance : LinearOrder Char where
   le_total := fun _ _ => @le_total ℕ _ _ _
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
-  decidable_le := inferInstance
+  decidableLE := inferInstance
 
 theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
