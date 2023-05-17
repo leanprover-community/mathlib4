@@ -64,13 +64,10 @@ inductive NormalMonoidalObject : Type u
 
 end
 
--- mathport name: exprF
 local notation "F" => FreeMonoidalCategory
 
--- mathport name: exprN
 local notation "N" => Discrete ∘ NormalMonoidalObject
 
--- mathport name: «expr ⟶ᵐ »
 local infixr:10 " ⟶ᵐ " => Hom
 
 -- porting note: this was automatic in mathlib
@@ -116,22 +113,24 @@ open Hom
 
 -- porting note: triggers a PANIC "invalid LCNF substitution of free variable
 -- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
+-- prevented with dsimp [normalizeObj]
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
 --@[simp]
 def normalizeMapAux :
     ∀ {X Y : F C},
-      (X ⟶ᵐ Y) → ((Discrete.functor (normalizeObj X) : _ ⥤ N C) ⟶ Discrete.functor (normalizeObj Y))
+      (X ⟶ᵐ Y) → ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
-  | _, _, α_hom _ _ _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, α_inv _ _ _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_hom _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_inv _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_hom _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_inv _ => Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, (comp f g) => normalizeMapAux f ≫ normalizeMapAux g
-  | _, _, (@Hom.tensor _ T _ _ W f g) =>
-    Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
+  | _, _, α_hom X Y Z => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, α_inv _ _ _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, l_hom _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, l_inv _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, ρ_hom _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, ρ_inv _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
+  | _, _, (@Hom.tensor _ T _ _ W f g) => by
+    dsimp [normalizeObj]
+    exact Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 
@@ -257,7 +256,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         simp only [id_tensor_associator_inv_naturality_assoc, ← pentagon_inv_assoc,
           tensorHom_inv_id_assoc, tensor_id, Category.id_comp, Category.comp_id,
           comp_tensor_id, Category.assoc]
-        rfl
+
       . ext n
         dsimp
         rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
@@ -283,13 +282,16 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         rw [mk_ρ_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.inv_comp_eq _).2 (rightUnitor_tensor _ _), Category.assoc,
-          ← rightUnitor_naturality, Category.comp_id]
+          ← rightUnitor_naturality, Category.comp_id]; rfl -- Porting note: added rfl
       . ext n
         dsimp
         rw [mk_ρ_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
           Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id]
+        -- Porting note: added last two lines
+        dsimp [Discrete.functor]
+        simp only [Category.comp_id, Iso.inv_hom_id]
       . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
       . ext ⟨n⟩
         replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
@@ -309,13 +311,14 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
           tensor_comp, Category.assoc, Category.assoc, Functor.map_comp]
         congr 2
         erw [← reassoc_of% h₂]
-        rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄])
+        rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
+        rfl ) -- Porting note: added rfl
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
   NatIso.ofComponents
-    (fun X => (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.Unit⟩)
+  (fun X => (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.Unit⟩)
     (by
       intro X Y f
       dsimp
