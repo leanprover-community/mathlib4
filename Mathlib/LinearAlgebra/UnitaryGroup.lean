@@ -154,7 +154,6 @@ example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
 -- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
@@ -211,7 +210,6 @@ variable (n) (β : Type v) [CommRing β]
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
 -- at the same time?
 attribute [local instance] starRingOfComm
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- `Matrix.orthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
 inverse. -/
