@@ -3,7 +3,6 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 
 open CategoryTheory Category Limits
 
-
 namespace HomologicalComplex
 
 section
@@ -462,6 +461,35 @@ lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
     homotopyEquivalences C c ⊆ qis C c := by
   rintro X Y _ ⟨e, rfl⟩ i
   exact IsIso.of_iso (e.toHomologyIso i)
+
+section single
+
+variable {C}
+variable [HasZeroObject C] [DecidableEq ι]
+
+instance (A : C) : ((single C c i).obj A).HasHomology i :=
+  ⟨⟨ShortComplex.HomologyData.ofZeros _ rfl rfl⟩⟩
+
+noncomputable def singleHomologyIso (A : C) : ((single C c i).obj A).newHomology i ≅ A :=
+  (ShortComplex.HomologyData.ofZeros (sc ((single C c i).obj A) i) rfl rfl).left.homologyIso ≪≫
+    singleObjXSelf C c i A
+
+@[reassoc (attr := simp)]
+def singleHomologyIso_hom_naturality {A B : C} (f : A ⟶ B) :
+    homologyMap ((single C c i).map f) i ≫ (singleHomologyIso c i B).hom =
+      (singleHomologyIso c i A).hom ≫ f := by
+  dsimp only [singleHomologyIso, Iso.trans, homologyMap]
+  simp [(ShortComplex.HomologyMapData.ofZeros
+    ((shortComplexFunctor C c i).map ((single C c i).map f)) rfl rfl rfl rfl).left.homologyMap_eq]
+
+variable (C)
+
+@[simps!]
+noncomputable def singleCompHomologyFunctorIso [CategoryWithHomology C] :
+    single C c i ⋙ newHomologyFunctor C c i ≅ 𝟭 C :=
+  NatIso.ofComponents (singleHomologyIso c i) (by aesop_cat)
+
+end single
 
 end HomologicalComplex
 

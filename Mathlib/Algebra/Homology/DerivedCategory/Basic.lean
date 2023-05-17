@@ -182,6 +182,11 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
     isoWhiskerLeft _ (homologyFunctorFactorsh C n) ≪≫
     HomotopyCategory.newHomologyFunctorFactors _ _ _
 
+noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
+    singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
+  Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
+    HomologicalComplex.singleCompHomologyFunctorIso C (ComplexShape.up ℤ) n
+
 instance : (homologyFunctor C n).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_fac_of_essSurj _ _ _
     (homologyFunctorFactorsh C n)

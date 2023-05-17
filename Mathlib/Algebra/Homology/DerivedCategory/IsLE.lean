@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
-open CategoryTheory Category Limits Pretriangulated
+open CategoryTheory Category Limits Pretriangulated Limits
 
 variable {C : Type _} [Category C] [Abelian C]
 
@@ -114,6 +114,18 @@ lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
       . exact isZero_zero _
       . linarith
 
+instance (A : C) (n : ℤ) :
+    IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
+    dsimp
+    rw [if_neg (by linarith)]
+    exact isZero_zero _⟩
+
+instance (A : C) (n : ℤ) :
+    IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
+    dsimp
+    rw [if_neg (by linarith)]
+    exact isZero_zero _⟩
+
 end CochainComplex
 
 namespace DerivedCategory
@@ -216,5 +228,13 @@ lemma distTriang₃_isGE_iff (T : Triangle (DerivedCategory C)) (hT : T ∈ dist
         exact h'.1
       . obtain rfl : n₀ = i := by linarith
         exact h₁
+
+instance (A : C) (n : ℤ) : IsLE ((singleFunctor C n).obj A) n := by
+  dsimp only [singleFunctor, Functor.comp]
+  infer_instance
+
+instance (A : C) (n : ℤ) : IsGE ((singleFunctor C n).obj A) n := by
+  dsimp only [singleFunctor, Functor.comp]
+  infer_instance
 
 end DerivedCategory

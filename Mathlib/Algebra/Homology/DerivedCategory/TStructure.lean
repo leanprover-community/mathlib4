@@ -119,7 +119,71 @@ lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] 
   obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
   exact ⟨A, ⟨e ≪≫ Q.mapIso e'⟩⟩
 
---instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h => by
---  sorry⟩
+instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h => by
+  have eq₁ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₁
+  have eq₂ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₂
+  dsimp at eq₁ eq₂
+  rw [← eq₁, ← eq₂, h]⟩
+
+noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
+  apply Functor.fullOfSurjective
+  intro A B f
+  dsimp only [singleFunctor, Functor.comp] at f
+  suffices ∃ (f' : (HomologicalComplex.single C (ComplexShape.up ℤ) n).obj A ⟶
+    (HomologicalComplex.single C (ComplexShape.up ℤ) n).obj B), f = Q.map f' by
+    obtain ⟨f', rfl⟩ := this
+    obtain ⟨g, hg⟩ := (HomologicalComplex.single C (ComplexShape.up ℤ) n).map_surjective f'
+    refine' ⟨g, _⟩
+    dsimp only [singleFunctor, Functor.comp]
+    rw [hg]
+  obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE _ _ n n f
+  have : IsIso s := by
+    obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
+    have ⟨φ, hφ⟩ := (HomologicalComplex.single _ _ _).map_surjective (e.inv ≫ s)
+    suffices IsIso φ by
+      have : IsIso (e.inv ≫ s) := by
+        rw [← hφ]
+        infer_instance
+      exact IsIso.of_isIso_comp_left e.inv s
+    apply (NatIso.isIso_map_iff (singleFunctorCompHomologyFunctorIso C n) φ).1
+    have : IsIso (Q.map ((HomologicalComplex.single C (ComplexShape.up ℤ) n).map φ)) := by
+      rw [hφ]
+      rw [Q.map_comp]
+      infer_instance
+    dsimp [singleFunctor]
+    infer_instance
+  exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
+
+namespace TStructure
+
+lemma singleFunctor_obj_mem_heart (X : C) :
+    (singleFunctor C 0).obj X ∈ t.heart :=
+  ⟨(inferInstance : ((singleFunctor C 0).obj X).IsLE 0),
+    (inferInstance : ((singleFunctor C 0).obj X).IsGE 0)⟩
+
+variable (C)
+
+noncomputable def singleFunctor₀ToHeart : C ⥤ (t : TStructure (DerivedCategory C)).Heart :=
+  FullSubcategory.lift _ (singleFunctor C 0) singleFunctor_obj_mem_heart
+
+noncomputable instance : Full (singleFunctor₀ToHeart C) := Functor.fullOfSurjective  _ (by
+  intro A B (φ : (singleFunctor C 0).obj A ⟶ (singleFunctor C 0).obj B)
+  obtain ⟨f, rfl⟩ := (singleFunctor C 0).map_surjective φ
+  exact ⟨_, rfl⟩)
+
+instance : Faithful (singleFunctor₀ToHeart C) := ⟨by
+  intro A B f₁ f₂ h
+  exact (singleFunctor C 0).map_injective h⟩
+
+instance : EssSurj (singleFunctor₀ToHeart C) := ⟨fun X => by
+  have : X.obj.IsLE 0 := X.2.1
+  have : X.obj.IsGE 0 := X.2.2
+  obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X.obj 0
+  exact ⟨A, ⟨t.heartInclusion.preimageIso e.symm⟩⟩⟩
+
+noncomputable instance : IsEquivalence (singleFunctor₀ToHeart C) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
+
+end TStructure
 
 end DerivedCategory

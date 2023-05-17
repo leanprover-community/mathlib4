@@ -181,15 +181,9 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
 
 def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
-def Heart := FullSubcategory t.heart
+abbrev Heart := FullSubcategory t.heart
 
-instance : Category t.Heart := by
-  dsimp only [Heart]
-  infer_instance
-
-instance : Preadditive t.Heart := by
-  dsimp only [Heart]
-  infer_instance
+abbrev heartInclusion : t.Heart ⥤ C := fullSubcategoryInclusion _
 
 end TStructure
 
