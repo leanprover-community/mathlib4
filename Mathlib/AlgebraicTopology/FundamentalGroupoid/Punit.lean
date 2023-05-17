@@ -8,13 +8,13 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Fundamental groupoid of punit
 
-The fundamental groupoid of punit is naturally isomorphic to `category_theory.discrete punit`
+The fundamental groupoid of punit is naturally isomorphic to `CategoryTheory.Discrete PUnit`
 -/
 
 
@@ -35,15 +35,14 @@ namespace FundamentalGroupoid
 
 instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
   convert_to Subsingleton (Path.Homotopic.Quotient PUnit.unit PUnit.unit)
-  · congr <;> apply PUnit.eq_punit
-  apply Quotient.subsingleton
+  apply Quotient.instSubsingletonQuotient
 
 /-- Equivalence of groupoids between fundamental groupoid of punit and punit -/
 def punitEquivDiscretePunit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} :=
-  Equivalence.mk (Functor.star _) ((CategoryTheory.Functor.const _).obj PUnit.unit)
-    (NatIso.ofComponents (fun _ => eqToIso (by decide)) fun _ _ _ => by decide)
+  CategoryTheory.Equivalence.mk (Functor.star _) ((CategoryTheory.Functor.const _).obj PUnit.unit)
+    -- Porting note: was `by decide`
+    (NatIso.ofComponents (fun _ => eqToIso (by simp)) fun _ => by simp)
     (Functor.pUnitExt _ _)
 #align fundamental_groupoid.punit_equiv_discrete_punit FundamentalGroupoid.punitEquivDiscretePunit
 
 end FundamentalGroupoid
-
