@@ -104,7 +104,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
   map_add' f g := by simp only [eval₂_add, coe_eval₂RingHom]
   left_inv := by
     intro f
-    refine' Polynomial.induction_on' f _ _
+    refine Polynomial.induction_on' f ?_ ?_
     · intro p q hp hq
       simp only [coe_eval₂RingHom] at hp hq
       simp only [coe_eval₂RingHom, hp, hq, RingHom.map_add]
@@ -114,7 +114,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
         RingHom.coe_comp, RingHom.map_mul, eval₂_X, Function.comp_apply]
   right_inv := by
     rintro ⟨f⟩
-    refine' Polynomial.induction_on' f _ _
+    refine Polynomial.induction_on' f ?_ ?_
     · -- Porting note: was `simp_intro p q hp hq`
       intros p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
