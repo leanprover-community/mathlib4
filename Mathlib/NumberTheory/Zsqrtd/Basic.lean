@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module number_theory.zsqrtd.basic
-! leanprover-community/mathlib commit 7ec294687917cbc5c73620b4414ae9b5dd9ae1b4
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -596,7 +596,7 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
     have := congr_arg (Int.natAbs ∘ norm) hy
     rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
-      Int.natAbs_one, eq_comm, Nat.mul_eq_one_iff] at this
+      Int.natAbs_one, eq_comm, mul_eq_one] at this
     exact this.1⟩
 #align zsqrtd.norm_eq_one_iff Zsqrtd.norm_eq_one_iff
 
@@ -650,7 +650,7 @@ instance : LT (ℤ√d) :=
   ⟨fun a b => ¬b ≤ a⟩
 
 instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
-  cases a <;> cases b <;> simp_rw [Int.ofNat_eq_coe] <;> unfold Nonnegg SqLe <;> infer_instance
+  cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
 #align zsqrtd.decidable_nonnegg Zsqrtd.decidableNonnegg
 
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
@@ -892,8 +892,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   let g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
-    False.elim <|
-      by
+    False.elim <| by
       let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
@@ -952,7 +951,7 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidable_le := Zsqrtd.decidableLE }
+    decidableLE := Zsqrtd.decidableLE }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
@@ -975,7 +974,6 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
                 calc
                   x * x * w = -y * (x * z) := by simp [h2, mul_assoc, mul_left_comm]
                   _ = d * y * y * w := by simp [h1, mul_assoc, mul_left_comm]
-
       else
         Or.inl <|
           fin <|
@@ -983,7 +981,6 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
               calc
                 x * x * z = d * -y * (x * w) := by simp [h1, mul_assoc, mul_left_comm]
                 _ = d * y * y * z := by simp [h2, mul_assoc, mul_left_comm]
-
 #align zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
 
 instance : NoZeroDivisors (ℤ√d) where

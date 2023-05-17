@@ -239,8 +239,8 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
-theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 :=
-  by
+theorem support_subset_iff {s : Set α} {f : α →₀ M} :
+    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -911,8 +911,8 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
 #align finsupp.single_of_emb_domain_single Finsupp.single_of_embDomain_single
 
 @[simp]
-theorem embDomain_single (f : α ↪ β) (a : α) (m : M) : embDomain f (single a m) = single (f a) m :=
-  by
+theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
+    embDomain f (single a m) = single (f a) m := by
   classical
     ext b
     by_cases h : b ∈ Set.range f
@@ -1140,7 +1140,7 @@ then they are equal.
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
   addHom_ext fun x => FunLike.congr_fun (H x)

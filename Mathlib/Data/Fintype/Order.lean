@@ -27,7 +27,7 @@ Those are marked as `def` to avoid defeqness issues.
 
 ## Completion instances
 
-Those instances are noncomputable because the definitions of `supₛ` and `infₛ` use `Set.toFinset`
+Those instances are noncomputable because the definitions of `sSup` and `sInf` use `Set.toFinset`
 and set membership is undecidable in general.
 
 On a `Fintype`, we can promote:
@@ -95,12 +95,12 @@ open Classical
 noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α :=
   { ‹Lattice α›,
     ‹BoundedOrder α› with
-    supₛ := fun s => s.toFinset.sup id
-    infₛ := fun s => s.toFinset.inf id
-    le_supₛ := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-    supₛ_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
-    infₛ_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-    le_infₛ := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
+    sSup := fun s => s.toFinset.sup id
+    sInf := fun s => s.toFinset.inf id
+    le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
+    sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
+    sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
+    le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
 #align fintype.to_complete_lattice Fintype.toCompleteLattice
 
 -- Porting note: `convert` doesn't work as well as it used to.
@@ -110,14 +110,14 @@ noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLat
 noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α :=
   { toCompleteLattice α with
-    infᵢ_sup_le_sup_infₛ := fun a s => by
+    iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
-      rw [Finset.inf_eq_infᵢ]
+      rw [Finset.inf_eq_iInf]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s => by
+    inf_sSup_le_iSup_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
-      rw [Finset.sup_eq_supᵢ]
+      rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
       rfl }
 #align fintype.to_complete_distrib_lattice Fintype.toCompleteDistribLattice
@@ -136,14 +136,14 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
   -- Porting note: using `Fintype.toCompleteDistribLattice α` caused timeouts
   { Fintype.toCompleteLattice α,
     ‹BooleanAlgebra α› with
-    infᵢ_sup_le_sup_infₛ := fun a s => by
+    iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
-      rw [Finset.inf_eq_infᵢ]
+      rw [Finset.inf_eq_iInf]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s => by
+    inf_sSup_le_iSup_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
-      rw [Finset.sup_eq_supᵢ]
+      rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
       rfl }
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra

@@ -55,9 +55,9 @@ class HasZeroMorphisms where
   /-- Every morphism space has zero -/
   [Zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop
+  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
   /-- `0` composed with `f` is `0` -/
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop
+  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop_cat
 #align category_theory.limits.has_zero_morphisms CategoryTheory.Limits.HasZeroMorphisms
 #align category_theory.limits.has_zero_morphisms.comp_zero' CategoryTheory.Limits.HasZeroMorphisms.comp_zero
 #align category_theory.limits.has_zero_morphisms.zero_comp' CategoryTheory.Limits.HasZeroMorphisms.zero_comp
@@ -524,8 +524,8 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
   · aesop_cat
 #align category_theory.limits.is_iso_zero_equiv_iso_zero CategoryTheory.Limits.isIsoZeroEquivIsoZero
 
-theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) : IsIso f :=
-  by
+theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
+    IsIso f := by
   rw [zero_of_source_iso_zero f i]
   exact (isIsoZeroEquivIsoZero _ _).invFun ⟨i, j⟩
 #align category_theory.limits.is_iso_of_source_target_iso_zero CategoryTheory.Limits.isIso_of_source_target_iso_zero
@@ -540,14 +540,13 @@ def isIsoZeroSelfEquivIsoZero (X : C) : IsIso (0 : X ⟶ X) ≃ (X ≅ 0) :=
 end IsIso
 
 /-- If there are zero morphisms, any initial object is a zero object. -/
-theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] : HasZeroObject C :=
-  by
+theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
+    HasZeroObject C := by
   refine' ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
     _ = f ≫ 0 := by congr!
     _ = 0 := HasZeroMorphisms.comp_zero _ _
-
 #align category_theory.limits.has_zero_object_of_has_initial_object CategoryTheory.Limits.hasZeroObject_of_hasInitial_object
 
 /-- If there are zero morphisms, any terminal object is a zero object. -/
@@ -558,7 +557,6 @@ theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C]
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
     _ = 0 ≫ f := by congr!
     _ = 0 := zero_comp
-
 #align category_theory.limits.has_zero_object_of_has_terminal_object CategoryTheory.Limits.hasZeroObject_of_hasTerminal_object
 
 section Image

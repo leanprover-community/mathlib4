@@ -113,11 +113,8 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 #align is_fraction_ring.is_domain IsFractionRing.isDomain
 
-attribute [local instance] Classical.decEq
-
 /-- The inverse of an element in the field of fractions of an integral domain. -/
--- Porting note: Had to replace `irreducible_def` with the `@[irreducible]` attribute.
-@[irreducible] protected noncomputable def inv (z : K) : K :=
+protected noncomputable irreducible_def inv (z : K) : K := open Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
