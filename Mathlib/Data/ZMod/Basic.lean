@@ -1176,7 +1176,6 @@ theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f
   (ringHom_rightInverse f).surjective
 #align zmod.ring_hom_surjective ZMod.ringHom_surjective
 
-set_option synthInstance.etaExperiment true in
 theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
     (h : RingHom.ker f = RingHom.ker g) : f = g := by
   have := f.liftOfRightInverse_comp _ (ZMod.ringHom_rightInverse f) ⟨g, le_of_eq h⟩

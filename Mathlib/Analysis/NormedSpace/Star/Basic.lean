@@ -77,7 +77,6 @@ instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E 
 
 end NormedStarGroup
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
@@ -202,6 +201,7 @@ end ProdPi
 
 section Unital
 
+
 variable [NormedRing E] [StarRing E] [CstarRing E]
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
@@ -311,13 +311,11 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance toNormedAlgebra {𝕜 A : Type _} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) S.algebra _ _ _ S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
   norm_star_mul_self {x} := @CstarRing.norm_star_mul_self A _ _ _ x

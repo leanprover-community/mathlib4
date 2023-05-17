@@ -337,7 +337,6 @@ section lift
 
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
-set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
@@ -364,7 +363,6 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
   rfl
 #align complex.lift_aux_apply Complex.liftAux_apply
 
-set_option synthInstance.etaExperiment true in
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_apply_I Complex.liftAux_apply_I

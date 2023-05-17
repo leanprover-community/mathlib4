@@ -32,7 +32,7 @@ theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, Hom.map_one, Hom.map_one]
+    rw [this, map_one, map_one]
   · ext
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
@@ -53,7 +53,7 @@ theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G :=
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, Hom.map_one, Hom.map_one]
+    rw [this, map_one, map_one]
   · ext
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in

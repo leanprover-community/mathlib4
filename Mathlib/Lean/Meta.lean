@@ -158,13 +158,6 @@ def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
 
 end Lean.Meta
 
-section SynthInstance
-
-/-- Elaborate the following term with `set_option synthInstance.etaExperiment true`. -/
-macro "eta_experiment% " a:term : term => `(term|set_option synthInstance.etaExperiment true in $a)
-
-end SynthInstance
-
 namespace Lean.Elab.Tactic
 
 /-- Analogue of `liftMetaTactic` for tactics that return a single goal. -/
