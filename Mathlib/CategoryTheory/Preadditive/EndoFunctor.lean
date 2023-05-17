@@ -8,9 +8,9 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Basic
-import Mathbin.CategoryTheory.Endofunctor.Algebra
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Endofunctor.Algebra
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -32,8 +32,7 @@ open CategoryTheory.Limits Preadditive
 /-- The category of algebras over an additive endofunctor on a preadditive category is preadditive.
 -/
 @[simps]
-instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F)
-    where
+instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) where
   homGroup A₁ A₂ :=
     { add := fun α β =>
         { f := α.f + β.f
@@ -113,8 +112,7 @@ instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
 #align category_theory.algebra.forget_additive CategoryTheory.Algebra.forget_additive
 
 @[simps]
-instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F)
-    where
+instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
   homGroup A₁ A₂ :=
     { add := fun α β =>
         { f := α.f + β.f
