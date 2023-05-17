@@ -425,10 +425,13 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation :=
-  @Algebra.FinitePresentation.of_surjective A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra
-    { g with
-      toFun := g
-      commutes' := fun a => rfl }
+  letI := f.toAlgebra
+  letI := (g.comp f).toAlgebra
+  Algebra.FinitePresentation.of_surjective
+    (f :=
+      { g with
+        toFun := g
+        commutes' := fun _ => rfl })
     hg hker hf
 #align ring_hom.finite_presentation.comp_surjective RingHom.FinitePresentation.comp_surjective
 
@@ -479,8 +482,6 @@ def FinitePresentation (f : A →ₐ[R] B) : Prop :=
 
 namespace FiniteType
 
-variable {R A}
-
 theorem of_finitePresentation {f : A →ₐ[R] B} (hf : f.FinitePresentation) : f.FiniteType :=
   RingHom.FiniteType.of_finitePresentation hf
 #align alg_hom.finite_type.of_finite_presentation AlgHom.FiniteType.of_finitePresentation
@@ -508,16 +509,17 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 #align alg_hom.finite_presentation.comp_surjective AlgHom.FinitePresentation.comp_surjective
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : f.toRingHom.ker.FG) :
-    f.FinitePresentation :=
-  RingHom.FinitePresentation.of_surjective f hf hker
+    f.FinitePresentation := by
+  -- Porting note: added `convert
+  convert RingHom.FinitePresentation.of_surjective f hf hker
 #align alg_hom.finite_presentation.of_surjective AlgHom.FinitePresentation.of_surjective
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType ↔ f.FinitePresentation :=
   RingHom.FinitePresentation.of_finiteType
 #align alg_hom.finite_presentation.of_finite_type AlgHom.FinitePresentation.of_finiteType
 
-theorem of_comp_finiteType (f : A →ₐ[R] B) {g : B →ₐ[R] C} (h : (g.comp f).FinitePresentation)
-    (h' : f.FiniteType) : g.FinitePresentation :=
+nonrec theorem of_comp_finiteType (f : A →ₐ[R] B) {g : B →ₐ[R] C}
+    (h : (g.comp f).FinitePresentation) (h' : f.FiniteType) : g.FinitePresentation :=
   h.of_comp_finiteType _ h'
 #align alg_hom.finite_presentation.of_comp_finite_type AlgHom.FinitePresentation.of_comp_finiteType
 
