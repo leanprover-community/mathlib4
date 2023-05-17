@@ -417,7 +417,6 @@ section Finite
 
 variable [Finite ι]
 
-set_option synthInstance.etaExperiment true in
 /-- A vector space is linearly equivalent to its dual space. -/
 @[simps!]
 def toDualEquiv : M ≃ₗ[R] Dual R M :=
@@ -553,7 +552,6 @@ section
 
 variable (K) (V)
 
-set_option synthInstance.etaExperiment true in
 theorem eval_ker : LinearMap.ker (eval K V) = ⊥ := by
   classical exact (Basis.ofVectorSpace K V).eval_ker
 #align module.eval_ker Module.eval_ker
@@ -956,7 +954,6 @@ theorem dualCoannihilator_top (W : Subspace K V) :
   rw [dualCoannihilator, dual_annihilator_top, comap_bot, Module.eval_ker]
 #align subspace.dual_coannihilator_top Subspace.dualCoannihilator_top
 
-set_option synthInstance.etaExperiment true in
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine' le_antisymm _ (le_dualAnnihilator_dualCoannihilator _)
@@ -1074,13 +1071,11 @@ theorem quotAnnihilatorEquiv_apply (W : Subspace K V) (φ : Module.Dual K V) :
   rfl
 #align subspace.quot_annihilator_equiv_apply Subspace.quotAnnihilatorEquiv_apply
 
-set_option synthInstance.etaExperiment true in
 /-- The natural isomorphism from the dual of a subspace `W` to `W.dualLift.range`. -/
 noncomputable def dualEquivDual (W : Subspace K V) : Module.Dual K W ≃ₗ[K] LinearMap.range W.dualLift :=
   LinearEquiv.ofInjective _ dualLift_injective
 #align subspace.dual_equiv_dual Subspace.dualEquivDual
 
-set_option synthInstance.etaExperiment true in
 theorem dualEquivDual_def (W : Subspace K V) :
     W.dualEquivDual.toLinearMap = W.dualLift.rangeRestrict :=
   rfl
