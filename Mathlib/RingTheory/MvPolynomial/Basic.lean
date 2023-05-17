@@ -99,9 +99,9 @@ theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
-theorem mem_restrictDegree_iff_sup (p : MvPolynomial σ R) (n : ℕ) :
+theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
-  simp only [mem_restrictDegree, degrees, Multiset.count_finset_sup, Finsupp.count_toMultiset,
+  simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
   exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
 #align mv_polynomial.mem_restrict_degree_iff_sup MvPolynomial.mem_restrictDegree_iff_sup
