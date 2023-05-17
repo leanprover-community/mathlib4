@@ -28,3 +28,7 @@ instance : LE Foo := ⟨Foo.le⟩
 
 example (a : Foo) : a ≤ a := by apply Foo.le_refl
 example (a : Foo) : a ≤ a := by rfl
+
+example (x : Nat) : x ≤ x := by
+  show _
+  rfl

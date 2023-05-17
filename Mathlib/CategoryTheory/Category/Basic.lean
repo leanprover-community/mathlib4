@@ -5,7 +5,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.category.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -108,6 +108,8 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+
 /-- Notation for the identity morphism in a category. -/
 notation "𝟙" => CategoryStruct.id  -- type as \b1
 
@@ -138,6 +140,11 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+
+-- Porting note:
+-- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
+-- when etaExperiment is on.
+attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
@@ -184,7 +191,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category
+initialize_simps_projections Category (-Hom)
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
@@ -292,16 +299,12 @@ theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f �
 #align category_theory.cancel_mono CategoryTheory.cancel_mono
 
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_epi f` here.
-  convert @cancel_epi _ _ _ _ _ f _ h (𝟙 Y)
+  convert cancel_epi f
   simp
 #align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
 
 theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_mono f` here.
-  convert @cancel_mono _ _ _ _ _ f _ g (𝟙 X)
+  convert cancel_mono f
   simp
 #align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id
 

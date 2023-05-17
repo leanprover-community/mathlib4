@@ -65,11 +65,8 @@ namespace AlgHomClass
 variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 -- see Note [lower instance priority]
-instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B}
-    {_ : Algebra R A} {_ : Algebra R B} {F : Type _} [AlgHomClass F R A B] :
-    LinearMapClass F R A B :=
+instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
@@ -498,9 +495,6 @@ end AlgHom
 
 namespace RingHom
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 variable {R S : Type _}
 
 /-- Reinterpret a `RingHom` as an `ℕ`-algebra homomorphism. -/
@@ -512,18 +506,7 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with
-    commutes' := fun n => by
-      -- Porting note: TODO Erase these `have`s.
-      --               Needed because we don't have η for classes. (lean4#2074)
-      have e₁ : algebraMap ℤ R n = n :=
-        @eq_intCast _ R Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ R) n
-      have e₂ : algebraMap ℤ S n = n :=
-        @eq_intCast _ S Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ S) n
-      have e₃ : f n = n :=
-        @map_intCast _ R S Ring.toNonAssocRing Ring.toNonAssocRing RingHom.instRingHomClassRingHom
-          f n
-      simp [e₁, e₂, e₃] }
+  { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
@@ -541,9 +524,6 @@ theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] 
 end RingHom
 
 section
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 variable {R S : Type _}
 

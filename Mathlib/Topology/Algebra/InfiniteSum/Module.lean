@@ -75,10 +75,10 @@ protected theorem ContinuousLinearEquiv.hasSum {f : ι → M} (e : M ≃SL[σ] M
 #align continuous_linear_equiv.has_sum ContinuousLinearEquiv.hasSum
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
-protected theorem ContinuousLinearEquiv.has_sum' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
+protected theorem ContinuousLinearEquiv.hasSum' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
     HasSum (fun b : ι => e (f b)) (e x) ↔ HasSum f x := by
   rw [e.hasSum, ContinuousLinearEquiv.symm_apply_apply]
-#align continuous_linear_equiv.has_sum' ContinuousLinearEquiv.has_sum'
+#align continuous_linear_equiv.has_sum' ContinuousLinearEquiv.hasSum'
 
 protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
     (Summable fun b : ι => e (f b)) ↔ Summable f :=
@@ -93,10 +93,10 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
         (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
   · have hf' : ¬Summable fun z => e (f z) := fun h => hf (e.summable.mp h)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hf']
-    exact
-      ⟨by
-        rintro rfl
-        simp, fun H => by simpa using congr_arg (fun z => e z) H⟩
+    refine ⟨?_, fun H => ?_⟩
+    · rintro rfl
+      simp
+    · simpa using congr_arg (fun z => e z) H
 #align continuous_linear_equiv.tsum_eq_iff ContinuousLinearEquiv.tsum_eq_iff
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}

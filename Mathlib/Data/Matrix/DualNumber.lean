@@ -31,10 +31,11 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
   left_inv A := Matrix.ext fun i j => TrivSqZeroExt.ext rfl rfl
   right_inv d := TrivSqZeroExt.ext (Matrix.ext fun i j => rfl) (Matrix.ext fun i j => rfl)
   map_mul' A B := by
-    ext; dsimp [mul_apply]
-    · simp_rw [fst_sum, fst_mul]
+    ext
+    · dsimp [mul_apply]
+      simp_rw [fst_sum]
       rfl
-    · simp_rw [snd_sum, snd_mul, smul_eq_mul, op_smul_eq_mul, Finset.sum_add_distrib]
+    · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
       simp [mul_apply, snd_sum, snd_mul]
       rw [← Finset.sum_add_distrib]
   map_add' A B := TrivSqZeroExt.ext rfl rfl

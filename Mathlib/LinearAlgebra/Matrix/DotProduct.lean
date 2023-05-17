@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.matrix.dot_product
-! leanprover-community/mathlib commit 738c19f572805cff525a93aa4ffbdf232df05aa8
+! leanprover-community/mathlib commit 5ac1dab1670014b4c07a82c86a67f3d064a1b3e1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,9 +33,13 @@ matrix, reindex
 
 universe v w
 
+variable {R : Type v} {n : Type w}
+
 namespace Matrix
 
-variable {R : Type v} [Semiring R] {n : Type w} [Fintype n]
+section Semiring
+
+variable [Semiring R] [Fintype n]
 
 @[simp]
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
@@ -67,5 +71,35 @@ theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, dotProduct v w = 0) : v = 0
 theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v = 0 :=
   ⟨fun h => dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
 #align matrix.dot_product_eq_zero_iff Matrix.dotProduct_eq_zero_iff
+
+end Semiring
+
+section Self
+
+variable [Fintype n]
+
+@[simp]
+theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
+    simp [Function.funext_iff]
+#align matrix.dot_product_self_eq_zero Matrix.dotProduct_self_eq_zero
+
+/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+@[simp]
+theorem dotProduct_star_self_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrderedRing R]
+    [NoZeroDivisors R] {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@star_mul_self_nonneg _ _ _ _ (v i) : _)).trans <|
+    by simp [Function.funext_iff, mul_eq_zero]
+#align matrix.dot_product_star_self_eq_zero Matrix.dotProduct_star_self_eq_zero
+
+/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+@[simp]
+theorem dotProduct_self_star_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrderedRing R]
+    [NoZeroDivisors R] {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@star_mul_self_nonneg' _ _ _ _ (v i) : _)).trans <|
+    by simp [Function.funext_iff, mul_eq_zero]
+#align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
+
+end Self
 
 end Matrix
