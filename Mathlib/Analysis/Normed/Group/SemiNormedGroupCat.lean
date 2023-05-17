@@ -93,11 +93,12 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup.of_unique SemiNormedGroup.ofUnique
 
-/-porting note: originally empty, which didn't work. Now problems with universe levels...-/
+/-porting note: originally empty, which didn't work. Notation for composition changed?-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup where
-  Zero X Y := NormedAddGroupHom.zero
+  Zero _ _ := NormedAddGroupHom.zero
   comp_zero _ _ := rfl
-  zero_comp X Y Z f:=  (NormedAddGroupHom.zero_comp Y Z X _ _ _ f: _ = 0)
+  zero_comp _ _ _ f:= NormedAddGroupHom.comp_zero f
+
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
