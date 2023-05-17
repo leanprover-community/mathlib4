@@ -16,10 +16,10 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 The main results are that multilinear maps over finitely-generated, free modules are
 finitely-generated and free.
 
-* `module.finite.multilinear_map`
-* `module.free.multilinear_map`
+* `Module.Finite.multilinearMap`
+* `Module.Free.multilinearMap`
 
-We do not put this in `linear_algebra/multilinear_map/basic` to avoid making the imports too large
+We do not put this in `LinearAlgebra.Multilinear.Basic` to avoid making the imports too large
 there.
 -/
 
