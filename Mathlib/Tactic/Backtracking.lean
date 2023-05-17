@@ -45,8 +45,7 @@ def Except.emoji : Except ε α → String
 returning the list of elements on which the function fails, and the list of successful results. -/
 def List.tryAllM [Monad m] [Alternative m] (L : List α) (f : α → m β) : m (List α × List β) := do
   let R ← L.mapM (fun a => (Sum.inr <$> f a) <|> (pure (Sum.inl a)))
-  return (R.filterMap (fun s => match s with | .inl a => a | _ => none),
-    R.filterMap (fun s => match s with | .inr b => b | _ => none))
+  return (R.filterMap Sum.getLeft, R.filterMap Sum.getRight)
 
 namespace Lean.MVarId
 

@@ -12,7 +12,7 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `prod`

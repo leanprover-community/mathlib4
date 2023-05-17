@@ -11,7 +11,10 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ScopedNS
+import Mathlib.Tactic.Replace
+import Mathlib.Tactic.SolveByElim
 
 /-!
 

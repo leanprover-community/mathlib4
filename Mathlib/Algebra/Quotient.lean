@@ -9,8 +9,6 @@ Authors: Anne Baanen
 ! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Tactic.Common
-
 /-!
 # Algebraic quotients
 

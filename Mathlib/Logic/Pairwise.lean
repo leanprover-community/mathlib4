@@ -11,7 +11,6 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relation
 import Mathlib.Init.Set
-import Mathlib.Tactic.Common
 
 /-!
 # Relations holding pairwise

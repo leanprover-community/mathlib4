@@ -11,7 +11,7 @@ Coinductive formalization of unbounded computations.
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Basic
 
 /-!
 # Coinductive formalization of unbounded computations.

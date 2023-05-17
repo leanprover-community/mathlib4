@@ -10,8 +10,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Use
 import Mathlib.Init.Data.Quot
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Relation closures
