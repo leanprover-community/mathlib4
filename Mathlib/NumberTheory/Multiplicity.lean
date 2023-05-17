@@ -257,28 +257,15 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
       ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Misc2.lean:80:4: warning: unsupported fin_cases 'using hy' clause -/
+-- porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
-  -- Replace `x : ℤ` with `y : zmod 4`
-  replace hx : x % (2 : ℕ) = 1 % (2 : ℕ);
-  · rw [Int.odd_iff] at hx
-    norm_num [hx]
-    rw [hx]
-    decide
-  calc
-    x ^ 2 % (4 : ℕ) = 1 % (4 : ℕ) := _
-    _ = 1 := by norm_num
-  rw [← ZMod.int_cast_eq_int_cast_iff'] at hx⊢
-  push_cast
-  rw [← map_intCast (ZMod.castHom (show 2 ∣ 4 by norm_num) (ZMod 2)) x] at hx
-  set y : ZMod 4 := x
-  change ZMod.castHom _ (ZMod 2) y = _ at hx
-  -- Now we can just consider each of the 4 possible values for y
-        fin_cases y <;>
-        rw [hy] at hx⊢ <;>
-      revert hx <;>
-    decide
+  unfold Odd at hx
+  cases' hx with _ h
+  rw [h]
+  ring_nf
+  rw [add_assoc, ← add_mul, Int.add_mul_emod_self]
+  decide
 #align int.sq_mod_four_eq_one_of_odd Int.sq_mod_four_eq_one_of_odd
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
