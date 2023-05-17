@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.BoxIntegral.Partition.Split
-import Mathbin.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.BoxIntegral.Partition.Split
+import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 /-!
 # Box additive functions
@@ -82,8 +82,7 @@ theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f :=
   rfl
 #align box_integral.box_additive_map.coe_mk BoxIntegral.BoxAdditiveMap.coe_mk
 
-theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
-  by
+theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x := by
   rintro ⟨f, hf⟩ ⟨g, hg⟩ (rfl : f = g)
   rfl
 #align box_integral.box_additive_map.coe_injective BoxIntegral.BoxAdditiveMap.coe_injective
@@ -161,8 +160,7 @@ def ofMapSplitAdd [Fintype ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
 /-- If `g : M → N` is an additive map and `f` is a box additive map, then `g ∘ f` is a box additive
 map. -/
 @[simps (config := { fullyApplied := false })]
-def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N
-    where
+def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N where
   toFun := g ∘ f
   sum_partition_boxes' I hI π hπ := by rw [← g.map_sum, f.sum_partition_boxes hI hπ]
 #align box_integral.box_additive_map.map BoxIntegral.BoxAdditiveMap.map
@@ -170,8 +168,7 @@ def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N
 /-- If `f` is a box additive function on subboxes of `I` and `π₁`, `π₂` are two prepartitions of
 `I` that cover the same part of `I`, then `∑ J in π₁.boxes, f J = ∑ J in π₂.boxes, f J`. -/
 theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π₁ π₂ : Prepartition I}
-    (h : π₁.iUnion = π₂.iUnion) : (∑ J in π₁.boxes, f J) = ∑ J in π₂.boxes, f J :=
-  by
+    (h : π₁.iUnion = π₂.iUnion) : (∑ J in π₁.boxes, f J) = ∑ J in π₂.boxes, f J := by
   rcases exists_split_many_inf_eq_filter_of_finite {π₁, π₂} ((finite_singleton _).insert _) with
     ⟨s, hs⟩
   simp only [inf_split_many] at hs
