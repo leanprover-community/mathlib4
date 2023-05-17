@@ -1067,8 +1067,8 @@ theorem basis_repr_symm_apply (r : R) (i : ι) :
 -- Porting note: simpNF linter failed on `basis_repr_symm_apply`
 @[simp]
 theorem basis_repr_symm_apply' (r : R) (i : ι) :
-    r • Algebra.TensorProduct.basis R b i = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  rw [← basis_repr_symm_apply, Basis.repr_symm_apply, Finsupp.total_single]
+    r • Algebra.TensorProduct.basis R b i = r ⊗ₜ b i := by
+  simpa using basis_repr_symm_apply b r i
 
 end Basis
 
