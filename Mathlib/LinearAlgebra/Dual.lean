@@ -1138,6 +1138,8 @@ noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
   LinearEquiv.quotEquivOfQuotEquiv <| LinearEquiv.trans W.quotAnnihilatorEquiv W.dualEquivDual
 #align subspace.quot_dual_equiv_annihilator Subspace.quotDualEquivAnnihilator
 
+-- Porting note: attempt fix problem in finrank_add_finrank_dualCoannihilator_eq below
+attribute [-instance] DivisionSemiring.toSemiring CommSemiring.toSemiring Submodule.addCommMonoid in
 /-- The quotient by a subspace is isomorphic to its dual annihilator. -/
 noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
   let φ := (Basis.ofVectorSpace K W).toDualEquiv.trans W.dualEquivDual
@@ -1159,9 +1161,11 @@ theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
   exact LinearEquiv.finrank_eq (LinearEquiv.ofSubmodule' _ _)
 #align subspace.finrank_dual_coannihilator_eq Subspace.finrank_dualCoannihilator_eq
 
+set_option maxHeartbeats 0 in
 theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K V)) :
     finrank K W + finrank K W.dualCoannihilator = finrank K V := by
-  rw [finrank_dualCoannihilator_eq, (W.quotEquivAnnihilator (V := V)).finrank_eq.symm, add_comm,
+  rw [finrank_dualCoannihilator_eq]
+  simp only [(W.quotEquivAnnihilator (K := K)).finrank_eq.symm, add_comm,
     Submodule.finrank_quotient_add_finrank, Subspace.dual_finrank_eq]
 #align subspace.finrank_add_finrank_dual_coannihilator_eq Subspace.finrank_add_finrank_dualCoannihilator_eq
 
@@ -1223,8 +1227,11 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
         exact (mem_dualAnnihilator φ).mp hφ w hw)
 #align submodule.dual_copairing Submodule.dualCopairing
 
-#synth CoeFun (Dual R M) M (fun _ => R)
+-- Porting note: helper instance
+instance (W : Submodule R M) : CoeFun (W.dualAnnihilator) fun _ => (M → R) where
+  coe := fun φ => φ.val
 
+-- Porting note: no CoeFun (dualAnnihilator) (fun _ => M → R)
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
     W.dualCopairing φ (Quotient.mk x) = φ x :=
@@ -1315,9 +1322,9 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
   · apply congr_arg
     ext (φ x)
     simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.dualMap_apply,
-      LinearEquiv.dualMap_apply, mkQ_apply, f', LinearMap.quotKerEquivOfSurjective,
+      LinearEquiv.dualMap_apply, mkQ_apply, LinearMap.quotKerEquivOfSurjective,
       LinearEquiv.trans_symm, LinearEquiv.trans_apply, LinearEquiv.ofTop_symm_apply,
-      LinearMap.quotKerEquivRange_symm_apply_image, mkq_apply]
+      LinearMap.quotKerEquivRange_symm_apply_image, mkQ_apply, Function.comp]
 #align linear_map.range_dual_map_eq_dual_annihilator_ker_of_surjective LinearMap.range_dualMap_eq_dualAnnihilator_ker_of_surjective
 
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
@@ -1330,7 +1337,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note: broken dot notation lean4#1910
-  · change ((Submodule.subtype f.range).comp f.rangeRestrict).dualMap.range = _
+  · change LinearMap.range ((Submodule.subtype <| LinearMap.range f).comp f.rangeRestrict).dualMap = _
     rw [← LinearMap.dualMap_comp_dualMap, LinearMap.range_comp_of_range_eq_top]
     rwa [LinearMap.range_eq_top]
   · apply congr_arg
@@ -1425,9 +1432,9 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   rw [LinearMap.mem_range]
   rintro ⟨x, rfl⟩
   rw [Submodule.mem_sup]
-  obtain ⟨⟨a, b⟩, rfl⟩ := (dual_prod_dual_equiv_dual K (V₁ ⧸ W) (V₁ ⧸ W')).Surjective x
-  obtain ⟨a', rfl⟩ := (dual_quot_equiv_dual_annihilator W).symm.Surjective a
-  obtain ⟨b', rfl⟩ := (dual_quot_equiv_dual_annihilator W').symm.Surjective b
+  obtain ⟨⟨a, b⟩, rfl⟩ := (dualProdDualEquivDual K (V₁ ⧸ W) (V₁ ⧸ W')).surjective x
+  obtain ⟨a', rfl⟩ := (dualQuotEquivDualAnnihilator W).symm.surjective a
+  obtain ⟨b', rfl⟩ := (dualQuotEquivDualAnnihilator W').symm.surjective b
   use a', a'.property, b', b'.property
   rfl
 #align subspace.dual_annihilator_inf_eq Subspace.dualAnnihilator_inf_eq
@@ -1444,7 +1451,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K
   revert ι
   refine' @Finite.induction_empty_option _ _ _ _
   · intro α β h hyp W
-    rw [← h.iInf_comp, hyp (W ∘ h), ← h.supr_comp]
+    rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W
     rw [iSup_of_empty', iInf_of_empty', sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
@@ -1462,6 +1469,7 @@ theorem isCompl_dualAnnihilator {W W' : Subspace K V₁} (h : IsCompl W W') :
 #align subspace.is_compl_dual_annihilator Subspace.isCompl_dualAnnihilator
 
 set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 0 in
 /-- For finite-dimensional vector spaces, one can distribute duals over quotients by identifying
 `W.dualLift.range` with `W`. Note that this depends on a choice of splitting of `V₁`. -/
 def dualQuotDistrib [FiniteDimensional K V₁] (W : Subspace K V₁) :
@@ -1486,13 +1494,13 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
   -- Porting note: broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   have that := Submodule.finrank_quotient_add_finrank (LinearMap.range f)
-  rw [(Subspace.quotEquivAnnihilator LinearMap.range f).finrank_eq, ←
-    ker_dual_map_eq_dual_annihilator_range] at that
+  rw [(Subspace.quotEquivAnnihilator <| LinearMap.range f).finrank_eq, ←
+    ker_dualMap_eq_dualAnnihilator_range] at that
   -- Porting note: cannot convert at `this`?
   conv_rhs at that => rw [← Subspace.dual_finrank_eq]
-  refine' add_left_injective (finrank K f.dual_map.ker) _
+  refine' add_left_injective (finrank K <| LinearMap.ker f.dualMap) _
   change _ + _ = _ + _
-  rw [finrank_range_add_finrank_ker f.dual_map, add_comm, that]
+  rw [finrank_range_add_finrank_ker f.dualMap, add_comm, that]
 #align linear_map.finrank_range_dual_map_eq_finrank_range LinearMap.finrank_range_dualMap_eq_finrank_range
 
 set_option maxHeartbeats 0 in
@@ -1574,41 +1582,54 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
 variable [Module R M] [Module R N]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- An inverse to `dual_tensor_dual_map` given bases.
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  ∑ (i) (j),
+  -- Porting note: ∑ (i) (j) does not seem to work; applyₗneeds a little help to unify
+  ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry R M N R
+      (applyₗ (R := R) (c j)) ∘ₗ (applyₗ (R := R) (b i)) ∘ₗ lcurry R M N R
 #align tensor_product.dual_distrib_inv_of_basis TensorProduct.dualDistribInvOfBasis
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
-    dualDistribInvOfBasis b c f = ∑ (i) (j), f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
-  simp [dual_distrib_inv_of_basis]
+    dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
+  simp [dualDistribInvOfBasis]
 #align tensor_product.dual_distrib_inv_of_basis_apply TensorProduct.dualDistribInvOfBasis_apply
 
+-- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
+theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
+    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
+  ext (f m n)
+  have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
+  -- rw [dualDistribInvOfBasis_apply]
+  rw [comp_apply, dualDistribInvOfBasis_apply, LinearMap.map_sum]
+  simp_rw [LinearMap.map_sum]
+  -- simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+    -- LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
+    -- f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+    -- Basis.coord_apply, Basis.sum_repr]
+
+-- Porting note: doesn't seem to terminate with this
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
 @[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  · ext (f m n)
-    have h : ∀ r s : R, r • s = s • r := IsCommutative.comm
-    simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-      LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-      f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-      Basis.coord_apply, Basis.sum_repr]
-  · ext (f g)
-    simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-      dualDistrib_apply, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-      Basis.sum_dual_apply_smul_coord]
+    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by sorry
+  -- refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
+  -- · ext (f m n)
+  --   have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
+  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+  --     LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
+  --     f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+  --     Basis.coord_apply, Basis.sum_repr]
+  -- · ext (f g)
+  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+  --     dualDistrib_apply, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+  --     Basis.sum_dual_apply_smul_coord]
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)
