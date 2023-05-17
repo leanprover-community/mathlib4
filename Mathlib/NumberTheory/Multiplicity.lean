@@ -13,6 +13,7 @@ import Mathlib.Data.Int.Parity
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.Init.Meta.WellFoundedTactics
 
 /-!
 # Multiplicity in Number Theory
@@ -50,7 +51,7 @@ theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i in range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
-  rw [geom_sum₂_comm, dvd_geom_sum₂_iff_of_dvd_sub] <;> simpa using h.neg_right
+  rw [geom_sum₂_comm, dvd_geom_sum₂_iff_of_dvd_sub]; simpa using h.neg_right
 #align dvd_geom_sum₂_iff_of_dvd_sub' dvd_geom_sum₂_iff_of_dvd_sub'
 
 theorem dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
@@ -195,7 +196,7 @@ variable (hp : Nat.Prime p) (hp1 : Odd p)
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     multiplicity (↑p) (x ^ n - y ^ n) = multiplicity (↑p) (x - y) + multiplicity p n := by
-  cases n
+  cases' n with n
   · simp only [multiplicity.zero, add_top, pow_zero, sub_self, Nat.zero_eq]
   have h : (multiplicity _ _).Dom := finite_nat_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   rcases eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
@@ -215,8 +216,7 @@ theorem Int.pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x) {
     multiplicity (↑p) (x ^ n + y ^ n) = multiplicity (↑p) (x + y) + multiplicity p n := by
   rw [← sub_neg_eq_add] at hxy
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
-  refine' Int.pow_sub_pow hp hxy hx _
-  exact n
+  exact Int.pow_sub_pow hp hp1 hxy hx n
 #align multiplicity.int.pow_add_pow multiplicity.Int.pow_add_pow
 
 theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
@@ -225,8 +225,9 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
   · iterate 2 rw [← Int.coe_nat_multiplicity]
     rw [Int.ofNat_sub (Nat.pow_le_pow_of_le_left hyx n)]
     rw [← Int.coe_nat_dvd] at hxy hx
+    rw [Int.coe_nat_sub hyx] at *
     push_cast at *
-    exact Int.pow_sub_pow hp hxy hx n
+    exact Int.pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_of_le_left hyx n), multiplicity.zero,
       PartENat.top_add]
@@ -292,8 +293,10 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   cases' i with i
   · intro hxy'
     have : 2 * 2 ∣ 2 * x := by
-      convert dvd_add hxy hxy'
-      ring
+      have := dvd_add hxy hxy'
+      norm_num at *
+      rw [two_mul]
+      exact this
     have : 2 ∣ x := (mul_dvd_mul_iff_left (by norm_num)).mp this
     contradiction
   suffices ∀ x : ℤ, Odd x → x ^ 2 ^ (i + 1) % 4 = 1 by
@@ -378,8 +381,8 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     convert Int.two_pow_sub_pow hxy hx hn using 2
     rw [← multiplicity.Int.coe_nat_multiplicity]
     rfl
-  ·
-    simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
+    exact n
+  · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_of_le_left' hyx n), multiplicity.zero,
       PartENat.top_add, PartENat.add_top]
 #align nat.two_pow_sub_pow Nat.two_pow_sub_pow
@@ -407,7 +410,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
-  · exact multiplicity.Nat.pow_sub_pow hp.out hp1 hxy hx n
+  · exact multiplicity.Nat.pow_sub_pow hp.out hxy hx n
   · exact hn
   · exact Nat.sub_pos_of_lt hyx
   · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_of_lt_left hyx hn)
@@ -415,12 +418,12 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
 
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
-  cases y
+  cases' y with y
   · have := dvd_zero p
     contradiction
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
-  · exact multiplicity.Nat.pow_add_pow hp.out hp1 hxy hx hn
+  · exact multiplicity.Nat.pow_add_pow hp.out hxy hx hn
   · exact Odd.pos hn
   · simp only [add_pos_iff, Nat.succ_pos', or_true_iff]
   · exact Nat.lt_add_left _ _ _ (pow_pos y.succ_pos _)
