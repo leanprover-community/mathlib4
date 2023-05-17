@@ -175,8 +175,9 @@ theorem isNat_prime_0 : {n : ℕ} → IsNat n (nat_lit 0) → ¬ n.Prime
 theorem isNat_prime_1 : {n : ℕ} → IsNat n (nat_lit 1) → ¬ n.Prime
   | _, ⟨rfl⟩ => not_prime_one
 
-theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n → n.Prime
-  | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
+theorem isNat_prime_2 : {n n' : ℕ} →
+    IsNat n n' → Nat.ble 2 n' = true → IsNat (minFac n') n' → n.Prime
+  | _, _, ⟨rfl⟩, h1, ⟨h2⟩ => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
 
 theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
@@ -198,7 +199,8 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         let prf : Q(¬ Nat.Prime $nn) := deriveNotPrime n' d nn
         return .isFalse q(isNat_not_prime $pn $prf)
       let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
-      let ⟨true, p2n⟩ ← deriveBool q(Nat.minFac $n = $n) | failure
+      let .isNat _ _lit (p2n : Q(IsNat (minFac $nn) $nn)) ←
+        evalMinFac.core nn nn q(.raw_refl _) nn.natLit! | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 
