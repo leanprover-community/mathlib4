@@ -571,6 +571,9 @@ theorem take_zero (s : Stream' α) : take 0 s = [] :=
   rfl
 #align stream.take_zero Stream'.take_zero
 
+-- This lemma used to be simp, but we removed it from the simp set because:
+-- 1) It duplicates the (often large) `s` term, resulting in large tactic states.
+-- 2) It conflicts with the very useful `dropLast_take` lemma below (causing nonconfluence).
 theorem take_succ (n : Nat) (s : Stream' α) : take (succ n) s = head s::take n (tail s) :=
   rfl
 #align stream.take_succ Stream'.take_succ
