@@ -72,6 +72,7 @@ or is merely a tactic combinator (e.g. `by`, `;`, multiline tactics, parenthesiz
 def substantive (t : TacticInvocation) : Bool :=
   match t.name with
   | none => false
+  | some `null => false
   | some `Lean.Parser.Term.byTactic => false
   | some `Lean.Parser.Tactic.tacticSeq => false
   | some `Lean.Parser.Tactic.tacticSeq1Indented => false
@@ -239,6 +240,11 @@ def allTacticsInModule' (mod : Name) : CoreM (List (Name × List (Format × Form
 def tacticsInDecl (mod? : Option Name) (decl : Name) : MetaM (List TacticInvocation) := do
   let tree ← declInfoTree mod? decl
   return tree.tactics
+
+def tacticsInModule_format (mod : Name) : MetaM (List (Name × List (Format × Format))) := do
+  (← allTacticsInModule mod).mapM fun (n, tactics) => do return (n,
+    ← (tactics.filter fun t => t.substantive && t.original).mapM
+         fun t => do return (← t.goalState, ← t.pp))
 
 def tacticsInDecl_format (mod? : Option Name) (decl : Name) : MetaM (List (Format × Format)) := do
   -- Only report tactics with "original" syntax positions,
