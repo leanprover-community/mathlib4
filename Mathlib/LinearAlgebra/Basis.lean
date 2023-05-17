@@ -74,9 +74,6 @@ open Function Set Submodule
 
 open BigOperators
 
--- Porting note: TODO: workaround for lean4#2074
--- attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
 
@@ -1555,9 +1552,6 @@ instance : IsAtomistic (Submodule K V) where
     exact nonzero_span_atom w hw
 
 end AtomsOfSubmoduleLattice
-
--- Porting note: TODO: workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 variable {K V}
 
