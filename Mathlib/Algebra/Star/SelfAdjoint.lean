@@ -376,7 +376,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
-  inv x := ⟨x.val⁻¹, IsSelfAdjoint.inv x.prop⟩
+  inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
 theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
@@ -384,7 +384,7 @@ theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
 #align self_adjoint.coe_inv selfAdjoint.val_inv
 
 instance : Div (selfAdjoint R) where
-  div x y := ⟨x / y, IsSelfAdjoint.div x.prop y.prop⟩
+  div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
 theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
@@ -392,7 +392,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
 #align self_adjoint.coe_div selfAdjoint.val_div
 
 instance : Pow (selfAdjoint R) ℤ where
-  pow x z := ⟨(x : R) ^ z, IsSelfAdjoint.zpow x.prop z⟩
+  pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
 theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=

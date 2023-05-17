@@ -506,8 +506,7 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with
-    commutes' := fun n => by simp }
+  { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,

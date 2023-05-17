@@ -324,11 +324,9 @@ open Pointwise
 
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] :
-    HasDistribNeg (Submodule R A) :=
-  Function.Injective.hasDistribNeg _ toAddSubmonoid_injective
-    neg_toAddSubmonoid mul_toAddSubmonoid
+This is available as an instance in the `Pointwise` locale. -/
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
