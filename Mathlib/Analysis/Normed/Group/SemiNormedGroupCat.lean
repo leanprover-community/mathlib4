@@ -30,19 +30,33 @@ open CategoryTheory
 /-- The category of seminormed abelian groups and bounded group homomorphisms. -/
 def SemiNormedGroup : Type (u + 1) :=
   Bundled SeminormedAddCommGroup
+
+set_option linter.uppercaseLean3 false --in [linter.uppercaseLean3]
 #align SemiNormedGroup SemiNormedGroup
 
 namespace SemiNormedGroup
 
-instance bundledHom : BundledHom @NormedAddGroupHom :=
-  ⟨@NormedAddGroupHom.toFun, @NormedAddGroupHom.id, @NormedAddGroupHom.comp,
-    @NormedAddGroupHom.coe_inj⟩
+instance bundledHom : BundledHom @NormedAddGroupHom where
+  toFun := @NormedAddGroupHom.toFun
+  id := @NormedAddGroupHom.id
+  comp := @NormedAddGroupHom.comp
+
 #align SemiNormedGroup.bundled_hom SemiNormedGroup.bundledHom
 
-deriving instance LargeCategory, ConcreteCategory for SemiNormedGroup
+deriving instance LargeCategory for SemiNormedGroup
 
-instance : CoeSort SemiNormedGroup (Type u) :=
-  Bundled.hasCoeToSort
+--Porting note: deriving fails for ConcreteCategory, adding instance manually.
+--deriving instance LargeCategory, ConcreteCategory for SemiRingCat
+instance : ConcreteCategory SemiNormedGroup := by
+  dsimp [SemiNormedGroup]
+  infer_instance
+
+--Porting Note: hasCoeToSort doesn't exist anymore
+--instance : CoeSort SemiNormedGroup (Type u) :=
+--  Bundled.hasCoeToSort
+
+instance : CoeSort SemiNormedGroup (Type _) where
+  coe X := X.α
 
 /-- Construct a bundled `SemiNormedGroup` from the underlying type and typeclass. -/
 def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup :=
@@ -52,13 +66,17 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup :=
 instance (M : SemiNormedGroup) : SeminormedAddCommGroup M :=
   M.str
 
+/-- Porting Note: Added -- needed to make coe_id work-/
+instance {X Y : SemiNormedGroup} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
+
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroup.of V : Type u) = V :=
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroup.coe_of
 
 @[simp]
-theorem coe_id (V : SemiNormedGroup) : ⇑(𝟙 V) = id :=
+theorem coe_id (V : SemiNormedGroup) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroup.coe_id
 
@@ -75,7 +93,11 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup.of_unique SemiNormedGroup.ofUnique
 
+/-porting note: originally empty, which didn't work. Now problems with universe levels...-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup where
+  Zero X Y := NormedAddGroupHom.zero
+  comp_zero _ _ := rfl
+  zero_comp X Y Z f:=  (NormedAddGroupHom.zero_comp Y Z X _ _ _ f: _ = 0)
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
@@ -229,4 +251,3 @@ theorem iso_isometry {V W : SemiNormedGroup₁} (i : V ≅ W) : Isometry i.hom :
 #align SemiNormedGroup₁.iso_isometry SemiNormedGroup₁.iso_isometry
 
 end SemiNormedGroup₁
-
