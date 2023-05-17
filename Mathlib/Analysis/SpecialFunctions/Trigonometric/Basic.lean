@@ -1003,6 +1003,10 @@ theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
 
+-- Porting note: added
+@[simp]
+theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
+
 theorem tan_add_pi (x : ℝ) : tan (x + π) = tan x :=
   tan_periodic x
 #align real.tan_add_pi Real.tan_add_pi
