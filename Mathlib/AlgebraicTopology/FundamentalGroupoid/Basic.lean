@@ -392,9 +392,9 @@ def fromTop {X : TopCat} (x : X) : πₓ X := x
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
+-- Porting note: Added `(X := X)` to the type.
 @[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
-  p
+def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient (X := X) x₀ x₁ := p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
 /-- Help the typechecker by convering a path in a topological space to an arrow in the
