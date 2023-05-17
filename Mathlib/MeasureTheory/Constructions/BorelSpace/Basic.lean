@@ -186,7 +186,7 @@ class BorelSpace (α : Type _) [TopologicalSpace α] [MeasurableSpace α] : Prop
 
 namespace Mathlib.Tactic
 
-open Lean Elab Tactic Meta
+open Lean Elab Term Tactic Meta
 
 /-- The behaviour of `borelize α` depends on the existing assumptions on `α`.
 
@@ -198,62 +198,33 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
-def addBorelInstance (e : Expr) : TacticM Unit :=
-  liftMetaTactic fun m₁ => do
-    let nm₁ ← getUnusedUserName `inst
-    let ms ← mkAppOptM ``MeasurableSpace #[e]
-    let bo ← mkAppOptM ``borel #[e, none]
-    let i₁ ← mkFreshFVarId
-    m₁.modifyDecl fun mdcl =>
-      { mdcl with
-        lctx := mdcl.lctx.mkLetDecl i₁ nm₁ ms bo,
-        localInstances := mdcl.localInstances.push
-          { className := ``MeasurableSpace,
-            fvar := bo } }
-    m₁.withContext do
-      let nm₂ ← getUnusedUserName `inst
-      let bs ← mkAppOptM ``BorelSpace #[e, none, none]
-      let rf ← mkEqRefl bo
-      let bm ← mkAppOptM ``BorelSpace.mk #[none, none, none, rf]
-      let i₂ ← mkFreshFVarId
-      m₁.modifyDecl fun mdcl =>
-        { mdcl with
-          lctx := mdcl.lctx.mkLetDecl i₂ nm₂ bs bm,
-          localInstances := mdcl.localInstances.push
-            { className := ``BorelSpace,
-              fvar := bm } }
-      return [m₁]
+/-- Add instances `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
+def addBorelInstance (t : Term) : TacticM Unit := do
+  evalTactic <| ← `(tactic|
+    refine_lift
+      letI : MeasurableSpace $t := borel $t
+      haveI : BorelSpace $t := ⟨rfl⟩
+      ?_)
 
-/-- Given a type `e`, an assumption `i : MeasurableSpace α`, and an instance `[BorelSpace e]`,
-replace `i` with `borel e`. -/
-def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit :=
-  liftMetaTactic fun m₁ => do
-    let nm ← i.getUserName
-    let ms ← mkAppOptM ``MeasurableSpace #[e]
-    let bo ← mkAppOptM ``borel #[e, none]
-    let eq ← mkEq (mkFVar i) bo
-    let me ← mkAppOptM ``BorelSpace.measurable_eq #[e, none, none, none]
-    let m₂ ← m₁.assert .anonymous eq me
-    let (_, m₃) ← m₂.intro .anonymous
-    let m₄ ← subst m₃ i
-    let i₂ ← mkFreshFVarId
-    m₄.modifyDecl fun mdcl =>
-      { mdcl with
-        lctx := mdcl.lctx.mkLetDecl i₂ nm ms bo,
-        localInstances := mdcl.localInstances.push
-          { className := ``MeasurableSpace,
-            fvar := bo } }
-    return [m₄]
+/-- Given a type `$t`, an assumption `i : MeasurableSpace $t`, and an instance `[BorelSpace $t]`,
+replace `i` with `borel $t`. -/
+def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
+  evalTactic <| ← `(tactic|
+    have := @BorelSpace.measurable_eq $t _ _ _)
+  liftMetaTactic fun m => return [← subst m i]
+  evalTactic <| ← `(tactic|
+    refine_lift
+      letI : MeasurableSpace $t := borel $t
+      ?_)
 
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Syntax) : TacticM Unit := do
+def borelize (t : Term) : TacticM Unit := do
   let u ← mkFreshLevelMVar
-  let e ← elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let e ← Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance e) (borelToRefl e)
+  i?.elim (addBorelInstance t) (borelToRefl t)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
