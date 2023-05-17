@@ -65,13 +65,10 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
 
 theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i))
     (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
-    ∃ r : ℝ,
-      ∀ᶠ y in 𝓝 x,
-        r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i } :=
-  by
-  have :=
-    (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
-      (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
+    ∃ r : ℝ, ∀ᶠ y in 𝓝 x,
+      r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i } := by
+  have := (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
+    (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
   rcases this.exists_gt with ⟨r, hr0, hr⟩
   refine' ⟨r, hr.mono fun y hy => ⟨hr0, _⟩⟩
   rwa [mem_preimage, mem_interᵢ₂]
@@ -80,11 +77,9 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
 theorem exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
-  (convex_Ioi _).inter <|
-    OrdConnected.convex <|
-      OrdConnected.preimage_ennreal_ofReal <|
-        ordConnected_interᵢ fun i =>
-          ordConnected_interᵢ fun (_ : y ∈ K i) => ordConnected_setOf_closedBall_subset y (U i)
+  (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
+    ordConnected_interᵢ fun i =>
+      ordConnected_interᵢ fun (_ : y ∈ K i) => ordConnected_setOf_closedBall_subset y (U i)
 #align emetric.exists_forall_closed_ball_subset_aux₂ EMetric.exists_forall_closedBall_subset_aux₂
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
@@ -93,8 +88,8 @@ exists a positive continuous function `δ : C(X, ℝ)` such that for any `i` and
 we have `EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i`. -/
 theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
-    ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (ENNReal.ofReal <| δ x) ⊆ U i :=
-  by
+    ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧
+      ∀ (i), ∀ x ∈ K i, closedBall x (ENNReal.ofReal <| δ x) ⊆ U i := by
   simpa only [mem_inter_iff, forall_and, mem_preimage, mem_interᵢ, @forall_swap ι X] using
     exists_continuous_forall_mem_convex_of_local_const exists_forall_closedBall_subset_aux₂
       (exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
