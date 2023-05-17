@@ -82,6 +82,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
       · unit_interval
       · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
       · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
+set_option linter.uppercaseLean3 false in
 #align path.homotopy.refl_trans_symm_aux_mem_I Path.Homotopy.reflTransSymmAux_mem_I
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
@@ -146,6 +147,7 @@ theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
 theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
+set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
@@ -216,6 +218,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
+set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
@@ -254,11 +257,8 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     linarith
   · exfalso
     linarith
-  · have h : ¬(x : ℝ) + 1 / 4 ≤ 1 / 2 := by linarith
-    have h' : 2 * ((x : ℝ) + 1 / 4) - 1 ≤ 1 / 2 := by linarith
-    have h'' : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
-    simp [h₂, h₁, h, h', h'', dif_neg (show ¬False from id), dif_pos True.intro, if_false,
-      if_true]
+  · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
+    simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
   · exfalso
     linarith
   · exfalso
@@ -271,9 +271,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     linarith
   · exfalso
     linarith
-  · have h : ¬(1 / 2 : ℝ) * (x + 1) ≤ 1 / 2 := by linarith
-    have h' : ¬2 * ((1 / 2 : ℝ) * (x + 1)) - 1 ≤ 1 / 2 := by linarith
-    simp only [h₁, h, h', if_false, dif_neg (show ¬False from id)]
+  · simp only [h₁, if_false, dif_neg (show ¬False from id)]
     congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
@@ -356,25 +354,24 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
     { obj := f
-      map := fun {X Y} p => by simp only at X Y; exact Path.Homotopic.Quotient.mapFn p f
+      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
-        simp only at x y z
-        exact Quotient.inductionOn₂ p q fun a b => by
-          simp [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift] }
-  map_id := by
-    intro X
+        refine' Quotient.inductionOn₂ p q fun a b => _
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
+        rfl }
+  map_id X := by
+    simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
-    ext (x y p)
+    ext x y p
     refine' Quotient.inductionOn p fun q => _
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
-    rfl
-  map_comp := by
-    intro X Y Z f g
+  map_comp f g := by
+    simp only
     congr
-    ext (x y p)
+    ext x y p
     refine' Quotient.inductionOn p fun q => _
     simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
     rfl
