@@ -265,7 +265,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = Finset.val := by
       funext
       simp [Finsupp.toMultiset_sum_single]
-    rw [degrees, support_esymm, sup_image, this]
+    rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetLen n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetLen n univ) val := by
       refine' comp_sup_eq_sup_comp _ _ _
