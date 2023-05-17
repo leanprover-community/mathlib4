@@ -240,10 +240,9 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
-    if n0 : n = 0 then
-      by
-        simp [n0]
-        exact z
+    if n0 : n = 0 then by
+      simp [n0]
+      exact z
     else by
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by

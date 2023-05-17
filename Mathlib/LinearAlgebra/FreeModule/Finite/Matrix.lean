@@ -40,7 +40,6 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Free R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
@@ -51,7 +50,6 @@ instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
 
 variable {R}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Finite R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
@@ -88,10 +86,9 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The finrank of `M →ₗ[R] N` is `(finrank R M) * (finrank R N)`. -/
-theorem FiniteDimensional.finrank_linearMap : finrank R (M →ₗ[R] N) = finrank R M * finrank R N :=
-  by
+theorem FiniteDimensional.finrank_linearMap :
+    finrank R (M →ₗ[R] N) = finrank R M * finrank R N := by
   classical
     letI := nontrivial_of_invariantBasisNumber R
     have h := LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)

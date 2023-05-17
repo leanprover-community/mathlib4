@@ -206,8 +206,7 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 #align encodable.decode₂_eq_some Encodable.decode₂_eq_some
 
 @[simp]
-theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
-  by
+theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
   ext
   simp [mem_decode₂, eq_comm, decode₂_eq_some]
 #align encodable.decode₂_encode Encodable.decode₂_encode
@@ -327,8 +326,7 @@ theorem decode_one : (decode 1: Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
-theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
-  by
+theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   suffices decodeSum n = none by
     change (decodeSum n).bind _ = none
     rw [this]
@@ -646,8 +644,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
 #align directed.sequence Directed.sequence
 
 theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
-    r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) :=
-  by
+    r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize eq : hf.sequence f n = p
   cases' h : (decode n: Option α) with a

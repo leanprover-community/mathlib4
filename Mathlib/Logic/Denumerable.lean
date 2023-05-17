@@ -336,10 +336,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
-    have h₂ :
-      (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) :=
-      by
+    have h₂ : (range (succ (ofNat s n))).filter (· ∈ s) =
+        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
