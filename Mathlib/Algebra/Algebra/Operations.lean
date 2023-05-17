@@ -133,7 +133,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
-  induction x using MulOpposite.rec'
+  induction x using MulOpposite.rec
   simp
 #align submodule.map_op_one Submodule.map_op_one
 
@@ -288,7 +288,7 @@ theorem map_op_mul :
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
-  · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
+  · refine' mul_le.2 (MulOpposite.rec fun m hm => MulOpposite.rec fun n hn => _)
     rw [Submodule.mem_map_equiv] at hm hn⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
