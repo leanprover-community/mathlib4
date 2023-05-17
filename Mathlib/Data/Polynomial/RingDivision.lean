@@ -87,7 +87,6 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 #align polynomial.add_mod_by_monic Polynomial.add_modByMonic
 
-set_option synthInstance.etaExperiment true in
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
@@ -917,7 +916,7 @@ theorem bUnion_roots_finite {R S : Type _} [Semiring R] [CommRing S] [IsDomain S
     (d : ℕ) {U : Set R} (h : U.Finite) :
     (⋃ (f : R[X]) (_hf : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset.toSet : Set S)).Finite :=
-  Set.Finite.bunionᵢ
+  Set.Finite.biUnion
     (by
       -- We prove that the set of polynomials under consideration is finite because its
       -- image by the injective map `π` is finite
@@ -1202,11 +1201,6 @@ theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f :
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
-/- Porting note: resolving a diamond from Ring to NonAssocSemiRing in RingHom TC search
-This also works
-`attribute [-instance] Ring.toNonAssocRing`
--/
-set_option synthInstance.etaExperiment true in
 theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by

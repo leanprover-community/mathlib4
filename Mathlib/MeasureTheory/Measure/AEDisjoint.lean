@@ -39,12 +39,12 @@ theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
   refine' ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
     measurableSet_toMeasurable _ _, fun i => _, _⟩
-  · simp only [measure_toMeasurable, inter_unionᵢ]
-    exact (measure_bunionᵢ_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
+  · simp only [measure_toMeasurable, inter_iUnion]
+    exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
   · simp only [Pairwise, disjoint_left, onFun, mem_diff, not_and, and_imp, Classical.not_not]
     intro i j hne x hi hU hj
-    replace hU : x ∉ s i ∩ unionᵢ λ j => unionᵢ λ _ => s j := λ h => hU (subset_toMeasurable _ _ h)
-    simp only [mem_inter_iff, mem_unionᵢ, not_and, not_exists] at hU
+    replace hU : x ∉ s i ∩ iUnion λ j => iUnion λ _ => s j := λ h => hU (subset_toMeasurable _ _ h)
+    simp only [mem_inter_iff, mem_iUnion, not_and, not_exists] at hU
     exact (hU hi j hne.symm hj).elim
 #align measure_theory.exists_null_pairwise_disjoint_diff MeasureTheory.exists_null_pairwise_disjoint_diff
 
@@ -93,25 +93,25 @@ protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ
 #align measure_theory.ae_disjoint.congr MeasureTheory.AEDisjoint.congr
 
 @[simp]
-theorem unionᵢ_left_iff [Countable ι] {s : ι → Set α} :
+theorem iUnion_left_iff [Countable ι] {s : ι → Set α} :
     AEDisjoint μ (⋃ i, s i) t ↔ ∀ i, AEDisjoint μ (s i) t := by
-  simp only [AEDisjoint, unionᵢ_inter, measure_unionᵢ_null_iff]
-#align measure_theory.ae_disjoint.Union_left_iff MeasureTheory.AEDisjoint.unionᵢ_left_iff
+  simp only [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
+#align measure_theory.ae_disjoint.Union_left_iff MeasureTheory.AEDisjoint.iUnion_left_iff
 
 @[simp]
-theorem unionᵢ_right_iff [Countable ι] {t : ι → Set α} :
+theorem iUnion_right_iff [Countable ι] {t : ι → Set α} :
     AEDisjoint μ s (⋃ i, t i) ↔ ∀ i, AEDisjoint μ s (t i) := by
-  simp only [AEDisjoint, inter_unionᵢ, measure_unionᵢ_null_iff]
-#align measure_theory.ae_disjoint.Union_right_iff MeasureTheory.AEDisjoint.unionᵢ_right_iff
+  simp only [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
+#align measure_theory.ae_disjoint.Union_right_iff MeasureTheory.AEDisjoint.iUnion_right_iff
 
 @[simp]
 theorem union_left_iff : AEDisjoint μ (s ∪ t) u ↔ AEDisjoint μ s u ∧ AEDisjoint μ t u := by
-  simp [union_eq_unionᵢ, and_comm]
+  simp [union_eq_iUnion, and_comm]
 #align measure_theory.ae_disjoint.union_left_iff MeasureTheory.AEDisjoint.union_left_iff
 
 @[simp]
 theorem union_right_iff : AEDisjoint μ s (t ∪ u) ↔ AEDisjoint μ s t ∧ AEDisjoint μ s u := by
-  simp [union_eq_unionᵢ, and_comm]
+  simp [union_eq_iUnion, and_comm]
 #align measure_theory.ae_disjoint.union_right_iff MeasureTheory.AEDisjoint.union_right_iff
 
 theorem union_left (hs : AEDisjoint μ s u) (ht : AEDisjoint μ t u) : AEDisjoint μ (s ∪ t) u :=

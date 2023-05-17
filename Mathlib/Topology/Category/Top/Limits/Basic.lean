@@ -77,7 +77,7 @@ def limitConeInfi (F : J ⥤ TopCatMax.{v, u}) : Cone F where
       ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
   π :=
     { app := fun j =>
-        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (infᵢ_le _ _)⟩
+        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
 #align Top.limit_cone_infi TopCat.limitConeInfi
@@ -120,7 +120,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     rw [Category.id_comp]
   · exact
     continuous_iff_coinduced_le.mpr
-      (le_infᵢ fun j =>
+      (le_iInf fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
   · rfl
@@ -138,15 +138,15 @@ instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 #align Top.Top_has_limits TopCat.topCat_hasLimits
 
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} forget where
+instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,v} F)
-          (Types.limitConeIsLimit.{v,v} (F ⋙ forget)) }
+        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
+          (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize.{u}
+  TopCat.forgetPreservesLimitsOfSize.{u,u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
@@ -161,7 +161,7 @@ def colimitCocone (F : J ⥤ TopCatMax.{v, u}) : Cocone F where
     { app := fun j =>
         ⟨(Types.colimitCocone (F ⋙ forget)).ι.app j, continuous_iff_coinduced_le.mpr <|
           -- Porting note: didn't need function before
-          le_supᵢ (fun j => coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
+          le_iSup (fun j => coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.colimitCocone (F ⋙ forget)).ι.naturality f) }
 #align Top.colimit_cocone TopCat.colimitCocone
@@ -183,7 +183,7 @@ def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCoco
     rw [Category.comp_id]
   · exact
     continuous_iff_le_induced.mpr
-      (supᵢ_le fun j =>
+      (iSup_le fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
   · rfl

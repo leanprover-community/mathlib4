@@ -173,7 +173,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
-  rw [map₂, supᵢ_toAddSubmonoid]
+  rw [map₂, iSup_toAddSubmonoid]
   rfl
 #align submodule.mul_to_add_submonoid Submodule.mul_toAddSubmonoid
 
@@ -261,9 +261,9 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
   calc
     map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
-      map_supᵢ _ _
+      map_iSup _ _
     _ = map f.toLinearMap M * map f.toLinearMap N := by
-      apply congr_arg supₛ
+      apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- porting note: added `⟨⟩`
@@ -322,21 +322,11 @@ section
 
 open Pointwise
 
-/-
-Porting note: the following def ought to be
-```
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
-  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
-```
-but this is not possible due to η-for-classes issues. See lean4#2074
--/
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] :
-    HasDistribNeg (@Submodule R A _ _ Algebra.toModule) :=
-  @Function.Injective.hasDistribNeg _ _ _ _ (id _) _ _ toAddSubmonoid_injective
-    (@neg_toAddSubmonoid R A _ _ Algebra.toModule) mul_toAddSubmonoid
+This is available as an instance in the `Pointwise` locale. -/
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
@@ -364,13 +354,13 @@ theorem mul_eq_span_mul_set (s t : Submodule R A) : s * t = span R ((s : Set A) 
   map₂_eq_span_image2 _ s t
 #align submodule.mul_eq_span_mul_set Submodule.mul_eq_span_mul_set
 
-theorem supᵢ_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
-  map₂_supᵢ_left _ s t
-#align submodule.supr_mul Submodule.supᵢ_mul
+theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
+  map₂_iSup_left _ s t
+#align submodule.supr_mul Submodule.iSup_mul
 
-theorem mul_supᵢ (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
-  map₂_supᵢ_right _ t s
-#align submodule.mul_supr Submodule.mul_supᵢ
+theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
+  map₂_iSup_right _ t s
+#align submodule.mul_supr Submodule.mul_iSup
 
 theorem mem_span_mul_finite_of_mem_mul {P Q : Submodule R A} {x : A} (hx : x ∈ P * Q) :
     ∃ T T' : Finset A, (T : Set A) ⊆ P ∧ (T' : Set A) ⊆ Q ∧ x ∈ span R (T * T' : Set A) :=
