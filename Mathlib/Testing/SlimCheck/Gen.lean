@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Control.Random
--- import Mathlib.Data.List.Perm
--- import Mathlib.Data.Subtype
--- import Mathlib.Data.Nat.Basic
+import Mathlib.Data.List.Perm
+import Mathlib.Data.Subtype
+import Mathlib.Data.Nat.Basic
 
 /-!
 # `Gen` Monad
