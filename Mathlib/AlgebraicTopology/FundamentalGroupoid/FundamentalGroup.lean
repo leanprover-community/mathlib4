@@ -8,11 +8,11 @@ Authors: Mark Lavrentyev
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.Topology.PathConnected
-import Mathbin.Topology.Homotopy.Path
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.Basic
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Homotopy.Path
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Fundamental group of a space
