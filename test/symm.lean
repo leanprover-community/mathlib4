@@ -41,12 +41,12 @@ infixl:25 " ≃* " => MulEquiv
 def foo_symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   { h.toEquiv.symm with map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
 
-def myEq (n m : Nat) := ∃ k, n + k = m ∧ m + k = n
+def MyEq (n m : Nat) := ∃ k, n + k = m ∧ m + k = n
 
-@[symm] lemma myEq.symm {n m : Nat} (h : myEq n m) : myEq m n := by
+@[symm] lemma MyEq.symm {n m : Nat} (h : MyEq n m) : MyEq m n := by
   rcases h with ⟨k, h1, h2⟩
   exact ⟨k, h2, h1⟩
 
-example {n m : Nat} (h : myEq n m) : myEq m n := by
+example {n m : Nat} (h : MyEq n m) : MyEq m n := by
   symm
   assumption
