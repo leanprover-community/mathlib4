@@ -8,10 +8,10 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Over
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Products in the over category
@@ -50,8 +50,7 @@ def widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Ov
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
-    Cone (widePullbackDiagramOfDiagramOver B F)
-    where
+    Cone (widePullbackDiagramOfDiagramOver B F) where
   pt := c.pt.left
   π :=
     { app := fun X => Option.casesOn X c.pt.Hom fun j : J => (c.π.app ⟨j⟩).left
@@ -66,8 +65,7 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
-    Cone F ⥤ Cone (widePullbackDiagramOfDiagramOver B F)
-    where
+    Cone F ⥤ Cone (widePullbackDiagramOfDiagramOver B F) where
   obj := conesEquivInverseObj B F
   map c₁ c₂ f :=
     { Hom := f.Hom.left
@@ -84,8 +82,7 @@ attribute [local tidy] tactic.discrete_cases
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
-    Cone (widePullbackDiagramOfDiagramOver B F) ⥤ Cone F
-    where
+    Cone (widePullbackDiagramOfDiagramOver B F) ⥤ Cone F where
   obj c :=
     { pt := Over.mk (c.π.app none)
       π :=
@@ -128,8 +125,7 @@ def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
 -/
 @[simps]
 def conesEquiv (B : C) (F : Discrete J ⥤ Over B) :
-    Cone (widePullbackDiagramOfDiagramOver B F) ≌ Cone F
-    where
+    Cone (widePullbackDiagramOfDiagramOver B F) ≌ Cone F where
   Functor := conesEquivFunctor B F
   inverse := conesEquivInverse B F
   unitIso := conesEquivUnitIso B F
