@@ -302,13 +302,15 @@ theorem coe_to_continuous_linear_map' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.to
 #align linear_map.coe_to_continuous_linear_map' LinearMap.coe_to_continuous_linear_map'
 
 @[simp]
-theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') : ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
+theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+    ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
   rfl
 #align linear_map.coe_to_continuous_linear_map LinearMap.coe_toContinuousLinearMap
 
 @[simp]
 theorem coe_toContinuousLinearMap_symm :
-    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm = ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
+    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm =
+      ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
 #align linear_map.coe_to_continuous_linear_map_symm LinearMap.coe_toContinuousLinearMap_symm
 
@@ -319,18 +321,20 @@ theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
 #align linear_map.det_to_continuous_linear_map LinearMap.det_toContinuousLinearMap
 
 @[simp]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') : ker (LinearMap.toContinuousLinearMap f) = ker f :=
+theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+    ker (LinearMap.toContinuousLinearMap f) = ker f :=
   rfl
 #align linear_map.ker_to_continuous_linear_map LinearMap.ker_toContinuousLinearMap
 
 @[simp]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') : range (LinearMap.toContinuousLinearMap f) = range f :=
+theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+    range (LinearMap.toContinuousLinearMap f) = range f :=
   rfl
 #align linear_map.range_to_continuous_linear_map LinearMap.range_toContinuousLinearMap
 
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
-theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) : IsOpenMap f :=
-  by
+theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
+    IsOpenMap f := by
   rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
   refine' IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, _, _, fun y => _⟩
   · exact
