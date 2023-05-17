@@ -23,9 +23,8 @@ its minimal factor. Todo: compute the list of all factors.
 
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression
 that is thousands of levels deep, and the Lean kernel seems to raise a stack overflow when
-type-checking that proof. We could try to produce a proof term that uses `let` expressions for
-subproofs to mitigate this, but for much larger numbers we need a more efficient primality checker
-anyway.
+type-checking that proof. If we want an implementation that works for larger primes, we should
+generate a proof that has a smaller depth.
 
 Note: `evalMinFac.aux` does not raise an stack overflow, which can be checked by replacing the
 `prf'` in the recursive call by something like `(.sort .zero)`
