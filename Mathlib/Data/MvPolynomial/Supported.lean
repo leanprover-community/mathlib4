@@ -76,6 +76,7 @@ set_option linter.uppercaseLean3 false in
 variable {s t : Set σ}
 
 theorem mem_supported : p ∈ supported R s ↔ ↑p.vars ⊆ s := by
+  classical
   rw [supported_eq_range_rename, AlgHom.mem_range]
   constructor
   · rintro ⟨p, rfl⟩
