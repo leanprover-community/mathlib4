@@ -11,7 +11,6 @@ Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 import Mathlib.Data.Polynomial.Div
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Tactic.SimpIntro
 
 /-!
 # Quotients of polynomial rings
@@ -105,7 +104,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
   map_add' f g := by simp only [eval₂_add, coe_eval₂RingHom]
   left_inv := by
     intro f
-    refine Polynomial.induction_on' f ?_ ?_
+    refine' Polynomial.induction_on' f _ _
     · intro p q hp hq
       simp only [coe_eval₂RingHom] at hp hq
       simp only [coe_eval₂RingHom, hp, hq, RingHom.map_add]
@@ -115,7 +114,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
         RingHom.coe_comp, RingHom.map_mul, eval₂_X, Function.comp_apply]
   right_inv := by
     rintro ⟨f⟩
-    refine Polynomial.induction_on' f ?_ ?_
+    refine' Polynomial.induction_on' f _ _
     · -- Porting note: was `simp_intro p q hp hq`
       intros p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
@@ -138,8 +137,8 @@ theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
-    I.polynomialQuotientEquivQuotientPolynomial (f.map <| Ideal.Quotient.mk I) =
-    Quotient.mk ((map C I : Ideal R[X])) f := by
+    I.polynomialQuotientEquivQuotientPolynomial (f.map <| Quotient.mk I) =
+    Quotient.mk (map C I : Ideal R[X]) f := by
   apply (polynomialQuotientEquivQuotientPolynomial I).symm.injective
   rw [RingEquiv.symm_apply_apply, polynomialQuotientEquivQuotientPolynomial_symm_mk]
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_map_mk Ideal.polynomialQuotientEquivQuotientPolynomial_map_mk
@@ -185,9 +184,8 @@ namespace MvPolynomial
 variable {R : Type _} {σ : Type _} [CommRing R] {r : R}
 
 theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
-    (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R))).comp C
-        i =
-      0 := by
+    (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :
+      Ideal (MvPolynomial σ R))).comp C i = 0 := by
   simp only [Function.comp_apply, RingHom.coe_comp, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.mem_map_of_mem _ hi
 #align mv_polynomial.quotient_map_C_eq_zero MvPolynomial.quotient_map_C_eq_zero
