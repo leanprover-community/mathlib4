@@ -85,21 +85,19 @@ theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = fal
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
 
-theorem isNat_minFac_1 : {a : ℕ} → {a' : ℕ} →
-    IsNat a a' → a' = 1 → IsNat a.minFac 1
+theorem isNat_minFac_1 : {a a' : ℕ} → IsNat a a' → a' = 1 → IsNat a.minFac 1
   | _, _, ⟨rfl⟩, rfl => ⟨minFac_one⟩
 
-theorem isNat_minFac_2 : {a : ℕ} → {a' : ℕ} →
-    IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
+theorem isNat_minFac_2 : {a a' : ℕ} → IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
   | a, _, ⟨rfl⟩, h => ⟨by rw [cast_ofNat, minFac_eq_two_iff, Nat.dvd_iff_mod_eq_zero, h]⟩
 
-theorem isNat_minFac_3 : {n : ℕ} → {n' : ℕ} → {k : ℕ} → {k' : ℕ} →
+theorem isNat_minFac_3 : {n n' k k' : ℕ} →
     IsNat n n' → IsNat k k' → MinFacHelper n' k → n' % k = 0 → IsNat (minFac n) k'
   | n, _, k, _, ⟨rfl⟩, ⟨rfl⟩, h1, h2 => by
     rw [← Nat.dvd_iff_mod_eq_zero] at h2
     exact ⟨le_antisymm (minFac_le_of_dvd h1.1.le h2) h1.2.2⟩
 
-theorem isNat_minFac_4 : {n : ℕ} → {n' : ℕ} → {k : ℕ} →
+theorem isNat_minFac_4 : {n n' k : ℕ} →
     IsNat n n' → MinFacHelper n' k → (k * k).ble n' = false → IsNat (minFac n) n'
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
@@ -111,15 +109,14 @@ theorem isNat_minFac_4 : {n : ℕ} → {n' : ℕ} → {k : ℕ} →
       _ ≤ n.minFac := h1.2.2
       _ ≤ m        := Nat.minFac_le_of_dvd hm h2mn
 
-theorem isNat_prime_1 : {n : ℕ} → {n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
+theorem isNat_prime_1 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = false → ¬ n.Prime
   | _, _, ⟨rfl⟩, h, hn => hn.two_le.not_lt <| ble_eq_false.1 h
 
-theorem isNat_prime_2 : {n : ℕ} → {n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n →
-  n.Prime
+theorem isNat_prime_2 : {n n' : ℕ} → IsNat n n' → Nat.ble 2 n' = true → minFac n = n → n.Prime
   | _, _, ⟨rfl⟩, h1, h2 => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
 
 theorem not_prime_mul_of_ble {a b n : ℕ} (h : a * b = n) (h₁ : a.ble 1 = false)
-  (h₂ : b.ble 1 = false) : ¬ n.Prime :=
+    (h₂ : b.ble 1 = false) : ¬ n.Prime :=
   not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
 
 /-
