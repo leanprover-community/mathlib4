@@ -9,7 +9,6 @@ Authors: Mario Carneiro, Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Rename
 
 /-!
 # Disjoint union of types

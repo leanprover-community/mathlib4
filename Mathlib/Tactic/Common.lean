@@ -13,6 +13,11 @@ We include some commented out imports here, with an explanation of their theory 
 to save some time for anyone wondering why they are not here.
 -/
 
+-- First import Aesop and Qq
+import Aesop
+import Qq
+
+-- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
@@ -28,6 +33,7 @@ import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -36,6 +42,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
@@ -53,6 +60,8 @@ import Mathlib.Tactic.Lift
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormCast imports `Mathlib.Algebra.Group.Defs`
 -- import Mathlib.Tactic.NormCast
+-- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
+-- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
@@ -73,6 +82,7 @@ import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simps.Basic
 -- SlimCheck has unnecessarily complicated imports, and could be streamlined.
 -- `Gen` / `Testable` / `Sampleable` instances for types should be out in the library,
 -- rather than the theory for those types being imported into `SlimCheck`.

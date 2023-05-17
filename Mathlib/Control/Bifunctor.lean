@@ -11,7 +11,7 @@ Authors: Simon Hudon
 import Aesop
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.HigherOrder
+import Mathlib.Tactic.Common
 
 /-!
 # Functors with two arguments

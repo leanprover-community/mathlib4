@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Tactic.Set
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`

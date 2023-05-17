@@ -11,8 +11,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

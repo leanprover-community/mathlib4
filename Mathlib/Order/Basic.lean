@@ -10,12 +10,6 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic definitions about `≤` and `<`

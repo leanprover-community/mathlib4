@@ -13,7 +13,6 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.Set
 import Qq
 
 /-!

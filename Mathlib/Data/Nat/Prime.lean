@@ -16,7 +16,6 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Tactic.ByContra
 
 /-!
 # Prime numbers
