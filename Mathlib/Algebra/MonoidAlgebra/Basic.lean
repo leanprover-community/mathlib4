@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -394,9 +394,8 @@ instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSM
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (MonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
@@ -448,8 +447,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
               simp only [mem_filter, mem_product, hs, and_comm])
             fun _ _ => rfl)
         _ = ∑ p in s, f p.1 * g p.2 :=
-          sum_subset (filter_subset _ _) fun p hps hp =>
-            by
+          sum_subset (filter_subset _ _) fun p hps hp => by
             simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp⊢
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
@@ -1474,13 +1472,17 @@ instance commRing [CommRing k] [AddCommMonoid G] : CommRing (AddMonoidAlgebra k 
 
 variable {S : Type _}
 
+instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (AddMonoidAlgebra k G) :=
+  Finsupp.distribSMul G k
+#align add_monoid_algebra.distrib_smul AddMonoidAlgebra.distribSMul
+
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (AddMonoidAlgebra k G) :=
   Finsupp.distribMulAction G k
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
 
-instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
-    [Nonempty G] : FaithfulSMul R (AddMonoidAlgebra k G) :=
+instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
+    FaithfulSMul R (AddMonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
@@ -1488,18 +1490,17 @@ instance module [Semiring R] [Semiring k] [Module R k] : Module R (AddMonoidAlge
   Finsupp.module G k
 #align add_monoid_algebra.module AddMonoidAlgebra.module
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (AddMonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (AddMonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align add_monoid_algebra.is_scalar_tower AddMonoidAlgebra.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (AddMonoidAlgebra k G) :=
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S (AddMonoidAlgebra k G) :=
   Finsupp.smulCommClass G k
 #align add_monoid_algebra.smul_comm_tower AddMonoidAlgebra.smulCommClass
 
-instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (AddMonoidAlgebra k G) :=
   Finsupp.isCentralScalar G k
 #align add_monoid_algebra.is_central_scalar AddMonoidAlgebra.isCentralScalar

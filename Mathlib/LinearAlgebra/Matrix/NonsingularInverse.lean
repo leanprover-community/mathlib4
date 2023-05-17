@@ -293,7 +293,6 @@ theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 #align matrix.transpose_nonsing_inv Matrix.transpose_nonsing_inv
 
-set_option synthInstance.etaExperiment true in
 theorem conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
   rw [inv_def, inv_def, conjTranspose_smul, det_conjTranspose, adjugate_conjTranspose,
     Ring.inverse_star]
@@ -600,7 +599,6 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
       Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse Xs]
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
@@ -609,7 +607,6 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
     h.mul_val_inv, one_smul]
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
