@@ -112,11 +112,11 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 #align add_opposite.unop_comp_op AddOpposite.unop_comp_op
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
-@[to_additive (attr := simp)
+@[to_additive (attr := simp, elab_as_elim)
   "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
-protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
-#align mul_opposite.rec MulOpposite.rec'
-#align add_opposite.rec AddOpposite.rec'
+protected def rec {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+#align mul_opposite.rec MulOpposite.rec
+#align add_opposite.rec AddOpposite.rec
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }) apply symm_apply)
