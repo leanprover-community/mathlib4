@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 universe v u
@@ -43,7 +43,23 @@ noncomputable instance : AddCommGroup (newExt X Y n) where
 noncomputable def ofHom (f : X ⟶ Y) : newExt X Y 0 :=
   mk (ShiftedHom.mk₀ ((singleFunctor _ 0).map f) ((0 : ℕ) : ℤ) rfl)
 
-variable (X)
+variable (X Y)
+
+noncomputable def ofHomAddEquiv : (X ⟶ Y) ≃+ newExt X Y 0 where
+  toFun f := ofHom f
+  invFun g := (singleFunctor C 0).preimage (g.hom ≫
+    (shiftFunctorZero' (DerivedCategory C) ((0 : ℕ) : ℤ) (by rfl)).hom.app _)
+  left_inv f := by
+    apply (singleFunctor C 0).map_injective
+    simp only [Functor.image_preimage, ofHom, ShiftedHom.mk₀, assoc, Iso.inv_hom_id_app,
+      Functor.id_obj, comp_id]
+  right_inv g := by
+    apply hom_injective
+    dsimp only [ofHom, ShiftedHom.mk₀]
+    rw [Functor.image_preimage, assoc, Iso.hom_inv_id_app, comp_id]
+  map_add' x y := by
+    apply hom_injective
+    simp [ofHom]
 
 noncomputable instance : One (newExt X X 0) := ⟨ofHom (𝟙 _)⟩
 
@@ -55,7 +71,7 @@ lemma one_hom : (1 : newExt X X 0).hom = ShiftedHom.mk₀ (𝟙 _) ((0 : ℕ) : 
 @[simp]
 lemma ofHom_id : ofHom (𝟙 X) = 1 := rfl
 
-variable {X}
+variable {X Y}
 
 noncomputable instance : HasGradedHSMul (newExt Y Z) (newExt X Y)
     (newExt X Z) where

@@ -66,6 +66,11 @@ lemma mk₀_comp (f : X ⟶ Y) (g : Y ⟶ Z) (m m' m'' : M) (hm : m = 0) (hm' : 
   simp [mk₀]
 
 @[simp]
+lemma mk₀_add [Preadditive C] (f₁ f₂ : X ⟶ Y) (m₀ : M) (hm₀ : m₀ = 0) :
+    (mk₀ (f₁ + f₂) m₀ hm₀) = mk₀ f₁ m₀ hm₀ + mk₀ f₂ m₀ hm₀ := by
+  simp [mk₀]
+
+@[simp]
 lemma one_γhsmul {n : M} (β : ShiftedHom M X Y n) :
     (1 : ShiftedHom M Y Y 0) •[zero_add n] β = β := by simp [one_eq]
 

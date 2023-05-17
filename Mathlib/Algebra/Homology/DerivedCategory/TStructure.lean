@@ -154,6 +154,13 @@ noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
     infer_instance
   exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
 
+lemma singleFunctor_preimage {A B : C} {n : ℤ}
+    (f : (singleFunctor C n).obj A ⟶  (singleFunctor C n).obj B) :
+    (singleFunctor C n).preimage f = (singleFunctorCompHomologyFunctorIso C n).inv.app A ≫
+        (homologyFunctor _ n).map f ≫ (singleFunctorCompHomologyFunctorIso C n).hom.app B := by
+  obtain ⟨φ, rfl⟩ := (singleFunctor C n).map_surjective f
+  erw [preimage_map, ← NatTrans.naturality_assoc, Iso.inv_hom_id_app, comp_id, Functor.id_map]
+
 namespace TStructure
 
 lemma singleFunctor_obj_mem_heart (X : C) :

@@ -112,6 +112,10 @@ lemma Q_obj_surjective (X : DerivedCategory C) :
   obtain ⟨⟨⟨K⟩⟩⟩ := X
   exact ⟨K, rfl⟩
 
+instance : (Q : CochainComplex C ℤ ⥤ _).Additive := by
+  dsimp only [Q]
+  infer_instance
+
 noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).HasCommShift ℤ := by
   dsimp only [Q]
   infer_instance
@@ -159,8 +163,15 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
 
 variable (C)
 
+-- this should be moved (and generalized)
+instance : (HomologicalComplex.single C (ComplexShape.up ℤ) n).Additive where
+
 noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp only [singleFunctor]
+  infer_instance
 
 lemma homologyFunctor_inverts_qis (n : ℤ) :
     (HomotopyCategory.qis C).IsInvertedBy
