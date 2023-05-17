@@ -16,9 +16,6 @@ import Mathlib.RingTheory.Ideal.Quotient
 -/
 
 
--- Porting note: Without this line, timeouts occur (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w
 
 namespace RingHom
