@@ -96,7 +96,9 @@ noncomputable section
 
 namespace Module
 
-variable (R : Type _) (M : Type _)
+universe u v v' v'' w u₁ u₂
+
+variable (R : Type u) (M : Type v)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -146,7 +148,7 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type _}
+variable {R M} {M' : Type v'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
@@ -159,7 +161,7 @@ theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose u l = l
   rfl
 #align module.dual.transpose_apply Module.Dual.transpose_apply
 
-variable {M'' : Type _} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type v''} [AddCommMonoid M''] [Module R M'']
 
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
     transpose (u.comp v) = (transpose v).comp (transpose u) :=
@@ -170,7 +172,7 @@ end Dual
 
 section Prod
 
-variable (M' : Type _) [AddCommMonoid M'] [Module R M']
+variable (M' : Type v') [AddCommMonoid M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -192,7 +194,7 @@ section DualMap
 
 open Module
 
-variable {R : Type _} [CommSemiring R] {M₁ : Type _} {M₂ : Type _}
+variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -284,7 +286,7 @@ open Module Module.Dual Submodule LinearMap Cardinal Function
 
 open BigOperators
 
-variable {R M K V ι : Type _}
+variable {R : Type u} {M : Type v} {K : Type u₁} {V : Type u₂} {ι : Type w}
 
 section CommSemiring
 
@@ -529,7 +531,7 @@ theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : 
 #align basis.total_coord Basis.total_coord
 
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
-    Cardinal.lift (Module.rank K V) = Module.rank K (Dual K V) := by
+    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) := by
   classical
     cases nonempty_fintype ι
     have := LinearEquiv.lift_rank_eq b.toDual_equiv
@@ -542,7 +544,7 @@ end Basis
 
 namespace Module
 
-variable {K V : Type _}
+variable {K : Type u₁} {V : Type u₂}
 
 variable [Field K] [AddCommGroup V] [Module K V]
 
@@ -593,7 +595,7 @@ end
 
 -- TODO(jmc): generalize to rings, once `Module.rank` is generalized
 theorem dual_rank_eq [FiniteDimensional K V] :
-    Cardinal.lift (Module.rank K V) = Module.rank K (Dual K V) :=
+    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) :=
   (Basis.ofVectorSpace K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
@@ -613,6 +615,8 @@ def evalEquiv [FiniteDimensional K V] : V ≃ₗ[K] Dual K (Dual K V) :=
       apply eval_ker K V, range_eq_top.mp erange_coe⟩
 #align module.eval_equiv Module.evalEquiv
 
+set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 0 in
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
 def mapEvalEquiv [FiniteDimensional K V] : Subspace K V ≃o Subspace K (Dual K (Dual K V)) :=
   Submodule.orderIsoMapComap (evalEquiv K V)
@@ -626,12 +630,15 @@ theorem evalEquiv_toLinearMap [FiniteDimensional K V] :
   rfl
 #align module.eval_equiv_to_linear_map Module.evalEquiv_toLinearMap
 
+set_option maxHeartbeats 0 in
 @[simp]
 theorem mapEvalEquiv_apply [FiniteDimensional K V] (W : Subspace K V) :
     mapEvalEquiv K V W = W.map (eval K V) :=
   rfl
 #align module.map_eval_equiv_apply Module.mapEvalEquiv_apply
 
+set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem mapEvalEquiv_symm_apply [FiniteDimensional K V] (W'' : Subspace K (Dual K (Dual K V))) :
     (mapEvalEquiv K V).symm W'' = W''.comap (eval K V) :=
@@ -648,23 +655,20 @@ variable {R M ι : Type _}
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- TODO: In Lean 4 we can remove this and use `by { intros; exact Set.toFinite _ }` as a default
--- argument.
+-- Porting note: replace use_finite_instance tactic
+open Lean.Elab.Tactic in
 /-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
-unsafe def use_finite_instance : tactic Unit :=
-  sorry
-#align use_finite_instance use_finite_instance
+def evalUseFiniteInstance : TacticM Unit := do
+  evalTactic (← `(tactic|intros; apply Set.toFinite ))
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic use_finite_instance -/
+elab "use_finite_instance" : tactic => evalUseFiniteInstance
+
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
-@[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance] -- Porting note: removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   Total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
-  Finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
-    run_tac
-      use_finite_instance
+  Finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by use_finite_instance
 #align module.dual_bases Module.DualBases
 
 end DualBases
@@ -677,6 +681,106 @@ variable {R M ι : Type _}
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+variable {e : ι → M} {ε : ι → Dual R M}
+
+/-- The coefficients of `v` on the basis `e` -/
+def coeffs [DecidableEq ι] (h : DualBases e ε) (m : M) : ι →₀ R where
+  toFun i := ε i m
+  support := (h.Finite m).toFinset
+  mem_support_toFun := by
+    intro i
+    rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+#align module.dual_bases.coeffs Module.DualBases.coeffs
+
+@[simp]
+theorem coeffs_apply [DecidableEq ι] (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=
+  rfl
+#align module.dual_bases.coeffs_apply Module.DualBases.coeffs_apply
+
+/-- linear combinations of elements of `e`.
+This is a convenient abbreviation for `Finsupp.total _ M R e l` -/
+def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
+  l.sum fun (i : ι) (a : R) => a • e i
+#align module.dual_bases.lc Module.DualBases.lc
+
+theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ _ e l :=
+  rfl
+#align module.dual_bases.lc_def Module.DualBases.lc_def
+
+open Module
+
+variable [DecidableEq ι] (h : DualBases e ε)
+
+theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
+  erw [LinearMap.map_sum]
+  simp only [h.eval, map_smul, smul_eq_mul]
+  rw [Finset.sum_eq_single i]
+  · simp
+  · intro q q_in q_ne
+    simp [q_ne.symm]
+  · intro p_not_in
+    simp [Finsupp.not_mem_support_iff.1 p_not_in]
+#align module.dual_bases.dual_lc Module.DualBases.dual_lc
+
+@[simp]
+theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
+  ext i
+  rw [h.coeffs_apply, h.dual_lc]
+#align module.dual_bases.coeffs_lc Module.DualBases.coeffs_lc
+
+/-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
+@[simp]
+theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
+  refine' eq_of_sub_eq_zero (h.total _)
+  intro i
+  simp [-sub_eq_add_neg, LinearMap.map_sub, h.dual_lc, sub_eq_zero]
+#align module.dual_bases.lc_coeffs Module.DualBases.lc_coeffs
+
+/-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
+@[simps]
+def basis : Basis ι R M :=
+  Basis.ofRepr
+    { toFun := coeffs h
+      invFun := lc e
+      left_inv := lc_coeffs h
+      right_inv := coeffs_lc h
+      map_add' := fun v w => by
+        ext i
+        exact (ε i).map_add v w
+      map_smul' := fun c v => by
+        ext i
+        exact (ε i).map_smul c v }
+#align module.dual_bases.basis Module.DualBases.basis
+
+@[simp]
+theorem coe_basis : ⇑h.basis = e := by
+  ext i
+  rw [Basis.apply_eq_iff]
+  ext j
+  rw [h.basis_repr_apply, coeffs_apply, h.eval, Finsupp.single_apply]
+  convert if_congr eq_comm rfl rfl
+#align module.dual_bases.coe_basis Module.DualBases.coe_basis
+
+-- `convert` to get rid of a `decidable_eq` mismatch
+theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
+    ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
+  intro i hi
+  rcases(Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
+  apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
+  rwa [← lc_def, h.dual_lc] at hi
+#align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span
+
+theorem coe_dualBasis [Fintype ι] : ⇑h.basis.dualBasis = ε :=
+  funext fun i =>
+    h.basis.ext fun j => by
+      rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval, if_congr eq_comm rfl rfl]
+#align module.dual_bases.coe_dual_basis Module.DualBases.coe_dualBasis
+
+end Module.DualBases
+
+namespace Submodule
+
+universe u v w
 variable {e : ι → M} {ε : ι → Dual R M}
 
 /-- The coefficients of `v` on the basis `e` -/
@@ -1452,10 +1556,11 @@ namespace LinearMap
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K f.dualMap.range = finrank K f.range := by
-  have := Submodule.finrank_quotient_add_finrank f.range
+  have that := Submodule.finrank_quotient_add_finrank f.range
   rw [(Subspace.quotEquivAnnihilator f.range).finrank_eq, ←
     ker_dual_map_eq_dual_annihilator_range] at this
-  conv_rhs at this => rw [← Subspace.dual_finrank_eq]
+  -- Porting note: cannot convert at `this`?
+  conv_rhs at that => rw [← Subspace.dual_finrank_eq]
   refine' add_left_injective (finrank K f.dual_map.ker) _
   change _ + _ = _ + _
   rw [finrank_range_add_finrank_ker f.dual_map, add_comm, this]
@@ -1465,12 +1570,12 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
 @[simp]
 theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Injective f.dualMap ↔ Function.Surjective f := by
-  refine' ⟨_, fun h => dual_map_injective_of_surjective h⟩
+  refine' ⟨_, fun h => dualMap_injective_of_surjective h⟩
   rw [← range_eq_top, ← ker_eq_bot]
   intro h
   apply FiniteDimensional.eq_top_of_finrank_eq
   rw [← finrank_eq_zero] at h
-  rw [← add_zero (FiniteDimensional.finrank K f.range), ← h, ←
+  rw [← add_zero (FiniteDimensional.finrank K (LinearMap.range f)), ← h, ←
     LinearMap.finrank_range_dualMap_eq_finrank_range, LinearMap.finrank_range_add_finrank_ker,
     Subspace.dual_finrank_eq]
 #align linear_map.dual_map_injective_iff LinearMap.dualMap_injective_iff
@@ -1479,7 +1584,7 @@ theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
 @[simp]
 theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Bijective f.dualMap ↔ Function.Bijective f := by
-  simp_rw [Function.Bijective, dual_map_surjective_iff, dual_map_injective_iff, and_comm]
+  simp_rw [Function.Bijective, dualMap_surjective_iff, dualMap_injective_iff, and_comm]
 #align linear_map.dual_map_bijective_iff LinearMap.dualMap_bijective_iff
 
 end LinearMap
