@@ -50,9 +50,9 @@ theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
 #align algebra.adjoin_le Algebra.adjoin_le
 
-theorem adjoin_eq_infₛ : adjoin R s = infₛ { p : Subalgebra R A | s ⊆ p } :=
-  le_antisymm (le_infₛ fun _ h => adjoin_le h) (infₛ_le subset_adjoin)
-#align algebra.adjoin_eq_Inf Algebra.adjoin_eq_infₛ
+theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
+  le_antisymm (le_sInf fun _ h => adjoin_le h) (sInf_le subset_adjoin)
+#align algebra.adjoin_eq_Inf Algebra.adjoin_eq_sInf
 
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
@@ -70,14 +70,14 @@ theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 #align algebra.adjoin_eq Algebra.adjoin_eq
 
-theorem adjoin_unionᵢ {α : Type _} (s : α → Set A) :
-    adjoin R (Set.unionᵢ s) = ⨆ i : α, adjoin R (s i) :=
-  (@Algebra.gc R A _ _ _).l_supᵢ
-#align algebra.adjoin_Union Algebra.adjoin_unionᵢ
+theorem adjoin_iUnion {α : Type _} (s : α → Set A) :
+    adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
+  (@Algebra.gc R A _ _ _).l_iSup
+#align algebra.adjoin_Union Algebra.adjoin_iUnion
 
-theorem adjoin_attach_bunionᵢ [DecidableEq A] {α : Type _} {s : Finset α} (f : s → Finset A) :
-    adjoin R (s.attach.bunionᵢ f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_unionᵢ]
-#align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_bunionᵢ
+theorem adjoin_attach_biUnion [DecidableEq A] {α : Type _} {s : Finset α} (f : s → Finset A) :
+    adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
+#align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_biUnion
 
 @[elab_as_elim]
 theorem adjoin_induction {p : A → Prop} {x : A} (h : x ∈ adjoin R s) (Hs : ∀ x ∈ s, p x)

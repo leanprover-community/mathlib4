@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit dd4c2044a9dee231309637e7fd4e61aea1506e33
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -70,7 +70,6 @@ theorem pow_le_pow' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤
   calc
     a ^ n ≤ a ^ n * a ^ k := le_mul_of_one_le_right' (one_le_pow_of_one_le' ha _)
     _ = a ^ m := by rw [← hk, pow_add]
-
 #align pow_le_pow' pow_le_pow'
 #align nsmul_le_nsmul nsmul_le_nsmul
 
@@ -156,7 +155,7 @@ theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
 
 end Right
 
-section CovariantLtSwap
+section CovariantLTSwap
 
 variable [Preorder β] [CovariantClass M M (· * ·) (· < ·)]
   [CovariantClass M M (swap (· * ·)) (· < ·)] {f : β → M}
@@ -178,9 +177,9 @@ theorem pow_strictMono_right' {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : M =>
 #align pow_strict_mono_right' pow_strictMono_right'
 #align nsmul_strict_mono_left nsmul_strictMono_left
 
-end CovariantLtSwap
+end CovariantLTSwap
 
-section CovariantLeSwap
+section CovariantLESwap
 
 variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
@@ -200,7 +199,7 @@ theorem pow_mono_right (n : ℕ) : Monotone fun a : M => a ^ n :=
 #align pow_mono_right pow_mono_right
 #align nsmul_mono_left nsmul_mono_left
 
-end CovariantLeSwap
+end CovariantLESwap
 
 @[to_additive Left.pow_neg]
 theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n)
@@ -230,7 +229,7 @@ section LinearOrder
 
 variable [LinearOrder M]
 
-section CovariantLe
+section CovariantLE
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)]
 
@@ -262,7 +261,6 @@ theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
 theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
   simp only [le_antisymm_iff]
   rw [pow_le_one_iff hn, one_le_pow_iff hn]
-
 #align pow_eq_one_iff pow_eq_one_iff
 #align nsmul_eq_zero_iff nsmul_eq_zero_iff
 
@@ -280,9 +278,9 @@ theorem pow_lt_pow_iff' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 #align pow_lt_pow_iff' pow_lt_pow_iff'
 #align nsmul_lt_nsmul_iff nsmul_lt_nsmul_iff
 
-end CovariantLe
+end CovariantLE
 
-section CovariantLeSwap
+section CovariantLESwap
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
@@ -314,9 +312,9 @@ theorem lt_max_of_sq_lt_mul {a b c : M} (h : a ^ 2 < b * c) : a < max b c := by
 #align lt_max_of_sq_lt_mul lt_max_of_sq_lt_mul
 #align lt_max_of_two_nsmul_lt_add lt_max_of_two_nsmul_lt_add
 
-end CovariantLeSwap
+end CovariantLESwap
 
-section CovariantLtSwap
+section CovariantLTSwap
 
 variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
 
@@ -338,7 +336,7 @@ theorem le_max_of_sq_le_mul {a b c : M} (h : a ^ 2 ≤ b * c) : a ≤ max b c :=
 #align le_max_of_sq_le_mul le_max_of_sq_le_mul
 #align le_max_of_two_nsmul_le_add le_max_of_two_nsmul_le_add
 
-end CovariantLtSwap
+end CovariantLTSwap
 
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
@@ -412,19 +410,15 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
-      x ^ n.succ + y ^ n.succ ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) :=
-      by
+      x ^ n.succ + y ^ n.succ ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) := by
         rw [pow_succ _ n, pow_succ _ n]
         exact le_add_of_nonneg_right h1
-      _ = (x + y) * (x ^ n + y ^ n) :=
-      by
+      _ = (x + y) * (x ^ n + y ^ n) := by
         rw [add_mul, mul_add, mul_add, add_comm (y * x ^ n), ← add_assoc, ← add_assoc,
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
-      _ ≤ (x + y) ^ n.succ :=
-      by
+      _ ≤ (x + y) ^ n.succ := by
         rw [pow_succ _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
-
 #align pow_add_pow_le pow_add_pow_le
 
 theorem pow_le_one : ∀ (n : ℕ) (_ : 0 ≤ a) (_ : a ≤ 1), a ^ n ≤ 1
@@ -533,7 +527,6 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
   calc
     a ^ n < a ^ 1 := pow_lt_pow_of_lt_one h₀ h₁ hn
     _ = a := pow_one _
-
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
 theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
@@ -640,6 +633,11 @@ theorem pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| :=
 
 theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 #align abs_neg_one_pow abs_neg_one_pow
+
+theorem abs_pow_eq_one (a : R) {n : ℕ} (h : 0 < n) : |a ^ n| = 1 ↔ |a| = 1 := by
+  convert pow_left_inj (abs_nonneg a) zero_le_one h
+  exacts [(pow_abs _ _).symm, (one_pow _).symm]
+#align abs_pow_eq_one abs_pow_eq_one
 
 section
 set_option linter.deprecated false
@@ -771,9 +769,8 @@ section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
 
 theorem pow_pos_iff (hn : 0 < n) : 0 < a ^ n ↔ 0 < a := by
-  simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
-  rw [pow_ne_zero_iff]
-  assumption
+  simp_rw [zero_lt_iff]
+  rw [pow_ne_zero_iff hn] -- Porting note: simp used to find unify the instances here
 #align pow_pos_iff pow_pos_iff
 
 end LinearOrderedCommMonoidWithZero

@@ -50,9 +50,8 @@ theorem Pi.cons_ne {m : Multiset α} {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ
 #align multiset.pi.cons_ne Multiset.Pi.cons_ne
 
 theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
-    (h : a ≠ a') :
-    HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f)) (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) :=
-  by
+    (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
+      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
@@ -144,7 +143,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
-  . have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
     intro _ h; exact (not_mem_zero _ h).elim
   simp_rw [pi_cons, mem_bind, mem_map, ih]

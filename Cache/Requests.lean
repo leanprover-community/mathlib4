@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
@@ -34,39 +33,59 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
   return "\n".intercalate l
 
+/-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
+def downloadFile (hash : UInt64) : IO Bool := do
+  let fileName := hash.asTarGz
+  let url ← mkFileURL fileName none
+  let path := IO.CACHEDIR / fileName
+  let out ← IO.Process.output
+    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", path.toString] }
+  if out.exitCode = 0 then
+    pure true
+  else
+    IO.FS.removeFile path
+    pure false
+
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
-def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
   let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
-    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-    let out ← IO.runCurl
-      #["--request", "GET", "--parallel", "--fail", "--silent",
-        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString] false
-    IO.FS.removeFile IO.CURLCFG
-    -- output errors other than 404 and remove corresponding partial downloads
     let mut failed := 0
-    for line in out.splitOn "\n" |>.filter (!·.isEmpty) do
-      let result ← IO.ofExcept <| Lean.Json.parse line.trim
-      if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
-        failed := failed + 1
-        if let .ok e := result.getObjValAs? String "errormsg" then
-          IO.println e
-        -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-        if let .ok fn := result.getObjValAs? String "filename_effective" then
-          if (← System.FilePath.pathExists fn) then
-            IO.FS.removeFile fn
+    if parallel then
+      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
+      let out ← IO.runCurl
+        #["--request", "GET", "--parallel", "--fail", "--silent",
+          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString] false
+      IO.FS.removeFile IO.CURLCFG
+      -- output errors other than 404 and remove corresponding partial downloads
+      for line in out.splitOn "\n" |>.filter (!·.isEmpty) do
+        let result ← IO.ofExcept <| Lean.Json.parse line.trim
+        if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
+          failed := failed + 1
+          if let .ok e := result.getObjValAs? String "errormsg" then
+            IO.println e
+          -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+          if let .ok fn := result.getObjValAs? String "filename_effective" then
+            if (← System.FilePath.pathExists fn) then
+              IO.FS.removeFile fn
+    else
+      let r ← hashMap.foldM (init := []) fun acc _ hash => do
+        pure <| (← IO.asTask do downloadFile hash) :: acc
+      failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     if failed > 0 then
       IO.println s!"{failed} download(s) failed"
       IO.Process.exit 1
   else IO.println "No files to download"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
-  downloadFiles hashMap forceDownload
-  IO.unpackCache hashMap
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) (decompress : Bool) :
+    IO Unit := do
+  downloadFiles hashMap forceDownload parallel
+  if decompress then
+    IO.unpackCache hashMap
 
 end Get
 

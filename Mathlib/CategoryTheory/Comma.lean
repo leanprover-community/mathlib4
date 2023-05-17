@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
 
 ! This file was ported from Lean 3 source module category_theory.comma
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -63,8 +63,8 @@ variable {T : Type u₃} [Category.{v₃} T]
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
-  left : A := by aesop_cat
-  right : B := by aesop_cat
+  left : A
+  right : B
   hom : L.obj left ⟶ R.obj right
 #align category_theory.comma CategoryTheory.Comma
 
@@ -83,8 +83,8 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
-  left : X.left ⟶ Y.left := by aesop_cat
-  right : X.right ⟶ Y.right := by aesop_cat
+  left : X.left ⟶ Y.left
+  right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 #align category_theory.comma_morphism CategoryTheory.CommaMorphism
 
@@ -167,24 +167,15 @@ def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 
 @[simp]
 theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
-    CommaMorphism.left (eqToHom H) =
-      eqToHom
-        (by
-          cases H
-          rfl) :=
-  by
+    CommaMorphism.left (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left
 
 @[simp]
-theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
-    CommaMorphism.right (eqToHom H) =
-      eqToHom
-        (by
-          cases H
-          rfl) :=
-  by
+theorem eqToHom_right (X Y : Comma L R) (H : X = Y) : CommaMorphism.right (eqToHom H) = eqToHom (by
+    cases H
+    rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_right CategoryTheory.Comma.eqToHom_right
@@ -198,8 +189,7 @@ directions give a commutative square.
 -/
 @[simps]
 def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.right)
-    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom) : X ≅ Y
-    where
+    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom) : X ≅ Y where
   hom :=
     { left := l.hom
       right := r.hom
@@ -207,8 +197,7 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
   inv :=
     { left := l.inv
       right := r.inv
-      w :=
-        by
+      w := by
         rw [← L₁.mapIso_inv l, Iso.inv_comp_eq, L₁.mapIso_hom, ← Category.assoc, h,
           Category.assoc, ← R₁.map_comp]
         simp }

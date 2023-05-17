@@ -36,7 +36,7 @@ class FinEnum (α : Sort _) where
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
 
-attribute [instance] FinEnum.decEq
+attribute [instance 100] FinEnum.decEq
 
 namespace FinEnum
 
