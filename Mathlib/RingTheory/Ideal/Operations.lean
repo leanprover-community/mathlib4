@@ -20,7 +20,6 @@ import Mathlib.RingTheory.NonZeroDivisors
 # More operations on modules and ideals
 -/
 
-
 universe u v w x
 
 open BigOperators Pointwise

@@ -15,7 +15,6 @@ import Mathlib.RingTheory.Ideal.Quotient
 # More operations on modules and ideals related to quotients
 -/
 
-
 universe u v w
 
 namespace RingHom

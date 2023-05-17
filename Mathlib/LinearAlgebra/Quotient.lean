@@ -19,7 +19,6 @@ import Mathlib.LinearAlgebra.Span
 
 -/
 
-
 -- For most of this file we work over a noncommutative ring
 section Ring
 
