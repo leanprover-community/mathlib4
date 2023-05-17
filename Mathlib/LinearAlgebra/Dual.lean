@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 
 ! This file was ported from Lean 3 source module linear_algebra.dual
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
+! leanprover-community/mathlib commit b1c017582e9f18d8494e5c18602a8cb4a6f843ac
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -102,13 +102,10 @@ variable (R : Type u) (M : Type v)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler module[module] R -/
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
+@[reducible]
 def Dual := M →ₗ[R] R
 #align module.dual Module.Dual
-
-instance : AddCommMonoid (Dual R M) := inferInstanceAs (AddCommMonoid (M →ₗ[R] R))
-instance : Module R (Dual R M) := inferInstanceAs (Module R (M →ₗ[R] R))
 
 instance {S : Type _} [CommRing S] {N : Type _} [AddCommGroup N] [Module S N] :
     AddCommGroup (Dual S N) :=
@@ -420,10 +417,15 @@ section Finite
 variable [Finite ι]
 
 /-- A vector space is linearly equivalent to its dual space. -/
-@[simps!]
 def toDualEquiv : M ≃ₗ[R] Dual R M :=
   LinearEquiv.ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top.mp b.toDual_range⟩
 #align basis.to_dual_equiv Basis.toDualEquiv
+
+-- `simps` times out when generating this
+@[simp]
+theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
+  rfl
+#align basis.to_dual_equiv_apply Basis.toDualEquiv_apply
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
 def dualBasis : Basis ι R (Dual R M) :=
@@ -916,14 +918,14 @@ theorem dualCoannihilator_sup_eq (U V : Submodule R (Module.Dual R M)) :
   (dualAnnihilator_gc R M).u_inf
 #align submodule.dual_coannihilator_sup_eq Submodule.dualCoannihilator_sup_eq
 
-theorem dualAnnihilator_supᵢ_eq {ι : Type _} (U : ι → Submodule R M) :
+theorem dualAnnihilator_iSup_eq {ι : Type _} (U : ι → Submodule R M) :
     (⨆ i : ι, U i).dualAnnihilator = ⨅ i : ι, (U i).dualAnnihilator :=
-  (dualAnnihilator_gc R M).l_supᵢ
-#align submodule.dual_annihilator_supr_eq Submodule.dualAnnihilator_supᵢ_eq
+  (dualAnnihilator_gc R M).l_iSup
+#align submodule.dual_annihilator_supr_eq Submodule.dualAnnihilator_iSup_eq
 
-theorem dualCoannihilator_supᵢ_eq {ι : Type _} (U : ι → Submodule R (Module.Dual R M)) :
+theorem dualCoannihilator_iSup_eq {ι : Type _} (U : ι → Submodule R (Module.Dual R M)) :
     (⨆ i : ι, U i).dualCoannihilator = ⨅ i : ι, (U i).dualCoannihilator :=
-  (dualAnnihilator_gc R M).u_infᵢ
+  (dualAnnihilator_gc R M).u_iInf
 #align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_supᵢ_eq
 
 /-- See also `subspace.dual_annihilator_inf_eq` for vector subspaces. -/
@@ -934,12 +936,12 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 #align submodule.sup_dual_annihilator_le_inf Submodule.sup_dualAnnihilator_le_inf
 
 /-- See also `subspace.dual_annihilator_infi_eq` for vector subspaces when `ι` is finite. -/
-theorem supᵢ_dualAnnihilator_le_infᵢ {ι : Type _} (U : ι → Submodule R M) :
+theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
     (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_supᵢ_eq]
   apply infᵢ_mono
   exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)
-#align submodule.supr_dual_annihilator_le_infi Submodule.supᵢ_dualAnnihilator_le_infᵢ
+#align submodule.supr_dual_annihilator_le_infi Submodule.iSup_dualAnnihilator_le_iInf
 
 end Submodule
 
@@ -1412,16 +1414,16 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
-theorem dualAnnihilator_infᵢ_eq {ι : Type _} [Finite ι] (W : ι → Subspace K V₁) :
+theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
   revert ι
   refine' @Finite.induction_empty_option _ _ _ _
   · intro α β h hyp W
     rw [← h.infᵢ_comp, hyp (W ∘ h), ← h.supr_comp]
   · intro W
-    rw [supᵢ_of_empty', infᵢ_of_empty', infₛ_empty, supₛ_empty, dualAnnihilator_top]
+    rw [iSup_of_empty', iInf_of_empty', sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
-    rw [infᵢ_option, supᵢ_option, dualAnnihilator_inf_eq, h]
+    rw [iInf_option, supᵢ_option, dualAnnihilator_inf_eq, h]
 #align subspace.dual_annihilator_infi_eq Subspace.dualAnnihilator_infᵢ_eq
 
 /-- For vector spaces, dual annihilators carry direct sum decompositions
