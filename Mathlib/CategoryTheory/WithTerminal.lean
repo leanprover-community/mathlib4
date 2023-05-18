@@ -211,7 +211,8 @@ theorem lift_map_liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : �
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
-    (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F)
+    (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x)
+    (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
     (hh : ∀ x : C, G.map (starTerminal.from (incl.obj x)) ≫ hG.hom = h.hom.app x ≫ M x) :
     G ≅ lift F M hM :=
@@ -249,7 +250,8 @@ def inclLiftToTerminal {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Lim
 @[simps!]
 def liftToTerminalUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
     (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToTerminal F hZ :=
-  liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
+  liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x =>
+    hZ.hom_ext _ _
 #align category_theory.with_terminal.lift_to_terminal_unique CategoryTheory.WithTerminal.liftToTerminalUnique
 
 /-- Constructs a morphism to `star` from `of X`. -/
@@ -420,7 +422,8 @@ theorem liftStar_lift_map {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : �
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
-    (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F)
+    (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y)
+    (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
     (hh : ∀ x : C, hG.symm.hom ≫ G.map (starInitial.to (incl.obj x)) = M x ≫ h.symm.hom.app x) :
     G ≅ lift F M hM :=
