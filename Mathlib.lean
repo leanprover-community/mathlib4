@@ -2112,6 +2112,7 @@ import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.Topology.Category.Top.Limits.Pullbacks
 import Mathlib.Topology.Category.Top.OpenNhds
 import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
