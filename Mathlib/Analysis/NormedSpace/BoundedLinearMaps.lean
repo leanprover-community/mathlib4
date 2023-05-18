@@ -650,7 +650,7 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range (coe : (E ≃L[𝕜] 
   · rintro ⟨e', rfl⟩
     exact ⟨(e'.trans e.symm).toUnit, rfl⟩
   · rintro ⟨w, hw⟩
-    use (units_equiv 𝕜 E w).trans e
+    use (unitsEquiv 𝕜 E w).trans e
     ext x
     simp [coeFn_coe_base' w, hw]
 #align continuous_linear_equiv.is_open ContinuousLinearEquiv.isOpen
