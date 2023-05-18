@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Localization.Ideal
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -77,8 +77,7 @@ protected abbrev Localization.AtPrime :=
 namespace IsLocalization
 
 theorem AtPrime.nontrivial [IsLocalization.AtPrime S I] : Nontrivial S :=
-  nontrivial_of_ne (0 : S) 1 fun hze =>
-    by
+  nontrivial_of_ne (0 : S) 1 fun hze => by
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists I.prime_compl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
@@ -206,8 +205,7 @@ theorem AtPrime.comap_maximalIdeal :
 it is the unique maximal ideal given by the local ring structure `at_prime.local_ring` -/
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
-      LocalRing.maximalIdeal (Localization I.primeCompl) :=
-  by
+      LocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert congr_arg (Ideal.map _) at_prime.comap_maximal_ideal.symm
   rw [map_comap I.prime_compl]
 #align localization.at_prime.map_eq_maximal_ideal Localization.AtPrime.map_eq_maximalIdeal
@@ -247,8 +245,7 @@ theorem localRingHom_mk' (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P) (hIJ : I
 
 instance isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalRingHom (localRingHom I J f hIJ) :=
-  IsLocalRingHom.mk fun x hx =>
-    by
+  IsLocalRingHom.mk fun x hx => by
     rcases IsLocalization.mk'_surjective I.prime_compl x with ⟨r, s, rfl⟩
     rw [local_ring_hom_mk'] at hx
     rw [at_prime.is_unit_mk'_iff] at hx⊢
