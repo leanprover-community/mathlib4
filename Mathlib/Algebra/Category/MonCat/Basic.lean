@@ -402,6 +402,7 @@ set_option linter.uppercaseLean3 false in
 -- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
-instance : Full (forget₂ CommMonCat MonCat) where preimage f := f
+@[to_additive]
+instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
 
 example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance
