@@ -8,9 +8,9 @@ Authors: Ruben Van de Velde
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Algebra.Algebra.RestrictScalars
-import Mathbin.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Data.IsROrC.Basic
 
 /-!
 # Extending a continuous `ℝ`-linear map to a continuous `𝕜`-linear map
@@ -48,31 +48,26 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
 bounded by `‖fr‖` if `fr` is continuous. -/
-noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
-  by
+noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 := by
   let fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
-  have add : ∀ x y : F, fc (x + y) = fc x + fc y :=
-    by
+  have add : ∀ x y : F, fc (x + y) = fc x + fc y := by
     intro x y
     simp only [fc]
     simp only [smul_add, LinearMap.map_add, of_real_add]
     rw [mul_add]
     abel
-  have A : ∀ (c : ℝ) (x : F), (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) :=
-    by
+  have A : ∀ (c : ℝ) (x : F), (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by
     intro c x
     rw [← of_real_mul]
     congr 1
     rw [IsROrC.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
-  have smul_ℝ : ∀ (c : ℝ) (x : F), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x :=
-    by
+  have smul_ℝ : ∀ (c : ℝ) (x : F), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
     intro c x
     simp only [fc, A]
     rw [A c x]
     rw [smul_smul, mul_comm I (c : 𝕜), ← smul_smul, A, mul_sub]
     ring
-  have smul_I : ∀ x : F, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x :=
-    by
+  have smul_I : ∀ x : F, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
     intro x
     simp only [fc]
     cases' @I_mul_I_ax 𝕜 _ with h h
@@ -80,8 +75,7 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
     rw [mul_sub, ← mul_assoc, smul_smul, h]
     simp only [neg_mul, LinearMap.map_neg, one_mul, one_smul, mul_neg, of_real_neg, neg_smul,
       sub_neg_eq_add, add_comm]
-  have smul_𝕜 : ∀ (c : 𝕜) (x : F), fc (c • x) = c • fc x :=
-    by
+  have smul_𝕜 : ∀ (c : 𝕜) (x : F), fc (c • x) = c • fc x := by
     intro c x
     rw [← re_add_im c, add_smul, add_smul, add, smul_ℝ, ← smul_smul, smul_ℝ, smul_I, ← mul_assoc]
     rfl
@@ -120,8 +114,7 @@ variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
-    ‖(fr.toLinearMap.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ :=
-  by
+    ‖(fr.toLinearMap.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
   set lm : F →ₗ[𝕜] 𝕜 := fr.to_linear_map.extend_to_𝕜'
   classical
     by_cases h : lm x = 0
