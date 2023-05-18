@@ -145,8 +145,7 @@ def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolut
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : Homotopy f 0 :=
   Homotopy.mkCoinductive _ (descHomotopyZeroZero f comm) (by simp [descHomotopyZeroZero])
     (descHomotopyZeroOne f comm) (by simp [descHomotopyZeroOne]) fun n ⟨g, g', w⟩ =>
-    ⟨descHomotopyZeroSucc f n g g' (by simp only [w, add_comm]), by
-      simp [descHomotopyZeroSucc, w]⟩
+    ⟨descHomotopyZeroSucc f n g g' (by simp only [w, add_comm]), by simp [descHomotopyZeroSucc, w]⟩
 #align category_theory.InjectiveResolution.desc_homotopy_zero CategoryTheory.InjectiveResolution.descHomotopyZero
 
 /-- Two descents of the same morphism are homotopic. -/
@@ -158,27 +157,27 @@ def descHomotopy {Y Z : C} (f : Y ⟶ Z) {I : InjectiveResolution Y} {J : Inject
 
 /-- The descent of the identity morphism is homotopic to the identity cochain map. -/
 def descIdHomotopy (X : C) (I : InjectiveResolution X) :
-    Homotopy (desc (𝟙 X) I I) (𝟙 I.cocomplex) := by apply descHomotopy (𝟙 X) <;> simp
+    Homotopy (desc (𝟙 X) I I) (𝟙 I.cocomplex) := by
+  apply descHomotopy (𝟙 X) <;> simp
 #align category_theory.InjectiveResolution.desc_id_homotopy CategoryTheory.InjectiveResolution.descIdHomotopy
 
 /-- The descent of a composition is homotopic to the composition of the descents. -/
 def descCompHomotopy {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (I : InjectiveResolution X)
     (J : InjectiveResolution Y) (K : InjectiveResolution Z) :
-    Homotopy (desc (f ≫ g) K I) (desc f J I ≫ desc g K J) := by apply descHomotopy (f ≫ g) <;> simp
+    Homotopy (desc (f ≫ g) K I) (desc f J I ≫ desc g K J) := by
+  apply descHomotopy (f ≫ g) <;> simp
 #align category_theory.InjectiveResolution.desc_comp_homotopy CategoryTheory.InjectiveResolution.descCompHomotopy
 
 -- We don't care about the actual definitions of these homotopies.
 /-- Any two injective resolutions are homotopy equivalent. -/
-def homotopyEquiv {X : C} (I J : InjectiveResolution X) : HomotopyEquiv I.cocomplex J.cocomplex
-    where
+def homotopyEquiv {X : C} (I J : InjectiveResolution X) :
+    HomotopyEquiv I.cocomplex J.cocomplex where
   hom := desc (𝟙 X) J I
   inv := desc (𝟙 X) I J
-  homotopyHomInvId :=
-    (descCompHomotopy (𝟙 X) (𝟙 X) I J I).symm.trans <| by
-      simpa [Category.id_comp] using descIdHomotopy _ _
-  homotopyInvHomId :=
-    (descCompHomotopy (𝟙 X) (𝟙 X) J I J).symm.trans <| by
-      simpa [Category.id_comp] using descIdHomotopy _ _
+  homotopyHomInvId := (descCompHomotopy (𝟙 X) (𝟙 X) I J I).symm.trans <| by
+    simpa [Category.id_comp] using descIdHomotopy _ _
+  homotopyInvHomId := (descCompHomotopy (𝟙 X) (𝟙 X) J I J).symm.trans <| by
+    simpa [Category.id_comp] using descIdHomotopy _ _
 #align category_theory.InjectiveResolution.homotopy_equiv CategoryTheory.InjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
