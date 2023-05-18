@@ -202,7 +202,7 @@ instance forget₂CreatesLimit (F : J ⥤ CommMonCatMax.{u,v}) :
 /-- A choice of limit cone for a functor into `CommMon`.
 (Generally, you'll just want to use `limit F`.)
 -/
-@[to_additive "A choice of limit cone for a functor into `CommMon`. (Generally, you'll just want
+@[to_additive "A choice of limit cone for a functor into `AddCommMon`. (Generally, you'll just want
 to use `limit F`.)"]
 def limitCone (F : J ⥤ CommMonCatMax.{u,v}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v}))
@@ -220,7 +220,7 @@ def limitConeIsLimit (F : J ⥤ CommMonCatMax.{u,v}) : IsLimit (limitCone F) :=
 #align AddCommMon.limit_cone_is_limit AddCommMonCat.limitConeIsLimit
 
 /-- The category of commutative monoids has all limits. -/
-@[to_additive "The category of commutative monoids has all limits."]
+@[to_additive "The category of additive commutative monoids has all limits."]
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommMonCatMax.{u,v} where
   has_limits_of_shape _ _ :=
     { has_limit := fun F => hasLimit_of_created F (forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v}) }
