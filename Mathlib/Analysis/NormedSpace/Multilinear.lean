@@ -43,7 +43,7 @@ function in `n` variables taking values in continuous linear functions. These op
 continuous multilinear functions in `n+1` variables and spaces of continuous linear functions into
 continuous multilinear functions in `n` variables (resp. continuous multilinear functions in `n`
 variables taking values in continuous linear functions), called respectively
-`continuous_multilinear_curry_left_equiv` and `continuous_multilinear_curry_right_equiv`.
+`continuousMultilinearCurryLeftEquiv` and `continuousMultilinearCurryRightEquiv`.
 
 ## Implementation notes
 
@@ -53,7 +53,7 @@ constructions are based on those in `multilinear.lean`.
 
 From the mathematical point of view, all the results follow from the results on operator norm in
 one variable, by applying them to one variable after the other through currying. However, this
-is only well defined when there is an order on the variables (for instance on `fin n`) although
+is only well defined when there is an order on the variables (for instance on `Fin n`) although
 the final result is independent of the order. While everything could be done following this
 approach, it turns out that direct proofs are easier and more efficient.
 -/
@@ -73,11 +73,11 @@ attribute [local instance 1001]
 
 We use the following type variables in this file:
 
-* `𝕜` : a `nontrivially_normed_field`;
+* `𝕜` : a `NontriviallyNormedField`;
 * `ι`, `ι'` : finite index types with decidable equality;
 * `E`, `E₁` : families of normed vector spaces over `𝕜` indexed by `i : ι`;
 * `E'` : a family of normed vector spaces over `𝕜` indexed by `i' : ι'`;
-* `Ei` : a family of normed vector spaces over `𝕜` indexed by `i : fin (nat.succ n)`;
+* `Ei` : a family of normed vector spaces over `𝕜` indexed by `i : Fin (Nat.succ n)`;
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
@@ -287,7 +287,7 @@ end MultilinearMap
 
 We define the norm `‖f‖` of a continuous multilinear map `f` in finitely many variables as the
 smallest number such that `‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖` for all `m`. We show that this
-defines a normed space structure on `continuous_multilinear_map 𝕜 E G`.
+defines a normed space structure on `ContinuousMultilinearMap 𝕜 E G`.
 -/
 
 
@@ -310,7 +310,7 @@ instance hasOpNorm : Norm (ContinuousMultilinearMap 𝕜 E G) :=
   ⟨opNorm⟩
 #align continuous_multilinear_map.has_op_norm ContinuousMultilinearMap.hasOpNorm
 
-/-- An alias of `continuous_multilinear_map.has_op_norm` with non-dependent types to help typeclass
+/-- An alias of `ContinuousMultilinearMap.hasOpNorm` with non-dependent types to help typeclass
 search. -/
 instance hasOpNorm' : Norm (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.hasOpNorm
@@ -320,7 +320,7 @@ theorem norm_def : ‖f‖ = sInf { c | 0 ≤ (c : ℝ) ∧ ∀ m, ‖f m‖ ≤
   rfl
 #align continuous_multilinear_map.norm_def ContinuousMultilinearMap.norm_def
 
--- So that invocations of `le_cInf` make sense: we show that the set of
+-- So that invocations of `le_csInf` make sense: we show that the set of
 -- bounds is nonempty and bounded below.
 theorem bounds_nonempty {f : ContinuousMultilinearMap 𝕜 E G} :
     ∃ c, c ∈ { c | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖ } :=
@@ -432,7 +432,7 @@ instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 
       eq_zero_of_map_eq_zero' := fun f => f.op_norm_zero_iff.1 }
 #align continuous_multilinear_map.normed_add_comm_group ContinuousMultilinearMap.normedAddCommGroup
 
-/-- An alias of `continuous_multilinear_map.normed_add_comm_group` with non-dependent types to help
+/-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance normedAddCommGroup' :
     NormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
@@ -444,7 +444,7 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
   ⟨fun c f => f.op_norm_smul_le c⟩
 #align continuous_multilinear_map.normed_space ContinuousMultilinearMap.normedSpace
 
-/-- An alias of `continuous_multilinear_map.normed_space` with non-dependent types to help typeclass
+/-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
 search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
@@ -558,7 +558,7 @@ section
 
 variable (𝕜 E E' G G')
 
-/-- `continuous_multilinear_map.prod` as a `linear_isometry_equiv`. -/
+/-- `ContinuousMultilinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodL :
     ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 E (G × G') where
@@ -574,7 +574,7 @@ def prodL :
 set_option linter.uppercaseLean3 false in
 #align continuous_multilinear_map.prodL ContinuousMultilinearMap.prodL
 
-/-- `continuous_multilinear_map.pi` as a `linear_isometry_equiv`. -/
+/-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
     @LinearIsometryEquiv 𝕜 𝕜 _ _ (RingHom.id 𝕜) _ _ _ (∀ i', ContinuousMultilinearMap 𝕜 E (E' i'))
@@ -608,7 +608,7 @@ ContinuousMultilinearMap.norm_restrictScalars
 
 variable (𝕜')
 
-/-- `continuous_multilinear_map.restrict_scalars` as a `continuous_multilinear_map`. -/
+/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousMultilinearMap`. -/
 def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
   LinearMap.mkContinuous
     { toFun := restrictScalars 𝕜'
@@ -706,7 +706,7 @@ open Filter
 
 /-- If the target space is complete, the space of continuous multilinear maps with its norm is also
 complete. The proof is essentially the same as for the space of continuous linear maps (modulo the
-addition of `finset.prod` where needed. The duplication could be avoided by deducing the linear
+addition of `Finset.prod` where needed. The duplication could be avoided by deducing the linear
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
@@ -802,11 +802,11 @@ theorem MultilinearMap.mkContinuous_norm_le' (f : MultilinearMap 𝕜 E G) {C : 
 
 namespace ContinuousMultilinearMap
 
-/-- Given a continuous multilinear map `f` on `n` variables (parameterized by `fin n`) and a subset
-`s` of `k` of these variables, one gets a new continuous multilinear map on `fin k` by varying
+/-- Given a continuous multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset
+`s` of `k` of these variables, one gets a new continuous multilinear map on `Fin k` by varying
 these variables, and fixing the other ones equal to a given value `z`. It is denoted by
 `f.restr s hk z`, where `hk` is a proof that the cardinality of `s` is `k`. The implicit
-identification between `fin k` and `s` that we use is the canonical (increasing) bijection. -/
+identification between `Fin k` and `s` that we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : (G[×n]→L[𝕜] G' : _)) (s : Finset (Fin n)) (hk : s.card = k) (z : G) :
     G[×k]→L[𝕜] G' :=
   (f.toMultilinearMap.restr s hk z).mkContinuous (‖f‖ * ‖z‖ ^ (n - k)) fun _ =>
@@ -957,7 +957,7 @@ variable (𝕜 ι G)
 /-- Continuous multilinear maps on `𝕜^n` with values in `G` are in bijection with `G`, as such a
 continuous multilinear map is completely determined by its value on the constant vector made of
 ones. We register this bijection as a linear isometry in
-`continuous_multilinear_map.pi_field_equiv`. -/
+`ContinuousMultilinearMap.piFieldEquiv`. -/
 protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
   toFun z := ContinuousMultilinearMap.mkPiField 𝕜 ι z
   invFun f := f fun i => 1
@@ -988,7 +988,7 @@ ContinuousLinearMap.norm_compContinuousMultilinearMap_le
 
 variable (𝕜 E G G')
 
-/-- `continuous_linear_map.comp_continuous_multilinear_map` as a bundled continuous bilinear map. -/
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous bilinear map. -/
 def compContinuousMultilinearMapL :
     (G →L[𝕜] G') →L[𝕜] ContinuousMultilinearMap 𝕜 E G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous₂
@@ -1008,7 +1008,7 @@ ContinuousLinearMap.compContinuousMultilinearMapL
 
 variable {𝕜 G G'}
 
-/-- `continuous_linear_map.comp_continuous_multilinear_map` as a bundled
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled
 continuous linear equiv. -/
 nonrec
 def _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL (g : G ≃L[𝕜] G') :
@@ -1052,8 +1052,8 @@ set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.comp_continuous_multilinear_mapL_apply
 ContinuousLinearEquiv.compContinuousMultilinearMapL_apply
 
-/-- Flip arguments in `f : G →L[𝕜] continuous_multilinear_map 𝕜 E G'` to get
-`continuous_multilinear_map 𝕜 E (G →L[𝕜] G')` -/
+/-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
+`ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
     ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') :=
   MultilinearMap.mkContinuous
@@ -1097,14 +1097,14 @@ open ContinuousMultilinearMap
 
 namespace MultilinearMap
 
-/-- Given a map `f : G →ₗ[𝕜] multilinear_map 𝕜 E G'` and an estimate
+/-- Given a map `f : G →ₗ[𝕜] MultilinearMap 𝕜 E G'` and an estimate
 `H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖`, construct a continuous linear
-map from `G` to `continuous_multilinear_map 𝕜 E G'`.
+map from `G` to `ContinuousMultilinearMap 𝕜 E G'`.
 
-In order to lift, e.g., a map `f : (multilinear_map 𝕜 E G) →ₗ[𝕜] multilinear_map 𝕜 E' G'`
-to a map `(continuous_multilinear_map 𝕜 E G) →L[𝕜] continuous_multilinear_map 𝕜 E' G'`,
-one can apply this construction to `f.comp continuous_multilinear_map.to_multilinear_map_linear`
-which is a linear map from `continuous_multilinear_map 𝕜 E G` to `multilinear_map 𝕜 E' G'`. -/
+In order to lift, e.g., a map `f : (MultilinearMap 𝕜 E G) →ₗ[𝕜] MultilinearMap 𝕜 E' G'`
+to a map `(ContinuousMultilinearMap 𝕜 E G) →L[𝕜] ContinuousMultilinearMap 𝕜 E' G'`,
+one can apply this construction to `f.comp ContinuousMultilinearMap.toMultilinearMapLinear`
+which is a linear map from `ContinuousMultilinearMap 𝕜 E G` to `MultilinearMap 𝕜 E' G'`. -/
 def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous
@@ -1135,9 +1135,9 @@ theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G')
   (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
 #align multilinear_map.mk_continuous_linear_norm_le MultilinearMap.mkContinuousLinear_norm_le
 
-/-- Given a map `f : multilinear_map 𝕜 E (multilinear_map 𝕜 E' G)` and an estimate
-`H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `multilinear_map`s in the type to
-`continuous_multilinear_map`s. -/
+/-- Given a map `f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)` and an estimate
+`H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
+`ContinuousMultilinearMap`s. -/
 def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
@@ -1258,7 +1258,7 @@ ContinuousMultilinearMap.norm_compContinuousLinearMapL_le
 
 variable (G)
 
-/-- `continuous_multilinear_map.comp_continuous_linear_map` as a bundled continuous linear equiv,
+/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear equiv,
 given `f : Π i, E i ≃L[𝕜] E₁ i`. -/
 def compContinuousLinearMapEquivL (f : ∀ i, E i ≃L[𝕜] E₁ i) :
     ContinuousMultilinearMap 𝕜 E₁ G ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
@@ -1323,14 +1323,14 @@ section Currying
 /-!
 ### Currying
 
-We associate to a continuous multilinear map in `n+1` variables (i.e., based on `fin n.succ`) two
+We associate to a continuous multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curry_left` (which is a continuous linear map on `E 0` taking values
 in continuous multilinear maps in `n` variables) and `f.curry_right` (which is a continuous
 multilinear map in `n` variables taking values in continuous linear maps on `E (last n)`).
 The inverse operations are called `uncurry_left` and `uncurry_right`.
 
 We also register continuous linear equiv versions of these correspondences, in
-`continuous_multilinear_curry_left_equiv` and `continuous_multilinear_curry_right_equiv`.
+`continuousMultilinearCurryLeftEquiv` and `continuousMultilinearCurryRightEquiv`.
 -/
 
 
@@ -1454,11 +1454,11 @@ theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap
 
 variable (𝕜 Ei G)
 
-/-- The space of continuous multilinear maps on `Π(i : fin (n+1)), E i` is canonically isomorphic to
+/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
 the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
-`Π(i : fin n), E i.succ `, by separating the first variable. We register this isomorphism in
-`continuous_multilinear_curry_left_equiv 𝕜 E E₂`. The algebraic version (without topology) is given
-in `multilinear_curry_left_equiv 𝕜 E E₂`.
+`Π(i : Fin n), E i.succ `, by separating the first variable. We register this isomorphism in
+`continuousMultilinearCurryLeftEquiv 𝕜 E E₂`. The algebraic version (without topology) is given
+in `multilinearCurryLeftEquiv 𝕜 E E₂`.
 
 The direct and inverse maps are given by `f.uncurry_left` and `f.curry_left`. Use these
 unless you need the full framework of linear isometric equivs. -/
@@ -1585,11 +1585,11 @@ theorem ContinuousMultilinearMap.uncurry_curryRight (f : ContinuousMultilinearMa
 variable (𝕜 Ei G)
 
 /--
-The space of continuous multilinear maps on `Π(i : fin (n+1)), Ei i` is canonically isomorphic to
-the space of continuous multilinear maps on `Π(i : fin n), Ei <| castSucc i` with values in the space
+The space of continuous multilinear maps on `Π(i : Fin (n+1)), Ei i` is canonically isomorphic to
+the space of continuous multilinear maps on `Π(i : Fin n), Ei <| castSucc i` with values in the space
 of continuous linear maps on `Ei (last n)`, by separating the last variable. We register this
-isomorphism as a continuous linear equiv in `continuous_multilinear_curry_right_equiv 𝕜 Ei G`.
-The algebraic version (without topology) is given in `multilinear_curry_right_equiv 𝕜 Ei G`.
+isomorphism as a continuous linear equiv in `continuousMultilinearCurryRightEquiv 𝕜 Ei G`.
+The algebraic version (without topology) is given in `multilinearCurryRightEquiv 𝕜 Ei G`.
 
 The direct and inverse maps are given by `f.uncurry_right` and `f.curry_right`. Use these
 unless you need the full framework of linear isometric equivs.
@@ -1616,11 +1616,11 @@ def continuousMultilinearCurryRightEquiv :
 
 variable (n G')
 
-/-- The space of continuous multilinear maps on `Π(i : fin (n+1)), G` is canonically isomorphic to
-the space of continuous multilinear maps on `Π(i : fin n), G` with values in the space
+/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), G` is canonically isomorphic to
+the space of continuous multilinear maps on `Π(i : Fin n), G` with values in the space
 of continuous linear maps on `G`, by separating the last variable. We register this
-isomorphism as a continuous linear equiv in `continuous_multilinear_curry_right_equiv' 𝕜 n G G'`.
-For a version allowing dependent types, see `continuous_multilinear_curry_right_equiv`. When there
+isomorphism as a continuous linear equiv in `continuousMultilinearCurryRightEquiv' 𝕜 n G G'`.
+For a version allowing dependent types, see `continuousMultilinearCurryRightEquiv`. When there
 are no dependent types, use the primed version as it helps Lean a lot for unification.
 
 The direct and inverse maps are given by `f.uncurry_right` and `f.curry_right`. Use these
@@ -1680,7 +1680,7 @@ theorem ContinuousMultilinearMap.uncurryRight_norm
 
 The space of multilinear maps with `0` variables is trivial: such a multilinear map is just an
 arbitrary constant (note that multilinear maps in `0` variables need not map `0` to `0`!).
-Therefore, the space of continuous multilinear maps on `(fin 0) → G` with values in `E₂` is
+Therefore, the space of continuous multilinear maps on `(Fin 0) → G` with values in `E₂` is
 isomorphic (and even isometric) to `E₂`. As this is the zeroth step in the construction of iterated
 derivatives, we register this isomorphism. -/
 
@@ -1889,9 +1889,9 @@ variable (𝕜 ι ι' G G')
 indexed by `ι ⊕ ι'` and the space of continuous multilinear maps with variables indexed by `ι`
 taking values in the space of continuous multilinear maps with variables indexed by `ι'`.
 
-The forward and inverse functions are `continuous_multilinear_map.curry_sum`
-and `continuous_multilinear_map.uncurry_sum`. Use this definition only if you need
-some properties of `linear_isometry_equiv`. -/
+The forward and inverse functions are `ContinuousMultilinearMap.currySum`
+and `ContinuousMultilinearMap.uncurrySum`. Use this definition only if you need
+some properties of `LinearIsometryEquiv`. -/
 def currySumEquiv :
     ContinuousMultilinearMap 𝕜 (fun x : Sum ι ι' => G) G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 (fun x : ι => G)
@@ -1922,7 +1922,7 @@ section
 
 variable (𝕜 G G') {k l : ℕ} {s : Finset (Fin n)}
 
-/-- If `s : finset (fin n)` is a finite set of cardinality `k` and its complement has cardinality
+/-- If `s : Finset (Fin n)` is a finite set of cardinality `k` and its complement has cardinality
 `l`, then the space of continuous multilinear maps `G [×n]→L[𝕜] G'` of `n` variables is isomorphic
 to the space of continuous multilinear maps `G [×k]→L[𝕜] G [×l]→L[𝕜] G'` of `k` variables taking
 values in the space of continuous multilinear maps of `l` variables. -/
