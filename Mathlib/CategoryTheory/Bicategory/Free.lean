@@ -394,12 +394,9 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   map₂_whisker_left := by
     intro a b c f g h η
     apply Quot.rec _ _ η
-    · intros; sorry
+    · intros; aesop_cat
     · intros; rfl
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
+  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; apply Quot.rec _ _ η <;> aesop_cat
 #align category_theory.free_bicategory.lift CategoryTheory.FreeBicategory.lift
 
 end
