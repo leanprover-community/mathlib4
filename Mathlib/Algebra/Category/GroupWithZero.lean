@@ -14,7 +14,7 @@ import Mathlib.Algebra.Category.MonCat.Basic
 /-!
 # The category of groups with zero
 
-This file defines `GroupWithZero`, the category of groups with zero.
+This file defines `GroupWithZeroCat`, the category of groups with zero.
 -/
 
 
@@ -36,7 +36,7 @@ instance : CoeSort GroupWithZeroCat (Type _) :=
 instance (X : GroupWithZeroCat) : GroupWithZero X :=
   X.str
 
-/-- Construct a bundled `GroupWithZero` from a `group_with_zero`. -/
+/-- Construct a bundled `GroupWithZeroCat` from a `GroupWithZero`. -/
 def of (α : Type _) [GroupWithZero α] : GroupWithZeroCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
