@@ -15,7 +15,6 @@ import Mathlib.RingTheory.QuotientNilpotent
 # Noetherian quotient rings and quotient modules
 -/
 
-
 instance Ideal.Quotient.isNoetherianRing {R : Type _} [CommRing R] [IsNoetherianRing R]
     (I : Ideal R) : IsNoetherianRing (R ⧸ I) :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower R <| Submodule.Quotient.isNoetherian _
