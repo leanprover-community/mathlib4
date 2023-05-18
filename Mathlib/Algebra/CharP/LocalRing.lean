@@ -8,10 +8,10 @@ Authors: Jon Eugster
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.Algebra.IsPrimePow
-import Mathbin.Data.Nat.Factorization.Basic
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.Algebra.IsPrimePow
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Characteristics of local rings
@@ -26,8 +26,7 @@ import Mathbin.Data.Nat.Factorization.Basic
 
 /-- In a local ring the characteristics is either zero or a prime power. -/
 theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : ℕ)
-    [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q :=
-  by
+    [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by
   -- Assume `q := char(R)` is not zero.
   apply or_iff_not_imp_left.2
   intro q_pos
@@ -55,8 +54,7 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
       exact absurd r_dvd_a r_ne_dvd_a
     -- Let `b` be the inverse of `a`.
     cases' a_unit.exists_left_inv with a_inv h_inv_mul_a
-    have rn_cast_zero : ↑(r ^ n) = (0 : R) :=
-      by
+    have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
       rw [Nat.cast_pow, ← @mul_one R _ (r ^ n), mul_comm, ←
         Classical.choose_spec a_unit.exists_left_inv, mul_assoc, ← Nat.cast_pow, ← Nat.cast_mul, ←
         q_eq_a_mul_rn, CharP.cast_eq_zero R q]
