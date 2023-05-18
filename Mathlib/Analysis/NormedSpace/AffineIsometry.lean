@@ -13,6 +13,7 @@ import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
+import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 # Affine isometries
@@ -77,7 +78,7 @@ instance : CoeFun (P →ᵃⁱ[𝕜] P₂) fun _ => P → P₂ :=
   ⟨fun f => f.toFun⟩
 
 @[simp]
-theorem coe_toAffineMap : ⇑f.toAffineMap = f :=
+theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
   rfl
 #align affine_isometry.coe_to_affine_map AffineIsometry.coe_toAffineMap
 
@@ -400,9 +401,10 @@ theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[�
   rfl
 #align linear_isometry_equiv.coe_to_affine_isometry_equiv LinearIsometryEquiv.coe_toAffineIsometryEquiv
 
-@[simp]
-theorem coe_toAffineIsometryEquiv' : ⇑e.toLinearEquiv = e :=
-  rfl
+-- Porting note: simp can prove this
+-- @[simp]
+-- theorem coe_toAffineIsometryEquiv' : ⇑e.toLinearEquiv = e := by simp
+--   -- rfl
 
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
@@ -641,7 +643,7 @@ protected theorem surjective : Surjective e :=
   e.1.surjective
 #align affine_isometry_equiv.surjective AffineIsometryEquiv.surjective
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align affine_isometry_equiv.map_eq_iff AffineIsometryEquiv.map_eq_iff
