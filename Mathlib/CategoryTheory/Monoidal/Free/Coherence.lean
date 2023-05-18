@@ -242,7 +242,6 @@ theorem discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 
 
 end
 
-set_option maxHeartbeats 400000 in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
     naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
     of our proof of the coherence theorem. -/
