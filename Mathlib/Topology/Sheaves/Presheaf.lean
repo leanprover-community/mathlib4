@@ -107,10 +107,6 @@ set_option linter.uppercaseLean3 false in
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
-/-- restriction of a section to open subset -/
--- porting note: temporary notation; todo: port `restrict_tac'` and use it instead
-scoped[AlgebraicGeometry] notation:80 a " |_[" h "] " b => TopCat.Presheaf.restrictOpen a b h
-
 -- Porting note : linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
 theorem restrict_restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C]
@@ -172,7 +168,8 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq' TopCat.Presheaf.pushforward_eq'
 
 @[simp]
-theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) (U) :
+theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
+  (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
   by simp [pushforwardEq]
@@ -387,8 +384,8 @@ theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presh
     -- porting note : `ext` does not see this
     refine NatTrans.ext _ _ (funext fun U => ?_)
     . erw [NatTrans.congr f (Opens.op_map_id_obj U)]
-      simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id, Category.comp_id, Category.id_comp,
-        Functor.id_obj, Functor.id_map]
+      simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
+        Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
@@ -476,7 +473,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 @[simps! unit_app_app counit_app_app]
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) : pullback C f ⊣ pushforward C f :=
+def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+  pullback C f ⊣ pushforward C f :=
   Lan.adjunction _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction
