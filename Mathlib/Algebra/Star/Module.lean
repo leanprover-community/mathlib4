@@ -75,11 +75,6 @@ theorem star_rat_smul {R : Type _} [AddCommGroup R] [StarAddMonoid R] [Module â„
 
 end SmulLemmas
 
-section deinstance
--- porting note: this is lean#2074 at play
-attribute [-instance] Ring.toNonUnitalRing
-attribute [-instance] CommRing.toNonUnitalCommRing
-
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
 @[simps]
@@ -89,8 +84,6 @@ def starLinearEquiv (R : Type _) {A : Type _} [CommRing R] [StarRing R] [Semirin
     toFun := star
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
-
-end deinstance
 
 variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
