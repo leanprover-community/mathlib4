@@ -273,6 +273,7 @@ def ofCocomplex (Z : C) : CochainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 
+/- TODO: Fix this. I can't work on this, because Lean 4 consumes all my memory (roughly 6 GB).
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
@@ -294,6 +295,7 @@ irreducible_def of (Z : C) : InjectiveResolution Z :=
     mono := Injective.ι_mono Z }
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of CategoryTheory.InjectiveResolution.of
+-/
 
 instance (priority := 100) (Z : C) : HasInjectiveResolution Z where out := ⟨of Z⟩
 
