@@ -16,27 +16,27 @@ import Mathlib.Algebra.DirectSum.Algebra
 # Internally graded rings and algebras
 
 This module provides `gsemiring` and `gcomm_semiring` instances for a collection of subobjects `A`
-when a `set_like.graded_monoid` instance is available:
+when a `SetLike.GradedMonoid` instance is available:
 
-* `set_like.gnon_unital_non_assoc_semiring`
-* `set_like.gsemiring`
-* `set_like.gcomm_semiring`
+* `SetLike.gnonUnitalNonAssocSemiring`
+* `SetLike.gsemiring`
+* `SetLike.gcommSemiring`
 
 With these instances in place, it provides the bundled canonical maps out of a direct sum of
 subobjects into their carrier type:
 
-* `direct_sum.coe_ring_hom` (a `ring_hom` version of `direct_sum.coe_add_monoid_hom`)
-* `direct_sum.coe_alg_hom` (an `alg_hom` version of `direct_sum.submodule_coe`)
+* `DirectSum.coeRingHom` (a `RingHom` version of `DirectSum.coeAddMonoidHom`)
+* `DirectSum.coeAlgHom` (an `AlgHom` version of `direct_sum.submodule_coe`)
 
 Strictly the definitions in this file are not sufficient to fully define an "internal" direct sum;
-to represent this case, `(h : direct_sum.is_internal A) [set_like.graded_monoid A]` is
+to represent this case, `(h : DirectSum.IsInternal A) [SetLike.GradedMonoid A]` is
 needed. In the future there will likely be a data-carrying, constructive, typeclass version of
-`direct_sum.is_internal` for providing an explicit decomposition function.
+`DirectSum.IsInternal` for providing an explicit decomposition function.
 
-When `complete_lattice.independent (set.range A)` (a weaker condition than
-`direct_sum.is_internal A`), these provide a grading of `⨆ i, A i`, and the
+When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
+`DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`direct_sum.to_monoid (λ i, add_submonoid.inclusion $ le_supr A i)`.
+`direct_sum.to_monoid (λ i, AddSubmonoid.inclusion $ le_iSup A i)`.
 
 ## tags
 
@@ -84,7 +84,7 @@ section DirectSum
 
 variable [DecidableEq ι]
 
-/-! #### From `add_submonoid`s and `add_subgroup`s -/
+/-! #### From `AddSubmonoid`s and `AddSubgroup`s -/
 
 
 namespace SetLike
@@ -259,7 +259,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for `canonically_ordered_add_monoid` + the above three typeclasses for convenience. -/
+  state them for `CanonicallyOrderedAddMonoid` + the above three typeclasses for convenience. -/
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -286,12 +286,12 @@ end CanonicallyOrderedAddMonoid
 
 end DirectSum
 
-/-! #### From `submodule`s -/
+/-! #### From `Submodule`s -/
 
 
 namespace Submodule
 
-/-- Build a `galgebra` instance for a collection of `submodule`s. -/
+/-- Build a `galgebra` instance for a collection of `Submodule`s. -/
 instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
     [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i where
   toFun :=
@@ -329,7 +329,7 @@ def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S 
 #align direct_sum.coe_alg_hom DirectSum.coeAlgHom
 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of
-`direct_sum.coe_alg_hom`. -/
+`DirectSum.coeAlgHom`. -/
 theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Semiring R]
     [Algebra S R] (A : ι → Submodule S R) [SetLike.GradedMonoid A] :
     (⨆ i, A i) = Subalgebra.toSubmodule (DirectSum.coeAlgHom A).range :=
