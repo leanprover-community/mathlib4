@@ -21,18 +21,18 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 
 This situation can be set up in Mathlib as:
 ```lean
-variables (R S M : Type*) [ring R] [ring S]
-variables [add_comm_group M] [module R M] [module Sᵐᵒᵖ M] [smul_comm_class R Sᵐᵒᵖ M]
+variables (R S M : Type*) [Ring R] [Ring S]
+variables [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean
-example : module (R ⊗[ℕ] Sᵐᵒᵖ) M := tensor_product.algebra.module
+example : Module (R ⊗[ℕ] Sᵐᵒᵖ) M := TensorProduct.Algebra.module
 ```
 Note that the corresponding result holds for the canonically isomorphic ring `R ⊗[ℤ] Sᵐᵒᵖ` but it is
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 
-Bimodules are thus just a special case of `module`s and most of their properties follow from the
-theory of `module`s`. In particular a two-sided submodule of a bimodule is simply a term of type
+Bimodules are thus just a special case of `Module`s and most of their properties follow from the
+theory of `Module`s`. In particular a two-sided Submodule of a bimodule is simply a term of type
 `submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
 
 This file is a place to collect results which are specific to bimodules.
@@ -105,7 +105,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
   simp [TensorProduct.Algebra.smul_def]
 #align subbimodule.smul_mem' Subbimodule.smul_mem'
 
-/-- If `A` and `B` are also `algebra`s over yet another set of scalars `S` then we may "base change"
+/-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps]
 def baseChange (S : Type _) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
@@ -114,7 +114,7 @@ def baseChange (S : Type _) [CommSemiring S] [Module S M] [Algebra S A] [Algebra
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)
 #align subbimodule.base_change Subbimodule.baseChange
 
-/-- Forgetting the `B` action, a `submodule` over `A ⊗[R] B` is just a `submodule` over `A`. -/
+/-- Forgetting the `B` action, a `Submodule` over `A ⊗[R] B` is just a `Submodule` over `A`. -/
 @[simps]
 def toSubmodule (p : Submodule (A ⊗[R] B) M) : Submodule A M :=
   { p with
@@ -122,7 +122,7 @@ def toSubmodule (p : Submodule (A ⊗[R] B) M) : Submodule A M :=
     smul_mem' := smul_mem p }
 #align subbimodule.to_submodule Subbimodule.toSubmodule
 
-/-- Forgetting the `A` action, a `submodule` over `A ⊗[R] B` is just a `submodule` over `B`. -/
+/-- Forgetting the `A` action, a `Submodule` over `A ⊗[R] B` is just a `Submodule` over `B`. -/
 @[simps]
 def toSubmodule' (p : Submodule (A ⊗[R] B) M) : Submodule B M :=
   { p with
@@ -138,14 +138,14 @@ variable (R S M : Type _) [Ring R] [Ring S]
 
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
-/-- A `submodule` over `R ⊗[ℕ] S` is naturally also a `submodule` over the canonically-isomorphic
+/-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℤ] S`. -/
 @[simps]
 def toSubbimoduleInt (p : Submodule (R ⊗[ℕ] S) M) : Submodule (R ⊗[ℤ] S) M :=
   baseChange ℤ p
 #align subbimodule.to_subbimodule_int Subbimodule.toSubbimoduleInt
 
-/-- A `submodule` over `R ⊗[ℤ] S` is naturally also a `submodule` over the canonically-isomorphic
+/-- A `Submodule` over `R ⊗[ℤ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℕ] S`. -/
 @[simps]
 def toSubbimoduleNat (p : Submodule (R ⊗[ℤ] S) M) : Submodule (R ⊗[ℕ] S) M :=
