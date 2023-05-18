@@ -30,11 +30,7 @@ Besides `OpenNhds`, the main constructions here are:
 -/
 
 
-open CategoryTheory
-
-open TopologicalSpace
-
-open Opposite
+open CategoryTheory TopologicalSpace Opposite
 
 universe u
 
@@ -81,14 +77,14 @@ instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) f
 #align topological_space.open_nhds.opens_nhds_hom_has_coe_to_fun TopologicalSpace.OpenNhds.opensNhdsHomHasCoeToFun
 
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets. -/
-def infLeLeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
+def infLELeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
   homOfLE inf_le_left
-#align topological_space.open_nhds.inf_le_left TopologicalSpace.OpenNhds.infLeLeft
+#align topological_space.open_nhds.inf_le_left TopologicalSpace.OpenNhds.infLELeft
 
 /-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of open sets. -/
-def infLeRight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
+def infLERight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
   homOfLE inf_le_right
-#align topological_space.open_nhds.inf_le_right TopologicalSpace.OpenNhds.infLeRight
+#align topological_space.open_nhds.inf_le_right TopologicalSpace.OpenNhds.infLERight
 
 /-- The inclusion functor from open neighbourhoods of `x`
 to open sets in the ambient topological space. -/

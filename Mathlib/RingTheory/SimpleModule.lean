@@ -64,8 +64,6 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
 variable {R} {M} -- Porting note: had break line or all hell breaks loose
 variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
 
--- Porting note: cannot synth RingInvHomPair
-set_option synthInstance.etaExperiment true in
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
@@ -131,38 +129,28 @@ theorem is_semisimple_iff_top_eq_sSup_simples :
 
 namespace LinearMap
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) :
     Function.Injective f ∨ f = 0 := by
   rw [← ker_eq_bot, ← ker_eq_top]
   apply eq_bot_or_eq_top
 #align linear_map.injective_or_eq_zero LinearMap.injective_or_eq_zero
 
--- Porting note: cannot coerce to function
-set_option synthInstance.etaExperiment true in
 theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Injective f :=
   f.injective_or_eq_zero.resolve_right h
 #align linear_map.injective_of_ne_zero LinearMap.injective_of_ne_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Surjective f ∨ f = 0 := by
   rw [← range_eq_top, ← range_eq_bot, or_comm]
   apply eq_bot_or_eq_top
 #align linear_map.surjective_or_eq_zero LinearMap.surjective_or_eq_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Surjective f :=
   f.surjective_or_eq_zero.resolve_right h
 #align linear_map.surjective_of_ne_zero LinearMap.surjective_of_ne_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 /-- **Schur's Lemma** for linear maps between (possibly distinct) simple modules -/
 theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Bijective f ∨ f = 0 := by
@@ -172,15 +160,11 @@ theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M �
   exact Or.intro_left _ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
 #align linear_map.bijective_or_eq_zero LinearMap.bijective_or_eq_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Bijective f :=
   f.bijective_or_eq_zero.resolve_right h
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
--- Porting note: cannot coerce to function
-set_option synthInstance.etaExperiment true in
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
@@ -226,8 +210,6 @@ namespace JordanHolderModule
 
 -- Porting note: jordanHolderModule was timing out so outlining the fields
 
--- Porting note: cannot synth RingHomInvPair
-set_option synthInstance.etaExperiment true in
 /-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
 `(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
 def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
@@ -236,8 +218,6 @@ def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
 theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
   fun ⟨f⟩ => ⟨f.symm⟩
 
--- Porting note: cannot synth RingHomCompClass
-set_option synthInstance.etaExperiment true in
 theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
   fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
 
@@ -249,8 +229,6 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
   dsimp
   exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
--- Porting note: cannot synth RingHomInvPair
-set_option synthInstance.etaExperiment true in
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := Covby.lt

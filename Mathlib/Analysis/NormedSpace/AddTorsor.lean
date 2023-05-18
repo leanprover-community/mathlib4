@@ -44,7 +44,6 @@ theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
   rfl
 #align affine_subspace.is_closed_direction_iff AffineSubspace.isClosed_direction_iff
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
@@ -53,7 +52,6 @@ theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
   simp [norm_smul, ← dist_eq_norm_vsub V, dist_comm]
 #align dist_center_homothety dist_center_homothety
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₁ = ‖c‖ * dist p₁ p₂ := by rw [dist_comm, dist_center_homothety]
@@ -99,14 +97,12 @@ theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ 
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
 #align dist_right_line_map dist_right_lineMap
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem dist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
   rw [homothety_eq_lineMap, dist_lineMap_right]
 #align dist_homothety_self dist_homothety_self
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₂ (homothety p₁ c p₂) = ‖1 - c‖ * dist p₁ p₂ := by rw [dist_comm, dist_homothety_self]
@@ -157,7 +153,6 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
 
 variable (𝕜)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
     ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
   rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
@@ -172,7 +167,6 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
   rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
 #align eventually_homothety_mem_of_mem_interior eventually_homothety_mem_of_mem_interior
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}
     (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s := by
   suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s by

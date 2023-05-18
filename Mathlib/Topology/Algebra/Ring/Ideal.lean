@@ -67,10 +67,7 @@ theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
 
 theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
   IsOpenMap.to_quotientMap ((QuotientRing.isOpenMap_coe N).prod (QuotientRing.isOpenMap_coe N))
-    (Continuous.prod_mk (Continuous.comp continuous_quot_mk continuous_fst) <|
-      Continuous.comp continuous_quot_mk continuous_snd)
-    -- porting note: this is lean4#2074 because this works with `etaExperiment`:
-    -- `(continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))`
+    ((continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))
     (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
 #align quotient_ring.quotient_map_coe_coe QuotientRing.quotientMap_coe_coe
 
@@ -78,15 +75,11 @@ instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
   TopologicalSemiring.toTopologicalRing
     { continuous_add :=
         have cont : Continuous (mk N ∘ fun p : R × R => p.fst + p.snd) :=
-          Continuous.comp continuous_quot_mk continuous_add
-          -- porting note: this is lean4#2074 because this works with `etaExperiment`:
-          -- `continuous_quot_mk.comp continuous_add`
+          continuous_quot_mk.comp continuous_add
         (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont
       continuous_mul :=
         have cont : Continuous (mk N ∘ fun p : R × R => p.fst * p.snd) :=
-          Continuous.comp continuous_quot_mk continuous_mul
-          -- porting note: this is lean4#2074 because this works with `etaExperiment`:
-          -- `continuous_quot_mk.comp continuous_mul`
+          continuous_quot_mk.comp continuous_mul
         (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont }
 #align topological_ring_quotient topologicalRing_quotient
 

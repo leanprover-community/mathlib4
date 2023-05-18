@@ -993,7 +993,7 @@ instance linearOrder : LinearOrder Ordinal :=
                   right
                   rw [h],
                   exact Or.inr (Or.inl h)]
-    decidable_le := Classical.decRel _ }
+    decidableLE := Classical.decRel _ }
 
 instance wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
