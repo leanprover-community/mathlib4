@@ -66,13 +66,13 @@ Case conversion may be inaccurate. Consider using '#align category_theory.free_b
 @[simp]
 def inclusionPathAux {a : B} : ∀ {b : B}, Path a b → Hom a b
   | _, nil => Hom.id a
-  | _, cons p f => (inclusion_path_aux p).comp (Hom.of f)
+  | _, cons p f => (inclusionPathAux p).comp (Hom.of f)
 #align category_theory.free_bicategory.inclusion_path_aux CategoryTheory.FreeBicategory.inclusionPathAux
 
 /-- The discrete category on the paths includes into the category of 1-morphisms in the free
 bicategory.
 -/
-def inclusionPath (a b : B) : Discrete (Path.{v + 1} a b) ⥤ Hom a b :=
+def inclusionPath (a b : B) :=  Discrete (Path.{v + 1} a b) ⥤ Hom a b :=
   Discrete.functor inclusionPathAux
 #align category_theory.free_bicategory.inclusion_path CategoryTheory.FreeBicategory.inclusionPath
 
@@ -84,7 +84,7 @@ def preinclusion (B : Type u) [Quiver.{v + 1} B] :
     PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) where
   obj := id
   map a b := (inclusionPath a b).obj
-  zipWith a b f g η := (inclusionPath a b).map η
+  map₂ a b f g η := (inclusionPath a b).map η
 #align category_theory.free_bicategory.preinclusion CategoryTheory.FreeBicategory.preinclusion
 
 @[simp]
@@ -94,11 +94,10 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
 
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
-    (preinclusion B).zipWith η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) :=
-  by
+    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
-  cases discrete.ext _ _ η
-  exact (inclusion_path a b).map_id _
+  cases Discrete.ext _ _ _
+  exact (inclusionPath a b).map_id _
 #align category_theory.free_bicategory.preinclusion_map₂ CategoryTheory.FreeBicategory.preinclusion_map₂
 
 /- warning: category_theory.free_bicategory.normalize_aux -> CategoryTheory.FreeBicategory.normalizeAux is a dubious translation:
@@ -114,9 +113,9 @@ of `f` alone, but the auxiliary `p` is necessary for Lean to accept the definiti
 -/
 @[simp]
 def normalizeAux {a : B} : ∀ {b c : B}, Path a b → Hom b c → Path a c
-  | _, _, p, hom.of f => p.cons f
-  | _, _, p, hom.id b => p
-  | _, _, p, hom.comp f g => normalize_aux (normalize_aux p f) g
+  | _, _, p, Hom.of f => p.cons f
+  | _, _, p, Hom.id _ => p
+  | _, _, p, Hom.comp f g => normalizeAux (normalizeAux p f) g
 #align category_theory.free_bicategory.normalize_aux CategoryTheory.FreeBicategory.normalizeAux
 
 /- warning: category_theory.free_bicategory.normalize_iso -> CategoryTheory.FreeBicategory.normalizeIso is a dubious translation:
@@ -151,9 +150,9 @@ fully-normalized 1-morphism.
 def normalizeIso {a : B} :
     ∀ {b c : B} (p : Path a b) (f : Hom b c),
       (preinclusion B).map ⟨p⟩ ≫ f ≅ (preinclusion B).map ⟨normalizeAux p f⟩
-  | _, _, p, hom.of f => Iso.refl _
-  | _, _, p, hom.id b => ρ_ _
-  | _, _, p, hom.comp f g =>
+  | _, _, p, Hom.of f => Iso.refl _
+  | _, _, p, Hom.id b => ρ_ _
+  | _, _, p, Hom.comp f g =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalize_iso p f) g ≪≫ normalize_iso (normalizeAux p f) g
 #align category_theory.free_bicategory.normalize_iso CategoryTheory.FreeBicategory.normalizeIso
 
@@ -211,10 +210,10 @@ theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
 def normalize (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
   obj := id
-  map a b f := ⟨normalizeAux nil f⟩
-  zipWith a b f g η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
-  map_id a := eqToIso <| Discrete.ext _ _ rfl
-  map_comp a b c f g := eqToIso <| Discrete.ext _ _ <| normalizeAux_nil_comp f g
+  map f := ⟨normalizeAux nil f⟩
+  map₂ f g η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
+  mapId a := eqToIso <| Discrete.ext _ _ rfl
+  mapComp a b c f g := eqToIso <| Discrete.ext _ _ <| normalizeAux_nil_comp f g
 #align category_theory.free_bicategory.normalize CategoryTheory.FreeBicategory.normalize
 
 /-- Auxiliary definition for `normalize_equiv`. -/
@@ -261,8 +260,8 @@ def inclusion (B : Type u) [Quiver.{v + 1} B] :
   {-- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
       preinclusion
       B with
-    map_id := fun a => Iso.refl (𝟙 a)
-    map_comp := fun a b c f g => inclusionMapCompAux f.as g.as }
+    mapId := fun a => Iso.refl (𝟙 a)
+    mapComp := fun f g => inclusionMapCompAux f.as g.as }
 #align category_theory.free_bicategory.inclusion CategoryTheory.FreeBicategory.inclusion
 
 end FreeBicategory
