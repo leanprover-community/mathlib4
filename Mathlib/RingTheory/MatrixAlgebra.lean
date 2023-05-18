@@ -122,7 +122,9 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
   simp only [invFun, AlgHom.map_sum, stdBasisMatrix, apply_ite ↑(algebraMap R A), smul_eq_mul,
     mul_boole, toFunAlgHom_apply, RingHom.map_zero, RingHom.map_one, Matrix.map_apply,
     Pi.smul_def]
-  convert Finset.sum_product; apply matrix_eq_sum_std_basis
+  convert Finset.sum_product (β := Matrix n n A)
+  conv_lhs => rw [matrix_eq_sum_std_basis M]
+  simp [stdBasisMatrix]
 #align matrix_equiv_tensor.right_inv MatrixEquivTensor.right_inv
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by
