@@ -8,8 +8,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Complex.Arg
-import Mathbin.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The complex `log` function
@@ -79,8 +79,7 @@ theorem log_of_real_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [l
 #align complex.log_of_real_re Complex.log_of_real_re
 
 theorem log_of_real_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
-    log (r * x) = Real.log r + log x :=
-  by
+    log (r * x) = Real.log r + log x := by
   replace hx := complex.abs.ne_zero_iff.mpr hx
   simp_rw [log, map_mul, abs_of_real, arg_real_mul _ hr, abs_of_pos hr, Real.log_mul hr.ne' hx,
     of_real_add, add_assoc]
@@ -107,8 +106,7 @@ theorem log_i : log I = π / 2 * I := by simp [log]
 theorem log_neg_i : log (-I) = -(π / 2) * I := by simp [log]
 #align complex.log_neg_I Complex.log_neg_i
 
-theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) :=
-  by
+theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) := by
   simp_rw [log, abs_conj, arg_conj, map_add, map_mul, conj_of_real]
   split_ifs with hx
   · rw [hx]
@@ -119,8 +117,7 @@ theorem log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := b
   rw [log_conj_eq_ite, if_neg h]
 #align complex.log_conj Complex.log_conj
 
-theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x :=
-  by
+theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
   by_cases hx : x = 0
   · simp [hx]
   rw [inv_def, log_mul_of_real, Real.log_inv, of_real_neg, ← sub_eq_neg_add, log_conj_eq_ite]
@@ -139,8 +136,7 @@ theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [lo
 theorem two_pi_i_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]
 #align complex.two_pi_I_ne_zero Complex.two_pi_i_ne_zero
 
-theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * I) :=
-  by
+theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * I) := by
   constructor
   · intro h
     rcases existsUnique_add_zsmul_mem_Ioc Real.two_pi_pos x.im (-π) with ⟨n, hn, -⟩
@@ -161,8 +157,7 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 #align complex.exp_eq_exp_iff_exists_int Complex.exp_eq_exp_iff_exists_int
 
 @[simp]
-theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable :=
-  by
+theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine' ⟨fun hs => _, fun hs => _⟩
   · refine' ((hs.image exp).insert 0).mono _
     rw [image_preimage_eq_inter_range, range_exp, ← diff_eq, ← union_singleton, diff_union_self]
@@ -180,8 +175,7 @@ alias countable_preimage_exp ↔ _ _root_.set.countable.preimage_cexp
 #align set.countable.preimage_cexp Set.Countable.preimage_cexp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
-    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log (abs z) - π * I) :=
-  by
+    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log (abs z) - π * I) := by
   have :=
     (continuous_of_real.continuous_at.comp_continuous_within_at
             (continuous_abs.continuous_within_at.log _)).Tendsto.add
@@ -195,8 +189,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 #align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
-    ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z :=
-  by
+    ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
   have :=
     (continuous_of_real.continuous_at.comp_continuous_within_at
             (continuous_abs.continuous_within_at.log _)).Tendsto.add
@@ -220,8 +213,7 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop :=
-  by
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
   rw [← comap_exp_comap_abs_at_top, map_comap, range_exp, inf_eq_left, le_principal_iff]
   exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
@@ -236,8 +228,7 @@ open Topology
 
 variable {α : Type _}
 
-theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x :=
-  by
+theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _
   · refine' continuous_of_real.continuous_at.comp _
     refine' (Real.continuousAt_log _).comp complex.continuous_abs.continuous_at
