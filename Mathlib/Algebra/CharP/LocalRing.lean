@@ -18,7 +18,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 
 ## Main result
 
-- `char_p_zero_or_prime_power`: In a commutative local ring the characteristics is either
+- `charP_zero_or_prime_power`: In a commutative local ring the characteristics is either
   zero or a prime power.
 
 -/
@@ -42,7 +42,6 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
     have r_ne_dvd_a := Nat.not_dvd_ord_compl r_prime q_pos
     have rn_dvd_q : r ^ n ∣ q := ⟨a, q_eq_a_mul_rn⟩
     rw [mul_comm] at q_eq_a_mul_rn
-    have a_dvd_q : a ∣ q := ⟨r ^ n, q_eq_a_mul_rn⟩
     -- ... where `a` is a unit.
     have a_unit : IsUnit (a : R) := by
       by_contra g
@@ -55,9 +54,8 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
     -- Let `b` be the inverse of `a`.
     cases' a_unit.exists_left_inv with a_inv h_inv_mul_a
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
-      rw [Nat.cast_pow, ← @mul_one R _ (r ^ n), mul_comm, ←
-        Classical.choose_spec a_unit.exists_left_inv, mul_assoc, ← Nat.cast_pow, ← Nat.cast_mul, ←
-        q_eq_a_mul_rn, CharP.cast_eq_zero R q]
+      rw [← @mul_one R _ (r ^ n), mul_comm, ←Classical.choose_spec a_unit.exists_left_inv,
+        mul_assoc, ← Nat.cast_mul, ←q_eq_a_mul_rn, CharP.cast_eq_zero R q]
       simp
     have q_eq_rn := Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R q (r ^ n)).mp rn_cast_zero) rn_dvd_q
     have n_pos : n ≠ 0 := fun n_zero =>
@@ -71,4 +69,3 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
     have q_zero := CharP.eq R char_R_q (CharP.ofCharZero R)
     exact absurd q_zero q_pos
 #align char_p_zero_or_prime_power charP_zero_or_prime_power
-
