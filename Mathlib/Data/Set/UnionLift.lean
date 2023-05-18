@@ -41,7 +41,7 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 directed union, directed supremum, glue, gluing
 -/
 
-variable {ι α β : Sort _}
+variable {α ι β : Sort _}
 
 namespace Set
 
