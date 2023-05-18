@@ -64,10 +64,10 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
      ⟩
 
 -- porting note: added
-lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
+lemma coeId {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
 -- porting note: added
-lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+lemma coeComp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget := { obj := fun G => G
