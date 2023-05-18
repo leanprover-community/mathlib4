@@ -8,8 +8,8 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Punit
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.Basic
+import Mathlib.CategoryTheory.Punit
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Fundamental groupoid of punit
@@ -33,8 +33,7 @@ end Path
 
 namespace FundamentalGroupoid
 
-instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) :=
-  by
+instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
   convert_to Subsingleton (Path.Homotopic.Quotient PUnit.unit PUnit.unit)
   · congr <;> apply PUnit.eq_punit
   apply Quotient.subsingleton
