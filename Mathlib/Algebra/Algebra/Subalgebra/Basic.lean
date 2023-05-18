@@ -449,8 +449,6 @@ theorem val_apply (x : S) : S.val x = (x : A) := rfl
 theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) := rfl
 #align subalgebra.to_subsemiring_subtype Subalgebra.toSubsemiring_subtype
 
--- Porting note: workaround for lean#2074
-attribute [-instance] Ring.toNonAssocRing
 @[simp]
 theorem toSubring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     S.toSubring.subtype = (S.val : S →+* A) := rfl

@@ -829,9 +829,6 @@ end
 
 end LinearEquiv
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 namespace LinearMap
 
 open Submodule
