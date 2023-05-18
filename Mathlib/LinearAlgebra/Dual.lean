@@ -22,73 +22,73 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 ## Main definitions
 
 * Duals and transposes:
-  * `module.dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
-  * `module.dual_pairing R M` is the canonical pairing between `dual R M` and `M`.
-  * `module.dual.eval R M : M →ₗ[R] dual R (dual R)` is the canonical map to the double dual.
-  * `module.dual.transpose` is the linear map from `M →ₗ[R] M'` to `dual R M' →ₗ[R] dual R M`.
-  * `linear_map.dual_map` is `module.dual.transpose` of a given linear map, for dot notation.
-  * `linear_equiv.dual_map` is for the dual of an equivalence.
+  * `Module.Dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
+  * `Module.dualPairing R M` is the canonical pairing between `Dual R M` and `M`.
+  * `Module.Dual.eval R M : M →ₗ[R] Dual R (Dual R)` is the canonical map to the double dual.
+  * `Module.Dual.transpose` is the linear map from `M →ₗ[R] M'` to `Dual R M' →ₗ[R] Dual R M`.
+  * `LinearMap.dualMap` is `Module.Dual.transpose` of a given linear map, for dot notation.
+  * `LinearEquiv.dualMap` is for the dual of an equivalence.
 * Bases:
-  * `basis.to_dual` produces the map `M →ₗ[R] dual R M` associated to a basis for an `R`-module `M`.
-  * `basis.to_dual_equiv` is the equivalence `M ≃ₗ[R] dual R M` associated to a finite basis.
-  * `basis.dual_basis` is a basis for `dual R M` given a finite basis for `M`.
-  * `module.dual_bases e ε` is the proposition that the families `e` of vectors and `ε` of dual
+  * `Basis.toDual` produces the map `M →ₗ[R] Dual R M` associated to a basis for an `R`-module `M`.
+  * `Basis.toDual_equiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
+  * `Basis.dualBasis` is a basis for `Dual R M` given a finite basis for `M`.
+  * `Module.dual_bases e ε` is the proposition that the families `e` of vectors and `ε` of dual
     vectors have the characteristic properties of a basis and a dual.
 * Submodules:
-  * `submodule.dual_restrict W` is the transpose `dual R M →ₗ[R] dual R W` of the inclusion map.
-  * `submodule.dual_annihilator W` is the kernel of `W.dual_restrict`. That is, it is the submodule
+  * `Submodule.dualRestrict W` is the transpose `Dual R M →ₗ[R] Dual R W` of the inclusion map.
+  * `Submodule.dualAnnihilator W` is the kernel of `W.dualRestrict`. That is, it is the submodule
     of `dual R M` whose elements all annihilate `W`.
-  * `submodule.dual_restrict_comap W'` is the dual annihilator of `W' : submodule R (dual R M)`,
-    pulled back along `module.dual.eval R M`.
-  * `submodule.dual_copairing W` is the canonical pairing between `W.dual_annihilator` and `M ⧸ W`.
-    It is nondegenerate for vector spaces (`subspace.dual_copairing_nondegenerate`).
-  * `submodule.dual_pairing W` is the canonical pairing between `dual R M ⧸ W.dual_annihilator`
-    and `W`. It is nondegenerate for vector spaces (`subspace.dual_pairing_nondegenerate`).
+  * `Submodule.dualRestrict_comap W'` is the dual annihilator of `W' : Submodule R (Dual R M)`,
+    pulled back along `Module.Dual.eval R M`.
+  * `Submodule.dualCopairing W` is the canonical pairing between `W.dualAnnihilator` and `M ⧸ W`.
+    It is nondegenerate for vector spaces (`subspace.dualCopairing_nondegenerate`).
+  * `Submodule.dualPairing W` is the canonical pairing between `dual R M ⧸ W.dualAnnihilator`
+    and `W`. It is nondegenerate for vector spaces (`Subspace.dualPairing_nondegenerate`).
 * Vector spaces:
-  * `subspace.dual_lift W` is an arbitrary section (using choice) of `submodule.dual_restrict W`.
+  * `Subspace.dualLift W` is an arbitrary section (using choice) of `Submodule.dualRestrict W`.
 
 ## Main results
 
 * Bases:
-  * `module.dual_basis.basis` and `module.dual_basis.coe_basis`: if `e` and `ε` form a dual pair,
+  * `Module.dualBasis.basis` and `Module.dualBasis.coe_basis`: if `e` and `ε` form a dual pair,
     then `e` is a basis.
-  * `module.dual_basis.coe_dual_basis`: if `e` and `ε` form a dual pair,
+  * `Module.dualBasis.coe_dualBasis`: if `e` and `ε` form a dual pair,
     then `ε` is a basis.
 * Annihilators:
-  * `module.dual_annihilator_gc R M` is the antitone Galois correspondence between
-    `submodule.dual_annihilator` and `submodule.dual_coannihilator`.
-  * `linear_map.ker_dual_map_eq_dual_annihilator_range` says that
-    `f.dual_map.ker = f.range.dual_annihilator`
-  * `linear_map.range_dual_map_eq_dual_annihilator_ker_of_subtype_range_surjective` says that
-    `f.dual_map.range = f.ker.dual_annihilator`; this is specialized to vector spaces in
-    `linear_map.range_dual_map_eq_dual_annihilator_ker`.
-  * `submodule.dual_quot_equiv_dual_annihilator` is the equivalence
-    `dual R (M ⧸ W) ≃ₗ[R] W.dual_annihilator`
+  * `Module.dualAnnihilator_gc R M` is the antitone Galois correspondence between
+    `Submodule.dualAnnihilator` and `Submodule.dualConnihilator`.
+  * `LinearMap.ker_dual_map_eq_dualAnnihilator_range` says that
+    `f.dual_map.ker = f.range.dualAnnihilator`
+  * `LinearMap.range_dual_map_eq_dualAnnihilator_ker_of_subtype_range_surjective` says that
+    `f.dual_map.range = f.ker.dualAnnihilator`; this is specialized to vector spaces in
+    `LinearMap.range_dual_map_eq_dualAnnihilator_ker`.
+  * `Submodule.dual_quot_equiv_dualAnnihilator` is the equivalence
+    `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
 * Vector spaces:
-  * `subspace.dual_annihilator_dual_coannihilator_eq` says that the double dual annihilator,
-    pulled back ground `module.dual.eval`, is the original submodule.
-  * `subspace.dual_annihilator_gci` says that `module.dual_annihilator_gc R M` is an
+  * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
+    pulled back ground `Module.Dual.eval`, is the original submodule.
+  * `Subspace.dualAnnihilator_gci` says that `module.dualAnnihilator_gc R M` is an
     antitone Galois coinsertion.
-  * `subspace.quot_annihilator_equiv` is the equivalence
-    `dual K V ⧸ W.dual_annihilator ≃ₗ[K] dual K W`.
-  * `linear_map.dual_pairing_nondegenerate` says that `module.dual_pairing` is nondegenerate.
-  * `subspace.is_compl_dual_annihilator` says that the dual annihilator carries complementary
+  * `Subspace.quotAnnihilatorEquiv` is the equivalence
+    `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
+  * `LinearMap.dualPairing_nondegenerate` says that `Module.dualPairing` is nondegenerate.
+  * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
-  * `module.eval_equiv` is the equivalence `V ≃ₗ[K] dual K (dual K V)`
-  * `module.map_eval_equiv` is the order isomorphism between subspaces of `V` and
-    subspaces of `dual K (dual K V)`.
-  * `subspace.quot_dual_equiv_annihilator W` is the equivalence
-    `(dual K V ⧸ W.dual_lift.range) ≃ₗ[K] W.dual_annihilator`, where `W.dual_lift.range` is a copy
-    of `dual K W` inside `dual K V`.
-  * `subspace.quot_equiv_annihilator W` is the equivalence `(V ⧸ W) ≃ₗ[K] W.dual_annihilator`
-  * `subspace.dual_quot_distrib W` is an equivalence
-    `dual K (V₁ ⧸ W) ≃ₗ[K] dual K V₁ ⧸ W.dual_lift.range` from an arbitrary choice of
+  * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
+  * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
+    subspaces of `Dual K (Dual K V)`.
+  * `Subspace.quotDualEquivAnnihilator W` is the equivalence
+    `(Dual K V ⧸ W.dualLift.range) ≃ₗ[K] W.dualAnnihilator`, where `W.dualLift.range` is a copy
+    of `Dual K W` inside `Dual K V`.
+  * `Subspace.quotEquivAnnihilator W` is the equivalence `(V ⧸ W) ≃ₗ[K] W.dualAnnihilator`
+  * `Subspace.dualQuotDistrib W` is an equivalence
+    `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
 
 ## TODO
 
-Erdös-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
+Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
 
