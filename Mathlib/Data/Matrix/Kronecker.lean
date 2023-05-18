@@ -577,5 +577,3 @@ end Algebra
 end KroneckerTmul
 
 end Matrix
-
-#lint
