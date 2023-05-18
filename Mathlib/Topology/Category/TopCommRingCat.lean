@@ -28,6 +28,7 @@ set_option linter.uppercaseLean3 false -- `TopCommRing`
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
+  /-- carrier of a topological commutative ring. -/
   α : Type u
   [isCommRing : CommRing α]
   [isTopologicalSpace : TopologicalSpace α]
@@ -58,7 +59,9 @@ instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }
-  forget_faithful := sorry -- Porting note: TODO fix sorry. Old proof was `forget_faithful := { }`
+  -- Porting note : Old proof was `forget_faithful := { }`
+  forget_faithful :=
+    { map_injective := fun {_ _ a b} h => Subtype.ext <| RingHom.coe_inj h }
 
 /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
 -/
