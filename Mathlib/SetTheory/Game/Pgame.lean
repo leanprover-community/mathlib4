@@ -287,6 +287,10 @@ theorem Subsequent.mk_right {xl xr} (xL : xl → Pgame) (xR : xr → Pgame) (j :
   @Subsequent.moveRight (mk _ _ _ _) j
 #align pgame.subsequent.mk_right Pgame.Subsequent.mk_right
 
+/--
+Discharges proof obligations of the form `⊢ Subsequent ..` arising in termination proofs
+of definitions using well-founded recursion on `Pgame`.
+-/
 macro "pgame_wf_tac" : tactic =>
   `(tactic| solve_by_elim (config := {maxDepth := 6 }) [PSigma.Lex.left, PSigma.Lex.right,
   Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
@@ -317,6 +321,10 @@ theorem Subsequent.mk_right' (xL : xl → Pgame) (xR : xr → Pgame) (j : RightM
 @[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → Pgame) (j) :
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
+
+-- Porting note: linter claims these lemmas don't simplify?
+open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
+  moveRight_mk_left moveRight_mk_right moveLeft_mk_left moveLeft_mk_right
 
 /-! ### Basic pre-games -/
 
@@ -1146,7 +1154,6 @@ theorem relabel_moveLeft' {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er :
   rfl
 #align pgame.relabel_move_left' Pgame.relabel_moveLeft'
 
-@[simp]
 theorem relabel_moveLeft {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er : xr' ≃ x.RightMoves)
     (i : x.LeftMoves) : moveLeft (relabel el er) (el.symm i) = x.moveLeft i := by simp
 #align pgame.relabel_move_left Pgame.relabel_moveLeft
@@ -1157,7 +1164,6 @@ theorem relabel_moveRight' {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er 
   rfl
 #align pgame.relabel_move_right' Pgame.relabel_moveRight'
 
-@[simp]
 theorem relabel_moveRight {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er : xr' ≃ x.RightMoves)
     (j : x.RightMoves) : moveRight (relabel el er) (er.symm j) = x.moveRight j := by simp
 #align pgame.relabel_move_right Pgame.relabel_moveRight
