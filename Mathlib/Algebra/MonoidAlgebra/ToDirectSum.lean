@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Algebra
-import Mathbin.Algebra.MonoidAlgebra.Basic
-import Mathbin.Data.Finsupp.ToDfinsupp
+import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Data.Finsupp.ToDfinsupp
 
 /-!
 # Conversion between `add_monoid_algebra` and homogenous `direct_sum`
@@ -133,8 +133,7 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
 
 @[simp]
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
-    (f * g).toDirectSum = f.toDirectSum * g.toDirectSum :=
-  by
+    (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
   let to_hom : AddMonoidAlgebra M ι →+ ⨁ i : ι, M :=
     ⟨to_direct_sum, to_direct_sum_zero, to_direct_sum_add⟩
   show to_hom (f * g) = to_hom f * to_hom g
