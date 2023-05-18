@@ -123,8 +123,8 @@ open Lean Elab Meta
 -- -/
 
 
--- #eval reflInDecl_format `Mathlib.Data.Subtype `Subtype.restrict_apply
--- -- [restrict p f x = f ↑x]
+#eval reflInDecl_format `Mathlib.Data.Subtype `Subtype.restrict_apply
+-- [restrict p f x = f ↑x]
 
 -- #eval exactInDecl_format `Mathlib.Data.Subtype `Subtype.surjective_restrict
 -- -- [((fun f => restrict p f) (fun x => if h : p x then f { val := x, property := h } else Nonempty.some (_ : Nonempty (β x)))
@@ -217,3 +217,5 @@ open Lean Elab Meta
       IO.println "----"
       IO.println tactic
       IO.println "----"
+
+#eval show MetaM _ from do return (← compilationCache.get).toList.map (fun x => x.2.2.2.length)
