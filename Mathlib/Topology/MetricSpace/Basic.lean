@@ -2132,8 +2132,8 @@ theorem isCompact_sphere {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
-instance {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
-    CompactSpace (sphere x r) :=
+instance Metric.sphere.compactSpace {α : Type _} [PseudoMetricSpace α] [ProperSpace α]
+    (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
   isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
 
 -- see Note [lower instance priority]
