@@ -115,7 +115,7 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun R A n (M.map (algebraMap R
   simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
   congr
   conv_rhs => rw [matrix_eq_sum_std_basis M]
-  convert Finset.sum_product; simp
+  convert Finset.sum_product (β := Matrix n n R); simp
 #align matrix_equiv_tensor.inv_fun_algebra_map MatrixEquivTensor.invFun_algebraMap
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M := by
