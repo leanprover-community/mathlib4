@@ -58,19 +58,80 @@ lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.o
     congr
     aesop_cat
 
+lemma Hom.ext' {X Y : Q C} {Z₁ Z₂ : C}
+    (j₁ : Z₁ ⟶ X.obj) (i₁ : Z₁ ⟶ Y.obj) [AdmissibleMono i₁] [AdmissibleEpi j₁]
+    (j₂ : Z₂ ⟶ X.obj) (i₂ : Z₂ ⟶ Y.obj) [AdmissibleMono i₂] [AdmissibleEpi j₂]
+    (e : Z₁ ≅ Z₂) (comm₁ : i₁ = e.hom ≫ i₂) (comm₂ : j₁ = e.hom ≫ j₂) :
+    Hom.mk' X Y j₁ i₁ = Hom.mk' X Y j₂ i₂ := by
+  refine' Hom.ext _ _ (Subobject.underlyingIso i₁ ≪≫ e ≪≫ (Subobject.underlyingIso i₂).symm)
+    _ _
+  . dsimp [mk']
+    simp only [assoc, Subobject.underlyingIso_arrow, ← comm₁,
+      Subobject.underlyingIso_hom_comp_eq_mk]
+  . dsimp [mk']
+    simp only [assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left, comm₂]
+
 noncomputable def Hom.id (X : Q C) : Hom X X :=
   Hom.mk' X X (𝟙 _) (𝟙 _)
 
 noncomputable def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z :=
   Hom.mk' X Z (pullback.fst ≫ α.j : pullback α.i.arrow β.j ⟶ _) (pullback.snd ≫ β.i.arrow)
 
-/-instance : Category (Q C) where
+lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z₁₂ ⟶ X₁.obj) (i₁ : Z₁₂ ⟶ X₂.obj)
+    (j₂ : Z₂₃ ⟶ X₂.obj) (i₂ : Z₂₃ ⟶ X₃.obj) [AdmissibleMono i₁] [AdmissibleMono i₂]
+    [AdmissibleEpi j₁] [AdmissibleEpi j₂] (j₂' : Z₁₃ ⟶ Z₁₂) (i₁' : Z₁₃ ⟶ Z₂₃)
+    [AdmissibleEpi j₂'] [AdmissibleMono i₁'] (H : IsPullback j₂' i₁' i₁ j₂):
+    (Hom.mk' X₁ X₂ j₁ i₁).comp (Hom.mk' X₂ X₃ j₂ i₂) = Hom.mk' X₁ X₃ (j₂' ≫ j₁) (i₁' ≫ i₂) := by
+  let φ : Z₁₃ ⟶ pullback (Subobject.arrow (mk' X₁ X₂ j₁ i₁).i) (mk' X₂ X₃ j₂ i₂).j :=
+    pullback.lift (j₂' ≫ (Subobject.underlyingIso i₁).inv)
+      (i₁' ≫ (Subobject.underlyingIso i₂).inv ) (by
+        dsimp [mk']
+        simp only [assoc, Subobject.underlyingIso_arrow, Iso.inv_hom_id_assoc, H.w])
+  have : IsIso φ := by
+    let e : cospan (Subobject.arrow (mk' X₁ X₂ j₁ i₁).i) (mk' X₂ X₃ j₂ i₂).j ≅
+        cospan i₁ j₂ := cospanExt (Subobject.underlyingIso i₁) (Subobject.underlyingIso i₂)
+          (Iso.refl _) (by dsimp [mk'] ; simp) (by dsimp [mk'] ; simp)
+    convert IsIso.of_iso (IsLimit.conePointUniqueUpToIso
+      ((IsLimit.postcomposeHomEquiv e.symm _).symm H.isLimit) (limit.isLimit _))
+    aesop_cat
+  symm
+  refine' Hom.ext' _ _ _ _ (asIso φ) _ _
+  all_goals
+    dsimp [mk', asIso]
+    simp
+
+noncomputable instance : Category (Q C) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry-/
+  id_comp {X Y} f := by
+    obtain ⟨Z, j, i, hj, hi, rfl⟩ := Hom.mk'_surjective f
+    simpa only [comp_id, id_comp]
+      using (Hom.comp_eq (𝟙 X.obj) (𝟙 X.obj) j i j (𝟙 Z) (IsPullback.of_vert_isIso ⟨by simp⟩))
+  comp_id {X Y} f := by
+    obtain ⟨Z, j, i, hj, hi, rfl⟩ := Hom.mk'_surjective f
+    change Hom.comp _ (Hom.mk' _ _ _ _) = _
+    simpa [id_comp, comp_id]
+      using Hom.comp_eq j i (𝟙 Y.obj) (𝟙 Y.obj) (𝟙 _) i (IsPullback.of_horiz_isIso ⟨by simp⟩)
+  assoc {X₁ X₂ X₃ X₄} f₁ f₂ f₃ := by
+    obtain ⟨Z₁₂, j₁₂, i₁₂, hj₁₂, hi₁₂, rfl⟩ := Hom.mk'_surjective f₁
+    obtain ⟨Z₂₃, j₂₃, i₂₃, hj₂₃, hi₂₃, rfl⟩ := Hom.mk'_surjective f₂
+    obtain ⟨Z₃₄, j₃₄, i₃₄, hj₃₄, hi₃₄, rfl⟩ := Hom.mk'_surjective f₃
+    change Hom.comp (Hom.comp _ _) _ = Hom.comp _ (Hom.comp _ _)
+    let Z₁₃ := pullback i₁₂ j₂₃
+    let Z₂₄ := pullback i₂₃ j₃₄
+    let Z₁₄ := pullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _)
+    rw [Hom.comp_eq j₁₂ i₁₂ j₂₃ i₂₃ (pullback.fst : Z₁₃ ⟶ _) pullback.snd,
+      Hom.comp_eq j₂₃ i₂₃ j₃₄ i₃₄ (pullback.fst : Z₂₄ ⟶ _) pullback.snd,
+      Hom.comp_eq _ _ j₃₄ i₃₄ (pullback.fst : Z₁₄ ⟶ _) (pullback.snd ≫ pullback.snd),
+      Hom.comp_eq j₁₂ i₁₂ _ _ (pullback.fst ≫ pullback.fst : Z₁₄ ⟶ _) pullback.snd]
+    . simp only [assoc]
+    . exact (IsPullback.paste_horiz_iff (IsPullback.of_hasPullback i₁₂ j₂₃) pullback.condition).2
+        (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
+    . exact (IsPullback.paste_vert_iff (IsPullback.of_hasPullback i₂₃ j₃₄) pullback.condition).2
+        (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
+    . exact (IsPullback.of_hasPullback i₂₃ j₃₄)
+    . exact (IsPullback.of_hasPullback i₁₂ j₂₃)
 
 end Q
 
