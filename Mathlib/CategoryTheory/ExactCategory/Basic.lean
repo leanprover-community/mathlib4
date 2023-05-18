@@ -8,6 +8,23 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject
 
+namespace IsPullback
+
+variable {C : Type _} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+
+lemma of_hasBinaryBiproduct_fst_snd (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
+    IsPullback biprod.fst biprod.snd (0 : X₁ ⟶ 0) (0 : X₂ ⟶ 0) where
+  w := by simp
+  isLimit' :=
+    ⟨{  lift := fun s => biprod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)
+        fac := fun s => by rintro (_|_|_) <;> aesop_cat
+        uniq := fun s m hm => by
+          apply biprod.hom_ext
+          . simpa using hm WalkingCospan.left
+          . simpa using hm WalkingCospan.right }⟩
+
+end IsPullback
+
 variable (C : Type _) [Category C] [Preadditive C]
 
 namespace ShortComplex
@@ -196,11 +213,54 @@ instance (X : C) : AdmissibleMono (0 : 0 ⟶ X) := by
   rw [(isZero_zero C).eq_of_src 0 (hZ.isoZero.inv ≫ f)]
   infer_instance
 
-/-lemma binaryBiproduct_shortExact (X₁ X₂ : C) :
+instance (X₁ X₂ : C) : AdmissibleEpi (biprod.snd : X₁ ⊞ X₂ ⟶ X₂) where
+  mem' := ExactCategory.admissibleEpi_stableUnderBaseChange
+    (IsPullback.of_hasBinaryBiproduct_fst_snd X₁ X₂) (AdmissibleEpi.mem _)
+
+instance (X₁ X₂ : C) : AdmissibleEpi (biprod.fst : X₁ ⊞ X₂ ⟶ X₁) := by
+  have eq : (biprod.fst : X₁ ⊞ X₂ ⟶ X₁) = (biprod.braiding X₁ X₂).hom ≫ biprod.snd := by aesop_cat
+  rw [eq]
+  infer_instance
+
+lemma binaryBiproduct_shortExact (X₁ X₂ : C) :
     ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp) ∈ shortExact C := by
   apply shortExact_of_admissibleEpi_of_isLimit
-  . sorry
-  . exact(ShortComplex.Splitting.ofHasBinaryBiproduct X₁ X₂).fIsKernel-/
+  . dsimp
+    infer_instance
+  . exact(ShortComplex.Splitting.ofHasBinaryBiproduct X₁ X₂).fIsKernel
+
+instance (X₁ X₂ : C) : AdmissibleMono (biprod.inl : _ ⟶ X₁ ⊞ X₂) where
+  mem' := ⟨_, _, _, binaryBiproduct_shortExact X₁ X₂⟩
+
+instance (X₁ X₂ : C) : AdmissibleMono (biprod.inr : _ ⟶ X₁ ⊞ X₂) := by
+  rw [show biprod.inr = biprod.inl ≫ (biprod.braiding X₁ X₂).inv by aesop_cat]
+  infer_instance
+
+instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [AdmissibleEpi g] :
+    AdmissibleMono (pullback.snd : pullback f g ⟶ _) := by
+  have hf' := hf
+  obtain ⟨Z, p, hp, mem⟩ := hf'
+  have hf'' : IsLimit (KernelFork.ofι f hp) := isLimit_kernelFork_of_shortExact _ mem
+  have : AdmissibleEpi p := ⟨_, _, _, mem⟩
+  let S := ShortComplex.mk (pullback.snd : pullback f g ⟶ _) (g ≫ p) (by
+    rw [← pullback.condition_assoc, hp, comp_zero])
+  have hS : S ∈ shortExact C := by
+    apply shortExact_of_admissibleEpi_of_isLimit
+    . dsimp
+      infer_instance
+    . exact KernelFork.IsLimit.ofι _ _
+          (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
+            (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))
+          (fun a ha => by dsimp ; simp)
+          (fun a ha b hb => by
+            dsimp at a b ha hb
+            apply pullback.hom_ext
+            . dsimp
+              rw [← cancel_mono f, assoc, pullback.condition, reassoc_of% hb]
+              simpa using (KernelFork.IsLimit.lift' hf'' (a ≫ g) (by rw [assoc, ha])).2.symm
+            . dsimp
+              simp [hb])
+  exact ⟨_, _, _, hS⟩
 
 end ExactCategory
 

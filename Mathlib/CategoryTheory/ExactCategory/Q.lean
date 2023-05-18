@@ -26,7 +26,7 @@ structure Hom (X Y : Q C) where
 attribute [instance] Hom.hi Hom.hj
 
 noncomputable def Hom.mk' (X Y : Q C) {Z : C} (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj)
-  (hi : AdmissibleMono i) (hj : AdmissibleEpi j) : Hom X Y where
+  [AdmissibleMono i] [AdmissibleEpi j] : Hom X Y where
   i := Subobject.mk i
   hi := by
     have eq := Subobject.underlyingIso_arrow i
@@ -36,14 +36,23 @@ noncomputable def Hom.mk' (X Y : Q C) {Z : C} (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj
   j := (Subobject.underlyingIso i).hom ≫ j
   hj := inferInstance
 
-noncomputable def Hom.id (X : Q C) : Hom X X :=
-  Hom.mk' X X (𝟙 _) (𝟙 _) inferInstance inferInstance
+/-lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj)
+    (hi : AdmissibleMono i) (hj : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
+  sorry-/
 
-/-
-def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z := by
-  refine' Hom.mk' X Z (pullback.fst ≫ α.j : pullback α.i.arrow β.j ⟶ _) (pullback.snd ≫ β.i.arrow) _ inferInstance
-  have : AdmissibleMono (pullback.snd : pullback (Subobject.arrow α.i) β.j ⟶ _) := sorry
-  infer_instance-/
+noncomputable def Hom.id (X : Q C) : Hom X X :=
+  Hom.mk' X X (𝟙 _) (𝟙 _)
+
+noncomputable def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z :=
+  Hom.mk' X Z (pullback.fst ≫ α.j : pullback α.i.arrow β.j ⟶ _) (pullback.snd ≫ β.i.arrow)
+
+/-instance : Category (Q C) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+  id_comp := sorry
+  comp_id := sorry
+  assoc := sorry-/
 
 end Q
 
