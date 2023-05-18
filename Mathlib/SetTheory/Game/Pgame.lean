@@ -98,11 +98,7 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
-
 open Function Relation
-
-universe u
 
 /-! ### Pre-game moves -/
 
@@ -117,6 +113,9 @@ universe u
 inductive Pgame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → Pgame) → (β → Pgame) → Pgame
 #align pgame Pgame
+
+-- Porting note: many definitions here are noncomputable as the compiler does not support Pgame.rec
+noncomputable section
 
 namespace Pgame
 
@@ -213,9 +212,8 @@ theorem ofLists_moveRight' {L R : List Pgame} (i : (ofLists L R).RightMoves) :
 /-- A variant of `Pgame.recOn` expressed in terms of `Pgame.moveLeft` and `Pgame.moveRight`.
 
 Both this and `Pgame.recOn` describe Conway induction on games. -/
--- Porting note: marked noncomputable
 @[elab_as_elim]
-noncomputable def moveRecOn {C : Pgame → Sort _} (x : Pgame)
+def moveRecOn {C : Pgame → Sort _} (x : Pgame)
     (IH : ∀ y : Pgame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
   x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on Pgame.moveRecOn
@@ -267,36 +265,58 @@ theorem wf_subsequent : WellFounded Subsequent :=
 instance : WellFoundedRelation Pgame :=
   ⟨_, wf_subsequent⟩
 
+@[simp]
 theorem Subsequent.moveLeft {x : Pgame} (i : x.LeftMoves) : Subsequent (x.moveLeft i) x :=
   TransGen.single (IsOption.moveLeft i)
 #align pgame.subsequent.move_left Pgame.Subsequent.moveLeft
 
+@[simp]
 theorem Subsequent.moveRight {x : Pgame} (j : x.RightMoves) : Subsequent (x.moveRight j) x :=
   TransGen.single (IsOption.moveRight j)
 #align pgame.subsequent.move_right Pgame.Subsequent.moveRight
 
+@[simp]
 theorem Subsequent.mk_left {xl xr} (xL : xl → Pgame) (xR : xr → Pgame) (i : xl) :
     Subsequent (xL i) (mk xl xr xL xR) :=
   @Subsequent.moveLeft (mk _ _ _ _) i
 #align pgame.subsequent.mk_left Pgame.Subsequent.mk_left
 
+@[simp]
 theorem Subsequent.mk_right {xl xr} (xL : xl → Pgame) (xR : xr → Pgame) (j : xr) :
     Subsequent (xR j) (mk xl xr xL xR) :=
   @Subsequent.moveRight (mk _ _ _ _) j
 #align pgame.subsequent.mk_right Pgame.Subsequent.mk_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- Porting note: **TODO**: Port this tactic
--- /-- A local tactic for proving well-foundedness of recursive definitions involving pregames. -/
--- unsafe def pgame_wf_tac :=
---   sorry
--- #align pgame.pgame_wf_tac pgame.pgame_wf_tac
-
--- Porting note: Clumsy first attempt at replacing pgame_wf_tac, but doesn't work
 macro "pgame_wf_tac" : tactic =>
   `(tactic| solve_by_elim (config := {maxDepth := 6 }) [PSigma.Lex.left, PSigma.Lex.right,
   Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
   Subsequent.trans] )
+
+-- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
+-- (which are applied by default for WF goals)
+
+-- This is different from mk_right from the POV of the simplifier,
+-- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
+@[simp]
+theorem Subsequent.mk_right' (xL : xl → Pgame) (xR : xr → Pgame) (j : RightMoves (mk xl xr xL xR)) :
+    Subsequent (xR j) (mk xl xr xL xR) := by
+  pgame_wf_tac
+
+@[simp] theorem Subsequent.moveRight_mk_left (xL : xl → Pgame) (j) :
+    Subsequent ((xL i).moveRight j) (mk xl xr xL xR) := by
+  pgame_wf_tac
+
+@[simp] theorem Subsequent.moveRight_mk_right (xR : xr → Pgame) (j) :
+    Subsequent ((xR i).moveRight j) (mk xl xr xL xR) := by
+  pgame_wf_tac
+
+@[simp] theorem Subsequent.moveLeft_mk_left (xL : xl → Pgame) (j) :
+    Subsequent ((xL i).moveLeft j) (mk xl xr xL xR) := by
+  pgame_wf_tac
+
+@[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → Pgame) (j) :
+    Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
+  pgame_wf_tac
 
 /-! ### Basic pre-games -/
 
@@ -1064,9 +1084,9 @@ def moveRightSymm :
 
 /-- The identity relabelling. -/
 @[refl]
-def refl : ∀ x : Pgame, x ≡r x
-  | x => ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
-  decreasing_by pgame_wf_tac
+def refl (x : Pgame) : x ≡r x :=
+  ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
+termination_by _ => x
 #align pgame.relabelling.refl Pgame.Relabelling.refl
 
 instance (x : Pgame) : Inhabited (x ≡r x) :=
@@ -1078,12 +1098,11 @@ def symm : ∀ {x y : Pgame}, x ≡r y → y ≡r x
   | _, _, ⟨L, R, hL, hR⟩ => mk' L R (fun i => (hL i).symm) fun j => (hR j).symm
 #align pgame.relabelling.symm Pgame.Relabelling.symm
 
-theorem le : ∀ {x y : Pgame} (r : x ≡r y), x ≤ y
-  | x, y, r =>
-    le_def.2
-      ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
-        Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
-  decreasing_by pgame_wf_tac
+theorem le {x y : Pgame} (r : x ≡r y) : x ≤ y :=
+  le_def.2
+    ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
+      Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
+termination_by _ => x
 #align pgame.relabelling.le Pgame.Relabelling.le
 
 theorem ge {x y : Pgame} (r : x ≡r y) : y ≤ x :=
@@ -1178,10 +1197,10 @@ instance : NegZeroClass Pgame :=
       dsimp [Zero.zero, Neg.neg, neg]
       congr <;> funext i <;> cases i }
 
-set_option linter.deprecated false in
 @[simp]
 theorem neg_ofLists (L R : List Pgame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
+  set_option linter.deprecated false in
   simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
     mk.injEq]
   constructor
@@ -1292,7 +1311,7 @@ private theorem neg_le_lf_neg_iff : ∀ {x y : Pgame.{u}}, (-y ≤ -x ↔ x ≤ 
       apply and_congr <;> exact forall_congr' fun _ => neg_le_lf_neg_iff.2
     · rw [or_comm]
       apply or_congr <;> exact exists_congr fun _ => neg_le_lf_neg_iff.1
-  decreasing_by pgame_wf_tac
+termination_by _ x y => (x, y)
 
 @[simp]
 theorem neg_le_neg_iff {x y : Pgame} : -y ≤ -x ↔ x ≤ y :=
@@ -1387,9 +1406,8 @@ theorem zero_fuzzy_neg_iff {x : Pgame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 
 /-! ### Addition and subtraction -/
 
-
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
-noncomputable instance : Add Pgame.{u} :=
+instance : Add Pgame.{u} :=
   ⟨fun x y => by
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
@@ -1401,7 +1419,7 @@ noncomputable instance : Add Pgame.{u} :=
     · exact IHyr⟩
 
 /-- The pre-game `((0+1)+⋯)+1`. -/
-noncomputable instance : NatCast Pgame :=
+instance : NatCast Pgame :=
   ⟨Nat.unaryCast⟩
 
 @[simp]
@@ -1430,6 +1448,7 @@ def addZeroRelabelling : ∀ x : Pgame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
+termination_by _ x => x
 #align pgame.add_zero_relabelling Pgame.addZeroRelabelling
 
 /-- `x + 0` is equivalent to `x`. -/
@@ -1571,10 +1590,10 @@ def Relabelling.addCongr : ∀ {w x y z : Pgame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-  decreasing_by pgame_wf_tac
+termination_by _ w x y z _ _ => (x, z)
 #align pgame.relabelling.add_congr Pgame.Relabelling.addCongr
 
-noncomputable instance : Sub Pgame :=
+instance : Sub Pgame :=
   ⟨fun x y => x + -y⟩
 
 @[simp]
@@ -1596,7 +1615,7 @@ def negAddRelabelling : ∀ x y : Pgame, -(x + y) ≡r -x + -y
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
           negAddRelabelling ⟨xl, xr, xL, xR⟩ _
-  decreasing_by pgame_wf_tac
+termination_by _ x y => (x, y)
 #align pgame.neg_add_relabelling Pgame.negAddRelabelling
 
 theorem neg_add_le {x y : Pgame} : -(x + y) ≤ -x + -y :=
@@ -1609,7 +1628,7 @@ def addCommRelabelling : ∀ x y : Pgame.{u}, x + y ≡r y + x
     refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
       · dsimp [leftMoves_add, rightMoves_add]
         apply addCommRelabelling
-  decreasing_by pgame_wf_tac
+termination_by _ x y => (x, y)
 #align pgame.add_comm_relabelling Pgame.addCommRelabelling
 
 theorem add_comm_le {x y : Pgame} : x + y ≤ y + x :=
@@ -1624,12 +1643,15 @@ theorem add_comm_equiv {x y : Pgame} : x + y ≈ y + x :=
 def addAssocRelabelling : ∀ x y z : Pgame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
     refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
-    all_goals
-      first |rintro (⟨i | i⟩ | i)|rintro (j | ⟨j | j⟩)
+    · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
-      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩
-      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩
-  decreasing_by pgame_wf_tac
+      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)
+      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩ (zL i)
+    · rintro (⟨i | i⟩ | i)
+      · apply addAssocRelabelling
+      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yR i)
+      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩ (zR i)
+termination_by _ x y z => (x, y, z)
 #align pgame.add_assoc_relabelling Pgame.addAssocRelabelling
 
 theorem add_assoc_equiv {x y z : Pgame} : x + y + z ≈ x + (y + z) :=
@@ -1676,7 +1698,7 @@ theorem sub_self_equiv : ∀ (x : Pgame), x - x ≈ 0 :=
   add_right_neg_equiv
 #align pgame.sub_self_equiv Pgame.sub_self_equiv
 
-private theorem add_le_add_right' : ∀ {x y z : Pgame} (h : x ≤ y), x + z ≤ y + z
+private theorem add_le_add_right' : ∀ {x y z : Pgame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
     refine' le_def.2 ⟨fun i => _, fun i => _⟩ <;> cases' i with i i
     · rw [le_def] at h
@@ -1688,15 +1710,14 @@ private theorem add_le_add_right' : ∀ {x y z : Pgame} (h : x ≤ y), x + z ≤
         apply add_moveRight_inl
     · exact Or.inl ⟨@toLeftMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
     · rw [le_def] at h
-      cases' h with h_left h_right
-      rcases h_right i with (⟨i, ih⟩ | ⟨j', jh⟩)
+      rcases h.right i with (⟨i, ih⟩ | ⟨j', jh⟩)
       · refine' Or.inl ⟨toLeftMovesAdd (Sum.inl i), _⟩
         convert add_le_add_right' ih
         apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩
     · exact
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
-  decreasing_by pgame_wf_tac
+termination_by _ x y z => (x, y, z)
 
 instance covariantClass_swap_add_le : CovariantClass Pgame Pgame (swap (· + ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add_right'⟩
