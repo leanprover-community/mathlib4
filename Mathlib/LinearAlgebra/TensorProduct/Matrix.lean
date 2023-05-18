@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Kronecker
-import Mathbin.LinearAlgebra.Matrix.ToLin
-import Mathbin.LinearAlgebra.TensorProductBasis
+import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.TensorProductBasis
 
 /-!
 # Connections between `tensor_product` and `matrix`
@@ -49,8 +49,7 @@ open Matrix LinearMap
 `matrix.kronecker`. -/
 theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
     toMatrix (bM.TensorProduct bN) (bM'.TensorProduct bN') (TensorProduct.map f g) =
-      toMatrix bM bM' f ⊗ₖ toMatrix bN bN' g :=
-  by
+      toMatrix bM bM' f ⊗ₖ toMatrix bN bN' g := by
   ext (⟨i, j⟩⟨i', j'⟩)
   simp_rw [Matrix.kroneckerMap_apply, to_matrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
@@ -60,8 +59,7 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
 `tensor_product.map`. -/
 theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
     toLin (bM.TensorProduct bN) (bM'.TensorProduct bN') (A ⊗ₖ B) =
-      TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) :=
-  by
+      TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) := by
   rw [← LinearEquiv.eq_symm_apply, to_lin_symm, TensorProduct.toMatrix_map, to_matrix_to_lin,
     to_matrix_to_lin]
 #align matrix.to_lin_kronecker Matrix.toLin_kronecker
@@ -69,8 +67,7 @@ theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
 /-- `tensor_product.comm` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_comm :
     toMatrix (bM.TensorProduct bN) (bN.TensorProduct bM) (TensorProduct.comm R M N) =
-      (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap id :=
-  by
+      (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap id := by
   ext (⟨i, j⟩⟨i', j'⟩)
   simp_rw [to_matrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
     Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Prod.swap_prod_mk, id.def,
@@ -82,8 +79,7 @@ theorem TensorProduct.toMatrix_comm :
 theorem TensorProduct.toMatrix_assoc :
     toMatrix ((bM.TensorProduct bN).TensorProduct bP) (bM.TensorProduct (bN.TensorProduct bP))
         (TensorProduct.assoc R M N P) =
-      (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix id (Equiv.prodAssoc _ _ _) :=
-  by
+      (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix id (Equiv.prodAssoc _ _ _) := by
   ext (⟨i, j, k⟩⟨⟨i', j'⟩, k'⟩)
   simp_rw [to_matrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
     TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
