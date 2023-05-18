@@ -65,12 +65,6 @@ namespace WithTerminal
 
 variable {C}
 
-/- warning: category_theory.with_terminal.hom -> CategoryTheory.WithTerminal.Hom is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C], (CategoryTheory.WithTerminal.{u1, u2} C _inst_1) -> (CategoryTheory.WithTerminal.{u1, u2} C _inst_1) -> Type.{u1}
-but is expected to have type
-  forall {C : Type.{u1}} [_inst_1 : CategoryTheory.Category.{u2, u1} C], (CategoryTheory.WithTerminal.{u2, u1} C _inst_1) -> (CategoryTheory.WithTerminal.{u2, u1} C _inst_1) -> Type.{u2}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_terminal.hom CategoryTheory.WithTerminal.Homₓ'. -/
 /-- Morphisms for `with_terminal C`. -/
 -- porting note: unsupported `nolint has_nonempty_instance`
 @[simp]
@@ -80,12 +74,6 @@ def Hom : WithTerminal C → WithTerminal C → Type v
   | _, star => PUnit
 #align category_theory.with_terminal.hom CategoryTheory.WithTerminal.Hom
 
-/- warning: category_theory.with_terminal.id -> CategoryTheory.WithTerminal.id is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (X : CategoryTheory.WithTerminal.{u1, u2} C _inst_1), CategoryTheory.WithTerminal.Hom.{u1, u2} C _inst_1 X X
-but is expected to have type
-  PUnit.{max (succ (succ u1)) (succ (succ u2))}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_terminal.id CategoryTheory.WithTerminal.idₓ'. -/
 /-- Identity morphisms for `with_terminal C`. -/
 @[simp]
 def id : ∀ X : WithTerminal C, Hom X X
@@ -93,12 +81,6 @@ def id : ∀ X : WithTerminal C, Hom X X
   | star => PUnit.unit
 #align category_theory.with_terminal.id CategoryTheory.WithTerminal.id
 
-/- warning: category_theory.with_terminal.comp -> CategoryTheory.WithTerminal.comp is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] {X : CategoryTheory.WithTerminal.{u1, u2} C _inst_1} {Y : CategoryTheory.WithTerminal.{u1, u2} C _inst_1} {Z : CategoryTheory.WithTerminal.{u1, u2} C _inst_1}, (CategoryTheory.WithTerminal.Hom.{u1, u2} C _inst_1 X Y) -> (CategoryTheory.WithTerminal.Hom.{u1, u2} C _inst_1 Y Z) -> (CategoryTheory.WithTerminal.Hom.{u1, u2} C _inst_1 X Z)
-but is expected to have type
-  PUnit.{max (succ (succ u1)) (succ (succ u2))}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_terminal.comp CategoryTheory.WithTerminal.compₓ'. -/
 /-- Composition of morphisms for `with_terminal C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
@@ -112,7 +94,17 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id X := id _
-  comp f g := comp f g
+  comp := comp
+  -- Porting note : need to do cases analysis
+  comp_id {X Y} _ := by
+    cases X <;> cases Y <;> aesop
+  id_comp {X Y} _ := by
+    cases X <;> cases Y <;> aesop
+  assoc {a b c d} f g h := by
+    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    . exact (h : PEmpty).elim
+    . exact (g : PEmpty).elim
+    . exact (h : PEmpty).elim
 
 /-- The inclusion from `C` into `with_terminal C`. -/
 def incl : C ⥤ WithTerminal C where
@@ -134,8 +126,19 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
   map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
-    | of x, star, PUnit.unit => PUnit.unit
+    | of _, star, PUnit.unit => PUnit.unit
     | star, star, PUnit.unit => PUnit.unit
+  -- Porting note : need to do cases analysis
+  map_id
+    | of _X => F.map_id _X
+    | star => by aesop
+  -- Porting note : need to do cases analysis
+  map_comp {X Y Z} f g := by
+    cases X <;> cases Y <;> cases Z <;> try aesop_cat
+    . exact F.map_comp f g
+    . exact (g : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (g : PEmpty).elim
 #align category_theory.with_terminal.map CategoryTheory.WithTerminal.map
 
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
@@ -163,6 +166,23 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => M x
     | star, star, PUnit.unit => 𝟙 Z
+  -- Porting note : need to do cases analysis
+  map_id
+    | of x => F.map_id x
+    | star => rfl
+  map_comp {X Y Z} f g := by
+  -- Porting note : need to do more cases analysis
+    cases X <;> cases Y <;> cases Z
+    . exact F.map_comp f g
+    . exact (hM _ _ _).symm
+    . exact (g : PEmpty).elim
+    . change M _ =  M _ ≫ 𝟙 Z
+      rw [Category.comp_id]
+    . exact (f : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (g : PEmpty).elim
+    . change 𝟙 Z = 𝟙 Z ≫ 𝟙 Z
+      rw [Category.comp_id]
 #align category_theory.with_terminal.lift CategoryTheory.WithTerminal.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
@@ -238,7 +258,11 @@ def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 #align category_theory.with_terminal.hom_from CategoryTheory.WithTerminal.homFrom
 
-instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f := by aesop_cat
+-- Porting note : `aesop_cat` does not work
+instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
+  match X with
+  | of _X => f.elim
+  | star => ⟨f, rfl, rfl⟩
 #align category_theory.with_terminal.is_iso_of_from_star CategoryTheory.WithTerminal.isIso_of_from_star
 
 end WithTerminal
@@ -250,12 +274,6 @@ namespace WithInitial
 
 variable {C}
 
-/- warning: category_theory.with_initial.hom -> CategoryTheory.WithInitial.Hom is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C], (CategoryTheory.WithInitial.{u1, u2} C _inst_1) -> (CategoryTheory.WithInitial.{u1, u2} C _inst_1) -> Type.{u1}
-but is expected to have type
-  forall {C : Type.{u1}} [_inst_1 : CategoryTheory.Category.{u2, u1} C], (CategoryTheory.WithInitial.{u2, u1} C _inst_1) -> (CategoryTheory.WithInitial.{u2, u1} C _inst_1) -> Type.{u2}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_initial.hom CategoryTheory.WithInitial.Homₓ'. -/
 /-- Morphisms for `with_initial C`. -/
 -- porting note: unsupported `nolint has_nonempty_instance`
 @[simp]
@@ -265,12 +283,6 @@ def Hom : WithInitial C → WithInitial C → Type v
   | star, _ => PUnit
 #align category_theory.with_initial.hom CategoryTheory.WithInitial.Hom
 
-/- warning: category_theory.with_initial.id -> CategoryTheory.WithInitial.id is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (X : CategoryTheory.WithInitial.{u1, u2} C _inst_1), CategoryTheory.WithInitial.Hom.{u1, u2} C _inst_1 X X
-but is expected to have type
-  PUnit.{max (succ (succ u1)) (succ (succ u2))}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_initial.id CategoryTheory.WithInitial.idₓ'. -/
 /-- Identity morphisms for `with_initial C`. -/
 @[simp]
 def id : ∀ X : WithInitial C, Hom X X
@@ -278,12 +290,6 @@ def id : ∀ X : WithInitial C, Hom X X
   | star => PUnit.unit
 #align category_theory.with_initial.id CategoryTheory.WithInitial.id
 
-/- warning: category_theory.with_initial.comp -> CategoryTheory.WithInitial.comp is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] {X : CategoryTheory.WithInitial.{u1, u2} C _inst_1} {Y : CategoryTheory.WithInitial.{u1, u2} C _inst_1} {Z : CategoryTheory.WithInitial.{u1, u2} C _inst_1}, (CategoryTheory.WithInitial.Hom.{u1, u2} C _inst_1 X Y) -> (CategoryTheory.WithInitial.Hom.{u1, u2} C _inst_1 Y Z) -> (CategoryTheory.WithInitial.Hom.{u1, u2} C _inst_1 X Z)
-but is expected to have type
-  PUnit.{max (succ (succ u1)) (succ (succ u2))}
-Case conversion may be inaccurate. Consider using '#align category_theory.with_initial.comp CategoryTheory.WithInitial.compₓ'. -/
 /-- Composition of morphisms for `with_initial C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
@@ -296,8 +302,18 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
 
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
-  id X := id _
+  id X := id X
   comp f g := comp f g
+  -- Porting note : need to do cases analysis
+  comp_id {X Y} _ := by
+    cases X <;> cases Y <;> aesop
+  id_comp {X Y} _ := by
+    cases X <;> cases Y <;> aesop
+  assoc {a b c d} f g h := by
+    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    . exact (g : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (f : PEmpty).elim
 
 /-- The inclusion of `C` into `with_initial C`. -/
 def incl : C ⥤ WithInitial C where
@@ -319,9 +335,19 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
   map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
-    | star, of x, PUnit.unit => PUnit.unit
+    | star, of _, PUnit.unit => PUnit.unit
     | star, star, PUnit.unit => PUnit.unit
-
+  -- Porting note : need to do cases analysis
+  map_id
+    | of _X => F.map_id _X
+    | star => by aesop
+  -- Porting note : need to do cases analysis
+  map_comp {X Y Z} f g := by
+    cases X <;> cases Y <;> cases Z <;> try aesop_cat
+    . exact F.map_comp f g
+    . exact (g : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (f : PEmpty).elim
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
@@ -349,6 +375,23 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => M _
     | star, star, PUnit.unit => 𝟙 _
+  -- Porting note : need to do cases analysis
+  map_id
+    | of x => F.map_id x
+    | star => rfl
+  map_comp {X Y Z} f g := by
+  -- Porting note : need to do more cases analysis
+    cases X <;> cases Y <;> cases Z
+    . exact F.map_comp f g
+    . exact (g : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (f : PEmpty).elim
+    . exact (hM _ _ _).symm
+    . exact (g : PEmpty).elim
+    . change M _ =  𝟙 _ ≫ M _
+      rw [Category.id_comp]
+    . change 𝟙 Z = 𝟙 Z ≫ 𝟙 Z
+      rw [Category.comp_id]
 #align category_theory.with_initial.lift CategoryTheory.WithInitial.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
@@ -427,7 +470,11 @@ def homTo (X : C) : star ⟶ incl.obj X :=
   starInitial.to _
 #align category_theory.with_initial.hom_to CategoryTheory.WithInitial.homTo
 
-instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f := by aesop_cat
+-- Porting note : need to do cases analysis
+instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
+  match X with
+  | of _X => f.elim
+  | star => ⟨f, rfl, rfl⟩
 #align category_theory.with_initial.is_iso_of_to_star CategoryTheory.WithInitial.isIso_of_to_star
 
 end WithInitial
