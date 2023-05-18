@@ -269,11 +269,10 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx
-  cases' hx with _ h
-  rw [h]
+  rcases hx with ⟨_, rfl⟩
   ring_nf
   rw [add_assoc, ← add_mul, Int.add_mul_emod_self]
-  decide
+  norm_num
 #align int.sq_mod_four_eq_one_of_odd Int.sq_mod_four_eq_one_of_odd
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
