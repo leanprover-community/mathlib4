@@ -137,13 +137,19 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         rw [this]
         ring1
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
-      simp only [add_left_eq_self, ← Finset.mul_sum]
+      have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
+          ((Finset.sum (range p) (fun (x : ℕ)  ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
+      simp only [add_left_eq_self, ← Finset.mul_sum, this]
       norm_cast
-      simp only [Finset.sum_range_id, Nat.cast_mul, _root_.map_mul,
-        Nat.mul_div_assoc _ (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
+      simp only [Finset.sum_range_id]
+      norm_cast
+      simp only [Nat.cast_mul, _root_.map_mul,
+          Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring
-      simp only [← map_pow, mul_eq_zero_of_left, Ideal.Quotient.eq_zero_iff_mem, mem_span_singleton]
-      sorry
+      rw [mul_assoc, mul_assoc]
+      refine' mul_eq_zero_of_left _ _
+      refine' Ideal.Quotient.eq_zero_iff_mem.mpr _
+      simp [mem_span_singleton]
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub
 
 namespace multiplicity
