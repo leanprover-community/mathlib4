@@ -28,7 +28,6 @@ We also provide some lemmas justifying correctness of our definitions.
 projection, complement subspace
 -/
 
-
 noncomputable section Ring
 
 variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E]

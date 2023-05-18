@@ -46,7 +46,6 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
-
 open Affine
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
@@ -505,7 +504,6 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 #align affine_map.image_vsub_image AffineMap.image_vsub_image
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
-
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=

@@ -244,7 +244,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
-    apply Subtype.eq; dsimp [tail]; rw [Stream'.tail_cons]
+    apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
 -- porting note: needed universe annotation to avoid universe issues
@@ -272,7 +272,6 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
   cases' s with f al
   apply Subtype.eq
   dsimp [tail, cons]
-  rw [Stream'.tail_cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
@@ -710,13 +709,12 @@ theorem map_id : ∀ s : Seq α, map id s = s
 
 @[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map] ; rw [Stream'.map_tail]
+  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map]
 #align stream.seq.map_tail Stream'.Seq.map_tail
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
     apply Subtype.eq ; dsimp [map]
-    rw [Stream'.map_map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 #align stream.seq.map_comp Stream'.Seq.map_comp
