@@ -273,8 +273,8 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       rw [← ht''] at this
       refine adjoin_induction this ?_ ?_ ?_ ?_
       · rintro _ (⟨x, hx, rfl⟩ | ⟨i, rfl⟩)
-        · rw [algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x) (map (algebraMap R A) (t' ⟨x, hx⟩)),
-            add_comm]
+        · rw [algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
+            (map (algebraMap R A) (t' ⟨x, hx⟩)), add_comm]
           apply AddSubmonoid.add_mem_sup
           · exact Set.mem_range_self _
           · apply Ideal.subset_span
@@ -439,8 +439,8 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentati
     hg hker hf
 #align ring_hom.finite_presentation.comp_surjective RingHom.FinitePresentation.comp_surjective
 
-theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : f.ker.FG) : f.FinitePresentation :=
-  by
+theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : f.ker.FG) :
+    f.FinitePresentation := by
   rw [← f.comp_id]
   exact (id A).comp_surjective hf hker
 #align ring_hom.finite_presentation.of_surjective RingHom.FinitePresentation.of_surjective
