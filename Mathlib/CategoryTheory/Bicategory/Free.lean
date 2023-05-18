@@ -349,7 +349,6 @@ variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
 -- @[simp] -- Porting note: adding `@[simp]` causes a PANIC.
--- Lean server printed an error: PANIC at _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS Lean.Meta.Match.MatchEqs:167:2: assertion violation: ( __do_lift._@.Lean.Meta.Match.MatchEqs._hyg.2199.0 ).xs.contains rhs
 def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (liftHom F f ⟶ liftHom F g)
   | _, _, _, _, Hom₂.id _ => 𝟙 _
   | _, _, _, _, Hom₂.associator _ _ _ => (α_ _ _ _).hom
