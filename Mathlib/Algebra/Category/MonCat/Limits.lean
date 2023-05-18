@@ -252,7 +252,8 @@ noncomputable instance forget₂MonPreservesLimitsOfSize :
 #align AddCommMon.forget₂_AddMon_preserves_limits AddCommMonCat.forget₂AddMonPreservesLimits
 
 @[to_additive]
-noncomputable instance forget₂MonPreservesLimits : PreservesLimits (forget₂ CommMonCat MonCat.{u}) :=
+noncomputable instance forget₂MonPreservesLimits :
+    PreservesLimits (forget₂ CommMonCat MonCat.{u}) :=
   CommMonCat.forget₂MonPreservesLimitsOfSize.{u, u}
 #align CommMon.forget₂_Mon_preserves_limits CommMonCat.forget₂MonPreservesLimits
 #align AddCommMon.forget₂_Mon_preserves_limits AddCommMonCat.forget₂MonPreservesLimits
