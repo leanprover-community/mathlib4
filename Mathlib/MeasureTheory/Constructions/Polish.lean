@@ -101,8 +101,8 @@ theorem analyticSet_range_of_polishSpace {β : Type _} [TopologicalSpace β] [Po
 #align measure_theory.analytic_set_range_of_polish_space MeasureTheory.analyticSet_range_of_polishSpace
 
 /-- The image of an open set under a continuous map is analytic. -/
-theorem _root_.IsOpen.analyticSet_image {β : Type _} [TopologicalSpace β] [PolishSpace β] {s : Set β}
-    (hs : IsOpen s) {f : β → α} (f_cont : Continuous f) : AnalyticSet (f '' s) := by
+theorem _root_.IsOpen.analyticSet_image {β : Type _} [TopologicalSpace β] [PolishSpace β]
+    {s : Set β} (hs : IsOpen s) {f : β → α} (f_cont : Continuous f) : AnalyticSet (f '' s) := by
   rw [image_eq_range]
   haveI : PolishSpace s := hs.polishSpace
   exact analyticSet_range_of_polishSpace (f_cont.comp continuous_subtype_val)
@@ -151,8 +151,8 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
   rcases hι with ⟨i₀⟩
   /- For the proof, write each `s n` as the continuous image under a map `f n` of a
     Polish space `β n`. The product space `γ = Π n, β n` is also Polish, and so is the subset
-    `t` of sequences `x n` for which `f n (x n)` is independent of `n`. The set `t` is Polish, and the
-    range of `x ↦ f 0 (x 0)` on `t` is exactly `⋂ n, s n`, so this set is analytic. -/
+    `t` of sequences `x n` for which `f n (x n)` is independent of `n`. The set `t` is Polish, and
+    the range of `x ↦ f 0 (x 0)` on `t` is exactly `⋂ n, s n`, so this set is analytic. -/
   choose β hβ h'β f f_cont f_range using fun n =>
     analyticSet_iff_exists_polishSpace_range.1 (hs n)
   skip
@@ -293,12 +293,12 @@ contained in disjoint Borel sets (see the full statement in `AnalyticSet.measura
 Here, we prove this when our analytic sets are the ranges of functions from `ℕ → ℕ`.
 -/
 theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] [BorelSpace α]
-    {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g) (h : Disjoint (range f) (range g)) :
-    MeasurablySeparable (range f) (range g) := by
+    {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g)
+    (h : Disjoint (range f) (range g)) : MeasurablySeparable (range f) (range g) := by
   /- We follow [Kechris, *Classical Descriptive Set Theory* (Theorem 14.7)][kechris1995].
-    If the ranges are not Borel-separated, then one can find two cylinders of length one whose images
-    are not Borel-separated, and then two smaller cylinders of length two whose images are not
-    Borel-separated, and so on. One thus gets two sequences of cylinders, that decrease to two
+    If the ranges are not Borel-separated, then one can find two cylinders of length one whose
+    images are not Borel-separated, and then two smaller cylinders of length two whose images are
+    not Borel-separated, and so on. One thus gets two sequences of cylinders, that decrease to two
     points `x` and `y`. Their images are different by the disjointness assumption, hence contained
     in two disjoint open sets by the T2 property. By continuity, long enough cylinders around `x`
     and `y` have images which are separated by these two disjoint open sets, a contradiction.
@@ -427,8 +427,8 @@ theorem measurableSet_range_of_continuous_injective {β : Type _} [TopologicalSp
     [MeasurableSpace β] [BorelSpace β] {f : γ → β} (f_cont : Continuous f) (f_inj : Injective f) :
     MeasurableSet (range f) := by
   /- We follow [Fremlin, *Measure Theory* (volume 4, 423I)][fremlin_vol4].
-    Let `b = {s i}` be a countable basis for `α`. When `s i` and `s j` are disjoint, their images are
-    disjoint analytic sets, hence by the separation theorem one can find a Borel-measurable set
+    Let `b = {s i}` be a countable basis for `α`. When `s i` and `s j` are disjoint, their images
+    are disjoint analytic sets, hence by the separation theorem one can find a Borel-measurable set
     `q i j` separating them.
     Let `E i = closure (f '' s i) ∩ ⋂ j, q i j \ q j i`. It contains `f '' (s i)` and it is
     measurable. Let `F n = ⋃ E i`, where the union is taken over those `i` for which `diam (s i)`
