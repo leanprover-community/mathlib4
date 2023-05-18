@@ -49,7 +49,14 @@ universe u v
 
 open Function
 
-/-- Auxiliary type to implement MulOpposite and AddOpposite-/
+/-- Auxiliary type to implement `MulOpposite` and `AddOpposite`.
+
+It turns out to be convenient to have `MulOpposite α= AddOpposite α` true by definition, in the
+same way that it is convenient to have `Additive α = α`; this means that we also get the defeq
+`AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
+
+This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
+having no defeqs within those three types (which we had as of mathlib4#1036). -/
 structure PreOpposite (α : Type u) : Type u where
   /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
@@ -113,7 +120,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
 @[to_additive (attr := simp, elab_as_elim)
-  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
+  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec'`."]
 protected def rec {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec
 #align add_opposite.rec AddOpposite.rec

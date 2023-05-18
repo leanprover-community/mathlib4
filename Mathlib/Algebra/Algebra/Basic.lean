@@ -605,7 +605,7 @@ instance : Algebra R Aᵐᵒᵖ where
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
       Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
-  commutes' r := MulOpposite.rec fun x => by
+  commutes' r := MulOpposite.rec' fun x => by
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
