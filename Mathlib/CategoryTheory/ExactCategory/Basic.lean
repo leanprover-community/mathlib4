@@ -249,17 +249,17 @@ instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [Admissib
     . dsimp
       infer_instance
     . exact KernelFork.IsLimit.ofι _ _
-          (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
-            (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))
-          (fun a ha => by dsimp ; simp)
-          (fun a ha b hb => by
-            dsimp at a b ha hb
-            apply pullback.hom_ext
-            . dsimp
-              rw [← cancel_mono f, assoc, pullback.condition, reassoc_of% hb]
-              simpa using (KernelFork.IsLimit.lift' hf'' (a ≫ g) (by rw [assoc, ha])).2.symm
-            . dsimp
-              simp [hb])
+        (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
+          (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))
+        (fun a ha => by dsimp ; simp)
+        (fun a ha b hb => by
+          dsimp at a b ha hb
+          apply pullback.hom_ext
+          . dsimp
+            rw [← cancel_mono f, assoc, pullback.condition, reassoc_of% hb]
+            simpa using (KernelFork.IsLimit.lift' hf'' (a ≫ g) (by rw [assoc, ha])).2.symm
+          . dsimp
+            simp [hb])
   exact ⟨_, _, _, hS⟩
 
 end ExactCategory
