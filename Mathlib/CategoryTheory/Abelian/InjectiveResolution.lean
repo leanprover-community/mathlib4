@@ -16,19 +16,19 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 # Main result
 
 When the underlying category is abelian:
-* `category_theory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
+* `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
   `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a chain map
   `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `I.ι` intertwines the descent and
-  the original morphism, see `category_theory.InjectiveResolution.desc_commutes`.
-* `category_theory.InjectiveResolution.desc_homotopy`: Any two such descents are homotopic.
-* `category_theory.InjectiveResolution.homotopy_equiv`: Any two injective resolutions of the same
+  the original morphism, see `CategoryTheory.InjectiveResolution.desc_commutes`.
+* `CategoryTheory.InjectiveResolution.descHomotopy`: Any two such descents are homotopic.
+* `CategoryTheory.InjectiveResolution.homotopyEquiv`: Any two injective resolutions of the same
   object are homotopy equivalent.
-* `category_theory.injective_resolutions`: If every object admits an injective resolution, we can
-  construct a functor `injective_resolutions C : C ⥤ homotopy_category C`.
+* `CategoryTheory.injectiveResolutions`: If every object admits an injective resolution, we can
+  construct a functor `injectiveResolutions C : C ⥤ HomotopyCategory C`.
 
-* `category_theory.exact_f_d`: `f` and `injective.d f` are exact.
-* `category_theory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
-  is injective, we can apply `injective.d` repeatedly to obtain an injective resolution of `X`.
+* `CategoryTheory.exact_f_d`: `f` and `Injective.d f` are exact.
+* `CategoryTheory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
+  is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
 
 
@@ -108,16 +108,15 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
       simp
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
 
--- Now that we've checked this property of the descent,
--- we can seal away the actual definition.
-/-- An auxiliary definition for `desc_homotopy_zero`. -/
+-- Now that we've checked this property of the descent, we can seal away the actual definition.
+/-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : I.cocomplex.X 1 ⟶ J.cocomplex.X 0 :=
   Exact.desc (f.f 0) (I.ι.f 0) (I.cocomplex.d 0 1) (Abelian.Exact.op _ _ I.exact₀)
     (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
 #align category_theory.InjectiveResolution.desc_homotopy_zero_zero CategoryTheory.InjectiveResolution.descHomotopyZeroZero
 
-/-- An auxiliary definition for `desc_homotopy_zero`. -/
+/-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroOne {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = (0 : _ ⟶ J.cocomplex)) :
     I.cocomplex.X 2 ⟶ J.cocomplex.X 1 :=
@@ -126,7 +125,7 @@ def descHomotopyZeroOne {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveReso
     (by simp [descHomotopyZeroZero, ← Category.assoc])
 #align category_theory.InjectiveResolution.desc_homotopy_zero_one CategoryTheory.InjectiveResolution.descHomotopyZeroOne
 
-/-- An auxiliary definition for `desc_homotopy_zero`. -/
+/-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (n : ℕ) (g : I.cocomplex.X (n + 1) ⟶ J.cocomplex.X n)
     (g' : I.cocomplex.X (n + 2) ⟶ J.cocomplex.X (n + 1))
@@ -206,7 +205,7 @@ abbrev injectiveResolution (Z : C) [HasInjectiveResolution Z] : CochainComplex C
 #align category_theory.injective_resolution CategoryTheory.injectiveResolution
 
 /-- The cochain map from cochain complex consisting of `Z` supported in degree `0`
-back to the arbitrarily chosen injective resolution `injective_resolution Z`. -/
+back to the arbitrarily chosen injective resolution `injectiveResolution Z`. -/
 abbrev injectiveResolution.ι (Z : C) [HasInjectiveResolution Z] :
     (CochainComplex.single₀ C).obj Z ⟶ injectiveResolution Z :=
   (HasInjectiveResolution.out (Z := Z)).some.ι
@@ -256,11 +255,11 @@ namespace InjectiveResolution
 
 /-!
 Our goal is to define `InjectiveResolution.of Z : InjectiveResolution Z`.
-The `0`-th object in this resolution will just be `injective.under Z`,
+The `0`-th object in this resolution will just be `Injective.under Z`,
 i.e. an arbitrarily chosen injective object with a map from `Z`.
-After that, we build the `n+1`-st object as `injective.syzygies`
+After that, we build the `n+1`-st object as `Injective.syzygies`
 applied to the previously constructed morphism,
-and the map from the `n`-th object as `injective.d`.
+and the map from the `n`-th object as `Injective.d`.
 -/
 
 
@@ -285,7 +284,7 @@ irreducible_def of (Z : C) : InjectiveResolution Z :=
         (by
           simp only [ofCocomplex_d, eq_self_iff_true, eqToHom_refl, Category.comp_id,
             dite_eq_ite, if_true, comp_zero]
-          exact (exact_f_d (injective.ι Z)).w)
+          exact (exact_f_d (Injective.ι Z)).w)
         fun n _ => ⟨0, by ext⟩
     injective := by rintro (_ | _ | _ | n) <;> · apply Injective.injective_under
     exact₀ := by simpa using exact_f_d (Injective.ι Z)
@@ -310,7 +309,7 @@ namespace HomologicalComplex.Hom
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- If `X` is a cochain complex of injective objects and we have a quasi-isomorphism
-`f : Y[0] ⟶ X`, then `X` is an injective resolution of `Y.` -/
+`f : Y[0] ⟶ X`, then `X` is an injective resolution of `Y`. -/
 def HomologicalComplex.Hom.fromSingle₀InjectiveResolution (X : CochainComplex C ℕ) (Y : C)
     (f : (CochainComplex.single₀ C).obj Y ⟶ X) [QuasiIso f] (H : ∀ n, Injective (X.X n)) :
     InjectiveResolution Y where
