@@ -367,7 +367,7 @@ section Opposite
 open MulOpposite
 
 /-- A ring iso `α ≃+* β` can equivalently be viewed as a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. -/
-@[simps!]
+@[simps! symm_apply_apply symm_apply_symm_apply apply_apply apply_symm_apply]
 protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
