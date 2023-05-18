@@ -1191,6 +1191,7 @@ import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Identities
