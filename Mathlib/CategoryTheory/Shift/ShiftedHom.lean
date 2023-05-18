@@ -98,6 +98,20 @@ lemma add_γhsmul [Preadditive C] [∀ (a : M), (shiftFunctor C a).Additive]
     (α₁ + α₂) •[hpq] β = α₁ •[hpq] β + α₂ •[hpq] β := by
   rw [γhsmul_eq, γhsmul_eq, γhsmul_eq, Functor.map_add, add_comp, comp_add]
 
+@[simp]
+lemma γhsmul_zsmul [Preadditive C] {p q n : M} (α : ShiftedHom M Y Z p) (x : ℤ)
+    (β : ShiftedHom M X Y q) (hpq : p + q = n) :
+    α •[hpq] (x • β) = x • (α •[hpq] β) := by
+  rw [γhsmul_eq, γhsmul_eq, Preadditive.zsmul_comp]
+
+@[simp]
+lemma zsmul_γhsmul [Preadditive C] [∀ (a : M), (shiftFunctor C a).Additive]
+    {p q n : M} (x : ℤ) (α : ShiftedHom M Y Z p)
+    (β : ShiftedHom M X Y q) (hpq : p + q = n) :
+    (x • α) •[hpq] β = x • (α •[hpq] β) := by
+  rw [γhsmul_eq, γhsmul_eq, Functor.map_zsmul, Preadditive.zsmul_comp,
+    Preadditive.comp_zsmul]
+
 instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHSMul (ShiftedHom M X₃ X₄)
     (ShiftedHom M X₂ X₃) (ShiftedHom M X₁ X₂) (ShiftedHom M X₂ X₄) (ShiftedHom M X₁ X₃)
     (ShiftedHom M X₁ X₄) where
