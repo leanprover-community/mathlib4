@@ -8,9 +8,9 @@ Authors: Lu-Ming Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Symmetric
-import Mathbin.LinearAlgebra.Matrix.Orthogonal
-import Mathbin.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Orthogonal
+import Mathlib.Data.Matrix.Kronecker
 
 /-!
 # Diagonal matrices
@@ -82,8 +82,7 @@ theorem IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : 
   simp [ha h, hf]
 #align matrix.is_diag.map Matrix.IsDiag.map
 
-theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag :=
-  by
+theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
   intro i j h
   simp [ha h]
 #align matrix.is_diag.neg Matrix.IsDiag.neg
@@ -145,8 +144,7 @@ theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m �
 
 /-- `(A ⊗ B).is_diag` if both `A` and `B` are diagonal. -/
 theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n α} (hA : A.IsDiag)
-    (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag :=
-  by
+    (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
   simp only [Prod.mk.inj_iff, Ne.def, not_and_or] at h
   cases' h with hac hbd
@@ -154,8 +152,7 @@ theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n �
   · simp [hB hbd]
 #align matrix.is_diag.kronecker Matrix.IsDiag.kronecker
 
-theorem IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm :=
-  by
+theorem IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm := by
   ext (i j)
   by_cases g : i = j; · rw [g]
   simp [h g, h (Ne.symm g)]
@@ -163,8 +160,7 @@ theorem IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm :=
 
 /-- The block matrix `A.from_blocks 0 0 D` is diagonal if `A` and `D` are diagonal. -/
 theorem IsDiag.fromBlocks [Zero α] {A : Matrix m m α} {D : Matrix n n α} (ha : A.IsDiag)
-    (hd : D.IsDiag) : (A.fromBlocks 0 0 D).IsDiag :=
-  by
+    (hd : D.IsDiag) : (A.fromBlocks 0 0 D).IsDiag := by
   rintro (i | i) (j | j) hij
   · exact ha (ne_of_apply_ne _ hij)
   · rfl
@@ -174,8 +170,7 @@ theorem IsDiag.fromBlocks [Zero α] {A : Matrix m m α} {D : Matrix n n α} (ha 
 
 /-- This is the `iff` version of `matrix.is_diag.from_blocks`. -/
 theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
-    {D : Matrix n n α} : (A.fromBlocks B C D).IsDiag ↔ A.IsDiag ∧ B = 0 ∧ C = 0 ∧ D.IsDiag :=
-  by
+    {D : Matrix n n α} : (A.fromBlocks B C D).IsDiag ↔ A.IsDiag ∧ B = 0 ∧ C = 0 ∧ D.IsDiag := by
   constructor
   · intro h
     refine' ⟨fun i j hij => _, ext fun i j => _, ext fun i j => _, fun i j hij => _⟩
@@ -191,8 +186,7 @@ theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} 
     if  `A` and `D` are diagonal and `B` is `0`. -/
 theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n m α}
     {D : Matrix n n α} (h : (A.fromBlocks 0 C D).IsSymm) (ha : A.IsDiag) (hd : D.IsDiag) :
-    (A.fromBlocks 0 C D).IsDiag :=
-  by
+    (A.fromBlocks 0 C D).IsDiag := by
   rw [← (is_symm_from_blocks_iff.1 h).2.1]
   exact ha.from_blocks hd
 #align matrix.is_diag.from_blocks_of_is_symm Matrix.IsDiag.fromBlocks_of_isSymm
