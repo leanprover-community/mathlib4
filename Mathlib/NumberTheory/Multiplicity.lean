@@ -366,7 +366,6 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity 2 n := by
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← multiplicity.Int.coe_nat_multiplicity]
-    have hxyn : y ^ n ≤ x ^ n := pow_le_pow_of_le_left' hyx _
     simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_of_le_left' hyx _), Int.ofNat_add,
       Int.coe_nat_pow]
     rw [← Int.coe_nat_dvd] at hx
@@ -411,8 +410,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   cases' y with y
-  · have := dvd_zero p
-    contradiction
+  · contradiction
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
   · exact multiplicity.Nat.pow_add_pow hp.out hp1 hxy hx hn
