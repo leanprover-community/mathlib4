@@ -220,9 +220,9 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
           le_sup_left)
     cases' map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop hmax
-    · refine' ⟨⊤, ⟨Set.mem_insert ⊤ _, htop ▸ this⟩⟩
-    · refine'
-        ⟨map f J, ⟨Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩, this⟩⟩
+    · exact ⟨⊤, ⟨Set.mem_insert ⊤ _, htop ▸ this⟩⟩
+    · exact ⟨map f J, ⟨Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
+        this⟩⟩
   · rw [comap_sInf]
     refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
     haveI : J.IsMaximal := hJ.right
