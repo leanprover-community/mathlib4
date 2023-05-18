@@ -119,8 +119,8 @@ open Hom
     associators and unitors map to the same normal form. -/
 --@[simp]
 def normalizeMapAux :
-    ∀ {X Y : F C},
-      (X ⟶ᵐ Y) → ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
+    ∀ {X Y : F C}, (X ⟶ᵐ Y) →
+      ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom X Y Z => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
