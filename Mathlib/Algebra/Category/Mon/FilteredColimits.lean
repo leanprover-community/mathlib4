@@ -8,10 +8,10 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.CategoryTheory.Limits.Preserves.Filtered
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
-import Mathbin.CategoryTheory.Limits.Types
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -89,8 +89,7 @@ object `j`.
 -/
 @[to_additive
       "The definition of the \"zero\" in the colimit is independent of the chosen object\nof `J`. In particular, this lemma allows us to \"unfold\" the definition of `colimit_zero` at a\ncustom chosen object `j`."]
-theorem colimit_one_eq (j : J) : (1 : M) = M.mk ⟨j, 1⟩ :=
-  by
+theorem colimit_one_eq (j : J) : (1 : M) = M.mk ⟨j, 1⟩ := by
   apply M.mk_eq
   refine' ⟨max' _ j, left_to_max _ j, right_to_max _ j, _⟩
   simp
@@ -112,8 +111,7 @@ def colimitMulAux (x y : Σj, F.obj j) : M :=
 @[to_additive "Addition in the colimit is well-defined in the left argument."]
 theorem colimitMulAux_eq_of_rel_left {x x' y : Σj, F.obj j}
     (hxx' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) x x') :
-    colimit_mul_aux x y = colimit_mul_aux x' y :=
-  by
+    colimit_mul_aux x y = colimit_mul_aux x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
   simp at hfg
@@ -130,8 +128,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σj, F.obj j}
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σj, F.obj j}
     (hyy' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) y y') :
-    colimit_mul_aux x y = colimit_mul_aux x y' :=
-  by
+    colimit_mul_aux x y = colimit_mul_aux x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
   simp at hfg
@@ -167,8 +164,7 @@ using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`.
 @[to_additive
       "Addition in the colimit is independent of the chosen \"maximum\" in the filtered\ncategory. In particular, this lemma allows us to \"unfold\" the definition of the addition of `x`\nand `y`, using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`."]
 theorem colimit_mul_mk_eq (x y : Σj, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
-    M.mk x * M.mk y = M.mk ⟨k, F.map f x.2 * F.map g y.2⟩ :=
-  by
+    M.mk x * M.mk y = M.mk ⟨k, F.map f x.2 * F.map g y.2⟩ := by
   cases' x with j₁ x; cases' y with j₂ y
   obtain ⟨s, α, β, h₁, h₂⟩ := bowtie (left_to_max j₁ j₂) f (right_to_max j₁ j₂) g
   apply M.mk_eq
@@ -211,8 +207,7 @@ def colimit : MonCat :=
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
 @[to_additive
       "The additive monoid homomorphism from a given additive monoid in the diagram to the\ncolimit additive monoid."]
-def coconeMorphism (j : J) : F.obj j ⟶ colimit
-    where
+def coconeMorphism (j : J) : F.obj j ⟶ colimit where
   toFun := (Types.colimitCocone (F ⋙ forget MonCat)).ι.app j
   map_one' := (colimit_one_eq j).symm
   map_mul' x y := by
@@ -242,8 +237,7 @@ The only thing left to see is that it is a monoid homomorphism.
 -/
 @[to_additive
       "Given a cocone `t` of `F`, the induced additive monoid homomorphism from the colimit\nto the cocone point. As a function, this is simply given by the induced map of the corresponding\ncocone in `Type`. The only thing left to see is that it is an additive monoid homomorphism."]
-def colimitDesc (t : cocone F) : colimit ⟶ t.pt
-    where
+def colimitDesc (t : cocone F) : colimit ⟶ t.pt where
   toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
   map_one' := by
     rw [colimit_one_eq F is_filtered.nonempty.some]
@@ -259,8 +253,7 @@ def colimitDesc (t : cocone F) : colimit ⟶ t.pt
 
 /-- The proposed colimit cocone is a colimit in `Mon`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMon`."]
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc := colimit_desc
   fac t j :=
     MonoidHom.coe_inj
@@ -337,8 +330,7 @@ def colimitCocone : cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommMon`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMon`."]
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     MonCat.FilteredColimits.colimitDesc (F ⋙ forget₂ CommMonCat MonCat.{max v u})
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)
