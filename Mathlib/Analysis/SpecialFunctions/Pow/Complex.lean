@@ -114,7 +114,7 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 #align complex.cpow_neg_one Complex.cpow_neg_one
 
--- Porting note: coudn't find a way to use `^` for the RHS
+-- Porting note: couldn't find a way to use `^` for the RHS
 @[simp, norm_cast]
 theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = HPow.hPow x (n : ℕ)
   | 0 => by simp
