@@ -47,8 +47,6 @@ variable [dec_ι : DecidableEq ι] [Preorder ι]
 
 variable (G : ι → Type w)
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`map_self] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`map_map] [] -/
 /-- A directed system is a functor from a category (directed poset) to another category. -/
 class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
   map_self' : ∀ i x h, f i i h x = x
@@ -74,7 +72,8 @@ variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `directed_system.map_self` specialized to linear maps, as otherwise the
 `λ i j h, f i j h` can confuse the simplifier. -/
-nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
+nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
+    f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align module.directed_system.map_self Module.DirectedSystem.map_self
 
@@ -242,8 +241,12 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (Dfinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
-          simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
-            toModule_totalize_of_le hjk hj]⟩)
+          -- Porting note: this had been
+          -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
+          --   toModule_totalize_of_le hjk hj]
+          simp only [map_add]
+          rw [toModule_totalize_of_le hik hi, toModule_totalize_of_le hjk hj]
+          simp [hxi, hyj]⟩)
       fun a x ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 #align module.direct_limit.of.zero_exact_aux Module.DirectLimit.of.zero_exact_aux
@@ -257,7 +260,12 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0
   if hx0 : x = 0 then ⟨i, le_rfl, by simp [hx0]⟩
   else
     have hij : i ≤ j := hj _ <| by simp [DirectSum.apply_eq_component, hx0]
-    ⟨j, hij, by simpa [totalize_of_le hij] using hxj⟩
+    ⟨j, hij, by
+      -- porting note: this had been
+      -- simpa [totalize_of_le hij] using hxj
+      simp only [DirectSum.toModule_lof] at hxj
+      rw [totalize_of_le hij] at hxj
+      exact hxj⟩
 #align module.direct_limit.of.zero_exact Module.DirectLimit.of.zero_exact
 
 end DirectLimit
