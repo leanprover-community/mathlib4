@@ -52,7 +52,6 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
 -- porting note: was not necessary in mathlib
--- proof from instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
   ⟨ fun f => f.toFun, fun f g h => by
     cases f
@@ -90,11 +89,29 @@ instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat
         map := fun f => f.toMonoidHom }
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
 
+-- porting note: this instance was not necessary in mathlib
+
+instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X →*₀ Y) := f
+
+
+def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N) : M →*₀ N :=
+  {
+    toFun := h.toFun
+    map_mul' := h.map_mul'
+    map_one' := h.map_one
+    map_zero' := by
+       rw [← mul_eq_zero_of_left rfl 1]
+       rw [h.map_mul' 0 1]
+       simp
+   }
+
+
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
-  hom := e.toFun
-  inv := e.symm
+  hom := toMonoidWithZeroHom e
+  inv := toMonoidWithZeroHom (e.symm)
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _
