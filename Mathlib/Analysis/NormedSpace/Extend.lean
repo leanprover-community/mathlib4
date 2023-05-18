@@ -93,12 +93,12 @@ theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendT
     isROrC_simps]
 #align linear_map.extend_to_𝕜'_apply_re LinearMap.extendTo𝕜'_apply_re
 
-theorem norm_extendTo𝕜'_apply_sq (f : F →ₗ[ℝ] ℝ) (x : F) :
-    ‖(f.extendTo𝕜' x : 𝕜)‖ ^ 2 = f (conj (f.extendTo𝕜' x : 𝕜) • x) :=
+theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
+    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
   calc
-    ‖(f.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (f.extendTo𝕜' x) * f.extendTo𝕜' x : 𝕜) := by
+    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
       rw [IsROrC.conj_mul, normSq_eq_def', ofReal_re]
-    _ = f (conj (f.extendTo𝕜' x : 𝕜) • x) := by
+    _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
       rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
 #align linear_map.norm_extend_to_𝕜'_apply_sq LinearMap.norm_extendTo𝕜'_apply_sq
 
