@@ -340,7 +340,7 @@ theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖
   rfl
 #align affine_isometry_equiv.coe_mk AffineIsometryEquiv.coe_mk
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_toAffineEquiv (e : P ≃ᵃⁱ[𝕜] P₂) : ⇑e.toAffineEquiv = e :=
   rfl
 #align affine_isometry_equiv.coe_to_affine_equiv AffineIsometryEquiv.coe_toAffineEquiv
@@ -359,7 +359,7 @@ def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
   ⟨e.1.toAffineMap, e.2⟩
 #align affine_isometry_equiv.to_affine_isometry AffineIsometryEquiv.toAffineIsometry
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_toAffineIsometry : ⇑e.toAffineIsometry = e :=
   rfl
 #align affine_isometry_equiv.coe_to_affine_isometry AffineIsometryEquiv.coe_toAffineIsometry
@@ -373,7 +373,7 @@ def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p : P₁) (h : ∀
   { AffineEquiv.mk' e e'.toLinearEquiv p h with norm_map := e'.norm_map }
 #align affine_isometry_equiv.mk' AffineIsometryEquiv.mk'
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) : ⇑(mk' e e' p h) = e :=
   rfl
 #align affine_isometry_equiv.coe_mk' AffineIsometryEquiv.coe_mk'
@@ -442,7 +442,7 @@ def toIsometryEquiv : P ≃ᵢ P₂ :=
   ⟨e.toAffineEquiv.toEquiv, e.isometry⟩
 #align affine_isometry_equiv.to_isometry_equiv AffineIsometryEquiv.toIsometryEquiv
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
   rfl
 #align affine_isometry_equiv.coe_to_isometry_equiv AffineIsometryEquiv.coe_toIsometryEquiv
@@ -457,7 +457,7 @@ def toHomeomorph : P ≃ₜ P₂ :=
   e.toIsometryEquiv.toHomeomorph
 #align affine_isometry_equiv.to_homeomorph AffineIsometryEquiv.toHomeomorph
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
   rfl
 #align affine_isometry_equiv.coe_to_homeomorph AffineIsometryEquiv.coe_toHomeomorph
@@ -490,7 +490,7 @@ variable {𝕜 P}
 instance : Inhabited (P ≃ᵃⁱ[𝕜] P) :=
   ⟨refl 𝕜 P⟩
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_refl : ⇑(refl 𝕜 P) = id :=
   rfl
 #align affine_isometry_equiv.coe_refl AffineIsometryEquiv.coe_refl
@@ -515,12 +515,12 @@ def symm : P₂ ≃ᵃⁱ[𝕜] P :=
   { e.toAffineEquiv.symm with norm_map := e.linearIsometryEquiv.symm.norm_map }
 #align affine_isometry_equiv.symm AffineIsometryEquiv.symm
 
-@[simp]
+@[simp] -- simp progress
 theorem apply_symm_apply (x : P₂) : e (e.symm x) = x :=
   e.toAffineEquiv.apply_symm_apply x
 #align affine_isometry_equiv.apply_symm_apply AffineIsometryEquiv.apply_symm_apply
 
-@[simp]
+@[simp] -- simp progress
 theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
   e.toAffineEquiv.symm_apply_apply x
 #align affine_isometry_equiv.symm_apply_apply AffineIsometryEquiv.symm_apply_apply
@@ -550,7 +550,7 @@ def trans (e' : P₂ ≃ᵃⁱ[𝕜] P₃) : P ≃ᵃⁱ[𝕜] P₃ :=
   ⟨e.toAffineEquiv.trans e'.toAffineEquiv, fun _ => (e'.norm_map _).trans (e.norm_map _)⟩
 #align affine_isometry_equiv.trans AffineIsometryEquiv.trans
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_trans (e₁ : P ≃ᵃⁱ[𝕜] P₂) (e₂ : P₂ ≃ᵃⁱ[𝕜] P₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
   rfl
 #align affine_isometry_equiv.coe_trans AffineIsometryEquiv.coe_trans
@@ -575,7 +575,7 @@ theorem symm_trans_self : e.symm.trans e = refl 𝕜 P₂ :=
   ext e.apply_symm_apply
 #align affine_isometry_equiv.symm_trans_self AffineIsometryEquiv.symm_trans_self
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_symm_trans (e₁ : P ≃ᵃⁱ[𝕜] P₂) (e₂ : P₂ ≃ᵃⁱ[𝕜] P₃) :
     ⇑(e₁.trans e₂).symm = e₁.symm ∘ e₂.symm :=
   rfl
@@ -596,37 +596,37 @@ instance : Group (P ≃ᵃⁱ[𝕜] P) where
   mul_assoc _ _ _ := trans_assoc _ _ _
   mul_left_inv := self_trans_symm
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_one : ⇑(1 : P ≃ᵃⁱ[𝕜] P) = id :=
   rfl
 #align affine_isometry_equiv.coe_one AffineIsometryEquiv.coe_one
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_mul (e e' : P ≃ᵃⁱ[𝕜] P) : ⇑(e * e') = e ∘ e' :=
   rfl
 #align affine_isometry_equiv.coe_mul AffineIsometryEquiv.coe_mul
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_inv (e : P ≃ᵃⁱ[𝕜] P) : ⇑e⁻¹ = e.symm :=
   rfl
 #align affine_isometry_equiv.coe_inv AffineIsometryEquiv.coe_inv
 
-@[simp]
+@[simp] -- simp progress
 theorem map_vadd (p : P) (v : V) : e (v +ᵥ p) = e.linearIsometryEquiv v +ᵥ e p :=
   e.toAffineIsometry.map_vadd p v
 #align affine_isometry_equiv.map_vadd AffineIsometryEquiv.map_vadd
 
-@[simp]
+@[simp] -- simp progress
 theorem map_vsub (p1 p2 : P) : e.linearIsometryEquiv (p1 -ᵥ p2) = e p1 -ᵥ e p2 :=
   e.toAffineIsometry.map_vsub p1 p2
 #align affine_isometry_equiv.map_vsub AffineIsometryEquiv.map_vsub
 
-@[simp]
+@[simp] -- simp progress
 theorem dist_map (x y : P) : dist (e x) (e y) = dist x y :=
   e.toAffineIsometry.dist_map x y
 #align affine_isometry_equiv.dist_map AffineIsometryEquiv.dist_map
 
-@[simp]
+@[simp] -- simp progress
 theorem edist_map (x y : P) : edist (e x) (e y) = edist x y :=
   e.toAffineIsometry.edist_map x y
 #align affine_isometry_equiv.edist_map AffineIsometryEquiv.edist_map
@@ -660,24 +660,24 @@ protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 #align affine_isometry_equiv.antilipschitz AffineIsometryEquiv.antilipschitz
 
-@[simp]
+@[simp] -- simp progress
 theorem ediam_image (s : Set P) : EMetric.diam (e '' s) = EMetric.diam s :=
   e.isometry.ediam_image s
 #align affine_isometry_equiv.ediam_image AffineIsometryEquiv.ediam_image
 
-@[simp]
+@[simp] -- simp progress
 theorem diam_image (s : Set P) : Metric.diam (e '' s) = Metric.diam s :=
   e.isometry.diam_image s
 #align affine_isometry_equiv.diam_image AffineIsometryEquiv.diam_image
 
 variable {α : Type _} [TopologicalSpace α]
 
-@[simp]
+@[simp] -- simp progress
 theorem comp_continuousOn_iff {f : α → P} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=
   e.isometry.comp_continuousOn_iff
 #align affine_isometry_equiv.comp_continuous_on_iff AffineIsometryEquiv.comp_continuousOn_iff
 
-@[simp]
+@[simp] -- simp progress
 theorem comp_continuous_iff {f : α → P} : Continuous (e ∘ f) ↔ Continuous f :=
   e.isometry.comp_continuous_iff
 #align affine_isometry_equiv.comp_continuous_iff AffineIsometryEquiv.comp_continuous_iff
@@ -702,7 +702,7 @@ theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
 theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v => v +ᵥ p :=
   rfl
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst 𝕜 p).symm = fun p' => p' -ᵥ p :=
   rfl
 #align affine_isometry_equiv.coe_vadd_const_symm AffineIsometryEquiv.coe_vaddConst_symm
@@ -722,7 +722,7 @@ def constVsub (p : P) : P ≃ᵃⁱ[𝕜] V :=
 
 variable {𝕜}
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_constVsub (p : P) : ⇑(constVsub 𝕜 p) = (· -ᵥ ·) p :=
   rfl
 #align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVsub
@@ -745,7 +745,7 @@ def constVadd (v : V) : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜 P}
 
-@[simp]
+@[simp] -- simp progress
 theorem coe_constVadd (v : V) : ⇑(constVadd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
   rfl
 #align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVadd
@@ -782,7 +782,7 @@ theorem pointReflection_toAffineEquiv (x : P) :
   rfl
 #align affine_isometry_equiv.point_reflection_to_affine_equiv AffineIsometryEquiv.pointReflection_toAffineEquiv
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this -- simp progress
 theorem pointReflection_self (x : P) : pointReflection 𝕜 x x = x :=
   AffineEquiv.pointReflection_self 𝕜 x
 #align affine_isometry_equiv.point_reflection_self AffineIsometryEquiv.pointReflection_self
@@ -828,12 +828,12 @@ theorem dist_pointReflection_self_real (x y : P) : dist (pointReflection ℝ x y
   by rw [dist_pointReflection_self, Real.norm_two]
 #align affine_isometry_equiv.dist_point_reflection_self_real AffineIsometryEquiv.dist_pointReflection_self_real
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this -- simp progress
 theorem pointReflection_midpoint_left (x y : P) : pointReflection ℝ (midpoint ℝ x y) x = y :=
   AffineEquiv.pointReflection_midpoint_left x y
 #align affine_isometry_equiv.point_reflection_midpoint_left AffineIsometryEquiv.pointReflection_midpoint_left
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this -- simp progress
 theorem pointReflection_midpoint_right (x y : P) : pointReflection ℝ (midpoint ℝ x y) y = x :=
   AffineEquiv.pointReflection_midpoint_right x y
 #align affine_isometry_equiv.point_reflection_midpoint_right AffineIsometryEquiv.pointReflection_midpoint_right
@@ -903,13 +903,13 @@ noncomputable def isometryEquivMap (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : AffineS
   ⟨E.equivMapOfInjective φ.toAffineMap φ.injective, fun _ => φ.norm_map _⟩
 #align affine_subspace.isometry_equiv_map AffineSubspace.isometryEquivMap
 
-@[simp]
+@[simp] -- simp progress
 theorem isometryEquivMap.apply_symm_apply {E : AffineSubspace 𝕜 P₁} [Nonempty E] {φ : P₁ →ᵃⁱ[𝕜] P₂}
     (x : E.map φ.toAffineMap) : φ ((E.isometryEquivMap φ).symm x) = x :=
   congr_arg Subtype.val <| (E.isometryEquivMap φ).apply_symm_apply _
 #align affine_subspace.isometry_equiv_map.apply_symm_apply AffineSubspace.isometryEquivMap.apply_symm_apply
 
-@[simp]
+@[simp] -- simp progress
 theorem isometryEquivMap.coe_apply (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : AffineSubspace 𝕜 P₁) [Nonempty E]
     (g : E) : ↑(E.isometryEquivMap φ g) = φ g :=
   rfl
