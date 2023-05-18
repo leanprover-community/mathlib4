@@ -129,7 +129,8 @@ theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M
   induction' M using TensorProduct.induction_on with a m x y hx hy
   · simp
   · simp
-  · simp [AlgHom.map_sum, hx, hy]
+  · rw [map_add]
+    conv_rhs => rw [← hx, ← hy, ← invFun_add]
 #align matrix_equiv_tensor.left_inv MatrixEquivTensor.left_inv
 
 /-- (Implementation detail)
