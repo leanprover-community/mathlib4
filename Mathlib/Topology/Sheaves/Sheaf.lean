@@ -17,12 +17,12 @@ import Mathlib.CategoryTheory.Sites.Spaces
 
 We define sheaves on a topological space, with values in an arbitrary category.
 
-A presheaf on a topological space `X` is a sheaf presicely when it is a sheaf under the
+A presheaf on a topological space `X` is a sheaf precisely when it is a sheaf under the
 grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
 `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an `A : X`, there exists an unique
 gluing `A ⟶ F(U)` compatible with the restriction.
 
-See the docstring of `Top.presheaf.is_sheaf` for an explanation on the design descisions and a list
+See the docstring of `Top.presheaf.is_sheaf` for an explanation on the design decisions and a list
 of equivalent conditions.
 
 We provide the instance `category (sheaf C X)` as the full subcategory of presheaves,
@@ -93,23 +93,28 @@ preserve limits. This applies to most "algebraic" categories, e.g. groups, abeli
   `category_theory.presheaf.is_sheaf_iff_is_sheaf_forget`.
 -/
 def IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
-  Presheaf.IsSheaf (Opens.grothendieckTopology X) F
+  -- Porting Note : needs full name
+  CategoryTheory.Presheaf.IsSheaf (Opens.grothendieckTopology X) F
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf TopCat.Presheaf.IsSheaf
 
 /-- The presheaf valued in `unit` over any topological space is a sheaf.
 -/
 theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
-  fun x U S hS x hx => ⟨eqToHom (Subsingleton.elim _ _), by tidy, by tidy⟩
+  fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by aesop_cat, fun _ => by aesop_cat⟩
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unit TopCat.Presheaf.isSheaf_unit
 
 theorem isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
   Presheaf.isSheaf_of_iso_iff α
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_iso_iff TopCat.Presheaf.isSheaf_iso_iff
 
 /-- Transfer the sheaf condition across an isomorphism of presheaves.
 -/
 theorem isSheaf_of_iso {F G : Presheaf C X} (α : F ≅ G) (h : F.IsSheaf) : G.IsSheaf :=
   (isSheaf_iso_iff α).1 h
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_of_iso TopCat.Presheaf.isSheaf_of_iso
 
 end Presheaf
@@ -120,14 +125,21 @@ variable (C X)
 satisfying the sheaf condition.
 -/
 def Sheaf : Type max u v w :=
-  Sheaf (Opens.grothendieckTopology X) C deriving Category
+  -- Porting note : need full name
+  CategoryTheory.Sheaf (Opens.grothendieckTopology X) C
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
+
+-- Porting Note : `deriving Cat` failed
+instance SheafCat : Category (Sheaf C X) :=
+  show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
 variable {C X}
 
 /-- The underlying presheaf of a sheaf -/
 abbrev Sheaf.presheaf (F : X.Sheaf C) : TopCat.Presheaf C X :=
   F.1
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf.presheaf TopCat.Sheaf.presheaf
 
 variable (C X)
@@ -135,6 +147,7 @@ variable (C X)
 -- Let's construct a trivial example, to keep the inhabited linter happy.
 instance sheafInhabited : Inhabited (Sheaf (CategoryTheory.Discrete PUnit) X) :=
   ⟨⟨Functor.star _, Presheaf.isSheaf_unit _⟩⟩
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf_inhabited TopCat.sheafInhabited
 
 namespace Sheaf
@@ -142,20 +155,30 @@ namespace Sheaf
 /-- The forgetful functor from sheaves to presheaves.
 -/
 def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
-  sheafToPresheaf _ _ deriving Full, Faithful
+  sheafToPresheaf _ _
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
+
+-- Porting note : `deriving Full` failed
+instance forgetFull : Full (forget C X) where
+  preimage := Sheaf.Hom.mk
+
+-- Porting note : `deriving Faithful` failed
+instance forgetFaithful : Faithful (forget C X) where
+  map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.
 theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf.id_app TopCat.Sheaf.id_app
 
 theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
     (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Top.sheaf.comp_app TopCat.Sheaf.comp_app
 
 end Sheaf
 
 end TopCat
-
