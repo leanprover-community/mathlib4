@@ -14,10 +14,10 @@ import Mathlib.Data.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 
-The continuous linear maps `complex.re_clm` (real part), `complex.im_clm` (imaginary part),
-`complex.conj_cle` (conjugation), and `complex.of_real_clm` (inclusion of `ℝ`) were introduced in
-`analysis.complex.operator_norm`.  This file contains a few calculations requiring more imports:
-the operator norm and (for `complex.conj_cle`) the determinant.
+The continuous linear maps `Complex.reClm` (real part), `Complex.imClm` (imaginary part),
+`Complex.conjCle` (conjugation), and `Complex.ofRealClm` (inclusion of `ℝ`) were introduced in
+`Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
+the operator norm and (for `Complex.conjCle`) the determinant.
 -/
 
 
@@ -25,15 +25,15 @@ open ContinuousLinearMap
 
 namespace Complex
 
-/-- The determinant of `conj_lie`, as a linear map. -/
+/-- The determinant of `conjLie`, as a linear map. -/
 @[simp]
-theorem det_conjLie : (conjLie.toLinearEquiv : ℂ →ₗ[ℝ] ℂ).det = -1 :=
+theorem det_conjLie : LinearMap.det (conjLie.toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = -1 :=
   det_conjAe
 #align complex.det_conj_lie Complex.det_conjLie
 
-/-- The determinant of `conj_lie`, as a linear equiv. -/
+/-- The determinant of `conjLie`, as a linear equiv. -/
 @[simp]
-theorem linearEquiv_det_conjLie : conjLie.toLinearEquiv.det = -1 :=
+theorem linearEquiv_det_conjLie : LinearEquiv.det conjLie.toLinearEquiv = -1 :=
   linearEquiv_det_conjAe
 #align complex.linear_equiv_det_conj_lie Complex.linearEquiv_det_conjLie
 
@@ -43,7 +43,6 @@ theorem reClm_norm : ‖reClm‖ = 1 :=
     calc
       1 = ‖reClm 1‖ := by simp
       _ ≤ ‖reClm‖ := unit_le_op_norm _ _ (by simp)
-      
 #align complex.re_clm_norm Complex.reClm_norm
 
 @[simp]
@@ -57,7 +56,6 @@ theorem imClm_norm : ‖imClm‖ = 1 :=
     calc
       1 = ‖imClm I‖ := by simp
       _ ≤ ‖imClm‖ := unit_le_op_norm _ _ (by simp)
-      
 #align complex.im_clm_norm Complex.imClm_norm
 
 @[simp]
@@ -86,4 +84,3 @@ theorem ofRealClm_nnnorm : ‖ofRealClm‖₊ = 1 :=
 #align complex.of_real_clm_nnnorm Complex.ofRealClm_nnnorm
 
 end Complex
-
