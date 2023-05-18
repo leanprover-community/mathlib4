@@ -70,7 +70,7 @@ local notation "N" => Discrete ∘ NormalMonoidalObject
 
 local infixr:10 " ⟶ᵐ " => Hom
 
--- porting note: this was automatic in mathlib
+-- porting note: this was automatic in mathlib 3
 instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscreteHom _ _
 
 /-- Auxiliary definition for `inclusion`. -/
