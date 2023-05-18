@@ -15,13 +15,13 @@ import Mathlib.Topology.Algebra.UniformRing
 /-!
 # Normed space structure on the completion of a normed space
 
-If `E` is a normed space over `𝕜`, then so is `uniform_space.completion E`. In this file we provide
-necessary instances and define `uniform_space.completion.to_complₗᵢ` - coercion
-`E → uniform_space.completion E` as a bundled linear isometry.
+If `E` is a normed space over `𝕜`, then so is `UniformSpace.Completion E`. In this file we provide
+necessary instances and define `UniformSpace.Completion.toComplₗᵢ` - coercion
+`E → UniformSpace.Completion E` as a bundled linear isometry.
 
-We also show that if `A` is a normed algebra over `𝕜`, then so is `uniform_space.completion A`.
+We also show that if `A` is a normed algebra over `𝕜`, then so is `UniformSpace.Completion A`.
 
-TODO: Generalise the results here from the concrete `completion` to any `abstract_completion`.
+TODO: Generalise the results here from the concrete `completion` to any `AbstractCompletion`.
 -/
 
 
