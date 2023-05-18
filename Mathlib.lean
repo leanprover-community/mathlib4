@@ -2199,6 +2199,7 @@ import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.Sheaves.Abelian
+import Mathlib.Topology.Sheaves.Init
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
