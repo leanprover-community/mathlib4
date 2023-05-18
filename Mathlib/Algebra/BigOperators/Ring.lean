@@ -108,7 +108,7 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
         by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
-    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
+    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
     refine' sum_congr rfl fun b _ => _
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
       fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
@@ -265,7 +265,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
-  rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
+  rw [powerset_card_disjiUnion, prod_disjiUnion]
 #align finset.prod_powerset Finset.prod_powerset
 #align finset.sum_powerset Finset.sum_powerset
 

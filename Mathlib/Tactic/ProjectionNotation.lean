@@ -84,7 +84,7 @@ def A.foo (a : A) (m : Nat) : Nat := a.n + m
 
 pp_extended_field_notation A.foo
 ```
-Now, `A.foo x m` pretty prints as `x.foo m`. It also adds a rule that
+Now, `A.foo x m` pretty prints as `x.foo m`. If `A` is a structure, it also adds a rule that
 `A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with
 the projection collapse delaborator, so that `A.foo x.toB.toA m` also will
 pretty print as `x.foo m`.
@@ -127,19 +127,27 @@ elab "pp_extended_field_notation " f:Term.ident : command => do
   let f ← liftTermElabM <| Elab.resolveGlobalConstNoOverloadWithInfo f
   let .str A projName := f |
     throwError "Projection name must end in a string component."
-  let some _ := getStructureInfo? (← getEnv) A |
-    throwError "{A} is not a structure"
-  let .str _ A' := A | throwError "{A} must end in a string component"
-  let toA : Name := .str .anonymous ("to" ++ A')
-  elabCommand <| ← `(command|
-    @[app_unexpander $(mkIdent f)]
-    aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
-      -- First two patterns are to avoid extra parentheses in output
-      | `($$_ $$(x).$(mkIdent toA))
-      | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-      -- Next two are for when there are actually arguments, so parentheses might be needed
-      | `($$_ $$(x).$(mkIdent toA) $$args*)
-      | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
-      | _ => throw ())
+  if let some _ := getStructureInfo? (← getEnv) A then
+    -- If this is for a structure, then generate an extra `.toA` remover.
+    -- It's easier to handle the two cases completely separately than to try to merge them.
+    let .str _ A' := A | throwError "{A} must end in a string component"
+    let toA : Name := .str .anonymous ("to" ++ A')
+    elabCommand <| ← `(command|
+      @[app_unexpander $(mkIdent f)]
+      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
+        -- Having a zero-argument pattern prevents unnecessary parenthesization in output
+        | `($$_ $$(x).$(mkIdent toA))
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
+        | `($$_ $$(x).$(mkIdent toA) $$args*)
+        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | _ => throw ())
+  else
+    elabCommand <| ← `(command|
+      @[app_unexpander $(mkIdent f)]
+      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
+        -- Having this zero-argument pattern prevents unnecessary parenthesization in output
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
+        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | _ => throw ())
 
 namespace Mathlib.ProjectionNotation

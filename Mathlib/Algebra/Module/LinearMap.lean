@@ -201,7 +201,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
+instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -211,6 +211,7 @@ instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
     exact h
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
+#align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
 #noalign LinearMap.has_coe_to_fun
@@ -1077,8 +1078,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
   rfl
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
--- *TODO*: why are you still timing out?
-set_option maxHeartbeats 300000 in
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     mul := (· * ·)
