@@ -75,7 +75,6 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : DenseInducing i) (hs 
   calc
     U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
     _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
-
 #align dense_inducing.closure_image_mem_nhds DenseInducing.closure_image_mem_nhds
 
 theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by

@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
 
@@ -36,7 +36,8 @@ theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) 
 
 /-- Simplify an expression using only the axioms of a category. -/
 def categorySimp (e : Expr) : MetaM Simp.Result :=
-  simpOnlyNames [``Category.comp_id, ``Category.id_comp, ``Category.assoc] e
+  simpOnlyNames [``Category.comp_id, ``Category.id_comp, ``Category.assoc,
+    ``Functor.id_obj, ``Functor.id_map, ``Functor.comp_obj, ``Functor.comp_map] e
     (config := { decide := false })
 
 /--

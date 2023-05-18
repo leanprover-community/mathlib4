@@ -259,7 +259,6 @@ noncomputable def karoubiUniversal : C ⥤ D ≌ Karoubi C ⥤ D :=
   (karoubiUniversal₂ C D).trans (Equivalence.congrRight (toKaroubi D).asEquivalence.symm)
 #align category_theory.idempotents.karoubi_universal CategoryTheory.Idempotents.karoubiUniversal
 
-set_option maxHeartbeats 400000 in
 theorem karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal_functor_eq CategoryTheory.Idempotents.karoubiUniversal_functor_eq
@@ -278,13 +277,12 @@ lemma isEquivalence_whiskeringLeft_obj_toKaroubi_aux :
 
 noncomputable instance : IsEquivalence ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)) :=
   IsEquivalence.cancelCompRight _
-    ((whiskeringRight C _ _).obj (toKaroubi D) ⋙ (whiskeringRight C _ _).obj (toKaroubi D).inv)
-    (IsEquivalence.ofEquivalence
-      (@Equivalence.congrRight _ _ _ _ C _
-        ((toKaroubi D).asEquivalence.trans (toKaroubi D).asEquivalence.symm)))
-    (by
-      rw [isEquivalence_whiskeringLeft_obj_toKaroubi_aux]
-      infer_instance)
+  ((whiskeringRight C _ _).obj (toKaroubi D) ⋙ (whiskeringRight C _ _).obj (toKaroubi D).inv)
+  (IsEquivalence.ofEquivalence <| (toKaroubi D).asEquivalence.congrRight.trans
+    (toKaroubi D).asEquivalence.symm.congrRight)
+  (by
+    rw [isEquivalence_whiskeringLeft_obj_toKaroubi_aux]
+    infer_instance)
 
 variable {C D}
 

@@ -201,7 +201,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
+instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -211,6 +211,7 @@ instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
     exact h
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
+#align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
 #noalign LinearMap.has_coe_to_fun
@@ -578,8 +579,8 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 
 /-- If a function `g` is a left and right inverse of a linear map `f`, then `g` is linear itself. -/
 def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
-    (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) : M₂ →ₛₗ[σ'] M :=
-  by
+    (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
+    M₂ →ₛₗ[σ'] M := by
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
   exact
     { toFun := g
@@ -693,8 +694,7 @@ theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f
 #align is_linear_map.mk'_apply IsLinearMap.mk'_apply
 
 theorem isLinearMap_smul {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
-    IsLinearMap R fun z : M ↦ c • z :=
-  by
+    IsLinearMap R fun z : M ↦ c • z := by
   refine' IsLinearMap.mk (smul_add c) _
   intro _ _
   simp only [smul_smul, mul_comm]
@@ -751,8 +751,7 @@ def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M �
 #align add_monoid_hom.to_nat_linear_map AddMonoidHom.toNatLinearMap
 
 theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M₂] :
-    Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) :=
-  by
+    Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
   intro f g h
   ext x
   exact LinearMap.congr_fun h x
@@ -767,8 +766,7 @@ def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+
 #align add_monoid_hom.to_int_linear_map AddMonoidHom.toIntLinearMap
 
 theorem AddMonoidHom.toIntLinearMap_injective [AddCommGroup M] [AddCommGroup M₂] :
-    Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) :=
-  by
+    Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
   intro f g h
   ext x
   exact LinearMap.congr_fun h x
@@ -787,8 +785,7 @@ def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M�
 #align add_monoid_hom.to_rat_linear_map AddMonoidHom.toRatLinearMap
 
 theorem AddMonoidHom.toRatLinearMap_injective [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂]
-    [Module ℚ M₂] : Function.Injective (@AddMonoidHom.toRatLinearMap M M₂ _ _ _ _) :=
-  by
+    [Module ℚ M₂] : Function.Injective (@AddMonoidHom.toRatLinearMap M M₂ _ _ _ _) := by
   intro f g h
   ext x
   exact LinearMap.congr_fun h x
@@ -1081,8 +1078,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
   rfl
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
--- *TODO*: why are you still timing out?
-set_option maxHeartbeats 300000 in
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     mul := (· * ·)
@@ -1179,7 +1174,7 @@ variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 @[simps]
 def toLinearMap (s : S) : M →ₗ[R] M where
-  toFun := SMul.smul s
+  toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
 #align distrib_mul_action.to_linear_map DistribMulAction.toLinearMap
@@ -1214,7 +1209,7 @@ def toModuleEnd : S →+* Module.End R M :=
     DistribMulAction.toModuleEnd R
       M with
     toFun := DistribMulAction.toLinearMap R M
-    map_zero' := LinearMap.ext <| zero_smul _
+    map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
 #align module.to_module_End_apply Module.toModuleEnd_apply

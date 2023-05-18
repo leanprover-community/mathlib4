@@ -9,7 +9,7 @@ Authors: Chris Hughes
 ! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.Algebra.GroupRingAction.Basic
 
 /-!

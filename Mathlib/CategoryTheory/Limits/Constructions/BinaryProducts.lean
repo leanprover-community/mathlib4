@@ -138,8 +138,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
   fac s j :=
     Discrete.casesOn j fun j =>
       WalkingPair.casesOn j (hc.fac _ WalkingSpan.left) (hc.fac _ WalkingSpan.right)
-  uniq s m J :=
-    by
+  uniq s m J := by
     let c' :=
       PushoutCocone.mk (c.ι.app ⟨WalkingPair.left⟩ ≫ m) (c.ι.app ⟨WalkingPair.right⟩ ≫ m)
         (hX.hom_ext (f ≫ _) (g ≫ _))
@@ -217,4 +216,3 @@ noncomputable def coprodIsoPushout [HasInitial C] [HasPushouts C] (X Y : C)
     [HasBinaryCoproduct X Y] : X ⨿ Y ≅ pushout (initial.to X) (initial.to Y) :=
   colimit.isoColimitCocone (colimitCoconeOfInitialAndPushouts _)
 #align coprod_iso_pushout coprodIsoPushout
-
