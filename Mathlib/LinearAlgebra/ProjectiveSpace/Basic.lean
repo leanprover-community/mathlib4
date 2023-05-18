@@ -192,7 +192,6 @@ section Map
 
 variable {L W : Type _} [DivisionRing L] [AddCommGroup W] [Module L W]
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 /-- An injective semilinear map of vector spaces induces a map on projective spaces. -/
 def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : ℙ K V → ℙ L W :=
   Quotient.map' (fun v => ⟨f v, fun c => v.2 (hf (by simp [c]))⟩)
@@ -203,12 +202,10 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       erw [← f.map_smulₛₗ, ha])
 #align projectivization.map Projectivization.map
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=
   rfl
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 /-- Mapping with respect to a semilinear map over an isomorphism of fields yields
 an injective map on projective spaces. -/
 theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
@@ -226,7 +223,6 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
   rfl
 #align projectivization.map_id Projectivization.map_id
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 -- porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
 theorem map_comp {F U : Type _} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
     {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
