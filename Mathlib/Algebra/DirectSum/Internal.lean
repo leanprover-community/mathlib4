@@ -8,9 +8,9 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Operations
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Algebra.DirectSum.Algebra
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Internally graded rings and algebras
@@ -57,15 +57,13 @@ instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass
 #align add_comm_group.of_subgroup_on_ring AddCommGroup.ofSubgroupOnRing
 
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
-    (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 :=
-  by
+    (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
 #align set_like.algebra_map_mem_graded SetLike.algebraMap_mem_graded
 
 theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
-    [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 :=
-  by
+    [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction n
   · rw [Nat.cast_zero]
     exact zero_mem (A 0)
@@ -74,8 +72,7 @@ theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R
 #align set_like.nat_cast_mem_graded SetLike.nat_cast_mem_graded
 
 theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
-    [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 :=
-  by
+    [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
   · rw [Int.cast_ofNat]
     exact SetLike.nat_cast_mem_graded _ _
@@ -168,16 +165,14 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
       ∑ ij in (r.support ×ˢ r'.support).filterₓ fun ij : ι × ι => ij.1 + ij.2 = n,
-        r ij.1 * r' ij.2 :=
-  by
+        r ij.1 * r' ij.2 := by
   rw [mul_eq_sum_support_ghas_mul, Dfinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, ← Finset.sum_filter, SetLike.coe_gMul]
 #align direct_sum.coe_mul_apply DirectSum.coe_mul_apply
 
 theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
-    ((r * r') n : R) = r.Sum fun i ri => r'.Sum fun j rj => if i + j = n then ri * rj else 0 :=
-  by
+    ((r * r') n : R) = r.Sum fun i ri => r'.Sum fun j rj => if i + j = n then ri * rj else 0 := by
   simp only [mul_eq_dfinsupp_sum, Dfinsupp.sum_apply]
   iterate 2 rw [Dfinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr ; ext
   dsimp only; split_ifs
@@ -274,15 +269,13 @@ theorem coe_of_mul_apply_of_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h 
 #align direct_sum.coe_of_mul_apply_of_le DirectSum.coe_of_mul_apply_of_le
 
 theorem coe_mul_of_apply (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) [Decidable (i ≤ n)] :
-    ((r * of _ i r') n : R) = if i ≤ n then r (n - i) * r' else 0 :=
-  by
+    ((r * of _ i r') n : R) = if i ≤ n then r (n - i) * r' else 0 := by
   split_ifs
   exacts[coe_mul_of_apply_of_le _ _ _ n h, coe_mul_of_apply_of_not_le _ _ _ n h]
 #align direct_sum.coe_mul_of_apply DirectSum.coe_mul_of_apply
 
 theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidable (i ≤ n)] :
-    ((of _ i r * r') n : R) = if i ≤ n then r * r' (n - i) else 0 :=
-  by
+    ((of _ i r * r') n : R) = if i ≤ n then r * r' (n - i) else 0 := by
   split_ifs
   exacts[coe_of_mul_apply_of_le _ _ _ n h, coe_of_mul_apply_of_not_le _ _ _ n h]
 #align direct_sum.coe_of_mul_apply DirectSum.coe_of_mul_apply
@@ -298,8 +291,7 @@ namespace Submodule
 
 /-- Build a `galgebra` instance for a collection of `submodule`s. -/
 instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
-    [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i
-    where
+    [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i where
   toFun :=
     ((Algebra.linearMap S R).codRestrict (A 0) <| SetLike.algebraMap_mem_graded A).toAddMonoidHom
   map_one := Subtype.ext <| (algebraMap S R).map_one
@@ -318,8 +310,7 @@ theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] 
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/
 instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p : Submodule S R) :
-    SetLike.GradedMonoid fun i : ℕ => p ^ i
-    where
+    SetLike.GradedMonoid fun i : ℕ => p ^ i where
   one_mem := by
     rw [← one_le, pow_zero]
     exact le_rfl
