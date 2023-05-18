@@ -67,7 +67,9 @@ measurable space, σ-algebra, measurable function, measurable equivalence, dynki
 
 open Set Encodable Function Equiv Filter MeasureTheory
 
-variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
+universe uι
+
+variable {α β γ δ δ' : Type _} {ι : Sort uι} {s t u : Set α}
 
 namespace MeasurableSpace
 
