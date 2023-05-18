@@ -22,7 +22,7 @@ This file contains results in number theory relating to multiplicity.
 
 ## Main statements
 
-* `multiplicity.int.pow_sub_pow` is the lifting the exponent lemma for odd primes.
+* `multiplicity.Int.pow_sub_pow` is the lifting the exponent lemma for odd primes.
   We also prove several variations of the lemma.
 
 ## References
