@@ -90,11 +90,11 @@ instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
 
 -- porting note: this instance was not necessary in mathlib
-
 instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →*₀ Y) := f
 
-
+/-- Conversion from MulEquiv to MonoidWithZeroHom -/
+-- porting note : this function was not necessary in mathlib
 def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N) : M →*₀ N :=
   {
     toFun := h.toFun
@@ -105,7 +105,6 @@ def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N)
        rw [h.map_mul' 0 1]
        simp
    }
-
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
@@ -121,3 +120,4 @@ def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
 #align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
 
 end GroupWithZeroCat
+
