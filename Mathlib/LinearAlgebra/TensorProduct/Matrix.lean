@@ -13,13 +13,13 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.TensorProductBasis
 
 /-!
-# Connections between `tensor_product` and `matrix`
+# Connections between `TensorProduct` and `Matrix`
 
 This file contains results about the matrices corresponding to maps between tensor product types,
-where the correspondance is induced by `basis.tensor_product`
+where the correspondance is induced by `Basis.tensorProduct`
 
-Notably, `tensor_product.to_matrix_map` shows that taking  the tensor product of linear maps is
-equivalent to taking the kronecker product of their matrix representations.
+Notably, `TensorProduct.toMatrix_map` shows that taking the tensor product of linear maps is
+equivalent to taking the Kronecker product of their matrix representations.
 -/
 
 
@@ -45,46 +45,45 @@ open Kronecker
 
 open Matrix LinearMap
 
-/-- The linear map built from `tensor_product.map` corresponds to the matrix built from
-`matrix.kronecker`. -/
+/-- The linear map built from `TensorProduct.map` corresponds to the matrix built from
+`Matrix.kronecker`. -/
 theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
-    toMatrix (bM.TensorProduct bN) (bM'.TensorProduct bN') (TensorProduct.map f g) =
+    toMatrix (bM.tensorProduct bN) (bM'.tensorProduct bN') (TensorProduct.map f g) =
       toMatrix bM bM' f ⊗ₖ toMatrix bN bN' g := by
   ext (⟨i, j⟩⟨i', j'⟩)
-  simp_rw [Matrix.kroneckerMap_apply, to_matrix_apply, Basis.tensorProduct_apply,
+  simp_rw [Matrix.kroneckerMap_apply, toMatrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
 #align tensor_product.to_matrix_map TensorProduct.toMatrix_map
 
-/-- The matrix built from `matrix.kronecker` corresponds to the linear map built from
-`tensor_product.map`. -/
+/-- The matrix built from `Matrix.kronecker` corresponds to the linear map built from
+`TensorProduct.map`. -/
 theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
-    toLin (bM.TensorProduct bN) (bM'.TensorProduct bN') (A ⊗ₖ B) =
+    toLin (bM.tensorProduct bN) (bM'.tensorProduct bN') (A ⊗ₖ B) =
       TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) := by
-  rw [← LinearEquiv.eq_symm_apply, to_lin_symm, TensorProduct.toMatrix_map, to_matrix_to_lin,
-    to_matrix_to_lin]
+  rw [← LinearEquiv.eq_symm_apply, toLin_symm, TensorProduct.toMatrix_map, toMatrix_toLin,
+    toMatrix_toLin]
 #align matrix.to_lin_kronecker Matrix.toLin_kronecker
 
-/-- `tensor_product.comm` corresponds to a permutation of the identity matrix. -/
+/-- `TensorProduct.comm` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_comm :
-    toMatrix (bM.TensorProduct bN) (bN.TensorProduct bM) (TensorProduct.comm R M N) =
-      (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap id := by
+    toMatrix (bM.tensorProduct bN) (bN.tensorProduct bM) (TensorProduct.comm R M N) =
+      (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext (⟨i, j⟩⟨i', j'⟩)
-  simp_rw [to_matrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
+  simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
     Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Prod.swap_prod_mk, id.def,
     Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and, @eq_comm _ i', @eq_comm _ j']
   split_ifs <;> simp
 #align tensor_product.to_matrix_comm TensorProduct.toMatrix_comm
 
-/-- `tensor_product.assoc` corresponds to a permutation of the identity matrix. -/
+/-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_assoc :
-    toMatrix ((bM.TensorProduct bN).TensorProduct bP) (bM.TensorProduct (bN.TensorProduct bP))
+    toMatrix ((bM.tensorProduct bN).tensorProduct bP) (bM.tensorProduct (bN.tensorProduct bP))
         (TensorProduct.assoc R M N P) =
-      (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix id (Equiv.prodAssoc _ _ _) := by
+      (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by
   ext (⟨i, j, k⟩⟨⟨i', j'⟩, k'⟩)
-  simp_rw [to_matrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
+  simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
     TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
     Equiv.prodAssoc_apply, id.def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and,
     @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
   split_ifs <;> simp
 #align tensor_product.to_matrix_assoc TensorProduct.toMatrix_assoc
-
