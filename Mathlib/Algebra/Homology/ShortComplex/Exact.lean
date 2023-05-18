@@ -478,6 +478,14 @@ noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyD
 lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
   ⟨s.homologyData, isZero_zero _⟩
 
+noncomputable def fIsKernel [HasZeroObject C] (s : S.Splitting) :
+    IsLimit (KernelFork.ofι S.f S.zero) :=
+  s.homologyData.left.hi
+
+noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) :=
+  s.homologyData.right.hp
+
 @[simps]
 def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
   r := F.map s.r
@@ -503,6 +511,11 @@ def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) 
     rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
     rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
       e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+
+noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
+    Splitting (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) where
+  r := biprod.fst
+  s := biprod.inr
 
 end Splitting
 

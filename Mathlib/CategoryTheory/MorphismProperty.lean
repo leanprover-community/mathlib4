@@ -425,9 +425,30 @@ def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 #align category_theory.morphism_property.epimorphisms CategoryTheory.MorphismProperty.epimorphisms
 
-section
+def quarrable : MorphismProperty C := fun _ Y f => ∀ ⦃Y' : C⦄ (g : Y' ⟶ Y), HasPullback f g
+
+def coquarrable : MorphismProperty C := fun X _ f => ∀ ⦃X' : C⦄ (g : X ⟶ X'), HasPushout f g
 
 variable {C}
+
+lemma quarrable.hasPullback {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback f g := hf g
+
+lemma quarrable.hasPullback' {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback g f := by
+  have : HasPullback f g := hasPullback f hf g
+  exact ⟨⟨_, (IsPullback.of_hasPullback f g).flip.isLimit'.some⟩⟩
+
+lemma coquarrable.hasPushout {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout f g := hf g
+
+lemma coquarrable.hasPushout' {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout g f := by
+  have : HasPushout f g := hasPushout f hf g
+  exact ⟨⟨_, (IsPushout.of_hasPushout f g).flip.isColimit'.some⟩⟩
+
+section
+
 variable {X Y : C} (f : X ⟶ Y)
 
 @[simp]
@@ -455,6 +476,8 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 #align category_theory.morphism_property.epimorphisms.infer_property CategoryTheory.MorphismProperty.epimorphisms.infer_property
 
 end
+
+variable (C)
 
 theorem RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   constructor <;>

@@ -114,6 +114,26 @@ lemma isIso₂_of_shortExact_of_isIso₁₃ [Balanced C] {S₁ S₂ : ShortCompl
   have := epi_τ₂_of_exact_of_epi φ h₂.exact
   apply isIso_of_mono_of_epi
 
+noncomputable def ShortExact.fIsKernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
+    IsLimit (KernelFork.ofι S.f S.zero) := by
+  have := hS.mono_f
+  exact hS.exact.fIsKernel
+
+noncomputable def gIsCokernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) := by
+  have := hS.epi_g
+  exact hS.exact.gIsCokernel
+
+namespace Splitting
+
+lemma shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
+    S.ShortExact where
+  exact := s.exact
+  mono_f := s.mono_f
+  epi_g := s.epi_g
+
+end Splitting
+
 end Preadditive
 
 end ShortComplex
