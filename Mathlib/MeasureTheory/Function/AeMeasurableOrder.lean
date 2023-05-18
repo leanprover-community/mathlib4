@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurability criterion for ennreal-valued functions
@@ -74,19 +74,16 @@ theorem MeasureTheory.aEMeasurable_of_exist_almost_disjoint_supersets {α : Type
   let t := ⋃ (p : s) (q : s ∩ Ioi p), u' p ∩ v p q
   have μt : μ t ≤ 0 :=
     calc
-      μ t ≤ ∑' (p : s) (q : s ∩ Ioi p), μ (u' p ∩ v p q) :=
-        by
+      μ t ≤ ∑' (p : s) (q : s ∩ Ioi p), μ (u' p ∩ v p q) := by
         refine' (measure_Union_le _).trans _
         apply ENNReal.tsum_le_tsum fun p => _
         apply measure_Union_le _
         exact (s_count.mono (inter_subset_left _ _)).to_subtype
-      _ ≤ ∑' (p : s) (q : s ∩ Ioi p), μ (u p q ∩ v p q) :=
-        by
+      _ ≤ ∑' (p : s) (q : s ∩ Ioi p), μ (u p q ∩ v p q) := by
         apply ENNReal.tsum_le_tsum fun p => _
         refine' ENNReal.tsum_le_tsum fun q => measure_mono _
         exact inter_subset_inter_left _ (bInter_subset_of_mem q.2)
-      _ = ∑' (p : s) (q : s ∩ Ioi p), (0 : ℝ≥0∞) :=
-        by
+      _ = ∑' (p : s) (q : s ∩ Ioi p), (0 : ℝ≥0∞) := by
         congr
         ext1 p
         congr
@@ -94,8 +91,7 @@ theorem MeasureTheory.aEMeasurable_of_exist_almost_disjoint_supersets {α : Type
         exact (huv p q).2.2.2.2 p.2 q.2.1 q.2.2
       _ = 0 := by simp only [tsum_zero]
       
-  have ff' : ∀ᵐ x ∂μ, f x = f' x :=
-    by
+  have ff' : ∀ᵐ x ∂μ, f x = f' x := by
     have : ∀ᵐ x ∂μ, x ∉ t := by
       have : μ t = 0 := le_antisymm μt bot_le
       change μ _ = 0
@@ -137,8 +133,7 @@ theorem ENNReal.aEMeasurable_of_exist_almost_disjoint_supersets {α : Type _} {m
             MeasurableSet u ∧
               MeasurableSet v ∧
                 { x | f x < p } ⊆ u ∧ { x | (q : ℝ≥0∞) < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
-    AEMeasurable f μ :=
-  by
+    AEMeasurable f μ := by
   obtain ⟨s, s_count, s_dense, s_zero, s_top⟩ :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s :=
     ENNReal.exists_countable_dense_no_zero_top
