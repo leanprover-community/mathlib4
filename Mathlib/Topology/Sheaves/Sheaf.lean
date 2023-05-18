@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.Presheaf
-import Mathbin.CategoryTheory.Sites.Sheaf
-import Mathbin.CategoryTheory.Sites.Spaces
+import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Spaces
 
 /-!
 # Sheaves
