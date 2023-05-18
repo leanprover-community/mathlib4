@@ -8,9 +8,9 @@ Authors: Jujian Zhang, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.QuasiIso
-import Mathbin.CategoryTheory.Preadditive.InjectiveResolution
-import Mathbin.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
+import Mathlib.Algebra.Homology.HomotopyCategory
 
 /-!
 # Main result
@@ -100,8 +100,7 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[simp, reassoc.1]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
-    (J : InjectiveResolution Z) : J.ι ≫ desc f I J = (CochainComplex.single₀ C).map f ≫ I.ι :=
-  by
+    (J : InjectiveResolution Z) : J.ι ≫ desc f I J = (CochainComplex.single₀ C).map f ≫ I.ι := by
   ext n
   rcases n with (_ | _ | n) <;>
     · dsimp [desc, desc_f_one, desc_f_zero]
@@ -136,8 +135,7 @@ def descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveRes
     (I.cocomplex.d (n + 2) (n + 3)) (Abelian.Exact.op _ _ (I.exact _))
     (by
       simp [preadditive.comp_sub, ← category.assoc, preadditive.sub_comp,
-        show I.cocomplex.d (n + 1) (n + 2) ≫ g' = f.f (n + 1) - g ≫ J.cocomplex.d n (n + 1)
-          by
+        show I.cocomplex.d (n + 1) (n + 2) ≫ g' = f.f (n + 1) - g ≫ J.cocomplex.d n (n + 1) by
           rw [w]
           simp only [add_sub_cancel]])
 #align category_theory.InjectiveResolution.desc_homotopy_zero_succ CategoryTheory.InjectiveResolution.descHomotopyZeroSucc
@@ -226,8 +224,7 @@ variable (C) [HasInjectiveResolutions C]
 if considered with target the homotopy category
 (`ℕ`-indexed cochain complexes and chain maps up to homotopy).
 -/
-def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ)
-    where
+def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ) where
   obj X := (HomotopyCategory.quotient _ _).obj (injectiveResolution X)
   map X Y f := (HomotopyCategory.quotient _ _).map (injectiveResolution.desc f)
   map_id' X := by
