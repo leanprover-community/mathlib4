@@ -90,7 +90,7 @@ def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p
   { p with
     carrier := p
     smul_mem' := fun ab m =>
-      TensorProduct.induction_on ab (fun hm => by simpa only [zero_smul] using p.zero_mem)
+      TensorProduct.induction_on ab (fun _ => by simpa only [zero_smul] using p.zero_mem)
         (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
         fun z w hz hw hm => by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
 #align subbimodule.mk Subbimodule.mk
@@ -107,7 +107,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
-@[simps]
+@[simps!]
 def baseChange (S : Type _) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
@@ -140,14 +140,14 @@ variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℤ] S`. -/
-@[simps]
+@[simps!]
 def toSubbimoduleInt (p : Submodule (R ⊗[ℕ] S) M) : Submodule (R ⊗[ℤ] S) M :=
   baseChange ℤ p
 #align subbimodule.to_subbimodule_int Subbimodule.toSubbimoduleInt
 
 /-- A `Submodule` over `R ⊗[ℤ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℕ] S`. -/
-@[simps]
+@[simps!]
 def toSubbimoduleNat (p : Submodule (R ⊗[ℤ] S) M) : Submodule (R ⊗[ℕ] S) M :=
   baseChange ℕ p
 #align subbimodule.to_subbimodule_nat Subbimodule.toSubbimoduleNat
