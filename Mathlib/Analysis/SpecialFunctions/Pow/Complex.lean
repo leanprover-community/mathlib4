@@ -17,9 +17,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
 
-open Classical Real Topology Filter ComplexConjugate
-
-open Filter Finset Set
+open Classical Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex
 
@@ -89,11 +87,13 @@ theorem cpow_one (x : ℂ) : x ^ (1 : ℂ) = x :=
 
 @[simp]
 theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
-  rw [cpow_def] <;> split_ifs <;> simp_all [one_ne_zero]
+  rw [cpow_def]
+  split_ifs <;> simp_all [one_ne_zero]
 #align complex.one_cpow Complex.one_cpow
 
 theorem cpow_add {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y + z) = x ^ y * x ^ z := by
-  simp only [cpow_def, ite_mul, boole_mul, mul_ite, mul_boole] <;> simp_all [exp_add, mul_add]
+  simp only [cpow_def, ite_mul, boole_mul, mul_ite, mul_boole]
+  simp_all [exp_add, mul_add]
 #align complex.cpow_add Complex.cpow_add
 
 theorem cpow_mul {x y : ℂ} (z : ℂ) (h₁ : -π < (log x * y).im) (h₂ : (log x * y).im ≤ π) :
@@ -103,7 +103,8 @@ theorem cpow_mul {x y : ℂ} (z : ℂ) (h₁ : -π < (log x * y).im) (h₂ : (lo
 #align complex.cpow_mul Complex.cpow_mul
 
 theorem cpow_neg (x y : ℂ) : x ^ (-y) = (x ^ y)⁻¹ := by
-  simp only [cpow_def, neg_eq_zero, mul_neg] <;> split_ifs <;> simp [exp_neg]
+  simp only [cpow_def, neg_eq_zero, mul_neg]
+  split_ifs <;> simp [exp_neg]
 #align complex.cpow_neg Complex.cpow_neg
 
 theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x ^ z := by
@@ -113,64 +114,68 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 #align complex.cpow_neg_one Complex.cpow_neg_one
 
+-- Porting note: coudn't find a way to use `^` for the RHS
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = x ^ n
+theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = HPow.hPow x (n : ℕ)
   | 0 => by simp
   | n + 1 =>
     if hx : x = 0 then by
       simp only [hx, pow_succ, Complex.zero_cpow (Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)),
         MulZeroClass.zero_mul]
-    else by simp [cpow_add, hx, pow_add, cpow_nat_cast n]
+    else by simp [cpow_add, hx, pow_add, cpow_nat_cast x n]
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
 @[simp]
-theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ 2 := by
+theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = HPow.hPow x (2 : ℕ) := by
   rw [← cpow_nat_cast]
-  simp only [Nat.cast_bit0, Nat.cast_one]
+  simp only [Nat.cast_ofNat]
 #align complex.cpow_two Complex.cpow_two
 
+open Int in
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = x ^ n
+theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = HPow.hPow x n
   | (n : ℕ) => by simp
   | -[n+1] => by
-    rw [zpow_negSucc] <;>
-      simp only [Int.negSucc_coe, Int.cast_neg, Complex.cpow_neg, inv_eq_one_div, Int.cast_ofNat,
-        cpow_nat_cast]
+    rw [zpow_negSucc]
+    simp only [Int.negSucc_coe, Int.cast_neg, Complex.cpow_neg, inv_eq_one_div, Int.cast_ofNat,
+      cpow_nat_cast]
 #align complex.cpow_int_cast Complex.cpow_int_cast
 
-theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
-  suffices im (log x * n⁻¹) ∈ Ioc (-π) π by
+theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : HPow.hPow (x ^ (n⁻¹ : ℂ)) n = x := by
+  suffices im (log x * (n⁻¹ : ℂ)) ∈ Ioc (-π) π by
     rw [← cpow_nat_cast, ← cpow_mul _ this.1 this.2, inv_mul_cancel, cpow_one]
     exact_mod_cast hn
-  rw [mul_comm, ← of_real_nat_cast, ← of_real_inv, of_real_mul_im, ← div_eq_inv_mul]
+  rw [mul_comm, ← ofReal_nat_cast, ← ofReal_inv, ofReal_mul_im, ← div_eq_inv_mul]
   rw [← pos_iff_ne_zero] at hn
   have hn' : 0 < (n : ℝ) := by assumption_mod_cast
   have hn1 : 1 ≤ (n : ℝ) := by exact_mod_cast Nat.succ_le_iff.2 hn
   constructor
   · rw [lt_div_iff hn']
     calc
-      -π * n ≤ -π * 1 := mul_le_mul_of_nonpos_left hn1 (neg_nonpos.2 real.pi_pos.le)
+      -π * n ≤ -π * 1 := mul_le_mul_of_nonpos_left hn1 (neg_nonpos.2 Real.pi_pos.le)
       _ = -π := (mul_one _)
       _ < im (log x) := neg_pi_lt_log_im _
-      
+
   · rw [div_le_iff hn']
     calc
       im (log x) ≤ π := log_im_le_pi _
       _ = π * 1 := (mul_one π).symm
-      _ ≤ π * n := mul_le_mul_of_nonneg_left hn1 real.pi_pos.le
-      
+      _ ≤ π * n := mul_le_mul_of_nonneg_left hn1 Real.pi_pos.le
+
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
+
+-- TODO: should log_of_real_mul and of_real_log use ofReal in their names?
 
 theorem mul_cpow_of_real_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp only [cpow_zero, mul_one]
   rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [of_real_zero, MulZeroClass.zero_mul, zero_cpow hr, MulZeroClass.zero_mul]
+  · rw [ofReal_zero, MulZeroClass.zero_mul, zero_cpow hr, MulZeroClass.zero_mul]
   rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [of_real_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
-  have ha'' : (a : ℂ) ≠ 0 := of_real_ne_zero.mpr ha'.ne'
-  have hb'' : (b : ℂ) ≠ 0 := of_real_ne_zero.mpr hb'.ne'
+  · rw [ofReal_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
+  have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
+  have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
   rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_of_real_mul ha' hb'', of_real_log ha,
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
 #align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_of_real_nonneg
@@ -191,7 +196,7 @@ theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)�
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :
     (x ^ n)⁻¹ = if x.arg = π then conj (x⁻¹ ^ conj n) else x⁻¹ ^ n := by
   rw [inv_cpow_eq_ite, apply_ite conj, conj_conj, conj_conj]
-  split_ifs
+  split_ifs with h
   · rfl
   · rw [inv_cpow _ _ h]
 #align complex.inv_cpow_eq_ite' Complex.inv_cpow_eq_ite'
@@ -213,61 +218,60 @@ theorem cpow_conj (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x ^ conj n = conj (c
 
 end Complex
 
-section Tactics
+-- section Tactics
 
-/-!
-## Tactic extensions for complex powers
--/
+-- /-!
+-- ## Tactic extensions for complex powers
+-- -/
 
 
-namespace NormNum
+-- namespace NormNum
 
-theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by
-  rw [← h, hb, Complex.cpow_nat_cast]
-#align norm_num.cpow_pos NormNum.cpow_pos
+-- theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by
+--   rw [← h, hb, Complex.cpow_nat_cast]
+-- #align norm_num.cpow_pos NormNum.cpow_pos
 
-theorem cpow_neg (a b : ℂ) (b' : ℕ) (c c' : ℂ) (hb : b = b') (h : a ^ b' = c) (hc : c⁻¹ = c') :
-    a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_nat_cast]
-#align norm_num.cpow_neg NormNum.cpow_neg
+-- theorem cpow_neg (a b : ℂ) (b' : ℕ) (c c' : ℂ) (hb : b = b') (h : a ^ b' = c) (hc : c⁻¹ = c') :
+--     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_nat_cast]
+-- #align norm_num.cpow_neg NormNum.cpow_neg
 
-open Tactic
+-- open Tactic
 
-/-- Generalized version of `prove_cpow`, `prove_nnrpow`, `prove_ennrpow`. -/
-unsafe def prove_rpow' (pos neg zero : Name) (α β one a b : expr) : tactic (expr × expr) := do
-  let na ← a.to_rat
-  let icα ← mk_instance_cache α
-  let icβ ← mk_instance_cache β
-  match match_sign b with
-    | Sum.inl b => do
-      let nc ← mk_instance_cache q(ℕ)
-      let (icβ, nc, b', hb) ← prove_nat_uncast icβ nc b
-      let (icα, c, h) ← prove_pow a na icα b'
-      let cr ← c
-      let (icα, c', hc) ← prove_inv icα c cr
-      pure (c', (expr.const neg []).mk_app [a, b, b', c, c', hb, h, hc])
-    | Sum.inr ff => pure (one, expr.const zero [] a)
-    | Sum.inr tt => do
-      let nc ← mk_instance_cache q(ℕ)
-      let (icβ, nc, b', hb) ← prove_nat_uncast icβ nc b
-      let (icα, c, h) ← prove_pow a na icα b'
-      pure (c, (expr.const Pos []).mk_app [a, b, b', c, hb, h])
-#align norm_num.prove_rpow' norm_num.prove_rpow'
+-- /-- Generalized version of `prove_cpow`, `prove_nnrpow`, `prove_ennrpow`. -/
+-- unsafe def prove_rpow' (pos neg zero : Name) (α β one a b : expr) : tactic (expr × expr) := do
+--   let na ← a.to_rat
+--   let icα ← mk_instance_cache α
+--   let icβ ← mk_instance_cache β
+--   match match_sign b with
+--     | Sum.inl b => do
+--       let nc ← mk_instance_cache q(ℕ)
+--       let (icβ, nc, b', hb) ← prove_nat_uncast icβ nc b
+--       let (icα, c, h) ← prove_pow a na icα b'
+--       let cr ← c
+--       let (icα, c', hc) ← prove_inv icα c cr
+--       pure (c', (expr.const neg []).mk_app [a, b, b', c, c', hb, h, hc])
+--     | Sum.inr ff => pure (one, expr.const zero [] a)
+--     | Sum.inr tt => do
+--       let nc ← mk_instance_cache q(ℕ)
+--       let (icβ, nc, b', hb) ← prove_nat_uncast icβ nc b
+--       let (icα, c, h) ← prove_pow a na icα b'
+--       pure (c, (expr.const Pos []).mk_app [a, b, b', c, hb, h])
+-- #align norm_num.prove_rpow' norm_num.prove_rpow'
 
-/-- Evaluate `complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
-unsafe def prove_cpow : expr → expr → tactic (expr × expr) :=
-  prove_rpow' `` cpow_pos `` cpow_neg `` Complex.cpow_zero q(ℂ) q(ℂ) q((1 : ℂ))
-#align norm_num.prove_cpow norm_num.prove_cpow
+-- /-- Evaluate `complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- unsafe def prove_cpow : expr → expr → tactic (expr × expr) :=
+--   prove_rpow' `` cpow_pos `` cpow_neg `` Complex.cpow_zero q(ℂ) q(ℂ) q((1 : ℂ))
+-- #align norm_num.prove_cpow norm_num.prove_cpow
 
-/-- Evaluates expressions of the form `cpow a b` and `a ^ b` in the special case where
-`b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
-@[norm_num]
-unsafe def eval_cpow : expr → tactic (expr × expr)
-  | q(@Pow.pow _ _ Complex.hasPow $(a) $(b)) => b.to_int >> prove_cpow a b
-  | q(Complex.cpow $(a) $(b)) => b.to_int >> prove_cpow a b
-  | _ => tactic.failed
-#align norm_num.eval_cpow norm_num.eval_cpow
+-- /-- Evaluates expressions of the form `cpow a b` and `a ^ b` in the special case where
+-- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
+-- @[norm_num]
+-- unsafe def eval_cpow : expr → tactic (expr × expr)
+--   | q(@Pow.pow _ _ Complex.hasPow $(a) $(b)) => b.to_int >> prove_cpow a b
+--   | q(Complex.cpow $(a) $(b)) => b.to_int >> prove_cpow a b
+--   | _ => tactic.failed
+-- #align norm_num.eval_cpow norm_num.eval_cpow
 
-end NormNum
+-- end NormNum
 
-end Tactics
-
+-- end Tactics
