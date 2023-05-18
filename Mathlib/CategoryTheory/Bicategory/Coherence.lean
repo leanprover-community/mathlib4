@@ -8,10 +8,10 @@ Authors: Yuma Mizuno, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.PathCategory
-import Mathbin.CategoryTheory.Functor.FullyFaithful
-import Mathbin.CategoryTheory.Bicategory.Free
-import Mathbin.CategoryTheory.Bicategory.LocallyDiscrete
+import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Bicategory.Free
+import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
 # The coherence theorem for bicategories
@@ -81,8 +81,7 @@ as a prelax functor. This will be promoted to a pseudofunctor after proving the 
 See `inclusion`.
 -/
 def preinclusion (B : Type u) [Quiver.{v + 1} B] :
-    PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B)
-    where
+    PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) where
   obj := id
   map a b := (inclusionPath a b).obj
   zipWith a b f g η := (inclusionPath a b).map η
@@ -162,8 +161,7 @@ def normalizeIso {a : B} :
 `normalize_aux p f = normalize_aux p g`.
 -/
 theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
-    normalizeAux p f = normalizeAux p g :=
-  by
+    normalizeAux p f = normalizeAux p g := by
   rcases η with ⟨⟩
   apply @congr_fun _ _ fun p => normalize_aux p f
   clear p
@@ -179,8 +177,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).Hom =
       (normalizeIso p f).Hom ≫
-        (preinclusion B).zipWith (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) :=
-  by
+        (preinclusion B).zipWith (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
   rcases η with ⟨⟩; induction η
   case id => simp
   case
@@ -203,8 +200,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
 
 @[simp]
 theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
-    normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) :=
-  by
+    normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) := by
   induction g generalizing a
   case id => rfl
   case of => rfl
@@ -213,8 +209,7 @@ theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
 
 /-- The normalization pseudofunctor for the free bicategory on a quiver `B`. -/
 def normalize (B : Type u) [Quiver.{v + 1} B] :
-    Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B))
-    where
+    Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
   obj := id
   map a b f := ⟨normalizeAux nil f⟩
   zipWith a b f g η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
