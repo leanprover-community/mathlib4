@@ -693,58 +693,6 @@ lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁
 
 end Cochain
 
-/-namespace cochain
-
-variable {n}
-
-def lift_to_kernel' (z : cochain L G n) {i : F ⟶ G} {f : G ⟶ K} (hip : is_termwise_kernel i f)
-  (hz : cochain.comp z (of_hom f) (add_zero n).symm = 0) (p q : ℤ) (hpq : q=p+n):=
-kernel_fork.is_limit.lift' (hip.is_limit q) (z.v p q hpq)
-(by simpa only [comp_zero_cochain, of_hom_v] using congr_v hz p q hpq)
-
-def lift_to_kernel (z : cochain L G n) {i : F ⟶ G} {f : G ⟶ K} (hip : is_termwise_kernel i f)
-  (hz : cochain.comp z (of_hom f) (add_zero n).symm = 0) : cochain L F n :=
-cochain.mk (λ p q hpq, (lift_to_kernel' z hip hz p q hpq).1)
-
-@[simp]
-lemma lift_to_kernel_comp (z : cochain L G n) {i : F ⟶ G} {f : G ⟶ K} (hip : is_termwise_kernel i f)
-  (hz : cochain.comp z (of_hom f) (add_zero n).symm = 0) :
-  cochain.comp (z.lift_to_kernel hip hz) (cochain.of_hom i) (add_zero n).symm = z :=
-begin
-  ext,
-  simpa only [comp_v _ _ (add_zero n).symm p q q hpq (add_zero q).symm,
-    of_hom_v] using (lift_to_kernel' z hip hz p q hpq).2,
-end
-
-end cochain
-
-namespace cocycle
-
-variable {n}
-
-def lift_to_kernel (z : cocycle L G n) {i : F ⟶ G} {f : G ⟶ K} (hip : is_termwise_kernel i f)
-  (hz : cochain.comp (z : cochain L G n) (cochain.of_hom f) (add_zero n).symm = 0) :
-  cocycle L F n :=
-cocycle.mk (cochain.lift_to_kernel (z : cochain L G n) hip hz) _ rfl
-begin
-  suffices : δ n (n + 1) (cochain.comp
-    ((z : cochain L G n).lift_to_kernel hip hz) (cochain.of_hom i) (add_zero n).symm) = 0,
-  { ext,
-    haveI : mono (i.f q) := hip.termwise_mono q,
-    simpa only [← cancel_mono (i.f q), cochain.zero_v, zero_comp,
-      δ_comp_of_second_is_zero_cochain, δ_cochain_of_hom,
-      cochain.comp_zero, zero_add, cochain.comp_zero_cochain,
-      cochain.of_hom_v, cochain.zero_v] using cochain.congr_v this p q hpq, },
-  simp only [cochain.lift_to_kernel_comp, δ_eq_zero],
-end
-
-lemma lift_to_kernel_comp (z : cocycle L G n) {i : F ⟶ G} {f : G ⟶ K} (hip : is_termwise_kernel i f)
-  (hz : cochain.comp (z : cochain L G n) (cochain.of_hom f) (add_zero n).symm = 0) :
-  cochain.comp (lift_to_kernel z hip hz : cochain L F n) (cochain.of_hom i) (add_zero n).symm =
-  (z : cochain L G n) := by apply cochain.lift_to_kernel_comp
-
-end cocycle-/
-
 section
 
 variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)

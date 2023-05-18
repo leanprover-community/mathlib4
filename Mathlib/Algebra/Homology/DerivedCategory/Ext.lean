@@ -216,6 +216,28 @@ lemma γhsmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := b
   dsimp [newExt.ofHom, ShiftedHom.mk₀] at eq ⊢
   simp only [assoc, Functor.map_comp, reassoc_of% eq, zero_comp]
 
+lemma covariant_newExt_exact₁ {A : C} {n₁ : ℕ}
+    (x₁ : newExt A S.X₁ n₁) (hx₁ : (newExt.ofHom S.f) •[zero_add n₁] x₁ = 0)
+    (n₀ : ℕ) (h : 1 + n₀ = n₁) :
+    ∃ (x₃ : newExt A S.X₃ n₀), x₁ = hS.extClass •[h] x₃ := by
+  have h' : 1 + (n₀ : ℤ) = n₁ := by rw [← h, Nat.cast_add, Nat.cast_one]
+  have h'' : (n₀ : ℤ) + 1 = n₁ := by rw [← h', add_comm 1]
+  obtain ⟨y₃, hy₃⟩ := covariant_yoneda_exact₁ _
+    (shift_distinguished _ hS.singleTriangle_distinguished n₀)
+    (x₁.hom ≫ (shiftFunctorAdd' (DerivedCategory C) _ _ _ h'').hom.app _) (by
+      simp only [newExt.ext_iff, newExt.γhsmul_hom, newExt.ofHom,
+        ShiftedHom.mk₀_γhsmul, newExt.zero_hom] at hx₁
+      dsimp [Triangle.shiftFunctor]
+      simp only [assoc, Functor.map_zsmul, comp_zsmul]
+      erw [← NatTrans.naturality, reassoc_of% hx₁, zero_comp, zsmul_zero])
+  refine' ⟨CochainComplex.ε n₀ • newExt.mk y₃, _⟩
+  apply newExt.hom_injective
+  dsimp at hy₃
+  simp only [newExt.γhsmul_hom, extClass, ShiftedHom.γhsmul_eq, newExt.zsmul_hom]
+  rw [zsmul_comp, ← cancel_mono ((shiftFunctorAdd' (DerivedCategory C) _ _ _ h'').hom.app _), hy₃,
+    comp_zsmul, zsmul_comp, assoc, assoc,
+    shiftFunctorComm_eq _ _ _ _ h', Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app]
+  rfl
 lemma covariant_newExt_exact₂ {A : C} {n : ℕ}
     (x₂ : newExt A S.X₂ n) (hx₂ : (newExt.ofHom S.g) •[zero_add n] x₂ = 0) :
     ∃ (x₁ : newExt A S.X₁ n), x₂ = (newExt.ofHom S.f) •[zero_add n] x₁ := by
@@ -231,6 +253,74 @@ lemma covariant_newExt_exact₂ {A : C} {n : ℕ}
     ShiftedHom.γhsmul_zsmul, newExt.ofHom, ShiftedHom.mk₀_γhsmul,
     hy₁, Triangle.shiftFunctor_obj, comp_zsmul, Triangle.mk_mor₁,
     singleTriangle_mor₁]
+
+lemma covariant_newExt_exact₃ {A : C} {n₀ : ℕ}
+    (x₃ : newExt A S.X₃ n₀) (n₁ : ℕ) (h : 1 + n₀ = n₁)
+    (hx₃ : hS.extClass •[h] x₃ = 0) :
+    ∃ (x₂ : newExt A S.X₂ n₀), x₃ = (newExt.ofHom S.g) •[zero_add n₀] x₂ := by
+  obtain ⟨y₂, hy₂⟩ := covariant_yoneda_exact₃ _
+    (shift_distinguished _ hS.singleTriangle_distinguished n₀) x₃.hom (by
+      simp only [newExt.ext_iff, newExt.γhsmul_hom, extClass,
+        ShiftedHom.γhsmul_eq, newExt.zero_hom, ← assoc] at hx₃
+      rw [IsIso.comp_right_eq_zero] at hx₃
+      dsimp [Triangle.shiftFunctor]
+      simp only [comp_zsmul, reassoc_of% hx₃, zero_comp, zsmul_zero])
+  refine' ⟨CochainComplex.ε n₀ • newExt.mk y₂, _⟩
+  apply newExt.hom_injective
+  simp only [newExt.γhsmul_hom, newExt.zsmul_hom, newExt.ofHom, ShiftedHom.mk₀_γhsmul,
+    hy₂, Triangle.shiftFunctor_obj, Triangle.mk_mor₂, singleTriangle_mor₂,
+    comp_zsmul]
+  rw [zsmul_comp]
+
+/- Note: the right multiplication with `hS.extClass` presumably corresponds to the connecting
+homomorphism only up to a sign. -/
+
+lemma contravariant_newExt_exact₁ {B : C} {n₀ : ℕ}
+    (x₁ : newExt S.X₁ B n₀) (n₁ : ℕ) (h : n₀ + 1 = n₁)
+    (hx₁ : x₁ •[h] hS.extClass = 0) :
+    ∃ (x₂ : newExt S.X₂ B n₀), x₁ = x₂ •[add_zero n₀] (newExt.ofHom S.f) := by
+  obtain ⟨x₂, hx₂⟩ := contravariant_yoneda_exact₂ _
+    (inv_rot_of_dist_triangle _ hS.singleTriangle_distinguished) x₁.hom (by
+      apply (shiftFunctor (DerivedCategory C) (1 : ℤ)).map_injective
+      simp only [newExt.ext_iff, newExt.zero_hom, newExt.γhsmul_hom, extClass,
+        ShiftedHom.γhsmul_eq] at hx₁
+      rw [← assoc, IsIso.comp_right_eq_zero] at hx₁
+      dsimp at hx₁ ⊢
+      simp only [Functor.map_comp, Functor.map_neg, Functor.map_zero, neg_comp, assoc,
+        neg_eq_zero, shift_neg_shift', IsIso.comp_left_eq_zero,
+        shift_shiftFunctorCompIsoId_add_neg_self_hom_app, Iso.inv_hom_id_app_assoc, hx₁])
+  refine' ⟨newExt.mk x₂, _⟩
+  apply newExt.hom_injective
+  simp only [newExt.γhsmul_hom, newExt.ofHom, ShiftedHom.γhsmul_mk₀, hx₂,
+    Triangle.invRotate_mor₂, singleTriangle_mor₁]
+
+lemma contravariant_newExt_exact₂ {B : C} {n : ℕ}
+    (x₂ : newExt S.X₂ B n) (hx₂ : x₂ •[add_zero n] (newExt.ofHom S.f) = 0) :
+    ∃ (x₃ : newExt S.X₃ B n), x₂ = x₃ •[add_zero n] (newExt.ofHom S.g) := by
+  obtain ⟨y₃, hy₃⟩ := contravariant_yoneda_exact₂ _ hS.singleTriangle_distinguished x₂.hom (by
+    simpa only [newExt.ext_iff, newExt.γhsmul_hom, newExt.ofHom,
+      ShiftedHom.γhsmul_mk₀, newExt.zero_hom] using hx₂)
+  refine' ⟨newExt.mk y₃, _⟩
+  apply newExt.hom_injective
+  dsimp at hy₃
+  simp only [newExt.γhsmul_hom, hy₃, newExt.ofHom, ShiftedHom.γhsmul_mk₀]
+
+lemma contravariant_newExt_exact₃ {B : C} {n₁ : ℕ}
+    (x₃ : newExt S.X₃ B n₁) (hx₃ : x₃ •[add_zero n₁] (newExt.ofHom S.g) = 0)
+    (n₀ : ℕ) (h : n₀ + 1 = n₁) :
+    ∃ (x₁ : newExt S.X₁ B n₀), x₃ = x₁ •[h] hS.extClass := by
+  have h' : (n₀ : ℤ) + 1 = n₁ := by rw [← h, Nat.cast_add, Nat.cast_one]
+  obtain ⟨y₁, hy₁⟩ := contravariant_yoneda_exact₃ _ hS.singleTriangle_distinguished x₃.hom (by
+    simpa only [newExt.ext_iff, newExt.γhsmul_hom, newExt.ofHom,
+      ShiftedHom.γhsmul_mk₀, newExt.zero_hom] using hx₃)
+  obtain ⟨x₁, rfl⟩ : ∃ (x₁ : (singleFunctor C 0).obj S.X₁ ⟶ ((singleFunctor C 0).obj B)⟦(n₀ : ℤ)⟧),
+      y₁ = x₁⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' (DerivedCategory C) _ _ _ h').inv.app _ :=
+    ⟨(shiftFunctor (DerivedCategory C) (1 : ℤ)).preimage
+      (y₁ ≫ (shiftFunctorAdd' (DerivedCategory C) _ _ _ h').hom.app _), by simp⟩
+  refine' ⟨newExt.mk x₁, _⟩
+  apply newExt.hom_injective
+  simp only [newExt.γhsmul_hom, ShiftedHom.γhsmul_eq, extClass]
+  exact hy₁
 
 end ShortExact
 
