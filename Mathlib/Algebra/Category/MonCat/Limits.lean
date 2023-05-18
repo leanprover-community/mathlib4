@@ -47,10 +47,10 @@ instance monoidObj (F : J ⥤ MonCatMax.{u,v} ) (j) : Monoid ((F ⋙ forget MonC
 #align Mon.monoid_obj MonCat.monoidObj
 #align AddMon.add_monoid_obj AddMonCat.addMonoidObj
 
-/-- The flat sections of a functor into `Mon` form a submonoid of all sections.
+/-- The flat sections of a functor into `MonCat` form a submonoid of all sections.
 -/
 @[to_additive
-      "The flat sections of a functor into `AddMon` form an additive submonoid of all sections."]
+      "The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections."]
 def sectionsSubmonoid (F : J ⥤ MonCatMax.{u,v}) : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
@@ -81,10 +81,10 @@ def limitπMonoidHom (F : J ⥤ MonCatMax.{u, v}) (j : J) :
 
 namespace HasLimits
 
--- The next two definitions are used in the construction of `has_limits Mon`.
+-- The next two definitions are used in the construction of `HasLimits MonCat`.
 -- After that, the limits should be constructed using the generic limits API,
--- e.g. `limit F`, `limit.cone F`, and `limit.is_limit F`.
-/-- Construction of a limit cone in `Mon`.
+-- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
+/-- Construction of a limit cone in `MonCat`.
 (Internal use only; use the limits API.)
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
@@ -98,7 +98,7 @@ def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
 #align Mon.has_limits.limit_cone MonCat.HasLimits.limitCone
 #align AddMon.has_limits.limit_cone AddMonCat.HasLimits.limitCone
 
-/-- Witness that the limit cone in `Mon` is a limit cone.
+/-- Witness that the limit cone in `MonCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
@@ -177,12 +177,12 @@ instance limitCommMonoid (F : J ⥤ CommMonCatMax.{u,v}) :
 #align CommMon.limit_comm_monoid CommMonCat.limitCommMonoid
 #align AddCommMon.limit_add_comm_monoid AddCommMonCat.limitAddCommMonoid
 
-/-- We show that the forgetful functor `CommMon ⥤ Mon` creates limits.
+/-- We show that the forgetful functor `CommMonCat ⥤ MonCat` creates limits.
 
-All we need to do is notice that the limit point has a `comm_monoid` instance available,
+All we need to do is notice that the limit point has a `CommMonoid` instance available,
 and then reuse the existing limit. -/
-@[to_additive "We show that the forgetful functor `AddCommMon ⥤ AddMon` creates limits.\n\n
-All we need to do is notice that the limit point has an `add_comm_monoid` instance available,\n
+@[to_additive "We show that the forgetful functor `AddCommMonCat ⥤ AddMonCat` creates limits.\n\n
+All we need to do is notice that the limit point has an `AddCommMonoid` instance available,\n
 and then reuse the existing limit."]
 instance forget₂CreatesLimit (F : J ⥤ CommMonCatMax.{u,v}) :
     CreatesLimit F (forget₂ CommMonCat MonCatMax.{u, v}) :=
@@ -199,11 +199,11 @@ instance forget₂CreatesLimit (F : J ⥤ CommMonCatMax.{u,v}) :
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{max v u})
           (MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
 
-/-- A choice of limit cone for a functor into `CommMon`.
+/-- A choice of limit cone for a functor into `CommMonCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-@[to_additive "A choice of limit cone for a functor into `AddCommMon`. (Generally, you'll just want
-to use `limit F`.)"]
+@[to_additive "A choice of limit cone for a functor into `AddCommMonCat`.
+(Generally, you'll just want to use `limit F`.)"]
 def limitCone (F : J ⥤ CommMonCatMax.{u,v}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v}))
 #align CommMon.limit_cone CommMonCat.limitCone
