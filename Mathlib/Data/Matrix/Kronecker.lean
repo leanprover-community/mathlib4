@@ -292,12 +292,12 @@ def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
 hypotheses which can be filled by properties of `*`. -/
 
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem zero_kronecker [MulZeroClass α] (B : Matrix n p α) : (0 : Matrix l m α) ⊗ₖ B = 0 :=
   kroneckerMap_zero_left _ MulZeroClass.zero_mul B
 #align matrix.zero_kronecker Matrix.zero_kronecker
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem kronecker_zero [MulZeroClass α] (A : Matrix l m α) : A ⊗ₖ (0 : Matrix n p α) = 0 :=
   kroneckerMap_zero_right _ MulZeroClass.mul_zero A
 #align matrix.kronecker_zero Matrix.kronecker_zero
@@ -338,7 +338,7 @@ theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B :
   kroneckerMap_diagonal_left _ MulZeroClass.zero_mul _ _
 #align matrix.diagonal_kronecker Matrix.diagonal_kronecker
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
     (1 : Matrix m m α) ⊗ₖ (1 : Matrix n n α) = 1 :=
   kroneckerMap_one_one _ MulZeroClass.zero_mul MulZeroClass.mul_zero (one_mul _)
@@ -362,11 +362,17 @@ theorem mul_kronecker_mul [Fintype m] [Fintype m'] [CommSemiring α] (A : Matrix
   kroneckerMapBilinear_mul_mul (Algebra.lmul ℕ α).toLinearMap mul_mul_mul_comm A B A' B'
 #align matrix.mul_kronecker_mul Matrix.mul_kronecker_mul
 
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `kronecker_assoc'`
 theorem kronecker_assoc [Semigroup α] (A : Matrix l m α) (B : Matrix n p α) (C : Matrix q r α) :
     reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r) (A ⊗ₖ B ⊗ₖ C) = A ⊗ₖ (B ⊗ₖ C) :=
   kroneckerMap_assoc₁ _ _ _ _ A B C mul_assoc
 #align matrix.kronecker_assoc Matrix.kronecker_assoc
+
+@[simp]
+theorem kronecker_assoc' [Semigroup α] (A : Matrix l m α) (B : Matrix n p α) (C : Matrix q r α) :
+    submatrix (A ⊗ₖ B ⊗ₖ C) (Equiv.prodAssoc l n q).symm (Equiv.prodAssoc m p r).symm =
+    A ⊗ₖ (B ⊗ₖ C) :=
+  kroneckerMap_assoc₁ _ _ _ _ A B C mul_assoc
 
 theorem trace_kronecker [Fintype m] [Fintype n] [Semiring α] (A : Matrix m m α) (B : Matrix n n α) :
     trace (A ⊗ₖ B) = trace A * trace B :=
@@ -458,12 +464,12 @@ def kroneckerTMulBilinear :
 hypotheses which can be filled by properties of `⊗ₜ`. -/
 
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem zero_kroneckerTMul (B : Matrix n p β) : (0 : Matrix l m α) ⊗ₖₜ[R] B = 0 :=
   kroneckerMap_zero_left _ (zero_tmul α) B
 #align matrix.zero_kronecker_tmul Matrix.zero_kroneckerTMul
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem kroneckerTMul_zero (A : Matrix l m α) : A ⊗ₖₜ[R] (0 : Matrix n p β) = 0 :=
   kroneckerMap_zero_right _ (tmul_zero β) A
 #align matrix.kronecker_tmul_zero Matrix.kroneckerTMul_zero
@@ -505,13 +511,19 @@ theorem diagonal_kroneckerTMul [DecidableEq l] (a : l → α) (B : Matrix m n α
   kroneckerMap_diagonal_left _ (zero_tmul _) _ _
 #align matrix.diagonal_kronecker_tmul Matrix.diagonal_kroneckerTMul
 
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `kroneckerTMul_assoc'`
 theorem kroneckerTMul_assoc (A : Matrix l m α) (B : Matrix n p β) (C : Matrix q r γ) :
     reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r)
         (((A ⊗ₖₜ[R] B) ⊗ₖₜ[R] C).map (TensorProduct.assoc R α β γ)) =
       A ⊗ₖₜ[R] B ⊗ₖₜ[R] C :=
   ext fun _ _ => assoc_tmul _ _ _
 #align matrix.kronecker_tmul_assoc Matrix.kroneckerTMul_assoc
+
+@[simp]
+theorem kroneckerTMul_assoc' (A : Matrix l m α) (B : Matrix n p β) (C : Matrix q r γ) :
+    submatrix (((A ⊗ₖₜ[R] B) ⊗ₖₜ[R] C).map (TensorProduct.assoc R α β γ))
+      (Equiv.prodAssoc l n q).symm (Equiv.prodAssoc m p r).symm = A ⊗ₖₜ[R] B ⊗ₖₜ[R] C :=
+  ext fun _ _ => assoc_tmul _ _ _
 
 theorem trace_kroneckerTMul [Fintype m] [Fintype n] (A : Matrix m m α) (B : Matrix n n β) :
     trace (A ⊗ₖₜ[R] B) = trace A ⊗ₜ[R] trace B :=
@@ -565,3 +577,5 @@ end Algebra
 end KroneckerTmul
 
 end Matrix
+
+#lint
