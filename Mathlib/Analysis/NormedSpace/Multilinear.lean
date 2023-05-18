@@ -1956,7 +1956,7 @@ theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
 ContinuousMultilinearMap.curryFinFinset_symm_apply
 
 set_option synthInstance.maxHeartbeats 50000 in
-@[simp]
+-- @[simp] -- porting note: simp removed: simp can reduce LHS
 theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
@@ -1975,7 +1975,7 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
 ContinuousMultilinearMap.curryFinFinset_symm_apply_const
 
 set_option synthInstance.maxHeartbeats 50000 in
-@[simp]
+-- @[simp] -- porting note: simp removed: simp can reduce LHS
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
