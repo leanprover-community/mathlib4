@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Data.Complex.Determinant
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Data.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 
