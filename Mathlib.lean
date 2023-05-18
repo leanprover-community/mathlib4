@@ -67,6 +67,7 @@ import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
@@ -444,6 +445,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Polynomials
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
@@ -1551,6 +1553,7 @@ import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -1582,6 +1585,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
@@ -1664,6 +1668,7 @@ import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
+import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.PellMatiyasevic
@@ -1819,6 +1824,7 @@ import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
@@ -2112,6 +2118,7 @@ import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.Topology.Category.Top.Limits.Pullbacks
 import Mathlib.Topology.Category.Top.OpenNhds
 import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
