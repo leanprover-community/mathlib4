@@ -124,7 +124,9 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
     Pi.smul_def]
   convert Finset.sum_product (β := Matrix n n A)
   conv_lhs => rw [matrix_eq_sum_std_basis M]
-  simp [stdBasisMatrix]
+  refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
+  simp only [stdBasisMatrix, smul_apply, Matrix.map_apply]
+  split_ifs <;> aesop
 #align matrix_equiv_tensor.right_inv MatrixEquivTensor.right_inv
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by
