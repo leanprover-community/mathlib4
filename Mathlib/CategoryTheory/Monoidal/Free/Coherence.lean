@@ -114,6 +114,7 @@ open Hom
 -- porting note: triggers a PANIC "invalid LCNF substitution of free variable
 -- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
 -- prevented with dsimp [normalizeObj]
+-- the @[simp] attribute is removed because it also triggers a PANIC
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
 --@[simp]
@@ -244,19 +245,23 @@ set_option maxHeartbeats 400000 in
     of our proof of the coherence theorem. -/
 def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
-    (by
+    (by -- porting note: the proof has been mostly rewritten
       rintro X Y f
       induction' f using Quotient.recOn with f ; swap ; rfl
-      induction' f with _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
+      induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
       . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
       . ext n
         dsimp
         rw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
-        simp only [id_tensor_associator_inv_naturality_assoc, ← pentagon_inv_assoc,
-          tensorHom_inv_id_assoc, tensor_id, Category.id_comp, Category.comp_id,
-          comp_tensor_id, Category.assoc]
-
+        simp only [comp_tensor_id, associator_conjugation, tensor_id,
+          Category.comp_id]
+        simp only [← Category.assoc]
+        congr 4
+        simp only [Category.assoc, ← cancel_epi (𝟙 (inclusionObj n.as) ⊗ (α_ X₁ X₂ X₃).inv),
+          pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃,
+          tensor_inv_hom_id_assoc, tensor_id, Category.id_comp, Iso.inv_hom_id,
+          Category.comp_id]
       . ext n
         dsimp
         rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
@@ -282,16 +287,14 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         rw [mk_ρ_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.inv_comp_eq _).2 (rightUnitor_tensor _ _), Category.assoc,
-          ← rightUnitor_naturality, Category.comp_id]; rfl -- Porting note: added rfl
+          ← rightUnitor_naturality, Category.comp_id]; rfl
       . ext n
         dsimp
         rw [mk_ρ_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
-          Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id]
-        -- Porting note: added last two lines
-        dsimp [Discrete.functor]
-        simp only [Category.comp_id, Iso.inv_hom_id]
+          Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
+          Discrete.functor, Category.comp_id, Function.comp]
       . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
       . ext ⟨n⟩
         replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
@@ -312,7 +315,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         congr 2
         erw [← reassoc_of% h₂]
         rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
-        rfl ) -- Porting note: added rfl
+        rfl )
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
