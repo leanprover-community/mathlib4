@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Completion
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Topology.Algebra.UniformRing
+import Mathlib.Analysis.Normed.Group.Completion
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Normed space structure on the completion of a normed space
@@ -104,8 +104,7 @@ instance [SeminormedRing A] : NormedRing (Completion A) :=
 instance [SeminormedCommRing A] [NormedAlgebra 𝕜 A] [UniformContinuousConstSMul 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) :=
   { Completion.algebra A 𝕜 with
-    norm_smul_le := fun r x =>
-      by
+    norm_smul_le := fun r x => by
       apply completion.induction_on x <;> clear x
       ·
         exact
