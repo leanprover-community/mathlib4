@@ -64,7 +64,8 @@ structure PreOpposite (α : Type u) : Type u where
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication.-/
 @[to_additive
-      "Additive opposite of a type. This type inherits all multiplicative structures on\n`α` and reverses left and right in addition."]
+      "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
+      reverses left and right in addition."]
 def MulOpposite (α : Type u) : Type u :=
   PreOpposite α
 #align mul_opposite MulOpposite
