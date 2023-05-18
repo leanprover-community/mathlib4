@@ -108,6 +108,11 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
   rfl
 #align continuous_multilinear_map.coe_coe ContinuousMultilinearMap.coe_coe
 
+@[simp]
+theorem coe_mk (f : MultilinearMap R M₁ M₂) (h) :
+    ⇑(⟨f, h⟩ : ContinuousMultilinearMap R M₁ M₂) = f :=
+  rfl
+
 @[ext]
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
   FunLike.ext _ _ H
