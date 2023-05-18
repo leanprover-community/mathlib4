@@ -113,24 +113,27 @@ open Hom
 
 -- porting note: triggers a PANIC "invalid LCNF substitution of free variable
 -- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
--- prevented with dsimp [normalizeObj]
+-- prevented with an initial call to dsimp...why?
 -- the @[simp] attribute is removed because it also triggers a PANIC
+-- `PANIC at _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
+-- Lean.Meta.Match.MatchEqs:167:2: assertion violation: (
+-- __do_lift._@.Lean.Meta.Match.MatchEqs._hyg.2199.0 ).xs.contains rhs`
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
---@[simp]
+-- @[simp]
 def normalizeMapAux :
     ∀ {X Y : F C}, (X ⟶ᵐ Y) →
       ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
-  | _, _, α_hom X Y Z => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, α_inv _ _ _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_hom _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_inv _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_hom _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_inv _ => by dsimp [normalizeObj]; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, l_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) => by
-    dsimp [normalizeObj]
+    dsimp
     exact Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
