@@ -8,8 +8,8 @@ Authors: Kenny Lau, Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Quotient
-import Mathbin.RingTheory.Polynomial.Quotient
+import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Jacobson radical
@@ -143,8 +143,7 @@ theorem exists_mul_sub_mem_of_sub_one_mem_jacobson {I : Ideal R} (r : R) (h : r 
 /-- An ideal equals its Jacobson radical iff it is the intersection of a set of maximal ideals.
 Allowing the set to include ⊤ is equivalent, and is included only to simplify some proofs. -/
 theorem eq_jacobson_iff_sInf_maximal :
-    I.jacobson = I ↔ ∃ M : Set (Ideal R), (∀ J ∈ M, IsMaximal J ∨ J = ⊤) ∧ I = sInf M :=
-  by
+    I.jacobson = I ↔ ∃ M : Set (Ideal R), (∀ J ∈ M, IsMaximal J ∨ J = ⊤) ∧ I = sInf M := by
   use fun hI => ⟨{ J : Ideal R | I ≤ J ∧ J.IsMaximal }, ⟨fun _ hJ => Or.inl hJ.right, hI.symm⟩⟩
   rintro ⟨M, hM, hInf⟩
   refine' le_antisymm (fun x hx => _) le_jacobson
@@ -176,8 +175,7 @@ theorem eq_jacobson_iff_sInf_maximal' :
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`
 also lies outside of a maximal ideal containing `I`. -/
 theorem eq_jacobson_iff_not_mem :
-    I.jacobson = I ↔ ∀ (x) (_ : x ∉ I), ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M :=
-  by
+    I.jacobson = I ↔ ∀ (x) (_ : x ∉ I), ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
   constructor
   · intro h x hx
     erw [← h, mem_Inf] at hx
@@ -191,8 +189,7 @@ theorem eq_jacobson_iff_not_mem :
 #align ideal.eq_jacobson_iff_not_mem Ideal.eq_jacobson_iff_not_mem
 
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
-    RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson :=
-  by
+    RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, f.ker ≤ J := fun J hJ => le_trans h hJ.left
@@ -221,8 +218,7 @@ theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
 #align ideal.comap_jacobson Ideal.comap_jacobson
 
 theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) {K : Ideal S} :
-    comap f K.jacobson = (comap f K).jacobson :=
-  by
+    comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
   refine' le_antisymm _ _
   · refine' le_trans (comap_mono (le_of_eq (trans top_inf_eq.symm Inf_insert.symm))) _
@@ -245,8 +241,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective
 
 @[mono]
-theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
-  by
+theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
   erw [mem_Inf] at hx⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨trans h hK, hK_max⟩
@@ -287,8 +282,7 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
-    I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ :=
-  by
+    I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Quotient.mk' I) := Submodule.Quotient.mk_surjective I
   constructor
   · intro h
@@ -304,8 +298,7 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
-    I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ :=
-  by
+    I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Quotient.mk' I) := Submodule.Quotient.mk_surjective I
   constructor
   · intro h
@@ -337,13 +330,11 @@ open Polynomial
 variable [CommRing R]
 
 theorem jacobson_bot_polynomial_le_sInf_map_maximal :
-    jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) :=
-  by
+    jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by
   refine' le_sInf fun J => exists_imp.2 fun j hj => _
   haveI : j.is_maximal := hj.1
   refine' trans (jacobson_mono bot_le) (le_of_eq _ : J.jacobson ≤ J)
-  suffices (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥
-    by
+  suffices (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
     rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]
     replace this := congr_arg (map (polynomial_quotient_equiv_quotient_polynomial j).toRingHom) this
     rwa [map_jacobson_of_bijective _, map_bot] at this
@@ -354,8 +345,7 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
 #align ideal.jacobson_bot_polynomial_le_Inf_map_maximal Ideal.jacobson_bot_polynomial_le_sInf_map_maximal
 
 theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
-    jacobson (⊥ : Ideal R[X]) = ⊥ :=
-  by
+    jacobson (⊥ : Ideal R[X]) = ⊥ := by
   refine' eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_Inf_map_maximal _)
   refine' fun f hf => (Submodule.mem_bot _).2 (Polynomial.ext fun n => trans _ (coeff_zero n).symm)
   suffices f.coeff n ∈ Ideal.jacobson ⊥ by rwa [h, Submodule.mem_bot] at this
