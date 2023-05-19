@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Adjugate
-import Mathbin.RingTheory.PolynomialAlgebra
-import Mathbin.Tactic.ApplyFun
-import Mathbin.Tactic.Squeeze
+import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Squeeze
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -71,8 +71,7 @@ theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
     map_apply, DMatrix.sub_apply]
 #align charmatrix_apply_ne charmatrix_apply_ne
 
-theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M :=
-  by
+theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
   ext (k i j)
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
@@ -85,8 +84,7 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
 #align mat_poly_equiv_charmatrix matPolyEquiv_charmatrix
 
 theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
-    charmatrix (reindex e e M) = reindex e e (charmatrix M) :=
-  by
+    charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext (i j x)
   by_cases h : i = j
   all_goals simp [h]
@@ -99,8 +97,7 @@ def Matrix.charpoly (M : Matrix n n R) : R[X] :=
 #align matrix.charpoly Matrix.charpoly
 
 theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
-    (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly :=
-  by
+    (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
 #align matrix.charpoly_reindex Matrix.charpoly_reindex
@@ -113,8 +110,7 @@ This holds over any commutative ring.
 
 See `linear_map.aeval_self_charpoly` for the equivalent statement about endomorphisms.
 -/
-theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :=
-  by
+theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- We begin with the fact $χ_M(t) I = adjugate (t I - M) * (t I - M)$,
   -- as an identity in `matrix n n R[X]`.
   have h : M.charpoly • (1 : Matrix n n R[X]) = adjugate (charmatrix M) * charmatrix M :=
