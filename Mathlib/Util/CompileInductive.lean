@@ -178,6 +178,8 @@ compile_inductive% Nat
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty
+compile_inductive% Sum
+compile_inductive% PSum
 compile_inductive% And
 compile_inductive% False
 compile_inductive% Empty

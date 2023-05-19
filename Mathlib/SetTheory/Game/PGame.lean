@@ -113,9 +113,7 @@ open Function Relation
 inductive PGame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → PGame) → (β → PGame) → PGame
 #align pgame PGame
-
--- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
-noncomputable section
+compile_inductive% PGame
 
 namespace PGame
 
