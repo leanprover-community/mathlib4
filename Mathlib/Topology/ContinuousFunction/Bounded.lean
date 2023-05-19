@@ -38,9 +38,9 @@ variable {F : Type _} {α : Type u} {β : Type v} {γ : Type w}
 metric space.
 
 When possible, instead of parametrizing results over `(f : α →ᵇ β)`,
-you should parametrize over `(F : Type*) [bounded_continuous_map_class F α β] (f : F)`.
+you should parametrize over `(F : Type _) [BoundedContinuousMapClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `bounded_continuous_map_class`. -/
+When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
   [PseudoMetricSpace β] extends ContinuousMap α β : Type max u v where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
@@ -52,9 +52,9 @@ scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunct
 section
 
 -- Porting note: Changed type of `α β` from `Type _` to `outParam <| Type _`.
-/-- `bounded_continuous_map_class F α β` states that `F` is a type of bounded continuous maps.
+/-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
-You should also extend this typeclass when you extend `bounded_continuous_function`. -/
+You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
 class BoundedContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
     [PseudoMetricSpace β] extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
@@ -81,7 +81,7 @@ instance : BoundedContinuousMapClass (α →ᵇ β) α β where
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (α →ᵇ β) fun _ => α → β :=
   FunLike.hasCoeToFun
@@ -151,14 +151,14 @@ theorem mkOfCompact_apply [CompactSpace α] (f : C(α, β)) (a : α) : mkOfCompa
 #align bounded_continuous_function.mk_of_compact_apply BoundedContinuousFunction.mkOfCompact_apply
 
 /-- If a function is bounded on a discrete space, it is automatically continuous,
-and therefore gives rise to an element of the type of bounded continuous functions -/
+and therefore gives rise to an element of the type of bounded continuous functions. -/
 @[simps]
 def mkOfDiscrete [DiscreteTopology α] (f : α → β) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) :
     α →ᵇ β :=
   ⟨⟨f, continuous_of_discreteTopology⟩, ⟨C, h⟩⟩
 #align bounded_continuous_function.mk_of_discrete BoundedContinuousFunction.mkOfDiscrete
 
-/-- The uniform distance between two bounded continuous functions -/
+/-- The uniform distance between two bounded continuous functions. -/
 instance : Dist (α →ᵇ β) :=
   ⟨fun f g => sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C }⟩
 
@@ -184,7 +184,7 @@ in metric spaces. -/
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
 
-/-- The distance between two functions is controlled by the supremum of the pointwise distances -/
+/-- The distance between two functions is controlled by the supremum of the pointwise distances. -/
 theorem dist_le (C0 : (0 : ℝ) ≤ C) : dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C :=
   ⟨fun h x => le_trans (dist_coe_le_dist x) h, fun H => csInf_le ⟨0, fun _ => And.left⟩ ⟨C0, H⟩⟩
 #align bounded_continuous_function.dist_le BoundedContinuousFunction.dist_le
@@ -253,7 +253,7 @@ theorem nndist_coe_le_nndist (x : α) : nndist (f x) (g x) ≤ nndist f g :=
   dist_coe_le_dist x
 #align bounded_continuous_function.nndist_coe_le_nndist BoundedContinuousFunction.nndist_coe_le_nndist
 
-/-- On an empty space, bounded continuous functions are at distance 0 -/
+/-- On an empty space, bounded continuous functions are at distance 0. -/
 theorem dist_zero_of_empty [IsEmpty α] : dist f g = 0 := by
   rw [(ext isEmptyElim : f = g), dist_self]
 #align bounded_continuous_function.dist_zero_of_empty BoundedContinuousFunction.dist_zero_of_empty
@@ -294,7 +294,7 @@ theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) �
   rfl
 #align bounded_continuous_function.inducing_coe_fn BoundedContinuousFunction.inducing_coeFn
 
--- TODO: upgrade to a `uniform_embedding`
+-- TODO: upgrade to a `UniformEmbedding`
 theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
 #align bounded_continuous_function.embedding_coe_fn BoundedContinuousFunction.embedding_coeFn
@@ -313,7 +313,7 @@ theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b :=
   rfl
 #align bounded_continuous_function.const_apply' BoundedContinuousFunction.const_apply'
 
-/-- If the target space is inhabited, so is the space of bounded continuous functions -/
+/-- If the target space is inhabited, so is the space of bounded continuous functions. -/
 instance [Inhabited β] : Inhabited (α →ᵇ β) :=
   ⟨const α default⟩
 
@@ -329,13 +329,13 @@ theorem continuous_coe : Continuous fun (f : α →ᵇ β) x => f x :=
   UniformContinuous.continuous uniformContinuous_coe
 #align bounded_continuous_function.continuous_coe BoundedContinuousFunction.continuous_coe
 
-/-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous -/
+/-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
 @[continuity]
 theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x :=
   (continuous_apply x).comp continuous_coe
 #align bounded_continuous_function.continuous_eval_const BoundedContinuousFunction.continuous_eval_const
 
-/-- The evaluation map is continuous, as a joint function of `u` and `x` -/
+/-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
 @[continuity]
 theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
   (continuous_prod_of_continuous_lipschitz _ 1 fun f => f.continuous) <| lipschitz_evalx
@@ -352,8 +352,8 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
     have fx_cau : ∀ x, CauchySeq fun n => f n x := fun x =>
       cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
     choose F hF using fun x => cauchySeq_tendsto_of_complete (fx_cau x)
-    /- F : α → β,  hF : ∀ (x : α), tendsto (λ (n : ℕ), f n x) at_top (𝓝 (F x))
-      `F` is the desired limit function. Check that it is uniformly approximated by `f N` -/
+    /- `F : α → β`, `hF : ∀ (x : α), Tendsto (fun n ↦ ↑(f n) x) atTop (𝓝 (F x))`
+      `F` is the desired limit function. Check that it is uniformly approximated by `f N`. -/
     have fF_bdd : ∀ x N, dist (f N x) (F x) ≤ b N := fun x N =>
       le_of_tendsto (tendsto_const_nhds.dist (hF x))
         (Filter.eventually_atTop.2 ⟨N, fun n hn => f_bdd x N n N (le_refl N) hn⟩)
@@ -420,7 +420,7 @@ theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x 
 #align bounded_continuous_function.restrict_apply BoundedContinuousFunction.restrict_apply
 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
-gives a bounded continuous function -/
+gives a bounded continuous function. -/
 def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) : α →ᵇ γ :=
   ⟨⟨fun x => G (f x), H.continuous.comp f.continuous⟩,
     let ⟨D, hD⟩ := f.bounded
@@ -432,7 +432,7 @@ def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β
         ⟩⟩
 #align bounded_continuous_function.comp BoundedContinuousFunction.comp
 
-/-- The composition operator (in the target) with a Lipschitz map is Lipschitz -/
+/-- The composition operator (in the target) with a Lipschitz map is Lipschitz. -/
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   LipschitzWith.of_dist_le_mul fun f g =>
@@ -442,19 +442,19 @@ theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
         _ ≤ C * dist f g := mul_le_mul_of_nonneg_left (dist_coe_le_dist _) C.2
 #align bounded_continuous_function.lipschitz_comp BoundedContinuousFunction.lipschitz_comp
 
-/-- The composition operator (in the target) with a Lipschitz map is uniformly continuous -/
+/-- The composition operator (in the target) with a Lipschitz map is uniformly continuous. -/
 theorem uniformContinuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     UniformContinuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   (lipschitz_comp H).uniformContinuous
 #align bounded_continuous_function.uniform_continuous_comp BoundedContinuousFunction.uniformContinuous_comp
 
-/-- The composition operator (in the target) with a Lipschitz map is continuous -/
+/-- The composition operator (in the target) with a Lipschitz map is continuous. -/
 theorem continuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     Continuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   (lipschitz_comp H).continuous
 #align bounded_continuous_function.continuous_comp BoundedContinuousFunction.continuous_comp
 
-/-- Restriction (in the target) of a bounded continuous function taking values in a subset -/
+/-- Restriction (in the target) of a bounded continuous function taking values in a subset. -/
 def codRestrict (s : Set β) (f : α →ᵇ β) (H : ∀ x, f x ∈ s) : α →ᵇ s :=
   ⟨⟨s.codRestrict f H, f.continuous.subtype_mk _⟩, f.bounded⟩
 #align bounded_continuous_function.cod_restrict BoundedContinuousFunction.codRestrict
@@ -463,7 +463,7 @@ section Extend
 
 variable {δ : Type _} [TopologicalSpace δ] [DiscreteTopology δ]
 
-/-- A version of `function.extend` for bounded continuous maps. We assume that the domain has
+/-- A version of `Function.extend` for bounded continuous maps. We assume that the domain has
 discrete topology, so we only need to verify boundedness. -/
 nonrec def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →ᵇ β where
   toFun := extend f g h
@@ -530,12 +530,11 @@ variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β]
 
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » U) -/
 /- Arzela-Ascoli theorem asserts that, on a compact space, a set of functions sharing
 a common modulus of continuity and taking values in a compact set forms a compact
 subset for the topology of uniform convergence. In this section, we prove this theorem
 and several useful variations around it. -/
-/-- First version, with pointwise equicontinuity and range in a compact space -/
+/-- First version, with pointwise equicontinuity and range in a compact space. -/
 theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : IsClosed A)
     (H : Equicontinuous ((↑) : A → α → β)) : IsCompact A := by
   simp_rw [Equicontinuous, Metric.equicontinuousAt_iff_pair] at H
@@ -544,11 +543,11 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   rcases exists_between ε0 with ⟨ε₁, ε₁0, εε₁⟩
   let ε₂ := ε₁ / 2 / 2
   /- We have to find a finite discretization of `u`, i.e., finite information
-    that is sufficient to reconstruct `u` up to ε. This information will be
-    provided by the values of `u` on a sufficiently dense set tα,
-    slightly translated to fit in a finite ε₂-dense set tβ in the image. Such
+    that is sufficient to reconstruct `u` up to `ε`. This information will be
+    provided by the values of `u` on a sufficiently dense set `tα`,
+    slightly translated to fit in a finite `ε₂`-dense set `tβ` in the image. Such
     sets exist by compactness of the source and range. Then, to check that these
-    data determine the function up to ε, one uses the control on the modulus of
+    data determine the function up to `ε`, one uses the control on the modulus of
     continuity to extend the closeness on tα to closeness everywhere. -/
   have ε₂0 : ε₂ > 0 := half_pos (half_pos ε₁0)
   have :
@@ -562,24 +561,24 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     let ⟨V, VU, openV, xV⟩ := _root_.mem_nhds_iff.1 nhdsU
     ⟨V, xV, openV, fun y hy z hz f hf => hU y (VU hy) z (VU hz) ⟨f, hf⟩⟩
   choose U hU using this
-  /- For all x, the set hU x is an open set containing x on which the elements of A
-    fluctuate by at most ε₂.
-    We extract finitely many of these sets that cover the whole space, by compactness -/
+  /- For all `x`, the set `hU x` is an open set containing `x` on which the elements of `A`
+    fluctuate by at most `ε₂`.
+    We extract finitely many of these sets that cover the whole space, by compactness. -/
   rcases isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1 with
     ⟨tα, _, ⟨_⟩, htα⟩
-  -- tα : set α, htα : univ ⊆ ⋃x ∈ tα, U x
+  -- `tα: Set α`, `htα : univ ⊆ ⋃x ∈ tα, U x`
   rcases@finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0 with ⟨tβ, _, ⟨_⟩, htβ⟩
   skip
-  -- tβ : set β, htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂
-  -- Associate to every point `y` in the space a nearby point `F y` in tβ
+  -- `tβ : Set β`, `htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂`
+  -- Associate to every point `y` in the space a nearby point `F y` in `tβ`
   choose F hF using fun y => show ∃ z ∈ tβ, dist y z < ε₂ by simpa using htβ (mem_univ y)
-  -- F : β → β, hF : ∀ (y : β), F y ∈ tβ ∧ dist y (F y) < ε₂
+  -- `F : β → β`, `hF : ∀ (y : β), F y ∈ tβ ∧ dist y (F y) < ε₂`
   /- Associate to every function a discrete approximation, mapping each point in `tα`
     to a point in `tβ` close to its true image by the function. -/
   refine' ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, _⟩
   rintro ⟨f, hf⟩ ⟨g, hg⟩ f_eq_g
-  -- If two functions have the same approximation, then they are within distance ε
+  -- If two functions have the same approximation, then they are within distance `ε`
   refine' lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x => _) εε₁
   obtain ⟨x', x'tα, hx'⟩ := mem_iUnion₂.1 (htα (mem_univ x))
   calc
@@ -600,7 +599,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     _ = ε₁ := by rw [add_halves, add_halves]
 #align bounded_continuous_function.arzela_ascoli₁ BoundedContinuousFunction.arzela_ascoli₁
 
-/-- Second version, with pointwise equicontinuity and range in a compact subset -/
+/-- Second version, with pointwise equicontinuity and range in a compact subset. -/
 theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)) (closed : IsClosed A)
     (in_s : ∀ (f : α →ᵇ β) (x : α), f ∈ A → f x ∈ s) (H : Equicontinuous ((↑) : A → α → β)) :
     IsCompact A := by
@@ -621,12 +620,12 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
 #align bounded_continuous_function.arzela_ascoli₂ BoundedContinuousFunction.arzela_ascoli₂
 
 /-- Third (main) version, with pointwise equicontinuity and range in a compact subset, but
-without closedness. The closure is then compact -/
+without closedness. The closure is then compact. -/
 theorem arzela_ascoli [T2Space β] (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β))
     (in_s : ∀ (f : α →ᵇ β) (x : α), f ∈ A → f x ∈ s) (H : Equicontinuous ((↑) : A → α → β)) :
     IsCompact (closure A) :=
-  /- This version is deduced from the previous one by checking that the closure of A, in
-    addition to being closed, still satisfies the properties of compact range and equicontinuity -/
+  /- This version is deduced from the previous one by checking that the closure of `A`, in
+    addition to being closed, still satisfies the properties of compact range and equicontinuity. -/
     arzela_ascoli₂
     s hs (closure A) isClosed_closure
     (fun _ x hf =>
@@ -675,13 +674,13 @@ end One
 
 section LipschitzAdd
 
-/- In this section, if `β` is an `add_monoid` whose addition operation is Lipschitz, then we show
-that the space of bounded continuous functions from `α` to `β` inherits a topological `add_monoid`
+/- In this section, if `β` is an `AddMonoid` whose addition operation is Lipschitz, then we show
+that the space of bounded continuous functions from `α` to `β` inherits a topological `AddMonoid`
 structure, by using pointwise operations and checking that they are compatible with the uniform
 distance.
 
-Implementation note: The material in this section could have been written for `has_lipschitz_mul`
-and transported by `@[to_additive]`.  We choose not to do this because this causes a few lemma
+Implementation note: The material in this section could have been written for `LipschitzMul`
+and transported by `@[to_additive]`. We choose not to do this because this causes a few lemma
 names (for example, `coe_mul`) to conflict with later lemma names for normed rings; this is only a
 trivial inconvenience, but in any case there are no obvious applications of the multiplicative
 version. -/
@@ -738,7 +737,7 @@ instance hasNatScalar : SMul ℕ (α →ᵇ β) where
 #align bounded_continuous_function.has_nat_scalar BoundedContinuousFunction.hasNatScalar
 
 @[simp]
-theorem coe_nsmul (r : ℕ) (f : α →ᵇ β) : ⇑(r • f) = r • f :=
+theorem coe_nsmul (r : ℕ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align bounded_continuous_function.coe_nsmul BoundedContinuousFunction.coe_nsmul
 
@@ -762,8 +761,7 @@ instance : LipschitzAdd (α →ᵇ β) where
       refine' mul_le_mul_of_nonneg_left _ C_nonneg
       apply max_le_max <;> exact dist_coe_le_dist x⟩
 
-/-- Coercion of a `normed_add_group_hom` is an `add_monoid_hom`. Similar to
-`add_monoid_hom.coe_fn`. -/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeFnAddHom : (α →ᵇ β) →+ α → β where
   toFun := (⇑)
@@ -773,8 +771,7 @@ def coeFnAddHom : (α →ᵇ β) →+ α → β where
 
 variable (α β)
 
-/-- The additive map forgetting that a bounded continuous function is bounded.
--/
+/-- The additive map forgetting that a bounded continuous function is bounded. -/
 @[simps]
 def toContinuousMapAddHom : (α →ᵇ β) →+ C(α, β) where
   toFun := toContinuousMap
@@ -812,8 +809,8 @@ end CommHasLipschitzAdd
 
 section NormedAddCommGroup
 
-/- In this section, if β is a normed group, then we show that the space of bounded
-continuous functions from α to β inherits a normed group structure, by using
+/- In this section, if `β` is a normed group, then we show that the space of bounded
+continuous functions from `α` to `β` inherits a normed group structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
 
@@ -827,13 +824,13 @@ theorem norm_def : ‖f‖ = dist f 0 :=
 #align bounded_continuous_function.norm_def BoundedContinuousFunction.norm_def
 
 /-- The norm of a bounded continuous function is the supremum of `‖f x‖`.
-We use `Inf` to ensure that the definition works if `α` has no elements. -/
+We use `sInf` to ensure that the definition works if `α` has no elements. -/
 theorem norm_eq (f : α →ᵇ β) : ‖f‖ = sInf { C : ℝ | 0 ≤ C ∧ ∀ x : α, ‖f x‖ ≤ C } := by
   simp [norm_def, BoundedContinuousFunction.dist_eq]
 #align bounded_continuous_function.norm_eq BoundedContinuousFunction.norm_eq
 
-/-- When the domain is non-empty, we do not need the `0 ≤ C` condition in the formula for ‖f‖ as an
-`Inf`. -/
+/-- When the domain is non-empty, we do not need the `0 ≤ C` condition in the formula for `‖f‖` as a
+`sInf`. -/
 theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x : α, ‖f x‖ ≤ C } := by
   obtain ⟨a⟩ := h
   rw [norm_eq]
@@ -869,7 +866,7 @@ theorem dist_le_two_norm (x y : α) : dist (f x) (f y) ≤ 2 * ‖f‖ :=
 
 variable {f}
 
-/-- The norm of a function is controlled by the supremum of the pointwise norms -/
+/-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C := by
   simpa using @dist_le _ _ _ _ f 0 _ C0
 #align bounded_continuous_function.norm_le BoundedContinuousFunction.norm_le
@@ -924,7 +921,7 @@ theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : �
 #align bounded_continuous_function.norm_of_normed_add_comm_group_le BoundedContinuousFunction.norm_ofNormedAddCommGroup_le
 
 /-- Constructing a bounded continuous function from a uniformly bounded
-function on a discrete space, taking values in a normed group -/
+function on a discrete space, taking values in a normed group. -/
 def ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α] [DiscreteTopology α]
     [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
   ofNormedAddCommGroup f continuous_of_discreteTopology C H
@@ -938,7 +935,7 @@ theorem coe_ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [Topologica
 #align bounded_continuous_function.coe_of_normed_add_comm_group_discrete BoundedContinuousFunction.coe_ofNormedAddCommGroupDiscrete
 
 /-- Taking the pointwise norm of a bounded continuous function with values in a
-`seminormed_add_comm_group` yields a bounded continuous function with values in ℝ. -/
+`SeminormedAddCommGroup` yields a bounded continuous function with values in ℝ. -/
 def normComp : α →ᵇ ℝ :=
   f.comp norm lipschitzWith_one_norm
 #align bounded_continuous_function.norm_comp BoundedContinuousFunction.normComp
@@ -1023,7 +1020,7 @@ instance hasIntScalar : SMul ℤ (α →ᵇ β) where
 #align bounded_continuous_function.has_int_scalar BoundedContinuousFunction.hasIntScalar
 
 @[simp]
-theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • f :=
+theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align bounded_continuous_function.coe_zsmul BoundedContinuousFunction.coe_zsmul
 
@@ -1057,7 +1054,7 @@ theorem nndist_le_two_nnnorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ 
   dist_le_two_norm _ _ _
 #align bounded_continuous_function.nndist_le_two_nnnorm BoundedContinuousFunction.nndist_le_two_nnnorm
 
-/-- The nnnorm of a function is controlled by the supremum of the pointwise nnnorms -/
+/-- The `nnnorm` of a function is controlled by the supremum of the pointwise `nnnorm`s. -/
 theorem nnnorm_le (C : ℝ≥0) : ‖f‖₊ ≤ C ↔ ∀ x : α, ‖f x‖₊ ≤ C :=
   norm_le C.prop
 #align bounded_continuous_function.nnnorm_le BoundedContinuousFunction.nnnorm_le
@@ -1095,12 +1092,12 @@ end NormedAddCommGroup
 section BoundedSMul
 
 /-!
-### `has_bounded_smul` (in particular, topological module) structure
+### `BoundedSMul` (in particular, topological module) structure
 
 In this section, if `β` is a metric space and a `𝕜`-module whose addition and scalar multiplication
 are compatible with the metric structure, then we show that the space of bounded continuous
-functions from `α` to `β` inherits a so-called `has_bounded_smul` structure (in particular, a
-`has_continuous_mul` structure, which is the mathlib formulation of being a topological module), by
+functions from `α` to `β` inherits a so-called `BoundedSMul` structure (in particular, a
+`ContinuousMul` structure, which is the mathlib formulation of being a topological module), by
 using pointwise operations and checking that they are compatible with the uniform distance. -/
 
 
@@ -1235,12 +1232,10 @@ variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 
 variable (α)
 
--- TODO does this work in the `has_bounded_smul` setting, too?
-/--
-Postcomposition of bounded continuous functions into a normed module by a continuous linear map is
-a continuous linear map.
-Upgraded version of `continuous_linear_map.comp_left_continuous`, similar to
-`linear_map.comp_left`. -/
+-- TODO does this work in the `BoundedSMul` setting, too?
+/-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
+is a continuous linear map.
+Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `LinearMap.compLeft`. -/
 protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[𝕜] γ) :
     (α →ᵇ β) →L[𝕜] α →ᵇ γ :=
   LinearMap.mkContinuous
@@ -1330,7 +1325,7 @@ instance hasNatPow : Pow (α →ᵇ R) ℕ where
 #align bounded_continuous_function.has_nat_pow BoundedContinuousFunction.hasNatPow
 
 @[simp]
-theorem coe_pow (n : ℕ) (f : α →ᵇ R) : ⇑(f ^ n) = f ^ n :=
+theorem coe_pow (n : ℕ) (f : α →ᵇ R) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align bounded_continuous_function.coe_pow BoundedContinuousFunction.coe_pow
 
@@ -1416,7 +1411,7 @@ variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
-/-- `bounded_continuous_function.const` as a `ring_hom`. -/
+/-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
   toFun := fun c : 𝕜 => const α ((algebraMap 𝕜 γ) c)
   map_one' := ext fun _ => (algebraMap 𝕜 γ).map_one
@@ -1473,7 +1468,7 @@ theorem norm_smul_le (f : α →ᵇ 𝕜) (g : α →ᵇ β) : ‖f • g‖ ≤
   norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 #align bounded_continuous_function.norm_smul_le BoundedContinuousFunction.norm_smul_le
 
-/- TODO: When `normed_module` has been added to `normed_space.basic`, the above facts
+/- TODO: When `NormedModule` has been added to `Analysis.NormedSpace.Basic`, the above facts
 show that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 end NormedAlgebra
@@ -1498,9 +1493,9 @@ is a star module.
 If `β` is a ⋆-ring in addition to being a normed ⋆-group, then `α →ᵇ β`
 inherits a ⋆-ring structure.
 
-In summary, if `β` is a C⋆-algebra over `𝕜`, then so is  `α →ᵇ β`; note that
+In summary, if `β` is a C⋆-algebra over `𝕜`, then so is `α →ᵇ β`; note that
 completeness is guaranteed when `β` is complete (see
-`bounded_continuous_function.complete`). -/
+`BoundedContinuousFunction.complete`). -/
 
 
 section NormedAddCommGroup
@@ -1516,9 +1511,9 @@ instance starAddMonoid : StarAddMonoid (α →ᵇ β) where
   star_add f g := ext fun x => star_add (f x) (g x)
 
 /-- The right-hand side of this equality can be parsed `star ∘ ⇑f` because of the
-instance `pi.has_star`. Upon inspecting the goal, one sees `⊢ ⇑(star f) = star ⇑f`.-/
+instance `Pi.instStarForAll`. Upon inspecting the goal, one sees `⊢ ↑(star f) = star ↑f`. -/
 @[simp]
-theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star f :=
+theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) :=
   rfl
 #align bounded_continuous_function.coe_star BoundedContinuousFunction.coe_star
 
@@ -1572,8 +1567,7 @@ variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
 instance partialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
 
-/-- Continuous normed lattice group valued functions form a meet-semilattice
--/
+/-- Continuous normed lattice group valued functions form a meet-semilattice. -/
 instance semilatticeInf : SemilatticeInf (α →ᵇ β) :=
   { BoundedContinuousFunction.partialOrder with
     inf := fun f g =>
@@ -1612,12 +1606,12 @@ instance lattice : Lattice (α →ᵇ β) :=
   { BoundedContinuousFunction.semilatticeSup, BoundedContinuousFunction.semilatticeInf with }
 
 @[simp]
-theorem coeFn_sup (f g : α →ᵇ β) : ⇑(f ⊔ g) = f ⊔ g :=
+theorem coeFn_sup (f g : α →ᵇ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 #align bounded_continuous_function.coe_fn_sup BoundedContinuousFunction.coeFn_sup
 
 @[simp]
-theorem coeFn_abs (f : α →ᵇ β) : ⇑(|f|) = |f| :=
+theorem coeFn_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| :=
   rfl
 #align bounded_continuous_function.coe_fn_abs BoundedContinuousFunction.coeFn_abs
 
@@ -1650,9 +1644,9 @@ def nnrealPart (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
 #align bounded_continuous_function.nnreal_part BoundedContinuousFunction.nnrealPart
 
 @[simp]
-theorem nnrealPart_coe_fun_eq (f : α →ᵇ ℝ) : ⇑f.nnrealPart = Real.toNNReal ∘ ⇑f :=
+theorem nnrealPart_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnrealPart = Real.toNNReal ∘ ⇑f :=
   rfl
-#align bounded_continuous_function.nnreal_part_coe_fun_eq BoundedContinuousFunction.nnrealPart_coe_fun_eq
+#align bounded_continuous_function.nnreal_part_coe_fun_eq BoundedContinuousFunction.nnrealPart_coeFn_eq
 
 /-- The absolute value of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
@@ -1662,9 +1656,9 @@ def nnnorm (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
 #align bounded_continuous_function.nnnorm BoundedContinuousFunction.nnnorm
 
 @[simp]
-theorem nnnorm_coe_fun_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ ⇑f :=
+theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ ⇑f :=
   rfl
-#align bounded_continuous_function.nnnorm_coe_fun_eq BoundedContinuousFunction.nnnorm_coe_fun_eq
+#align bounded_continuous_function.nnnorm_coe_fun_eq BoundedContinuousFunction.nnnorm_coeFn_eq
 
 /-- Decompose a bounded continuous function to its positive and negative parts. -/
 theorem self_eq_nnrealPart_sub_nnrealPart_neg (f : α →ᵇ ℝ) :
