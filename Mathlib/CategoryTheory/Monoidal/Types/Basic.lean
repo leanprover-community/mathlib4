@@ -28,67 +28,52 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
+noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
   monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 #align category_theory.types_monoidal CategoryTheory.typesMonoidal
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ g) p = (f p.1, g p.2) :=
   rfl
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
-    ((λ_ X).Hom : 𝟙_ (Type u) ⊗ X → X) (p, x) = x :=
+    ((λ_ X).hom : 𝟙_ (Type u) ⊗ X → X) (p, x) = x :=
   rfl
 #align category_theory.left_unitor_hom_apply CategoryTheory.leftUnitor_hom_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem leftUnitor_inv_apply {X : Type u} {x : X} :
     ((λ_ X).inv : X ⟶ 𝟙_ (Type u) ⊗ X) x = (PUnit.unit, x) :=
   rfl
 #align category_theory.left_unitor_inv_apply CategoryTheory.leftUnitor_inv_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem rightUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
-    ((ρ_ X).Hom : X ⊗ 𝟙_ (Type u) → X) (x, p) = x :=
+    ((ρ_ X).hom : X ⊗ 𝟙_ (Type u) → X) (x, p) = x :=
   rfl
 #align category_theory.right_unitor_hom_apply CategoryTheory.rightUnitor_hom_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem rightUnitor_inv_apply {X : Type u} {x : X} :
     ((ρ_ X).inv : X ⟶ X ⊗ 𝟙_ (Type u)) x = (x, PUnit.unit) :=
   rfl
 #align category_theory.right_unitor_inv_apply CategoryTheory.rightUnitor_inv_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem associator_hom_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
-    ((α_ X Y Z).Hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) ((x, y), z) = (x, (y, z)) :=
+    ((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) ((x, y), z) = (x, (y, z)) :=
   rfl
 #align category_theory.associator_hom_apply CategoryTheory.associator_hom_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     ((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) (x, (y, z)) = ((x, y), z) :=
   rfl
 #align category_theory.associator_inv_apply CategoryTheory.associator_inv_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- We don't yet have an API for tensor products indexed by finite ordered types,
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
@@ -100,4 +85,3 @@ noncomputable def MonoidalFunctor.mapPi {C : Type _} [Category C] [MonoidalCateg
 #align category_theory.monoidal_functor.map_pi CategoryTheory.MonoidalFunctor.mapPi
 
 end CategoryTheory
-
