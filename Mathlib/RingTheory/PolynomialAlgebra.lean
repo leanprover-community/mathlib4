@@ -12,7 +12,6 @@ import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
