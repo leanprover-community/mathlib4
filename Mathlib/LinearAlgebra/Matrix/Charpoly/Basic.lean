@@ -10,8 +10,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Squeeze
+-- porting note: these imports are no longer needed
+--import Mathlib.Tactic.ApplyFun
+--import Mathlib.Tactic.Squeeze
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -60,15 +61,15 @@ theorem charmatrix_apply (M : Matrix n n R) (i j : n) :
 @[simp]
 theorem charmatrix_apply_eq (M : Matrix n n R) (i : n) :
     charmatrix M i i = (X : R[X]) - C (M i i) := by
-  simp only [charmatrix, sub_left_inj, Pi.sub_apply, scalar_apply_eq, RingHom.mapMatrix_apply,
-    map_apply, DMatrix.sub_apply]
+  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_eq, map_apply]
+
 #align charmatrix_apply_eq charmatrix_apply_eq
 
 @[simp]
 theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
     charmatrix M i j = -C (M i j) := by
-  simp only [charmatrix, Pi.sub_apply, scalar_apply_ne _ _ _ h, zero_sub, RingHom.mapMatrix_apply,
-    map_apply, DMatrix.sub_apply]
+  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_ne _ _ _ h, map_apply,
+    sub_eq_neg_self]
 #align charmatrix_apply_ne charmatrix_apply_ne
 
 theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
@@ -118,7 +119,7 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
   -- Using the algebra isomorphism `matrix n n R[X] ≃ₐ[R] polynomial (matrix n n R)`,
   -- we have the same identity in `polynomial (matrix n n R)`.
   apply_fun matPolyEquiv  at h
-  simp only [mat_poly_equiv.map_mul, matPolyEquiv_charmatrix] at h
+  simp only [matPolyEquiv.map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$
@@ -132,4 +133,3 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 #align matrix.aeval_self_charpoly Matrix.aeval_self_charpoly
-
