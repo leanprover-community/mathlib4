@@ -7,7 +7,40 @@ import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.ProjectionNotation
 
-/-! # `HasAdj` class for types with an associated relation called `Adj`
+/-! # Basic definitions for graph structures
+
+This module contains definitions that are common to different kinds of (simple) graphs,
+in particular combinatorial objects that are fundamentally some kind of relation.
+
+We put general things having to do with graphs into the `Graph` namespace.
+
+## Main definitions
+
+* `Graph.HasAdj` is a typeclass that imbues terms of a type with an adjacency relation.
+  This is like an indexed family of `Prop`-valued `Quiver`s.
+
+* `Graph.IsAdjSymmetric` and `Graph.IsAdjIrreflexive` restrict the graphs under consideration
+  to those that are symmetric or irreflexive. Simple graphs are modeled as graphs satisfying both,
+  and `SimpleGraph` is a type modeling this.
+
+* `Graph.Dart` is an ordered pair of adjacent vertices, thought of as being an
+  orientated edge. These are also known as "half-edges" or "bonds."
+
+* `Graph.Hom`, `Graph.Embedding`, and `Graph.Iso` for graph
+  homomorphisms, graph embeddings, and
+  graph isomorphisms. Note that a graph embedding is a stronger notion than an
+  injective graph homomorphism, since its image is an induced subgraph.
+
+## Notations
+
+* `→g`, `↪g`, and `≃g` for graph homomorphisms, graph embeddings, and graph isomorphisms,
+  respectively.
+
+-/
+
+namespace Graph
+
+/-! ### `HasAdj` class for types with an associated relation called `Adj`
 
 The `HasAdj` class gives the structure of a (simple) directed graph to
 each term of a given type by providing an `Adj` relation.
@@ -22,47 +55,34 @@ class HasAdj (Γ : Type _) (V : outParam (Γ → Type _)) where
   /-- An adjacency relation for a term of type `Γ`. -/
   Adj (G : Γ) : V G → V G → Prop
 
+export HasAdj (Adj)
+
 /--
 Axiom that the adjacency relation is symmetric.
 -/
 class IsAdjSymmetric (Γ : Type _) (V : outParam (Γ → Type _)) [HasAdj Γ V] : Prop where
   adj_symmetric (G : Γ) : Symmetric (HasAdj.Adj G)
-#align simple_graph.symm IsAdjSymmetric.adj_symmetric
+#align simple_graph.symm Graph.IsAdjSymmetric.adj_symmetric
 
-protected theorem HasAdj.Adj.symm [HasAdj Γ V] [IsAdjSymmetric Γ V]
-    (G : Γ) (u v : V G) (h : Adj G u v) : Adj G v u :=
-  IsAdjSymmetric.adj_symmetric G h
-#align simple_graph.adj.symm HasAdj.Adj.symm
+export IsAdjSymmetric (adj_symmetric)
 
 /--
 Axiom that the adjacency relation has no loop edges (i.e., if it is irreflexive).
 -/
 class IsAdjIrreflexive (Γ : Type _) (V : outParam (Γ → Type _)) [HasAdj Γ V] : Prop where
   adj_irreflexive (G : Γ) : Irreflexive (HasAdj.Adj G)
-#align simple_graph.loopless IsAdjIrreflexive.adj_irreflexive
+#align simple_graph.loopless Graph.IsAdjIrreflexive.adj_irreflexive
 
-protected theorem HasAdj.Adj.loopless [HasAdj Γ V] [IsAdjIrreflexive Γ V]
-    {G : Γ} {u : V G} : ¬ Adj G u u := IsAdjIrreflexive.adj_irreflexive G _
-
-protected theorem HasAdj.Adj.ne [HasAdj Γ V] [IsAdjIrreflexive Γ V]
-    {G : Γ} {u v : V G} (h : Adj G u v) : u ≠ v | rfl => h.loopless
-#align simple_graph.adj.ne HasAdj.Adj.ne
-
-namespace Graph
-
-/-! ### The `Graph` namespace
-
-We put general things having to do with graphs into the `Graph` namespace.
--/
-
-export HasAdj (Adj)
-export IsAdjSymmetric (adj_symmetric)
 export IsAdjIrreflexive (adj_irreflexive)
 
 variable {Γ : Type _} {V : Γ → Type _} [HasAdj Γ V]
 
 section symmetric
 variable [IsAdjSymmetric Γ V] (G : Γ)
+
+protected theorem HasAdj.Adj.symm {G : Γ} {u v : V G} (h : Adj G u v) : Adj G v u :=
+  IsAdjSymmetric.adj_symmetric G h
+#align simple_graph.adj.symm Graph.HasAdj.Adj.symm
 
 theorem adj_symm {u v : V G} (h : Adj G u v) : Adj G v u := h.symm
 #align simple_graph.adj_symm Graph.adj_symm
@@ -74,6 +94,17 @@ end symmetric
 
 section irreflexive
 variable [IsAdjIrreflexive Γ V] (G : Γ)
+
+protected theorem HasAdj.Adj.loopless {G : Γ} {u : V G} : ¬ Adj G u u :=
+  IsAdjIrreflexive.adj_irreflexive G _
+
+protected theorem HasAdj.Adj.ne {G : Γ} {u v : V G} (h : Adj G u v) : u ≠ v
+  | rfl => h.loopless
+#align simple_graph.adj.ne Graph.HasAdj.Adj.ne
+
+protected theorem HasAdj.Adj.ne' {G : Γ} {u v : V G} (h : Adj G u v) : v ≠ u
+  | rfl => h.loopless
+#align simple_graph.adj.ne' Graph.HasAdj.Adj.ne'
 
 theorem adj_irrefl {u : V G} : ¬ Adj G u u | h => h.loopless
 #align simple_graph.irrefl Graph.adj_irrefl
@@ -208,3 +239,46 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : (f'.comp f : V G → V'' G
 end Iso
 
 end Maps
+
+/-! ## Darts -/
+
+/-- A `Dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
+This terminology comes from combinatorial maps, and they are also known as "half-edges"
+or "bonds." -/
+structure Dart (G : Γ) extends (V G) × (V G) where
+  is_adj : Adj G fst snd
+#align simple_graph.dart Graph.Dart
+
+initialize_simps_projections Dart (+toProd, -fst, -snd)
+
+pp_extended_field_notation Dart
+
+section Darts
+
+variable {G : Γ}
+
+theorem Dart.ext_iff (d₁ d₂ : Dart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
+  cases d₁; cases d₂; simp
+#align simple_graph.dart.ext_iff Graph.Dart.ext_iff
+
+@[ext]
+theorem Dart.ext (d₁ d₂ : Dart G) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
+  (Dart.ext_iff d₁ d₂).mpr h
+#align simple_graph.dart.ext Graph.Dart.ext
+
+instance [DecidableEq (V G)] : DecidableEq (Dart G)
+  | d₁, d₂ =>
+    if h : d₁.toProd = d₂.toProd then
+      isTrue (Dart.ext _ _ h)
+    else
+      isFalse (by rintro rfl; exact (h rfl).elim)
+
+-- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
+-- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
+
+theorem Dart.toProd_injective : Function.Injective (Dart.toProd : Dart G → V G × V G) := Dart.ext
+#align simple_graph.dart.to_prod_injective Graph.Dart.toProd_injective
+
+end Darts
+
+end Graph

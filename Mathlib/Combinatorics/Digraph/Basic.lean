@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.Digraph.HasAdj
+import Mathlib.Combinatorics.GraphDefs
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.ProjectionNotation
@@ -19,12 +19,12 @@ While one could work with relations directly, the purpose here is to provide the
 theory of relations from a graph-theoretical point of view.
 -/
 
-open Function
+open Function Graph
 
 /-- A directed graph is a relation `Adj` on a vertex type `V`. -/
 @[ext]
 structure Digraph (V : Type _) where
-  Adj : V → V → Prop
+  protected Adj : V → V → Prop
 
 pp_extended_field_notation Digraph.Adj
 
@@ -32,7 +32,12 @@ instance : HasAdj (Digraph V) (fun _ ↦ V) where
   Adj G := G.Adj
 
 /- Perhaps there is an elaborator/delaborator that could help here. -/
-@[simp] theorem Digraph.adj_eq_adj (G : Digraph V) : HasAdj.Adj G = G.Adj := rfl
+@[simp] theorem Digraph.adj_eq_adj (G : Digraph V) : G.Adj = Adj G := rfl
+
+/-- See Note [custom simps projection] -/
+def Digraph.Simps.Adj (G : Digraph V) : V → V → Prop := Graph.Adj G
+
+initialize_simps_projections Digraph
 
 /-- Constructor for directed graphs given a boolean function. -/
 @[simps]
@@ -43,7 +48,7 @@ def Digraph.mk' : (V → V → Bool) ↪ Digraph V where
     funext v w
     simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
 
-instance (adj : V → V → Bool): DecidableRel (Digraph.mk' adj).Adj :=
+instance (adj : V → V → Bool): DecidableRel (Adj <| Digraph.mk' adj) :=
   show DecidableRel (fun v w ↦ adj v w) from inferInstance
 
 instance [Fintype V] [DecidableEq V] : Fintype (Digraph V) where
@@ -60,48 +65,48 @@ namespace Digraph
 variable {V : Type u} {W : Type w} {X : Type x}
 variable (G : Digraph V) (G' : Digraph W) (G'' : Digraph X)
 
-theorem adj_injective : Injective (@Adj V) := Digraph.ext
+theorem adj_injective : Injective (Adj : Digraph V → _) := Digraph.ext
 
 @[simp]
-theorem adj_inj {G H : Digraph V} : G.Adj = H.Adj ↔ G = H := adj_injective.eq_iff
+theorem adj_inj {G H : Digraph V} : Adj G = Adj H ↔ G = H := adj_injective.eq_iff
 
 section order
 
 /-- The relation that one `Digraph` is a subgraph of another. -/
-instance : LE (Digraph V) := ⟨fun G H ↦ ∀ ⦃u v⦄, G.Adj u v → H.Adj u v⟩
+instance : LE (Digraph V) := ⟨fun G H ↦ ∀ ⦃u v⦄, Adj G u v → Adj H u v⟩
 
-@[simp] theorem adj_le_iff {G H : Digraph V} : G.Adj ≤ H.Adj ↔ G ≤ H := Iff.rfl
+@[simp] theorem adj_le_iff {G H : Digraph V} : Adj G ≤ Adj H ↔ G ≤ H := Iff.rfl
 
-/-- The supremum of two graphs `x ⊔ y` has an edge where either `x` or `y` has an edge. -/
+/-- The supremum of two graphs `G ⊔ H` has an edge where either `G` or `H` has an edge. -/
 instance : Sup (Digraph V) where
-  sup x y := { Adj := x.Adj ⊔ y.Adj }
+  sup G H := { Adj := Adj G ⊔ Adj H }
 
 @[simp]
-theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
+theorem sup_adj (G H : Digraph V) (v w : V) : Adj (G ⊔ H) v w ↔ Adj G v w ∨ Adj H v w := Iff.rfl
 
-/-- The infimum of two graphs `x ⊔ y` has an edge where both `x` and `y` have an edge. -/
+/-- The infimum of two graphs `G ⊔ H` has an edge where both `G` and `H` have an edge. -/
 instance : Inf (Digraph V) where
-  inf x y := { Adj := x.Adj ⊓ y.Adj }
+  inf G H := { Adj := Adj G ⊓ Adj H }
 
 @[simp]
-theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl
+theorem inf_adj (G H : Digraph V) (v w : V) : Adj (G ⊓ H) v w ↔ Adj G v w ∧ Adj H v w := Iff.rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that vertices are adjacent in `Gᶜ`
 if and only if they aren't adjacent in `G`.
 
 Note that one gets loop edges for every vertex that is not self-adjacent. -/
 instance hasCompl : HasCompl (Digraph V) where
-  compl G := { Adj := G.Adjᶜ }
+  compl G := { Adj := (Adj G)ᶜ }
 
 @[simp]
-theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
+theorem compl_adj (G : Digraph V) (v w : V) : Adj (Gᶜ) v w ↔ ¬ Adj G v w := Iff.rfl
 
-/-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
+/-- The difference of two graphs `G \ H` has the edges of `G` with the edges of `H` removed. -/
 instance sdiff : SDiff (Digraph V) where
-  sdiff x y := { Adj := x.Adj \ y.Adj }
+  sdiff G H := { Adj := Adj G \ Adj H }
 
 @[simp]
-theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
+theorem sdiff_adj (G H : Digraph V) (v w : V) : Adj (G \ H) v w ↔ Adj G v w ∧ ¬ Adj H v w := Iff.rfl
 
 instance supSet : SupSet (Digraph V) where
   sSup s := { Adj := fun a b => ∃ G ∈ s, Adj G a b  }
@@ -110,16 +115,16 @@ instance infSet : InfSet (Digraph V) where
   sInf s := { Adj := fun a b => ∀ ⦃G⦄, G ∈ s → Adj G a b }
 
 @[simp]
-theorem sSup_adj {s : Set (Digraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
+theorem sSup_adj {s : Set (Digraph V)} {a b : V} : Adj (sSup s) a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem sInf_adj {s : Set (Digraph V)} : (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
+theorem sInf_adj {s : Set (Digraph V)} : Adj (sInf s) a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [iSup]
+theorem iSup_adj {f : ι → Digraph V} : Adj (⨆ i, f i) a b ↔ ∃ i, Adj (f i) a b := by simp [iSup]
 
 @[simp]
-theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by simp [iInf]
+theorem iInf_adj {f : ι → Digraph V} : Adj (⨅ i, f i) a b ↔ ∀ i, Adj (f i) a b := by simp [iInf]
 
 instance distribLattice : DistribLattice (Digraph V) :=
   { show DistribLattice (Digraph V) from
@@ -141,7 +146,7 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
       ext v w
       rfl
     inf_compl_le_bot := fun G v w h => False.elim <| h.2 h.1
-    top_le_sup_compl := fun G v w _ => Classical.em (G.Adj v w)
+    top_le_sup_compl := fun G v w _ => Classical.em (Adj G v w)
     sSup := sSup
     le_sSup := fun s G hG a b hab => ⟨G, hG, hab⟩
     sSup_le := fun s G hG a b => by
@@ -154,35 +159,35 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
     iInf_sup_le_sup_sInf := fun G s a b hab => by simpa [forall_or_left] using hab }
 
 @[simp]
-theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
+theorem top_adj (v w : V) : Adj (⊤ : Digraph V) v w := trivial
 
 @[simp]
-theorem bot_adj (v w : V) : ¬ (⊥ : Digraph V).Adj v w := not_false
+theorem bot_adj (v w : V) : ¬ Adj (⊥ : Digraph V) v w := not_false
 
 @[simps]
 instance (V : Type u) : Inhabited (Digraph V) := ⟨⊥⟩
 
 section Decidable
 
-variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable (V) (H : Digraph V) [DecidableRel (Adj G)] [DecidableRel (Adj H)]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
+instance Bot.adjDecidable : DecidableRel (Adj (⊥ : Digraph V)) :=
   inferInstanceAs <| DecidableRel ⊥
 
-instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∨ H.Adj v w
+instance Sup.adjDecidable : DecidableRel (Adj (G ⊔ H)) :=
+  inferInstanceAs <| DecidableRel fun v w => Adj G v w ∨ Adj H v w
 
-instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ H.Adj v w
+instance Inf.adjDecidable : DecidableRel (Adj (G ⊓ H)) :=
+  inferInstanceAs <| DecidableRel fun v w => Adj G v w ∧ Adj H v w
 
-instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
+instance Sdiff.adjDecidable : DecidableRel (Adj (G \ H)) :=
+  inferInstanceAs <| DecidableRel fun v w => Adj G v w ∧ ¬Adj H v w
 
-instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
+instance Top.adjDecidable : DecidableRel (Adj (⊤ : Digraph V)) :=
   inferInstanceAs <| DecidableRel ⊤
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w => ¬G.Adj v w
+instance Compl.adjDecidable : DecidableRel (Adj (Gᶜ)) :=
+  inferInstanceAs <| DecidableRel fun v w => ¬Adj G v w
 
 end Decidable
 
@@ -190,11 +195,11 @@ end order
 
 /-- Known as the *transpose* of a digraph, this is the digraph with all edges having
 reversed orientation. -/
-protected def inv (G : Digraph V) : Digraph V := ⟨flip G.Adj⟩
+protected def inv (G : Digraph V) : Digraph V := ⟨flip <| Adj G⟩
 
 pp_extended_field_notation Digraph.inv
 
-@[simp] def inv_Adj {G : Digraph V} {v w : V} : G.inv.Adj v w ↔ G.Adj w v := by cases G; rfl
+@[simp] def Adj_inv {G : Digraph V} {v w : V} : Adj G.inv v w ↔ Adj G w v := by cases G; rfl
 
 @[simp] def inv_inv {G : Digraph V} : G.inv.inv = G := by ext; rfl
 
@@ -204,17 +209,17 @@ pp_extended_field_notation Digraph.inv
 @[simp] def inv_top : (⊤ : Digraph V).inv = ⊤ := rfl
 @[simp] def inv_bot : (⊥ : Digraph V).inv = ⊥ := rfl
 
-/-- `G.inSupport` is the set of vertices `v` such that there exists a `w` with `G.Adj v w`. -/
-protected def inSupport : Set V := Rel.dom G.Adj
+/-- `G.inSupport` is the set of vertices `v` such that there exists a `w` with `Adj G v w`. -/
+protected def inSupport : Set V := Rel.dom (Adj G)
 
-/-- `G.outSupport` is the set of vertices `v` such that there exists a `w` with `G.Adj w v`. -/
-protected def outSupport : Set V := Rel.codom G.Adj
+/-- `G.outSupport` is the set of vertices `v` such that there exists a `w` with `Adj G w v`. -/
+protected def outSupport : Set V := Rel.codom (Adj G)
 
 pp_extended_field_notation Digraph.inSupport
 pp_extended_field_notation Digraph.outSupport
 
-@[simp] theorem mem_inSupport {v : V} : v ∈ G.inSupport ↔ ∃ w, G.Adj v w := Iff.rfl
-@[simp] theorem mem_outSupport {v : V} : v ∈ G.outSupport ↔ ∃ w, G.Adj w v := Iff.rfl
+@[simp] theorem mem_inSupport {v : V} : v ∈ G.inSupport ↔ ∃ w, Adj G v w := Iff.rfl
+@[simp] theorem mem_outSupport {v : V} : v ∈ G.outSupport ↔ ∃ w, Adj G w v := Iff.rfl
 
 @[mono]
 theorem inSupport_mono {G G' : Digraph V} (h : G ≤ G') : G.inSupport ⊆ G'.inSupport :=
@@ -225,68 +230,33 @@ theorem outSupport_mono {G G' : Digraph V} (h : G ≤ G') : G.outSupport ⊆ G'.
   fun _ ⟨w, h'⟩ => ⟨w, h h'⟩
 
 /-- `G.inNeighborSet v` is the set of vertices that are adjacent *to* `v`. -/
-protected def inNeighborSet (v : V) : Set V := {w | G.Adj w v}
+protected def inNeighborSet (v : V) : Set V := {w | Adj G w v}
 
 /-- `G.outNeighborSet v` is the set of vertices that `v` is adjacent *to*. -/
-protected def outNeighborSet (v : V) : Set V := {w | G.Adj v w}
+protected def outNeighborSet (v : V) : Set V := {w | Adj G v w}
 
 pp_extended_field_notation Digraph.inNeighborSet
 pp_extended_field_notation Digraph.outNeighborSet
 
-@[simp] theorem mem_inNeighborSet : v ∈ G.inNeighborSet w ↔ G.Adj v w := Iff.rfl
-@[simp] theorem mem_outNeighborSet : v ∈ G.outNeighborSet w ↔ G.Adj w v := Iff.rfl
+@[simp] theorem mem_inNeighborSet : v ∈ G.inNeighborSet w ↔ Adj G v w := Iff.rfl
+@[simp] theorem mem_outNeighborSet : v ∈ G.outNeighborSet w ↔ Adj G w v := Iff.rfl
 
-instance inNeighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
-    DecidablePred (· ∈ G.inNeighborSet v) := inferInstanceAs <| DecidablePred (Adj G · v)
+instance inNeighborSet.memDecidable (v : V) [DecidableRel (Adj G)] :
+    DecidablePred (· ∈ G.inNeighborSet v) := show DecidablePred (Adj G · v) from inferInstance
 
-instance outNeighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
-    DecidablePred (· ∈ G.outNeighborSet v) := inferInstanceAs <| DecidablePred (Adj G v ·)
+instance outNeighborSet.memDecidable (v : V) [DecidableRel (Adj G)] :
+    DecidablePred (· ∈ G.outNeighborSet v) := show DecidablePred (Adj G v ·) from inferInstance
 
 @[simp] theorem inNeighborSet_inv : G.inv.inNeighborSet = G.outNeighborSet := rfl
 @[simp] theorem outNeighborSet_inv : G.inv.outNeighborSet = G.inNeighborSet := rfl
 
-/-! ## Darts -/
-
-/-- A `Dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
-This terminology comes from combinatorial maps, and they are also known as "half-edges"
-or "bonds." -/
-structure Dart extends V × V where
-  is_adj : G.Adj fst snd
-  deriving DecidableEq
-#align simple_graph.dart Digraph.Dart
-
-initialize_simps_projections Dart (+toProd, -fst, -snd)
-
-pp_extended_field_notation Dart
-
-section Darts
-
-variable {G}
-
-theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
-  cases d₁; cases d₂; simp
-#align simple_graph.dart.ext_iff Digraph.Dart.ext_iff
-
-@[ext]
-theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
-  (Dart.ext_iff d₁ d₂).mpr h
-#align simple_graph.dart.ext Digraph.Dart.ext
-
--- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
--- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
-
-theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) := Dart.ext
-#align simple_graph.dart.to_prod_injective Digraph.Dart.toProd_injective
-
-instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
+instance Dart.fintype [Fintype V] [DecidableRel (Adj G)] : Fintype (Dart G) :=
   Fintype.ofEquiv (Σ v, G.outNeighborSet v)
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
       left_inv := fun s => by ext <;> simp
       right_inv := fun d => by ext <;> simp }
 #align simple_graph.dart.fintype Digraph.Dart.fintype
-
-end Darts
 
 /-! ## Map and comap -/
 
@@ -296,11 +266,11 @@ the adjacency relation. Whenever two adjacent vertices map to the same vertex, t
 that vertex is self-adjacent in the image.
 
 This is injective when `f` is injective (see `Digraph.map_injective`). -/
-protected def map (f : V → W) (G : Digraph V) : Digraph W := ⟨Relation.Map G.Adj f f⟩
+protected def map (f : V → W) (G : Digraph V) : Digraph W := ⟨Relation.Map (Adj G) f f⟩
 
 @[simp]
 theorem map_adj (f : V → W) (G : Digraph V) (u v : W) :
-    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
+    Adj (G.map f) u v ↔ ∃ u' v' : V, Adj G u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
 
 theorem map_monotone (f : V → W) : Monotone (Digraph.map f) := by
@@ -314,7 +284,7 @@ This is one of the ways of creating induced graphs. See `Digraph.induce` for a w
 This is surjective when `f` is injective (see `Digraph.comap_surjective`).-/
 @[simps]
 protected def comap (f : V → W) (G : Digraph W) : Digraph V where
-  Adj u v := G.Adj (f u) (f v)
+  Adj u v := Adj G (f u) (f v)
 
 theorem comap_monotone (f : V → W) : Monotone (Digraph.comap f) := by
   intro G G' h _ _ ha
@@ -394,11 +364,11 @@ pp_extended_field_notation Digraph.outNeighborFinset
 
 @[simp]
 theorem mem_inNeighborFinset [Fintype (G.inNeighborSet v)] :
-    w ∈ G.inNeighborFinset v ↔ G.Adj w v := Set.mem_toFinset
+    w ∈ G.inNeighborFinset v ↔ Adj G w v := Set.mem_toFinset
 
 @[simp]
 theorem mem_outNeighborFinset [Fintype (G.outNeighborSet v)] :
-    w ∈ G.outNeighborFinset v ↔ G.Adj v w := Set.mem_toFinset
+    w ∈ G.outNeighborFinset v ↔ Adj G v w := Set.mem_toFinset
 
 @[simp] theorem inNeighborFinSet_inv : G.inv.inNeighborFinset = G.outNeighborFinset := rfl
 @[simp] theorem outNeighborFinSet_inv : G.inv.outNeighborFinset = G.inNeighborFinset := rfl
@@ -434,28 +404,28 @@ theorem card_outNeighborSet_eq_outDegree (v : V) [Fintype (G.outNeighborSet v)] 
 @[simp] theorem outDegree_inv : G.inv.outDegree = G.inDegree := rfl
 
 theorem inDegree_pos_iff_exists_adj (v : V) [Fintype (G.inNeighborSet v)] :
-    0 < G.inDegree v ↔ ∃ w, G.Adj w v := by
+    0 < G.inDegree v ↔ ∃ w, Adj G w v := by
   simp only [inDegree, Finset.card_pos, Finset.Nonempty, mem_inNeighborFinset]
 
 theorem outDegree_pos_iff_exists_adj (v : V) [Fintype (G.outNeighborSet v)] :
-    0 < G.outDegree v ↔ ∃ w, G.Adj v w := by
+    0 < G.outDegree v ↔ ∃ w, Adj G v w := by
   simp only [outDegree, Finset.card_pos, Finset.Nonempty, mem_outNeighborFinset]
 
 section Finite
 
 variable [Fintype V]
 
-instance inNeighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.inNeighborSet v) :=
-  @Subtype.fintype _ _ (inferInstanceAs <| DecidablePred fun w ↦ G.Adj w v) _
+instance inNeighborSetFintype [DecidableRel (Adj G)] (v : V) : Fintype (G.inNeighborSet v) :=
+  Subtype.fintype _
 
-instance outNeighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.outNeighborSet v) :=
-  @Subtype.fintype _ _ (inferInstanceAs <| DecidablePred fun w ↦ G.Adj v w) _
+instance outNeighborSetFintype [DecidableRel (Adj G)] (v : V) : Fintype (G.outNeighborSet v) :=
+  Subtype.fintype _
 
-theorem inNeighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
-    G.inNeighborFinset v = Finset.univ.filter (G.Adj · v) := by ext; simp
+theorem inNeighborFinset_eq_filter {v : V} [DecidableRel (Adj G)] :
+    G.inNeighborFinset v = Finset.univ.filter (Adj G · v) := by ext; simp
 
-theorem outNeighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
-    G.outNeighborFinset v = Finset.univ.filter (G.Adj v ·) := by ext; simp
+theorem outNeighborFinset_eq_filter {v : V} [DecidableRel (Adj G)] :
+    G.outNeighborFinset v = Finset.univ.filter (Adj G v ·) := by ext; simp
 
 @[simp]
 theorem inDegree_top (v : V) : (⊤ : Digraph V).inDegree v = Fintype.card V := by
@@ -473,10 +443,10 @@ theorem inDegree_bot (v : V) : (⊥ : Digraph V).inDegree v = 0 := by
 @[simp]
 theorem outDegree_bot (v : V) : (⊥ : Digraph V).outDegree v = 0 := inDegree_bot v
 
-theorem inDegree_le_card_verts [DecidableRel G.Adj] (v : V) : G.inDegree v ≤ Fintype.card V :=
+theorem inDegree_le_card_verts [DecidableRel (Adj G)] (v : V) : G.inDegree v ≤ Fintype.card V :=
   Finset.card_le_of_subset (Finset.subset_univ _)
 
-theorem outDegree_le_card_verts [DecidableRel G.Adj] (v : V) : G.outDegree v ≤ Fintype.card V :=
+theorem outDegree_le_card_verts [DecidableRel (Adj G)] (v : V) : G.outDegree v ≤ Fintype.card V :=
   Finset.card_le_of_subset (Finset.subset_univ _)
 
 end Finite
@@ -494,10 +464,10 @@ namespace Hom
 variable {G G'} (f : G →g G')
 
 theorem apply_mem_inNeighborSet {v w : V} (h : w ∈ G.inNeighborSet v) :
-    f w ∈ G'.inNeighborSet (f v) := HasAdj.Hom.map_adj f h
+    f w ∈ G'.inNeighborSet (f v) := Hom.map_adj f h
 
 theorem apply_mem_outNeighborSet {v w : V} (h : w ∈ G.outNeighborSet v) :
-    f w ∈ G'.outNeighborSet (f v) := HasAdj.Hom.map_adj f h
+    f w ∈ G'.outNeighborSet (f v) := Hom.map_adj f h
 
 /-- The map between in-neighbor sets induced by a homomorphism. -/
 @[simps]
@@ -510,11 +480,11 @@ def mapOutNeighborSet (v : V) (w : G.outNeighborSet v) : G'.outNeighborSet (f v)
   ⟨f w, apply_mem_outNeighborSet f w.property⟩
 
 /-- The map between darts induced by a homomorphism. -/
-def mapDart (d : G.Dart) : G'.Dart := ⟨d.1.map f f, f.map_adj d.2⟩
+def mapDart (d : Dart G) : Dart G' := ⟨d.1.map f f, f.map_adj d.2⟩
 #align simple_graph.hom.map_dart Digraph.Hom.mapDart
 
 @[simp]
-theorem mapDart_apply (d : G.Dart) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
+theorem mapDart_apply (d : Dart G) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
 #align simple_graph.hom.map_dart_apply Digraph.Hom.mapDart_apply
 
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
@@ -540,11 +510,11 @@ variable {G G'} (f : G ↪g G')
 
 theorem apply_mem_inNeighborSet_iff {v w : V} :
     f w ∈ G'.inNeighborSet (f v) ↔ w ∈ G.inNeighborSet v :=
-  HasAdj.Embedding.map_adj_iff f
+  Embedding.map_adj_iff f
 
 theorem apply_mem_outNeighborSet_iff {v w : V} :
     f w ∈ G'.outNeighborSet (f v) ↔ w ∈ G.outNeighborSet v :=
-  HasAdj.Embedding.map_adj_iff f
+  Embedding.map_adj_iff f
 
 /-- A graph embedding induces an embedding of in-neighbor sets. -/
 @[simps]
@@ -605,7 +575,7 @@ def InduceHom : G.induce s →g G'.induce t where
 @[simp, norm_cast] lemma coe_induceHom : InduceHom φ φst = Set.MapsTo.restrict φ s t φst := rfl
 
 @[simp] lemma induceHom_id (G : Digraph V) (s) :
-    InduceHom (HasAdj.Hom.id : G →g G) (Set.mapsTo_id s) = HasAdj.Hom.id := by
+    InduceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
   ext x
   rfl
 
@@ -622,11 +592,11 @@ variable {G G'} (f : G ≃g G')
 
 theorem apply_mem_inNeighborSet_iff {v w : V} :
     f w ∈ G'.inNeighborSet (f v) ↔ w ∈ G.inNeighborSet v :=
-  HasAdj.Iso.map_adj_iff f
+  Iso.map_adj_iff f
 
 theorem apply_mem_outNeighborSet_iff {v w : V} :
     f w ∈ G'.outNeighborSet (f v) ↔ w ∈ G.outNeighborSet v :=
-  HasAdj.Iso.map_adj_iff f
+  Iso.map_adj_iff f
 
 /-- A graph isomorphism induces an equivalence of in-neighbor sets. -/
 @[simps]
