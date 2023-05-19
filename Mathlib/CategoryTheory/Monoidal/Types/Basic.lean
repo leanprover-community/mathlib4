@@ -8,10 +8,10 @@ Authors: Michael Jendrusch, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Functor
-import Mathbin.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
-import Mathbin.CategoryTheory.Limits.Shapes.Types
-import Mathbin.Logic.Equiv.Fin
+import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # The category of types is a monoidal category
