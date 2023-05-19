@@ -67,8 +67,8 @@ open IsArtinian
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
   ⟨Subrelation.wf
-      (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
-      (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt))⟩
+    (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
+    (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt))⟩
 #align is_artinian_of_injective isArtinian_of_injective
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
@@ -84,9 +84,9 @@ variable (M)
 theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
   ⟨Subrelation.wf
-      (fun {A B} hAB =>
-        show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
-      (InvImage.wf (Submodule.comap f) (IsArtinian.wellFounded_submodule_lt))⟩
+    (fun {A B} hAB =>
+      show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
+    (InvImage.wf (Submodule.comap f) (IsArtinian.wellFounded_submodule_lt))⟩
 #align is_artinian_of_surjective isArtinian_of_surjective
 
 variable {M}
@@ -96,12 +96,12 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 #align is_artinian_of_linear_equiv isArtinian_of_linearEquiv
 
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-    (hf : Function.Injective f) (hg : Function.Surjective g) (h : LinearMap.range f = LinearMap.ker g) :
-    IsArtinian R N :=
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
   ⟨wellFounded_lt_exact_sequence (IsArtinian.wellFounded_submodule_lt)
-      (IsArtinian.wellFounded_submodule_lt) (LinearMap.range f) (Submodule.map f) (Submodule.comap f)
-      (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf) (Submodule.giMapComap hg)
-      (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
+    (IsArtinian.wellFounded_submodule_lt) (LinearMap.range f) (Submodule.map f) (Submodule.comap f)
+    (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf) (Submodule.giMapComap hg)
+    (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
 #align is_artinian_of_range_eq_ker isArtinian_of_range_eq_ker
 
 instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
@@ -151,26 +151,24 @@ theorem isArtinian_iff_wellFounded :
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine'
-    by_contradiction fun hf =>
-      (RelEmbedding.wellFounded_iff_no_descending_seq.1 (wellFounded_submodule_lt (R := R) (M := M))).elim' _
+  refine' by_contradiction fun hf => (RelEmbedding.wellFounded_iff_no_descending_seq.1
+    (wellFounded_submodule_lt (R := R) (M := M))).elim' _
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
     exact (f y).2
-  have : ∀ a b : ℕ, a ≤ b ↔ span R (Subtype.val ∘ f '' { m | b ≤ m }) ≤ span R (Subtype.val ∘ f '' { m | a ≤ m }) :=
-    by
+  have : ∀ a b : ℕ, a ≤ b ↔
+      span R (Subtype.val ∘ f '' { m | b ≤ m }) ≤ span R (Subtype.val ∘ f '' { m | a ≤ m }) := by
     intro a b
     rw [span_le_span_iff hs (this b) (this a),
       Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
     simp only [Set.mem_setOf_eq]
     exact ⟨fun hab x => le_trans hab, fun h => h _ le_rfl⟩
-  exact
-    ⟨⟨fun n => span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y => by
-      rw [le_antisymm_iff, ← this y x, ← this x y]
-      exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
-      intro a b
-      conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]⟩
+  exact ⟨⟨fun n => span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y => by
+    rw [le_antisymm_iff, ← this y x, ← this x y]
+    exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
+    intro a b
+    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]⟩
 #align is_artinian.finite_of_linear_independent IsArtinian.finite_of_linearIndependent
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
@@ -270,10 +268,9 @@ variable {R : Type _} (M : Type _) [CommRing R] [AddCommGroup M] [Module R M] [I
 namespace IsArtinian
 
 theorem range_smul_pow_stabilizes (r : R) :
-    ∃ n : ℕ,
-      ∀ m,
-        n ≤ m →
-          LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M) = LinearMap.range (r ^ m • LinearMap.id : M →ₗ[R] M) :=
+    ∃ n : ℕ, ∀ m, n ≤ m →
+      LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M) =
+      LinearMap.range (r ^ m • LinearMap.id : M →ₗ[R] M) :=
   monotone_stabilizes
     ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
       ⟨r ^ (m - n) • y, by
@@ -283,8 +280,8 @@ theorem range_smul_pow_stabilizes (r : R) :
 
 variable {M}
 
-theorem exists_pow_succ_smul_dvd (r : R) (x : M) : ∃ (n : ℕ)(y : M), r ^ n.succ • y = r ^ n • x :=
-  by
+theorem exists_pow_succ_smul_dvd (r : R) (x : M) :
+    ∃ (n : ℕ) (y : M), r ^ n.succ • y = r ^ n • x := by
   obtain ⟨n, hn⟩ := IsArtinian.range_smul_pow_stabilizes M r
   simp_rw [SetLike.ext_iff] at hn
   exact ⟨n, by simpa using hn n.succ n.le_succ (r ^ n • x)⟩
@@ -321,8 +318,7 @@ def IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 #align is_artinian_ring IsArtinianRing
 
-theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R :=
-  Iff.rfl
+theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
 theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
@@ -331,7 +327,7 @@ theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArti
 #align ring.is_artinian_of_zero_eq_one Ring.isArtinian_of_zero_eq_one
 
 theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
-    (N : Submodule R M) (h : IsArtinian R M) : IsArtinian R N := by infer_instance
+    (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 #align is_artinian_of_submodule_of_artinian isArtinian_of_submodule_of_artinian
 
 theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
@@ -427,15 +423,11 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
       exact ⟨le_sup_left, ⟨x, mem_sup_right (mem_span_singleton_self x), hxJ⟩⟩
   have : J ⊔ Jac • Ideal.span {x} ≤ J ⊔ Ideal.span {x} :=
     sup_le_sup_left (smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _
-  have : Jac * Ideal.span {x} ≤ J := by
-    classical
-      --Need version 4 of Nakayamas lemma on Stacks
-      by_contra H
-      refine'
-        H
-          (smul_sup_le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
-            (this.eq_of_not_lt (hJ' _ _)).ge)
-      exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
+  have : Jac * Ideal.span {x} ≤ J := by -- Need version 4 of Nakayama's lemma on Stacks
+    by_contra H
+    refine' H (smul_sup_le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
+      (this.eq_of_not_lt (hJ' _ _)).ge)
+    exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥
   calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
@@ -455,14 +447,15 @@ theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
   obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
   obtain ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r
-  swap; · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
+  swap
+  · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)
   use r
   rw [smul_eq_mul, smul_eq_mul, pow_succ', mul_assoc] at hr
-  apply_fun algebraMap R L  at hr
+  apply_fun algebraMap R L at hr
   simp only [map_mul] at hr
-  rw [← IsLocalization.mk'_one (M := S) L, IsLocalization.mk'_eq_iff_eq, mul_one, Submonoid.coe_one, ←
-    (IsLocalization.map_units L (s ^ n)).mul_left_cancel hr, map_mul]
+  rw [← IsLocalization.mk'_one (M := S) L, IsLocalization.mk'_eq_iff_eq, mul_one, Submonoid.coe_one,
+    ← (IsLocalization.map_units L (s ^ n)).mul_left_cancel hr, map_mul]
 #align is_artinian_ring.localization_surjective IsArtinianRing.localization_surjective
 
 theorem localization_artinian : IsArtinianRing L :=
