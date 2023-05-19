@@ -124,7 +124,7 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
+-- instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
 
 /-- Maps a module M to the dual of the dual of M. See `module.erange_coe` and
 `module.eval_equiv`. -/
@@ -1423,8 +1423,6 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 
 -- This is also true if `V₁` is finite dimensional since one can restrict `ι` to some subtype
 -- for which the infi and supr are the same.
---
-<<<<<<< HEAD
 -- The obstruction to the `dualAnnihilator_inf_eq` argument carrying through is that we need
 -- for `Module.dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
@@ -1639,4 +1637,3 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
-
