@@ -13,36 +13,36 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.ToDfinsupp
 
 /-!
-# Conversion between `add_monoid_algebra` and homogenous `direct_sum`
+# Conversion between `AddMonoidAlgebra` and homogenous `DirectSum`
 
-This module provides conversions between `add_monoid_algebra` and `direct_sum`.
+This module provides conversions between `AddMonoidAlgebra` and `DirectSum`.
 The latter is essentially a dependent version of the former.
 
 Note that since `direct_sum.has_mul` combines indices additively, there is no equivalent to
-`monoid_algebra`.
+`MonoidAlgebra`.
 
 ## Main definitions
 
-* `add_monoid_algebra.to_direct_sum : add_monoid_algebra M ι → (⨁ i : ι, M)`
-* `direct_sum.to_add_monoid_algebra : (⨁ i : ι, M) → add_monoid_algebra M ι`
+* `AddMonoidAlgebra.toDirectSum : AddMonoidAlgebra M ι → (⨁ i : ι, M)`
+* `DirectSum.toAddMonoidAlgebra : (⨁ i : ι, M) → AddMonoidAlgebra M ι`
 * Bundled equiv versions of the above:
-  * `add_monoid_algebra_equiv_direct_sum : add_monoid_algebra M ι ≃ (⨁ i : ι, M)`
-  * `add_monoid_algebra_add_equiv_direct_sum : add_monoid_algebra M ι ≃+ (⨁ i : ι, M)`
-  * `add_monoid_algebra_ring_equiv_direct_sum R : add_monoid_algebra M ι ≃+* (⨁ i : ι, M)`
-  * `add_monoid_algebra_alg_equiv_direct_sum R : add_monoid_algebra A ι ≃ₐ[R] (⨁ i : ι, A)`
+  * `addMonoidAlgebraEquivDirectSum : AddMonoidAlgebra M ι ≃ (⨁ i : ι, M)`
+  * `addMonoidAlgebraAddEquivDirectSum : AddMonoidAlgebra M ι ≃+ (⨁ i : ι, M)`
+  * `addMonoidAlgebraRingEquivDirectSum R : AddMonoidAlgebra M ι ≃+* (⨁ i : ι, M)`
+  * `addMonoidAlgebraAlgEquivDirectSum R : AddMonoidAlgebra A ι ≃ₐ[R] (⨁ i : ι, A)`
 
 ## Theorems
 
-The defining feature of these operations is that they map `finsupp.single` to
-`direct_sum.of` and vice versa:
+The defining feature of these operations is that they map `Finsupp.single` to
+`DirectSum.of` and vice versa:
 
-* `add_monoid_algebra.to_direct_sum_single`
-* `direct_sum.to_add_monoid_algebra_of`
+* `AddMonoidAlgebra.toDirectSum_single`
+* `DirectSum.toAddMonoidAlgebra_of`
 
 as well as preserving arithmetic operations.
 
 For the bundled equivalences, we provide lemmas that they reduce to
-`add_monoid_algebra.to_direct_sum`:
+`AddMonoidAlgebra.toDirectSum`:
 
 * `add_monoid_algebra_add_equiv_direct_sum_apply`
 * `add_monoid_algebra_lequiv_direct_sum_apply`
@@ -51,11 +51,11 @@ For the bundled equivalences, we provide lemmas that they reduce to
 
 ## Implementation notes
 
-This file largely just copies the API of `data/finsupp/to_dfinsupp`, and reuses the proofs.
-Recall that `add_monoid_algebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
+This file largely just copies the API of `data/Finsupp/to_dfinsupp`, and reuses the proofs.
+Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
 `Π₀ i : ι, M`.
 
-Note that there is no `add_monoid_algebra` equivalent to `finsupp.single`, so many statements
+Note that there is no `AddMonoidAlgebra` equivalent to `Finsupp.single`, so many statements
 still involve this definition.
 -/
 
@@ -69,7 +69,7 @@ open DirectSum
 
 section Defs
 
-/-- Interpret a `add_monoid_algebra` as a homogenous `direct_sum`. -/
+/-- Interpret a `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
 def AddMonoidAlgebra.toDirectSum [Semiring M] (f : AddMonoidAlgebra M ι) : ⨁ _i : ι, M :=
   Finsupp.toDfinsupp f
 #align add_monoid_algebra.to_direct_sum AddMonoidAlgebra.toDirectSum
@@ -86,7 +86,7 @@ theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
 
 variable [∀ m : M, Decidable (m ≠ 0)]
 
-/-- Interpret a homogenous `direct_sum` as a `add_monoid_algebra`. -/
+/-- Interpret a homogenous `DirectSum` as a `AddMonoidAlgebra`. -/
 def DirectSum.toAddMonoidAlgebra (f : ⨁ _i : ι, M) : AddMonoidAlgebra M ι :=
   Dfinsupp.toFinsupp f
 #align direct_sum.to_add_monoid_algebra DirectSum.toAddMonoidAlgebra
@@ -182,12 +182,12 @@ end DirectSum
 
 end Lemmas
 
-/-! ### Bundled `equiv`s -/
+/-! ### Bundled `Equiv`s -/
 
 
 section Equivs
 
-/-- `add_monoid_algebra.to_direct_sum` and `direct_sum.to_add_monoid_algebra` together form an
+/-- `AddMonoidAlgebra.toDirectSum` and `DirectSum.toAddMonoidAlgebra` together form an
 equiv. -/
 @[simps (config := { fullyApplied := false })]
 def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
