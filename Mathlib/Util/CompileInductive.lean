@@ -40,6 +40,16 @@ private def mkFunExts (e : Expr) : MetaM Expr := do
 
 open Elab
 
+/-- Returns the names of the recursors for a nested or mutual inductive,
+using the `all` and `numMotives` arguments from `RecursorVal`. -/
+def mkRecNames (all : List Name) (numMotives : Nat) : List Name :=
+  if numMotives ≤ all.length then
+    all.map mkRecName
+  else
+    let main := all[0]!
+    all.map mkRecName ++
+      (List.range (numMotives - all.length)).map (fun i => main.str s!"rec_{i+1}")
+
 /--
 Compile the definition `dv` by adding a second definition `dv✝` with the same body,
 and registering a `csimp`-lemma `dv = dv✝`.
@@ -113,28 +123,30 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   then
     logWarning m!"already compiled {rv.name}"
     return
-  unless rv.numMotives == rv.all.length do
-    throwError "nested inductives unsupported"
   if !iv.isRec && rv.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
     compileStruct iv rv
     return
   let levels := rv.levelParams.map .param
   let rvs ←
     if rv.numMotives == 1 then pure [rv]
-    else iv.all.mapM fun n => getConstInfoRec <| mkRecName n
+    else mkRecNames iv.all rv.numMotives |>.mapM getConstInfoRec
   let rvs ← rvs.mapM fun rv => return (rv, ← mkFreshUserName rv.name)
   let repl := rvs.foldl (fun l (rv, name) => .cons rv.name name l) .nil
   addAndCompile <| .mutualDefnDecl <|← rvs.mapM fun (rv, name) => do
     pure { rv with
       name
       value := ← forallTelescope rv.type fun xs body => do
-        let val := .const (mkCasesOnName rv.name.getPrefix) levels
-        let val := mkAppN val xs[:rv.numParams]
-        let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
-        let val := mkAppN val xs[rv.getFirstIndexIdx:]
-        let val := mkAppN val <| rv.rules.toArray.map fun rule =>
-          .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
-        mkLambdaFVars xs val
+        (← whnfD <| ← inferType xs[rv.getMajorIdx]!).withApp fun head args => do
+          let .const iv levels' := head | throwError "not an inductive"
+          let iv ← getConstInfoInduct iv
+          let rv' ← getConstInfoRec <| mkRecName iv.name
+          let val := .const (mkCasesOnName iv.name) (.param rv.levelParams.head! :: levels')
+          let val := mkAppN val args[:rv'.numParams]
+          let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
+          let val := mkAppN val xs[rv.getFirstIndexIdx:]
+          let val := mkAppN val <| rv.rules.toArray.map fun rule =>
+            .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+          mkLambdaFVars xs val
       hints := .opaque
       safety := .partial
     }
@@ -151,7 +163,8 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       safety := .partial
     }]
     Compiler.CSimp.add name .global
-    for aux in [mkRecOnName iv.name, mkBRecOnName iv.name] do
+  for name in iv.all do
+    for aux in [mkRecOnName name, mkBRecOnName name] do
       if let some (.defnInfo dv) := (← getEnv).find? aux then
         compileDefn dv
 
