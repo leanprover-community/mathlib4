@@ -12,7 +12,6 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
-import Mathlib.Tactic.Eqns
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -1748,7 +1747,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
 def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.move _ _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.push _ _ q) => insert Q <| trStmts₁ q
-  | Q@(Λ'.read q) => insert Q <| Finset.univ.bunionᵢ fun s => trStmts₁ (q s)
+  | Q@(Λ'.read q) => insert Q <| Finset.univ.biUnion fun s => trStmts₁ (q s)
   | Q@(Λ'.clear _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.copy q) => insert Q <| trStmts₁ q
   | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| trStmts₁ q
@@ -1951,10 +1950,10 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
   simp [Supports, or_imp, forall_and]
 #align turing.partrec_to_TM2.supports_union Turing.PartrecToTM2.supports_union
 
-theorem supports_bunionᵢ {K : Option Γ' → Finset Λ'} {S} :
-    Supports (Finset.univ.bunionᵢ K) S ↔ ∀ a, Supports (K a) S := by
+theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
+    Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
   simp [Supports]; apply forall_swap
-#align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_bunionᵢ
+#align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_biUnion
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H
@@ -1988,7 +1987,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- copy
   · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- push
   · refine' supports_insert.2 ⟨fun _ => h₂ _ W, _⟩ -- read
-    exact supports_bunionᵢ.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
+    exact supports_biUnion.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
   · refine' supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, _⟩ -- succ
     exact supports_insert.2 ⟨⟨fun _ => h₂.2 _ W, fun _ => h₂.1⟩, q_ih H₁ h₂.2⟩
   · refine' -- pred

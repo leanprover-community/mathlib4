@@ -265,7 +265,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
       reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addRefineSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
       if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else

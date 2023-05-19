@@ -50,7 +50,6 @@ variable [∀ i₂, AddCommGroup (M₂ i₂)] [AddCommGroup M₂']
 
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- The linear equivalence `(⨁ i₁, M₁ i₁) ⊗ (⨁ i₂, M₂ i₂) ≃ (⨁ i₁, ⨁ i₂, M₁ i₁ ⊗ M₂ i₂)`, i.e.
 "tensor product distributes over direct sum". -/

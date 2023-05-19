@@ -46,7 +46,6 @@ noncomputable section
 
 open Function LinearIsometry ContinuousLinearMap
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- A continuous linear map `f'` is said to be conformal if it's
     a nonzero multiple of a linear isometry. -/

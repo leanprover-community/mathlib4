@@ -93,6 +93,28 @@ def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
+/-- Extract the integer from a raw integer literal, as produced by
+`Mathlib.Meta.NormNum.mkRawIntLit`. -/
+def _root_.Lean.Expr.intLit! (e : Expr) : ℤ :=
+  if e.isAppOfArity ``Int.ofNat 1 then
+    e.appArg!.natLit!
+  else if e.isAppOfArity ``Int.negOfNat 1 then
+    .negOfNat e.appArg!.natLit!
+  else
+    panic! "not a raw integer literal"
+
+/-- Extract the raw natlit representing the absolute value of a raw integer literal
+(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
+def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
+  if n.isAppOfArity ``Int.ofNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+  else if n.isAppOfArity ``Int.negOfNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩
+  else
+    panic! "not a raw integer literal"
+
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 

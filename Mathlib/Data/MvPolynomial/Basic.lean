@@ -563,7 +563,7 @@ theorem support_smul {S₁ : Type _} [SMulZeroClass S₁ R] {a : S₁} {f : MvPo
 #align mv_polynomial.support_smul MvPolynomial.support_smul
 
 theorem support_sum {α : Type _} {s : Finset α} {f : α → MvPolynomial σ R} :
-    (∑ x in s, f x).support ⊆ s.bunionᵢ fun x => (f x).support :=
+    (∑ x in s, f x).support ⊆ s.biUnion fun x => (f x).support :=
   Finsupp.support_finset_sum
 #align mv_polynomial.support_sum MvPolynomial.support_sum
 
@@ -592,7 +592,7 @@ theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ �
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
 theorem support_mul (p q : MvPolynomial σ R) :
-    (p * q).support ⊆ p.support.bunionᵢ fun a => q.support.bunionᵢ fun b => {a + b} := by
+    (p * q).support ⊆ p.support.biUnion fun a => q.support.biUnion fun b => {a + b} := by
   convert AddMonoidAlgebra.support_mul p q
 #align mv_polynomial.support_mul MvPolynomial.support_mul
 
@@ -771,7 +771,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
     intro hm
     apply h
     have H := support_mul _ _ hm
-    simp only [Finset.mem_bunionᵢ] at H
+    simp only [Finset.mem_biUnion] at H
     rcases H with ⟨j, _hj, i', hi', H⟩
     rw [support_monomial, if_neg hr, Finset.mem_singleton] at hi'
     subst i'

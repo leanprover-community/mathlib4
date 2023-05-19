@@ -116,21 +116,21 @@ theorem span_coe (W : Subspace K V) : span ↑W = W :=
 #align projectivization.subspace.span_coe Projectivization.Subspace.span_coe
 
 /-- The infimum of two subspaces exists. -/
-instance hasInf : Inf (Subspace K V) :=
+instance instInf : Inf (Subspace K V) :=
   ⟨fun A B =>
     ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
-#align projectivization.subspace.has_inf Projectivization.Subspace.hasInf
+#align projectivization.subspace.has_inf Projectivization.Subspace.instInf
 
 -- Porting note: delete the name of this instance since it causes problem since hasInf is already
 -- defined above
 /-- Infimums of arbitrary collections of subspaces exist. -/
-instance : InfSet (Subspace K V) :=
+instance instInfSet : InfSet (Subspace K V) :=
   ⟨fun A =>
-    ⟨infₛ (SetLike.coe '' A), fun v w hv hw hvw h1 h2 t => by
+    ⟨sInf (SetLike.coe '' A), fun v w hv hw hvw h1 h2 t => by
       rintro ⟨s, hs, rfl⟩
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
-#align projectivization.subspace.has_Inf Projectivization.Subspace.hasInfₓ
+#align projectivization.subspace.has_Inf Projectivization.Subspace.instInfSet
 
 /-- The subspaces of a projective space form a complete lattice. -/
 instance : CompleteLattice (Subspace K V) :=
@@ -185,9 +185,9 @@ theorem span_union (S T : Set (ℙ K V)) : span (S ∪ T) = span S ⊔ span T :=
 
 /-- The supremum of a collection of subspaces is equal to the span of the union of the
 collection. -/
-theorem span_unionᵢ {ι} (s : ι → Set (ℙ K V)) : span (⋃ i, s i) = ⨆ i, span (s i) :=
-  (@gi K V _ _ _).gc.l_supᵢ
-#align projectivization.subspace.span_Union Projectivization.Subspace.span_unionᵢ
+theorem span_iUnion {ι} (s : ι → Set (ℙ K V)) : span (⋃ i, s i) = ⨆ i, span (s i) :=
+  (@gi K V _ _ _).gc.l_iSup
+#align projectivization.subspace.span_Union Projectivization.Subspace.span_iUnion
 
 /-- The supremum of a subspace and the span of a set of points is equal to the span of the union of
 the subspace and the set of points. -/
@@ -209,14 +209,14 @@ theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
 
 /-- The span of a set of points in a projective space is equal to the infimum of the collection of
 subspaces which contain the set. -/
-theorem span_eq_infₛ {S : Set (ℙ K V)} : span S = infₛ { W : Subspace K V| S ⊆ W } := by
+theorem span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S ⊆ W } := by
   ext x
   simp_rw [mem_carrier_iff, mem_span x]
   refine ⟨fun hx => ?_, fun hx W hW => ?_⟩
   · rintro W ⟨T, hT, rfl⟩
     exact hx T hT
-  · exact (@infₛ_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) hx
-#align projectivization.subspace.span_eq_Inf Projectivization.Subspace.span_eq_infₛ
+  · exact (@sInf_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) hx
+#align projectivization.subspace.span_eq_Inf Projectivization.Subspace.span_eq_sInf
 
 /-- If a set of points in projective space is contained in a subspace, and that subspace is
 contained in the span of the set of points, then the span of the set of points is equal to
