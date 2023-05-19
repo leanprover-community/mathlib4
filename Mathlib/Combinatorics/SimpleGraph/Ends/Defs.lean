@@ -25,6 +25,7 @@ universe u
 variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
 
 namespace SimpleGraph
+open Digraph
 
 /-- The components outside a given set of vertices `K` -/
 @[reducible]
@@ -175,7 +176,7 @@ If `K ⊆ L`, the components outside of `L` are all contained in a single compon
 -/
 @[reducible]
 def hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
-  C.map <| InduceHom Hom.id <| Set.compl_subset_compl.2 h
+  C.map <| InduceHom HasAdj.Hom.id <| Set.compl_subset_compl.2 h
 #align simple_graph.component_compl.hom SimpleGraph.ComponentCompl.hom
 
 theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by

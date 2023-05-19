@@ -60,7 +60,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
     simp only [comap_Adj, Subtype.coe_mk, top_adj, Ne.def, Subtype.mk_eq_mk]
-    exact ⟨Adj.ne, h hv hw⟩
+    exact ⟨ne_of_adj _, h hv hw⟩
   · intro h v hv w hw hne
     have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
     conv_lhs at h2 => rw [h]
@@ -177,7 +177,10 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_Adj, Function.Embedding.coe_subtype,
-    f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
+    top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
+  -- Porting note: was able to use this as simp lemma, but change in `Adj` prevents it
+  exact HasAdj.Embedding.map_adj_iff f
+
 #align simple_graph.not_clique_free_of_top_embedding SimpleGraph.not_cliqueFree_of_top_embedding
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
@@ -190,7 +193,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
-  exact hb.symm
+   <;> try exact hb.symm -- Porting note: only needed a single `exact hb.symm`
 #align simple_graph.top_embedding_of_not_clique_free SimpleGraph.topEmbeddingOfNotCliqueFree
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=

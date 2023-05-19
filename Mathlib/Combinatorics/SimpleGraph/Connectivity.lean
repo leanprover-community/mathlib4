@@ -74,7 +74,7 @@ walks, trails, paths, circuits, cycles, bridge edges
 -/
 
 
-open Function
+open Function Digraph
 
 universe u v w
 
@@ -106,9 +106,9 @@ instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨Walk.nil⟩
 
 /-- The one-edge walk associated to a pair of adjacent vertices. -/
 @[match_pattern, reducible]
-def Adj.toWalk {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Walk u v :=
+def _root_.Digraph.Adj.toWalk {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Walk u v :=
   Walk.cons h Walk.nil
-#align simple_graph.adj.to_walk SimpleGraph.Adj.toWalk
+#align simple_graph.adj.to_walk Digraph.Adj.toWalk
 
 namespace Walk
 
@@ -1470,7 +1470,7 @@ theorem map_copy (hu : u = u') (hv : v = v') :
 #align simple_graph.walk.map_copy SimpleGraph.Walk.map_copy
 
 @[simp]
-theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
+theorem map_id (p : G.Walk u v) : p.map HasAdj.Hom.id = p := by
   induction p with
   | nil => rfl
   | cons _ p' ih => simp [ih p']
@@ -1512,7 +1512,7 @@ theorem support_map : (p.map f).support = p.support.map f := by induction p <;> 
 #align simple_graph.walk.support_map SimpleGraph.Walk.support_map
 
 @[simp]
-theorem darts_map : (p.map f).darts = p.darts.map f.mapDart := by induction p <;> simp [*]
+theorem darts_map : (p.map f).darts = p.darts.map (Hom.mapDart f) := by induction p <;> simp [*]
 #align simple_graph.walk.darts_map SimpleGraph.Walk.darts_map
 
 @[simp]
@@ -1861,9 +1861,9 @@ protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) 
   ⟨p⟩
 #align simple_graph.walk.reachable SimpleGraph.Walk.reachable
 
-protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
+protected theorem _root_.Digraph.Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
   h.toWalk.reachable
-#align simple_graph.adj.reachable SimpleGraph.Adj.reachable
+#align simple_graph.adj.reachable Digraph.Adj.reachable
 
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
@@ -2058,7 +2058,7 @@ theorem map_mk (φ : G →g G') (v : V) :
 #align simple_graph.connected_component.map_mk SimpleGraph.ConnectedComponent.map_mk
 
 @[simp]
-theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
+theorem map_id (C : ConnectedComponent G) : C.map HasAdj.Hom.id = C := by
   refine' C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
@@ -2105,14 +2105,14 @@ def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.Conne
 
 @[simp]
 theorem connectedComponentEquiv_refl :
-    (Iso.refl : G ≃g G).connectedComponentEquiv = Equiv.refl _ := by
+    connectedComponentEquiv (HasAdj.Iso.refl : G ≃g G) = Equiv.refl _ := by
   ext ⟨v⟩
   rfl
 #align simple_graph.iso.connected_component_equiv_refl SimpleGraph.Iso.connectedComponentEquiv_refl
 
 @[simp]
 theorem connectedComponentEquiv_symm (φ : G ≃g G') :
-    φ.symm.connectedComponentEquiv = φ.connectedComponentEquiv.symm := by
+    connectedComponentEquiv φ.symm = (connectedComponentEquiv φ).symm := by
   ext ⟨_⟩
   rfl
 #align simple_graph.iso.connected_component_equiv_symm SimpleGraph.Iso.connectedComponentEquiv_symm
@@ -2120,7 +2120,7 @@ theorem connectedComponentEquiv_symm (φ : G ≃g G') :
 @[simp]
 theorem connectedComponentEquiv_trans (φ : G ≃g G') (φ' : G' ≃g G'') :
     connectedComponentEquiv (φ.trans φ') =
-    φ.connectedComponentEquiv.trans φ'.connectedComponentEquiv := by
+    (connectedComponentEquiv φ).trans (connectedComponentEquiv φ') := by
   ext ⟨_⟩
   rfl
 #align simple_graph.iso.connected_component_equiv_trans SimpleGraph.Iso.connectedComponentEquiv_trans
@@ -2167,7 +2167,7 @@ theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
 itself defines an equivalence on the supports of each connected component.
 -/
 def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
-    C.supp ≃ (φ.connectedComponentEquiv C).supp where
+    C.supp ≃ (Iso.connectedComponentEquiv φ C).supp where
   toFun v := ⟨φ v, ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp.mpr v.prop⟩
   invFun v' := ⟨φ.symm v', ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map.mpr v'.prop⟩
   left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)

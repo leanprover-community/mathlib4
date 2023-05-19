@@ -41,9 +41,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
 
-open Finset
-
-open BigOperators
+open Finset BigOperators Digraph
 
 namespace SimpleGraph
 
@@ -83,10 +81,10 @@ theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
 
 variable {G} [DecidableEq V]
 
-theorem Dart.edge_fiber (d : G.Dart) :
+theorem _root_.Digraph.Dart.edge_fiber (d : G.Dart) :
     (univ.filter fun d' : G.Dart => d'.edge = d.edge) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
-#align simple_graph.dart.edge_fiber SimpleGraph.Dart.edge_fiber
+#align simple_graph.dart.edge_fiber Digraph.Dart.edge_fiber
 
 variable (G)
 
@@ -97,7 +95,7 @@ theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
   convert congr_arg card d.edge_fiber
   rw [card_insert_of_not_mem, card_singleton]
   rw [mem_singleton]
-  exact d.symm_ne.symm
+  exact (Dart.symm_ne d).symm
 #align simple_graph.dart_edge_fiber_card SimpleGraph.dart_edge_fiber_card
 
 theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * G.edgeFinset.card := by

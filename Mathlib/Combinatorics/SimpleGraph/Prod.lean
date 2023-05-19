@@ -86,7 +86,7 @@ def boxProdComm : G □ H ≃g H □ G := ⟨Equiv.prodComm _ _, or_comm⟩
 @[simps!]
 def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
-    simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
+    simp only [adj_eq_adj, boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
       and_assoc, @and_comm (x.fst.fst = _)]; tauto⟩
 #align simple_graph.box_prod_assoc SimpleGraph.boxProdAssoc
 

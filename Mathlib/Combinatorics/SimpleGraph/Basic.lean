@@ -129,6 +129,12 @@ structure SimpleGraph (V : Type u) extends Digraph V where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
+instance : HasAdj (SimpleGraph V) (fun _ ↦ V) where
+  Adj G := G.Adj
+
+/- Perhaps there is an elaborator/delaborator that could help here. -/
+@[simp] theorem SimpleGraph.adj_eq_adj (G : SimpleGraph V) : HasAdj.Adj G = G.Adj := rfl
+
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
 @[simps]
 def SimpleGraph.mk' :
@@ -705,48 +711,15 @@ end FromEdgeSet
 
 /-! ## Darts -/
 
-/-- A `Dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
-This terminology comes from combinatorial maps, and they are also known as "half-edges"
-or "bonds." -/
-structure Dart extends V × V where
-  is_adj : G.Adj fst snd
-  deriving DecidableEq
-#align simple_graph.dart SimpleGraph.Dart
-
-initialize_simps_projections Dart (+toProd, -fst, -snd)
-
 section Darts
+open Digraph
 
 variable {G}
 
-theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
-  cases d₁; cases d₂; simp
-#align simple_graph.dart.ext_iff SimpleGraph.Dart.ext_iff
-
-@[ext]
-theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
-  (Dart.ext_iff d₁ d₂).mpr h
-#align simple_graph.dart.ext SimpleGraph.Dart.ext
-
--- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
--- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
-
-theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=
-  Dart.ext
-#align simple_graph.dart.to_prod_injective SimpleGraph.Dart.toProd_injective
-
-instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
-  Fintype.ofEquiv (Σ v, G.neighborSet v)
-    { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
-      left_inv := fun s => by ext <;> simp
-      right_inv := fun d => by ext <;> simp }
-#align simple_graph.dart.fintype SimpleGraph.Dart.fintype
-
 /-- The edge associated to the dart. -/
-def Dart.edge (d : G.Dart) : Sym2 V :=
+def _root_.Digraph.Dart.edge (d : G.Dart) : Sym2 V :=
   ⟦d.toProd⟧
-#align simple_graph.dart.edge SimpleGraph.Dart.edge
+#align simple_graph.dart.edge Digraph.Dart.edge
 
 @[simp]
 theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = ⟦p⟧ :=
@@ -754,15 +727,15 @@ theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = ⟦
 #align simple_graph.dart.edge_mk SimpleGraph.Dart.edge_mk
 
 @[simp]
-theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
+theorem _root_.Digraph.Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
   d.is_adj
-#align simple_graph.dart.edge_mem SimpleGraph.Dart.edge_mem
+#align simple_graph.dart.edge_mem Digraph.Dart.edge_mem
 
 /-- The dart with reversed orientation from a given dart. -/
 @[simps]
-def Dart.symm (d : G.Dart) : G.Dart :=
+def _root_.Digraph.Dart.symm (d : G.Dart) : G.Dart :=
   ⟨d.toProd.swap, G.symm d.is_adj⟩
-#align simple_graph.dart.symm SimpleGraph.Dart.symm
+#align simple_graph.dart.symm Digraph.Dart.symm
 
 @[simp]
 theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
@@ -843,7 +816,6 @@ instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart 
 end Darts
 
 /-! ### Incidence set -/
-
 
 /-- Set of edges incident to a given vertex, aka incidence set. -/
 def incidenceSet (v : V) : Set (Sym2 V) :=
@@ -1667,45 +1639,26 @@ namespace Hom
 
 variable {G G'} (f : G →g G')
 
-/-- The identity homomorphism from a graph to itself. -/
-abbrev id : G →g G :=
-  RelHom.id _
-#align simple_graph.hom.id SimpleGraph.Hom.id
-
-theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
-  f.map_rel' h
-#align simple_graph.hom.map_adj SimpleGraph.Hom.map_adj
-
 theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
   Sym2.ind (fun _ _ => f.map_rel') e h
 #align simple_graph.hom.map_mem_edge_set SimpleGraph.Hom.map_mem_edgeSet
 
 theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'.neighborSet (f v) :=
-  map_adj f h
+  HasAdj.Hom.map_adj f h
 #align simple_graph.hom.apply_mem_neighbor_set SimpleGraph.Hom.apply_mem_neighborSet
 
 /-- The map between edge sets induced by a homomorphism.
 The underlying map on edges is given by `Sym2.map`. -/
 @[simps]
 def mapEdgeSet (e : G.edgeSet) : G'.edgeSet :=
-  ⟨Sym2.map f e, f.map_mem_edgeSet e.property⟩
+  ⟨Sym2.map f e, map_mem_edgeSet f e.property⟩
 #align simple_graph.hom.map_edge_set SimpleGraph.Hom.mapEdgeSet
 
 /-- The map between neighbor sets induced by a homomorphism. -/
 @[simps]
 def mapNeighborSet (v : V) (w : G.neighborSet v) : G'.neighborSet (f v) :=
-  ⟨f w, f.apply_mem_neighborSet w.property⟩
+  ⟨f w, apply_mem_neighborSet f w.property⟩
 #align simple_graph.hom.map_neighbor_set SimpleGraph.Hom.mapNeighborSet
-
-/-- The map between darts induced by a homomorphism. -/
-def mapDart (d : G.Dart) : G'.Dart :=
-  ⟨d.1.map f f, f.map_adj d.2⟩
-#align simple_graph.hom.map_dart SimpleGraph.Hom.mapDart
-
-@[simp]
-theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
-  rfl
-#align simple_graph.hom.map_dart_apply SimpleGraph.Hom.mapDart_apply
 
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
 @[simps]
@@ -1714,7 +1667,7 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   map_rel' ha := h ha
 #align simple_graph.hom.map_spanning_subgraphs SimpleGraph.Hom.mapSpanningSubgraphs
 
-theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
+theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective (mapEdgeSet f) := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]
   repeat' rw [Subtype.mk_eq_mk]
@@ -1725,7 +1678,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
   contrapose! h
-  exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))
+  exact G'.ne_of_adj (HasAdj.Hom.map_adj f ((top_adj _ _).mpr h))
 #align simple_graph.hom.injective_of_top_hom SimpleGraph.Hom.injective_of_top_hom
 
 /-- There is a homomorphism to a graph from a comapped graph.
@@ -1736,44 +1689,18 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
   map_rel' := by simp
 #align simple_graph.hom.comap SimpleGraph.Hom.comap
 
-variable {G'' : SimpleGraph X}
-
-/-- Composition of graph homomorphisms. -/
-abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
-  RelHom.comp f' f
-#align simple_graph.hom.comp SimpleGraph.Hom.comp
-
-@[simp]
-theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
-  rfl
-#align simple_graph.hom.coe_comp SimpleGraph.Hom.coe_comp
-
 end Hom
 
 namespace Embedding
 
 variable {G G'} (f : G ↪g G')
 
-/-- The identity embedding from a graph to itself. -/
-abbrev refl : G ↪g G :=
-  RelEmbedding.refl _
-#align simple_graph.embedding.refl SimpleGraph.Embedding.refl
-
-/-- An embedding of graphs gives rise to a homomorphism of graphs. -/
-abbrev toHom : G →g G' :=
-  f.toRelHom
-#align simple_graph.embedding.to_hom SimpleGraph.Embedding.toHom
-
-theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
-  f.map_rel_iff
-#align simple_graph.embedding.map_adj_iff SimpleGraph.Embedding.map_adj_iff
-
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 #align simple_graph.embedding.map_mem_edge_set_iff SimpleGraph.Embedding.map_mem_edgeSet_iff
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
-  map_adj_iff f
+  HasAdj.Embedding.map_adj_iff f
 #align simple_graph.embedding.apply_mem_neighbor_set_iff SimpleGraph.Embedding.apply_mem_neighborSet_iff
 
 /-- A graph embedding induces an embedding of edge sets. -/
@@ -1787,7 +1714,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
     where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_neighborSet_iff f).mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h⊢
@@ -1840,18 +1767,6 @@ protected def completeGraph {α β : Type _} (f : α ↪ β) :
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
 
-variable {G'' : SimpleGraph X}
-
-/-- Composition of graph embeddings. -/
-abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
-  f.trans f'
-#align simple_graph.embedding.comp SimpleGraph.Embedding.comp
-
-@[simp]
-theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
-  rfl
-#align simple_graph.embedding.coe_comp SimpleGraph.Embedding.coe_comp
-
 end Embedding
 
 section InduceHom
@@ -1870,7 +1785,7 @@ def InduceHom : G.induce s →g G'.induce t where
 #align simple_graph.coe_induce_hom SimpleGraph.coe_induceHom
 
 @[simp] lemma induceHom_id (G : SimpleGraph V) (s) :
-    InduceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
+    InduceHom (HasAdj.Hom.id : G →g G) (Set.mapsTo_id s) = HasAdj.Hom.id := by
   ext x
   rfl
 #align simple_graph.induce_hom_id SimpleGraph.induceHom_id
@@ -1887,36 +1802,12 @@ namespace Iso
 
 variable {G G'} (f : G ≃g G')
 
-/-- The identity isomorphism of a graph with itself. -/
-abbrev refl : G ≃g G :=
-  RelIso.refl _
-#align simple_graph.iso.refl SimpleGraph.Iso.refl
-
-/-- An isomorphism of graphs gives rise to an embedding of graphs. -/
-abbrev toEmbedding : G ↪g G' :=
-  f.toRelEmbedding
-#align simple_graph.iso.to_embedding SimpleGraph.Iso.toEmbedding
-
-/-- An isomorphism of graphs gives rise to a homomorphism of graphs. -/
-abbrev toHom : G →g G' :=
-  f.toEmbedding.toHom
-#align simple_graph.iso.to_hom SimpleGraph.Iso.toHom
-
-/-- The inverse of a graph isomorphism. -/
-abbrev symm : G' ≃g G :=
-  RelIso.symm f
-#align simple_graph.iso.symm SimpleGraph.Iso.symm
-
-theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
-  f.map_rel_iff
-#align simple_graph.iso.map_adj_iff SimpleGraph.Iso.map_adj_iff
-
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 #align simple_graph.iso.map_mem_edge_set_iff SimpleGraph.Iso.map_mem_edgeSet_iff
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
-  map_adj_iff f
+  HasAdj.Iso.map_adj_iff f
 #align simple_graph.iso.apply_mem_neighbor_set_iff SimpleGraph.Iso.apply_mem_neighborSet_iff
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
@@ -1941,19 +1832,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
     where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_neighborSet_iff f).mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
-      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_neighborSet_iff.mpr w.2⟩
+      simpa [RelIso.symm_apply_apply] using (apply_mem_neighborSet_iff f.symm).mpr w.2⟩
   left_inv w := by simp
   right_inv w := by simp
 #align simple_graph.iso.map_neighbor_set SimpleGraph.Iso.mapNeighborSet
-
-theorem card_eq_of_iso [Fintype V] [Fintype W] (f : G ≃g G') : Fintype.card V = Fintype.card W := by
-  rw [← Fintype.ofEquiv_card f.toEquiv]
-  -- porting note: need to help it to find the typeclass instances from the target expression
-  apply @Fintype.card_congr' _ _ (_) (_) rfl
-#align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq_of_iso
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
@@ -2000,18 +1885,6 @@ theorem toEmbedding_completeGraph {α β : Type _} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 #align simple_graph.iso.to_embedding_complete_graph SimpleGraph.Iso.toEmbedding_completeGraph
-
-variable {G'' : SimpleGraph X}
-
-/-- Composition of graph isomorphisms. -/
-abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
-  f.trans f'
-#align simple_graph.iso.comp SimpleGraph.Iso.comp
-
-@[simp]
-theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
-  rfl
-#align simple_graph.iso.coe_comp SimpleGraph.Iso.coe_comp
 
 end Iso
 

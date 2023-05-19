@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Combinatorics.Digraph.HasAdj
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.ProjectionNotation
@@ -26,6 +27,12 @@ structure Digraph (V : Type _) where
   Adj : V → V → Prop
 
 pp_extended_field_notation Digraph.Adj
+
+instance : HasAdj (Digraph V) (fun _ ↦ V) where
+  Adj G := G.Adj
+
+/- Perhaps there is an elaborator/delaborator that could help here. -/
+@[simp] theorem Digraph.adj_eq_adj (G : Digraph V) : HasAdj.Adj G = G.Adj := rfl
 
 /-- Constructor for directed graphs given a boolean function. -/
 @[simps]
@@ -246,6 +253,7 @@ or "bonds." -/
 structure Dart extends V × V where
   is_adj : G.Adj fst snd
   deriving DecidableEq
+#align simple_graph.dart Digraph.Dart
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
 
@@ -257,12 +265,18 @@ variable {G}
 
 theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   cases d₁; cases d₂; simp
+#align simple_graph.dart.ext_iff Digraph.Dart.ext_iff
 
 @[ext]
 theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (Dart.ext_iff d₁ d₂).mpr h
+#align simple_graph.dart.ext Digraph.Dart.ext
+
+-- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
+-- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) := Dart.ext
+#align simple_graph.dart.to_prod_injective Digraph.Dart.toProd_injective
 
 instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
   Fintype.ofEquiv (Σ v, G.outNeighborSet v)
@@ -270,6 +284,7 @@ instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
       invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
       left_inv := fun s => by ext <;> simp
       right_inv := fun d => by ext <;> simp }
+#align simple_graph.dart.fintype Digraph.Dart.fintype
 
 end Darts
 
@@ -470,70 +485,37 @@ section Maps
 
 /-! ### Graph homomorphisms
 
-We define graph homomorphisms for the `Digraph` structure. Any structure that extends
-`Digraph` gets graph homomorphisms for free, though this only makes sense for relation-like
-graphs (so not multigraphs).
-
-In the future we may decide to use a more sophisticated class-based system if we want this
-notation to be usable for other types of graph homomorphisms too.
-
-TODO: make delaborator that erases `toDigraph` in `x.toDigraph →g y.toDigraph`.
+We get graph homomorphisms from the `HasAdj` class. Here we give properties
+specialized to `Digraph`.
 -/
-
-/-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
-
-The notation `G →g G'` represents the type of graph homomorphisms. -/
-abbrev Hom := RelHom G.Adj G'.Adj
-#align simple_graph.hom Digraph.Hom
-
-/-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w `. Its image is an induced subgraph of G'.
-
-The notation `G ↪g G'` represents the type of graph embeddings. -/
-abbrev Embedding := RelEmbedding G.Adj G'.Adj
-#align simple_graph.embedding Digraph.Embedding
-
-/-- A graph isomorphism is an bijective map on vertex sets that respects adjacency relations.
-
-The notation `G ≃g G'` represents the type of graph isomorphisms.
--/
-abbrev Iso := RelIso G.Adj G'.Adj
-#align simple_graph.iso Digraph.Iso
-
-infixl:50 " →g " => Hom
-infixl:50 " ↪g " => Embedding
-infixl:50 " ≃g " => Iso
 
 namespace Hom
 
 variable {G G'} (f : G →g G')
 
-/-- The identity homomorphism from a graph to itself. -/
-protected abbrev id : G →g G := RelHom.id _
-
-theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) := f.map_rel' h
-
 theorem apply_mem_inNeighborSet {v w : V} (h : w ∈ G.inNeighborSet v) :
-    f w ∈ G'.inNeighborSet (f v) := map_adj f h
+    f w ∈ G'.inNeighborSet (f v) := HasAdj.Hom.map_adj f h
 
 theorem apply_mem_outNeighborSet {v w : V} (h : w ∈ G.outNeighborSet v) :
-    f w ∈ G'.outNeighborSet (f v) := map_adj f h
+    f w ∈ G'.outNeighborSet (f v) := HasAdj.Hom.map_adj f h
 
 /-- The map between in-neighbor sets induced by a homomorphism. -/
 @[simps]
 def mapInNeighborSet (v : V) (w : G.inNeighborSet v) : G'.inNeighborSet (f v) :=
-  ⟨f w, f.apply_mem_inNeighborSet w.property⟩
+  ⟨f w, apply_mem_inNeighborSet f w.property⟩
 
 /-- The map between out-neighbor sets induced by a homomorphism. -/
 @[simps]
 def mapOutNeighborSet (v : V) (w : G.outNeighborSet v) : G'.outNeighborSet (f v) :=
-  ⟨f w, f.apply_mem_outNeighborSet w.property⟩
+  ⟨f w, apply_mem_outNeighborSet f w.property⟩
 
 /-- The map between darts induced by a homomorphism. -/
 def mapDart (d : G.Dart) : G'.Dart := ⟨d.1.map f f, f.map_adj d.2⟩
+#align simple_graph.hom.map_dart Digraph.Hom.mapDart
 
 @[simp]
-theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
+theorem mapDart_apply (d : G.Dart) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
+#align simple_graph.hom.map_dart_apply Digraph.Hom.mapDart_apply
 
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
 @[simps]
@@ -550,40 +532,24 @@ protected def comap (f : V → W) (G : Digraph W) : G.comap f →g G where
 
 variable {G''}
 
-/-- Composition of graph homomorphisms. -/
-protected abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' := RelHom.comp f' f
-
-pp_extended_field_notation Hom.comp
-
-@[simp]
-theorem coe_comp (f' : G' →g G'') (f : G →g G') : (f'.comp f : V → X) = f' ∘ f := rfl
-
 end Hom
 
 namespace Embedding
 
 variable {G G'} (f : G ↪g G')
 
-/-- The identity embedding from a graph to itself. -/
-abbrev refl : G ↪g G := RelEmbedding.refl _
-
-/-- An embedding of graphs gives rise to a homomorphism of graphs. -/
-abbrev toHom : G →g G' := f.toRelHom
-
-theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w := f.map_rel_iff
-
 theorem apply_mem_inNeighborSet_iff {v w : V} :
     f w ∈ G'.inNeighborSet (f v) ↔ w ∈ G.inNeighborSet v :=
-  map_adj_iff f
+  HasAdj.Embedding.map_adj_iff f
 
 theorem apply_mem_outNeighborSet_iff {v w : V} :
     f w ∈ G'.outNeighborSet (f v) ↔ w ∈ G.outNeighborSet v :=
-  map_adj_iff f
+  HasAdj.Embedding.map_adj_iff f
 
 /-- A graph embedding induces an embedding of in-neighbor sets. -/
 @[simps]
 def mapInNeighborSet (v : V) : G.inNeighborSet v ↪ G'.inNeighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_inNeighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_inNeighborSet_iff f).mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h ⊢
@@ -592,7 +558,7 @@ def mapInNeighborSet (v : V) : G.inNeighborSet v ↪ G'.inNeighborSet (f v) wher
 /-- A graph embedding induces an embedding of out-neighbor sets. -/
 @[simps]
 def mapOutNeighborSet (v : V) : G.outNeighborSet v ↪ G'.outNeighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_outNeighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_outNeighborSet_iff f).mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h ⊢
@@ -624,16 +590,6 @@ protected def induce (s : Set V) : G.induce s ↪g G :=
 protected def spanningCoe {s : Set V} (G : Digraph s) : G ↪g G.spanningCoe :=
   Digraph.Embedding.map (Function.Embedding.subtype _) G
 
-variable {G''}
-
-/-- Composition of graph embeddings. -/
-protected abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' := f.trans f'
-
-pp_extended_field_notation Embedding.comp
-
-@[simp]
-theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : (f'.comp f : V → X) = f' ∘ f := rfl
-
 end Embedding
 
 section InduceHom
@@ -649,7 +605,7 @@ def InduceHom : G.induce s →g G'.induce t where
 @[simp, norm_cast] lemma coe_induceHom : InduceHom φ φst = Set.MapsTo.restrict φ s t φst := rfl
 
 @[simp] lemma induceHom_id (G : Digraph V) (s) :
-    InduceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
+    InduceHom (HasAdj.Hom.id : G →g G) (Set.mapsTo_id s) = HasAdj.Hom.id := by
   ext x
   rfl
 
@@ -664,50 +620,33 @@ namespace Iso
 
 variable {G G'} (f : G ≃g G')
 
-/-- The identity isomorphism of a graph with itself. -/
-abbrev refl : G ≃g G := RelIso.refl _
-
-/-- An isomorphism of graphs gives rise to an embedding of graphs. -/
-abbrev toEmbedding : G ↪g G' := f.toRelEmbedding
-
-/-- An isomorphism of graphs gives rise to a homomorphism of graphs. -/
-abbrev toHom : G →g G' := f.toEmbedding.toHom
-
-/-- The inverse of a graph isomorphism. -/
-abbrev symm : G' ≃g G := RelIso.symm f
-
-theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w := f.map_rel_iff
-
 theorem apply_mem_inNeighborSet_iff {v w : V} :
     f w ∈ G'.inNeighborSet (f v) ↔ w ∈ G.inNeighborSet v :=
-  map_adj_iff f
+  HasAdj.Iso.map_adj_iff f
 
 theorem apply_mem_outNeighborSet_iff {v w : V} :
     f w ∈ G'.outNeighborSet (f v) ↔ w ∈ G.outNeighborSet v :=
-  map_adj_iff f
+  HasAdj.Iso.map_adj_iff f
 
 /-- A graph isomorphism induces an equivalence of in-neighbor sets. -/
 @[simps]
 def mapInNeighborSet (v : V) : G.inNeighborSet v ≃ G'.inNeighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_inNeighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_inNeighborSet_iff f).mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
-      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_inNeighborSet_iff.mpr w.2⟩
+      simpa [RelIso.symm_apply_apply] using (apply_mem_inNeighborSet_iff f.symm).mpr w.2⟩
   left_inv w := by simp
   right_inv w := by simp
 
 /-- A graph isomorphism induces an equivalence of out-neighbor sets. -/
 @[simps]
 def mapOutNeighborSet (v : V) : G.outNeighborSet v ≃ G'.outNeighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_outNeighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, (apply_mem_outNeighborSet_iff f).mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
-      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_outNeighborSet_iff.mpr w.2⟩
+      simpa [RelIso.symm_apply_apply] using (apply_mem_outNeighborSet_iff f.symm).mpr w.2⟩
   left_inv w := by simp
   right_inv w := by simp
-
-theorem card_eq_of_iso [Fintype V] [Fintype W] (f : G ≃g G') : Fintype.card V = Fintype.card W :=
-  Fintype.card_congr f.toEquiv
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
@@ -733,16 +672,6 @@ lemma map_apply (f : V ≃ W) (G : Digraph V) (v : V) :
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : Digraph V) (w : W) :
   (Digraph.Iso.map f G).symm w = f.symm w := rfl
-
-variable {G''}
-
-/-- Composition of graph isomorphisms. -/
-abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' := f.trans f'
-
-pp_extended_field_notation Iso.comp
-
-@[simp]
-theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : (f'.comp f : V → X) = f' ∘ f := rfl
 
 end Iso
 
