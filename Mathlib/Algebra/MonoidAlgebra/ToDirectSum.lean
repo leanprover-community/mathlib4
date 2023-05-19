@@ -11,6 +11,8 @@ Authors: Eric Wieser
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.ToDfinsupp
+-- porting note: Added import to bring pointwise multiplication into scope
+import Mathlib.Data.Finsupp.Pointwise
 
 /-!
 # Conversion between `add_monoid_algebra` and homogenous `direct_sum`
@@ -103,10 +105,16 @@ theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M 
   Finsupp.toDfinsupp_toFinsupp f
 #align add_monoid_algebra.to_direct_sum_to_add_monoid_algebra AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra
 
+-- porting note: Not needed in mathlib
+instance : Coe (DirectSum ι fun i ↦ M) ( Π₀ _i : ι, M) where
+   coe s := s
+
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ i : ι, M) :
-    f.toAddMonoidAlgebra.toDirectSum = f :=
-  Dfinsupp.toFinsupp_toDfinsupp f
+    f.toAddMonoidAlgebra.toDirectSum = f := by {
+      rw [DirectSum.toAddMonoidAlgebra, AddMonoidAlgebra.toDirectSum]
+      exact @Dfinsupp.toFinsupp_toDfinsupp ι M _ _ _ f
+    }
 #align direct_sum.to_add_monoid_algebra_to_direct_sum DirectSum.toAddMonoidAlgebra_toDirectSum
 
 end
@@ -131,19 +139,45 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
   Finsupp.toDfinsupp_add _ _
 #align add_monoid_algebra.to_direct_sum_add AddMonoidAlgebra.toDirectSum_add
 
+
+instance [MulZeroClass M] : Mul (Π₀ _i : ι, M) :=
+  ⟨Dfinsupp.zipWith (fun _i => (· * ·)) (fun _i => mul_zero 0)⟩
+--instance MulDFinsupp {β : ι → M } [Semiring M] :  HMul (Dfinsupp ι (Π₀ _i, M)) (Dfinsupp (Π₀ _i, M)) := _
+instance [DecidableEq ι] [AddMonoid ι] [Semiring M] : Mul (AddMonoidAlgebra M ι) :=
+  ⟨Dfinsupp.zipWith (fun _i => (· * ·)) (fun _i => mul_zero 0)⟩
+-- instance [Semiring M] : HMul (ι →₀ M) (ι →₀ M) (ι →₀ M) where
+--   hMul := fun f g => (f i) * (g i)
+-- [Semiring M] Π₀ i, β i
+-- -- port note: not needed in mathlib
+@[simp]
+theorem toDfinsupp_mul [MulZeroClass M] (f g : ι →₀ M) :
+    (f * g).toDfinsupp = f.toDfinsupp * g.toDfinsupp :=
+       FunLike.coe_injective rfl
+
+
+
 @[simp]
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
-  let to_hom : AddMonoidAlgebra M ι →+ ⨁ i : ι, M :=
-    ⟨to_direct_sum, to_direct_sum_zero, to_direct_sum_add⟩
-  show to_hom (f * g) = to_hom f * to_hom g
-  revert f g
-  rw [AddMonoidHom.map_mul_iff]
-  ext (xi xv yi yv) : 4
-  dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
-    AddMonoidHom.mul_apply, AddEquiv.coe_toAddMonoidHom, Finsupp.singleAddHom_apply]
-  simp only [AddMonoidAlgebra.single_mul_single, to_hom, AddMonoidHom.coe_mk,
-    AddMonoidAlgebra.toDirectSum_single, DirectSum.of_mul_of, Mul.gMul_mul]
+      -- rw [AddMonoidAlgebra.toDirectSum]
+      -- rw [AddMonoidAlgebra.toDirectSum]
+      -- rw [AddMonoidAlgebra.toDirectSum]
+      -- exact toDfinsupp_mul f g
+      let to_hom : AddMonoidAlgebra M ι →+ ⨁ i : ι, M :=
+        {
+          toFun := toDirectSum
+          map_zero' := rfl
+          map_add' := by simp only [toDirectSum_add, forall_const]
+        }
+      show to_hom (f * g) = to_hom f * to_hom g
+      revert f g
+      rw [@AddMonoidHom.map_mul_iff (AddMonoidAlgebra M ι) (⨁ i : ι, M) _ _ to_hom ]
+      ext (xi xv yi yv) : 4
+      dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
+        AddMonoidHom.mul_apply, AddEquiv.coe_toAddMonoidHom, Finsupp.singleAddHom_apply]
+      simp [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk,
+        AddMonoidAlgebra.toDirectSum_single, DirectSum.of_mul_of, Mul.gMul_mul]
+      exact toDfinsupp_mul xi xv
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
 
 end AddMonoidAlgebra
@@ -234,4 +268,3 @@ def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemir
 #align add_monoid_algebra_alg_equiv_direct_sum addMonoidAlgebraAlgEquivDirectSum
 
 end Equivs
-
