@@ -3,11 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.Graph.Classes
+import Mathlib.Combinatorics.Graph.Dart
+import Mathlib.Combinatorics.Graph.Hom
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
-import Mathlib.Tactic.ProjectionNotation
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Directed graphs
