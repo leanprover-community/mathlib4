@@ -74,7 +74,7 @@ elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
 
-private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM Unit := do
+private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM Unit := do
   let name ← mkFreshUserName rv.name
   addAndCompile <| .defnDecl { rv with
     name
@@ -115,8 +115,8 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
     return
   unless rv.numMotives == 1 do
     throwError "mutual/nested inductives unsupported"
-  if iv.type.getForallBody.isProp && !iv.isRec && iv.numCtors == 1 && iv.numIndices == 0 then
-    compilePropStruct iv rv
+  if !iv.isRec && iv.numCtors == 1 && iv.numIndices == 0 then
+    compileStruct iv rv
     return
   let levels := rv.levelParams.map .param
   let name ← mkFreshUserName rv.name
