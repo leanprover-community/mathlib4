@@ -9,7 +9,7 @@ Authors: Jon Eugster
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Algebra
--- import Mathlib.Algebra.CharP.LocalRing -- Porting note: [TODO] not ported yet.
+import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.FieldSimp
 
@@ -45,18 +45,18 @@ characteristic case for convenience:
 
 - `split_by_characteristic` : Generally consider positive char `p ≠ 0`.
 - `split_by_characteristic_domain` : In a domain we can assume that `p` is prime.
-- `split_by_characteristic_local_ring` : In a local ring we can assume that `p` is a prime power.
+- `split_by_characteristic_localRing` : In a local ring we can assume that `p` is a prime power.
 
 ## Implementation Notes
 
 We use the terms `EqualCharZero` and `RatAlgebra` despite not being such definitions in mathlib.
 The former refers to the statement `∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)`, the latter
-refers to the existance of a instance `[Algebra ℚ R]`. The two are shown to be
+refers to the existance of an instance `[Algebra ℚ R]`. The two are shown to be
 equivalent conditions.
 
 ## TODO
 
-- Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.padics].
+- Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
 
 variable (R : Type _) [CommRing R]
@@ -96,15 +96,16 @@ theorem reduce_to_p_prime {P : Prop} :
     -- Krull's Thm: There exists a prime ideal `P` such that `I ≤ P`
     rcases Ideal.exists_le_maximal I hI_ne_top with ⟨M, hM_max, h_IM⟩
     let r := ringChar (R ⧸ M)
-    have r_pos : r ≠ 0 := by
-      have q_zero := congr_arg (Ideal.Quotient.factor I M h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
+    have r_pos : r ≠ 0
+    · have q_zero :=
+        congr_arg (Ideal.Quotient.factor I M h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
       simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
       exact (CharP.cast_eq_zero_iff (R ⧸ M) r q).mp q_zero
     have r_prime : Nat.Prime r :=
       or_iff_not_imp_right.1 (CharP.char_is_prime_or_zero (R ⧸ M) r) r_pos
     apply h r r_prime
-    haveI : CharZero R := q_mixedChar.toCharZero
+    have : CharZero R := q_mixedChar.toCharZero
     exact ⟨⟨M, hM_max.ne_top, ringChar.of_eq rfl⟩⟩
 #align mixed_char_zero.reduce_to_p_prime MixedCharZero.reduce_to_p_prime
 
@@ -159,9 +160,6 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 -/
 
 namespace EqualCharZero
-
--- Porting note: That's probably #2074
-set_option synthInstance.etaExperiment true in
 
 /-- `ℚ`-algebra implies equal characteristic. -/
 theorem of_ratAlgebra [Nontrivial R] [Algebra ℚ R] :
@@ -375,20 +373,19 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
   exact h_pos p p_prime p_char
 #align split_by_characteristic_domain split_by_characteristic_domain
 
--- -- Porting note: [TODO] Uncomment this once all dependencies are ported.
--- /--
--- In a `LocalRing R`, split any `Prop` over `R` into the three cases:
--- - *prime power* characteristic.
--- - equal characteristic zero.
--- - mixed characteristic `(0, p)`.
--- -/
--- theorem split_by_characteristic_localRing [LocalRing R]
---     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
---     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
---   refine' split_by_characteristic R _ h_equal h_mixed
---   intro p p_pos p_char
---   have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
---   exact h_pos p p_ppow p_char
--- #align split_by_characteristic_local_ring split_by_characteristic_localRing
+ /--
+In a `LocalRing R`, split any `Prop` over `R` into the three cases:
+- *prime power* characteristic.
+- equal characteristic zero.
+- mixed characteristic `(0, p)`.
+-/
+theorem split_by_characteristic_localRing [LocalRing R]
+    (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
+    (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
+  refine' split_by_characteristic R _ h_equal h_mixed
+  intro p p_pos p_char
+  have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
+  exact h_pos p p_ppow p_char
+#align split_by_characteristic_local_ring split_by_characteristic_localRing
 
 end MainStatements
