@@ -300,8 +300,8 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 #align basis.to_dual_apply Basis.toDual_apply
 
 @[simp]
-theorem toDual_total_left (f : ι →₀ R) (i : ι) : b.toDual (Finsupp.total ι M R b f) (b i) = f i :=
-  by
+theorem toDual_total_left (f : ι →₀ R) (i : ι) :
+    b.toDual (Finsupp.total ι M R b f) (b i) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
@@ -311,8 +311,8 @@ theorem toDual_total_left (f : ι →₀ R) (i : ι) : b.toDual (Finsupp.total �
 #align basis.to_dual_total_left Basis.toDual_total_left
 
 @[simp]
-theorem toDual_total_right (f : ι →₀ R) (i : ι) : b.toDual (b i) (Finsupp.total ι M R b f) = f i :=
-  by
+theorem toDual_total_right (f : ι →₀ R) (i : ι) :
+    b.toDual (b i) (Finsupp.total ι M R b f) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
@@ -383,8 +383,8 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Fintype ι]
 variable (b : Basis ι R M)
 
 @[simp]
-theorem sum_dual_apply_smul_coord (f : Module.Dual R M) : (∑ x, f (b x) • b.coord x) = f :=
-  by
+theorem sum_dual_apply_smul_coord (f : Module.Dual R M) :
+    (∑ x, f (b x) • b.coord x) = f := by
   ext m
   simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul, ←
     f.map_smul, ← f.map_sum, Basis.coord_apply, Basis.sum_repr]
@@ -682,7 +682,6 @@ theorem coeffs_apply [DecidableEq ι] (h : DualBases e ε) (m : M) (i : ι) : h.
 #align module.dual_bases.coeffs_apply Module.DualBases.coeffs_apply
 
 /-- linear combinations of elements of `e`.
-<<<<<<< HEAD
 This is a convenient abbreviation for `Finsupp.total _ M R e l` -/
 def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
   l.sum fun (i : ι) (a : R) => a • e i
@@ -738,6 +737,10 @@ def basis : Basis ι R M :=
         ext i
         exact (ε i).map_smul c v }
 #align module.dual_bases.basis Module.DualBases.basis
+
+-- Porting note : from simpNF the LHS simplifies; it yields lc_def.symm
+-- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
+attribute [-simp, nolint simpNF] basis_repr_symm_apply
 
 @[simp]
 theorem coe_basis : ⇑h.basis = e := by
@@ -1066,7 +1069,8 @@ theorem quotAnnihilatorEquiv_apply (W : Subspace K V) (φ : Module.Dual K V) :
 
 /-- The natural isomorphism from the dual of a subspace `W` to `W.dualLift.range`. -/
 -- Porting note: broken dot notation lean4#1910 LinearMap.range
-noncomputable def dualEquivDual (W : Subspace K V) : Module.Dual K W ≃ₗ[K] LinearMap.range W.dualLift :=
+noncomputable def dualEquivDual (W : Subspace K V) :
+    Module.Dual K W ≃ₗ[K] LinearMap.range W.dualLift :=
   LinearEquiv.ofInjective _ dualLift_injective
 #align subspace.dual_equiv_dual Subspace.dualEquivDual
 
@@ -1227,8 +1231,6 @@ def dualPairing (W : Submodule R M) : Module.Dual R M ⧸ W.dualAnnihilator →�
   W.dualAnnihilator.liftQ W.dualRestrict le_rfl
 #align submodule.dual_pairing Submodule.dualPairing
 
-example (W : Submodule R M) : Module.Dual R M ⧸ dualAnnihilator W →ₗ[R] Module.Dual R W := Submodule.dualPairing W
-
 @[simp]
 theorem dualPairing_apply {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
     W.dualPairing (Quotient.mk φ) x = φ x :=
@@ -1318,7 +1320,8 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note: broken dot notation lean4#1910
-  · change LinearMap.range ((Submodule.subtype <| LinearMap.range f).comp f.rangeRestrict).dualMap = _
+  · change LinearMap.range
+      ((Submodule.subtype <| LinearMap.range f).comp f.rangeRestrict).dualMap = _
     rw [← LinearMap.dualMap_comp_dualMap, LinearMap.range_comp_of_range_eq_top]
     rwa [LinearMap.range_eq_top]
   · apply congr_arg
@@ -1375,7 +1378,9 @@ namespace Subspace
 
 open Submodule
 
--- Porting note: remove this
+-- Porting note: remove this at some point; this spends a lot of time
+-- checking that AddCommGroup structures on V₁ ⧸ W.dualAnnihilator are defEq
+-- was much worse with implicit universe variables
 set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
@@ -1639,3 +1644,4 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
+
