@@ -60,7 +60,7 @@ theorem BinaryFan.swap_snd {P Q : C} (t : BinaryFan P Q) : t.swap.snd = t.fst :=
   rfl
 #align category_theory.limits.binary_fan.swap_snd CategoryTheory.Limits.BinaryFan.swap_snd
 
-/-- If a cone `t` over `P Q` is a limit cone, then `t.swap` is a limit cone over `Q P`.
+/-- If a binary fan `t` over `P Q` is a limit cone, then `t.swap` is a limit cone over `Q P`.
 -/
 @[simps]
 def IsLimit.swapBinaryFan {P Q : C} {t : BinaryFan P Q} (I : IsLimit t) : IsLimit t.swap where
