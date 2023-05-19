@@ -19,7 +19,7 @@ In this file we define several notions of finiteness that are common in commutat
 
 ## Main declarations
 
-- `Module.Finite`, `algebra.finite`, `RingHom.Finite`, `AlgHom.Finite`
+- `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
   all of these express that some object is finitely generated *as module* over some base ring.
 - `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
   all of these express that some object is finitely generated *as algebra* over some base ring.
@@ -39,8 +39,8 @@ universe w₁ w₂ w₃
 -- Porting Note : `M, N` is never used
 variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
-/-- An algebra over a commutative semiring is `finite_presentation` if it is the quotient of a
-polynomial ring in `n` variables by a finitely generated ideal. -/
+/-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
+a polynomial ring in `n` variables by a finitely generated ideal. -/
 def Algebra.FinitePresentation [CommSemiring R] [Semiring A] [Algebra R A] : Prop :=
   ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f ∧ f.toRingHom.ker.FG
 #align algebra.finite_presentation Algebra.FinitePresentation
@@ -166,7 +166,6 @@ theorem iff_quotient_mvPolynomial' :
     refine'
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ _ hfk ulift_var.surjective⟩
-    -- change Submodule.FG _
     erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
     exact Submodule.fg_bot
     -- Porting note: was
@@ -403,7 +402,7 @@ namespace RingHom
 
 variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
 
-/-- A ring morphism `A →+* B` is of `finite_presentation` if `B` is finitely presented as
+/-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
 def FinitePresentation (f : A →+* B) : Prop :=
   @Algebra.FinitePresentation A B _ _ f.toAlgebra
@@ -455,11 +454,9 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f
   letI ins1 := RingHom.toAlgebra f
   letI ins2 := RingHom.toAlgebra g
   letI ins3 := RingHom.toAlgebra (g.comp f)
-  @Algebra.FinitePresentation.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
-    ⟨fun a b c => by
-      simp only [Algebra.smul_def, RingHom.map_mul, mul_assoc]
-      rfl⟩
-    hf hg
+  letI ins4 : IsScalarTower A B C :=
+    { smul_assoc := fun a b c => by simp [Algebra.smul_def, mul_assoc]; rfl }
+  Algebra.FinitePresentation.trans hf hg
 #align ring_hom.finite_presentation.comp RingHom.FinitePresentation.comp
 
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
@@ -485,8 +482,8 @@ variable [CommRing A] [CommRing B] [CommRing C]
 
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
-/-- An algebra morphism `A →ₐ[R] B` is of `finite_presentation` if it is of finite presentation as
-ring morphism. In other words, if `B` is finitely presented as `A`-algebra. -/
+/-- An algebra morphism `A →ₐ[R] B` is of `AlgHom.FinitePresentation` if it is of finite
+presentation as ring morphism. In other words, if `B` is finitely presented as `A`-algebra. -/
 def FinitePresentation (f : A →ₐ[R] B) : Prop :=
   f.toRingHom.FinitePresentation
 #align alg_hom.finite_presentation AlgHom.FinitePresentation
