@@ -111,7 +111,7 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
     refine' sum_congr rfl fun b _ => _
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
-      fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
+      fun p₁ _ p₂ _ eq => Pi.cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
