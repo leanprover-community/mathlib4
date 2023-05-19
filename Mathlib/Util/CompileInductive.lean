@@ -8,6 +8,12 @@ import Lean.Elab.PreDefinition
 
 /-!
 # Define the `#compile inductive` command.
+
+The command `#compile inductive Foo` adds compiled code for the recursor `Foo.rec`,
+working around a bug in the core Lean compiler which does not support recursors.
+
+Similarly, `#compile def Foo.foo` adds compiled code for definitions when missing.
+This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
 namespace Mathlib.Util
@@ -19,23 +25,17 @@ private def replaceConst (old new : Name) (e : Expr) : Expr :=
 
 open Meta
 
-private def mkFunExts' (xs : Array Expr) (e : Expr) (βfg : Expr × Expr × Expr) : MetaM Expr :=
-  Prod.fst <$> xs.foldrM (init := (e, βfg)) λ x (e, β, f, g) => do
+private def mkFunExts' (xs : Array Expr) (e : Expr) (βfg : Expr × Expr × Expr) : MetaM Expr := do
+  let mut (β, f, g) := βfg
+  let mut e := e
+  for x in xs.reverse do
     let α ← inferType x
-    let f ← mkLambdaFVars #[x] f
-    let g ← mkLambdaFVars #[x] g
-    return (
-      mkApp5
-        (.const ``funext [(← inferType α).sortLevel!, (← inferType β).sortLevel!])
-        α
-        (← mkLambdaFVars #[x] β)
-        f
-        g
-        (← mkLambdaFVars #[x] e),
-      ← mkForallFVars #[x] β,
-      f,
-      g
-    )
+    f ← mkLambdaFVars #[x] f
+    g ← mkLambdaFVars #[x] g
+    e := mkApp5 (.const ``funext [(← inferType α).sortLevel!, (← inferType β).sortLevel!])
+      α (← mkLambdaFVars #[x] β) f g (← mkLambdaFVars #[x] e)
+    β ← mkForallFVars #[x] β
+  return e
 
 private def mkFunExts (e : Expr) : MetaM Expr := do
   forallTelescope (← inferType e) λ xs body => do
@@ -52,7 +52,8 @@ private def mkEqRefl (α a : Expr) : MetaM Expr := do
 open Elab
 
 /--
-Compile the definition `dv`.
+Compile the definition `dv` by adding a second definition `dv✝` with the same body,
+and registering a `csimp`-lemma `dv = dv✝`.
 -/
 def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
   let name ← mkFreshUserName dv.name
@@ -70,7 +71,10 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
   Compiler.CSimp.add name .global
 
 /--
-`#compile def i` compiles the definition `i`.
+`#compile def Foo.foo` adds compiled code for the definition `Foo.foo`.
+This can be used for type class projections or definitions like `List._sizeOf_1`,
+for which Lean does not generate compiled code by default
+(since it is not used 99% of the time).
 -/
 elab tk:"#compile " "def " i:ident : command => Command.liftTermElabM do
   let n ← resolveGlobalConstNoOverloadWithInfo i
@@ -113,7 +117,7 @@ private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM
   compileDefn <| ← getConstInfoDefn <| mkRecOnName iv.name
 
 /--
-Compile the recursor for `iv`.
+Generate compiled code for the recursor for `iv`.
 -/
 def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   let rv ← getConstInfoRec <| mkRecName iv.name
@@ -172,7 +176,9 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       compileDefn dv
 
 /--
-`#compile inductive i` compiles the recursor for `i`.
+`#compile inductive Foo` creates compiled code for the recursor `Foo.rec`,
+so that `Foo.rec` can be used in a definition
+without having to mark the definition as `noncomputable`.
 -/
 elab tk:"#compile " "inductive " i:ident : command => Command.liftTermElabM do
   let n ← resolveGlobalConstNoOverloadWithInfo i
