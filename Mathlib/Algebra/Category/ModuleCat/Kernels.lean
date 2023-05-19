@@ -46,7 +46,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
             HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
-    LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simpa? [← h] )
+    LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h] ; rfl)
 #align Module.kernel_is_limit ModuleCat.kernelIsLimit
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
@@ -132,19 +132,14 @@ theorem cokernel_π_cokernelIsoRangeQuotient_hom :
 
 @[simp, elementwise]
 theorem range_mkQ_cokernelIsoRangeQuotient_inv :
-    ↿f.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f := by
-  convert colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ _ <;> rfl
+    ↿f.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
+  colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ WalkingParallelPair.one
 #align Module.range_mkq_cokernel_iso_range_quotient_inv ModuleCat.range_mkQ_cokernelIsoRangeQuotient_inv
 
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
-  rw [map_add]
-  -- Porting note: broken because we have forget instead of coe
-  sorry
-  -- rw [cokernel.condition_apply]
-  -- rw [map_add, add_zero]
-  -- simp? [LinearMap.zero_apply, cokernel.condition_apply]
+  simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m
 #align Module.cokernel_π_ext ModuleCat.cokernel_π_ext
 
 end ModuleCat
