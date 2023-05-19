@@ -77,14 +77,11 @@ theorem rotate'_eq_drop_append_take :
         drop_append_of_le_length hnl, take_append_of_le_length hnl]; simp
 #align list.rotate'_eq_drop_append_take List.rotate'_eq_drop_append_take
 
--- Porting note: Added termination_by and decreasing_by as recursion fails
 theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m = l.rotate' (n + m)
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
     rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ]
-    simp
-  termination_by rotate'_rotate' l n _ => (l.length, n)
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -92,7 +89,6 @@ theorem rotate'_length (l : List α) : rotate' l l.length = l := by
   rw [rotate'_eq_drop_append_take le_rfl]; simp
 #align list.rotate'_length List.rotate'_length
 
--- Porting note: Added termination_by and decreasing_by as recursion fails
 @[simp]
 theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n) = l
   | 0 => by simp

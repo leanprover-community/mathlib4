@@ -113,7 +113,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [MulActionWithZero 𝕜 E]
 
-set_option synthInstance.etaExperiment true
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩

@@ -1180,10 +1180,7 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
 #align polynomial.support_neg Polynomial.support_neg
 
-@[simp]
-theorem C_eq_int_cast (n : ℤ) : C (n : R) = n :=
-  -- Porting note: Eta structure is disabled so the instance should be specified.
-  @map_intCast _ _ _ _ _ (@RingHom.instRingHomClassRingHom R R[X] _ _) C n
+theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
 
 end Ring
