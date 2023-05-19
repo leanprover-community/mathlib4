@@ -25,17 +25,17 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
 
 ## Main results:
 
-* `finite_dimensional.complete` : a finite-dimensional space over a complete field is complete. This
+* `FiniteDimensional.complete` : a finite-dimensional space over a complete field is complete. This
   is not registered as an instance, as the field would be an unknown metavariable in typeclass
   resolution.
-* `submodule.closed_of_finite_dimensional` : a finite-dimensional subspace over a complete field is
+* `Submodule.closed_of_finiteDimensional` : a finite-dimensional subspace over a complete field is
   closed
-* `finite_dimensional.proper` : a finite-dimensional space over a proper field is proper. This
+* `FiniteDimensional.proper` : a finite-dimensional space over a proper field is proper. This
   is not registered as an instance, as the field would be an unknown metavariable in typeclass
   resolution. It is however registered as an instance for `𝕜 = ℝ` and `𝕜 = ℂ`. As properness
-  implies completeness, there is no need to also register `finite_dimensional.complete` on `ℝ` or
+  implies completeness, there is no need to also register `FiniteDimensional.complete` on `ℝ` or
   `ℂ`.
-* `finite_dimensional_of_is_compact_closed_ball`: Riesz' theorem: if the closed unit ball is
+* `finiteDimensional_of_isCompact_closedBall`: Riesz' theorem: if the closed unit ball is
   compact, then the space is finite-dimensional.
 
 ## Implementation notes
@@ -44,7 +44,7 @@ The fact that all norms are equivalent is not written explicitly, as it would me
 on a single space, which is not the way type classes work. However, if one has a
 finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another norm,
 then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks to
-`linear_map.continuous_of_finite_dimensional`. This gives the desired norm equivalence.
+`LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
 
 
@@ -182,7 +182,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
-as `lipschitz_extension_constant E'`. -/
+as `lipschitzExtensionConstant E'`. -/
 irreducible_def lipschitzExtensionConstant (E' : Type _) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
@@ -197,7 +197,7 @@ theorem lipschitzExtensionConstant_pos (E' : Type _) [NormedAddCommGroup E'] [No
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
-constant `lipschitz_extension_constant E' * K`. -/
+constant `lipschitzExtensionConstant E' * K`. -/
 theorem LipschitzOnWith.extend_finite_dimension {α : Type _} [PseudoMetricSpace α] {E' : Type _}
     [NormedAddCommGroup E'] [NormedSpace ℝ E'] [FiniteDimensional ℝ E'] {s : Set α} {f : α → E'}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
@@ -297,7 +297,7 @@ theorem Basis.op_norm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
   simpa using NNReal.coe_le_coe.mpr (v.op_nnnorm_le ⟨M, hM⟩ hu)
 #align basis.op_norm_le Basis.op_norm_le
 
-/-- A weaker version of `basis.op_nnnorm_le` that abstracts away the value of `C`. -/
+/-- A weaker version of `Basis.op_nnnorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_op_nnnorm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ≥0), ∀ {u : E →L[𝕜] F} (M : ℝ≥0), (∀ i, ‖u (v i)‖₊ ≤ M) → ‖u‖₊ ≤ C * M := by
   cases nonempty_fintype ι
@@ -307,7 +307,7 @@ theorem Basis.exists_op_nnnorm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E
       (v.op_nnnorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
 #align basis.exists_op_nnnorm_le Basis.exists_op_nnnorm_le
 
-/-- A weaker version of `basis.op_norm_le` that abstracts away the value of `C`. -/
+/-- A weaker version of `Basis.op_norm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_op_norm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ), ∀ {u : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖u (v i)‖ ≤ M) → ‖u‖ ≤ C * M := by
   obtain ⟨C, hC, h⟩ := v.exists_op_nnnorm_le (F := F)
@@ -621,8 +621,8 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
-`metric.inf_dist x sᶜ` from `x`. See also
-`is_compact.exists_mem_frontier_inf_dist_compl_eq_dist`. -/
+`Metric.infDist x sᶜ` from `x`. See also
+`IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
 theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {x : E} {s : Set E} (hx : x ∈ s) (hs : s ≠ univ) :
     ∃ y ∈ frontier s, Metric.infDist x (sᶜ) = dist x y := by
@@ -637,8 +637,8 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGro
 #align exists_mem_frontier_inf_dist_compl_eq_dist exists_mem_frontier_infDist_compl_eq_dist
 
 /-- If `K` is a compact set in a nontrivial real normed space and `x ∈ K`, then there exists a point
-`y` of the boundary of `K` at distance `metric.inf_dist x Kᶜ` from `x`. See also
-`exists_mem_frontier_inf_dist_compl_eq_dist`. -/
+`y` of the boundary of `K` at distance `Metric.infDist x Kᶜ` from `x`. See also
+`exists_mem_frontier_infDist_compl_eq_dist`. -/
 nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type _}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
@@ -663,7 +663,7 @@ any complete normed space, while the other holds only in finite dimensional spac
 theorem summable_norm_iff {α E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
   refine' ⟨summable_of_summable_norm, fun hf => _⟩
-  -- First we use a finite basis to reduce the problem to the case `E = fin N → ℝ`
+  -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
   suffices ∀ {N : ℕ} {g : α → Fin N → ℝ}, Summable g → Summable fun x => ‖g x‖ by
     obtain v := finBasis ℝ E
     set e := v.equivFunL
@@ -673,7 +673,7 @@ theorem summable_norm_iff {α E : Type _} [NormedAddCommGroup E] [NormedSpace �
         fun i => _
     simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_op_norm (e <| f i)
   clear! E
-  -- Now we deal with `g : α → fin N → ℝ`
+  -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg
   have : ∀ i, Summable fun x => ‖g x i‖ := fun i => (Pi.summable.1 hg i).abs
   refine'
