@@ -106,7 +106,7 @@ theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ i : ι, M) :
     f.toAddMonoidAlgebra.toDirectSum = f :=
-  Dfinsupp.toFinsupp_toDfinsupp f
+  (Dfinsupp.toFinsupp_toDfinsupp (show Π₀ i : ι, M from f) : _)
 #align direct_sum.to_add_monoid_algebra_to_direct_sum DirectSum.toAddMonoidAlgebra_toDirectSum
 
 end
@@ -135,14 +135,16 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
   let to_hom : AddMonoidAlgebra M ι →+ ⨁ i : ι, M :=
-    ⟨to_direct_sum, to_direct_sum_zero, to_direct_sum_add⟩
+  { toFun := toDirectSum
+    map_zero' := toDirectSum_zero
+    map_add' := toDirectSum_add }
   show to_hom (f * g) = to_hom f * to_hom g
   revert f g
   rw [AddMonoidHom.map_mul_iff]
   ext (xi xv yi yv) : 4
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
     AddMonoidHom.mul_apply, AddEquiv.coe_toAddMonoidHom, Finsupp.singleAddHom_apply]
-  simp only [AddMonoidAlgebra.single_mul_single, to_hom, AddMonoidHom.coe_mk,
+  simp only [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk,
     AddMonoidAlgebra.toDirectSum_single, DirectSum.of_mul_of, Mul.gMul_mul]
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
 
@@ -234,4 +236,3 @@ def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemir
 #align add_monoid_algebra_alg_equiv_direct_sum addMonoidAlgebraAlgEquivDirectSum
 
 end Equivs
-
