@@ -25,7 +25,7 @@ namespace Mathlib.Util
 open Lean
 
 private def replaceConst (old new : Name) (e : Expr) : Expr :=
-  e.replace λ | .const n us => if n == old then some (.const new us) else none | _ => none
+  e.replace fun | .const n us => if n == old then some (.const new us) else none | _ => none
 
 open Meta
 
@@ -36,7 +36,7 @@ private def mkFunExts' (xs : Array Expr) (e : Expr) : MetaM Expr := do
   return e
 
 private def mkFunExts (e : Expr) : MetaM Expr := do
-  forallTelescope (← inferType e) λ xs _ => mkFunExts' xs (mkAppN e xs)
+  forallTelescope (← inferType e) fun xs _ => mkFunExts' xs (mkAppN e xs)
 
 open Elab
 
@@ -78,7 +78,7 @@ private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM
   let name ← mkFreshUserName rv.name
   addAndCompile <| .defnDecl { rv with
     name
-    value := ← forallTelescope rv.type λ xs _ =>
+    value := ← forallTelescope rv.type fun xs _ =>
       let val := xs[rv.getFirstMinorIdx]!
       let val := mkAppN val ⟨.map (xs[rv.getMajorIdx]!.proj iv.name) <| .range rv.rules[0]!.nfields⟩
       mkLambdaFVars xs val
@@ -93,14 +93,14 @@ private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM
     name
     levelParams := rv.levelParams
     type := ← mkEq old new
-    value := ← forallTelescope rv.type λ xs _ => do
+    value := ← forallTelescope rv.type fun xs _ => do
       let pf := .const rv.name (.zero :: levels.tail!)
       let pf := mkAppN pf xs[:rv.numParams]
       let old := mkAppN old xs
       let new := mkAppN new xs
       let pf := .app pf <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq old new
       let minor := xs[rv.getFirstMinorIdx]!
-      let pf := .app pf <| ← forallTelescope (← inferType minor) λ ys _ => do
+      let pf := .app pf <| ← forallTelescope (← inferType minor) fun ys _ => do
         let pf' ← mkEqRefl <| mkAppN minor ys
         mkLambdaFVars ys pf'
       let pf := .app pf xs[rv.getMajorIdx]!
@@ -126,12 +126,12 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   let name ← mkFreshUserName rv.name
   addAndCompile <| .mutualDefnDecl [{ rv with
     name
-    value := ← forallTelescope rv.type λ xs body => do
+    value := ← forallTelescope rv.type fun xs body => do
       let val := .const (mkCasesOnName iv.name) levels
       let val := mkAppN val xs[:rv.numParams]
       let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
       let val := mkAppN val xs[rv.getFirstIndexIdx:]
-      let val := mkAppN val <| rv.rules.toArray.map λ rule =>
+      let val := mkAppN val <| rv.rules.toArray.map fun rule =>
         .beta (replaceConst rv.name name rule.rhs) xs[:rv.getFirstIndexIdx]
       mkLambdaFVars xs val
     hints := .opaque
