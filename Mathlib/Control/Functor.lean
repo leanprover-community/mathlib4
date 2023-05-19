@@ -91,7 +91,7 @@ def Const.mk {α β} (x : α) : Const α β :=
 #align functor.const.mk Functor.Const.mk
 
 /-- `Const.mk'` is `Const.mk` but specialized to map `α` to
-`Const α PUnit`, where `PUnit` is the terminal object in `Type*`. -/
+`Const α PUnit`, where `PUnit` is the terminal object in `Type _`. -/
 def Const.mk' {α} (x : α) : Const α PUnit :=
   x
 #align functor.const.mk' Functor.Const.mk'

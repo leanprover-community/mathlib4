@@ -30,9 +30,11 @@ While the name `WType` is somewhat verbose, it is preferable to putting a single
 identifier `W` in the root namespace.
 -/
 
+-- For "W_type"
+set_option linter.uppercaseLean3 false
 
 /--
-Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
+Given `β : α → Type _`, `WType β` is the type of finitely branching trees where nodes are labeled by
 elements of `α` and the children of a node labeled `a` are indexed by elements of `β a`.
 -/
 inductive WType {α : Type _} (β : α → Type _)
@@ -80,6 +82,8 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
 #align W_type.equiv_sigma WType.equivSigma
+#align W_type.equiv_sigma_symm_apply WType.equivSigma_symm_apply
+#align W_type.equiv_sigma_apply WType.equivSigma_apply
 
 variable {β}
 
@@ -91,8 +95,7 @@ def elim (γ : Type _) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
 
 theorem elim_injective (γ : Type _) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
-  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h =>
-    by
+  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)

@@ -53,7 +53,7 @@ end NatPow
 
 end GroupWithZero
 
-section Zpow
+section ZPow
 
 open Int
 
@@ -186,7 +186,7 @@ theorem zpow_neg_mul_zpow_self (n : ℤ) {x : G₀} (h : x ≠ 0) : x ^ (-n) * x
   exact inv_mul_cancel (zpow_ne_zero n h)
 #align zpow_neg_mul_zpow_self zpow_neg_mul_zpow_self
 
-end Zpow
+end ZPow
 
 section
 

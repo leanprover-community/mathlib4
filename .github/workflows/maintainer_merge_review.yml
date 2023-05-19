@@ -7,7 +7,7 @@ on:
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.review.body, 'maintainer merge') || contains(toJSON(github.event.review.body), '\r\nmaintainer merge'))
+    if: (startsWith(github.event.review.body, 'maintainer merge') || contains(toJSON(github.event.review.body), '\r\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -22,7 +22,7 @@ jobs:
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-bot@leanprover.zulipchat.com'
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'

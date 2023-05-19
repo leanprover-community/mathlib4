@@ -12,13 +12,13 @@ import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
 /-!
-# Preimage of a `finset` under an injective map.
+# Preimage of a `Finset` under an injective map.
 -/
 
 
 open Set Function
 
--- open BigOperators -- Porting note: notation is global for now
+open BigOperators
 
 universe u v w x
 
@@ -150,7 +150,6 @@ theorem prod_preimage' [CommMonoid β] (f : α → γ) [DecidablePred fun x => x
     (∏ x in preimage s f hf, g (f x)) = ∏ x in image f (preimage s f hf), g x :=
       Eq.symm <| prod_image <| by simpa only [mem_preimage, InjOn] using hf
     _ = ∏ x in s.filter fun x => x ∈ Set.range f, g x := by rw [image_preimage]
-
 #align finset.prod_preimage' Finset.prod_preimage'
 #align finset.sum_preimage' Finset.sum_preimage'
 

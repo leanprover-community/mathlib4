@@ -28,6 +28,7 @@ variable {α β γ δ : Type _} {R S : α → β → Prop} {P : γ → δ → Pr
 open Relator
 
 mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
+#align list.forall₂_iff List.forall₂_iff
 
 #align list.forall₂.nil List.Forall₂.nil
 #align list.forall₂.cons List.Forall₂.cons
@@ -117,7 +118,6 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
     simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
-
 #align list.forall₂_and_left List.forall₂_and_left
 
 @[simp]
@@ -196,8 +196,7 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
-  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h =>
-    by
+  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     cases' h with h₁ h₂
     induction' l₁ with a l₁ IH generalizing l₂
     · cases length_eq_zero.1 h₁.symm
@@ -256,8 +255,7 @@ theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (. ++ .) (. +
 
 theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ =>
-    by
+  | _, _, Forall₂.cons h₁ h₂ => by
     simp only [reverse_cons]
     exact rel_append (rel_reverse h₂) (Forall₂.cons h₁ Forall₂.nil)
 #align list.rel_reverse List.rel_reverse
@@ -296,7 +294,7 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
   | _, _, Forall₂.nil => Forall₂.nil
   | a :: as, b :: bs, Forall₂.cons h₁ h₂ => by
     dsimp [LiftFun] at hpq
-    by_cases p a
+    by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
       simp only [filter_cons_of_pos _ h, filter_cons_of_pos _ this, forall₂_cons, h₁, true_and_iff,
         rel_filter hpq h₂]
@@ -319,6 +317,7 @@ theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· *
     (Forall₂ R ⇒ R) prod prod :=
   rel_foldl hf h
 #align list.rel_prod List.rel_prod
+#align list.rel_sum List.rel_sum
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/
@@ -367,7 +366,7 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
         exact SublistForall₂.nil
       · cases' h1 with _ _ _ _ _ hab tab _ _ _ atb
         · exact SublistForall₂.nil
-        · exact SublistForall₂.cons (trans hab hbc) (ih _ _ tab tbc)
+        · exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)
       · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 #align list.sublist_forall₂.is_trans List.SublistForall₂.is_trans

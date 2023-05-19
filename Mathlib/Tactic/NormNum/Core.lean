@@ -10,8 +10,7 @@ import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
-import Qq.MetaM
-import Qq.Delab
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality
@@ -94,6 +93,28 @@ def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
+/-- Extract the integer from a raw integer literal, as produced by
+`Mathlib.Meta.NormNum.mkRawIntLit`. -/
+def _root_.Lean.Expr.intLit! (e : Expr) : ℤ :=
+  if e.isAppOfArity ``Int.ofNat 1 then
+    e.appArg!.natLit!
+  else if e.isAppOfArity ``Int.negOfNat 1 then
+    .negOfNat e.appArg!.natLit!
+  else
+    panic! "not a raw integer literal"
+
+/-- Extract the raw natlit representing the absolute value of a raw integer literal
+(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
+def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
+  if n.isAppOfArity ``Int.ofNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+  else if n.isAppOfArity ``Int.negOfNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩
+  else
+    panic! "not a raw integer literal"
+
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
@@ -119,7 +140,8 @@ A "raw rat cast" is an expression of the form:
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
 -/
-@[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
+@[simp]
+def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
 theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
@@ -143,6 +165,14 @@ theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
 theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
+
+theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
+    (h : (d : α) ≠ 0) : IsRat (Rat.rawCast n d : α) n d :=
+  have := invertibleOfNonzero h
+  ⟨this, by simp [div_eq_mul_inv]⟩
+
+theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
+  | ⟨_, _⟩ => nonzero_of_invertible (d : α)
 
 /-- Represent an integer as a typed expression. -/
 def mkRawRatLit (q : ℚ) : Q(ℚ) :=
@@ -206,6 +236,13 @@ and `q` is the value of `n / d`. -/
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
 
+/-- A shortcut (non)instance for `AddMonoidWithOne α` from `DivisionRing α` to shrink generated
+proofs. -/
+def instAddMonoidWithOne' [DivisionRing α] : AddMonoidWithOne α := inferInstance
+
+/-- A shortcut (non)instance for `Ring α` from `DivisionRing α` to shrink generated proofs. -/
+def instRing [DivisionRing α] : Ring α := inferInstance
+
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
 -- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
 -- We ensure these are "the same" when calling.
@@ -226,6 +263,11 @@ def Result.toRat : Result e → Option Rat
   | .isRat _ q .. => some q
 
 end
+
+/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
+def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
+  | .some a => some a
+  | _ => none
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
@@ -266,8 +308,8 @@ def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible 
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
 def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
-    MetaM (LOption Q(CharZero $α)) :=
-  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+    MetaM (Option Q(CharZero $α)) :=
+  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
 def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
@@ -279,8 +321,8 @@ def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
 exists. -/
 def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
-      MetaM (LOption Q(CharZero $α)) :=
-  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+      MetaM (Option Q(CharZero $α)) :=
+  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
@@ -288,11 +330,21 @@ def inferCharZeroOfDivisionRing {α : Q(Type u)}
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
     throwError "not a characterstic zero division ring"
 
+/-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
+def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
+  return ← synthInstanceQ (q(OfScientific $α) : Q(Type u)) <|>
+    throwError "does not support scientific notation"
+
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}
-    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (LOption Q(CharZero $α)) :=
-  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
+  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+
+/-- Helper function to synthesize a typed `RatCast α` expression. -/
+def inferRatCast (α : Q(Type u)) : MetaM Q(RatCast $α) :=
+  return ← synthInstanceQ (q(RatCast $α) : Q(Type u)) <|> throwError "does not support a rat cast"
+
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
@@ -372,6 +424,17 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
     let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
 
+/-- Constructs a `Result` out of a raw rat cast.
+Assumes `e` is a raw rat cast expression denoting `n`. -/
+def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
+  if q.den = 1 then
+    Result.ofRawInt q.num e
+  else Id.run do
+    let .app (.app (.app _ (dα : Q(DivisionRing $α))) (n : Q(ℤ))) (d : Q(ℕ)) := e
+      | panic! "not a raw rat cast"
+    let hyp : Q(($d : $α) ≠ 0) := hyp.get!
+    .isRat dα q n d (q(IsRat.of_raw $α $n $d $hyp) : Expr)
+
 /-- The result depends on whether `q : ℚ` happens to be an integer, in which case the result is
 `.isInt ..` whereas otherwise it's `.isRat ..`. -/
 def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
@@ -381,6 +444,14 @@ def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := b
     .isInt q(DivisionRing.toRing) n q.num q(IsRat.to_isInt $proof)
   else
     .isRat inst q n d proof
+
+/-- Returns the rational number that is the result of `norm_num` evaluation, along with a proof
+that the denominator is nonzero in the `isRat` case. -/
+def Result.toRatNZ : Result e → Option (Rat × Option Expr)
+  | .isBool .. => none
+  | .isNat _ lit _ => some (lit.natLit!, none)
+  | .isNegNat _ lit _ => some (-lit.natLit!, none)
+  | .isRat _ q _ _ p => some (q, q(IsRat.den_nz $p))
 
 /--
 Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
@@ -492,7 +563,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
-          let new ← ext.eval e
+          let new ← withReducibleAndInstances <| ext.eval e
           trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
@@ -569,7 +640,7 @@ def isNormalForm : Expr → Bool
 returning a `Simp.Result`. -/
 def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   if isNormalForm e then return { expr := e }
-  let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
+  let ⟨_, _, e⟩ ← inferTypeQ' e
   (← derive e post).toSimpResult
 
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and

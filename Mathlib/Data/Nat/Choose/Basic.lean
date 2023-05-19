@@ -65,6 +65,9 @@ theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + c
   rfl
 #align nat.choose_succ_succ Nat.choose_succ_succ
 
+theorem choose_succ_succ' (n k : ℕ) : choose (n + 1) (k + 1) = choose n k + choose n (k + 1) :=
+  rfl
+
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, k + 1, _ => choose_zero_succ _
@@ -160,7 +163,6 @@ theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) :=
       by rw [tsub_tsub_tsub_cancel_right hsk, mul_assoc, mul_left_comm s !, mul_assoc,
         mul_comm (k - s)!, mul_comm s !, mul_right_comm, ← mul_assoc]
-
 #align nat.choose_mul Nat.choose_mul
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :

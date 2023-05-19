@@ -9,7 +9,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
 import Lean.Linter.Deprecated
 /-!
@@ -158,6 +158,9 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
+instance : OfNat PosNum (n + 1) where
+  ofNat := ofNat (n + 1)
+
 open Ordering
 
 /-- Ordering of `PosNum`s. -/
@@ -195,35 +198,35 @@ section deprecated
 set_option linter.deprecated false
 
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated] def castPosNum : PosNum → α
+@[deprecated, coe] def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => bit0 (castPosNum a)
   | PosNum.bit1 a => bit1 (castPosNum a)
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated] def castNum [Zero α] : Num → α
+@[deprecated, coe] def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
 #align cast_num castNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) posNumCoe : CoeTC PosNum α :=
+@[deprecated] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
   ⟨castPosNum⟩
 #align pos_num_coe posNumCoe
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeTC Num α :=
+@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
 
 end deprecated
 
 instance : Repr PosNum :=
-  ⟨fun _ n => repr (n : ℕ)⟩
+  ⟨fun n _ => repr (n : ℕ)⟩
 
 instance : Repr Num :=
-  ⟨fun _ n => repr (n : ℕ)⟩
+  ⟨fun n _ => repr (n : ℕ)⟩
 
 end
 
@@ -328,12 +331,8 @@ def toZNumNeg : Num → ZNum
 #align num.to_znum_neg Num.toZNumNeg
 
 /-- Converts a `Nat` to a `Num`. -/
-def ofNat' : ℕ → Num
-  | 0 => 0
-  | n + 1 => if (n + 1) % 2 = 0
-    then Num.bit0 (ofNat' ((n + 1) / 2))
-    else Num.bit1 (ofNat' ((n + 1) / 2))
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
+def ofNat' : ℕ → Num :=
+  Nat.binaryRec 0 (fun b _ => cond b Num.bit1 Num.bit0)
 #align num.of_nat' Num.ofNat'
 
 end Num
@@ -676,18 +675,18 @@ set_option linter.deprecated false
 variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated] def castZNum : ZNum → α
+@[deprecated, coe] def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
   | ZNum.neg p => -p
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeTC ZNum α :=
+@[deprecated] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
 instance : Repr ZNum :=
-  ⟨fun _ n => repr (n : ℤ)⟩
+  ⟨fun n _ => repr (n : ℤ)⟩
 
 end

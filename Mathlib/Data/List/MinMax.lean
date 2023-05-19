@@ -45,7 +45,7 @@ theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = no
     simp [argAux]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
-private theorem foldl_arg_aux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
+private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
   List.reverseRecOn l (by simp [eq_comm])
     (by
       intro tl hd ih a m
@@ -63,9 +63,9 @@ private theorem foldl_arg_aux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (so
           · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
 
 @[simp]
-theorem arg_aux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
+theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
   if_neg <| hr₀ _
-#align list.arg_aux_self List.arg_aux_self
+#align list.arg_aux_self List.argAux_self
 
 theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
@@ -151,7 +151,7 @@ theorem argmin_concat (f : α → β) (a : α) (l : List α) :
 
 theorem argmax_mem : ∀ {l : List α} {m : α}, m ∈ argmax f l → m ∈ l
   | [], m => by simp
-  | hd :: tl, m => by simpa [argmax, argAux] using foldl_arg_aux_mem _ tl hd m
+  | hd :: tl, m => by simpa [argmax, argAux] using foldl_argAux_mem _ tl hd m
 #align list.argmax_mem List.argmax_mem
 
 theorem argmin_mem : ∀ {l : List α} {m : α}, m ∈ argmin f l → m ∈ l :=
@@ -184,8 +184,7 @@ theorem le_of_mem_argmin : a ∈ l → m ∈ argmin f l → f m ≤ f a :=
 theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     argmax f (a :: l) =
       Option.casesOn (argmax f l) (some a) fun c => if f a < f c then some c else some a :=
-  List.reverseRecOn l rfl fun hd tl ih =>
-    by
+  List.reverseRecOn l rfl fun hd tl ih => by
     rw [← cons_append, argmax_concat, ih, argmax_concat]
     cases' h : argmax f hd with m
     · simp [h]
@@ -236,13 +235,13 @@ theorem mem_argmax_iff :
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
   ⟨fun hm => ⟨argmax_mem hm, fun a ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
-    rintro ⟨hml, ham, hma⟩
-    cases' harg : argmax f l with n
-    · simp_all
-    · have :=
-        _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
-          (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-      rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+      rintro ⟨hml, ham, hma⟩
+      cases' harg : argmax f l with n
+      · simp_all
+      · have :=
+          _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
+            (index_of_argmax harg hml (ham _ (argmax_mem harg)))
+        rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 #align list.mem_argmax_iff List.mem_argmax_iff
 
 theorem argmax_eq_some_iff :
@@ -271,13 +270,13 @@ section Preorder
 
 variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
-/-- `maximum l` returns an `with_bot α`, the largest element of `l` for nonempty lists, and `⊥` for
+/-- `maximum l` returns an `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 #align list.maximum List.maximum
 
-/-- `minimum l` returns an `with_top α`, the smallest element of `l` for nonempty lists, and `⊤` for
+/-- `minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`  -/
 def minimum (l : List α) : WithTop α :=
   argmin id l

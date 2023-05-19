@@ -33,12 +33,14 @@ namespace AddHom
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
+#align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
 #align add_hom.mul_right AddHom.mulRight
+#align add_hom.mul_right_apply AddHom.mulRight_apply
 
 end AddHom
 
@@ -58,37 +60,35 @@ end AddHomClass
 namespace AddMonoidHom
 
 /-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
-    R →+ R where
-  toFun := (· * ·) r
+def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
+  toFun := (r * ·)
   map_zero' := mul_zero r
   map_add' := mul_add r
 #align add_monoid_hom.mul_left AddMonoidHom.mulLeft
 
 @[simp]
-theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r) = (r * ·) :=
+theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
+    (mulLeft r : R → R) = HMul.hMul r :=
   rfl
-#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
+#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mulLeft
 
 /-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
-    R →+ R where
+def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
   toFun a := a * r
   map_zero' := zero_mul r
   map_add' _ _ := add_mul _ _ r
 #align add_monoid_hom.mul_right AddMonoidHom.mulRight
 
 @[simp]
-theorem coe_mul_right [NonUnitalNonAssocSemiring R] (r : R) :
+theorem coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     (mulRight r) = (· * r) :=
   rfl
-#align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mul_right
+#align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mulRight
 
-theorem mul_right_apply [NonUnitalNonAssocSemiring R] (a r : R) :
+theorem mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
     mulRight r a = a * r :=
   rfl
-#align add_monoid_hom.mul_right_apply AddMonoidHom.mul_right_apply
+#align add_monoid_hom.mul_right_apply AddMonoidHom.mulRight_apply
 
 end AddMonoidHom
 
@@ -100,8 +100,8 @@ variable [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.instInvolutiveNegMulOpposite _ with
+instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
+  { MulOpposite.involutiveNeg _ with
     neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
 
@@ -135,6 +135,7 @@ theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
   refine' ⟨b - x, _, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
+set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
 
 end NonUnitalCommRing

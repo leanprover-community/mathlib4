@@ -51,9 +51,9 @@ instance : LinearOrder ℤ where
   lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  decidable_eq := by infer_instance
-  decidable_le := by infer_instance
-  decidable_lt := by infer_instance
+  decidableEq := by infer_instance
+  decidableLE := by infer_instance
+  decidableLT := by infer_instance
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs
@@ -73,4 +73,29 @@ theorem mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_
 #align int.nat_abs_of_nonneg Int.natAbs_of_nonneg
 #align int.of_nat_nat_abs_of_nonpos Int.ofNat_natAbs_of_nonpos
 
-alias mul_eq_zero ↔ eq_zero_or_eq_zero_of_mul_eq_zero _
+protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
+  match lt_trichotomy 0 a with
+  | Or.inl hlt₁ =>
+    match lt_trichotomy 0 b with
+    | Or.inl hlt₂ => by
+      have : 0 < a * b := Int.mul_pos hlt₁ hlt₂
+      rw [h] at this
+      exact absurd this (lt_irrefl _)
+    | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
+    | Or.inr (Or.inr hgt₂) => by
+      have : 0 > a * b := Int.mul_neg_of_pos_of_neg hlt₁ hgt₂
+      rw [h] at this
+      exact absurd this (lt_irrefl _)
+  | Or.inr (Or.inl heq₁) => Or.inl heq₁.symm
+  | Or.inr (Or.inr hgt₁) =>
+    match lt_trichotomy 0 b with
+    | Or.inl hlt₂ => by
+      have : 0 > a * b := Int.mul_neg_of_neg_of_pos hgt₁ hlt₂
+      rw [h] at this
+      exact absurd this (lt_irrefl _)
+    | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
+    | Or.inr (Or.inr hgt₂) => by
+      have : 0 < a * b := Int.mul_pos_of_neg_of_neg hgt₁ hgt₂
+      rw [h] at this
+      exact absurd this (lt_irrefl _)
+#align int.eq_zero_or_eq_zero_of_mul_eq_zero Int.eq_zero_or_eq_zero_of_mul_eq_zero

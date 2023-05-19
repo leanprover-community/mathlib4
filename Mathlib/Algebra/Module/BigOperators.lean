@@ -15,8 +15,7 @@ import Mathlib.GroupTheory.GroupAction.BigOperators
 # Finite sums over modules over a ring
 -/
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 variable {α β R M ι : Type _}
 

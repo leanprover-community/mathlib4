@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 
 ! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,7 +50,7 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -60,8 +60,11 @@ def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 
 -- Porting note: temporarily remove `scoped[uIcc]` and use `[[]]` instead of `[]` before a
 -- workaround is found.
+-- Porting note 2 : now `scoped[Interval]` works again.
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
-notation "[[" a ", " b "]]" => Set.uIcc a b
+scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
+
+open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] := dual_Icc
 #align set.dual_uIcc Set.dual_uIcc
@@ -140,10 +143,22 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
     ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
 #align set.bdd_below_bdd_above_iff_subset_uIcc Set.bdd_below_bdd_above_iff_subset_uIcc
 
+section Prod
+
+@[simp]
+theorem uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) :
+    [[a₁, a₂]] ×ˢ [[b₁, b₂]] = [[(a₁, b₁), (a₂, b₂)]] :=
+  Icc_prod_Icc _ _ _ _
+#align set.uIcc_prod_uIcc Set.uIcc_prod_uIcc
+
+theorem uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
+#align set.uIcc_prod_eq Set.uIcc_prod_eq
+
+end Prod
+
 end Lattice
 
--- Porting note: fix scoped notation
--- open Interval
+open Interval
 
 section DistribLattice
 

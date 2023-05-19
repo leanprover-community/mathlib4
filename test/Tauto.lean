@@ -122,7 +122,7 @@ end tauto₃
 /-
 section closer
 
-example {α : Type*} {β : Type*} (a : α)
+example {α : Type _} {β : Type _} (a : α)
   {s_1 : set α} :
   (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) :=
 begin

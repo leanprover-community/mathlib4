@@ -115,6 +115,7 @@ protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSem
   { Pi.monoidHom fun i => (g i).toMonoidHom, Pi.addMonoidHom fun i => (g i).toAddMonoidHom with
     toFun := fun x b => g b x }
 #align pi.ring_hom Pi.ringHom
+#align pi.ring_hom_apply Pi.ringHom_apply
 
 theorem ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
@@ -162,16 +163,18 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of rings at a point is a ring
 homomorphism. This is `Function.eval` as a `RingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : (∀ i, f i) →+* f i :=
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_ring_hom Pi.evalRingHom
+#align pi.eval_ring_hom_apply Pi.evalRingHom_apply
 
 /-- `Function.const` as a `RingHom`. -/
 @[simps]
 def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β :=
   { Pi.ringHom fun _ => RingHom.id β with toFun := Function.const _ }
 #align pi.const_ring_hom Pi.constRingHom
+#align pi.const_ring_hom_apply Pi.constRingHom_apply
 
 /-- Ring homomorphism between the function spaces `I → α` and `I → β`, induced by a ring
 homomorphism `f` between `α` and `β`. -/
@@ -180,5 +183,6 @@ protected def RingHom.compLeft {α β : Type _} [NonAssocSemiring α] [NonAssocS
     (f : α →+* β) (I : Type _) : (I → α) →+* I → β :=
   { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
 #align ring_hom.comp_left RingHom.compLeft
+#align ring_hom.comp_left_apply RingHom.compLeft_apply
 
 end RingHom

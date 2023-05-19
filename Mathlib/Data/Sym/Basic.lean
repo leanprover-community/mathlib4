@@ -47,12 +47,15 @@ def Sym (α : Type _) (n : ℕ) :=
 
 --Porting note: new definition
 /-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
-@[coe] def toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
+@[coe] def Sym.toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
 instance Sym.hasCoe (α : Type _) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
-  ⟨toMultiset⟩
+  ⟨Sym.toMultiset⟩
 #align sym.has_coe Sym.hasCoe
+
+-- Porting note: instance needed for Data.Finset.Sym
+instance [DecidableEq α]: DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -150,8 +153,7 @@ theorem of_vector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
 #align sym.of_vector_nil Sym.of_vector_nil
 
 @[simp]
-theorem of_vector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) :=
-  by
+theorem of_vector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
 #align sym.of_vector_cons Sym.of_vector_cons
@@ -252,8 +254,7 @@ def symEquivSym' {α : Type _} {n : ℕ} : Sym α n ≃ Sym' α n :=
 #align sym.sym_equiv_sym' Sym.symEquivSym'
 
 theorem cons_equiv_eq_equiv_cons (α : Type _) (n : ℕ) (a : α) (s : Sym α n) :
-    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) :=
-  by
+    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
 #align sym.cons_equiv_eq_equiv_cons Sym.cons_equiv_eq_equiv_cons
@@ -299,8 +300,7 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
-theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' :=
-  by
+theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
@@ -418,6 +418,8 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
 #align sym.equiv_congr Sym.equivCongr
+#align sym.equiv_congr_symm_apply Sym.equivCongr_symm_apply
+#align sym.equiv_congr_apply Sym.equivCongr_apply
 
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
@@ -641,8 +643,7 @@ theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.so
   rfl
 
 @[simp]
-theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s :=
-  by
+theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s := by
   by_cases h : none ∈ s
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_not_none_mem, Embedding.some_apply, map_map,

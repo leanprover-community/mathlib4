@@ -34,8 +34,7 @@ and `t`.
 
 open Finset Function Relator
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 variable {α β : Type _}
 
@@ -85,8 +84,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
     (∑ a in s, (t.bipartiteAbove r a).card) = ∑ b in t, (s.bipartiteBelow r b).card := by
   simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
   exact sum_comm
-#align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below
-  Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
+#align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
 
 /-- Double counting argument. Considering `r` as a bipartite graph, the LHS is a lower bound on the
 number of edges while the RHS is an upper bound. -/
@@ -98,7 +96,6 @@ theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     _ = ∑ b in t, (s.bipartiteBelow r b).card :=
       sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
-
 #align finset.card_mul_le_card_mul Finset.card_mul_le_card_mul
 
 theorem card_mul_le_card_mul' [∀ a b, Decidable (r a b)]

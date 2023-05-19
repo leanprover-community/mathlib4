@@ -103,13 +103,14 @@ theorem iterate_map_smul (f : M →+ M) (n m : ℕ) (x : M) : (f^[n]) (m • x) 
   f.toMultiplicative.iterate_map_pow n x m
 #align add_monoid_hom.iterate_map_smul AddMonoidHom.iterate_map_smul
 
-attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_pow
+attribute [to_additive (reorder := 5 6)] MonoidHom.iterate_map_pow
+#align add_monoid_hom.iterate_map_nsmul AddMonoidHom.iterate_map_nsmul
 
 theorem iterate_map_zsmul (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) : (f^[n]) (m • x) = m • (f^[n]) x :=
   f.toMultiplicative.iterate_map_zpow n x m
 #align add_monoid_hom.iterate_map_zsmul AddMonoidHom.iterate_map_zsmul
 
-attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_zpow
+attribute [to_additive existing (reorder := 5 6)] MonoidHom.iterate_map_zpow
 
 end AddMonoidHom
 
@@ -207,6 +208,7 @@ theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G =
       mul_smul := fun m n g => pow_mul' g m n }
   smul_iterate n j
 #align pow_iterate pow_iterate
+#align nsmul_iterate nsmul_iterate
 
 end Monoid
 
@@ -250,13 +252,13 @@ theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
     Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
 #align semiconj_by.function_semiconj_mul_right_swap SemiconjBy.function_semiconj_mul_right_swap
-#align add_semiconj_by.function_semiconj_add_right_swap  SemiconjBy.function_semiconj_mul_right_swap
+#align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : _root_.Commute a b) :
   Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right
-#align add_commute.function_commute_add_right  AddCommute.function_commute_add_right
+#align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup
