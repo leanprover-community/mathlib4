@@ -22,23 +22,10 @@ This can be the case for type class projections, or definitions like `List._size
 
 namespace Mathlib.Util
 
-open Lean
+open Lean Meta Elab
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
-
-open Meta
-
-private def mkFunExts' (xs : Array Expr) (e : Expr) : MetaM Expr := do
-  let mut e := e
-  for x in xs.reverse do
-    e ← mkFunExt (← mkLambdaFVars #[x] e)
-  return e
-
-private def mkFunExts (e : Expr) : MetaM Expr := do
-  forallTelescope (← inferType e) fun xs _ => mkFunExts' xs (mkAppN e xs)
-
-open Elab
 
 /-- Returns the names of the recursors for a nested or mutual inductive,
 using the `all` and `numMotives` arguments from `RecursorVal`. -/
