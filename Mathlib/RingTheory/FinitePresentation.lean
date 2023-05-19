@@ -19,11 +19,11 @@ In this file we define several notions of finiteness that are common in commutat
 
 ## Main declarations
 
-- `module.finite`, `algebra.finite`, `ring_hom.finite`, `alg_hom.finite`
+- `Module.Finite`, `algebra.finite`, `RingHom.Finite`, `AlgHom.Finite`
   all of these express that some object is finitely generated *as module* over some base ring.
-- `algebra.finite_type`, `ring_hom.finite_type`, `alg_hom.finite_type`
+- `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
   all of these express that some object is finitely generated *as algebra* over some base ring.
-- `algebra.finite_presentation`, `ring_hom.finite_presentation`, `alg_hom.finite_presentation`
+- `Algebra.FinitePresentation`, `RingHom.FinitePresentation`, `AlgHom.FinitePresentation`
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
@@ -185,7 +185,7 @@ theorem iff_quotient_mvPolynomial' :
 #align algebra.finite_presentation.iff_quotient_mv_polynomial' Algebra.FinitePresentation.iff_quotient_mvPolynomial'
 
 -- Porting note : make universe level explicit to ensure `ι, ι'` has the same universe level
-/-- If `A` is a finitely presented `R`-algebra, then `mv_polynomial (fin n) A` is finitely presented
+/-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
 theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation.{w₁, w₂} R A)
     (ι : Type v) [Finite ι] :
