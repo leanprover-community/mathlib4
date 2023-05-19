@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Partrec
-import Mathlib.Tactic.RSuffices
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.

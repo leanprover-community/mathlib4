@@ -11,7 +11,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Unbundled relation classes
