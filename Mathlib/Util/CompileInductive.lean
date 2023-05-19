@@ -24,8 +24,8 @@ namespace Mathlib.Util
 
 open Lean
 
-private def replaceConst (old new : Name) (e : Expr) : Expr :=
-  e.replace fun | .const n us => if n == old then some (.const new us) else none | _ => none
+private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
+  e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
 
 open Meta
 
@@ -113,41 +113,47 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   then
     logWarning m!"already compiled {rv.name}"
     return
-  unless rv.numMotives == 1 do
-    throwError "mutual/nested inductives unsupported"
-  if !iv.isRec && iv.numCtors == 1 && iv.numIndices == 0 then
+  unless rv.numMotives == rv.all.length do
+    throwError "nested inductives unsupported"
+  if !iv.isRec && rv.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
     compileStruct iv rv
     return
   let levels := rv.levelParams.map .param
-  let name ← mkFreshUserName rv.name
-  addAndCompile <| .mutualDefnDecl [{ rv with
-    name
-    value := ← forallTelescope rv.type fun xs body => do
-      let val := .const (mkCasesOnName iv.name) levels
-      let val := mkAppN val xs[:rv.numParams]
-      let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
-      let val := mkAppN val xs[rv.getFirstIndexIdx:]
-      let val := mkAppN val <| rv.rules.toArray.map fun rule =>
-        .beta (replaceConst rv.name name rule.rhs) xs[:rv.getFirstIndexIdx]
-      mkLambdaFVars xs val
-    hints := .opaque
-    safety := .partial
-  }]
-  let old := .const rv.name levels
-  let new := .const name levels
-  let name ← mkFreshUserName <| rv.name.str "eq"
-  addDecl <| .mutualDefnDecl [{
-    name
-    levelParams := rv.levelParams
-    type := ← mkEq old new
-    value := .const name levels
-    hints := .opaque
-    safety := .partial
-  }]
-  Compiler.CSimp.add name .global
-  for aux in [mkRecOnName iv.name, mkBRecOnName iv.name] do
-    if let some (.defnInfo dv) := (← getEnv).find? aux then
-      compileDefn dv
+  let rvs ←
+    if rv.numMotives == 1 then pure [rv]
+    else iv.all.mapM fun n => getConstInfoRec <| mkRecName n
+  let rvs ← rvs.mapM fun rv => return (rv, ← mkFreshUserName rv.name)
+  let repl := rvs.foldl (fun l (rv, name) => .cons rv.name name l) .nil
+  addAndCompile <| .mutualDefnDecl <|← rvs.mapM fun (rv, name) => do
+    pure { rv with
+      name
+      value := ← forallTelescope rv.type fun xs body => do
+        let val := .const (mkCasesOnName rv.name.getPrefix) levels
+        let val := mkAppN val xs[:rv.numParams]
+        let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
+        let val := mkAppN val xs[rv.getFirstIndexIdx:]
+        let val := mkAppN val <| rv.rules.toArray.map fun rule =>
+          .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+        mkLambdaFVars xs val
+      hints := .opaque
+      safety := .partial
+    }
+  for (rv, name) in rvs do
+    let old := .const rv.name levels
+    let new := .const name levels
+    let name ← mkFreshUserName <| rv.name.str "eq"
+    addDecl <| .mutualDefnDecl [{
+      name
+      levelParams := rv.levelParams
+      type := ← mkEq old new
+      value := .const name levels
+      hints := .opaque
+      safety := .partial
+    }]
+    Compiler.CSimp.add name .global
+    for aux in [mkRecOnName iv.name, mkBRecOnName iv.name] do
+      if let some (.defnInfo dv) := (← getEnv).find? aux then
+        compileDefn dv
 
 /--
 `compile_inductive% Foo` creates compiled code for the recursor `Foo.rec`,
