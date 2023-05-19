@@ -106,6 +106,7 @@ protected theorem HasAdj.Adj.ne' {G : Γ} {u v : V G} (h : Adj G u v) : v ≠ u
   | rfl => h.loopless
 #align simple_graph.adj.ne' Graph.HasAdj.Adj.ne'
 
+@[simp]
 theorem adj_irrefl {u : V G} : ¬ Adj G u u | h => h.loopless
 #align simple_graph.irrefl Graph.adj_irrefl
 

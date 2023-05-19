@@ -22,7 +22,6 @@ theory of relations from a graph-theoretical point of view.
 open Function Graph
 
 /-- A directed graph is a relation `Adj` on a vertex type `V`. -/
-@[ext]
 structure Digraph (V : Type _) where
   protected Adj : V → V → Prop
 
@@ -38,6 +37,13 @@ instance : HasAdj (Digraph V) (fun _ ↦ V) where
 def Digraph.Simps.Adj (G : Digraph V) : V → V → Prop := Graph.Adj G
 
 initialize_simps_projections Digraph
+
+@[simp]
+theorem Digraph.Adj_mk (adj : V → V → Prop) : Adj (Digraph.mk adj) = adj := rfl
+
+@[ext]
+protected theorem Digraph.ext (G H : Digraph V) : Adj G = Adj H → G = H := by
+  cases G; cases H; simp
 
 /-- Constructor for directed graphs given a boolean function. -/
 @[simps]
