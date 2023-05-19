@@ -49,7 +49,7 @@ characteristic case for convenience:
 
 ## Implementation Notes
 
-We use the terms `EqualCharZero` and `RatAlgebra` despite not being such definitions in mathlib.
+We use the terms `EqualCharZero` and `AlgebraRat` despite not being such definitions in mathlib.
 The former refers to the statement `∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)`, the latter
 refers to the existance of an instance `[Algebra ℚ R]`. The two are shown to be
 equivalent conditions.
@@ -162,7 +162,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 namespace EqualCharZero
 
 /-- `ℚ`-algebra implies equal characteristic. -/
-theorem of_ratAlgebra [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
+theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
   constructor
   intro a b h_ab
@@ -172,9 +172,9 @@ theorem of_ratAlgebra [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero 
   · simpa only [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, map_natCast]
   simpa only [Ne.def, sub_eq_zero] using (@Nat.cast_injective ℚ _ _).ne hI
 set_option linter.uppercaseLean3 false in
-#align Q_algebra_to_equal_char_zero EqualCharZero.of_ratAlgebra
+#align Q_algebra_to_equal_char_zero EqualCharZero.of_algebraRat
 
-section ConstructionRatAlgebra
+section ConstructionAlgebraRat
 
 variable {R}
 
@@ -222,7 +222,7 @@ theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R �
 #align equal_char_zero.pnat_coe_units_coe_eq_coe EqualCharZero.pnatCast_eq_natCast
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
-noncomputable def ratAlgebra (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
+noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
   RingHom.toAlgebra
@@ -246,9 +246,9 @@ noncomputable def ratAlgebra (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       rw [Rat.add_num_den' a b]
       simp }
 set_option linter.uppercaseLean3 false in
-#align equal_char_zero_to_Q_algebra EqualCharZero.ratAlgebra
+#align equal_char_zero_to_Q_algebra EqualCharZero.algebraRat
 
-end ConstructionRatAlgebra
+end ConstructionAlgebraRat
 
 /-- Not mixed characteristic implies equal characteristic. -/
 theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
@@ -285,31 +285,31 @@ theorem iff_not_mixedCharZero [CharZero R] :
 #align equal_char_zero_iff_not_mixed_char EqualCharZero.iff_not_mixedCharZero
 
 /-- A ring is a `ℚ`-algebra iff it has equal characteristic zero. -/
-theorem nonempty_ratAlgebra_iff :
+theorem nonempty_algebraRat_iff :
     Nonempty (Algebra ℚ R) ↔ ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   constructor
   · intro h_alg
     haveI h_alg' : Algebra ℚ R := h_alg.some
-    apply of_ratAlgebra
+    apply of_algebraRat
   · intro h
     apply Nonempty.intro
-    exact ratAlgebra h
+    exact algebraRat h
 set_option linter.uppercaseLean3 false in
-#align Q_algebra_iff_equal_char_zero EqualCharZero.nonempty_ratAlgebra_iff
+#align Q_algebra_iff_equal_char_zero EqualCharZero.nonempty_algebraRat_iff
 
 end EqualCharZero
 
 /--
 A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteristic for some `p`.
 -/
-theorem isEmpty_ratAlgebra_iff_mixedCharZero [CharZero R] :
+theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
   rw [← not_iff_not]
   push_neg
   rw [not_isEmpty_iff, ← EqualCharZero.iff_not_mixedCharZero]
-  apply EqualCharZero.nonempty_ratAlgebra_iff
+  apply EqualCharZero.nonempty_algebraRat_iff
 set_option linter.uppercaseLean3 false in
-#align not_Q_algebra_iff_not_equal_char_zero isEmpty_ratAlgebra_iff_mixedCharZero
+#align not_Q_algebra_iff_not_equal_char_zero isEmpty_algebraRat_iff_mixedCharZero
 
 /-!
 # Splitting statements into different characteristic
@@ -333,7 +333,7 @@ theorem split_equalCharZero_mixedCharZero [CharZero R] (h_equal : Algebra ℚ R 
     rw [← MixedCharZero.reduce_to_p_prime] at h_mixed
     exact h_mixed p H hp
   · apply h_equal
-    rw [← isEmpty_ratAlgebra_iff_mixedCharZero, not_isEmpty_iff] at h
+    rw [← isEmpty_algebraRat_iff_mixedCharZero, not_isEmpty_iff] at h
     exact h.some
 #align split_equal_mixed_char split_equalCharZero_mixedCharZero
 
