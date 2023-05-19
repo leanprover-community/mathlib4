@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.Tactic
 
 /-!
 
