@@ -1598,26 +1598,28 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
   all_goals { intros; simp [*] at * }
 
+theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
+    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
+  apply (b.dualBasis.tensorProduct c.dualBasis).ext
+  rintro ⟨i, j⟩
+  simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
+    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
+    ne_eq, id_coe, id_eq]
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  all_goals { intros; simp [*] at * }
+
 -- Porting note : this doesn't work
 -- set_option maxHeartbeats 0 in
 /-- A linear equivalence between `dual M ⊗ dual N` and `dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `tensor_product.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
-@[simps]
+@[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by sorry
-  -- refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  -- · ext (f m n)
-  --   have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
-  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-  --     LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-  --     f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-  --     Basis.coord_apply, Basis.sum_repr]
-  -- · ext (f g)
-  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-  --     dualDistrib_apply, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-  --     Basis.sum_dual_apply_smul_coord]
+    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
+  refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
+  . exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
+  . exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)
