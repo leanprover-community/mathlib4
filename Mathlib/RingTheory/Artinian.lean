@@ -121,10 +121,12 @@ instance isArtinian_pi {R ι : Type _} [Finite ι] :
       ∀ [∀ i, Module R (M i)], ∀ [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · intro α β e hα M _ _ _ _
+    have := @hα
     exact isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R M e)
   · intro M _ _ _ _
     infer_instance
   · intro α _ ih M _ _ _ _
+    have := @ih
     exact isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
 #align is_artinian_pi isArtinian_pi
 
