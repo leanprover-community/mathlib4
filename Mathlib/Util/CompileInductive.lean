@@ -159,22 +159,7 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
     name
     levelParams := rv.levelParams
     type := ← mkEq rv.type old new
-    value := ← forallTelescope rv.type λ xs body => do
-      let pf := .const rv.name (.zero :: levels.tail!)
-      let pf := mkAppN pf xs[:rv.numParams]
-      let old := mkAppN old xs
-      let new := mkAppN new xs
-      let motive ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq body old new
-      let pf := .app pf motive
-      let pf := mkAppN pf <| ← rv.rules.toArray.zip xs[rv.getFirstMinorIdx:]
-        |>.mapM λ (rule, minor) => do
-        forallTelescope ((← inferType minor).replaceFVar xs[rv.numParams]! motive) λ ys _ => do
-          let minor := mkAppN minor ys[:rule.nfields]
-          let pf' ← mkEqRefl (← inferType minor) minor
-          let pf' ← ys[rule.nfields:].foldlM (λ pf' y => do mkCongr pf' (← mkFunExts y)) pf'
-          mkLambdaFVars ys pf'
-      let pf := mkAppN pf xs[rv.getFirstIndexIdx:]
-      mkFunExts' xs pf (body, old, new)
+    value := .const name (rv.levelParams.map .param)
     hints := .opaque
     safety := .partial
   }]
