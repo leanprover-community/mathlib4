@@ -159,13 +159,22 @@ def SemiNormedGroup₁ : Type (u + 1) :=
 
 namespace SemiNormedGroup₁
 
-instance : CoeSort SemiNormedGroup₁ (Type u) :=
-  Bundled.hasCoeToSort
+--Porting Note: hasCoeToSort doesn't exist anymore
+--instance : CoeSort SemiNormedGroup₁ (Type u) :=
+--  Bundled.hasCoeToSort
+
+instance : CoeSort SemiNormedGroup₁ (Type _) where
+  coe X := X.α
+
+
+-- Porting Note: Added -- needed to make intance LargeCategory work-/
+instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
 
 instance : LargeCategory.{u} SemiNormedGroup₁ where
-  hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
+  Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp X Y Z f g := ⟨(g : NormedAddGroupHom Y Z).comp (f : NormedAddGroupHom X Y), g.2.comp f.2⟩
+  comp {X Y Z} f g := ⟨(g : NormedAddGroupHom Y Z).comp (f : NormedAddGroupHom X Y), g.2.comp f.2⟩
 
 @[ext]
 theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
