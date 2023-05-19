@@ -18,9 +18,6 @@ import Mathlib.Data.Finsupp.Basic
 # The category of `R`-modules has enough projectives.
 -/
 
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{u, v} := ModuleCat.{max u v}
-
 universe v u
 
 open CategoryTheory
@@ -49,37 +46,33 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
 
 namespace ModuleCat
 
-variable {R : Type u} [Ring R] {M : ModuleCatMax.{u, v} R}
+variable {R : Type u} [Ring R] {M : ModuleCat.{max u v} R}
 
--- We transport the corresponding result from `module.projective`.
+-- We transport the corresponding result from `Module.Projective`.
 /-- Modules that have a basis are projective. -/
-theorem projective_of_free {ι : Type _} (b : Basis ι R M) : Projective M :=
-  Projective.of_iso (ModuleCat.ofSelfIso _)
-    (IsProjective.iff_projective.{v, u}.mp (Module.Projective.of_basis b))
+theorem projective_of_free {ι : Type u'} (b : Basis ι R M) : Projective M :=
+  Projective.of_iso (ModuleCat.ofSelfIso M)
+    (IsProjective.iff_projective.{v,u}.mp (Module.Projective.of_basis b))
 set_option linter.uppercaseLean3 false in
 #align Module.projective_of_free ModuleCat.projective_of_free
 
 /-- The category of modules has enough projectives, since every module is a quotient of a free
     module. -/
-
-instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
-    where presentation M :=
-    ⟨{  p := ModuleCat.of R (Finsupp R M) --(M →₀ R)
-        projective := projective_of_free.{u, v} Finsupp.basisSingleOne.{u, v}
-        f := sorry
-        epi := sorry }⟩
+instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R) where
+  presentation M :=
+    ⟨{  p := ModuleCat.of R (M →₀ R)
+        projective :=
+          projective_of_free.{v,u} (ι := M) (M := ModuleCat.of R (M →₀ R)) <|
+            Finsupp.basisSingleOne
+        f := Finsupp.basisSingleOne.constr ℕ _root_.id
+        epi := (epi_iff_range_eq_top _).mpr
+            (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
+              -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
+              dsimp [Basis.constr]
+              simp only [Finsupp.lmapDomain_id, comp_id]
+              rw [Finsupp.total_single, one_smul]
+              rfl ⟩) }⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
-
--- instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
---     where presentation M :=
---     ⟨{  p := ModuleCat.of R (Finsupp R M) --(M →₀ R)
---         projective := projective_of_free Finsupp.basisSingleOne
---         f := by Finsupp.basisSingleOne.constr ℕ _root_.id
---         epi :=
---           (epi_iff_range_eq_top _).mpr
---             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by simp [Basis.constr]⟩) }⟩
--- set_option linter.uppercaseLean3 false in
--- #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
 end ModuleCat
