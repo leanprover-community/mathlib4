@@ -311,6 +311,8 @@ end Complex
 
 namespace Real
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 variable {x y z : ℝ}
 
 theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
@@ -320,21 +322,21 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
 #align real.rpow_mul Real.rpow_mul
 
-theorem rpow_add_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * HPow.hPow x n :=
+theorem rpow_add_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n :=
   by rw [rpow_def, rpow_def, Complex.ofReal_add,
     Complex.cpow_add _ _ (Complex.ofReal_ne_zero.mpr hx), Complex.ofReal_int_cast,
     Complex.cpow_int_cast, ← Complex.ofReal_zpow, mul_comm, Complex.ofReal_mul_re, mul_comm]
 #align real.rpow_add_int Real.rpow_add_int
 
-theorem rpow_add_nat {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * HPow.hPow x n :=
+theorem rpow_add_nat {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * x ^ n :=
   by simpa using rpow_add_int hx y n
 #align real.rpow_add_nat Real.rpow_add_nat
 
-theorem rpow_sub_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / HPow.hPow x n :=
+theorem rpow_sub_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n :=
   by simpa using rpow_add_int hx y (-n)
 #align real.rpow_sub_int Real.rpow_sub_int
 
-theorem rpow_sub_nat {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / HPow.hPow x n :=
+theorem rpow_sub_nat {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n :=
   by simpa using rpow_sub_int hx y n
 #align real.rpow_sub_nat Real.rpow_sub_nat
 
@@ -347,18 +349,18 @@ theorem rpow_sub_one {x : ℝ} (hx : x ≠ 0) (y : ℝ) : x ^ (y - 1) = x ^ y / 
 #align real.rpow_sub_one Real.rpow_sub_one
 
 @[simp, norm_cast]
-theorem rpow_int_cast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = HPow.hPow x n := by
+theorem rpow_int_cast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   simp only [rpow_def, ← Complex.ofReal_zpow, Complex.cpow_int_cast, Complex.ofReal_int_cast,
     Complex.ofReal_re]
 #align real.rpow_int_cast Real.rpow_int_cast
 
 @[simp, norm_cast]
-theorem rpow_nat_cast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = HPow.hPow x n :=
+theorem rpow_nat_cast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
   by simpa using rpow_int_cast x n
 #align real.rpow_nat_cast Real.rpow_nat_cast
 
 @[simp]
-theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = HPow.hPow x 2 := by
+theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
   rw [← rpow_nat_cast]
   simp only [Nat.cast_ofNat]
 #align real.rpow_two Real.rpow_two
@@ -453,13 +455,13 @@ theorem lt_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x < y ^ 
 
 theorem rpow_inv_lt_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z⁻¹ < y ↔ y ^ z < x :=
   by
-  convert lt_rpow_inv_iff_of_neg (Real.rpow_pos_of_pos hx _) (Real.rpow_pos_of_pos hy _) hz <;>
+    convert lt_rpow_inv_iff_of_neg (Real.rpow_pos_of_pos hx z⁻¹) (Real.rpow_pos_of_pos hy z) hz <;>
     simp [← Real.rpow_mul hx.le, ← Real.rpow_mul hy.le, ne_of_lt hz]
 #align real.rpow_inv_lt_iff_of_neg Real.rpow_inv_lt_iff_of_neg
 
 theorem rpow_inv_le_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z⁻¹ ≤ y ↔ y ^ z ≤ x :=
   by
-  convert le_rpow_inv_iff_of_neg (Real.rpow_pos_of_pos hx _) (Real.rpow_pos_of_pos hy _) hz <;>
+    convert le_rpow_inv_iff_of_neg (Real.rpow_pos_of_pos hx z⁻¹) (Real.rpow_pos_of_pos hy z) hz <;>
     simp [← Real.rpow_mul hx.le, ← Real.rpow_mul hy.le, ne_of_lt hz]
 #align real.rpow_inv_le_iff_of_neg Real.rpow_inv_le_iff_of_neg
 
@@ -556,7 +558,7 @@ theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ 
 theorem rpow_lt_one_iff (hx : 0 ≤ x) : x ^ y < 1 ↔ x = 0 ∧ y ≠ 0 ∨ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y :=
   by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, zero_lt_one]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, zero_lt_one]
   · simp [rpow_lt_one_iff_of_pos hx, hx.ne.symm]
 #align real.rpow_lt_one_iff Real.rpow_lt_one_iff
 
@@ -566,7 +568,7 @@ theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 
 
 theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x ∧ x < 1 ∧ y < 0 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 #align real.one_lt_rpow_iff Real.one_lt_rpow_iff
 
@@ -588,8 +590,8 @@ theorem le_rpow_iff_log_le (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ z ↔ Real.log 
   rw [← Real.log_le_log hx (Real.rpow_pos_of_pos hy z), Real.log_rpow hy]
 #align real.le_rpow_iff_log_le Real.le_rpow_iff_log_le
 
-theorem le_rpow_of_log_le (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x ≤ z * Real.log y) : x ≤ y ^ z :=
-  by
+theorem le_rpow_of_log_le (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x ≤ z * Real.log y) :
+    x ≤ y ^ z := by
   obtain hx | rfl := hx.lt_or_eq
   · exact (le_rpow_iff_log_le hx hy).2 h
   exact (Real.rpow_pos_of_pos hy z).le
@@ -599,8 +601,8 @@ theorem lt_rpow_iff_log_lt (hx : 0 < x) (hy : 0 < y) : x < y ^ z ↔ Real.log x 
   rw [← Real.log_lt_log_iff hx (Real.rpow_pos_of_pos hy z), Real.log_rpow hy]
 #align real.lt_rpow_iff_log_lt Real.lt_rpow_iff_log_lt
 
-theorem lt_rpow_of_log_lt (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x < z * Real.log y) : x < y ^ z :=
-  by
+theorem lt_rpow_of_log_lt (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x < z * Real.log y) :
+    x < y ^ z := by
   obtain hx | rfl := hx.lt_or_eq
   · exact (lt_rpow_iff_log_lt hx hy).2 h
   exact Real.rpow_pos_of_pos hy z
@@ -618,14 +620,14 @@ theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0
   rwa [log_rpow h1, mul_assoc, abs_mul, abs_of_pos ht, mul_comm] at this
 #align real.abs_log_mul_self_rpow_lt Real.abs_log_mul_self_rpow_lt
 
-theorem pow_nat_rpow_nat_inv {x : ℝ} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x :=
-  by
+theorem pow_nat_rpow_nat_inv {x : ℝ} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) :
+    (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
   rw [← rpow_nat_cast, ← rpow_mul hx, mul_inv_cancel hn0, rpow_one]
 #align real.pow_nat_rpow_nat_inv Real.pow_nat_rpow_nat_inv
 
-theorem rpow_nat_inv_pow_nat {x : ℝ} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x :=
-  by
+theorem rpow_nat_inv_pow_nat {x : ℝ} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) :
+    (x ^ (n⁻¹ : ℝ)) ^ n = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
   rw [← rpow_nat_cast, ← rpow_mul hx, inv_mul_cancel hn0, rpow_one]
 #align real.rpow_nat_inv_pow_nat Real.rpow_nat_inv_pow_nat
@@ -663,8 +665,10 @@ end Sqrt
 
 variable {n : ℕ}
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ ↑q ^ n < y := by
+    ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
   have hn' : 0 < (n : ℝ) := by exact_mod_cast hn.bot_lt
   obtain ⟨q, hxq, hqy⟩ :=
     exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
@@ -673,9 +677,9 @@ theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy :
   replace hxq := rpow_lt_rpow this hxq hn'
   replace hqy := rpow_lt_rpow hq.le hqy hn'
   rw [rpow_nat_cast, rpow_nat_cast, rpow_nat_inv_pow_nat _ hn] at hxq hqy
-  exact ⟨q, by exact_mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
-  · exact le_max_left _ _
+  · exact ⟨q, by exact_mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
   · exact hy.le
+  · exact le_max_left _ _
 #align real.exists_rat_pow_btwn_rat_aux Real.exists_rat_pow_btwn_rat_aux
 
 theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 < y) :
