@@ -426,6 +426,7 @@ import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.NormedSpace.BanachSteinhaus
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.NormedSpace.Completion
@@ -669,6 +670,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Linear
@@ -1823,6 +1825,7 @@ import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
@@ -1839,6 +1842,7 @@ import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
@@ -1895,6 +1899,7 @@ import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.SetTheory.Game.PGame
 import Mathlib.SetTheory.Lists
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
@@ -1925,6 +1930,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Common
 import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
@@ -2118,16 +2124,16 @@ import Mathlib.Topology.Category.Locale
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Category.Profinite.Projective
-import Mathlib.Topology.Category.Top.Adjunctions
-import Mathlib.Topology.Category.Top.Basic
-import Mathlib.Topology.Category.Top.EpiMono
-import Mathlib.Topology.Category.Top.Limits.Basic
-import Mathlib.Topology.Category.Top.Limits.Cofiltered
-import Mathlib.Topology.Category.Top.Limits.Konig
-import Mathlib.Topology.Category.Top.Limits.Products
-import Mathlib.Topology.Category.Top.Limits.Pullbacks
-import Mathlib.Topology.Category.Top.OpenNhds
-import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCat.Adjunctions
+import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Category.TopCat.EpiMono
+import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Topology.Category.TopCat.Limits.Products
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+import Mathlib.Topology.Category.TopCat.OpenNhds
+import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
