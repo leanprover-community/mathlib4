@@ -27,9 +27,9 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodule of `M`.
 
-* `is_artinian R M` is the proposition that `M` is a Artinian `R`-module. It is a class,
+* `IsArtinian R M` is the proposition that `M` is a Artinian `R`-module. It is a class,
   implemented as the predicate that the `<` relation on submodules is well founded.
-* `is_artinian_ring R` is the proposition that `R` is a left Artinian ring.
+* `IsArtinianRing R` is the proposition that `R` is a left Artinian ring.
 
 ## References
 
@@ -48,9 +48,8 @@ open Set
 open BigOperators Pointwise
 
 /- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`wellFounded_submodule_lt] [] -/
-/-- `is_artinian R M` is the proposition that `M` is an Artinian `R`-module,
-implemented as the well-foundedness of submodule inclusion.
--/
+/-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
+implemented as the well-foundedness of submodule inclusion. -/
 class IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   wellFounded_submodule_lt : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop)
 #align is_artinian IsArtinian
@@ -129,7 +128,7 @@ instance isArtinian_pi {R ι : Type _} [Finite ι] :
     exact isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
 #align is_artinian_pi isArtinian_pi
 
-/-- A version of `is_artinian_pi` for non-dependent functions. We need this instance because
+/-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
 instance isArtinian_pi' {R ι M : Type _} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
@@ -174,8 +173,7 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {
       conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]⟩
 #align is_artinian.finite_of_linear_independent IsArtinian.finite_of_linearIndependent
 
-/-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them.
--/
+/-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
 theorem set_has_minimal_iff_artinian :
     (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬I < M') ↔ IsArtinian R M := by
   rw [isArtinian_iff_wellFounded, WellFounded.wellFounded_iff_has_min]
@@ -208,8 +206,7 @@ theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) �
 #align is_artinian.induction IsArtinian.induction
 
 /-- For any endomorphism of a Artinian module, there is some nontrivial iterate
-with disjoint kernel and range.
--/
+with disjoint kernel and range. -/
 theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
     ∃ n : ℕ, n ≠ 0 ∧ LinearMap.ker (f ^ n) ⊔ LinearMap.range (f ^ n) = ⊤ := by
   obtain ⟨n, w⟩ :=
@@ -244,10 +241,9 @@ theorem bijective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f
   ⟨s, surjective_of_injective_endomorphism f s⟩
 #align is_artinian.bijective_of_injective_endomorphism IsArtinian.bijective_of_injective_endomorphism
 
-/-- A sequence `f` of submodules of a artinian module,
-with the supremum `f (n+1)` and the infinum of `f 0`, ..., `f n` being ⊤,
-is eventually ⊤.
--/
+/-- A sequence `f` of submodules of an artinian module,
+with the supremum `f (n+1)` and the infimum of `f 0`, ..., `f n` being ⊤,
+is eventually ⊤. -/
 theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     (h : ∀ n, Disjoint (partialSups (OrderDual.toDual ∘ f) n) (OrderDual.toDual (f (n + 1)))) :
     ∃ n : ℕ, ∀ m, n ≤ m → f m = ⊤ := by
@@ -318,8 +314,8 @@ end CommRing
 -- end
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
-Strictly speaking, this should be called `is_left_artinian_ring` but we omit the `left_` for
-convenience in the commutative case. For a right Artinian ring, use `is_artinian Rᵐᵒᵖ R`. -/
+Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
+convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
 @[reducible]
 def IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
@@ -329,10 +325,10 @@ theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R :=
   Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
-theorem Ring.is_artinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
+theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
   have := subsingleton_of_zero_eq_one h01
   inferInstance
-#align ring.is_artinian_of_zero_eq_one Ring.is_artinian_of_zero_eq_one
+#align ring.is_artinian_of_zero_eq_one Ring.isArtinian_of_zero_eq_one
 
 theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) (h : IsArtinian R M) : IsArtinian R N := by infer_instance
@@ -343,8 +339,7 @@ theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Mo
   isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
 #align is_artinian_of_quotient_of_artinian isArtinian_of_quotient_of_artinian
 
-/-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is
-also Artinian. -/
+/-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
   rw [isArtinian_iff_wellFounded] at h⊢
@@ -387,7 +382,7 @@ theorem isArtinian_of_fG_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R 
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_artinian_of_fg_of_artinian' isArtinian_of_fG_of_artinian'
 
-/-- In a module over a artinian ring, the submodule generated by finitely many vectors is
+/-- In a module over an artinian ring, the submodule generated by finitely many vectors is
 artinian. -/
 theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M] [IsArtinianRing R]
     {A : Set M} (hA : A.Finite) : IsArtinian R (Submodule.span R A) :=
@@ -474,7 +469,7 @@ theorem localization_artinian : IsArtinianRing L :=
   (localization_surjective S L).isArtinianRing
 #align is_artinian_ring.localization_artinian IsArtinianRing.localization_artinian
 
-/-- `is_artinian_ring.localization_artinian` can't be made an instance, as it would make `S` + `R`
+/-- `IsArtinianRing.localization_artinian` can't be made an instance, as it would make `S` + `R`
 into metavariables. However, this is safe. -/
 instance : IsArtinianRing (Localization S) :=
   localization_artinian S _
