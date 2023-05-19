@@ -1148,8 +1148,12 @@ theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
 
 theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K V)) :
     finrank K W + finrank K W.dualCoannihilator = finrank K V := by
-  rw [finrank_dualCoannihilator_eq, (W.quotEquivAnnihilator (K := K) (V := Module.Dual K V)).finrank_eq.symm, add_comm,
-    Submodule.finrank_quotient_add_finrank, Subspace.dual_finrank_eq]
+  rw [finrank_dualCoannihilator_eq]
+  -- Porting note: LineqrEquiv.finrank_eq needs help
+  let equiv := W.quotEquivAnnihilator
+  have eq := LinearEquiv.finrank_eq (R := K) (M := (Module.Dual K V) ⧸ W)
+    (M₂ := { x // x ∈ dualAnnihilator W }) equiv
+  rw [eq.symm, add_comm, Submodule.finrank_quotient_add_finrank, Subspace.dual_finrank_eq]
 #align subspace.finrank_add_finrank_dual_coannihilator_eq Subspace.finrank_add_finrank_dualCoannihilator_eq
 
 end
@@ -1387,6 +1391,9 @@ theorem dualPairing_eq (W : Subspace K V₁) :
   rfl
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
+-- Porting note: remove this
+set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 0 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
@@ -1484,8 +1491,11 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
   -- Porting note: broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   have that := Submodule.finrank_quotient_add_finrank (LinearMap.range f)
-  rw [(Subspace.quotEquivAnnihilator <| LinearMap.range f).finrank_eq, ←
-    ker_dualMap_eq_dualAnnihilator_range] at that
+  -- Porting note: Again LinearEquiv.finrank_eq needs help
+  let equiv := (Subspace.quotEquivAnnihilator <| LinearMap.range f)
+  have eq := LinearEquiv.finrank_eq (R := K) (M := (V₂ ⧸ range f))
+    (M₂ := { x // x ∈ Submodule.dualAnnihilator (range f) }) equiv
+  rw [eq, ←ker_dualMap_eq_dualAnnihilator_range] at that
   -- Porting note: cannot convert at `this`?
   conv_rhs at that => rw [← Subspace.dual_finrank_eq]
   refine' add_left_injective (finrank K <| LinearMap.ker f.dualMap) _
@@ -1586,24 +1596,26 @@ theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : D
   simp [dualDistribInvOfBasis]
 #align tensor_product.dual_distrib_inv_of_basis_apply TensorProduct.dualDistribInvOfBasis_apply
 
+-- Porting note : this doesn't work
+-- set_option maxHeartbeats 0 in
 /-- A linear equivalence between `dual M ⊗ dual N` and `dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `tensor_product.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
 @[simps]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  · ext (f m n)
-    have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
-    simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-      LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-      f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-      Basis.coord_apply, Basis.sum_repr]
-  · ext (f g)
-    simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-      dualDistrib_apply, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-      Basis.sum_dual_apply_smul_coord]
+    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by sorry
+  -- refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
+  -- · ext (f m n)
+  --   have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
+  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+  --     LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
+  --     f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+  --     Basis.coord_apply, Basis.sum_repr]
+  -- · ext (f g)
+  --   simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+  --     dualDistrib_apply, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+  --     Basis.sum_dual_apply_smul_coord]
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)
@@ -1621,7 +1633,7 @@ isomorphism `R ⊗ R ≃ R`.
 -/
 @[simp]
 noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  DualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
+  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
