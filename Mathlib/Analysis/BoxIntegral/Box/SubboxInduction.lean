@@ -32,9 +32,7 @@ rectangular box, induction
 -/
 
 
-open Set Finset Function Filter Metric
-
-open Classical Topology Filter ENNReal
+open Set Finset Function Filter Metric Classical Topology Filter ENNReal
 
 noncomputable section
 
@@ -97,10 +95,10 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem unionᵢ_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I := by
+theorem iUnion_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I := by
   ext x
   simp
-#align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.unionᵢ_coe_splitCenterBox
+#align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
 
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
@@ -155,23 +153,23 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- sufficiently large `m`. This contradicts `hJp`.
   set z : ι → ℝ := ⨆ m, (J m).lower
   have hzJ : ∀ m, z ∈ Box.Icc (J m) :=
-    mem_interᵢ.1 (csupᵢ_mem_Inter_Icc_of_antitone_Icc
+    mem_iInter.1 (ciSup_mem_Inter_Icc_of_antitone_Icc
       ((@Box.Icc ι).monotone.comp_antitone hJmono) fun m ↦ (J m).lower_le_upper)
-  have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_icc.1 (hJle m) (J m).lower_mem_icc
-  have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_icc.1 (hJle m) (J m).upper_mem_icc
+  have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).lower_mem_Icc
+  have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).upper_mem_Icc
   have hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝 z) :=
-    tendsto_atTop_csupᵢ (antitone_lower.comp hJmono) ⟨I.upper, fun x ⟨m, hm⟩ ↦ hm ▸ (hJl_mem m).2⟩
+    tendsto_atTop_ciSup (antitone_lower.comp hJmono) ⟨I.upper, fun x ⟨m, hm⟩ ↦ hm ▸ (hJl_mem m).2⟩
   have hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝 z) := by
     suffices Tendsto (fun m ↦ (J m).upper - (J m).lower) atTop (𝓝 0) by simpa using hJlz.add this
     refine' tendsto_pi_nhds.2 fun i ↦ _
     simpa [hJsub] using
       tendsto_const_nhds.div_atTop (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)
   replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z)
-  exact
-    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
+  · exact
+      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
   replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z)
-  exact
-    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
+  · exact
+      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
   rcases H_nhds z (h0 ▸ hzJ 0) with ⟨U, hUz, hU⟩
   rcases(tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
   exact hJp m (hU (J m) (hJle m) m (hzJ m) hUm (hJsub m))

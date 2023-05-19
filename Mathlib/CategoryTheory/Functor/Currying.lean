@@ -35,16 +35,14 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
       map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g =>
-        by
+      map_comp := fun f g => by
         simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
           Category.assoc]
         slice_lhs 2 3 => rw [← NatTrans.naturality]
         rw [Category.assoc] }
   map T :=
     { app := fun X => (T.app X.1).app X.2
-      naturality := fun X Y f =>
-        by
+      naturality := fun X Y f => by
         simp only [prod_comp_fst, prod_comp_snd, Category.comp_id, Category.assoc, Functor.map_id,
           Functor.map_comp, NatTrans.id_app, NatTrans.comp_app]
         slice_lhs 2 3 => rw [NatTrans.naturality]

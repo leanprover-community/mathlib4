@@ -21,7 +21,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## Main Definitions
 * A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-* A `FirstOrder.Language.Formula` is defined so that `L.formula α` is the type of `L`-formulas with
+* A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
 * A `FirstOrder.Language.Sentence` is a formula with no free variables.
 * A `FirstOrder.Language.Theory` is a set of sentences.
@@ -41,10 +41,10 @@ variables with given terms.
 constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.boundedFormula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.boundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.boundedFormula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -91,7 +91,7 @@ open Finset
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinset
+  | func _f ts => univ.biUnion fun i => (ts i).varFinset
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
 --Porting note: universes in different order
@@ -100,7 +100,7 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | var (Sum.inl i) => {i}
   | var (Sum.inr _i) => ∅
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 #align first_order.language.term.var_finset_left FirstOrder.Language.Term.varFinsetLeft
 
 --Porting note: universes in different order
@@ -147,7 +147,7 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
     func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
+      (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVar
 
 --Porting note: universes in different order
@@ -158,7 +158,7 @@ def restrictVarLeft [DecidableEq α] {γ : Type _} :
   | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
     func F fun i =>
-      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_bunionᵢ_of_mem
+      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
         (fun i => varFinsetLeft (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var_left FirstOrder.Language.Term.restrictVarLeft
 
@@ -318,7 +318,7 @@ variable (L) (α)
 inductive BoundedFormula : ℕ → Type max u v u'
   | falsum {n} : BoundedFormula n
   | equal {n} (t₁ t₂ : L.Term (Sum α (Fin n))) : BoundedFormula n
-  | Rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (Sum α (Fin n))) : BoundedFormula n
+  | rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (Sum α (Fin n))) : BoundedFormula n
   | imp {n} (f₁ f₂ : BoundedFormula n) : BoundedFormula n
   | all {n} (f : BoundedFormula (n + 1)) : BoundedFormula n
 #align first_order.language.bounded_formula FirstOrder.Language.BoundedFormula
@@ -347,7 +347,7 @@ variable {L} {α} {n : ℕ}
 /-- Applies a relation to terms as a bounded formula. -/
 def Relations.boundedFormula {l : ℕ} (R : L.Relations n) (ts : Fin n → L.Term (Sum α (Fin l))) :
     L.BoundedFormula α l :=
-  BoundedFormula.Rel R ts
+  BoundedFormula.rel R ts
 #align first_order.language.relations.bounded_formula FirstOrder.Language.Relations.boundedFormula
 
 /-- Applies a unary relation to a term as a bounded formula. -/
@@ -429,19 +429,19 @@ open Finset
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
   | _n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
-  | _n, Rel _R ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | _n, rel _R ts => univ.biUnion fun i => (ts i).varFinsetLeft
   | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
   | _n, all f => f.freeVarFinset
 #align first_order.language.bounded_formula.free_var_finset FirstOrder.Language.BoundedFormula.freeVarFinset
 
 --Porting note: universes in different order
-/-- Casts `L.bounded_formula α m` as `L.bounded_formula α n`, where `m ≤ n`. -/
+/-- Casts `L.BoundedFormula α m` as `L.BoundedFormula α n`, where `m ≤ n`. -/
 @[simp]
 def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
   | _m, _n, _h, falsum => falsum
   | _m, _n, h, equal t₁ t₂ =>
     equal (t₁.relabel (Sum.map id (Fin.castLE h))) (t₂.relabel (Sum.map id (Fin.castLE h)))
-  | _m, _n, h, Rel R ts => Rel R (Term.relabel (Sum.map id (Fin.castLE h)) ∘ ts)
+  | _m, _n, h, rel R ts => rel R (Term.relabel (Sum.map id (Fin.castLE h)) ∘ ts)
   | _m, _n, h, imp f₁ f₂ => (f₁.castLE h).imp (f₂.castLE h)
   | _m, _n, h, all f => (f.castLE (add_le_add_right h 1)).all
 #align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLE
@@ -486,9 +486,9 @@ def restrictFreeVar [DecidableEq α] :
   | _n, equal t₁ t₂, f =>
     equal (t₁.restrictVarLeft (f ∘ Set.inclusion (subset_union_left _ _)))
       (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
-  | _n, Rel R ts, f =>
-    Rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
+  | _n, rel R ts, f =>
+    rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
+      (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
     (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
       (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
@@ -517,7 +517,7 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Ter
     ∀ {n}, L.BoundedFormula α n → L'.BoundedFormula β (g n)
   | _n, falsum => falsum
   | _n, equal t₁ t₂ => equal (ft _ t₁) (ft _ t₂)
-  | _n, Rel R ts => Rel (fr _ R) fun i => ft _ (ts i)
+  | _n, rel R ts => rel (fr _ R) fun i => ft _ (ts i)
   | _n, imp φ₁ φ₂ => (φ₁.mapTermRel ft fr h).imp (φ₂.mapTermRel ft fr h)
   | n, all φ => (h n (φ.mapTermRel ft fr h)).all
 #align first_order.language.bounded_formula.map_term_rel FirstOrder.Language.BoundedFormula.mapTermRel
@@ -573,9 +573,8 @@ def relabelAux (g : α → Sum β (Fin n)) (k : ℕ) : Sum α (Fin k) → Sum β
 
 @[simp]
 theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → Sum β (Fin n)} {v : β → M}
-    {xs : Fin (n + m) → M} :
-    Sum.elim v xs ∘ relabelAux g m = Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) :=
-  by
+    {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
+    Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
   cases' x with x x
   · simp only [BoundedFormula.relabelAux, Function.comp_apply, Sum.map_inl, Sum.elim_inl]
@@ -666,7 +665,7 @@ def constantsVarsEquiv : L[[γ]].BoundedFormula α n ≃ L.BoundedFormula (Sum �
 def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin n))
   | _n, falsum => falsum
   | _n, equal t₁ t₂ => t₁.equal t₂
-  | _n, Rel R ts => R.formula ts
+  | _n, rel R ts => R.formula ts
   | _n, imp φ₁ φ₂ => φ₁.toFormula.imp φ₂.toFormula
   | _n, all φ =>
     (φ.toFormula.relabel
@@ -681,8 +680,7 @@ variable {v : α → M} {xs : Fin l → M}
   Note that `⊥` and `⊤` are not considered atomic in this convention. -/
 inductive IsAtomic : L.BoundedFormula α n → Prop
   | equal (t₁ t₂ : L.Term (Sum α (Fin n))) : IsAtomic (t₁.bdEqual t₂)
-  |
-  Rel {l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (Sum α (Fin n))) :
+  | rel {l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (Sum α (Fin n))) :
     IsAtomic (R.boundedFormula ts)
 #align first_order.language.bounded_formula.is_atomic FirstOrder.Language.BoundedFormula.IsAtomic
 
@@ -695,15 +693,15 @@ theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic :=
 
 theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
     (f : α → Sum β (Fin n)) : (φ.relabel f).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.Rel _ _
+  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.relabel FirstOrder.Language.BoundedFormula.IsAtomic.relabel
 
 theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.Rel _ _
+  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.lift_at FirstOrder.Language.BoundedFormula.IsAtomic.liftAt
 
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
-  IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.Rel _ _
+  IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.cast_le FirstOrder.Language.BoundedFormula.IsAtomic.castLE
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
@@ -794,7 +792,7 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.to_prenex_imp_right ψ`
+  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
@@ -806,10 +804,10 @@ theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
     ∀ {ψ : L.BoundedFormula α n}, IsQF ψ → φ.toPrenexImpRight ψ = φ.imp ψ
   | _, IsQF.falsum => rfl
   | _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
-  | _, IsQF.of_isAtomic (IsAtomic.Rel _ _) => rfl
+  | _, IsQF.of_isAtomic (IsAtomic.rel _ _) => rfl
   | _, IsQF.imp IsQF.falsum _ => rfl
   | _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.equal _ _)) _ => rfl
-  | _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.Rel _ _)) _ => rfl
+  | _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.rel _ _)) _ => rfl
   | _, IsQF.imp (IsQF.imp _ _) _ => rfl
 #align first_order.language.bounded_formula.is_qf.to_prenex_imp_right FirstOrder.Language.BoundedFormula.IsQF.toPrenexImpRight
 
@@ -824,7 +822,7 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` and `ψ` are in prenex normal form, then `φ.to_prenex_imp ψ`
+  If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, BoundedFormula.ex φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).all
@@ -836,10 +834,10 @@ theorem IsQF.toPrenexImp :
     ∀ {φ ψ : L.BoundedFormula α n}, φ.IsQF → φ.toPrenexImp ψ = φ.toPrenexImpRight ψ
   | _, _, IsQF.falsum => rfl
   | _, _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
-  | _, _, IsQF.of_isAtomic (IsAtomic.Rel _ _) => rfl
+  | _, _, IsQF.of_isAtomic (IsAtomic.rel _ _) => rfl
   | _, _, IsQF.imp IsQF.falsum _ => rfl
   | _, _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.equal _ _)) _ => rfl
-  | _, _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.Rel _ _)) _ => rfl
+  | _, _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.rel _ _)) _ => rfl
   | _, _, IsQF.imp (IsQF.imp _ _) _ => rfl
 #align first_order.language.bounded_formula.is_qf.to_prenex_imp FirstOrder.Language.BoundedFormula.IsQF.toPrenexImp
 
@@ -853,19 +851,19 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImp
 
 --Porting note: universes in different order
-/-- For any bounded formula `φ`, `φ.to_prenex` is a semantically-equivalent formula in prenex normal
+/-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
   form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
   | _, falsum => ⊥
   | _, equal t₁ t₂ => t₁.bdEqual t₂
-  | _, Rel R ts => Rel R ts
+  | _, rel R ts => rel R ts
   | _, imp f₁ f₂ => f₁.toPrenex.toPrenexImp f₂.toPrenex
   | _, all f => f.toPrenex.all
 #align first_order.language.bounded_formula.to_prenex FirstOrder.Language.BoundedFormula.toPrenex
 
 theorem toPrenex_isPrenex (φ : L.BoundedFormula α n) : φ.toPrenex.IsPrenex :=
   BoundedFormula.recOn φ isQF_bot.isPrenex (fun _ _ => (IsAtomic.equal _ _).isPrenex)
-    (fun _ _ => (IsAtomic.Rel _ _).isPrenex) (fun _ _ h1 h2 => isPrenex_toPrenexImp h1 h2)
+    (fun _ _ => (IsAtomic.rel _ _).isPrenex) (fun _ _ h1 h2 => isPrenex_toPrenexImp h1 h2)
     fun _ => IsPrenex.all
 #align first_order.language.bounded_formula.to_prenex_is_prenex FirstOrder.Language.BoundedFormula.toPrenex_isPrenex
 
@@ -881,7 +879,7 @@ open BoundedFormula
 def onBoundedFormula (g : L →ᴸ L') : ∀ {k : ℕ}, L.BoundedFormula α k → L'.BoundedFormula α k
   | _k, falsum => falsum
   | _k, equal t₁ t₂ => (g.onTerm t₁).bdEqual (g.onTerm t₂)
-  | _k, Rel R ts => (g.onRelation R).boundedFormula (g.onTerm ∘ ts)
+  | _k, rel R ts => (g.onRelation R).boundedFormula (g.onTerm ∘ ts)
   | _k, imp f₁ f₂ => (onBoundedFormula g f₁).imp (onBoundedFormula g f₂)
   | _k, all f => (onBoundedFormula g f).all
 set_option linter.uppercaseLean3 false in
@@ -1135,23 +1133,23 @@ theorem directed_distinctConstantsTheory :
   Monotone.directed_le monotone_distinctConstantsTheory
 #align first_order.language.directed_distinct_constants_theory FirstOrder.Language.directed_distinctConstantsTheory
 
-theorem distinctConstantsTheory_eq_unionᵢ (s : Set α) :
+theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
         L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by
   classical
     simp only [distinctConstantsTheory]
-    rw [← image_unionᵢ, ← unionᵢ_inter]
+    rw [← image_iUnion, ← iUnion_inter]
     refine' congr rfl (congr (congr rfl _) rfl)
     ext ⟨i, j⟩
-    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_unionᵢ,
+    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
     refine' ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, _⟩, ⟨h.2, _⟩⟩, _⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩
       exact ⟨is, js⟩
-#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_unionᵢ
+#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_iUnion
 
 end Cardinality
 

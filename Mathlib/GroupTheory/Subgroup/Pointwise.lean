@@ -113,35 +113,35 @@ then it holds for all elements of the supremum of `S`. -/
 @[to_additive (attr := elab_as_elim) " An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `S`. "]
-theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
+theorem iSup_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
-  rw [supᵢ_eq_closure] at hx
+  rw [iSup_eq_closure] at hx
   refine' closure_induction'' hx (fun x hx => _) (fun x hx => _) h1 hmul
-  · obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx
+  · obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
     exact hp _ _ hi
-  · obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx
+  · obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
     exact hp _ _ (inv_mem hi)
-#align subgroup.supr_induction Subgroup.supᵢ_induction
-#align add_subgroup.supr_induction AddSubgroup.supᵢ_induction
+#align subgroup.supr_induction Subgroup.iSup_induction
+#align add_subgroup.supr_induction AddSubgroup.iSup_induction
 
-/-- A dependent version of `Subgroup.supᵢ_induction`. -/
-@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.supᵢ_induction`. "]
-theorem supᵢ_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
-    (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_supᵢ_of_mem i hx)) (h1 : C 1 (one_mem _))
+/-- A dependent version of `Subgroup.iSup_induction`. -/
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.iSup_induction`. "]
+theorem iSup_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+    (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_iSup_of_mem i hx)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices : ∃ h, C x h; exact this.snd
-  refine' supᵢ_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => _) _ fun x y => _
+  refine' iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
-#align subgroup.supr_induction' Subgroup.supᵢ_induction'
-#align add_subgroup.supr_induction' AddSubgroup.supᵢ_induction'
+#align subgroup.supr_induction' Subgroup.iSup_induction'
+#align add_subgroup.supr_induction' AddSubgroup.iSup_induction'
 
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
-  infₛ_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 #align subgroup.closure_mul_le Subgroup.closure_mul_le

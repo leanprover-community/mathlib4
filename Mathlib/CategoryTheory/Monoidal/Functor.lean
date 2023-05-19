@@ -95,6 +95,8 @@ structure LaxMonoidalFunctor extends C ⥤ D where
 
 -- Porting note: todo: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
+-- See also `initialize_simps_projections MonoidalFunctor` below.
+-- This may require waiting on https://github.com/leanprover-community/mathlib4/pull/2936
 initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
 
 --Porting note: was `[simp, reassoc.1]`
@@ -151,6 +153,7 @@ structure MonoidalFunctor extends LaxMonoidalFunctor.{v₁, v₂} C D where
   μ_isIso : ∀ X Y : C, IsIso (μ X Y) := by infer_instance
 #align category_theory.monoidal_functor CategoryTheory.MonoidalFunctor
 
+-- See porting note on `initialize_simps_projections LaxMonoidalFunctor`
 initialize_simps_projections MonoidalFunctor (+toLaxMonoidalFunctor, -obj, -map, -ε, -μ)
 
 attribute [instance] MonoidalFunctor.ε_isIso MonoidalFunctor.μ_isIso
@@ -324,8 +327,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
   { F.toFunctor ⋙ G.toFunctor with
     ε := G.ε ≫ G.map F.ε
     μ := fun X Y => G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y)
-    μ_natural := @fun _ _ _ _ f g =>
-      by
+    μ_natural := @fun _ _ _ _ f g => by
       simp only [Functor.comp_map, assoc]
       rw [← Category.assoc, LaxMonoidalFunctor.μ_natural, Category.assoc, ← map_comp, ← map_comp,
         ← LaxMonoidalFunctor.μ_natural]
