@@ -424,6 +424,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.NormedSpace.AddTorsor
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.BanachSteinhaus
 import Mathlib.Analysis.NormedSpace.Basic
