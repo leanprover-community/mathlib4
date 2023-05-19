@@ -8,9 +8,9 @@ Authors: Scott Morrison, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Category
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Pempty
+import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Pempty
 
 /-!
 # The monoidal structure on a category with chosen finite products.
@@ -63,8 +63,7 @@ theorem BinaryFan.swap_snd {P Q : C} (t : BinaryFan P Q) : t.symm.snd = t.fst :=
 /-- If a cone `t` over `P Q` is a limit cone, then `t.swap` is a limit cone over `Q P`.
 -/
 @[simps]
-def IsLimit.swapBinaryFan {P Q : C} {t : BinaryFan P Q} (I : IsLimit t) : IsLimit t.symm
-    where
+def IsLimit.swapBinaryFan {P Q : C} {t : BinaryFan P Q} (I : IsLimit t) : IsLimit t.symm where
   lift s := I.lift (BinaryFan.swap s)
   fac s := by rintro ⟨⟨⟩⟩ <;> simp
   uniq s m w := by
@@ -141,8 +140,7 @@ theorem BinaryFan.assocInv_snd {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sX
 -/
 @[simps]
 def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : BinaryFan Y Z}
-    (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s) : IsLimit (s.and_assoc Q)
-    where
+    (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s) : IsLimit (s.and_assoc Q) where
   lift t := R.lift (BinaryFan.assocInv P t)
   fac t := by
     rintro ⟨⟨⟩⟩ <;> simp
@@ -190,8 +188,7 @@ attribute [local tidy] tactic.discrete_cases
 -/
 @[simps]
 def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
-    {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X
-    where
+    {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   Hom := t.snd
   inv :=
     Q.lift
@@ -212,8 +209,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 -/
 @[simps]
 def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
-    {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X
-    where
+    {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   Hom := t.fst
   inv :=
     Q.lift
@@ -280,8 +276,7 @@ theorem pentagon (W X Y Z : C) :
         (BinaryFan.associatorOfLimitCone ℬ W (tensorObj ℬ X Y) Z).Hom ≫
           tensorHom ℬ (𝟙 W) (BinaryFan.associatorOfLimitCone ℬ X Y Z).Hom =
       (BinaryFan.associatorOfLimitCone ℬ (tensorObj ℬ W X) Y Z).Hom ≫
-        (BinaryFan.associatorOfLimitCone ℬ W X (tensorObj ℬ Y Z)).Hom :=
-  by
+        (BinaryFan.associatorOfLimitCone ℬ W X (tensorObj ℬ Y Z)).Hom := by
   dsimp [tensor_hom]
   apply is_limit.hom_ext (ℬ _ _).IsLimit; rintro ⟨⟨⟩⟩
   · simp
@@ -297,32 +292,28 @@ theorem pentagon (W X Y Z : C) :
 theorem triangle (X Y : C) :
     (BinaryFan.associatorOfLimitCone ℬ X 𝒯.Cone.pt Y).Hom ≫
         tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.IsLimit (ℬ 𝒯.Cone.pt Y).IsLimit).Hom =
-      tensorHom ℬ (BinaryFan.rightUnitor 𝒯.IsLimit (ℬ X 𝒯.Cone.pt).IsLimit).Hom (𝟙 Y) :=
-  by
+      tensorHom ℬ (BinaryFan.rightUnitor 𝒯.IsLimit (ℬ X 𝒯.Cone.pt).IsLimit).Hom (𝟙 Y) := by
   dsimp [tensor_hom]
   apply is_limit.hom_ext (ℬ _ _).IsLimit; rintro ⟨⟨⟩⟩ <;> simp
 #align category_theory.monoidal_of_chosen_finite_products.triangle CategoryTheory.MonoidalOfChosenFiniteProducts.triangle
 
 theorem leftUnitor_naturality {X₁ X₂ : C} (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.Cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.IsLimit (ℬ 𝒯.Cone.pt X₂).IsLimit).Hom =
-      (BinaryFan.leftUnitor 𝒯.IsLimit (ℬ 𝒯.Cone.pt X₁).IsLimit).Hom ≫ f :=
-  by
+      (BinaryFan.leftUnitor 𝒯.IsLimit (ℬ 𝒯.Cone.pt X₁).IsLimit).Hom ≫ f := by
   dsimp [tensor_hom]
   simp
 #align category_theory.monoidal_of_chosen_finite_products.left_unitor_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.leftUnitor_naturality
 
 theorem rightUnitor_naturality {X₁ X₂ : C} (f : X₁ ⟶ X₂) :
     tensorHom ℬ f (𝟙 𝒯.Cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.IsLimit (ℬ X₂ 𝒯.Cone.pt).IsLimit).Hom =
-      (BinaryFan.rightUnitor 𝒯.IsLimit (ℬ X₁ 𝒯.Cone.pt).IsLimit).Hom ≫ f :=
-  by
+      (BinaryFan.rightUnitor 𝒯.IsLimit (ℬ X₁ 𝒯.Cone.pt).IsLimit).Hom ≫ f := by
   dsimp [tensor_hom]
   simp
 #align category_theory.monoidal_of_chosen_finite_products.right_unitor_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.rightUnitor_naturality
 
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom ℬ (tensorHom ℬ f₁ f₂) f₃ ≫ (BinaryFan.associatorOfLimitCone ℬ Y₁ Y₂ Y₃).Hom =
-      (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).Hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) :=
-  by
+      (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).Hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
   dsimp [tensor_hom]
   apply is_limit.hom_ext (ℬ _ _).IsLimit; rintro ⟨⟨⟩⟩
   · simp
@@ -337,8 +328,7 @@ end MonoidalOfChosenFiniteProducts
 open MonoidalOfChosenFiniteProducts
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfChosenFiniteProducts : MonoidalCategory C
-    where
+def monoidalOfChosenFiniteProducts : MonoidalCategory C where
   tensorUnit := 𝒯.Cone.pt
   tensorObj X Y := tensorObj ℬ X Y
   tensorHom _ _ _ _ f g := tensorHom ℬ f g
