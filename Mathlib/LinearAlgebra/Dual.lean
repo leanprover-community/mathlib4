@@ -603,8 +603,6 @@ def evalEquiv [FiniteDimensional K V] : V ≃ₗ[K] Dual K (Dual K V) :=
       apply eval_ker K V, range_eq_top.mp erange_coe⟩
 #align module.eval_equiv Module.evalEquiv
 
-set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
 def mapEvalEquiv [FiniteDimensional K V] : Subspace K V ≃o Subspace K (Dual K (Dual K V)) :=
   Submodule.orderIsoMapComap (evalEquiv K V)
