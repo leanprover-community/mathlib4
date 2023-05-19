@@ -137,7 +137,7 @@ theorem BinaryFan.assocInv_snd {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sX
   rfl
 #align category_theory.limits.binary_fan.assoc_inv_snd CategoryTheory.Limits.BinaryFan.assocInv_snd
 
-/-- If all the binary fans involved a limit cones, `binary_fan.assoc` produces another limit cone.
+/-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone.
 -/
 @[simps]
 def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : BinaryFan Y Z}
@@ -245,13 +245,13 @@ variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 namespace MonoidalOfChosenFiniteProducts
 
-/-- Implementation of the tensor product for `monoidal_of_chosen_finite_products`. -/
+/-- Implementation of the tensor product for `MonoidalOfChosenFiniteProducts`. -/
 @[reducible]
 def tensorObj (X Y : C) : C :=
   (ℬ X Y).cone.pt
 #align category_theory.monoidal_of_chosen_finite_products.tensor_obj CategoryTheory.MonoidalOfChosenFiniteProducts.tensorObj
 
-/-- Implementation of the tensor product of morphisms for `monoidal_of_chosen_finite_products`. -/
+/-- Implementation of the tensor product of morphisms for `MonoidalOfChosenFiniteProducts`. -/
 @[reducible]
 def tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : tensorObj ℬ W Y ⟶ tensorObj ℬ X Z :=
   (BinaryFan.IsLimit.lift' (ℬ X Z).isLimit ((ℬ W Y).cone.π.app ⟨WalkingPair.left⟩ ≫ f)
@@ -353,7 +353,7 @@ open MonoidalCategory
 /-- A type synonym for `C` carrying a monoidal category structure corresponding to
 a fixed choice of limit data for the empty functor, and for `pair X Y` for every `X Y : C`.
 
-This is an implementation detail for `symmetric_of_chosen_finite_products`.
+This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
 -- Porting note: no `has_nonempty_instance` linter.
 -- @[nolint has_nonempty_instance]
