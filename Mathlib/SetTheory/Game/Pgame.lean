@@ -424,8 +424,8 @@ theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
 
 The ordering here is chosen so that `and.left` refer to moves by Left, and `and.right` refer to
 moves by Right. -/
-theorem le_iff_forall_lf {x y : PGame} : x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j :=
-  by
+theorem le_iff_forall_lf {x y : PGame} :
+    x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
   unfold LE.le le
   simp only
   rw [Sym2.GameAdd.fix_eq]
@@ -448,8 +448,8 @@ theorem le_of_forall_lf {x y : PGame} (h₁ : ∀ i, x.moveLeft i ⧏ y) (h₂ :
 
 The ordering here is chosen so that `or.inl` refer to moves by Left, and `or.inr` refer to
 moves by Right. -/
-theorem lf_iff_exists_le {x y : PGame} : x ⧏ y ↔ (∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y :=
-  by
+theorem lf_iff_exists_le {x y : PGame} :
+    x ⧏ y ↔ (∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y := by
   rw [Lf, le_iff_forall_lf, not_and_or]
   simp
 #align pgame.lf_iff_exists_le PGame.lf_iff_exists_le
@@ -1281,8 +1281,8 @@ theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.
 #align pgame.move_right_neg PGame.moveRight_neg
 
 @[simp]
-theorem moveRight_neg' {x : PGame} (i) : (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) :=
-  by
+theorem moveRight_neg' {x : PGame} (i) :
+    (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 #align pgame.move_right_neg' PGame.moveRight_neg'
@@ -1559,8 +1559,8 @@ theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
 #align pgame.add_move_right_inr PGame.add_moveRight_inr
 
 theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
-    (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) : P k :=
-  by
+    (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
+    P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
   cases' toLeftMovesAdd.symm k with i i
   · exact hl i
