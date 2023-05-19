@@ -1586,15 +1586,17 @@ theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : D
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
     comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
-  ext (f m n)
-  have h : ∀ r s : R, r • s = s • r := CommRing.mul_comm -- Porting note: was IsCommutative.comm
-  -- rw [dualDistribInvOfBasis_apply]
-  rw [comp_apply, dualDistribInvOfBasis_apply, LinearMap.map_sum]
-  simp_rw [LinearMap.map_sum]
-  -- simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-  --   LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-  --   f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-  --   Basis.coord_apply, Basis.sum_repr]
+  apply (b.tensorProduct c).dualBasis.ext
+  rintro ⟨i, j⟩
+  apply (b.tensorProduct c).ext
+  rintro ⟨i', j'⟩
+  simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
+    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
+    Basis.repr_self, ne_eq, LinearMap.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
+    Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
+    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  all_goals { intros; simp [*] at * }
 
 -- Porting note : this doesn't work
 -- set_option maxHeartbeats 0 in
