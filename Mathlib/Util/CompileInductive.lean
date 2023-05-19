@@ -60,6 +60,10 @@ Compile the definition `dv` by adding a second definition `dv✝` with the same 
 and registering a `csimp`-lemma `dv = dv✝`.
 -/
 def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
+  if ((← getEnv).getModuleIdxFor? dv.name).isNone then
+    -- If it's in the same module then we can safely just call `compileDecl`
+    -- on the original definition
+    return ← compileDecl <| .defnDecl dv
   let name ← mkFreshUserName dv.name
   addAndCompile <| .defnDecl { dv with name }
   let levels := dv.levelParams.map .param
