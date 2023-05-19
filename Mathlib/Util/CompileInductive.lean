@@ -108,6 +108,11 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   if ← isProp rv.type then
     logWarning m!"not compiling {rv.name}"
     return
+  if (← getEnv).contains (rv.name.str "_cstage2") ||
+    (Compiler.CSimp.ext.getState (← getEnv)).map.contains rv.name
+  then
+    logWarning m!"already compiled {rv.name}"
+    return
   unless rv.numMotives == 1 do
     throwError "mutual/nested inductives unsupported"
   if iv.type.getForallBody.isProp && !iv.isRec && iv.numCtors == 1 && iv.numIndices == 0 then
