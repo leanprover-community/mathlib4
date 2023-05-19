@@ -16,18 +16,18 @@ import Mathlib.RingTheory.Localization.Ideal
 
 ## Main definitions
 
- * `is_localization.at_prime (I : ideal R) [is_prime I] (S : Type*)` expresses that `S` is a
+ * `IsLocalization.AtPrime (I : Ideal R) [IsPrime I] (S : Type*)` expresses that `S` is a
    localization at (the complement of) a prime ideal `I`, as an abbreviation of
-   `is_localization I.prime_compl S`
+   `IsLocalization I.prime_compl S`
 
 ## Main results
 
- * `is_localization.at_prime.local_ring`: a theorem (not an instance) stating a localization at the
+ * `IsLocalization.AtPrime.localRing`: a theorem (not an instance) stating a localization at the
    complement of a prime ideal is a local ring
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `src/ring_theory/Localization/basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -58,13 +58,13 @@ theorem primeCompl_le_nonZeroDivisors [NoZeroDivisors R] : I.primeCompl ≤ nonZ
 
 end Ideal
 
-/-- Given a prime ideal `P`, the typeclass `is_localization.at_prime S P` states that `S` is
+/-- Given a prime ideal `P`, the typeclass `IsLocalization.AtPrime S P` states that `S` is
 isomorphic to the localization of `R` at the complement of `P`. -/
 protected abbrev IsLocalization.AtPrime :=
   IsLocalization I.primeCompl S
 #align is_localization.at_prime IsLocalization.AtPrime
 
-/-- Given a prime ideal `P`, `localization.at_prime S P` is a localization of
+/-- Given a prime ideal `P`, `Localization.AtPrime S P` is a localization of
 `R` at the complement of `P`, as a quotient type. -/
 protected abbrev Localization.AtPrime :=
   Localization I.primeCompl
@@ -148,8 +148,8 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
     fun h => map_units S ⟨x, h⟩⟩
 #align is_localization.at_prime.is_unit_to_map_iff IsLocalization.AtPrime.isUnit_to_map_iff
 
--- Can't use typeclasses to infer the `local_ring` instance, so use an `opt_param` instead
--- (since `local_ring` is a `Prop`, there should be no unification issues.)
+-- Can't use typeclasses to infer the `LocalRing` instance, so use an `optParam` instead
+-- (since `LocalRing` is a `Prop`, there should be no unification issues.)
 theorem to_map_mem_maximal_iff (x : R) (h : LocalRing S := localRing S I) :
     algebraMap R S x ∈ LocalRing.maximalIdeal S ↔ x ∈ I :=
   not_iff_not.mp <| by
