@@ -57,7 +57,7 @@ theorem NonlinearRightInverse.bound {f : E →L[𝕜] F} (fsymm : NonlinearRight
 end ContinuousLinearMap
 
 /-- Given a continuous linear equivalence, the inverse is in particular an instance of
-`nonlinear_right_inverse` (which turns out to be linear). -/
+`ContinuousLinearMap.NonlinearRightInverse` (which turns out to be linear). -/
 noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜] F) :
     ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F) where
   toFun := f.invFun
