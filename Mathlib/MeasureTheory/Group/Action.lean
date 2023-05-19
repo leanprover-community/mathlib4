@@ -16,7 +16,7 @@ import Mathlib.Dynamics.Minimal
 /-!
 # Measures invariant under group actions
 
-A measure `μ : measure α` is said to be *invariant* under an action of a group `G` if scalar
+A measure `μ : Measure α` is said to be *invariant* under an action of a group `G` if scalar
 multiplication by `c : G` is a measure preserving map for all `c`. In this file we define a
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
@@ -31,76 +31,75 @@ namespace MeasureTheory
 
 variable {G M α : Type _} {s : Set α}
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`measure_preimage_vadd] [] -/
-/-- A measure `μ : measure α` is invariant under an additive action of `M` on `α` if for any
-measurable set `s : set α` and `c : M`, the measure of its preimage under `λ x, c +ᵥ x` is equal to
-the measure of `s`. -/
-class VaddInvariantMeasure (M α : Type _) [VAdd M α] {_ : MeasurableSpace α} (μ : Measure α) :
+/-- A measure `μ : Measure α` is invariant under an additive action of `M` on `α` if for any
+measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c +ᵥ x` is equal
+to the measure of `s`. -/
+class VAddInvariantMeasure (M α : Type _) [VAdd M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
   measure_preimage_vadd : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c +ᵥ x) ⁻¹' s) = μ s
-#align measure_theory.vadd_invariant_measure MeasureTheory.VaddInvariantMeasure
+#align measure_theory.vadd_invariant_measure MeasureTheory.VAddInvariantMeasure
+#align measure_theory.vadd_invariant_measure.measure_preimage_vadd MeasureTheory.VAddInvariantMeasure.measure_preimage_vadd
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`measure_preimage_smul] [] -/
-/-- A measure `μ : measure α` is invariant under a multiplicative action of `M` on `α` if for any
-measurable set `s : set α` and `c : M`, the measure of its preimage under `λ x, c • x` is equal to
-the measure of `s`. -/
+/-- A measure `μ : Measure α` is invariant under a multiplicative action of `M` on `α` if for any
+measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c • x` is equal
+to the measure of `s`. -/
 @[to_additive]
-class SmulInvariantMeasure (M α : Type _) [SMul M α] {_ : MeasurableSpace α} (μ : Measure α) :
+class SMulInvariantMeasure (M α : Type _) [SMul M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
   measure_preimage_smul : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c • x) ⁻¹' s) = μ s
-#align measure_theory.smul_invariant_measure MeasureTheory.SmulInvariantMeasure
-#align measure_theory.vadd_invariant_measure MeasureTheory.VaddInvariantMeasure
+#align measure_theory.smul_invariant_measure MeasureTheory.SMulInvariantMeasure
+#align measure_theory.smul_invariant_measure.measure_preimage_smul MeasureTheory.SMulInvariantMeasure.measure_preimage_smul
 
-namespace SmulInvariantMeasure
+namespace SMulInvariantMeasure
 
 @[to_additive]
-instance zero [MeasurableSpace α] [SMul M α] : SmulInvariantMeasure M α 0 :=
+instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
   ⟨fun _ _ _ => rfl⟩
-#align measure_theory.smul_invariant_measure.zero MeasureTheory.SmulInvariantMeasure.zero
-#align measure_theory.vadd_invariant_measure.zero MeasureTheory.VaddInvariantMeasure.zero
+#align measure_theory.smul_invariant_measure.zero MeasureTheory.SMulInvariantMeasure.zero
+#align measure_theory.vadd_invariant_measure.zero MeasureTheory.VAddInvariantMeasure.zero
 
 variable [SMul M α] {m : MeasurableSpace α} {μ ν : Measure α}
 
 @[to_additive]
-instance add [SmulInvariantMeasure M α μ] [SmulInvariantMeasure M α ν] :
-    SmulInvariantMeasure M α (μ + ν) :=
-  ⟨fun c s hs =>
+instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
+    SMulInvariantMeasure M α (μ + ν) :=
+  ⟨fun c _s hs =>
     show _ + _ = _ + _ from
-      congr_arg₂ (· + ·) (measure_preimage_smul μ c hs) (measure_preimage_smul ν c hs)⟩
-#align measure_theory.smul_invariant_measure.add MeasureTheory.SmulInvariantMeasure.add
-#align measure_theory.vadd_invariant_measure.add MeasureTheory.VaddInvariantMeasure.add
+      congr_arg₂ (· + ·) (measure_preimage_smul c hs) (measure_preimage_smul c hs)⟩
+#align measure_theory.smul_invariant_measure.add MeasureTheory.SMulInvariantMeasure.add
+#align measure_theory.vadd_invariant_measure.add MeasureTheory.VAddInvariantMeasure.add
 
 @[to_additive]
-instance smul [SmulInvariantMeasure M α μ] (c : ℝ≥0∞) : SmulInvariantMeasure M α (c • μ) :=
-  ⟨fun a s hs => show c • _ = c • _ from congr_arg ((· • ·) c) (measure_preimage_smul μ a hs)⟩
-#align measure_theory.smul_invariant_measure.smul MeasureTheory.SmulInvariantMeasure.smul
-#align measure_theory.vadd_invariant_measure.vadd MeasureTheory.VaddInvariantMeasure.vadd
+instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
+  ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
+#align measure_theory.smul_invariant_measure.smul MeasureTheory.SMulInvariantMeasure.smul
+#align measure_theory.vadd_invariant_measure.vadd MeasureTheory.VAddInvariantMeasure.vadd
 
 @[to_additive]
-instance smul_nNReal [SmulInvariantMeasure M α μ] (c : ℝ≥0) : SmulInvariantMeasure M α (c • μ) :=
-  SmulInvariantMeasure.smul c
-#align measure_theory.smul_invariant_measure.smul_nnreal MeasureTheory.SmulInvariantMeasure.smul_nNReal
-#align measure_theory.vadd_invariant_measure.vadd_nnreal MeasureTheory.VaddInvariantMeasure.vadd_nnreal
+instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
+  SMulInvariantMeasure.smul c
+#align measure_theory.smul_invariant_measure.smul_nnreal MeasureTheory.SMulInvariantMeasure.smul_nnreal
+#align measure_theory.vadd_invariant_measure.vadd_nnreal MeasureTheory.VAddInvariantMeasure.vadd_nnreal
 
-end SmulInvariantMeasure
+end SMulInvariantMeasure
 
 section MeasurableSMul
 
 variable {m : MeasurableSpace α} [MeasurableSpace M] [SMul M α] [MeasurableSMul M α] (c : M)
-  (μ : Measure α) [SmulInvariantMeasure M α μ]
+  (μ : Measure α) [SMulInvariantMeasure M α μ]
 
-@[simp, to_additive]
-theorem measurePreserving_smul : MeasurePreserving ((· • ·) c) μ μ :=
-  { Measurable := measurable_const_smul c
+@[to_additive (attr := simp)]
+theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
+  { measurable := measurable_const_smul c
     map_eq := by
       ext1 s hs
       rw [map_apply (measurable_const_smul c) hs]
-      exact smul_invariant_measure.measure_preimage_smul μ c hs }
+      exact SMulInvariantMeasure.measure_preimage_smul c hs }
 #align measure_theory.measure_preserving_smul MeasureTheory.measurePreserving_smul
 #align measure_theory.measure_preserving_vadd MeasureTheory.measurePreserving_vadd
 
-@[simp, to_additive]
-theorem map_smul : map ((· • ·) c) μ = μ :=
+@[to_additive (attr := simp)]
+theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 #align measure_theory.map_smul MeasureTheory.map_smul
 #align measure_theory.map_vadd MeasureTheory.map_vadd
@@ -112,7 +111,7 @@ variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpac
 
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
-- 0: `smul_invariant_measure G α μ`;
+- 0: `SMulInvariantMeasure G α μ`;
 
 - 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
      multiplication by `c` is equal to the measure of `s`;
@@ -126,30 +125,37 @@ variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpac
 
 - 6: for any `c : G`, scalar multiplication by `c` is a measure preserving map. -/
 @[to_additive]
-theorem smulInvariantMeasure_tFAE :
-    TFAE
-      [SmulInvariantMeasure G α μ, ∀ (c : G) (s), MeasurableSet s → μ ((· • ·) c ⁻¹' s) = μ s,
-        ∀ (c : G) (s), MeasurableSet s → μ (c • s) = μ s, ∀ (c : G) (s), μ ((· • ·) c ⁻¹' s) = μ s,
-        ∀ (c : G) (s), μ (c • s) = μ s, ∀ c : G, Measure.map ((· • ·) c) μ = μ,
-        ∀ c : G, MeasurePreserving ((· • ·) c) μ μ] := by
-  tfae_have 1 ↔ 2; exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 1 → 6;
+theorem smulInvariantMeasure_tfae :
+    List.TFAE
+      [SMulInvariantMeasure G α μ,
+        ∀ (c : G) (s), MeasurableSet s → μ ((c • ·) ⁻¹' s) = μ s,
+        ∀ (c : G) (s), MeasurableSet s → μ (c • s) = μ s,
+        ∀ (c : G) (s), μ ((c • ·) ⁻¹' s) = μ s,
+        ∀ (c : G) (s), μ (c • s) = μ s,
+        ∀ c : G, Measure.map (c • ·) μ = μ,
+        ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
+  tfae_have 1 ↔ 2
+  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 → 6
   · intro h c
-    exact (measure_preserving_smul c μ).map_eq
-  tfae_have 6 → 7; exact fun H c => ⟨measurable_const_smul c, H c⟩
-  tfae_have 7 → 4; exact fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
-  tfae_have 4 → 5;
-  exact fun H c s => by
-    rw [← preimage_smul_inv]
-    apply H
-  tfae_have 5 → 3; exact fun H c s hs => H c s
-  tfae_have 3 → 2;
+    exact (measurePreserving_smul c μ).map_eq
+  tfae_have 6 → 7
+  · exact fun H c => ⟨measurable_const_smul c, H c⟩
+  tfae_have 7 → 4
+  · exact fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
+  tfae_have 4 → 5
+  · exact fun H c s => by
+      rw [← preimage_smul_inv]
+      apply H
+  tfae_have 5 → 3
+  · exact fun H c s hs => H c s
+  tfae_have 3 → 2
   · intro H c s hs
     rw [preimage_smul]
     exact H c⁻¹ s hs
   tfae_finish
-#align measure_theory.smul_invariant_measure_tfae MeasureTheory.smulInvariantMeasure_tFAE
-#align measure_theory.vadd_invariant_measure_tfae MeasureTheory.vadd_invariant_measure_tFAE
+#align measure_theory.smul_invariant_measure_tfae MeasureTheory.smulInvariantMeasure_tfae
+#align measure_theory.vadd_invariant_measure_tfae MeasureTheory.vaddInvariantMeasure_tfae
 
 /-- Equivalent definitions of a measure invariant under an additive action of a group.
 
@@ -168,7 +174,7 @@ theorem smulInvariantMeasure_tFAE :
 - 6: for any `c : G`, vector addition of `c` is a measure preserving map. -/
 add_decl_doc vadd_invariant_measure_tfae
 
-variable {G} [SmulInvariantMeasure G α μ]
+variable {G} [SMulInvariantMeasure G α μ]
 
 @[simp, to_additive]
 theorem measure_preimage_smul (s : Set α) : μ ((· • ·) c ⁻¹' s) = μ s :=
@@ -270,7 +276,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
 theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type _} [MeasurableSpace G] [AddGroup G]
-    [AddAction G α] [VaddInvariantMeasure G α μ] [MeasurableVAdd G α] {x y : G}
+    [AddAction G α] [VAddInvariantMeasure G α μ] [MeasurableVAdd G α] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
     (y +ᵥ s : Set α) =ᵐ[μ] s := by
   letI : MeasurableSpace (Multiplicative G) := (by infer_instance : MeasurableSpace G)
@@ -287,4 +293,3 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type _} [MeasurableSpace G] [AddG
 attribute [to_additive vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers
 
 end MeasureTheory
-
