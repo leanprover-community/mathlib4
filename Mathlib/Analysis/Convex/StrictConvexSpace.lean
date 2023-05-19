@@ -8,12 +8,12 @@ Authors: Yaël Dillies, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Normed
-import Mathbin.Analysis.Convex.Strict
-import Mathbin.Analysis.Normed.Order.Basic
-import Mathbin.Analysis.NormedSpace.AddTorsor
-import Mathbin.Analysis.NormedSpace.Pointwise
-import Mathbin.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Normed.Order.Basic
+import Mathlib.Analysis.NormedSpace.AddTorsor
+import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 /-!
 # Strictly convex spaces
@@ -80,8 +80,7 @@ variable (𝕜 : Type _) {E : Type _} [NormedLinearOrderedField 𝕜] [NormedAdd
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
-    StrictConvex 𝕜 (closedBall x r) :=
-  by
+    StrictConvex 𝕜 (closedBall x r) := by
   cases' le_or_lt r 0 with hr hr
   · exact (subsingleton_closed_ball x hr).StrictConvex
   rw [← vadd_closedBall_zero]
@@ -101,8 +100,7 @@ and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows th
 check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
 theorem StrictConvexSpace.ofNormComboLtOne
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, a + b = 1 ∧ ‖a • x + b • y‖ < 1) :
-    StrictConvexSpace ℝ E :=
-  by
+    StrictConvexSpace ℝ E := by
   refine'
     StrictConvexSpace.ofStrictConvexClosedUnitBall ℝ
       ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => _)
@@ -118,8 +116,7 @@ theorem StrictConvexSpace.ofNormComboNeOne
     (h :
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
-    StrictConvexSpace ℝ E :=
-  by
+    StrictConvexSpace ℝ E := by
   refine' StrictConvexSpace.ofStrictConvexClosedUnitBall ℝ ((convex_closedBall _ _).StrictConvex _)
   simp only [interior_closedBall _ one_ne_zero, closed_ball_diff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
@@ -129,8 +126,7 @@ theorem StrictConvexSpace.ofNormComboNeOne
 #align strict_convex_space.of_norm_combo_ne_one StrictConvexSpace.ofNormComboNeOne
 
 theorem StrictConvexSpace.ofNormAddNeTwo
-    (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
-  by
+    (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
   refine'
     StrictConvexSpace.ofNormComboNeOne fun x y hx hy hne =>
       ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
@@ -148,8 +144,7 @@ theorem StrictConvexSpace.ofPairwiseSphereNormNeTwo
 /-- If `‖x + y‖ = ‖x‖ + ‖y‖` implies that `x y : E` are in the same ray, then `E` is a strictly
 convex space. See also a more -/
 theorem StrictConvexSpace.ofNormAdd
-    (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E :=
-  by
+    (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
   refine' StrictConvexSpace.ofPairwiseSphereNormNeTwo fun x hx y hy => mt fun h₂ => _
   rw [mem_sphere_zero_iff_norm] at hx hy
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
@@ -160,8 +155,7 @@ variable [StrictConvexSpace ℝ E] {x y z : E} {a b r : ℝ}
 /-- If `x ≠ y` belong to the same closed ball, then a convex combination of `x` and `y` with
 positive coefficients belongs to the corresponding open ball. -/
 theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r) (hne : x ≠ y)
-    (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a • x + b • y ∈ ball z r :=
-  by
+    (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a • x + b • y ∈ ball z r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closed_ball_zero, mem_singleton_iff] at hx hy
     exact (hne (hx.trans hy.symm)).elim
@@ -179,16 +173,14 @@ theorem openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ cl
 /-- If `x` and `y` are two distinct vectors of norm at most `r`, then a convex combination of `x`
 and `y` with positive coefficients has norm strictly less than `r`. -/
 theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x ≠ y) (ha : 0 < a) (hb : 0 < b)
-    (hab : a + b = 1) : ‖a • x + b • y‖ < r :=
-  by
+    (hab : a + b = 1) : ‖a • x + b • y‖ < r := by
   simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy⊢
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
 #align norm_combo_lt_of_ne norm_combo_lt_of_ne
 
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ +
 ‖y‖`. -/
-theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ :=
-  by
+theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
   simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
@@ -202,14 +194,12 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
     div_eq_inv_mul, div_lt_one hxy] at this
 #align norm_add_lt_of_not_same_ray norm_add_lt_of_not_sameRay
 
-theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ :=
-  by
+theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h⊢
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
-theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ :=
-  by
+theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
   refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
   rw [norm_sub_rev]
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
@@ -264,8 +254,7 @@ variable [NormedAddTorsor F PF] [NormedAddTorsor E PE]
 include E
 
 theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = r * dist x z)
-    (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r :=
-  by
+    (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
     rw [← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right, ← dist_eq_norm_vsub', ←
       dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
@@ -282,8 +271,7 @@ theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = 
 #align eq_line_map_of_dist_eq_mul_of_dist_eq_mul eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
 
 theorem eq_midpoint_of_dist_eq_half {x y z : PE} (hx : dist x y = dist x z / 2)
-    (hy : dist y z = dist x z / 2) : y = midpoint ℝ x z :=
-  by
+    (hy : dist y z = dist x z / 2) : y = midpoint ℝ x z := by
   apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
   · rwa [invOf_eq_inv, ← div_eq_inv_mul]
   · rwa [invOf_eq_inv, ← one_div, sub_half, one_div, ← div_eq_inv_mul]
