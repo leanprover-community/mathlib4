@@ -89,7 +89,7 @@ attribute [local instance] hasCokernels_moduleCat
 
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
-/-- The categorical kernel of a morphism in `Module`
+/-- The categorical kernel of a morphism in `ModuleCat`
 agrees with the usual module-theoretical kernel.
 -/
 noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
@@ -113,7 +113,7 @@ theorem kernelIsoKer_hom_ker_subtype :
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) WalkingParallelPair.zero
 #align Module.kernel_iso_ker_hom_ker_subtype ModuleCat.kernelIsoKer_hom_ker_subtype
 
-/-- The categorical cokernel of a morphism in `Module`
+/-- The categorical cokernel of a morphism in `ModuleCat`
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H) :
