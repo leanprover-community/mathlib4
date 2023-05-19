@@ -136,17 +136,24 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
     pure { rv with
       name
       value := ← forallTelescope rv.type fun xs body => do
-        (← whnfD <| ← inferType xs[rv.getMajorIdx]!).withApp fun head args => do
+        let major := xs[rv.getMajorIdx]!
+        (← whnfD <| ← inferType major).withApp fun head args => do
           let .const iv levels' := head | throwError "not an inductive"
           let iv ← getConstInfoInduct iv
           let rv' ← getConstInfoRec <| mkRecName iv.name
-          let val := .const (mkCasesOnName iv.name) (.param rv.levelParams.head! :: levels')
-          let val := mkAppN val args[:rv'.numParams]
-          let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
-          let val := mkAppN val xs[rv.getFirstIndexIdx:]
-          let val := mkAppN val <| rv.rules.toArray.map fun rule =>
-            .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
-          mkLambdaFVars xs val
+          if !iv.isRec && rv'.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
+            let rule := rv.rules[0]!
+            let val := .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+            let val := .beta val ⟨.map (major.proj iv.name) <| .range rule.nfields⟩
+            mkLambdaFVars xs val
+          else
+            let val := .const (mkCasesOnName iv.name) (.param rv.levelParams.head! :: levels')
+            let val := mkAppN val args[:rv'.numParams]
+            let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
+            let val := mkAppN val xs[rv.getFirstIndexIdx:]
+            let val := mkAppN val <| rv.rules.toArray.map fun rule =>
+              .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+            mkLambdaFVars xs val
       hints := .opaque
       safety := .partial
     }
