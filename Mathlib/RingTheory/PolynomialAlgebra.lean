@@ -68,11 +68,11 @@ def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
 theorem toFunBilinear_apply_eq_sum (a : A) (p : R[X]) :
     toFunBilinear R A a p = p.sum fun n r => monomial n (a * algebraMap R A r) := by
   rw [sum]
-  simp only [toFunBilinear, LinearMap.toSpanSingleton_apply, LinearMap.smul_apply, AlgHom.toLinearMap_apply, aeval_def,
-  eval₂_eq_sum, sum._eq_1, Finset.smul_sum]
+  simp only [toFunBilinear, LinearMap.toSpanSingleton_apply, LinearMap.smul_apply,
+    AlgHom.toLinearMap_apply, aeval_def, eval₂_eq_sum, sum._eq_1, Finset.smul_sum]
   congr with i : 1
-  rw [← Algebra.smul_def, ← C_mul', mul_smul_comm, C_mul_X_pow_eq_monomial, ← Algebra.commutes, ←
-    Algebra.smul_def, smul_monomial]
+  rw [← Algebra.smul_def, ← C_mul', mul_smul_comm, C_mul_X_pow_eq_monomial, ← Algebra.commutes,
+    ← Algebra.smul_def, smul_monomial]
 #align poly_equiv_tensor.to_fun_bilinear_apply_eq_sum PolyEquivTensor.toFunBilinear_apply_eq_sum
 
 /-- (Implementation detail).
@@ -122,7 +122,8 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
 
 theorem toFunLinear_algebraMap_tmul_one (r : R) :
     (toFunLinear R A) ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R A[X]) r := by
-  simp [toFunLinear_tmul_apply, toFunBilinear_apply_apply_toFinsupp_toFun, toFunBilinear_apply_apply_toFinsupp_support_val, Polynomial.aeval_one, algebraMap_smul,
+  simp [toFunLinear_tmul_apply, toFunBilinear_apply_apply_toFinsupp_toFun,
+    toFunBilinear_apply_apply_toFinsupp_support_val, Polynomial.aeval_one, algebraMap_smul,
     Algebra.algebraMap_eq_smul_one]
 
   congr
