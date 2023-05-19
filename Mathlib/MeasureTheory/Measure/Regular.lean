@@ -311,8 +311,8 @@ protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {�
     (s : μ.FiniteSpanningSetsIn { U | IsOpen U ∧ OuterRegular (μ.restrict U) }) :
     OuterRegular μ := by
   refine' ⟨fun A hA r hr => _⟩
-  have hm : ∀ n, MeasurableSet (s.set n) := fun n => (s.set_mem n).1.MeasurableSet
-  haveI : ∀ n, outer_regular (μ.restrict (s.set n)) := fun n => (s.set_mem n).2
+  have hm : ∀ n, MeasurableSet (s.set n) := fun n => (s.set_mem n).1.measurableSet
+  haveI : ∀ n, OuterRegular (μ.restrict (s.set n)) := fun n => (s.set_mem n).2
   -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
   obtain ⟨A, hAm, hAs, hAd, rfl⟩ :
     ∃ A' : ℕ → Set α,
@@ -322,7 +322,7 @@ protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {�
       ⟨fun n => A ∩ disjointed s.set n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
         (inter_subset_right _ _).trans (disjointed_subset _ _),
         (disjoint_disjointed s.set).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, _⟩
-    rw [← inter_Union, iUnion_disjointed, s.spanning, inter_univ]
+    rw [← inter_iUnion, iUnion_disjointed, s.spanning, inter_univ]
   rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
   rw [lt_tsub_iff_right, add_comm] at hδε
   have : ∀ n, ∃ (U : _)(_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
@@ -330,26 +330,24 @@ protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {�
     have H₁ : ∀ t, μ.restrict (s.set n) t = μ (t ∩ s.set n) := fun t => restrict_apply' (hm n)
     have Ht : μ.restrict (s.set n) (A n) ≠ ⊤ := by
       rw [H₁]
-      exact ((measure_mono <| inter_subset_right _ _).trans_lt (s.finite n)).Ne
+      exact ((measure_mono <| inter_subset_right _ _).trans_lt (s.finite n)).ne
     rcases(A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
     rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
     exact ⟨U ∩ s.set n, subset_inter hAU (hAs _), hUo.inter (s.set_mem n).1, hU⟩
-  choose U hAU hUo hU
-  refine' ⟨⋃ n, U n, Union_mono hAU, isOpen_iUnion hUo, _⟩
+  choose U hAU hUo hU using this
+  refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
   calc
-    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_Union_le _
+    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
     _ ≤ ∑' n, μ (A n) + δ n := (ENNReal.tsum_le_tsum fun n => (hU n).le)
     _ = (∑' n, μ (A n)) + ∑' n, δ n := ENNReal.tsum_add
-    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_Union hAd hAm).symm rfl)
+    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
     _ < r := hδε
-
 #align measure_theory.measure.finite_spanning_sets_in.outer_regular MeasureTheory.Measure.FiniteSpanningSetsIn.outerRegular
 
 namespace InnerRegular
 
 variable {p q : Set α → Prop} {U s : Set α} {ε r : ℝ≥0∞}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (ε «expr ≠ » 0) -/
 /-- If a measure is inner regular (using closed or compact sets), then every measurable set of
 finite measure can by approximated by a (closed or compact) subset. -/
 theorem measurableSet_of_open [OuterRegular μ] (H : InnerRegular μ p IsOpen) (h0 : p ∅)
@@ -359,7 +357,7 @@ theorem measurableSet_of_open [OuterRegular μ] (H : InnerRegular μ p IsOpen) (
   obtain ⟨ε, hε, hεs, rfl⟩ : ∃ (ε : _)(_ : ε ≠ 0), ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
     use (μ s - r) / 2
     simp [*, hr.le, ENNReal.add_halves, ENNReal.sub_sub_cancel, le_add_right]
-  rcases hs.exists_is_open_diff_lt hμs hε with ⟨U, hsU, hUo, hUt, hμU⟩
+  rcases hs.exists_isOpen_diff_lt hμs hε with ⟨U, hsU, hUo, hUt, hμU⟩
   rcases(U \ s).exists_isOpen_lt_of_lt _ hμU with ⟨U', hsU', hU'o, hμU'⟩
   replace hsU' := diff_subset_comm.1 hsU'
   rcases H.exists_subset_lt_add h0 hUo hUt.ne hε with ⟨K, hKU, hKc, hKr⟩
@@ -369,31 +367,23 @@ theorem measurableSet_of_open [OuterRegular μ] (H : InnerRegular μ p IsOpen) (
     _ < μ K + ε := hKr
     _ ≤ μ (K \ U') + μ U' + ε := (add_le_add_right (tsub_le_iff_right.1 le_measure_diff) _)
     _ ≤ μ (K \ U') + ε + ε := by
-      mono*
-      exacts[hμU'.le, le_rfl]
+      apply add_le_add_right; apply add_le_add_left
+      exact hμU'.le
     _ = μ (K \ U') + (ε + ε) := add_assoc _ _ _
-
 #align measure_theory.measure.inner_regular.measurable_set_of_open MeasureTheory.Measure.InnerRegular.measurableSet_of_open
 
 open Finset
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (ε «expr ≠ » 0) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (F «expr ⊆ » s) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (U «expr ⊇ » s) -/
 /-- In a finite measure space, assume that any open set can be approximated from inside by closed
 sets. Then the measure is weakly regular. -/
 theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [FiniteMeasure μ]
     (H : InnerRegular μ IsClosed IsOpen) : WeaklyRegular μ := by
-  have hfin : ∀ {s}, μ s ≠ ⊤ := measure_ne_top μ
-  suffices
-    ∀ s,
-      MeasurableSet s →
-        ∀ (ε) (_ : ε ≠ 0),
-          ∃ (F : _)(_ : F ⊆ s)(U : _)(_ : U ⊇ s),
-            IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
+  have hfin : ∀ {s}, μ s ≠ ⊤ := @(measure_ne_top μ)
+  suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
+      IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
     refine'
-      { OuterRegular := fun s hs r hr => _
-        InnerRegular := H }
+      { outerRegular := fun s hs r hr => _
+        innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
     rcases this s hs _ (tsub_pos_iff_lt.2 hsr').ne' with ⟨-, -, U, hsU, -, hUo, -, H⟩
     refine' ⟨U, hsU, hUo, _⟩
@@ -407,14 +397,14 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [FiniteMeasure
   -- check for open set
   · intro U hU ε hε
     rcases H.exists_subset_lt_add isClosed_empty hU hfin hε with ⟨F, hsF, hFc, hF⟩
-    exact ⟨F, hsF, U, subset.rfl, hFc, hU, hF.le, le_self_add⟩
+    exact ⟨F, hsF, U, Subset.rfl, hFc, hU, hF.le, le_self_add⟩
   -- check for complements
   · rintro s hs H ε hε
     rcases H ε hε with ⟨F, hFs, U, hsU, hFc, hUo, hF, hU⟩
     refine'
-      ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.is_closed_compl,
-        hFc.is_open_compl, _⟩
-    simp only [measure_compl_le_add_iff, *, hUo.measurable_set, hFc.measurable_set, true_and_iff]
+      ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
+        hFc.isOpen_compl, _⟩
+    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
     have ε0' : ε / 2 ≠ 0 := (ENNReal.half_pos ε0).ne'
@@ -423,32 +413,30 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [FiniteMeasure
     -- the approximating closed set is constructed by considering finitely many sets `s i`, which
     -- cover all the measure up to `ε/2`, approximating each of these by a closed set `F i`, and
     -- taking the union of these (finitely many) `F i`.
-    have : tendsto (fun t => (∑ k in t, μ (s k)) + ε / 2) at_top (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
-      rw [measure_Union hsd hsm]
-      exact tendsto.add ennreal.summable.has_sum tendsto_const_nhds
+    have : Tendsto (fun t => (∑ k in t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
+      rw [measure_iUnion hsd hsm]
+      exact Tendsto.add ENNReal.summable.hasSum tendsto_const_nhds
     rcases(this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
     refine'
-      ⟨⋃ k ∈ t, F k, Union_mono fun k => Union_subset fun _ => hFs _, ⋃ n, U n, Union_mono hsU,
-        isClosed_biUnion t.finite_to_set fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
+      ⟨⋃ k ∈ t, F k, iUnion_mono fun k => iUnion_subset fun _ => hFs _, ⋃ n, U n, iUnion_mono hsU,
+        isClosed_biUnion t.finite_toSet fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
     · calc
         (∑ k in t, μ (s k)) + ε / 2 ≤ ((∑ k in t, μ (F k)) + ∑ k in t, δ k) + ε / 2 := by
           rw [← sum_add_distrib]
-          exact add_le_add_right (sum_le_sum fun k hk => hF k) _
+          exact add_le_add_right (sum_le_sum fun k _ => hF k) _
         _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 :=
           (add_le_add_right (add_le_add_left ((ENNReal.sum_le_tsum _).trans hδε.le) _) _)
-        _ = μ (⋃ k ∈ t, F k) + ε := _
-
-      rw [measure_bUnion_finset, add_assoc, ENNReal.add_halves]
-      exacts[fun k _ n _ hkn => (hsd hkn).mono (hFs k) (hFs n), fun k hk => (hFc k).MeasurableSet]
-    ·
-      calc
-        μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_Union_le _
+        _ = μ (⋃ k ∈ t, F k) + ε := by
+          rw [measure_biUnion_finset, add_assoc, ENNReal.add_halves]
+          exacts [fun k _ n _ hkn => (hsd hkn).mono (hFs k) (hFs n),
+            fun k _ => (hFc k).measurableSet]
+    · calc
+        μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
         _ ≤ ∑' n, μ (s n) + δ n := (ENNReal.tsum_le_tsum hU)
-        _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_Union hsd hsm, ENNReal.tsum_add]
+        _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
-
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegular.weaklyRegular_of_finite
 
 /-- In a metric space (or even a pseudo emetric space), an open set can be approximated from inside
@@ -456,10 +444,10 @@ by closed sets. -/
 theorem of_pseudoEMetricSpace {X : Type _} [PseudoEMetricSpace X] [MeasurableSpace X]
     (μ : Measure X) : InnerRegular μ IsClosed IsOpen := by
   intro U hU r hr
-  rcases hU.exists_Union_is_closed with ⟨F, F_closed, -, rfl, F_mono⟩
-  rw [measure_Union_eq_supr F_mono.directed_le] at hr
+  rcases hU.exists_iUnion_isClosed with ⟨F, F_closed, -, rfl, F_mono⟩
+  rw [measure_iUnion_eq_iSup F_mono.directed_le] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  exact ⟨F n, subset_Union _ _, F_closed n, hn⟩
+  exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
 #align measure_theory.measure.inner_regular.of_pseudo_emetric_space MeasureTheory.Measure.InnerRegular.of_pseudoEMetricSpace
 
 /-- In a `σ`-compact space, any closed set can be approximated by a compact subset. -/
@@ -468,9 +456,9 @@ theorem isCompact_isClosed {X : Type _} [TopologicalSpace X] [SigmaCompactSpace 
   intro F hF r hr
   set B : ℕ → Set X := compactCovering X
   have hBc : ∀ n, IsCompact (F ∩ B n) := fun n => (isCompact_compactCovering X n).inter_left hF
-  have hBU : (⋃ n, F ∩ B n) = F := by rw [← inter_Union, iUnion_compactCovering, Set.inter_univ]
+  have hBU : (⋃ n, F ∩ B n) = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
   have : μ F = ⨆ n, μ (F ∩ B n) := by
-    rw [← measure_Union_eq_supr, hBU]
+    rw [← measure_iUnion_eq_iSup, hBU]
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
@@ -482,95 +470,91 @@ end InnerRegular
 namespace Regular
 
 instance zero : Regular (0 : Measure α) :=
-  ⟨fun U hU r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
+  ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
 #align measure_theory.measure.regular.zero MeasureTheory.Measure.Regular.zero
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » U) -/
 /-- If `μ` is a regular measure, then any open set can be approximated by a compact subset. -/
-theorem IsOpen.exists_lt_isCompact [Regular μ] ⦃U : Set α⦄ (hU : IsOpen U) {r : ℝ≥0∞}
-    (hr : r < μ U) : ∃ (K : _)(_ : K ⊆ U), IsCompact K ∧ r < μ K :=
+theorem _root_.IsOpen.exists_lt_isCompact [Regular μ] ⦃U : Set α⦄ (hU : IsOpen U) {r : ℝ≥0∞}
+    (hr : r < μ U) : ∃ K, K ⊆ U ∧ IsCompact K ∧ r < μ K :=
   Regular.innerRegular hU r hr
 #align is_open.exists_lt_is_compact IsOpen.exists_lt_isCompact
 
 /-- The measure of an open set is the supremum of the measures of compact sets it contains. -/
-theorem IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α) [Regular μ] :
-    μ U = ⨆ (K : Set α) (h : K ⊆ U) (h2 : IsCompact K), μ K :=
+theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
+    [Regular μ] : μ U = ⨆ (K : Set α) (_h : K ⊆ U) (_h2 : IsCompact K), μ K :=
   Regular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_compact IsOpen.measure_eq_iSup_isCompact
 
 theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
-  simp_rw [Ne.def, ← measure_univ_eq_zero, is_open_univ.measure_eq_supr_is_compact,
+  simp_rw [Ne.def, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 #align measure_theory.measure.regular.exists_compact_not_null MeasureTheory.Measure.Regular.exists_compact_not_null
 
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
-compact subset. See also `measurable_set.exists_is_compact_lt_add` and
-`measurable_set.exists_lt_is_compact_of_ne_top`. -/
+compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
+`MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
 theorem innerRegular_measurable [Regular μ] :
     InnerRegular μ IsCompact fun s => MeasurableSet s ∧ μ s ≠ ∞ :=
   Regular.innerRegular.measurableSet_of_open isCompact_empty fun _ _ => IsCompact.diff
 #align measure_theory.measure.regular.inner_regular_measurable MeasureTheory.Measure.Regular.innerRegular_measurable
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
-compact subset. See also `measurable_set.exists_lt_is_compact_of_ne_top`. -/
-theorem MeasurableSet.exists_isCompact_lt_add [Regular μ] ⦃A : Set α⦄ (hA : MeasurableSet A)
-    (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ (K : _)(_ : K ⊆ A), IsCompact K ∧ μ A < μ K + ε :=
+compact subset. See also `MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
+theorem _root_.MeasurableSet.exists_isCompact_lt_add [Regular μ] ⦃A : Set α⦄ (hA : MeasurableSet A)
+    (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ K, K ⊆ A ∧ IsCompact K ∧ μ A < μ K + ε :=
   Regular.innerRegular_measurable.exists_subset_lt_add isCompact_empty ⟨hA, h'A⟩ h'A hε
 #align measurable_set.exists_is_compact_lt_add MeasurableSet.exists_isCompact_lt_add
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
-compact subset. See also `measurable_set.exists_is_compact_lt_add` and
-`measurable_set.exists_lt_is_compact_of_ne_top`. -/
-theorem MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] [T2Space α] [Regular μ]
-    ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ (K : _)(_ : K ⊆ A), IsCompact K ∧ μ (A \ K) < ε := by
-  rcases hA.exists_is_compact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
+compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
+`MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
+theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] [T2Space α]
+    [Regular μ] ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
+  rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
   exact
     ⟨K, hKA, hKc,
-      measure_diff_lt_of_lt_add hKc.measurable_set hKA (ne_top_of_le_ne_top h'A <| measure_mono hKA)
+      measure_diff_lt_of_lt_add hKc.measurableSet hKA (ne_top_of_le_ne_top h'A <| measure_mono hKA)
         hK⟩
 #align measurable_set.exists_is_compact_diff_lt MeasurableSet.exists_isCompact_diff_lt
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
-compact subset. See also `measurable_set.exists_is_compact_lt_add`. -/
-theorem MeasurableSet.exists_lt_isCompact_of_ne_top [Regular μ] ⦃A : Set α⦄ (hA : MeasurableSet A)
-    (h'A : μ A ≠ ∞) {r : ℝ≥0∞} (hr : r < μ A) : ∃ (K : _)(_ : K ⊆ A), IsCompact K ∧ r < μ K :=
+compact subset. See also `MeasurableSet.exists_isCompact_lt_add`. -/
+theorem _root_.MeasurableSet.exists_lt_isCompact_of_ne_top [Regular μ] ⦃A : Set α⦄
+    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {r : ℝ≥0∞} (hr : r < μ A) :
+    ∃ K, K ⊆ A ∧ IsCompact K ∧ r < μ K :=
   Regular.innerRegular_measurable ⟨hA, h'A⟩ _ hr
 #align measurable_set.exists_lt_is_compact_of_ne_top MeasurableSet.exists_lt_isCompact_of_ne_top
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- Given a regular measure, any measurable set of finite mass can be approximated from
 inside by compact sets. -/
-theorem MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [Regular μ] ⦃A : Set α⦄
-    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_ : K ⊆ A) (h : IsCompact K), μ K :=
+theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [Regular μ] ⦃A : Set α⦄
+    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_h : K ⊆ A) (_h : IsCompact K), μ K :=
   Regular.innerRegular_measurable.measure_eq_iSup ⟨hA, h'A⟩
 #align measurable_set.measure_eq_supr_is_compact_of_ne_top MeasurableSet.measure_eq_iSup_isCompact_of_ne_top
 
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β] [T2Space β]
-    [BorelSpace β] [Regular μ] (f : α ≃ₜ β) : (Measure.map f μ).regular := by
-  haveI := outer_regular.map f μ
+    [BorelSpace β] [Regular μ] (f : α ≃ₜ β) : (Measure.map f μ).Regular := by
+  haveI := OuterRegular.map f μ
   haveI := IsFiniteMeasureOnCompacts.map μ f
   exact
-    ⟨regular.inner_regular.map f.to_equiv f.measurable.ae_measurable
-        (fun U hU => hU.Preimage f.continuous) (fun K hK => hK.image f.continuous)
-        (fun K hK => hK.MeasurableSet) fun U hU => hU.MeasurableSet⟩
+    ⟨Regular.innerRegular.map f.toEquiv f.measurable.aemeasurable
+        (fun U hU => hU.preimage f.continuous) (fun K hK => hK.image f.continuous)
+        (fun K hK => hK.measurableSet) fun U hU => hU.measurableSet⟩
 #align measure_theory.measure.regular.map MeasureTheory.Measure.Regular.map
 
-protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).regular := by
-  haveI := outer_regular.smul μ hx
-  haveI := is_finite_measure_on_compacts.smul μ hx
-  exact ⟨regular.inner_regular.smul x⟩
+protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
+  haveI := OuterRegular.smul μ hx
+  haveI := FiniteMeasureOnCompacts.smul μ hx
+  exact ⟨Regular.innerRegular.smul x⟩
 #align measure_theory.measure.regular.smul MeasureTheory.Measure.Regular.smul
 
 -- see Note [lower instance priority]
 /-- A regular measure in a σ-compact space is σ-finite. -/
 instance (priority := 100) sigmaFinite [SigmaCompactSpace α] [Regular μ] : SigmaFinite μ :=
-  ⟨⟨{   Set := compactCovering α
-        set_mem := fun n => trivial
-        Finite := fun n => (isCompact_compactCovering α n).measure_lt_top
+  ⟨⟨{   set := compactCovering α
+        set_mem := fun _ => trivial
+        finite := fun n => (isCompact_compactCovering α n).measure_lt_top
         spanning := iUnion_compactCovering α }⟩⟩
 #align measure_theory.measure.regular.sigma_finite MeasureTheory.Measure.Regular.sigmaFinite
 
@@ -578,17 +562,15 @@ end Regular
 
 namespace WeaklyRegular
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (F «expr ⊆ » U) -/
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
-theorem IsOpen.exists_lt_isClosed [WeaklyRegular μ] ⦃U : Set α⦄ (hU : IsOpen U) {r : ℝ≥0∞}
-    (hr : r < μ U) : ∃ (F : _)(_ : F ⊆ U), IsClosed F ∧ r < μ F :=
+theorem _root_.IsOpen.exists_lt_isClosed [WeaklyRegular μ] ⦃U : Set α⦄ (hU : IsOpen U) {r : ℝ≥0∞}
+    (hr : r < μ U) : ∃ F, F ⊆ U ∧ IsClosed F ∧ r < μ F :=
   WeaklyRegular.innerRegular hU r hr
 #align is_open.exists_lt_is_closed IsOpen.exists_lt_isClosed
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (F «expr ⊆ » U) -/
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
-theorem IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
-    [WeaklyRegular μ] : μ U = ⨆ (F) (_ : F ⊆ U) (h : IsClosed F), μ F :=
+theorem _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
+    [WeaklyRegular μ] : μ U = ⨆ (F) (_h : F ⊆ U) (_h : IsClosed F), μ F :=
   WeaklyRegular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_closed IsOpen.measure_eq_iSup_isClosed
 
@@ -598,39 +580,36 @@ theorem innerRegular_measurable [WeaklyRegular μ] :
     h₁.inter h₂.isClosed_compl
 #align measure_theory.measure.weakly_regular.inner_regular_measurable MeasureTheory.Measure.WeaklyRegular.innerRegular_measurable
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » s) -/
 /-- If `s` is a measurable set, a weakly regular measure `μ` is finite on `s`, and `ε` is a positive
 number, then there exist a closed set `K ⊆ s` such that `μ s < μ K + ε`. -/
-theorem MeasurableSet.exists_isClosed_lt_add [WeaklyRegular μ] {s : Set α} (hs : MeasurableSet s)
-    (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ (K : _)(_ : K ⊆ s), IsClosed K ∧ μ s < μ K + ε :=
+theorem _root_.MeasurableSet.exists_isClosed_lt_add [WeaklyRegular μ] {s : Set α}
+    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ K, K ⊆ s ∧ IsClosed K ∧ μ s < μ K + ε :=
   innerRegular_measurable.exists_subset_lt_add isClosed_empty ⟨hs, hμs⟩ hμs hε
 #align measurable_set.exists_is_closed_lt_add MeasurableSet.exists_isClosed_lt_add
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (F «expr ⊆ » A) -/
-theorem MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [WeaklyRegular μ] ⦃A : Set α⦄
-    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ (F : _)(_ : F ⊆ A), IsClosed F ∧ μ (A \ F) < ε := by
-  rcases hA.exists_is_closed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
+theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [WeaklyRegular μ]
+    ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
+  rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
   exact
     ⟨F, hFA, hFc,
-      measure_diff_lt_of_lt_add hFc.measurable_set hFA (ne_top_of_le_ne_top h'A <| measure_mono hFA)
+      measure_diff_lt_of_lt_add hFc.measurableSet hFA (ne_top_of_le_ne_top h'A <| measure_mono hFA)
         hF⟩
 #align measurable_set.exists_is_closed_diff_lt MeasurableSet.exists_isClosed_diff_lt
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
 inside by closed sets. -/
-theorem MeasurableSet.exists_lt_isClosed_of_ne_top [WeaklyRegular μ] ⦃A : Set α⦄
+theorem _root_.MeasurableSet.exists_lt_isClosed_of_ne_top [WeaklyRegular μ] ⦃A : Set α⦄
     (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {r : ℝ≥0∞} (hr : r < μ A) :
-    ∃ (K : _)(_ : K ⊆ A), IsClosed K ∧ r < μ K :=
+    ∃ K, K ⊆ A ∧ IsClosed K ∧ r < μ K :=
   innerRegular_measurable ⟨hA, h'A⟩ _ hr
 #align measurable_set.exists_lt_is_closed_of_ne_top MeasurableSet.exists_lt_isClosed_of_ne_top
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (K «expr ⊆ » A) -/
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
 inside by closed sets. -/
-theorem MeasurableSet.measure_eq_iSup_isClosed_of_ne_top [WeaklyRegular μ] ⦃A : Set α⦄
-    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_ : K ⊆ A) (h : IsClosed K), μ K :=
+theorem _root_.MeasurableSet.measure_eq_iSup_isClosed_of_ne_top [WeaklyRegular μ] ⦃A : Set α⦄
+    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_h : K ⊆ A) (_h : IsClosed K), μ K :=
   innerRegular_measurable.measure_eq_iSup ⟨hA, h'A⟩
 #align measurable_set.measure_eq_supr_is_closed_of_ne_top MeasurableSet.measure_eq_iSup_isClosed_of_ne_top
 
@@ -639,11 +618,11 @@ weakly regular. -/
 theorem restrict_of_measurableSet [BorelSpace α] [WeaklyRegular μ] (A : Set α)
     (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : WeaklyRegular (μ.restrict A) := by
   haveI : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
-  refine' inner_regular.weakly_regular_of_finite _ fun V V_open => _
+  refine' InnerRegular.weaklyRegular_of_finite (μ.restrict A) fun V V_open => _
   simp only [restrict_apply' hA]
   intro r hr
   have : μ (V ∩ A) ≠ ∞ := ne_top_of_le_ne_top h'A (measure_mono <| inter_subset_right _ _)
-  rcases(V_open.measurable_set.inter hA).exists_lt_isClosed_of_ne_top this hr with
+  rcases(V_open.measurableSet.inter hA).exists_lt_isClosed_of_ne_top this hr with
     ⟨F, hFVA, hFc, hF⟩
   refine' ⟨F, hFVA.trans (inter_subset_left _ _), hFc, _⟩
   rwa [inter_eq_self_of_subset_left (hFVA.trans <| inter_subset_right _ _)]
@@ -660,15 +639,15 @@ instance (priority := 100) of_pseudoEMetricSpace_of_finiteMeasure {X : Type _}
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a second countable metric space (or even a pseudo emetric space)
 is weakly regular. -/
-instance (priority := 100) of_pseudo_emetric_second_countable_of_locally_finite {X : Type _}
+instance (priority := 100) of_pseudoEMetric_secondCountable_of_locallyFinite {X : Type _}
     [PseudoEMetricSpace X] [TopologicalSpace.SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [LocallyFiniteMeasure μ] : WeaklyRegular μ :=
-  haveI : outer_regular μ := by
-    refine' (μ.finite_spanning_sets_in_open'.mono' fun U hU => _).OuterRegular
+  haveI : OuterRegular μ := by
+    refine' (μ.finiteSpanningSetsInOpen'.mono' fun U hU => _).outerRegular
     have : Fact (μ U < ∞) := ⟨hU.2⟩
     exact ⟨hU.1, inferInstance⟩
-  ⟨inner_regular.of_pseudo_emetric_space μ⟩
-#align measure_theory.measure.weakly_regular.of_pseudo_emetric_second_countable_of_locally_finite MeasureTheory.Measure.WeaklyRegular.of_pseudo_emetric_second_countable_of_locally_finite
+  ⟨InnerRegular.of_pseudoEMetricSpace μ⟩
+#align measure_theory.measure.weakly_regular.of_pseudo_emetric_second_countable_of_locally_finite MeasureTheory.Measure.WeaklyRegular.of_pseudoEMetric_secondCountable_of_locallyFinite
 
 end WeaklyRegular
 
@@ -679,8 +658,8 @@ attribute [local instance] EMetric.secondCountable_of_sigmaCompact
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_locallyFiniteMeasure {X : Type _}
     [EMetricSpace X] [SigmaCompactSpace X] [MeasurableSpace X] [BorelSpace X] (μ : Measure X)
     [LocallyFiniteMeasure μ] : Regular μ where
-  lt_top_of_isCompact K hK := hK.measure_lt_top
-  InnerRegular := (InnerRegular.isCompact_isClosed μ).trans (InnerRegular.of_pseudoEMetricSpace μ)
+  lt_top_of_isCompact _K hK := hK.measure_lt_top
+  innerRegular := (InnerRegular.isCompact_isClosed μ).trans (InnerRegular.of_pseudoEMetricSpace μ)
 #align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_locallyFiniteMeasure
 
 end Measure
