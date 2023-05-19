@@ -198,18 +198,19 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
       (BinaryFan.mk
         (P.lift
           { pt := X, π :=
-            { app := Discrete.rec (PEmpty.rec.{_, v} _),
+            -- Porting note: there is something fishy here:
+            -- `PEmpty.rec x x` should not even typecheck.
+            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x,
               -- Porting note: `aesop_cat` should work here, but it does something wrong
               -- with the `PEmpty` hypotheses.
               naturality := by rintro ⟨⟨⟩⟩ } })
         (𝟙 X))
   hom_inv_id := by
     apply Q.hom_ext
-    · rintro ⟨⟨⟩⟩
-      · apply P.hom_ext
-        · rintro ⟨⟨⟩⟩
-        · sorry -- What is this goal!?
-      · simp
+    rintro ⟨⟨⟩⟩
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩
+    · simp
 #align category_theory.limits.binary_fan.left_unitor CategoryTheory.Limits.BinaryFan.leftUnitor
 
 /-- Construct a right unitor from specified limit cones.
@@ -224,7 +225,9 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit 
         (P.lift
           { pt := X
             π :=
-            { app := Discrete.rec (PEmpty.rec.{_, v} _)
+            -- Porting note: there is something fishy here:
+            -- `PEmpty.rec x x` should not even typecheck.
+            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x
               -- Porting note: `aesop_cat` should work here, but it does something wrong
               -- with the `PEmpty` hypotheses.
               naturality := by rintro ⟨⟨⟩⟩ } }))
@@ -233,8 +236,7 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit 
     rintro ⟨⟨⟩⟩
     · simp
     · apply P.hom_ext
-      · rintro ⟨⟨⟩⟩
-      · sorry -- What is this goal!?
+      rintro ⟨⟨⟩⟩
 #align category_theory.limits.binary_fan.right_unitor CategoryTheory.Limits.BinaryFan.rightUnitor
 
 end
