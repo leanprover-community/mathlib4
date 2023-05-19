@@ -30,9 +30,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin
-
-open Topology
+open Set Fin Topology
 
 variable {𝕜 𝕜' E F G : Type _}
 
@@ -45,13 +43,20 @@ variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [
 
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 def FormalMultilinearSeries (𝕜 : Type _) (E : Type _) (F : Type _) [Ring 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 F] :=
-  ∀ n : ℕ, E[×n]→L[𝕜] F deriving AddCommGroup
+  ∀ n : ℕ, E[×n]→L[𝕜] F
 #align formal_multilinear_series FormalMultilinearSeries
+
+-- Porting note: was `deriving`
+instance (𝕜 : Type _) (E : Type _) (F : Type _) [Ring 𝕜] [AddCommGroup E]
+    [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜 F] : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
   ⟨0⟩
@@ -60,10 +65,9 @@ section Module
 
 /- `derive` is not able to find the module structure, probably because Lean is confused by the
 dependent types. We register it explicitly. -/
-instance : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) := by
-  letI : ∀ n, Module 𝕜 (ContinuousMultilinearMap 𝕜 (fun i : Fin n => E) F) := fun n => by
-    infer_instance
-  refine' Pi.module _ _ _
+-- Porting note: rewrote with `inferInstanceAs`
+instance : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| Module 𝕜 <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 end Module
 
@@ -113,7 +117,7 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
 continuous linear map, gives a new formal multilinear series `p.comp_continuous_linear_map u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
-    FormalMultilinearSeries 𝕜 E G := fun n => (p n).compContinuousLinearMap fun i : Fin n => u
+    FormalMultilinearSeries 𝕜 E G := fun n => (p n).compContinuousLinearMap fun _ : Fin n => u
 #align formal_multilinear_series.comp_continuous_linear_map FormalMultilinearSeries.compContinuousLinearMap
 
 @[simp]
@@ -212,7 +216,7 @@ theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by s
 #align formal_multilinear_series.ne_zero_of_order_ne_zero FormalMultilinearSeries.ne_zero_of_order_ne_zero
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by simp [order, Inf, hp]
+    p.order = Nat.find hp := by simp [order, sInf, hp]
 #align formal_multilinear_series.order_eq_find FormalMultilinearSeries.order_eq_find
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
@@ -222,7 +226,7 @@ theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
 
 theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   classical
-    have : ∃ n, p n ≠ 0 := formal_multilinear_series.ne_iff.mp hp
+    have : ∃ n, p n ≠ 0 := FormalMultilinearSeries.ne_iff.mp hp
     simp [order_eq_find this, hp]
 #align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
 
@@ -232,7 +236,7 @@ theorem order_eq_zero_iff' : p.order = 0 ↔ p = 0 ∨ p 0 ≠ 0 := by
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 := by
   classical
-    let h := formal_multilinear_series.ne_iff.mp hp
+    let h := FormalMultilinearSeries.ne_iff.mp hp
     exact (order_eq_find h).symm ▸ Nat.find_spec h
 #align formal_multilinear_series.apply_order_ne_zero FormalMultilinearSeries.apply_order_ne_zero
 
@@ -241,10 +245,9 @@ theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
 #align formal_multilinear_series.apply_order_ne_zero' FormalMultilinearSeries.apply_order_ne_zero'
 
 theorem apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 := by
-  by_cases p = 0
+  by_cases h : p = 0
   · simp [h]
-  ·
-    classical
+  · classical
       rw [order_eq_find' h] at hp
       simpa using Nat.find_min _ hp
 #align formal_multilinear_series.apply_eq_zero_of_lt_order FormalMultilinearSeries.apply_eq_zero_of_lt_order
@@ -336,4 +339,3 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
 #align const_formal_multilinear_series_apply constFormalMultilinearSeries_apply
 
 end Const
-
