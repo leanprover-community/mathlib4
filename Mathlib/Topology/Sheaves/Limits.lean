@@ -36,27 +36,27 @@ instance [HasColimits C] (X : TopCat) : HasColimitsOfSize.{v} (Presheaf C X) :=
   Limits.functorCategoryHasColimitsOfSize
 
 instance [HasLimits C] (X : TopCat) : CreatesLimits (Sheaf.forget C X) :=
-  Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u, v, v}
+  Sheaf.createsLimits.{u, v, v}
 
 instance [HasLimits C] (X : TopCat) : HasLimitsOfSize.{v} (Sheaf.{v} C X) :=
   has_limits_of_has_limits_creates_limits (Sheaf.forget C X)
 
 theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
-  let F' : J ⥤ sheaf C X :=
+  let F' : J ⥤ Sheaf C X :=
     { obj := fun j => ⟨F.obj j, H j⟩
-      map := fun X Y f => ⟨F.map f⟩ }
-  let e : F' ⋙ sheaf.forget C X ≅ F := nat_iso.of_components (fun _ => iso.refl _) (by tidy)
-  exact
-    presheaf.is_sheaf_of_iso
-      ((is_limit_of_preserves (sheaf.forget C X) (limit.is_limit F')).conePointsIsoOfNatIso hc e)
-      (limit F').2
+      map := fun f => ⟨F.map f⟩ }
+  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  exact Presheaf.isSheaf_of_iso
+    ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
+    (limit F').2
+set_option linter.uppercaseLean3 false in
 #align Top.is_sheaf_of_is_limit TopCat.isSheaf_of_isLimit
 
 theorem limit_isSheaf [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) : (limit F).IsSheaf :=
   isSheaf_of_isLimit F H (limit.isLimit F)
+set_option linter.uppercaseLean3 false in
 #align Top.limit_is_sheaf TopCat.limit_isSheaf
 
 end TopCat
-
