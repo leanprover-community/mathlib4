@@ -124,7 +124,7 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
--- instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
+instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
 
 /-- Maps a module M to the dual of the dual of M. See `module.erange_coe` and
 `module.eval_equiv`. -/
@@ -1586,10 +1586,10 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   -- rw [dualDistribInvOfBasis_apply]
   rw [comp_apply, dualDistribInvOfBasis_apply, LinearMap.map_sum]
   simp_rw [LinearMap.map_sum]
-  -- simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-    -- LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-    -- f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-    -- Basis.coord_apply, Basis.sum_repr]
+  simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+    LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
+    f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+    Basis.coord_apply, Basis.sum_repr]
 
 -- Porting note : this doesn't work
 -- set_option maxHeartbeats 0 in
