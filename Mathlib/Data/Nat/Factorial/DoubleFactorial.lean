@@ -8,9 +8,9 @@ Authors: Jake Levinson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Factorial.Basic
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Tactic.Ring
+import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Tactic.Ring
 
 /-!
 # Double factorials
@@ -56,8 +56,7 @@ theorem factorial_eq_mul_doubleFactorial : ∀ n : ℕ, (n + 1)! = (n + 1)‼ * 
 
 theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
   | 0 => rfl
-  | n + 1 =>
-    by
+  | n + 1 => by
     rw [mul_add, mul_one, double_factorial_add_two, factorial, pow_succ, double_factorial_two_mul,
       succ_eq_add_one]
     ring
@@ -67,8 +66,7 @@ open BigOperators
 
 theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset.range n, 2 * (i + 1)
   | 0 => rfl
-  | n + 1 =>
-    by
+  | n + 1 => by
     rw [Finset.prod_range_succ, ← double_factorial_eq_prod_even, mul_comm (2 * n)‼,
       (by ring : 2 * (n + 1) = 2 * n + 2)]
     rfl
@@ -76,8 +74,7 @@ theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset
 
 theorem doubleFactorial_eq_prod_odd : ∀ n : ℕ, (2 * n + 1)‼ = ∏ i in Finset.range n, 2 * (i + 1) + 1
   | 0 => rfl
-  | n + 1 =>
-    by
+  | n + 1 => by
     rw [Finset.prod_range_succ, ← double_factorial_eq_prod_odd, mul_comm (2 * n + 1)‼,
       (by ring : 2 * (n + 1) + 1 = 2 * n + 1 + 2)]
     rfl
