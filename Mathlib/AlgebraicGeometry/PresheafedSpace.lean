@@ -51,11 +51,10 @@ variable {C}
 
 namespace PresheafedSpace
 
--- porting note: using `Coe` here triggers an error, `CoeOut` seems a better choice
+-- porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
 instance coeCarrier : CoeOut (PresheafedSpace.{w, v, u} C) TopCat.{w} where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
-
 
 -- porting note: the following lemma is removed because it is a syntatic tauto
 /-@[simp]
@@ -65,6 +64,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.as_coe AlgebraicGeometry.PresheafedSpace.as_coe-/
 
 -- porting note: removed @[simp] as the `simpVarHead` linter complains
+--
 -- were the restrictions on the universes done purposely here? (TODO: check whether
 -- this compiles without these restrictions at the end of the port of this file)
 --@[simp]
@@ -99,9 +99,11 @@ structure Hom (X Y : PresheafedSpace.{w, v, u} C) where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hom AlgebraicGeometry.PresheafedSpace.Hom
 
--- porting note: eventually, the ext lemma has to apply to terms of `X ⟶ Y` rather than `Hom X Y`,
--- this one was renamed `Hom.ext` instead of `ext`, and the more practical lemma `ext` is defined
--- just after the construction of the `Category` instance
+-- porting note: eventually, the ext lemma shall be applied to terms in `X ⟶ Y`
+-- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
+-- and the more practical lemma `ext` is defined just after the definition
+-- of the `Category` instance
+@[ext]
 theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β := by
   rcases α with ⟨base, c⟩
@@ -156,8 +158,9 @@ section
 
 attribute [local simp] id comp
 
-/- The proofs below can be done by `tidy`, but it is too slow,
-   and we don't have a tactic caching mechanism. -/
+-- porting note: in mathlib3, `tidy` could (almost) prove the category axioms, but proofs
+-- were included because `tidy` was slow. Here, `aesop_cat` succeeds reasonably fast
+-- for `comp_id` and `assoc`
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
     from the presheaf on the target to the pushforward of the presheaf on the source. -/
 instance categoryOfPresheafedSpaces : Category (PresheafedSpace.{v, v, u} C) where
@@ -165,26 +168,14 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace.{v, v, u} C) whe
   id := id
   comp := comp
   id_comp _ := by
-    apply Hom.ext
-    . dsimp
-      simp only [map_id, whiskerRight_id', assoc]
+    dsimp
+    ext
+    . apply NatTrans.ext
       dsimp
+      simp only [map_id, whiskerRight_id', assoc]
       erw [comp_id, comp_id]
-    . apply id_comp
-  comp_id _ := by
-    apply Hom.ext
     . dsimp
-      simp only [id_comp, whiskerRight_id']
-      erw [comp_id]
-      rfl
-    . apply comp_id
-  assoc f g h := by
-    apply Hom.ext
-    . dsimp
-      simp only [map_comp, whiskerRight_id', assoc]
-      erw [comp_id]
-      rfl
-    . rfl
+      simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.category_of_PresheafedSpaces AlgebraicGeometry.PresheafedSpace.categoryOfPresheafedSpaces
 
@@ -237,6 +228,8 @@ instance (X Y : PresheafedSpace.{v, v, u} C) : CoeFun (X ⟶ Y) fun _ => (↑X �
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
+-- porting note: as there is no composition in the LHS it is purposely `@[reassoc, simp]` rather
+-- than `@[reassoc (attr := simp)]`
 /-- Sometimes rewriting with `comp_c_app` doesn't work because of dependent type issues.
 In that case, `erw comp_c_app_assoc` might make progress.
 The lemma `comp_c_app_assoc` is also better suited for rewrites in the opposite direction. -/
@@ -259,7 +252,7 @@ section
 
 variable (C)
 
-/-- The forgetful functor from `PresheafedSpace` to `Top`. -/
+/-- The forgetful functor from `PresheafedSpace` to `TopCat`. -/
 @[simps]
 def forget : PresheafedSpace.{v, v, u} C ⥤ TopCat where
   obj X := (X : TopCat.{v})
@@ -323,13 +316,20 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
     rw [NatTrans.comp_app]
     simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id U)
   inv_hom_id := by
-    sorry
-    --ext U
-    --simp only [presheaf.pushforward_to_of_iso_app, nat_trans.comp_app, category.assoc,
-    --  nat_trans.id_app, H.hom.c.naturality]
-    --have := congr_app H.hom_inv_id ((opens.map H.hom.base).op.obj U)
-    --generalize_proofs h  at this
-    --simpa using congr_arg (fun f => f ≫ X.presheaf.map (eq_to_hom h.symm)) this
+    apply NatTrans.ext
+    ext U
+    dsimp
+    rw [NatTrans.comp_app, NatTrans.id_app]
+    simp only [Presheaf.pushforwardObj_obj, op_obj, Presheaf.pushforwardToOfIso_app,
+      Iso.symm_inv, mapIso_hom, forget_map, Iso.symm_hom, mapIso_inv,
+      unop_op, eqToHom_map, assoc]
+    have eq₁ := congr_app H.hom_inv_id ((Opens.map H.hom.base).op.obj U)
+    have eq₂ := H.hom.c.naturality (eqToHom (congr_obj (congr_arg Opens.map
+      ((forget C).congr_map H.inv_hom_id.symm)) (Opposite.unop U))).op
+    rw [id_c, NatTrans.id_app, id_comp, eqToHom_map, comp_c_app] at eq₁
+    rw [eqToHom_op, eqToHom_map] at eq₂
+    erw [eq₂, reassoc_of% eq₁]
+    simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.sheaf_iso_of_iso AlgebraicGeometry.PresheafedSpace.sheafIsoOfIso
 
@@ -456,20 +456,20 @@ set_option linter.uppercaseLean3 false in
 def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X where
   hom := X.ofRestrict _
   inv := X.toRestrictTop
-  hom_inv_id :=
-    sorry
-    --ext _ _ (ConcreteCategory.hom_ext _ _ fun ⟨x, _⟩ => rfl) <| by
-    --  erw [comp_c]
-    --  rw [X.of_restrict_top_c]
-    --  ext
-    --  simp
-  inv_hom_id :=
-    sorry
-    --ext _ _ rfl <| by
-    --  erw [comp_c]
-    --  rw [X.of_restrict_top_c]
-    --  ext
-    --  simpa [-eq_to_hom_refl]
+  hom_inv_id := by
+    ext
+    . dsimp
+      erw [comp_c, toRestrictTop_c, whiskerRight_id',
+        comp_id, ofRestrict_top_c, eqToHom_map, eqToHom_trans, eqToHom_refl]
+      rfl
+    . rfl
+  inv_hom_id := by
+    ext
+    . dsimp
+      erw [comp_c, ofRestrict_top_c, toRestrictTop_c, eqToHom_map, whiskerRight_id', comp_id,
+        eqToHom_trans, eqToHom_refl]
+      rfl
+    . rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_top_iso AlgebraicGeometry.PresheafedSpace.restrictTopIso
 
@@ -520,8 +520,24 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace.{v, v, u} C ⥤ PresheafedSpace.
     { base := f.base
       c := whiskerRight f.c F }
   -- porting note: these proofs were automatic in mathlib3
-  map_id := sorry
-  map_comp := sorry
+  map_id X := by
+    ext
+    . apply NatTrans.ext
+      ext U
+      dsimp
+      erw [id_c, id_c, whiskerRight_id', id_comp, whiskerRight_app,
+        Functor.map_id, NatTrans.id_app]
+      rfl
+    . rfl
+  map_comp f g := by
+    ext
+    . apply NatTrans.ext
+      ext U
+      dsimp
+      erw [comp_c, whiskerRight_id', comp_id, whiskerRight_app,
+        NatTrans.comp_app, F.map_comp]
+      rfl
+    . rfl
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]
@@ -560,7 +576,17 @@ def onPresheaf {F G : C ⥤ D} (α : F ⟶ G) : G.mapPresheaf ⟶ F.mapPresheaf 
     { base := 𝟙 _
       c := whiskerLeft X.presheaf α ≫ eqToHom (Presheaf.Pushforward.id_eq _).symm }
   -- porting note: this proof was automatic in mathlib3
-  naturality := sorry
+  naturality X Y f := by
+    ext
+    . apply NatTrans.ext
+      ext U
+      dsimp
+      erw [comp_c]
+      dsimp
+      rw [whiskerRight_id', comp_id, comp_id, comp_id, whiskerLeft_app, naturality,
+        NatTrans.comp_app, whiskerLeft_app, Presheaf.pushforward_map_app', whiskerRight_app]
+      rfl
+    . rfl
 #align category_theory.nat_trans.on_presheaf CategoryTheory.NatTrans.onPresheaf
 
 -- TODO Assemble the last two constructions into a functor
