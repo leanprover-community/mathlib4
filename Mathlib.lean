@@ -558,6 +558,7 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.ExactCategory.Basic
+import Mathlib.CategoryTheory.ExactCategory.GrothendieckGroup
 import Mathlib.CategoryTheory.ExactCategory.Q
 import Mathlib.CategoryTheory.Filtered
 import Mathlib.CategoryTheory.FinCategory
