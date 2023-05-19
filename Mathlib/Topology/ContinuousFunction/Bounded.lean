@@ -294,7 +294,7 @@ theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β)
 variable (α)
 
 /-- Constant as a continuous bounded function. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })] -- Porting note: Changed `simps` to `simps!`
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp [le_rfl]⟩
 #align bounded_continuous_function.const BoundedContinuousFunction.const
@@ -1286,20 +1286,20 @@ instance : NatCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
-#align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_nat_cast
+theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
+#align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
 
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
-#align bounded_continuous_function.coe_int_cast BoundedContinuousFunction.coe_int_cast
+theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
+#align bounded_continuous_function.coe_int_cast BoundedContinuousFunction.coe_intCast
 
 instance ring : Ring (α →ᵇ R) :=
   FunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_nat_cast
-    coe_int_cast
+    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
+    coe_intCast
 
 instance : SeminormedRing (α →ᵇ R) :=
   { BoundedContinuousFunction.nonUnitalSeminormedRing with }
@@ -1369,10 +1369,10 @@ set_option linter.uppercaseLean3 false in
 
 instance : Algebra 𝕜 (α →ᵇ γ) :=
   { BoundedContinuousFunction.module,
-    BoundedContinuousFunction.ring with
+    BoundedContinuousFunction.ring (α := α) (R := γ) with
     toRingHom := C
-    commutes' := fun c f => ext fun x => Algebra.commutes' _ _
-    smul_def' := fun c f => ext fun x => Algebra.smul_def' _ _ }
+    commutes' := fun _ _ => ext fun _ => Algebra.commutes' _ _
+    smul_def' := fun _ _ => ext fun _ => Algebra.smul_def' _ _ }
 
 @[simp]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
