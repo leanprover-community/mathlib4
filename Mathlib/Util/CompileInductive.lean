@@ -29,29 +29,14 @@ private def replaceConst (old new : Name) (e : Expr) : Expr :=
 
 open Meta
 
-private def mkFunExts' (xs : Array Expr) (e : Expr) (βfg : Expr × Expr × Expr) : MetaM Expr := do
-  let mut (β, f, g) := βfg
+private def mkFunExts' (xs : Array Expr) (e : Expr) : MetaM Expr := do
   let mut e := e
   for x in xs.reverse do
-    let α ← inferType x
-    f ← mkLambdaFVars #[x] f
-    g ← mkLambdaFVars #[x] g
-    e := mkApp5 (.const ``funext [(← inferType α).sortLevel!, (← inferType β).sortLevel!])
-      α (← mkLambdaFVars #[x] β) f g (← mkLambdaFVars #[x] e)
-    β ← mkForallFVars #[x] β
+    e ← mkFunExt (← mkLambdaFVars #[x] e)
   return e
 
 private def mkFunExts (e : Expr) : MetaM Expr := do
-  forallTelescope (← inferType e) λ xs body => do
-    let some βfg := (← whnf body).eq?
-      | throwError "expected equality"
-    mkFunExts' xs (mkAppN e xs) βfg
-
-private def mkEq (α a b : Expr) : MetaM Expr := do
-  return mkApp3 (.const ``Eq [(← inferType α).sortLevel!]) α a b
-
-private def mkEqRefl (α a : Expr) : MetaM Expr := do
-  return mkApp2 (.const ``Eq.refl [(← inferType α).sortLevel!]) α a
+  forallTelescope (← inferType e) λ xs _ => mkFunExts' xs (mkAppN e xs)
 
 open Elab
 
@@ -73,8 +58,8 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
   addDecl <| .thmDecl {
     name
     levelParams := dv.levelParams
-    type := ← mkEq dv.type old new
-    value := ← mkEqRefl dv.type old
+    type := ← mkEq old new
+    value := ← mkEqRefl old
   }
   Compiler.CSimp.add name .global
 
@@ -107,19 +92,19 @@ private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM
   addDecl <| .thmDecl {
     name
     levelParams := rv.levelParams
-    type := ← mkEq rv.type old new
-    value := ← forallTelescope rv.type λ xs body => do
+    type := ← mkEq old new
+    value := ← forallTelescope rv.type λ xs _ => do
       let pf := .const rv.name (.zero :: levels.tail!)
       let pf := mkAppN pf xs[:rv.numParams]
       let old := mkAppN old xs
       let new := mkAppN new xs
-      let pf := .app pf <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq body old new
+      let pf := .app pf <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq old new
       let minor := xs[rv.getFirstMinorIdx]!
-      let pf := .app pf <| ← forallTelescope (← inferType minor) λ ys body' => do
-        let pf' ← mkEqRefl body' <| mkAppN minor ys
+      let pf := .app pf <| ← forallTelescope (← inferType minor) λ ys _ => do
+        let pf' ← mkEqRefl <| mkAppN minor ys
         mkLambdaFVars ys pf'
       let pf := .app pf xs[rv.getMajorIdx]!
-      mkFunExts' xs pf (body, old, new)
+      mkFunExts' xs pf
   }
   Compiler.CSimp.add name .global
   compileDefn <| ← getConstInfoDefn <| mkRecOnName iv.name
@@ -158,7 +143,7 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   addDecl <| .mutualDefnDecl [{
     name
     levelParams := rv.levelParams
-    type := ← mkEq rv.type old new
+    type := ← mkEq old new
     value := .const name (rv.levelParams.map .param)
     hints := .opaque
     safety := .partial
