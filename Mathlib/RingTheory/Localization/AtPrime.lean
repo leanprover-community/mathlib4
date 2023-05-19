@@ -80,11 +80,6 @@ theorem AtPrime.Nontrivial [IsLocalization.AtPrime S I] : Nontrivial S :=
     exact t.2 (htz.symm ▸ I.zero_mem : ↑t ∈ I)
 #align is_localization.at_prime.nontrivial IsLocalization.AtPrime.Nontrivial
 
--- Porting Note: Lean cannot find synthesization order for instance, so I turned it off
--- not sure if this is a good idea though
-set_option synthInstance.checkSynthOrder false in
-attribute [local instance] AtPrime.Nontrivial
-
 theorem AtPrime.localRing [IsLocalization.AtPrime S I] : LocalRing S :=
   -- Porting Note : since I couldn't get local instance running, I just specify it manually
   letI := AtPrime.Nontrivial S I
