@@ -154,7 +154,8 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       let new := mkAppN new xs
       let motive ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq body old new
       let pf := .app pf motive
-      let pf := mkAppN pf <| ← rv.rules.toArray.zip xs[rv.getFirstMinorIdx:] |>.mapM λ (rule, minor) => do
+      let pf := mkAppN pf <| ← rv.rules.toArray.zip xs[rv.getFirstMinorIdx:]
+        |>.mapM λ (rule, minor) => do
         forallTelescope ((← inferType minor).replaceFVar xs[rv.numParams]! motive) λ ys _ => do
           let minor := mkAppN minor ys[:rule.nfields]
           let pf' ← mkEqRefl (← inferType minor) minor
