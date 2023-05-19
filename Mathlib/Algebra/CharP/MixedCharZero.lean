@@ -387,5 +387,3 @@ theorem split_by_characteristic_localRing [LocalRing R]
 #align split_by_characteristic_local_ring split_by_characteristic_localRing
 
 end MainStatements
-
-#lint
