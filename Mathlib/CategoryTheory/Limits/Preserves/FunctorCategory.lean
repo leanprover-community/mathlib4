@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 
 ! This file was ported from Lean 3 source module category_theory.limits.preserves.functor_category
-! leanprover-community/mathlib commit 7cd8adb7a9d7d0498d2e76c23cd4255f966899f5
+! leanprover-community/mathlib commit 39478763114722f0ec7613cb2f3f7701f9b86c8d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -114,6 +114,6 @@ noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategor
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
   exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
 set_option linter.uppercaseLean3 false in
-#align category_theory.preserves_limit_of_Lan_presesrves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
+#align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
 
 end CategoryTheory

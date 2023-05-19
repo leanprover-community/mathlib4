@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.algebra.basic
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
+! leanprover-community/mathlib commit 36b8aa61ea7c05727161f96a0532897bd72aedab
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -905,6 +905,12 @@ instance (priority := 100) IsScalarTower.to_smulCommClass : SMulCommClass R A M 
 instance (priority := 100) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 #align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smulCommClass'
+
+-- see Note [lower instance priority]
+instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+    [Algebra R A] : SMulCommClass R A A :=
+  IsScalarTower.to_smulCommClass
+#align algebra.to_smul_comm_class Algebra.to_smulCommClass
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _

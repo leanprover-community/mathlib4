@@ -330,8 +330,6 @@ instance cancelMonoid {α : Type _} [StrictOrderedRing α] [IsDomain α] :
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 #align set.Ioc.cancel_monoid Set.Ioc.cancelMonoid
 
--- Porting note: This takes too long
-set_option maxHeartbeats 0 in
 instance cancelCommMonoid {α : Type _} [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.cancelMonoid, Set.Ioc.commMonoid with }
