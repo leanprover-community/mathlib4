@@ -22,7 +22,7 @@ This can be the case for type class projections, or definitions like `List._size
 
 namespace Mathlib.Util
 
-open Lean Meta Elab
+open Lean Meta
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -41,7 +41,7 @@ def mkRecNames (all : List Name) (numMotives : Nat) : List Name :=
 Compile the definition `dv` by adding a second definition `dv✝` with the same body,
 and registering a `csimp`-lemma `dv = dv✝`.
 -/
-def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
+def compileDefn (dv : DefinitionVal) : MetaM Unit := do
   if ((← getEnv).getModuleIdxFor? dv.name).isNone then
     -- If it's in the same module then we can safely just call `compileDecl`
     -- on the original definition
@@ -60,6 +60,8 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
   }
   Compiler.CSimp.add name .global
 
+open Elab
+
 /--
 `compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
 This can be used for type class projections or definitions like `List._sizeOf_1`,
@@ -71,7 +73,7 @@ elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
 
-private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM Unit := do
+private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit := do
   let name ← mkFreshUserName rv.name
   addAndCompile <| .defnDecl { rv with
     name
@@ -100,7 +102,7 @@ private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM Uni
 /--
 Generate compiled code for the recursor for `iv`.
 -/
-def compileInductive (iv : InductiveVal) : TermElabM Unit := do
+def compileInductive (iv : InductiveVal) : MetaM Unit := do
   let rv ← getConstInfoRec <| mkRecName iv.name
   if ← isProp rv.type then
     logWarning m!"not compiling {rv.name}"
