@@ -133,7 +133,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
   rw [smul_comm]
 #align comp_dual_tensor_hom comp_dualTensorHom
 
-/-- As a matrix, `dual_tensor_hom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
+/-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type _} {n : Type _} [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
@@ -238,30 +238,28 @@ variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 variable [Free R M] [Finite R M] [Free R N] [Finite R N] [Nontrivial R]
 
-/-- When `M` is a finite free module, the map `ltensor_hom_to_hom_ltensor` is an equivalence. Note
-that `ltensor_hom_equiv_hom_ltensor` is not defined directly in terms of
-`ltensor_hom_to_hom_ltensor`, but the equivalence between the two is given by
-`ltensor_hom_equiv_hom_ltensor_to_linear_map` and `ltensor_hom_equiv_hom_ltensor_apply`. -/
-noncomputable def ltensorHomEquivHomLtensor : P ⊗[R] (M →ₗ[R] Q) ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
+/-- When `M` is a finite free module, the map `lTensorHomToHomLTensor` is an equivalence. Note
+that `lTensorHomEquivHomLTensor` is not defined directly in terms of
+`lTensorHomToHomLTensor`, but the equivalence between the two is given by
+`lTensorHomEquivHomLTensor_toLinearMap` and `lTensorHomEquivHomLTensor_apply`. -/
+noncomputable def lTensorHomEquivHomLTensor : P ⊗[R] (M →ₗ[R] Q) ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
   congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q).symm ≪≫ₗ
       TensorProduct.leftComm R P _ Q ≪≫ₗ
     dualTensorHomEquiv R M _
-#align ltensor_hom_equiv_hom_ltensor ltensorHomEquivHomLtensor
+#align ltensor_hom_equiv_hom_ltensor lTensorHomEquivHomLTensor
 
-/-- When `M` is a finite free module, the map `rtensor_hom_to_hom_rtensor` is an equivalence. Note
-that `rtensor_hom_equiv_hom_rtensor` is not defined directly in terms of
-`rtensor_hom_to_hom_rtensor`, but the equivalence between the two is given by
-`rtensor_hom_equiv_hom_rtensor_to_linear_map` and `rtensor_hom_equiv_hom_rtensor_apply`. -/
-noncomputable def rtensorHomEquivHomRtensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
+/-- When `M` is a finite free module, the map `rTensorHomToHomRTensor` is an equivalence. Note
+that `rTensorHomEquivHomRTensor` is not defined directly in terms of
+`rTensorHomToHomRTensor`, but the equivalence between the two is given by
+`rTensorHomEquivHomRTensor_toLinearMap` and `rTensorHomEquivHomRTensor_apply`. -/
+noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
   congr (dualTensorHomEquiv R M P).symm (LinearEquiv.refl R Q) ≪≫ₗ TensorProduct.assoc R _ P Q ≪≫ₗ
     dualTensorHomEquiv R M _
-#align rtensor_hom_equiv_hom_rtensor rtensorHomEquivHomRtensor
+#align rtensor_hom_equiv_hom_rtensor rTensorHomEquivHomRTensor
 
--- Porting note: something is timing out in the giant simp
-set_option maxHeartbeats 0 in
 @[simp]
-theorem ltensorHomEquivHomLtensor_toLinearMap :
-    (ltensorHomEquivHomLtensor R M P Q).toLinearMap = ltensorHomToHomLtensor R M P Q := by
+theorem lTensorHomEquivHomLTensor_toLinearMap :
+    (lTensorHomEquivHomLTensor R M P Q).toLinearMap = lTensorHomToHomLTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
@@ -270,19 +268,16 @@ theorem ltensorHomEquivHomLtensor_toLinearMap :
   apply LinearMap.ext; intro p -- Porting note: had to walk through this
   apply TensorProduct.ext -- Porting note: missing from ext
   ext (f q m)
-  dsimp [ltensorHomEquivHomLtensor]
-  simp only [ltensorHomEquivHomLtensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
+  dsimp [lTensorHomEquivHomLTensor]
+  simp only [lTensorHomEquivHomLTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
-    dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul, dualTensorHom_apply,
-    ltensorHomToHomLtensor_apply, tmul_smul]
-#align ltensor_hom_equiv_hom_ltensor_to_linear_map ltensorHomEquivHomLtensor_toLinearMap
+    dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul, dualTensorHom_apply, tmul_smul]
+#align ltensor_hom_equiv_hom_ltensor_to_linear_map lTensorHomEquivHomLTensor_toLinearMap
 
--- Porting note: something is timing out in the giant simp
-set_option maxHeartbeats 0 in
 @[simp]
-theorem rtensorHomEquivHomRtensor_toLinearMap :
-    (rtensorHomEquivHomRtensor R M P Q).toLinearMap = rtensorHomToHomRtensor R M P Q := by
+theorem rTensorHomEquivHomRTensor_toLinearMap :
+    (rTensorHomEquivHomRTensor R M P Q).toLinearMap = rTensorHomToHomRTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
@@ -290,26 +285,26 @@ theorem rtensorHomEquivHomRtensor_toLinearMap :
   apply TensorProduct.ext -- Porting note: missing from ext
   apply TensorProduct.ext -- Porting note: missing from ext
   ext (f p q m)
-  simp only [rtensorHomEquivHomRtensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
+  simp only [rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul,
     dualTensorHomEquivOfBasis_symm_cancel_left, LinearEquiv.refl_apply, assoc_tmul,
-    dualTensorHom_apply, rtensorHomToHomRtensor_apply, smul_tmul']
-#align rtensor_hom_equiv_hom_rtensor_to_linear_map rtensorHomEquivHomRtensor_toLinearMap
+    dualTensorHom_apply, rTensorHomToHomRTensor_apply, smul_tmul']
+#align rtensor_hom_equiv_hom_rtensor_to_linear_map rTensorHomEquivHomRTensor_toLinearMap
 
 variable {R M N P Q}
 
 @[simp]
-theorem ltensorHomEquivHomLtensor_apply (x : P ⊗[R] (M →ₗ[R] Q)) :
-    ltensorHomEquivHomLtensor R M P Q x = ltensorHomToHomLtensor R M P Q x := by
-  rw [← LinearEquiv.coe_toLinearMap, ltensorHomEquivHomLtensor_toLinearMap]
-#align ltensor_hom_equiv_hom_ltensor_apply ltensorHomEquivHomLtensor_apply
+theorem lTensorHomEquivHomLTensor_apply (x : P ⊗[R] (M →ₗ[R] Q)) :
+    lTensorHomEquivHomLTensor R M P Q x = lTensorHomToHomLTensor R M P Q x := by
+  rw [← LinearEquiv.coe_toLinearMap, lTensorHomEquivHomLTensor_toLinearMap]
+#align ltensor_hom_equiv_hom_ltensor_apply lTensorHomEquivHomLTensor_apply
 
 @[simp]
-theorem rtensorHomEquivHomRtensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
-    rtensorHomEquivHomRtensor R M P Q x = rtensorHomToHomRtensor R M P Q x := by
-  rw [← LinearEquiv.coe_toLinearMap, rtensorHomEquivHomRtensor_toLinearMap]
-#align rtensor_hom_equiv_hom_rtensor_apply rtensorHomEquivHomRtensor_apply
+theorem rTensorHomEquivHomRTensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
+    rTensorHomEquivHomRTensor R M P Q x = rTensorHomToHomRTensor R M P Q x := by
+  rw [← LinearEquiv.coe_toLinearMap, rTensorHomEquivHomRTensor_toLinearMap]
+#align rtensor_hom_equiv_hom_rtensor_apply rTensorHomEquivHomRTensor_apply
 
 variable (R M N P Q)
 
@@ -318,8 +313,8 @@ variable (R M N P Q)
 between the two is given by `hom_tensor_hom_equiv_to_linear_map` and `hom_tensor_hom_equiv_apply`.
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  rtensorHomEquivHomRtensor R M P _ ≪≫ₗ
-      (LinearEquiv.refl R M).arrowCongr (ltensorHomEquivHomLtensor R N _ Q) ≪≫ₗ
+  rTensorHomEquivHomRTensor R M P _ ≪≫ₗ
+      (LinearEquiv.refl R M).arrowCongr (lTensorHomEquivHomLTensor R N _ Q) ≪≫ₗ
     lift.equiv R M N _
 #align hom_tensor_hom_equiv homTensorHomEquiv
 
@@ -333,8 +328,8 @@ theorem homTensorHomEquiv_toLinearMap :
   ext (m n)
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
-    LinearEquiv.refl_apply, rtensorHomEquivHomRtensor_apply, ltensorHomEquivHomLtensor_apply,
-    ltensorHomToHomLtensor_apply, rtensorHomToHomRtensor_apply, homTensorHomMap_apply,
+    LinearEquiv.refl_apply, rTensorHomEquivHomRTensor_apply, lTensorHomEquivHomLTensor_apply,
+    lTensorHomToHomLTensor_apply, rTensorHomToHomRTensor_apply, homTensorHomMap_apply,
     map_tmul]
 #align hom_tensor_hom_equiv_to_linear_map homTensorHomEquiv_toLinearMap
 
