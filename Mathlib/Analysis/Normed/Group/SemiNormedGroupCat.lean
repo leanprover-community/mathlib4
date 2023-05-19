@@ -105,7 +105,7 @@ theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroup.zero_apply
 
-/--porting note :Added, Needed to make isZero_of_subsingleton work -/
+--/--porting note :Added, Needed to make isZero_of_subsingleton work -/
 -- instance {V W : SemiNormedGroup}: ZeroHomClass (V ⟶ W) V W where
 --   coe := NormedAddGroupHom.toFun
 --   coe_injective' := NormedAddGroupHom.coe_injective
@@ -128,13 +128,23 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroup.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup.has_zero_object SemiNormedGroup.hasZeroObject
 
+/--Porting Note: Added to make iso_isometry_of_normNoninc work-/
+instance toAddMonoidHomClass {V W : SemiNormedGroup} : AddMonoidHomClass (V ⟶ W) V W where
+  coe := (forget SemiNormedGroup).map
+  coe_injective' := fun f g h => by cases f; cases g; congr
+  map_add f := f.map_add'
+  map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
+
 theorem iso_isometry_of_normNoninc {V W : SemiNormedGroup} (i : V ≅ W) (h1 : i.hom.NormNoninc)
     (h2 : i.inv.NormNoninc) : Isometry i.hom := by
-  apply AddMonoidHomClass.isometry_of_norm
+  apply AddMonoidHomClass.isometry_of_norm i.hom
   intro v
   apply le_antisymm (h1 v)
+  have h3 : v = i.inv (i.hom v) := by
+    change v = (forget _).map i.inv ((forget _).map i.hom v)
+    simp only [FunctorToTypes.map_inv_map_hom_apply]
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← h3]
     _ ≤ ‖i.hom v‖ := h2 _
 #align SemiNormedGroup.iso_isometry_of_norm_noninc SemiNormedGroup.iso_isometry_of_normNoninc
 
