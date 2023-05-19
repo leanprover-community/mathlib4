@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.Sheaf
-import Mathbin.CategoryTheory.Sites.Limits
-import Mathbin.CategoryTheory.Limits.FunctorCategory
+import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 /-!
 # Presheaves in `C` have limits and colimits when `C` does.
@@ -42,8 +42,7 @@ instance [HasLimits C] (X : TopCat) : HasLimitsOfSize.{v} (Sheaf.{v} C X) :=
   has_limits_of_has_limits_creates_limits (Sheaf.forget C X)
 
 theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
-    (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf :=
-  by
+    (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
   let F' : J ⥤ sheaf C X :=
     { obj := fun j => ⟨F.obj j, H j⟩
       map := fun X Y f => ⟨F.map f⟩ }
