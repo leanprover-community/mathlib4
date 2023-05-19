@@ -52,9 +52,8 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter Asymptotics
-
-open Classical BigOperators Filter Topology Asymptotics NNReal
+open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
+  NNReal
 
 namespace LinearIsometry
 
@@ -69,8 +68,8 @@ variable {R₁ : Type _} [Field R₁] [Module R₁ E₁] [Module R₁ F] [Finite
 
 /-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
     to a linear isometry equivalence. -/
-def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) : E₁ ≃ₗᵢ[R₁] F
-    where
+def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
+    E₁ ≃ₗᵢ[R₁] F where
   toLinearEquiv := li.toLinearMap.linearEquivOfInjective li.injective h
   norm_map' := li.norm_map'
 #align linear_isometry.to_linear_isometry_equiv LinearIsometry.toLinearIsometryEquiv
@@ -166,6 +165,7 @@ end Affine
 
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
   change Continuous fun f : E →L[𝕜] E => LinearMap.det (f : E →ₗ[𝕜] E)
+  -- Porting note: this could be easier with `det_cases`
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
     haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
@@ -320,9 +320,8 @@ theorem Basis.exists_op_norm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E) 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
   set d := FiniteDimensional.finrank 𝕜 E
-  suffices :
-    ∀ ε > (0 : ℝ), ∃ n : (E →L[𝕜] F) → Fin d → ℕ, ∀ f g : E →L[𝕜] F, n f = n g → dist f g ≤ ε
-  exact
+  suffices
+    ∀ ε > (0 : ℝ), ∃ n : (E →L[𝕜] F) → Fin d → ℕ, ∀ f g : E →L[𝕜] F, n f = n g → dist f g ≤ ε from
     Metric.secondCountable_of_countable_discretization fun ε ε_pos =>
       ⟨Fin d → ℕ, by infer_instance, this ε ε_pos⟩
   intro ε ε_pos
@@ -489,9 +488,10 @@ theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
 #align finite_dimensional_of_is_compact_closed_ball finiteDimensional_of_isCompact_closedBall
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
-space if finite-dimensional. -/
+space is finite-dimensional. -/
 @[to_additive
-      "If a function has compact support, then either the function is trivial or the\nspace if finite-dimensional."]
+      "If a function has compact support, then either the function is trivial or the space is
+      finite-dimensional."]
 theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type _} [TopologicalSpace X] [One X]
     [T2Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
     f = 1 ∨ FiniteDimensional 𝕜 E := by
@@ -500,9 +500,8 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type _} [Topologic
     ext x
     exact h x
   apply Or.inr
-  push_neg  at h
-  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1
-  exact h
+  push_neg at h
+  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
   have : Function.mulSupport f ∈ 𝓝 x := h'f.isOpen_mulSupport.mem_nhds hx
   -- Porting note: moved type ascriptions because of exists_prop changes
   obtain ⟨r : ℝ, rpos : 0 < r, hr : Metric.closedBall x r ⊆ Function.mulSupport f⟩ :=
@@ -557,10 +556,7 @@ def ContinuousLinearEquiv.piRing (ι : Type _) [Fintype ι] [DecidableEq ι] :
       exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-      change
-        Continuous
-          (LinearMap.toContinuousLinearMap.toLinearMap.comp
-            (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
+      -- Note: added explicit type and removed `change` that tried to achieve the same
       refine AddMonoidHomClass.continuous_of_bound
         (LinearMap.toContinuousLinearMap.toLinearMap.comp
             (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
