@@ -162,9 +162,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 namespace EqualCharZero
 
 /-- `ℚ`-algebra implies equal characteristic. -/
-theorem of_ratAlgebra [Nontrivial R] [Algebra ℚ R] :
-    ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
-  haveI : CharZero R := algebraRat.charZero R
+theorem of_ratAlgebra [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
   constructor
   intro a b h_ab
@@ -287,7 +285,7 @@ theorem iff_not_mixedCharZero [CharZero R] :
 #align equal_char_zero_iff_not_mixed_char EqualCharZero.iff_not_mixedCharZero
 
 /-- A ring is a `ℚ`-algebra iff it has equal characteristic zero. -/
-theorem nonempty_ratAlgebra_iff [Nontrivial R] :
+theorem nonempty_ratAlgebra_iff :
     Nonempty (Algebra ℚ R) ↔ ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   constructor
   · intro h_alg
@@ -389,3 +387,5 @@ theorem split_by_characteristic_localRing [LocalRing R]
 #align split_by_characteristic_local_ring split_by_characteristic_localRing
 
 end MainStatements
+
+#lint
