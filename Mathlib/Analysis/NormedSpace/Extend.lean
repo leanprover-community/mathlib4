@@ -144,12 +144,13 @@ theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →
 
 end ContinuousLinearMap
 
+-- Porting note: Added a new instance. This instance is needed for the rest of the file.
+instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
+  unfold RestrictScalars
+  infer_instance
+
 /-- Extend `fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜`. -/
 noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
-  -- Porting note: Added instance for `NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F)`
-  let _ : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
-    unfold RestrictScalars
-    infer_instance
   fr.extendTo𝕜'
 #align linear_map.extend_to_𝕜 LinearMap.extendTo𝕜
 
@@ -159,10 +160,6 @@ theorem LinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ
 
 /-- Extend `fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ` to `F →L[𝕜] 𝕜`. -/
 noncomputable def ContinuousLinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) : F →L[𝕜] 𝕜 :=
-  -- Porting note: Added instance for `NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F)`
-  let _ : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
-    unfold RestrictScalars
-    infer_instance
   fr.extendTo𝕜'
 #align continuous_linear_map.extend_to_𝕜 ContinuousLinearMap.extendTo𝕜
 
@@ -173,9 +170,5 @@ theorem ContinuousLinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F 
 @[simp]
 theorem ContinuousLinearMap.norm_extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) :
     ‖fr.extendTo𝕜‖ = ‖fr‖ :=
-  -- Porting note: Added instance for `NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F)`
-  let _ : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
-    unfold RestrictScalars
-    infer_instance
   fr.norm_extendTo𝕜'
 #align continuous_linear_map.norm_extend_to_𝕜 ContinuousLinearMap.norm_extendTo𝕜
