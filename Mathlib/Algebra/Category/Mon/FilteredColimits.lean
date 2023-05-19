@@ -84,45 +84,46 @@ variable [IsFiltered J]
 /-- As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to define the
 "one" in the colimit as the equivalence class of `⟨j₀, 1 : F.obj j₀⟩`.
 -/
-@[to_additive colimitZero
+@[to_additive
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to\ndefine the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
-instance colimitOne : One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some, 1⟩
+noncomputable instance colimitOne : One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some, 1⟩
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
--- #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
+set_option linter.uppercaseLean3 false in
+#align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
 
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen
 object `j`.
 -/
--- @[to_additive
---       "The definition of the \"zero\" in the colimit is independent of the chosen object\nof `J`. In particular, this lemma allows us to \"unfold\" the definition of `colimit_zero` at a\ncustom chosen object `j`."]
+@[to_additive
+      "The definition of the \"zero\" in the colimit is independent of the chosen object\nof `J`. In particular, this lemma allows us to \"unfold\" the definition of `colimit_zero` at a\ncustom chosen object `j`."]
 theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
   refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
   simp
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
--- set_option linter.uppercaseLean3 false in
--- #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
+set_option linter.uppercaseLean3 false in
+#align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
 
 /-- The "unlifted" version of multiplication in the colimit. To multiply two dependent pairs
 `⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `is_filtered.max`)
 and multiply them there.
 -/
--- @[to_additive
---       "The \"unlifted\" version of addition in the colimit. To add two dependent pairs\n`⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `is_filtered.max`)\nand add them there."]
-def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
+@[to_additive
+      "The \"unlifted\" version of addition in the colimit. To add two dependent pairs\n`⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `is_filtered.max`)\nand add them there."]
+noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
   M.mk F ⟨IsFiltered.max x.fst y.fst, F.map (IsFiltered.leftToMax x.1 y.1) x.2 *
     F.map (IsFiltered.rightToMax x.1 y.1) y.2⟩
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_mul_aux MonCat.FilteredColimits.colimitMulAux
--- set_option linter.uppercaseLean3 false in
--- #align AddMon.filtered_colimits.colimit_add_aux AddMonCat.FilteredColimits.colimitAddAux
+set_option linter.uppercaseLean3 false in
+#align AddMon.filtered_colimits.colimit_add_aux AddMonCat.FilteredColimits.colimitAddAux
 
 /-- Multiplication in the colimit is well-defined in the left argument. -/
--- @[to_additive "Addition in the colimit is well-defined in the left argument."]
+@[to_additive "Addition in the colimit is well-defined in the left argument."]
 theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     (hxx' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) x x') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
@@ -145,10 +146,11 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   rw [hfg]
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_left MonCat.FilteredColimits.colimitMulAux_eq_of_rel_left
--- #align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_left AddMonCat.FilteredColimits.colimit_add_aux_eq_of_rel_left
+set_option linter.uppercaseLean3 false in
+#align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_left AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_left
 
 /-- Multiplication in the colimit is well-defined in the right argument. -/
--- @[to_additive "Addition in the colimit is well-defined in the right argument."]
+@[to_additive "Addition in the colimit is well-defined in the right argument."]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     (hyy' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) y y') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
@@ -171,7 +173,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
   rw [hfg]
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_right MonCat.FilteredColimits.colimitMulAux_eq_of_rel_right
--- #align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_right AddMonCat.FilteredColimits.colimit_add_aux_eq_of_rel_right
+#align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_right AddMonCat.FilteredColimits.colimit_add_aux_eq_of_rel_right
 
 /-- Multiplication in the colimit. See also `colimit_mul_aux`. -/
 -- @[to_additive "Addition in the colimit. See also `colimit_add_aux`."]
