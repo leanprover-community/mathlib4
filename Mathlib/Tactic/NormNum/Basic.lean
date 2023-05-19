@@ -409,7 +409,7 @@ theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
-    IsRat (a ^ b) cn cd := by
+    IsRat (f a b) cn cd := by
   rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
   have := invertiblePow (ad:α) b
   rw [← Nat.cast_pow] at this
@@ -426,16 +426,17 @@ def evalPow : NormNumExt where eval {u α} e := do
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
   let rec
   /-- Main part of `evalPow`. -/
+  @[nolint unusedHavesSuffices] -- the =Q assumptions are marked as unused
   core : Option (Result e) := do
     match ra with
     | .isBool .. => failure
     | .isNat sα na pa =>
-      let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
+      have : $sα =Q AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
       have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
       let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
       let pb : Q(IsNat $b $nb) := pb
-      return (.isNat sα c (q(isNat_pow $pf $pa $pb $r) : Expr) : Result q($f $a $b))
+      return (.isNat sα c q(isNat_pow $pf $pa $pb $r) : Result q($f $a $b))
     | .isNegNat rα .. =>
       have : $sα =Q Ring.toSemiring := ⟨⟩
       let ⟨za, na, pa⟩ ← ra.toInt
@@ -443,7 +444,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       let c := mkRawIntLit zc
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
       let r : Q(Int.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
-      return (.isInt rα c zc (q(isInt_pow $pf $pa $pb $r) : Expr) : Result q($f $a $b))
+      return (.isInt rα c zc q(isInt_pow $pf $pa $pb $r) : Result q($f $a $b))
     | .isRat dα qa na da pa =>
       have : $sα =Q Ring.toSemiring := ⟨⟩
       let qc := qa ^ nb.natLit!
@@ -452,7 +453,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
       have r1 : Q(Int.pow $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
       have r2 : Q(Nat.pow $da $nb = $dc) := (q(Eq.refl $dc) : Expr)
-      return (.isRat' dα qc nc dc (q(isRat_pow $pf $pa $pb $r1 $r2) : Expr) : Result q($f $a $b))
+      return (.isRat' dα qc nc dc q(isRat_pow $pf $pa $pb $r1 $r2) : Result q($f $a $b))
   core
 
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
