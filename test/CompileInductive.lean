@@ -1,7 +1,7 @@
 import Mathlib.Util.CompileInductive
 import Mathlib.Data.Fin.Fin2
 
-#compile inductive Fin2
+compile_inductive% Fin2
 
 example := @Nat.rec
 example := @List.rec

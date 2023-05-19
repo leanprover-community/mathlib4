@@ -9,7 +9,7 @@ import Mathlib.Util.CompileInductive
 
 namespace Nat
 
-#compile inductive Nat
+compile_inductive% Nat
 
 set_option linter.deprecated false
 

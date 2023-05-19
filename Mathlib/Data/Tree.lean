@@ -152,7 +152,7 @@ def right : Tree α → Tree α
 scoped infixr:65 " △ " => Tree.node ()
 
 -- porting note: workaround for leanprover/lean4#2049
-#compile inductive Tree
+compile_inductive% Tree
 
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)

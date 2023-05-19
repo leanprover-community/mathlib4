@@ -89,7 +89,7 @@ inductive Code : Type
 #align nat.partrec.code Nat.Partrec.Code
 
 -- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
-#compile inductive Code
+compile_inductive% Code
 
 end Nat.Partrec
 

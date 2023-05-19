@@ -7,12 +7,12 @@ import Lean.Compiler.CSimpAttr
 import Lean.Elab.PreDefinition
 
 /-!
-# Define the `#compile inductive` command.
+# Define the `compile_inductive%` command.
 
-The command `#compile inductive Foo` adds compiled code for the recursor `Foo.rec`,
+The command `compile_inductive% Foo` adds compiled code for the recursor `Foo.rec`,
 working around a bug in the core Lean compiler which does not support recursors.
 
-Similarly, `#compile def Foo.foo` adds compiled code for definitions when missing.
+Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missing.
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
@@ -71,12 +71,12 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
   Compiler.CSimp.add name .global
 
 /--
-`#compile def Foo.foo` adds compiled code for the definition `Foo.foo`.
+`compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
 This can be used for type class projections or definitions like `List._sizeOf_1`,
 for which Lean does not generate compiled code by default
 (since it is not used 99% of the time).
 -/
-elab tk:"#compile " "def " i:ident : command => Command.liftTermElabM do
+elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let n ← resolveGlobalConstNoOverloadWithInfo i
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
@@ -176,21 +176,21 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       compileDefn dv
 
 /--
-`#compile inductive Foo` creates compiled code for the recursor `Foo.rec`,
+`compile_inductive% Foo` creates compiled code for the recursor `Foo.rec`,
 so that `Foo.rec` can be used in a definition
 without having to mark the definition as `noncomputable`.
 -/
-elab tk:"#compile " "inductive " i:ident : command => Command.liftTermElabM do
+elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let n ← resolveGlobalConstNoOverloadWithInfo i
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
-#compile inductive Nat
-#compile inductive List
-#compile inductive PUnit
-#compile inductive PEmpty
-#compile inductive And
-#compile inductive False
-#compile inductive Empty
-#compile def List._sizeOf_1
-#compile def List._sizeOf_inst
+compile_inductive% Nat
+compile_inductive% List
+compile_inductive% PUnit
+compile_inductive% PEmpty
+compile_inductive% And
+compile_inductive% False
+compile_inductive% Empty
+compile_def% List._sizeOf_1
+compile_def% List._sizeOf_inst

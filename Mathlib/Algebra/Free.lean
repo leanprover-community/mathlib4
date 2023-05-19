@@ -39,7 +39,7 @@ inductive FreeAddMagma (α : Type u) : Type u
   | add : FreeAddMagma α → FreeAddMagma α → FreeAddMagma α
   deriving DecidableEq
 #align free_add_magma FreeAddMagma
-#compile inductive FreeAddMagma
+compile_inductive% FreeAddMagma
 
 /-- Free magma over a given alphabet. -/
 @[to_additive]
@@ -48,7 +48,7 @@ inductive FreeMagma (α : Type u) : Type u
   | mul : FreeMagma α → FreeMagma α → FreeMagma α
   deriving DecidableEq
 #align free_magma FreeMagma
-#compile inductive FreeMagma
+compile_inductive% FreeMagma
 
 namespace FreeMagma
 
@@ -449,7 +449,7 @@ structure FreeAddSemigroup (α : Type u) where
 /-- The tail of the element -/
   tail : List α
 #align free_add_semigroup FreeAddSemigroup
-#compile inductive FreeAddSemigroup
+compile_inductive% FreeAddSemigroup
 
 /-- Free semigroup over a given alphabet. -/
 @[to_additive (attr := ext)]
@@ -459,7 +459,7 @@ structure FreeSemigroup (α : Type u) where
 /-- The tail of the element -/
   tail : List α
 #align free_semigroup FreeSemigroup
-#compile inductive FreeSemigroup
+compile_inductive% FreeSemigroup
 
 namespace FreeSemigroup
 

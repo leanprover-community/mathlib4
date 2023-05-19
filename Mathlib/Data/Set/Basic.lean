@@ -71,13 +71,13 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 -/
 
 -- https://github.com/leanprover/lean4/issues/2096
-#compile def Union.union
-#compile def Inter.inter
-#compile def SDiff.sdiff
-#compile def HasCompl.compl
-#compile def EmptyCollection.emptyCollection
-#compile def Insert.insert
-#compile def Singleton.singleton
+compile_def% Union.union
+compile_def% Inter.inter
+compile_def% SDiff.sdiff
+compile_def% HasCompl.compl
+compile_def% EmptyCollection.emptyCollection
+compile_def% Insert.insert
+compile_def% Singleton.singleton
 
 /-! ### Set coercion to a type -/
 

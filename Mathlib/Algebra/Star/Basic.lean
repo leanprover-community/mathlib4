@@ -59,7 +59,7 @@ class Star (R : Type u) where
 #align has_star Star
 
 -- https://github.com/leanprover/lean4/issues/2096
-#compile def Star.star
+compile_def% Star.star
 
 variable {R : Type u}
 

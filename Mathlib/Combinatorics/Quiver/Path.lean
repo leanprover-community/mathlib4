@@ -32,7 +32,7 @@ inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
 #align quiver.path Quiver.Path
 
 -- See issue lean4#2049
-#compile inductive Path
+compile_inductive% Path
 
 /-- An arrow viewed as a path of length one. -/
 def Hom.toPath {V} [Quiver V] {a b : V} (e : a ⟶ b) : Path a b :=

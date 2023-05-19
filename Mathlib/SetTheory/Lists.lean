@@ -57,7 +57,7 @@ inductive Lists'.{u} (α : Type u) : Bool → Type u
   | cons' {b} : Lists' α b → Lists' α true → Lists' α true
   deriving DecidableEq
 #align lists' Lists'
-#compile inductive Lists'
+compile_inductive% Lists'
 
 /-- Hereditarily finite list, aka ZFA list. A ZFA list is either an "atom" (`b = false`),
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA

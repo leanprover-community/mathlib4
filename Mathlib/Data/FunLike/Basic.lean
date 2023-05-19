@@ -137,7 +137,7 @@ class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sor
 #align fun_like FunLike
 
 -- https://github.com/leanprover/lean4/issues/2096
-#compile def FunLike.coe
+compile_def% FunLike.coe
 
 section Dependent
 

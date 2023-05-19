@@ -8,7 +8,7 @@ import Mathlib.Util.CompileInductive
 
 /-! ### alignments from lean 3 `init.data.prod` -/
 
-#compile inductive Prod
+compile_inductive% Prod
 
 @[simp]
 theorem Prod.mk.eta : ∀ {p : α × β}, (p.1, p.2) = p

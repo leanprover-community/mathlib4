@@ -362,7 +362,7 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
 -- porting note: workaround for leanprover/lean4#2049
-#compile inductive Option
+compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
