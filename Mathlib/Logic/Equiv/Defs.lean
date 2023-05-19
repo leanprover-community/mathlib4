@@ -12,13 +12,6 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.ProjectionNotation
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.Relation.Trans
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types

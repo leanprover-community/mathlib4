@@ -10,7 +10,7 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
 
 /-!

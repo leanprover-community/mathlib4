@@ -11,7 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Common
 
 /-!
 # Types with a unique term
