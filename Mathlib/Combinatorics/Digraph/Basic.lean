@@ -484,18 +484,21 @@ TODO: make delaborator that erases `toDigraph` in `x.toDigraph →g y.toDigraph`
 
 The notation `G →g G'` represents the type of graph homomorphisms. -/
 abbrev Hom := RelHom G.Adj G'.Adj
+#align simple_graph.hom Digraph.Hom
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
 `G.Adj (f v) (f w) ↔ G.Adj v w `. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding := RelEmbedding G.Adj G'.Adj
+#align simple_graph.embedding Digraph.Embedding
 
 /-- A graph isomorphism is an bijective map on vertex sets that respects adjacency relations.
 
 The notation `G ≃g G'` represents the type of graph isomorphisms.
 -/
 abbrev Iso := RelIso G.Adj G'.Adj
+#align simple_graph.iso Digraph.Iso
 
 infixl:50 " →g " => Hom
 infixl:50 " ↪g " => Embedding

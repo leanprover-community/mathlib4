@@ -9,6 +9,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Combinatorics.Digraph.Basic
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
@@ -122,15 +123,35 @@ There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
 @[ext, aesop safe constructors (rule_sets [SimpleGraph])]
-structure SimpleGraph (V : Type u) where
-  Adj : V → V → Prop
+structure SimpleGraph (V : Type u) extends Digraph V where
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
-noncomputable instance {V : Type u} [Fintype V] : Fintype (SimpleGraph V) := by
-  classical exact Fintype.ofInjective SimpleGraph.Adj SimpleGraph.ext
+/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+@[simps]
+def SimpleGraph.mk' :
+    {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
+  toFun x := ⟨⟨fun v w ↦ x.1 v w⟩, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
+  inj' := by
+    rintro ⟨adj, _⟩ ⟨adj', _⟩
+    simp only [mk.injEq, Digraph.mk.injEq, Subtype.mk.injEq]
+    intro h
+    funext v w
+    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+
+instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
+  elems := Finset.univ.map SimpleGraph.mk'
+  complete := by
+    classical
+    rintro ⟨⟨Adj⟩, hs, hi⟩
+    simp only [mem_map, mem_univ, true_and, Subtype.exists, Bool.not_eq_true]
+    refine ⟨fun v w ↦ Adj v w, ⟨?_, ?_⟩, ?_⟩
+    · dsimp at hs; simp [hs.iff]
+    · dsimp at hi; intro v; simp [hi v]
+    · ext
+      simp
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
@@ -198,28 +219,28 @@ theorem adj_symm (h : G.Adj u v) : G.Adj v u :=
   G.symm h
 #align simple_graph.adj_symm SimpleGraph.adj_symm
 
-theorem Adj.symm {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Adj v u :=
+theorem _root_.Digraph.Adj.symm {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Adj v u :=
   G.symm h
-#align simple_graph.adj.symm SimpleGraph.Adj.symm
+#align simple_graph.adj.symm Digraph.Adj.symm
 
 theorem ne_of_adj (h : G.Adj a b) : a ≠ b := by
   rintro rfl
   exact G.irrefl h
 #align simple_graph.ne_of_adj SimpleGraph.ne_of_adj
 
-protected theorem Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b :=
+protected theorem _root_.Digraph.Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b :=
   G.ne_of_adj h
-#align simple_graph.adj.ne SimpleGraph.Adj.ne
+#align simple_graph.adj.ne Digraph.Adj.ne
 
-protected theorem Adj.ne' {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : b ≠ a :=
+protected theorem _root_.Digraph.Adj.ne' {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : b ≠ a :=
   h.ne.symm
-#align simple_graph.adj.ne' SimpleGraph.Adj.ne'
+#align simple_graph.adj.ne' Digraph.Adj.ne'
 
 theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v ≠ w := fun h' =>
   hn (h' ▸ h)
 #align simple_graph.ne_of_adj_of_not_adj SimpleGraph.ne_of_adj_of_not_adj
 
-theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
+theorem adj_injective : Injective (fun (G : SimpleGraph V) => G.Adj) :=
   SimpleGraph.ext
 #align simple_graph.adj_injective SimpleGraph.adj_injective
 
@@ -248,7 +269,7 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 instance : Sup (SimpleGraph V) where
   sup x y :=
     { Adj := x.Adj ⊔ y.Adj
-      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
+      symm := fun v w h => by change x.Adj w v ∨ y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
@@ -259,7 +280,7 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 instance : Inf (SimpleGraph V) where
   inf x y :=
     { Adj := x.Adj ⊓ y.Adj
-      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
+      symm := fun v w h => by change x.Adj w v ∧ y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w :=
@@ -293,25 +314,25 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
-    { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
+    { Adj := fun a b => ∃ G ∈ s, G.Adj a b
+      symm := fun a b => Exists.imp $ fun _ => And.imp_right (adj_symm _)
       loopless := by
         rintro a ⟨G, _, ha⟩
         exact ha.ne rfl }
 
 instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
-    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
-      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
+    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → G.Adj a b) ∧ a ≠ b
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => adj_symm _) Ne.symm
       loopless := fun _ h => h.2 rfl }
 
 @[simp]
-theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, G.Adj a b :=
   Iff.rfl
 #align simple_graph.Sup_adj SimpleGraph.sSup_adj
 
 @[simp]
-theorem sInf_adj {s : Set (SimpleGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
+theorem sInf_adj {s : Set (SimpleGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, G.Adj a b) ∧ a ≠ b :=
   Iff.rfl
 #align simple_graph.Inf_adj SimpleGraph.sInf_adj
 
@@ -325,7 +346,7 @@ theorem iInf_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (
 #align simple_graph.infi_adj SimpleGraph.iInf_adj
 
 theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
-    (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
+    (sInf s).Adj a b ↔ ∀ G ∈ s, G.Adj a b :=
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
@@ -374,7 +395,8 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
     le_sInf := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
     inf_sSup_le_iSup_inf := fun G s a b hab => by simpa using hab
     iInf_sup_le_sup_sInf := fun G s a b hab => by
-      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
+      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp (ne_of_adj _)]
+        using hab }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -453,7 +475,7 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
-  inferInstanceAs <| DecidablePred (Adj G v)
+  inferInstanceAs <| DecidablePred (G.Adj v)
 #align simple_graph.neighbor_set.mem_decidable SimpleGraph.neighborSet.memDecidable
 
 section EdgeSet
@@ -484,7 +506,7 @@ theorem mem_edgeSet : ⟦(v, w)⟧ ∈ G.edgeSet ↔ G.Adj v w :=
 #align simple_graph.mem_edge_set SimpleGraph.mem_edgeSet
 
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
-  Sym2.ind (fun _ _ => Adj.ne) e
+  Sym2.ind (fun _ _ => ne_of_adj G) e
 #align simple_graph.not_is_diag_of_mem_edge_set SimpleGraph.not_isDiag_of_mem_edgeSet
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
@@ -1640,38 +1662,6 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 end Finite
 
 section Maps
-
-/-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
-
-The notation `G →g G'` represents the type of graph homomorphisms. -/
-abbrev Hom :=
-  RelHom G.Adj G'.Adj
-#align simple_graph.hom SimpleGraph.Hom
-
-/-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w `. Its image is an induced subgraph of G'.
-
-The notation `G ↪g G'` represents the type of graph embeddings. -/
-abbrev Embedding :=
-  RelEmbedding G.Adj G'.Adj
-#align simple_graph.embedding SimpleGraph.Embedding
-
-/-- A graph isomorphism is an bijective map on vertex sets that respects adjacency relations.
-
-The notation `G ≃g G'` represents the type of graph isomorphisms.
--/
-abbrev Iso :=
-  RelIso G.Adj G'.Adj
-#align simple_graph.iso SimpleGraph.Iso
-
--- mathport name: «expr →g »
-infixl:50 " →g " => Hom
-
--- mathport name: «expr ↪g »
-infixl:50 " ↪g " => Embedding
-
--- mathport name: «expr ≃g »
-infixl:50 " ≃g " => Iso
 
 namespace Hom
 
