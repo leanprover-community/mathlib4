@@ -717,7 +717,7 @@ theorem rpow_neg (a b : ℝ) (b' : ℕ) (c c' : ℝ) (a0 : 0 ≤ a) (hb : (b' : 
     (hc : c⁻¹ = c') : a ^ (-b) = c' := by rw [← hc, ← h, ← hb, Real.rpow_neg a0, Real.rpow_nat_cast]
 #align norm_num.rpow_neg NormNum.rpow_neg
 
-/-- Evaluate `real.rpow a b` where `a` is a rational numeral and `b` is an integer.
+/-- Evaluate `Real.rpow a b` where `a` is a rational numeral and `b` is an integer.
 (This cannot go via the generalized version `prove_rpow'` because `rpow_pos` has a side condition;
 we do not attempt to evaluate `a ^ b` where `a` and `b` are both negative because it comes
 out to some garbage.) -/
