@@ -89,23 +89,14 @@ private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM
   let old := .const rv.name levels
   let new := .const name levels
   let name ← mkFreshUserName <| rv.name.str "eq"
-  addDecl <| .thmDecl {
+  addDecl <| .mutualDefnDecl [{
     name
     levelParams := rv.levelParams
     type := ← mkEq old new
-    value := ← forallTelescope rv.type fun xs _ => do
-      let pf := .const rv.name (.zero :: levels.tail!)
-      let pf := mkAppN pf xs[:rv.numParams]
-      let old := mkAppN old xs
-      let new := mkAppN new xs
-      let pf := .app pf <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq old new
-      let minor := xs[rv.getFirstMinorIdx]!
-      let pf := .app pf <| ← forallTelescope (← inferType minor) fun ys _ => do
-        let pf' ← mkEqRefl <| mkAppN minor ys
-        mkLambdaFVars ys pf'
-      let pf := .app pf xs[rv.getMajorIdx]!
-      mkFunExts' xs pf
-  }
+    value := .const name levels
+    hints := .opaque
+    safety := .partial
+  }]
   Compiler.CSimp.add name .global
   compileDefn <| ← getConstInfoDefn <| mkRecOnName iv.name
 
@@ -144,7 +135,7 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
     name
     levelParams := rv.levelParams
     type := ← mkEq old new
-    value := .const name (rv.levelParams.map .param)
+    value := .const name levels
     hints := .opaque
     safety := .partial
   }]
