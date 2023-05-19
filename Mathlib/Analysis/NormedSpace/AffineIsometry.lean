@@ -74,8 +74,9 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : CoeFun (P →ᵃⁱ[𝕜] P₂) fun _ => P → P₂ :=
-  ⟨fun f => f.toFun⟩
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P fun _ => P₂ :=
+  { coe := fun f => f.toFun,
+    coe_injective' := fun f g => by cases f; cases g; simp }
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
@@ -332,8 +333,16 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : CoeFun (P ≃ᵃⁱ[𝕜] P₂) fun _ => P → P₂ :=
-  ⟨fun f => f.toFun⟩
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P  P₂ :=
+  { coe := fun f => f.toFun
+    inv := fun f => f.invFun
+    left_inv := fun f => f.left_inv
+    right_inv := fun f => f.right_inv,
+    coe_injective' := fun f g h _ => by
+      cases f
+      cases g
+      congr
+      simpa [FunLike.coe_injective.eq_iff] using h }
 
 @[simp]
 theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖) : ⇑(mk e he) = e :=
@@ -922,3 +931,4 @@ theorem isometryEquivMap.toAffineMap_eq (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : Af
 #align affine_subspace.isometry_equiv_map.to_affine_map_eq AffineSubspace.isometryEquivMap.toAffineMap_eq
 
 end AffineSubspace
+#lint
