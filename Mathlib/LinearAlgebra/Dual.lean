@@ -124,7 +124,8 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
+instance : FunLike (Dual R M) M fun _ => R :=
+  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
 
 /-- Maps a module M to the dual of the dual of M. See `module.erange_coe` and
 `module.eval_equiv`. -/
@@ -1205,8 +1206,12 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 #align submodule.dual_copairing Submodule.dualCopairing
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : CoeFun (W.dualAnnihilator) fun _ => (M → R) where
-  coe := fun φ => φ.val
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M fun _ => R :=
+  { coe := fun φ => φ.val,
+    coe_injective' := fun φ ψ h => by
+      ext
+      simp only [Function.funext_iff] at h
+      exact h _ }
 
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
@@ -1586,10 +1591,10 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   -- rw [dualDistribInvOfBasis_apply]
   rw [comp_apply, dualDistribInvOfBasis_apply, LinearMap.map_sum]
   simp_rw [LinearMap.map_sum]
-  simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
-    LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
-    f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
-    Basis.coord_apply, Basis.sum_repr]
+  -- simp only [compr₂_apply, mk_apply, comp_apply, id_apply, dualDistribInvOfBasis_apply,
+  --   LinearMap.map_sum, map_smul, sum_apply, smul_apply, dualDistrib_apply, h (f _) _, ←
+  --   f.map_smul, ← f.map_sum, ← smul_tmul_smul, ← tmul_sum, ← sum_tmul, Basis.coe_dualBasis,
+  --   Basis.coord_apply, Basis.sum_repr]
 
 -- Porting note : this doesn't work
 -- set_option maxHeartbeats 0 in
@@ -1622,13 +1627,8 @@ variable [Nontrivial R]
 open Classical
 
 /--
-<<<<<<< HEAD
 A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
 modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-=======
-A linear equivalence between `dual M ⊗ dual N` and `dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `tensor_product.map f g` with the natural
->>>>>>> port/LinearAlgebra.Dual.theReportering
 isomorphism `R ⊗ R ≃ R`.
 -/
 @[simp]
