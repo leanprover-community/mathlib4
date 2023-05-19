@@ -1589,7 +1589,7 @@ theorem symm_dual_comp (g : BoundedLatticeHom βᵒᵈ γᵒᵈ) (f : BoundedLat
 
 end BoundedLatticeHom
 
-/-! ### `with_top`, `with_bot` -/
+/-! ### `WithTop`, `WithBot` -/
 
 namespace SupHom
 variable [SemilatticeSup α] [SemilatticeSup β] [SemilatticeSup γ]
