@@ -73,6 +73,12 @@ elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
 
+private def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
+  for name in iv.all do
+    for aux in [name.str "_sizeOf_1", name.str "_sizeOf_inst"] do
+      if let some (.defnInfo dv) := (← getEnv).find? aux then
+        compileDefn dv
+
 private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit := do
   let name ← mkFreshUserName rv.name
   addAndCompile <| .defnDecl { rv with
@@ -98,6 +104,7 @@ private def compileStruct (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit :=
   }]
   Compiler.CSimp.add name .global
   compileDefn <| ← getConstInfoDefn <| mkRecOnName iv.name
+  compileSizeOf iv
 
 /--
 Generate compiled code for the recursor for `iv`.
@@ -163,6 +170,7 @@ def compileInductive (iv : InductiveVal) : MetaM Unit := do
     for aux in [mkRecOnName name, mkBRecOnName name] do
       if let some (.defnInfo dv) := (← getEnv).find? aux then
         compileDefn dv
+  compileSizeOf iv
 
 /--
 `compile_inductive% Foo` creates compiled code for the recursor `Foo.rec`,
@@ -183,5 +191,5 @@ compile_inductive% PSum
 compile_inductive% And
 compile_inductive% False
 compile_inductive% Empty
-compile_def% List._sizeOf_1
-compile_def% List._sizeOf_inst
+compile_inductive% Bool
+compile_inductive% Sigma

@@ -260,9 +260,7 @@ instance : Inhabited (Lists α) :=
 
 instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: 'Lists'._sizeOf_inst' does not have executable code.
--- So noncomputable is added.
-noncomputable instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
@@ -360,10 +358,9 @@ instance : Setoid (Lists α) :=
 
 section Decidable
 
--- porting note: Noncomputable because Lists.instSizeOfLists is
 /-- Auxillary function to prove termination of decidability checking -/
 @[simp]
-noncomputable def Equiv.decidableMeas :
+def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
       ℕ
