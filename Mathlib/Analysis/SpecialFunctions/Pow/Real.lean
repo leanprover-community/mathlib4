@@ -11,6 +11,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
+import Mathlib.Tactic.LibrarySearch -- Porting note: delete
+
 /-! # Power function on `ℝ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
@@ -36,23 +38,20 @@ noncomputable def rpow (x y : ℝ) :=
   ((x : ℂ) ^ (y : ℂ)).re
 #align real.rpow Real.rpow
 
-noncomputable instance : Pow ℝ ℝ :=
-  ⟨rpow⟩
+noncomputable instance : Pow ℝ ℝ := ⟨rpow⟩
 
 @[simp]
-theorem rpow_eq_pow (x y : ℝ) : rpow x y = x ^ y :=
-  rfl
+theorem rpow_eq_pow (x y : ℝ) : rpow x y = x ^ y := rfl
 #align real.rpow_eq_pow Real.rpow_eq_pow
 
-theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re :=
-  rfl
+theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 #align real.rpow_def Real.rpow_def
 
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
-  simp only [rpow_def, Complex.cpow_def] <;> split_ifs <;>
-    simp_all [(Complex.of_real_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
-      (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re]
+  simp only [rpow_def, Complex.cpow_def] ; split_ifs <;>
+  simp_all [(Complex.of_real_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
+      (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 
 theorem rpow_def_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : x ^ y = exp (log x * y) := by
@@ -94,7 +93,7 @@ theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
 #align real.rpow_def_of_nonpos Real.rpow_def_of_nonpos
 
 theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
-  rw [rpow_def_of_pos hx] <;> apply exp_pos
+  rw [rpow_def_of_pos hx] ; apply exp_pos
 #align real.rpow_pos_of_pos Real.rpow_pos_of_pos
 
 @[simp]
@@ -113,7 +112,7 @@ theorem zero_rpow_eq_iff {x : ℝ} {a : ℝ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 �
     · subst h
       simp only [Complex.one_re, Complex.ofReal_zero, Complex.cpow_zero] at hyp
       exact Or.inr ⟨rfl, hyp.symm⟩
-    · rw [Complex.zero_cpow (complex.of_real_ne_zero.mpr h)] at hyp
+    · rw [Complex.zero_cpow (Complex.ofReal_ne_zero.mpr h)] at hyp
       exact Or.inl ⟨h, hyp.symm⟩
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_rpow h
@@ -141,7 +140,7 @@ theorem zero_rpow_nonneg (x : ℝ) : 0 ≤ (0 : ℝ) ^ x := by
 #align real.zero_rpow_nonneg Real.zero_rpow_nonneg
 
 theorem rpow_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : 0 ≤ x ^ y := by
-  rw [rpow_def_of_nonneg hx] <;> split_ifs <;>
+  rw [rpow_def_of_nonneg hx] ; split_ifs <;>
     simp only [zero_le_one, le_refl, le_of_lt (exp_pos _)]
 #align real.rpow_nonneg_of_nonneg Real.rpow_nonneg_of_nonneg
 
@@ -181,7 +180,7 @@ theorem rpow_add' (hx : 0 ≤ x) (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z
   · rw [zero_rpow h, zero_eq_mul]
     have : y ≠ 0 ∨ z ≠ 0 := not_and_or.1 fun ⟨hy, hz⟩ => h <| hy.symm ▸ hz.symm ▸ zero_add 0
     exact this.imp zero_rpow zero_rpow
-  · exact rpow_add Pos _ _
+  · exact rpow_add pos _ _
 #align real.rpow_add' Real.rpow_add'
 
 theorem rpow_add_of_nonneg (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) : x ^ (y + z) = x ^ y * x ^ z :=
@@ -202,15 +201,14 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
         (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 :=
           mul_le_mul (zero_rpow_le_one y) (zero_rpow_le_one z) (zero_rpow_nonneg z) zero_le_one
         _ = 1 := by simp
-        
+
     · simp [rpow_add', ← H, h]
-  · simp [rpow_add Pos]
+  · simp [rpow_add pos]
 #align real.le_rpow_add Real.le_rpow_add
 
 theorem rpow_sum_of_pos {ι : Type _} {a : ℝ} (ha : 0 < a) (f : ι → ℝ) (s : Finset ι) :
     (a ^ ∑ x in s, f x) = ∏ x in s, a ^ f x :=
-  @AddMonoidHom.map_sum ℝ ι (Additive ℝ) _ _ ⟨fun x : ℝ => (a ^ x : ℝ), rpow_zero a, rpow_add ha⟩ f
-    s
+  map_sum (⟨⟨fun (x : ℝ) => (a ^ x : ℝ), rpow_zero a⟩, rpow_add ha⟩ : ℝ →+ (Additive ℝ)) f s
 #align real.rpow_sum_of_pos Real.rpow_sum_of_pos
 
 theorem rpow_sum_of_nonneg {ι : Type _} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι} {f : ι → ℝ}
@@ -222,7 +220,7 @@ theorem rpow_sum_of_nonneg {ι : Type _} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι
 #align real.rpow_sum_of_nonneg Real.rpow_sum_of_nonneg
 
 theorem rpow_neg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
-  simp only [rpow_def_of_nonneg hx] <;> split_ifs <;> simp_all [exp_neg]
+  simp only [rpow_def_of_nonneg hx] ; split_ifs <;> simp_all [exp_neg]
 #align real.rpow_neg Real.rpow_neg
 
 theorem rpow_sub {x : ℝ} (hx : 0 < x) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z := by
@@ -244,7 +242,7 @@ end Real
 namespace Complex
 
 theorem of_real_cpow {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : ((x ^ y : ℝ) : ℂ) = (x : ℂ) ^ (y : ℂ) := by
-  simp only [Real.rpow_def_of_nonneg hx, Complex.cpow_def, of_real_eq_zero] <;> split_ifs <;>
+  simp only [Real.rpow_def_of_nonneg hx, Complex.cpow_def, ofReal_eq_zero] ; split_ifs <;>
     simp [Complex.of_real_log hx]
 #align complex.of_real_cpow Complex.of_real_cpow
 
@@ -252,10 +250,10 @@ theorem of_real_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     (x : ℂ) ^ y = (-x : ℂ) ^ y * exp (π * I * y) := by
   rcases hx.eq_or_lt with (rfl | hlt)
   · rcases eq_or_ne y 0 with (rfl | hy) <;> simp [*]
-  have hne : (x : ℂ) ≠ 0 := of_real_ne_zero.mpr hlt.ne
+  have hne : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr hlt.ne
   rw [cpow_def_of_ne_zero hne, cpow_def_of_ne_zero (neg_ne_zero.2 hne), ← exp_add, ← add_mul, log,
-    log, abs.map_neg, arg_of_real_of_neg hlt, ← of_real_neg,
-    arg_of_real_of_nonneg (neg_nonneg.2 hx), of_real_zero, MulZeroClass.zero_mul, add_zero]
+    log, abs.map_neg, arg_of_real_of_neg hlt, ← ofReal_neg,
+    arg_of_real_of_nonneg (neg_nonneg.2 hx), ofReal_zero, MulZeroClass.zero_mul, add_zero]
 #align complex.of_real_cpow_of_nonpos Complex.of_real_cpow_of_nonpos
 
 theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
@@ -281,25 +279,25 @@ theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z
 #align complex.abs_cpow_le Complex.abs_cpow_le
 
 @[simp]
-theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = x.abs ^ y := by
+theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
   rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy), skip] <;>
     simp [*, abs_cpow_of_ne_zero]
 #align complex.abs_cpow_real Complex.abs_cpow_real
 
 @[simp]
-theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = x.abs ^ (n⁻¹ : ℝ) := by
-  rw [← abs_cpow_real] <;> simp [-abs_cpow_real]
+theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Complex.abs x ^ (n⁻¹ : ℝ) := by
+  rw [← abs_cpow_real] ; simp [-abs_cpow_real]
 #align complex.abs_cpow_inv_nat Complex.abs_cpow_inv_nat
 
 theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re := by
-  rw [abs_cpow_of_ne_zero (of_real_ne_zero.mpr hx.ne'), arg_of_real_of_nonneg hx.le,
+  rw [abs_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_of_real_of_nonneg hx.le,
     MulZeroClass.zero_mul, Real.exp_zero, div_one, abs_of_nonneg hx.le]
 #align complex.abs_cpow_eq_rpow_re_of_pos Complex.abs_cpow_eq_rpow_re_of_pos
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     abs (x ^ y) = x ^ re y := by
   rcases hx.eq_or_lt with (rfl | hlt)
-  · rw [of_real_zero, zero_cpow, map_zero, Real.zero_rpow hy]
+  · rw [ofReal_zero, zero_cpow, map_zero, Real.zero_rpow hy]
     exact ne_of_apply_ne re hy
   · exact abs_cpow_eq_rpow_re_of_pos hlt y
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
@@ -323,16 +321,12 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
 #align real.rpow_mul Real.rpow_mul
 
 theorem rpow_add_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n := by
-  rw [rpow_def, Complex.ofReal_add, Complex.cpow_add _ _ (complex.of_real_ne_zero.mpr hx),
-    Complex.ofReal_int_cast, Complex.cpow_int_cast, ← Complex.ofReal_zpow, mul_comm,
-    Complex.ofReal_mul_re, ← rpow_def, mul_comm]
+  rw [rpow_def, rpow_def, rpow_def, Complex.ofReal_add,
+    Complex.cpow_add _ _ (Complex.ofReal_ne_zero.mpr hx), Complex.ofReal_int_cast,
+    Complex.cpow_int_cast, ← Complex.ofReal_zpow, mul_comm, Complex.ofReal_mul_re, mul_comm]
 #align real.rpow_add_int Real.rpow_add_int
 
 theorem rpow_add_nat {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * x ^ n := by
-  simpa using rpow_add_int hx y n
-#align real.rpow_add_nat Real.rpow_add_nat
-
-theorem rpow_sub_int {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y - n) = x ^ y / x ^ n := by
   simpa using rpow_add_int hx y (-n)
 #align real.rpow_sub_int Real.rpow_sub_int
 
@@ -348,11 +342,7 @@ theorem rpow_sub_one {x : ℝ} (hx : x ≠ 0) (y : ℝ) : x ^ (y - 1) = x ^ y / 
   simpa using rpow_sub_nat hx y 1
 #align real.rpow_sub_one Real.rpow_sub_one
 
-@[simp, norm_cast]
-theorem rpow_int_cast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  simp only [rpow_def, ← Complex.ofReal_zpow, Complex.cpow_int_cast, Complex.ofReal_int_cast,
-    Complex.ofReal_re]
-#align real.rpow_int_cast Real.rpow_int_cast
+
 
 @[simp, norm_cast]
 theorem rpow_nat_cast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_int_cast x n
@@ -779,4 +769,3 @@ unsafe def positivity_rpow : expr → tactic strictness
 end Tactic
 
 end Tactics
-
