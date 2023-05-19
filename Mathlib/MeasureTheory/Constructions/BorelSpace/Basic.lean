@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
+! leanprover-community/mathlib commit 20d5763051978e9bc6428578ed070445df6a18b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -156,6 +156,24 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
 theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
   @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
 #align borel_eq_generate_from_Ioi borel_eq_generateFrom_Ioi
+
+theorem borel_eq_generateFrom_Iic :
+    borel α = MeasurableSpace.generateFrom (range Iic) := by
+  rw [borel_eq_generateFrom_Ioi]
+  refine' le_antisymm _ _
+  · refine' MeasurableSpace.generateFrom_le fun t ht => _
+    obtain ⟨u, rfl⟩ := ht
+    rw [← compl_Iic]
+    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
+  · refine' MeasurableSpace.generateFrom_le fun t ht => _
+    obtain ⟨u, rfl⟩ := ht
+    rw [← compl_Ioi]
+    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
+#align borel_eq_generate_from_Iic borel_eq_generateFrom_Iic
+
+theorem borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) :=
+  @borel_eq_generateFrom_Iic αᵒᵈ _ _ _ _
+#align borel_eq_generate_from_Ici borel_eq_generateFrom_Ici
 
 end OrderTopology
 
