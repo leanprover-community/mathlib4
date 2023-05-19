@@ -93,7 +93,7 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup.of_unique SemiNormedGroup.ofUnique
 
-/-porting note: originally empty, which didn't work. Notation for composition changed?-/
+/--porting note: originally empty, which didn't work. Notation for composition changed?-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup where
   Zero _ _ := NormedAddGroupHom.zero
   comp_zero _ _ := rfl
@@ -105,10 +105,23 @@ theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroup.zero_apply
 
+/--porting note :Added, Needed to make isZero_of_subsingleton work -/
+-- instance {V W : SemiNormedGroup}: ZeroHomClass (V ⟶ W) V W where
+--   coe := NormedAddGroupHom.toFun
+--   coe_injective' := NormedAddGroupHom.coe_injective
+--   map_zero f := by simp only [NormedAddGroupHom.toFun_eq_coe, map_zero]
+
+/--porting note: Didn't work, manual rewrite-/
 theorem isZero_of_subsingleton (V : SemiNormedGroup) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
-  · ext; apply Subsingleton.elim
+  · ext x
+    change V at x
+    have  := Subsingleton.elim (x : V) (0 : V)
+    rw [this]
+    suffices f 0 = (0 : V⟶ X) 0 by convert this
+    simp [map_zero]
+  · ext
+    apply @Subsingleton.elim V _
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroup.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroup.{u} :=
