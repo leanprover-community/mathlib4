@@ -1,15 +1,7 @@
--- import Mathlib
 import Mathlib.Util.CompileInductive
 import Mathlib.Data.Fin.Fin2
 
-#compile inductive Nat
-#compile inductive List
 #compile inductive Fin2
-#compile inductive PUnit
-#compile inductive PEmpty
-#compile inductive And
-#compile inductive False
-#compile inductive Empty
 
 example := @Nat.rec
 example := @List.rec
@@ -29,8 +21,6 @@ example := @Empty.recOn
 example := @Nat.brecOn
 example := @List.brecOn
 example := @Fin2.brecOn
-
-#compile def List._sizeOf_1
 
 example := @List._sizeOf_1
 

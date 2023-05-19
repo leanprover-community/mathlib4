@@ -33,10 +33,6 @@ namespace List
 
 open Function Nat
 
-#compile inductive List
-#compile def _sizeOf_1
-#compile def _sizeOf_inst
-
 universe u v w x
 
 variable {α β γ δ ε ζ : Type _}

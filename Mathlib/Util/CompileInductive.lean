@@ -73,7 +73,7 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
 `#compile def i` compiles the definition `i`.
 -/
 elab tk:"#compile " "def " i:ident : command => Command.liftTermElabM do
-  let n ← resolveGlobalConstNoOverload i
+  let n ← resolveGlobalConstNoOverloadWithInfo i
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
 
@@ -174,6 +174,16 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
 `#compile inductive i` compiles the recursor for `i`.
 -/
 elab tk:"#compile " "inductive " i:ident : command => Command.liftTermElabM do
-  let n ← resolveGlobalConstNoOverload i
+  let n ← resolveGlobalConstNoOverloadWithInfo i
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
+
+#compile inductive Nat
+#compile inductive List
+#compile inductive PUnit
+#compile inductive PEmpty
+#compile inductive And
+#compile inductive False
+#compile inductive Empty
+#compile def List._sizeOf_1
+#compile def List._sizeOf_inst
