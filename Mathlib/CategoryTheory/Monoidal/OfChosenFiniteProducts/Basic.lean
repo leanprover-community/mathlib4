@@ -200,10 +200,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
           { pt := X, π :=
             -- Porting note: there is something fishy here:
             -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x,
-              -- Porting note: `aesop_cat` should work here, but it does something wrong
-              -- with the `PEmpty` hypotheses.
-              naturality := by rintro ⟨⟨⟩⟩ } })
+            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
         (𝟙 X))
   hom_inv_id := by
     apply Q.hom_ext
@@ -227,10 +224,7 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit 
             π :=
             -- Porting note: there is something fishy here:
             -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x
-              -- Porting note: `aesop_cat` should work here, but it does something wrong
-              -- with the `PEmpty` hypotheses.
-              naturality := by rintro ⟨⟨⟩⟩ } }))
+            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
