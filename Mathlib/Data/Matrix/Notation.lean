@@ -75,7 +75,8 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-syntax (name := matrixNotation) "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
+syntax (name := matrixNotation)
+  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
