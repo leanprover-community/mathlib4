@@ -9,8 +9,6 @@ import Mathlib.Util.CompileInductive
 
 namespace Nat
 
-compile_inductive% Nat
-
 set_option linter.deprecated false
 
 protected theorem bit0_succ_eq (n : ℕ) : bit0 (succ n) = succ (succ (bit0 n)) :=
