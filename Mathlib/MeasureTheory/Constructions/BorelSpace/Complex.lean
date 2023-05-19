@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-! # Equip `ℂ` with the Borel sigma-algebra -/
 
