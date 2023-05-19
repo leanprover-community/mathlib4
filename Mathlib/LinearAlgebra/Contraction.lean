@@ -8,8 +8,8 @@ Authors: Oliver Nash, Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Dual
-import Mathbin.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Contractions
@@ -80,8 +80,7 @@ theorem dualTensorHom_apply (f : Module.Dual R M) (m : M) (n : N) :
 
 @[simp]
 theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
-    Dual.transpose (dualTensorHom R M M (f ⊗ₜ m)) = dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) :=
-  by
+    Dual.transpose (dualTensorHom R M M (f ⊗ₜ m)) = dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext (f' m')
   simp only [dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
     LinearMap.map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, dual.eval_apply, smul_apply]
@@ -91,8 +90,7 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
 @[simp]
 theorem dualTensorHom_prodMap_zero (f : Module.Dual R M) (p : P) :
     ((dualTensorHom R M P) (f ⊗ₜ[R] p)).Prod_map (0 : N →ₗ[R] Q) =
-      dualTensorHom R (M × N) (P × Q) ((f ∘ₗ fst R M N) ⊗ₜ inl R P Q p) :=
-  by
+      dualTensorHom R (M × N) (P × Q) ((f ∘ₗ fst R M N) ⊗ₜ inl R P Q p) := by
   ext <;>
     simp only [coe_comp, coe_inl, Function.comp_apply, prod_map_apply, dualTensorHom_apply,
       fst_apply, Prod.smul_mk, zero_apply, smul_zero]
@@ -101,8 +99,7 @@ theorem dualTensorHom_prodMap_zero (f : Module.Dual R M) (p : P) :
 @[simp]
 theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
     (0 : M →ₗ[R] P).Prod_map ((dualTensorHom R N Q) (g ⊗ₜ[R] q)) =
-      dualTensorHom R (M × N) (P × Q) ((g ∘ₗ snd R M N) ⊗ₜ inr R P Q q) :=
-  by
+      dualTensorHom R (M × N) (P × Q) ((g ∘ₗ snd R M N) ⊗ₜ inr R P Q q) := by
   ext <;>
     simp only [coe_comp, coe_inr, Function.comp_apply, prod_map_apply, dualTensorHom_apply,
       snd_apply, Prod.smul_mk, zero_apply, smul_zero]
@@ -119,8 +116,7 @@ theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q
 @[simp]
 theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (p : P) :
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
-      g n • dualTensorHom R M P (f ⊗ₜ p) :=
-  by
+      g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m;
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
     RingHom.id_apply, smul_apply]
@@ -131,8 +127,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type _} {n : Type _} [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
-    toMatrix bM bN (dualTensorHom R M N (bM.Coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 :=
-  by
+    toMatrix bM bN (dualTensorHom R M N (bM.Coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
   ext (i' j')
   by_cases hij : i = i' ∧ j = j' <;>
     simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
@@ -244,8 +239,7 @@ noncomputable def rtensorHomEquivHomRtensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
 
 @[simp]
 theorem ltensorHomEquivHomLtensor_toLinearMap :
-    (ltensorHomEquivHomLtensor R M P Q).toLinearMap = ltensorHomToHomLtensor R M P Q :=
-  by
+    (ltensorHomEquivHomLtensor R M P Q).toLinearMap = ltensorHomToHomLtensor R M P Q := by
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.to_linear_map := e.surjective
   refine' (cancel_right h).1 _
@@ -260,8 +254,7 @@ theorem ltensorHomEquivHomLtensor_toLinearMap :
 
 @[simp]
 theorem rtensorHomEquivHomRtensor_toLinearMap :
-    (rtensorHomEquivHomRtensor R M P Q).toLinearMap = rtensorHomToHomRtensor R M P Q :=
-  by
+    (rtensorHomEquivHomRtensor R M P Q).toLinearMap = rtensorHomToHomRtensor R M P Q := by
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.to_linear_map := e.surjective
   refine' (cancel_right h).1 _
@@ -301,8 +294,7 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
 
 @[simp]
 theorem homTensorHomEquiv_toLinearMap :
-    (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q :=
-  by
+    (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q := by
   ext (f g m n)
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
