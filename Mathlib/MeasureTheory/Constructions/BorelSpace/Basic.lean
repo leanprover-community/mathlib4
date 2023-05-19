@@ -1692,7 +1692,7 @@ theorem isPiSystem_Ioo_rat :
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
 def finiteSpanningSetsInIooRat (μ : Measure ℝ) [LocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) (b : ℝ)}) where
-  Set n := Ioo (-(n + 1)) (n + 1)
+  set n := Ioo (-(n + 1)) (n + 1)
   set_mem n := by
     simp only [mem_iUnion, mem_singleton_iff]
     refine' ⟨-(n + 1 : ℕ), n + 1, _, by simp⟩
