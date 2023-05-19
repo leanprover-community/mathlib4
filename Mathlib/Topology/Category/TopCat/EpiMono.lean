@@ -8,7 +8,7 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Category.Top.Adjunctions
+import Mathlib.Topology.Category.TopCat.Adjunctions
 
 /-!
 # Epi- and monomorphisms in `Top`

@@ -11,9 +11,7 @@ Authors: Anne Baanen, Eric Wieser
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ToExpr
 import Mathlib.Algebra.BigOperators.Fin
-import Qq
 
 /-!
 # Matrix and vector notation

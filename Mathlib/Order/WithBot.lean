@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`

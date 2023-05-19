@@ -9,7 +9,7 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
-import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
 

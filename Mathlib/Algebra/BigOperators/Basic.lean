@@ -18,7 +18,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Big operators
