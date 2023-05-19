@@ -131,6 +131,7 @@ protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 #align real.pi Real.pi
 
+@[inherit_doc]
 scoped notation "π" => Real.pi
 
 @[simp]
@@ -380,22 +381,22 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
-@[simp]
+-- porting note : was @[simp] but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_add_pi Real.cos_nat_mul_two_pi_add_pi
 
-@[simp]
+-- porting note : was @[simp] but simp can prove it
 theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_add_pi Real.cos_int_mul_two_pi_add_pi
 
-@[simp]
+-- porting note : was @[simp] but simp can prove it
 theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_sub_pi Real.cos_nat_mul_two_pi_sub_pi
 
-@[simp]
+-- porting note : was @[simp] but simp can prove it
 theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_sub_pi Real.cos_int_mul_two_pi_sub_pi
@@ -1001,6 +1002,10 @@ theorem tan_inj_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hx�
 theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
+
+-- Porting note: added
+@[simp]
+theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 
 theorem tan_add_pi (x : ℝ) : tan (x + π) = tan x :=
   tan_periodic x

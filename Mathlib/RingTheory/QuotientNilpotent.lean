@@ -30,9 +30,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     {P : ∀ ⦃S : Type _⦄ [CommRing S], ∀ _I : Ideal S, Prop}
     (h₁ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)
     (h₂ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I J : Ideal S, I ≤ J → P I →
-    -- Porting note: etaExperiment fixes this but times out Zero (Ideal S) in IsNilpotent I
-        P (@Ideal.map S (S ⧸ I) (S →+* S ⧸ I) (_) (_)
-          RingHom.instRingHomClassRingHom (Ideal.Quotient.mk I) J) → P J) :
+      P (J.map (Ideal.Quotient.mk I)) → P J) :
     P I := by
 -- Porting note: linarith misbehaving below
   have bound (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
@@ -64,11 +62,9 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   · apply h₁
     -- Porting note: used to be by linarith?
     -- Investigate this issue again after during lean4#2210 cleanup.
-    rw [← @Ideal.map_pow S (S ⧸ I^2) (S →+* S ⧸ I^2) _ _ RingHom.instRingHomClassRingHom,
-      Ideal.map_quotient_self]
+    rw [← Ideal.map_pow, Ideal.map_quotient_self]
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
 
-example (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩

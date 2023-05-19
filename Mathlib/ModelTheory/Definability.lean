@@ -39,9 +39,7 @@ namespace Set
 
 variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure M]
 
-open FirstOrder
-
-open FirstOrder.Language FirstOrder.Language.Structure
+open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 variable {α : Type u₁} {β : Type _}
 
@@ -143,8 +141,8 @@ theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
-  rw [hφ]
-  rfl
+  ext v
+  rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
 #align set.definable.compl Set.Definable.compl
 
 @[simp]
@@ -173,7 +171,7 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     simp
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
-/-- This lemma is only intended as a helper for `definable.image_comp. -/
+/-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h

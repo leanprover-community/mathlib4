@@ -433,8 +433,7 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
   (is_real_TFAE z).out 0 3
 #align is_R_or_C.conj_eq_iff_im IsROrC.conj_eq_iff_im
 
--- porting note: @[simp] commented out because simpNF linter times out regardless of etaExperiment
--- @[simp]
+@[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 #align is_R_or_C.star_def IsROrC.star_def
