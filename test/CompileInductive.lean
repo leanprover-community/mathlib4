@@ -1,4 +1,6 @@
-import Mathlib
+-- import Mathlib
+import Mathlib.Util.CompileInductive
+import Mathlib.Data.Fin.Fin2
 
 #compile inductive Nat
 #compile inductive List
@@ -6,7 +8,6 @@ import Mathlib
 #compile inductive PUnit
 #compile inductive PEmpty
 #compile inductive And
-#compile inductive Or
 #compile inductive False
 #compile inductive Empty
 
@@ -33,9 +34,9 @@ example := @Fin2.brecOn
 
 example := @List._sizeOf_1
 
-open Lean
+open Lean Elab Term
 
-#eval Elab.Command.liftTermElabM do
+def tryToCompileAllInductives : TermElabM Unit := do
   let ivs := (← getEnv).constants.toList.filterMap λ | (_, .inductInfo iv) => some iv | _ => none
   let mut success := 0
   for iv in ivs do
@@ -46,3 +47,5 @@ open Lean
   modifyThe Core.State λ s => { s with messages.msgs := s.messages.msgs.filter (·.severity != .warning) }
   modifyThe Core.State λ s => { s with messages := s.messages.errorsToWarnings }
   logInfo m!"{success} / {ivs.length}"
+
+-- #eval Command.liftTermElabM tryToCompileAllInductives

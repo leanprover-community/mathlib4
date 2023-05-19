@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri
 -/
 import Lean.Compiler.CSimpAttr
-import Lean.Elab.Predefinition
+import Lean.Elab.PreDefinition
 
 /-!
 # Define the `#compile inductive` command.
