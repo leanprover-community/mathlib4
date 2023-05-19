@@ -1875,6 +1875,7 @@ import Mathlib.RingTheory.Polynomial.Quotient
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNilpotent
