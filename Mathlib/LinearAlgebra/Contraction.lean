@@ -29,6 +29,7 @@ universe w u v₁ v₂ v₃ v₄
 variable {ι : Type w} (R : Type u) (M : Type v₁) (N : Type v₂)
   (P : Type v₃) (Q : Type v₄)
 
+-- Porting note: this does not appear to work; see below
 attribute [local ext] TensorProduct.ext
 
 section Contraction
@@ -86,10 +87,12 @@ theorem dualTensorHom_apply (f : Module.Dual R M) (m : M) (n : N) :
 
 @[simp]
 theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
-    Dual.transpose (R := R) (dualTensorHom R M M (f ⊗ₜ m)) = dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
+    Dual.transpose (R := R) (dualTensorHom R M M (f ⊗ₜ m)) =
+    dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext (f' m')
   simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
-    LinearMap.map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, Dual.eval_apply, LinearMap.smul_apply]
+    LinearMap.map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, Dual.eval_apply,
+    LinearMap.smul_apply]
   exact mul_comm _ _
 #align transpose_dual_tensor_hom transpose_dualTensorHom
 
@@ -113,8 +116,8 @@ theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
 
 theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q : Q) :
     TensorProduct.map (dualTensorHom R M P (f ⊗ₜ[R] p)) (dualTensorHom R N Q (g ⊗ₜ[R] q)) =
-      dualTensorHom R (M ⊗[R] N) (P ⊗[R] Q) (dualDistrib R M N (f ⊗ₜ g) ⊗ₜ[R] p ⊗ₜ[R] q) :=
-  by
+      dualTensorHom R (M ⊗[R] N) (P ⊗[R] Q) (dualDistrib R M N (f ⊗ₜ g) ⊗ₜ[R] p ⊗ₜ[R] q) := by
+  apply TensorProduct.ext -- Porting note: missing from ext
   ext (m n)
   simp only [compr₂_apply, mk_apply, map_tmul, dualTensorHom_apply, dualDistrib_apply, ←
     smul_tmul_smul]
@@ -158,7 +161,7 @@ variable {R M N P Q}
 
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
 provides this equivalence in return for a basis of `M`. -/
-@[simps apply]
+-- @[simps! apply] -- Porting note: removed and created manually; malformed
 noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   LinearEquiv.ofLinear (dualTensorHom R M N)
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
@@ -168,11 +171,18 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
         f.map_smul, (dualTensorHom R M N).map_sum, ← f.map_sum, b.sum_repr])
     (by
+      apply TensorProduct.ext -- Porting note: missing from ext
       ext (f m)
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂_apply,
         tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
 #align dual_tensor_hom_equiv_of_basis dualTensorHomEquivOfBasis
+
+@[simp]
+theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :
+    (dualTensorHomEquivOfBasis (N := N) b :
+    Module.Dual R M ⊗[R] N → (M →ₗ[R] N)) x = (dualTensorHom R M N) x := by
+  ext; rfl
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_toLinearMap :
@@ -185,8 +195,8 @@ theorem dualTensorHomEquivOfBasis_toLinearMap :
 @[simp]
 theorem dualTensorHomEquivOfBasis_symm_cancel_left (x : Module.Dual R M ⊗[R] N) :
     (dualTensorHomEquivOfBasis (N := N) b).symm (dualTensorHom R M N x) = x := by
-  -- dsimp [dualTensorHomEquivOfBasis]
-  rw [← dualTensorHomEquivOfBasis_apply (N := N) b, LinearEquiv.symm_apply_apply]
+  rw [← dualTensorHomEquivOfBasis_apply b,
+    LinearEquiv.symm_apply_apply <| dualTensorHomEquivOfBasis (N := N) b]
 #align dual_tensor_hom_equiv_of_basis_symm_cancel_left dualTensorHomEquivOfBasis_symm_cancel_left
 
 @[simp]
@@ -247,13 +257,19 @@ noncomputable def rtensorHomEquivHomRtensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
     dualTensorHomEquiv R M _
 #align rtensor_hom_equiv_hom_rtensor rtensorHomEquivHomRtensor
 
+-- Porting note: something is timing out in the giant simp
+set_option maxHeartbeats 0 in
 @[simp]
 theorem ltensorHomEquivHomLtensor_toLinearMap :
     (ltensorHomEquivHomLtensor R M P Q).toLinearMap = ltensorHomToHomLtensor R M P Q := by
+  classical -- Porting note: missing decidable for choosing basis
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  ext (p f q m)
+  apply TensorProduct.ext -- Porting note: missing from ext
+  apply LinearMap.ext; intro p -- Porting note: had to walk through this
+  apply TensorProduct.ext -- Porting note: missing from ext
+  ext (f q m)
   dsimp [ltensorHomEquivHomLtensor]
   simp only [ltensorHomEquivHomLtensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
@@ -262,12 +278,17 @@ theorem ltensorHomEquivHomLtensor_toLinearMap :
     ltensorHomToHomLtensor_apply, tmul_smul]
 #align ltensor_hom_equiv_hom_ltensor_to_linear_map ltensorHomEquivHomLtensor_toLinearMap
 
+-- Porting note: something is timing out in the giant simp
+set_option maxHeartbeats 0 in
 @[simp]
 theorem rtensorHomEquivHomRtensor_toLinearMap :
     (rtensorHomEquivHomRtensor R M P Q).toLinearMap = rtensorHomToHomRtensor R M P Q := by
+  classical -- Porting note: missing decidable for choosing basis
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
+  apply TensorProduct.ext -- Porting note: missing from ext
+  apply TensorProduct.ext -- Porting note: missing from ext
   ext (f p q m)
   simp only [rtensorHomEquivHomRtensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
@@ -292,8 +313,8 @@ theorem rtensorHomEquivHomRtensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
 
 variable (R M N P Q)
 
-/-- When `M` and `N` are free `R` modules, the map `hom_tensor_hom_map` is an equivalence. Note that
-`hom_tensor_hom_equiv` is not defined directly in terms of `hom_tensor_hom_map`, but the equivalence
+/-- When `M` and `N` are free `R` modules, the map `homTensorHomMap` is an equivalence. Note that
+`homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the equivalence
 between the two is given by `hom_tensor_hom_equiv_to_linear_map` and `hom_tensor_hom_equiv_apply`.
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
@@ -305,7 +326,11 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
 @[simp]
 theorem homTensorHomEquiv_toLinearMap :
     (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q := by
-  ext (f g m n)
+  apply TensorProduct.ext -- Porting note: missing from ext
+  apply LinearMap.ext; intro f -- Porting note: had to walk through this
+  apply LinearMap.ext; intro g -- Porting note: had to walk through this
+  apply TensorProduct.ext -- Porting note: missing from ext
+  ext (m n)
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
     LinearEquiv.refl_apply, rtensorHomEquivHomRtensor_apply, ltensorHomEquivHomLtensor_apply,
