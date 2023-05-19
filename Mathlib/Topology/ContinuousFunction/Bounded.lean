@@ -1222,7 +1222,7 @@ variable [TopologicalSpace α] {R : Type _}
 
 section NonUnital
 
-section SemiNormed
+section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
@@ -1250,7 +1250,7 @@ instance nonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
     -- Porting note: These 5 fields were missing. Add them.
     left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
 
-end SemiNormed
+end Seminormed
 
 instance nonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) :=
   { BoundedContinuousFunction.nonUnitalSeminormedRing,
@@ -1258,7 +1258,7 @@ instance nonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α �
 
 end NonUnital
 
-section SemiNormed
+section Seminormed
 
 variable [SeminormedRing R]
 
@@ -1304,7 +1304,7 @@ instance ring : Ring (α →ᵇ R) :=
 instance : SeminormedRing (α →ᵇ R) :=
   { BoundedContinuousFunction.nonUnitalSeminormedRing with }
 
-end SemiNormed
+end Seminormed
 
 instance [NormedRing R] : NormedRing (α →ᵇ R) :=
   { BoundedContinuousFunction.nonUnitalNormedRing with }
