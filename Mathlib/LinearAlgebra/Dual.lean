@@ -1598,6 +1598,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
   all_goals { intros; simp [*] at * }
 
+-- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
     comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
   apply (b.dualBasis.tensorProduct c.dualBasis).ext
@@ -1608,8 +1609,6 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
   all_goals { intros; simp [*] at * }
 
--- Porting note : this doesn't work
--- set_option maxHeartbeats 0 in
 /-- A linear equivalence between `dual M ⊗ dual N` and `dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `tensor_product.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
