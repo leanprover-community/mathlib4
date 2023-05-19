@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Nakayama
-import Mathbin.Data.SetLike.Fintype
+import Mathlib.RingTheory.Nakayama
+import Mathlib.Data.SetLike.Fintype
 
 /-!
 # Artinian rings and modules
@@ -157,14 +157,12 @@ theorem isArtinian_iff_wellFounded :
 variable {R M}
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {s : Set M}
-    (hs : LinearIndependent R (coe : s → M)) : s.Finite :=
-  by
+    (hs : LinearIndependent R (coe : s → M)) : s.Finite := by
   refine'
     by_contradiction fun hf =>
       (RelEmbedding.wellFounded_iff_no_descending_seq.1 (well_founded_submodule_lt R M)).elim' _
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
-  have : ∀ n, coe ∘ f '' { m | n ≤ m } ⊆ s :=
-    by
+  have : ∀ n, coe ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, hy₁, rfl⟩
     exact (f y).2
   have : ∀ a b : ℕ, a ≤ b ↔ span R (coe ∘ f '' { m | b ≤ m }) ≤ span R (coe ∘ f '' { m | a ≤ m }) :=
@@ -176,8 +174,7 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {
     exact ⟨fun hab x => le_trans hab, fun h => h _ le_rfl⟩
   exact
     ⟨⟨fun n => span R (coe ∘ f '' { m | n ≤ m }), fun x y => by
-        simp (config := { contextual := true }) [le_antisymm_iff, (this _ _).symm]⟩,
-      by
+        simp (config := { contextual := true }) [le_antisymm_iff, (this _ _).symm]⟩, by
       intro a b
       conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]
       simp⟩
@@ -197,8 +194,7 @@ theorem IsArtinian.set_has_minimal [IsArtinian R M] (a : Set <| Submodule R M) (
 
 /-- A module is Artinian iff every decreasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_artinian :
-    (∀ f : ℕ →o (Submodule R M)ᵒᵈ, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsArtinian R M :=
-  by
+    (∀ f : ℕ →o (Submodule R M)ᵒᵈ, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsArtinian R M := by
   rw [isArtinian_iff_wellFounded]
   exact well_founded.monotone_chain_condition.symm
 #align monotone_stabilizes_iff_artinian monotone_stabilizes_iff_artinian
@@ -221,8 +217,7 @@ theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) �
 with disjoint kernel and range.
 -/
 theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
-    ∃ n : ℕ, n ≠ 0 ∧ (f ^ n).ker ⊔ (f ^ n).range = ⊤ :=
-  by
+    ∃ n : ℕ, n ≠ 0 ∧ (f ^ n).ker ⊔ (f ^ n).range = ⊤ := by
   obtain ⟨n, w⟩ :=
     monotone_stabilizes (f.iterate_range.comp ⟨fun n => n + 1, fun n m w => by linarith⟩)
   specialize w (n + 1 + n) (by linarith)
@@ -230,8 +225,7 @@ theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
   refine' ⟨n + 1, Nat.succ_ne_zero _, _⟩
   simp_rw [eq_top_iff', mem_sup]
   intro x
-  have : (f ^ (n + 1)) x ∈ (f ^ (n + 1 + n + 1)).range :=
-    by
+  have : (f ^ (n + 1)) x ∈ (f ^ (n + 1 + n + 1)).range := by
     rw [← w]
     exact mem_range_self _
   rcases this with ⟨y, hy⟩
@@ -244,8 +238,7 @@ theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
 #align is_artinian.exists_endomorphism_iterate_ker_sup_range_eq_top IsArtinian.exists_endomorphism_iterate_ker_sup_range_eq_top
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
-theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f :=
-  by
+theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
   obtain ⟨n, ne, w⟩ := exists_endomorphism_iterate_ker_sup_range_eq_top f
   rw [linear_map.ker_eq_bot.mpr (LinearMap.iterate_injective s n), bot_sup_eq,
     LinearMap.range_eq_top] at w
@@ -263,8 +256,7 @@ is eventually ⊤.
 -/
 theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     (h : ∀ n, Disjoint (partialSups (OrderDual.toDual ∘ f) n) (OrderDual.toDual (f (n + 1)))) :
-    ∃ n : ℕ, ∀ m, n ≤ m → f m = ⊤ :=
-  by
+    ∃ n : ℕ, ∀ m, n ≤ m → f m = ⊤ := by
   -- A little off-by-one cleanup first:
   rsuffices ⟨n, w⟩ : ∃ n : ℕ, ∀ m, n ≤ m → OrderDual.toDual f (m + 1) = ⊤
   · use n + 1
@@ -360,15 +352,13 @@ theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Mo
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is
 also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
-    [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
-  by
+    [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
   rw [isArtinian_iff_wellFounded] at h⊢
   refine' (Submodule.restrictScalarsEmbedding R S M).WellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
 theorem isArtinian_of_fG_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N :=
-  by
+    (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
   let ⟨s, hs⟩ := hN
   haveI := Classical.decEq M
   haveI := Classical.decEq R
@@ -411,8 +401,7 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
 #align is_artinian_span_of_finite isArtinian_span_of_finite
 
 theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F} [RingHomClass F R S]
-    {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S :=
-  by
+    {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H⊢
   exact (Ideal.orderEmbeddingOfSurjective f hf).WellFounded H
 #align function.surjective.is_artinian_ring Function.Surjective.isArtinianRing
@@ -428,8 +417,7 @@ open IsArtinian
 
 variable {R : Type _} [CommRing R] [IsArtinianRing R]
 
-theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) :=
-  by
+theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow h⟩
   obtain ⟨n, hn⟩ : ∃ n, ∀ m, n ≤ m → Jac ^ n = Jac ^ m := IsArtinian.monotone_stabilizes f
@@ -443,8 +431,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   rcases IsArtinian.set_has_minimal { J' : Ideal R | J < J' } ⟨⊤, hJ.lt_top⟩ with
     ⟨J', hJJ' : J < J', hJ' : ∀ I, J < I → ¬I < J'⟩
   rcases SetLike.exists_of_lt hJJ' with ⟨x, hxJ', hxJ⟩
-  obtain rfl : J ⊔ Ideal.span {x} = J' :=
-    by
+  obtain rfl : J ⊔ Ideal.span {x} = J' := by
     apply eq_of_le_of_not_lt _ (hJ' (J ⊔ Ideal.span {x}) _)
     · exact sup_le hJJ'.le (span_le.2 (singleton_subset_iff.2 hxJ'))
     · rw [SetLike.lt_iff_le_and_exists]
@@ -478,8 +465,7 @@ variable (S : Submonoid R) (L : Type _) [CommRing L] [Algebra R L] [IsLocalizati
 include S
 
 /-- Localizing an artinian ring can only reduce the amount of elements. -/
-theorem localization_surjective : Function.Surjective (algebraMap R L) :=
-  by
+theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
   obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
   obtain ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r
