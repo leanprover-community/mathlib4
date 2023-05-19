@@ -339,9 +339,35 @@ lemma triangle_mor₃_eq_zero_of_epi_mor₂ (T : Triangle C) (hT : T ∈ distTri
     T.mor₃ = 0 := by
   rw [← cancel_epi T.mor₂, comp_dist_triangle_mor_zero₂₃ _ hT, comp_zero]
 
+lemma triangle_mor₂_eq_zero_of_epi_mor₁ (T : Triangle C) (hT : T ∈ distTriang C) (h : Epi T.mor₁) :
+    T.mor₂ = 0 := by
+  simpa using triangle_mor₃_eq_zero_of_epi_mor₂ _ (inv_rot_of_dist_triangle _ hT)
+    (by dsimp ; infer_instance)
+
+lemma triangle_mor₁_eq_zero_of_epi_mor₃ (T : Triangle C) (hT : T ∈ distTriang C) (h : Epi T.mor₃) :
+    T.mor₁ = 0 := by
+  have eq := triangle_mor₃_eq_zero_of_epi_mor₂ _ (rot_of_dist_triangle _ hT)
+    (by dsimp ; infer_instance)
+  dsimp at eq
+  simp only [neg_eq_zero] at eq
+  apply (shiftFunctor C (1 : ℤ)).map_injective
+  rw [eq, Functor.map_zero]
+
 lemma triangle_mor₃_eq_zero_of_mono_mor₁ (T : Triangle C) (hT : T ∈ distTriang C)
     (h : Mono T.mor₁) : T.mor₃ = 0 := by
   rw [← cancel_mono (T.mor₁⟦(1 : ℤ)⟧'), comp_dist_triangle_mor_zero₃₁ _ hT, zero_comp]
+
+lemma triangle_mor₁_eq_zero_of_mono_mor₂ (T : Triangle C) (hT : T ∈ distTriang C)
+    (h : Mono T.mor₂) : T.mor₁ = 0 := by
+  have eq := triangle_mor₃_eq_zero_of_mono_mor₁ _ (rot_of_dist_triangle _ hT) (by dsimp ; infer_instance)
+  dsimp at eq
+  simp only [neg_eq_zero] at eq
+  apply (shiftFunctor C (1 : ℤ)).map_injective
+  rw [eq, Functor.map_zero]
+
+lemma triangle_mor₂_eq_zero_of_mono_mor₃ (T : Triangle C) (hT : T ∈ distTriang C)
+    (h : Mono T.mor₃) : T.mor₂ = 0 :=
+  triangle_mor₁_eq_zero_of_mono_mor₂ _ (rot_of_dist_triangle _ hT) (by dsimp ; infer_instance)
 
 lemma triangle_mono_mor₁ (T : Triangle C) (hT : T ∈ distTriang C) (h : T.mor₃ = 0) :
     Mono T.mor₁ := by
@@ -350,6 +376,14 @@ lemma triangle_mono_mor₁ (T : Triangle C) (hT : T ∈ distTriang C) (h : T.mor
   intro P f hf
   obtain ⟨g, hg⟩ := covariant_yoneda_exact₁ _ hT f hf
   rw [hg, h, comp_zero]
+
+lemma triangle_mono_mor₂ (T : Triangle C) (hT : T ∈ distTriang C) (h : T.mor₁ = 0) :
+    Mono T.mor₂ :=
+  triangle_mono_mor₁ _ (rot_of_dist_triangle _ hT) (by dsimp ; rw [h, Functor.map_zero, neg_zero])
+
+lemma triangle_mono_mor₃ (T : Triangle C) (hT : T ∈ distTriang C) (h : T.mor₂ = 0) :
+    Mono T.mor₃ :=
+  triangle_mono_mor₂ _ (rot_of_dist_triangle _ hT) h
 
 section
 
@@ -635,6 +669,46 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
       exact h.choose_spec.2.symm) (by
       convert e.hom.comm₃
       exact h.choose_spec.1.symm)
+
+lemma isIso₂_iff (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₂ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
+  constructor
+  . intro
+    constructor
+    . exact triangle_mor₁_eq_zero_of_mono_mor₂ T hT inferInstance
+    . exact triangle_mor₃_eq_zero_of_epi_mor₂ T hT inferInstance
+  . rintro ⟨h₁, h₃⟩
+    obtain ⟨φ, hφ⟩ := covariant_yoneda_exact₃ T hT (𝟙 T.obj₃) (by rw [h₃, comp_zero])
+    have := triangle_mono_mor₂ T hT h₁
+    exact ⟨⟨φ, by rw [← cancel_mono T.mor₂, assoc, id_comp, ← hφ, comp_id], hφ.symm⟩⟩
+
+lemma isIso₁_iff (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₁ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
+  refine' (isIso₂_iff _ (inv_rot_of_dist_triangle T hT)).trans _
+  have : (shiftFunctor C (-1 : ℤ)).map T.mor₃ = 0 ↔ T.mor₃ = 0 := by
+    constructor
+    . intro h
+      apply (shiftFunctor C (-1 : ℤ)).map_injective
+      rw [h, Functor.map_zero]
+    . intro h
+      simp only [h, Functor.map_zero]
+  dsimp
+  simp only [neg_eq_zero, IsIso.comp_right_eq_zero, this]
+  tauto
+
+lemma isIso₃_iff (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₃ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
+  refine' (isIso₂_iff _ (rot_of_dist_triangle T hT)).trans _
+  have : (shiftFunctor C (1 : ℤ)).map T.mor₁ = 0 ↔ T.mor₁ = 0 := by
+    constructor
+    . intro h
+      apply (shiftFunctor C (1 : ℤ)).map_injective
+      rw [h, Functor.map_zero]
+    . intro h
+      simp only [h, Functor.map_zero]
+  dsimp
+  simp only [neg_eq_zero, this]
+  tauto
 
 /-
 TODO: If `C` is pretriangulated with respect to a shift,

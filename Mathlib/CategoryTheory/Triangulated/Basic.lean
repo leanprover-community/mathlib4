@@ -11,6 +11,7 @@ Authors: Luke Kershaw
 import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Triangles
@@ -167,13 +168,13 @@ lemma id_hom₂ (A : Triangle C) : TriangleMorphism.hom₂ (𝟙 A) = 𝟙 _ := 
 @[simp]
 lemma id_hom₃ (A : Triangle C) : TriangleMorphism.hom₃ (𝟙 A) = 𝟙 _ := rfl
 
-@[simp]
+@[simp, reassoc]
 lemma comp_hom₁ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₁ = f.hom₁ ≫ g.hom₁ := rfl
-@[simp]
+@[simp, reassoc]
 lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₂ = f.hom₂ ≫ g.hom₂ := rfl
-@[simp]
+@[simp, reassoc]
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
@@ -243,6 +244,13 @@ lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₂ {A B : Triangle C} (e
 lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₃ {A B : Triangle C} (e : A ≅ B) :
     e.inv.hom₃ ≫ e.hom.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.inv_hom_id, id_hom₃]
 
+lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
+  (eqToHom h).hom₁ = eqToHom (by subst h ; rfl) := by subst h ; rfl
+lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
+  (eqToHom h).hom₂ = eqToHom (by subst h ; rfl) := by subst h ; rfl
+lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
+  (eqToHom h).hom₃ = eqToHom (by subst h ; rfl) := by subst h ; rfl
+
 @[simps!]
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] : Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
@@ -290,11 +298,56 @@ def Triangle.π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+@[simps]
+def Triangle.π₁Toπ₂ : (Triangle.π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
+  app T := T.mor₁
+
+@[simps]
+def Triangle.π₂Toπ₃ : (Triangle.π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
+  app T := T.mor₂
+
+@[simps]
+def Triangle.π₃Toπ₁ : (Triangle.π₃ : Triangle C ⥤ C) ⟶ Triangle.π₁ ⋙ shiftFunctor C (1 : ℤ) where
+  app T := T.mor₃
+
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₁ :=
   (inferInstance : IsIso (Triangle.π₁.map φ))
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₂ :=
   (inferInstance : IsIso (Triangle.π₂.map φ))
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₃ :=
   (inferInstance : IsIso (Triangle.π₃.map φ))
+
+section Preadditive
+
+variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+@[simps]
+instance instAddCommGroupTriangleHom (T₁ T₂ : Triangle C) : AddCommGroup (T₁ ⟶ T₂) where
+  add f g :=
+    { hom₁ := f.hom₁ + g.hom₁
+      hom₂ := f.hom₂ + g.hom₂
+      hom₃ := f.hom₃ + g.hom₃ }
+  neg f :=
+    { hom₁ := -f.hom₁
+      hom₂ := -f.hom₂
+      hom₃ := -f.hom₃ }
+  zero :=
+    { hom₁ := 0
+      hom₂ := 0
+      hom₃ := 0 }
+  sub f g :=
+    { hom₁ := f.hom₁ - g.hom₁
+      hom₂ := f.hom₂ - g.hom₂
+      hom₃ := f.hom₃ - g.hom₃ }
+  zero_add f := by ext <;> apply zero_add
+  add_assoc f g h := by ext <;> apply add_assoc
+  add_zero f := by ext <;> apply add_zero
+  add_comm f g := by ext <;> apply add_comm
+  add_left_neg f := by ext <;> apply add_left_neg
+  sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
+
+instance instPreadditiveTriangle : Preadditive (Triangle C) where
+
+end Preadditive
 
 end CategoryTheory.Pretriangulated

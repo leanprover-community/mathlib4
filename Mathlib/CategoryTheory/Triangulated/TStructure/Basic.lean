@@ -41,7 +41,6 @@ namespace CategoryTheory
 
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-    --[IsTriangulated C]
 
 open Pretriangulated
 
@@ -124,7 +123,7 @@ lemma shift_setGE (a n n' : ℤ) (hn' : a + n = n'): ((t.setGE n).shift a) = t.s
   . intro hX
     exact t.shift_mem_setGE _ _ _ hn' X hX
 
-lemma setLE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.setLE n₁ := by
+lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.setLE n₁ := by
   let H := fun (a : ℕ) => ∀ (n : ℤ), t.setLE n ⊆ t.setLE (n + a)
   suffices ∀ (a : ℕ), H a by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
@@ -184,14 +183,6 @@ def heart : Set C := t.setLE 0 ∩ t.setGE 0
 abbrev Heart := FullSubcategory t.heart
 
 abbrev heartInclusion : t.Heart ⥤ C := fullSubcategoryInclusion _
-
-/-def plus : Triangulated.Subcategory C where
-  set X := ∃ (n : ℤ), X ∈ t.setGE n
-  zero := ⟨0, by sorry⟩
-  shift := by
-    rintro X n ⟨i, hX⟩
-    exact ⟨i - n, t.shift_mem_setGE i n (i - n) (by linarith) X hX⟩
-  ext₂ := sorry -/
 
 end TStructure
 

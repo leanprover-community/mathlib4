@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
-import Mathlib.CategoryTheory.Triangulated.TStructure
+import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
