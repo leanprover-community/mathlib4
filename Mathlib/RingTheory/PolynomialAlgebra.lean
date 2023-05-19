@@ -296,7 +296,6 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
   simp only [coeff_map, one_apply, algebraMap_matrix_apply, mul_boole, Pi.smul_apply,
     matPolyEquiv_coeff_apply]
   split_ifs <;> simp <;> rename_i h <;> simp [h]
-
 #align mat_poly_equiv_smul_one matPolyEquiv_smul_one
 
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
