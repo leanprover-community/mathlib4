@@ -266,16 +266,16 @@ structure GlobalBranchingPreprocessor : Type where
 /--
 A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list.
 -/
-def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor :=
-{ name := pp.name,
-  transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) [] }
+def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor where
+  name := pp.name
+  transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) []
 
 /--
 A `GlobalPreprocessor` lifts to a `GlobalBranchingPreprocessor` by producing only one branch.
 -/
-def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor :=
-{ name := pp.name,
-  transform := fun g l => do return [⟨g, ← pp.transform l⟩] }
+def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor where
+  name := pp.name
+  transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
 /--
 `process pp l` runs `pp.transform` on `l` and returns the result,
@@ -284,8 +284,8 @@ tracing the result if `trace.linarith` is on.
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
   (g : MVarId) (l : List Expr) : MetaM (List Branch) := do
   let branches ← pp.transform g l
-  if (branches.length > 1) then
-    trace[linarith] m!"Preprocessing: {pp.name} has branched, with branches:"
+  if branches.length > 1 then
+    trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
   for ⟨goal, hyps⟩ in branches do
     goal.withContext do
       linarithTraceProofs m!"Preprocessing: {pp.name}" hyps
@@ -330,9 +330,9 @@ structure LinarithConfig : Type where
   /-- Transparency mode for identifying atomic expressions in comparisons. -/
   transparency : TransparencyMode := .reducible
   /-- Split conjunctions in hypotheses. -/
-  split_hypotheses : Bool := true
+  splitHypotheses : Bool := true
   /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
-  split_ne : Bool := false
+  splitNe : Bool := false
   /-- Override the list of preprocessors. -/
   preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.
@@ -402,7 +402,6 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   else do
     let tp ← inferType (← getRelSides (← inferType h)).2
     let cpos ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
-    -- TODO There should be a def for this, rather than using `evalTactic`.
-    let ex ← synthesizeUsing cpos (do evalTactic (←`(tactic| norm_num; done)))
+    let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')

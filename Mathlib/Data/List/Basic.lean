@@ -1173,14 +1173,12 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) 
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
-
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
   simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
-
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
@@ -2767,7 +2765,6 @@ theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a�
     calc
       ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
       _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
-
 #align list.foldl_assoc List.foldl_assoc
 
 theorem foldl_op_eq_op_foldr_assoc :
@@ -3233,7 +3230,6 @@ theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
   · cases' n with n
     . simp
     . simp [hl]
-      dsimp
 #align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
@@ -3597,7 +3593,6 @@ theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p
     . simp [filter, h1]
     . rw [filter]
       cases p x <;> simp [mem_filter_of_mem h h1]
-
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 
 #align list.mem_filter List.mem_filter

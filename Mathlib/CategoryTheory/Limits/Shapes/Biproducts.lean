@@ -319,7 +319,7 @@ class HasBiproductsOfShape : Prop where
   has_biproduct : ∀ F : J → C, HasBiproduct F
 #align category_theory.limits.has_biproducts_of_shape CategoryTheory.Limits.HasBiproductsOfShape
 
-attribute [instance] HasBiproductsOfShape.has_biproduct
+attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
 /-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
 indexed by a finite type. -/
@@ -674,7 +674,7 @@ variable (f : J → C) (i : J) [HasBiproduct f] [HasBiproduct (Subtype.restrict 
 from the index set `J` into the biproduct over `J`. -/
 def biproduct.isLimitFromSubtype :
     IsLimit (KernelFork.ofι (biproduct.fromSubtype f fun j => j ≠ i) (by simp) :
-      KernelFork (biproduct.π f i)) :=
+    KernelFork (biproduct.π f i)) :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨s.ι ≫ biproduct.toSubtype _ _, by
       apply biproduct.hom_ext; intro j
@@ -682,8 +682,7 @@ def biproduct.isLimitFromSubtype :
         biproduct.toSubtype_fromSubtype_assoc, biproduct.map_π]
       rcases Classical.em (i = j) with (rfl | h)
       · rw [if_neg (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
-      · rw [if_pos (Ne.symm h), Category.comp_id],
-      by
+      · rw [if_pos (Ne.symm h), Category.comp_id], by
       intro m hm
       rw [← hm, KernelFork.ι_ofι, Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.comp_id _).symm⟩
@@ -701,17 +700,15 @@ def kernelBiproductπIso : kernel (biproduct.π f i) ≅ ⨁ Subtype.restrict (f
 /-- The cokernel of `biproduct.ι f i` is the projection from the biproduct over the index set `J`
 onto the biproduct omitting `i`. -/
 def biproduct.isColimitToSubtype :
-    IsColimit
-      (CokernelCofork.ofπ (biproduct.toSubtype f fun j => j ≠ i) (by simp) :
-        CokernelCofork (biproduct.ι f i)) :=
+    IsColimit (CokernelCofork.ofπ (biproduct.toSubtype f fun j => j ≠ i) (by simp) :
+    CokernelCofork (biproduct.ι f i)) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨biproduct.fromSubtype _ _ ≫ s.π, by
       apply biproduct.hom_ext'; intro j
       rw [CokernelCofork.π_ofπ, biproduct.toSubtype_fromSubtype_assoc, biproduct.ι_map_assoc]
       rcases Classical.em (i = j) with (rfl | h)
       · rw [if_neg (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
-      · rw [if_pos (Ne.symm h), Category.id_comp],
-      by
+      · rw [if_pos (Ne.symm h), Category.id_comp], by
       intro m hm
       rw [← hm, CokernelCofork.π_ofπ, ← Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.id_comp _).symm⟩
@@ -1227,7 +1224,7 @@ class HasBinaryBiproducts : Prop where
   has_binary_biproduct : ∀ P Q : C, HasBinaryBiproduct P Q
 #align category_theory.limits.has_binary_biproducts CategoryTheory.Limits.HasBinaryBiproducts
 
-attribute [instance] HasBinaryBiproducts.has_binary_biproduct
+attribute [instance 100] HasBinaryBiproducts.has_binary_biproduct
 
 /-- A category with finite biproducts has binary biproducts.
 
@@ -1886,15 +1883,12 @@ theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
     [IsIso (biprod.map f g)] : IsIso f :=
   ⟨⟨biprod.inl ≫ inv (biprod.map f g) ≫ biprod.fst,
       ⟨by
-        have t :=
-          congrArg (fun p : W ⊞ X ⟶ W ⊞ X => biprod.inl ≫ p ≫ biprod.fst)
-            (IsIso.hom_inv_id (biprod.map f g))
+        have t := congrArg (fun p : W ⊞ X ⟶ W ⊞ X => biprod.inl ≫ p ≫ biprod.fst)
+          (IsIso.hom_inv_id (biprod.map f g))
         simp only [Category.id_comp, Category.assoc, biprod.inl_map_assoc] at t
-        simp [t],
-        by
-        have t :=
-          congrArg (fun p : Y ⊞ Z ⟶ Y ⊞ Z => biprod.inl ≫ p ≫ biprod.fst)
-            (IsIso.inv_hom_id (biprod.map f g))
+        simp [t], by
+        have t := congrArg (fun p : Y ⊞ Z ⟶ Y ⊞ Z => biprod.inl ≫ p ≫ biprod.fst)
+          (IsIso.inv_hom_id (biprod.map f g))
         simp only [Category.id_comp, Category.assoc, biprod.map_fst] at t
         simp only [Category.assoc]
         simp [t]⟩⟩⟩

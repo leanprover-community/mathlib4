@@ -85,7 +85,6 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
     _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.functor := (isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _))
     _ ≅ e'.inverse ⋙ e'.functor := (Iso.refl _)
     _ ≅ 𝟭 B' := e'.counitIso
-
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
@@ -141,8 +140,8 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
     _ ≅ 𝟭 B := eB.unitIso.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso
 
-theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF :=
-  by
+theorem equivalence₂CounitIso_eq :
+    (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
   dsimp [equivalence₂, Iso.refl]
   simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,

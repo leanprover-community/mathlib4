@@ -115,9 +115,7 @@ composition of local equivs with `≫`.
 
 noncomputable section
 
-open Classical Topology
-
-open Filter
+open Classical Topology Filter
 
 universe u
 
@@ -304,14 +302,6 @@ structure Pregroupoid (H : Type _) [TopologicalSpace H] where
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
 #align pregroupoid Pregroupoid
 
--- Porting note:
--- simplify fails on left-hand side:
--- failed to synthesize
---   Subsingleton ((H → H) → Set H → Prop)
--- (deterministic) timeout at 'typeclass', maximum number of heartbeats (20000) has been reached
---  (use 'set_option synthInstance.maxHeartbeats <num>' to set the limit)
-attribute [nolint simpNF] Pregroupoid.mk.injEq
-
 /-- Construct a groupoid of local homeos for which the map and its inverse have some property,
 from a pregroupoid asserting that this property is stable under composition. -/
 def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
@@ -402,10 +392,10 @@ class ClosedUnderRestriction (G : StructureGroupoid H) : Prop where
     ∀ {e : LocalHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
 #align closed_under_restriction ClosedUnderRestriction
 
-theorem closed_under_restriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
+theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
     {e : LocalHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
-#align closed_under_restriction' closed_under_restriction'
+#align closed_under_restriction' closedUnderRestriction'
 
 /-- The trivial restriction-closed groupoid, containing only local homeomorphisms equivalent to the
 restriction of the identity to the various open subsets. -/
@@ -460,7 +450,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     apply StructureGroupoid.le_iff.mpr
     rintro e ⟨s, hs, hes⟩
     refine' G.eq_on_source _ hes
-    convert closed_under_restriction' G.id_mem hs
+    convert closedUnderRestriction' G.id_mem hs
     -- Porting note: was
     -- change s = _ ∩ _
     -- rw [hs.interior_eq]
@@ -581,7 +571,7 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
   haveI : ∀ x : M, SecondCountableTopology (chartAt x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
   haveI := hsc.toEncodable
-  rw [bunionᵢ_eq_unionᵢ] at hs
+  rw [biUnion_eq_iUnion] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt (x : M)).open_source) hs
 #align charted_space.second_countable_of_countable_cover ChartedSpace.secondCountable_of_countable_cover
 
@@ -785,7 +775,7 @@ protected def toTopologicalSpace : TopologicalSpace M :=
 
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
-  simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+  simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine' ⟨e, he, univ, isOpen_univ, _⟩
   simp only [Set.univ_inter, Set.preimage_univ]
 #align charted_space_core.open_source' ChartedSpaceCore.open_source'
@@ -811,13 +801,13 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       intro s s_open
       rw [inter_comm]
       apply TopologicalSpace.GenerateOpen.basic
-      simp only [exists_prop, mem_unionᵢ, mem_singleton_iff]
+      simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuous_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_open_of_generateFrom
       intro t ht
-      simp only [exists_prop, mem_unionᵢ, mem_singleton_iff] at ht
+      simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
       rw [ts]
       let f := e.symm.trans e'
@@ -840,7 +830,7 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
     chartAt := fun x ↦ c.localHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
-      simp only [mem_unionᵢ, mem_singleton_iff]
+      simp only [mem_iUnion, mem_singleton_iff]
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
 #align charted_space_core.to_charted_space ChartedSpaceCore.toChartedSpace
 
@@ -1059,7 +1049,7 @@ instance : ChartedSpace H s where
   chartAt x := @LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt x.1) s ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source x.1⟩
   chart_mem_atlas x := by
-    simp only [mem_unionᵢ, mem_singleton_iff]
+    simp only [mem_iUnion, mem_singleton_iff]
     use x
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
@@ -1073,7 +1063,7 @@ instance [ClosedUnderRestriction G] : HasGroupoid s G where
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
     refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt x) (chartAt x'))
-    apply closed_under_restriction'
+    apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _) (chart_mem_atlas _)
     · exact preimage_open_of_open_symm (chartAt _) s.2
 

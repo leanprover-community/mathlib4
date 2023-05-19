@@ -358,7 +358,7 @@ end Command
 namespace Term
 
 /- M -/ syntax (name := matrixNotation)
-  "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
+  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
 /- M -/ syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 /- M -/ syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 

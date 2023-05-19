@@ -36,7 +36,6 @@ open TensorProduct
 
 open TensorProduct Classical
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
 def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
