@@ -304,14 +304,14 @@ end EqualCharZero
 /--
 A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteristic for some `p`.
 -/
-theorem not_Q_algebra_iff_not_equal_charZero [CharZero R] :
+theorem isEmpty_ratAlgebra_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
   rw [← not_iff_not]
   push_neg
   rw [not_isEmpty_iff, ← EqualCharZero.iff_not_mixedCharZero]
   apply EqualCharZero.nonempty_ratAlgebra_iff
 set_option linter.uppercaseLean3 false in
-#align not_Q_algebra_iff_not_equal_char_zero not_Q_algebra_iff_not_equal_charZero
+#align not_Q_algebra_iff_not_equal_char_zero isEmpty_ratAlgebra_iff_mixedCharZero
 
 /-!
 # Splitting statements into different characteristic
@@ -335,7 +335,7 @@ theorem split_equalCharZero_mixedCharZero [CharZero R] (h_equal : Algebra ℚ R 
     rw [← MixedCharZero.reduce_to_p_prime] at h_mixed
     exact h_mixed p H hp
   · apply h_equal
-    rw [← not_Q_algebra_iff_not_equal_charZero, not_isEmpty_iff] at h
+    rw [← isEmpty_ratAlgebra_iff_mixedCharZero, not_isEmpty_iff] at h
     exact h.some
 #align split_equal_mixed_char split_equalCharZero_mixedCharZero
 
