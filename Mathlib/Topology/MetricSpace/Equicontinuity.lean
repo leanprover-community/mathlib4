@@ -115,8 +115,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricS
     _ ≤ |b (dist x y)| := (le_abs_self _)
     _ = dist (b (dist x y)) 0 := by simp [Real.dist_eq]
     _ < ε := hδ (by simpa only [Real.dist_eq, tsub_zero, abs_dist] using hxy)
-#align metric.uniform_equicontinuous_of_continuity_modulus
-  Metric.uniformEquicontinuous_of_continuity_modulus
+#align metric.uniform_equicontinuous_of_continuity_modulus Metric.uniformEquicontinuous_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 equicontinuity is to show that all of the functions share a common *global* continuity modulus. -/

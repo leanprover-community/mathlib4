@@ -176,9 +176,8 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
-  simp only [f.map_adj_iff, comap_Adj, Function.Embedding.coe_subtype, top_adj, Ne.def,
-    Subtype.mk_eq_mk]
-  exact (Function.Embedding.apply_eq_iff_eq _ _ _).symm.not
+  simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_Adj, Function.Embedding.coe_subtype,
+    f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
 #align simple_graph.not_clique_free_of_top_embedding SimpleGraph.not_cliqueFree_of_top_embedding
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/

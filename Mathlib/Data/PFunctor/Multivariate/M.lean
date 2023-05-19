@@ -165,8 +165,7 @@ def M.corecContents {α : TypeVec.{u} n}
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
-    have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) :=
-      by
+    have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
@@ -291,8 +290,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   cases' x with a₁ f₁
   cases' y with a₂ f₂
   dsimp [mp] at *
-  have : a₁ = a₂ :=
-    by
+  have : a₁ = a₂ := by
     refine'
       PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
@@ -335,8 +333,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   injection h with h₀ h₁
   subst ay
   simp at h₁
-  have Hdrop : dropFun fx = dropFun fy :=
-    by
+  have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
