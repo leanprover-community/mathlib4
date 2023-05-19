@@ -1229,6 +1229,8 @@ def dualPairing (W : Submodule R M) : Module.Dual R M ⧸ W.dualAnnihilator →�
   W.dualAnnihilator.liftQ W.dualRestrict le_rfl
 #align submodule.dual_pairing Submodule.dualPairing
 
+example (W : Submodule R M) : Module.Dual R M ⧸ dualAnnihilator W →ₗ[R] Module.Dual R W := Submodule.dualPairing W
+
 @[simp]
 theorem dualPairing_apply {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
     W.dualPairing (Quotient.mk φ) x = φ x :=
@@ -1331,7 +1333,8 @@ end CommRing
 
 section VectorSpace
 
-variable {K : Type _} [Field K] {V₁ : Type _} {V₂ : Type _}
+-- Porting note: adding `u` to avoid timeouts in `dualPairing_eq`
+variable {K : Type u} [Field K] {V₁ : Type v'} {V₂ : Type v''}
 
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -1375,8 +1378,7 @@ namespace Subspace
 open Submodule
 
 -- Porting note: remove this
-set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
   ext
@@ -1384,8 +1386,7 @@ theorem dualPairing_eq (W : Subspace K V₁) :
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
 -- Porting note: remove this
-set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 400000 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
