@@ -677,7 +677,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   classical
   exact
       { Interval.lattice, Interval.boundedOrder with
-        supₛ := fun S =>
+        sSup := fun S =>
           if h : S ⊆ {⊥} then ⊥
           else
             some
@@ -685,22 +685,22 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                   ⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
-                exact infᵢ₂_le_of_le s hs (le_supᵢ₂_of_le s hs s.fst_le_snd)⟩
-        le_supₛ := fun s s ha => by
+                exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
+        le_sSup := fun s s ha => by
           dsimp only -- Porting note: added
           split_ifs with h
           · exact (h ha).le
           cases s
           · exact bot_le
           · -- Porting note: This case was
-            -- `exact WithBot.some_le_some.2 ⟨infᵢ₂_le _ ha, le_supᵢ₂_of_le _ ha le_rfl⟩`
-            -- but there seems to be a defEq-problem at `infᵢ₂_le` that lean cannot resolve yet.
+            -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
+            -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
             apply WithBot.some_le_some.2
             constructor
-            · apply infᵢ₂_le
+            · apply iInf₂_le
               exact ha
-            · exact le_supᵢ₂_of_le _ ha le_rfl
-        supₛ_le := fun s s ha => by
+            · exact le_iSup₂_of_le _ ha le_rfl
+        sSup_le := fun s s ha => by
           dsimp only -- Porting note: added
           split_ifs with h
           · exact bot_le
@@ -708,9 +708,9 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha _ hs)
           exact
             WithBot.coe_le_coe.2
-              ⟨le_infᵢ₂ fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).1,
-                supᵢ₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).2⟩
-        infₛ := fun S =>
+              ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).1,
+                iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).2⟩
+        sInf := fun S =>
           if h :
               ⊥ ∉ S ∧
                 ∀ ⦃s : NonemptyInterval α⦄,
@@ -718,18 +718,18 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
             some
               ⟨⟨⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
                   ⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩,
-                supᵢ₂_le fun s hs => le_infᵢ₂ <| h.2 hs⟩
+                iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
-        infₛ_le := fun s₁ s ha => by
+        sInf_le := fun s₁ s ha => by
           dsimp only -- Porting note: added
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
             -- so I added it through manually
             let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) => s.toProd.fst
-            exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ (f := f) s ha, infᵢ₂_le s ha⟩
+            exact WithBot.coe_le_coe.2 ⟨le_iSup₂ (f := f) s ha, iInf₂_le s ha⟩
           · exact bot_le
-        le_infₛ := by
+        le_sInf := by
           intro S s ha
           cases s with
           | none => exact bot_le
@@ -737,8 +737,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
             dsimp -- Porting note: added
             split_ifs with h
             · exact WithBot.some_le_some.2
-                ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
-                  le_infᵢ₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
+                ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
+                  le_iInf₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
             · rw [not_and_or, not_not] at h
               rcases h with h | h
               · exact ha _ h
@@ -757,8 +757,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
-    ↑(infₛ S) = ⋂ s ∈ S, (s : Set α) := by
+theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
+    ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
@@ -769,22 +769,22 @@ theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
   · refine' (eq_empty_of_subset_empty _).symm
-    exact interᵢ₂_subset_of_subset _ h Subset.rfl
+    exact iInter₂_subset_of_subset _ h Subset.rfl
   · refine' (not_nonempty_iff_eq_empty.1 _).symm
     rintro ⟨x, hx⟩
-    rw [mem_interᵢ₂] at hx
+    rw [mem_iInter₂] at hx
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
-#align interval.coe_Inf Interval.coe_infₛ
+#align interval.coe_Inf Interval.coe_sInf
 
 @[simp, norm_cast]
-theorem coe_infᵢ [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
-    ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [infᵢ]
-#align interval.coe_infi Interval.coe_infᵢ
+theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
+    ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
+#align interval.coe_infi Interval.coe_iInf
 
 -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_infᵢ₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
-    ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_infᵢ]
-#align interval.coe_infi₂ Interval.coe_infᵢ₂
+theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+    ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
+#align interval.coe_infi₂ Interval.coe_iInf₂
 
 end CompleteLattice
 
