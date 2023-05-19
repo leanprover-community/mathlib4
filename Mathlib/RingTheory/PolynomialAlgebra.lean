@@ -17,17 +17,17 @@ import Mathlib.Tactic.LibrarySearch
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
 
-Given `[comm_ring R] [ring A] [algebra R A]`
+Given `[CommRing R] [Ring A] [Algebra R A]`
 we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
-Combining this with the isomorphism `matrix n n A ≃ₐ[R] (A ⊗[R] matrix n n R)` proved earlier
-in `ring_theory.matrix_algebra`, we obtain the algebra isomorphism
+Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)` proved earlier
+in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
 ```
-def mat_poly_equiv :
-  matrix n n R[X] ≃ₐ[R] (matrix n n R)[X]
+def matPolyEquiv :
+  Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
-coeff (mat_poly_equiv m) k i j = coeff (m i j) k
+coeff (matPolyEquiv m) k i j = coeff (m i j) k
 ```
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
@@ -232,7 +232,7 @@ The algebra isomorphism stating "matrices of polynomials are the same as polynom
 
 (You probably shouldn't attempt to use this underlying definition ---
 it's an algebra equivalence, and characterised extensionally by the lemma
-`mat_poly_equiv_coeff_apply` below.)
+`matPolyEquiv_coeff_apply` below.)
 -/
 noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
   ((matrixEquivTensor R R[X] n).trans (Algebra.TensorProduct.comm R _ _)).trans
