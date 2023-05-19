@@ -47,15 +47,15 @@ theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ�
     refine' eq_univ_of_forall fun x => _
     cases' h x with C hC
     obtain ⟨m, hm⟩ := exists_nat_ge C
-    exact ⟨e m, mem_range_self m, mem_Inter.mpr fun i => le_trans (hC i) hm⟩
+    exact ⟨e m, mem_range_self m, mem_iInter.mpr fun i => le_trans (hC i) hm⟩
   -- apply the Baire category theorem to conclude that for some `m : ℕ`, `e m` contains some `x`
   rcases nonempty_interior_of_iUnion_of_closed hc hU with ⟨m, x, hx⟩
-  rcases metric.is_open_iff.mp isOpen_interior x hx with ⟨ε, ε_pos, hε⟩
+  rcases Metric.isOpen_iff.mp isOpen_interior x hx with ⟨ε, ε_pos, hε⟩
   obtain ⟨k, hk⟩ := NormedField.exists_one_lt_norm 𝕜
   -- show all elements in the ball have norm bounded by `m` after applying any `g i`
   have real_norm_le : ∀ z : E, z ∈ Metric.ball x ε → ∀ i : ι, ‖g i z‖ ≤ m := by
     intro z hz i
-    replace hz := mem_Inter.mp (interior_iInter_subset _ (hε hz)) i
+    replace hz := mem_iInter.mp (interior_iInter_subset _ (hε hz)) i
     apply interior_subset hz
   have εk_pos : 0 < ε / ‖k‖ := div_pos ε_pos (zero_lt_one.trans hk)
   refine' ⟨(m + m : ℕ) / (ε / ‖k‖), fun i => ContinuousLinearMap.op_norm_le_of_shell ε_pos _ hk _⟩
@@ -72,7 +72,6 @@ theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ�
       (le_mul_of_one_le_right (Nat.cast_nonneg _)
         ((one_le_div <| div_pos ε_pos (zero_lt_one.trans hk)).2 le_y))
     _ = (m + m : ℕ) / (ε / ‖k‖) * ‖y‖ := (mul_comm_div _ _ _).symm
-    
 #align banach_steinhaus banach_steinhaus
 
 open ENNReal
@@ -89,11 +88,10 @@ theorem banach_steinhaus_iSup_nnnorm {ι : Type _} [CompleteSpace E] {g : ι →
     refine' ⟨p, fun i => _⟩
     exact_mod_cast
       calc
-        (‖g i x‖₊ : ℝ≥0∞) ≤ ⨆ j, ‖g j x‖₊ := le_iSup _ i
+        (‖g i x‖₊ : ℝ≥0∞) ≤ ⨆ j, ↑‖g j x‖₊ := le_iSup (fun j => (‖g j x‖₊ : ℝ≥0∞)) i
         _ = p := hp₁
-        
   cases' banach_steinhaus h' with C' hC'
-  refine' (iSup_le fun i => _).trans_lt (@coe_lt_top C'.to_nnreal)
+  refine' (iSup_le fun i => _).trans_lt (@coe_lt_top C'.toNNReal)
   rw [← norm_toNNReal]
   exact coe_mono (Real.toNNReal_le_toNNReal <| hC' i)
 #align banach_steinhaus_supr_nnnorm banach_steinhaus_iSup_nnnorm
@@ -114,20 +112,19 @@ def continuousLinearMapOfTendsto [CompleteSpace E] [T2Space F] (g : ℕ → E �
     -- show that the maps are pointwise bounded and apply `banach_steinhaus`
     have h_point_bdd : ∀ x : E, ∃ C : ℝ, ∀ n : ℕ, ‖g n x‖ ≤ C := by
       intro x
-      rcases cauchySeq_bdd (tendsto_pi_nhds.mp h x).CauchySeq with ⟨C, C_pos, hC⟩
+      rcases cauchySeq_bdd (tendsto_pi_nhds.mp h x).cauchySeq with ⟨C, -, hC⟩
       refine' ⟨C + ‖g 0 x‖, fun n => _⟩
       simp_rw [dist_eq_norm] at hC
       calc
         ‖g n x‖ ≤ ‖g 0 x‖ + ‖g n x - g 0 x‖ := norm_le_insert' _ _
         _ ≤ C + ‖g 0 x‖ := by linarith [hC n 0]
-        
     cases' banach_steinhaus h_point_bdd with C' hC'
     /- show the uniform bound from `banach_steinhaus` is a norm bound of the limit map
              by allowing "an `ε` of room." -/
     refine'
       AddMonoidHomClass.continuous_of_bound (linearMapOfTendsto _ _ h) C' fun x =>
         le_of_forall_pos_lt_add fun ε ε_pos => _
-    cases' metric.tendsto_at_top.mp (tendsto_pi_nhds.mp h x) ε ε_pos with n hn
+    cases' Metric.tendsto_atTop.mp (tendsto_pi_nhds.mp h x) ε ε_pos with n hn
     have lt_ε : ‖g n x - f x‖ < ε := by
       rw [← dist_eq_norm]
       exact hn n (le_refl n)
@@ -135,6 +132,4 @@ def continuousLinearMapOfTendsto [CompleteSpace E] [T2Space F] (g : ℕ → E �
       ‖f x‖ ≤ ‖g n x‖ + ‖g n x - f x‖ := norm_le_insert _ _
       _ < ‖g n‖ * ‖x‖ + ε := by linarith [lt_ε, (g n).le_op_norm x]
       _ ≤ C' * ‖x‖ + ε := by nlinarith [hC' n, norm_nonneg x]
-      
 #align continuous_linear_map_of_tendsto continuousLinearMapOfTendsto
-
