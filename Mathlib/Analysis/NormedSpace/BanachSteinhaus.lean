@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Topology.MetricSpace.Baire
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
@@ -36,16 +36,14 @@ variable {E F 𝕜 𝕜₂ : Type _} [SeminormedAddCommGroup E] [SeminormedAddCo
 If a family of continuous linear maps from a Banach space into a normed space is pointwise
 bounded, then the norms of these linear maps are uniformly bounded. -/
 theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
-    (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' :=
-  by
+    (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   -- sequence of subsets consisting of those `x : E` with norms `‖g i x‖` bounded by `n`
   let e : ℕ → Set E := fun n => ⋂ i : ι, { x : E | ‖g i x‖ ≤ n }
   -- each of these sets is closed
   have hc : ∀ n : ℕ, IsClosed (e n) := fun i =>
     isClosed_iInter fun i => isClosed_le (Continuous.norm (g i).cont) continuous_const
   -- the union is the entire space; this is where we use `h`
-  have hU : (⋃ n : ℕ, e n) = univ :=
-    by
+  have hU : (⋃ n : ℕ, e n) = univ := by
     refine' eq_univ_of_forall fun x => _
     cases' h x with C hC
     obtain ⟨m, hm⟩ := exists_nat_ge C
@@ -55,8 +53,7 @@ theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ�
   rcases metric.is_open_iff.mp isOpen_interior x hx with ⟨ε, ε_pos, hε⟩
   obtain ⟨k, hk⟩ := NormedField.exists_one_lt_norm 𝕜
   -- show all elements in the ball have norm bounded by `m` after applying any `g i`
-  have real_norm_le : ∀ z : E, z ∈ Metric.ball x ε → ∀ i : ι, ‖g i z‖ ≤ m :=
-    by
+  have real_norm_le : ∀ z : E, z ∈ Metric.ball x ε → ∀ i : ι, ‖g i z‖ ≤ m := by
     intro z hz i
     replace hz := mem_Inter.mp (interior_iInter_subset _ (hε hz)) i
     apply interior_subset hz
@@ -85,10 +82,8 @@ open ENNReal
 /-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖⬝‖₊ : ℝ≥0∞`
 for convenience. -/
 theorem banach_steinhaus_iSup_nnnorm {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
-    (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ :=
-  by
-  have h' : ∀ x : E, ∃ C : ℝ, ∀ i : ι, ‖g i x‖ ≤ C :=
-    by
+    (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
+  have h' : ∀ x : E, ∃ C : ℝ, ∀ i : ι, ‖g i x‖ ≤ C := by
     intro x
     rcases lt_iff_exists_coe.mp (h x) with ⟨p, hp₁, _⟩
     refine' ⟨p, fun i => _⟩
@@ -111,16 +106,13 @@ open Filter
 domain is complete, the Banach-Steinhaus theorem is used to guarantee that the limit map
 is a *continuous* linear map as well. -/
 def continuousLinearMapOfTendsto [CompleteSpace E] [T2Space F] (g : ℕ → E →SL[σ₁₂] F) {f : E → F}
-    (h : Tendsto (fun n x => g n x) atTop (𝓝 f)) : E →SL[σ₁₂] F
-    where
+    (h : Tendsto (fun n x => g n x) atTop (𝓝 f)) : E →SL[σ₁₂] F where
   toFun := f
   map_add' := (linearMapOfTendsto _ _ h).map_add'
   map_smul' := (linearMapOfTendsto _ _ h).map_smul'
-  cont :=
-    by
+  cont := by
     -- show that the maps are pointwise bounded and apply `banach_steinhaus`
-    have h_point_bdd : ∀ x : E, ∃ C : ℝ, ∀ n : ℕ, ‖g n x‖ ≤ C :=
-      by
+    have h_point_bdd : ∀ x : E, ∃ C : ℝ, ∀ n : ℕ, ‖g n x‖ ≤ C := by
       intro x
       rcases cauchySeq_bdd (tendsto_pi_nhds.mp h x).CauchySeq with ⟨C, C_pos, hC⟩
       refine' ⟨C + ‖g 0 x‖, fun n => _⟩
