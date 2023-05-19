@@ -132,6 +132,12 @@ lemma additive_of_full_essSurj_comp {E : Type _} [Category E] [Preadditive E]
   dsimp
   rw [F.map_add]
 
+lemma additive_of_comp_faithful {E : Type _} [Category E] [Preadditive E]
+    (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
+    F.Additive := ⟨fun {_ _ f₁ f₂} => by
+  apply G.map_injective
+  rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map]⟩
+
 end
 
 section InducedCategory

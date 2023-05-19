@@ -148,6 +148,11 @@ notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
 
 variable {C}
 
+lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
+    (T₁ ∈ distTriang C) ↔ T₂ ∈ distTriang C :=
+  ⟨fun hT₁ => isomorphic_distinguished _ hT₁ _ e.symm,
+    fun hT₂ => isomorphic_distinguished _ hT₂ _ e⟩
+
 /-- Given any distinguished triangle `T`, then we know `T.rotate` is also distinguished.
 -/
 theorem rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=

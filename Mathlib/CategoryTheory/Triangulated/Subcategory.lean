@@ -280,7 +280,89 @@ instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
     MorphismProperty.IsMultiplicative.comp S.W _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
     ⟨by simpa using φ.comm₂, by simpa using φ.comm₃⟩⟩⟩
 
+lemma ext₁ (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
+    (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set :=
+  S.ext₂ _ (inv_rot_of_dist_triangle _ hT) (S.shift _ _ h₃) h₂
+
+lemma ext₃ (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
+    (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set :=
+  S.ext₂ _ (rot_of_dist_triangle _ hT) h₂ (S.shift _ _ h₁)
+
 noncomputable example [IsTriangulated C] : Pretriangulated (S.W.Localization) := inferInstance
+
+def category := FullSubcategory S.set
+
+instance : Category S.category := FullSubcategory.category _
+
+def ι : S.category ⥤ C := fullSubcategoryInclusion _
+
+instance : Full S.ι := FullSubcategory.full _
+instance : Faithful S.ι := FullSubcategory.faithful _
+
+instance : Preadditive S.category := by
+  dsimp [category]
+  infer_instance
+
+instance : S.ι.Additive := by
+  dsimp [ι, category]
+  infer_instance
+
+
+noncomputable instance hasShift : HasShift S.category ℤ :=
+  hasShiftOfFullyFaithful S.ι (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
+    (fun X => S.shift _ _ X.2)) (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
+
+instance hasCommShiftι : S.ι.HasCommShift ℤ :=
+  Functor.HasCommShift.of_hasShiftOfFullyFaithful _ _ _
+
+-- these definitions are made irreducible to prevent (at least temporarily) any abuse of defeq
+attribute [irreducible] hasShift hasCommShiftι
+
+instance (n : ℤ) : (shiftFunctor S.category n).Additive := by
+  have := Functor.additive_of_iso (S.ι.commShiftIso n).symm
+  apply Functor.additive_of_comp_faithful _ S.ι
+
+instance : HasZeroObject S.category where
+  zero := by
+    refine' ⟨⟨0, S.zero⟩, _⟩
+    rw [IsZero.iff_id_eq_zero]
+    apply S.ι.map_injective
+    simpa only [Functor.map_zero] using id_zero
+
+instance : Pretriangulated S.category where
+  distinguishedTriangles := fun T => S.ι.mapTriangle.obj T ∈ distTriang C
+  isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
+    isomorphic_distinguished _ hT₁ _ (S.ι.mapTriangle.mapIso e)
+  contractible_distinguished X := by
+    refine' isomorphic_distinguished _ (contractible_distinguished (S.ι.obj X)) _ _
+    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) S.ι.mapZeroObject
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  distinguished_cocone_triangle {X Y} f := by
+    obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (S.ι.map f)
+    let Z : S.category := ⟨Z', S.ext₃ _ mem X.2 Y.2⟩
+    refine' ⟨Z, S.ι.preimage g', S.ι.preimage (h' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X),
+      isomorphic_distinguished _ mem _ _⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  rotate_distinguished_triangle T :=
+    (rotate_distinguished_triangle (S.ι.mapTriangle.obj T)).trans
+      (distinguished_iff_of_iso (S.ι.mapTriangleRotateIso.app T))
+  complete_distinguished_triangle_morphism T₁ T₂ hT₁ hT₂ a b comm := by
+    obtain ⟨c, ⟨hc₁, hc₂⟩⟩ := complete_distinguished_triangle_morphism (S.ι.mapTriangle.obj T₁)
+      (S.ι.mapTriangle.obj T₂) hT₁ hT₂ (S.ι.map a) (S.ι.map b)
+      (by simpa using S.ι.congr_map comm)
+    have ⟨c', hc'⟩ : ∃ (c' : T₁.obj₃ ⟶ T₂.obj₃), c = S.ι.map c' := ⟨S.ι.preimage c, by simp⟩
+    dsimp at hc₁ hc₂
+    rw [hc'] at hc₁
+    rw [hc', assoc, ← Functor.commShiftIso_hom_naturality] at hc₂
+    refine' ⟨c', ⟨S.ι.map_injective _, S.ι.map_injective _⟩⟩
+    . simpa using hc₁
+    . rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
+        S.ι.map_comp, S.ι.map_comp, assoc, assoc, hc₂]
+
+--instance [IsTriangulated C] : IsTriangulated S.category := sorry
+
+instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 
 end Subcategory
 
@@ -299,7 +381,7 @@ variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditi
 example : MorphismProperty C := S.W
 
 noncomputable example : Pretriangulated S.W.Localization := inferInstance
---noncomputable example : IsTriangulated S.W.Localization := inferInstance
+noncomputable example : IsTriangulated S.W.Localization := inferInstance
 noncomputable example : S.W.Q.IsTriangulated := inferInstance
 
 end CategoryTheory

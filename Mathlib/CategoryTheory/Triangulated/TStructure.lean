@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.RespectsIso
 import Mathlib.Tactic.Linarith
 
@@ -184,6 +184,14 @@ def heart : Set C := t.setLE 0 ∩ t.setGE 0
 abbrev Heart := FullSubcategory t.heart
 
 abbrev heartInclusion : t.Heart ⥤ C := fullSubcategoryInclusion _
+
+/-def plus : Triangulated.Subcategory C where
+  set X := ∃ (n : ℤ), X ∈ t.setGE n
+  zero := ⟨0, by sorry⟩
+  shift := by
+    rintro X n ⟨i, hX⟩
+    exact ⟨i - n, t.shift_mem_setGE i n (i - n) (by linarith) X hX⟩
+  ext₂ := sorry -/
 
 end TStructure
 
