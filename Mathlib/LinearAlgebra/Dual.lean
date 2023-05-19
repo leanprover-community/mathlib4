@@ -42,7 +42,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     pulled back along `Module.Dual.eval R M`.
   * `Submodule.dualCopairing W` is the canonical pairing between `W.dualAnnihilator` and `M ⧸ W`.
     It is nondegenerate for vector spaces (`subspace.dualCopairing_nondegenerate`).
-  * `Submodule.dualPairing W` is the canonical pairing between `dual R M ⧸ W.dualAnnihilator`
+  * `Submodule.dualPairing W` is the canonical pairing between `Dual R M ⧸ W.dualAnnihilator`
     and `W`. It is nondegenerate for vector spaces (`Subspace.dualPairing_nondegenerate`).
 * Vector spaces:
   * `Subspace.dualLift W` is an arbitrary section (using choice) of `Submodule.dualRestrict W`.
@@ -127,8 +127,8 @@ instance : Inhabited (Dual R M) := ⟨0⟩
 instance : FunLike (Dual R M) M fun _ => R :=
   inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
 
-/-- Maps a module M to the dual of the dual of M. See `module.erange_coe` and
-`module.eval_equiv`. -/
+/-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
+`Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
   LinearMap.flip LinearMap.id
 #align module.dual.eval Module.Dual.eval
@@ -142,7 +142,7 @@ variable {R M} {M' : Type v'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
-`dual R M' →ₗ[R] dual R M`. -/
+`Dual R M' →ₗ[R] Dual R M`. -/
 def transpose : (M →ₗ[R] M') →ₗ[R] Dual R M' →ₗ[R] Dual R M :=
   (LinearMap.llcomp R M M' R).flip
 #align module.dual.transpose Module.Dual.transpose
@@ -190,7 +190,7 @@ variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
-/-- Given a linear map `f : M₁ →ₗ[R] M₂`, `f.dual_map` is the linear map between the dual of
+/-- Given a linear map `f : M₁ →ₗ[R] M₂`, `f.dualMap` is the linear map between the dual of
 `M₂` and `M₁` such that it maps the functional `φ` to `φ ∘ f`. -/
 def LinearMap.dualMap (f : M₁ →ₗ[R] M₂) : Dual R M₂ →ₗ[R] Dual R M₁ :=
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
@@ -750,7 +750,7 @@ theorem coe_basis : ⇑h.basis = e := by
   convert if_congr (eq_comm (a := j) (b := i)) rfl rfl
 #align module.dual_bases.coe_basis Module.DualBases.coe_basis
 
--- `convert` to get rid of a `decidable_eq` mismatch
+-- `convert` to get rid of a `DecidableEq` mismatch
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
@@ -917,14 +917,14 @@ theorem dualCoannihilator_iSup_eq {ι : Type _} (U : ι → Submodule R (Module.
   (dualAnnihilator_gc R M).u_iInf
 #align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_iSup_eq
 
-/-- See also `subspace.dual_annihilator_inf_eq` for vector subspaces. -/
+/-- See also `Subspace.dualAnnihilator_inf_eq` for vector subspaces. -/
 theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
     U.dualAnnihilator ⊔ V.dualAnnihilator ≤ (U ⊓ V).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_sup_eq]
   apply inf_le_inf <;> exact le_dualAnnihilator_dualCoannihilator _
 #align submodule.sup_dual_annihilator_le_inf Submodule.sup_dualAnnihilator_le_inf
 
-/-- See also `subspace.dual_annihilator_infi_eq` for vector subspaces when `ι` is finite. -/
+/-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
 theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
     (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
@@ -1429,7 +1429,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- This is also true if `V₁` is finite dimensional since one can restrict `ι` to some subtype
 -- for which the infi and supr are the same.
 -- The obstruction to the `dualAnnihilator_inf_eq` argument carrying through is that we need
--- for `Module.dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.dual R (V ⧸ W i)`, which is not
+-- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
 theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K V₁) :
@@ -1609,8 +1609,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
   all_goals { intros; simp [*] at * }
 
-/-- A linear equivalence between `dual M ⊗ dual N` and `dual (M ⊗ N)` given bases for `M` and `N`.
-It sends `f ⊗ g` to the composition of `tensor_product.map f g` with the natural
+/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
+It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
 @[simps!]
