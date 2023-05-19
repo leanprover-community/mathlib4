@@ -74,9 +74,6 @@ open Function Set Submodule
 
 open BigOperators
 
--- Porting note: TODO: workaround for lean4#2074
--- attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
 
@@ -832,7 +829,6 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 #align basis.singleton_repr Basis.singleton_repr
 
-set_option synthInstance.etaExperiment true in
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
@@ -1117,7 +1113,6 @@ section Mk
 
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
-set_option synthInstance.etaExperiment true in
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
@@ -1130,7 +1125,6 @@ protected noncomputable def mk : Basis ι R M :=
       right_inv := fun _ => hli.repr_eq rfl }
 #align basis.mk Basis.mk
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
   rfl
@@ -1147,14 +1141,12 @@ theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
 
 variable {hli hsp}
 
-set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 1 on the `i`th element of the
 basis. -/
 theorem mk_coord_apply_eq (i : ι) : (Basis.mk hli hsp).coord i (v i) = 1 :=
   show hli.repr ⟨v i, Submodule.subset_span (mem_range_self i)⟩ i = 1 by simp [hli.repr_eq_single i]
 #align basis.mk_coord_apply_eq Basis.mk_coord_apply_eq
 
-set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 0 on the `j`th element of the
 basis if `j ≠ i`. -/
 theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i (v j) = 0 :=
@@ -1234,7 +1226,6 @@ theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMu
     (groupSmul_span_eq_top v.span_eq).ge i
 #align basis.group_smul_apply Basis.groupSmul_apply
 
-set_option synthInstance.etaExperiment true in
 theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → Rˣ} :
     Submodule.span R (Set.range (w • v)) = ⊤ :=
   groupSmul_span_eq_top hv
@@ -1252,7 +1243,6 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
     (units_smul_span_eq_top v.span_eq).ge i
 #align basis.units_smul_apply Basis.unitsSMul_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
@@ -1267,7 +1257,6 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     split_ifs with h <;> simp [h]
 #align basis.coord_units_smul Basis.coord_unitsSMul
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
     (e.unitsSMul w).repr v i = (w i)⁻¹ • e.repr v i :=
@@ -1557,15 +1546,12 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) where
-  eq_supₛ_atoms W := by
-    refine ⟨_, submodule_eq_supₛ_le_nonzero_spans W, ?_⟩
+  eq_sSup_atoms W := by
+    refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
 
 end AtomsOfSubmoduleLattice
-
--- Porting note: TODO: workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 variable {K V}
 
@@ -1621,7 +1607,6 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
 
 open Submodule LinearMap
 
-set_option synthInstance.etaExperiment true in
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
@@ -1659,7 +1644,6 @@ variable (R)
 
 open Submodule
 
-set_option synthInstance.etaExperiment true in
 /-- Let `b` be a `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
 divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as a `R`-basis. -/
 noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
@@ -1671,7 +1655,6 @@ theorem Basis.restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i
   simp only [Basis.restrictScalars, Basis.span_apply]
 #align basis.restrict_scalars_apply Basis.restrictScalars_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     algebraMap R S ((b.restrictScalars R).repr m i) = b.repr m i := by
