@@ -41,12 +41,14 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
@@ -67,7 +69,9 @@ import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.DirectSum.Finsupp
+import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 import Mathlib.Algebra.Divisibility.Basic
@@ -174,6 +178,7 @@ import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
@@ -431,6 +436,7 @@ import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.MStructure
+import Mathlib.Analysis.NormedSpace.Multilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.Ray
@@ -1191,6 +1197,7 @@ import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Identities
@@ -1551,6 +1558,7 @@ import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -1582,6 +1590,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
@@ -1663,8 +1672,10 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
+import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.PellMatiyasevic
@@ -1820,6 +1831,7 @@ import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
@@ -1840,6 +1852,7 @@ import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Symmetric
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
@@ -2113,6 +2126,7 @@ import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.Topology.Category.Top.Limits.Pullbacks
 import Mathlib.Topology.Category.Top.OpenNhds
 import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
@@ -2209,6 +2223,9 @@ import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.Sheaves.Abelian
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.Spectral.Hom

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module linear_algebra.std_basis
-! leanprover-community/mathlib commit f2edd790f6c6e1d660515f76768f63cb717434d7
+! leanprover-community/mathlib commit f8c79b0a623404854a2902b836eac32156fd7712
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
