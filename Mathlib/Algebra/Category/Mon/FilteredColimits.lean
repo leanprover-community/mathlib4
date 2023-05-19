@@ -8,7 +8,7 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.Limits.Types
@@ -46,30 +46,37 @@ section
 
 -- We use parameters here, mainly so we can have the abbreviations `M` and `M.mk` below, without
 -- passing around `F` all the time.
-parameter {J : Type v}[SmallCategory J](F : J ⥤ MonCat.{max v u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget Mon` in the category of types.
 In the following, we will construct a monoid structure on `M`.
 -/
 @[to_additive
       "The colimit of `F ⋙ forget AddMon` in the category of types.\nIn the following, we will construct an additive monoid structure on `M`."]
-abbrev M : Type max v u :=
+abbrev M : TypeMax.{v, u} :=
   Types.Quot (F ⋙ forget MonCat)
+set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.M MonCat.FilteredColimits.M
+set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.M AddMonCat.FilteredColimits.M
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
-abbrev M.mk : (Σj, F.obj j) → M :=
+abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
   Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat))
+set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.M.mk MonCat.FilteredColimits.M.mk
+set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
 @[to_additive]
-theorem M.mk_eq (x y : Σj, F.obj j)
-    (h : ∃ (k : J)(f : x.1 ⟶ k)(g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk x = M.mk y :=
+theorem M.mk_eq (x y : Σ j, F.obj j)
+    (h : ∃ (k : J)(f : x.1 ⟶ k)(g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
+  M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
+set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.M.mk_eq MonCat.FilteredColimits.M.mk_eq
+set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.M.mk_eq AddMonCat.FilteredColimits.M.mk_eq
 
 variable [IsFiltered J]
@@ -78,10 +85,13 @@ variable [IsFiltered J]
 "one" in the colimit as the equivalence class of `⟨j₀, 1 : F.obj j₀⟩`.
 -/
 @[to_additive
-      "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to\ndefine the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
-instance colimitHasOne : One M where one := M.mk ⟨IsFiltered.nonempty.some, 1⟩
-#align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitHasOne
-#align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitHasZero
+  "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to\ndefine the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
+instance colimitOne : One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some, 1⟩
+set_option linter.uppercaseLean3 false in
+#align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
+set_option linter.uppercaseLean3 false in
+#align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
+
 
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen
@@ -89,11 +99,13 @@ object `j`.
 -/
 @[to_additive
       "The definition of the \"zero\" in the colimit is independent of the chosen object\nof `J`. In particular, this lemma allows us to \"unfold\" the definition of `colimit_zero` at a\ncustom chosen object `j`."]
-theorem colimit_one_eq (j : J) : (1 : M) = M.mk ⟨j, 1⟩ := by
+theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
-  refine' ⟨max' _ j, left_to_max _ j, right_to_max _ j, _⟩
+  refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
   simp
+set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
+set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
 
 /-- The "unlifted" version of multiplication in the colimit. To multiply two dependent pairs
@@ -102,21 +114,25 @@ and multiply them there.
 -/
 @[to_additive
       "The \"unlifted\" version of addition in the colimit. To add two dependent pairs\n`⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `is_filtered.max`)\nand add them there."]
-def colimitMulAux (x y : Σj, F.obj j) : M :=
-  M.mk ⟨max x.1 y.1, F.map (leftToMax x.1 y.1) x.2 * F.map (rightToMax x.1 y.1) y.2⟩
+def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
+  M.mk F ⟨IsFiltered.max x.fst y.fst, F.map (IsFiltered.leftToMax x.1 y.1) x.2 *
+    F.map (IsFiltered.rightToMax x.1 y.1) y.2⟩
+set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_mul_aux MonCat.FilteredColimits.colimitMulAux
+set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_add_aux AddMonCat.FilteredColimits.colimitAddAux
 
 /-- Multiplication in the colimit is well-defined in the left argument. -/
 @[to_additive "Addition in the colimit is well-defined in the left argument."]
-theorem colimitMulAux_eq_of_rel_left {x x' y : Σj, F.obj j}
-    (hxx' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) x x') :
-    colimit_mul_aux x y = colimit_mul_aux x' y := by
+theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
+    (hxx' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) x x') :
+    colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
   simp at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
-    tulip (left_to_max j₁ j₂) (right_to_max j₁ j₂) (right_to_max j₃ j₂) (left_to_max j₃ j₂) f g
+    IsFiltered.tulip (IsFiltered.leftToMax j₁ j₂) (IsFiltered.rightToMax j₁ j₂)
+      (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
   apply M.mk_eq
   use s, α, γ
   dsimp
@@ -126,14 +142,15 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σj, F.obj j}
 
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
-theorem colimitMulAux_eq_of_rel_right {x y y' : Σj, F.obj j}
-    (hyy' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) y y') :
-    colimit_mul_aux x y = colimit_mul_aux x y' := by
+theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
+    (hyy' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) y y') :
+    colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
   simp at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
-    tulip (right_to_max j₂ j₁) (left_to_max j₂ j₁) (left_to_max j₂ j₃) (right_to_max j₂ j₃) f g
+    IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
+      (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
   apply M.mk_eq
   use s, α, γ
   dsimp
@@ -143,17 +160,17 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σj, F.obj j}
 
 /-- Multiplication in the colimit. See also `colimit_mul_aux`. -/
 @[to_additive "Addition in the colimit. See also `colimit_add_aux`."]
-instance colimitHasMul : Mul M
-    where mul x y := by
-    refine' Quot.lift₂ (colimit_mul_aux F) _ _ x y
+instance colimitMul : Mul (M.{v, u} F) :=
+{ mul := fun x y => by
+    refine' Quot.lift₂ (colimitMulAux F) _ _ x y
     · intro x y y' h
-      apply colimit_mul_aux_eq_of_rel_right
-      apply types.filtered_colimit.rel_of_quot_rel
+      apply colimitMulAux_eq_of_rel_right
+      apply Types.FilteredColimit.rel_of_quot_rel
       exact h
     · intro x x' y h
-      apply colimit_mul_aux_eq_of_rel_left
-      apply types.filtered_colimit.rel_of_quot_rel
-      exact h
+      apply colimitMulAux_eq_of_rel_left
+      apply Types.FilteredColimit.rel_of_quot_rel
+      exact h }
 #align Mon.filtered_colimits.colimit_has_mul MonCat.FilteredColimits.colimitHasMul
 #align AddMon.filtered_colimits.colimit_has_add AddMonCat.FilteredColimits.colimitHasAdd
 
@@ -163,10 +180,11 @@ using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`.
 -/
 @[to_additive
       "Addition in the colimit is independent of the chosen \"maximum\" in the filtered\ncategory. In particular, this lemma allows us to \"unfold\" the definition of the addition of `x`\nand `y`, using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`."]
-theorem colimit_mul_mk_eq (x y : Σj, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
-    M.mk x * M.mk y = M.mk ⟨k, F.map f x.2 * F.map g y.2⟩ := by
+theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
+    M.mk.{v, u} F x * M.mk F y = M.mk F ⟨k, F.map f x.2 * F.map g y.2⟩ := by
   cases' x with j₁ x; cases' y with j₂ y
-  obtain ⟨s, α, β, h₁, h₂⟩ := bowtie (left_to_max j₁ j₂) f (right_to_max j₁ j₂) g
+  obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f
+    (IsFiltered.rightToMax j₁ j₂) g
   apply M.mk_eq
   use s, α, β
   dsimp
@@ -175,9 +193,9 @@ theorem colimit_mul_mk_eq (x y : Σj, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 
 #align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
 @[to_additive]
-instance colimitMonoid : Monoid M :=
-  { colimit_has_one,
-    colimit_has_mul with
+instance colimitMonoid : Monoid (M.{v, u} F) :=
+  { colimitOne F,
+    colimitMul F with
     one_mul := fun x => by
       apply Quot.inductionOn x; clear x; intro x; cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
@@ -364,4 +382,3 @@ instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget Com
 end
 
 end CommMonCat.FilteredColimits
-
