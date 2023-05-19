@@ -158,7 +158,6 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
       | top => apply J.top_mem
       | transitive X R S _ _ H1 H2 => exact J.transitive H1 _ H2
 
-
 theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
@@ -172,7 +171,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
-theorem IsSheaf_iff_Coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
+theorem isSheaf_iff_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (toGrothendieck _ K) P ↔
     (∀ {X : C} (R : Presieve X), R ∈ K X → Presieve.IsSheafFor P R) := by
   constructor
