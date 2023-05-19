@@ -364,6 +364,7 @@ This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
 -- Porting note: no `has_nonempty_instance` linter.
 -- @[nolint has_nonempty_instance]
+@[nolint unusedArguments]
 def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} C))
     (_ℬ : ∀ X Y : C, LimitCone (pair X Y)) :=
   C
