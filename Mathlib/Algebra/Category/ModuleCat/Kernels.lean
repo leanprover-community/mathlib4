@@ -61,7 +61,8 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
       f.range.liftQ (Cofork.π s) <| LinearMap.range_le_ker_iff.2 <| CokernelCofork.condition s)
     (fun s => f.range.liftQ_mkQ (Cofork.π s) _) fun s m h => by
     -- Porting note: broken dot notation
-    haveI : Epi (asHom (LinearMap.range f).mkQ) := (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
+    haveI : Epi (asHom (LinearMap.range f).mkQ) :=
+      (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     -- Porting note: broken dot notation
     apply (cancel_epi (asHom (LinearMap.range f).mkQ)).1
     convert h
