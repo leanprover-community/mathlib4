@@ -141,10 +141,12 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   show to_hom (f * g) = to_hom f * to_hom g
   revert f g
   rw [AddMonoidHom.map_mul_iff]
-  ext (xi xv yi yv) : 4
+  -- porting note: does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
+  refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
+  refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
     AddMonoidHom.mul_apply, AddEquiv.coe_toAddMonoidHom, Finsupp.singleAddHom_apply]
-  simp only [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk,
+  simp only [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     AddMonoidAlgebra.toDirectSum_single, DirectSum.of_mul_of, Mul.gMul_mul]
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
 
