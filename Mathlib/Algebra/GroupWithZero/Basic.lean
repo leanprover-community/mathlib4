@@ -12,7 +12,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Tactic.SimpRw
 
 /-!
 # Groups with an adjoined zero element

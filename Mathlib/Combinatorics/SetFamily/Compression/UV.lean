@@ -9,7 +9,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic.ScopedNS -- Porting note: scoped
 
 /-!
 # UV-compressions

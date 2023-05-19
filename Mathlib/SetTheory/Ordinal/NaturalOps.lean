@@ -9,7 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Tactic.SolveByElim
+
 /-!
 # Natural operations on ordinals
 

@@ -12,8 +12,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Lift
 
 /-!
 # Units (i.e., invertible elements) of a monoid
