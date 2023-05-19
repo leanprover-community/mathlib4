@@ -402,9 +402,9 @@ namespace ContinuousLinearMap
 variable [CompleteSpace E]
 
 /-- Intermediate definition used to show
-`continuous_linear_map.closed_complemented_range_of_is_compl_of_ker_eq_bot`.
+`ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
-This is `f.coprod G.subtypeL` as an `continuous_linear_equiv`. -/
+This is `f.coprod G.subtypeL` as an `ContinuousLinearEquiv`. -/
 noncomputable def coprodSubtypeLEquivOfIsCompl (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl (LinearMap.range f) G) [CompleteSpace G] (hker : ker f = ⊥) : (E × G) ≃L[𝕜] F :=
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)
@@ -482,7 +482,7 @@ variable {g}
 
 namespace ContinuousLinearMap
 
-/-- Upgrade a `linear_map` to a `continuous_linear_map` using the **closed graph theorem**. -/
+/-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using the **closed graph theorem**. -/
 def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F where
   toLinearMap := g
   cont := g.continuous_of_isClosed_graph hg
@@ -500,7 +500,7 @@ theorem coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
   rfl
 #align continuous_linear_map.coe_of_is_closed_graph ContinuousLinearMap.coe_ofIsClosedGraph
 
-/-- Upgrade a `linear_map` to a `continuous_linear_map` using a variation on the
+/-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using a variation on the
 **closed graph theorem**. -/
 def ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
