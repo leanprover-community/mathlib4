@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Baire
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 /-!
 # Banach open mapping theorem
@@ -63,8 +63,7 @@ end ContinuousLinearMap
 /-- Given a continuous linear equivalence, the inverse is in particular an instance of
 `nonlinear_right_inverse` (which turns out to be linear). -/
 noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜] F) :
-    ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F)
-    where
+    ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F) where
   toFun := f.invFun
   nnnorm := ‖(f.symm : F →L[𝕜] E)‖₊
   bound' y := ContinuousLinearMap.le_op_norm (f.symm : F →L[𝕜] E) _
@@ -89,10 +88,8 @@ images of elements of norm at most `C * ‖y‖`.
 For further use, we will only need such an element whose image
 is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
-    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
-  by
-  have A : (⋃ n : ℕ, closure (f '' ball 0 n)) = univ :=
-    by
+    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+  have A : (⋃ n : ℕ, closure (f '' ball 0 n)) = univ := by
     refine' subset.antisymm (subset_univ _) fun y hy => _
     rcases surj y with ⟨x, hx⟩
     rcases exists_nat_gt ‖x‖ with ⟨n, hn⟩
@@ -129,8 +126,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       let x := x₁ - x₂
       have I : ‖f x - d • y‖ ≤ 2 * δ :=
         calc
-          ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ :=
-            by
+          ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
             congr 1
             simp only [x, f.map_sub]
             abel
@@ -165,8 +161,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
         calc
           ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
-          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) :=
-            by
+          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
             refine' mul_le_mul dinv _ (norm_nonneg _) _
             · exact le_trans (norm_sub_le _ _) (add_le_add (le_of_lt hx₁) (le_of_lt hx₂))
             · apply mul_nonneg (mul_nonneg _ (norm_nonneg _)) (norm_nonneg _)
@@ -181,8 +176,7 @@ variable [CompleteSpace E]
 /-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
 any point has a preimage with controlled norm. -/
 theorem exists_preimage_norm_le (surj : Surjective f) :
-    ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ :=
-  by
+    ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ := by
   obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le f surj
   /- Second step of the proof: starting from `y`, we want an exact preimage of `y`. Let `g y` be
     the approximate preimage of `y` given by the first step, and `h y = y - f(g y)` the part that
@@ -197,8 +191,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
   refine' ⟨2 * C + 1, by linarith, fun y => _⟩
-  have hnle : ∀ n : ℕ, ‖(h^[n]) y‖ ≤ (1 / 2) ^ n * ‖y‖ :=
-    by
+  have hnle : ∀ n : ℕ, ‖(h^[n]) y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction' n with n IH
     · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero]
@@ -208,16 +201,14 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       apply mul_le_mul_of_nonneg_left IH
       norm_num
   let u n := g ((h^[n]) y)
-  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) :=
-    by
+  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := by
     intro n
     apply le_trans (hg _).2 _
     calc
       C * ‖(h^[n]) y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
       
-  have sNu : Summable fun n => ‖u n‖ :=
-    by
+  have sNu : Summable fun n => ‖u n‖ := by
     refine' summable_of_nonneg_of_le (fun n => norm_nonneg _) ule _
     exact Summable.mul_right _ (summable_geometric_of_lt_1 (by norm_num) (by norm_num))
   have su : Summable u := summable_of_summable_norm sNu
@@ -232,8 +223,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := (le_add_of_nonneg_right (norm_nonneg y))
       _ = (2 * C + 1) * ‖y‖ := by ring
       
-  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - (h^[n]) y :=
-    by
+  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - (h^[n]) y := by
     intro n
     induction' n with n IH
     · simp [f.map_zero]
@@ -242,8 +232,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have L₁ : tendsto (fun n => f (∑ i in Finset.range n, u i)) at_top (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
   simp only [fsumeq] at L₁
-  have L₂ : tendsto (fun n => y - (h^[n]) y) at_top (𝓝 (y - 0)) :=
-    by
+  have L₂ : tendsto (fun n => y - (h^[n]) y) at_top (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
     rw [tendsto_iff_norm_tendsto_zero]
     simp only [sub_zero]
@@ -257,8 +246,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
 
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
-protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f :=
-  by
+protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   intro s hs
   rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
   refine' is_open_iff.2 fun y yfs => _
@@ -311,8 +299,7 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 #align continuous_linear_map.frontier_preimage ContinuousLinearMap.frontier_preimage
 
 theorem exists_nonlinearRightInverse_of_surjective (f : E →L[𝕜] F) (hsurj : LinearMap.range f = ⊤) :
-    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm :=
-  by
+    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
   choose C hC fsymm h using exists_preimage_norm_le _ (linear_map.range_eq_top.mp hsurj)
   use {
       toFun := fsymm
@@ -332,8 +319,7 @@ noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →L[𝕜
 #align continuous_linear_map.nonlinear_right_inverse_of_surjective ContinuousLinearMap.nonlinearRightInverseOfSurjective
 
 theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →L[𝕜] F)
-    (hsurj : LinearMap.range f = ⊤) : 0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm :=
-  by
+    (hsurj : LinearMap.range f = ⊤) : 0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm := by
   rw [nonlinear_right_inverse_of_surjective]
   exact Classical.choose_spec (exists_nonlinear_right_inverse_of_surjective f hsurj)
 #align continuous_linear_map.nonlinear_right_inverse_of_surjective_nnnorm_pos ContinuousLinearMap.nonlinearRightInverseOfSurjective_nnnorm_pos
@@ -346,8 +332,7 @@ variable [CompleteSpace E]
 
 /-- If a bounded linear map is a bijection, then its inverse is also a bounded linear map. -/
 @[continuity]
-theorem continuous_symm (e : E ≃ₗ[𝕜] F) (h : Continuous e) : Continuous e.symm :=
-  by
+theorem continuous_symm (e : E ≃ₗ[𝕜] F) (h : Continuous e) : Continuous e.symm := by
   rw [continuous_def]
   intro s hs
   rw [← e.image_eq_preimage]
@@ -441,8 +426,7 @@ theorem range_eq_map_coprodSubtypeLEquivOfIsCompl (f : E →L[𝕜] F) {G : Subm
     (h : IsCompl (LinearMap.range f) G) [CompleteSpace G] (hker : ker f = ⊥) :
     LinearMap.range f =
       ((⊤ : Submodule 𝕜 E).Prod (⊥ : Submodule 𝕜 G)).map
-        (f.coprodSubtypeLEquivOfIsCompl h hker : E × G →ₗ[𝕜] F) :=
-  by
+        (f.coprodSubtypeLEquivOfIsCompl h hker : E × G →ₗ[𝕜] F) := by
   rw [coprod_subtypeL_equiv_of_is_compl, _root_.coe_coe, ContinuousLinearEquiv.coe_ofBijective,
     coe_coprod, LinearMap.coprod_map_prod, Submodule.map_bot, sup_bot_eq, Submodule.map_top]
   rfl
@@ -452,8 +436,7 @@ theorem range_eq_map_coprodSubtypeLEquivOfIsCompl (f : E →L[𝕜] F) {G : Subm
 `E / f.ker`, once we have quotient normed spaces. -/
 theorem closed_complemented_range_of_isCompl_of_ker_eq_bot (f : E →L[𝕜] F) (G : Submodule 𝕜 F)
     (h : IsCompl (LinearMap.range f) G) (hG : IsClosed (G : Set F)) (hker : ker f = ⊥) :
-    IsClosed (LinearMap.range f : Set F) :=
-  by
+    IsClosed (LinearMap.range f : Set F) := by
   haveI : CompleteSpace G := hG.complete_space_coe
   let g := coprod_subtypeL_equiv_of_is_compl f h hker
   rw [congr_arg coe (range_eq_map_coprod_subtypeL_equiv_of_is_compl f h hker)]
@@ -470,8 +453,7 @@ variable [CompleteSpace E] (g : E →ₗ[𝕜] F)
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
 theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
-    Continuous g :=
-  by
+    Continuous g := by
   letI : CompleteSpace g.graph := complete_space_coe_iff_is_complete.mpr hg.is_complete
   let φ₀ : E →ₗ[𝕜] E × F := linear_map.id.prod g
   have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl
@@ -487,8 +469,7 @@ spaces. To show that `f` is continuous, it suffices to show that for any converg
 `uₙ ⟶ x`, if `f(uₙ) ⟶ y` then `y = f(x)`. -/
 theorem LinearMap.continuous_of_seq_closed_graph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    Continuous g :=
-  by
+    Continuous g := by
   refine' g.continuous_of_is_closed_graph (IsSeqClosed.isClosed _)
   rintro φ ⟨x, y⟩ hφg hφ
   refine' hg (Prod.fst ∘ φ) x y ((continuous_fst.tendsto _).comp hφ) _
@@ -504,8 +485,7 @@ variable {g}
 namespace ContinuousLinearMap
 
 /-- Upgrade a `linear_map` to a `continuous_linear_map` using the **closed graph theorem**. -/
-def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F
-    where
+def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F where
   toLinearMap := g
   cont := g.continuous_of_isClosed_graph hg
 #align continuous_linear_map.of_is_closed_graph ContinuousLinearMap.ofIsClosedGraph
@@ -517,8 +497,7 @@ theorem coeFn_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
 #align continuous_linear_map.coe_fn_of_is_closed_graph ContinuousLinearMap.coeFn_ofIsClosedGraph
 
 theorem coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
-    ↑(ContinuousLinearMap.ofIsClosedGraph hg) = g :=
-  by
+    ↑(ContinuousLinearMap.ofIsClosedGraph hg) = g := by
   ext
   rfl
 #align continuous_linear_map.coe_of_is_closed_graph ContinuousLinearMap.coe_ofIsClosedGraph
@@ -541,8 +520,7 @@ theorem coeFn_ofSeqClosedGraph
 
 theorem coe_ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    ↑(ContinuousLinearMap.ofSeqClosedGraph hg) = g :=
-  by
+    ↑(ContinuousLinearMap.ofSeqClosedGraph hg) = g := by
   ext
   rfl
 #align continuous_linear_map.coe_of_seq_closed_graph ContinuousLinearMap.coe_ofSeqClosedGraph
