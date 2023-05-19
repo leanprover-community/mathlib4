@@ -33,7 +33,6 @@ coeff (mat_poly_equiv m) k i j = coeff (m i j) k
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
 -/
 
-set_option autoImplicit false
 universe u v w
 
 open Polynomial TensorProduct
@@ -54,7 +53,6 @@ variable [Semiring A] [Algebra R A]
 
 namespace PolyEquivTensor
 
-set_option trace.simps.verbose true
 /-- (Implementation detail).
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
