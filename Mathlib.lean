@@ -557,6 +557,7 @@ import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.ExactCategory.Abelian
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.CategoryTheory.ExactCategory.GrothendieckGroup
 import Mathlib.CategoryTheory.ExactCategory.Q

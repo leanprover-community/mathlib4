@@ -119,7 +119,7 @@ noncomputable def ShortExact.fIsKernel [Balanced C] {S : ShortComplex C} (hS : S
   have := hS.mono_f
   exact hS.exact.fIsKernel
 
-noncomputable def gIsCokernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
+noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.epi_g
   exact hS.exact.gIsCokernel
