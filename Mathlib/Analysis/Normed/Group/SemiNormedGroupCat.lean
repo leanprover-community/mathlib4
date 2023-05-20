@@ -166,15 +166,14 @@ namespace SemiNormedGroup₁
 instance : CoeSort SemiNormedGroup₁ (Type _) where
   coe X := X.α
 
-
--- Porting Note: Added -- needed to make intance LargeCategory work-/
-instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
-
 instance : LargeCategory.{u} SemiNormedGroup₁ where
   Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {X Y Z} f g := ⟨(g : NormedAddGroupHom Y Z).comp (f : NormedAddGroupHom X Y), g.2.comp f.2⟩
+  comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
+
+/-- Porting Note: Added-/
+instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X ⟶ Y) := f.1
 
 @[ext]
 theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
@@ -184,7 +183,7 @@ theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (f : M → N) = 
 instance : ConcreteCategory.{u} SemiNormedGroup₁ where
   forget :=
     { obj := fun X => X
-      map := fun X Y f => f }
+      map := fun f => f }
   forget_faithful := { }
 
 /-- Construct a bundled `SemiNormedGroup₁` from the underlying type and typeclass. -/
@@ -213,10 +212,10 @@ def mkIso {M N : SemiNormedGroup} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.i
     SemiNormedGroup₁.of M ≅ SemiNormedGroup₁.of N where
   hom := mkHom f.hom i
   inv := mkHom f.inv i'
-  hom_inv_id' := by
+  hom_inv_id := by
     apply Subtype.eq
     exact f.hom_inv_id
-  inv_hom_id' := by
+  inv_hom_id := by
     apply Subtype.eq
     exact f.inv_hom_id
 #align SemiNormedGroup₁.mk_iso SemiNormedGroup₁.mkIso
@@ -224,7 +223,7 @@ def mkIso {M N : SemiNormedGroup} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.i
 instance : HasForget₂ SemiNormedGroup₁ SemiNormedGroup
     where forget₂ :=
     { obj := fun X => X
-      map := fun X Y f => f.1 }
+      map := fun f => f.1 }
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroup₁.of V : Type u) = V :=
@@ -244,7 +243,7 @@ theorem coe_comp {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) : (f �
 -- If `coe_fn_coe_base` fires before `coe_comp`, `coe_comp'` puts us back in normal form.
 @[simp]
 theorem coe_comp' {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) :
-    (f ≫ g : NormedAddGroupHom M K) = (↑g : NormedAddGroupHom N K).comp ↑f :=
+    (⇑(f ≫ g) : NormedAddGroupHom M K) = (↑g : NormedAddGroupHom N K).comp ↑f :=
   rfl
 #align SemiNormedGroup₁.coe_comp' SemiNormedGroup₁.coe_comp'
 
