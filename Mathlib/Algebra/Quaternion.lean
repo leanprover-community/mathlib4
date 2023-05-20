@@ -500,8 +500,6 @@ section
 
 variable (c₁ c₂)
 
-set_option synthInstance.etaExperiment true -- lean4#2074
-
 /-- `QuaternionAlgebra.re` as a `LinearMap`-/
 @[simps]
 def reₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
@@ -1312,7 +1310,6 @@ theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
 end LinearOrderedCommRing
 
 section Field
-set_option synthInstance.etaExperiment true
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
@@ -1329,7 +1326,7 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
       -- porting note: the aliased definition confuse TC search
       letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
       rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel (norm_sq_ne_zero.2 ha), coe_one] }
+        inv_mul_cancel (normSq_ne_zero.2 ha), coe_one] }
 
 @[norm_cast, simp]
 theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
@@ -1407,7 +1404,8 @@ theorem normSq_zpow (z : ℤ) : normSq (a ^ z) = normSq a ^ z :=
 #align quaternion.norm_sq_zpow Quaternion.normSq_zpow
 
 @[norm_cast]
-theorem normSq_rat_cast (q : ℚ) : normSq (q : ℍ[R]) = q ^ 2 := by rw [← coe_rat_cast, norm_sq_coe]
+theorem normSq_rat_cast (q : ℚ) : normSq (q : ℍ[R]) = (q : ℍ[R]) ^ 2 := by
+  rw [← coe_rat_cast, normSq_coe, coe_pow]
 #align quaternion.norm_sq_rat_cast Quaternion.normSq_rat_cast
 
 end Field
