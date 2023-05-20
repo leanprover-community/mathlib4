@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated ZeroObject
+open Category Limits Pretriangulated ZeroObject Preadditive
 
 namespace Triangulated
 
@@ -36,6 +36,39 @@ lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
     have hg' : g = 0 := t.zero g (a-1) b (by linarith)
       (t.shift_mem_setLE a 1 (a-1) (by linarith) _ h₀) h₁'
     rw [instAddCommGroupTriangleHom_zero_hom₃, hg, hg', comp_zero]
+
+lemma triangle_map_exists (n₀ n₁ : ℤ) (h : n₀ < n₁) (T T' : Triangle C)
+    (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
+    (φ : T.obj₂ ⟶ T'.obj₂)
+    (h₀ : T.obj₁ ∈ t.setLE n₀)
+    (h₁' : T'.obj₃ ∈ t.setGE n₁) :
+    ∃ (f : T ⟶ T'), f.hom₂ = φ := by
+  obtain ⟨a, comm₁⟩ := covariant_yoneda_exact₂ _ hT' (T.mor₁ ≫ φ)
+    (t.zero _ n₀ n₁ h h₀ h₁')
+  obtain ⟨c, ⟨comm₂, comm₃⟩⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
+  exact ⟨
+    { hom₁ := a
+      hom₂ := φ
+      hom₃ := c
+      comm₁ := comm₁
+      comm₂ := comm₂
+      comm₃ := comm₃ }, rfl⟩
+
+lemma triangle_iso_exists (n₀ n₁ : ℤ) (h : n₀ < n₁) (T T' : Triangle C)
+    (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
+    (e : T.obj₂ ≅ T'.obj₂)
+    (h₀ : T.obj₁ ∈ t.setLE n₀) (h₁ : T.obj₃ ∈ t.setGE n₁)
+    (h₀' : T'.obj₁ ∈ t.setLE n₀) (h₁' : T'.obj₃ ∈ t.setGE n₁) :
+    ∃ (e' : T ≅ T'), e'.hom.hom₂ = e.hom := by
+  obtain ⟨hom, hhom⟩ := triangle_map_exists t _ _ h _ _ hT hT' e.hom h₀ h₁'
+  obtain ⟨inv, hinv⟩ := triangle_map_exists t _ _ h _ _ hT' hT e.inv h₀' h₁
+  refine' ⟨
+    { hom := hom
+      inv := inv
+      hom_inv_id := triangle_map_ext' t n₀ n₁ (by linarith) _ _ hT hT h₀ h₁
+        (by simp only [comp_hom₂, id_hom₂, hhom, hinv, e.hom_inv_id])
+      inv_hom_id := triangle_map_ext' t n₀ n₁ (by linarith) _ _ hT' hT' h₀' h₁'
+        (by simp only [comp_hom₂, id_hom₂, hhom, hinv, e.inv_hom_id]) }, hhom⟩
 
 namespace TruncAux
 
@@ -75,27 +108,16 @@ lemma triangle_map_ext (f₁ f₂ : triangle t n₀ n₁ h A ⟶ triangle t n₀
     (triangle_distinguished t n₀ n₁ h A) (triangle_distinguished t n₀ n₁ h B)
     (triangle_obj₁_mem_setLE _ _ _ _ _) (triangle_obj₃_mem_setGE _ _ _ _ _) H
 
--- TODO: generalize this lemma
-lemma triangle_map_exists : ∃ (a : (triangle t n₀ n₁ h A).obj₁ ⟶ (triangle t n₀ n₁ h B).obj₁)
-    (c : (triangle t n₀ n₁ h A).obj₃ ⟶ (triangle t n₀ n₁ h B).obj₃)
-    (_ : (triangle t n₀ n₁ h A).mor₁ ≫ φ = a ≫ (triangle t n₀ n₁ h B).mor₁)
-    (_ : (triangle t n₀ n₁ h A).mor₂ ≫ c = φ ≫ (triangle t n₀ n₁ h B).mor₂),
-      (triangle t n₀ n₁ h A).mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ (triangle t n₀ n₁ h B).mor₃ := by
-  obtain ⟨a, comm₁⟩  := covariant_yoneda_exact₂ _ (triangle_distinguished t n₀ n₁ h B)
-    ((triangle t n₀ n₁ h A).mor₁ ≫ φ) (t.zero _ n₀ n₁ (by linarith)
-      (triangle_obj₁_mem_setLE _ _ _ _ _) (triangle_obj₃_mem_setGE _ _ _ _ _))
-  obtain ⟨c, ⟨comm₂, comm₃⟩⟩ :=
-    complete_distinguished_triangle_morphism _ _ (triangle_distinguished t n₀ n₁ h A)
-      (triangle_distinguished t n₀ n₁ h B) a φ comm₁
-  exact ⟨a, c, comm₁, comm₂, comm₃⟩
-
-noncomputable def triangle_map : triangle t n₀ n₁ h A ⟶ triangle t n₀ n₁ h B where
-  hom₁ := (triangle_map_exists t n₀ n₁ h φ).choose
-  hom₂ := φ
-  hom₃ := (triangle_map_exists t n₀ n₁ h φ).choose_spec.choose
-  comm₁ := (triangle_map_exists t n₀ n₁ h φ).choose_spec.choose_spec.choose
-  comm₂ := (triangle_map_exists t n₀ n₁ h φ).choose_spec.choose_spec.choose_spec.choose
-  comm₃ := (triangle_map_exists t n₀ n₁ h φ).choose_spec.choose_spec.choose_spec.choose_spec
+noncomputable def triangle_map : triangle t n₀ n₁ h A ⟶ triangle t n₀ n₁ h B :=
+  have H := triangle_map_exists t n₀ n₁ (by linarith) _ _ (triangle_distinguished t n₀ n₁ h A)
+    (triangle_distinguished t n₀ n₁ h B) φ
+    (triangle_obj₁_mem_setLE _ _ _ _ _) (triangle_obj₃_mem_setGE _ _ _ _ _)
+  { hom₁ := H.choose.hom₁
+    hom₂ := φ
+    hom₃ := H.choose.hom₃
+    comm₁ := by rw [← H.choose.comm₁, H.choose_spec]
+    comm₂ := by rw [H.choose.comm₂, H.choose_spec]
+    comm₃ := H.choose.comm₃ }
 
 noncomputable def triangleFunctor : C ⥤ Triangle C where
   obj := triangle t n₀ n₁ h
@@ -156,6 +178,10 @@ lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsLE X p] : t.IsLE X q w
 lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsGE X q] : t.IsGE X p where
   mem := setGE_antitone t p q hpq (t.mem_of_isGE X q)
 
+lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 :=
+  zero t f n₀ n₁ h (t.mem_of_isLE X n₀) (t.mem_of_isGE Y n₁)
+
 noncomputable def truncLE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n (n+1) rfl ⋙ Triangle.π₁
 
@@ -214,23 +240,100 @@ def truncTriangle_obj_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X :
 
 attribute [irreducible] truncLE truncGE truncLEι truncGEπ truncδ
 
-/-lemma isLE_iff_isIso_truncLEι_app (X : C) (n : ℤ) :
+lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
+  let δ := (t.truncδ n (n+1) rfl).app 0
+  have : IsIso δ := (isIso₃_iff _ ((t.truncTriangle_obj_distinguished n (n+1) rfl 0))).2
+      ⟨(isZero_zero C).eq_of_tgt _ _, (isZero_zero C).eq_of_src _ _⟩
+  have hδ := t.zero δ (n-1) (n+1) (by linarith) (Set.mem_of_iso _ (asIso δ).symm
+    (t.shift_mem_setLE n 1 (n-1) (by linarith) _ (t.mem_of_isLE _ _)))
+    (Set.mem_of_iso _ (asIso δ) (t.mem_of_isGE _ _))
+  rw [IsZero.iff_id_eq_zero]
+  apply (shiftFunctor C (1 : ℤ)).map_injective
+  rw [Functor.map_id, Functor.map_zero, ← cancel_epi δ, comp_zero, hδ, zero_comp]
+
+lemma isZero_truncGE_obj_zero (n : ℤ) : IsZero ((t.truncGE n).obj 0) := by
+  apply (isIso₁_iff_isZero₃ _ (t.truncTriangle_obj_distinguished (n-1) n (by linarith) 0)).1
+  exact ⟨⟨0, (isZero_truncLE_obj_zero t (n-1)).eq_of_src _ _, (isZero_zero _).eq_of_src _ _⟩⟩
+
+instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_iso (t.isZero_truncLE_obj_zero n).isoZero n
+instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_iso (t.isZero_truncGE_obj_zero n).isoZero n
+
+lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) := by
   constructor
   . intro h
-    refine' (isIso₁_iff _ (t.truncTriangle_obj_distinguished n (n+1) rfl X)).2 ⟨_, _⟩
-    . sorry
-    . sorry
+    obtain ⟨e, he⟩ := triangle_iso_exists t n (n+1) (by linarith) _ _
+      (contractible_distinguished X)
+      (t.truncTriangle_obj_distinguished n (n+1) rfl X) (Iso.refl X) (mem_of_isLE t X n)
+      (mem_of_isGE t 0 _) (by dsimp ; apply mem_of_isLE) (by dsimp ; apply mem_of_isGE)
+    dsimp at he
+    have : (truncLEι t n).app X = e.inv.hom₁ := by
+      have he' : e.inv.hom₂ = 𝟙 X := by
+        rw [← cancel_mono e.hom.hom₂, ← comp_hom₂, e.inv_hom_id, he]
+        dsimp
+        rw [id_comp]
+      simpa [he'] using e.inv.comm₁
+    rw [this]
+    infer_instance
   . intro
-    exact t.isLE_of_iso (asIso ((truncLEι t n).app X)) n-/
+    exact t.isLE_of_iso (asIso ((truncLEι t n).app X)) n
+
+lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ IsZero ((t.truncGE n₁).obj X) := by
+  rw [t.isLE_iff_isIso_truncLEι_app n₀ X]
+  exact isIso₁_iff_isZero₃ _ (t.truncTriangle_obj_distinguished n₀ n₁ h X)
+
+lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
+    (f₁ f₂ : (t.truncGE n).obj X ⟶ Y) (h : (t.truncGEπ n).app X ≫ f₁ = (t.truncGEπ n).app X ≫ f₂)
+    [t.IsGE Y n] :
+    f₁ = f₂ := by
+  suffices ∀ (f : (t.truncGE n).obj X ⟶ Y) (_ : (t.truncGEπ n).app X ≫ f = 0), f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by rw [comp_sub, sub_eq_zero, h])]
+  intro f hf
+  obtain ⟨g, hg⟩ := contravariant_yoneda_exact₃ _
+    (t.truncTriangle_obj_distinguished (n-1) n (by linarith) X) f hf
+  have hg' := t.zero g (n-2) n (by linarith) (t.shift_mem_setLE (n-1) 1 (n-2) (by linarith) _
+    (by dsimp ; apply t.mem_of_isLE)) (t.mem_of_isGE Y n)
+  rw [hg, hg', comp_zero]
+
+lemma isLE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ ∀ (Y : C) (f : X ⟶ Y) (_ : t.IsGE Y n₁), f = 0 := by
+  constructor
+  . intro _ Y f _
+    exact t.zero_of_isLE_of_isGE f n₀ n₁ (by linarith)
+  . intro hX
+    rw [isLE_iff_isZero_truncGE_obj t n₀ n₁ h, IsZero.iff_id_eq_zero]
+    apply t.from_truncGE_obj_ext n₁
+    rw [comp_zero, comp_id]
+    exact hX _ _ inferInstance
+
+lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : T.obj₁ ∈ t.setLE n)
+    (h₃ : T.obj₃ ∈ t.setLE n) : T.obj₂ ∈ t.setLE n := by
+  suffices t.IsLE (T.obj₂) n from t.mem_of_isLE _ _
+  rw [t.isLE_iff_orthogonal n (n+1) rfl]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := contravariant_yoneda_exact₂ _ hT f
+    (t.zero _ n (n+1) (by linarith) h₁ (t.mem_of_isGE _ _))
+  rw [hf', t.zero f' n (n+1) (by linarith) h₃ (t.mem_of_isGE _ _), comp_zero]
+
+def minus : Triangulated.Subcategory C where
+  set X := ∃ (n : ℤ), X ∈ t.setLE n
+  zero := ⟨0, t.mem_of_isLE 0 0⟩
+  shift := by
+    rintro X n ⟨i, hX⟩
+    exact ⟨i - n, t.shift_mem_setLE i n (i - n) (by linarith) X hX⟩
+  ext₂ := by
+    rintro T hT ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.setLE_monotone _ _ (le_max_left i₁ i₃) hi₁)
+      (t.setLE_monotone _ _ (le_max_right i₁ i₃) hi₃)⟩
 
 /-def plus : Triangulated.Subcategory C where
   set X := ∃ (n : ℤ), X ∈ t.setGE n
-  zero := ⟨0, by sorry⟩
+  zero := ⟨0, t.mem_of_isGE 0 0⟩
   shift := by
     rintro X n ⟨i, hX⟩
     exact ⟨i - n, t.shift_mem_setGE i n (i - n) (by linarith) X hX⟩
-  ext₂ := sorry -/
+  ext₂ := sorry-/
 
 end TStructure
 

@@ -710,6 +710,32 @@ lemma isIso₃_iff (T : Triangle C) (hT : T ∈ distTriang C) :
   simp only [neg_eq_zero, this]
   tauto
 
+lemma isIso₁_iff_isZero₃ (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₁ ↔ IsZero T.obj₃ := by
+  rw [isIso₁_iff _ hT]
+  constructor
+  . rintro ⟨h₂, h₃⟩
+    have := triangle_mono_mor₃ _ hT h₂
+    rw [IsZero.iff_id_eq_zero, ← cancel_mono T.mor₃, id_comp, zero_comp, h₃]
+  . intro h
+    exact ⟨h.eq_of_tgt _ _, h.eq_of_src _ _⟩
+
+lemma isIso₂_iff_isZero₁ (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₂ ↔ IsZero T.obj₁ := by
+  refine' (isIso₁_iff_isZero₃ _ (rot_of_dist_triangle _ hT)).trans _
+  dsimp
+  simp only [IsZero.iff_id_eq_zero]
+  constructor
+  . intro h
+    apply (shiftFunctor C (1 : ℤ)).map_injective
+    rw [Functor.map_id, Functor.map_zero, h]
+  . intro h
+    rw [← Functor.map_id, h, Functor.map_zero]
+
+lemma isIso₃_iff_isZero₂ (T : Triangle C) (hT : T ∈ distTriang C) :
+    IsIso T.mor₃ ↔ IsZero T.obj₂ :=
+  isIso₂_iff_isZero₁ _ (rot_of_dist_triangle _ hT)
+
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
 then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
