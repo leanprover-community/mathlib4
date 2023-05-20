@@ -38,9 +38,9 @@ For `p : ℝ`, prove that `λ x, x ^ p` is concave when `0 ≤ p ≤ 1` and stri
 -/
 
 
-open Real Set
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
-open BigOperators NNReal
+open Real Set BigOperators NNReal
 
 /-- `exp` is strictly convex on the whole real line.
 
@@ -56,23 +56,21 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     calc
       exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add] <;> ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
-      _ < exp y * -(x - y) := (mul_lt_mul_of_pos_left _ y.exp_pos)
+      _ < exp y * -(x - y) := (mul_lt_mul_of_pos_left ?_ y.exp_pos)
       _ = exp y * (y - x) := by ring
-      
     linarith [add_one_lt_exp_of_nonzero h2.ne]
   · have h1 : 0 < z - y := by linarith
     rw [lt_div_iff h1]
     calc
       exp y * (z - y) < exp y * (exp (z - y) - 1) := mul_lt_mul_of_pos_left _ y.exp_pos
       _ = exp (z - y) * exp y - exp y := by ring
-      _ ≤ exp z - exp y := by rw [← exp_add] <;> ring_nf
-      
+      _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
     linarith [add_one_lt_exp_of_nonzero h1.ne']
 #align strict_convex_on_exp strictConvexOn_exp
 
 /-- `exp` is convex on the whole real line. -/
 theorem convexOn_exp : ConvexOn ℝ univ exp :=
-  strictConvexOn_exp.ConvexOn
+  strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`.
@@ -94,34 +92,35 @@ theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
       have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
       positivity
   calc
-    (μ * a + ν * b) ^ k.succ = (μ * a + ν * b) * (μ * a + ν * b) ^ k := by ring
+    (μ * a + ν * b) ^ k.succ = (μ * a + ν * b) * (μ * a + ν * b) ^ k := pow_succ _ _
     _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) := (mul_le_mul_of_nonneg_left H (by positivity))
     _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) + (b ^ k - a ^ k) * (b - a) * μ * ν := by linarith
-    _ = (μ + ν) * (μ * a ^ k.succ + ν * b ^ k.succ) := by ring
-    _ = μ * a ^ k.succ + ν * b ^ k.succ := by rw [h] <;> ring
-    
+    _ = (μ + ν) * (μ * a ^ k.succ + ν * b ^ k.succ) := by rw [Nat.succ_eq_add_one]; ring
+    _ = μ * a ^ k.succ + ν * b ^ k.succ := by rw [h]; ring
 #align convex_on_pow convexOn_pow
 
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
+nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   refine' ⟨convex_univ, _⟩
-  intro a ha b hb μ ν hμ hν h
+  rintro a - b - μ ν hμ hν h
   obtain ⟨k, rfl⟩ := hn.exists_two_nsmul _
-  have : 0 ≤ (a - b) ^ 2 * μ * ν := by positivity
+  -- Porting note: added type ascription to LHS
+  have : (0 : ℝ) ≤ (a - b) ^ 2 * μ * ν := by positivity
   calc
     (μ * a + ν * b) ^ (2 * k) = ((μ * a + ν * b) ^ 2) ^ k := by rw [pow_mul]
-    _ ≤ ((μ + ν) * (μ * a ^ 2 + ν * b ^ 2)) ^ k := (pow_le_pow_of_le_left (by positivity) _ k)
-    _ = (μ * a ^ 2 + ν * b ^ 2) ^ k := by rw [h] <;> ring
-    _ ≤ μ * (a ^ 2) ^ k + ν * (b ^ 2) ^ k := _
-    _ ≤ μ * a ^ (2 * k) + ν * b ^ (2 * k) := by ring
-    
+    _ ≤ ((μ + ν) * (μ * a ^ 2 + ν * b ^ 2)) ^ k := (pow_le_pow_of_le_left (by positivity) ?_ k)
+    _ = (μ * a ^ 2 + ν * b ^ 2) ^ k := by rw [h]; ring
+    _ ≤ μ * (a ^ 2) ^ k + ν * (b ^ 2) ^ k := ?_
+    _ ≤ μ * a ^ (2 * k) + ν * b ^ (2 * k) := by ring_nf; rfl
   · linarith
-  · refine' (convexOn_pow k).2 _ _ hμ hν h <;> dsimp <;> positivity
+  · -- Porting note: `rw [mem_Ici]` was `dsimp`
+    refine' (convexOn_pow k).2 _ _ hμ hν h <;> rw [mem_Ici] <;> positivity
 #align even.convex_on_pow Even.convexOn_pow
 
+open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
@@ -129,7 +128,7 @@ needed early in the analysis library. -/
 theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
   | (n : ℕ) => by
     simp_rw [zpow_ofNat]
-    exact (convexOn_pow n).Subset Ioi_subset_Ici_self (convex_Ioi _)
+    exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc]
     refine' ⟨convex_Ioi _, _⟩
@@ -138,14 +137,15 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     have hb' : 0 < b ^ (n + 1) := by positivity
     field_simp [ha.ne', hb.ne', ha'.ne', hb'.ne']
     rw [div_le_div_iff]
-    · calc
-        1 * (a ^ (n + 1) * b ^ (n + 1)) = ((μ + ν) ^ 2 * (a * b)) ^ (n + 1) := by rw [h] <;> ring
-        _ ≤ ((μ * b + ν * a) * (μ * a + ν * b)) ^ (n + 1) := (pow_le_pow_of_le_left _ _ _)
+    · -- Porting note: added type ascription to LHS
+      calc
+        (1 : ℝ) * (a ^ (n + 1) * b ^ (n + 1)) = ((μ + ν) ^ 2 * (a * b)) ^ (n + 1) := by rw [h]; ring
+        _ ≤ ((μ * b + ν * a) * (μ * a + ν * b)) ^ (n + 1) := (pow_le_pow_of_le_left ?_ ?_ _)
         _ = (μ * b + ν * a) ^ (n + 1) * (μ * a + ν * b) ^ (n + 1) := by rw [mul_pow]
-        _ ≤ (μ * b ^ (n + 1) + ν * a ^ (n + 1)) * (μ * a + ν * b) ^ (n + 1) := _
-        
+        _ ≤ (μ * b ^ (n + 1) + ν * a ^ (n + 1)) * (μ * a + ν * b) ^ (n + 1) := ?_
       · positivity
-      · have : 0 ≤ μ * ν * (a - b) ^ 2 := by positivity
+      · -- Porting note: added type ascription to LHS
+        have : (0 : ℝ) ≤ μ * ν * (a - b) ^ 2 := by positivity
         linarith
       · apply mul_le_mul_of_nonneg_right ((convexOn_pow (n + 1)).2 hb.le ha.le hμ hν h)
         positivity
@@ -174,7 +174,6 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
       _ < z / y - 1 := (log_lt_sub_one_of_pos hyz' hyz'')
       _ = y⁻¹ * (z - y) := by field_simp [hy.ne']
-      
   · have h : 0 < y - x := by linarith
     rw [lt_div_iff h]
     have hxy' : 0 < x / y := by positivity
@@ -187,7 +186,6 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
-      
 #align strict_concave_on_log_Ioi strictConcaveOn_log_Ioi
 
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
@@ -201,18 +199,18 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   cases' le_or_lt (1 + p * s) 0 with hs2 hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
-  apply exp_strict_mono
+  apply exp_strictMono
   have hp : 0 < p := by positivity
   have hs3 : 1 + s ≠ 1 := by contrapose! hs' <;> linarith
   have hs4 : 1 + p * s ≠ 1 := by contrapose! hs' <;> nlinarith
   cases' lt_or_gt_of_ne hs' with hs' hs'
   · rw [← div_lt_iff hp, ← div_lt_div_right_of_neg hs']
-    convert strict_concave_on_log_Ioi.secant_strict_mono zero_lt_one hs2 hs1 hs4 hs3 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono zero_lt_one hs2 hs1 hs4 hs3 _ using 1
     · field_simp [log_one]
     · field_simp [log_one]
     · nlinarith
   · rw [← div_lt_iff hp, ← div_lt_div_right hs']
-    convert strict_concave_on_log_Ioi.secant_strict_mono zero_lt_one hs1 hs2 hs3 hs4 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono zero_lt_one hs1 hs2 hs3 hs4 _ using 1
     · field_simp [log_one, hp.ne']
     · field_simp [log_one]
     · nlinarith
@@ -276,7 +274,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
 theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
-  exact (strictConvexOn_rpow hp).ConvexOn
+  exact (strictConvexOn_rpow hp).convexOn
 #align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
@@ -284,12 +282,11 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith
-  have hxy' : -x ≠ -y := by contrapose! hxy <;> linarith
+  have hxy' : -x ≠ -y := by contrapose! hxy; linarith
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
     _ < log (a • -x + b • -y) := (strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab)
-    _ = log (-(a • x + b • y)) := by congr 1 <;> simp only [Algebra.id.smul_eq_mul] <;> ring
+    _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
-    
-#align strict_concave_on_log_Iio strictConcaveOn_log_Iio
 
+#align strict_concave_on_log_Iio strictConcaveOn_log_Iio
