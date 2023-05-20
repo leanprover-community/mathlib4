@@ -10,7 +10,6 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.TFAE
 
 /-!

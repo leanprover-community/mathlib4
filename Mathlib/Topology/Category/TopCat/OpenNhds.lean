@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.TopCat.Opens
 
 /-!
 # The category of open neighborhoods of a point
