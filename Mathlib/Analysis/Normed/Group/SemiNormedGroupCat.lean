@@ -119,7 +119,7 @@ theorem isZero_of_subsingleton (V : SemiNormedGroup) [Subsingleton V] : Limits.I
     have  := Subsingleton.elim (x : V) (0 : V)
     rw [this]
     suffices f 0 = (0 : V⟶ X) 0 by convert this
-    simp [map_zero]
+    simp only [NormedAddGroupHom.toFun_eq_coe, map_zero, zero_apply]
   · ext
     apply @Subsingleton.elim V _
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroup.isZero_of_subsingleton
@@ -150,6 +150,8 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGroup} (i : V ≅ W) (h1 : i
 
 end SemiNormedGroup
 
+--Porting Note: Is this correct? It appears that the category structure is norm-non-increasing up to
+-- a factor
 /-- `SemiNormedGroup₁` is a type synonym for `SemiNormedGroup`,
 which we shall equip with the category structure consisting only of the norm non-increasing maps.
 -/
@@ -197,7 +199,7 @@ instance (M : SemiNormedGroup₁) : SeminormedAddCommGroup M :=
 /-- Promote a morphism in `SemiNormedGroup` to a morphism in `SemiNormedGroup₁`. -/
 def mkHom {M N : SemiNormedGroup} (f : M ⟶ N) (i : f.NormNoninc) :
     SemiNormedGroup₁.of M ⟶ SemiNormedGroup₁.of N :=
-  ⟨f, f.map_add' , ⟨1, by simpa using i ⟩ ⟩
+  ⟨f, f.map_add' , ⟨1, by simpa using i⟩ ⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroup₁.mkHom
 
 @[simp]
@@ -254,32 +256,48 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup₁.of_unique SemiNormedGroup₁.ofUnique
 
+/--Porting Note: Had to add this to make Limits.HasZeroMorphisms work-/
+lemma zero_NormNoninc {X Y : SemiNormedGroup} : NormedAddGroupHom.NormNoninc (0:X⟶ Y):= by
+  change ∀ v : X, ‖(0 : (X⟶ Y)) v‖ ≤ ‖v‖
+  intro v
+  simp only [SemiNormedGroup.zero_apply, norm_zero, norm_nonneg]
+
+/--Porting Note: Added some things to make it compile again - might have created issues?-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
-  Zero X Y := { zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩ }
-  comp_zero X Y f Z := by ext; rfl
-  zero_comp X Y Z f := by ext; simp [coeFn_coe_base']
+  Zero X Y := {zero := mkHom 0 zero_NormNoninc}
+  comp_zero {X Y} f Z := by
+    ext x
+    simp only [coe_comp', NormedAddGroupHom.toFun_eq_coe, NormedAddGroupHom.comp_apply]
+    rfl
+  zero_comp X Y Z f := by
+    ext x
+    simp only [coe_comp', NormedAddGroupHom.toFun_eq_coe, NormedAddGroupHom.comp_apply]
+    apply map_zero
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroup₁} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup₁.zero_apply SemiNormedGroup₁.zero_apply
 
+/--Porting Note: Didn't work, manual rewrite-/
 theorem isZero_of_subsingleton (V : SemiNormedGroup₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
-    exact map_zero f.1
-  · ext; apply Subsingleton.elim
+  · ext x
+    have : x = 0 := Subsingleton.elim _ _
+    simp only [this, map_zero]
+    simp only [NormedAddGroupHom.toFun_eq_coe, map_zero, zero_apply]
+  · ext
+    apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroup₁.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroup₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroup₁.hasZeroObject
 
+/--Porting Note: I think this simply doesn't work with the current definition of SemiNormedGroup₁-/
 theorem iso_isometry {V W : SemiNormedGroup₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (i.hom : V →+ W)
-  refine' AddMonoidHomClass.isometry_of_norm i.hom _
   intro v
-  apply le_antisymm (i.hom.2 v)
+  apply le_antisymm (i.hom.3 v)
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
