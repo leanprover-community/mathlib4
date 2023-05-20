@@ -378,11 +378,16 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance : CommRing (DirectLimit G f) :=
+instance commRing : CommRing (DirectLimit G f) :=
   Ideal.Quotient.commRing _
 
-instance : Ring (DirectLimit G f) :=
+instance ring : Ring (DirectLimit G f) :=
   CommRing.toRing
+
+-- Porting note: Added a `Zero` instance to get rid of `0` errors.
+instance : Zero (DirectLimit G f) := by
+  unfold DirectLimit
+  exact ⟨0⟩
 
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
@@ -599,7 +604,7 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (hix : of G (fun i j h =
   haveI : Nonempty ι := ⟨i⟩
   let ⟨j, s, H, hxs, hx⟩ := of.zero_exact_aux hix
   have hixs : (⟨i, x⟩ : Σi, G i) ∈ s := isSupported_of.1 hxs
-  ⟨j, H ⟨i, x⟩ hixs, by rw [restriction_of, dif_pos hixs, lift_of] at hx <;> exact hx⟩
+  ⟨j, H ⟨i, x⟩ hixs, by rw [restriction_of, dif_pos hixs, lift_of] at hx; exact hx⟩
 #align ring.direct_limit.of.zero_exact Ring.DirectLimit.of.zero_exact
 
 end OfZeroExact
@@ -628,8 +633,6 @@ variable (g : ∀ i, G i →+* P)
 
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-include Hg
-
 open FreeCommRing
 
 variable (G f)
@@ -654,8 +657,6 @@ def lift : DirectLimit G f →+* P :=
 #align ring.direct_limit.lift Ring.DirectLimit.lift
 
 variable {G f}
-
-omit Hg
 
 @[simp]
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
@@ -712,11 +713,11 @@ noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
 #align field.direct_limit.inv Field.DirectLimit.inv
 
 protected theorem mul_inv_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : p * inv G f p = 1 := by
-  rw [inv, dif_neg hp, Classical.choose_spec (direct_limit.exists_inv G f hp)]
+  rw [inv, dif_neg hp, Classical.choose_spec (DirectLimit.exists_inv G f hp)]
 #align field.direct_limit.mul_inv_cancel Field.DirectLimit.mul_inv_cancel
 
 protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv G f p * p = 1 := by
-  rw [_root_.mul_comm, direct_limit.mul_inv_cancel G f hp]
+  rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
 /-- Noncomputable field structure on the direct limit of fields.
