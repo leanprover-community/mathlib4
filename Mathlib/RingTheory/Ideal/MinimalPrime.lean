@@ -18,15 +18,15 @@ import Mathlib.Order.Minimal
 We provide various results concerning the minimal primes above an ideal
 
 ## Main results
-- `ideal.minimal_primes`: `I.minimal_primes` is the set of ideals that are minimal primes over `I`.
-- `minimal_primes`: `minimal_primes R` is the set of minimal primes of `R`.
-- `ideal.exists_minimal_primes_le`: Every prime ideal over `I` contains a minimal prime over `I`.
-- `ideal.radical_minimal_primes`: The minimal primes over `I.radical` are precisely
+- `Ideal.minimalPrimes`: `I.minimalPrimes` is the set of ideals that are minimal primes over `I`.
+- `minimalPrimes`: `minimalPrimes R` is the set of minimal primes of `R`.
+- `Ideal.exists_minimalPrimes_le`: Every prime ideal over `I` contains a minimal prime over `I`.
+- `Ideal.radical_minimalPrimes`: The minimal primes over `I.radical` are precisely
   the minimal primes over `I`.
-- `ideal.Inf_minimal_primes`: The intersection of minimal primes over `I` is `I.radical`.
-- `ideal.exists_minimal_primes_comap_eq` If `p` is a minimal prime over `f ⁻¹ I`, then it is the
+- `Ideal.sInf_minimalPrimes`: The intersection of minimal primes over `I` is `I.radical`.
+- `Ideal.exists_minimalPrimes_comap_eq` If `p` is a minimal prime over `f ⁻¹ I`, then it is the
   preimage of some minimal prime over `I`.
-- `ideal.minimal_primes_eq_comap`: The minimal primes over `I` are precisely the preimages of
+- `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
 
 
