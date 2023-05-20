@@ -8,10 +8,10 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Algebra
-import Mathbin.Algebra.DirectSum.Decomposition
-import Mathbin.Algebra.DirectSum.Internal
-import Mathbin.Algebra.DirectSum.Ring
+import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Algebra.DirectSum.Internal
+import Mathlib.Algebra.DirectSum.Ring
 
 /-!
 # Internally-graded rings and algebras
@@ -143,15 +143,13 @@ variable {i j : ι}
 namespace DirectSum
 
 theorem coe_decompose_mul_add_of_left_mem [AddLeftCancelMonoid ι] [GradedRing 𝒜] {a b : A}
-    (a_mem : a ∈ 𝒜 i) : (decompose 𝒜 (a * b) (i + j) : A) = a * decompose 𝒜 b j :=
-  by
+    (a_mem : a ∈ 𝒜 i) : (decompose 𝒜 (a * b) (i + j) : A) = a * decompose 𝒜 b j := by
   lift a to 𝒜 i using a_mem
   rw [decompose_mul, decompose_coe, coe_of_mul_apply_add]
 #align direct_sum.coe_decompose_mul_add_of_left_mem DirectSum.coe_decompose_mul_add_of_left_mem
 
 theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing 𝒜] {a b : A}
-    (b_mem : b ∈ 𝒜 j) : (decompose 𝒜 (a * b) (i + j) : A) = decompose 𝒜 a i * b :=
-  by
+    (b_mem : b ∈ 𝒜 j) : (decompose 𝒜 (a * b) (i + j) : A) = decompose 𝒜 a i * b := by
   lift b to 𝒜 j using b_mem
   rw [decompose_mul, decompose_coe, coe_mul_of_apply_add]
 #align direct_sum.coe_decompose_mul_add_of_right_mem DirectSum.coe_decompose_mul_add_of_right_mem
@@ -260,8 +258,7 @@ variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 
 homomorphism.
 -/
 @[simps]
-def GradedRing.projZeroRingHom : A →+* A
-    where
+def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
   map_one' := decompose_of_mem_same 𝒜 one_mem
   map_zero' := by
@@ -298,15 +295,13 @@ variable {a b : A} {n i : ι}
 namespace DirectSum
 
 theorem coe_decompose_mul_of_left_mem_of_not_le (a_mem : a ∈ 𝒜 i) (h : ¬i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = 0 :=
-  by
+    (decompose 𝒜 (a * b) n : A) = 0 := by
   lift a to 𝒜 i using a_mem
   rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_left_mem_of_not_le DirectSum.coe_decompose_mul_of_left_mem_of_not_le
 
 theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = 0 :=
-  by
+    (decompose 𝒜 (a * b) n : A) = 0 := by
   lift b to 𝒜 i using b_mem
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
@@ -314,29 +309,25 @@ theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = a * decompose 𝒜 b (n - i) :=
-  by
+    (decompose 𝒜 (a * b) n : A) = a * decompose 𝒜 b (n - i) := by
   lift a to 𝒜 i using a_mem
   rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_le]
 #align direct_sum.coe_decompose_mul_of_left_mem_of_le DirectSum.coe_decompose_mul_of_left_mem_of_le
 
 theorem coe_decompose_mul_of_right_mem_of_le (b_mem : b ∈ 𝒜 i) (h : i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = decompose 𝒜 a (n - i) * b :=
-  by
+    (decompose 𝒜 (a * b) n : A) = decompose 𝒜 a (n - i) * b := by
   lift b to 𝒜 i using b_mem
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_le DirectSum.coe_decompose_mul_of_right_mem_of_le
 
 theorem coe_decompose_mul_of_left_mem (n) [Decidable (i ≤ n)] (a_mem : a ∈ 𝒜 i) :
-    (decompose 𝒜 (a * b) n : A) = if i ≤ n then a * decompose 𝒜 b (n - i) else 0 :=
-  by
+    (decompose 𝒜 (a * b) n : A) = if i ≤ n then a * decompose 𝒜 b (n - i) else 0 := by
   lift a to 𝒜 i using a_mem
   rwa [decompose_mul, decompose_coe, coe_of_mul_apply]
 #align direct_sum.coe_decompose_mul_of_left_mem DirectSum.coe_decompose_mul_of_left_mem
 
 theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 𝒜 i) :
-    (decompose 𝒜 (a * b) n : A) = if i ≤ n then decompose 𝒜 a (n - i) * b else 0 :=
-  by
+    (decompose 𝒜 (a * b) n : A) = if i ≤ n then decompose 𝒜 a (n - i) * b else 0 := by
   lift b to 𝒜 i using b_mem
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply]
 #align direct_sum.coe_decompose_mul_of_right_mem DirectSum.coe_decompose_mul_of_right_mem
