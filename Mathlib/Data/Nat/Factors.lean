@@ -11,7 +11,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Prime numbers
