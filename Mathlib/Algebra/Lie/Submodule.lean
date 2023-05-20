@@ -76,7 +76,7 @@ instance : Zero (LieSubmodule R L M) :=
 
 instance : Inhabited (LieSubmodule R L M) := ⟨0⟩
 
-instance coeSubmodule : Coe (LieSubmodule R L M) (Submodule R M) :=
+instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 #align lie_submodule.coe_submodule LieSubmodule.coeSubmodule
 
