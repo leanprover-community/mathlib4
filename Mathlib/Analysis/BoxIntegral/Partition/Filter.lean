@@ -303,7 +303,7 @@ Sacks-Henstock inequality to compare two prepartitions covering the same part of
 
 It is also automatically satisfied for any `c > 1`, see TODO section of the module docstring for
 details. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not yet implemented
 structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
   IsSubordinate : π.IsSubordinate r
@@ -436,8 +436,8 @@ theorem RCond.mono {ι : Type _} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ 
   fun hR => hr (le_iff_imp.1 h.1 hR)
 #align box_integral.integration_params.r_cond.mono BoxIntegral.IntegrationParams.RCond.mono
 
-theorem RCond.min {ι : Type _} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁) (h₂ : l.RCond r₂) :
-    l.RCond fun x => min (r₁ x) (r₂ x) :=
+nonrec theorem RCond.min {ι : Type _} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
+    (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 #align box_integral.integration_params.r_cond.min BoxIntegral.IntegrationParams.RCond.min
 
