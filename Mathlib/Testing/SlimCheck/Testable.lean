@@ -3,8 +3,6 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-
-import Mathlib.Data.Array.Basic
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 

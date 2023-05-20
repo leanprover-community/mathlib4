@@ -9,7 +9,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Tactic.ByContra
 
 /-!
 # Ordinal arithmetic

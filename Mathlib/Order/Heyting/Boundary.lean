@@ -9,7 +9,6 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BooleanAlgebra
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Co-Heyting boundary
