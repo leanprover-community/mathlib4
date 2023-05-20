@@ -9,7 +9,7 @@ Authors: Johan Commelin, Adam Topaz
 ! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Instances.NNReal
 
 /-!
