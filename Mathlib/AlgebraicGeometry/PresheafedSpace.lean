@@ -383,31 +383,33 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
   haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.inj
   constructor
   intro Z g₁ g₂ eq
-  sorry
-  --ext V
-  --· induction V using Opposite.rec'
-  --  have hV : (opens.map (X.of_restrict hf).base).obj (hf.is_open_map.functor.obj V) = V := by
-  --    ext1
-  --    exact Set.preimage_image_eq _ hf.inj
-  --  haveI :
-  --    is_iso (hf.is_open_map.adjunction.counit.app (unop (op (hf.is_open_map.functor.obj V)))) :=
-  --    (nat_iso.is_iso_app_of_is_iso
-  --        (whisker_left hf.is_open_map.functor hf.is_open_map.adjunction.counit) V :
-  --      _)
-  --  have := PresheafedSpace.congr_app Eq (op (hf.is_open_map.functor.obj V))
-  --  simp only [PresheafedSpace.comp_c_app, PresheafedSpace.of_restrict_c_app, category.assoc,
-  --    cancel_epi] at this
-  --  have h : _ ≫ _ = _ ≫ _ ≫ _ :=
-  --    congr_arg (fun f => (X.restrict hf).Presheaf.map (eq_to_hom hV).op ≫ f) this
-  --  erw [g₁.c.naturality, g₂.c.naturality_assoc] at h
-  --  simp only [presheaf.pushforward_obj_map, eq_to_hom_op, category.assoc, eq_to_hom_map,
-  --    eq_to_hom_trans] at h
-  --  rw [← is_iso.comp_inv_eq] at h
-  --  simpa using h
-  --· have := congr_arg PresheafedSpace.hom.base Eq
-  --  simp only [PresheafedSpace.comp_base, PresheafedSpace.of_restrict_base] at this
-  --  rw [cancel_mono] at this
-  --  exact this
+  ext1
+  swap
+  · have := congr_arg PresheafedSpace.Hom.base eq
+    simp only [PresheafedSpace.comp_base, PresheafedSpace.ofRestrict_base] at this
+    rw [cancel_mono] at this
+    exact this
+  . apply NatTrans.ext
+    ext ⟨V⟩
+    have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.isOpenMap.functor.obj V) = V := by
+      ext1
+      exact Set.preimage_image_eq _ hf.inj
+    haveI :
+      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.isOpenMap.functor.obj V)))) :=
+        NatIso.isIso_app_of_isIso
+          (whiskerLeft hf.isOpenMap.functor hf.isOpenMap.adjunction.counit) V
+    have := PresheafedSpace.congr_app eq (op (hf.isOpenMap.functor.obj V))
+    simp only [PresheafedSpace.comp_c_app, PresheafedSpace.ofRestrict_c_app, Category.assoc,
+      cancel_epi] at this
+    have h : _ ≫ _ = _ ≫ _ ≫ _ :=
+      congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
+    erw [g₁.c.naturality, g₂.c.naturality_assoc] at h
+    simp only [Presheaf.pushforwardObj_map, eqToHom_op, Category.assoc, eqToHom_map,
+      eqToHom_trans] at h
+    rw [← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc, eqToHom_trans] at h
+    rw [NatTrans.comp_app]
+    simpa using h
+
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_mono AlgebraicGeometry.PresheafedSpace.ofRestrict_mono
 
