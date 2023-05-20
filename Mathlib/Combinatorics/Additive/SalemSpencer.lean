@@ -371,7 +371,7 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
-  convert MulSalemSpencer.roth_number_eq (α := α) _
+  refine' MulSalemSpencer.roth_number_eq _
   rw [coe_singleton]
   exact mulSalemSpencer_singleton a
 #align mul_roth_number_singleton mulRothNumber_singleton
