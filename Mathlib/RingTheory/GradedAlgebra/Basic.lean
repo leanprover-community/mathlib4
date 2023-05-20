@@ -54,8 +54,6 @@ variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra 
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 
-include A
-
 open DirectSum
 
 /-- An internally-graded `R`-algebra `A` is one that can be decomposed into a collection
@@ -78,8 +76,7 @@ namespace DirectSum
 a ring to a direct sum of components. -/
 def decomposeRingEquiv : A ≃+* ⨁ i, 𝒜 i :=
   RingEquiv.symm
-    {
-      (decomposeAddEquiv 𝒜).symm with
+    { (decomposeAddEquiv 𝒜).symm with
       map_mul' := (coeRingHom 𝒜).map_mul
       map_add' := (coeRingHom 𝒜).map_add }
 #align direct_sum.decompose_ring_equiv DirectSum.decomposeRingEquiv
@@ -127,7 +124,7 @@ theorem GradedRing.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedRing.mem_support_iff [∀ (i) (x : 𝒜 i), Decidable (x ≠ 0)] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedRing.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.Not.symm
+  Dfinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.not.symm
 #align graded_ring.mem_support_iff GradedRing.mem_support_iff
 
 end GradedRing
@@ -191,14 +188,15 @@ See note [reducible non-instances]. -/
 @[reducible]
 def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
-    (left_inv : ∀ (i) (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
+    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
     GradedAlgebra 𝒜 where
   decompose' := decompose
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
-    suffices : decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _
-    exact AlgHom.congr_fun this
-    ext (i x) : 2
+    suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
+    -- Porting note: was ext (i x) : 2
+    refine DirectSum.algHom_ext' _ _ fun i => ?_
+    ext x
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
 
@@ -208,7 +206,7 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
-@[simps]
+@[simps!]
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
@@ -223,7 +221,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra-/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).Subtype.comp <| (Dfinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (Dfinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 #align graded_algebra.proj GradedAlgebra.proj
 
 @[simp]
@@ -239,7 +237,7 @@ theorem GradedAlgebra.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedAlgebra.mem_support_iff [DecidableEq A] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedAlgebra.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans Submodule.coe_eq_zero.Not.symm
+  Dfinsupp.mem_support_iff.trans Submodule.coe_eq_zero.not.symm
 #align graded_algebra.mem_support_iff GradedAlgebra.mem_support_iff
 
 end GradedAlgebra
@@ -260,11 +258,15 @@ homomorphism.
 @[simps]
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
-  map_one' := decompose_of_mem_same 𝒜 one_mem
+  map_one' :=
+    -- Porting note: qualified `one_mem`
+    decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
   map_zero' := by
+    simp only -- Porting note: added
     rw [decompose_zero]
     rfl
   map_add' _ _ := by
+    simp only -- Porting note: added
     rw [decompose_add]
     rfl
   map_mul' := by
@@ -276,17 +278,19 @@ def GradedRing.projZeroRingHom : A →+* A where
       · rintro j ⟨c', hc'⟩
         · simp only [Subtype.coe_mk]
           by_cases h : i + j = 0
-          ·
-            rw [decompose_of_mem_same 𝒜 (show c * c' ∈ 𝒜 0 from h ▸ mul_mem hc hc'),
+          · rw [decompose_of_mem_same 𝒜
+                (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
               decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
               decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
-          · rw [decompose_of_mem_ne 𝒜 (mul_mem hc hc') h]
+          · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
             cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
             · simp only [decompose_of_mem_ne 𝒜 hc h', MulZeroClass.zero_mul]
             · simp only [decompose_of_mem_ne 𝒜 hc' h', MulZeroClass.mul_zero]
       · intro _ _ hd he
+        simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
     · rintro _ _ ha hb _
+      simp only at ha hb -- Porting note: added
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
 
@@ -323,16 +327,15 @@ theorem coe_decompose_mul_of_right_mem_of_le (b_mem : b ∈ 𝒜 i) (h : i ≤ n
 theorem coe_decompose_mul_of_left_mem (n) [Decidable (i ≤ n)] (a_mem : a ∈ 𝒜 i) :
     (decompose 𝒜 (a * b) n : A) = if i ≤ n then a * decompose 𝒜 b (n - i) else 0 := by
   lift a to 𝒜 i using a_mem
-  rwa [decompose_mul, decompose_coe, coe_of_mul_apply]
+  rw [decompose_mul, decompose_coe, coe_of_mul_apply]
 #align direct_sum.coe_decompose_mul_of_left_mem DirectSum.coe_decompose_mul_of_left_mem
 
 theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 𝒜 i) :
     (decompose 𝒜 (a * b) n : A) = if i ≤ n then decompose 𝒜 a (n - i) * b else 0 := by
   lift b to 𝒜 i using b_mem
-  rwa [decompose_mul, decompose_coe, coe_mul_of_apply]
+  rw [decompose_mul, decompose_coe, coe_mul_of_apply]
 #align direct_sum.coe_decompose_mul_of_right_mem DirectSum.coe_decompose_mul_of_right_mem
 
 end DirectSum
 
 end CanonicalOrder
-
