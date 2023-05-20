@@ -23,33 +23,33 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 
 ## Main definitions
 
-* `is_bounded_linear_map`: Class stating that a map `f : E → F` is linear and has `‖f x‖` bounded
+* `IsBoundedLinearMap`: Class stating that a map `f : E → F` is linear and has `‖f x‖` bounded
   by a multiple of `‖x‖`.
-* `is_bounded_bilinear_map`: Class stating that a map `f : E × F → G` is bilinear and continuous,
+* `IsBoundedBilinearMap`: Class stating that a map `f : E × F → G` is bilinear and continuous,
   but through the simpler to provide statement that `‖f (x, y)‖` is bounded by a multiple of
   `‖x‖ * ‖y‖`
-* `is_bounded_bilinear_map.linear_deriv`: Derivative of a continuous bilinear map as a linear map.
-* `is_bounded_bilinear_map.deriv`: Derivative of a continuous bilinear map as a continuous linear
-  map. The proof that it is indeed the derivative is `is_bounded_bilinear_map.has_fderiv_at` in
-  `analysis.calculus.fderiv`.
+* `IsBoundedBilinearMap.linearDeriv`: Derivative of a continuous bilinear map as a linear map.
+* `IsBoundedBilinearMap.deriv`: Derivative of a continuous bilinear map as a continuous linear
+  map. The proof that it is indeed the derivative is `IsBoundedBilinearMap.hasFDerivAt` in
+  `Analysis.Calculus.FDeriv`.
 
 ## Main theorems
 
-* `is_bounded_bilinear_map.continuous`: A bounded bilinear map is continuous.
-* `continuous_linear_equiv.is_open`: The continuous linear equivalences are an open subset of the
+* `IsBoundedBilinearMap.continuous`: A bounded bilinear map is continuous.
+* `ContinuousLinearEquiv.isOpen`: The continuous linear equivalences are an open subset of the
   set of continuous linear maps between a pair of Banach spaces.  Placed in this file because its
-  proof uses `is_bounded_bilinear_map.continuous`.
+  proof uses `IsBoundedBilinearMap.continuous`.
 
 ## Notes
 
-The main use of this file is `is_bounded_bilinear_map`. The file `analysis.normed_space.multilinear`
+The main use of this file is `IsBoundedBilinearMap`. The file `Analysis.NormedSpace.Multilinear`
 already expounds the theory of multilinear maps, but the `2`-variables case is sufficiently simpler
 to currently deserve its own treatment.
 
-`is_bounded_linear_map` is effectively an unbundled version of `continuous_linear_map` (defined
-in `topology.algebra.module.basic`, theory over normed spaces developed in
-`analysis.normed_space.operator_norm`), albeit the name disparity. A bundled
-`continuous_linear_map` is to be preferred over a `is_bounded_linear_map` hypothesis. Historical
+`IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
+in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
+`Analysis.NormedSpace.OperatorNorm`), albeit the name disparity. A bundled
+`ContinuousLinearMap` is to be preferred over a `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
 
@@ -66,7 +66,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
   [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type _}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-/-- A function `f` satisfies `is_bounded_linear_map 𝕜 f` if it is linear and satisfies the
+/-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
 structure IsBoundedLinearMap (𝕜 : Type _) [NormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
@@ -84,19 +84,19 @@ theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
       fun (this : ¬M ≤ 0) => ⟨M, lt_of_not_ge this, h⟩⟩
 #align is_linear_map.with_bound IsLinearMap.with_bound
 
-/-- A continuous linear map satisfies `is_bounded_linear_map` -/
+/-- A continuous linear map satisfies `IsBoundedLinearMap` -/
 theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
   { f.toLinearMap.isLinear with bound := f.bound }
 #align continuous_linear_map.is_bounded_linear_map ContinuousLinearMap.isBoundedLinearMap
 
 namespace IsBoundedLinearMap
 
-/-- Construct a linear map from a function `f` satisfying `is_bounded_linear_map 𝕜 f`. -/
+/-- Construct a linear map from a function `f` satisfying `IsBoundedLinearMap 𝕜 f`. -/
 def toLinearMap (f : E → F) (h : IsBoundedLinearMap 𝕜 f) : E →ₗ[𝕜] F :=
   IsLinearMap.mk' _ h.toIsLinearMap
 #align is_bounded_linear_map.to_linear_map IsBoundedLinearMap.toLinearMap
 
-/-- Construct a continuous linear map from is_bounded_linear_map -/
+/-- Construct a continuous linear map from `IsBoundedLinearMap`. -/
 def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) : E →L[𝕜] F :=
   { toLinearMap f hf with
     cont :=
@@ -212,8 +212,8 @@ section
 
 variable {ι : Type _} [Fintype ι]
 
-/-- Taking the cartesian product of two continuous multilinear maps
-is a bounded linear operation. -/
+/-- Taking the cartesian product of two continuous multilinear maps is a bounded linear
+operation. -/
 theorem isBoundedLinearMap_prod_multilinear {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
@@ -231,16 +231,10 @@ theorem isBoundedLinearMap_prod_multilinear {E : ι → Type _} [∀ i, NormedAd
         intro m
         rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
         constructor
-        ·
-          exact
-            (p.1.le_op_norm m).trans
-              (mul_le_mul_of_nonneg_right (norm_fst_le p)
-                (Finset.prod_nonneg fun i _ => norm_nonneg _))
-        ·
-          exact
-            (p.2.le_op_norm m).trans
-              (mul_le_mul_of_nonneg_right (norm_snd_le p)
-                (Finset.prod_nonneg fun i _ => norm_nonneg _))⟩ }
+        · exact (p.1.le_op_norm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p)
+            (Finset.prod_nonneg fun i _ => norm_nonneg _))
+        · exact (p.2.le_op_norm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p)
+            (Finset.prod_nonneg fun i _ => norm_nonneg _))⟩ }
 #align is_bounded_linear_map_prod_multilinear isBoundedLinearMap_prod_multilinear
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
@@ -250,11 +244,8 @@ theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜
       f.compContinuousLinearMap fun _ => g := by
   refine'
     IsLinearMap.with_bound
-      ⟨fun f₁ f₂ => by
-        ext m
-        rfl, fun c f => by
-        ext m
-        rfl⟩
+      ⟨fun f₁ f₂ => by ext; rfl,
+        fun c f => by ext; rfl⟩
       (‖g‖ ^ Fintype.card ι) fun f => _
   apply ContinuousMultilinearMap.op_norm_le_bound _ _ _
   · apply_rules [mul_nonneg, pow_nonneg, norm_nonneg]
@@ -281,7 +272,7 @@ namespace ContinuousLinearMap
   `(f _).map_add` and similar.
 
 We have to assume that `F` and `G` are normed spaces in this section, to use
-`continuous_linear_map.to_normed_add_comm_group`, but we don't need to assume this for the first
+`ContinuousLinearMap.toNormedAddCommGroup`, but we don't need to assume this for the first
 argument of `f`.
 -/
 
@@ -338,7 +329,7 @@ end ContinuousLinearMap
 
 variable (𝕜)
 
-/-- A map `f : E × F → G` satisfies `is_bounded_bilinear_map 𝕜 f` if it is bilinear and
+/-- A map `f : E × F → G` satisfies `IsBoundedBilinearMap 𝕜 f` if it is bilinear and
 continuous. -/
 structure IsBoundedBilinearMap (f : E × F → G) : Prop where
   add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂, y) = f (x₁, y) + f (x₂, y)
@@ -404,7 +395,7 @@ theorem IsBoundedBilinearMap.map_sub_right (h : IsBoundedBilinearMap 𝕜 f) {x 
 
 #align is_bounded_bilinear_map.map_sub_right IsBoundedBilinearMap.map_sub_right
 
-/-- Useful to use together with `continuous.comp₂`. -/
+/-- Useful to use together with `Continuous.comp₂`. -/
 theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
   have one_ne : (1 : ℝ) ≠ 0 := by simp
   obtain ⟨C, _ : 0 < C, hC⟩ := h.bound
@@ -443,7 +434,7 @@ theorem IsBoundedBilinearMap.continuous_right (h : IsBoundedBilinearMap 𝕜 f) 
   h.continuous.comp (continuous_const.prod_mk continuous_id)
 #align is_bounded_bilinear_map.continuous_right IsBoundedBilinearMap.continuous_right
 
-/-- Useful to use together with `continuous.comp₂`. -/
+/-- Useful to use together with `Continuous.comp₂`. -/
 theorem ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :
     Continuous (Function.uncurry fun x y => f x y) :=
   f.isBoundedBilinearMap.continuous
@@ -511,7 +502,7 @@ theorem isBoundedBilinearMapApply : IsBoundedBilinearMap 𝕜 fun p : (E →L[�
   (ContinuousLinearMap.flip (apply 𝕜 F : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F)).isBoundedBilinearMap
 #align is_bounded_bilinear_map_apply isBoundedBilinearMapApply
 
-/-- The function `continuous_linear_map.smul_right`, associating to a continuous linear map
+/-- The function `ContinuousLinearMap.smulRight`, associating to a continuous linear map
 `f : E → 𝕜` and a scalar `c : F` the tensor product `f ⊗ c` as a continuous linear map from `E` to
 `F`, is a bounded bilinear map. -/
 theorem isBoundedBilinearMapSmulRight :
@@ -531,7 +522,7 @@ theorem isBoundedBilinearMapCompMultilinear {ι : Type _} {E : ι → Type _} [F
 
 /-- Definition of the derivative of a bilinear map `f`, given at a point `p` by
 `q ↦ f(p.1, q.2) + f(q.1, p.2)` as in the standard formula for the derivative of a product.
-We define this function here as a linear map `E × F →ₗ[𝕜] G`, then `is_bounded_bilinear_map.deriv`
+We define this function here as a linear map `E × F →ₗ[𝕜] G`, then `IsBoundedBilinearMap.deriv`
 strengthens it to a continuous linear map `E × F →L[𝕜] G`.
 ``. -/
 def IsBoundedBilinearMap.linearDeriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : E × F →ₗ[𝕜] G
@@ -550,7 +541,7 @@ def IsBoundedBilinearMap.linearDeriv (h : IsBoundedBilinearMap 𝕜 f) (p : E ×
 
 /-- The derivative of a bounded bilinear map at a point `p : E × F`, as a continuous linear map
 from `E × F` to `G`. The statement that this is indeed the derivative of `f` is
-`is_bounded_bilinear_map.has_fderiv_at` in `analysis.calculus.fderiv`. -/
+`IsBoundedBilinearMap.hasFDerivAt` in `Analysis.Calculus.FDeriv`. -/
 def IsBoundedBilinearMap.deriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : E × F →L[𝕜] G :=
   (h.linearDeriv p).mkContinuousOfExistsBound <| by
     rcases h.bound with ⟨C, Cpos, hC⟩
@@ -576,7 +567,7 @@ theorem isBoundedBilinearMap_deriv_coe (h : IsBoundedBilinearMap 𝕜 f) (p q : 
 
 variable (𝕜)
 
-/-- The function `continuous_linear_map.mul_left_right : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
+/-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
 theorem ContinuousLinearMap.mulLeftRightIsBoundedBilinear (𝕜' : Type _) [NormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
