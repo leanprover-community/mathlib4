@@ -444,13 +444,15 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     have hl : 2 ≤ s.length := by simpa using Cycle.length_nontrivial ht
     simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff, Subtype.coe_mk,
       Cycle.formPerm_coe] at hn hx⊢
+    apply Subtype.ext
+    dsimp
     rw [toCycle_eq_toList _ _ x]
     · refine' Quotient.sound' _
       exact toList_formPerm_isRotated_self _ hl hn _ hx
     · rw [← mem_support, support_formPerm_of_nodup _ hn]
       · simpa using hx
       · rintro _ rfl
-        simpa [Nat.succ_le_succ_iff] using hl
+        simp [Nat.succ_le_succ_iff] at hl
 #align equiv.perm.iso_cycle Equiv.Perm.isoCycle
 
 end Fintype
@@ -507,27 +509,26 @@ variable [Fintype α] [DecidableEq α]
 that corresponds to repeated application of `f`.
 The forward direction is implemented by finding this `Cycle α` using `Fintype.choose`.
 -/
-def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } where
-  toFun f := Fintype.choose _ f.prop.existsUnique_cycle_nontrivial_subtype
-  invFun s := ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
-  left_inv f := by
-    simpa [Subtype.ext_iff] using
-      Fintype.choose_spec _ f.prop.existsUnique_cycle_nontrivial_subtype
-  right_inv := fun ⟨s, hs, ht⟩ => by
-    simp [Subtype.coe_mk]
-    convert Fintype.choose_subtype_eq (fun s' : Cycle α => s'.Nodup ∧ s'.Nontrivial) _
-    ext ⟨s', hs', ht'⟩
-    simp [Cycle.formPerm_eq_formPerm_iff, iff_not_comm.mp hs.nontrivial_iff,
-      iff_not_comm.mp hs'.nontrivial_iff, ht]
+def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
+  let f : { s : Cycle α // s.Nodup ∧ s.Nontrivial } → { f : Perm α // IsCycle f } :=
+    fun s => ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
+  { toFun := Fintype.bijInv (show Function.Bijective f by
+      rw [Function.bijective_iff_existsUnique]
+      rintro ⟨f, hf⟩
+      simp only [Subtype.ext_iff]
+      exact hf.existsUnique_cycle_nontrivial_subtype)
+    invFun := f
+    left_inv := Fintype.rightInverse_bijInv _
+    right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
 notation3"c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (↑l) (Cycle.nodup_coe_iff.mpr _)
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
-  ⟨fun f => Repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)
+  ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)
     (Perm.cycleFactorsFinset f).val -- toCycle is faster?
-    fun g hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
+    fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
 #align equiv.perm.repr_perm Equiv.Perm.repr_perm
 
 end Equiv.Perm
