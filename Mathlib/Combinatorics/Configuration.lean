@@ -421,8 +421,8 @@ theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p =
 variable (P) {L}
 
 theorem pointCount_eq_pointCount [Finite P] [Finite L] (l m : L) :
-    pointCount P l = pointCount P m :=
-  lineCount_eq_lineCount (Dual P) l m
+    pointCount P l = pointCount P m := by
+  apply lineCount_eq_lineCount (Dual P)
 #align configuration.projective_plane.point_count_eq_point_count Configuration.ProjectivePlane.pointCount_eq_pointCount
 
 -- porting note: left out {L} to avoid redundant binder annotation
@@ -458,24 +458,24 @@ theorem lineCount_eq [Finite P] [Finite L] (p : P) : lineCount L p = order P L +
 variable (P) {L}
 
 theorem pointCount_eq [Finite P] [Finite L] (l : L) : pointCount P l = order P L + 1 :=
-  (lineCount_eq (Dual P) l).trans (congr_arg (fun n => n + 1) (Dual.order P L))
+  (lineCount_eq (Dual P) _).trans (congr_arg (fun n => n + 1) (Dual.order P L))
 #align configuration.projective_plane.point_count_eq Configuration.ProjectivePlane.pointCount_eq
 
-variable (P L)
+variable (L)
 
 theorem one_lt_order [Finite P] [Finite L] : 1 < order P L := by
   obtain ⟨p₁, p₂, p₃, l₁, l₂, l₃, -, -, h₂₁, h₂₂, h₂₃, h₃₁, h₃₂, h₃₃⟩ := @exists_config P L _ _
-  classical
-    cases nonempty_fintype { p : P // p ∈ l₂ }
-    rw [← add_lt_add_iff_right, ← pointCount_eq _ l₂, pointCount, Nat.card_eq_fintype_card]
-    simp_rw [Fintype.two_lt_card_iff, Ne, Subtype.ext_iff]
-    have h := mkPoint_ax fun h => h₂₁ ((congr_arg _ h).mpr h₂₂)
-    exact
-      ⟨⟨mkPoint _, h.2⟩, ⟨p₂, h₂₂⟩, ⟨p₃, h₃₂⟩, ne_of_mem_of_not_mem h.1 h₂₁,
-        ne_of_mem_of_not_mem h.1 h₃₁, ne_of_mem_of_not_mem h₂₃ h₃₃⟩
+  cases nonempty_fintype { p : P // p ∈ l₂ }
+  rw [← add_lt_add_iff_right 1, ← pointCount_eq _ l₂, pointCount, Nat.card_eq_fintype_card,
+    Fintype.two_lt_card_iff]
+  simp_rw [Ne, Subtype.ext_iff]
+  have h := mkPoint_ax fun h => h₂₁ ((congr_arg _ h).mpr h₂₂)
+  exact
+    ⟨⟨mkPoint _, h.2⟩, ⟨p₂, h₂₂⟩, ⟨p₃, h₃₂⟩, ne_of_mem_of_not_mem h.1 h₂₁,
+      ne_of_mem_of_not_mem h.1 h₃₁, ne_of_mem_of_not_mem h₂₃ h₃₃⟩
 #align configuration.projective_plane.one_lt_order Configuration.ProjectivePlane.one_lt_order
 
-variable {P} (L)
+variable {P}
 
 theorem two_lt_lineCount [Finite P] [Finite L] (p : P) : 2 < lineCount L p := by
   simpa only [lineCount_eq L p, Nat.succ_lt_succ_iff] using one_lt_order P L
