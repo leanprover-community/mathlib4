@@ -1853,6 +1853,7 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient

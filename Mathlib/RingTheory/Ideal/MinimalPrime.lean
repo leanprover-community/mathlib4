@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.AtPrime
-import Mathbin.Order.Minimal
+import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.Order.Minimal
 
 /-!
 
@@ -50,12 +50,10 @@ def minimalPrimes (R : Type _) [CommRing R] : Set (Ideal R) :=
 
 variable {I J}
 
-theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J :=
-  by
+theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
   suffices
     ∃ m ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p },
-      OrderDual.toDual J ≤ m ∧ ∀ z ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ p }, m ≤ z → z = m
-    by
+      OrderDual.toDual J ≤ m ∧ ∀ z ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ p }, m ≤ z → z = m by
     obtain ⟨p, h₁, h₂, h₃⟩ := this
     simp_rw [← @eq_comm _ p] at h₃
     exact ⟨p, ⟨h₁, fun a b c => (h₃ a b c).le⟩, h₂⟩
@@ -76,8 +74,7 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
 #align ideal.exists_minimal_primes_le Ideal.exists_minimalPrimes_le
 
 @[simp]
-theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes :=
-  by
+theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
   congr
   ext p
@@ -85,8 +82,7 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
 #align ideal.radical_minimal_primes Ideal.radical_minimalPrimes
 
 @[simp]
-theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical :=
-  by
+theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
   rw [I.radical_eq_Inf]
   apply le_antisymm
   · intro x hx
@@ -103,11 +99,9 @@ theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » minimal_primes[minimal_primes] R) -/
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (_ : p ∈ minimalPrimes R) :
-    ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p :=
-  by
+    ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
   haveI := H.1.1
-  have : Nontrivial (Localization (Submonoid.map f p.prime_compl)) :=
-    by
+  have : Nontrivial (Localization (Submonoid.map f p.prime_compl)) := by
     refine' ⟨⟨1, 0, _⟩⟩
     convert(IsLocalization.map_injective_of_injective p.prime_compl (Localization.AtPrime p)
             (Localization <| p.prime_compl.map f) hf).Ne
@@ -133,16 +127,13 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » (I.comap f).minimal_primes) -/
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
-    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
-  by
+    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
   haveI := H.1.1
   let f' := I.Quotient.mk.comp f
-  have e : (I.Quotient.mk.comp f).ker = I.comap f :=
-    by
+  have e : (I.Quotient.mk.comp f).ker = I.comap f := by
     ext1
     exact Submodule.Quotient.mk_eq_zero _
-  have : (I.Quotient.mk.comp f).ker.Quotient.mk.ker ≤ p :=
-    by
+  have : (I.Quotient.mk.comp f).ker.Quotient.mk.ker ≤ p := by
     rw [Ideal.mk_ker, e]
     exact H.1.2
   obtain ⟨p', hp₁, hp₂⟩ :=
@@ -173,8 +164,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » (I.comap f).minimal_primes) -/
 theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
-    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p :=
-  by
+    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
   obtain ⟨p', h₁, h₂, h₃⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f p H
   skip
   obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le h₂
@@ -185,8 +175,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
 #align ideal.exists_minimal_primes_comap_eq Ideal.exists_minimalPrimes_comap_eq
 
 theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
-    {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes :=
-  by
+    {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   haveI := h.1.1
   refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
   rintro K ⟨hK, e₁⟩ e₂
@@ -199,8 +188,7 @@ theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
 #align ideal.mimimal_primes_comap_of_surjective Ideal.mimimal_primes_comap_of_surjective
 
 theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Function.Surjective f)
-    (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes :=
-  by
+    (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes := by
   ext J
   constructor
   · intro H
@@ -216,8 +204,7 @@ theorem Ideal.minimalPrimes_eq_comap :
     RingHom.ker_eq_comap_bot, Ideal.mk_ker]
 #align ideal.minimal_primes_eq_comap Ideal.minimalPrimes_eq_comap
 
-theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} :=
-  by
+theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
   constructor
   ·
@@ -228,8 +215,7 @@ theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes
     exact ⟨⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩, fun _ H _ => H.1.radical_le_iff.mpr H.2⟩
 #align ideal.minimal_primes_eq_subsingleton Ideal.minimalPrimes_eq_subsingleton
 
-theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes = {I} :=
-  by
+theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes = {I} := by
   ext J
   constructor
   · exact fun H => (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
