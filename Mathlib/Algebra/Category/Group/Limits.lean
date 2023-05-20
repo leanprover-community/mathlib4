@@ -8,11 +8,11 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Limits
-import Mathbin.Algebra.Category.Group.Preadditive
-import Mathbin.CategoryTheory.Over
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Algebra.Category.Mon.Limits
+import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.CategoryTheory.Over
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -36,8 +36,7 @@ variable {J : Type v} [SmallCategory J]
 namespace GroupCat
 
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCat.{max v u}) (j) : Group ((F ⋙ forget GroupCat).obj j) :=
-  by
+instance groupObj (F : J ⥤ GroupCat.{max v u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
   change Group (F.obj j)
   infer_instance
 #align Group.group_obj GroupCat.groupObj
@@ -53,8 +52,7 @@ def sectionsSubgroup (F : J ⥤ GroupCat) : Subgroup (∀ j, F.obj j) :=
       (F ⋙ forget₂ GroupCat
           MonCat) with
     carrier := (F ⋙ forget GroupCat).sections
-    inv_mem' := fun a ah j j' f =>
-      by
+    inv_mem' := fun a ah j j' f => by
       simp only [forget_map_eq_coe, functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
       dsimp [functor.sections] at ah
       rw [ah f] }
@@ -63,8 +61,7 @@ def sectionsSubgroup (F : J ⥤ GroupCat) : Subgroup (∀ j, F.obj j) :=
 
 @[to_additive]
 instance limitGroup (F : J ⥤ GroupCat.{max v u}) :
-    Group (Types.limitCone (F ⋙ forget GroupCat)).pt :=
-  by
+    Group (Types.limitCone (F ⋙ forget GroupCat)).pt := by
   change Group (sections_subgroup F)
   infer_instance
 #align Group.limit_group GroupCat.limitGroup
@@ -170,8 +167,7 @@ namespace CommGroupCat
 
 @[to_additive]
 instance commGroupObj (F : J ⥤ CommGroupCat.{max v u}) (j) :
-    CommGroup ((F ⋙ forget CommGroupCat).obj j) :=
-  by
+    CommGroup ((F ⋙ forget CommGroupCat).obj j) := by
   change CommGroup (F.obj j)
   infer_instance
 #align CommGroup.comm_group_obj CommGroupCat.commGroupObj
@@ -310,12 +306,10 @@ namespace AddCommGroupCat
 /-- The categorical kernel of a morphism in `AddCommGroup`
 agrees with the usual group-theoretical kernel.
 -/
-def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) : kernel f ≅ AddCommGroupCat.of f.ker
-    where
+def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) : kernel f ≅ AddCommGroupCat.of f.ker where
   Hom :=
     { toFun := fun g =>
-        ⟨kernel.ι f g,
-          by
+        ⟨kernel.ι f g, by
           -- TODO where is this `has_coe_t_aux.coe` coming from? can we prevent it appearing?
           change (kernel.ι f) g ∈ f.ker
           simp [AddMonoidHom.mem_ker]⟩
@@ -344,8 +338,7 @@ theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat} (f : G ⟶ H) :
 
 @[simp]
 theorem kernelIsoKer_inv_comp_ι {G H : AddCommGroupCat} (f : G ⟶ H) :
-    (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype f.ker :=
-  by
+    (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype f.ker := by
   ext
   simp [kernel_iso_ker]
 #align AddCommGroup.kernel_iso_ker_inv_comp_ι AddCommGroupCat.kernelIsoKer_inv_comp_ι
