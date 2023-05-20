@@ -76,6 +76,14 @@ jobs:
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
+      - name: update MathlibExtras.lean
+        run: |
+          find MathlibExtras -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
+
+      - name: update Mathlib/Tactic.lean
+        run: |
+          find Mathlib/Tactic -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+
       - name: check that all files are imported
         run: git diff --exit-code
 

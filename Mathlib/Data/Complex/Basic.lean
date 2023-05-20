@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
+! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -543,19 +543,19 @@ theorem conj_neg_I : conj (-I) = I :=
 set_option linter.uppercaseLean3 false in
 #align complex.conj_neg_I Complex.conj_neg_I
 
-theorem eq_conj_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
+theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
   ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
-#align complex.eq_conj_iff_real Complex.eq_conj_iff_real
+#align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
-theorem eq_conj_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  eq_conj_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
-#align complex.eq_conj_iff_re Complex.eq_conj_iff_re
+theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+#align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
-theorem eq_conj_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
+theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
-#align complex.eq_conj_iff_im Complex.eq_conj_iff_im
+#align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
 -- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
 -- though it's not imported by this file.
@@ -924,8 +924,8 @@ private theorem abs_mul (z w : ℂ) : (abs z * w) = (abs z) * abs w := by
   rw [normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
 
 private theorem abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
-  (mul_self_le_mul_self_iff (abs_nonneg' (z + w)) (add_nonneg (abs_nonneg' z) (abs_nonneg' w))).2 <|
-    by
+  (mul_self_le_mul_self_iff (abs_nonneg' (z + w))
+      (add_nonneg (abs_nonneg' z) (abs_nonneg' w))).2 <| by
     rw [mul_self_abs, add_mul_self_eq, mul_self_abs, mul_self_abs, add_right_comm, normSq_add,
       add_le_add_iff_left, mul_assoc, mul_le_mul_left (zero_lt_two' ℝ), ←
       Real.sqrt_mul <| normSq_nonneg z, ← normSq_conj w, ← map_mul]
