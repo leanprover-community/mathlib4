@@ -12,8 +12,6 @@ Ported by: Scott Morrison
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.RestateAxiom
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Replace
 
 /-!
 # Categories

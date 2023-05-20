@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.Tactic.ScopedNS
 
 /-! # The simplex category
 
