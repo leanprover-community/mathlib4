@@ -352,13 +352,6 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc
 
-@[to_additive]
-noncomputable local instance FunLike_instance (t : Cocone.{v, max v u, v} F) :
-  FunLike (F.obj j ⟶ t.pt) ((F ⋙ forget MonCat).obj j)
-  (fun _ => t.pt) :=
-show FunLike (F.obj j →* t.pt) ((F ⋙ forget MonCat).obj j)
-  (fun _ => t.pt) by infer_instance
-
 /-- The proposed colimit cocone is a colimit in `Mon`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMon`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
@@ -368,7 +361,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   uniq t m h := MonoidHom.ext fun y => congr_fun
       ((Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
-        fun j => funext fun x => FunLike.congr_fun (i := FunLike_instance.{v, u} F t) (h j) x) y
+        fun j => funext fun x => FunLike.congr_fun (i := MonCat.Hom_FunLike _ _) (h j) x) y
 set_option linter.uppercaseLean3 false in
 #align Mon.filtered_colimits.colimit_cocone_is_colimit MonCat.FilteredColimits.colimitCoconeIsColimit
 set_option linter.uppercaseLean3 false in
@@ -446,22 +439,6 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.filtered_colimits.colimit_cocone AddCommMonCat.FilteredColimits.colimitCocone
 
--- Porting note : need to add `FunLike` instance manually
-@[to_additive]
-noncomputable local instance FunLike_instance (t : Cocone.{v, max v u, v} F) :
-  FunLike (F.obj j ⟶ t.pt)
-    ((F ⋙ forget CommMonCat).obj j)
-    (fun _ => t.pt) :=
-show FunLike (F.obj j →* t.pt) ((F ⋙ forget CommMonCat.{max v u}).obj j)
-  (fun _ => t.pt) by infer_instance
-
--- Porting note : need to add `FunLike` instance manually
-@[to_additive]
-noncomputable local instance FunLike_instance' (t : Cocone.{v, max v u, v} F) :
-  FunLike ((colimitCocone.{v, u} F).pt ⟶ t.pt) (colimitCocone.{v, u} F).pt fun _ => t.pt :=
-show FunLike ((colimitCocone.{v, u} F).pt →* t.pt) (colimitCocone.{v, u} F).pt fun _ => t.pt
-by infer_instance
-
 /-- The proposed colimit cocone is a colimit in `CommMon`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMon`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
@@ -469,15 +446,15 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)
   fac t j :=
-    FunLike.coe_injective (i := FunLike_instance.{v, u} F t) <|
+    FunLike.coe_injective (i := CommMonCat.Hom_FunLike _ _) <|
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
         ((forget CommMonCat).mapCocone t) j
   uniq t m h :=
-    FunLike.coe_injective (i := FunLike_instance'.{v, u} F t) <|
+    FunLike.coe_injective (i := CommMonCat.Hom_FunLike _ _) <|
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
         ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
-          FunLike.congr_fun (i := FunLike_instance.{v, u} F t) (h j) x
+          FunLike.congr_fun (i := CommMonCat.Hom_FunLike _ _) (h j) x
 set_option linter.uppercaseLean3 false in
 #align CommMon.filtered_colimits.colimit_cocone_is_colimit CommMonCat.FilteredColimits.colimitCoconeIsColimit
 set_option linter.uppercaseLean3 false in
