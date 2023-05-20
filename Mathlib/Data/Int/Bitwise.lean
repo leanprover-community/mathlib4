@@ -12,7 +12,6 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
-import Mathlib.Tactic.Coe
 
 /-!
 # Bitwise operations on integers

@@ -12,7 +12,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
@@ -38,7 +37,6 @@ Note that, rather than using the derived algebraic structures on these subobject
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
-set_option synthInstance.etaExperiment true
 
 --attribute [elab_without_expected_type] Continuous.comp
 
@@ -822,7 +820,6 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
 
-set_option synthInstance.maxHeartbeats 40000 in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 

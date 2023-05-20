@@ -37,9 +37,6 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
--- Porting note: TODO Erase this line. Workaround for lean4#2074.
-attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
 
 variable [dec_ι : DecidableEq ι]
@@ -541,7 +538,6 @@ theorem independent_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) 
   ⟨Independent.dfinsupp_sumAddHom_injective, independent_of_dfinsupp_sumAddHom_injective' p⟩
 #align complete_lattice.independent_iff_dfinsupp_sum_add_hom_injective CompleteLattice.independent_iff_dfinsupp_sumAddHom_injective
 
-set_option synthInstance.etaExperiment true in
 /-- If a family of submodules is `Independent`, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
 

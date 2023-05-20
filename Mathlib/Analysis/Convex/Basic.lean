@@ -248,7 +248,6 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
     _ = r := Convex.combo_self hab _
 #align convex_Iic convex_Iic
 
-set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
   @convex_Iic 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ici convex_Ici
@@ -288,7 +287,6 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     _ = r := Convex.combo_self hab _
 #align convex_Iio convex_Iio
 
-set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) :=
   @convex_Iio 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ioi convex_Ioi
@@ -349,13 +347,11 @@ theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β)
       (max_rec' { x | f x < r } hx.2 hy.2)⟩
 #align monotone_on.convex_lt MonotoneOn.convex_lt
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
   @MonotoneOn.convex_le 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r
 #align monotone_on.convex_ge MonotoneOn.convex_ge
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
   @MonotoneOn.convex_lt 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r

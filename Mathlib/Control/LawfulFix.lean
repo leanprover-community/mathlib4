@@ -12,7 +12,6 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.WLOG
 
 /-!
 # Lawful fixed point operators

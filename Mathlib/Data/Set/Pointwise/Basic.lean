@@ -13,7 +13,6 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Pointwise operations of sets

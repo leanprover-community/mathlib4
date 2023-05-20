@@ -723,7 +723,7 @@ variable {k : Type _} {V : Type _} {P : Type _} [LinearOrderedRing k] [AddCommGr
 
 variable [Module k V] [AffineSpace V P] {ι : Type _}
 
-attribute [local instance] LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLT
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of two points given as affine combinations, and suppose that, for two indices, the

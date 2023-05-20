@@ -10,25 +10,20 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
+
 /-!
 # Definition of `Stream'` and functions on streams
 
 A stream `Stream' α` is an infinite sequence of elements of `α`. One can also think about it as an
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
-
 -/
 
-universe u v w
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α
 #align stream Stream'
 
-open Nat
-
 namespace Stream'
-
-variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- Prepend an element to a stream. -/
 def cons (a : α) (s : Stream' α) : Stream' α
@@ -38,21 +33,21 @@ def cons (a : α) (s : Stream' α) : Stream' α
 
 scoped infixr:67 " :: " => cons
 
-/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
-def head (s : Stream' α) : α := s 0
-#align stream.head Stream'.head
-
-/-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s (i + 1)
-#align stream.tail Stream'.tail
-
-/-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s (i + n)
-#align stream.drop Stream'.drop
-
 /-- `n`-th element of a stream. -/
 def nth (s : Stream' α) (n : ℕ) : α := s n
 #align stream.nth Stream'.nth
+
+/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
+abbrev head (s : Stream' α) : α := s.nth 0
+#align stream.head Stream'.head
+
+/-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
+def tail (s : Stream' α) : Stream' α := fun i => s.nth (i + 1)
+#align stream.tail Stream'.tail
+
+/-- Drop first `n` elements of a stream. -/
+def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.nth (i + n)
+#align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
 def All (p : α → Prop) (s : Stream' α) := ∀ n, p (nth s n)
@@ -111,7 +106,7 @@ def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
 #align stream.corec_state Stream'.corecState
 
 -- corec is also known as unfold
-def unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
+abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 #align stream.unfolds Stream'.unfolds
 
