@@ -13,7 +13,6 @@ import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
--- import Mathlib.Tactic.RingExp
 
 /-!
 # Quaternions
