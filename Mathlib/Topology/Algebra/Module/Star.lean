@@ -8,9 +8,9 @@ Authors: Eric Wieser, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Module
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.Topology.Algebra.Star
+import Mathlib.Algebra.Star.Module
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Star
 
 /-!
 # The star operation, bundled as a continuous star-linear equiv
@@ -71,8 +71,7 @@ def skewAdjointPartL [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R
 as a continuous linear equivalence. -/
 @[simps]
 def StarModule.decomposeProdAdjointL [TopologicalAddGroup A] [ContinuousStar A]
-    [ContinuousConstSMul R A] : A ≃L[R] selfAdjoint A × skewAdjoint A
-    where
+    [ContinuousConstSMul R A] : A ≃L[R] selfAdjoint A × skewAdjoint A where
   toLinearEquiv := StarModule.decomposeProdAdjoint R A
   continuous_toFun := continuous_decomposeProdAdjoint _ _
   continuous_invFun := continuous_decomposeProdAdjoint_symm _ _
