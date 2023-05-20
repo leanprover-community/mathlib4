@@ -77,8 +77,8 @@ theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
   · exact one_div_pos.2 hgcd
 #align cancel_factors.cancel_factors_le CancelDenoms.cancel_factors_le
 
-theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
-    (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
+theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
+    (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) := by
   rw [← ha, ← hb, ← mul_assoc bd, ← mul_assoc ad, mul_comm bd]
   ext; constructor
@@ -89,10 +89,11 @@ theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     refine' mul_left_cancel₀ (mul_ne_zero _ _) h
     apply mul_ne_zero
     apply div_ne_zero
-    all_goals apply ne_of_gt ; first | assumption | exact zero_lt_one
+    exact one_ne_zero
+    all_goals assumption
 #align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
-/-! ### Computing cancelation factors -/
+/-! ### Computing cancellation factors -/
 
 /--
 `findCancelFactor e` produces a natural number `n`, such that multiplying `e` by `n` will
@@ -208,13 +209,13 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
 -/
-def findCompLemma (e : Expr) : Option (Expr × Expr × Name) :=
+def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
   match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt)
-  | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le)
-  | (``Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq)
-  | (``GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le)
-  | (``GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt)
+  | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt, true)
+  | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le, true)
+  | (``Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq, false)
+  | (``GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le, true)
+  | (``GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt, true)
   | _ => none
 
 /--
@@ -224,23 +225,31 @@ It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
-  let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
+  let some (lhs, rhs, lem, ord) := findCompLemma h | throwError "cannot kill factors"
   let (al, lhs_p) ← derive lhs
   let ⟨u, α, _⟩ ← inferTypeQ' lhs
-  let _ ← synthInstanceQ q(LinearOrderedField $α)
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   let (ar, rhs_p) ← derive rhs
   let gcd := al.gcd ar
   have al := (← mkOfNat α amwo <| mkRawNatLit al).1
   have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
   have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
-  let al_pos : Q(Prop) := q(0 < $al)
-  let ar_pos : Q(Prop) := q(0 < $ar)
-  let gcd_pos : Q(Prop) := q(0 < $gcd)
-  let al_pos ← synthesizeUsingNormNum al_pos
-  let ar_pos ← synthesizeUsingNormNum ar_pos
-  let gcd_pos ← synthesizeUsingNormNum gcd_pos
-  let pf ← mkAppM lem #[lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
+  let (al_cond, ar_cond, gcd_cond) ← if ord then do
+      let _ ← synthInstanceQ q(LinearOrderedField $α)
+      let al_pos : Q(Prop) := q(0 < $al)
+      let ar_pos : Q(Prop) := q(0 < $ar)
+      let gcd_pos : Q(Prop) := q(0 < $gcd)
+      pure (al_pos, ar_pos, gcd_pos)
+    else do
+      let _ ← synthInstanceQ q(Field $α)
+      let al_ne : Q(Prop) := q($al ≠ 0)
+      let ar_ne : Q(Prop) := q($ar ≠ 0)
+      let gcd_ne : Q(Prop) := q($gcd ≠ 0)
+      pure (al_ne, ar_ne, gcd_ne)
+  let al_cond ← synthesizeUsingNormNum al_cond
+  let ar_cond ← synthesizeUsingNormNum ar_cond
+  let gcd_cond ← synthesizeUsingNormNum gcd_cond
+  let pf ← mkAppM lem #[lhs_p, rhs_p, al_cond, ar_cond, gcd_cond]
   let pf_tp ← inferType pf
   return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
 
@@ -284,3 +293,9 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
+
+variable {α : Type} [Field α] [CharZero α] (a b c d : α)
+example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
+  cancel_denoms
+  rw [← h]
+  sorry

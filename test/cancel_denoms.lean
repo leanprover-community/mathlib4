@@ -55,6 +55,7 @@ example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
 
+variable {α : Type} [Field α] [CharZero α] (a b c d : α)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   rw [← h]
@@ -73,6 +74,18 @@ example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
 
+example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
+  cancel_denoms
+  rw [← h]
+  ring
+end
+
+section
+-- simulate the type of complex numbers
+def C : Type := sorry
+instance : Field C := sorry
+instance : CharZero C := sorry
+variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   rw [← h]
