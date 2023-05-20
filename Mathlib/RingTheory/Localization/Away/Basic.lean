@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.UniqueFactorizationDomain
-import Mathbin.RingTheory.Localization.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Localizations away from an element
@@ -59,8 +59,7 @@ noncomputable def invSelf : S :=
 #align is_localization.away.inv_self IsLocalization.Away.invSelf
 
 @[simp]
-theorem mul_invSelf : algebraMap R S x * invSelf x = 1 :=
-  by
+theorem mul_invSelf : algebraMap R S x * invSelf x = 1 := by
   convert IsLocalization.mk'_mul_mk'_eq_one _ 1
   symm
   apply IsLocalization.mk'_one
@@ -104,8 +103,7 @@ variable (S) (Q : Type _) [CommSemiring Q] [Algebra P Q]
 noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
     [IsLocalization.Away (f r) Q] : S →+* Q :=
   IsLocalization.map Q f
-    (show Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f
-      by
+    (show Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f by
       rintro x ⟨n, rfl⟩
       use n
       simp)
@@ -122,8 +120,7 @@ section AtUnits
 variable (R) (S) (M)
 
 /-- The localization at a module of units is isomorphic to the ring -/
-noncomputable def atUnits (H : ∀ x : M, IsUnit (x : R)) : R ≃ₐ[R] S :=
-  by
+noncomputable def atUnits (H : ∀ x : M, IsUnit (x : R)) : R ≃ₐ[R] S := by
   refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
@@ -139,8 +136,7 @@ noncomputable def atUnits (H : ∀ x : M, IsUnit (x : R)) : R ≃ₐ[R] S :=
 #align is_localization.at_units IsLocalization.atUnits
 
 /-- The localization away from a unit is isomorphic to the ring -/
-noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R ≃ₐ[R] S :=
-  by
+noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R ≃ₐ[R] S := by
   apply at_units R (Submonoid.powers x)
   rintro ⟨xn, n, hxn⟩
   obtain ⟨u, hu⟩ := e
@@ -235,8 +231,7 @@ theorem selfZpow_of_neg {n : ℤ} (hn : n < 0) :
 #align self_zpow_of_neg selfZpow_of_neg
 
 theorem selfZpow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
-    selfZpow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  by
+    selfZpow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
   by_cases hn0 : n = 0
   · simp [hn0, selfZpow_zero, Submonoid.pow_apply]
   · simp [selfZpow_of_neg _ _ (lt_of_le_of_ne hn hn0)]
@@ -249,8 +244,7 @@ theorem selfZpow_neg_coe_nat (d : ℕ) : selfZpow x B (-d) = mk' _ (1 : R) (Subm
 
 @[simp]
 theorem selfZpow_sub_cast_nat {n m : ℕ} :
-    selfZpow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) :=
-  by
+    selfZpow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
   by_cases h : m ≤ n
   ·
     rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
@@ -261,8 +255,7 @@ theorem selfZpow_sub_cast_nat {n m : ℕ} :
 #align self_zpow_sub_cast_nat selfZpow_sub_cast_nat
 
 @[simp]
-theorem selfZpow_add {n m : ℤ} : selfZpow x B (n + m) = selfZpow x B n * selfZpow x B m :=
-  by
+theorem selfZpow_add {n m : ℤ} : selfZpow x B (n + m) = selfZpow x B n * selfZpow x B m := by
   cases' le_or_lt 0 n with hn hn <;> cases' le_or_lt 0 m with hm hm
   ·
     rw [selfZpow_of_nonneg _ _ hn, selfZpow_of_nonneg _ _ hm,
@@ -282,8 +275,7 @@ theorem selfZpow_add {n m : ℤ} : selfZpow x B (n + m) = selfZpow x B n * selfZ
     simp [pow_add]
 #align self_zpow_add selfZpow_add
 
-theorem selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 :=
-  by
+theorem selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 := by
   by_cases hd : d ≤ 0
   · erw [selfZpow_of_nonpos x B hd, selfZpow_of_nonneg, ← map_pow, Int.natAbs_neg,
       IsLocalization.mk'_spec, map_one]
@@ -302,8 +294,7 @@ theorem selfZpow_neg_mul (d : ℤ) : selfZpow x B (-d) * selfZpow x B d = 1 := b
 
 theorem selfZpow_pow_sub (a : R) (b : B) (m d : ℤ) :
     selfZpow x B (m - d) * mk' B a (1 : Submonoid.powers x) = b ↔
-      selfZpow x B m * mk' B a (1 : Submonoid.powers x) = selfZpow x B d * b :=
-  by
+      selfZpow x B m * mk' B a (1 : Submonoid.powers x) = selfZpow x B d * b := by
   rw [sub_eq_add_neg, selfZpow_add, mul_assoc, mul_comm _ (mk' B a 1), ← mul_assoc]
   constructor
   · intro h
@@ -323,8 +314,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   classical
     obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
     obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
-    have ha₀ : a₀ ≠ 0 :=
-      by
+    have ha₀ : a₀ ≠ 0 := by
       haveI :=
         @is_domain_of_le_non_zero_divisors B _ R _ _ _ (Submonoid.powers x) _
           (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
