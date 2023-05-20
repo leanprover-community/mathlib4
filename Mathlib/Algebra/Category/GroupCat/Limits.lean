@@ -8,11 +8,13 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Mon.Limits
-import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.Algebra.Category.MonCat.Limits
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+-- Porting note : need `CategoryTheory.reflectsIsomorphisms_forget₂`
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -39,7 +41,9 @@ namespace GroupCat
 instance groupObj (F : J ⥤ GroupCat.{max v u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
   change Group (F.obj j)
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align Group.group_obj GroupCat.groupObj
+set_option linter.uppercaseLean3 false in
 #align AddGroup.add_group_obj AddGroupCat.addGroupObj
 
 /-- The flat sections of a functor into `Group` form a subgroup of all sections.
@@ -52,19 +56,23 @@ def sectionsSubgroup (F : J ⥤ GroupCat) : Subgroup (∀ j, F.obj j) :=
       (F ⋙ forget₂ GroupCat
           MonCat) with
     carrier := (F ⋙ forget GroupCat).sections
-    inv_mem' := fun a ah j j' f => by
-      simp only [forget_map_eq_coe, functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
-      dsimp [functor.sections] at ah
-      rw [ah f] }
+    inv_mem' := fun {a} ah j j' f => by
+      simp only [Functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
+      dsimp [Functor.sections] at ah ⊢
+      rw [(F.map f).map_inv (a j), ah f] }
+set_option linter.uppercaseLean3 false in
 #align Group.sections_subgroup GroupCat.sectionsSubgroup
+set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
 instance limitGroup (F : J ⥤ GroupCat.{max v u}) :
-    Group (Types.limitCone (F ⋙ forget GroupCat)).pt := by
-  change Group (sections_subgroup F)
+    Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
+  change Group (sectionsSubgroup.{v, u} F)
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align Group.limit_group GroupCat.limitGroup
+set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_add_group AddGroupCat.limitAddGroup
 
 /-- We show that the forgetful functor `Group ⥤ Mon` creates limits.
@@ -73,21 +81,27 @@ All we need to do is notice that the limit point has a `group` instance availabl
 the existing limit. -/
 @[to_additive
       "We show that the forgetful functor `AddGroup ⥤ AddMon` creates limits.\n\nAll we need to do is notice that the limit point has an `add_group` instance available, and then\nreuse the existing limit."]
-instance Forget₂.createsLimit (F : J ⥤ GroupCat.{max v u}) :
+noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCat.{max v u}) :
     CreatesLimit F (forget₂ GroupCat.{max v u} MonCat.{max v u}) :=
-  createsLimitOfReflectsIso fun c' t =>
+  -- Porting note: need to add `forget₂ Grp Mon` reflects isomorphism
+  letI : ReflectsIsomorphisms (forget₂ GroupCat.{max v u} MonCat.{max v u}) :=
+    CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+  createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{max v u} MonCat.{max v u}))
+    fun c' t =>
     { liftedCone :=
         { pt := GroupCat.of (Types.limitCone (F ⋙ forget GroupCat)).pt
           π :=
             { app := MonCat.limitπMonoidHom (F ⋙ forget₂ GroupCat MonCat.{max v u})
-              naturality' :=
+              naturality :=
                 (MonCat.HasLimits.limitCone
                       (F ⋙ forget₂ GroupCat MonCat.{max v u})).π.naturality } }
-      validLift := by apply is_limit.unique_up_to_iso (MonCat.HasLimits.limitConeIsLimit _) t
+      validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ GroupCat MonCat.{max v u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun s => _) fun s => rfl }
+set_option linter.uppercaseLean3 false in
 #align Group.forget₂.creates_limit GroupCat.Forget₂.createsLimit
+set_option linter.uppercaseLean3 false in
 #align AddGroup.forget₂.creates_limit AddGroupCat.Forget₂.createsLimit
 
 /-- A choice of limit cone for a functor into `Group`.
@@ -96,7 +110,7 @@ instance Forget₂.createsLimit (F : J ⥤ GroupCat.{max v u}) :
 @[to_additive
       "A choice of limit cone for a functor into `Group`.\n(Generally, you'll just want to use `limit F`.)"]
 def limitCone (F : J ⥤ GroupCat.{max v u}) : Cone F :=
-  liftLimit (limit.isLimit (F ⋙ forget₂ GroupCat MonCat.{max v u}))
+  liftLimit (limit.isLimit (F ⋙ forget₂ GroupCat.{max v u} MonCat.{max v u}))
 #align Group.limit_cone GroupCat.limitCone
 #align AddGroup.limit_cone AddGroupCat.limitCone
 
@@ -353,4 +367,3 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
 
 end AddCommGroupCat
-
