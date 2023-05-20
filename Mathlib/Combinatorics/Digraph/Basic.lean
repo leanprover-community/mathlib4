@@ -261,7 +261,6 @@ instance Dart.fintype [Fintype V] [DecidableRel (Adj G)] : Fintype (Dart G) :=
       invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
       left_inv := fun s => by ext <;> simp
       right_inv := fun d => by ext <;> simp }
-#align simple_graph.dart.fintype Digraph.Dart.fintype
 
 /-! ## Map and comap -/
 
@@ -483,14 +482,6 @@ def mapInNeighborSet (v : V) (w : G.inNeighborSet v) : G'.inNeighborSet (f v) :=
 @[simps]
 def mapOutNeighborSet (v : V) (w : G.outNeighborSet v) : G'.outNeighborSet (f v) :=
   ⟨f w, apply_mem_outNeighborSet f w.property⟩
-
-/-- The map between darts induced by a homomorphism. -/
-def mapDart (d : Dart G) : Dart G' := ⟨d.1.map f f, f.map_adj d.2⟩
-#align simple_graph.hom.map_dart Digraph.Hom.mapDart
-
-@[simp]
-theorem mapDart_apply (d : Dart G) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
-#align simple_graph.hom.map_dart_apply Digraph.Hom.mapDart_apply
 
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
 @[simps]

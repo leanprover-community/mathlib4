@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.Graph.Classes
+import Mathlib.Combinatorics.Graph.Hom
 
 /-! # Darts
 
@@ -55,5 +55,18 @@ instance [DecidableEq (V G)] : DecidableEq (Dart G)
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : Dart G → V G × V G) := Dart.ext
 #align simple_graph.dart.to_prod_injective Graph.Dart.toProd_injective
+
+namespace Hom
+variable {G : Γ} {G' : Γ'} (f : G →g G')
+
+/-- The map between darts induced by a homomorphism. -/
+def mapDart (d : Dart G) : Dart G' := ⟨d.1.map f f, f.map_adj d.2⟩
+#align simple_graph.hom.map_dart Graph.Hom.mapDart
+
+@[simp]
+theorem mapDart_apply (d : Dart G) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
+#align simple_graph.hom.map_dart_apply Graph.Hom.mapDart_apply
+
+end Hom
 
 end Graph

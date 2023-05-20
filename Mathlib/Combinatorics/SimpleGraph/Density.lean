@@ -28,9 +28,7 @@ Between two finsets of vertices,
 -/
 
 
-open Finset
-
-open BigOperators
+open Finset BigOperators Graph
 
 variable {𝕜 ι κ α β : Type _}
 
@@ -296,20 +294,20 @@ open Rel
 
 namespace SimpleGraph
 
-variable (G : SimpleGraph α) [DecidableRel G.Adj] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
+variable (G : SimpleGraph α) [DecidableRel (Adj G)] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
 def interedges (s t : Finset α) : Finset (α × α) :=
-  Rel.interedges G.Adj s t
+  Rel.interedges (Adj G) s t
 #align simple_graph.interedges SimpleGraph.interedges
 
 /-- Density of edges of a graph between two finsets of vertices. -/
 def edgeDensity : Finset α → Finset α → ℚ :=
-  Rel.edgeDensity G.Adj
+  Rel.edgeDensity (Adj G)
 #align simple_graph.edge_density SimpleGraph.edgeDensity
 
 theorem interedges_def (s t : Finset α) :
-    G.interedges s t = (s ×ᶠ t).filter fun e ↦ G.Adj e.1 e.2 :=
+    G.interedges s t = (s ×ᶠ t).filter fun e ↦ Adj G e.1 e.2 :=
   rfl
 #align simple_graph.interedges_def SimpleGraph.interedges_def
 
@@ -324,11 +322,11 @@ theorem card_interedges_div_card (s t : Finset α) :
   rfl
 #align simple_graph.card_interedges_div_card SimpleGraph.card_interedges_div_card
 
-theorem mem_interedges_iff {x : α × α} : x ∈ G.interedges s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ G.Adj x.1 x.2 :=
+theorem mem_interedges_iff {x : α × α} : x ∈ G.interedges s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ Adj G x.1 x.2 :=
   Rel.mem_interedges_iff
 #align simple_graph.mem_interedges_iff SimpleGraph.mem_interedges_iff
 
-theorem mk_mem_interedges_iff : (a, b) ∈ G.interedges s t ↔ a ∈ s ∧ b ∈ t ∧ G.Adj a b :=
+theorem mk_mem_interedges_iff : (a, b) ∈ G.interedges s t ↔ a ∈ s ∧ b ∈ t ∧ Adj G a b :=
   Rel.mk_mem_interedges_iff
 #align simple_graph.mk_mem_interedges_iff SimpleGraph.mk_mem_interedges_iff
 
@@ -374,7 +372,7 @@ theorem interedges_biUnion (s : Finset ι) (t : Finset κ) (f : ι → Finset α
 theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
-  have : ((s ×ᶠ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ᶠ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
+  have : ((s ×ᶠ t).filter fun e ↦ Adj (Gᶜ) e.1 e.2) = (s ×ᶠ t).filter fun e ↦ ¬Adj G e.1 e.2 := by
     refine' filter_congr fun x hx ↦ _
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]

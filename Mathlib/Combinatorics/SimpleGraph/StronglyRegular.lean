@@ -31,14 +31,14 @@ import Mathlib.Data.Set.Finite
 -/
 
 
-open Finset
+open Finset Graph
 
 universe u
 
 namespace SimpleGraph
 
 variable {V : Type u} [Fintype V] [DecidableEq V]
-variable (G : SimpleGraph V) [DecidableRel G.Adj]
+variable (G : SimpleGraph V) [DecidableRel (Adj G)]
 
 /-- A graph is strongly regular with parameters `n k ℓ μ` if
  * its vertex set has cardinality `n`
@@ -49,8 +49,8 @@ variable (G : SimpleGraph V) [DecidableRel G.Adj]
 structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k
-  of_adj : ∀ v w : V, G.Adj v w → Fintype.card (G.commonNeighbors v w) = ℓ
-  of_not_adj : ∀ v w : V, v ≠ w → ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
+  of_adj : ∀ v w : V, Adj G v w → Fintype.card (G.commonNeighbors v w) = ℓ
+  of_not_adj : ∀ v w : V, v ≠ w → ¬Adj G v w → Fintype.card (G.commonNeighbors v w) = μ
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with SimpleGraph.IsSRGWith
 
@@ -97,10 +97,10 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_eq SimpleGraph.IsSRGWith.card_neighborFinset_union_eq
 
 /-- Assuming `G` is strongly regular, `2*(k + 1) - m` in `G` is the number of vertices that are
-adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
+adjacent to either `v` or `w` when `¬Adj G v w`. So it's the cardinality of
 `G.neighborSet v ∪ G.neighborSet w`. -/
 theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
-    (hne : v ≠ w) (ha : ¬G.Adj v w) :
+    (hne : v ≠ w) (ha : ¬Adj G v w) :
     (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - μ := by
   rw [← h.of_not_adj v w hne ha]
   apply h.card_neighborFinset_union_eq
@@ -108,7 +108,7 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_not_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_not_adj
 
 theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
-    (ha : G.Adj v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ := by
+    (ha : Adj G v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ := by
   rw [← h.of_adj v w ha]
   apply h.card_neighborFinset_union_eq
 set_option linter.uppercaseLean3 false in
@@ -122,7 +122,7 @@ theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
   simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
 #align simple_graph.compl_neighbor_finset_sdiff_inter_eq SimpleGraph.compl_neighborFinset_sdiff_inter_eq
 
-theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
+theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : Adj G v w) :
     (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) =
       G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ := by
   ext
@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.compl_is_regular SimpleGraph.IsSRGWith.compl_is_regular
 
 theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
-    (ha : Gᶜ.Adj v w) : Fintype.card (↥(Gᶜ.commonNeighbors v w)) = n - (2 * k - μ) - 2 := by
+    (ha : Adj (Gᶜ) v w) : Fintype.card (↥(Gᶜ.commonNeighbors v w)) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp_rw [compl_neighborFinset_sdiff_inter_eq]
@@ -158,7 +158,7 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_common_neighbors_eq_of_adj_compl SimpleGraph.IsSRGWith.card_commonNeighbors_eq_of_adj_compl
 
 theorem IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
-    (hn : v ≠ w) (hna : ¬Gᶜ.Adj v w) :
+    (hn : v ≠ w) (hna : ¬Adj (Gᶜ) v w) :
     Fintype.card (↥Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]

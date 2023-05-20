@@ -918,6 +918,12 @@ theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     exact ha.ne rfl
 #align simple_graph.eq_singleton_subgraph_iff_verts_eq SimpleGraph.eq_singletonSubgraph_iff_verts_eq
 
+/- Helper lemma with `Γ` in the correct form to be applied by `simp`. -/
+@[simp]
+theorem adj_coe_subgraphOfAdj {v w : V} (hvw : Adj G v w) (x y : ↑({v, w} : Set V)) :
+    Adj (Γ := SimpleGraph <| by exact ↑({v, w} : Set V)) (G.subgraphOfAdj hvw).coe x y =
+      (G.subgraphOfAdj hvw).Adj x y := rfl
+
 instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : Adj G v w) :
     Nonempty (G.subgraphOfAdj hvw).verts :=
   ⟨⟨v, by simp⟩⟩

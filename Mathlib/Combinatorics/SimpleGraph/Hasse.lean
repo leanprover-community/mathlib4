@@ -25,7 +25,7 @@ path graph on `n` vertices.
 -/
 
 
-open Order OrderDual Relation
+open Order OrderDual Relation Graph
 
 namespace SimpleGraph
 
@@ -45,7 +45,7 @@ def hasse : SimpleGraph α where
 variable {α β} {a b : α}
 
 @[simp]
-theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
+theorem hasse_adj : Adj (hasse α) a b ↔ a ⋖ b ∨ b ⋖ a :=
   Iff.rfl
 #align simple_graph.hasse_adj SimpleGraph.hasse_adj
 
