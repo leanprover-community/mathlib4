@@ -940,7 +940,10 @@ inductive Λ'
 #align turing.partrec_to_TM2.Λ'.ret Turing.PartrecToTM2.Λ'.ret
 
 -- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
-compile_inductive% Turing.PartrecToTM2.Λ'
+compile_inductive% Code
+compile_inductive% Cont'
+compile_inductive% K'
+compile_inductive% Λ'
 
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
