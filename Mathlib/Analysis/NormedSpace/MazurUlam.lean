@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.RealVectorSpace
-import Mathbin.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 /-!
 # Mazur-Ulam Theorem
@@ -48,15 +48,13 @@ include E
 then it fixes the midpoint of `[x, y]`. This is a lemma for a more general Mazur-Ulam theorem,
 see below. -/
 theorem midpoint_fixed {x y : PE} :
-    ∀ e : PE ≃ᵢ PE, e x = x → e y = y → e (midpoint ℝ x y) = midpoint ℝ x y :=
-  by
+    ∀ e : PE ≃ᵢ PE, e x = x → e y = y → e (midpoint ℝ x y) = midpoint ℝ x y := by
   set z := midpoint ℝ x y
   -- Consider the set of `e : E ≃ᵢ E` such that `e x = x` and `e y = y`
   set s := { e : PE ≃ᵢ PE | e x = x ∧ e y = y }
   haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
-  have h_bdd : BddAbove (range fun e : s => dist (e z) z) :=
-    by
+  have h_bdd : BddAbove (range fun e : s => dist (e z) z) := by
     refine' ⟨dist x z + dist x z, forall_range_iff.2 <| Subtype.forall.2 _⟩
     rintro e ⟨hx, hy⟩
     calc
@@ -70,8 +68,7 @@ theorem midpoint_fixed {x y : PE} :
   set R : PE ≃ᵢ PE := (point_reflection ℝ z).toIsometryEquiv
   set f : PE ≃ᵢ PE → PE ≃ᵢ PE := fun e => ((e.trans R).trans e.symm).trans R
   -- Note that `f` doubles the value of ``dist (e z) z`
-  have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z :=
-    by
+  have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
     dsimp [f]
     rw [dist_point_reflection_fixed, ← e.dist_eq, e.apply_symm_apply,
@@ -96,8 +93,7 @@ theorem midpoint_fixed {x y : PE} :
 include F
 
 /-- A bijective isometry sends midpoints to midpoints. -/
-theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) :=
-  by
+theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) := by
   set e : PE ≃ᵢ PE :=
     ((f.trans <| (point_reflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (point_reflection ℝ <| midpoint ℝ x y).toIsometryEquiv
@@ -169,8 +165,7 @@ theorem coeFn_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : ⇑f.toRealAffineIs
 
 @[simp]
 theorem coe_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) :
-    f.toRealAffineIsometryEquiv.toIsometryEquiv = f :=
-  by
+    f.toRealAffineIsometryEquiv.toIsometryEquiv = f := by
   ext
   rfl
 #align isometry_equiv.coe_to_real_affine_isometry_equiv IsometryEquiv.coe_toRealAffineIsometryEquiv
