@@ -43,7 +43,7 @@ lemma hasProductOfEquiv : HasProduct (X ∘ e) :=
 noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] :  ∏ (X ∘ e) ≅ ∏ X :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFanOfEquiv X e)
 
-lemma productOptionIso {C J : Type _} [Category C]
+noncomputable def productOptionIso {C J : Type _} [Category C]
     (X : Option J → C) [HasProduct X] [HasProduct (fun j => X (some j))]
     [HasBinaryProduct (∏ (fun j => X (some j))) (X none)] :
     (∏ X) ≅ (∏ (fun j => X (some j))) ⨯ (X none) where
@@ -97,6 +97,9 @@ instance : S.set.RespectsIso := ⟨fun X Y e hX => by
   exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)⟩
 
+lemma zero' (X : C) (hX : IsZero X) : X ∈ S.set :=
+  Set.mem_of_iso S.set hX.isoZero.symm S.zero
+
 def W : MorphismProperty C := fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
   (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set
 
@@ -105,10 +108,10 @@ def W' : MorphismProperty C := fun Y Z g => ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶
 
 variable {S}
 
-def W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₃ ∈ S.set) : S.W T.mor₁ :=
+lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₃ ∈ S.set) : S.W T.mor₁ :=
   ⟨T.obj₃, T.mor₂, T.mor₃, hT, h⟩
 
-def W'.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W' T.mor₂ :=
+lemma W'.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W' T.mor₂ :=
   ⟨T.obj₁, T.mor₁, T.mor₃, hT, h⟩
 
 noncomputable def W.triangle {X Y : C} (f : X ⟶ Y) (hf : S.W f) : Triangle C :=
@@ -135,7 +138,7 @@ lemma W_eq_W' : S.W = S.W' := by
 
 variable {S}
 
-def W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
+lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
   simpa only [W_eq_W'] using W'.mk hT h
 
 variable (S)
@@ -377,6 +380,9 @@ def span (S : Set C) : Subcategory C where
   shift X n hX := setSpan.shift X n hX
   ext₂ T hT h₁ h₃ := setSpan.ext₂ T hT h₁ h₃
 
+lemma subset_span_set (S : Set C) : S ⊆ (span S).set :=
+  setSpan.subset
+
 instance : PartialOrder (Subcategory C) where
   le S₁ S₂ := S₁.set ⊆ S₂.set
   le_refl S := (by rfl : S.set ⊆ S.set)
@@ -389,6 +395,15 @@ instance : PartialOrder (Subcategory C) where
     cases S₁
     cases S₂
     congr
+
+lemma span_LE (S : Set C) (A : Subcategory C) (hA : S ⊆ A.set ) :
+    span S ≤ A := by
+  intro X (hX : setSpan S X)
+  induction' hX with Y hY Y n _ hY T hT _ _ h₁ h₃
+  . exact hA hY
+  . exact A.zero
+  . exact A.shift Y n hY
+  . exact A.ext₂ T hT h₁ h₃
 
 def iInf {ι : Type _} (S : ι → Subcategory C) : Subcategory C where
   set := Set.iInter (fun i => (S i).set)
@@ -436,6 +451,76 @@ instance : CompleteSemilatticeInf (Subcategory C) where
     erw [mem_sInf_set_iff]
     intro A' hA'
     exact hA _ hA' hX
+
+instance : SupSet (Subcategory C) where
+  sSup S := span (sSup (Subcategory.set '' S))
+
+instance : CompleteSemilatticeSup (Subcategory C) where
+  le_sSup := by
+    intro S A hA X hX
+    refine' subset_span_set _ _
+    simp only [Set.sSup_eq_sUnion, Set.sUnion_image,
+      Set.mem_iUnion, exists_prop]
+    exact ⟨A, hA, hX⟩
+  sSup_le := by
+    intro S A hA
+    apply span_LE
+    rintro X ⟨_, ⟨B, hB, rfl⟩, hX⟩
+    exact hA B hB hX
+
+instance : Lattice (Subcategory C) where
+  sup S₁ S₂ := sSup {S₁, S₂}
+  le_sup_left S₁ S₂ := le_sSup (Set.mem_insert _ _ )
+  le_sup_right S₁ S₂ := le_sSup (Set.mem_insert_of_mem _ rfl)
+  sup_le := by
+    rintro S₁ S₂ S₃ (h₁₃ : S₁.set ⊆ S₃.set) (h₂₃ : S₂.set ⊆ S₃.set)
+    apply span_LE
+    rintro X ⟨_, ⟨B, hB, rfl⟩, hX⟩
+    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hB
+    obtain (rfl|rfl) := hB
+    . exact h₁₃ hX
+    . exact h₂₃ hX
+  inf S₁ S₂ :=
+    { set := S₁.set ∩ S₂.set
+      zero := ⟨S₁.zero, S₂.zero⟩
+      shift := fun X n hX => ⟨S₁.shift X n hX.1, S₂.shift X n hX.2⟩
+      ext₂ := fun T hT h₁ h₃ => ⟨S₁.ext₂ T hT h₁.1 h₃.1,
+        S₂.ext₂ T hT h₁.2 h₃.2⟩ }
+  inf_le_left := fun S₁ S₂ X hX => hX.1
+  inf_le_right := fun S₁ S₂ X hX => hX.2
+  le_inf := fun S₁ S₂ S₃ h₁₂ h₂₃ X hX => ⟨h₁₂ hX, h₂₃ hX⟩
+
+variable (C)
+
+def top : Subcategory C where
+  set := ⊤
+  zero := by tauto
+  shift := by tauto
+  ext₂ := by tauto
+
+
+variable {C}
+
+instance : CompleteLattice (Subcategory C) where
+  le_sSup := CompleteSemilatticeSup.le_sSup
+  sSup_le := CompleteSemilatticeSup.sSup_le
+  le_sInf := CompleteSemilatticeInf.le_sInf
+  sInf_le := CompleteSemilatticeInf.sInf_le
+  top :=
+    { set := ⊤
+      zero := by tauto
+      shift := by tauto
+      ext₂ := by tauto }
+  bot :=
+    { set := IsZero
+      zero := isZero_zero _
+      shift := fun X n (hX : IsZero X) => by
+        change IsZero _
+        simp only [IsZero.iff_id_eq_zero] at hX ⊢
+        rw [← (shiftFunctor C n).map_id, hX, Functor.map_zero]
+      ext₂ := fun T hT h₁ h₃ => isZero₂_of_isZero₂₃ _ hT h₁ h₃ }
+  le_top _ _ _ := Set.mem_univ _
+  bot_le := fun A X (hX : IsZero X) => A.zero' _ hX
 
 end Subcategory
 

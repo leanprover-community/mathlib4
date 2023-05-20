@@ -396,6 +396,8 @@ def plus : Triangulated.Subcategory C where
     exact ⟨min i₁ i₃, t.mem_setGE₂ T hT _ (t.setGE_antitone _ _ (min_le_left i₁ i₃) hi₁)
       (t.setGE_antitone _ _ (min_le_right i₁ i₃) hi₃)⟩
 
+def bounded : Triangulated.Subcategory C := t.plus ⊓ t.minus
+
 end TStructure
 
 end Triangulated

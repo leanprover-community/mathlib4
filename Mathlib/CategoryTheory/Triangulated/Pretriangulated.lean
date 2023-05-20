@@ -736,6 +736,13 @@ lemma isIso₃_iff_isZero₂ (T : Triangle C) (hT : T ∈ distTriang C) :
     IsIso T.mor₃ ↔ IsZero T.obj₂ :=
   isIso₂_iff_isZero₁ _ (rot_of_dist_triangle _ hT)
 
+lemma isZero₂_of_isZero₂₃ (T : Triangle C) (hT : T ∈ distTriang C)
+    (h₁ : IsZero T.obj₁) (h₃ : IsZero T.obj₃) : IsZero T.obj₂ := by
+  rw [← isIso₃_iff_isZero₂ _ hT]
+  refine' ⟨⟨0, h₃.eq_of_src _ _, IsZero.eq_of_tgt _ _ _⟩⟩
+  rw [IsZero.iff_id_eq_zero, ← Functor.map_id,
+    (IsZero.iff_id_eq_zero _).1 h₁, Functor.map_zero]
+
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
 then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
