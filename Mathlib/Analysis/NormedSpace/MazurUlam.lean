@@ -103,7 +103,7 @@ theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midp
 
 /-!
 Since `f : PE ≃ᵢ PF` sends midpoints to midpoints, it is an affine map.
-We define a conversion to a `ContinuousLinearEquiv` first, then a conversion to an `affine_map`.
+We define a conversion to a `ContinuousLinearEquiv` first, then a conversion to an `AffineMap`.
 -/
 
 
