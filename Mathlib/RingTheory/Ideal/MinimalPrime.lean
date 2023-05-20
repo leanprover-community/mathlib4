@@ -139,8 +139,9 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
     rw [Ideal.mk_ker, e]
     exact H.1.2
   obtain ⟨p', hp₁, hp₂⟩ :=
-    Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective _
-      (RingHom.kerLift_injective f' (p.map (Ideal.Quotient.mk (RingHom.ker f'))) _
+    Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
+      -- (RingHom.kerLift_injective f' (p.map (I.Quotient.mk.comp f).ker.Quotient.mk)) _
+      (I.Quotient.mk.comp f).ker_lift_injective (p.map (I.Quotient.mk.comp f).ker.Quotient.mk) _
   · skip
     refine' ⟨p'.comap I.Quotient.mk, Ideal.IsPrime.comap _, _, _⟩
     · exact ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
