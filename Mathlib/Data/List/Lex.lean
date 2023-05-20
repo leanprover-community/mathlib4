@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Classical
 
 /-!
 # Lexicographic ordering of lists.
