@@ -12,7 +12,6 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Lift
 
 /-!
 # Symmetric powers

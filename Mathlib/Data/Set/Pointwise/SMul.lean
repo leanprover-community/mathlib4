@@ -11,7 +11,6 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Tactic.ByContra
 
 /-!
 # Pointwise operations of sets
