@@ -170,21 +170,23 @@ instance : CoeSort SemiNormedGroup₁ (Type _) where
 
 
 --Porting Note: Was explicitly shown before. Is there a problem doing it like this?
-deriving instance LargeCategory for SemiNormedGroup₁
+instance : LargeCategory.{u} SemiNormedGroup₁ where
+  Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
+  id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
+  comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 /-- Porting Note: Added-/
 instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
+  coe (f : X ⟶ Y) := f.1
 
 @[ext]
 theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (↑f : M → N) = (↑g : M → N)) : f = g :=
-  NormedAddGroupHom.ext (congr_fun w)
+  Subtype.ext (NormedAddGroupHom.ext (congr_fun w))
 #align SemiNormedGroup₁.hom_ext SemiNormedGroup₁.hom_ext
 
 /--Porting Note: Changed -/
-instance : ConcreteCategory.{u} SemiNormedGroup₁ := by
-  dsimp only [SemiNormedGroup₁]
-  infer_instance
+instance : ConcreteCategory.{u} SemiNormedGroup₁ where
+  forget := rfl
 
 
 /-- Construct a bundled `SemiNormedGroup₁` from the underlying type and typeclass. -/
