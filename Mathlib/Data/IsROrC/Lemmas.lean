@@ -8,9 +8,9 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.FiniteDimension
-import Mathbin.FieldTheory.Tower
-import Mathbin.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.FieldTheory.Tower
+import Mathlib.Data.IsROrC.Basic
 
 /-! # Further lemmas about `is_R_or_C` -/
 
@@ -57,8 +57,7 @@ variable (K E) [NormedAddCommGroup E] [NormedSpace K E]
 
 This is not an instance because it would cause a search for `finite_dimensional ?x E` before
 `is_R_or_C ?x`. -/
-theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E :=
-  by
+theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
   letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
   letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
@@ -76,8 +75,7 @@ end FiniteDimensional
 namespace IsROrC
 
 @[simp, is_R_or_C_simps]
-theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 :=
-  by
+theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
   convert ContinuousLinearMap.ratio_le_op_norm _ (1 : K)
   · simp
