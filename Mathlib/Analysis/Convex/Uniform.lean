@@ -9,7 +9,6 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Uniformly convex spaces
