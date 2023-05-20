@@ -107,7 +107,8 @@ def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N)
     map_zero' := by
        rw [← mul_eq_zero_of_left rfl 1]
        rw [h.map_mul' 0 1]
-       simp
+       simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe_apply, MulEquiv.coe_toEquiv,
+         map_zero, map_one, mul_one]
    }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
