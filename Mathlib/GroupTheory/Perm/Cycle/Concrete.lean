@@ -370,9 +370,9 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
   obtain ⟨k, hk, rfl⟩ := get_of_mem hx
   have hr : l ~r l.rotate k := ⟨k, rfl⟩
   rw [formPerm_eq_of_isRotated hn hr]
-  rw [← get_eq_get_rotate l k k]
-  simp only [Nat.mod_eq_of_lt hk, tsub_add_cancel_of_le hk.le, Nat.mod_self]
-  rw [toList_formPerm_nontrivial]
+  rw [get_eq_get_rotate l k k]
+  simp only [Nat.mod_eq_of_lt k.2, tsub_add_cancel_of_le (le_of_lt k.2), Nat.mod_self]
+  erw [toList_formPerm_nontrivial]
   · simp
   · simpa using hl
   · simpa using hn
@@ -380,8 +380,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
 
 theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycleOf x := by
   by_cases hx : f x = x
-  ·
-    rw [(cycleOf_eq_one_iff f).mpr hx, toList_eq_nil_iff.mpr (not_mem_support.mpr hx),
+  · rw [(cycleOf_eq_one_iff f).mpr hx, toList_eq_nil_iff.mpr (not_mem_support.mpr hx),
       formPerm_nil]
   ext y
   by_cases hy : SameCycle f x y
