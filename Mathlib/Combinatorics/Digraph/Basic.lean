@@ -204,15 +204,15 @@ protected def inv (G : Digraph V) : Digraph V := ⟨flip <| Adj G⟩
 
 pp_extended_field_notation Digraph.inv
 
-@[simp] def Adj_inv {G : Digraph V} {v w : V} : Adj G.inv v w ↔ Adj G w v := by cases G; rfl
+@[simp] theorem Adj_inv {G : Digraph V} {v w : V} : Adj G.inv v w ↔ Adj G w v := by cases G; rfl
 
-@[simp] def inv_inv {G : Digraph V} : G.inv.inv = G := by ext; rfl
+@[simp] theorem inv_inv {G : Digraph V} : G.inv.inv = G := by ext; rfl
 
-@[simp] def inv_le_inv {G H : Digraph V} : G.inv ≤ H.inv ↔ G ≤ H :=
+@[simp] theorem inv_le_inv {G H : Digraph V} : G.inv ≤ H.inv ↔ G ≤ H :=
   ⟨fun h _ _ h' ↦ h h', fun h _ _ h' ↦ h h'⟩
 
-@[simp] def inv_top : (⊤ : Digraph V).inv = ⊤ := rfl
-@[simp] def inv_bot : (⊥ : Digraph V).inv = ⊥ := rfl
+@[simp] theorem inv_top : (⊤ : Digraph V).inv = ⊤ := rfl
+@[simp] theorem inv_bot : (⊥ : Digraph V).inv = ⊥ := rfl
 
 /-- `G.inSupport` is the set of vertices `v` such that there exists a `w` with `Adj G v w`. -/
 protected def inSupport : Set V := Rel.dom (Adj G)

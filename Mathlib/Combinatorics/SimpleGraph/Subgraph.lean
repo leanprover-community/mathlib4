@@ -87,14 +87,6 @@ instance (G : SimpleGraph V) : Graph.IsAdjSymmetric G.Subgraph (fun G' ↦ G'.ve
 instance (G : SimpleGraph V) : Graph.IsAdjIrreflexive G.Subgraph (fun G' ↦ G'.verts) :=
   ⟨fun G' ⟨_, _⟩ h ↦ G.loopless _ (G'.adj_sub h)⟩
 
-@[simp]
-theorem SimpleGraph.Adj_mk (G : Digraph V) (hs hi) :
-    Adj (SimpleGraph.mk G hs hi) = Adj G := rfl
-
-@[ext]
-protected theorem SimpleGraph.ext (G H : SimpleGraph V) : Adj G = Adj H → G = H := by
-  cases G; cases H; simp
-
 variable {ι : Sort _} {V : Type u} {W : Type v}
 
 /-- The one-vertex subgraph. -/
