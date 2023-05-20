@@ -1478,13 +1478,12 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (∑ i in rang
   calc
     (∑ i in range n, x ^ i / i !) ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
-      simp only [exp', const_apply, mk_to_fun, re_sum]
+      simp only [exp', const_apply, re_sum]
       norm_cast
       rw [← Nat.add_sub_of_le hj, Finset.sum_range_add]
-      refine' le_add_of_nonneg_right (sum_nonneg fun i hi => _)
+      refine' le_add_of_nonneg_right (sum_nonneg fun i _ => _)
       positivity
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
-
 #align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
 
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
@@ -1979,23 +1978,6 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'
 
---Porting note: removed `(h1 : 0 ≤ x)` because it is no longer used
-theorem exp_bound_div_one_sub_of_interval_approx {x : ℝ} (h2 : x ≤ 1) :
-    (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
-        x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ)) ≤
-      ∑ j in Finset.range 3, x ^ j :=
-  calc
-    (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
-        x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ))
-      = (2 / 9) * x ^ 3 + x ^ 2 / 2 + x + 1 := by simp [Finset.sum]; ring
-    _ ≤ x ^ 2 + x + 1 := sub_nonneg.1 <|
-      calc 0 ≤ x^2 * (2 / 9) * (9 / 4 - x) :=
-          mul_nonneg (mul_nonneg (pow_two_nonneg _) (by norm_num : (0 : ℝ) ≤ 2 / 9))
-            (sub_nonneg.2 (le_trans h2 (by norm_num)))
-        _ = _ := by ring
-    _ = _ := by simp [Finset.sum]; ring
-#align real.exp_bound_div_one_sub_of_interval_approx Real.exp_bound_div_one_sub_of_interval_approxₓ
-
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
     Real.exp x ≤ 1 / (1 - x) := by
   rcases eq_or_lt_of_le h1 with (rfl | h1)
@@ -2011,29 +1993,27 @@ theorem one_sub_lt_exp_minus_of_pos {y : ℝ} (h : 0 < y) : 1 - y < Real.exp (-y
   · linarith
 #align real.one_sub_le_exp_minus_of_pos Real.one_sub_lt_exp_minus_of_pos
 
-theorem one_sub_le_exp_minus_of_nonneg {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) :=
-  by
+theorem one_sub_le_exp_minus_of_nonneg {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
   rcases eq_or_lt_of_le h with (rfl | h)
   · simp
   · exact (one_sub_lt_exp_minus_of_pos h).le
 #align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_minus_of_nonneg
 
-theorem add_one_lt_exp_of_neg {x : ℝ} (h : x < 0) : x + 1 < Real.exp x :=
-  by
+theorem add_one_lt_exp_of_neg {x : ℝ} (h : x < 0) : x + 1 < Real.exp x := by
   have h1 : 0 < -x := by linarith
   simpa [add_comm] using one_sub_lt_exp_minus_of_pos h1
 #align real.add_one_lt_exp_of_neg Real.add_one_lt_exp_of_neg
 
-theorem add_one_le_exp_of_nonzero {x : ℝ} (hx : x ≠ 0) : x + 1 ≤ Real.exp x := by
+theorem add_one_lt_exp_of_nonzero {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   cases' lt_or_gt_of_ne hx with h h
-  · exact Real.add_one_lt_exp_of_neg h
+  · exact add_one_lt_exp_of_neg h
   exact add_one_lt_exp_of_pos h
 #align real.add_one_lt_exp_of_nonzero Real.add_one_lt_exp_of_nonzero
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
   cases' le_or_lt 0 x with h h
   · exact Real.add_one_le_exp_of_nonneg h
-  exact add_one_le_exp_of_nonpos h.le
+  exact (add_one_lt_exp_of_neg h).le
 #align real.add_one_le_exp Real.add_one_le_exp
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
