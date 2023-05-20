@@ -151,7 +151,7 @@ theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one
 multiplies the radius of balls by at most `K`, as stated
-in `measure_mul_le_scaling_constant_of_mul`. -/
+in `IsUnifLocDoublingMeasure.measure_mul_le_scalingConstantOf_mul`. -/
 def scalingScaleOf (K : ℝ) : ℝ :=
   (eventually_measure_mul_le_scalingConstantOf_mul μ K).choose
 #align is_unif_loc_doubling_measure.scaling_scale_of IsUnifLocDoublingMeasure.scalingScaleOf
