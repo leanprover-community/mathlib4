@@ -135,20 +135,17 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
   have e : RingHom.ker f' = I.comap f := by
     ext1
     exact Submodule.Quotient.mk_eq_zero _
-  have : RingHom.ker (Ideal.Quotient.mk (RingHom.ker f')) ≤ p := by
+  have : RingHom.ker (Ideal.Quotient.mk <| RingHom.ker f') ≤ p := by
     rw [Ideal.mk_ker, e]
     exact H.1.2
   obtain ⟨p', hp₁, hp₂⟩ :=
     Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
-      -- (RingHom.kerLift_injective f' (p.map (I.Quotient.mk.comp f).ker.Quotient.mk)) _
-      (I.Quotient.mk.comp f).ker_lift_injective (p.map (I.Quotient.mk.comp f).ker.Quotient.mk) _
-  · skip
-    refine' ⟨p'.comap I.Quotient.mk, Ideal.IsPrime.comap _, _, _⟩
-    · exact ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
-    convert congr_arg (Ideal.comap (I.Quotient.mk.comp f).ker.Quotient.mk) hp₂
-    rwa [Ideal.comap_map_of_surjective (I.Quotient.mk.comp f).ker.Quotient.mk
-        Ideal.Quotient.mk_surjective,
-      eq_comm, sup_eq_left]
+      (RingHom.kerLift_injective f') (p.map <| Ideal.Quotient.mk <| RingHom.ker f') _
+    · refine' ⟨p'.comap <| Ideal.Quotient.mk I, Ideal.IsPrime.comap _, _, _⟩
+    · exact Ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
+    . convert congr_arg (Ideal.comap <| Ideal.Quotient.mk <| RingHom.ker f') hp₂
+      rwa [Ideal.comap_map_of_surjective (Ideal.Quotient.mk  <| RingHom.ker f')
+        Ideal.Quotient.mk_surjective, eq_comm, sup_eq_left]
   refine' ⟨⟨_, bot_le⟩, _⟩
   · apply Ideal.map_isPrime_of_surjective _ this
     exact Ideal.Quotient.mk_surjective
