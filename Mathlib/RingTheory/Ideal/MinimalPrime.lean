@@ -104,9 +104,9 @@ theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » minimal_primes[minimal_primes] R) -/
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
-    (hf : Function.Injective f) (p) (_ : p ∈ minimalPrimes R) :
+    (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
-  haveI := H.1.1
+  have := H.1.1
   have : Nontrivial (Localization (Submonoid.map f p.prime_compl)) := by
     refine' ⟨⟨1, 0, _⟩⟩
     convert(IsLocalization.map_injective_of_injective p.prime_compl (Localization.AtPrime p)
@@ -133,8 +133,8 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » (I.comap f).minimal_primes) -/
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
-    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
-  haveI := H.1.1
+    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
+  have := H.1.1
   let f' := I.Quotient.mk.comp f
   have e : (I.Quotient.mk.comp f).ker = I.comap f := by
     ext1
@@ -170,19 +170,19 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p «expr ∈ » (I.comap f).minimal_primes) -/
 theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
-    (_ : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
+    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
   obtain ⟨p', h₁, h₂, h₃⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f p H
   skip
   obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le h₂
   refine' ⟨q, hq, Eq.symm _⟩
-  haveI := hq.1.1
+  have := hq.1.1
   have := (Ideal.comap_mono hq').trans_eq h₃
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 #align ideal.exists_minimal_primes_comap_eq Ideal.exists_minimalPrimes_comap_eq
 
 theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
-  haveI := h.1.1
+  have := h.1.1
   refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
   rintro K ⟨hK, e₁⟩ e₂
   have : f.ker ≤ K := (Ideal.comap_mono bot_le).trans e₁
