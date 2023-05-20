@@ -10,7 +10,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Topology.Category.Top.EpiMono
+import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Sets.Opens
 
 /-!

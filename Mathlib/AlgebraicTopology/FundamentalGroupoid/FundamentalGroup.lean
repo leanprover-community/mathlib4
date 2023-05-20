@@ -9,7 +9,7 @@ Authors: Mark Lavrentyev
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic

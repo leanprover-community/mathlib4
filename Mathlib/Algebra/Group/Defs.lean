@@ -12,6 +12,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Typeclasses for (semi)groups and monoids

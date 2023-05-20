@@ -8,8 +8,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.WLOG
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
