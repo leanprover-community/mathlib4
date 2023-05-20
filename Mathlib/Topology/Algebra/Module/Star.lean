@@ -12,12 +12,12 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Star
 
-set_option linter.uppercaseLean3 false
-
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
