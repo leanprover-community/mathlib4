@@ -107,18 +107,18 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
   have := H.1.1
-  have : Nontrivial (Localization (Submonoid.map f p.prime_compl)) := by
+  have : Nontrivial (Localization (Submonoid.map f p.primeCompl)) := by
     refine' ⟨⟨1, 0, _⟩⟩
-    convert(IsLocalization.map_injective_of_injective p.prime_compl (Localization.AtPrime p)
-            (Localization <| p.prime_compl.map f) hf).Ne
+    convert(IsLocalization.map_injective_of_injective p.primeCompl (Localization.AtPrime p)
+            (Localization <| p.primeCompl.map f) hf).Ne
         one_ne_zero
     · rw [map_one]
     · rw [map_zero]
-  obtain ⟨M, hM⟩ := Ideal.exists_maximal (Localization (Submonoid.map f p.prime_compl))
+  obtain ⟨M, hM⟩ := Ideal.exists_maximal (Localization (Submonoid.map f p.primeCompl))
   skip
-  refine' ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.prime_compl)), inferInstance, _⟩
+  refine' ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.primeCompl)), inferInstance, _⟩
   rw [Ideal.comap_comap, ←
-    @IsLocalization.map_comp _ _ _ _ Localization.isLocalization _ p.prime_compl.le_comap_map _
+    @IsLocalization.map_comp _ _ _ _ Localization.isLocalization _ p.primeCompl.le_comap_map _
       Localization.isLocalization,
     ← Ideal.comap_comap]
   suffices _ ≤ p by exact this.antisymm (H.2 ⟨inferInstance, bot_le⟩ this)
@@ -127,7 +127,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
   apply hM.ne_top
   apply M.eq_top_of_is_unit_mem hx
   apply IsUnit.map
-  apply IsLocalization.map_units _ (show p.prime_compl from ⟨x, h⟩)
+  apply IsLocalization.map_units _ (show p.primeCompl from ⟨x, h⟩)
   infer_instance
 #align ideal.exists_comap_eq_of_mem_minimal_primes_of_injective Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
 
