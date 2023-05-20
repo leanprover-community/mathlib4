@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Circle
-import Mathbin.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Analysis.Complex.Circle
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-!
 # Maps on the unit circle
@@ -51,8 +51,7 @@ namespace circle
 /-- `complex.arg ∘ coe` and `exp_map_circle` define a local equivalence between `circle and `ℝ` with
 `source = set.univ` and `target = set.Ioc (-π) π`. -/
 @[simps (config := { fullyApplied := false })]
-noncomputable def argLocalEquiv : LocalEquiv circle ℝ
-    where
+noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   toFun := arg ∘ coe
   invFun := expMapCircle
   source := univ
@@ -65,8 +64,7 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ
 
 /-- `complex.arg` and `exp_map_circle` define an equivalence between `circle and `(-π, π]`. -/
 @[simps (config := { fullyApplied := false })]
-noncomputable def argEquiv : circle ≃ Ioc (-π) π
-    where
+noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := expMapCircle ∘ coe
   left_inv z := argLocalEquiv.left_inv trivial
@@ -88,8 +86,7 @@ theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ 
 #align surj_on_exp_map_circle_neg_pi_pi surjOn_expMapCircle_neg_pi_pi
 
 theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
-    expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) :=
-  by
+    expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, expMapCircle_apply, expMapCircle_apply, exp_eq_exp_iff_exists_int]
   refine' exists_congr fun n => _
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero, ← of_real_one, ← of_real_bit0, ← of_real_mul,
@@ -136,8 +133,7 @@ theorem Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
 
 @[simp]
 theorem Real.Angle.expMapCircle_neg (θ : Real.Angle) :
-    Real.Angle.expMapCircle (-θ) = (Real.Angle.expMapCircle θ)⁻¹ :=
-  by
+    Real.Angle.expMapCircle (-θ) = (Real.Angle.expMapCircle θ)⁻¹ := by
   induction θ using Real.Angle.induction_on
   simp_rw [← Real.Angle.coe_neg, Real.Angle.expMapCircle_coe, expMapCircle_neg]
 #align real.angle.exp_map_circle_neg Real.Angle.expMapCircle_neg
@@ -153,8 +149,7 @@ theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) :
 
 @[simp]
 theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
-    (arg (Real.Angle.expMapCircle θ) : Real.Angle) = θ :=
-  by
+    (arg (Real.Angle.expMapCircle θ) : Real.Angle) = θ := by
   induction θ using Real.Angle.induction_on
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← of_real_cos, ← of_real_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
