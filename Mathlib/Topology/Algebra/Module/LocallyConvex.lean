@@ -138,7 +138,7 @@ theorem Disjoint.exists_open_convexes [LocallyConvexSpace 𝕜 E] {s t : Set E} 
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
   refine' ⟨s + V, t + V, hVopen.add_left, hVopen.add_left, hs₁.add hVconvex, ht₁.add hVconvex,
     subset_add_left _ hV0, subset_add_left _ hV0, _⟩
-  simp_rw [← unionᵢ_add_left_image, image_add_left]
+  simp_rw [← iUnion_add_left_image, image_add_left]
   simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 #align disjoint.exists_open_convexes Disjoint.exists_open_convexes
@@ -150,29 +150,29 @@ section LatticeOps
 variable {ι : Sort _} {𝕜 E F : Type _} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
   [AddCommMonoid F] [Module 𝕜 F]
 
-theorem locallyConvexSpaceInfₛ {ts : Set (TopologicalSpace E)}
-    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (infₛ ts) := by
-  letI : TopologicalSpace E := infₛ ts
+theorem locallyConvexSpacesInf {ts : Set (TopologicalSpace E)}
+    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (sInf ts) := by
+  letI : TopologicalSpace E := sInf ts
   refine'
     LocallyConvexSpace.ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
       (fun x => fun If : Set ts × (ts → Set E) =>
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
-      (fun x => _) fun x If hif => convex_interᵢ fun i => convex_interᵢ fun hi => (hif.2 i hi).2
-  rw [nhds_infₛ, ← infᵢ_subtype'']
-  exact hasBasis_infᵢ' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
-#align locally_convex_space_Inf locallyConvexSpaceInfₛ
+      (fun x => _) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
+  rw [nhds_sInf, ← iInf_subtype'']
+  exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
+#align locally_convex_space_Inf locallyConvexSpacesInf
 
-theorem locallyConvexSpaceInfᵢ {ts' : ι → TopologicalSpace E}
+theorem locallyConvexSpaceiInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
-  refine' locallyConvexSpaceInfₛ _
+  refine' locallyConvexSpacesInf _
   rwa [forall_range_iff]
-#align locally_convex_space_infi locallyConvexSpaceInfᵢ
+#align locally_convex_space_infi locallyConvexSpaceiInf
 
 theorem locallyConvexSpaceInf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
     (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) := by
-  rw [inf_eq_infᵢ]
-  refine' locallyConvexSpaceInfᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' locallyConvexSpaceiInf fun b => _
   cases b <;> assumption
 #align locally_convex_space_inf locallyConvexSpaceInf
 
@@ -188,7 +188,7 @@ theorem locallyConvexSpaceInduced {t : TopologicalSpace F} [LocallyConvexSpace �
 
 instance {ι : Type _} {X : ι → Type _} [∀ i, AddCommMonoid (X i)] [∀ i, TopologicalSpace (X i)]
     [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] : LocallyConvexSpace 𝕜 (∀ i, X i) :=
-  locallyConvexSpaceInfᵢ fun i => locallyConvexSpaceInduced (LinearMap.proj i)
+  locallyConvexSpaceiInf fun i => locallyConvexSpaceInduced (LinearMap.proj i)
 
 instance [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
