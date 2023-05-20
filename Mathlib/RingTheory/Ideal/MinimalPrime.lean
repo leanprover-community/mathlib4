@@ -133,8 +133,8 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
   have := H.1.1
-  let f' := I.Quotient.mk.comp f
-  have e : (I.Quotient.mk.comp f).ker = I.comap f := by
+  let f' := (Ideal.Quotient.mk I).comp f
+  have e : RingHom.ker f' = I.comap f := by
     ext1
     exact Submodule.Quotient.mk_eq_zero _
   have : (I.Quotient.mk.comp f).ker.Quotient.mk.ker ≤ p := by
