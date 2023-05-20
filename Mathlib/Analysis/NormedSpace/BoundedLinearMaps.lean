@@ -407,30 +407,29 @@ theorem IsBoundedBilinearMap.map_sub_right (h : IsBoundedBilinearMap 𝕜 f) {x 
 /-- Useful to use together with `continuous.comp₂`. -/
 theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
   have one_ne : (1 : ℝ) ≠ 0 := by simp
-  obtain ⟨C, Cpos : 0 < C, hC⟩ := h.bound
+  obtain ⟨C, _ : 0 < C, hC⟩ := h.bound
   rw [continuous_iff_continuousAt]
   intro x
   have H : ∀ (a : E) (b : F), ‖f (a, b)‖ ≤ C * ‖‖a‖ * ‖b‖‖ := by
     intro a b
     simpa [mul_assoc] using hC a b
-  have h₁ : (fun e : E × F => f (e.1 - x.1, e.2)) =o[𝓝 x] fun e => (1 : ℝ) := by
+  have h₁ : (fun e : E × F => f (e.1 - x.1, e.2)) =o[𝓝 x] fun _ => (1 : ℝ) := by
     refine' (Asymptotics.isBigO_of_le' (𝓝 x) fun e => H (e.1 - x.1) e.2).trans_isLittleO _
     rw [Asymptotics.isLittleO_const_iff one_ne]
-    convert ((continuous_fst.sub continuous_const).norm.mul continuous_snd.norm).continuousAt
-    · simp
-    infer_instance
-  have h₂ : (fun e : E × F => f (x.1, e.2 - x.2)) =o[𝓝 x] fun e => (1 : ℝ) := by
+    have : ContinuousAt (fun (e : E × F) ↦ ‖e.fst - x.fst‖ * ‖e.snd‖) x :=
+      ((continuous_fst.sub continuous_const).norm.mul continuous_snd.norm).continuousAt
+    rwa [ContinuousAt, sub_self, norm_zero, zero_mul] at this
+  have h₂ : (fun e : E × F => f (x.1, e.2 - x.2)) =o[𝓝 x] fun _ => (1 : ℝ) := by
     refine' (Asymptotics.isBigO_of_le' (𝓝 x) fun e => H x.1 (e.2 - x.2)).trans_isLittleO _
     rw [Asymptotics.isLittleO_const_iff one_ne]
-    convert(continuous_const.mul (continuous_snd.sub continuous_const).norm).continuousAt
-    · simp
-    infer_instance
+    have : ContinuousAt (fun e ↦ ‖x.fst‖ * ‖e.snd - x.snd‖) x :=
+      (continuous_const.mul (continuous_snd.sub continuous_const).norm).continuousAt
+    rwa [ContinuousAt, sub_self, norm_zero, mul_zero] at this
   have := h₁.add h₂
   rw [Asymptotics.isLittleO_const_iff one_ne] at this
   change Tendsto _ _ _
   convert this.add_const (f x)
-  · ext e
-    simp [h.map_sub_left, h.map_sub_right]
+  · simp [h.map_sub_left, h.map_sub_right]
   · simp
 #align is_bounded_bilinear_map.continuous IsBoundedBilinearMap.continuous
 
