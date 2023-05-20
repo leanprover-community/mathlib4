@@ -167,25 +167,23 @@ instance : CoeSort SemiNormedGroup₁ (Type _) where
   coe X := X.α
 
 
--- Porting Note: Added -- needed to make intance LargeCategory work-/
+--Porting Note: Was explicitly shown before. Is there a problem doing it like this?
+deriving instance LargeCategory for SemiNormedGroup₁
+
+/-- Porting Note: Added-/
 instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
 
-instance : LargeCategory.{u} SemiNormedGroup₁ where
-  Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
-  id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {X Y Z} f g := ⟨(g : NormedAddGroupHom Y Z).comp (f : NormedAddGroupHom X Y), g.2.comp f.2⟩
-
 @[ext]
-theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
-  Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
+theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (↑f : M → N) = (↑g : M → N)) : f = g :=
+  NormedAddGroupHom.ext (congr_fun w)
 #align SemiNormedGroup₁.hom_ext SemiNormedGroup₁.hom_ext
 
-instance : ConcreteCategory.{u} SemiNormedGroup₁ where
-  forget :=
-    { obj := fun X => X
-      map := fun X Y f => f }
-  forget_faithful := { }
+/--Porting Note: Changed -/
+instance : ConcreteCategory.{u} SemiNormedGroup₁ := by
+  dsimp only [SemiNormedGroup₁]
+  infer_instance
+
 
 /-- Construct a bundled `SemiNormedGroup₁` from the underlying type and typeclass. -/
 def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup₁ :=
