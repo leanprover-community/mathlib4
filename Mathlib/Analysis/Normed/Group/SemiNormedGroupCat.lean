@@ -240,10 +240,14 @@ theorem coe_comp {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) : (f �
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroup₁.coe_comp
 
+/--Porting Note: Added to make `coe_comp'` work -- might cause double coercions-/
+instance coeToNormedAddGroupHom {M N : SemiNormedGroup₁} : Coe (M ⟶ N) (NormedAddGroupHom M N) :=
+  ⟨fun f => f.1⟩
+
 -- If `coe_fn_coe_base` fires before `coe_comp`, `coe_comp'` puts us back in normal form.
 @[simp]
 theorem coe_comp' {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) :
-    (⇑(f ≫ g) : NormedAddGroupHom M K) = (↑g : NormedAddGroupHom N K).comp ↑f :=
+    ((f ≫ g) : NormedAddGroupHom M K) = (g : NormedAddGroupHom N K).comp f :=
   rfl
 #align SemiNormedGroup₁.coe_comp' SemiNormedGroup₁.coe_comp'
 
@@ -255,14 +259,17 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup₁.of_unique SemiNormedGroup₁.ofUnique
 
+/--Porting Note: Had to fix double coercions in `zero_comp`-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
   Zero X Y := { zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩ }
-  comp_zero X Y f Z := by
+  comp_zero {X Y} f Z := by
     ext
     rfl
-  zero_comp X Y Z f := by
-    ext
-    simp [coeFn_coe_base']
+  zero_comp X {Y Z} f := by
+    ext x
+    simp only [coe_comp', NormedAddGroupHom.comp_apply]
+    change f ((0: X → Y) x) = (0: X → Z) x
+    simp only [Pi.zero_apply, map_zero]
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroup₁} (x : V) : (0 : V ⟶ W) x = 0 :=
@@ -271,10 +278,9 @@ theorem zero_apply {V W : SemiNormedGroup₁} (x : V) : (0 : V ⟶ W) x = 0 :=
 
 theorem isZero_of_subsingleton (V : SemiNormedGroup₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext
+  · ext x
     have : x = 0 := Subsingleton.elim _ _
     simp only [this, map_zero]
-    exact map_zero f.1
   · ext
     apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroup₁.isZero_of_subsingleton
