@@ -202,7 +202,7 @@ class BorelSpace (α : Type _) [TopologicalSpace α] [MeasurableSpace α] : Prop
 #align borel_space BorelSpace
 #align borel_space.measurable_eq BorelSpace.measurable_eq
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.Borelize
 
 open Lean Elab Term Tactic Meta
 
@@ -247,7 +247,7 @@ def borelize (t : Term) : TacticM Unit := do
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
 
-end Mathlib.Tactic
+end Mathlib.Tactic.Borelize
 
 instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type _} [TopologicalSpace α]
     [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ where
