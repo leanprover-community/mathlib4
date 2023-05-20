@@ -119,7 +119,7 @@ theorem isZero_of_subsingleton (V : SemiNormedGroup) [Subsingleton V] : Limits.I
     have  := Subsingleton.elim (x : V) (0 : V)
     rw [this]
     suffices f 0 = (0 : V⟶ X) 0 by convert this
-    simp only [NormedAddGroupHom.toFun_eq_coe, map_zero, zero_apply]
+    simp [map_zero]
   · ext
     apply @Subsingleton.elim V _
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroup.isZero_of_subsingleton
@@ -150,8 +150,6 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGroup} (i : V ≅ W) (h1 : i
 
 end SemiNormedGroup
 
---Porting Note: Is this correct? It appears that the category structure is norm-non-increasing up to
--- a factor
 /-- `SemiNormedGroup₁` is a type synonym for `SemiNormedGroup`,
 which we shall equip with the category structure consisting only of the norm non-increasing maps.
 -/
@@ -169,25 +167,25 @@ instance : CoeSort SemiNormedGroup₁ (Type _) where
   coe X := X.α
 
 
---Porting Note: Was explicitly shown before. Is there a problem doing it like this?
+-- Porting Note: Added -- needed to make intance LargeCategory work-/
+instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
+
 instance : LargeCategory.{u} SemiNormedGroup₁ where
   Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
-
-/-- Porting Note: Added-/
-instance {X Y : SemiNormedGroup₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X ⟶ Y) := f.1
+  comp {X Y Z} f g := ⟨(g : NormedAddGroupHom Y Z).comp (f : NormedAddGroupHom X Y), g.2.comp f.2⟩
 
 @[ext]
-theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (↑f : M → N) = (↑g : M → N)) : f = g :=
-  Subtype.ext (NormedAddGroupHom.ext (congr_fun w))
+theorem hom_ext {M N : SemiNormedGroup₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
+  Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
 #align SemiNormedGroup₁.hom_ext SemiNormedGroup₁.hom_ext
 
-/--Porting Note: Changed -/
 instance : ConcreteCategory.{u} SemiNormedGroup₁ where
-  forget := rfl
-
+  forget :=
+    { obj := fun X => X
+      map := fun X Y f => f }
+  forget_faithful := { }
 
 /-- Construct a bundled `SemiNormedGroup₁` from the underlying type and typeclass. -/
 def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup₁ :=
@@ -197,11 +195,10 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup₁ :=
 instance (M : SemiNormedGroup₁) : SeminormedAddCommGroup M :=
   M.str
 
---Porting Note: Some changes
 /-- Promote a morphism in `SemiNormedGroup` to a morphism in `SemiNormedGroup₁`. -/
 def mkHom {M N : SemiNormedGroup} (f : M ⟶ N) (i : f.NormNoninc) :
     SemiNormedGroup₁.of M ⟶ SemiNormedGroup₁.of N :=
-  ⟨f, f.map_add' , ⟨1, by simpa using i⟩ ⟩
+  ⟨f, i⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroup₁.mkHom
 
 @[simp]
@@ -216,17 +213,18 @@ def mkIso {M N : SemiNormedGroup} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.i
     SemiNormedGroup₁.of M ≅ SemiNormedGroup₁.of N where
   hom := mkHom f.hom i
   inv := mkHom f.inv i'
-  hom_inv_id := by
+  hom_inv_id' := by
+    apply Subtype.eq
     exact f.hom_inv_id
-  inv_hom_id := by
+  inv_hom_id' := by
+    apply Subtype.eq
     exact f.inv_hom_id
 #align SemiNormedGroup₁.mk_iso SemiNormedGroup₁.mkIso
 
-instance : HasForget₂ SemiNormedGroup₁ SemiNormedGroup where
-  forget₂ :=
+instance : HasForget₂ SemiNormedGroup₁ SemiNormedGroup
+    where forget₂ :=
     { obj := fun X => X
-      map := fun {X Y f} => f }
-
+      map := fun X Y f => f.1 }
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroup₁.of V : Type u) = V :=
@@ -258,36 +256,26 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup₁.of_unique SemiNormedGroup₁.ofUnique
 
-/--Porting Note: Had to add this to make Limits.HasZeroMorphisms work-/
-lemma zero_NormNoninc {X Y : SemiNormedGroup} : NormedAddGroupHom.NormNoninc (0:X⟶ Y):= by
-  change ∀ v : X, ‖(0 : (X⟶ Y)) v‖ ≤ ‖v‖
-  intro v
-  simp only [SemiNormedGroup.zero_apply, norm_zero, norm_nonneg]
-
-/--Porting Note: Added some things to make it compile again - might have created issues?-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
-  Zero X Y := {zero := mkHom 0 zero_NormNoninc}
-  comp_zero {X Y} f Z := by
-    ext x
-    simp only [coe_comp', NormedAddGroupHom.toFun_eq_coe, NormedAddGroupHom.comp_apply]
+  Zero X Y := { zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩ }
+  comp_zero X Y f Z := by
+    ext
     rfl
   zero_comp X Y Z f := by
-    ext x
-    simp only [coe_comp', NormedAddGroupHom.toFun_eq_coe, NormedAddGroupHom.comp_apply]
-    apply map_zero
+    ext
+    simp [coeFn_coe_base']
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroup₁} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup₁.zero_apply SemiNormedGroup₁.zero_apply
 
-/--Porting Note: Didn't work, manual rewrite-/
 theorem isZero_of_subsingleton (V : SemiNormedGroup₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext x
+  · ext
     have : x = 0 := Subsingleton.elim _ _
     simp only [this, map_zero]
-    simp only [NormedAddGroupHom.toFun_eq_coe, map_zero, zero_apply]
+    exact map_zero f.1
   · ext
     apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroup₁.isZero_of_subsingleton
@@ -296,10 +284,11 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroup₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroup₁.hasZeroObject
 
-/--Porting Note: I think this simply doesn't work with the current definition of SemiNormedGroup₁-/
 theorem iso_isometry {V W : SemiNormedGroup₁} (i : V ≅ W) : Isometry i.hom := by
+  change Isometry (i.hom : V →+ W)
+  refine' AddMonoidHomClass.isometry_of_norm i.hom _
   intro v
-  apply le_antisymm (i.hom.3 v)
+  apply le_antisymm (i.hom.2 v)
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
