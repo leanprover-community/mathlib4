@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Banach
-import Mathbin.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
 # Complemented subspaces of normed vector spaces
@@ -40,8 +40,7 @@ section
 variable [CompleteSpace 𝕜]
 
 theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
-    [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented :=
-  by
+    [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented := by
   set f' : E →L[𝕜] range f := f.cod_restrict _ (f : E →ₗ[𝕜] F).mem_range_self
   rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
   simpa only [ker_cod_restrict] using f'.closed_complemented_ker_of_right_inverse g (ext_iff.1 hg)
@@ -92,8 +91,7 @@ variable [CompleteSpace E] (p q : Subspace 𝕜 E)
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
-    (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E :=
-  by
+    (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.complete_space_coe; haveI := hq.complete_space_coe
   refine' (p.prod_equiv_of_is_compl q h).toContinuousLinearEquivOfContinuous _
   exact (p.subtypeL.coprod q.subtypeL).Continuous
@@ -148,8 +146,7 @@ theorem closedComplemented_iff_has_closed_compl :
 #align subspace.closed_complemented_iff_has_closed_compl Subspace.closedComplemented_iff_has_closed_compl
 
 theorem closedComplemented_of_quotient_finiteDimensional [CompleteSpace 𝕜]
-    [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented :=
-  by
+    [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by
   obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_is_compl
   haveI : FiniteDimensional 𝕜 q := (p.quotient_equiv_of_is_compl q hq).FiniteDimensional
   exact closed_complemented_of_closed_compl hq hp q.closed_of_finite_dimensional
