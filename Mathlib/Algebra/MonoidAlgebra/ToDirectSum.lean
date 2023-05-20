@@ -132,8 +132,8 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
 #align add_monoid_algebra.to_direct_sum_add AddMonoidAlgebra.toDirectSum_add
 
 -- porting note : was not needed in mathlib
-noncomputable instance [DecidableEq ι] [AddMonoid ι] [Semiring M] : NonUnitalNonAssocSemiring (ι →₀ M) :=
-    AddMonoidAlgebra.nonUnitalNonAssocSemiring
+noncomputable instance [DecidableEq ι] [AddMonoid ι] [Semiring M] :
+  NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
 
 @[simp]
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
@@ -154,7 +154,8 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   erw [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     AddMonoidAlgebra.toDirectSum_single]
   simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-  Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply, AddMonoidHom.coe_mulLeft]
+    Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply,
+    AddMonoidHom.coe_mulLeft]
   erw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
@@ -178,9 +179,9 @@ theorem toAddMonoidAlgebra_add [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (f 
 #align direct_sum.to_add_monoid_algebra_add DirectSum.toAddMonoidAlgebra_add
 
 @[simp]
-theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)]
-    (f g : ⨁ _i : ι, M) : (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g :=
-  by
+theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
+  [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _i : ι, M) :
+      (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g := by
   apply_fun AddMonoidAlgebra.toDirectSum
   · simp
   · apply Function.LeftInverse.injective
