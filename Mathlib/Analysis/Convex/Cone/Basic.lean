@@ -8,9 +8,9 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Hull
-import Mathbin.Data.Real.Basic
-import Mathbin.LinearAlgebra.LinearPmap
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.Data.Real.Basic
+import Mathlib.LinearAlgebra.LinearPmap
 
 /-!
 # Convex cones
@@ -257,8 +257,7 @@ section Module
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
-def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F
-    where
+def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
   carrier := f '' S
   smul_mem' := fun c hc y ⟨x, hx, hy⟩ => hy ▸ f.map_smul c x ▸ mem_image_of_mem f (S.smul_mem hc hx)
   add_mem' := fun y₁ ⟨x₁, hx₁, hy₁⟩ y₂ ⟨x₂, hx₂, hy₂⟩ =>
@@ -281,8 +280,7 @@ theorem map_id (S : ConvexCone 𝕜 E) : S.map LinearMap.id = S :=
 #align convex_cone.map_id ConvexCone.map_id
 
 /-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
-def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E
-    where
+def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E where
   carrier := f ⁻¹' S
   smul_mem' c hc x hx := by
     rw [mem_preimage, f.map_smul c]
@@ -388,8 +386,7 @@ def Salient : Prop :=
   ∀ x ∈ S, x ≠ (0 : E) → -x ∉ S
 #align convex_cone.salient ConvexCone.Salient
 
-theorem salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat :=
-  by
+theorem salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat := by
   constructor
   · rintro h₁ ⟨x, xs, H₁, H₂⟩
     exact h₁ x xs H₁ H₂
@@ -408,23 +405,20 @@ theorem Salient.anti {S T : ConvexCone 𝕜 E} (h : T ≤ S) : S.Salient → T.S
 #align convex_cone.salient.anti ConvexCone.Salient.anti
 
 /-- A flat cone is always pointed (contains `0`). -/
-theorem Flat.pointed {S : ConvexCone 𝕜 E} (hS : S.Flat) : S.Pointed :=
-  by
+theorem Flat.pointed {S : ConvexCone 𝕜 E} (hS : S.Flat) : S.Pointed := by
   obtain ⟨x, hx, _, hxneg⟩ := hS
   rw [pointed, ← add_neg_self x]
   exact add_mem S hx hxneg
 #align convex_cone.flat.pointed ConvexCone.Flat.pointed
 
 /-- A blunt cone (one not containing `0`) is always salient. -/
-theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient :=
-  by
+theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient := by
   rw [salient_iff_not_flat, blunt_iff_not_pointed]
   exact mt flat.pointed
 #align convex_cone.blunt.salient ConvexCone.Blunt.salient
 
 /-- A pointed convex cone defines a preorder. -/
-def toPreorder (h₁ : S.Pointed) : Preorder E
-    where
+def toPreorder (h₁ : S.Pointed) : Preorder E where
   le x y := y - x ∈ S
   le_refl x := by change x - x ∈ S <;> rw [sub_self x] <;> exact h₁
   le_trans x y z xy zy := by simpa using add_mem S zy xy
@@ -499,8 +493,7 @@ instance : AddZeroClass (ConvexCone 𝕜 E) :=
     ext
     simp⟩
 
-instance : AddCommSemigroup (ConvexCone 𝕜 E)
-    where
+instance : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
   add_assoc _ _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_comm _ _
@@ -525,8 +518,7 @@ section AddCommMonoid
 variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- Every submodule is trivially a convex cone. -/
-def toConvexCone (S : Submodule 𝕜 E) : ConvexCone 𝕜 E
-    where
+def toConvexCone (S : Submodule 𝕜 E) : ConvexCone 𝕜 E where
   carrier := S
   smul_mem' c hc x hx := S.smul_mem c hx
   add_mem' x hx y hy := S.add_mem hx hy
@@ -621,8 +613,7 @@ theorem pointed_positive : Pointed (positive 𝕜 E) :=
 
 Note that this naming diverges from the mathlib convention of `pos` and `nonneg` due to "positive
 cone" (`convex_cone.positive`) being established terminology for the non-negative elements. -/
-def strictlyPositive : ConvexCone 𝕜 E
-    where
+def strictlyPositive : ConvexCone 𝕜 E where
   carrier := Set.Ioi 0
   smul_mem' c hc x (hx : _ < _) := smul_pos hc hx
   add_mem' x hx y hy := add_pos hx hy
@@ -665,8 +656,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 namespace Convex
 
 /-- The set of vectors proportional to those in a convex set forms a convex cone. -/
-def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E :=
-  by
+def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
   apply ConvexCone.mk (⋃ (c : 𝕜) (H : 0 < c), c • s) <;> simp only [mem_Union, mem_smul_set]
   · rintro c c_pos _ ⟨c', c'_pos, x, hx, rfl⟩
     exact ⟨c * c', mul_pos c_pos c'_pos, x, hx, (smul_smul _ _ _).symm⟩
@@ -682,8 +672,7 @@ theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, 
   simp only [to_cone, ConvexCone.mem_mk, mem_Union, mem_smul_set, eq_comm, exists_prop]
 #align convex.mem_to_cone Convex.mem_toCone
 
-theorem mem_to_cone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s :=
-  by
+theorem mem_to_cone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine' hs.mem_to_cone.trans ⟨_, _⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
     exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
@@ -696,8 +685,7 @@ theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
 #align convex.subset_to_cone Convex.subset_toCone
 
 /-- `hs.to_cone s` is the least cone that includes `s`. -/
-theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } (hs.toCone s) :=
-  by
+theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } (hs.toCone s) := by
   refine' ⟨hs.subset_to_cone, fun t ht x hx => _⟩
   rcases hs.mem_to_cone.1 hx with ⟨c, hc, y, hy, rfl⟩
   exact t.smul_mem hc (ht hy)
@@ -710,8 +698,7 @@ theorem toCone_eq_sInf : hs.toCone s = sInf { t : ConvexCone 𝕜 E | s ⊆ t } 
 end Convex
 
 theorem convexHull_toCone_isLeast (s : Set E) :
-    IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) :=
-  by
+    IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert(convex_convexHull 𝕜 s).toCone_isLeast
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
@@ -756,8 +743,7 @@ and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it t
 submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
-    ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x :=
-  by
+    ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
   obtain ⟨y, -, hy⟩ : ∃ (y : E)(h : y ∈ ⊤), y ∉ f.domain :=
     @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
@@ -807,8 +793,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
-    ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x :=
-  by
+    ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
   replace hp_nonneg : p ∈ { p | _ };
   · rw [mem_set_of_eq]
     exact hp_nonneg
@@ -845,8 +830,7 @@ and is nonnegative on `s`. -/
 theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
-    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x :=
-  by
+    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
   rcases RieszExtension.exists_top s f nonneg Dense with ⟨⟨g_dom, g⟩, ⟨hpg, hfg⟩, htop, hgs⟩
   clear hpg
   refine' ⟨g ∘ₗ ↑(LinearEquiv.ofTop _ htop).symm, _, _⟩ <;>
@@ -862,8 +846,7 @@ for all `x`. -/
 theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ)
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
-    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x :=
-  by
+    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
   let s : ConvexCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
       smul_mem' := fun c hc p hp =>
