@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
@@ -192,5 +192,17 @@ noncomputable instance : IsEquivalence (singleFunctor₀ToHeart C) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
 end TStructure
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
+abbrev Plus := (t : TStructure (DerivedCategory C)).plus.category
+
+variable {C}
+
+abbrev ιMinus : Minus C ⥤ DerivedCategory C := t.minus.ι
+abbrev ιPlus : Plus C ⥤ DerivedCategory C := t.plus.ι
 
 end DerivedCategory

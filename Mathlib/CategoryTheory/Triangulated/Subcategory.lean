@@ -364,6 +364,79 @@ instance : Pretriangulated S.category where
 
 instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 
+inductive setSpan (S : Set C) : C → Prop
+  | subset (X : C) (hX : X ∈ S) : setSpan S X
+  | zero : setSpan S 0
+  | shift (X : C) (n : ℤ) (hX : setSpan S X) : setSpan S (X⟦n⟧)
+  | ext₂ (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : setSpan S T.obj₁) (h₃ : setSpan S T.obj₃) :
+      setSpan S T.obj₂
+
+def span (S : Set C) : Subcategory C where
+  set := setSpan S
+  zero := setSpan.zero
+  shift X n hX := setSpan.shift X n hX
+  ext₂ T hT h₁ h₃ := setSpan.ext₂ T hT h₁ h₃
+
+instance : PartialOrder (Subcategory C) where
+  le S₁ S₂ := S₁.set ⊆ S₂.set
+  le_refl S := (by rfl : S.set ⊆ S.set)
+  le_trans := by
+    intro S₁ S₂ S₃ (h₁₂ : S₁.set ⊆ S₂.set) (h₂₃ : S₂.set ⊆ S₃.set)
+    exact h₁₂.trans h₂₃
+  le_antisymm := by
+    rintro S₁ S₂ (h₁₂ : S₁.set ⊆ S₂.set) (h₂₁ : S₂.set ⊆ S₁.set)
+    have := le_antisymm h₁₂ h₂₁
+    cases S₁
+    cases S₂
+    congr
+
+def iInf {ι : Type _} (S : ι → Subcategory C) : Subcategory C where
+  set := Set.iInter (fun i => (S i).set)
+  zero := by
+    rw [Set.mem_iInter]
+    intro i
+    exact (S i).zero
+  shift X n hX := by
+    simp only [Set.mem_iInter] at hX ⊢
+    intro i
+    exact (S i).shift X n (hX i)
+  ext₂ T hT h₁ h₃ := by
+    simp only [Set.mem_iInter] at h₁ h₃ ⊢
+    intro i
+    exact (S i).ext₂ T hT (h₁ i) (h₃ i)
+
+lemma mem_iInf_set_iff {ι : Type _} (S : ι → Subcategory C) (X : C) :
+    X ∈ (iInf S).set ↔ ∀ (i : ι), X ∈ (S i).set := by
+  dsimp [iInf]
+  rw [Set.mem_iInter]
+
+def sInf (S : Set (Subcategory C)) : Subcategory C :=
+  iInf (Subtype.val : S → _)
+
+lemma mem_sInf_set_iff (S : Set (Subcategory C)) (X : C) :
+    X ∈ (sInf S).set ↔ ∀ (A : Subcategory C) (_ : A ∈ S), X ∈ A.set := by
+  dsimp [sInf]
+  rw [mem_iInf_set_iff]
+  constructor
+  . intro hX A hA
+    exact hX ⟨_, hA⟩
+  . intro hX A
+    exact hX A.1 A.2
+
+instance : InfSet (Subcategory C) where
+  sInf := sInf
+
+instance : CompleteSemilatticeInf (Subcategory C) where
+  sInf_le := by
+    intro S A hA X hX
+    erw [mem_sInf_set_iff] at hX
+    exact hX _ hA
+  le_sInf := by
+    intro B A hA X hX
+    erw [mem_sInf_set_iff]
+    intro A' hA'
+    exact hA _ hA' hX
+
 end Subcategory
 
 end Triangulated

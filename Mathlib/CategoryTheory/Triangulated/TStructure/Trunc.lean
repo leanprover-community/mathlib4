@@ -262,7 +262,7 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) := by
   constructor
   . intro h
-    obtain ⟨e, he⟩ := triangle_iso_exists t n (n+1) (by linarith) _ _
+    obtain ⟨e, he⟩ := t.triangle_iso_exists n (n+1) (by linarith) _ _
       (contractible_distinguished X)
       (t.truncTriangle_obj_distinguished n (n+1) rfl X) (Iso.refl X) (mem_of_isLE t X n)
       (mem_of_isGE t 0 _) (by dsimp ; apply mem_of_isLE) (by dsimp ; apply mem_of_isGE)
@@ -278,10 +278,35 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
   . intro
     exact t.isLE_of_iso (asIso ((truncLEι t n).app X)) n
 
+lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
+    t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
+  constructor
+  . intro h
+    obtain ⟨e, he⟩ := t.triangle_iso_exists (n-1) n (by linarith) _ _
+      (inv_rot_of_dist_triangle _ (contractible_distinguished X))
+      (t.truncTriangle_obj_distinguished (n-1) n (by linarith) X)
+      (Iso.refl X)
+        (Set.mem_of_iso _ (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm (t.mem_of_isLE 0 _))
+        (t.mem_of_isGE X n) (by dsimp ; apply t.mem_of_isLE) (by dsimp ; apply t.mem_of_isGE)
+    dsimp at he
+    have : (truncGEπ t n).app X = e.hom.hom₃ := by
+      have eq := e.hom.comm₂
+      dsimp at eq
+      rw [← cancel_epi e.hom.hom₂, ← eq, he]
+    rw [this]
+    infer_instance
+  . intro
+    exact t.isGE_of_iso (asIso ((truncGEπ t n).app X)).symm n
+
 lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsZero ((t.truncGE n₁).obj X) := by
   rw [t.isLE_iff_isIso_truncLEι_app n₀ X]
   exact isIso₁_iff_isZero₃ _ (t.truncTriangle_obj_distinguished n₀ n₁ h X)
+
+lemma isGE_iff_isZero_truncLE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsGE X n₁ ↔ IsZero ((t.truncLE n₀).obj X) := by
+  rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]
+  exact isIso₂_iff_isZero₁ _ (t.truncTriangle_obj_distinguished n₀ n₁ h X)
 
 lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
     (f₁ f₂ : (t.truncGE n).obj X ⟶ Y) (h : (t.truncGEπ n).app X ≫ f₁ = (t.truncGEπ n).app X ≫ f₂)
@@ -296,6 +321,19 @@ lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
     (by dsimp ; apply t.mem_of_isLE)) (t.mem_of_isGE Y n)
   rw [hg, hg', comp_zero]
 
+lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
+    (f₁ f₂ : Y ⟶ (t.truncLE n).obj X) (h : f₁ ≫ (t.truncLEι n).app X = f₂ ≫ (t.truncLEι n).app X)
+    [t.IsLE Y n] :
+    f₁ = f₂ := by
+  suffices ∀ (f : Y ⟶ (t.truncLE n).obj X) (_ : f ≫ (t.truncLEι n).app X = 0), f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by rw [sub_comp, sub_eq_zero, h])]
+  intro f hf
+  obtain ⟨g, hg⟩ := covariant_yoneda_exact₂ _ (inv_rot_of_dist_triangle _
+    (t.truncTriangle_obj_distinguished n (n+1) rfl X)) f hf
+  have hg' := t.zero g n (n+2) (by linarith) (t.mem_of_isLE Y n)
+    (t.shift_mem_setGE (n+1) (-1) (n+2) (by linarith) _ (by dsimp ; apply t.mem_of_isGE))
+  rw [hg, hg', zero_comp]
+
 lemma isLE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ ∀ (Y : C) (f : X ⟶ Y) (_ : t.IsGE Y n₁), f = 0 := by
   constructor
@@ -307,7 +345,18 @@ lemma isLE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     rw [comp_zero, comp_id]
     exact hX _ _ inferInstance
 
-lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : T.obj₁ ∈ t.setLE n)
+lemma isGE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsGE X n₁ ↔ ∀ (Y : C) (f : Y ⟶ X) (_ : t.IsLE Y n₀), f = 0 := by
+  constructor
+  . intro _ Y f _
+    exact t.zero_of_isLE_of_isGE f n₀ n₁ (by linarith)
+  . intro hX
+    rw [isGE_iff_isZero_truncLE_obj t n₀ n₁ h, IsZero.iff_id_eq_zero]
+    apply t.to_truncLE_obj_ext n₀
+    rw [zero_comp, id_comp]
+    exact hX _ _ inferInstance
+
+lemma mem_setLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : T.obj₁ ∈ t.setLE n)
     (h₃ : T.obj₃ ∈ t.setLE n) : T.obj₂ ∈ t.setLE n := by
   suffices t.IsLE (T.obj₂) n from t.mem_of_isLE _ _
   rw [t.isLE_iff_orthogonal n (n+1) rfl]
@@ -315,6 +364,15 @@ lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : T.obj
   obtain ⟨f', hf'⟩ := contravariant_yoneda_exact₂ _ hT f
     (t.zero _ n (n+1) (by linarith) h₁ (t.mem_of_isGE _ _))
   rw [hf', t.zero f' n (n+1) (by linarith) h₃ (t.mem_of_isGE _ _), comp_zero]
+
+lemma mem_setGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : T.obj₁ ∈ t.setGE n)
+    (h₃ : T.obj₃ ∈ t.setGE n) : T.obj₂ ∈ t.setGE n := by
+  suffices t.IsGE (T.obj₂) n from t.mem_of_isGE _ _
+  rw [t.isGE_iff_orthogonal (n-1) n (by linarith)]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := covariant_yoneda_exact₂ _ hT f
+    (t.zero _ (n-1) n (by linarith) (t.mem_of_isLE _ _) h₃)
+  rw [hf', t.zero f' (n-1) n (by linarith) (t.mem_of_isLE _ _) h₁, zero_comp]
 
 def minus : Triangulated.Subcategory C where
   set X := ∃ (n : ℤ), X ∈ t.setLE n
@@ -324,16 +382,19 @@ def minus : Triangulated.Subcategory C where
     exact ⟨i - n, t.shift_mem_setLE i n (i - n) (by linarith) X hX⟩
   ext₂ := by
     rintro T hT ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
-    exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.setLE_monotone _ _ (le_max_left i₁ i₃) hi₁)
+    exact ⟨max i₁ i₃, t.mem_setLE₂ T hT _ (t.setLE_monotone _ _ (le_max_left i₁ i₃) hi₁)
       (t.setLE_monotone _ _ (le_max_right i₁ i₃) hi₃)⟩
 
-/-def plus : Triangulated.Subcategory C where
+def plus : Triangulated.Subcategory C where
   set X := ∃ (n : ℤ), X ∈ t.setGE n
   zero := ⟨0, t.mem_of_isGE 0 0⟩
   shift := by
     rintro X n ⟨i, hX⟩
     exact ⟨i - n, t.shift_mem_setGE i n (i - n) (by linarith) X hX⟩
-  ext₂ := sorry-/
+  ext₂ := by
+    rintro T hT ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨min i₁ i₃, t.mem_setGE₂ T hT _ (t.setGE_antitone _ _ (min_le_left i₁ i₃) hi₁)
+      (t.setGE_antitone _ _ (min_le_right i₁ i₃) hi₃)⟩
 
 end TStructure
 
