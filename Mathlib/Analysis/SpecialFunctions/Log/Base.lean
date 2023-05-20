@@ -263,8 +263,8 @@ theorem logb_lt_logb_of_base_lt_one (hx : 0 < x) (hxy : x < y) : logb b y < logb
 #align real.logb_lt_logb_of_base_lt_one Real.logb_lt_logb_of_base_lt_one
 
 @[simp]
-theorem logb_lt_logb_iff_of_base_lt_one (hx : 0 < x) (hy : 0 < y) : logb b x < logb b y ↔ y < x :=
-  by
+theorem logb_lt_logb_iff_of_base_lt_one (hx : 0 < x) (hy : 0 < y) :
+    logb b x < logb b y ↔ y < x := by
   rw [logb, logb, div_lt_div_right_of_neg (log_neg b_pos b_lt_one)]
   exact log_lt_log_iff hy hx
 #align real.logb_lt_logb_iff_of_base_lt_one Real.logb_lt_logb_iff_of_base_lt_one
