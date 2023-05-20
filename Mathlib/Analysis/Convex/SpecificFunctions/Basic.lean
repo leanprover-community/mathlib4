@@ -8,9 +8,9 @@ Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Slope
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Analysis.Convex.Slope
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions
@@ -46,8 +46,7 @@ open BigOperators NNReal
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp :=
-  by
+theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ
   rintro x y z - - hxy hyz
   trans exp y
@@ -80,15 +79,13 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n :=
-  by
+theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   induction' n with k IH
   · exact convexOn_const (1 : ℝ) (convex_Ici _)
   refine' ⟨convex_Ici _, _⟩
   rintro a (ha : 0 ≤ a) b (hb : 0 ≤ b) μ ν hμ hν h
   have H := IH.2 ha hb hμ hν h
-  have : 0 ≤ (b ^ k - a ^ k) * (b - a) * μ * ν :=
-    by
+  have : 0 ≤ (b ^ k - a ^ k) * (b - a) * μ * ν := by
     cases' le_or_lt a b with hab hab
     · have : a ^ k ≤ b ^ k := pow_le_pow_of_le_left ha hab k
       have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
@@ -109,8 +106,7 @@ theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n :=
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn ℝ Set.univ fun x : ℝ => x ^ n :=
-  by
+theorem Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   refine' ⟨convex_univ, _⟩
   intro a ha b hb μ ν hμ hν h
   obtain ⟨k, rfl⟩ := hn.exists_two_nsmul _
@@ -162,8 +158,7 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log :=
-  by
+theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
   rintro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
   have hy : 0 < y := hx.trans hxy
@@ -198,8 +193,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log :=
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/
 theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp : 1 < p) :
-    1 + p * s < (1 + s) ^ p :=
-  by
+    1 + p * s < (1 + s) ^ p := by
   rcases eq_or_lt_of_le hs with (rfl | hs)
   · have : p ≠ 0 := by positivity
     simpa [zero_rpow this]
@@ -227,8 +221,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
 we have `1 + p * s ≤ (1 + s) ^ p`. -/
 theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp : 1 ≤ p) :
-    1 + p * s ≤ (1 + s) ^ p :=
-  by
+    1 + p * s ≤ (1 + s) ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simp
   by_cases hs' : s = 0
@@ -240,8 +233,7 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p :=
-  by
+theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
   rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
   have hy : 0 < y := by linarith
@@ -281,15 +273,13 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       linear_combination -H
 #align strict_convex_on_rpow strictConvexOn_rpow
 
-theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p :=
-  by
+theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).ConvexOn
 #align convex_on_rpow convexOn_rpow
 
-theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log :=
-  by
+theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine' ⟨convex_Iio _, _⟩
   rintro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
