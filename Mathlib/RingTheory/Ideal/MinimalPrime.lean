@@ -37,13 +37,13 @@ section
 
 variable {R S : Type _} [CommRing R] [CommRing S] (I J : Ideal R)
 
-/-- `I.minimal_primes` is the set of ideals that are minimal primes over `I`. -/
+/-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 def Ideal.minimalPrimes : Set (Ideal R) :=
   minimals (· ≤ ·) { p | p.IsPrime ∧ I ≤ p }
 #align ideal.minimal_primes Ideal.minimalPrimes
 
-/-- `minimal_primes R` is the set of minimal primes of `R`.
-This is defined as `ideal.minimal_primes ⊥`. -/
+/-- `minimalPrimes R` is the set of minimal primes of `R`.
+This is defined as `Ideal.minimalPrimes ⊥`. -/
 def minimalPrimes (R : Type _) [CommRing R] : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
@@ -78,7 +78,13 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
   congr
   ext p
-  exact ⟨fun ⟨a, b⟩ => ⟨a, ideal.le_radical.trans b⟩, fun ⟨a, b⟩ => ⟨a, a.radical_le_iff.mpr b⟩⟩
+  refine' ⟨_, _⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
+  . refine' ⟨⟨a, a.radical_le_iff.1 ha⟩, _⟩
+    . simp only [Set.mem_setOf_eq, and_imp] at *
+      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
+  . refine' ⟨⟨a, a.radical_le_iff.2 ha⟩, _⟩
+    . simp only [Set.mem_setOf_eq, and_imp] at *
+      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 #align ideal.radical_minimal_primes Ideal.radical_minimalPrimes
 
 @[simp]
