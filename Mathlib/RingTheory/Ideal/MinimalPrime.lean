@@ -135,12 +135,12 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
   have e : RingHom.ker f' = I.comap f := by
     ext1
     exact Submodule.Quotient.mk_eq_zero _
-  have : (I.Quotient.mk.comp f).ker.Quotient.mk.ker ≤ p := by
+  have : RingHom.ker (Ideal.Quotient.mk (RingHom.ker f')) ≤ p := by
     rw [Ideal.mk_ker, e]
     exact H.1.2
   obtain ⟨p', hp₁, hp₂⟩ :=
-    Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
-      (I.Quotient.mk.comp f).ker_lift_injective (p.map (I.Quotient.mk.comp f).ker.Quotient.mk) _
+    Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective _
+      (RingHom.kerLift_injective f' (p.map (Ideal.Quotient.mk (RingHom.ker f'))) _
   · skip
     refine' ⟨p'.comap I.Quotient.mk, Ideal.IsPrime.comap _, _, _⟩
     · exact ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
@@ -180,7 +180,7 @@ theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
   have := h.1.1
   refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
   rintro K ⟨hK, e₁⟩ e₂
-  have : f.ker ≤ K := (Ideal.comap_mono bot_le).trans e₁
+  have : RingHom.ker f ≤ K := (Ideal.comap_mono bot_le).trans e₁
   rw [← sup_eq_left.mpr this, RingHom.ker_eq_comap_bot, ← Ideal.comap_map_of_surjective f hf]
   apply Ideal.comap_mono _
   apply h.2 _ _
