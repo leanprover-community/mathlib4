@@ -89,7 +89,7 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
 
 @[simp]
 theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
-  rw [I.radical_eq_Inf]
+  rw [I.radical_eq_sInf]
   apply le_antisymm
   · intro x hx
     rw [Ideal.mem_sInf] at hx⊢
