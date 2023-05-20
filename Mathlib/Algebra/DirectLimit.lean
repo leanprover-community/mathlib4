@@ -388,7 +388,7 @@ instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
-def of (i) : G i →+* DirectLimit G f :=
+nonrec def of (i) : G i →+* DirectLimit G f :=
   RingHom.mk'
     { toFun := fun x => Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σi, G i))
       map_one' := Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inl ⟨i, rfl⟩
@@ -431,7 +431,7 @@ open Polynomial
 
 variable {f' : ∀ i j, i ≤ j → G i →+* G j}
 
-theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
+nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (q : Polynomial (DirectLimit G fun i j h => f' i j h)) :
     ∃ i p, Polynomial.map (of G (fun i j h => f' i j h) i) p = q :=
   Polynomial.induction_on q
@@ -443,7 +443,7 @@ theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
       ⟨i, p₁.map (f' i₁ i h1) + p₂.map (f' i₂ i h2), by
         rw [Polynomial.map_add, map_map, map_map, ← ih₁, ← ih₂]
         congr 2 <;> ext x <;> simp_rw [RingHom.comp_apply, of_f]⟩)
-    fun n z ih =>
+    fun n z _ =>
     let ⟨i, x, h⟩ := exists_of z
     ⟨i, C x * X ^ (n + 1), by rw [Polynomial.map_mul, map_C, h, Polynomial.map_pow, map_X]⟩
 #align ring.direct_limit.polynomial.exists_of Ring.DirectLimit.Polynomial.exists_of
@@ -508,7 +508,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine'
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, _,
-          is_supported_sub (is_supported_of.2 <| Or.inr rfl) (is_supported_of.2 <| Or.inl rfl), _⟩
+          isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl), _⟩
       · rintro k (rfl | ⟨rfl | _⟩)
         exact hij
         rfl
@@ -520,7 +520,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         rw [this]
         exact sub_self _
         exacts[Or.inr rfl, Or.inl rfl]
-    · refine' ⟨i, {⟨i, 1⟩}, _, is_supported_sub (is_supported_of.2 rfl) is_supported_one, _⟩
+    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl
       · rw [(restriction _).map_sub, (FreeCommRing.lift _).map_sub, restriction_of, dif_pos,
@@ -530,9 +530,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         · exact Set.mem_singleton _
     · refine'
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
-          is_supported_sub (is_supported_of.2 <| Or.inl rfl)
-            (is_supported_add (is_supported_of.2 <| Or.inr <| Or.inl rfl)
-              (is_supported_of.2 <| Or.inr <| Or.inr rfl)),
+          isSupported_sub (isSupported_of.2 <| Or.inl rfl)
+            (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
+              (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
           _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
@@ -544,9 +544,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         exacts[Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
     · refine'
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
-          is_supported_sub (is_supported_of.2 <| Or.inl rfl)
-            (is_supported_mul (is_supported_of.2 <| Or.inr <| Or.inl rfl)
-              (is_supported_of.2 <| Or.inr <| Or.inr rfl)),
+          isSupported_sub (isSupported_of.2 <| Or.inl rfl)
+            (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
+              (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
           _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
@@ -556,7 +556,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         rw [(f' i i _).map_mul]
         exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
-    refine' ⟨ind, ∅, fun _ => False.elim, is_supported_zero, _⟩
+    refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
     rw [(restriction _).map_zero, (FreeCommRing.lift _).map_zero]
   · rintro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
@@ -566,8 +566,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       exact le_trans (hj z hz) hjk
     refine'
       ⟨k, s ∪ t, this,
-        is_supported_add (is_supported_upwards hxs <| Set.subset_union_left s t)
-          (is_supported_upwards hyt <| Set.subset_union_right s t),
+        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
+          (isSupported_upwards hyt <| Set.subset_union_right s t),
         _⟩
     ·
       rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, ←
@@ -584,8 +584,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       exacts[(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
     refine'
       ⟨k, ↑s ∪ t, this,
-        is_supported_mul (is_supported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (is_supported_upwards hyt <| Set.subset_union_right (↑s) t),
+        isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
+          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t),
         _⟩
     rw [(restriction _).map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
@@ -598,7 +598,7 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (hix : of G (fun i j h =
     ∃ (j : _)(hij : i ≤ j), f' i j hij x = 0 :=
   haveI : Nonempty ι := ⟨i⟩
   let ⟨j, s, H, hxs, hx⟩ := of.zero_exact_aux hix
-  have hixs : (⟨i, x⟩ : Σi, G i) ∈ s := is_supported_of.1 hxs
+  have hixs : (⟨i, x⟩ : Σi, G i) ∈ s := isSupported_of.1 hxs
   ⟨j, H ⟨i, x⟩ hixs, by rw [restriction_of, dif_pos hixs, lift_of] at hx <;> exact hx⟩
 #align ring.direct_limit.of.zero_exact Ring.DirectLimit.of.zero_exact
 
