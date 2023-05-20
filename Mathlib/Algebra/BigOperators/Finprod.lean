@@ -10,7 +10,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Finite products and sums over types and sets
