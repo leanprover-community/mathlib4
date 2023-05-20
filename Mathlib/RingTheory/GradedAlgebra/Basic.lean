@@ -16,27 +16,27 @@ import Mathlib.Algebra.DirectSum.Ring
 /-!
 # Internally-graded rings and algebras
 
-This file defines the typeclass `graded_algebra 𝒜`, for working with an algebra `A` that is
-internally graded by a collection of submodules `𝒜 : ι → submodule R A`.
+This file defines the typeclass `GradedAlgebra 𝒜`, for working with an algebra `A` that is
+internally graded by a collection of submodules `𝒜 : ι → Submodule R A`.
 See the docstring of that typeclass for more information.
 
 ## Main definitions
 
-* `graded_ring 𝒜`: the typeclass, which is a combination of `set_like.graded_monoid`, and
-  `direct_sum.decomposition 𝒜`.
-* `graded_algebra 𝒜`: A convenience alias for `graded_ring` when `𝒜` is a family of submodules.
-* `direct_sum.decompose_ring_equiv 𝒜 : A ≃ₐ[R] ⨁ i, 𝒜 i`, a more bundled version of
-  `direct_sum.decompose 𝒜`.
-* `direct_sum.decompose_alg_equiv 𝒜 : A ≃ₐ[R] ⨁ i, 𝒜 i`, a more bundled version of
-  `direct_sum.decompose 𝒜`.
-* `graded_algebra.proj 𝒜 i` is the linear map from `A` to its degree `i : ι` component, such that
+* `GradedRing 𝒜`: the typeclass, which is a combination of `SetLike.GradedMonoid`, and
+  `DirectSum.Decomposition 𝒜`.
+* `GradedAlgebra 𝒜`: A convenience alias for `GradedRing` when `𝒜` is a family of submodules.
+* `DirectSum.decomposeRingEquiv 𝒜 : A ≃ₐ[R] ⨁ i, 𝒜 i`, a more bundled version of
+  `DirectSum.decompose 𝒜`.
+* `DirectSum.decomposeAlgEquiv 𝒜 : A ≃ₐ[R] ⨁ i, 𝒜 i`, a more bundled version of
+  `DirectSum.decompose 𝒜`.
+* `GradedAlgebra.proj 𝒜 i` is the linear map from `A` to its degree `i : ι` component, such that
   `proj 𝒜 i x = decompose 𝒜 x i`.
 
 ## Implementation notes
 
 For now, we do not have internally-graded semirings and internally-graded rings; these can be
-represented with `𝒜 : ι → submodule ℕ A` and `𝒜 : ι → submodule ℤ A` respectively, since all
-`semiring`s are ℕ-algebras via `algebra_nat`, and all `ring`s are `ℤ`-algebras via `algebra_int`.
+represented with `𝒜 : ι → Submodule ℕ A` and `𝒜 : ι → Submodule ℤ A` respectively, since all
+`Semiring`s are ℕ-algebras via `algebraNat`, and all `Ring`s are `ℤ`-algebras via `algebraInt`.
 
 ## Tags
 
@@ -57,13 +57,13 @@ variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 open DirectSum
 
 /-- An internally-graded `R`-algebra `A` is one that can be decomposed into a collection
-of `submodule R A`s indexed by `ι` such that the canonical map `A → ⨁ i, 𝒜 i` is bijective and
+of `Submodule R A`s indexed by `ι` such that the canonical map `A → ⨁ i, 𝒜 i` is bijective and
 respects multiplication, i.e. the product of an element of degree `i` and an element of degree `j`
 is an element of degree `i + j`.
 
-Note that the fact that `A` is internally-graded, `graded_algebra 𝒜`, implies an externally-graded
-algebra structure `direct_sum.galgebra R (λ i, ↥(𝒜 i))`, which in turn makes available an
-`algebra R (⨁ i, 𝒜 i)` instance.
+Note that the fact that `A` is internally-graded, `GradedAlgebra 𝒜`, implies an externally-graded
+algebra structure `DirectSum.GAlgebra R (λ i, ↥(𝒜 i))`, which in turn makes available an
+`Algebra R (⨁ i, 𝒜 i)` instance.
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜
 #align graded_ring GradedRing
@@ -173,14 +173,14 @@ variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra 
 
 variable (𝒜 : ι → Submodule R A)
 
-/-- A special case of `graded_ring` with `σ = submodule R A`. This is useful both because it
+/-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
 can avoid typeclass search, and because it provides a more concise name. -/
 @[reducible]
 def GradedAlgebra :=
   GradedRing 𝒜
 #align graded_algebra GradedAlgebra
 
-/-- A helper to construct a `graded_algebra` when the `set_like.graded_monoid` structure is already
+/-- A helper to construct a `GradedAlgebra` when the `SetLike.GradedMonoid` structure is already
 available. This makes the `left_inv` condition easier to prove, and phrases the `right_inv`
 condition in a way that allows custom `@[ext]` lemmas to apply.
 
