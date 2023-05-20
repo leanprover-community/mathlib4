@@ -8,9 +8,9 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GeomSum
-import Mathbin.LinearAlgebra.Smodeq
-import Mathbin.RingTheory.JacobsonIdeal
+import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Smodeq
+import Mathlib.RingTheory.JacobsonIdeal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -92,8 +92,7 @@ def Hausdorffification : Type _ :=
 
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
-def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M))
-    where
+def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier :=
     { f |
       ∀ {m n} (h : m ≤ n),
@@ -161,8 +160,7 @@ instance : IsHausdorff I (Hausdorffification I M) :=
   ⟨fun x =>
     Quotient.inductionOn' x fun x hx =>
       (Quotient.mk_eq_zero _).2 <|
-        (mem_iInf _).2 fun n =>
-          by
+        (mem_iInf _).2 fun n => by
           have := comap_map_mkq (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
           simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
           rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkq, ← SModEq.zero];
@@ -179,8 +177,7 @@ def lift (f : M →ₗ[R] N) : Hausdorffification I M →ₗ[R] N :=
     map_le_iff_le_comap.1 <|
       h.iInf_pow_smul ▸
         le_iInf fun n =>
-          le_trans (map_mono <| iInf_le _ n) <|
-            by
+          le_trans (map_mono <| iInf_le _ n) <| by
             rw [map_smul'']
             exact smul_mono le_rfl le_top
 #align Hausdorffification.lift Hausdorffification.lift
@@ -203,8 +200,7 @@ end Hausdorffification
 
 namespace IsPrecomplete
 
-instance bot : IsPrecomplete (⊥ : Ideal R) M :=
-  by
+instance bot : IsPrecomplete (⊥ : Ideal R) M := by
   refine' ⟨fun f hf => ⟨f 1, fun n => _⟩⟩; cases n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
     exact SModEq.top
@@ -228,8 +224,7 @@ end IsPrecomplete
 namespace adicCompletion
 
 /-- The canonical linear map to the completion. -/
-def of : M →ₗ[R] adicCompletion I M
-    where
+def of : M →ₗ[R] adicCompletion I M where
   toFun x := ⟨fun n => mkQ _ x, fun m n hmn => rfl⟩
   map_add' x y := rfl
   map_smul' c x := rfl
@@ -241,8 +236,7 @@ theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
 #align adic_completion.of_apply adicCompletion.of_apply
 
 /-- Linearly evaluating a sequence in the completion at a given input. -/
-def eval (n : ℕ) : adicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M)
-    where
+def eval (n : ℕ) : adicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) where
   toFun f := f.1 n
   map_add' f g := rfl
   map_smul' c f := rfl
@@ -308,15 +302,13 @@ open BigOperators
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
-  by
+theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
   intro x hx
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
-  have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] :=
-    by
+  have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
     simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
     rw [← add_tsub_cancel_of_le h, Finset.sum_range_add, ← sub_sub, sub_self, zero_sub, neg_mem_iff]
@@ -333,8 +325,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     specialize hL n
     rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL⊢
     rw [sub_zero]
-    suffices (1 - x * y) * f n - 1 ∈ I ^ n
-      by
+    suffices (1 - x * y) * f n - 1 ∈ I ^ n by
       convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
       ring
     cases n
