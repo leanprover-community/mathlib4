@@ -85,12 +85,11 @@ variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (
 structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
   (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)] extends
   Prefunctor B C where
+  /-- The action of a prelax functor on 2-morphisms. -/
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.PrelaxFunctor
 
 initialize_simps_projections PrelaxFunctor (+toPrefunctor, -obj, -map)
-
-attribute [nolint docBlame] CategoryTheory.PrelaxFunctor.map₂
 
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc PrelaxFunctor.toPrefunctor
@@ -101,8 +100,7 @@ attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
 instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
   ⟨toPrefunctor⟩
-#align category_theory.prelax_functor.has_coe_to_prefunctor
-  CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
+#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
 
 variable (F : PrelaxFunctor B C)
 
@@ -291,13 +289,11 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
     mapComp := fun f g => by
       exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
-    mapComp_naturality_left := fun η g =>
-      by
+    mapComp_naturality_left := fun η g => by
       dsimp
       rw [← map₂_comp_assoc, mapComp_naturality_left, map₂_comp_assoc, mapComp_naturality_left,
         assoc]
-    mapComp_naturality_right := fun η =>
-      by
+    mapComp_naturality_right := fun η => by
       dsimp
       intros
       rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,
@@ -371,7 +367,7 @@ associator, the left unitor, and the right unitor modulo some adjustments of dom
 of 2-morphisms.
 -/
 structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
-  [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
+    [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : map (𝟙 a) ≅ 𝟙 (obj a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ≅ map f ≫ map g
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
@@ -508,8 +504,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
--- porting note: this is aesop_cat taking a long time auto-filling in fields
-set_option maxHeartbeats 500000 in
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=

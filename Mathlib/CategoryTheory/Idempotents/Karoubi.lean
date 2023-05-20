@@ -21,7 +21,7 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
 complete category. It is also preadditive when `C` is preadditive.
-- `toKaroubi C : C ⥤ karoubi C` is a fully faithful functor, which is an equivalence
+- `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
 (`toKaroubi_isEquivalence`) when `C` is idempotent complete.
 
 -/
@@ -29,13 +29,7 @@ complete category. It is also preadditive when `C` is preadditive.
 
 noncomputable section
 
-open CategoryTheory.Category
-
-open CategoryTheory.Preadditive
-
-open CategoryTheory.Limits
-
-open BigOperators
+open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits BigOperators
 
 namespace CategoryTheory
 
@@ -175,7 +169,7 @@ instance : Faithful (toKaroubi C) where
 variable {C}
 
 @[simps add zero neg]
-instance [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   add f g :=
     ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
@@ -256,12 +250,12 @@ instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
         { hom := ⟨i, by erw [id_comp, ← h₂, ← assoc, h₁, id_comp]⟩
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
-/-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ karoubi C` is an equivalence. -/
+/-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
 def toKaroubi_isEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
   Equivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
 #align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubi_isEquivalence
 
-/-- The equivalence `C ≅ karoubi C` when `C` is idempotent complete. -/
+/-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
 def toKaroubi_equivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
   haveI := toKaroubi_isEquivalence C
   Functor.asEquivalence (toKaroubi C)
@@ -290,6 +284,7 @@ def decompId_p (P : Karoubi C) : (P.X : Karoubi C) ⟶ P :=
 
 /-- The formal direct factor of `P.X` given by the idempotent `P.p` in the category `C`
 is actually a direct factor in the category `Karoubi C`. -/
+@[reassoc]
 theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
   simp only [comp_f, id_eq, P.idem, decompId_i, decompId_p]

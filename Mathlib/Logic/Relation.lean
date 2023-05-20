@@ -10,10 +10,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Use
 import Mathlib.Init.Data.Quot
-import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Common
 
 /-!
 # Relation closures
@@ -451,7 +449,6 @@ theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=
 
 theorem _root_.WellFounded.transGen (h : WellFounded r) : WellFounded (TransGen r) :=
   ⟨fun a ↦ (h.apply a).TransGen⟩
-
 #align well_founded.trans_gen WellFounded.transGen
 
 section TransGen

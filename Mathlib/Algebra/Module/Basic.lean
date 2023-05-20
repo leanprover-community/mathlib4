@@ -14,7 +14,6 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring
@@ -281,7 +280,6 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
-
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
 end AddCommGroup

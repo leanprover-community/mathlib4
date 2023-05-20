@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.Tactic.ScopedNS
 
 /-! # The simplex category
 
@@ -94,14 +93,14 @@ protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n])
 #align simplex_category.rec SimplexCategory.rec
 
 -- porting note: removed @[nolint has_nonempty_instance]
-/-- Morphisms in the simplex_category. -/
+/-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
 #align simplex_category.hom SimplexCategory.Hom
 
 namespace Hom
 
-/-- Make a moprhism in `SimplexCategory` from a monotone map of fin's. -/
+/-- Make a moprhism in `SimplexCategory` from a monotone map of `Fin`'s. -/
 def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
   f
 #align simplex_category.hom.mk SimplexCategory.Hom.mk
@@ -464,7 +463,7 @@ end Truncated
 section Concrete
 
 instance : ConcreteCategory.{0} SimplexCategory where
-  Forget :=
+  forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
   forget_faithful := ⟨fun h => by ext : 2 ; exact h⟩
@@ -583,8 +582,12 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext1; ext1
-  exact congr_arg (fun φ => OrderEmbedding.toOrderHom φ) (eq₁.trans eq₂.symm)
+  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
+  -- It could be investigated again to see if the original can be restored.
+  ext x
+  replace eq₁ := congr_arg (· x) eq₁
+  replace eq₂ := congr_arg (· x) eq₂.symm
+  simp_all
 #align simplex_category.iso_eq_iso_refl SimplexCategory.iso_eq_iso_refl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
@@ -640,7 +643,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   -- and then, `θ x = θ (x+1)`
   have hθ₂ : ∃ x y : Fin (n + 2), (Hom.toOrderHom θ) x = (Hom.toOrderHom θ) y ∧ x < y := by
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
-    by_cases x < y
+    by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
       cases' lt_or_eq_of_le (not_lt.mp h) with h' h'
@@ -700,8 +703,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 #align simplex_category.eq_comp_δ_of_not_surjective' SimplexCategory.eq_comp_δ_of_not_surjective'
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
-    (hθ : ¬Function.Surjective θ.toOrderHom) : ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i :=
-  by
+    (hθ : ¬Function.Surjective θ.toOrderHom) :
+    ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
   cases' not_forall.mp hθ with i hi
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)

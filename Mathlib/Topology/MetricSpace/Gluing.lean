@@ -24,8 +24,8 @@ Gluing two metric spaces along a common subset. Formally, we are given
   Y
 ```
 where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
-We want to complete the square by a space `glue_space hΦ hΨ` and two isometries
-`to_glue_l hΦ hΨ` and `to_glue_r hΦ hΨ` that make the square commute.
+We want to complete the square by a space `GlueSpacescan hΦ hΨ` and two isometries
+`toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
 points `Φ p` and `Ψ p` are at distance 0. The (quotient) metric space associated
 to this predistance is the desired space.
@@ -83,10 +83,10 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
   have : (⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q)) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
       add_nonneg dist_nonneg dist_nonneg
-    refine' le_antisymm _ (le_cinfᵢ A)
+    refine' le_antisymm _ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
-    exact cinfᵢ_le ⟨0, forall_range_iff.2 A⟩ p
+    exact ciInf_le ⟨0, forall_range_iff.2 A⟩ p
   simp only [glueDist, this, zero_add]
 #align metric.glue_dist_glued_points Metric.glueDist_glued_points
 
@@ -106,7 +106,7 @@ theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
 
 theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
-  le_add_of_nonneg_left <| Real.infᵢ_nonneg fun _ => add_nonneg dist_nonneg dist_nonneg
+  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => add_nonneg dist_nonneg dist_nonneg
 
 theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
@@ -119,7 +119,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inr z) := by
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
-  refine le_cinfᵢ_add fun p => cinfᵢ_le_of_le ⟨0, ?_⟩ p ?_
+  refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
   · exact forall_range_iff.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
@@ -128,9 +128,9 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
     glueDist Φ Ψ ε (.inl x) (.inl z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
   simp_rw [glueDist, add_add_add_comm _ ε, add_assoc]
-  refine le_cinfᵢ_add fun p => ?_
+  refine le_ciInf_add fun p => ?_
   rw [add_left_comm, add_assoc, ← two_mul]
-  refine le_cinfᵢ_add fun q => ?_
+  refine le_ciInf_add fun q => ?_
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]
 
@@ -184,7 +184,7 @@ section Sum
 
 A particular case of the previous construction is when one uses basepoints in `X` and `Y` and one
 glues only along the basepoints, putting them at distance 1. We give a direct definition of
-the distance, without `infᵢ`, as it is easier to use in applications, and show that it is equal to
+the distance, without `iInf`, as it is easier to use in applications, and show that it is equal to
 the gluing distance defined above to take advantage of the lemmas we have already proved.
 -/
 variable {X : Type u} {Y : Type v} {Z : Type w}
@@ -449,8 +449,8 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine' completeSpace_of_isComplete_univ _
-  convert isComplete_unionᵢ_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [← preimage_unionᵢ, unionᵢ_of_singleton, preimage_univ]
+  convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
+  simp only [← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
 
 end Sigma
@@ -476,7 +476,7 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 #align metric.glue_premetric Metric.gluePremetric
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
-space  `glue_space hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
+space  `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
 def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
@@ -625,7 +625,7 @@ def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.In
 instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
   ⟨toInductiveLimit _ 0 default⟩
 
-/-- The map `to_inductive_limit n` mapping `X n` to the inductive limit is an isometry. -/
+/-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/
 theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
     Isometry (toInductiveLimit I n) :=
   Isometry.of_dist_eq fun x y => by
@@ -634,7 +634,7 @@ theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
       leRecOn_self]
 #align metric.to_inductive_limit_isometry Metric.toInductiveLimit_isometry
 
-/-- The maps `to_inductive_limit n` are compatible with the maps `f n`. -/
+/-- The maps `toInductiveLimit n` are compatible with the maps `f n`. -/
 theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
     toInductiveLimit I n.succ ∘ f n = toInductiveLimit I n := by
   let _ := inductivePremetric I

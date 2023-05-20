@@ -11,9 +11,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
 
 /-!
 # Basic operations on the natural numbers
@@ -201,7 +198,6 @@ theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
   · rw [not_le] at h1
     have h2 := le_of_lt h1
     rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-
 #align nat.max_succ_succ Nat.max_succ_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
@@ -374,16 +370,18 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
+-- Porting note: The type ascriptions of these two theorems need to be changed,
+-- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
-    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+    Nat.rec h0 h 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
 @[simp]
 theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
-    (Nat.rec h0 h : ∀ n, C n) (n + 1) = h n ((Nat.rec h0 h : ∀ n, C n) n) :=
+    Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) :=
   rfl
 #align nat.rec_add_one Nat.rec_add_one
 
@@ -595,7 +593,6 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
     · exact h n (lt_succ_self n) mn hP
   · intro _ hP
     exact hP
-
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-! ### `div` -/
@@ -823,10 +820,8 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ => Nat.find_min h⟩
-
   · rintro ⟨hm, hlt⟩
     exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
-
 #align nat.find_eq_iff Nat.find_eq_iff
 
 @[simp]
@@ -927,7 +922,6 @@ instance decidableBallLT :
           match k, e, h' with
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
-
 #align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :

@@ -201,7 +201,7 @@ theorem extend_agrees {x : FamilyOfElements P R} (t : x.Compatible) {f : Y ⟶ X
   have h := (le_generate R Y hf).choose_spec
   unfold FamilyOfElements.sieveExtend
   rw [t h.choose (𝟙 _) _ hf _]
-  · simp;
+  · simp
   · rw [id_comp]
     exact h.choose_spec.choose_spec.2
 #align category_theory.presieve.extend_agrees CategoryTheory.Presieve.extend_agrees
@@ -511,7 +511,6 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     convert h f hf
     rw [yonedaEquiv_naturality]
     simp [yonedaEquiv]
-    rfl
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -845,7 +844,7 @@ def forkMap : P.obj (op X) ⟶ FirstObj P R :=
 
 /-!
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
-the definition of `is_sheaf_for`.
+the definition of `IsSheafFor`.
 -/
 
 
@@ -1026,7 +1025,7 @@ structure SheafOfTypes (J : GrothendieckTopology C) : Type max u₁ v₁ (w + 1)
   val : Cᵒᵖ ⥤ Type w
   /-- the condition that the presheaf is a sheaf -/
   cond : Presieve.IsSheaf J val
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes CategoryTheory.SheafOfTypes
 
 namespace SheafOfTypes
@@ -1038,7 +1037,7 @@ variable {J}
 structure Hom (X Y : SheafOfTypes J) where
   /-- a morphism between the underlying presheaves -/
   val : X.val ⟶ Y.val
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes.hom CategoryTheory.SheafOfTypes.Hom
 
 @[simps]
@@ -1049,6 +1048,13 @@ instance : Category (SheafOfTypes J) where
   id_comp _ := Hom.ext _ _ <| id_comp _
   comp_id _ := Hom.ext _ _ <| comp_id _
   assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
+
+-- Porting note: we need to restate the ext lemma in terms of the categorical morphism
+-- not just the underlying structure.
+-- It would be nice if this boilerplate weren't necessary.
+@[ext]
+theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
+  Hom.ext f g w
 
 -- Let's make the inhabited linter happy...
 instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=

@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.SimpRw
 
 /-!
 # `max` and `min`
@@ -160,10 +159,8 @@ theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a
   by_cases h : a ≤ b
   · left
     exact ⟨min_eq_left h, h⟩
-
   · right
     exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
-
 #align min_cases min_cases
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
@@ -177,9 +174,7 @@ theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := 
   constructor
   · intro h
     refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
-
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
-
 #align min_eq_iff min_eq_iff
 
 theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
