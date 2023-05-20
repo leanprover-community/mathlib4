@@ -61,6 +61,9 @@ def selfAdjointPartL [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R
   cont := continuous_selfAdjointPart _ _
 #align self_adjoint_partL selfAdjointPartL
 
+-- Porting note: `simp only [selfAdjointPartL_toFun_coe]` proves this projection
+attribute [nolint simpNF] selfAdjointPartL_apply_coe
+
 /-- The skew-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps!]
 def skewAdjointPartL [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
