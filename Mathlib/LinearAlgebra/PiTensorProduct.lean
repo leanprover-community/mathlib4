@@ -254,7 +254,7 @@ instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])
       fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy]
   one_smul x :=
-    PiTensorProduct.induction_on' x (fun {f} ↦ by simp [smul_tprodCoeff' _ _])
+    PiTensorProduct.induction_on' x (fun {r f} ↦ by rw [smul_tprodCoeff', one_smul])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]
   smul_zero r := AddMonoidHom.map_zero _
 #align pi_tensor_product.distrib_mul_action' PiTensorProduct.distribMulAction'
@@ -281,13 +281,11 @@ instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Modu
     smul := (· • ·)
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
-        (fun {r f} ↦ by simp [smul_tprodCoeff' _ _, add_smul, add_tprodCoeff'])
+        (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])
         fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy, add_add_add_comm]
     zero_smul := fun x ↦
       PiTensorProduct.induction_on' x
-        (fun {r f} ↦ by
-          simp_rw [smul_tprodCoeff' _ _, zero_smul]
-          exact zero_tprodCoeff _)
+        (fun {r f} ↦ by simp_rw [smul_tprodCoeff', zero_smul, zero_tprodCoeff])
         fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy, add_zero] }
 #align pi_tensor_product.module' PiTensorProduct.module'
 
@@ -439,9 +437,9 @@ variable (R M)
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
-def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, M) ≃ₗ[R] ⨂[R] i : ι₂, M :=
-  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] i : ι₂, M))))
-    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] i : ι, M))))
+def reindex (e : ι ≃ ι₂) : (⨂[R] _i : ι, M) ≃ₗ[R] ⨂[R] _i : ι₂, M :=
+  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _i : ι₂, M))))
+    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _i : ι, M))))
     (by
       refine ext ?_
       ext
@@ -463,11 +461,10 @@ def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, M) ≃ₗ[R] ⨂[R] i : ι₂, 
 end
 
 @[simp]
-theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ i, M) :
-    reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) :=
-  by
-    dsimp [reindex]
-    exact liftAux_tprod _ f
+theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ _, M) :
+    reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
+  dsimp [reindex]
+  exact liftAux_tprod _ f
 #align pi_tensor_product.reindex_tprod PiTensorProduct.reindex_tprod
 
 @[simp]
