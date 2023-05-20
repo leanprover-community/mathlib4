@@ -541,10 +541,11 @@ def IsBoundedBilinearMap.linearDeriv (h : IsBoundedBilinearMap 𝕜 f) (p : E ×
     change
       f (p.1, q₁.2 + q₂.2) + f (q₁.1 + q₂.1, p.2) =
         f (p.1, q₁.2) + f (q₁.1, p.2) + (f (p.1, q₂.2) + f (q₂.1, p.2))
-    simp [h.add_left, h.add_right]; abel
+    rw [h.add_left, h.add_right]
+    abel
   map_smul' c q := by
     change f (p.1, c • q.2) + f (c • q.1, p.2) = c • (f (p.1, q.2) + f (q.1, p.2))
-    simp [h.smul_left, h.smul_right, smul_add]
+    rw [h.smul_left, h.smul_right, smul_add]
 #align is_bounded_bilinear_map.linear_deriv IsBoundedBilinearMap.linearDeriv
 
 /-- The derivative of a bounded bilinear map at a point `p : E × F`, as a continuous linear map
@@ -591,15 +592,13 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 
     IsBoundedLinearMap 𝕜 fun p : E × F => h.deriv p := by
   rcases h.bound with ⟨C, Cpos : 0 < C, hC⟩
   refine' IsLinearMap.with_bound ⟨fun p₁ p₂ => _, fun c p => _⟩ (C + C) fun p => _
-  ·
-    ext <;>
-        simp only [h.add_left, h.add_right, coe_comp', Function.comp_apply, inl_apply,
-          isBoundedBilinearMap_deriv_coe, Prod.fst_add, Prod.snd_add, add_apply] <;>
-      abel
-  ·
-    ext <;>
-      simp only [h.smul_left, h.smul_right, smul_add, coe_comp', Function.comp_apply,
-        isBoundedBilinearMap_deriv_coe, Prod.smul_fst, Prod.smul_snd, coe_smul', Pi.smul_apply]
+  · ext
+    simp only [h.add_left, h.add_right, coe_comp', Function.comp_apply, inl_apply,
+      isBoundedBilinearMap_deriv_coe, Prod.fst_add, Prod.snd_add, add_apply]
+    abel
+  · ext
+    simp only [h.smul_left, h.smul_right, smul_add, coe_comp', Function.comp_apply,
+      isBoundedBilinearMap_deriv_coe, Prod.smul_fst, Prod.smul_snd, coe_smul', Pi.smul_apply]
   · refine'
       ContinuousLinearMap.op_norm_le_bound _
         (mul_nonneg (add_nonneg Cpos.le Cpos.le) (norm_nonneg _)) fun q => _
@@ -623,7 +622,7 @@ theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} 
 theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
-  (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.Prod hf)
+  (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prod hf)
 #align continuous_on.clm_comp ContinuousOn.clm_comp
 
 namespace ContinuousLinearEquiv
