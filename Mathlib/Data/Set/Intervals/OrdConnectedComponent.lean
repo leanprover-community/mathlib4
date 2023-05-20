@@ -9,7 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Tactic.SwapVar
+
 /-!
 # Order connected components of a set
 
