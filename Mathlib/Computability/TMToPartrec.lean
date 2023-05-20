@@ -12,7 +12,6 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
-import Mathlib.Tactic.Eqns
 
 /-!
 # Modelling partial recursive functions using Turing machines
