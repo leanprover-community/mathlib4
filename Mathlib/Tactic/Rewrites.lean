@@ -20,9 +20,8 @@ import Mathlib.Control.Basic
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 
 ## Future work
-It would be nice to have `rewrites at h`.
 
-We could also try discharging side goals via `assumption` or `solve_by_elim`.
+We could try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
 
@@ -85,11 +84,10 @@ Find lemmas which can rewrite the goal.
 This core function returns a monadic list, to allow the caller to decide how long to search.
 See also `rewrites` for a more convenient interface.
 -/
-def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) :
+def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) (target : Expr) :
     ListM MetaM RewriteResult := ListM.squash do
-  let type ← instantiateMVars (← goal.getType)
   -- Get all lemmas which could match some subexpression
-  let candidates ← lemmas.getSubexpressionMatches type
+  let candidates ← lemmas.getSubexpressionMatches target
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
   let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
@@ -97,7 +95,7 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) :
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let some result ← try? <| goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    let some result ← try? <| goal.rewrite target (← mkConstWithFreshMVarLevels lem) symm
       | return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
@@ -106,14 +104,15 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) :
       none
 
 /-- Find lemmas which can rewrite the goal. -/
-def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId)
-    (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) :=
-rewritesCore lemmas goal
+def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId) (target : Expr)
+    (stop_at_rfl : Bool := False) (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (List RewriteResult) :=
+rewritesCore lemmas goal target
   -- Don't use too many heartbeats.
   |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
   -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-  |>.mapM RewriteResult.computeRefl
-  |>.takeUpToFirst (fun r => r.refl? = some true)
+  |>.mapM RewriteResult.computeRefl -- TODO we could simply not compute this if stop_at_rfl is False
+  |>.takeUpToFirst (fun r => stop_at_rfl && r.refl? = some true)
   -- Bound the number of results.
   |>.takeAsList max
 
@@ -127,27 +126,52 @@ open Lean.Parser.Tactic
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 `rewrites!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
-syntax (name := rewrites') "rewrites" "!"? : tactic
+syntax (name := rewrites') "rewrites" "!"? (ppSpace location)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rewrites%$tk $[!%$lucky]?) => do
+    `(tactic| rewrites%$tk $[!%$lucky]? $[$loc]?) => do
+  let lems ← rewriteLemmas.get
+  reportOutOfHeartbeats `rewrites tk
   let goal ← getMainGoal
-  goal.withContext do
-    let results ← rewrites (← rewriteLemmas.get) goal
-    reportOutOfHeartbeats `rewrites tk
-    if results.isEmpty then
-      throwError "rewrites could not find any lemmas which can rewrite the goal"
-    for r in results do
-      let newGoal := if r.refl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
-      addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm newGoal
-    if lucky.isSome then
-      match results[0]? with
-      | some r => do
-          replaceMainGoal
-            ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
-          evalTactic (← `(tactic| rfl))
-      | _ => failure
+  -- TODO fix doc of core to say that * fails only if all failed
+  withLocation (expandOptLocation (Lean.mkOptionalNode loc))
+    fun f => do
+      let some a ← f.findDecl? | return
+      if a.isImplementationDetail then return
+      let target ← instantiateMVars (← f.getType)
+      let results ← rewrites lems goal target (stop_at_rfl := false)
+      reportOutOfHeartbeats `rewrites tk
+      if results.isEmpty then
+        throwError "rewrites could not find any lemmas which can rewrite the hypothesis {
+          ← f.getUserName}"
+      for r in results do
+        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+          r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
+      if lucky.isSome then
+        match results[0]? with
+        | some r => do
+            let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
+            replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
+        | _ => failure
+    do
+      let target ← instantiateMVars (← goal.getType)
+      let results ← rewrites lems goal target (stop_at_rfl := true)
+      reportOutOfHeartbeats `rewrites tk
+      if results.isEmpty then
+        throwError "rewrites could not find any lemmas which can rewrite the goal"
+      for r in results do
+        let newGoal := if r.refl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+          newGoal (origSpan? := ← getRef)
+      if lucky.isSome then
+        match results[0]? with
+        | some r => do
+            replaceMainGoal
+              ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
+            evalTactic (← `(tactic| try rfl))
+        | _ => failure
+    (λ _ => throwError "Failed to find a rewrite for some location")
 
 @[inherit_doc rewrites'] macro "rewrites!" : tactic =>
   `(tactic| rewrites !)
