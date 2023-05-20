@@ -62,7 +62,7 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
   · refine' ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
   refine'
-    ⟨OrderDual.toDual (Inf c),
+    ⟨OrderDual.toDual (sInf c),
       ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx => (hc hx).1, _⟩, _⟩
   · rw [OrderDual.ofDual_toDual]
     convert le_sInf _
