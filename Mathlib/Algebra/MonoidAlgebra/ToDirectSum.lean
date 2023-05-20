@@ -132,7 +132,7 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
 #align add_monoid_algebra.to_direct_sum_add AddMonoidAlgebra.toDirectSum_add
 
 -- porting note : was not needed in mathlib
-noncomputable instance [DecidableEq ι] [AddMonoid ι] [Semiring M] :
+noncomputable instance [AddMonoid ι] [Semiring M] :
   NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
 
 @[simp]
