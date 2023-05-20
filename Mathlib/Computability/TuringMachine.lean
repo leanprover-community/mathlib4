@@ -16,8 +16,6 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.WLOG
-import Mathlib.Tactic.RSuffices
 
 /-!
 # Turing machines
