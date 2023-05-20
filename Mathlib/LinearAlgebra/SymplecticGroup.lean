@@ -44,8 +44,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
-  rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _), fromBlocks_smul,
-    Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
+  rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),
+    fromBlocks_smul, Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
   simp [fromBlocks]
 set_option linter.uppercaseLean3 false in
 #align matrix.J_transpose Matrix.J_transpose

@@ -14,7 +14,6 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring

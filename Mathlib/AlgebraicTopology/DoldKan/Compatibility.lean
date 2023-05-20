@@ -140,8 +140,8 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
     _ ≅ 𝟭 B := eB.unitIso.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso
 
-theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF :=
-  by
+theorem equivalence₂CounitIso_eq :
+    (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
   dsimp [equivalence₂, Iso.refl]
   simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,

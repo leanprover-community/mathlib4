@@ -11,9 +11,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
 
 /-!
 # Basic operations on the natural numbers
@@ -373,16 +370,18 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
+-- Porting note: The type ascriptions of these two theorems need to be changed,
+-- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
-    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+    Nat.rec h0 h 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
 @[simp]
 theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
-    (Nat.rec h0 h : ∀ n, C n) (n + 1) = h n ((Nat.rec h0 h : ∀ n, C n) n) :=
+    Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) :=
   rfl
 #align nat.rec_add_one Nat.rec_add_one
 
