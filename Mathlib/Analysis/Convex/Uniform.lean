@@ -9,6 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Uniformly convex spaces
@@ -22,7 +23,7 @@ the same ray).
 
 ## Main declarations
 
-`uniform_convex_space E` means that `E` is a uniformly convex space.
+`UniformConvexSpace E` means that `E` is a uniformly convex space.
 
 ## TODO
 
@@ -41,13 +42,10 @@ open Convex Pointwise
 
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
-by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant.
-
-See also `uniform_convex_space.of_uniform_convex_closed_unit_ball`. -/
+by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
 class UniformConvexSpace (E : Type _) [SeminormedAddCommGroup E] : Prop where
-  uniform_convex :
-    ∀ ⦃ε : ℝ⦄,
-      0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ
+  uniform_convex : ∀ ⦃ε : ℝ⦄,
+    0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ
 #align uniform_convex_space UniformConvexSpace
 
 variable {E : Type _}
@@ -70,9 +68,11 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   set δ' := min (1 / 2) (min (ε / 3) <| δ / 3)
   refine' ⟨δ', lt_min one_half_pos <| lt_min hε' (div_pos hδ zero_lt_three), fun x hx y hy hxy => _⟩
   obtain hx' | hx' := le_or_lt ‖x‖ (1 - δ')
-  · exact (norm_add_le_of_le hx' hy).trans (sub_add_eq_add_sub _ _ _).le
+  · rw [← one_add_one_eq_two]
+    exact (norm_add_le_of_le hx' hy).trans (sub_add_eq_add_sub _ _ _).le
   obtain hy' | hy' := le_or_lt ‖y‖ (1 - δ')
-  · exact (norm_add_le_of_le hx hy').trans (add_sub_assoc _ _ _).ge
+  · rw [← one_add_one_eq_two]
+    exact (norm_add_le_of_le hx hy').trans (add_sub_assoc _ _ _).ge
   have hδ' : 0 < 1 - δ' := sub_pos_of_lt (min_lt_of_left_lt one_half_lt_one)
   have h₁ : ∀ z : E, 1 - δ' < ‖z‖ → ‖‖z‖⁻¹ • z‖ = 1 := by
     rintro z hz
@@ -95,7 +95,6 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
         have : ∀ x' y', x - y = x' - y' + (x - x') + (y' - y) := fun _ _ => by abel
         rw [sub_le_iff_le_add, norm_sub_rev _ x, ← add_assoc, this]
         exact norm_add₃_le _ _ _
-      
   calc
     ‖x + y‖ ≤ ‖x' + y'‖ + ‖x' - x‖ + ‖y' - y‖ := by
       have : ∀ x' y', x + y = x' + y' + (x - x') + (y - y') := fun _ _ => by abel
@@ -108,22 +107,21 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
       refine' sub_le_sub_left _ _
       ring_nf
       rw [← mul_div_cancel' δ three_ne_zero]
+      norm_num -- Porting note: these three extra lines needed to make `exact` work
+      have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
+      rw [this, mul_comm]
       exact mul_le_mul_of_nonneg_left (min_le_of_right_le <| min_le_right _ _) three_pos.le
-    
 #align exists_forall_closed_ball_dist_add_le_two_sub exists_forall_closed_ball_dist_add_le_two_sub
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 * r - δ := by
   obtain hr | hr := le_or_lt r 0
-  ·
-    exact
-      ⟨1, one_pos, fun x hx y hy h =>
-        (hε.not_le <|
-            h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
+  · exact ⟨1, one_pos, fun x hx y hy h => (hε.not_le <|
+      h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
   refine' ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => _⟩
-  rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy <;>
-    try infer_instance
+  rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
+  try infer_instance
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
     div_le_div_right hr, div_le_iff hr, sub_mul] at this
@@ -136,8 +134,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [UniformConvexSpace E]
 
 -- See note [lower instance priority]
 instance (priority := 100) UniformConvexSpace.toStrictConvexSpace : StrictConvexSpace ℝ E :=
-  StrictConvexSpace.ofNormAddNeTwo fun x y hx hy hxy =>
-    let ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (norm_sub_pos_iff.2 hxy)
-    ((h hx.le hy.le le_rfl).trans_lt <| sub_lt_self _ hδ).Ne
+  StrictConvexSpace.ofNormAddNeTwo fun _ _ hx hy hxy =>
+    let ⟨_, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (norm_sub_pos_iff.2 hxy)
+    ((h hx.le hy.le le_rfl).trans_lt <| sub_lt_self _ hδ).ne
 #align uniform_convex_space.to_strict_convex_space UniformConvexSpace.toStrictConvexSpace
-
