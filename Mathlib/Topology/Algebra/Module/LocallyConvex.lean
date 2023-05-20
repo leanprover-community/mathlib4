@@ -190,6 +190,7 @@ instance {ι : Type _} {X : ι → Type _} [∀ i, AddCommMonoid (X i)] [∀ i, 
     [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] : LocallyConvexSpace 𝕜 (∀ i, X i) :=
   locallyConvexSpaceiInf fun i => locallyConvexSpaceInduced (LinearMap.proj i)
 
+set_option maxHeartbeats 2000000 in
 instance [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
   locallyConvexSpaceInf (locallyConvexSpaceInduced (LinearMap.fst _ _ _))
