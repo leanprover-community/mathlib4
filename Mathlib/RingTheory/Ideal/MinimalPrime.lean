@@ -38,7 +38,7 @@ section
 variable {R S : Type _} [CommRing R] [CommRing S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
-def Ideal.minimalPrimes : Set (Ideal R) :=
+protected def Ideal.minimalPrimes : Set (Ideal R) :=
   minimals (· ≤ ·) { p | p.IsPrime ∧ I ≤ p }
 #align ideal.minimal_primes Ideal.minimalPrimes
 
