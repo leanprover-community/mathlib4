@@ -193,10 +193,11 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroup₁ :=
 instance (M : SemiNormedGroup₁) : SeminormedAddCommGroup M :=
   M.str
 
+--Porting Note: Some changes
 /-- Promote a morphism in `SemiNormedGroup` to a morphism in `SemiNormedGroup₁`. -/
 def mkHom {M N : SemiNormedGroup} (f : M ⟶ N) (i : f.NormNoninc) :
     SemiNormedGroup₁.of M ⟶ SemiNormedGroup₁.of N :=
-  ⟨f, i⟩
+  ⟨f, f.map_add' , ⟨1, by simpa using i ⟩ ⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroup₁.mkHom
 
 @[simp]
@@ -211,14 +212,17 @@ def mkIso {M N : SemiNormedGroup} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.i
     SemiNormedGroup₁.of M ≅ SemiNormedGroup₁.of N where
   hom := mkHom f.hom i
   inv := mkHom f.inv i'
-  hom_inv_id' := by apply Subtype.eq; exact f.hom_inv_id
-  inv_hom_id' := by apply Subtype.eq; exact f.inv_hom_id
+  hom_inv_id := by
+    exact f.hom_inv_id
+  inv_hom_id := by
+    exact f.inv_hom_id
 #align SemiNormedGroup₁.mk_iso SemiNormedGroup₁.mkIso
 
-instance : HasForget₂ SemiNormedGroup₁ SemiNormedGroup
-    where forget₂ :=
+instance : HasForget₂ SemiNormedGroup₁ SemiNormedGroup where
+  forget₂ :=
     { obj := fun X => X
-      map := fun X Y f => f.1 }
+      map := fun {X Y f} => f }
+
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroup₁.of V : Type u) = V :=
