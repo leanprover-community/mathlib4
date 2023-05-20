@@ -1303,13 +1303,13 @@ instance ring : Ring (α →ᵇ R) :=
     coe_intCast
 
 instance : SeminormedRing (α →ᵇ R) :=
-  { (show Ring (α →ᵇ R) from ring),  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from ring,  -- porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalSeminormedRing with }
 
 end Seminormed
 
 instance [NormedRing R] : NormedRing (α →ᵇ R) :=
-  { (show Ring (α →ᵇ R) from ring),  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from ring,  -- porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalNormedRing with }
 
 end NormedRing
@@ -1385,7 +1385,7 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
 instance : NormedAlgebra 𝕜 (α →ᵇ γ) :=
-  { show (Algebra 𝕜 (α →ᵇ γ)) from algebra, -- porting note: this was not present in the original
+  { show Algebra 𝕜 (α →ᵇ γ) from algebra, -- porting note: this was not present in the original
     BoundedContinuousFunction.normedSpace with }
 
 /-!
