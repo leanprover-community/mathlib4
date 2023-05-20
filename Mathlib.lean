@@ -365,6 +365,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
