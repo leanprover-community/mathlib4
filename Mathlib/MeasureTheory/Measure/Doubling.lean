@@ -22,9 +22,9 @@ This file records basic facts about uniformly locally doubling measures.
 
 ## Main definitions
 
-  * `is_unif_loc_doubling_measure`: the definition of a uniformly locally doubling measure (as a
+  * `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
   typeclass).
-  * `is_unif_loc_doubling_measure.doubling_constant`: a function yielding the doubling constant `C`
+  * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
   appearing in the definition of a uniformly locally doubling measure.
 -/
 
@@ -40,7 +40,7 @@ such that for all sufficiently small radii `ε`, and for any centre, the measure
 `2 * ε` is bounded by `C` times the measure of the concentric ball of radius `ε`.
 
 Note: it is important that this definition makes a demand only for sufficiently small `ε`. For
-example we want hyperbolic space to carry the instance `is_unif_loc_doubling_measure volume` but
+example we want hyperbolic space to carry the instance `IsUnifLocDoublingMeasure volume` but
 volumes grow exponentially in hyperbolic space. To be really explicit, consider the hyperbolic plane
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
 `A(2ε)/A(ε) ~ exp(ε)`. -/
@@ -62,7 +62,7 @@ theorem exists_measure_closedBall_le_mul :
 
 /-- A doubling constant for a uniformly locally doubling measure.
 
-See also `is_unif_loc_doubling_measure.scaling_constant_of`. -/
+See also `IsUnifLocDoublingMeasure.scalingConstantOf`. -/
 def doublingConstant : ℝ≥0 :=
   Classical.choose <| exists_measure_closedBall_le_mul μ
 #align is_unif_loc_doubling_measure.doubling_constant IsUnifLocDoublingMeasure.doublingConstant
@@ -106,7 +106,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
 #align is_unif_loc_doubling_measure.exists_eventually_forall_measure_closed_ball_le_mul IsUnifLocDoublingMeasure.exists_eventually_forall_measure_closedBall_le_mul
 
-/-- A variant of `is_unif_loc_doubling_measure.doubling_constant` which allows for scaling the
+/-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
 radius by values other than `2`. -/
 def scalingConstantOf (K : ℝ) : ℝ≥0 :=
   max (Classical.choose <| exists_eventually_forall_measure_closedBall_le_mul μ K) 1
