@@ -56,10 +56,10 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
       OrderDual.toDual J ≤ m ∧ ∀ z ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ p }, m ≤ z → z = m by
     obtain ⟨p, h₁, h₂, h₃⟩ := this
     simp_rw [← @eq_comm _ p] at h₃
-    exact ⟨p, ⟨h₁, fun a b c => (h₃ a b c).le⟩, h₂⟩
+    exact ⟨p, ⟨h₁, fun a b c => le_of_eq (h₃ a b c)⟩, h₂⟩
   apply zorn_nonempty_partialOrder₀
   swap
-  · refine' ⟨show J.is_prime by infer_instance, e⟩
+  · refine' ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
   refine'
     ⟨OrderDual.toDual (Inf c),
@@ -224,4 +224,3 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 #align ideal.minimal_primes_eq_subsingleton_self Ideal.minimalPrimes_eq_subsingleton_self
 
 end
-
