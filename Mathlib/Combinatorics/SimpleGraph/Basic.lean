@@ -696,14 +696,6 @@ section Darts
 
 variable {G}
 
-instance Dart.fintype [Fintype V] [DecidableRel (Adj G)] : Fintype (Dart G) :=
-  Fintype.ofEquiv (Σ v, G.neighborSet v)
-    { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
-      left_inv := fun s => by ext <;> simp
-      right_inv := fun d => by ext <;> simp }
-#align simple_graph.dart.fintype SimpleGraph.Dart.fintype
-
 /-- The edge associated to the dart. -/
 def _root_.Graph.Dart.edge (d : Dart G) : Sym2 V :=
   ⟦d.toProd⟧

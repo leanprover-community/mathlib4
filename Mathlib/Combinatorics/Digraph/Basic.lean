@@ -255,15 +255,8 @@ instance outNeighborSet.memDecidable (v : V) [DecidableRel (Adj G)] :
 @[simp] theorem inNeighborSet_inv : G.inv.inNeighborSet = G.outNeighborSet := rfl
 @[simp] theorem outNeighborSet_inv : G.inv.outNeighborSet = G.inNeighborSet := rfl
 
-instance Dart.fintype [Fintype V] [DecidableRel (Adj G)] : Fintype (Dart G) :=
-  Fintype.ofEquiv (Σ v, G.outNeighborSet v)
-    { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
-      left_inv := fun s => by ext <;> simp
-      right_inv := fun d => by ext <;> simp }
 
 /-! ## Map and comap -/
-
 
 /-- Given a function, there is an covariant induced map on graphs by pushing forward
 the adjacency relation. Whenever two adjacent vertices map to the same vertex, then

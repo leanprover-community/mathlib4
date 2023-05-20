@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.Graph.Hom
+import Mathlib.Data.Set.Finite
 
 /-! # Darts
 
@@ -55,6 +56,14 @@ instance [DecidableEq (V G)] : DecidableEq (Dart G)
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : Dart G → V G × V G) := Dart.ext
 #align simple_graph.dart.to_prod_injective Graph.Dart.toProd_injective
+
+instance Dart.fintype [Fintype (V G)] [DecidableRel (Adj G)] : Fintype (Dart G) :=
+  Fintype.ofEquiv (Σ v, {w | Adj G v w})
+    { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
+      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
+      left_inv := fun s => by ext <;> simp
+      right_inv := fun d => by ext <;> simp }
+#align simple_graph.dart.fintype Graph.Dart.fintype
 
 namespace Hom
 variable {G : Γ} {G' : Γ'} (f : G →g G')
