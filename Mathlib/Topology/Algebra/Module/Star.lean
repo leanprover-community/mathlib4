@@ -12,6 +12,8 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Star
 
+set_option linter.uppercaseLean3 false
+
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
@@ -19,7 +21,7 @@ import Mathlib.Topology.Algebra.Star
 
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
-@[simps]
+@[simps!]
 def starL (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A] :
     A ≃L⋆[R] A where
@@ -52,7 +54,7 @@ theorem continuous_decomposeProdAdjoint_symm [TopologicalAddGroup A] :
 #align continuous_decompose_prod_adjoint_symm continuous_decomposeProdAdjoint_symm
 
 /-- The self-adjoint part of an element of a star module, as a continuous linear map. -/
-@[simps]
+@[simps!]
 def selfAdjointPartL [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
     A →L[R] selfAdjoint A where
   toLinearMap := selfAdjointPart R
@@ -60,7 +62,7 @@ def selfAdjointPartL [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R
 #align self_adjoint_partL selfAdjointPartL
 
 /-- The skew-adjoint part of an element of a star module, as a continuous linear map. -/
-@[simps]
+@[simps!]
 def skewAdjointPartL [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
     A →L[R] skewAdjoint A where
   toLinearMap := skewAdjointPart R
@@ -69,11 +71,10 @@ def skewAdjointPartL [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a continuous linear equivalence. -/
-@[simps]
+@[simps!]
 def StarModule.decomposeProdAdjointL [TopologicalAddGroup A] [ContinuousStar A]
     [ContinuousConstSMul R A] : A ≃L[R] selfAdjoint A × skewAdjoint A where
   toLinearEquiv := StarModule.decomposeProdAdjoint R A
   continuous_toFun := continuous_decomposeProdAdjoint _ _
   continuous_invFun := continuous_decomposeProdAdjoint_symm _ _
 #align star_module.decompose_prod_adjointL StarModule.decomposeProdAdjointL
-
