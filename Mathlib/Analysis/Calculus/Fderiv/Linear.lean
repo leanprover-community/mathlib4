@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Basic
 
 /-!
 # The derivative of bounded linear maps
@@ -92,8 +92,7 @@ protected theorem ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
 #align continuous_linear_map.fderiv ContinuousLinearMap.fderiv
 
 protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 e s x = e :=
-  by
+    fderivWithin 𝕜 e s x = e := by
   rw [DifferentiableAt.fderivWithin e.differentiable_at hxs]
   exact e.fderiv
 #align continuous_linear_map.fderiv_within ContinuousLinearMap.fderivWithin
@@ -137,8 +136,7 @@ theorem IsBoundedLinearMap.fderiv (h : IsBoundedLinearMap 𝕜 f) :
 #align is_bounded_linear_map.fderiv IsBoundedLinearMap.fderiv
 
 theorem IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
-    (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = h.toContinuousLinearMap :=
-  by
+    (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = h.toContinuousLinearMap := by
   rw [DifferentiableAt.fderivWithin h.differentiable_at hxs]
   exact h.fderiv
 #align is_bounded_linear_map.fderiv_within IsBoundedLinearMap.fderivWithin
