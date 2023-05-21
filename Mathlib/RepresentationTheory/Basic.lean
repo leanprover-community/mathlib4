@@ -225,16 +225,16 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k (MonoidAlgebra k G)
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
   apply_fun RestrictScalars.addEquiv _ _ ρ.asModule using
-    (RestrictScalars.addEquiv _ _ _).injective
+    (RestrictScalars.addEquiv _ _ ρ.asModule).injective
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
   simp
 #align representation.of_module_as_module_act Representation.ofModule_asModule_act
 
 theorem smul_ofModule_asModule (r : MonoidAlgebra k G) (m : (ofModule M).asModule) :
-    (RestrictScalars.addEquiv _ _ _) ((ofModule M).asModuleEquiv (r • m)) =
-      r • (RestrictScalars.addEquiv _ _ _) ((ofModule M).asModuleEquiv m) := by
+    (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (r • m)) =
+      r • (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (G := G) m) := by
   dsimp
-  simp only [AddEquiv.apply_symm_apply, ofModuleAsAlgebraHom_apply_apply]
+  simp only [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
 #align representation.smul_of_module_as_module Representation.smul_ofModule_asModule
 
 end
@@ -299,9 +299,19 @@ theorem ofMulAction_apply {H : Type _} [MulAction G H] (g : G) (f : H →₀ k) 
   simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
 #align representation.of_mul_action_apply Representation.ofMulAction_apply
 
+-- Porting note: did not need this in ML3; noncomputable because IR check complains
+noncomputable instance : HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) := by
+    change HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
+    infer_instance
+
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
-    x • y = (x * y : MonoidAlgebra k G) :=
-  x.induction_on (fun g => by show asAlgebraHom _ _ _ = _ <;> ext <;> simp)
+    x • y = (x * y : MonoidAlgebra k G) := -- by
+  -- Porting note: trouble figuring out the motive
+  x.induction_on (p := fun z => z • y = z * y)
+    (fun g => by
+      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
+      sorry
+    )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
     show asAlgebraHom _ _ _ = _ <;> simpa [← hx]
 #align representation.of_mul_action_self_smul_eq_mul Representation.ofMulAction_self_smul_eq_mul
