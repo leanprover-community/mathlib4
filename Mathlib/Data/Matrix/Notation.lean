@@ -472,24 +472,24 @@ theorem smul_vec3 {R : Type _} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
 
 variable [AddCommMonoid α] [Mul α]
 
-theorem vec2_dot_product' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
+theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
   rw [cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty, add_zero]
-#align matrix.vec2_dot_product' Matrix.vec2_dot_product'
+#align matrix.vec2_dot_product' Matrix.vec2_dotProduct'
 
 @[simp]
 theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
-  vec2_dot_product'
+  vec2_dotProduct'
 #align matrix.vec2_dot_product Matrix.vec2_dotProduct
 
-theorem vec3_dot_product' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
+theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
     ![a₀, a₁, a₂] ⬝ᵥ ![b₀, b₁, b₂] = a₀ * b₀ + a₁ * b₁ + a₂ * b₂ := by
   rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
     add_zero, add_assoc]
-#align matrix.vec3_dot_product' Matrix.vec3_dot_product'
+#align matrix.vec3_dot_product' Matrix.vec3_dotProduct'
 
 @[simp]
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
-  vec3_dot_product'
+  vec3_dotProduct'
 #align matrix.vec3_dot_product Matrix.vec3_dotProduct
 
 end Vec2AndVec3
