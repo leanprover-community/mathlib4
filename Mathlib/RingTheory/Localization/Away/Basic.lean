@@ -79,13 +79,13 @@ noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
 #align is_localization.away.lift IsLocalization.Away.lift
 
 @[simp]
-nonrec theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg ((algebraMap R S) a) = g a :=
-  lift_eq _ _
+theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg ((algebraMap R S) a) = g a :=
+  IsLocalization.lift_eq _ _
 #align is_localization.away.away_map.lift_eq IsLocalization.Away.AwayMap.lift_eq
 
 @[simp]
-nonrec theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
-  lift_comp _
+theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
+  IsLocalization.lift_comp _
 #align is_localization.away.away_map.lift_comp IsLocalization.Away.AwayMap.lift_comp
 
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `x * y`
