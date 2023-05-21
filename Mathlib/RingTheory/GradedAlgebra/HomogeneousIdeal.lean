@@ -185,10 +185,7 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
 is the largest homogeneous ideal of `A` contained in `I`. -/
 def Ideal.homogeneousCore : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.homogeneousCore' 𝒜 I,
-    Ideal.homogeneous_span _ _ fun x h => by
-      -- Porting note: Original proof was `rw [Subtype.image_preimage_coe] at h; exact h.2`
-      simp_rw [mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
-      exact h.1⟩
+    Ideal.homogeneous_span _ _ fun _ h => (Subtype.image_preimage_coe _ _ ▸ h).2⟩
 #align ideal.homogeneous_core Ideal.homogeneousCore
 
 theorem Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=
