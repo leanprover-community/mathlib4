@@ -365,7 +365,7 @@ theorem coe_rpow_of_nonneg (x : ℝ≥0) {y : ℝ} (h : 0 ≤ y) : (x : ℝ≥0�
 #align ennreal.coe_rpow_of_nonneg ENNReal.coe_rpow_of_nonneg
 
 theorem coe_rpow_def (x : ℝ≥0) (y : ℝ) :
-    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then (⊤ : ℝ≥0∞) else (x ^ y : ℝ≥0) :=
+    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0∞) :=
   rfl
 #align ennreal.coe_rpow_def ENNReal.coe_rpow_def
 
@@ -548,7 +548,7 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
 
 /-- Bundles `λ x : ℝ≥0∞, x ^ y` into an order isomorphism when `y : ℝ` is positive,
 where the inverse is `λ x : ℝ≥0∞, x ^ (1 / y)`. -/
-@[simps apply]
+@[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
     fun x => by
