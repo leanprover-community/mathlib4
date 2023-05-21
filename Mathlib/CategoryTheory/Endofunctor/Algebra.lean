@@ -156,7 +156,7 @@ theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
       h := by
         rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
-        simp }, Hom.ext _ _ <| by aesop, Hom.ext _ _ <| by aesop⟩⟩ 
+        simp }, Hom.ext _ _ <| by aesop, Hom.ext _ _ <| by aesop⟩⟩
 -- Porting note: `tidy` can't finish
 #align category_theory.endofunctor.algebra.iso_of_iso CategoryTheory.Endofunctor.Algebra.iso_of_iso
 
@@ -262,7 +262,6 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
 namespace Initial
 
 variable {A} (h : @Limits.IsInitial (Algebra F) _ A)
-#check Algebra.mk
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
 def strInv : A.1 ⟶ F.obj A.1 :=

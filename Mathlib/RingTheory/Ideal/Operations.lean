@@ -20,10 +20,6 @@ import Mathlib.RingTheory.NonZeroDivisors
 # More operations on modules and ideals
 -/
 
-
--- Porting note: TODO Erase this line, lean#2074
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w x
 
 open BigOperators Pointwise

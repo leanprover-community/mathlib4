@@ -11,7 +11,6 @@ Authors: Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.Basic
-import Mathlib.Tactic.WLOG
 
 /-!
 # The topology on linearly ordered commutative groups with zero

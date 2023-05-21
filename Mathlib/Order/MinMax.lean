@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.SimpRw
 
 /-!
 # `max` and `min`

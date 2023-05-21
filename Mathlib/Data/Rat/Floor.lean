@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Set
 
 /-!
 # Floor Function for Rational Numbers
