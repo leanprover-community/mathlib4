@@ -771,103 +771,103 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 end ENNReal
 
-section Tactics
+-- section Tactics
 
-/-!
-## Tactic extensions for powers on `ℝ≥0` and `ℝ≥0∞`
--/
+-- /-!
+-- ## Tactic extensions for powers on `ℝ≥0` and `ℝ≥0∞`
+-- -/
 
 
-namespace NormNum
+-- namespace NormNum
 
-theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
-    a ^ b = c := by rw [← h, hb, NNReal.rpow_nat_cast]
-#align norm_num.nnrpow_pos NormNum.nnrpow_pos
+-- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
+--     a ^ b = c := by rw [← h, hb, NNReal.rpow_nat_cast]
+-- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
-theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
-    (hc : c⁻¹ = c') : a ^ (-b) = c' := by rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_nat_cast]
-#align norm_num.nnrpow_neg NormNum.nnrpow_neg
+-- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
+--     (hc : c⁻¹ = c') : a ^ (-b) = c' := by rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_nat_cast]
+-- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
-theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
-    a ^ b = c := by rw [← h, hb, ENNReal.rpow_nat_cast]
-#align norm_num.ennrpow_pos NormNum.ennrpow_pos
+-- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
+--     a ^ b = c := by rw [← h, hb, ENNReal.rpow_nat_cast]
+-- #align norm_num.ennrpow_pos NormNum.ennrpow_pos
 
-theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
-    (hc : c⁻¹ = c') : a ^ (-b) = c' := by
-  rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
-#align norm_num.ennrpow_neg NormNum.ennrpow_neg
+-- theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
+--     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
+--   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
+-- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
-/-- Evaluate `nnreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
-unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
-  prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
-#align norm_num.prove_nnrpow norm_num.prove_nnrpow
+-- /-- Evaluate `nnreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
+--   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
+-- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
-/-- Evaluate `ennreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
-unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
-  prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
-#align norm_num.prove_ennrpow norm_num.prove_ennrpow
+-- /-- Evaluate `ennreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
+--   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
+-- #align norm_num.prove_ennrpow norm_num.prove_ennrpow
 
-/-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
-`b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
-@[norm_num]
-unsafe def eval_nnrpow_ennrpow : expr → tactic (expr × expr)
-  | q(@Pow.pow _ _ NNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_nnrpow a b
-  | q(NNReal.rpow $(a) $(b)) => b.to_int >> prove_nnrpow a b
-  | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_ennrpow a b
-  | q(ENNReal.rpow $(a) $(b)) => b.to_int >> prove_ennrpow a b
-  | _ => tactic.failed
-#align norm_num.eval_nnrpow_ennrpow norm_num.eval_nnrpow_ennrpow
+-- /-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
+-- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
+-- @[norm_num]
+-- unsafe def eval_nnrpow_ennrpow : expr → tactic (expr × expr)
+--   | q(@Pow.pow _ _ NNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_nnrpow a b
+--   | q(NNReal.rpow $(a) $(b)) => b.to_int >> prove_nnrpow a b
+--   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_ennrpow a b
+--   | q(ENNReal.rpow $(a) $(b)) => b.to_int >> prove_ennrpow a b
+--   | _ => tactic.failed
+-- #align norm_num.eval_nnrpow_ennrpow norm_num.eval_nnrpow_ennrpow
 
-end NormNum
+-- end NormNum
 
-namespace Tactic
+-- namespace Tactic
 
-namespace Positivity
+-- namespace Positivity
 
-private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
-  NNReal.rpow_pos ha
-#align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
+-- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
+--   NNReal.rpow_pos ha
+-- #align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
 
-/-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals. -/
-unsafe def prove_nnrpow (a b : expr) : tactic strictness := do
-  let strictness_a ← core a
-  match strictness_a with
-    | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
-    | _ => failed
-#align tactic.positivity.prove_nnrpow tactic.positivity.prove_nnrpow
+-- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals. -/
+-- unsafe def prove_nnrpow (a b : expr) : tactic strictness := do
+--   let strictness_a ← core a
+--   match strictness_a with
+--     | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
+--     | _ => failed
+-- #align tactic.positivity.prove_nnrpow tactic.positivity.prove_nnrpow
 
--- We already know `0 ≤ x` for all `x : ℝ≥0`
-private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
-  ENNReal.rpow_pos_of_nonneg ha hb.le
-#align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
+-- -- We already know `0 ≤ x` for all `x : ℝ≥0`
+-- private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
+--   ENNReal.rpow_pos_of_nonneg ha hb.le
+-- #align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
 
-/-- Auxiliary definition for the `positivity` tactic to handle real powers of extended nonnegative
-reals. -/
-unsafe def prove_ennrpow (a b : expr) : tactic strictness := do
-  let strictness_a ← core a
-  let strictness_b ← core b
-  match strictness_a, strictness_b with
-    | positive pa, positive pb => positive <$> mk_app `` ennrpow_pos [pa, pb]
-    | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
-    | _, _ => failed
-#align tactic.positivity.prove_ennrpow tactic.positivity.prove_ennrpow
+-- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended nonnegative
+-- reals. -/
+-- unsafe def prove_ennrpow (a b : expr) : tactic strictness := do
+--   let strictness_a ← core a
+--   let strictness_b ← core b
+--   match strictness_a, strictness_b with
+--     | positive pa, positive pb => positive <$> mk_app `` ennrpow_pos [pa, pb]
+--     | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
+--     | _, _ => failed
+-- #align tactic.positivity.prove_ennrpow tactic.positivity.prove_ennrpow
 
--- We already know `0 ≤ x` for all `x : ℝ≥0∞`
-end Positivity
+-- -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
+-- end Positivity
 
-open Positivity
+-- open Positivity
 
-/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when the
-base is nonnegative and positive when the base is positive. -/
-@[positivity]
-unsafe def positivity_nnrpow_ennrpow : expr → tactic strictness
-  | q(@Pow.pow _ _ NNReal.Real.hasPow $(a) $(b)) => prove_nnrpow a b
-  | q(NNReal.rpow $(a) $(b)) => prove_nnrpow a b
-  | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => prove_ennrpow a b
-  | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
-  | _ => failed
-#align tactic.positivity_nnrpow_ennrpow tactic.positivity_nnrpow_ennrpow
+-- /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when the
+-- base is nonnegative and positive when the base is positive. -/
+-- @[positivity]
+-- unsafe def positivity_nnrpow_ennrpow : expr → tactic strictness
+--   | q(@Pow.pow _ _ NNReal.Real.hasPow $(a) $(b)) => prove_nnrpow a b
+--   | q(NNReal.rpow $(a) $(b)) => prove_nnrpow a b
+--   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => prove_ennrpow a b
+--   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
+--   | _ => failed
+-- #align tactic.positivity_nnrpow_ennrpow tactic.positivity_nnrpow_ennrpow
 
-end Tactic
+-- end Tactic
 
-end Tactics
+-- end Tactics
