@@ -240,7 +240,7 @@ partial def addEdge (p : Expr) : SCCM Unit := do
   | ~q((($v₀ : Prop)) → $v₁) => do
     let ⟨g, _⟩ ← getState
     let xs := (g.find? v₀).getD []
-    let xs' := (g.find? v₁).getD [ ]
+    let xs' := (g.find? v₁).getD []
     modifyState fun ⟨g, vi⟩ => ⟨g.insert v₀ ((v₁, p) :: xs) |>.insert v₁ xs', vi⟩
   | ~q($v₀ ↔ $v₁) => do
     let p : Q($v₀ ↔ $v₁) := p
