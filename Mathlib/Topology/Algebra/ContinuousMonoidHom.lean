@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Circle
-import Mathbin.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Complex.Circle
+import Mathlib.Topology.ContinuousFunction.Algebra
 
 /-!
 
@@ -100,8 +100,7 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B
-    where
+instance : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -255,8 +254,7 @@ def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
 #align continuous_add_monoid_hom.coprod ContinuousAddMonoidHom.coprod
 
 @[to_additive]
-instance : CommGroup (ContinuousMonoidHom A E)
-    where
+instance : CommGroup (ContinuousMonoidHom A E) where
   mul f g := (mul E).comp (f.Prod g)
   mul_comm f g := ext fun x => mul_comm (f x) (g x)
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
@@ -297,8 +295,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
               ⋃ (x) (y) (U) (V) (W) (hU : IsOpen U) (hV : IsOpen V) (hW : IsOpen W) (h :
                 Disjoint (U * V) W),
-                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W })ᶜ
-        by
+                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W })ᶜ by
         rw [this, compl_compl]
         refine' (ContinuousMap.isOpen_gen isCompact_singleton isOpen_compl_singleton).union _
         repeat' apply isOpen_iUnion; intro
@@ -383,8 +380,7 @@ variable (E)
 /-- `continuous_monoid_hom _ f` is a functor. -/
 @[to_additive "`continuous_add_monoid_hom _ f` is a functor."]
 def compLeft (f : ContinuousMonoidHom A B) :
-    ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E)
-    where
+    ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
   map_one' := rfl
   map_mul' g h := rfl
@@ -398,8 +394,7 @@ variable (A) {E}
 @[to_additive "`continuous_add_monoid_hom f _` is a functor."]
 def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
-    ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E)
-    where
+    ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
   map_one' := ext fun a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
@@ -457,8 +452,7 @@ variable (A B C D E)
 /-- `continuous_monoid_hom.dual` as a `continuous_monoid_hom`. -/
 noncomputable def mapHom [LocallyCompactSpace E] :
     ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A))
-    where
+      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
   map_mul' := map_mul
