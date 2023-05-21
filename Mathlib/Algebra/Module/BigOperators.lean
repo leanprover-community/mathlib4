@@ -32,7 +32,7 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 #align multiset.sum_smul Multiset.sum_smul
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
-    s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
+    s.sum • t.sum = ((s ×ᵐˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
   induction' s using Multiset.induction with a s ih
   · simp
   · simp [add_smul, ih, ← Multiset.smul_sum]
@@ -44,7 +44,7 @@ theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
 
 -- Porting note: changed `×ˢ` to `xᶠ` in the statement of the theorem to fix ambiguous notation
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
-    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ᶠ t, f p.fst • g p.snd := by
+    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ᶠˢ t, f p.fst • g p.snd := by
   rw [Finset.sum_product, Finset.sum_smul, Finset.sum_congr rfl]
   intros
   rw [Finset.smul_sum]

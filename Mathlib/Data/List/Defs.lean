@@ -353,7 +353,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 /-- Notation for calculating the product of a `List`
 -/
 -- This notation binds more strongly than (pre)images, unions and intersections.
-infixr:82 " ×ˢ " => List.product
+infixr:82 " ×ˡ " => List.product
 #align list.sigma List.sigma
 #align list.of_fn List.ofFn
 #align list.of_fn_nth_val List.ofFnNthVal

@@ -112,7 +112,7 @@ instance punit : FinEnum PUnit :=
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
-  ofList (toList α ×ˢ toList β) fun x => by cases x ; simp
+  ofList (toList α ×ˡ toList β) fun x => by cases x ; simp
 #align fin_enum.prod FinEnum.prod
 
 instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (Sum α β) :=
