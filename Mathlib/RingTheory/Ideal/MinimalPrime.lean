@@ -133,7 +133,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
   have : RingHom.ker (Ideal.Quotient.mk <| RingHom.ker f') ≤ p := by
     rw [Ideal.mk_ker, e]
     exact H.1.2
-  suffices map (Quotient.mk (RingHom.ker f')) p ∈ minimalPrimes (R ⧸ RingHom.ker f') by
+  suffices _ by
     have ⟨p', hp₁, hp₂⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
       (RingHom.kerLift_injective f') (p.map <| Ideal.Quotient.mk <| RingHom.ker f') this
     refine' ⟨p'.comap <| Ideal.Quotient.mk I, Ideal.IsPrime.comap _, _, _⟩
