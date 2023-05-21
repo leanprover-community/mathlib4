@@ -150,7 +150,7 @@ section LatticeOps
 variable {ι : Sort _} {𝕜 E F : Type _} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
   [AddCommMonoid F] [Module 𝕜 F]
 
-theorem locallyConvexSpacesInf {ts : Set (TopologicalSpace E)}
+theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
     (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (sInf ts) := by
   letI : TopologicalSpace E := sInf ts
   refine'
@@ -160,23 +160,23 @@ theorem locallyConvexSpacesInf {ts : Set (TopologicalSpace E)}
       (fun x => _) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
   exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
-#align locally_convex_space_Inf locallyConvexSpacesInf
+#align locally_convex_space_Inf locallyConvexSpace_sInf
 
-theorem locallyConvexSpaceiInf {ts' : ι → TopologicalSpace E}
+theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
-  refine' locallyConvexSpacesInf _
+  refine' locallyConvexSpace_sInf _
   rwa [forall_range_iff]
-#align locally_convex_space_infi locallyConvexSpaceiInf
+#align locally_convex_space_infi locallyConvexSpace_iInf
 
-theorem locallyConvexSpaceInf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
+theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
     (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine' locallyConvexSpaceiInf fun b => _
+  refine' locallyConvexSpace_iInf fun b => _
   cases b <;> assumption
-#align locally_convex_space_inf locallyConvexSpaceInf
+#align locally_convex_space_inf locallyConvexSpace_inf
 
-theorem locallyConvexSpaceInduced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
+theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ (t.induced f) := by
   letI : TopologicalSpace E := t.induced f
   refine' LocallyConvexSpace.ofBases 𝕜 E (fun _ => preimage f)
@@ -184,16 +184,18 @@ theorem locallyConvexSpaceInduced {t : TopologicalSpace F} [LocallyConvexSpace �
     hs.linear_preimage f
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
-#align locally_convex_space_induced locallyConvexSpaceInduced
+#align locally_convex_space_induced locallyConvexSpace_induced
 
-instance {ι : Type _} {X : ι → Type _} [∀ i, AddCommMonoid (X i)] [∀ i, TopologicalSpace (X i)]
-    [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] : LocallyConvexSpace 𝕜 (∀ i, X i) :=
-  locallyConvexSpaceiInf fun i => locallyConvexSpaceInduced (LinearMap.proj i)
+instance Pi.locallyConvexSpace {ι : Type _} {X : ι → Type _} [∀ i, AddCommMonoid (X i)]
+    [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
+    LocallyConvexSpace 𝕜 (∀ i, X i) :=
+  locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)
 
-set_option maxHeartbeats 2000000 in
-instance [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
+instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
-  locallyConvexSpaceInf (locallyConvexSpaceInduced (LinearMap.fst _ _ _))
-    (locallyConvexSpaceInduced (LinearMap.snd _ _ _))
+-- Porting note : had to specify `t₁` and `t₂`
+  locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
+    (locallyConvexSpace_induced (LinearMap.fst _ _ _))
+    (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 
 end LatticeOps
