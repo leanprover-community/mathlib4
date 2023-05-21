@@ -160,8 +160,8 @@ theorem ext_iff {f g : MultilinearMap R M₁ M₂} : f = g ↔ ∀ x, f x = g x 
 #align multilinear_map.ext_iff MultilinearMap.ext_iff
 
 @[simp]
-theorem mk_coe (f : MultilinearMap R M₁ M₂) (h₁ h₂) : (⟨f, h₁, h₂⟩ : MultilinearMap R M₁ M₂) = f :=
-  by
+theorem mk_coe (f : MultilinearMap R M₁ M₂) (h₁ h₂) :
+    (⟨f, h₁, h₂⟩ : MultilinearMap R M₁ M₂) = f := by
   ext
   rfl
 #align multilinear_map.mk_coe MultilinearMap.mk_coe
@@ -1269,9 +1269,8 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 #align multilinear_map.curry_left_apply MultilinearMap.curryLeft_apply
 
 @[simp]
-theorem LinearMap.curry_uncurryLeft
-    (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f :=
-  by
+theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
+    Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
   ext (m x)
   simp only [tail_cons, LinearMap.uncurryLeft_apply, MultilinearMap.curryLeft_apply]
   rw [cons_zero]

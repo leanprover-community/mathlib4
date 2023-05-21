@@ -19,6 +19,12 @@ This file defines a bunch of functions for the `String` datatype.
 
 namespace String
 
+#align string.split_on String.splitOn
+#align string.is_prefix_of String.isPrefixOf
+#align string.starts_with String.startsWith
+#align string.ends_with String.endsWith
+#align string.is_nat String.isNat
+
 /-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
 def leftpad (n : Nat) (c : Char) (s : String) : String :=
@@ -77,10 +83,7 @@ def getRest (s t : String) : Option String :=
   List.asString <$> s.toList.getRest t.toList
 #align string.get_rest String.getRest
 
-/-- Removes the first `n` elements from the string `s`. -/
-def popn (s : String) (n : Nat) : String :=
-  ⟨s.toList.drop n⟩
-#align string.popn String.popn
+#align string.popn String.drop
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=

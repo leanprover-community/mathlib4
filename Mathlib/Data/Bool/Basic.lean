@@ -323,8 +323,8 @@ instance linearOrder : LinearOrder Bool where
   le_trans := by unfold LE.le; decide
   le_antisymm := by unfold LE.le Preorder.toLE; decide
   le_total := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; decide
-  decidable_le := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
-  decidable_eq := inferInstance
+  decidableLE := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
+  decidableEq := inferInstance
   max := or
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and

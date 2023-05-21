@@ -59,19 +59,16 @@ variable {R : Type v} [CommRing R]
 -- mathport name: «exprε »
 local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 
-set_option synthInstance.etaExperiment true in
 /-- `det` is an `AlternatingMap` in the rows of the matrix. -/
 def detRowAlternating : AlternatingMap R (n → R) R n :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 #align matrix.det_row_alternating Matrix.detRowAlternating
 
-set_option synthInstance.etaExperiment true in
 /-- The determinant of a matrix given by the Leibniz formula. -/
 abbrev det (M : Matrix n n R) : R :=
   detRowAlternating M
 #align matrix.det Matrix.det
 
-set_option synthInstance.etaExperiment true in
 theorem det_apply (M : Matrix n n R) : M.det = ∑ σ : Perm n, Equiv.Perm.sign σ • ∏ i, M (σ i) i :=
   MultilinearMap.alternatization_apply _ M
 #align matrix.det_apply Matrix.det_apply
@@ -94,7 +91,6 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   · simp
 #align matrix.det_diagonal Matrix.det_diagonal
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_zero (_ : Nonempty n) : det (0 : Matrix n n R) = 0 :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_zero
@@ -126,8 +122,8 @@ theorem det_unique {n : Type _} [Unique n] [DecidableEq n] [Fintype n] (A : Matr
     det A = A default default := by simp [det_apply, univ_unique]
 #align matrix.det_unique Matrix.det_unique
 
-theorem det_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) : det A = A k k :=
-  by
+theorem det_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
+    det A = A k k := by
   have := uniqueOfSubsingleton k
   convert det_unique A
 #align matrix.det_eq_elem_of_subsingleton Matrix.det_eq_elem_of_subsingleton
@@ -154,6 +150,8 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
       mul_swap_involutive i j σ
 #align matrix.det_mul_aux Matrix.det_mul_aux
 
+-- Porting note: need to bump for last simp; new after #3414 (reenableeta)
+set_option maxHeartbeats 300000 in
 @[simp]
 theorem det_mul (M N : Matrix n n R) : det (M ⬝ N) = det M * det N :=
   calc
@@ -241,7 +239,6 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   simp
 #align matrix.det_transpose Matrix.det_transpose
 
-set_option synthInstance.etaExperiment true in
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
     (Matrix.det fun i => M (σ i)) = Perm.sign σ * M.det :=
@@ -250,8 +247,8 @@ theorem det_permute (σ : Perm n) (M : Matrix n n R) :
 
 /-- Permuting rows and columns with the same equivalence has no effect. -/
 @[simp]
-theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) : det (A.submatrix e e) = det A :=
-  by
+theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
+    det (A.submatrix e e) = det A := by
   rw [det_apply', det_apply']
   apply Fintype.sum_equiv (Equiv.permCongr e)
   intro σ
@@ -314,7 +311,6 @@ theorem det_mul_row (v : n → R) (A : Matrix n n R) :
     _ = (∏ i, v i) * det A := by rw [det_mul, det_diagonal, mul_comm]
 #align matrix.det_mul_row Matrix.det_mul_row
 
-set_option synthInstance.etaExperiment true in
 /-- Multiplying each column by a fixed `v j` multiplies the determinant by
 the product of the `v`s. -/
 theorem det_mul_column (v : n → R) (A : Matrix n n R) :
@@ -353,7 +349,6 @@ theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra
 
 end HomMap
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
   ((starRingEnd R).map_det _).symm.trans <| congr_arg star M.det_transpose
@@ -368,20 +363,18 @@ Prove that a matrix with a repeated column has determinant equal to zero.
 -/
 
 
-set_option synthInstance.etaExperiment true in
 theorem det_eq_zero_of_row_eq_zero {A : Matrix n n R} (i : n) (h : ∀ j, A i j = 0) : det A = 0 :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_coord_zero i (funext h)
 #align matrix.det_eq_zero_of_row_eq_zero Matrix.det_eq_zero_of_row_eq_zero
 
-theorem det_eq_zero_of_column_eq_zero {A : Matrix n n R} (j : n) (h : ∀ i, A i j = 0) : det A = 0 :=
-  by
+theorem det_eq_zero_of_column_eq_zero {A : Matrix n n R} (j : n) (h : ∀ i, A i j = 0) :
+    det A = 0 := by
   rw [← det_transpose]
   exact det_eq_zero_of_row_eq_zero j h
 #align matrix.det_eq_zero_of_column_eq_zero Matrix.det_eq_zero_of_column_eq_zero
 
 variable {M : Matrix n n R} {i j : n}
 
-set_option synthInstance.etaExperiment true in
 /-- If a matrix has a repeated row, the determinant will be zero. -/
 theorem det_zero_of_row_eq (i_ne_j : i ≠ j) (hij : M i = M j) : M.det = 0 :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_eq_zero_of_eq M hij i_ne_j
@@ -395,7 +388,6 @@ theorem det_zero_of_column_eq (i_ne_j : i ≠ j) (hij : ∀ k, M k i = M k j) : 
 
 end DetZero
 
-set_option synthInstance.etaExperiment true in
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateRow M j <| u + v) = det (updateRow M j u) + det (updateRow M j v) :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_add M j u v
@@ -407,7 +399,6 @@ theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
   simp [updateRow_transpose, det_transpose]
 #align matrix.det_update_column_add Matrix.det_updateColumn_add
 
-set_option synthInstance.etaExperiment true in
 theorem det_updateRow_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow M j <| s • u) = s * det (updateRow M j u) :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_smul M j s u
@@ -419,7 +410,6 @@ theorem det_updateColumn_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
   simp [updateRow_transpose, det_transpose]
 #align matrix.det_update_column_smul Matrix.det_updateColumn_smul
 
-set_option synthInstance.etaExperiment true in
 theorem det_updateRow_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
   MultilinearMap.map_update_smul _ M j s u
@@ -743,16 +733,12 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]
   calc
     ((-1 * Perm.sign σ : ℤ) • ∏ i', A (Perm.decomposeFin.symm (Fin.succ i, σ) i') i') =
-        (-1 * Perm.sign σ : ℤ) •
-          (A (Fin.succ i) 0 * ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) :=
-      by
+        (-1 * Perm.sign σ : ℤ) • (A (Fin.succ i) 0 *
+          ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
       simp only [Fin.prod_univ_succ, Fin.succAbove_cycleRange,
         Equiv.Perm.decomposeFin_symm_apply_zero, Equiv.Perm.decomposeFin_symm_apply_succ]
-    _ =
-        -1 *
-          (A (Fin.succ i) 0 *
-            (Perm.sign σ : ℤ) •
-              ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
+    _ = -1 * (A (Fin.succ i) 0 * (Perm.sign σ : ℤ) •
+        ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
       simp [mul_assoc, mul_comm, _root_.neg_mul, one_mul, zsmul_eq_mul, neg_inj, neg_smul,
         Fin.succAbove_cycleRange, mul_left_comm]
 #align matrix.det_succ_column_zero Matrix.det_succ_column_zero
@@ -775,7 +761,6 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
     calc
       det A = ↑((-1 : ℤˣ) ^ (i : ℕ) * (-1 : ℤˣ) ^ (i : ℕ) : ℤˣ) * det A := by simp
       _ = (-1 : R) ^ (i : ℕ) * (Perm.sign i.cycleRange⁻¹) * det A := by simp [-Int.units_mul_self]
-
   rw [this, mul_assoc]
   congr
   rw [← det_permute, det_succ_row_zero]

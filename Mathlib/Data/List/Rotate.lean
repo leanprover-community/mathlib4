@@ -77,14 +77,11 @@ theorem rotate'_eq_drop_append_take :
         drop_append_of_le_length hnl, take_append_of_le_length hnl]; simp
 #align list.rotate'_eq_drop_append_take List.rotate'_eq_drop_append_take
 
--- Porting note: Added termination_by and decreasing_by as recursion fails
 theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m = l.rotate' (n + m)
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
     rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ]
-    simp
-  termination_by rotate'_rotate' l n _ => (l.length, n)
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -92,7 +89,6 @@ theorem rotate'_length (l : List α) : rotate' l l.length = l := by
   rw [rotate'_eq_drop_append_take le_rfl]; simp
 #align list.rotate'_length List.rotate'_length
 
--- Porting note: Added termination_by and decreasing_by as recursion fails
 @[simp]
 theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n) = l
   | 0 => by simp
@@ -180,8 +176,7 @@ theorem rotate_length_mul (l : List α) (n : ℕ) : l.rotate (l.length * n) = l 
 theorem prod_rotate_eq_one_of_prod_eq_one [Group α] :
     ∀ {l : List α} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
   | [], _, _ => by simp
-  | a :: l, hl, n =>
-    by
+  | a :: l, hl, n => by
     have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
     rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl;
       rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq, ←
@@ -223,8 +218,8 @@ theorem rotate_singleton (x : α) (n : ℕ) : [x].rotate n = [x] :=
 #align list.rotate_singleton List.rotate_singleton
 
 theorem zipWith_rotate_distrib {α β γ : Type _} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
-    (h : l.length = l'.length) : (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) :=
-  by
+    (h : l.length = l'.length) :
+    (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
     rotate_eq_drop_append_take_mod, h, zipWith_append, ← zipWith_distrib_drop, ←
     zipWith_distrib_take, List.length_zipWith, h, min_self]

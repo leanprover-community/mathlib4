@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -450,6 +449,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), ⊥, (a₃ : α) => inf_le_left
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
+
+-- porting note: added, previously this was found via unfolding `WithBot`
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
@@ -1209,6 +1211,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
       | (a₁ : α), ⊤, (a₃ : α) => le_rfl
       | (a₁ : α), (a₂ : α), ⊤ => le_rfl
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
+
+-- porting note: added, previously this was found via unfolding `WithTop`
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
