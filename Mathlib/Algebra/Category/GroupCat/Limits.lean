@@ -316,7 +316,7 @@ set_option linter.uppercaseLean3 false in
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommGroupCat.{max v u}
   where has_limits_of_shape _ _ :=
   { has_limit := fun F => hasLimit_of_created F
-    (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) }
+      (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_limits_of_size CommGroupCat.hasLimitsOfSize
 set_option linter.uppercaseLean3 false in
