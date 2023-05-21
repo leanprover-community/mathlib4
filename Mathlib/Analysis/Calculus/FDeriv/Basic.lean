@@ -291,9 +291,7 @@ theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivW
 
 end DerivativeUniqueness
 
-#exit
-
-section FderivProperties
+section FDerivProperties
 
 /-! ### Basic properties of the derivative -/
 
@@ -447,14 +445,14 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDe
 #align has_strict_fderiv_at.exists_lipschitz_on_with_of_nnnorm_lt HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt
 
 /-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
-neighborhood of `x`. See also `has_strict_fderiv_at.exists_lipschitz_on_with_of_nnnorm_lt` for a
+neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
 more precise statement. -/
 theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x) :
     ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
   (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
 #align has_strict_fderiv_at.exists_lipschitz_on_with HasStrictFDerivAt.exists_lipschitzOnWith
 
-/-- Directional derivative agrees with `has_fderiv`. -/
+/-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type _} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
@@ -545,10 +543,11 @@ theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
-theorem FderivAt.le_of_lip {f : E → F} {x₀ : E} (hf : DifferentiableAt 𝕜 f x₀) {s : Set E}
-    (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
+-- Porting note: renamed so that dot-notation makes sense
+theorem DifferentiableAt.le_of_lip {f : E → F} {x₀ : E} (hf : DifferentiableAt 𝕜 f x₀)
+    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
   hf.hasFDerivAt.le_of_lip hs hlip
-#align fderiv_at.le_of_lip FderivAt.le_of_lip
+#align fderiv_at.le_of_lip DifferentiableAt.le_of_lip
 
 theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
@@ -725,7 +724,9 @@ theorem HasFDerivAt.isBigO {f : E → F} {x₀ : E} {f' : E →L[𝕜] F} (h : H
 set_option linter.uppercaseLean3 false in
 #align has_fderiv_at.is_O HasFDerivAt.isBigO
 
-end FderivProperties
+#exit
+
+end FDerivProperties
 
 section Continuous
 
@@ -1030,7 +1031,7 @@ end id
 
 section Const
 
-/-! ### derivative of a constant function -/
+/-! ### Derivative of a constant function -/
 
 
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
