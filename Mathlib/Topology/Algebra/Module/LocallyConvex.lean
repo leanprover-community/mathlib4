@@ -190,6 +190,7 @@ instance Pi.locallyConvexSpace {ι : Type _} {X : ι → Type _} [∀ i, AddComm
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=
   locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)
+#align pi.locally_convex_space Pi.locallyConvexSpace
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
@@ -197,5 +198,6 @@ instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [Loca
   locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
+#align prod.locally_convex_space Prod.locallyConvexSpace
 
 end LatticeOps
