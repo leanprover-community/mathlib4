@@ -33,6 +33,7 @@ import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.Injective
+import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Zero
@@ -50,6 +51,7 @@ import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.LocalRing
+import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
@@ -1578,6 +1580,7 @@ import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Block
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -1662,6 +1665,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.Floor
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
