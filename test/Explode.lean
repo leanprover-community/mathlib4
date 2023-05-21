@@ -3,23 +3,19 @@ import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
 open Lean
 
-elab "#explode_test " theoremStx:ident : command => do
+elab "#explode_test " theoremStx:ident : command => Elab.Command.liftTermElabM do
   let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
-  Elab.Command.liftCoreM do
-    Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.explode body true 0 default
-      let md : MessageData ← Mathlib.Explode.entriesToMd results
-      let str := toString (← md.format)
+  let results ← Mathlib.Explode.explode body true 0 default
+  let md : MessageData ← Mathlib.Explode.entriesToMd results
+  let str := toString (← md.format)
 
-      let docString ← findDocString? (← getEnv) theoremName
-      if let some ds := docString then
-        if str == ds then
-          Lean.logInfo s!"✅ {theoremName} success"
-        else
-          Lean.logError s!"❌ {theoremName} in docstring:\n\n{ds}\n❌ {theoremName} actual:\n\n{str}"
-      else
-        Lean.logError s!"❌ {theoremName}: no docstring"
+  let some ds ← findDocString? (← getEnv) theoremName
+    | throwError s!"❌ {theoremName}: no docstring"
+  if str == ds then
+    Lean.logInfo s!"✅ {theoremName} success"
+  else
+    Lean.logError s!"❌ {theoremName} in docstring:\n\n{ds}\n❌ {theoremName} actual:\n\n{str}"
 
 /--
 0│   │ a  ├ True

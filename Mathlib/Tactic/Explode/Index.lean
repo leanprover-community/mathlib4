@@ -25,7 +25,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
   | .lam varName varType body binderInfo => do
     trace[explode] ".lam"
     Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
-      let body := Expr.instantiate1 body.cleanupAnnotations arg
+      let body' := Expr.instantiate1 body.cleanupAnnotations arg
       let entries_1 := entries.add arg
         { type    := ← addMessageContext <| ← Meta.inferType arg
           line    := entries.size
@@ -34,7 +34,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
           thm     := ← addMessageContext <| arg
           deps    := [] }
 
-      let entries_2 ← explode body si (if si then depth else depth + 1) entries_1
+      let entries_2 ← explode body' si (if si then depth else depth + 1) entries_1
 
       let entries_3 := entries_2.add e
         { type    := ← addMessageContext <| ← Meta.inferType e
@@ -44,7 +44,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
           thm     := if (← Meta.inferType e).isArrow then "→I" else "∀I"
           deps    := if si
             then [entries.size, entries_2.size - 1]
-            else ← appendDep entries_2 arg (← appendDep entries_2 body []) }
+            else ← appendDep entries_2 arg (← appendDep entries_2 body' []) }
 
       return entries_3
   | .app .. => do
@@ -80,10 +80,10 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
 
     return entries_3
   | .letE .. => do
-    trace[explode] "auxilliary - strip .letE"
+    trace[explode] "auxiliary - strip .letE"
     explode (reduceLets e) si depth entries
   | .mdata _ expr => do
-    trace[explode] "auxilliary - strip .mdata"
+    trace[explode] "auxiliary - strip .mdata"
     explode expr si depth entries
   | _ => do
     -- Right now all of these are caught by the default case.
@@ -162,12 +162,9 @@ the proof will be introduced in a group and the indentation will stay fixed. (Th
 brackets are only needed in order to delimit the scope of assumptions, and these assumptions
 have global scope anyway so detailed tracking is not necessary.)
 -/
-elab "#explode " theoremStx:ident : command => do
+elab "#explode " theoremStx:ident : command => Elab.Command.liftTermElabM do
   let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
-
-  Elab.Command.liftCoreM do
-    Meta.MetaM.run' do
-      let results ← Mathlib.Explode.explode body true 0 default
-      let fitchTable : MessageData ← Mathlib.Explode.entriesToMd results
-      Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")
+  let results ← Mathlib.Explode.explode body true 0 default
+  let fitchTable : MessageData ← Mathlib.Explode.entriesToMd results
+  Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")

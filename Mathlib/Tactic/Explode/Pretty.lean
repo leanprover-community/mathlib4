@@ -20,8 +20,8 @@ namespace Mathlib.Explode
 Given a list of `MessageData`s, make them of equal length.
 We need this in order to form columns in our Fitch table.
 
-```
-  padRight ["hi", "hello"] -- ["hi   ", "hello"]
+```lean
+padRight ["hi", "hello"] = ["hi   ", "hello"]
 ```
 -/
 def padRight (mds : List MessageData) : MetaM (List MessageData) := do
@@ -31,11 +31,11 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
     maxLength := max maxLength (← md.toString).length
 
   -- 2. Pad all words in a list with " "
-  let mut paddedMds := []
-  for md in mds do
+  let pad (md : MessageData) : MetaM MessageData := do
     let padWidth : Nat := maxLength - (← md.toString).length
-    paddedMds := (md ++ String.replicate padWidth ' ') :: paddedMds
-  return paddedMds.reverse
+    return md ++ String.replicate padWidth ' '
+
+  mds.mapM pad
 
 /-- Render a particular row of the Fitch table. -/
 def rowToMd :
