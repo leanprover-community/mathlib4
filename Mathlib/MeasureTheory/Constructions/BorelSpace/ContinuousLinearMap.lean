@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.FiniteDimension
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurable functions in normed spaces
