@@ -712,19 +712,17 @@ theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀]
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.has_fderiv_at Asymptotics.IsBigO.hasFDerivAt
 
-theorem HasFDerivWithinAt.isBigO {f : E → F} {s : Set E} {x₀ : E} {f' : E →L[𝕜] F}
+nonrec theorem HasFDerivWithinAt.isBigO {f : E → F} {s : Set E} {x₀ : E} {f' : E →L[𝕜] F}
     (h : HasFDerivWithinAt f f' s x₀) : (fun x => f x - f x₀) =O[𝓝[s] x₀] fun x => x - x₀ := by
   simpa only [sub_add_cancel] using h.isBigO.add (isBigO_sub f' (𝓝[s] x₀) x₀)
 set_option linter.uppercaseLean3 false in
 #align has_fderiv_within_at.is_O HasFDerivWithinAt.isBigO
 
-theorem HasFDerivAt.isBigO {f : E → F} {x₀ : E} {f' : E →L[𝕜] F} (h : HasFDerivAt f f' x₀) :
+nonrec theorem HasFDerivAt.isBigO {f : E → F} {x₀ : E} {f' : E →L[𝕜] F} (h : HasFDerivAt f f' x₀) :
     (fun x => f x - f x₀) =O[𝓝 x₀] fun x => x - x₀ := by
   simpa only [sub_add_cancel] using h.isBigO.add (isBigO_sub f' (𝓝 x₀) x₀)
 set_option linter.uppercaseLean3 false in
 #align has_fderiv_at.is_O HasFDerivAt.isBigO
-
-#exit
 
 end FDerivProperties
 
