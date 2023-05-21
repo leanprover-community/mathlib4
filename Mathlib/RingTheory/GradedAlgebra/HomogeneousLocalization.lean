@@ -260,7 +260,8 @@ section SMul
 
 variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
 
-instance : SMul α (NumDenSameDeg 𝒜 x) where smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
+instance : SMul α (NumDenSameDeg 𝒜 x) where
+  smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
 
 @[simp]
 theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
@@ -332,7 +333,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
     (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
           simp only [num_pow, den_pow]
-          convert congr_arg (fun z => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
+          convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
         HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
       z
 #align homogeneous_localization.has_pow HomogeneousLocalization.hasPow
@@ -344,11 +345,10 @@ variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
-  smul m :=
-    Quotient.map' ((· • ·) m) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
-      change Localization.mk _ _ = Localization.mk _ _
-      simp only [num_smul, den_smul]
-      convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
+  smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+    change Localization.mk _ _ = Localization.mk _ _
+    simp only [num_smul, den_smul]
+    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
 
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
@@ -363,11 +363,10 @@ theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val =
 end SMul
 
 instance : Neg (HomogeneousLocalization 𝒜 x) where
-  neg :=
-    Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
-      change Localization.mk _ _ = Localization.mk _ _
-      simp only [num_neg, den_neg, ← Localization.neg_mk]
-      exact congr_arg (fun c => -c) h
+  neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+    change Localization.mk _ _ = Localization.mk _ _
+    simp only [num_neg, den_neg, ← Localization.neg_mk]
+    exact congr_arg Neg.neg h
 
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
@@ -476,8 +475,7 @@ theorem int_cast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
 
 instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
   (HomogeneousLocalization.val_injective x).commRing _ zero_val one_val add_val mul_val neg_val
-    sub_val (fun z n => smul_val x z n) (fun z n => smul_val x z n) pow_val nat_cast_val
-    int_cast_val
+    sub_val (smul_val x · ·) (smul_val x · ·) pow_val nat_cast_val int_cast_val
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
 
 instance homogeneousLocalizationAlgebra :
@@ -531,7 +529,7 @@ theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ := by
   have := Quotient.out_eq' f
-  apply_fun HomogeneousLocalization.val  at this
+  apply_fun HomogeneousLocalization.val at this
   rw [← this]
   simp only [Quotient.liftOn'_mk'']
   rfl
@@ -563,8 +561,8 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
     induction' b using Localization.induction_on with data
     rcases data with ⟨a, ⟨b, hb⟩⟩
     dsimp only at eq0 eq1
-    have b_f_den_not_mem : b * f.den ∈ 𝔭.primeCompl := fun r =>
-      Or.elim (Ideal.IsPrime.mem_or_mem inferInstance r) (fun r2 => hb r2) fun r2 => f.den_mem r2
+    have b_f_den_not_mem : b * f.den ∈ 𝔭.primeCompl :=
+      fun r => Or.elim (Ideal.IsPrime.mem_or_mem inferInstance r) (hb ·) (f.den_mem ·)
     rw [f.eq_num_div_den, Localization.mk_mul,
       show (⟨b, hb⟩ : 𝔭.primeCompl) * ⟨f.den, _⟩ = ⟨b * f.den, _⟩ from rfl,
       show (1 : Localization.AtPrime 𝔭) = Localization.mk 1 1 by erw [Localization.mk_self 1],
@@ -578,14 +576,12 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
       contrapose! mem1
       erw [Classical.not_not]
       exact Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ mem1)
-    refine'
-            ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _,
-                _⟩,
-              rfl⟩ <;>
-          simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den,
-            Localization.mk_mul, one_val] <;>
-        convert Localization.mk_self _ <;>
-      simpa only [mul_comm] ,
+    refine' ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
+        rfl⟩
+      <;> simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den, Localization.mk_mul, one_val]
+      <;> convert Localization.mk_self (M := A) _
+      <;> rw [mul_comm]
+      <;> rfl ,
     fun ⟨⟨_, b, eq1, eq2⟩, rfl⟩ => by
     simp only [ext_iff_val, mul_val, one_val] at eq1 eq2
     exact ⟨⟨f.val, b.val, eq1, eq2⟩, rfl⟩⟩
@@ -605,15 +601,16 @@ instance : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
         a.den_mem (sub_add_cancel a.den.val a.num.val ▸ Ideal.add_mem _ h mem1 : a.den.1 ∈ 𝔭)
       apply isUnit_of_mul_eq_one _ (Localization.mk a.den.1 ⟨a.den.1 - a.num.1, this⟩)
       simp only [sub_mul, Localization.mk_mul, one_mul, Localization.sub_mk, Submonoid.coe_mul]
-      convert Localization.mk_self _
-      simp only [← Subtype.val_eq_coe, Submonoid.coe_mul]
+      convert Localization.mk_self (M := A) _
+      simp only [Submonoid.coe_mul]
       ring
     · left
       change _ ∈ 𝔭.primeCompl at mem1
       apply isUnit_of_mul_eq_one _ (Localization.mk a.den.1 ⟨a.num.1, mem1⟩)
       rw [Localization.mk_mul]
-      convert Localization.mk_self _
-      simpa only [mul_comm]
+      convert Localization.mk_self (M := A) _
+      rw [mul_comm]
+      rfl
 
 end
 
