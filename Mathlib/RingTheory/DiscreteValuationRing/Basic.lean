@@ -396,8 +396,6 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 /-!
 ## The additive valuation on a DVR
 -/
-
-
 open multiplicity
 
 /-- The `PartENat`-valued additive valuation on a DVR. -/
@@ -406,9 +404,8 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuati
   addValuation (Classical.choose_spec (exists_prime R))
 #align discrete_valuation_ring.add_val DiscreteValuationRing.addVal
 
--- Porting note: Added `: PartENat` and `show PartENat from` to all the theorems below.
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
-    addVal R r = (n : PartENat) := by
+    addVal R r = n := by
   rw [addVal, addValuation_apply, hr, eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
@@ -416,42 +413,42 @@ theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (
 #align discrete_valuation_ring.add_val_def DiscreteValuationRing.addVal_def
 
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
-    addVal R ((u : R) * ϖ ^ n) = (n : PartENat) :=
+    addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl
 #align discrete_valuation_ring.add_val_def' DiscreteValuationRing.addVal_def'
 
 @[simp]
-theorem addVal_zero : addVal R 0 = (⊤ : PartENat) :=
+theorem addVal_zero : addVal R 0 = ⊤ :=
   (addVal R).map_zero
 #align discrete_valuation_ring.add_val_zero DiscreteValuationRing.addVal_zero
 
 @[simp]
-theorem addVal_one : addVal R 1 = (0 : PartENat) :=
+theorem addVal_one : addVal R 1 = 0 :=
   (addVal R).map_one
 #align discrete_valuation_ring.add_val_one DiscreteValuationRing.addVal_one
 
 @[simp]
-theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = (1 : PartENat) := by
+theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := by
   simpa only [one_mul, eq_self_iff_true, Units.val_one, pow_one, forall_true_left, Nat.cast_one]
     using addVal_def ϖ 1 hϖ 1
 #align discrete_valuation_ring.add_val_uniformizer DiscreteValuationRing.addVal_uniformizer
 
 @[simp]
 theorem addVal_mul {a b : R} :
-    addVal R (a * b) = (show PartENat from addVal R a) + show PartENat from addVal R b :=
+    addVal R (a * b) = addVal R a + addVal R b :=
   (addVal R).map_mul _ _
 #align discrete_valuation_ring.add_val_mul DiscreteValuationRing.addVal_mul
 
-theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • (show PartENat from addVal R a) :=
+theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
   (addVal R).map_pow _ _
 #align discrete_valuation_ring.add_val_pow DiscreteValuationRing.addVal_pow
 
 nonrec theorem _root_.Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) :
-    addVal R (ϖ ^ n) = (n : PartENat) := by
+    addVal R (ϖ ^ n) = n := by
   rw [addVal_pow, addVal_uniformizer h, nsmul_one]
 #align irreducible.add_val_pow Irreducible.addVal_pow
 
-theorem addVal_eq_top_iff {a : R} : addVal R a = (⊤ : PartENat) ↔ a = 0 := by
+theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
   have hi := (Classical.choose_spec (exists_prime R)).irreducible
   constructor
   · contrapose
