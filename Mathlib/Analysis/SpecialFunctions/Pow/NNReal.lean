@@ -786,7 +786,8 @@ end ENNReal
 -- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
 -- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
---     (hc : c⁻¹ = c') : a ^ (-b) = c' := by rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_nat_cast]
+--     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
+--   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_nat_cast]
 -- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
 -- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
@@ -829,7 +830,8 @@ end ENNReal
 --   NNReal.rpow_pos ha
 -- #align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
 
--- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals. -/
+-- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals.
+-- -/
 -- unsafe def prove_nnrpow (a b : expr) : tactic strictness := do
 --   let strictness_a ← core a
 --   match strictness_a with
@@ -842,8 +844,8 @@ end ENNReal
 --   ENNReal.rpow_pos_of_nonneg ha hb.le
 -- #align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
 
--- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended nonnegative
--- reals. -/
+-- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended
+-- nonnegative reals. -/
 -- unsafe def prove_ennrpow (a b : expr) : tactic strictness := do
 --   let strictness_a ← core a
 --   let strictness_b ← core b
@@ -858,8 +860,8 @@ end ENNReal
 
 -- open Positivity
 
--- /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when the
--- base is nonnegative and positive when the base is positive. -/
+-- /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+-- the base is nonnegative and positive when the base is positive. -/
 -- @[positivity]
 -- unsafe def positivity_nnrpow_ennrpow : expr → tactic strictness
 --   | q(@Pow.pow _ _ NNReal.Real.hasPow $(a) $(b)) => prove_nnrpow a b
