@@ -43,16 +43,14 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 -/
 
-
 open Set
 
 open BigOperators Pointwise
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`wellFounded_submodule_lt] [] -/
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
 class IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  wellFounded_submodule_lt : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop)
+  wellFounded_submodule_lt' : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop)
 #align is_artinian IsArtinian
 
 section
@@ -65,11 +63,18 @@ variable [Module R M] [Module R P] [Module R N]
 
 open IsArtinian
 
+/-Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
+Lean 4-/
+theorem IsArtinian.wellFounded_submodule_lt (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+    [IsArtinian R M] : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
+  IsArtinian.wellFounded_submodule_lt'
+#align is_artinian.well_founded_submodule_lt IsArtinian.wellFounded_submodule_lt
+
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
   ⟨Subrelation.wf
     (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
-    (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt))⟩
+    (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt R P))⟩
 #align is_artinian_of_injective isArtinian_of_injective
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
@@ -87,7 +92,7 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
   ⟨Subrelation.wf
     (fun {A B} hAB =>
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
-    (InvImage.wf (Submodule.comap f) (IsArtinian.wellFounded_submodule_lt))⟩
+    (InvImage.wf (Submodule.comap f) (IsArtinian.wellFounded_submodule_lt R M))⟩
 #align is_artinian_of_surjective isArtinian_of_surjective
 
 variable {M}
@@ -99,9 +104,10 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  ⟨wellFounded_lt_exact_sequence (IsArtinian.wellFounded_submodule_lt)
-    (IsArtinian.wellFounded_submodule_lt) (LinearMap.range f) (Submodule.map f) (Submodule.comap f)
-    (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf) (Submodule.giMapComap hg)
+  ⟨wellFounded_lt_exact_sequence (IsArtinian.wellFounded_submodule_lt R M)
+    (IsArtinian.wellFounded_submodule_lt R P) (LinearMap.range f) (Submodule.map f)
+    (Submodule.comap f) (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf)
+    (Submodule.giMapComap hg)
     (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
 #align is_artinian_of_range_eq_ker isArtinian_of_range_eq_ker
 
@@ -208,7 +214,7 @@ theorem monotone_stabilizes (f : ℕ →o (Submodule R M)ᵒᵈ) : ∃ n, ∀ m,
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) :
     P I :=
-  (wellFounded_submodule_lt).recursion I hgt
+  (wellFounded_submodule_lt R M).recursion I hgt
 #align is_artinian.induction IsArtinian.induction
 
 /-- For any endomorphism of a Artinian module, there is some nontrivial iterate
