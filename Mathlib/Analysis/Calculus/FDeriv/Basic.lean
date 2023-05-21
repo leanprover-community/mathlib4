@@ -18,57 +18,57 @@ import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 Let `E` and `F` be normed spaces, `f : E → F`, and `f' : E →L[𝕜] F` a
 continuous 𝕜-linear map, where `𝕜` is a non-discrete normed field. Then
 
-  `has_fderiv_within_at f f' s x`
+  `HasFDerivWithinAt f f' s x`
 
 says that `f` has derivative `f'` at `x`, where the domain of interest
 is restricted to `s`. We also have
 
-  `has_fderiv_at f f' x := has_fderiv_within_at f f' x univ`
+  `HasFDerivAt f f' x := HasFDerivWithinAt f f' x univ`
 
 Finally,
 
-  `has_strict_fderiv_at f f' x`
+  `HasStrictFDerivAt f f' x`
 
 means that `f : E → F` has derivative `f' : E →L[𝕜] F` in the sense of strict differentiability,
 i.e., `f y - f z - f'(y - z) = o(y - z)` as `y, z → x`. This notion is used in the inverse
 function theorem, and is defined here only to avoid proving theorems like
-`is_bounded_bilinear_map.has_fderiv_at` twice: first for `has_fderiv_at`, then for
-`has_strict_fderiv_at`.
+`IsBoundedBilinearMap.hasFDerivAt` twice: first for `HasFDerivAt`, then for
+`HasStrictFDerivAt`.
 
 ## Main results
 
 In addition to the definition and basic properties of the derivative,
-the folder `analysis/calculus/fderiv/` contains the usual formulas
+the folder `Analysis/Calculus/FDeriv/` contains the usual formulas
 (and existence assertions) for the derivative of
 * constants
 * the identity
-* bounded linear maps (`linear.lean`)
-* bounded bilinear maps (`bilinear.lean`)
-* sum of two functions (`add.lean`)
-* sum of finitely many functions (`add.lean`)
-* multiplication of a function by a scalar constant (`add.lean`)
-* negative of a function (`add.lean`)
-* subtraction of two functions (`add.lean`)
-* multiplication of a function by a scalar function (`mul.lean`)
-* multiplication of two scalar functions (`mul.lean`)
-* composition of functions (the chain rule) (`comp.lean`)
-* inverse function (`mul.lean`)
-  (assuming that it exists; the inverse function theorem is in `../inverse.lean`)
+* bounded linear maps (`Linear.lean`)
+* bounded bilinear maps (`Bilinear.lean`)
+* sum of two functions (`Add.lean`)
+* sum of finitely many functions (`Add.lean`)
+* multiplication of a function by a scalar constant (`Add.lean`)
+* negative of a function (`Add.lean`)
+* subtraction of two functions (`Add.lean`)
+* multiplication of a function by a scalar function (`Mul.lean`)
+* multiplication of two scalar functions (`Mul.lean`)
+* composition of functions (the chain rule) (`Comp.lean`)
+* inverse function (`Mul.lean`)
+  (assuming that it exists; the inverse function theorem is in `../Inverse.lean`)
 
 For most binary operations we also define `const_op` and `op_const` theorems for the cases when
-the first or second argument is a constant. This makes writing chains of `has_deriv_at`'s easier,
+the first or second argument is a constant. This makes writing chains of `HasDerivAt`'s easier,
 and they more frequently lead to the desired result.
 
 One can also interpret the derivative of a function `f : 𝕜 → E` as an element of `E` (by identifying
 a linear function from `𝕜` to `E` with its value at `1`). Results on the Fréchet derivative are
-translated to this more elementary point of view on the derivative in the file `deriv.lean`. The
+translated to this more elementary point of view on the derivative in the file `Deriv.lean`. The
 derivative of polynomials is handled there, as it is naturally one-dimensional.
 
 The simplifier is set up to prove automatically that some functions are differentiable, or
 differentiable at a point (but not differentiable on a set or within a set at a point, as checking
 automatically that the good domains are mapped one to the other when using composition is not
 something the simplifier can easily do). This means that one can write
-`example (x : ℝ) : differentiable ℝ (λ x, sin (exp (3 + x^2)) - 5 * cos x) := by simp`.
+`example (x : ℝ) : Differentiable ℝ (λ x, sin (exp (3 + x^2)) - 5 * cos x) := by simp`.
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
 ```lean
@@ -76,27 +76,27 @@ example (x : ℝ) (h : 1 + sin x ≠ 0) : differentiable_at ℝ (λ x, exp x / (
 by simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
-differentiable, in `analysis.special_functions.trigonometric`.
+differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
 
 The simplifier is not set up to compute the Fréchet derivative of maps (as these are in general
 complicated multidimensional linear maps), but it will compute one-dimensional derivatives,
-see `deriv.lean`.
+see `Deriv.lean`.
 
 ## Implementation details
 
-The derivative is defined in terms of the `is_o` relation, but also
-characterized in terms of the `tendsto` relation.
+The derivative is defined in terms of the `isLittleO` relation, but also
+characterized in terms of the `Tendsto` relation.
 
-We also introduce predicates `differentiable_within_at 𝕜 f s x` (where `𝕜` is the base field,
+We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
-and `s` the set along which the derivative is defined), as well as `differentiable_at 𝕜 f x`,
-`differentiable_on 𝕜 f s` and `differentiable 𝕜 f` to express the existence of a derivative.
+and `s` the set along which the derivative is defined), as well as `DifferentiableAt 𝕜 f x`,
+`Differentiable_on 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
 
-To be able to compute with derivatives, we write `fderiv_within 𝕜 f s x` and `fderiv 𝕜 f x`
+To be able to compute with derivatives, we write `fderivWithin 𝕜 f s x` and `fderiv 𝕜 f x`
 for some choice of a derivative if it exists, and the zero function otherwise. This choice only
 behaves well along sets for which the derivative is unique, i.e., those for which the tangent
-directions span a dense subset of the whole space. The predicates `unique_diff_within_at s x` and
-`unique_diff_on s`, defined in `tangent_cone.lean` express this property. We prove that indeed
+directions span a dense subset of the whole space. The predicates `UniqueDiffWithinAt s x` and
+`UniqueDiffOn s`, defined in `TangentCone.lean` express this property. We prove that indeed
 they imply the uniqueness of the derivative. This is satisfied for open subsets, and in particular
 for `univ`. This uniqueness only holds when the field is non-discrete, which we request at the very
 beginning: otherwise, a derivative can be defined, but it has no interesting properties whatsoever.
@@ -111,14 +111,13 @@ we add a lemma that if `f` is differentiable then so is `(λ x, exp (f x))`. Thi
 some boilerplate lemmas, but these can also be useful in their own right.
 
 Tests for this ability of the simplifier (with more examples) are provided in
-`tests/differentiable.lean`.
+`Tests/Differentiable.lean`.
 
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
 
 -/
-
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
@@ -140,8 +139,8 @@ variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
-is designed to be specialized for `L = 𝓝 x` (in `has_fderiv_at`), giving rise to the usual notion
-of Fréchet derivative, and for `L = 𝓝[s] x` (in `has_fderiv_within_at`), giving rise to
+is designed to be specialized for `L = 𝓝 x` (in `HasFDerivAt`), giving rise to the usual notion
+of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving rise to
 the notion of Fréchet derivative along the set `s`. -/
 def HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) :=
   (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
@@ -181,7 +180,7 @@ def DifferentiableAt (f : E → F) (x : E) :=
   ∃ f' : E →L[𝕜] F, HasFDerivAt f f' x
 #align differentiable_at DifferentiableAt
 
-/-- If `f` has a derivative at `x` within `s`, then `fderiv_within 𝕜 f s x` is such a derivative.
+/-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
 Otherwise, it is set to `0`. -/
 def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
   if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
@@ -193,12 +192,12 @@ def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
   if h : ∃ f', HasFDerivAt f f' x then Classical.choose h else 0
 #align fderiv fderiv
 
-/-- `differentiable_on 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/
+/-- `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/
 def DifferentiableOn (f : E → F) (s : Set E) :=
   ∀ x ∈ s, DifferentiableWithinAt 𝕜 f s x
 #align differentiable_on DifferentiableOn
 
-/-- `differentiable 𝕜 f` means that `f` is differentiable at any point. -/
+/-- `Differentiable 𝕜 f` means that `f` is differentiable at any point. -/
 def Differentiable (f : E → F) :=
   ∀ x, DifferentiableAt 𝕜 f x
 #align differentiable Differentiable
@@ -231,7 +230,7 @@ theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : 
 section DerivativeUniqueness
 
 /- In this section, we discuss the uniqueness of the derivative.
-We prove that the definitions `unique_diff_within_at` and `unique_diff_on` indeed imply the
+We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
 uniqueness of the derivative. -/
 /-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
 i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
@@ -279,7 +278,7 @@ theorem HasFDerivWithinAt.unique_on (hf : HasFDerivWithinAt f f' s x)
   tendsto_nhds_unique (hf.lim atTop dtop clim cdlim) (hg.lim atTop dtop clim cdlim)
 #align has_fderiv_within_at.unique_on HasFDerivWithinAt.unique_on
 
-/-- `unique_diff_within_at` achieves its goal: it implies the uniqueness of the derivative. -/
+/-- `UniqueDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 theorem UniqueDiffWithinAt.eq (H : UniqueDiffWithinAt 𝕜 s x) (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=
   ContinuousLinearMap.ext_on H.1 (hf.unique_on hg)
@@ -291,6 +290,8 @@ theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivW
 #align unique_diff_on.eq UniqueDiffOn.eq
 
 end DerivativeUniqueness
+
+#exit
 
 section FderivProperties
 
