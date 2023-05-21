@@ -18,44 +18,44 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 - `ι` is a commutative monoid;
 - `R` is a commutative semiring;
 - `A` is a commutative ring and an `R`-algebra;
-- `𝒜 : ι → submodule R A` is the grading of `A`;
-- `x : submonoid A` is a submonoid
+- `𝒜 : ι → Submodule R A` is the grading of `A`;
+- `x : Submonoid A` is a submonoid
 
 ## Main definitions and results
 
 This file constructs the subring of `Aₓ` where the numerator and denominator have the same grading,
 i.e. `{a/b ∈ Aₓ | ∃ (i : ι), a ∈ 𝒜ᵢ ∧ b ∈ 𝒜ᵢ}`.
 
-* `homogeneous_localization.num_denom_same_deg`: a structure with a numerator and denominator field
+* `HomogeneousLocalization.NumDenSameDeg`: a structure with a numerator and denominator field
   where they are required to have the same grading.
 
-However `num_denom_same_deg 𝒜 x` cannot have a ring structure for many reasons, for example if `c`
-is a `num_denom_same_deg`, then generally, `c + (-c)` is not necessarily `0` for degree reasons ---
+However `NumDenSameDeg 𝒜 x` cannot have a ring structure for many reasons, for example if `c`
+is a `NumDenSameDeg`, then generally, `c + (-c)` is not necessarily `0` for degree reasons ---
 `0` is considered to have grade zero (see `deg_zero`) but `c + (-c)` has the same degree as `c`. To
-circumvent this, we quotient `num_denom_same_deg 𝒜 x` by the kernel of `c ↦ c.num / c.denom`.
+circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.num / c.den`.
 
-* `homogeneous_localization.num_denom_same_deg.embedding` : for `x : submonoid A` and any
-  `c : num_denom_same_deg 𝒜 x`, or equivalent a numerator and a denominator of the same degree,
-  we get an element `c.num / c.denom` of `Aₓ`.
-* `homogeneous_localization`: `num_denom_same_deg 𝒜 x` quotiented by kernel of `embedding 𝒜 x`.
-* `homogeneous_localization.val`: if `f : homogeneous_localization 𝒜 x`, then `f.val` is an element
-  of `Aₓ`. In another word, one can view `homogeneous_localization 𝒜 x` as a subring of `Aₓ`
-  through `homogeneous_localization.val`.
-* `homogeneous_localization.num`: if `f : homogeneous_localization 𝒜 x`, then `f.num : A` is the
+* `HomogeneousLocalization.NumDenSameDeg.embedding`: for `x : Submonoid A` and any
+  `c : NumDenSameDeg 𝒜 x`, or equivalent a numerator and a denominator of the same degree,
+  we get an element `c.num / c.den` of `Aₓ`.
+* `HomogeneousLocalization`: `NumDenSameDeg 𝒜 x` quotiented by kernel of `embedding 𝒜 x`.
+* `HomogeneousLocalization.val`: if `f : HomogeneousLocalization 𝒜 x`, then `f.val` is an element
+  of `Aₓ`. In another word, one can view `HomogeneousLocalization 𝒜 x` as a subring of `Aₓ`
+  through `HomogeneousLocalization.val`.
+* `HomogeneousLocalization.num`: if `f : HomogeneousLocalization 𝒜 x`, then `f.num : A` is the
   numerator of `f`.
-* `homogeneous_localization.denom`: if `f : homogeneous_localization 𝒜 x`, then `f.denom : A` is the
+* `HomogeneousLocalization.den`: if `f : HomogeneousLocalization 𝒜 x`, then `f.den : A` is the
   denominator of `f`.
-* `homogeneous_localization.deg`: if `f : homogeneous_localization 𝒜 x`, then `f.deg : ι` is the
-  degree of `f` such that `f.num ∈ 𝒜 f.deg` and `f.denom ∈ 𝒜 f.deg`
-  (see `homogeneous_localization.num_mem_deg` and `homogeneous_localization.denom_mem_deg`).
-* `homogeneous_localization.num_mem_deg`: if `f : homogeneous_localization 𝒜 x`, then
+* `HomogeneousLocalization.deg`: if `f : HomogeneousLocalization 𝒜 x`, then `f.deg : ι` is the
+  degree of `f` such that `f.num ∈ 𝒜 f.deg` and `f.den ∈ 𝒜 f.deg`
+  (see `HomogeneousLocalization.num_mem_deg` and `HomogeneousLocalization.den_mem_deg`).
+* `HomogeneousLocalization.num_mem_deg`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.num_mem_deg` is a proof that `f.num ∈ 𝒜 f.deg`.
-* `homogeneous_localization.denom_mem_deg`: if `f : homogeneous_localization 𝒜 x`, then
-  `f.denom_mem_deg` is a proof that `f.denom ∈ 𝒜 f.deg`.
-* `homogeneous_localization.eq_num_div_denom`: if `f : homogeneous_localization 𝒜 x`, then
-  `f.val : Aₓ` is equal to `f.num / f.denom`.
+* `HomogeneousLocalization.den_mem_deg`: if `f : HomogeneousLocalization 𝒜 x`, then
+  `f.den_mem_deg` is a proof that `f.den ∈ 𝒜 f.deg`.
+* `HomogeneousLocalization.eq_num_div_den`: if `f : HomogeneousLocalization 𝒜 x`, then
+  `f.val : Aₓ` is equal to `f.num / f.den`.
 
-* `homogeneous_localization.local_ring`: `homogeneous_localization 𝒜 x` is a local ring when `x` is
+* `HomogeneousLocalization.localRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
 ## References
@@ -82,15 +82,13 @@ variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 variable (x : Submonoid A)
 
--- mathport name: «exprat »
 local notation "at " x => Localization x
 
 namespace HomogeneousLocalization
 
 section
 
-/--
-Let `x` be a submonoid of `A`, then `num_denom_same_deg 𝒜 x` is a structure with a numerator and a
+/-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
@@ -282,8 +280,8 @@ end SMul
 
 variable (𝒜)
 
-/-- For `x : prime ideal of A` and any `p : num_denom_same_deg 𝒜 x`, or equivalent a numerator and a
-denominator of the same degree, we get an element `p.num / p.denom` of `Aₓ`.
+/-- For `x : prime ideal of A` and any `p : NumDenSameDeg 𝒜 x`, or equivalent a numerator and a
+denominator of the same degree, we get an element `p.num / p.den` of `Aₓ`.
 -/
 def embedding (p : NumDenSameDeg 𝒜 x) : at x :=
   Localization.mk p.num ⟨p.den, p.den_mem⟩
@@ -293,8 +291,7 @@ end NumDenSameDeg
 
 end HomogeneousLocalization
 
-/--
-For `x : prime ideal of A`, `homogeneous_localization 𝒜 x` is `num_denom_same_deg 𝒜 x` modulo the
+/-- For `x : prime ideal of A`, `HomogeneousLocalization 𝒜 x` is `NumDenSameDeg 𝒜 x` modulo the
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
@@ -309,7 +306,7 @@ open HomogeneousLocalization HomogeneousLocalization.NumDenSameDeg
 
 variable {𝒜} {x}
 
-/-- View an element of `homogeneous_localization 𝒜 x` as an element of `Aₓ` by forgetting that the
+/-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
 -/
 def val (y : HomogeneousLocalization 𝒜 x) : at x :=
@@ -464,18 +461,18 @@ instance : IntCast (HomogeneousLocalization 𝒜 x) :=
   ⟨Int.castDef⟩
 
 @[simp]
-theorem nat_cast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
+theorem natCast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Nat.unaryCast n) = _ by induction n <;> simp [Nat.unaryCast, zero_val, one_val, *]
-#align homogeneous_localization.nat_cast_val HomogeneousLocalization.nat_cast_val
+#align homogeneous_localization.nat_cast_val HomogeneousLocalization.natCast_val
 
 @[simp]
-theorem int_cast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
+theorem intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, zero_val, one_val, *]
-#align homogeneous_localization.int_cast_val HomogeneousLocalization.int_cast_val
+#align homogeneous_localization.int_cast_val HomogeneousLocalization.intCast_val
 
 instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
   (HomogeneousLocalization.val_injective x).commRing _ zero_val one_val add_val mul_val neg_val
-    sub_val (smul_val x · ·) (smul_val x · ·) pow_val nat_cast_val int_cast_val
+    sub_val (smul_val x · ·) (smul_val x · ·) pow_val natCast_val intCast_val
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
 
 instance homogeneousLocalizationAlgebra :
@@ -498,17 +495,17 @@ open HomogeneousLocalization HomogeneousLocalization.NumDenSameDeg
 
 variable {𝒜} {x}
 
-/-- numerator of an element in `homogeneous_localization x`-/
+/-- Numerator of an element in `HomogeneousLocalization x`. -/
 def num (f : HomogeneousLocalization 𝒜 x) : A :=
   (Quotient.out' f).num
 #align homogeneous_localization.num HomogeneousLocalization.num
 
-/-- denominator of an element in `homogeneous_localization x`-/
+/-- Denominator of an element in `HomogeneousLocalization x`. -/
 def den (f : HomogeneousLocalization 𝒜 x) : A :=
   (Quotient.out' f).den
 #align homogeneous_localization.denom HomogeneousLocalization.den
 
-/-- For an element in `homogeneous_localization x`, degree is the natural number `i` such that
+/-- For an element in `HomogeneousLocalization x`, degree is the natural number `i` such that
   `𝒜 i` contains both numerator and denominator. -/
 def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
   (Quotient.out' f).deg
@@ -548,7 +545,7 @@ section
 
 variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
-/-- Localizing a ring homogeneously at a prime ideal-/
+/-- Localizing a ring homogeneously at a prime ideal. -/
 abbrev AtPrime :=
   HomogeneousLocalization 𝒜 𝔭.primeCompl
 #align homogeneous_localization.at_prime HomogeneousLocalization.AtPrime
@@ -590,7 +587,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, zero_val, one_val, zero_ne_one] at r⟩⟩
 
-instance : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
+instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
     simp only [← isUnit_iff_isUnit_val, sub_val, one_val]
     induction' a using Quotient.inductionOn' with a
@@ -618,7 +615,7 @@ section
 
 variable (𝒜) (f : A)
 
-/-- Localising away from powers of `f` homogeneously.-/
+/-- Localizing away from powers of `f` homogeneously. -/
 abbrev Away :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 #align homogeneous_localization.away HomogeneousLocalization.Away
