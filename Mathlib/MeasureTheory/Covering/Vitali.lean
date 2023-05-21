@@ -110,7 +110,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   -- contains `a`. We will pick an element `a'` of `A` with `δ a'` almost as large as possible.
   let A := { a' | a' ∈ t ∧ ∀ c ∈ u, Disjoint (B a') (B c) }
   have Anonempty : A.Nonempty := ⟨a, hat, a_disj⟩
-  let m := Sup (δ '' A)
+  let m := sSup (δ '' A)
   have bddA : BddAbove (δ '' A) := by
     refine' ⟨R, fun x xA => _⟩
     rcases(mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
@@ -136,7 +136,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     exact ⟨a'A.1, uT.1⟩
   -- check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
   -- intersect `u`.
-  · exact uT.2.1.insert fun b bu ba' => a'A.2 b bu
+  · exact uT.2.1.insert fun b bu _ => a'A.2 b bu
   -- check that every element `c` of `t` intersecting `u ∪ {a'}` intersects an element of this
   -- family with large `δ`.
   · intro c ct b ba'u hcb
@@ -287,7 +287,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       refine' hav.2.mono _
       apply inter_subset_inter _ ball_subset_closedBall
       exact hB a (ut (vu hav))
-    set R0 := Sup (r '' v) with R0_def
+    set R0 := sSup (r '' v) with R0_def
     have R0_bdd : BddAbove (r '' v) := by
       refine' ⟨1, fun r' hr' => _⟩
       rcases(mem_image _ _ _).1 hr' with ⟨b, hb, rfl⟩
@@ -299,10 +299,10 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       have : r a ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨au, hax⟩)
       linarith [Idist_v a ⟨au, hax⟩, hR0 x]
     · have R0pos : 0 < R0 := (hR0 x).trans_le H
-      have vnonempty : v.nonempty := by
-        by_contra
+      have vnonempty : v.Nonempty := by
+        by_contra h
         rw [nonempty_iff_ne_empty, Classical.not_not] at h
-        simp only [h, Real.sSup_empty, image_empty] at R0_def
+        rw [h, image_empty, Real.sSup_empty] at R0_def
         exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
       obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by
         obtain ⟨r', r'mem, hr'⟩ : ∃ r' ∈ r '' v, R0 / 2 < r' :=
