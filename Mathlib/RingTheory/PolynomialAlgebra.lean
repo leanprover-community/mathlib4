@@ -117,15 +117,9 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
 
 theorem toFunLinear_algebraMap_tmul_one (r : R) :
     (toFunLinear R A) ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R A[X]) r := by
-<<<<<<< HEAD
-  simp [toFunLinear_tmul_apply, toFunBilinear_apply_apply_toFinsupp_toFun,
-    toFunBilinear_apply_apply_toFinsupp_support_val, Polynomial.aeval_one, algebraMap_smul,
-    Algebra.algebraMap_eq_smul_one, toFunBilinear]
-=======
   rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, algebraMap_smul,
     Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one] -- porting note: had to
   -- add extra `Algebra.algebraMap_eq_smul_one`
->>>>>>> master
 #align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_algebraMap_tmul_one
 
 /-- (Implementation detail).
