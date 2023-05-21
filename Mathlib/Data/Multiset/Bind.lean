@@ -235,7 +235,7 @@ section Product
 
 variable (a : α) (b : β) (s : Multiset α) (t : Multiset β)
 
-/-- The multiplicity of `(a, b)` in `s ×ˢ t` is
+/-- The multiplicity of `(a, b)` in `s ×ᵐˢ t` is
   the product of the multiplicity of `a` in `s` and `b` in `t`. -/
 def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
   s.bind fun a => t.map <| Prod.mk a
@@ -243,7 +243,7 @@ def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
 
 -- This notation binds more strongly than (pre)images, unions and intersections.
 @[inherit_doc]
-infixr:82 " ×ˢ " => Multiset.product
+infixr:82 " ×ᵐˢ " => Multiset.product
 
 @[simp]
 theorem coe_product (l₁ : List α) (l₂ : List β) : @product α β l₁ l₂ = l₁.product l₂ := by
@@ -257,29 +257,29 @@ theorem zero_product : @product α β 0 t = 0 :=
 #align multiset.zero_product Multiset.zero_product
 
 @[simp]
-theorem cons_product : (a ::ₘ s) ×ˢ t = map (Prod.mk a) t + s ×ˢ t := by simp [product]
+theorem cons_product : (a ::ₘ s) ×ᵐˢ t = map (Prod.mk a) t + s ×ᵐˢ t := by simp [product]
 #align multiset.cons_product Multiset.cons_product
 
 @[simp]
-theorem product_zero : s ×ˢ (0 : Multiset β) = 0 := by simp [product]
+theorem product_zero : s ×ᵐˢ (0 : Multiset β) = 0 := by simp [product]
 #align multiset.product_zero Multiset.product_zero
 
 @[simp]
-theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t := by simp [product]
+theorem product_cons : s ×ᵐˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ᵐˢ t := by simp [product]
 #align multiset.product_cons Multiset.product_cons
 
 @[simp]
-theorem product_singleton : ({a} : Multiset α) ×ˢ ({b} : Multiset β) = {(a, b)} := by
+theorem product_singleton : ({a} : Multiset α) ×ᵐˢ ({b} : Multiset β) = {(a, b)} := by
   simp only [product, bind_singleton, map_singleton]
 #align multiset.product_singleton Multiset.product_singleton
 
 @[simp]
-theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by
+theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ᵐˢ u = s ×ᵐˢ u + t ×ᵐˢ u := by
   simp [product]
 #align multiset.add_product Multiset.add_product
 
 @[simp]
-theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
+theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ᵐˢ (t + u) = s ×ᵐˢ t + s ×ᵐˢ u :=
   Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
     rw [cons_product, IH]
     simp [add_comm, add_left_comm, add_assoc]
@@ -291,7 +291,7 @@ theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1
 #align multiset.mem_product Multiset.mem_product
 
 @[simp]
-theorem card_product : card (s ×ˢ t) = card s * card t := by simp [product]
+theorem card_product : card (s ×ᵐˢ t) = card s * card t := by simp [product]
 #align multiset.card_product Multiset.card_product
 
 end Product

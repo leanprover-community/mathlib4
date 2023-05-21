@@ -222,7 +222,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
     Fintype ((G □ H).neighborSet x) :=
   Fintype.ofEquiv
     -- porting note: was `×ˢ`
-    ((G.neighborFinset x.1 ×ᶠ {x.2}).disjUnion ({x.1} ×ᶠ H.neighborFinset x.2) <|
+    ((G.neighborFinset x.1 ×ᶠˢ {x.2}).disjUnion ({x.1} ×ᶠˢ H.neighborFinset x.2) <|
       Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
     ((Equiv.refl _).subtypeEquiv fun y => by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
@@ -234,7 +234,7 @@ theorem boxProd_neighborFinset (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       -- porting note: was `×ˢ`
-      (G.neighborFinset x.1 ×ᶠ {x.2}).disjUnion ({x.1} ×ᶠ H.neighborFinset x.2)
+      (G.neighborFinset x.1 ×ᶠˢ {x.2}).disjUnion ({x.1} ×ᶠˢ H.neighborFinset x.2)
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
