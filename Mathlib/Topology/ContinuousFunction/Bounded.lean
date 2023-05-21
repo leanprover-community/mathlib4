@@ -626,12 +626,12 @@ variable [TopologicalSpace α] [PseudoMetricSpace β] [One β]
 instance : One (α →ᵇ β) :=
   ⟨const α 1⟩
 
-@[to_additive (attr := simp)] -- Porting note: Originally `@[simp, to_additive]`
+@[to_additive (attr := simp)]
 theorem coe_one : ((1 : α →ᵇ β) : α → β) = 1 := rfl
 #align bounded_continuous_function.coe_one BoundedContinuousFunction.coe_one
 #align bounded_continuous_function.coe_zero BoundedContinuousFunction.coe_zero
 
-@[to_additive (attr := simp)] -- Porting note: Originally `@[simp, to_additive]`
+@[to_additive (attr := simp)]
 theorem mkOfCompact_one [CompactSpace α] : mkOfCompact (1 : C(α, β)) = 1 := rfl
 #align bounded_continuous_function.mk_of_compact_one BoundedContinuousFunction.mkOfCompact_one
 #align bounded_continuous_function.mk_of_compact_zero BoundedContinuousFunction.mkOfCompact_zero
@@ -642,7 +642,7 @@ theorem forall_coe_one_iff_one (f : α →ᵇ β) : (∀ x, f x = 1) ↔ f = 1 :
 #align bounded_continuous_function.forall_coe_one_iff_one BoundedContinuousFunction.forall_coe_one_iff_one
 #align bounded_continuous_function.forall_coe_zero_iff_zero BoundedContinuousFunction.forall_coe_zero_iff_zero
 
-@[to_additive (attr := simp)] -- Porting note: Originally `@[simp, to_additive]`
+@[to_additive (attr := simp)]
 theorem one_compContinuous [TopologicalSpace γ] (f : C(γ, α)) : (1 : α →ᵇ β).compContinuous f = 1 :=
   rfl
 #align bounded_continuous_function.one_comp_continuous BoundedContinuousFunction.one_compContinuous
@@ -1303,13 +1303,13 @@ instance ring : Ring (α →ᵇ R) :=
     coe_intCast
 
 instance : SeminormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from ring,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalSeminormedRing with }
 
 end Seminormed
 
 instance [NormedRing R] : NormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from ring,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalNormedRing with }
 
 end NormedRing
@@ -1377,6 +1377,7 @@ instance algebra : Algebra 𝕜 (α →ᵇ γ) :=
     toRingHom := C
     commutes' := fun _ _ => ext fun _ => Algebra.commutes' _ _
     smul_def' := fun _ _ => ext fun _ => Algebra.smul_def' _ _ }
+#align bounded_continuous_function.algebra BoundedContinuousFunction.algebra
 
 @[simp]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
@@ -1384,8 +1385,9 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
   rfl
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
+-- porting note: `show Algebra` was not present in the original
 instance : NormedAlgebra 𝕜 (α →ᵇ γ) :=
-  { show Algebra 𝕜 (α →ᵇ γ) from algebra, -- porting note: this was not present in the original
+  { show Algebra 𝕜 (α →ᵇ γ) from inferInstance,
     BoundedContinuousFunction.normedSpace with }
 
 /-!
