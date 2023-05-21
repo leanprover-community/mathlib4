@@ -9,7 +9,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Nnreal
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Limits and asymptotics of power functions at `+∞`
@@ -36,8 +36,7 @@ section Limits
 open Real Filter
 
 /-- The function `x ^ y` tends to `+∞` at `+∞` for any positive real `y`. -/
-theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ y) atTop atTop :=
-  by
+theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ y) atTop atTop := by
   rw [tendsto_at_top_at_top]
   intro b
   use max b 0 ^ (1 / y)
@@ -58,8 +57,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
 theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
-    Tendsto (fun x => x ^ (a / (b * x + c))) atTop (𝓝 1) :=
-  by
+    Tendsto (fun x => x ^ (a / (b * x + c))) atTop (𝓝 1) := by
   refine'
     tendsto.congr' _
       ((tendsto_exp_nhds_0_nhds_1.comp
@@ -76,8 +74,7 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 #align tendsto_rpow_div_mul_add tendsto_rpow_div_mul_add
 
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
-theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) :=
-  by
+theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
   funext
   congr 2
@@ -85,8 +82,7 @@ theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1)
 #align tendsto_rpow_div tendsto_rpow_div
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
-theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) :=
-  by
+theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
   funext
   congr 2
@@ -94,8 +90,7 @@ theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (�
 #align tendsto_rpow_neg_div tendsto_rpow_neg_div
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
-theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop :=
-  by
+theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by
   cases' archimedean_iff_nat_lt.1 Real.archimedean s with n hn
   refine' tendsto_at_top_mono' _ _ (tendsto_exp_div_pow_at_top n)
   filter_upwards [eventually_gt_at_top (0 : ℝ), eventually_ge_at_top (1 : ℝ)]with x hx₀ hx₁
@@ -105,8 +100,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
 
 /-- The function `exp (b * x) / x ^ s` tends to `+∞` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
-    Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop :=
-  by
+    Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop := by
   refine' ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' _
   filter_upwards [eventually_ge_at_top (0 : ℝ)]with x hx₀
   simp [div_rpow, (exp_pos x).le, rpow_nonneg_of_nonneg, ← rpow_mul, ← exp_mul, mul_comm x, hb.ne',
@@ -118,16 +112,14 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
     (exp _), "]"] [] []]]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error @ arg 0: next failed, no more args -/
 /-- The function `x ^ s * exp (-b * x)` tends to `0` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 (s : ℝ) (b : ℝ) (hb : 0 < b) :
-    Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) :=
-  by
+    Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:38: in filter_upwards #[[], [\"with\", ident x],\n  [\"using\", expr by simp [] [] [] [\"[\", expr exp_neg, \",\", expr inv_div, \",\", expr div_eq_mul_inv _\n    (exp _), \"]\"] [] []]]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error @ arg 0: next failed, no more args"
 #align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0
 
 theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
-    Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop :=
-  by
+    Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
   rw [Filter.tendsto_atTop_atTop]
   intro b
   obtain ⟨c, hc⟩ := tendsto_at_top_at_top.mp (tendsto_rpow_atTop hy) b
@@ -137,8 +129,7 @@ theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
 #align nnreal.tendsto_rpow_at_top NNReal.tendsto_rpow_atTop
 
 theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
-    Tendsto (fun x : ℝ≥0∞ => x ^ y) (𝓝 ⊤) (𝓝 ⊤) :=
-  by
+    Tendsto (fun x : ℝ≥0∞ => x ^ y) (𝓝 ⊤) (𝓝 ⊤) := by
   rw [ENNReal.tendsto_nhds_top_iff_nnreal]
   intro x
   obtain ⟨c, _, hc⟩ :=
@@ -170,8 +161,7 @@ variable {α : Type _} {l : Filter α} {f g : α → ℂ}
 open Asymptotics
 
 theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
-    (fun x => Real.exp (arg (f x) * im (g x))) =Θ[l] fun x => (1 : ℝ) :=
-  by
+    (fun x => Real.exp (arg (f x) * im (g x))) =Θ[l] fun x => (1 : ℝ) := by
   rcases hl with ⟨b, hb⟩
   refine' Real.isTheta_exp_comp_one.2 ⟨π * b, _⟩
   rw [eventually_map] at hb⊢
@@ -221,8 +211,7 @@ namespace Asymptotics
 variable {α : Type _} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
 
 theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) :
-    IsBigOWith (c ^ r) l (fun x => f x ^ r) fun x => g x ^ r :=
-  by
+    IsBigOWith (c ^ r) l (fun x => f x ^ r) fun x => g x ^ r := by
   apply is_O_with.of_bound
   filter_upwards [hg, h.bound]with x hgx hx
   calc
@@ -277,8 +266,7 @@ theorem isLittleO_rpow_exp_atTop (s : ℝ) : (fun x : ℝ => x ^ s) =o[atTop] ex
 
 /-- `exp (-a * x) = o(x ^ s)` as `x → ∞`, for any positive `a` and real `s`. -/
 theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
-    IsLittleO atTop (fun x : ℝ => exp (-a * x)) fun x : ℝ => x ^ b :=
-  by
+    IsLittleO atTop (fun x : ℝ => exp (-a * x)) fun x : ℝ => x ^ b := by
   apply is_o_of_tendsto'
   · refine' (eventually_gt_at_top 0).mp (eventually_of_forall fun t ht h => _)
     rw [rpow_eq_zero_iff_of_nonneg ht.le] at h
@@ -306,8 +294,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
   calc
     (fun x => log x ^ r) =O[atTop] fun x => log x ^ r' :=
       IsBigO.of_bound 1 <|
-        (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx =>
-          by
+        (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
           have hx₀ : 0 ≤ log x := zero_le_one.trans hx
           simp [norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
             rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
