@@ -47,7 +47,7 @@ theorem op_nnnorm_mul : ‖mul 𝕜 E a‖₊ = ‖a‖₊ := by
 #align op_nnnorm_mul op_nnnorm_mul
 
 /-- In a C⋆-algebra `E`, either unital or non-unital, multiplication on the right by `a : E` has
-norm eqaul to the norm of `a`. -/
+norm equal to the norm of `a`. -/
 @[simp]
 theorem op_nnnorm_mul_flip : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ := by
   rw [← sSup_unit_ball_eq_nnnorm, ← nnnorm_star, ← @op_nnnorm_mul 𝕜 E, ← sSup_unit_ball_eq_nnnorm]
