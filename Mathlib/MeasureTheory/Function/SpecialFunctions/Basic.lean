@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Nnreal
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Measurability of real and complex functions
@@ -236,8 +236,7 @@ instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
   ⟨(measurable_fst.coeNNRealReal.pow measurable_snd).subtype_mk⟩
 #align nnreal.has_measurable_pow NNReal.hasMeasurablePow
 
-instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ :=
-  by
+instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
   refine' ⟨ENNReal.measurable_of_measurable_nnreal_prod _ _⟩
   · simp_rw [ENNReal.coe_rpow_def]
     refine' Measurable.ite _ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
