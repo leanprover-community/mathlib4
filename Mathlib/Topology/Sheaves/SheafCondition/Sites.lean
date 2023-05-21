@@ -197,7 +197,7 @@ variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 
 /-- The empty component of a sheaf is terminal. -/
 def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
-  F.isTerminalOfBotCover ⊥ (by tidy)
+  F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 #align Top.sheaf.is_terminal_of_empty TopCat.Sheaf.isTerminalOfEmpty
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
