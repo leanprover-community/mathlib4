@@ -118,7 +118,7 @@ add_decl_doc getTFAEListQ.guardExplicitList
 
 /-! # Proof construction -/
 
-/-- Prove an implication via solve_by_elim. -/
+/-- Prove an implication via `scc`. -/
 def proveImpl (P P' : Q(Prop)) : TacticM Q($P → $P') := do
   let t ← mkFreshExprMVar q($P → $P')
   try
