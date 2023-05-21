@@ -582,14 +582,13 @@ theorem skew_product [SigmaFinite μb] [SigmaFinite μd] {f : α → β} (hf : M
     refine' ⟨this, (prod_eq fun s t hs ht => _).symm⟩
     rw [map_apply this (hs.prod ht)]
     refine' (prod_apply (this <| hs.prod ht)).trans _
-    have :
-      ∀ᵐ x ∂μa, μc ((fun y => (f x, g x y)) ⁻¹' s ×ˢ t) = indicator (f ⁻¹' s) (fun _ => μd t) x :=
-      by
+    have : ∀ᵐ x ∂μa,
+        μc ((fun y => (f x, g x y)) ⁻¹' s ×ˢ t) = indicator (f ⁻¹' s) (fun _ => μd t) x := by
       refine' hg.mono fun x hx => _
       subst hx
       simp only [mk_preimage_prod_right_fn_eq_if, indicator_apply, mem_preimage]
       split_ifs
-      exacts[(map_apply hgm.of_uncurry_left ht).symm, measure_empty]
+      exacts [(map_apply hgm.of_uncurry_left ht).symm, measure_empty]
     simp only [preimage_preimage]
     rw [lintegral_congr_ae this, lintegral_indicator _ (hf.1 hs), set_lintegral_const,
       hf.measure_preimage hs, mul_comm]
@@ -683,10 +682,12 @@ theorem lintegral_prod_of_measurable :
       enter [2, x]
       rw [lintegral_indicator _ (m (x := x) hs), lintegral_const,
         Measure.restrict_apply MeasurableSet.univ, univ_inter]
-    simp [lintegral_indicator, fun x => m (x := x) hs, hs, lintegral_const_mul,
-      measurable_measure_prod_mk_left (ν := ν) hs, prod_apply, Function.comp]
-  · rintro f g - hf hg h2f h2g
-    simp [lintegral_add_left, Measurable.lintegral_prod_right', hf.comp m, hf, h2f, h2g]
+    simp [hs, lintegral_const_mul, measurable_measure_prod_mk_left (ν := ν) hs, prod_apply]
+  · rintro f g - hf _ h2f h2g
+    simp only [Pi.add_apply]
+    conv_lhs => rw [lintegral_add_left hf]
+    conv_rhs => enter [2, x]; erw [lintegral_add_left (hf.comp (m (x := x)))]
+    simp [lintegral_add_left, Measurable.lintegral_prod_right', hf, h2f, h2g]
   · intro f hf h2f h3f
     have kf : ∀ x n, Measurable fun y => f n (x, y) := fun x n => (hf n).comp m
     have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
@@ -772,8 +773,8 @@ instance [FiniteMeasure ρ] : FiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
 
-instance [ProbabilityMeasure ρ] : ProbabilityMeasure ρ.fst
-    where measure_univ := by
+instance [ProbabilityMeasure ρ] : ProbabilityMeasure ρ.fst where
+  measure_univ := by
     rw [fst_univ]
     exact measure_univ
 
@@ -783,7 +784,7 @@ noncomputable def snd (ρ : Measure (α × β)) : Measure β :=
 #align measure_theory.measure.snd MeasureTheory.Measure.snd
 
 theorem snd_apply {s : Set β} (hs : MeasurableSet s) : ρ.snd s = ρ (Prod.snd ⁻¹' s) := by
-  rw [snd, measure.map_apply measurable_snd hs]
+  rw [snd, Measure.map_apply measurable_snd hs]
 #align measure_theory.measure.snd_apply MeasureTheory.Measure.snd_apply
 
 theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ, preimage_univ]
@@ -793,8 +794,8 @@ instance [FiniteMeasure ρ] : FiniteMeasure ρ.snd := by
   rw [snd]
   infer_instance
 
-instance [ProbabilityMeasure ρ] : ProbabilityMeasure ρ.snd
-    where measure_univ := by
+instance [ProbabilityMeasure ρ] : ProbabilityMeasure ρ.snd where
+  measure_univ := by
     rw [snd_univ]
     exact measure_univ
 
