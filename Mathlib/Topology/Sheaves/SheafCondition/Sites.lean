@@ -92,8 +92,9 @@ def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
 @[simp]
 theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
-  ext (Z f)
-  exact ⟨fun ⟨⟨_, _, h⟩, rfl⟩ => by convert h, fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
+  funext Z
+  ext f
+  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
 #align Top.presheaf.covering_presieve_eq_self TopCat.Presheaf.covering_presieve_eq_self
 
 namespace presieveOfCovering
