@@ -314,6 +314,10 @@ variable {R}
 -- mathport name: «expr⨂ₜ[ ] , »
 notation3:100"⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
+--Porting note: new theorem
+theorem tprod_eq_tprodCoeff_one :
+  ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : ∀ i, s i) : tprodCoeff R z f = z • tprod R f := by
   have : z = z • (1 : R) := by simp only [mul_one, Algebra.id.smul_eq_mul]
@@ -361,9 +365,11 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 #align pi_tensor_product.lift_aux PiTensorProduct.liftAux
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : ∀ i, s i) : liftAux φ (tprod R f) = φ f := by
-  simp only [liftAux, liftAddHom, tprod, MultilinearMap.coe_mk, tprodCoeff,
-    FreeAddMonoid.lift_eval_of, one_smul, AddCon.lift, AddCon.coe_mk', AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk, AddCon.liftOn_coe]
+  simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
+  rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
+  dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
+  show _ • _ = _
+  rw [one_smul]
 #align pi_tensor_product.lift_aux_tprod PiTensorProduct.liftAux_tprod
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : ∀ i, s i) :
