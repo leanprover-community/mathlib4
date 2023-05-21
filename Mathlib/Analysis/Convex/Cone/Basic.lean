@@ -265,7 +265,7 @@ def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
 
 @[simp]
 theorem mem_map {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 E} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
-  mem_image_iff_bex
+  Set.mem_image f S y
 #align convex_cone.mem_map ConvexCone.mem_map
 
 theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) :
@@ -301,7 +301,8 @@ theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
 
 theorem comap_comap (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 G) :
     (S.comap g).comap f = S.comap (g.comp f) :=
-  SetLike.coe_injective <| preimage_comp.symm
+  SetLike.coe_injective <| by simp only [coe_comap, coe_comp, preimage_comp]
+  -- Porting note: `by simp only [..]` was `preimage.symm`
 #align convex_cone.comap_comap ConvexCone.comap_comap
 
 @[simp]
@@ -317,7 +318,7 @@ section OrderedAddCommGroup
 
 variable [OrderedAddCommGroup E] [Module 𝕜 E]
 
-/-- Constructs an ordered module given an `ordered_add_comm_group`, a cone, and a proof that
+/-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
 the order relation is the one defined by the cone.
 -/
 theorem to_orderedSMul (S : ConvexCone 𝕜 E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ S) : OrderedSMul 𝕜 E :=
@@ -366,7 +367,7 @@ theorem Pointed.mono {S T : ConvexCone 𝕜 E} (h : S ≤ T) : S.Pointed → T.P
 #align convex_cone.pointed.mono ConvexCone.Pointed.mono
 
 theorem Blunt.anti {S T : ConvexCone 𝕜 E} (h : T ≤ S) : S.Blunt → T.Blunt :=
-  (· ∘ @h)
+  (· ∘ @h 0)
 #align convex_cone.blunt.anti ConvexCone.Blunt.anti
 
 end AddCommMonoid
@@ -467,7 +468,7 @@ theorem coe_zero : ((0 : ConvexCone 𝕜 E) : Set E) = 0 :=
 theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_zero]
 #align convex_cone.pointed_zero ConvexCone.pointed_zero
 
-instance : Add (ConvexCone 𝕜 E) :=
+instance instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
     { carrier := { z | ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z }
       smul_mem' := by
@@ -485,14 +486,11 @@ theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
-instance : AddZeroClass (ConvexCone 𝕜 E) :=
-  ⟨0, Add.add, fun _ => by
-    ext
-    simp, fun _ => by
-    ext
-    simp⟩
+instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
+  zero_add := by intro; ext; simp
+  add_zero := by intro; ext; simp
 
-instance : AddCommSemigroup (ConvexCone 𝕜 E) where
+instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
   add_assoc _ _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_comm _ _
@@ -656,7 +654,7 @@ namespace Convex
 
 /-- The set of vectors proportional to those in a convex set forms a convex cone. -/
 def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
-  apply ConvexCone.mk (⋃ (c : 𝕜) (H : 0 < c), c • s) <;> simp only [mem_sUnion, mem_smul_set]
+  apply ConvexCone.mk (⋃ (c : 𝕜) (_H : 0 < c), c • s) <;> simp only [mem_iUnion, mem_smul_set]
   · rintro c c_pos _ ⟨c', c'_pos, x, hx, rfl⟩
     exact ⟨c * c', mul_pos c_pos c'_pos, x, hx, (smul_smul _ _ _).symm⟩
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
@@ -668,8 +666,7 @@ def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
 variable {s : Set E} (hs : Convex 𝕜 s) {x : E}
 
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
-  simp only [toCone, ConvexCone.mem_mk, mem_sUnion, mem_smul_set, eq_comm, exists_prop]
-  simp
+  simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 #align convex.mem_to_cone Convex.mem_toCone
 
 theorem mem_to_cone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
@@ -684,7 +681,7 @@ theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_to_cone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 #align convex.subset_to_cone Convex.subset_toCone
 
-/-- `hs.to_cone s` is the least cone that includes `s`. -/
+/-- `hs.toCone s` is the least cone that includes `s`. -/
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } (hs.toCone s) := by
   refine' ⟨hs.subset_toCone, fun t ht x hx => _⟩
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
@@ -699,9 +696,16 @@ end Convex
 
 theorem convexHull_toCone_isLeast (s : Set E) :
     IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert(convex_convexHull 𝕜 s).toCone_isLeast
+  convert (convex_convexHull 𝕜 s).toCone_isLeast
   ext t
-  exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
+  refine ⟨fun h => (subset_convexHull 𝕜 s) h, fun h => ?_⟩
+
+  refine convexHull_min ?_ ?_ h
+
+  refine ⟨fun h => ?_/-convexHull_min h t.convex-/, ?_/-(subset_convexHull 𝕜 s).trans-/⟩
+  · refine (subset_convexHull 𝕜 s) h
+    sorry
+  · sorry
 #align convex_hull_to_cone_is_least convexHull_toCone_isLeast
 
 theorem convexHull_toCone_eq_sInf (s : Set E) :
@@ -744,7 +748,7 @@ submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ (y : E)(h : y ∈ ⊤), y ∉ f.domain :=
+  obtain ⟨y, -, hy⟩ : ∃ (y : E), y ∈ ⊤ ∧ y ∉ f.domain :=
     @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
     ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧ ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x :=
@@ -753,8 +757,8 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
       simpa only [Set.Nonempty, upperBounds, lowerBounds, ball_image_iff] using this
-    refine' exists_between_of_forall_le (nonempty.image f _) (nonempty.image f (Dense y)) _
-    · rcases Dense (-y) with ⟨x, hx⟩
+    refine' exists_between_of_forall_le (Nonempty.image f _) (Nonempty.image f (dense y)) _
+    · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, AddSubgroupClass.coe_neg, ← sub_eq_add_neg] at hx
       exact ⟨_, hx⟩
     rintro a ⟨xn, hxn, rfl⟩ b ⟨xp, hxp, rfl⟩
@@ -763,9 +767,9 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   have hy' : y ≠ 0 := fun hy₀ => hy (hy₀.symm ▸ zero_mem _)
-  refine' ⟨f.sup_span_singleton y (-c) hy, _, _⟩
+  refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
   · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
-    replace H := linear_pmap.domain_mono.monotone H
+    replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2
   · rintro ⟨z, hz⟩ hzs
@@ -777,9 +781,11 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
           mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
-      replace := le_c (r⁻¹ • ⟨x, hx⟩) this
-      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
+      have this' := le_c (r⁻¹ • ⟨x, hx⟩)
+      simp only [SetLike.mk_smul_mk, this, forall_true_left] at this'
+      rw [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, ← smul_eq_mul] at this'--, f.map_smul,
+
+        --smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this'
     · subst r
       simp only [zero_smul, add_zero] at hzs⊢
       apply nonneg
@@ -795,7 +801,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
   replace hp_nonneg : p ∈ { p | _ };
-  · rw [mem_set_of_eq]
+  · rw [mem_setOf_eq]
     exact hp_nonneg
   obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ _ _ _ hp_nonneg
   · refine' ⟨q, hpq, _, hqs⟩
@@ -861,7 +867,12 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
         sub_eq_neg_add, sub_nonneg, Subtype.coe_mk] at *
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x
   · intro x y
-    simpa only [Subtype.coe_mk, Subtype.coe_eta] using g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩
+    have := g_eq ⟨(x,y), ⟨x.2, trivial⟩⟩
+    simp only [LinearPMap.neg_domain, LinearPMap.coprod_apply, Subtype.coe_eta,
+      LinearPMap.neg_apply, toPMap_apply, id_coe, id_eq] at this
+    rw [this]
+    ring
+    -- simpa only [Subtype.coe_mk, Subtype.coe_eta] using g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩
   · refine' ⟨-g.comp (inl ℝ E ℝ), _, _⟩ <;> simp only [neg_apply, inl_apply, comp_apply]
     · intro x
       simp [g_eq x 0]
