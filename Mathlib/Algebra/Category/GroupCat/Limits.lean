@@ -35,10 +35,17 @@ noncomputable section
 
 variable {J : Type v} [SmallCategory J]
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs)
+  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
+abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
+
+
 namespace GroupCat
 
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCat.{max v u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
+instance groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
   change Group (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false in
@@ -66,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance limitGroup (F : J ⥤ GroupCat.{max v u}) :
+instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
@@ -81,17 +88,17 @@ All we need to do is notice that the limit point has a `group` instance availabl
 the existing limit. -/
 @[to_additive
       "We show that the forgetful functor `AddGroup ⥤ AddMon` creates limits.\n\nAll we need to do is notice that the limit point has an `add_group` instance available, and then\nreuse the existing limit."]
-noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCat.{max v u}) :
-    CreatesLimit F (forget₂ GroupCat.{max v u} MonCat.{max v u}) :=
+noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
+    CreatesLimit F (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
   -- Porting note: need to add `forget₂ Grp Mon` reflects isomorphism
-  letI : ReflectsIsomorphisms (forget₂ GroupCat.{max v u} MonCat.{max v u}) :=
+  letI : ReflectsIsomorphisms (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{max v u} MonCat.{max v u}))
     fun c' t =>
     { liftedCone :=
-        { pt := GroupCat.of (Types.limitCone (F ⋙ forget GroupCat)).pt
+        { pt := GroupCat.of (Types.limitCone (F ⋙ forget GroupCatMax)).pt
           π :=
-            { app := MonCat.limitπMonoidHom (F ⋙ forget₂ GroupCat MonCat.{max v u})
+            { app := MonCat.limitπMonoidHom (F ⋙ forget₂ GroupCatMax MonCatMax)
               naturality :=
                 (MonCat.HasLimits.limitCone
                       (F ⋙ forget₂ GroupCat MonCat.{max v u})).π.naturality } }
@@ -109,9 +116,15 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive
       "A choice of limit cone for a functor into `Group`.\n(Generally, you'll just want to use `limit F`.)"]
-def limitCone (F : J ⥤ GroupCat.{max v u}) : Cone F :=
-  liftLimit (limit.isLimit (F ⋙ forget₂ GroupCat.{max v u} MonCat.{max v u}))
+noncomputable def limitCone (F : J ⥤ GroupCatMax.{v, u}) : Cone F :=
+  -- Porting note: add this instance to help Lean unify universe levels
+  letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
+    (MonCat.hasLimitsOfSize.{v, u}.1 J).1 _
+  liftLimit
+    (limit.isLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}))
+set_option linter.uppercaseLean3 false in
 #align Group.limit_cone GroupCat.limitCone
+set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_cone AddGroupCat.limitCone
 
 /-- The chosen cone is a limit cone.
@@ -119,23 +132,33 @@ def limitCone (F : J ⥤ GroupCat.{max v u}) : Cone F :=
 -/
 @[to_additive
       "The chosen cone is a limit cone.\n(Generally, you'll just want to use `limit.cone F`.)"]
-def limitConeIsLimit (F : J ⥤ GroupCat.{max v u}) : IsLimit (limitCone F) :=
+noncomputable def limitConeIsLimit (F : J ⥤ GroupCatMax.{v, u}) : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
+set_option linter.uppercaseLean3 false in
 #align Group.limit_cone_is_limit GroupCat.limitConeIsLimit
+set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_cone_is_limit AddGroupCat.limitConeIsLimit
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCat.{max v u}
-    where HasLimitsOfShape J 𝒥 :=
-    { HasLimit := fun F => has_limit_of_created F (forget₂ GroupCat MonCat.{max v u}) }
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u}
+    where has_limits_of_shape J _ :=
+    { has_limit :=
+        -- Porting note: add this instance to help Lean unify universe levels
+        fun F => letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
+          (MonCat.hasLimitsOfSize.{v, u}.1 J).1 _
+        hasLimit_of_created F (forget₂ GroupCatMax.{v, u} MonCat.{max v u}) }
+set_option linter.uppercaseLean3 false in
 #align Group.has_limits_of_size GroupCat.hasLimitsOfSize
+set_option linter.uppercaseLean3 false in
 #align AddGroup.has_limits_of_size AddGroupCat.hasLimitsOfSize
 
 @[to_additive]
 instance hasLimits : HasLimits GroupCat.{u} :=
   GroupCat.hasLimitsOfSize.{u, u}
+set_option linter.uppercaseLean3 false in
 #align Group.has_limits GroupCat.hasLimits
+set_option linter.uppercaseLean3 false in
 #align AddGroup.has_limits AddGroupCat.hasLimits
 
 /-- The forgetful functor from groups to monoids preserves all limits.
@@ -144,16 +167,25 @@ This means the underlying monoid of a limit can be computed as a limit in the ca
 -/
 @[to_additive AddGroupCat.forget₂AddMonPreservesLimits
       "The forgetful functor from additive groups\nto additive monoids preserves all limits.\n\nThis means the underlying additive monoid of a limit can be computed as a limit in the category of\nadditive monoids."]
-instance forget₂MonPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ GroupCat MonCat.{max v u})
-    where PreservesLimitsOfShape J 𝒥 := { PreservesLimit := fun F => by infer_instance }
+noncomputable instance forget₂MonPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{v, v} (forget₂ GroupCatMax.{v, u} MonCat.{max v u})
+    where preservesLimitsOfShape {J _} := { preservesLimit := fun {F} =>
+      -- Porting note: add this instance to help Lean unify universe levels
+      letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
+        (MonCat.hasLimitsOfSize.{v, u}.1 J).1 _
+      inferInstance }
+set_option linter.uppercaseLean3 false in
 #align Group.forget₂_Mon_preserves_limits_of_size GroupCat.forget₂MonPreservesLimitsOfSize
+set_option linter.uppercaseLean3 false in
 #align AddGroup.forget₂_AddMon_preserves_limits AddGroupCat.forget₂AddMonPreservesLimits
 
 @[to_additive]
-instance forget₂MonPreservesLimits : PreservesLimits (forget₂ GroupCat MonCat.{u}) :=
+noncomputable instance forget₂MonPreservesLimits :
+  PreservesLimits (forget₂ GroupCat.{u} MonCat.{u}) :=
   GroupCat.forget₂MonPreservesLimitsOfSize.{u, u}
+set_option linter.uppercaseLean3 false in
 #align Group.forget₂_Mon_preserves_limits GroupCat.forget₂MonPreservesLimits
+set_option linter.uppercaseLean3 false in
 #align AddGroup.forget₂_Mon_preserves_limits AddGroupCat.forget₂MonPreservesLimits
 
 /-- The forgetful functor from groups to types preserves all limits.
@@ -161,37 +193,55 @@ instance forget₂MonPreservesLimits : PreservesLimits (forget₂ GroupCat MonCa
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
 @[to_additive
       "The forgetful functor from additive groups to types preserves all limits.\n\nThis means the underlying type of a limit can be computed as a limit in the category of types."]
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget GroupCat.{max v u})
-    where PreservesLimitsOfShape J 𝒥 :=
-    {
-      PreservesLimit := fun F =>
-        limits.comp_preserves_limit (forget₂ GroupCat MonCat) (forget MonCat) }
+noncomputable instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget GroupCatMax.{v, u})
+  where preservesLimitsOfShape {J _} :=
+  { preservesLimit := fun {F} =>
+      -- Porting note: add these instances to help Lean unify universe levels
+      letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
+        (MonCat.hasLimitsOfSize.{v, u}.1 J).1 _
+      letI h1 := GroupCat.forget₂MonPreservesLimitsOfSize.{v, u}
+      letI h2 := MonCat.forgetPreservesLimitsOfSize.{v, u}
+      Limits.compPreservesLimit (K := F)
+        (forget₂ GroupCatMax.{v, u} MonCat.{max v u})
+        (forget MonCat.{max v u}) }
+set_option linter.uppercaseLean3 false in
 #align Group.forget_preserves_limits_of_size GroupCat.forgetPreservesLimitsOfSize
+set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits_of_size AddGroupCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-instance forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) :=
   GroupCat.forgetPreservesLimitsOfSize.{u, u}
+set_option linter.uppercaseLean3 false in
 #align Group.forget_preserves_limits GroupCat.forgetPreservesLimits
+set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits AddGroupCat.forgetPreservesLimits
 
 end GroupCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs)
+  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
+abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
+
 namespace CommGroupCat
 
 @[to_additive]
-instance commGroupObj (F : J ⥤ CommGroupCat.{max v u}) (j) :
-    CommGroup ((F ⋙ forget CommGroupCat).obj j) := by
+instance commGroupObj (F : J ⥤ CommGroupCatMax.{v, u}) (j) :
+    CommGroup ((F ⋙ forget CommGroupCatMax).obj j) := by
   change CommGroup (F.obj j)
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align CommGroup.comm_group_obj CommGroupCat.commGroupObj
+set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_obj AddCommGroupCat.addCommGroupObj
 
 @[to_additive]
-instance limitCommGroup (F : J ⥤ CommGroupCat.{max v u}) :
-    CommGroup (Types.limitCone (F ⋙ forget CommGroupCat.{max v u})).pt :=
+noncomputable instance limitCommGroup (F : J ⥤ CommGroupCatMax.{v, u}) :
+    CommGroup (Types.limitCone (F ⋙ forget CommGroupCatMax.{v, u})).pt :=
   @Subgroup.toCommGroup (∀ j, F.obj j) _
-    (GroupCat.sectionsSubgroup (F ⋙ forget₂ CommGroupCat GroupCat.{max v u}))
+    (GroupCat.sectionsSubgroup.{v, max v u} (F ⋙ forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}))
 #align CommGroup.limit_comm_group CommGroupCat.limitCommGroup
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
 
