@@ -120,8 +120,8 @@ theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _roo
   rfl
 #align real.angle.exp_map_circle_coe Real.Angle.expMapCircle_coe
 
-theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) : (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I :=
-  by
+theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
+    (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
   induction θ using Real.Angle.induction_on
   simp [Complex.exp_mul_I]
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
@@ -139,9 +139,8 @@ theorem Real.Angle.expMapCircle_neg (θ : Real.Angle) :
 #align real.angle.exp_map_circle_neg Real.Angle.expMapCircle_neg
 
 @[simp]
-theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) :
-    Real.Angle.expMapCircle (θ₁ + θ₂) = Real.Angle.expMapCircle θ₁ * Real.Angle.expMapCircle θ₂ :=
-  by
+theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expMapCircle (θ₁ + θ₂) =
+    Real.Angle.expMapCircle θ₁ * Real.Angle.expMapCircle θ₂ := by
   induction θ₁ using Real.Angle.induction_on
   induction θ₂ using Real.Angle.induction_on
   exact _root_.expMapCircle_add _ _
