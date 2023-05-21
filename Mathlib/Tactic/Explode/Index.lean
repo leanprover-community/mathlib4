@@ -27,12 +27,13 @@ def consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Na
 
 - `filter` is a condition for which expressions to process
 - `e` is the expression to process
-- `si` is whether this is among the initial lambdas
 - `depth` is the current abstraction depth
 - `entries` is the table so far
+- `start` is whether we are at the top-level of the expression, which
+  causes lambdas to use `Status.sintro` to prevent a layer of nesting.
 -/
 partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
-    (si : Bool) (depth : Nat) (entries : Entries) :
+    (depth : Nat) (entries : Entries) (start : Bool := false) :
     MetaM (Option Entry × Entries) := do
   let e := e.cleanupAnnotations
   if let some entry := entries.find? e then
@@ -41,24 +42,32 @@ partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
     trace[explode] "filtered out {e}"
     return (none, entries)
   match e with
-  | .lam varName varType body binderInfo => do
+  | .lam .. => do
     trace[explode] ".lam"
-    Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
-      let body' := Expr.instantiate1 body.cleanupAnnotations arg
-      let (argEntry?, entries) := entries.add arg
-        { type    := ← addMessageContext <| ← Meta.inferType arg
-          depth   := depth
-          status  := if si then Status.sintro else Status.intro
-          thm     := ← addMessageContext <| arg
-          deps    := [] }
+    Meta.lambdaTelescope e fun args body => do
+      let mut entries' := entries
+      let mut rdeps := []
+      for arg in args, i in [0:args.size] do
+        let (argEntry?, entries'') := entries'.add arg
+          { type    := ← addMessageContext <| ← Meta.inferType arg
+            depth   := depth
+            status  :=
+              if start
+              then Status.sintro
+              else if i == 0 then Status.intro else Status.cintro
+            thm     := ← addMessageContext <| arg
+            deps    := [] }
+        entries' := entries''
+        rdeps := consDep argEntry? rdeps
       let (bodyEntry?, entries) ←
-        explode_core filter body' si (if si then depth else depth + 1) entries
+        explode_core filter body (if start then depth else depth + 1) entries'
+      rdeps := consDep bodyEntry? rdeps
       let (entry, entries) := entries.add e
         { type    := ← addMessageContext <| ← Meta.inferType e
           depth   := depth
           status  := Status.lam
-          thm     := if (← Meta.inferType e).isArrow then "→I" else "∀I"
-          deps    := consDep argEntry? (consDep bodyEntry? []) }
+          thm     := "∀I" -- TODO use "→I" if it's purely implications?
+          deps    := rdeps.reverse }
       return (entry, entries)
   | .app .. => do
     trace[explode] ".app"
@@ -75,13 +84,13 @@ partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
       if fn.isConst then
         pure (none, entries)
       else
-        explode_core filter fn false depth entries
+        explode_core filter fn depth entries
     let deps := if fn.isConst then [] else consDep fnEntry? []
 
     let mut entries' := entries
     let mut rdeps := []
     for arg in args do
-      let (appEntry?, entries'') ← explode_core filter arg false depth entries'
+      let (appEntry?, entries'') ← explode_core filter arg depth entries'
       entries' := entries''
       rdeps := consDep appEntry? rdeps
     let deps := deps ++ rdeps.reverse
@@ -97,10 +106,10 @@ partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
     trace[explode] ".letE"
     let varType := varType.cleanupAnnotations
     Meta.withLocalDeclD varName varType fun var => do
-      let (valEntry?, entries) ← explode_core filter val si depth entries
+      let (valEntry?, entries) ← explode_core filter val depth entries
       -- Add a synonym so that the substituted fvars refer to `valEntry?`
       let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
-      explode_core filter (body.instantiate1 var) si depth entries
+      explode_core filter (body.instantiate1 var) depth entries
   | _ => do
     -- Right now all of these are caught by this case case:
     --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
@@ -122,7 +131,7 @@ where
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let filter (e : Expr) : MetaM Bool :=
     if filterProofs then Meta.isProof e else return true
-  let (_, entries) ← explode_core filter e true 0 default
+  let (_, entries) ← explode_core (start := true) filter e 0 default
   return entries
 
 end Mathlib.Explode

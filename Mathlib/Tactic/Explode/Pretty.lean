@@ -45,6 +45,7 @@ def rowToMessageData :
     let pipes := match en.status with
       | Status.sintro => "├ "
       | Status.intro  => "│ " ++ pipes ++ "┌ "
+      | Status.cintro => "│ " ++ pipes ++ "├ "
       | Status.lam    => "│ " ++ pipes
       | Status.reg    => "│ " ++ pipes
 

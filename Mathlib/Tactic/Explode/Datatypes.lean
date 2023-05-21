@@ -19,10 +19,12 @@ initialize registerTraceClass `explode
 
 /-- How to display pipes (`│`) for this entry in the Fitch table . -/
 inductive Status where
-  /-- `├` -/
+  /-- `├` Start intro (top-level) -/
   | sintro : Status
-  /-- `Entry.depth` * `│` + `┌` -/
+  /-- `Entry.depth` * `│` + `┌` Normal intro -/
   | intro  : Status
+  /-- `Entry.depth` * `│` + `├` Continuation intro -/
+  | cintro  : Status
   /-- `Entry.depth` * `│` -/
   | lam    : Status
   /-- `Entry.depth` * `│` -/
