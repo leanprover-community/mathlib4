@@ -541,6 +541,8 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   simp_rw [← (I.sup p).mem_ball_zero] at h'
   refine' Absorbs.mono_right _ h'
   exact (Finset.sup I p).ball_zero_absorbs_ball_zero hr
+
+set_option linter.uppercaseLean3 false in
 #align with_seminorms.is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
 
 theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G → E) {s : Set G}
@@ -548,6 +550,8 @@ theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G →
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔
       ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r :=
   by simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
+
+set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
 
 theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
@@ -570,12 +574,16 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
   simp only [Finset.not_nonempty_iff_eq_empty.mp hI, Finset.sup_empty, coe_bot, Pi.zero_apply,
     exists_prop]
   exact ⟨1, zero_lt_one, fun _ _ => zero_lt_one⟩
+
+set_option linter.uppercaseLean3 false in
 #align with_seminorms.is_vonN_bounded_iff_seminorm_bounded WithSeminorms.isVonNBounded_iff_seminorm_bounded
 
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r :=
   by simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
+
+set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_seminorm_bounded
 
 end NontriviallyNormedField
@@ -605,14 +613,17 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
   simp_rw [ContinuousAt, f.map_zero, q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.tendsto_iInf,
     Filter.tendsto_comap_iff]
   intro i
-  convert (hf i).continuousAt
-  exact (map_zero f).symm
+  convert (hf i).continuousAt.tendsto
+  exact (map_zero _).symm
 #align seminorm.continuous_of_continuous_comp Seminorm.continuous_of_continuous_comp
 
 theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [TopologicalSpace E]
     [TopologicalAddGroup E] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
     (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) : Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
-  ⟨fun h i => Continuous.comp (hq.continuous_seminorm i) h, continuous_of_continuous_comp hq f⟩
+    -- Porting note: if we *don't* use dot notation for `Continuous.comp`, Lean tries to show
+    -- continuity of `((q i).comp f) ∘ id` because it doesn't see that `((q i).comp f)` is
+    -- actually a composition of functions.
+  ⟨fun h i => (hq.continuous_seminorm i).comp h, continuous_of_continuous_comp hq f⟩
 #align seminorm.continuous_iff_continuous_comp Seminorm.continuous_iff_continuous_comp
 
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
@@ -624,10 +635,10 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   intro r hr
   rcases hf i with ⟨s₁, C, hf⟩
   have hC' : 0 < C + 1 := by positivity
-  rw [hp.has_basis.eventually_iff]
+  rw [hp.hasBasis.eventually_iff]
   refine' ⟨(s₁.sup p).ball 0 (r / (C + 1)), p.basisSets_mem _ (by positivity), _⟩
   simp_rw [← Metric.mem_ball, ← mem_preimage, ← ball_zero_eq_preimage_ball]
-  refine' subset.trans _ (ball_antitone hf)
+  refine' Subset.trans _ (ball_antitone hf)
   norm_cast
   rw [← ball_smul (s₁.sup p) hC']
   refine' ball_antitone (smul_le_smul le_rfl _)
@@ -663,13 +674,13 @@ variable [Nonempty ι] [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E
 
 theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     LocallyConvexSpace ℝ E := by
-  apply of_basis_zero ℝ E id fun s => s ∈ p.basisSets
+  apply ofBasisZero ℝ E id fun s => s ∈ p.basisSets
   · rw [hp.1, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
     exact FilterBasis.hasBasis _
   · intro s hs
     change s ∈ Set.iUnion _ at hs
     simp_rw [Set.mem_iUnion, Set.mem_singleton_iff] at hs
-    rcases hs with ⟨I, r, hr, rfl⟩
+    rcases hs with ⟨I, r, _, rfl⟩
     exact convex_ball _ _ _
 #align with_seminorms.to_locally_convex_space WithSeminorms.toLocallyConvexSpace
 
@@ -727,7 +738,7 @@ theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 
   letI : TopologicalSpace E := induced f inferInstance
   letI : TopologicalAddGroup E := topologicalAddGroup_induced f
   rw [(q.comp f).withSeminorms_iff_nhds_eq_iInf, nhds_induced, map_zero,
-    q.with_seminorms_iff_nhds_eq_infi.mp hq, Filter.comap_iInf]
+    q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.comap_iInf]
   refine' iInf_congr fun i => _
   exact Filter.comap_comap
 #align linear_map.with_seminorms_induced LinearMap.withSeminorms_induced
@@ -735,7 +746,7 @@ theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 
 theorem Inducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι} (hq : WithSeminorms q)
     [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : Inducing f) : WithSeminorms (q.comp f) := by
   rw [hf.induced]
-  exact f.with_seminorms_induced hq
+  exact f.withSeminorms_induced hq
 #align inducing.with_seminorms Inducing.withSeminorms
 
 end TopologicalConstructions
@@ -753,7 +764,7 @@ is first countable. -/
 theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
     TopologicalSpace.FirstCountableTopology E := by
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
-    rw [p.with_seminorms_iff_nhds_eq_infi.mp hp]
+    rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
     exact Filter.iInf.isCountablyGenerated _
   haveI : (uniformity E).IsCountablyGenerated := UniformAddGroup.uniformity_countably_generated
   exact UniformSpace.firstCountableTopology E
