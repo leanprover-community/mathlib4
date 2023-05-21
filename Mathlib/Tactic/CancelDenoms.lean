@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
 import Mathlib.Util.Qq
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # A tactic for canceling numeric denominators
@@ -93,7 +94,13 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     all_goals assumption
 #align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
-/-! ### Computing cancellation factors -/
+theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
+    (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
+    (a ≠ b) = (1 / gcd * (bd * a') ≠ 1 / gcd * (ad * b')) := by
+  classical
+  rw [eq_iff_iff, not_iff_not, cancel_factors_eq ha hb had hbd hgcd]
+
+/-! ### Computing cancelation factors -/
 
 /--
 `findCancelFactor e` produces a natural number `n`, such that multiplying `e` by `n` will
@@ -208,12 +215,15 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
+In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
+it is not, the final component of the return value tracks this.
 -/
 def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
   match e.getAppFnArgs with
   | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt, true)
   | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le, true)
   | (``Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq, false)
+  | (``Ne, #[_, a, b]) => (a, b, ``cancel_factors_ne, false)
   | (``GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le, true)
   | (``GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt, true)
   | _ => none
@@ -228,6 +238,7 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let some (lhs, rhs, lem, ord) := findCompLemma h | throwError "cannot kill factors"
   let (al, lhs_p) ← derive lhs
   let ⟨u, α, _⟩ ← inferTypeQ' lhs
+  let _ ← synthInstanceQ q(Field $α)
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   let (ar, rhs_p) ← derive rhs
   let gcd := al.gcd ar
@@ -292,3 +303,4 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
+  Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
