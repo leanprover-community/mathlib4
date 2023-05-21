@@ -29,8 +29,8 @@ universe w u v₁ v₂ v₃ v₄
 variable {ι : Type w} (R : Type u) (M : Type v₁) (N : Type v₂)
   (P : Type v₃) (Q : Type v₄)
 
--- Porting note: this does not appear to work; see below
-attribute [local ext] TensorProduct.ext
+-- Porting note: apparently `high` is necessary for this to fire below, odd
+attribute [local ext high] TensorProduct.ext
 
 section Contraction
 
@@ -117,7 +117,6 @@ theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
 theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q : Q) :
     TensorProduct.map (dualTensorHom R M P (f ⊗ₜ[R] p)) (dualTensorHom R N Q (g ⊗ₜ[R] q)) =
       dualTensorHom R (M ⊗[R] N) (P ⊗[R] Q) (dualDistrib R M N (f ⊗ₜ g) ⊗ₜ[R] p ⊗ₜ[R] q) := by
-  apply TensorProduct.ext -- Porting note: missing from ext
   ext (m n)
   simp only [compr₂_apply, mk_apply, map_tmul, dualTensorHom_apply, dualDistrib_apply, ←
     smul_tmul_smul]
@@ -171,7 +170,6 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
         f.map_smul, (dualTensorHom R M N).map_sum, ← f.map_sum, b.sum_repr])
     (by
-      apply TensorProduct.ext -- Porting note: missing from ext
       ext (f m)
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂_apply,
@@ -264,9 +262,6 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  apply TensorProduct.ext -- Porting note: missing from ext
-  apply LinearMap.ext; intro p -- Porting note: had to walk through this
-  apply TensorProduct.ext -- Porting note: missing from ext
   ext (f q m)
   dsimp [lTensorHomEquivHomLTensor]
   simp only [lTensorHomEquivHomLTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
@@ -282,8 +277,6 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  apply TensorProduct.ext -- Porting note: missing from ext
-  apply TensorProduct.ext -- Porting note: missing from ext
   ext (f p q m)
   simp only [rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
@@ -321,10 +314,6 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
 @[simp]
 theorem homTensorHomEquiv_toLinearMap :
     (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q := by
-  apply TensorProduct.ext -- Porting note: missing from ext
-  apply LinearMap.ext; intro f -- Porting note: had to walk through this
-  apply LinearMap.ext; intro g -- Porting note: had to walk through this
-  apply TensorProduct.ext -- Porting note: missing from ext
   ext (m n)
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
