@@ -5,9 +5,8 @@ Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills
 -/
 import Lean
 import Mathlib.Tactic.Have
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SCC
 import Mathlib.Data.List.TFAE
-import Qq
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -69,11 +68,11 @@ Example:
 ```lean
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2
-  { /- proof of P → Q -/ }
+  · /- proof of P → Q -/
   tfae_have 2 → 1
-  { /- proof of Q → P -/ }
+  · /- proof of Q → P -/
   tfae_have 2 ↔ 3
-  { /- proof of Q ↔ R -/ }
+  · /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/
@@ -123,7 +122,7 @@ add_decl_doc getTFAEListQ.guardExplicitList
 def proveImpl (P P' : Q(Prop)) : TacticM Q($P → $P') := do
   let t ← mkFreshExprMVar q($P → $P')
   try
-    let [] ← run t.mvarId! <| evalTactic (← `(tactic| intro; solve_by_elim [Iff.mp, Iff.mpr])) |
+    let [] ← run t.mvarId! <| evalTactic (← `(tactic| apply Iff.mp; scc)) |
       failure
   catch _ =>
     throwError "couldn't prove {P} → {P'}"
