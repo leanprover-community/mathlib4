@@ -13,7 +13,6 @@ import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
--- Porting note : need `CategoryTheory.reflectsIsomorphisms_forget₂`
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
