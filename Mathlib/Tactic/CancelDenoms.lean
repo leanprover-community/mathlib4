@@ -292,10 +292,3 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
-  Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
-
-variable {α : Type} [Field α] [CharZero α] (a b c d : α)
-example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
-  cancel_denoms
-  rw [← h]
-  sorry
