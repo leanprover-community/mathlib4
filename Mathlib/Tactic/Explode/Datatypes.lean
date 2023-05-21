@@ -40,8 +40,6 @@ inductive Thm where
 
 /-- The row in the Fitch table. -/
 structure Entry where
-  /-- Expression -/
-  expr    : Expr
   /-- A type of this expression. We need to store it too, because it needs to have been created
   in the right `MessageDataContext` - we can't just `inferType` from `Entry.expr` later. -/
   type    : Expr
@@ -77,11 +75,11 @@ def Entries.size (es : Entries) : Nat :=
   es.s.size
 
 /-- Add the entry unless it already exists. -/
-def Entries.add : Entries → Entry → Entries
-  | entries@⟨s, l⟩, entry =>
-    if s.contains entry.expr
+def Entries.add : Entries → Expr → Entry → Entries
+  | entries@⟨s, l⟩, expr, entry =>
+    if s.contains expr
       then entries
-      else ⟨s.insert entry.expr entry, entry :: l⟩
+      else ⟨s.insert expr entry, entry :: l⟩
 
 /-- Create an empty `Entries`. -/
 def entriesDefault : Entries := default

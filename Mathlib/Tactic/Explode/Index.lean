@@ -27,9 +27,8 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
     Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
       let body := Expr.instantiate1 body.cleanupAnnotations arg
 
-      let entries_1 := entries.add
-        { expr    := arg,
-          type    := ← Meta.inferType arg,
+      let entries_1 := entries.add arg
+        { type    := ← Meta.inferType arg,
           line    := entries.size,
           depth   := depth,
           status  := if si then Status.sintro else Status.intro,
@@ -39,9 +38,8 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
 
       let entries_2 ← explode body si (if si then depth else depth + 1) entries_1
 
-      let entries_3 := entries_2.add
-        { expr    := e,
-          type    := ← Meta.inferType e,
+      let entries_3 := entries_2.add e
+        { type    := ← Meta.inferType e,
           line    := entries_2.size,
           depth   := depth,
           status  := Status.lam,
@@ -77,9 +75,8 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
       deps_3 ← appendDep entries_2 arg deps_3
     deps_3 ← appendDep entries_1 fn deps_3.reverse
 
-    let entries_3 := entries_2.add
-      { expr    := e,
-        type    := ← Meta.inferType e,
+    let entries_3 := entries_2.add e
+      { type    := ← Meta.inferType e,
         line    := entries_2.size,
         depth   := depth,
         status  := Status.reg,
@@ -101,9 +98,8 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
     -- Might be good to handle them separately.
     -- Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
     trace[explode] "default - .{e.ctorName}"
-    let entries := entries.add
-      { expr    := e,
-        type    := ← Meta.inferType e,
+    let entries := entries.add e
+      { type    := ← Meta.inferType e,
         line    := entries.size,
         depth   := depth,
         status  := Status.reg,
