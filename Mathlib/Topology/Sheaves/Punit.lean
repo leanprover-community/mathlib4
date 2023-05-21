@@ -30,10 +30,10 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
   obtain rfl | hne := eq_or_ne U ⊥
   · intro _ _
     rw [@exists_unique_iff_exists _ ⟨fun _ _ => _⟩]
-    · refine' ⟨it.from _, fun U hU hs => is_terminal.hom_ext _ _ _⟩
+    · refine' ⟨it.from _, fun U hU hs => IsTerminal.hom_ext _ _ _⟩
       rwa [le_bot_iff.1 hU.le]
     · apply it.hom_ext
-  · convert presieve.is_sheaf_for_top_sieve _
+  · convert @Presieve.isSheafFor_top_sieve _ _ _ _
     rw [← sieve.id_mem_iff_eq_top]
     have := (U.eq_bot_or_top hind).resolve_left hne
     subst this
@@ -43,6 +43,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     obtain rfl | rfl := U.eq_bot_or_top hind
     · cases hm
     · convert hf
+set_option linter.uppercaseLean3 false
 #align Top.presheaf.is_sheaf_of_is_terminal_of_indiscrete TopCat.Presheaf.isSheaf_of_isTerminal_of_indiscrete
 
 theorem isSheaf_iff_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤)
@@ -62,4 +63,3 @@ theorem isSheaf_on_pUnit_iff_isTerminal (F : Presheaf C (TopCat.of PUnit)) :
 #align Top.presheaf.is_sheaf_on_punit_iff_is_terminal TopCat.Presheaf.isSheaf_on_pUnit_iff_isTerminal
 
 end TopCat.Presheaf
-
