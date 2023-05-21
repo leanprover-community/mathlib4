@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 /-!
 # Measurability of `⌊x⌋` etc
 
-In this file we prove that `int.floor`, `int.ceil`, `int.fract`, `nat.floor`, and `nat.ceil` are
+In this file we prove that `Int.floor`, `Int.ceil`, `Int.fract`, `Nat.floor`, and `Nat.ceil` are
 measurable under some assumptions on the (semi)ring.
 -/
 
@@ -74,7 +74,7 @@ variable {α R : Type _} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSe
 
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases eq_or_ne ⌊n⌋₊ 0 <;> simp [*, Nat.preimage_floor_of_ne_zero]
+    cases' eq_or_ne ⌊n⌋₊ 0 with h h <;> simp_all [h, Nat.preimage_floor_of_ne_zero]
 #align nat.measurable_floor Nat.measurable_floor
 
 @[measurability]
@@ -84,7 +84,7 @@ theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋
 
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases eq_or_ne ⌈n⌉₊ 0 <;> simp [*, Nat.preimage_ceil_of_ne_zero]
+    cases' eq_or_ne ⌈n⌉₊ 0 with h h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero]
 #align nat.measurable_ceil Nat.measurable_ceil
 
 @[measurability]
@@ -93,4 +93,3 @@ theorem Measurable.nat_ceil (hf : Measurable f) : Measurable fun x => ⌈f x⌉�
 #align measurable.nat_ceil Measurable.nat_ceil
 
 end FloorSemiring
-
