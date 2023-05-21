@@ -37,13 +37,6 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
     paddedMds := (md ++ String.replicate padWidth ' ') :: paddedMds
   return paddedMds.reverse
 
-/-- Turn a theorem into `MessageData`. -/
-def thmToMd (thm : Thm) : MessageData :=
-  match thm with
-    | Thm.msg msg       => msg
-    | Thm.name name     => name
-    | Thm.string string => string
-
 /-- Render a particular row of the Fitch table. -/
 def rowToMd :
     List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
@@ -67,6 +60,6 @@ def entriesToMd (entries : Entries) : MetaM MessageData := do
   let paddedDeps  ← padRight <| entries.l.map fun entry =>
     String.intercalate "," (entry.deps.map toString)
   -- ['p  ', 'hP ', '∀I ']
-  let paddedThms ← padRight <| entries.l.map fun entry => thmToMd entry.thm
+  let paddedThms ← padRight <| entries.l.map (·.thm)
 
   rowToMd paddedLines paddedDeps paddedThms entries.l

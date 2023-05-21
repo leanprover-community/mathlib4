@@ -31,7 +31,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
           line    := entries.size
           depth   := depth
           status  := if si then Status.sintro else Status.intro
-          thm     := Thm.name varName
+          thm     := ← addMessageContext <| arg
           deps    := [] }
 
       let entries_2 ← explode body si (if si then depth else depth + 1) entries_1
@@ -41,9 +41,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
           line    := entries_2.size
           depth   := depth
           status  := Status.lam
-          thm     := if (← Meta.inferType e).isArrow
-            then Thm.string "→I"
-            else Thm.string "∀I"
+          thm     := if (← Meta.inferType e).isArrow then "→I" else "∀I"
           deps    := if si
             then [entries.size, entries_2.size - 1]
             else ← appendDep entries_2 arg (← appendDep entries_2 body []) }
@@ -77,9 +75,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
         line    := entries_2.size
         depth   := depth
         status  := Status.reg
-        thm     := if fn.isConst
-          then Thm.string s!"{fn.constName!}()"
-          else Thm.string "∀E"
+        thm     := ← addMessageContext <| if fn.isConst then m!"{fn}()" else "∀E"
         deps    := deps_3 }
 
     return entries_3
@@ -99,7 +95,7 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
         line    := entries.size
         depth   := depth
         status  := Status.reg
-        thm     := Thm.msg (← addMessageContext e)
+        thm     := ← addMessageContext e
         deps    := [] }
     return entries
 

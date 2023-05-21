@@ -29,15 +29,6 @@ inductive Status where
   | reg    : Status
   deriving Inhabited
 
-/-- How to display the theorem in the Fitch table. -/
-inductive Thm where
-  /-- The theorem expression as a `MessageData`. Make sure to use `addMessageContext`. -/
-  | msg   : MessageData → Thm
-  /-- Display as a name -/
-  | name   : Name → Thm
-  /-- Display as a string -/
-  | string : String → Thm
-
 /-- The row in the Fitch table. -/
 structure Entry where
   /-- A type of this expression as a `MessageData`. Make sure to use `addMessageContext`. -/
@@ -48,8 +39,9 @@ structure Entry where
   depth   : Nat
   /-- What `Status` this entry has - this only affects how `│`s are displayed. -/
   status  : Status
-  /-- What to display in the "theorem applied" column. -/
-  thm     : Thm
+  /-- What to display in the "theorem applied" column.
+  Make sure to use `addMessageContext` if needed. -/
+  thm     : MessageData
   /-- Which other lines (aka rows) this row depends on. -/
   deps    : List Nat
 
