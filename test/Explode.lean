@@ -3,6 +3,9 @@ import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
 open Lean
 
+-- See that the explode command itself works
+#explode true_iff
+
 elab "#explode_test " theoremStx:ident : command => Elab.Command.liftTermElabM do
   let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!

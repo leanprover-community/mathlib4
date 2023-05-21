@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Evgenia Karunus
+Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.Explode.Datatypes
@@ -143,52 +143,96 @@ proof or the Metamath proof style.
 For example, exploding the following theorem:
 
 ```lean
-theorem application : True ∧ True :=
-  And.intro True.intro True.intro
-#explode application
+#explode iff_of_true
 ```
 
 produces:
 
 ```lean
-iff_true_intro : ∀ {a : Prop}, a → (a ↔ true)
-0│         │ @And.intro  │ ∀ {a b : Prop}, a → b → a ∧ b
-1│         │ True        │ Prop
-2│         │ True.intro  │ True
-3│0,1,1,2,2│ And.intro() │ True ∧ True
+iff_of_true : ∀ {a b : Prop}, a → b → (a ↔ b)
+
+0│         │ a          ├ Prop
+1│         │ b          ├ Prop
+2│         │ ha         ├ a
+3│         │ hb         ├ b
+4│         │ x✝         │ ┌ a
+5│4,3      │ ∀I         │ a → b
+6│         │ x✝         │ ┌ b
+7│6,2      │ ∀I         │ b → a
+8│0,1,5,7  │ @Iff.intro │ a ↔ b
+9│0,1,2,3,8│ ∀I         │ ∀ {a b : Prop}, a → b → (a ↔ b)
 ```
 
 ## Overview
 
-Given a body of a theorem, we parse it as an `Expr`.
-We only have 3 cases (written in pseudocode):
-  - `Expr.lam` - displays `fun x => y` as
-    ```lean
-     |    | x        -- (X)
-     |    | y        -- (Y)
-     | →I | fun x => y -- (X → Y)
-    ```
-  - `Expr.app` - displays `f a b c` as
-     ```lean
-     |    | f       -- (A → B → C → D)
-     |    | a       -- (A)
-     |    | b       -- (B)
-     |    | c       -- (C)
-     | →E | f a b c -- (D)
-     ```
-  - everything else (constants, fvars, potential weird things) - displays `x` as `x`.
+The `#explode` command takes the body of the theorem and decomposes it into its parts,
+displaying each expression constructor one at a time. The constructor is indicated
+in some way in column 3, and its dependencies are recorded in column 2.
 
-## In more details
+These are the main constructor types:
+
+  - Lambda expressions (`Expr.lam`). The expression `fun (h : p) => s` is displayed as
+    ```lean
+     0│    │ h   │ ┌ p
+     1│**  │ **  │ │ q
+     2│1,2 │ ∀I  │ ∀ (h : p), q
+    ```
+    with `**` a wildcard, and there can be intervening steps between 0 and 1.
+    Nested lambda expressions can be merged, and `∀I` can depend on a whole list of arguments.
+
+  - Applications (`Expr.app`). The expression `f a b c` is displayed as
+     ```lean
+     0│**      │ f  │ A → B → C → D
+     1│**      │ a  │ A
+     2│**      │ b  │ B
+     3│**      │ c  │ C
+     1│0,1,2,3 │ ∀E │ D
+     ```
+     There can be intervening steps between each of these.
+     As a special case, if `f` is a constant it can be omitted and the display instead looks like
+     ```lean
+     0│**    │ a │ A
+     1│**    │ b │ B
+     2│**    │ c │ C
+     3│1,2,3 │ f │ D
+     ```
+     (and if `f` has implicit arguments, the pretty printer will write `@f`).
+  - Let expressions (`Expr.letE`) do not display in any special way, but they do
+    ensure that in `let x := v; b` that `v` is processed first and then `b`, rather
+    than first doing zeta reduction. This keeps lambda merging and application merging
+    from making proofs with `let` confusing to interpret.
+  - Everything else (constants, fvars, etc.) display `x : X` as
+    ```lean
+    0│  │ x │ X
+    ```
+
+## In more detail
 
 The output of `#explode` is a Fitch-style proof in a four-column diagram modeled after Metamath
 proof displays like [this](http://us.metamath.org/mpeuni/ru.html). The headers of the columns are
 "Step", "Hyp", "Ref", "Type" (or "Expression" in the case of Metamath):
-* **Step**: An increasing sequence of numbers for each row in the proof.
-* **Hyp**: The **Step**s we used to create this row.
+* **Step**: An increasing sequence of numbers for each row in the proof, used in the Hyp fields.
+* **Hyp**: The direct children of the current step. These are step numbers for the subexpressions
+  for this step's expression. For theorem applications, it's the theorem arguments, and for
+  foralls it is all the bound variables and the conclusion.
 * **Ref**: The name of the theorem being applied. This is well-defined in Metamath, but in Lean
   there are some special steps that may have long names because the structure of proof terms doesn't
-  exactly match this mold. For example, **Ref** can be `theoremName()` (same as `∀E`, but we know
-  the theorem name), `∀E`, `→I`, or `∀I`.
+  exactly match this mold.
+  * If the theorem is `foo (x y : Z) : A x -> B y -> C x y`:
+    * the Ref field will contain `foo`,
+    * `x` and `y` will be suppressed, because term construction is not interesting, and
+    * the Hyp field will reference steps proving `A x` and `B y`. This corresponds to a proof term
+      like `@foo x y pA pB` where `pA` and `pB` are subproofs.
+    * In the Hyp column, suppressed terms appear using "_" rather than a step number.
+  * If the head of the proof term is a local constant or lambda, then in this case the Ref will
+    say `∀E` for forall-elimination. This happens when you have for example `h : A -> B` and
+    `ha : A` and prove `b` by `h ha`; we reinterpret this as if it said `∀E h ha` where `∀E` is
+    (n-ary) modus ponens.
+  * If the proof term is a lambda, we will also use `∀I` for forall-introduction, referencing the
+    body of the lambda. The indentation level will increase, and a bracket will surround the proof
+    of the body of the lambda, starting at a proof step labeled with the name of the lambda variable
+    and its type, and ending with the `∀I` step. Metamath doesn't have steps like this, but the
+    style is based on Fitch proofs in first-order logic.
 * **Type**: This contains the type of the proof term, the theorem being proven at the current step.
 
 Also, it is common for a Lean theorem to begin with a sequence of lambdas introducing local
@@ -199,7 +243,7 @@ have global scope anyway so detailed tracking is not necessary.)
 -/
 elab "#explode " theoremStx:ident : command => Elab.Command.liftTermElabM do
   let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
-  let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
-  let entries ← Mathlib.Explode.explode body
+  let const := ((← getEnv).find? theoremStx.getId).get!
+  let entries ← Mathlib.Explode.explode const.value!
   let fitchTable : MessageData ← Mathlib.Explode.entriesToMessageData entries
-  Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")
+  Lean.logInfo m!"{theoremName} : {const.type}\n\n{fitchTable}\n"
