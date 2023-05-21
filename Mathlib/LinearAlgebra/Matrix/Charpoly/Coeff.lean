@@ -71,7 +71,8 @@ theorem charpoly_sub_diagonal_degree_lt :
   rw [← mem_degreeLT]; apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
   intro c hc; rw [← C_eq_int_cast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
-  rw [mem_degreeLT]; apply lt_of_le_of_lt degree_le_natDegree _; rw [WithBot.coe_lt_coe]
+  rw [mem_degreeLT]; apply lt_of_le_of_lt degree_le_natDegree _
+  apply WithBot.coe_lt_coe.mpr -- porting note: was `rw [WithBot.coe_lt_coe]`
   apply lt_of_le_of_lt _ (Equiv.Perm.fixed_point_card_lt_of_ne_one (ne_of_mem_erase hc))
   apply le_trans (Polynomial.natDegree_prod_le univ fun i : n => charmatrix M (c i) i) _
   rw [card_eq_sum_ones]; rw [sum_filter]; apply sum_le_sum
@@ -81,7 +82,8 @@ theorem charpoly_sub_diagonal_degree_lt :
 theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤ k) :
     M.charpoly.coeff k = (∏ i : n, (X - C (M i i))).coeff k := by
   apply eq_of_sub_eq_zero; rw [← coeff_sub]; apply Polynomial.coeff_eq_zero_of_degree_lt
-  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) _; rw [WithBot.coe_le_coe]; apply h
+  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_; exact WithBot.coe_le_coe.mpr h
+  -- porting note: was `rw [WithBot.coe_le_coe]; apply h`
 #align matrix.charpoly_coeff_eq_prod_coeff_of_le Matrix.charpoly_coeff_eq_prod_coeff_of_le
 
 theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1 := by
@@ -100,8 +102,9 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     · simp
     · assumption
   rw [← sub_add_cancel M.charpoly (∏ i : n, (X - C (M i i)))]
-  have h1 : (∏ i : n, (X - C (M i i))).degree = Fintype.card n := by
-    rw [degree_eq_iff_nat_degree_eq_of_pos]
+  -- porting note: added `↑` in front of `Fintype.card n`
+  have h1 : (∏ i : n, (X - C (M i i))).degree = ↑(Fintype.card n) := by
+    rw [degree_eq_iff_natDegree_eq_of_pos]
     swap
     apply Nat.pos_of_ne_zero h
     rw [natDegree_prod']
@@ -114,7 +117,8 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
-  rw [WithBot.coe_lt_coe]
+  -- porting note: was `rw [WithBot.coe_lt_coe]`
+  apply WithBot.coe_lt_coe.mpr
   rw [← Nat.pred_eq_sub_one]
   apply Nat.pred_lt
   apply h
@@ -126,7 +130,7 @@ theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
 #align matrix.charpoly_nat_degree_eq_dim Matrix.charpoly_natDegree_eq_dim
 
 theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
-  nontriviality
+  nontriviality R -- porting note: was simply `nontriviality`
   by_cases Fintype.card n = 0
   · rw [charpoly, det_of_card_zero h]
     apply monic_one
@@ -141,7 +145,8 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [← neg_sub]
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
-  rw [WithBot.coe_lt_coe]
+  -- porting note: was `rw [WithBot.coe_lt_coe]`
+  apply WithBot.coe_lt_coe.mpr
   rw [← Nat.pred_eq_sub_one]
   apply Nat.pred_lt
   apply h
@@ -180,7 +185,8 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
 theorem eval_det (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
   rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
-  apply congr_arg det; ext; symm; convert matPolyEquiv_eval _ _ _ _
+  apply congr_arg det; ext; symm; exact matPolyEquiv_eval _ _ _ _
+                                  -- porting note: `exact` was `convert`
 #align matrix.eval_det Matrix.eval_det
 
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
@@ -203,10 +209,12 @@ theorem matPolyEquiv_eq_x_pow_sub_c {K : Type _} (k : ℕ) [Field K] (M : Matrix
   by_cases hij : i = j
   · rw [hij, charmatrix_apply_eq, AlgHom.map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow,
       coeff_C]
-    split_ifs with mp m0 <;> simp only [Matrix.one_apply_eq, DMatrix.zero_apply]
+                             -- porting note: the second `Matrix.` was `DMatrix.`
+    split_ifs with mp m0 <;> simp only [Matrix.one_apply_eq, Matrix.zero_apply]
   · rw [charmatrix_apply_ne _ _ _ hij, AlgHom.map_neg, expand_C, coeff_neg, coeff_C]
     split_ifs with m0 mp <;>
-      simp only [hij, zero_sub, DMatrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
+      -- porting note: again, the first `Matrix.` that was `DMatrix.`
+      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
         not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_x_pow_sub_c
@@ -242,8 +250,9 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, coeff_X_mul_zero, coeff_C_zero, zero_sub,
-      neg_mem_iff]
+  · rw [Nat.zero_eq]  -- porting note: `rw [Nat.zero_eq]` was not present
+    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, coeff_X_mul_zero, coeff_C_zero, zero_sub]
+    apply neg_mem  -- porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
   · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
