@@ -40,7 +40,7 @@ you should parametrize over `(F : Type*) [continuous_add_monoid_hom_class F A B]
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B where
-  continuous_toFun : Continuous to_fun
+  continuous_toFun : Continuous (to_fun : A → B)
 #align continuous_add_monoid_hom ContinuousAddMonoidHom
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
@@ -51,9 +51,8 @@ you should parametrize over `(F : Type*) [continuous_monoid_hom_class F A B] (f 
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 @[to_additive]
 structure ContinuousMonoidHom extends A →* B where
-  continuous_toFun : Continuous to_fun
+  continuous_toFun : Continuous (to_fun : A → B)
 #align continuous_monoid_hom ContinuousMonoidHom
-#align continuous_add_monoid_hom ContinuousAddMonoidHom
 
 section
 
@@ -61,7 +60,8 @@ section
 homomorphisms.
 
 You should also extend this typeclass when you extend `continuous_add_monoid_hom`. -/
-class ContinuousAddMonoidHomClass (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
+-- porting note : Changed A B to outParam to help synthesizing order
+class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends AddMonoidHomClass F A B where
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
@@ -70,14 +70,16 @@ class ContinuousAddMonoidHomClass (A B : Type _) [AddMonoid A] [AddMonoid B] [To
 homomorphisms.
 
 You should also extend this typeclass when you extend `continuous_monoid_hom`. -/
+-- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
-class ContinuousMonoidHomClass extends MonoidHomClass F A B where
+class ContinuousMonoidHomClass {A B : outParam (Type _)} [Monoid A] [Monoid B]
+    [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
-#align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
 
-attribute [to_additive ContinuousAddMonoidHomClass.toAddMonoidHomClass]
-  ContinuousMonoidHomClass.toMonoidHomClass
+-- porting note : moved to class?
+-- attribute [to_additive ContinuousAddMonoidHomClass.toAddMonoidHomClass]
+--   ContinuousMonoidHomClass.toMonoidHomClass
 
 end
 
@@ -460,4 +462,3 @@ noncomputable def mapHom [LocallyCompactSpace E] :
 #align pontryagin_dual.map_hom PontryaginDual.mapHom
 
 end PontryaginDual
-
