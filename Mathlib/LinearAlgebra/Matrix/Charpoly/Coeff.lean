@@ -72,7 +72,8 @@ theorem charpoly_sub_diagonal_degree_lt :
   intro c hc; rw [← C_eq_int_cast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]; apply lt_of_le_of_lt degree_le_natDegree _
-  apply WithBot.coe_lt_coe.mpr -- porting note: was `rw [WithBot.coe_lt_coe]`
+  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
+  rw [WithBot.coe_lt_coe]
   apply lt_of_le_of_lt _ (Equiv.Perm.fixed_point_card_lt_of_ne_one (ne_of_mem_erase hc))
   apply le_trans (Polynomial.natDegree_prod_le univ fun i : n => charmatrix M (c i) i) _
   rw [card_eq_sum_ones]; rw [sum_filter]; apply sum_le_sum
@@ -82,8 +83,9 @@ theorem charpoly_sub_diagonal_degree_lt :
 theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤ k) :
     M.charpoly.coeff k = (∏ i : n, (X - C (M i i))).coeff k := by
   apply eq_of_sub_eq_zero; rw [← coeff_sub]; apply Polynomial.coeff_eq_zero_of_degree_lt
-  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_; exact WithBot.coe_le_coe.mpr h
-  -- porting note: was `rw [WithBot.coe_le_coe]; apply h`
+  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
+  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
+  rw [WithBot.coe_le_coe]; apply h
 #align matrix.charpoly_coeff_eq_prod_coeff_of_le Matrix.charpoly_coeff_eq_prod_coeff_of_le
 
 theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1 := by
@@ -117,8 +119,8 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
-  -- porting note: was `rw [WithBot.coe_lt_coe]`
-  apply WithBot.coe_lt_coe.mpr
+  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
+  rw [WithBot.coe_lt_coe]
   rw [← Nat.pred_eq_sub_one]
   apply Nat.pred_lt
   apply h
@@ -164,7 +166,7 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
 theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     (matPolyEquiv M).eval ((scalar n) r) i j = (M i j).eval r := by
   unfold Polynomial.eval
-  rw [Polynomial.eval₂_def, Polynomial.eval₂_def]
+  rw [Polynomial.eval₂_def, Polynomial.eval₂_def]  -- porting note: was `unfold eval₂`
   trans Polynomial.sum (matPolyEquiv M) fun (e : ℕ) (a : Matrix n n R) => (a * (scalar n) r ^ e) i j
   · unfold Polynomial.sum
     simp only [sum_apply]
@@ -172,14 +174,15 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
   · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
     simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul,
       Algebra.smul_mul_assoc]
-    have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
+    -- porting note: the `have` was present and unused also in the original
+    --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
     simp only [Polynomial.sum, matPolyEquiv_coeff_apply, mul_comm]
-    simp only [smul_apply, matPolyEquiv_coeff_apply, smul_eq_mul]
+    simp only [smul_apply, matPolyEquiv_coeff_apply, smul_eq_mul]  -- porting note: added
     apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
-    intro n hn h'n
+    intro n _hn h'n
     rw [not_mem_support_iff] at h'n
     simp only [h'n, MulZeroClass.zero_mul]
-    simp only [mul_zero]
+    simp only [mul_zero]  -- porting note: added
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
 theorem eval_det (M : Matrix n n R[X]) (r : R) :
