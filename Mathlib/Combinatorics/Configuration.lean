@@ -33,7 +33,7 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.HasLines.hasPoints`: `has_lines` and `|P| = |L|` implies `has_points`.
 * `Configuration.HasPoints.hasLines`: `has_points` and `|P| = |L|` implies `has_lines`.
 Together, these four statements say that any two of the following properties imply the third:
-(a) `has_lines`, (b) `has_points`, (c) `|P| = |L|`.
+(a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
 -/
 
