@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.circular
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
+! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Set
 
 /-!
 # Circular order hierarchy
@@ -73,7 +72,7 @@ What is the correct generality of "rolling the necklace" open? At least, this wo
 `β × α` where `α` is a circular order and `β` is a linear order.
 
 What's next is to define circular groups and provide instances for `ZMod n`, the usual circle group
-`Circle`, `Real.Angle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
+`Circle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
 to work?
 
 We should have circular order homomorphisms. The typical example is
@@ -316,8 +315,7 @@ theorem btw_rfl_right {a b : α} : btw a b b :=
   btw_refl_right _ _
 #align btw_rfl_right btw_rfl_right
 
-theorem sbtw_iff_not_btw {a b c : α} : sbtw a b c ↔ ¬btw c b a :=
-  by
+theorem sbtw_iff_not_btw {a b c : α} : sbtw a b c ↔ ¬btw c b a := by
   rw [sbtw_iff_btw_not_btw]
   exact and_iff_right_of_imp (btw_total _ _ _).resolve_left
 #align sbtw_iff_not_btw sbtw_iff_not_btw
@@ -371,15 +369,13 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 
-theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a :=
-  by
+theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a := by
   ext
   rw [Set.mem_cIoo, sbtw_iff_not_btw]
   rfl
 #align set.compl_cIcc Set.compl_cIcc
 
-theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a :=
-  by
+theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a := by
   ext
   rw [Set.mem_cIcc, btw_iff_not_sbtw]
   rfl

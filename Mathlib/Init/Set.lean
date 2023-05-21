@@ -34,9 +34,11 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 -/
 
 def Set (α : Type u) := α → Prop
+#align set Set
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
 p
+#align set_of setOf
 
 namespace Set
 
@@ -76,7 +78,7 @@ macro_rules
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 open Std.ExtendedBinder in

@@ -110,8 +110,8 @@ protected theorem le_tsub_iff_left (ha : AddLECancellable a) (h : a ≤ c) : b �
   ⟨add_le_of_le_tsub_left_of_le h, ha.le_tsub_of_add_le_left⟩
 #align add_le_cancellable.le_tsub_iff_left AddLECancellable.le_tsub_iff_left
 
-protected theorem le_tsub_iff_right (ha : AddLECancellable a) (h : a ≤ c) : b ≤ c - a ↔ b + a ≤ c :=
-  by
+protected theorem le_tsub_iff_right (ha : AddLECancellable a) (h : a ≤ c) :
+    b ≤ c - a ↔ b + a ≤ c := by
   rw [add_comm]
   exact ha.le_tsub_iff_left h
 #align add_le_cancellable.le_tsub_iff_right AddLECancellable.le_tsub_iff_right
@@ -329,6 +329,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
 alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+#align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
 
@@ -507,7 +508,7 @@ theorem tsub_min : a - min a b = a - b := by
 #align tsub_min tsub_min
 
 theorem tsub_add_min : a - b + min a b = a := by
-  rw [← tsub_min, tsub_add_cancel_of_le]
+  rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
 

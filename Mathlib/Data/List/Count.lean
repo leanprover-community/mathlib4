@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.count
-! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -39,7 +39,7 @@ protected theorem countp_go_eq_add (l) : countp.go p l n = n + countp.go p l 0 :
   · rfl
   · unfold countp.go
     rw [ih (n := n + 1), ih (n := n), ih (n := 1)]
-    by_cases p head
+    by_cases h : p head
     · simp [h, add_assoc]
     · simp [h]
 
@@ -51,7 +51,6 @@ theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp 
     rfl
   unfold countp
   rw [this, add_comm, List.countp_go_eq_add]
-
 #align list.countp_cons_of_pos List.countp_cons_of_pos
 
 @[simp]
@@ -68,7 +67,7 @@ theorem countp_cons (a : α) (l) : countp p (a :: l) = countp p l + if p a then 
 theorem length_eq_countp_add_countp (l) : length l = countp p l + countp (fun a => ¬p a) l := by
   induction' l with x h ih
   · rfl
-  by_cases p x
+  by_cases h : p x
   · rw [countp_cons_of_pos _ _ h, countp_cons_of_neg _ _ _, length, ih]
     · ac_rfl
     · simp only [h]
@@ -80,7 +79,7 @@ theorem length_eq_countp_add_countp (l) : length l = countp p l + countp (fun a 
 theorem countp_eq_length_filter (l) : countp p l = length (filter p l) := by
   induction' l with x l ih
   · rfl
-  by_cases p x
+  by_cases h : p x
   · rw [countp_cons_of_pos p l h, ih, filter_cons_of_pos l h, length]
   · rw [countp_cons_of_neg p l h, ih, filter_cons_of_neg l h]
 #align list.countp_eq_length_filter List.countp_eq_length_filter
@@ -327,7 +326,6 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countp_map, (· ∘ ·), hf.beq_eq]
-
 #align list.count_map_of_injective List.count_map_of_injective
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :
@@ -362,8 +360,7 @@ theorem count_erase_of_ne (ab : a ≠ b) (l : List α) : count a (l.erase b) = c
 
 @[to_additive]
 theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
-    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a :=
-  by
+    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction' l with a' as h generalizing a
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
@@ -372,12 +369,14 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     · rw [ha', _root_.pow_succ]
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
+#align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
 
 @[to_additive]
 theorem prod_eq_pow_single [Monoid α] (a : α)
     (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 #align list.prod_eq_pow_single List.prod_eq_pow_single
+#align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
 
 end Count
 

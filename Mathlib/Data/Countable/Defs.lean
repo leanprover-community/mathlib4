@@ -9,7 +9,6 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Countable types
@@ -32,12 +31,13 @@ variable {α : Sort u} {β : Sort v}
 ### Definition and basic properties
 -/
 
-
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
 @[mk_iff countable_iff_exists_injective]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f
+#align countable Countable
+#align countable_iff_exists_injective countable_iff_exists_injective
 
 lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
   ∃ f : α → ℕ, Injective f :=
@@ -52,23 +52,29 @@ protected theorem Function.Injective.countable [Countable β] {f : α → β} (h
   Countable α :=
   let ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
+#align function.injective.countable Function.Injective.countable
 
 protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
   Countable β :=
   (injective_surjInv hf).countable
+#align function.surjective.countable Function.Surjective.countable
 
 theorem exists_surjective_nat (α : Sort u) [Nonempty α] [Countable α] : ∃ f : ℕ → α, Surjective f :=
   let ⟨f, hf⟩ := exists_injective_nat α
   ⟨invFun f, invFun_surjective hf⟩
+#align exists_surjective_nat exists_surjective_nat
 
 theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f : ℕ → α, Surjective f :=
   ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ ↦ hf.countable⟩
+#align countable_iff_exists_surjective countable_iff_exists_surjective
 
 theorem Countable.of_equiv (α : Sort _) [Countable α] (e : α ≃ β) : Countable β :=
   e.symm.injective.countable
+#align countable.of_equiv Countable.of_equiv
 
 theorem Equiv.countable_iff (e : α ≃ β) : Countable α ↔ Countable β :=
   ⟨fun h => @Countable.of_equiv _ _ h e, fun h => @Countable.of_equiv _ _ h e.symm⟩
+#align equiv.countable_iff Equiv.countable_iff
 
 instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
@@ -84,7 +90,8 @@ instance [Countable α] : Countable (PLift α) :=
 instance (priority := 100) Subsingleton.to_countable [Subsingleton α] : Countable α :=
   ⟨⟨fun _ => 0, fun x y _ => Subsingleton.elim x y⟩⟩
 
-instance (priority := 500) [Countable α] {p : α → Prop} : Countable { x // p x } :=
+instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
+    Countable { x // p x } :=
   Subtype.val_injective.countable
 
 instance {n : ℕ} : Countable (Fin n) :=
@@ -106,7 +113,8 @@ instance Bool.countable : Countable Bool :=
 instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm
 
-instance (priority := 500) [Countable α] {r : α → α → Prop} : Countable (Quot r) :=
+instance (priority := 500) Quotient.countable [Countable α] {r : α → α → Prop} :
+    Countable (Quot r) :=
   (surjective_quot_mk r).countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=

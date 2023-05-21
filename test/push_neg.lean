@@ -53,6 +53,11 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
   guard_target = y < x
   exact h
 
+example (a b : β) (h : a ≤ b) : ¬ a > b := by
+  push_neg
+  guard_target = a ≤ b
+  exact h
+
 example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
   push_neg
   guard_target = x = y
@@ -96,6 +101,16 @@ example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, 
   push_neg
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
   sorry
+
+example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
+  push_neg at h
+  guard_hyp h : ∀ k, ¬(m ≤ k)
+  exact h₂
+
+example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ n) : m ≤ n := by
+  push_neg at h
+  guard_hyp h : ∀ k, ¬(m < k)
+  exact h₂
 
 set_option push_neg.use_distrib true
 

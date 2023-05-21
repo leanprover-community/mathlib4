@@ -147,6 +147,7 @@ def _root_.MulSemiringAction.toRingAut [MulSemiringAction G R] :
   map_mul' g h := RingEquiv.ext <| mul_smul g h
   map_one' := RingEquiv.ext <| one_smul _
 #align mul_semiring_action.to_ring_aut MulSemiringAction.toRingAut
+#align mul_semiring_action.to_ring_aut_apply MulSemiringAction.toRingAut_apply
 
 end Semiring
 

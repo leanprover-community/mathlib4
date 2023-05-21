@@ -39,7 +39,7 @@ walkthrough:
   (or whatever you actually need) followed by a `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
-A typical proof using Zorn could look like this
+A typical proof using Zorn could look like this (TODO: update to mathlib4)
 ```lean
 lemma zorny_lemma : zorny_statement :=
 begin
@@ -222,8 +222,8 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
     exact ⟨M, ⟨hM₀, fun d hd hMd => (hM₂ _ ⟨hM₁.trans hMd, hd⟩ hMd).symm⟩, hM₁⟩
   rintro cs hcs₀ hcs₁ ⟨s, hs⟩
   refine'
-    ⟨⋃₀cs, ⟨fun _ ha => Set.mem_unionₛ_of_mem ((hcs₀ hs).left ha) hs, _⟩, fun _ =>
-      Set.subset_unionₛ_of_mem⟩
+    ⟨⋃₀cs, ⟨fun _ ha => Set.mem_sUnion_of_mem ((hcs₀ hs).left ha) hs, _⟩, fun _ =>
+      Set.subset_sUnion_of_mem⟩
   rintro y ⟨sy, hsy, hysy⟩ z ⟨sz, hsz, hzsz⟩ hyz
   obtain rfl | hsseq := eq_or_ne sy sz
   · exact (hcs₀ hsy).right hysy hzsz hyz

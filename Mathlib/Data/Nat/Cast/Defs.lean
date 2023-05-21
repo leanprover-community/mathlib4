@@ -10,7 +10,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Cast of natural numbers
@@ -39,12 +38,6 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 
 #align nat.cast Nat.cast
 
--- see note [coercion into rings]
-instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
-
--- see note [coercion into rings]
-instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
-
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 
@@ -65,6 +58,8 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+
+theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -113,8 +108,8 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 #align nat.cast_zero Nat.cast_zero
 
--- Lemmas about nat.succ need to get a low priority, so that they are tried last.
--- This is because `nat.succ _` matches `1`, `3`, `x+1`, etc.
+-- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
+-- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
 @[simp 500, norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
@@ -233,6 +228,7 @@ theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
   apply congrArg
   decide
+#align one_add_one_eq_two one_add_one_eq_two
 
 theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
   rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]

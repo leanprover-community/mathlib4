@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.max
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Synonym
-import Mathlib.Tactic.Classical
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -158,6 +157,7 @@ theorem noBotOrder_iff_noMinOrder (α : Type _) [LinearOrder α] : NoBotOrder α
     fun h =>
     haveI := h
     inferInstance⟩
+#align no_bot_order_iff_no_min_order noBotOrder_iff_noMinOrder
 
 theorem noTopOrder_iff_noMaxOrder (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
   ⟨fun h =>
@@ -166,12 +166,15 @@ theorem noTopOrder_iff_noMaxOrder (α : Type _) [LinearOrder α] : NoTopOrder α
     fun h =>
     haveI := h
     inferInstance⟩
+#align no_top_order_iff_no_max_order noTopOrder_iff_noMaxOrder
 
 theorem NoMinOrder.not_acc [LT α] [NoMinOrder α] (a : α) : ¬Acc (· < ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_lt x).recOn
+#align no_min_order.not_acc NoMinOrder.not_acc
 
 theorem NoMaxOrder.not_acc [LT α] [NoMaxOrder α] (a : α) : ¬Acc (· > ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_gt x).recOn
+#align no_max_order.not_acc NoMaxOrder.not_acc
 
 section LE
 
@@ -183,6 +186,7 @@ several bottom elements. When `α` is linear, this is useful to make a case disj
 `NoMinOrder α` within a proof. -/
 def IsBot (a : α) : Prop :=
   ∀ b, a ≤ b
+#align is_bot IsBot
 
 /-- `a : α` is a top element of `α` if it is greater than or equal to any other element of `α`.
 This predicate is roughly an unbundled version of `OrderBot`, except that a preorder may have
@@ -190,18 +194,21 @@ several top elements. When `α` is linear, this is useful to make a case disjunc
 `NoMaxOrder α` within a proof. -/
 def IsTop (a : α) : Prop :=
   ∀ b, b ≤ a
+#align is_top IsTop
 
 /-- `a` is a minimal element of `α` if no element is strictly less than it. We spell it without `<`
 to avoid having to convert between `≤` and `<`. Instead, `isMin_iff_forall_not_lt` does the
 conversion. -/
 def IsMin (a : α) : Prop :=
   ∀ ⦃b⦄, b ≤ a → a ≤ b
+#align is_min IsMin
 
 /-- `a` is a maximal element of `α` if no element is strictly greater than it. We spell it without
 `<` to avoid having to convert between `≤` and `<`. Instead, `isMax_iff_forall_not_lt` does the
 conversion. -/
 def IsMax (a : α) : Prop :=
   ∀ ⦃b⦄, a ≤ b → b ≤ a
+#align is_max IsMax
 
 @[simp]
 theorem not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
@@ -262,20 +269,28 @@ theorem isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
 #align is_max_of_dual_iff isMax_ofDual_iff
 
 alias isBot_toDual_iff ↔ _ IsTop.toDual
+#align is_top.to_dual IsTop.toDual
 
 alias isTop_toDual_iff ↔ _ IsBot.toDual
+#align is_bot.to_dual IsBot.toDual
 
 alias isMin_toDual_iff ↔ _ IsMax.toDual
+#align is_max.to_dual IsMax.toDual
 
 alias isMax_toDual_iff ↔ _ IsMin.toDual
+#align is_min.to_dual IsMin.toDual
 
 alias isBot_ofDual_iff ↔ _ IsTop.ofDual
+#align is_top.of_dual IsTop.ofDual
 
 alias isTop_ofDual_iff ↔ _ IsBot.ofDual
+#align is_bot.of_dual IsBot.ofDual
 
 alias isMin_ofDual_iff ↔ _ IsMax.ofDual
+#align is_max.of_dual IsMax.ofDual
 
 alias isMax_ofDual_iff ↔ _ IsMin.ofDual
+#align is_min.of_dual IsMin.ofDual
 
 end LE
 

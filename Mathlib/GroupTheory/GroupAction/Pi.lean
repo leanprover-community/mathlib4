@@ -98,7 +98,7 @@ instance smulCommClass'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (g i
 #align pi.vadd_comm_class'' Pi.vaddCommClass''
 
 @[to_additive]
-instance {α : Type _} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
+instance isCentralScalar {α : Type _} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
     [∀ i, IsCentralScalar α (f i)] : IsCentralScalar α (∀ i, f i) :=
   ⟨fun _ _ => funext fun _ => op_smul_eq_smul _ _⟩
 
@@ -232,6 +232,7 @@ is not present. -/
 instance hasSMul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
 #align function.has_smul Function.hasSMul
+#align function.has_vadd Function.hasVAdd
 
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
@@ -242,12 +243,14 @@ instance smulCommClass {ι α β M : Type _} [SMul α M] [SMul β M] [SMulCommCl
     SMulCommClass α β (ι → M) :=
   Pi.smulCommClass
 #align function.smul_comm_class Function.smulCommClass
+#align function.vadd_comm_class Function.vaddCommClass
 
 @[to_additive]
 theorem update_smul {α : Type _} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
     (i : I) (x₁ : f i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
   funext fun j => (apply_update (β := f) (fun _ => (· • ·) c) f₁ i x₁ j).symm
 #align function.update_smul Function.update_smul
+#align function.update_vadd Function.update_vadd
 
 end Function
 
@@ -258,6 +261,7 @@ theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, 
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
   s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
 #align set.piecewise_smul Set.piecewise_smul
+#align set.piecewise_vadd Set.piecewise_vadd
 
 end Set
 
@@ -274,5 +278,6 @@ theorem Function.extend_smul {R α β γ : Type _} [SMul R γ] (r : R) (f : α �
   rfl
   -- convert (apply_dite (fun c : γ => r • c) _ _ _).symm
 #align function.extend_smul Function.extend_smul
+#align function.extend_vadd Function.extend_vadd
 
 end Extend

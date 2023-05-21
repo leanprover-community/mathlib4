@@ -15,7 +15,7 @@ import Mathlib.Algebra.Module.Basic
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
-We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
+We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
 
 We provide a type synonym of `Σ x, E x` as `Bundle.TotalSpace E`, to be able to endow it with
 a topology which is not the disjoint union topology `Sigma.TopologicalSpace`. In general, the
@@ -55,11 +55,10 @@ def TotalSpace.proj : TotalSpace E → B :=
   Sigma.fst
 #align bundle.total_space.proj Bundle.TotalSpace.proj
 
--- mathport name: exprπ
 -- this notation won't be used in the pretty-printer
 set_option quotPrecheck false in
 /-- The canonical projection defining a bundle. -/
-scoped notation "π" => @Bundle.TotalSpace.proj _
+scoped notation "π" E => @Bundle.TotalSpace.proj _ E
 
 /-- Constructor for the total space of a bundle. -/
 @[simp, reducible]
@@ -76,8 +75,7 @@ theorem sigma_mk_eq_totalSpaceMk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk
 #align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_totalSpaceMk
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
-    totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b :=
-  by
+    totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b := by
   subst h
   rfl
 #align bundle.total_space.mk_cast Bundle.TotalSpace.mk_cast

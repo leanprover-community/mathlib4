@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.units
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 641b6a82006416ec431b2987b354af9311fed4f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about units in `ℤ`.
@@ -62,8 +61,13 @@ theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
       rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
-theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} : z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 :=
-  by
+theorem eq_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = w :=
+  (eq_one_or_neg_one_of_mul_eq_one' h).elim
+    (and_imp.2 (·.trans ·.symm)) (and_imp.2 (·.trans ·.symm))
+#align int.eq_of_mul_eq_one Int.eq_of_mul_eq_one
+
+theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} :
+    z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   refine' ⟨eq_one_or_neg_one_of_mul_eq_one', fun h => Or.elim h (fun H => _) fun H => _⟩ <;>
       rcases H with ⟨rfl, rfl⟩ <;>
     rfl

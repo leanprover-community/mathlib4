@@ -41,6 +41,7 @@ def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   left_inv x := (Option.map_map _ _ _).trans <| e.symm_comp_self.symm ▸ congr_fun Option.map_id x
   right_inv x := (Option.map_map _ _ _).trans <| e.self_comp_symm.symm ▸ congr_fun Option.map_id x
 #align equiv.option_congr Equiv.optionCongr
+#align equiv.option_congr_apply Equiv.optionCongr_apply
 
 @[simp]
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
@@ -83,18 +84,20 @@ def removeNone_aux (x : α) : β :=
         intro hn
         rw [Option.not_isSome_iff_eq_none, ← hn] at h
         exact Option.some_ne_none _ (e.injective h)
-
-#align equiv.remove_none_aux Equiv.removeNone_aux
+-- Porting note: private
+-- #align equiv.remove_none_aux Equiv.removeNone_aux
 
 theorem removeNone_aux_some {x : α} (h : ∃ x', e (some x) = some x') :
     some (removeNone_aux e x) = e (some x) :=
   by simp [removeNone_aux, Option.isSome_iff_exists.mpr h]
-#align equiv.remove_none_aux_some Equiv.removeNone_aux_some
+-- Porting note: private
+-- #align equiv.remove_none_aux_some Equiv.removeNone_aux_some
 
 theorem removeNone_aux_none {x : α} (h : e (some x) = none) :
     some (removeNone_aux e x) = e none := by
   simp [removeNone_aux, Option.not_isSome_iff_eq_none.mpr h]
-#align equiv.remove_none_aux_none Equiv.removeNone_aux_none
+-- Porting note: private
+-- #align equiv.remove_none_aux_none Equiv.removeNone_aux_none
 
 theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x) = x :=
   Option.some_injective _
@@ -113,7 +116,8 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
         rw [removeNone_aux_some _ ⟨_, h2⟩]
         simp
         )
-#align equiv.remove_none_aux_inv Equiv.removeNone_aux_inv
+-- Porting note: private
+-- #align equiv.remove_none_aux_inv Equiv.removeNone_aux_inv
 
 /-- Given an equivalence between two `Option` types, eliminate `none` from that equivalence by
 mapping `e.symm none` to `e none`. -/
@@ -147,13 +151,11 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
   cases' h : e (some x) with a
   · rw [removeNone_none _ h]
     simpa using (congr_arg e.symm h).symm
-
   · rw [removeNone_some _ ⟨a, h⟩]
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [false_iff_iff, apply_eq_iff_eq]
     simp [h1, apply_eq_iff_eq]
-
 #align equiv.some_remove_none_iff Equiv.some_removeNone_iff
 
 @[simp]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module data.real.cau_seq_completion
-! leanprover-community/mathlib commit 40acfb6aa7516ffe6f91136691df012a64683390
+! leanprover-community/mathlib commit cf4c49c445991489058260d75dae0ff2b1abca28
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -32,6 +32,7 @@ variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
+set_option linter.uppercaseLean3 false in
 #align cau_seq.completion.Cauchy CauSeq.Completion.Cauchy
 
 variable {abv}
@@ -178,6 +179,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
   map_add' := ofRat_add
   map_mul' := ofRat_mul
 #align cau_seq.completion.of_rat_ring_hom CauSeq.Completion.ofRatRingHom
+#align cau_seq.completion.of_rat_ring_hom_apply CauSeq.Completion.ofRatRingHom_apply
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
   congr_arg mk (const_sub _ _)
@@ -217,8 +219,7 @@ theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
 
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
-    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg =>
-      by
+    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]

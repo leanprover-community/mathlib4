@@ -298,7 +298,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
-  let p₁ ← Option.getDM (pure p₁) (mkEqRefl e₁')
+  let p₁ ← p₁.getDM (mkEqRefl e₁')
   match Meta.NormNum.isIntLit e₁' with
   | some n => do
     let c ← read
@@ -486,6 +486,11 @@ def abelNFLocalDecl (cfg : AbelNF.Config) (fvarId : FVarId) :
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
+
+/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel`. -/
+syntax (name := abel_term) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel!`. -/
+syntax (name := abel!_term) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
 /--
 Simplification tactic for expressions in the language of abelian groups,

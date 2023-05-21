@@ -16,20 +16,20 @@ import Mathlib.Order.BoundedOrder
 
 This file defines (bounded) order homomorphisms.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `top_hom`: Maps which preserve `⊤`.
-* `bot_hom`: Maps which preserve `⊥`.
-* `bounded_order_hom`: Bounded order homomorphisms. Monotone maps which preserve `⊤` and `⊥`.
+* `TopHom`: Maps which preserve `⊤`.
+* `BotHom`: Maps which preserve `⊥`.
+* `BoundedOrderHom`: Bounded order homomorphisms. Monotone maps which preserve `⊤` and `⊥`.
 
 ## Typeclasses
 
-* `top_hom_class`
-* `bot_hom_class`
-* `bounded_order_hom_class`
+* `TopHomClass`
+* `BotHomClass`
+* `BoundedOrderHomClass`
 -/
 
 
@@ -64,27 +64,27 @@ structure BoundedOrderHom (α β : Type _) [Preorder α] [Preorder β] [BoundedO
 
 section
 
-/-- `top_hom_class F α β` states that `F` is a type of `⊤`-preserving morphisms.
+/-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
-You should extend this class when you extend `top_hom`. -/
+You should extend this class when you extend `TopHom`. -/
 class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] extends
   FunLike F α fun _ => β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align top_hom_class TopHomClass
 
-/-- `bot_hom_class F α β` states that `F` is a type of `⊥`-preserving morphisms.
+/-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
-You should extend this class when you extend `bot_hom`. -/
+You should extend this class when you extend `BotHom`. -/
 class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] extends
   FunLike F α fun _ => β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bot_hom_class BotHomClass
 
-/-- `bounded_order_hom_class F α β` states that `F` is a type of bounded order morphisms.
+/-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
-You should extend this class when you extend `bounded_order_hom`. -/
+You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F : Type _) (α β : outParam <| Type _) [LE α] [LE β] [BoundedOrder α]
   [BoundedOrder β] extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
@@ -101,43 +101,36 @@ export BotHomClass (map_bot)
 
 attribute [simp] map_top map_bot
 
--- Porting note: the `BoundedOrder` parameters can't be inferred through unification in all cases
--- so they should really be instance parameters once this is technically possible.
--- We have to supply these instances through `letI` in some cases as a work-around.
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass {_ : LE α} {_ : LE β}
-    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : TopHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
+    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_top_hom_class BoundedOrderHomClass.toTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toBotHomClass {_ : LE α} {_ : LE β}
-    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : BotHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
+    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_bot_hom_class BoundedOrderHomClass.toBotHomClass
 
-@[nolint dangerousInstance] -- The `OrderTop`s should be instance parameters but depend on outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toTopHomClass {_ : LE α} {_ : OrderTop α}
-    {_ : PartialOrder β} {_ : OrderTop β} [OrderIsoClass F α β] : TopHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
+    [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 #align order_iso_class.to_top_hom_class OrderIsoClass.toTopHomClass
 
-@[nolint dangerousInstance] -- The `OrderBot`s should be instance parameters but depend on outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBotHomClass {_ : LE α} {_ : OrderBot α}
-    {_ : PartialOrder β} {_ : OrderBot β} [OrderIsoClass F α β] : BotHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
+    [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
   { --⟨λ f, le_bot_iff.1 $ (le_map_inv_iff f).1 bot_le⟩
     show OrderHomClass F α β from inferInstance with
     map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
 
-@[nolint dangerousInstance] -- The `BoundedOrder`s should be instance parameters but depend on
-                            -- outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass {_ : LE α} {_ : BoundedOrder α}
-    {_ : PartialOrder β} {_ : BoundedOrder β} [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
+    [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 #align order_iso_class.to_bounded_order_hom_class OrderIsoClass.toBoundedOrderHomClass
@@ -218,7 +211,7 @@ theorem ext {f g : TopHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align top_hom.ext TopHom.ext
 
-/-- Copy of a `top_hom` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `TopHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : TopHom α β) (f' : α → β) (h : f' = f) :
     TopHom α β where
@@ -240,7 +233,7 @@ instance : Inhabited (TopHom α β) :=
 
 variable (α)
 
-/-- `id` as a `top_hom`. -/
+/-- `id` as a `TopHom`. -/
 protected def id : TopHom α α :=
   ⟨id, rfl⟩
 #align top_hom.id TopHom.id
@@ -257,7 +250,7 @@ theorem id_apply (a : α) : TopHom.id α a = a :=
   rfl
 #align top_hom.id_apply TopHom.id_apply
 
-/-- Composition of `top_hom`s as a `top_hom`. -/
+/-- Composition of `TopHom`s as a `TopHom`. -/
 def comp (f : TopHom β γ) (g : TopHom α β) :
     TopHom α γ where
   toFun := f ∘ g
@@ -333,7 +326,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasInf (TopHom α β) :=
+instance : Inf (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -355,7 +348,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasSup (TopHom α β) :=
+instance : Sup (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -408,7 +401,7 @@ theorem ext {f g : BotHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align bot_hom.ext BotHom.ext
 
-/-- Copy of a `bot_hom` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `BotHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : BotHom α β) (f' : α → β) (h : f' = f) :
     BotHom α β where
@@ -430,7 +423,7 @@ instance : Inhabited (BotHom α β) :=
 
 variable (α)
 
-/-- `id` as a `bot_hom`. -/
+/-- `id` as a `BotHom`. -/
 protected def id : BotHom α α :=
   ⟨id, rfl⟩
 #align bot_hom.id BotHom.id
@@ -447,7 +440,7 @@ theorem id_apply (a : α) : BotHom.id α a = a :=
   rfl
 #align bot_hom.id_apply BotHom.id_apply
 
-/-- Composition of `bot_hom`s as a `bot_hom`. -/
+/-- Composition of `BotHom`s as a `BotHom`. -/
 def comp (f : BotHom β γ) (g : BotHom α β) :
     BotHom α γ where
   toFun := f ∘ g
@@ -523,7 +516,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasInf (BotHom α β) :=
+instance : Inf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -545,7 +538,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasSup (BotHom α β) :=
+instance : Sup (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
@@ -573,18 +566,21 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
 namespace BoundedOrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [BoundedOrder α] [BoundedOrder β]
   [BoundedOrder γ] [BoundedOrder δ]
 
-/-- Reinterpret a `bounded_order_hom` as a `top_hom`. -/
+/-- Reinterpret a `BoundedOrderHom` as a `TopHom`. -/
 def toTopHom (f : BoundedOrderHom α β) : TopHom α β :=
   { f with }
 #align bounded_order_hom.to_top_hom BoundedOrderHom.toTopHom
 
-/-- Reinterpret a `bounded_order_hom` as a `bot_hom`. -/
+/-- Reinterpret a `BoundedOrderHom` as a `BotHom`. -/
 def toBotHom (f : BoundedOrderHom α β) : BotHom α β :=
   { f with }
 #align bounded_order_hom.to_bot_hom BoundedOrderHom.toBotHom
@@ -604,7 +600,7 @@ theorem ext {f g : BoundedOrderHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align bounded_order_hom.ext BoundedOrderHom.ext
 
-/-- Copy of a `bounded_order_hom` with a new `to_fun` equal to the old one. Useful to fix
+/-- Copy of a `BoundedOrderHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : BoundedOrderHom α β) (f' : α → β) (h : f' = f) : BoundedOrderHom α β :=
   { f.toOrderHom.copy f' h, f.toTopHom.copy f' h, f.toBotHom.copy f' h with }
@@ -621,7 +617,7 @@ theorem copy_eq (f : BoundedOrderHom α β) (f' : α → β) (h : f' = f) : f.co
 
 variable (α)
 
-/-- `id` as a `bounded_order_hom`. -/
+/-- `id` as a `BoundedOrderHom`. -/
 protected def id : BoundedOrderHom α α :=
   { OrderHom.id, TopHom.id α, BotHom.id α with }
 #align bounded_order_hom.id BoundedOrderHom.id
@@ -641,7 +637,7 @@ theorem id_apply (a : α) : BoundedOrderHom.id α a = a :=
   rfl
 #align bounded_order_hom.id_apply BoundedOrderHom.id_apply
 
-/-- Composition of `bounded_order_hom`s as a `bounded_order_hom`. -/
+/-- Composition of `BoundedOrderHom`s as a `BoundedOrderHom`. -/
 def comp (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) : BoundedOrderHom α γ :=
   { f.toOrderHom.comp g.toOrderHom, f.toTopHom.comp g.toTopHom, f.toBotHom.comp g.toBotHom with }
 #align bounded_order_hom.comp BoundedOrderHom.comp
@@ -658,22 +654,22 @@ theorem comp_apply (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) (a : 
 #align bounded_order_hom.comp_apply BoundedOrderHom.comp_apply
 
 @[simp]
-theorem coe_comp_order_hom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
+theorem coe_comp_orderHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
     (f.comp g : OrderHom α γ) = (f : OrderHom β γ).comp g :=
   rfl
-#align bounded_order_hom.coe_comp_order_hom BoundedOrderHom.coe_comp_order_hom
+#align bounded_order_hom.coe_comp_order_hom BoundedOrderHom.coe_comp_orderHom
 
 @[simp]
-theorem coe_comp_top_hom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
+theorem coe_comp_topHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
     (f.comp g : TopHom α γ) = (f : TopHom β γ).comp g :=
   rfl
-#align bounded_order_hom.coe_comp_top_hom BoundedOrderHom.coe_comp_top_hom
+#align bounded_order_hom.coe_comp_top_hom BoundedOrderHom.coe_comp_topHom
 
 @[simp]
-theorem coe_comp_bot_hom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
+theorem coe_comp_botHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
     (f.comp g : BotHom α γ) = (f : BotHom β γ).comp g :=
   rfl
-#align bounded_order_hom.coe_comp_bot_hom BoundedOrderHom.coe_comp_bot_hom
+#align bounded_order_hom.coe_comp_bot_hom BoundedOrderHom.coe_comp_botHom
 
 @[simp]
 theorem comp_assoc (f : BoundedOrderHom γ δ) (g : BoundedOrderHom β γ) (h : BoundedOrderHom α β) :
@@ -723,6 +719,8 @@ protected def dual :
   left_inv _ := TopHom.ext fun _ => rfl
   right_inv _ := BotHom.ext fun _ => rfl
 #align top_hom.dual TopHom.dual
+#align top_hom.dual_apply_apply TopHom.dual_apply_apply
+#align top_hom.dual_symm_apply_apply TopHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -761,6 +759,8 @@ protected def dual :
   left_inv _ := BotHom.ext fun _ => rfl
   right_inv _ := TopHom.ext fun _ => rfl
 #align bot_hom.dual BotHom.dual
+#align bot_hom.dual_apply_apply BotHom.dual_apply_apply
+#align bot_hom.dual_symm_apply_apply BotHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
@@ -802,6 +802,8 @@ protected def dual :
   left_inv _ := ext fun _ => rfl
   right_inv _ := ext fun _ => rfl
 #align bounded_order_hom.dual BoundedOrderHom.dual
+#align bounded_order_hom.dual_apply_to_order_hom BoundedOrderHom.dual_apply_toOrderHom
+#align bounded_order_hom.dual_symm_apply_to_order_hom BoundedOrderHom.dual_symm_apply_toOrderHom
 
 @[simp]
 theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=

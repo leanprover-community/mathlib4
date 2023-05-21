@@ -133,7 +133,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   apply binaryRec _ _ n
   · apply this rfl
   intro b n IH
-  by_cases bit b n = 0
+  by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftl_succ]
   exact bit_lt_bit0 _ IH

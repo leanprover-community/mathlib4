@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.abs
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -28,14 +28,16 @@ section Neg
 -- see Note [lower instance priority]
 /-- `abs a` is the absolute value of `a`. -/
 @[to_additive "`abs a` is the absolute value of `a`"]
-instance (priority := 100) Inv.toHasAbs [Inv α] [HasSup α] : Abs α :=
+instance (priority := 100) Inv.toHasAbs [Inv α] [Sup α] : Abs α :=
   ⟨fun a => a ⊔ a⁻¹⟩
 #align has_inv.to_has_abs Inv.toHasAbs
+#align has_neg.to_has_abs Neg.toHasAbs
 
 @[to_additive]
-theorem abs_eq_sup_inv [Inv α] [HasSup α] (a : α) : |a| = a ⊔ a⁻¹ :=
+theorem abs_eq_sup_inv [Inv α] [Sup α] (a : α) : |a| = a ⊔ a⁻¹ :=
   rfl
 #align abs_eq_sup_inv abs_eq_sup_inv
+#align abs_eq_sup_neg abs_eq_sup_neg
 
 variable [Neg α] [LinearOrder α] {a b : α}
 
@@ -86,13 +88,13 @@ theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_
 #align abs_neg abs_neg
 
 theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
-  simpa only [← h, eq_comm, eq_neg_iff_eq_neg] using abs_choice a
+  simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
-      simpa only [neg_eq_iff_neg_eq, neg_inj, or_comm, @eq_comm _ (-b)] using abs_choice b
+      simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
   · cases' h with h h <;>
     simp [h, abs_neg]
 #align abs_eq_abs abs_eq_abs
@@ -101,7 +103,6 @@ theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
   calc
     |a - b| = |(-(b - a))| := congr_arg _ (neg_sub b a).symm
     _ = |b - a| := abs_neg (b - a)
-
 #align abs_sub_comm abs_sub_comm
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)] {a b c : α}
@@ -153,11 +154,9 @@ theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
       _ ≤ a := h
-
   · calc
       -|a| = - -a := congr_arg Neg.neg (abs_of_nonpos h)
       _ ≤ a := (neg_neg a).le
-
 #align neg_abs_le_self neg_abs_le_self
 
 theorem add_abs_nonneg (a : α) : 0 ≤ a + |a| := by
@@ -256,6 +255,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 #align apply_abs_le_mul_of_one_le' apply_abs_le_mul_of_one_le'
+#align apply_abs_le_add_of_nonneg' apply_abs_le_add_of_nonneg'
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
@@ -263,6 +263,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
     (h : ∀ x, 1 ≤ f x) (a : α) : f (|a|) ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le
+#align apply_abs_le_add_of_nonneg apply_abs_le_add_of_nonneg
 
 /-- The **triangle inequality** in `LinearOrderedAddCommGroup`s. -/
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
@@ -309,7 +310,6 @@ theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _
-
 #align abs_sub_abs_le_abs_sub abs_sub_abs_le_abs_sub
 
 theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
@@ -356,7 +356,6 @@ theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
   calc
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
     _ ≤ |a - b| + |b - c| := abs_add _ _
-
 #align abs_sub_le abs_sub_le
 
 theorem abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=
