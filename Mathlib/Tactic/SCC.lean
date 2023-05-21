@@ -113,30 +113,30 @@ def toTacticFormat : ClosureM Format := do
   let fmt ←
     l.mapM fun ⟨x, y⟩ => do
         match y with
-        | Sum.inl y => return f!"{(← ppExpr x)} ⇐ {y}"
-        | Sum.inr ⟨y, p⟩ => return f!"({(← ppExpr x)}, {(← ppExpr y)}) : {← ppExpr (← inferType p)}"
+        | Sum.inl y => return f!"{x} ⇐ {y}"
+        | Sum.inr ⟨y, p⟩ => return f!"({x}, {y}) : {← inferType p}"
   return format fmt
 
 /-- `(n, r, p) ← root e` returns `r` the root of the tree that `e` is a part of (which might be
 itself) along with `p` a proof of `e ↔ r` and `n`, the preorder numbering of the root. -/
 partial def root (e : Q(Prop)) : ClosureM (ℕ × Q(Prop) × Expr) := do
-    let cl ← getClosure
-    match cl.find? e with
-      | none =>
-        return (0, e, q(Iff.refl $e))
-      | some (Sum.inl n) => do
-        pure (n, e, q(Iff.refl $e))
-      | some (Sum.inr (e₀, (p₀ : Q($e ↔ $e₀)))) => do
-        let (n, e₁, (p₁ : Q($e₀ ↔ $e₁))) ← root e₀
-        modifyClosure fun cl => cl.insert e (Sum.inr (e₁, q(Iff.trans $p₀ $p₁)))
-        pure (n, e₁, q(Iff.trans $p₀ $p₁))
+  let cl ← getClosure
+  match cl.find? e with
+    | none =>
+      return (0, e, q(Iff.refl $e))
+    | some (Sum.inl n) => do
+      pure (n, e, q(Iff.refl $e))
+    | some (Sum.inr (e₀, (p₀ : Q($e ↔ $e₀)))) => do
+      let (n, e₁, (p₁ : Q($e₀ ↔ $e₁))) ← root e₀
+      modifyClosure fun cl => cl.insert e (Sum.inr (e₁, q(Iff.trans $p₀ $p₁)))
+      pure (n, e₁, q(Iff.trans $p₀ $p₁))
 
 /-- `merge p`, with `p` a proof of `e₀ ↔ e₁` for some `e₀` and `e₁`, merges the trees of `e₀` and
 `e₁` and keeps the root with the smallest preorder number as the root. This ensures that, in the
 depth-first traversal of the graph, when encountering an edge going into a vertex whose equivalence
 class includes a vertex that originated the current search, that vertex will be the root of the
 corresponding tree. -/
-partial def merge (p : Expr) : ClosureM Unit := do
+def merge (p : Expr) : ClosureM Unit := do
   let ty : Q(Prop) ← inferType p
   let ~q($e₀ ↔ $e₁) := ty | throwError "{p} must be a proof of `e₀ ↔ e₁`"
   have p : Q($e₀ ↔ $e₁) := p
@@ -151,34 +151,32 @@ partial def merge (p : Expr) : ClosureM Unit := do
         cl.insert e₂ (Sum.inr (e₃, q(Iff.trans (Iff.trans (Iff.symm $p₂) $p) $p₃)))
 
 /-- Sequentially assign numbers to the nodes of the graph as they are being visited. -/
-unsafe def assign_preorder (cl : closure) (e : expr) : tactic Unit :=
-  modify_ref cl fun m => m.insert e (Sum.inl m.size)
+def assignPreorder (e : Q(Prop)) : ClosureM Unit :=
+  modifyClosure fun cl => cl.insert e (Sum.inl cl.size)
 
-/-- `prove_eqv cl e₀ e₁` constructs a proof of equivalence of `e₀` and `e₁` if
+/-- `proveEqv e₀ e₁` constructs a proof of equivalence of `e₀` and `e₁` if
 they are equivalent. -/
-unsafe def prove_eqv (cl : closure) (e₀ e₁ : expr) : tactic expr := do
-  let (_, r, p₀) ← root cl e₀
-  let (_, r', p₁) ← root cl e₁
-  guard (r = r') <|> throwError "{(← e₀)} and {← e₁} are not equivalent"
-  let p₁ ← mk_app `` Iff.symm [p₁]
-  mk_app `` Iff.trans [p₀, p₁]
+def proveEqv (e₀ e₁ : Q(Prop)) : ClosureM Q($e₀ ↔ $e₁) := do
+  let (_, r, (p₀ : Q($e₀ ↔ $r))) ← root e₀
+  let (_, r', (p₁ : Q($e₁ ↔ $r))) ← root e₁
+  guard (r == r') <|> throwError "{e₀} and {e₁} are not equivalent"
+  return q(Iff.trans $p₀ (Iff.symm $p₁))
 
-/-- `prove_impl cl e₀ e₁` constructs a proof of `e₀ -> e₁` if they are equivalent. -/
-unsafe def prove_impl (cl : closure) (e₀ e₁ : expr) : tactic expr :=
-  cl.prove_eqv e₀ e₁ >>= iff_mp
+/-- `proveImpl e₀ e₁` constructs a proof of `e₀ → e₁` if they are equivalent. -/
+def proveImpl (e₀ e₁ : Q(Prop)) : ClosureM Q($e₀ → $e₁) := do
+  let p ← proveEqv e₀ e₁
+  return q(Iff.mp $p)
 
-/-- `is_eqv cl e₀ e₁` checks whether `e₀` and `e₁` are equivalent without building a proof. -/
-unsafe def is_eqv (cl : closure) (e₀ e₁ : expr) : tactic Bool := do
-  let (_, r, p₀) ← root cl e₀
-  let (_, r', p₁) ← root cl e₁
-  return <| r = r'
+/-- `isEqv cl e₀ e₁` checks whether `e₀` and `e₁` are equivalent without building a proof. -/
+def isEqv (e₀ e₁ : Q(Prop)) : ClosureM Bool := do
+  let (_, r, _) ← root e₀
+  let (_, r', _) ← root e₁
+  return r == r'
 
 end ClosureM
 
 /-- mutable graphs between local propositions that imply each other with the proof of implication -/
-@[reducible]
-unsafe def impl_graph :=
-  ref (expr_map (List <| expr × expr))
+def ImplGraph := HashMap Q(Prop) (List (Q(Prop) × Expr))
 
 /-- `with_impl_graph f` creates an empty `impl_graph` `g`, executes `f` on `g`, and then deletes
 `g`, returning the output of `f`. -/
@@ -250,7 +248,6 @@ unsafe def merge_path (path : List (expr × expr)) (e : expr) : tactic Unit := d
         p₂
   let ps ← zipWithM (fun p₀ p₁ => mk_app `` Iff.intro [p₀, p₁]) ls.tail rs.dropLast
   ps cl
-#align tactic.impl_graph.merge_path tactic.impl_graph.merge_path
 
 /-- (implementation of `collapse`) -/
 unsafe def collapse' : List (expr × expr) → List (expr × expr) → expr → tactic Unit
@@ -259,7 +256,6 @@ unsafe def collapse' : List (expr × expr) → List (expr × expr) → expr → 
     let b ← cl.is_eqv x v
     let acc' := (x, pr) :: Acc
     if b then merge_path acc' v else collapse' acc' xs v
-#align tactic.impl_graph.collapse' tactic.impl_graph.collapse'
 
 /-- `collapse path v`, where `v` is a vertex that originated the current search
 (or a vertex in the same equivalence class as the one that originated the current search).
@@ -267,7 +263,6 @@ It or its equivalent should be found in `path`. Since the vertices following `v`
 form a cycle with `v`, they can all be added to an equivalence class. -/
 unsafe def collapse : List (expr × expr) → expr → tactic Unit :=
   collapse' []
-#align tactic.impl_graph.collapse tactic.impl_graph.collapse
 
 /-- Strongly connected component algorithm inspired by Tarjan's and
 Dijkstra's scc algorithm. Whereas they return strongly connected
@@ -294,7 +289,6 @@ unsafe def dfs_at : List (expr × expr) → expr → tactic Unit
         ns fun ⟨w, e⟩ => dfs_at ((v, e) :: vs) w
         modify_ref visit fun m => m v tt
         pure ()
-#align tactic.impl_graph.dfs_at tactic.impl_graph.dfs_at
 
 end Scc
 
@@ -307,7 +301,6 @@ unsafe def mk_scc (cl : closure) : tactic (expr_map (List (expr × expr))) :=
       let m ← read_ref g
       m fun ⟨v, _⟩ => impl_graph.dfs_at m visit cl [] v
       pure m
-#align tactic.impl_graph.mk_scc tactic.impl_graph.mk_scc
 
 end ImplGraph
 
@@ -317,7 +310,6 @@ unsafe
     prove_eqv_target
     ( cl : closure ) : tactic Unit
     := do let q( $ ( p ) ↔ $ ( q ) ) ← target >>= whnf cl p q >>= exact
-#align tactic.prove_eqv_target tactic.prove_eqv_target
 
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /--
@@ -336,7 +328,6 @@ unsafe
     :=
       closure.with_new_closure
         fun cl => do impl_graph.mk_scc cl let q( $ ( p ) ↔ $ ( q ) ) ← target cl p q >>= exact
-#align tactic.interactive.scc tactic.interactive.scc
 
 /-- Collect all the available equivalences and implications and
 add assumptions for every equivalence that can be proven using the
@@ -349,7 +340,6 @@ unsafe def interactive.scc' : tactic Unit :=
     ls' fun x => do
         let h ← get_unused_name `h
         try <| closure.prove_eqv cl x.1 x.2 >>= note h none
-#align tactic.interactive.scc' tactic.interactive.scc'
 
 /-- `scc` uses the available equivalences and implications to prove
 a goal of the form `p ↔ q`.
