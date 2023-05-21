@@ -37,8 +37,6 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
--- variable (M) -- Porting note: TODO
-
 variable (N : Submonoid S) (T : Type _) [CommRing T] [Algebra R T]
 
 section
@@ -49,7 +47,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 /-- Localizing wrt `M ⊆ R` and then wrt `N ⊆ S = M⁻¹R` is equal to the localization of `R` wrt this
 module. See `localization_localization_is_localization`.
 -/
--- @[nolint unused_arguments] -- Porting note: TODO
+@[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
   (N ⊔ M.map (algebraMap R S)).comap (algebraMap R S)
 #align is_localization.localization_localization_submodule IsLocalization.localizationLocalizationSubmodule
@@ -78,8 +76,8 @@ theorem localization_localization_map_units [IsLocalization N T]
 #align is_localization.localization_localization_map_units IsLocalization.localization_localization_map_units
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
-    ∃ y : R × localizationLocalizationSubmodule M N, x * algebraMap R T y.2 = algebraMap R T y.1 :=
-  by
+    ∃ y : R × localizationLocalizationSubmodule M N, x * algebraMap R T y.2 = algebraMap R T y.1
+    := by
   rcases IsLocalization.surj N x with ⟨⟨y, s⟩, eq₁⟩
   -- x = y / s
   rcases IsLocalization.surj M y with ⟨⟨z, t⟩, eq₂⟩
@@ -134,8 +132,6 @@ theorem localization_localization_isLocalization [IsLocalization N T] :
     eq_iff_exists' := localization_localization_eq_iff_exists M N T _ _ }
 #align is_localization.localization_localization_is_localization IsLocalization.localization_localization_isLocalization
 
--- include M -- Porting note: TODO
-
 /-- Given submodules `M ⊆ R` and `N ⊆ S = M⁻¹R`, with `f : R →+* S` the localization map, if
 `N` contains all the units of `S`, then `N ⁻¹ S = T = (f⁻¹ N) ⁻¹ R`. I.e., the localization of a
 localization is a localization.
@@ -162,7 +158,6 @@ theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp :
   exact (Hp.1 : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
 #align is_localization.is_localization_is_localization_at_prime_is_localization IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
 
--- Porting note: do you need that?
 instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
   inferInstance
 
