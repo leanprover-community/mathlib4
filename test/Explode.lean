@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Explode.Index
+import Mathlib.Tactic.Explode
 import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
 open Lean
