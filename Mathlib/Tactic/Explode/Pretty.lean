@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Evgenia Karunus
 -/
 import Lean
 import Mathlib.Tactic.Explode.Datatypes
+import Mathlib.Data.String.Defs
 
 /-!
 # Explode command: pretty
@@ -27,15 +28,13 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
   -- 1. Find the max length of the word in a list
   let mut maxLength := 0
   for md in mds do
-    let length := (← md.toString).length
-    maxLength := if length > maxLength then length else maxLength
+    maxLength := max maxLength (← md.toString).length
 
   -- 2. Pad all words in a list with " "
   let mut paddedMds := []
   for md in mds do
     let padWidth : Nat := maxLength - (← md.toString).length
-    let padding := MessageData.joinSep (List.replicate padWidth " ") ""
-    paddedMds := (md ++ padding) :: paddedMds
+    paddedMds := (md ++ String.replicate padWidth ' ') :: paddedMds
   return paddedMds.reverse
 
 /-- Turn a theorem into `MessageData`. -/
@@ -46,8 +45,8 @@ def thmToMd (context : MessageDataContext) (thm : Thm) : MessageData :=
     | Thm.string string => string
 
 /-- Render a particular row of the Fitch table. -/
-def rowToMd
-  : List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
+def rowToMd :
+    List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
     let pipes := String.join (List.replicate en.depth "│ ")
     let pipes := match en.status with
@@ -65,16 +64,12 @@ def rowToMd
 /-- Given all `Entries`, return the entire Fitch table. -/
 def entriesToMd (entries : Entries) : MetaM MessageData := do
   -- ['1', '2', '3']
-  let paddedLines ← padRight (entries.l.map (λ entry =>
-    m!"{entry.line}"
-  ))
+  let paddedLines ← padRight <| entries.l.map fun entry => m!"{entry.line}"
   -- ['   ', '1,2', '1  ']
-  let paddedDeps  ← padRight (entries.l.map (λ entry =>
-    m!"{String.intercalate "," (entry.deps.map toString)}"
-  ))
+  let paddedDeps  ← padRight <| entries.l.map fun entry =>
+    String.intercalate "," (entry.deps.map toString)
   -- ['p  ', 'hP ', '∀I ']
-  let paddedThms ← padRight (entries.l.map (λ entry =>
+  let paddedThms ← padRight <| entries.l.map fun entry =>
     thmToMd entry.context entry.thm
-  ))
 
   rowToMd paddedLines paddedDeps paddedThms entries.l

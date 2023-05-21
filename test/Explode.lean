@@ -8,7 +8,7 @@ elab "#explode_test " theoremStx:ident : command => do
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.explode body true 0 default { verbose := false }
+      let results ← Mathlib.Explode.explode body true 0 default
       let md : MessageData ← Mathlib.Explode.entriesToMd results
       let str := toString (← md.format)
 

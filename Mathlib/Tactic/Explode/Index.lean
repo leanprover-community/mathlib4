@@ -20,51 +20,45 @@ open Lean
 namespace Mathlib.Explode
 
 /-- Main method behind `#explode` command. -/
-partial def explode : Expr → Bool → Nat → Entries → Opts → MetaM Entries
-  | e@(Expr.lam varName varType body binderInfo), si, depth, entries, opts => do
-    if opts.verbose then dbg_trace ".lam"
-    Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
-      let expr_1 := x
-      let expr_2 := Expr.instantiate1 body x
-      let expr_3 := e
+partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : MetaM Entries :=
+  match e.cleanupAnnotations with
+  | .lam varName varType body binderInfo => do
+    trace[explode] ".lam"
+    Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
+      let body := Expr.instantiate1 body.cleanupAnnotations arg
 
-      let entries_1 := entries.add {
-        expr    := expr_1,
-        type    := ← Lean.Meta.inferType expr_1,
-        line    := entries.size,
-        depth   := depth,
-        status  := if si then Status.sintro else Status.intro,
-        thm     := Thm.name varName,
-        deps    := [],
-        context := ← getContext
-      }
+      let entries_1 := entries.add
+        { expr    := arg,
+          type    := ← Meta.inferType arg,
+          line    := entries.size,
+          depth   := depth,
+          status  := if si then Status.sintro else Status.intro,
+          thm     := Thm.name varName,
+          deps    := [],
+          context := ← getContext }
 
-      let entries_2 ← explode expr_2 si (if si then depth else depth + 1) entries_1 opts
+      let entries_2 ← explode body si (if si then depth else depth + 1) entries_1
 
-      let entries_3 := entries_2.add {
-        expr    := expr_3,
-        type    := ← Lean.Meta.inferType expr_3,
-        line    := entries_2.size,
-        depth   := depth,
-        status  := Status.lam,
-        thm     := if (← Lean.Meta.inferType expr_3).isArrow
-          then Thm.string "→I"
-          else Thm.string "∀I",
-        deps    := if si
-          then [entries.size, entries_2.size - 1]
-          else
-            (← appendDep entries_2 expr_1
-            -- In case of a "have" clause, the expr_2 here has an annotation
-            (← appendDep entries_2 expr_2.cleanupAnnotations []))
-        context := ← getContext
-      }
+      let entries_3 := entries_2.add
+        { expr    := e,
+          type    := ← Meta.inferType e,
+          line    := entries_2.size,
+          depth   := depth,
+          status  := Status.lam,
+          thm     := if (← Meta.inferType e).isArrow
+            then Thm.string "→I"
+            else Thm.string "∀I",
+          deps    := if si
+            then [entries.size, entries_2.size - 1]
+            else (← appendDep entries_2 arg (← appendDep entries_2 body []))
+          context := ← getContext }
 
       return entries_3
-  | e@(Expr.app _ _), si, depth, es, opts => do
-    if !(← mayBeProof e) then
-      if opts.verbose then dbg_trace s!".app - missed {e}"
-      return es
-    if opts.verbose then dbg_trace ".app"
+  | .app .. => do
+    if !(← Meta.isProof e) then
+      trace[explode] ".app - missed {e}"
+      return entries
+    trace[explode] ".app"
 
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
@@ -74,56 +68,48 @@ partial def explode : Expr → Bool → Nat → Entries → Opts → MetaM Entri
 
     -- We could turn this off iff it's a `.const`, but it's nice to have a theorem
     -- we're about to apply explicitly stated in the Fitch table
-    let entries_1 ← explode fn false depth es opts
+    let entries_1 ← explode fn false depth entries
 
     let mut entries_2 := entries_1
     let mut deps_3 := []
     for arg in args do
-      entries_2 ← explode arg false depth entries_2 opts
+      entries_2 ← explode arg false depth entries_2
       deps_3 ← appendDep entries_2 arg deps_3
     deps_3 ← appendDep entries_1 fn deps_3.reverse
 
-    let entries_3 := entries_2.add {
-      expr    := e,
-      type    := ← Lean.Meta.inferType e,
-      line    := entries_2.size,
-      depth   := depth,
-      status  := Status.reg,
-      thm     := if fn.isConst
-        then Thm.string s!"{fn.constName!}()"
-        else Thm.string "∀E",
-      deps    := deps_3,
-      context := ← getContext
-    }
+    let entries_3 := entries_2.add
+      { expr    := e,
+        type    := ← Meta.inferType e,
+        line    := entries_2.size,
+        depth   := depth,
+        status  := Status.reg,
+        thm     := if fn.isConst
+          then Thm.string s!"{fn.constName!}()"
+          else Thm.string "∀E",
+        deps    := deps_3,
+        context := ← getContext }
 
     return entries_3
-  | e@(Expr.letE _ _ _ _ _), si, depth, es, opts => do
-    if opts.verbose then dbg_trace "auxilliary - strip .letE"
-    explode (reduceLets e) si depth es opts
-  | e@(Expr.mdata _ expr), si, depth, es, opts => do
-    if opts.verbose then dbg_trace "auxilliary - strip .mdata"
-    explode expr si depth es opts
-  -- Right now all of these are caught by the default case.
-  -- Might be good to handle them separately.
-  -- (Expr.lit _)
-  -- (Expr.forallE _ _ _ _)
-  -- (Expr.const _ _)
-  -- (Expr.sort _)
-  -- (Expr.mvar _)
-  -- (Expr.fvar _)
-  -- (Expr.bvar _)
-  | e, si, depth, es, opts => do
-    if opts.verbose then dbg_trace s!"default - .{e.ctorName}"
-    let entries := es.add {
-      expr    := e,
-      type    := ← Lean.Meta.inferType e,
-      line    := es.size,
-      depth   := depth,
-      status  := Status.reg,
-      thm     := Thm.expr e,
-      deps    := [],
-      context := ← getContext
-    }
+  | .letE .. => do
+    trace[explode] "auxilliary - strip .letE"
+    explode (reduceLets e) si depth entries
+  | .mdata _ expr => do
+    trace[explode] "auxilliary - strip .mdata"
+    explode expr si depth entries
+  | _ => do
+    -- Right now all of these are caught by the default case.
+    -- Might be good to handle them separately.
+    -- Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
+    trace[explode] "default - .{e.ctorName}"
+    let entries := entries.add
+      { expr    := e,
+        type    := ← Meta.inferType e,
+        line    := entries.size,
+        depth   := depth,
+        status  := Status.reg,
+        thm     := Thm.expr e,
+        deps    := [],
+        context := ← getContext }
     return entries
 
 end Mathlib.Explode
@@ -154,11 +140,11 @@ iff_true_intro : ∀ {a : Prop}, a → (a ↔ true)
 
 Given a body of a theorem, we parse it as an `Expr`.
 We only have 3 cases (written in pseudocode):
-  - `Expr.lam` - displays `λ x => y` as
+  - `Expr.lam` - displays `fun x => y` as
     ```lean
      |    | x        -- (X)
      |    | y        -- (Y)
-     | →I | λ x => y -- (X → Y)
+     | →I | fun x => y -- (X → Y)
     ```
   - `Expr.app` - displays `f a b c` as
      ```lean
@@ -194,7 +180,7 @@ elab "#explode " theoremStx:ident : command => do
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
 
   Elab.Command.liftCoreM do
-    Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.explode body true 0 default { verbose := true }
+    Meta.MetaM.run' do
+      let results ← Mathlib.Explode.explode body true 0 default
       let fitchTable : MessageData ← Mathlib.Explode.entriesToMd results
       Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")
