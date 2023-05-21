@@ -82,17 +82,27 @@ theorem IsTheta.trans {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =�
   ⟨h₁.1.trans h₂.1, h₂.2.trans h₁.2⟩
 #align asymptotics.is_Theta.trans Asymptotics.IsTheta.trans
 
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsTheta l) (IsTheta l) :=
+  ⟨IsTheta.trans⟩
+
 @[trans]
 theorem IsBigO.trans_isTheta {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =O[l] g)
     (h₂ : g =Θ[l] k) : f =O[l] k :=
   h₁.trans h₂.1
 #align asymptotics.is_O.trans_is_Theta Asymptotics.IsBigO.trans_isTheta
 
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsBigO l) (IsTheta l) (IsBigO l) :=
+  ⟨IsBigO.trans_isTheta⟩
+
 @[trans]
 theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =Θ[l] g)
     (h₂ : g =O[l] k) : f =O[l] k :=
   h₁.1.trans h₂
 #align asymptotics.is_Theta.trans_is_O Asymptotics.IsTheta.trans_isBigO
+
+-- Porting note: Add more `Trans` instances?
 
 @[trans]
 theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h₁ : f =o[l] g)
