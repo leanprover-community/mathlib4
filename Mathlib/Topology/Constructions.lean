@@ -55,7 +55,7 @@ instance {r : α → α → Prop} [t : TopologicalSpace α] : TopologicalSpace (
 instance {s : Setoid α} [t : TopologicalSpace α] : TopologicalSpace (Quotient s) :=
   coinduced Quotient.mk' t
 
-@[reducible] instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α × β) :=
+instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α × β) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
 
 instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α ⊕ β) :=
