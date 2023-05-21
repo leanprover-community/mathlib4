@@ -105,7 +105,7 @@ theorem localization_localization_eq_iff_exists [IsLocalization N T] (x y : R) :
   · rintro ⟨z, eq₁⟩
     rcases IsLocalization.surj M (z : S) with ⟨⟨z', s⟩, eq₂⟩
     dsimp only at eq₂
-    let a := (x * z' : R)
+    let _a := (x * z' : R)
     suffices : (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z')
     · obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
       refine ⟨⟨c * z', ?_⟩, ?_⟩
