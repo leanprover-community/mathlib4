@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of commutative rings has all colimits.
@@ -136,8 +136,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to commutative expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F)
-    where
+def colimitSetoid : Setoid (Prequotient F) where
   R := Relation F
   iseqv := ⟨Relation.refl, Relation.symm, Relation.trans⟩
 #align CommRing.colimits.colimit_setoid CommRingCat.Colimits.colimitSetoid
@@ -150,8 +149,7 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)deriving Inhabited
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
-instance : AddGroup (ColimitType F)
-    where
+instance : AddGroup (ColimitType F) where
   zero := Quot.mk _ zero
   neg := by
     fapply @Quot.lift
@@ -335,8 +333,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F
-    where
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_one' := by apply Quot.sound <;> apply relation.one
   map_mul' := by intros <;> apply Quot.sound <;> apply relation.mul
@@ -346,8 +343,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ coconeMorphism F j' = coconeMorphism F j :=
-  by
+    F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
   apply Relation.Map
@@ -355,8 +351,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
-    (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x :=
-  by
+    (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components
@@ -380,8 +375,7 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
 #align CommRing.colimits.desc_fun_lift CommRingCat.Colimits.descFunLift
 
 /-- The function from the colimit commutative ring to the cone point of any other cocone. -/
-def descFun (s : Cocone F) : ColimitType F → s.pt :=
-  by
+def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact desc_fun_lift F s
   · intro x y r
@@ -440,8 +434,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt :=
 
 /-- The ring homomorphism from the colimit commutative ring to the cone point of any other
 cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt
-    where
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
   map_one' := rfl
   map_zero' := rfl
@@ -450,8 +443,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt
 #align CommRing.colimits.desc_morphism CommRingCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
-def colimitIsColimit : IsColimit (colimitCocone F)
-    where
+def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext
