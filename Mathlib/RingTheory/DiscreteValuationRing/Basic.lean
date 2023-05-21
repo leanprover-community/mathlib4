@@ -376,12 +376,13 @@ theorem unit_mul_pow_congr_pow {p q : R} (hp : Irreducible p) (hq : Irreducible 
     refine' ⟨u * v⁻¹, _⟩
     simp only [Units.val_mul]
     rw [mul_left_comm, ← mul_assoc, h, mul_right_comm, Units.mul_inv, one_mul]
-  have := Multiset.card_eq_card_of_rel (UniqueFactorizationMonoid.factors_unique _ _ key)
-  · simpa only [Multiset.card_replicate]
-  all_goals
-    intro x hx
-    obtain rfl := Multiset.eq_of_mem_replicate hx
-    assumption
+  have := by
+    refine' Multiset.card_eq_card_of_rel (UniqueFactorizationMonoid.factors_unique _ _ key)
+    all_goals
+      intro x hx
+      obtain rfl := Multiset.eq_of_mem_replicate hx
+      assumption
+  simpa only [Multiset.card_replicate]
 #align discrete_valuation_ring.unit_mul_pow_congr_pow DiscreteValuationRing.unit_mul_pow_congr_pow
 
 theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m n : ℕ)
@@ -408,73 +409,76 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuati
   addValuation (Classical.choose_spec (exists_prime R))
 #align discrete_valuation_ring.add_val DiscreteValuationRing.addVal
 
+-- Porting note: Added `: PartENat` and `show PartENat from` to all the theorems below.
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
-    addVal R r = n := by
-  rw [add_val, add_valuation_apply, hr,
+    addVal R r = (n : PartENat) := by
+  rw [addVal, addValuation_apply, hr,
     eq_of_associated_left
-      (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).Irreducible),
+      (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
     multiplicity_pow_self_of_prime (PrincipalIdealRing.irreducible_iff_prime.1 hϖ)]
 #align discrete_valuation_ring.add_val_def DiscreteValuationRing.addVal_def
 
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
-    addVal R ((u : R) * ϖ ^ n) = n :=
+    addVal R ((u : R) * ϖ ^ n) = (n : PartENat) :=
   addVal_def _ u hϖ n rfl
 #align discrete_valuation_ring.add_val_def' DiscreteValuationRing.addVal_def'
 
 @[simp]
-theorem addVal_zero : addVal R 0 = ⊤ :=
+theorem addVal_zero : addVal R 0 = (⊤ : PartENat) :=
   (addVal R).map_zero
 #align discrete_valuation_ring.add_val_zero DiscreteValuationRing.addVal_zero
 
 @[simp]
-theorem addVal_one : addVal R 1 = 0 :=
+theorem addVal_one : addVal R 1 = (0 : PartENat) :=
   (addVal R).map_one
 #align discrete_valuation_ring.add_val_one DiscreteValuationRing.addVal_one
 
 @[simp]
-theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := by
-  simpa only [one_mul, eq_self_iff_true, Units.val_one, pow_one, forall_true_left,
-    Nat.cast_one] using add_val_def ϖ 1 hϖ 1
+theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = (1 : PartENat) := by
+  simpa only [one_mul, eq_self_iff_true, Units.val_one, pow_one, forall_true_left, Nat.cast_one]
+    using addVal_def ϖ 1 hϖ 1
 #align discrete_valuation_ring.add_val_uniformizer DiscreteValuationRing.addVal_uniformizer
 
 @[simp]
-theorem addVal_mul {a b : R} : addVal R (a * b) = addVal R a + addVal R b :=
+theorem addVal_mul {a b : R} :
+    addVal R (a * b) = (show PartENat from addVal R a) + show PartENat from addVal R b :=
   (addVal R).map_mul _ _
 #align discrete_valuation_ring.add_val_mul DiscreteValuationRing.addVal_mul
 
-theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
+theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • (show PartENat from addVal R a) :=
   (addVal R).map_pow _ _
 #align discrete_valuation_ring.add_val_pow DiscreteValuationRing.addVal_pow
 
-theorem Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) : addVal R (ϖ ^ n) = n := by
-  rw [add_val_pow, add_val_uniformizer h, nsmul_one]
+nonrec theorem _root_.Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) :
+    addVal R (ϖ ^ n) = (n : PartENat) := by
+  rw [addVal_pow, addVal_uniformizer h, nsmul_one]
 #align irreducible.add_val_pow Irreducible.addVal_pow
 
-theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
-  have hi := (Classical.choose_spec (exists_prime R)).Irreducible
+theorem addVal_eq_top_iff {a : R} : addVal R a = (⊤ : PartENat) ↔ a = 0 := by
+  have hi := (Classical.choose_spec (exists_prime R)).irreducible
   constructor
   · contrapose
     intro h
     obtain ⟨n, ha⟩ := associated_pow_irreducible h hi
     obtain ⟨u, rfl⟩ := ha.symm
-    rw [mul_comm, add_val_def' u hi n]
+    rw [mul_comm, addVal_def' u hi n]
     exact PartENat.natCast_ne_top _
   · rintro rfl
-    exact add_val_zero
+    exact addVal_zero
 #align discrete_valuation_ring.add_val_eq_top_iff DiscreteValuationRing.addVal_eq_top_iff
 
 theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
   have hp := Classical.choose_spec (exists_prime R)
   constructor <;> intro h
   · by_cases ha0 : a = 0
-    · rw [ha0, add_val_zero, top_le_iff, add_val_eq_top_iff] at h
+    · rw [ha0, addVal_zero, top_le_iff, addVal_eq_top_iff] at h
       rw [h]
       apply dvd_zero
     obtain ⟨n, ha⟩ := associated_pow_irreducible ha0 hp.irreducible
-    rw [add_val, add_valuation_apply, add_valuation_apply, multiplicity_le_multiplicity_iff] at h
+    rw [addVal, addValuation_apply, addValuation_apply, multiplicity_le_multiplicity_iff] at h
     exact ha.dvd.trans (h n ha.symm.dvd)
-  · rw [add_val, add_valuation_apply, add_valuation_apply]
+  · rw [addVal, addValuation_apply, addValuation_apply]
     exact multiplicity_le_multiplicity_of_dvd_right h
 #align discrete_valuation_ring.add_val_le_iff_dvd DiscreteValuationRing.addVal_le_iff_dvd
 
@@ -485,12 +489,12 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 end
 
 instance (R : Type _) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
-    IsHausdorff (maximalIdeal R) R
-    where haus' x hx := by
+    IsHausdorff (maximalIdeal R) R where
+  haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.zero, hϖ.maximalIdeal_eq,
-      Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← add_val_le_iff_dvd, hϖ.add_val_pow] at
-      hx
-    rwa [← add_val_eq_top_iff, PartENat.eq_top_iff_forall_le]
+      Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow]
+        at hx
+    rwa [← addVal_eq_top_iff, PartENat.eq_top_iff_forall_le]
 
 end DiscreteValuationRing
