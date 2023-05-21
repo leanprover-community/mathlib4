@@ -50,6 +50,7 @@ import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.LocalRing
+import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
