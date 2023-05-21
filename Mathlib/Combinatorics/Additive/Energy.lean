@@ -20,8 +20,8 @@ additive combinatorics.
 ## TODO
 
 It's possibly interesting to have
-`(s ×ˢ s) ×ᶠˢ t ×ᶠˢ t).filter (λ x : (α × α) × α × α, x.1.1 * x.2.1 = x.1.2 * x.2.2)` (whose `card` is
-`multiplicativeEnergy s t`) as a standalone definition.
+`(s ×ˢ s) ×ᶠˢ t ×ᶠˢ t).filter (λ x : (α × α) × α × α, x.1.1 * x.2.1 = x.1.2 * x.2.2)` (whose `card`
+is `multiplicativeEnergy s t`) as a standalone definition.
 -/
 
 
