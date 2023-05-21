@@ -273,7 +273,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- the family `u` will be the desired family
   refine' ⟨u, fun a hat' => (ut' hat').1, u_count, u_disj, _⟩
   -- it suffices to show that it covers almost all `s` locally around each point `x`.
-  refine' null_of_locally_null _ fun x hx => _
+  refine' null_of_locally_null _ fun x _ => _
   -- let `v` be the subfamily of `u` made of those sets intersecting the small ball `ball x (r x)`
   let v := { a ∈ u | (B a ∩ ball x (R x)).Nonempty }
   have vu : v ⊆ u := fun a ha => ha.1
@@ -344,12 +344,12 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   have M : (s \ ⋃ a ∈ u, B a) ∩ ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) :=
     by
     intro z hz
-    set k := ⋃ (a : v) (ha : a ∈ w), B a with hk
-    have k_closed : IsClosed k := isClosed_biUnion w.finite_toSet fun i hi => h't _ (ut (vu i.2))
+    set k := ⋃ (a : v) (ha : a ∈ w), B a
+    have k_closed : IsClosed k := isClosed_biUnion w.finite_toSet fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
       simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
         SetCoe.exists, not_and, exists_and_right, Subtype.coe_mk]
-      intro b hbv h'b h'z
+      intro b hbv _ h'z
       have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=
         mem_inter (mem_of_mem_inter_left hz) (mem_biUnion (vu hbv) h'z)
       simpa only [diff_inter_self]
@@ -393,7 +393,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       have A : dist (c a) e ≤ r a := mem_closedBall'.1 (hB a hat ea)
       have B : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
       simp only [mem_closedBall]
-      linarith [dist_triangle (c a) e (c b)]
+      linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
     suffices H : closedBall (c b'') (3 * r b'') ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)
     exact H zb
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
