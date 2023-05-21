@@ -487,7 +487,7 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_le hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y using WithTop.recTopCoe <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
+  · induction y using ENNReal.recTopCoe <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x using ENNReal.recTopCoe
