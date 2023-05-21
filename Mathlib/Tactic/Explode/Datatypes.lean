@@ -31,18 +31,17 @@ inductive Status where
 
 /-- How to display the theorem in the Fitch table. -/
 inductive Thm where
-  /-- We'll display it as a full-blown `MessageData`, and it will be possible to hover over it -/
-  | expr   : Expr   → Thm
+  /-- The theorem expression as a `MessageData`. Make sure to use `addMessageContext`. -/
+  | msg   : MessageData → Thm
   /-- Display as a name -/
-  | name   : Name   → Thm
+  | name   : Name → Thm
   /-- Display as a string -/
   | string : String → Thm
 
 /-- The row in the Fitch table. -/
 structure Entry where
-  /-- A type of this expression. We need to store it too, because it needs to have been created
-  in the right `MessageDataContext` - we can't just `inferType` from `Entry.expr` later. -/
-  type    : Expr
+  /-- A type of this expression as a `MessageData`. Make sure to use `addMessageContext`. -/
+  type    : MessageData
   /-- The row number, starting from `0`. -/
   line    : Nat
   /-- How many `if`s (aka lambda-abstractions) this row is nested under. -/
@@ -53,9 +52,6 @@ structure Entry where
   thm     : Thm
   /-- Which other lines (aka rows) this row depends on. -/
   deps    : List Nat
-  /-- Context in which to render our expressions (`Entry.expr`, `Entry.type`, and
-  `Entry.thm.expr`). -/
-  context : MessageDataContext
 
 /-- Instead of simply keeping a list of entries (`List Entry`), we create a datatype `Entries`
 that allows us to compare expressions faster. -/
@@ -96,8 +92,3 @@ def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List 
     return existingEntry.line :: deps
   else
     return deps
-
-/-- Get current `MessageDataContext`.
-This allows us to render `Entry`'s `Expr`s when printing out the Fitch table. -/
-def getContext : MetaM MessageDataContext := do
-  return { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }

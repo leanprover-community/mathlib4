@@ -26,30 +26,27 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
     trace[explode] ".lam"
     Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
       let body := Expr.instantiate1 body.cleanupAnnotations arg
-
       let entries_1 := entries.add arg
-        { type    := ← Meta.inferType arg,
-          line    := entries.size,
-          depth   := depth,
-          status  := if si then Status.sintro else Status.intro,
-          thm     := Thm.name varName,
-          deps    := [],
-          context := ← getContext }
+        { type    := ← addMessageContext <| ← Meta.inferType arg
+          line    := entries.size
+          depth   := depth
+          status  := if si then Status.sintro else Status.intro
+          thm     := Thm.name varName
+          deps    := [] }
 
       let entries_2 ← explode body si (if si then depth else depth + 1) entries_1
 
       let entries_3 := entries_2.add e
-        { type    := ← Meta.inferType e,
-          line    := entries_2.size,
-          depth   := depth,
-          status  := Status.lam,
+        { type    := ← addMessageContext <| ← Meta.inferType e
+          line    := entries_2.size
+          depth   := depth
+          status  := Status.lam
           thm     := if (← Meta.inferType e).isArrow
             then Thm.string "→I"
-            else Thm.string "∀I",
+            else Thm.string "∀I"
           deps    := if si
             then [entries.size, entries_2.size - 1]
-            else (← appendDep entries_2 arg (← appendDep entries_2 body []))
-          context := ← getContext }
+            else ← appendDep entries_2 arg (← appendDep entries_2 body []) }
 
       return entries_3
   | .app .. => do
@@ -76,15 +73,14 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
     deps_3 ← appendDep entries_1 fn deps_3.reverse
 
     let entries_3 := entries_2.add e
-      { type    := ← Meta.inferType e,
-        line    := entries_2.size,
-        depth   := depth,
-        status  := Status.reg,
+      { type    := ← addMessageContext <| ← Meta.inferType e
+        line    := entries_2.size
+        depth   := depth
+        status  := Status.reg
         thm     := if fn.isConst
           then Thm.string s!"{fn.constName!}()"
-          else Thm.string "∀E",
-        deps    := deps_3,
-        context := ← getContext }
+          else Thm.string "∀E"
+        deps    := deps_3 }
 
     return entries_3
   | .letE .. => do
@@ -99,13 +95,12 @@ partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : M
     -- Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
     trace[explode] "default - .{e.ctorName}"
     let entries := entries.add e
-      { type    := ← Meta.inferType e,
-        line    := entries.size,
-        depth   := depth,
-        status  := Status.reg,
-        thm     := Thm.expr e,
-        deps    := [],
-        context := ← getContext }
+      { type    := ← addMessageContext <| ← Meta.inferType e
+        line    := entries.size
+        depth   := depth
+        status  := Status.reg
+        thm     := Thm.msg (← addMessageContext e)
+        deps    := [] }
     return entries
 
 end Mathlib.Explode

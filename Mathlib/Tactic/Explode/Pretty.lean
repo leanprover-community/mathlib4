@@ -38,9 +38,9 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
   return paddedMds.reverse
 
 /-- Turn a theorem into `MessageData`. -/
-def thmToMd (context : MessageDataContext) (thm : Thm) : MessageData :=
+def thmToMd (thm : Thm) : MessageData :=
   match thm with
-    | Thm.expr expr     => MessageData.withContext context expr
+    | Thm.msg msg       => msg
     | Thm.name name     => name
     | Thm.string string => string
 
@@ -55,9 +55,7 @@ def rowToMd :
       | Status.lam    => "│ " ++ pipes
       | Status.reg    => "│ " ++ pipes
 
-    let type := MessageData.withContext en.context en.type
-
-    let row := m!"{line}│{dep}│ {thm} {pipes}{type}\n"
+    let row := m!"{line}│{dep}│ {thm} {pipes}{en.type}\n"
     return (← rowToMd lines deps thms es).compose row
   | _, _, _, _ => return MessageData.nil
 
@@ -69,7 +67,6 @@ def entriesToMd (entries : Entries) : MetaM MessageData := do
   let paddedDeps  ← padRight <| entries.l.map fun entry =>
     String.intercalate "," (entry.deps.map toString)
   -- ['p  ', 'hP ', '∀I ']
-  let paddedThms ← padRight <| entries.l.map fun entry =>
-    thmToMd entry.context entry.thm
+  let paddedThms ← padRight <| entries.l.map fun entry => thmToMd entry.thm
 
   rowToMd paddedLines paddedDeps paddedThms entries.l
