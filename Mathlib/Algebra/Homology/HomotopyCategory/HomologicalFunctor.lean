@@ -31,7 +31,8 @@ lemma homology_triangle_exact {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : �
     _ _ _ _ _ (n-1) (by simp)] at hz''
   obtain ⟨A₂, π₂, hπ₂, y, hy⟩ := hz''
   obtain ⟨y₁, y₂, hy₁₂⟩ := to_break _ y n (by rw [sub_add_cancel])
-  simp [hy₁₂, to_ext_iff _ _ _ (n+1) rfl] at hy
+  cases hy₁₂
+  simp [to_ext_iff _ _ _ (n+1) rfl] at hy
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _,
     K.liftCycles' y₁ (n+1) (by simp) hy.1 ≫ K.homologyπ n, _⟩
   simp [hz', hy.2]
