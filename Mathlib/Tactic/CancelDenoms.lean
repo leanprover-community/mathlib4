@@ -8,7 +8,6 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
 import Mathlib.Util.Qq
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # A tactic for canceling numeric denominators
