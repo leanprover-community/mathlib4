@@ -359,7 +359,7 @@ theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E
   by_contra' h
   -- In theory, `by_contra'` does `push_neg`, but it doesn't, and `push_neg` on his own
   -- does nothing...
-  push_neg at h
+  simp [not_exists] at h
   refine' hx (this _)
   rw [hp.hasBasis_zero_ball.specializes_iff]
   rintro ⟨s, r⟩ (hr : 0 < r)
