@@ -1670,6 +1670,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Constructions.Polish
+import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEMeasurableOrder
