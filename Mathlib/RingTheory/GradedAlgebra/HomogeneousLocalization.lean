@@ -535,9 +535,9 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
 theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
   { mp := fun h => h ▸ rfl
     mpr := fun h => by
-      induction f using Quotient.inductionOn
-      induction g using Quotient.inductionOn
-      rw [Quotient.eq]
+      induction f using Quotient.inductionOn'
+      induction g using Quotient.inductionOn'
+      rw [Quotient.eq'']
       simpa only [Quotient.liftOn'_mk] using h }
 #align homogeneous_localization.ext_iff_val HomogeneousLocalization.ext_iff_val
 
