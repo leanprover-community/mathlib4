@@ -8,7 +8,10 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Tauto
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Init.Logic
+import Mathlib.Control.Basic
+import Qq
 
 /-!
 # Strongly Connected Components
@@ -90,11 +93,9 @@ def Closure := HashMap Q(Prop) (ℕ ⊕ (Q(Prop) × Expr))
 /-- The tactic monad with mutable `Closure`. -/
 abbrev ClosureM := StateRefT Closure TacticM
 
-namespace ClosureM
-
 /-- `m.run` creates an empty `Closure` `c`, executes `m` on `c`, and then deletes `c`,
 returning the output of `m`. -/
-def run {α : Type _} (m : ClosureM α) : TacticM α := StateRefT'.run' m mkHashMap
+def ClosureM.run {α : Type _} (m : ClosureM α) : TacticM α := StateRefT'.run' m mkHashMap
 
 /-- Gets the closure. -/
 def getClosure : ClosureM Closure := get
@@ -113,8 +114,8 @@ def toTacticFormat : ClosureM Format := do
   let fmt ←
     l.mapM fun ⟨x, y⟩ => do
         match y with
-        | Sum.inl y => return f!"{x} ⇐ {y}"
-        | Sum.inr ⟨y, p⟩ => return f!"({x}, {y}) : {← inferType p}"
+        | Sum.inl y => return f!"{← ppExpr x} ⇐ {y}"
+        | Sum.inr ⟨y, p⟩ => return f!"({← ppExpr x}, {← ppExpr y}) : {← ppExpr (← inferType p)}"
   return format fmt
 
 /-- `(n, r, p) ← root e` returns `r` the root of the tree that `e` is a part of (which might be
@@ -142,7 +143,7 @@ def merge (p : Expr) : ClosureM Unit := do
   have p : Q($e₀ ↔ $e₁) := p
   let (n₂, e₂, (p₂ : Q($e₀ ↔ $e₂))) ← root e₀
   let (n₃, e₃, (p₃ : Q($e₁ ↔ $e₃))) ← root e₁
-  if e₂ == e₃ then
+  if !(e₂ == e₃) then
     if n₂ < n₃ then
       modifyClosure fun cl =>
         cl.insert e₃ (Sum.inr (e₂, q(Iff.trans (Iff.trans (Iff.symm $p₃) (Iff.symm $p)) $p₂)))
@@ -159,7 +160,7 @@ they are equivalent. -/
 def proveEqv (e₀ e₁ : Q(Prop)) : ClosureM Q($e₀ ↔ $e₁) := do
   let (_, r, (p₀ : Q($e₀ ↔ $r))) ← root e₀
   let (_, r', (p₁ : Q($e₁ ↔ $r))) ← root e₁
-  guard (r == r') <|> throwError "{e₀} and {e₁} are not equivalent"
+  unless r == r' do throwError "{e₀} and {e₁} are not equivalent"
   return q(Iff.trans $p₀ (Iff.symm $p₁))
 
 /-- `proveImpl e₀ e₁` constructs a proof of `e₀ → e₁` if they are equivalent. -/
@@ -173,96 +174,81 @@ def isEqv (e₀ e₁ : Q(Prop)) : ClosureM Bool := do
   let (_, r', _) ← root e₁
   return r == r'
 
-end ClosureM
-
-/-- mutable graphs between local propositions that imply each other with the proof of implication -/
-def ImplGraph := HashMap Q(Prop) (List (Q(Prop) × Expr))
-
-/-- `with_impl_graph f` creates an empty `impl_graph` `g`, executes `f` on `g`, and then deletes
-`g`, returning the output of `f`. -/
-unsafe def with_impl_graph {α} : (impl_graph → tactic α) → tactic α :=
-  using_new_ref (expr_map.mk (List <| expr × expr))
-
-namespace ImplGraph
-
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      `add_edge g p`, with `p` a proof of `v₀ → v₁` or `v₀ ↔ v₁`, adds an edge to the implication
-      graph `g`. -/
-    unsafe
-  def
-    add_edge
-    ( g : impl_graph ) : expr → tactic Unit
-    |
-      p
-      =>
-      do
-        let t ← infer_type p
-          match
-            t
-            with
-            |
-                q( $ ( v₀ ) → $ ( v₁ ) )
-                =>
-                do
-                  is_prop v₀ >>= guardb
-                    is_prop v₁ >>= guardb
-                    let m ← read_ref g
-                    let xs := ( m v₀ ) . getD [ ]
-                    let xs' := ( m v₁ ) . getD [ ]
-                    modify_ref g fun m => ( m v₀ ( ( v₁ , p ) :: xs ) ) . insert v₁ xs'
-              |
-                q( $ ( v₀ ) ↔ $ ( v₁ ) )
-                =>
-                do
-                  let p₀ ← mk_mapp ` ` Iff.mp [ none , none , p ]
-                    let p₁ ← mk_mapp ` ` Iff.mpr [ none , none , p ]
-                    add_edge p₀
-                    add_edge p₁
-              | _ => failed
-
-section Scc
-
-open List
-
-parameter (g : expr_map (List <| expr × expr))
-
-parameter (visit : ref <| expr_map Bool)
-
-parameter (cl : closure)
-
-/-- `merge_path path e`, where `path` and `e` forms a cycle with proofs of implication between
+/-- `mergePath path e`, where `path` and `e` forms a cycle with proofs of implication between
 consecutive vertices. The proofs are compiled into proofs of equivalences and added to the closure
 structure. `e` and the first vertex of `path` do not have to be the same but they have to be
 in the same equivalence class. -/
-unsafe def merge_path (path : List (expr × expr)) (e : expr) : tactic Unit := do
-  let p₁ ← cl.prove_impl e Path.headI.fst
-  let p₂ ← mk_mapp `` id [e]
-  let path := (e, p₁) :: Path
-  let (_, ls) ←
-    Path.mapAccumLM
-        (fun p p' => Prod.mk <$> mk_mapp `` Implies.trans [none, p'.1, none, p, p'.2] <*> pure p) p₂
-  let (_, rs) ←
-    Path.mapAccumRM
-        (fun p p' => Prod.mk <$> mk_mapp `` Implies.trans [none, none, none, p.2, p'] <*> pure p')
-        p₂
-  let ps ← zipWithM (fun p₀ p₁ => mk_app `` Iff.intro [p₀, p₁]) ls.tail rs.dropLast
-  ps cl
+def mergePath (path : List (Q(Prop) × Expr)) (e : Q(Prop)) : ClosureM Unit := do
+  let some (e', _) := path.head? | throwError "{path} should not be nil"
+  let p₁ : Expr ← proveImpl e e'
+  let p₂ : Expr := q(@id $e)
+  let path := (e, p₁) :: path
+  let (_, ls) ← List.mapAccumLM
+    (fun p p' => Prod.mk <$>
+      mkAppOptM ``Implies.trans #[none, some p'.1, none, some p, some p'.2] <*> pure p)
+    p₂ path
+  let (_, rs) ← List.mapAccumRM
+    (fun p p' => Prod.mk <$>
+      mkAppOptM ``Implies.trans #[none, none, none, some p.2, some p'] <*> pure p')
+    p₂ path
+  let ps ← zipWithM (fun p₀ p₁ => mkAppM ``Iff.intro #[p₀, p₁]) ls.tail rs.dropLast
+  ps.forM merge
 
 /-- (implementation of `collapse`) -/
-unsafe def collapse' : List (expr × expr) → List (expr × expr) → expr → tactic Unit
-  | Acc, [], v => merge_path Acc v
-  | Acc, (x, pr) :: xs, v => do
-    let b ← cl.is_eqv x v
-    let acc' := (x, pr) :: Acc
-    if b then merge_path acc' v else collapse' acc' xs v
+def collapse' : List (Q(Prop) × Expr) → List (Q(Prop) × Expr) → Q(Prop) → ClosureM Unit
+  | acc, [], v => mergePath acc v
+  | acc, (x, pr) :: xs, v => do
+    let b ← isEqv x v
+    let acc' := (x, pr) :: acc
+    if b then mergePath acc' v else collapse' acc' xs v
 
 /-- `collapse path v`, where `v` is a vertex that originated the current search
 (or a vertex in the same equivalence class as the one that originated the current search).
 It or its equivalent should be found in `path`. Since the vertices following `v` in the path
 form a cycle with `v`, they can all be added to an equivalence class. -/
-unsafe def collapse : List (expr × expr) → expr → tactic Unit :=
+def collapse : List (Q(Prop) × Expr) → Q(Prop) → ClosureM Unit :=
   collapse' []
+
+/-- mutable graphs between local propositions that imply each other with the proof of implication -/
+def ImplGraph := HashMap Q(Prop) (List (Q(Prop) × Expr))
+
+/-- `SCCM` monad state. -/
+structure State where
+  /-- mutable graphs between local propositions that imply each other with the proof of
+  implication -/
+  graph : ImplGraph := mkHashMap
+  /-- visited propositions by `dfsAt` -/
+  visit : HashMap Q(Prop) Bool := mkHashMap
+
+abbrev SCCM := StateRefT State ClosureM
+
+/-- `m.run` creates an empty `State` `s`, executes `m` on `s`, and then deletes
+`s`, returning the output of `m`. -/
+def SCCM.run {α : Type _} (m : SCCM α) : ClosureM α := StateRefT'.run' m {}
+
+/-- Gets the state. -/
+def getState : SCCM State := get
+
+/-- Modifies the state. -/
+def modifyState : (State → State) → SCCM Unit := modify
+
+/-- `addEdge p`, with `p` a proof of `v₀ → v₁` or `v₀ ↔ v₁`, adds an edge to the implication
+graph . -/
+partial def addEdge (p : Expr) : SCCM Unit := do
+  let ty : Q(Prop) ← inferType p
+  match ty with
+  | ~q((($v₀ : Prop)) → $v₁) => do
+    let ⟨g, _⟩ ← getState
+    let xs := (g.find? v₀).getD []
+    let xs' := (g.find? v₁).getD [ ]
+    modifyState fun ⟨g, vi⟩ => ⟨g.insert v₀ ((v₁, p) :: xs) |>.insert v₁ xs', vi⟩
+  | ~q($v₀ ↔ $v₁) => do
+    let p : Q($v₀ ↔ $v₁) := p
+    addEdge q(Iff.mp $p)
+    addEdge q(Iff.mpr $p)
+  | _ => throwError "{p} must be a proof of `e₀ → e₁` or `e₀ ↔ e₁`"
+
+open List
 
 /-- Strongly connected component algorithm inspired by Tarjan's and
 Dijkstra's scc algorithm. Whereas they return strongly connected
@@ -275,87 +261,62 @@ equivalence between any two members of an equivalence class.
    SIAM Journal on Computing, 1 (2): 146–160, doi:10.1137/0201010
  * Dijkstra, Edsger (1976), A Discipline of Programming, NJ: Prentice Hall, Ch. 25.
 -/
-unsafe def dfs_at : List (expr × expr) → expr → tactic Unit
-  | vs, v => do
-    let m ← read_ref visit
-    let (_, v', _) ← cl.root v
-    match m v' with
-      | some tt => pure ()
-      | some ff => collapse vs v
-      | none => do
-        cl v
-        modify_ref visit fun m => m v ff
-        let ns ← g v
-        ns fun ⟨w, e⟩ => dfs_at ((v, e) :: vs) w
-        modify_ref visit fun m => m v tt
-        pure ()
-
-end Scc
+partial def dfsAt (vs : List (Q(Prop) × Expr)) (v : Q(Prop)) : SCCM Unit := do
+  let ⟨g, vi⟩ ← getState
+  let (_, v', _) ← root v
+  match vi.find? v' with
+  | some true => return
+  | some false => collapse vs v
+  | none =>
+    assignPreorder v
+    modifyState fun ⟨g, vi⟩ => ⟨g, vi.insert v false⟩
+    let some ns := g.find? v | throwError "{v} is not found in the graph"
+    ns.forM fun (w, e) => dfsAt ((v, e) :: vs) w
+    modifyState fun ⟨g, vi⟩ => ⟨g, vi.insert v true⟩
 
 /-- Use the local assumptions to create a set of equivalence classes. -/
-unsafe def mk_scc (cl : closure) : tactic (expr_map (List (expr × expr))) :=
-  with_impl_graph fun g =>
-    using_new_ref (expr_map.mk Bool) fun visit => do
-      let ls ← local_context
-      ls fun l => try (g l)
-      let m ← read_ref g
-      m fun ⟨v, _⟩ => impl_graph.dfs_at m visit cl [] v
-      pure m
+def mkSCC : ClosureM (HashMap Q(Prop) (List (Q(Prop) × Expr))) :=
+  SCCM.run do
+    let ls ← getLocalHyps
+    ls.forM fun l => try addEdge l catch _ => return
+    let ⟨g, _⟩ ← getState
+    g.forM fun v _ => dfsAt [] v
+    return g
 
-end ImplGraph
+def proveEqvTarget : ClosureM Unit := do
+  let ty : Q(Prop) ← whnf (← getMainTarget)
+  let ~q($p ↔ $q) := ty | throwError "goal is not the form `p ↔ q`"
+  closeMainGoal (← proveEqv p q)
 
--- failed to format: unknown constant 'term.pseudo.antiquot'
-unsafe
-  def
-    prove_eqv_target
-    ( cl : closure ) : tactic Unit
-    := do let q( $ ( p ) ↔ $ ( q ) ) ← target >>= whnf cl p q >>= exact
 
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      `scc` uses the available equivalences and implications to prove
-      a goal of the form `p ↔ q`.
-
-      ```lean
-      example (p q r : Prop) (hpq : p → q) (hqr : q ↔ r) (hrp : r → p) : p ↔ r :=
-      by scc
-      ```
-      -/
-    unsafe
-  def
-    interactive.scc
-    : tactic Unit
-    :=
-      closure.with_new_closure
-        fun cl => do impl_graph.mk_scc cl let q( $ ( p ) ↔ $ ( q ) ) ← target cl p q >>= exact
+/-- `scc` uses the available equivalences and implications to prove a goal of the form `p ↔ q`.
+```lean
+example (p q r : Prop) (hpq : p → q) (hqr : q ↔ r) (hrp : r → p) : p ↔ r := by
+  scc
+``` -/
+elab "scc" : tactic =>
+  ClosureM.run do
+    discard mkSCC
+    let ty : Q(Prop) ← getMainTarget
+    let ~q($p ↔ $q) := ty | throwError "goal is not the form `p ↔ q`"
+    closeMainGoal (← proveEqv p q)
 
 /-- Collect all the available equivalences and implications and
 add assumptions for every equivalence that can be proven using the
 strongly connected components technique. Mostly useful for testing. -/
-unsafe def interactive.scc' : tactic Unit :=
-  closure.with_new_closure fun cl => do
-    let m ← impl_graph.mk_scc cl
-    let ls := m.toList.map Prod.fst
-    let ls' := Prod.mk <$> ls <*> ls
-    ls' fun x => do
-        let h ← get_unused_name `h
-        try <| closure.prove_eqv cl x.1 x.2 >>= note h none
-
-/-- `scc` uses the available equivalences and implications to prove
-a goal of the form `p ↔ q`.
-
-```lean
-example (p q r : Prop) (hpq : p → q) (hqr : q ↔ r) (hrp : r → p) : p ↔ r :=
-by scc
-```
-
-The variant `scc'` populates the local context with all equivalences that `scc` is able to prove.
-This is mostly useful for testing purposes.
--/
-add_tactic_doc
-  { Name := "scc"
-    category := DocCategory.tactic
-    declNames := [`` interactive.scc, `` interactive.scc']
-    tags := ["logic"] }
+elab "scc'" : tactic =>
+  ClosureM.run do
+    let g ← mkSCC
+    let ls := g.toList.map Prod.fst
+    let ls' := product ls ls
+    ls'.forM fun x => do
+      let n ← getUnusedUserName `h
+      try
+        let e ← proveEqv x.1 x.2
+        liftMetaTactic fun m₁ => do
+          let m₂ ← m₁.assert n q($(x.1) ↔ $(x.2)) e
+          let (_, m₃) ← m₂.intro n
+          return [m₃]
+      catch _ => return
 
 end Mathlib.Tactic.SCC
