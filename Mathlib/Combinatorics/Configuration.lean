@@ -18,20 +18,20 @@ import Mathlib.SetTheory.Cardinal.Finite
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
-* `configuration.nondegenerate`: Excludes certain degenerate configurations,
+* `Configuration.Nondegenerate`: Excludes certain degenerate configurations,
   and imposes uniqueness of intersection points.
-* `configuration.has_points`: A nondegenerate configuration in which
+* `Configuration.HasPoints`: A nondegenerate configuration in which
   every pair of lines has an intersection point.
-* `configuration.has_lines`:  A nondegenerate configuration in which
+* `Configuration.HasLines`:  A nondegenerate configuration in which
   every pair of points has a line through them.
-* `configuration.line_count`: The number of lines through a given point.
-* `configuration.point_count`: The number of lines through a given line.
+* `Configuration.lineCount`: The number of lines through a given point.
+* `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
-* `configuration.has_lines.card_le`: `has_lines` implies `|P| ≤ |L|`.
-* `configuration.has_points.card_le`: `has_points` implies `|L| ≤ |P|`.
-* `configuration.has_lines.has_points`: `has_lines` and `|P| = |L|` implies `has_points`.
-* `configuration.has_points.has_lines`: `has_points` and `|P| = |L|` implies `has_lines`.
+* `Configuration.HasLines.card_le`: `has_lines` implies `|P| ≤ |L|`.
+* `Configuration.HasPoints.card_le`: `has_points` implies `|L| ≤ |P|`.
+* `Configuration.HasLines.hasPoints`: `has_lines` and `|P| = |L|` implies `has_points`.
+* `Configuration.HasPoints.hasLines`: `has_points` and `|P| = |L|` implies `has_lines`.
 Together, these four statements say that any two of the following properties imply the third:
 (a) `has_lines`, (b) `has_points`, (c) `|P| = |L|`.
 
