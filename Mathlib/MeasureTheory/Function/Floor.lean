@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurability of `⌊x⌋` etc
@@ -47,8 +47,7 @@ theorem Measurable.ceil [OpensMeasurableSpace R] {f : α → R} (hf : Measurable
   Int.measurable_ceil.comp hf
 #align measurable.ceil Measurable.ceil
 
-theorem measurable_fract [BorelSpace R] : Measurable (Int.fract : R → R) :=
-  by
+theorem measurable_fract [BorelSpace R] : Measurable (Int.fract : R → R) := by
   intro s hs
   rw [Int.preimage_fract]
   exact MeasurableSet.iUnion fun z => measurable_id.sub_const _ (hs.inter measurableSet_Ico)
@@ -61,8 +60,7 @@ theorem Measurable.fract [BorelSpace R] {f : α → R} (hf : Measurable f) :
 #align measurable.fract Measurable.fract
 
 theorem MeasurableSet.image_fract [BorelSpace R] {s : Set R} (hs : MeasurableSet s) :
-    MeasurableSet (Int.fract '' s) :=
-  by
+    MeasurableSet (Int.fract '' s) := by
   simp only [Int.image_fract, sub_eq_add_neg, image_add_right']
   exact MeasurableSet.iUnion fun m => (measurable_add_const _ hs).inter measurableSet_Ico
 #align measurable_set.image_fract MeasurableSet.image_fract
