@@ -38,7 +38,7 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
   mds.mapM pad
 
 /-- Render a particular row of the Fitch table. -/
-def rowToMd :
+def rowToMessageData :
     List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
     let pipes := String.join (List.replicate en.depth "│ ")
@@ -49,17 +49,17 @@ def rowToMd :
       | Status.reg    => "│ " ++ pipes
 
     let row := m!"{line}│{dep}│ {thm} {pipes}{en.type}\n"
-    return (← rowToMd lines deps thms es).compose row
+    return (← rowToMessageData lines deps thms es).compose row
   | _, _, _, _ => return MessageData.nil
 
 /-- Given all `Entries`, return the entire Fitch table. -/
-def entriesToMd (entries : Entries) : MetaM MessageData := do
+def entriesToMessageData (entries : Entries) : MetaM MessageData := do
   -- ['1', '2', '3']
-  let paddedLines ← padRight <| entries.l.map fun entry => m!"{entry.line}"
+  let paddedLines ← padRight <| entries.l.map fun entry => m!"{entry.line!}"
   -- ['   ', '1,2', '1  ']
   let paddedDeps  ← padRight <| entries.l.map fun entry =>
-    String.intercalate "," (entry.deps.map toString)
+    String.intercalate "," <| entry.deps.map (fun dep => (dep.map toString).getD "_")
   -- ['p  ', 'hP ', '∀I ']
   let paddedThms ← padRight <| entries.l.map (·.thm)
 
-  rowToMd paddedLines paddedDeps paddedThms entries.l
+  rowToMessageData paddedLines paddedDeps paddedThms entries.l

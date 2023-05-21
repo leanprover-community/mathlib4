@@ -19,85 +19,111 @@ open Lean
 
 namespace Mathlib.Explode
 
-/-- Main method behind `#explode` command. -/
-partial def explode (e : Expr) (si : Bool) (depth : Nat) (entries : Entries) : MetaM Entries :=
-  match e.cleanupAnnotations with
+/-- Prepend the `line` of the `Entry` to `deps` if it's not `none`. -/
+def consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
+  entry?.map Entry.line! :: deps
+
+/-- Core `explode` algorithm.
+
+- `filter` is a condition for which expressions to process
+- `e` is the expression to process
+- `si` is whether this is among the initial lambdas
+- `depth` is the current abstraction depth
+- `entries` is the table so far
+-/
+partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
+    (si : Bool) (depth : Nat) (entries : Entries) :
+    MetaM (Option Entry × Entries) := do
+  let e := e.cleanupAnnotations
+  if let some entry := entries.find? e then
+    return (entry, entries)
+  if !(← filter e) then
+    trace[explode] "filtered out {e}"
+    return (none, entries)
+  match e with
   | .lam varName varType body binderInfo => do
     trace[explode] ".lam"
     Meta.withLocalDecl varName binderInfo varType.cleanupAnnotations fun arg => do
       let body' := Expr.instantiate1 body.cleanupAnnotations arg
-      let entries_1 := entries.add arg
+      let (argEntry?, entries) := entries.add arg
         { type    := ← addMessageContext <| ← Meta.inferType arg
-          line    := entries.size
           depth   := depth
           status  := if si then Status.sintro else Status.intro
           thm     := ← addMessageContext <| arg
           deps    := [] }
-
-      let entries_2 ← explode body' si (if si then depth else depth + 1) entries_1
-
-      let entries_3 := entries_2.add e
+      let (bodyEntry?, entries) ←
+        explode_core filter body' si (if si then depth else depth + 1) entries
+      let (entry, entries) := entries.add e
         { type    := ← addMessageContext <| ← Meta.inferType e
-          line    := entries_2.size
           depth   := depth
           status  := Status.lam
           thm     := if (← Meta.inferType e).isArrow then "→I" else "∀I"
-          deps    := if si
-            then [entries.size, entries_2.size - 1]
-            else ← appendDep entries_2 arg (← appendDep entries_2 body' []) }
-
-      return entries_3
+          deps    := consDep argEntry? (consDep bodyEntry? []) }
+      return (entry, entries)
   | .app .. => do
-    if !(← Meta.isProof e) then
-      trace[explode] ".app - missed {e}"
-      return entries
     trace[explode] ".app"
 
-    -- If we stumbled upon an application `f a b c`,
-    -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
-    -- lump them all under a single line! `a; b; c; f a b c`
+    -- We want to represent entire applications as a single line in the table
     let fn := Expr.getAppFn e
     let args := Expr.getAppArgs e
 
-    -- We could turn this off iff it's a `.const`, but it's nice to have a theorem
-    -- we're about to apply explicitly stated in the Fitch table
-    let entries_1 ← explode fn false depth entries
+    -- If the function is a `const`, then it's not local so we do not need an
+    -- entry in the table for it. We store the theorem name in the `thm` field
+    -- below, giving access to the theorem's type on hover in the UI.
+    -- Whether to include the entry could be controlled by a configuration option.
+    let (fnEntry?, entries) ←
+      if fn.isConst then
+        pure (none, entries)
+      else
+        explode_core filter fn false depth entries
+    let deps := if fn.isConst then [] else consDep fnEntry? []
 
-    let mut entries_2 := entries_1
-    let mut deps_3 := []
+    let mut entries' := entries
+    let mut rdeps := []
     for arg in args do
-      entries_2 ← explode arg false depth entries_2
-      deps_3 ← appendDep entries_2 arg deps_3
-    deps_3 ← appendDep entries_1 fn deps_3.reverse
+      let (appEntry?, entries'') ← explode_core filter arg false depth entries'
+      entries' := entries''
+      rdeps := consDep appEntry? rdeps
+    let deps := deps ++ rdeps.reverse
 
-    let entries_3 := entries_2.add e
+    let (entry, entries) := entries'.add e
       { type    := ← addMessageContext <| ← Meta.inferType e
-        line    := entries_2.size
         depth   := depth
         status  := Status.reg
-        thm     := ← addMessageContext <| if fn.isConst then m!"{fn}()" else "∀E"
-        deps    := deps_3 }
-
-    return entries_3
-  | .letE .. => do
-    trace[explode] "auxiliary - strip .letE"
-    explode (reduceLets e) si depth entries
-  | .mdata _ expr => do
-    trace[explode] "auxiliary - strip .mdata"
-    explode expr si depth entries
+        thm     := ← addMessageContext <| if fn.isConst then fn else "∀E"
+        deps    := deps }
+    return (entry, entries)
+  | .letE varName varType val body _ => do
+    trace[explode] ".letE"
+    let varType := varType.cleanupAnnotations
+    Meta.withLocalDeclD varName varType fun var => do
+      let (valEntry?, entries) ← explode_core filter val si depth entries
+      -- Add a synonym so that the substituted fvars refer to `valEntry?`
+      let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
+      explode_core filter (body.instantiate1 var) si depth entries
   | _ => do
-    -- Right now all of these are caught by the default case.
-    -- Might be good to handle them separately.
-    -- Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
+    -- Right now all of these are caught by this case case:
+    --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
+    --   (Note: Expr.mdata is stripped by cleanupAnnotations)
+    -- Might be good to handle them individually.
     trace[explode] "default - .{e.ctorName}"
-    let entries := entries.add e
+    handleDefault e entries
+where
+  handleDefault (e : Expr) (entries : Entries) : MetaM (Option Entry × Entries) := do
+    let (entry, entries) := entries.add e
       { type    := ← addMessageContext <| ← Meta.inferType e
-        line    := entries.size
         depth   := depth
         status  := Status.reg
         thm     := ← addMessageContext e
         deps    := [] }
-    return entries
+    return (entry, entries)
+
+/-- Main definition behind `#explode` command. -/
+def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
+  let filter (e : Expr) : MetaM Bool :=
+    if filterProofs then Meta.isProof e else return true
+  let (_, entries) ← explode_core filter e true 0 default
+  return entries
 
 end Mathlib.Explode
 
@@ -165,6 +191,6 @@ have global scope anyway so detailed tracking is not necessary.)
 elab "#explode " theoremStx:ident : command => Elab.Command.liftTermElabM do
   let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
-  let results ← Mathlib.Explode.explode body true 0 default
-  let fitchTable : MessageData ← Mathlib.Explode.entriesToMd results
+  let entries ← Mathlib.Explode.explode body
+  let fitchTable : MessageData ← Mathlib.Explode.entriesToMessageData entries
   Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")

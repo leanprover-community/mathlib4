@@ -33,8 +33,8 @@ inductive Status where
 structure Entry where
   /-- A type of this expression as a `MessageData`. Make sure to use `addMessageContext`. -/
   type    : MessageData
-  /-- The row number, starting from `0`. -/
-  line    : Nat
+  /-- The row number, starting from `0`. This is set by `Entries.add`. -/
+  line    : Option Nat := none
   /-- How many `if`s (aka lambda-abstractions) this row is nested under. -/
   depth   : Nat
   /-- What `Status` this entry has - this only affects how `│`s are displayed. -/
@@ -42,8 +42,12 @@ structure Entry where
   /-- What to display in the "theorem applied" column.
   Make sure to use `addMessageContext` if needed. -/
   thm     : MessageData
-  /-- Which other lines (aka rows) this row depends on. -/
-  deps    : List Nat
+  /-- Which other lines (aka rows) this row depends on.
+  `none` means that the dependency has been filtered out of the table. -/
+  deps    : List (Option Nat)
+
+/-- Get the `line` for an `Entry` that thas been added to the `Entries` structure. -/
+def Entry.line! (entry : Entry) : Nat := entry.line.get!
 
 /-- Instead of simply keeping a list of entries (`List Entry`), we create a datatype `Entries`
 that allows us to compare expressions faster. -/
@@ -55,32 +59,23 @@ structure Entries : Type where
   deriving Inhabited
 
 /-- Find a row where `Entry.expr` == `e`. -/
-def Entries.find (es : Entries) (e : Expr) : Option Entry :=
+def Entries.find? (es : Entries) (e : Expr) : Option Entry :=
   es.s.find? e
 
 /-- Length of our entries. -/
 def Entries.size (es : Entries) : Nat :=
   es.s.size
 
-/-- Add the entry unless it already exists. -/
-def Entries.add : Entries → Expr → Entry → Entries
-  | entries@⟨s, l⟩, expr, entry =>
-    if s.contains expr
-      then entries
-      else ⟨s.insert expr entry, entry :: l⟩
-
-/-- Create an empty `Entries`. -/
-def entriesDefault : Entries := default
-
-/-- Head-reduce all let expressions -/
-partial def reduceLets : Expr → Expr
-  | .letE _ _ v b _ => reduceLets (b.instantiate1 v)
-  | e => e
-
-/-- Add a row number to `Entry`'s dependencies. -/
-def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) := do
-  let expr := reduceLets expr
-  if let some existingEntry := entries.find expr then
-    return existingEntry.line :: deps
+/-- Add the entry unless it already exists. Sets the `line` field to the next
+available value. -/
+def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Entries :=
+  if let some entry' := entries.find? expr then
+    (entry', entries)
   else
-    return deps
+    let entry := {entry with line := entries.size}
+    (entry, ⟨entries.s.insert expr entry, entry :: entries.l⟩)
+
+/-- Add a pre-existing entry to the `ExprMap` for an additional expression.
+This is used by `let` bindings where `expr` is an fvar. -/
+def Entries.addSynonym (entries : Entries) (expr : Expr) (entry : Entry) : Entries :=
+  ⟨entries.s.insert expr entry, entries.l⟩
