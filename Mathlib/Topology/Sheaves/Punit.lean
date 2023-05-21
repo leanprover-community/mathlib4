@@ -8,7 +8,7 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.SheafCondition.Sites
+import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Presheaves on punit
@@ -26,8 +26,7 @@ open CategoryTheory CategoryTheory.Limits TopCat Opposite
 variable {C : Type u} [Category.{v} C]
 
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
-    (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs =>
-  by
+    (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
   obtain rfl | hne := eq_or_ne U ⊥
   · intro _ _
     rw [@exists_unique_iff_exists _ ⟨fun _ _ => _⟩]
