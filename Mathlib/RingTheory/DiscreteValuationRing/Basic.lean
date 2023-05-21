@@ -8,11 +8,11 @@ Authors: Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.PrincipalIdealDomain
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.RingTheory.Multiplicity
-import Mathbin.RingTheory.Valuation.Basic
-import Mathbin.LinearAlgebra.AdicCompletion
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.LinearAlgebra.AdicCompletion
 
 /-!
 # Discrete valuation rings
@@ -77,8 +77,7 @@ variable {R}
 open PrincipalIdealRing
 
 theorem irreducible_of_span_eq_maximalIdeal {R : Type _} [CommRing R] [LocalRing R] [IsDomain R]
-    (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ :=
-  by
+    (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximal_ideal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
   intro a b hab
@@ -108,8 +107,7 @@ theorem Irreducible.maximalIdeal_eq {ϖ : R} (h : Irreducible ϖ) : maximalIdeal
 variable (R)
 
 /-- Uniformisers exist in a DVR -/
-theorem exists_irreducible : ∃ ϖ : R, Irreducible ϖ :=
-  by
+theorem exists_irreducible : ∃ ϖ : R, Irreducible ϖ := by
   simp_rw [irreducible_iff_uniformizer]
   exact (IsPrincipalIdealRing.principal <| maximal_ideal R).principal
 #align discrete_valuation_ring.exists_irreducible DiscreteValuationRing.exists_irreducible
@@ -121,8 +119,7 @@ theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
 
 /-- an integral domain is a DVR iff it's a PID with a unique non-zero prime ideal -/
 theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
-    DiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P :=
-  by
+    DiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
   constructor
   · intro RDVR
     rcases id RDVR with ⟨Rlocal⟩
@@ -209,8 +206,7 @@ See `discrete_valuation_ring.of_has_unit_mul_pow_irreducible_factorization`. -/
 theorem to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
-  UniqueFactorizationMonoid.of_exists_prime_factors fun x hx =>
-    by
+  UniqueFactorizationMonoid.of_exists_prime_factors fun x hx => by
     use Multiset.replicate (Classical.choose (spec.2 hx)) p
     constructor
     · intro q hq
@@ -240,8 +236,7 @@ omit hR
 
 theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
-    HasUnitMulPowIrreducibleFactorization R :=
-  by
+    HasUnitMulPowIrreducibleFactorization R := by
   obtain ⟨p, hp⟩ := h₁
   refine' ⟨p, hp, _⟩
   intro x hx
@@ -324,8 +319,7 @@ such that every nonzero element is associated to a power of `p`
 is a discrete valuation ring.
 -/
 theorem of_hasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDomain R]
-    (hR : HasUnitMulPowIrreducibleFactorization R) : DiscreteValuationRing R :=
-  by
+    (hR : HasUnitMulPowIrreducibleFactorization R) : DiscreteValuationRing R := by
   letI : UniqueFactorizationMonoid R := hR.to_unique_factorization_monoid
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
   obtain ⟨p, hp, H⟩ := hR
@@ -339,8 +333,7 @@ variable [CommRing R] [IsDomain R] [DiscreteValuationRing R]
 variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
-    ∃ n : ℕ, Associated x (ϖ ^ n) :=
-  by
+    ∃ n : ℕ, Associated x (ϖ ^ n) := by
   have : WfDvdMonoid R := IsNoetherianRing.wfDvdMonoid
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
   use fx.card
@@ -359,8 +352,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
 #align discrete_valuation_ring.associated_pow_irreducible DiscreteValuationRing.associated_pow_irreducible
 
 theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
-    ∃ (n : ℕ)(u : Rˣ), x = u * ϖ ^ n :=
-  by
+    ∃ (n : ℕ)(u : Rˣ), x = u * ϖ ^ n := by
   obtain ⟨n, hn⟩ := associated_pow_irreducible hx hirr
   obtain ⟨u, rfl⟩ := hn.symm
   use n, u
@@ -370,10 +362,8 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
 open Submodule.IsPrincipal
 
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
-    ∃ n : ℕ, s = Ideal.span {ϖ ^ n} :=
-  by
-  have gen_ne_zero : generator s ≠ 0 :=
-    by
+    ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
+  have gen_ne_zero : generator s ≠ 0 := by
     rw [Ne.def, ← eq_bot_iff_generator_eq_zero]
     assumption
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
@@ -384,10 +374,8 @@ theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (h
 #align discrete_valuation_ring.ideal_eq_span_pow_irreducible DiscreteValuationRing.ideal_eq_span_pow_irreducible
 
 theorem unit_mul_pow_congr_pow {p q : R} (hp : Irreducible p) (hq : Irreducible q) (u v : Rˣ)
-    (m n : ℕ) (h : ↑u * p ^ m = v * q ^ n) : m = n :=
-  by
-  have key : Associated (Multiset.replicate m p).Prod (Multiset.replicate n q).Prod :=
-    by
+    (m n : ℕ) (h : ↑u * p ^ m = v * q ^ n) : m = n := by
+  have key : Associated (Multiset.replicate m p).Prod (Multiset.replicate n q).Prod := by
     rw [Multiset.prod_replicate, Multiset.prod_replicate, Associated]
     refine' ⟨u * v⁻¹, _⟩
     simp only [Units.val_mul]
@@ -401,8 +389,7 @@ theorem unit_mul_pow_congr_pow {p q : R} (hp : Irreducible p) (hq : Irreducible 
 #align discrete_valuation_ring.unit_mul_pow_congr_pow DiscreteValuationRing.unit_mul_pow_congr_pow
 
 theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m n : ℕ)
-    (h : ↑u * ϖ ^ m = v * ϖ ^ n) : u = v :=
-  by
+    (h : ↑u * ϖ ^ m = v * ϖ ^ n) : u = v := by
   obtain rfl : m = n := unit_mul_pow_congr_pow hirr hirr u v m n h
   rw [← sub_eq_zero] at h
   rw [← sub_mul, mul_eq_zero] at h
@@ -468,8 +455,7 @@ theorem Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) : addVal 
   rw [add_val_pow, add_val_uniformizer h, nsmul_one]
 #align irreducible.add_val_pow Irreducible.addVal_pow
 
-theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 :=
-  by
+theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
   have hi := (Classical.choose_spec (exists_prime R)).Irreducible
   constructor
   · contrapose
@@ -482,8 +468,7 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 :=
     exact add_val_zero
 #align discrete_valuation_ring.add_val_eq_top_iff DiscreteValuationRing.addVal_eq_top_iff
 
-theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b :=
-  by
+theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
   have hp := Classical.choose_spec (exists_prime R)
   constructor <;> intro h
   · by_cases ha0 : a = 0
