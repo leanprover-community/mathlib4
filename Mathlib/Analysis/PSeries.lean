@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Nnreal
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Convergence of `p`-series
@@ -50,12 +50,10 @@ namespace Finset
 variable {M : Type _} [OrderedAddCommMonoid M] {f : ℕ → M}
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-    (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) :=
-  by
+    (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   induction' n with n ihn
   · simp
-  suffices (∑ k in Ico (2 ^ n) (2 ^ (n + 1)), f k) ≤ 2 ^ n • f (2 ^ n)
-    by
+  suffices (∑ k in Ico (2 ^ n) (2 ^ (n + 1)), f k) ≤ 2 ^ n • f (2 ^ n) by
     rw [sum_range_succ, ← sum_Ico_consecutive]
     exact add_le_add ihn this
     exacts[n.one_le_two_pow, Nat.pow_le_pow_of_le_right zero_lt_two n.le_succ]
@@ -66,19 +64,16 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
 theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-    (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) :=
-  by
+    (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   convert add_le_add_left (le_sum_condensed' hf n) (f 0)
   rw [← sum_range_add_sum_Ico _ n.one_le_two_pow, sum_range_succ, sum_range_zero, zero_add]
 #align finset.le_sum_condensed Finset.le_sum_condensed
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k :=
-  by
+    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
   induction' n with n ihn
   · simp
-  suffices 2 ^ n • f (2 ^ (n + 1)) ≤ ∑ k in Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f k
-    by
+  suffices 2 ^ n • f (2 ^ (n + 1)) ≤ ∑ k in Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f k by
     rw [sum_range_succ, ← sum_Ico_consecutive]
     exact add_le_add ihn this
     exacts[add_le_add_right n.one_le_two_pow _,
@@ -91,8 +86,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-    (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k :=
-  by
+    (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert add_le_add_left (nsmul_le_nsmul_of_le_right (sum_condensed_le' hf n) 2) (f 1)
   simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
 #align finset.sum_condensed_le Finset.sum_condensed_le
@@ -104,8 +98,7 @@ namespace ENNReal
 variable {f : ℕ → ℝ≥0∞}
 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
-    (∑' k, f k) ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) :=
-  by
+    (∑' k, f k) ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
@@ -113,8 +106,7 @@ theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
 #align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
 
 theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
-    (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k :=
-  by
+    (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_at_top_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
   refine'
     iSup_le fun n =>
@@ -130,8 +122,7 @@ namespace NNReal
 
 /-- Cauchy condensation test for a series of `nnreal` version. -/
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
-    (Summable fun k : ℕ => 2 ^ k * f (2 ^ k)) ↔ Summable f :=
-  by
+    (Summable fun k : ℕ => 2 ^ k * f (2 ^ k)) ↔ Summable f := by
   simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul,
     ENNReal.coe_pow, ENNReal.coe_two]
   constructor <;> intro h
@@ -148,8 +139,7 @@ end NNReal
 /-- Cauchy condensation test for series of nonnegative real numbers. -/
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
-    (Summable fun k : ℕ => 2 ^ k * f (2 ^ k)) ↔ Summable f :=
-  by
+    (Summable fun k : ℕ => 2 ^ k * f (2 ^ k)) ↔ Summable f := by
   lift f to ℕ → ℝ≥0 using h_nonneg
   simp only [NNReal.coe_le_coe] at *
   exact_mod_cast NNReal.summable_condensed_iff h_mono
@@ -170,8 +160,7 @@ common ratio `2 ^ {1 - p}`. -/
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, (n ^ p)⁻¹` converges
 if and only if `1 < p`. -/
 @[simp]
-theorem Real.summable_nat_rpow_inv {p : ℝ} : Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p :=
-  by
+theorem Real.summable_nat_rpow_inv {p : ℝ} : Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
   cases' le_or_lt 0 p with hp hp
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
@@ -190,8 +179,7 @@ theorem Real.summable_nat_rpow_inv {p : ℝ} : Summable (fun n => (n ^ p)⁻¹ :
         inv_le_inv_of_le (rpow_pos_of_pos (Nat.cast_pos.2 hm) _)
           (rpow_le_rpow m.cast_nonneg (Nat.cast_le.2 hmn) hp)
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
-  · suffices ¬Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ)
-      by
+  · suffices ¬Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ) by
       have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
       simpa [this, -one_div]
     · intro h
@@ -205,8 +193,7 @@ theorem Real.summable_nat_rpow_inv {p : ℝ} : Summable (fun n => (n ^ p)⁻¹ :
 #align real.summable_nat_rpow_inv Real.summable_nat_rpow_inv
 
 @[simp]
-theorem Real.summable_nat_rpow {p : ℝ} : Summable (fun n => n ^ p : ℕ → ℝ) ↔ p < -1 :=
-  by
+theorem Real.summable_nat_rpow {p : ℝ} : Summable (fun n => n ^ p : ℕ → ℝ) ↔ p < -1 := by
   rcases neg_surjective p with ⟨p, rfl⟩
   simp [rpow_neg]
 #align real.summable_nat_rpow Real.summable_nat_rpow
@@ -254,8 +241,7 @@ theorem Real.summable_abs_int_rpow {b : ℝ} (hb : 1 < b) : Summable fun n : ℤ
 #align real.summable_abs_int_rpow Real.summable_abs_int_rpow
 
 /-- Harmonic series is not unconditionally summable. -/
-theorem Real.not_summable_nat_cast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) :=
-  by
+theorem Real.not_summable_nat_cast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) := by
   have : ¬Summable (fun n => (n ^ 1)⁻¹ : ℕ → ℝ) := mt Real.summable_nat_pow_inv.1 (lt_irrefl 1)
   simpa
 #align real.not_summable_nat_cast_inv Real.not_summable_nat_cast_inv
@@ -267,8 +253,7 @@ theorem Real.not_summable_one_div_nat_cast : ¬Summable (fun n => 1 / n : ℕ �
 
 /-- **Divergence of the Harmonic Series** -/
 theorem Real.tendsto_sum_range_one_div_nat_succ_atTop :
-    Tendsto (fun n => ∑ i in Finset.range n, (1 / (i + 1) : ℝ)) atTop atTop :=
-  by
+    Tendsto (fun n => ∑ i in Finset.range n, (1 / (i + 1) : ℝ)) atTop atTop := by
   rw [← not_summable_iff_tendsto_nat_atTop_of_nonneg]
   · exact_mod_cast mt (summable_nat_add_iff 1).1 Real.not_summable_one_div_nat_cast
   · exact fun i => div_nonneg zero_le_one i.cast_add_one_pos.le
@@ -295,8 +280,7 @@ open Finset
 variable {α : Type _} [LinearOrderedField α]
 
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
-    (∑ i in Ioc k n, ((i ^ 2)⁻¹ : α)) ≤ k⁻¹ - n⁻¹ :=
-  by
+    (∑ i in Ioc k n, ((i ^ 2)⁻¹ : α)) ≤ k⁻¹ - n⁻¹ := by
   refine' Nat.le_induction _ _ n h
   · simp only [Ioc_self, sum_empty, sub_self]
   intro n hn IH
@@ -315,26 +299,22 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
 
 theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, ((i ^ 2)⁻¹ : α)) ≤ 2 / (k + 1) :=
   calc
-    (∑ i in Ioo k n, ((i ^ 2)⁻¹ : α)) ≤ ∑ i in Ioc k (max (k + 1) n), (i ^ 2)⁻¹ :=
-      by
+    (∑ i in Ioo k n, ((i ^ 2)⁻¹ : α)) ≤ ∑ i in Ioc k (max (k + 1) n), (i ^ 2)⁻¹ := by
       apply sum_le_sum_of_subset_of_nonneg
       · intro x hx
         simp only [mem_Ioo] at hx
         simp only [hx, hx.2.le, mem_Ioc, le_max_iff, or_true_iff, and_self_iff]
       · intro i hi hident
         exact inv_nonneg.2 (sq_nonneg _)
-    _ ≤ ((k + 1) ^ 2)⁻¹ + ∑ i in Ioc k.succ (max (k + 1) n), (i ^ 2)⁻¹ :=
-      by
+    _ ≤ ((k + 1) ^ 2)⁻¹ + ∑ i in Ioc k.succ (max (k + 1) n), (i ^ 2)⁻¹ := by
       rw [← Nat.Icc_succ_left, ← Nat.Ico_succ_right, sum_eq_sum_Ico_succ_bot]
       swap; · exact Nat.succ_lt_succ ((Nat.lt_succ_self k).trans_le (le_max_left _ _))
       rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
-    _ ≤ ((k + 1) ^ 2)⁻¹ + (k + 1)⁻¹ :=
-      by
+    _ ≤ ((k + 1) ^ 2)⁻¹ + (k + 1)⁻¹ := by
       refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
       · simp only [Ne.def, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
-    _ ≤ 1 / (k + 1) + 1 / (k + 1) :=
-      by
+    _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]
       apply add_le_add_right
