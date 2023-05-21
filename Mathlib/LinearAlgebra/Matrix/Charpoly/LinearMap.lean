@@ -158,7 +158,7 @@ theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A
 
 variable (b R)
 
-/-- The subalgebra of `matrix ι ι R` that consists of matrices that actually represent
+/-- The subalgebra of `Matrix ι ι R` that consists of matrices that actually represent
 endomorphisms on `M`. -/
 def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   carrier := { A | ∃ f : Module.End R M, A.Represents b f }
