@@ -40,7 +40,7 @@ you should parametrize over `(F : Type*) [continuous_add_monoid_hom_class F A B]
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B where
-  continuous_toFun : Continuous (to_fun : A → B)
+  continuous_toFun : @Continuous A B _ _ to_fun
 #align continuous_add_monoid_hom ContinuousAddMonoidHom
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
@@ -51,7 +51,7 @@ you should parametrize over `(F : Type*) [continuous_monoid_hom_class F A B] (f 
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 @[to_additive]
 structure ContinuousMonoidHom extends A →* B where
-  continuous_toFun : Continuous (to_fun : A → B)
+  continuous_toFun : @Continuous A B _ _ to_fun
 #align continuous_monoid_hom ContinuousMonoidHom
 
 section
@@ -72,7 +72,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `continuous_monoid_hom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
-class ContinuousMonoidHomClass {A B : outParam (Type _)} [Monoid A] [Monoid B]
+class ContinuousMonoidHomClass (A B : outParam (Type _)) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
@@ -95,7 +95,7 @@ instance (priority := 100) ContinuousMonoidHomClass.toContinuousMapClass
     [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
   { ‹ContinuousMonoidHomClass F A B› with }
 #align continuous_monoid_hom_class.to_continuous_map_class ContinuousMonoidHomClass.toContinuousMapClass
-#align continuous_add_monoid_hom_class.to_continuous_map_class ContinuousAddMonoidHomClass.to_continuous_map_class
+#align continuous_add_monoid_hom_class.to_continuous_map_class ContinuousAddMonoidHomClass.toContinuousMapClass
 
 namespace ContinuousMonoidHom
 
@@ -105,9 +105,10 @@ variable {A B C D E}
 instance : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
+    obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := g
     congr
+
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
