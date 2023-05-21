@@ -658,12 +658,12 @@ theorem valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDua
 end
 
 -- Porting note: Lean get confused about namespaces and instances below
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem map_zero : v 0 = (⊤ : Γ₀) :=
   Valuation.map_zero v
 #align add_valuation.map_zero AddValuation.map_zero
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem map_one : v 1 = (0 : Γ₀) :=
   Valuation.map_one v
 #align add_valuation.map_one AddValuation.map_one
