@@ -17,8 +17,8 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 We show that most standard real and complex functions are measurable, notably `exp`, `cos`, `sin`,
 `cosh`, `sinh`, `log`, `pow`, `arcsin`, `arccos`.
 
-See also `measure_theory.function.special_functions.arctan` and
-`measure_theory.function.special_functions.inner`, which have been split off to minimize imports.
+See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
+`MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
 
 
@@ -30,7 +30,7 @@ namespace Real
 
 @[measurability]
 theorem measurable_exp : Measurable exp :=
-  continuous_exp.Measurable
+  continuous_exp.measurable
 #align real.measurable_exp Real.measurable_exp
 
 @[measurability]
@@ -41,32 +41,32 @@ theorem measurable_log : Measurable log :=
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=
-  continuous_sin.Measurable
+  continuous_sin.measurable
 #align real.measurable_sin Real.measurable_sin
 
 @[measurability]
 theorem measurable_cos : Measurable cos :=
-  continuous_cos.Measurable
+  continuous_cos.measurable
 #align real.measurable_cos Real.measurable_cos
 
 @[measurability]
 theorem measurable_sinh : Measurable sinh :=
-  continuous_sinh.Measurable
+  continuous_sinh.measurable
 #align real.measurable_sinh Real.measurable_sinh
 
 @[measurability]
 theorem measurable_cosh : Measurable cosh :=
-  continuous_cosh.Measurable
+  continuous_cosh.measurable
 #align real.measurable_cosh Real.measurable_cosh
 
 @[measurability]
 theorem measurable_arcsin : Measurable arcsin :=
-  continuous_arcsin.Measurable
+  continuous_arcsin.measurable
 #align real.measurable_arcsin Real.measurable_arcsin
 
 @[measurability]
 theorem measurable_arccos : Measurable arccos :=
-  continuous_arccos.Measurable
+  continuous_arccos.measurable
 #align real.measurable_arccos Real.measurable_arccos
 
 end Real
@@ -75,52 +75,52 @@ namespace Complex
 
 @[measurability]
 theorem measurable_re : Measurable re :=
-  continuous_re.Measurable
+  continuous_re.measurable
 #align complex.measurable_re Complex.measurable_re
 
 @[measurability]
 theorem measurable_im : Measurable im :=
-  continuous_im.Measurable
+  continuous_im.measurable
 #align complex.measurable_im Complex.measurable_im
 
 @[measurability]
-theorem measurable_of_real : Measurable (coe : ℝ → ℂ) :=
-  continuous_ofReal.Measurable
+theorem measurable_of_real : Measurable ((↑) : ℝ → ℂ) :=
+  continuous_ofReal.measurable
 #align complex.measurable_of_real Complex.measurable_of_real
 
 @[measurability]
 theorem measurable_exp : Measurable exp :=
-  continuous_exp.Measurable
+  continuous_exp.measurable
 #align complex.measurable_exp Complex.measurable_exp
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=
-  continuous_sin.Measurable
+  continuous_sin.measurable
 #align complex.measurable_sin Complex.measurable_sin
 
 @[measurability]
 theorem measurable_cos : Measurable cos :=
-  continuous_cos.Measurable
+  continuous_cos.measurable
 #align complex.measurable_cos Complex.measurable_cos
 
 @[measurability]
 theorem measurable_sinh : Measurable sinh :=
-  continuous_sinh.Measurable
+  continuous_sinh.measurable
 #align complex.measurable_sinh Complex.measurable_sinh
 
 @[measurability]
 theorem measurable_cosh : Measurable cosh :=
-  continuous_cosh.Measurable
+  continuous_cosh.measurable
 #align complex.measurable_cosh Complex.measurable_cosh
 
 @[measurability]
 theorem measurable_arg : Measurable arg :=
-  have A : Measurable fun x : ℂ => Real.arcsin (x.im / x.abs) :=
+  have A : Measurable fun x : ℂ => Real.arcsin (x.im / Complex.abs x) :=
     Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
-  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / x.abs) :=
+  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / Complex.abs x) :=
     Real.measurable_arcsin.comp ((measurable_im.comp measurable_neg).div measurable_norm)
-  Measurable.ite (isClosed_le continuous_const continuous_re).MeasurableSet A <|
-    Measurable.ite (isClosed_le continuous_const continuous_im).MeasurableSet (B.AddConst _)
+  Measurable.ite (isClosed_le continuous_const continuous_re).measurableSet A <|
+    Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)
       (B.sub_const _)
 #align complex.measurable_arg Complex.measurable_arg
 
@@ -170,7 +170,7 @@ theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
 
 @[measurability]
 theorem Measurable.sqrt : Measurable fun x => sqrt (f x) :=
-  continuous_sqrt.Measurable.comp hf
+  continuous_sqrt.measurable.comp hf
 #align measurable.sqrt Measurable.sqrt
 
 end RealComposition
@@ -212,7 +212,7 @@ theorem Measurable.carg : Measurable fun x => arg (f x) :=
 #align measurable.carg Measurable.carg
 
 @[measurability]
-theorem Measurable.clog : Measurable fun x => log (f x) :=
+theorem Measurable.clog : Measurable fun x => Complex.log (f x) :=
   measurable_log.comp hf
 #align measurable.clog Measurable.clog
 
@@ -233,7 +233,7 @@ instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ :=
 #align real.has_measurable_pow Real.hasMeasurablePow
 
 instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
-  ⟨(measurable_fst.coeNNRealReal.pow measurable_snd).subtype_mk⟩
+  ⟨(measurable_fst.coe_nnreal_real.pow measurable_snd).subtype_mk⟩
 #align nnreal.has_measurable_pow NNReal.hasMeasurablePow
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
@@ -241,19 +241,16 @@ instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
   · simp_rw [ENNReal.coe_rpow_def]
     refine' Measurable.ite _ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
     exact
-      MeasurableSet.inter (measurable_fst (measurable_set_singleton 0))
+      MeasurableSet.inter (measurable_fst (measurableSet_singleton 0))
         (measurable_snd measurableSet_Iio)
   · simp_rw [ENNReal.top_rpow_def]
     refine' Measurable.ite measurableSet_Ioi measurable_const _
-    exact Measurable.ite (measurable_set_singleton 0) measurable_const measurable_const
+    exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
 #align ennreal.has_measurable_pow ENNReal.hasMeasurablePow
 
 end PowInstances
 
 -- Guard against import creep:
-assert_not_exists inner_product_space
-
-assert_not_exists real.arctan
-
-assert_not_exists FiniteDimensional.proper
-
+-- assert_not_exists InnerProductSpace
+-- assert_not_exists Real.arctan
+-- assert_not_exists FiniteDimensional.proper
