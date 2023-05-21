@@ -39,6 +39,26 @@ variable (S : SnakeInput C)
 attribute [instance] epi_L₁_g
 attribute [instance] mono_L₂_f
 
+@[simps]
+noncomputable def op : SnakeInput Cᵒᵖ where
+  L₀ := S.L₃.op
+  L₁ := S.L₂.op
+  L₂ := S.L₁.op
+  L₃ := S.L₀.op
+  epi_L₁_g := by dsimp ; infer_instance
+  mono_L₂_f := by dsimp ; infer_instance
+  v₀₁ := opMap S.v₂₃
+  v₁₂ := opMap S.v₁₂
+  v₂₃ := opMap S.v₀₁
+  w₀₂ := congr_arg opMap S.w₁₃
+  w₁₃ := congr_arg opMap S.w₀₂
+  h₀ := isLimitForkMapOfIsLimit'
+    (ShortComplex.opEquiv C).functor _ (CokernelCofork.IsColimit.ofπOp _ _ S.h₃)
+  h₃ := isColimitCoforkMapOfIsColimit'
+    (ShortComplex.opEquiv C).functor _ (KernelFork.IsLimit.ofιOp _ _ S.h₀)
+  L₁_exact := S.L₂_exact.op
+  L₂_exact := S.L₁_exact.op
+
 @[reassoc (attr := simp)] lemma w₀₂_τ₁ : S.v₀₁.τ₁ ≫ S.v₁₂.τ₁ = 0 := by
   rw [← comp_τ₁, S.w₀₂, zero_τ₁]
 @[reassoc (attr := simp)] lemma w₀₂_τ₂ : S.v₀₁.τ₂ ≫ S.v₁₂.τ₂ = 0 := by
@@ -79,23 +99,6 @@ instance mono_L₀_f [Mono S.L₁.f] : Mono S.L₀.f := by
     apply mono_comp
   exact mono_of_mono _ S.v₀₁.τ₂
 
-noncomputable def isLimitKernelForkL₀ [Mono S.L₁.f] :
-    IsLimit (KernelFork.ofι _ S.L₀.zero) :=
-  KernelFork.IsLimit.ofι _ _
-    (fun x hx => S.h₀τ₁.lift (KernelFork.ofι (S.L₁_exact.lift (x ≫ S.v₀₁.τ₂)
-        (by rw [assoc, S.v₀₁.comm₂₃, reassoc_of% hx, zero_comp])) (by
-          rw [← cancel_mono S.L₂.f, assoc, S.v₁₂.comm₁₂, Exact.lift_f_assoc, zero_comp,
-            assoc, w₀₂_τ₂, comp_zero])))
-    (fun x hx => by
-      rw [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂]
-      erw [Fork.IsLimit.lift_ι_assoc]
-      simp)
-    (fun x hx b hb => by
-      erw [← cancel_mono S.L₀.f, hb, ← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂,
-        Fork.IsLimit.lift_ι_assoc, KernelFork.ι_ofι, Exact.lift_f])
-
-lemma ex₀ [Mono S.L₁.f] : S.L₀.Exact := exact_of_f_is_kernel _ (S.isLimitKernelForkL₀)
-
 noncomputable def h₃_τ₁ : IsColimit (CokernelCofork.ofπ S.v₂₃.τ₁ S.w₁₃_τ₁) :=
   isColimitCoforkMapOfIsColimit' π₁ S.w₁₃ S.h₃
 noncomputable def h₃_τ₂ : IsColimit (CokernelCofork.ofπ S.v₂₃.τ₂ S.w₁₃_τ₂) :=
@@ -123,21 +126,20 @@ instance epi_L₃_g [Epi S.L₂.g] : Epi S.L₃.g := by
     apply epi_comp
   exact epi_of_epi S.v₂₃.τ₂ _
 
-noncomputable def isColimitCokernelCoforkL₃ [Epi S.L₂.g] :
-    IsColimit (CokernelCofork.ofπ _ S.L₃.zero) :=
-  CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => S.h₃_τ₃.desc (CokernelCofork.ofπ (S.L₂_exact.desc (S.v₂₃.τ₂ ≫ x)
-      (by rw [← S.v₂₃.comm₁₂_assoc, hx, comp_zero]))
-      (by rw [← cancel_epi S.L₁.g, ← S.v₁₂.comm₂₃_assoc, Exact.g_desc,
-        w₁₃_τ₂_assoc, zero_comp, comp_zero])))
-    (fun x hx => by
-      rw [← cancel_epi S.v₂₃.τ₂, S.v₂₃.comm₂₃_assoc]
-      erw [Cofork.IsColimit.π_desc S.h₃_τ₃, CokernelCofork.π_ofπ, Exact.g_desc])
-    (fun x hx b hb => by
-      erw [← cancel_epi S.L₃.g, hb, ← cancel_epi S.v₂₃.τ₂, S.v₂₃.comm₂₃_assoc,
-        Cofork.IsColimit.π_desc S.h₃_τ₃, Cofork.π_ofπ, Exact.g_desc])
+lemma ex₀ : S.L₀.Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  obtain ⟨A₁, π₁, hπ₁, y₁, hy₁⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ S.v₀₁.τ₂) (by
+    rw [assoc, S.v₀₁.comm₂₃, reassoc_of% hx₂, zero_comp])
+  have hy₁' : y₁ ≫ S.v₁₂.τ₁ = 0 := by
+    simp only [← cancel_mono S.L₂.f, assoc, zero_comp, S.v₁₂.comm₁₂,
+      ← reassoc_of% hy₁, w₀₂_τ₂, comp_zero]
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S.v₀₁.τ₁ = y₁:= ⟨_, S.exact_C₁_up.lift_f y₁ hy₁'⟩
+  refine' ⟨A₁, π₁, hπ₁, x₁, _⟩
+  simp only [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂,
+    reassoc_of% hx₁, hy₁]
 
-lemma ex₃ [Epi S.L₂.g] : S.L₃.Exact := exact_of_g_is_cokernel _ S.isColimitCokernelCoforkL₃
+lemma ex₃ : S.L₃.Exact := S.op.ex₀.unop
 
 noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 
@@ -250,34 +252,13 @@ lemma exact_L₁' : S.L₁'.Exact := by
   let x₂ := π₂ ≫ p ≫ pullback.fst
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
     simp only [sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
-  let k₂ := S.exact_C₂_up.lift _ hx₂'
-  dsimp at k₂
+  let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
   have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd := by
     simp only [← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂, sub_comp, S.L₁.zero,
       comp_zero, sub_zero, pullback.condition]
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, _⟩
   simp only [assoc, L₁'_f, ← hk₂', hp]
-
-@[simps]
-noncomputable def op : SnakeInput Cᵒᵖ where
-  L₀ := S.L₃.op
-  L₁ := S.L₂.op
-  L₂ := S.L₁.op
-  L₃ := S.L₀.op
-  epi_L₁_g := by dsimp ; infer_instance
-  mono_L₂_f := by dsimp ; infer_instance
-  v₀₁ := opMap S.v₂₃
-  v₁₂ := opMap S.v₁₂
-  v₂₃ := opMap S.v₀₁
-  w₀₂ := congr_arg opMap S.w₁₃
-  w₁₃ := congr_arg opMap S.w₀₂
-  h₀ := isLimitForkMapOfIsLimit'
-    (ShortComplex.opEquiv C).functor _ (CokernelCofork.IsColimit.ofπOp _ _ S.h₃)
-  h₃ := isColimitCoforkMapOfIsColimit'
-    (ShortComplex.opEquiv C).functor _ (KernelFork.IsLimit.ofιOp _ _ S.h₀)
-  L₁_exact := S.L₂_exact.op
-  L₂_exact := S.L₁_exact.op
 
 @[simp]
 noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' :=
