@@ -866,6 +866,6 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
   · exact fun x hx => le_trans (hf _) hx
   · rintro ⟨x, y⟩
     refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
-    simp only [ConvexCone.mem_mk, mem_set_of_eq, Subtype.coe_mk, Prod.fst_add, Prod.snd_add,
-      zero_add, sub_add_cancel]
+    simp only [ConvexCone.mem_mk, mem_setOf_eq, Subtype.coe_mk, Prod.fst_add, Prod.snd_add,
+      zero_add, sub_add_cancel, le_rfl]
 #align exists_extension_of_le_sublinear exists_extension_of_le_sublinear
