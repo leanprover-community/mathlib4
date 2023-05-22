@@ -387,13 +387,7 @@ def Salient : Prop :=
 #align convex_cone.salient ConvexCone.Salient
 
 theorem salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat := by
-  constructor
-  · rintro h₁ ⟨x, xs, H₁, H₂⟩
-    exact h₁ x xs H₁ H₂
-  · intro h
-    unfold Flat at h
-    push_neg  at h
-    exact h
+  simp [Salient, Flat]
 #align convex_cone.salient_iff_not_flat ConvexCone.salient_iff_not_flat
 
 theorem Flat.mono {S T : ConvexCone 𝕜 E} (h : S ≤ T) : S.Flat → T.Flat
@@ -744,8 +738,8 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
   obtain ⟨y, -, hy⟩ : ∃ (y : E), y ∈ ⊤ ∧ y ∉ f.domain :=
     @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
-    ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧ ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x :=
-    by
+      ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
+        ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x := by
     set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
@@ -759,8 +753,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     rw [add_assoc, add_sub_cancel'_right, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
-  -- Porting note: this `have` is unused
-  --have hy' : y ≠ 0 := fun hy₀ => hy (hy₀.symm ▸ zero_mem _)
+  -- Porting note: removed an unused `have`
   refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
   · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
     replace H := LinearPMap.domain_mono.monotone H
@@ -775,64 +768,48 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
           mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
-      -- Porting note: rest of proof was
-      /-replace := le_c (r⁻¹ • ⟨x, hx⟩) this
+      -- Porting note: added type annotation and `by exact`
+      replace : f (r⁻¹ • ⟨x, hx⟩) ≤ c := le_c (r⁻¹ • ⟨x, hx⟩) (by exact this)
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this-/
-      have this' : f (r⁻¹ • ⟨x, hx⟩) ≤ c := by
-        refine le_c (r⁻¹ • ⟨x, hx⟩) ?_
-        simp only [SetLike.mk_smul_mk, this]
-      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this'
+        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel hr.ne', one_smul]
-      -- Porting note: rest of proof was
-      /-replace := c_le (r⁻¹ • ⟨x, hx⟩) this
+      -- Porting note: added type annotation and `by exact`
+      replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
       rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
-        one_mul] at this-/
-      have this' : c ≤ f (r⁻¹ • ⟨x, hx⟩) := by
-        refine c_le (r⁻¹ • ⟨x, hx⟩) ?_
-        simp only [SetLike.mk_smul_mk, this]
-      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
-        one_mul] at this'
+        one_mul] at this
 #align riesz_extension.step RieszExtension.step
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
-  have hp_nonneg' : p ∈ { p | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x } := by
-    rw [mem_setOf_eq]
-    exact hp_nonneg
-  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ _ ?_ _ hp_nonneg'
-  · refine' ⟨q, hpq, _, hqs⟩
-    contrapose! hq
-    rcases step s q hqs _ hq with ⟨r, hqr, hr⟩
-    · exact ⟨r, hr, hqr.le, hqr.ne'⟩
-
-    ·
-      exact fun y =>
-        let ⟨x, hx⟩ := hp_dense y
-        ⟨of_le hpq.left x, hx⟩
+  set S := { p : E →ₗ.[ℝ] ℝ | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x }
+  have hSc : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub
   · intro c hcs c_chain y hy
     clear hp_nonneg hp_dense p
-    have cne : c.nonempty := ⟨y, hy⟩
-    refine'
-      ⟨LinearPMap.sSup c c_chain.directed_on, _, fun _ => LinearPMap.le_sSup c_chain.directed_on⟩
+    have cne : c.Nonempty := ⟨y, hy⟩
+    have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
+    refine' ⟨LinearPMap.sSup c hcd, _, fun _ ↦ LinearPMap.le_sSup hcd⟩
     rintro ⟨x, hx⟩ hxs
     have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
-      directedOn_image.2 (c_chain.directed_on.mono linear_pmap.domain_mono.monotone)
-    rcases(mem_Sup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
-    have : f ≤ LinearPMap.sSup c c_chain.directed_on := LinearPMap.le_sSup _ hfc
-    convert← hcs hfc ⟨x, hfx⟩ hxs
-    apply this.2
-    rfl
+      directedOn_image.2 (hcd.mono fun h ↦ LinearPMap.domain_mono.monotone h)
+    rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
+    have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
+    convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
+    exact this.2 rfl
+  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
+  · refine' ⟨q, hpq, _, hqs⟩
+    contrapose! hq
+    have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
+      let ⟨x, hx⟩ := hp_dense y
+      ⟨ofLe hpq.left x, hx⟩
+    rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
+    exact ⟨r, hr, hqr.le, hqr.ne'⟩
 #align riesz_extension.exists_top RieszExtension.exists_top
-
-#exit
 
 end RieszExtension
 
@@ -844,11 +821,10 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
-  rcases RieszExtension.exists_top s f nonneg Dense with ⟨⟨g_dom, g⟩, ⟨hpg, hfg⟩, htop, hgs⟩
-  clear hpg
-  refine' ⟨g ∘ₗ ↑(LinearEquiv.ofTop _ htop).symm, _, _⟩ <;>
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.ofTop_symm_apply]
-  · exact fun x => (hfg (Submodule.coe_mk _ _).symm).symm
+  rcases RieszExtension.exists_top s f nonneg dense
+    with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
+  refine' ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), _, _⟩
+  · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
 #align riesz_extension riesz_extension
 
@@ -866,12 +842,9 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
         calc
           N (c • p.1) = c * N p.1 := N_hom c hc p.1
           _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
-
       add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
-  obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s ((-f).coprod (LinearMap.id.toPMap ⊤)) _ _ <;>
-    try
-      simp only [LinearPMap.coprod_apply, to_pmap_apply, id_apply, LinearPMap.neg_apply, ←
-        sub_eq_neg_add, sub_nonneg, Subtype.coe_mk] at *
+  have := riesz_extension s ((-f).coprod (LinearMap.id.toPMap ⊤)) ?_ ?_
+  obtain ⟨g, g_eq, g_nonneg⟩ := this
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x
   · intro x y
     have := g_eq ⟨(x,y), ⟨x.2, trivial⟩⟩
