@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousFunction.Bounded
-import Mathbin.Topology.UniformSpace.Compact
-import Mathbin.Topology.CompactOpen
-import Mathbin.Topology.Sets.Compacts
+import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Continuous functions on a compact space
@@ -51,8 +51,7 @@ equivalent to `C(α, β)`.
 -/
 @[simps (config := { fullyApplied := false })]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
-  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f =>
-    by
+  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
     ext
     rfl, fun f => by
     ext
@@ -91,8 +90,7 @@ instance : MetricSpace C(α, β) :=
 isometric to `C(α, β)`.
 -/
 @[simps (config := { fullyApplied := false }) toEquiv apply symm_apply]
-def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β)
-    where
+def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β) where
   isometry_toFun x y := rfl
   toEquiv := equivBoundedOfCompact α β
 #align continuous_map.isometry_equiv_bounded_of_compact ContinuousMap.isometryEquivBoundedOfCompact
@@ -405,8 +403,7 @@ protected def ContinuousLinearMap.compLeftContinuousCompact (g : β →L[𝕜] �
 
 @[simp]
 theorem ContinuousLinearMap.to_linear_compLeftContinuousCompact (g : β →L[𝕜] γ) :
-    (g.compLeftContinuousCompact X : C(X, β) →ₗ[𝕜] C(X, γ)) = g.compLeftContinuous 𝕜 X :=
-  by
+    (g.compLeftContinuousCompact X : C(X, β) →ₗ[𝕜] C(X, γ)) = g.compLeftContinuous 𝕜 X := by
   ext f
   rfl
 #align continuous_linear_map.to_linear_comp_left_continuous_compact ContinuousLinearMap.to_linear_compLeftContinuousCompact
@@ -438,8 +435,7 @@ section CompRight
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
 -/
 def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T))
-    where
+    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T)) where
   toFun g := g.comp f
   continuous_toFun := by
     refine' metric.continuous_iff.mpr _
@@ -459,8 +455,7 @@ theorem compRightContinuousMap_apply {X Y : Type _} (T : Type _) [TopologicalSpa
 /-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
 -/
 def compRightHomeomorph {X Y : Type _} (T : Type _) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T)
-    where
+    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T) where
   toFun := compRightContinuousMap T f.toContinuousMap
   invFun := compRightContinuousMap T f.symm.toContinuousMap
   left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
@@ -492,12 +487,10 @@ variable {X : Type _} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
 variable {E : Type _} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type _} {F : ι → C(X, E)}
-    (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F :=
-  by
+    (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   refine' (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => _
   lift K to compacts X using hK
-  have A : ∀ s : Finset ι, restrict (↑K) (∑ i in s, F i) = ∑ i in s, restrict K (F i) :=
-    by
+  have A : ∀ s : Finset ι, restrict (↑K) (∑ i in s, F i) = ∑ i in s, restrict K (F i) := by
     intro s
     ext1 x
     simp
