@@ -55,13 +55,12 @@ instance : LargeCategory.{u} GroupWithZeroCat where
 
 -- porting note: was not necessary in mathlib
 instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
-  ⟨ fun f => f.toFun, fun f g h => by
+  ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g
     congr
     apply FunLike.coe_injective'
-    exact h
-     ⟩
+    exact h⟩
 
 -- porting note: added
 lemma coeId {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
@@ -70,19 +69,17 @@ lemma coeId {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 lemma coeComp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
-  forget := { obj := fun G => G
-              map := fun f => f.toFun }
-  forget_faithful := ⟨ fun h => FunLike.coe_injective h ⟩
+  forget :=
+  { obj := fun G => G
+    map := fun f => f.toFun }
+  forget_faithful := ⟨fun h => FunLike.coe_injective h⟩
 
 -- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
-
-
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed
     where forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
-        map := fun f => ⟨f, f.map_zero', f.map_one'⟩
-        }
+        map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
 
@@ -100,16 +97,14 @@ instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 /-- Conversion from MulEquiv to MonoidWithZeroHom -/
 -- porting note : this function was not necessary in mathlib
 def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N) : M →*₀ N :=
-  {
-    toFun := h.toFun
+  { toFun := h.toFun
     map_mul' := h.map_mul'
     map_one' := h.map_one
     map_zero' := by
-       rw [← mul_eq_zero_of_left rfl 1]
-       rw [h.map_mul' 0 1]
-       simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe_apply, MulEquiv.coe_toEquiv,
-         map_zero, map_one, mul_one]
-   }
+      rw [← mul_eq_zero_of_left rfl 1]
+      rw [h.map_mul' 0 1]
+      simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe_apply, MulEquiv.coe_toEquiv,
+         map_zero, map_one, mul_one] }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
