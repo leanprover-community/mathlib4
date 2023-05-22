@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Quaternion
-import Mathbin.Tactic.Ring
+import Mathlib.Algebra.Quaternion
+import Mathlib.Tactic.Ring
 
 /-!
 # Basis on a quaternion-like algebra
@@ -53,8 +53,7 @@ namespace Basis
 
 /-- Since `k` is redundant, it is not necessary to show `q₁.k = q₂.k` when showing `q₁ = q₂`. -/
 @[ext]
-protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) : q₁ = q₂ :=
-  by
+protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) : q₁ = q₂ := by
   cases q₁
   cases q₂
   congr
@@ -66,8 +65,7 @@ variable (R)
 
 /-- There is a natural quaternionic basis for the `quaternion_algebra`. -/
 @[simps i j k]
-protected def self : Basis ℍ[R,c₁,c₂] c₁ c₂
-    where
+protected def self : Basis ℍ[R,c₁,c₂] c₁ c₂ where
   i := ⟨0, 1, 0, 0⟩
   i_mul_i := by ext <;> simp
   j := ⟨0, 0, 1, 0⟩
@@ -125,14 +123,12 @@ theorem lift_zero : q.lift (0 : ℍ[R,c₁,c₂]) = 0 := by simp [lift]
 theorem lift_one : q.lift (1 : ℍ[R,c₁,c₂]) = 1 := by simp [lift]
 #align quaternion_algebra.basis.lift_one QuaternionAlgebra.Basis.lift_one
 
-theorem lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y :=
-  by
+theorem lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y := by
   simp [lift, add_smul]
   abel
 #align quaternion_algebra.basis.lift_add QuaternionAlgebra.Basis.lift_add
 
-theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y :=
-  by
+theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y := by
   simp only [lift, Algebra.algebraMap_eq_smul_one]
   simp only [add_mul]
   simp only [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, ← Algebra.smul_def,
@@ -164,8 +160,7 @@ def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
 
 /-- Transform a `quaternion_algebra.basis` through an `alg_hom`. -/
 @[simps i j k]
-def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂
-    where
+def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   i := F q.i
   i_mul_i := by rw [← F.map_mul, q.i_mul_i, F.map_smul, F.map_one]
   j := F q.j
@@ -179,8 +174,7 @@ end Basis
 
 /-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
 @[simps]
-def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A)
-    where
+def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
   toFun := Basis.liftHom
   invFun := (Basis.self R).compHom
   left_inv q := by ext <;> simp [basis.lift]
