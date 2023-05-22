@@ -21,8 +21,6 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
-set_option autoImplicit false
-
 
 universe u v w
 
@@ -31,7 +29,7 @@ open Classical Polynomial
 section
 
 variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
---#check IsAlgebraic
+
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/
 def IsAlgebraic (x : A) : Prop :=
@@ -53,7 +51,6 @@ variable {R}
 nonrec
 def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
   ∀ x ∈ S, IsAlgebraic R x
-
 #align subalgebra.is_algebraic Subalgebra.IsAlgebraic
 
 variable (R A)
@@ -156,14 +153,14 @@ theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →�
 #align is_algebraic_alg_hom_of_is_algebraic isAlgebraic_algHom_of_isAlgebraic
 
 /-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
-theorem AlgEquiv.IsAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
+theorem AlgEquiv.isAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
     (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
   convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _) ; refine e.apply_symm_apply ?_
-#align alg_equiv.is_algebraic AlgEquiv.IsAlgebraic
+#align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
 theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) :
     Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic R B :=
-  ⟨e.IsAlgebraic, e.symm.IsAlgebraic⟩
+  ⟨e.isAlgebraic, e.symm.isAlgebraic⟩
 #align alg_equiv.is_algebraic_iff AlgEquiv.isAlgebraic_iff
 
 theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
@@ -217,8 +214,8 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
-theorem isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) : IsAlgebraic K A :=
-  by
+theorem isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
+    IsAlgebraic K A := by
   simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg⊢
   exact isIntegral_trans L_alg A_alg
 #align algebra.is_algebraic_trans Algebra.isAlgebraic_trans
@@ -309,7 +306,6 @@ end Algebra
 
 variable {R S : Type _} [CommRing R] [IsDomain R] [CommRing S]
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y «expr ≠ » (0 : R)) -/
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
     ∃ (x : integralClosure R S)(y : _)(_ : y ≠ (0 : R)), z * algebraMap R S y = x := by
@@ -322,7 +318,6 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
 #align exists_integral_multiple exists_integral_multiple
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (d «expr ≠ » (0 : R)) -/
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
 theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S] [Algebra S L]
@@ -414,19 +409,19 @@ variable (R' : Type u) (S' : Type v) (T' : Type w)
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
-def Polynomial.hasSmulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
+def Polynomial.hasSMulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
   ⟨fun p f x => eval x p • f x⟩
-#align polynomial.has_smul_pi Polynomial.hasSmulPi
+#align polynomial.has_smul_pi Polynomial.hasSMulPi
 
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
-noncomputable def Polynomial.hasSmulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
+noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
     [SMul S' T'] : SMul R'[X] (S' → T') :=
   ⟨fun p f x => aeval x p • f x⟩
-#align polynomial.has_smul_pi' Polynomial.hasSmulPi'
+#align polynomial.has_smul_pi' Polynomial.hasSMulPi'
 
-attribute [local instance] Polynomial.hasSmulPi Polynomial.hasSmulPi'
+attribute [local instance] Polynomial.hasSMulPi Polynomial.hasSMulPi'
 
 @[simp]
 theorem polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' → S') (x : R') :
@@ -444,23 +439,25 @@ variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [
 
 -- porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
-/-- This is not an instance for the same reasons as `Polynomial.hasSmulPi'`. -/
+/-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
-  {
-    Polynomial.hasSmulPi' R' S'
-      T' with
+  { Polynomial.hasSMulPi' R' S' T' with
     toFun := fun p z => algebraMap S' T' (aeval z p)
-    map_one' := by funext z
-                   simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
-    map_mul' := fun f g => by funext z
-                              simp only [Pi.mul_apply, map_mul]
-    map_zero' := by funext z
-                    simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
+    map_one' := by
+      funext z
+      simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
+    map_mul' := fun f g => by
+      funext z
+      simp only [Pi.mul_apply, map_mul]
+    map_zero' := by
+      funext z
+      simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
     map_add' := fun f g => by
       funext z
       simp only [Polynomial.aeval_add, Pi.add_apply, map_add]
-    commutes' := fun p f => by funext z
-                               exact mul_comm _ _
+    commutes' := fun p f => by
+      funext z
+      exact mul_comm _ _
     smul_def' := fun p f => by
       funext z
       simp only [polynomial_smul_apply', Algebra.algebraMap_eq_smul_one, RingHom.coe_mk,
