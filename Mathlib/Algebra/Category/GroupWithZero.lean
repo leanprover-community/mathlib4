@@ -63,10 +63,10 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
     exact h⟩
 
 -- porting note: added
-lemma coeId {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
+lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
 -- porting note: added
-lemma coeComp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget :=
@@ -94,23 +94,11 @@ set_option linter.uppercaseLean3 false in
 instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →*₀ Y) := f
 
-/-- Conversion from MulEquiv to MonoidWithZeroHom -/
--- porting note : this function was not necessary in mathlib
-def toMonoidWithZeroHom {M N} [GroupWithZero M] [GroupWithZero N] (h : M ≃* N) : M →*₀ N :=
-  { toFun := h.toFun
-    map_mul' := h.map_mul'
-    map_one' := h.map_one
-    map_zero' := by
-      rw [← mul_eq_zero_of_left rfl 1]
-      rw [h.map_mul' 0 1]
-      simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe_apply, MulEquiv.coe_toEquiv,
-         map_zero, map_one, mul_one] }
-
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
-  hom := toMonoidWithZeroHom e
-  inv := toMonoidWithZeroHom (e.symm)
+  hom := (e : α →*₀ β)
+  inv := (e.symm : β →*₀ α)
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _
