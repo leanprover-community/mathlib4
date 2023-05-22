@@ -18,32 +18,32 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 ## Main definitions
 
-* `seminorm_family.basisSets`: The set of open seminorm balls for a family of seminorms.
-* `seminorm_family.module_filter_basis`: A module filter basis formed by the open balls.
-* `seminorm.is_bounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
+* `SeminormFamily.basisSets`: The set of open seminorm balls for a family of seminorms.
+* `SeminormFamily.moduleFilterBasis`: A module filter basis formed by the open balls.
+* `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
 bounded by a finite number of seminorms in `E`.
 
 ## Main statements
 
-* `with_seminorms.to_locally_convex_space`: A space equipped with a family of seminorms is locally
+* `WithSeminorms.toLocallyConvexSpace`: A space equipped with a family of seminorms is locally
 convex.
-* `with_seminorms.first_countable`: A space is first countable if it's topology is induced by a
+* `WithSeminorms.firstCountable`: A space is first countable if it's topology is induced by a
 countable family of seminorms.
 
 ## Continuity of semilinear maps
 
 If `E` and `F` are topological vector space with the topology induced by a family of seminorms, then
 we have a direct method to prove that a linear map is continuous:
-* `seminorm.continuous_from_bounded`: A bounded linear map `f : E →ₗ[𝕜] F` is continuous.
+* `Seminorm.continuous_from_bounded`: A bounded linear map `f : E →ₗ[𝕜] F` is continuous.
 
 If the topology of a space `E` is induced by a family of seminorms, then we can characterize von
 Neumann boundedness in terms of that seminorm family. Together with
-`linear_map.continuous_of_locally_bounded` this gives general criterion for continuity.
+`LinearMap.continuous_of_locally_bounded` this gives general criterion for continuity.
 
-* `with_seminorms.is_vonN_bounded_iff_finset_seminorm_bounded`
-* `with_seminorms.is_vonN_bounded_iff_seminorm_bounded`
-* `with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded`
-* `with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded`
+* `WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded`
+* `WithSeminorms.isVonNBounded_iff_seminorm_bounded`
+* `WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded`
+* `WithSeminorms.image_isVonNBounded_iff_seminorm_bounded`
 
 ## Tags
 
@@ -72,11 +72,9 @@ variable {𝕜 E ι}
 
 namespace SeminormFamily
 
--- Porting note: `hr` unused but `_` doesn't work
-set_option linter.unusedVariables false in
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
 def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
-  ⋃ (s : Finset ι) (r) (hr : 0 < r), singleton <| ball (s.sup p) (0 : E) r
+  ⋃ (s : Finset ι) (r) (_hr : 0 < r), singleton <| ball (s.sup p) (0 : E) r
 #align seminorm_family.basis_sets SeminormFamily.basisSets
 
 variable (p : SeminormFamily 𝕜 E ι)
@@ -139,7 +137,7 @@ theorem basisSets_neg (U) (hU' : U ∈ p.basisSets) :
   exact ⟨U, hU', Eq.subset hU⟩
 #align seminorm_family.basis_sets_neg SeminormFamily.basisSets_neg
 
-/-- The `add_group_filter_basis` induced by the filter basis `seminorm_basis_zero`. -/
+/-- The `addGroupFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
 protected def addGroupFilterBasis [Nonempty ι] : AddGroupFilterBasis E :=
   addGroupFilterBasisOfComm p.basisSets p.basisSets_nonempty p.basisSets_intersect p.basisSets_zero
     p.basisSets_add p.basisSets_neg
@@ -182,7 +180,7 @@ theorem basisSets_smul_left (x : 𝕜) (U : Set E) (hU : U ∈ p.basisSets) :
     preimage_const_of_mem, zero_smul]
 #align seminorm_family.basis_sets_smul_left SeminormFamily.basisSets_smul_left
 
-/-- The `module_filter_basis` induced by the filter basis `seminorm_basis_zero`. -/
+/-- The `moduleFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
 protected def moduleFilterBasis : ModuleFilterBasis 𝕜 E where
   toAddGroupFilterBasis := p.addGroupFilterBasis
   smul' := p.basisSets_smul _
@@ -336,8 +334,8 @@ theorem WithSeminorms.isOpen_iff_mem_balls (hp : WithSeminorms p) (U : Set E) :
 #align with_seminorms.is_open_iff_mem_balls WithSeminorms.isOpen_iff_mem_balls
 
 /- Note that through the following lemmas, one also immediately has that separating families
-of seminorms induce T₂ and T₃ topologies by `topological_add_group.t2_space`
-and `topological_add_group.t3_space` -/
+of seminorms induce T₂ and T₃ topologies by `TopologicalAddGroup.t2Space`
+and `TopologicalAddGroup.t3Space` -/
 /-- A separating family of seminorms induces a T₁ topology. -/
 theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
     (h : ∀ x, x ≠ 0 → ∃ i, p i x ≠ 0) : T1Space E := by
@@ -382,7 +380,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [Topo
 
 variable {p : SeminormFamily 𝕜 E ι}
 
-/-- Convergence along filters for `with_seminorms`.
+/-- Convergence along filters for `WithSeminorms`.
 
 Variant with `finset.sup`. -/
 theorem WithSeminorms.tendsto_nhds' (hp : WithSeminorms p) (u : F → E) {f : Filter F} (y₀ : E) :
@@ -390,7 +388,7 @@ theorem WithSeminorms.tendsto_nhds' (hp : WithSeminorms p) (u : F → E) {f : Fi
   by simp [hp.hasBasis_ball.tendsto_right_iff]
 #align with_seminorms.tendsto_nhds' WithSeminorms.tendsto_nhds'
 
-/-- Convergence along filters for `with_seminorms`. -/
+/-- Convergence along filters for `WithSeminorms`. -/
 theorem WithSeminorms.tendsto_nhds (hp : WithSeminorms p) (u : F → E) {f : Filter F} (y₀ : E) :
     Filter.Tendsto u f (𝓝 y₀) ↔ ∀ i ε, 0 < ε → ∀ᶠ x in f, p i (u x - y₀) < ε := by
   rw [hp.tendsto_nhds' u y₀]
@@ -401,7 +399,7 @@ theorem WithSeminorms.tendsto_nhds (hp : WithSeminorms p) (u : F → E) {f : Fil
 
 variable [SemilatticeSup F] [Nonempty F]
 
-/-- Limit `→ ∞` for `with_seminorms`. -/
+/-- Limit `→ ∞` for `WithSeminorms`. -/
 theorem WithSeminorms.tendsto_nhds_atTop (hp : WithSeminorms p) (u : F → E) (y₀ : E) :
     Filter.Tendsto u Filter.atTop (𝓝 y₀) ↔ ∀ i ε, 0 < ε → ∃ x₀, ∀ x, x₀ ≤ x → p i (u x - y₀) < ε :=
   by
@@ -452,7 +450,7 @@ theorem WithSeminorms.continuous_seminorm [NontriviallyNormedField 𝕝] [Module
 #align with_seminorms.continuous_seminorm WithSeminorms.continuous_seminorm
 
 /-- The topology induced by a family of seminorms is exactly the infimum of the ones induced by
-each seminorm individually. We express this as a characterization of `with_seminorms p`. -/
+each seminorm individually. We express this as a characterization of `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔
       t = ⨅ i,
@@ -472,7 +470,7 @@ end TopologicalSpace
 
 /-- The uniform structure induced by a family of seminorms is exactly the infimum of the ones
 induced by each seminorm individually. We express this as a characterization of
-`with_seminorms p`. -/
+`WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔ u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace :=
@@ -491,7 +489,7 @@ end TopologicalAddGroup
 
 section NormedSpace
 
-/-- The topology of a `normed_space 𝕜 E` is induced by the seminorm `norm_seminorm 𝕜 E`. -/
+/-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
 theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
   let p : SeminormFamily 𝕜 E (Fin 1) := fun _ => normSeminorm 𝕜 E
@@ -696,14 +694,14 @@ section NormedSpace
 
 variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
 
-/-- Not an instance since `𝕜` can't be inferred. See `normed_space.to_locally_convex_space` for a
+/-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/
 theorem NormedSpace.toLocallyConvexSpace' [NormedSpace 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
     LocallyConvexSpace ℝ E :=
   (norm_withSeminorms 𝕜 E).toLocallyConvexSpace
 #align normed_space.to_locally_convex_space' NormedSpace.toLocallyConvexSpace'
 
-/-- See `normed_space.to_locally_convex_space'` for a slightly stronger version which is not an
+/-- See `NormedSpace.toLocallyConvexSpace'` for a slightly stronger version which is not an
 instance. -/
 instance NormedSpace.toLocallyConvexSpace [NormedSpace ℝ E] : LocallyConvexSpace ℝ E :=
   NormedSpace.toLocallyConvexSpace' ℝ
