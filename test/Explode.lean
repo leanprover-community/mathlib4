@@ -16,7 +16,7 @@ elab dc?:docComment ? tk:"#explode_test " stx:term : command => do
       logInfoAt tk m!"✅ success"
       logInfoAt tk msg
     else
-      logErrorAt tk m!"❌ expected from docstring:\n\n{ds}\n❌ actual:\n\n{str}"
+      logErrorAt tk m!"❌ expected from docstring:\n\n{ds}\n❌ actual:\n\n{msg}"
   else
     logErrorAt tk m!"❌ missing docstring"
     logInfoAt tk msg
@@ -39,7 +39,7 @@ theorem application : True ∧ True :=
 application : True ∧ True
 
 0│   │ True.intro │ True
-1│0,0│ @And.intro │ True ∧ True
+1│0,0│ And.intro  │ True ∧ True
 -/
 #explode_test application
 
@@ -60,12 +60,12 @@ theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
 /--
 theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 
-0│         │ p          ├ Prop
-1│         │ q          ├ Prop
-2│         │ hP         ├ p
-3│         │ hQ         ├ q
-4│2,3      │ @And.intro │ p ∧ q
-5│0,1,2,3,4│ ∀I         │ ∀ (p q : Prop), p → q → p ∧ q
+0│         │ p         ├ Prop
+1│         │ q         ├ Prop
+2│         │ hP        ├ p
+3│         │ hQ        ├ q
+4│2,3      │ And.intro │ p ∧ q
+5│0,1,2,3,4│ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
 -/
 #explode_test theorem_2
 
@@ -77,15 +77,15 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
 /--
 theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 
-0│     │ a          ├ Prop
-1│     │ h          ├ a
-2│     │ hl         │ ┌ a
-3│     │ trivial    │ │ True
-4│2,3  │ ∀I         │ a → True
-5│     │ hr         │ ┌ True
-6│5,1  │ ∀I         │ True → a
-7│4,6  │ @Iff.intro │ a ↔ True
-8│0,1,7│ ∀I         │ ∀ (a : Prop), a → (a ↔ True)
+0│     │ a         ├ Prop
+1│     │ h         ├ a
+2│     │ hl        │ ┌ a
+3│     │ trivial   │ │ True
+4│2,3  │ ∀I        │ a → True
+5│     │ hr        │ ┌ True
+6│5,1  │ ∀I        │ True → a
+7│4,6  │ Iff.intro │ a ↔ True
+8│0,1,7│ ∀I        │ ∀ (a : Prop), a → (a ↔ True)
 -/
 #explode_test theorem_3
 
@@ -96,15 +96,15 @@ theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
 /--
 theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 
-0│           │ U           ├ Prop
-1│           │ W           ├ Prop
-2│           │ hPQ         ├ U → W
-3│           │ hNQ         ├ ¬W
-4│           │ hP          ├ U
-5│2,4        │ ∀E          │ W
-6│3,5        │ ∀E          │ False
-7│6          │ @False.elim │ False
-8│0,1,2,3,4,7│ ∀I          │ ∀ (U W : Prop), (U → W) → ¬W → U → False
+0│           │ U          ├ Prop
+1│           │ W          ├ Prop
+2│           │ hPQ        ├ U → W
+3│           │ hNQ        ├ ¬W
+4│           │ hP         ├ U
+5│2,4        │ ∀E         │ W
+6│3,5        │ ∀E         │ False
+7│6          │ False.elim │ False
+8│0,1,2,3,4,7│ ∀I         │ ∀ (U W : Prop), (U → W) → ¬W → U → False
 -/
 #explode_test theorem_4
 
@@ -131,9 +131,9 @@ lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 7 │          │ hNQ          │ ┌ ¬q
 8 │2,7       │ ∀E           │ │ ¬p
 10│8,3       │ ∀E           │ │ False
-11│10        │ @False.elim  │ │ q
+11│10        │ False.elim   │ │ q
 12│7,11      │ ∀I           │ ¬q → q
-13│4,6,12    │ @Or.elim     │ q
+13│4,6,12    │ Or.elim      │ q
 14│0,1,2,3,13│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
 #explode_test lemma_5
@@ -199,15 +199,25 @@ lemma_5' : ∀ (p q : Prop), (¬q → ¬p) → p → q
 8 │        │ hP           │ ├ p
 9 │2,7     │ ∀E           │ │ ¬p
 11│9,8     │ ∀E           │ │ False
-12│11      │ @False.elim  │ │ q
+12│11      │ False.elim   │ │ q
 13│7,8,12  │ ∀I           │ ¬q → p → q
-14│3,6,13  │ @Or.elim     │ p → q
+14│3,6,13  │ Or.elim      │ p → q
 15│0,1,2,14│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
 #explode_test lemma_5'
 
 section
 variable (p q : Prop)
+
+/--
+fun hp hnp ↦ hnp hp : p → (p → q) → q
+
+0│     │ hp  ├ p
+1│     │ hnp ├ p → q
+2│1,0  │ ∀E  │ q
+3│0,1,2│ ∀I  │ p → (p → q) → q
+-/
+#explode_test fun (hp : p) (hnp : p → q) => hnp hp
 
 /--
 fun hNQNP ↦
@@ -224,9 +234,9 @@ fun hNQNP ↦
 6 │      │ hP           │ ├ p
 7 │0,5   │ ∀E           │ │ ¬p
 9 │7,6   │ ∀E           │ │ False
-10│9     │ @False.elim  │ │ q
+10│9     │ False.elim   │ │ q
 11│5,6,10│ ∀I           │ ¬q → p → q
-12│1,4,11│ @Or.elim     │ p → q
+12│1,4,11│ Or.elim      │ p → q
 13│0,12  │ ∀I           │ (¬q → ¬p) → p → q
 -/
 #explode_test fun (hNQNP : ¬q → ¬p) =>

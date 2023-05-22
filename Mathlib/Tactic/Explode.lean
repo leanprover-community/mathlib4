@@ -42,6 +42,7 @@ where
       if entry.useAsDep then entry.line! :: deps else deps
     else
       deps
+
   explode_core' (e : Expr) (depth : Nat) (entries : Entries) (start : Bool := false) :
       MetaM (Option Entry × Entries) := do
     trace[explode] "depth = {depth}, start = {start}, e = {e}"
@@ -112,7 +113,7 @@ where
         { type     := ← addMessageContext <| ← Meta.inferType e
           depth    := depth
           status   := Status.reg
-          thm      := ← addMessageContext <| if fn.isConst then fn else "∀E"
+          thm      := ← addMessageContext <| if fn.isConst then appConstMsg fn else "∀E"
           deps     := deps
           useAsDep := true }
       return (entry, entries)
@@ -138,6 +139,17 @@ where
           deps     := []
           useAsDep := ← select e }
       return (entry, entries)
+
+  /-- Generate the pretty printed name for the given constant expression. Can't just use the
+  default `toMessageData` for `Expr` since that inserts `@` if the constant is a function
+  with implicit arguments. -/
+  appConstMsg (e : Expr) : MessageData :=
+    .ofPPFormat { pp := fun
+      | some ctx => ctx.runMetaM <| withOptions (pp.tagAppFns.set · true) <|
+          -- The pp.tagAppFns option causes the `delabConst` function to annotate
+          -- the constant with terminfo, which is necessary for seeing the type on mouse hover.
+          PrettyPrinter.ppExprWithInfos (delab := PrettyPrinter.Delaborator.delabConst) e
+      | none     => return f!"{e}" }
 
 /-- Main definition behind `#explode` command. -/
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
