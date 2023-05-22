@@ -82,6 +82,9 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
 
 syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
+-- TODO: add `apply_congr with h` to specify hypothesis name
+-- https://github.com/leanprover-community/mathlib/issues/2882
+
 elab_rules : conv
   | `(conv| apply_congr$[ $t?]?) => do
     let e? ← t?.mapM (fun t => elabTerm t.raw none)

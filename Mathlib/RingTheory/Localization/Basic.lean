@@ -1005,7 +1005,7 @@ instance {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M
         simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul, mul_one,
           Algebra.commutes]
 
-instance : IsLocalization M (Localization M) where
+instance isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
   surj' := (Localization.monoidOf M).surj
   eq_iff_exists' := (Localization.monoidOf M).eq_iff_exists
