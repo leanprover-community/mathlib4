@@ -159,10 +159,8 @@ variable {A : Type _} [CommRing A]
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext n
-
   simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, OneHom.coe_mk, coe_mk,
     factorial, Nat.sum_antidiagonal_eq_sum_range_succ_mk, add_pow, sum_mul]
-
   apply sum_congr rfl
   rintro x hx
   suffices
