@@ -4,19 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib
-import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Rewrites
 
 /-!
-# Saving the `library_search` cache.
+# Saving the `rewrites` cache.
 
-After importing of mathlib, we build a `library_search` cache and pickle it to disk.
+After importing of mathlib, we build a `rewrites` cache and pickle it to disk.
 This file will be distributed via our Azure storage.
 -/
 
 open Lean.Elab.Command
-open Mathlib.Tactic.LibrarySearch
+open Mathlib.Tactic.Rewrites
 
 run_cmd liftTermElabM do
   let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
-  pickle path (← (← buildDiscrTree).get).2 `LibrarySearch
+  pickle path (← (← buildDiscrTree).get).2 `Rewrites
