@@ -60,9 +60,7 @@ inductive WithInitial : Type u
 
 namespace WithTerminal
 
--- porting note: no such tactic
--- attribute [local tidy] tactic.case_bash
-
+attribute [local aesop safe cases] WithTerminal
 variable {C}
 
 /-- Morphisms for `with_terminal C`. -/
@@ -96,11 +94,10 @@ instance : Category.{v} (WithTerminal C) where
   id X := id _
   comp := comp
   -- Porting note : need to do cases analysis
-  comp_id {X Y} _ := by
-    cases X <;> cases Y <;> aesop
-  id_comp {X Y} _ := by
-    cases X <;> cases Y <;> aesop
+  comp_id {X Y} _ := by aesop
+  id_comp {X Y} _ := by aesop
   assoc {a b c d} f g h := by
+    -- Porting note : still can't automatically close goal using `aesop(_cat) + cases`
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
     . exact (h : PEmpty).elim
     . exact (g : PEmpty).elim
@@ -132,7 +129,8 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
   map_id
     | of _X => F.map_id _X
     | star => by aesop
-  -- Porting note : need to do cases analysis
+  -- Porting note : still need to do cases analysis
+  -- `aesop(_cat) + cases` can't do it automatically
   map_comp {X Y Z} f g := by
     cases X <;> cases Y <;> cases Z <;> try aesop_cat
     . exact F.map_comp f g
@@ -166,12 +164,12 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => M x
     | star, star, PUnit.unit => 𝟙 Z
-  -- Porting note : need to do cases analysis
   map_id
     | of x => F.map_id x
     | star => rfl
   map_comp {X Y Z} f g := by
-  -- Porting note : need to do more cases analysis
+  -- Porting note : still need to do cases analysis
+  -- `aesop(_cat) + cases` can't do it automatically
     cases X <;> cases Y <;> cases Z
     . exact F.map_comp f g
     . exact (hM _ _ _).symm
@@ -271,9 +269,6 @@ end WithTerminal
 
 namespace WithInitial
 
--- porting note: no such tactic
--- attribute [local tidy] tactic.case_bash
-
 variable {C}
 
 /-- Morphisms for `with_initial C`. -/
@@ -306,9 +301,8 @@ instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
-  -- Porting note : need to do cases analysis
-  comp_id {X Y} _ := by
-    cases X <;> cases Y <;> aesop
+  comp_id {X Y} _ := by aesop
+  -- Porting note : `aesop + cases` does `comp_id` but not `id_comp`
   id_comp {X Y} _ := by
     cases X <;> cases Y <;> aesop
   assoc {a b c d} f g h := by
@@ -339,7 +333,6 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     | of x, of y, f => F.map f
     | star, of _, PUnit.unit => PUnit.unit
     | star, star, PUnit.unit => PUnit.unit
-  -- Porting note : need to do cases analysis
   map_id
     | of _X => F.map_id _X
     | star => by aesop
@@ -377,7 +370,6 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => M _
     | star, star, PUnit.unit => 𝟙 _
-  -- Porting note : need to do cases analysis
   map_id
     | of x => F.map_id x
     | star => rfl
