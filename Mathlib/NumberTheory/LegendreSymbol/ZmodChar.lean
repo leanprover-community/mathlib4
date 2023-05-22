@@ -50,7 +50,12 @@ def χ₄ : MulChar (ZMod 4) ℤ where
 /-- `χ₄` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   intro a
-  decide!
+  -- Porting note: was `decide!`
+  match a with
+  | 0 => decide
+  | 1 => decide
+  | 2 => decide
+  | 3 => decide
 #align zmod.is_quadratic_χ₄ ZMod.isQuadratic_χ₄
 
 /-- The value of `χ₄ n`, for `n : ℕ`, depends only on `n % 4`. -/
@@ -212,4 +217,3 @@ theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a :
 end QuadCharModP
 
 end ZMod
-
