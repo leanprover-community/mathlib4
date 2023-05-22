@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathbin.Data.IsROrC.Lemmas
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.Data.IsROrC.Lemmas
 
 /-!
 # Measurability of the basic `is_R_or_C` functions
@@ -77,8 +77,7 @@ theorem IsROrC.measurable_of_real : Measurable (coe : ℝ → 𝕜) :=
 #align is_R_or_C.measurable_of_real IsROrC.measurable_of_real
 
 theorem measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
-    (him : Measurable fun x => IsROrC.im (f x)) : Measurable f :=
-  by
+    (him : Measurable fun x => IsROrC.im (f x)) : Measurable f := by
   convert(is_R_or_C.measurable_of_real.comp hre).add
       ((is_R_or_C.measurable_of_real.comp him).mul_const IsROrC.i)
   · ext1 x
@@ -87,8 +86,7 @@ theorem measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
 #align measurable_of_re_im measurable_of_re_im
 
 theorem aEMeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
-    (him : AEMeasurable (fun x => IsROrC.im (f x)) μ) : AEMeasurable f μ :=
-  by
+    (him : AEMeasurable (fun x => IsROrC.im (f x)) μ) : AEMeasurable f μ := by
   convert(is_R_or_C.measurable_of_real.comp_ae_measurable hre).add
       ((is_R_or_C.measurable_of_real.comp_ae_measurable him).mul_const IsROrC.i)
   · ext1 x
