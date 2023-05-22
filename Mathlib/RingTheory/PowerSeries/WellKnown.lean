@@ -90,7 +90,7 @@ def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 #align power_series.cos PowerSeries.cos
 
-variable {A A' : Type _} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (f : A →+* A')
+variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
