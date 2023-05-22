@@ -16,14 +16,14 @@ import Mathlib.Tactic.Ring
 
 ## Main definitions
 
-* `quaternion_algebra.basis A c₁ c₂`: a basis for a subspace of an `R`-algebra `A` that has the
+* `QuaternionAlgebra.Basis A c₁ c₂`: a basis for a subspace of an `R`-algebra `A` that has the
   same algebra structure as `ℍ[R,c₁,c₂]`.
-* `quaternion_algebra.basis.self R`: the canonical basis for `ℍ[R,c₁,c₂]`.
-* `quaternion_algebra.basis.comp_hom b f`: transform a basis `b` by an alg_hom `f`.
-* `quaternion_algebra.lift`: Define an `alg_hom` out of `ℍ[R,c₁,c₂]` by its action on the basis
-  elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `complex.lift`,
-  but takes a bundled `quaternion_algebra.basis` instead of just a `subtype` as the amount of
-  data / proves is non-negligeable.
+* `QuaternionAlgebra.Basis.self R`: the canonical basis for `ℍ[R,c₁,c₂]`.
+* `QuaternionAlgebra.Basis.compHom b f`: transform a basis `b` by an AlgHom `f`.
+* `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂]` by its action on the basis
+  elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
+  but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
+  data / proves is non-negligible.
 -/
 
 
@@ -63,7 +63,7 @@ protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i)
 
 variable (R)
 
-/-- There is a natural quaternionic basis for the `quaternion_algebra`. -/
+/-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/
 @[simps i j k]
 protected def self : Basis ℍ[R,c₁,c₂] c₁ c₂ where
   i := ⟨0, 1, 0, 0⟩
@@ -112,7 +112,7 @@ theorem k_mul_k : q.k * q.k = -((c₁ * c₂) • 1) := by
     mul_assoc, i_mul_i, smul_mul_assoc, one_mul, neg_mul, smul_mul_assoc, j_mul_j, smul_smul]
 #align quaternion_algebra.basis.k_mul_k QuaternionAlgebra.Basis.k_mul_k
 
-/-- Intermediate result used to define `quaternion_algebra.basis.lift_hom`. -/
+/-- Intermediate result used to define `QuaternionAlgebra.Basis.liftHom`. -/
 def lift (x : ℍ[R,c₁,c₂]) : A :=
   algebraMap R _ x.re + x.imI • q.i + x.imJ • q.j + x.imK • q.k
 #align quaternion_algebra.basis.lift QuaternionAlgebra.Basis.lift
@@ -147,7 +147,7 @@ theorem lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.li
   simp [lift, mul_smul, ← Algebra.smul_def]
 #align quaternion_algebra.basis.lift_smul QuaternionAlgebra.Basis.lift_smul
 
-/-- A `quaternion_algebra.basis` implies an `alg_hom` from the quaternions. -/
+/-- A `QuaternionAlgebra.Basis` implies an `AlgHom` from the quaternions. -/
 @[simps]
 def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
   AlgHom.mk'
@@ -158,7 +158,7 @@ def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
       map_mul' := q.lift_mul } q.lift_smul
 #align quaternion_algebra.basis.lift_hom QuaternionAlgebra.Basis.liftHom
 
-/-- Transform a `quaternion_algebra.basis` through an `alg_hom`. -/
+/-- Transform a `QuaternionAlgebra.Basis` through an `AlgHom`. -/
 @[simps i j k]
 def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   i := F q.i
@@ -189,4 +189,3 @@ def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
 #align quaternion_algebra.lift QuaternionAlgebra.lift
 
 end QuaternionAlgebra
-
