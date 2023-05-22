@@ -62,7 +62,7 @@ instance field [Field β] : Field β* :=
   { Germ.commRing, Germ.divisionRing with }
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLe]
+  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
 #align filter.germ.coe_lt Filter.Germ.coe_lt
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
@@ -79,7 +79,7 @@ theorem const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
 #align filter.germ.const_lt_iff Filter.Germ.const_lt_iff
 
 theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· < ·) := by
-  ext (⟨f⟩⟨g⟩)
+  ext ⟨f⟩ ⟨g⟩
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 

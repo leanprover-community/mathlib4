@@ -74,7 +74,7 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
 #align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symmApply
+#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
 #align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section

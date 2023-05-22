@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.lattice
-! leanprover-community/mathlib commit d6aad9528ddcac270ed35c6f7b5f1d8af25341d6
+! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # (Semi-)lattices
@@ -223,10 +222,8 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
   constructor
   · intro h
     exact ⟨b, (sup_eq_right.mpr h).symm⟩
-
   · rintro ⟨c, rfl : _ = _ ⊔ _⟩
     exact le_sup_left
-
 #align le_iff_exists_sup le_iff_exists_sup
 
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
@@ -320,7 +317,6 @@ theorem Monotone.forall_le_of_antitone {β : Type _} [Preorder β] {f g : α →
     f m ≤ f (m ⊔ n) := hf le_sup_left
     _ ≤ g (m ⊔ n) := h _
     _ ≤ g n := hg le_sup_right
-
 #align monotone.forall_le_of_antitone Monotone.forall_le_of_antitone
 
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
@@ -776,7 +772,6 @@ theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
     _ = (x ⊔ x ⊓ y) ⊓ (x ⊓ y ⊔ z) := by rw [sup_inf_self]
     _ = (x ⊓ y ⊔ x) ⊓ (x ⊓ y ⊔ z) := by rw [sup_comm]
     _ = x ⊓ y ⊔ x ⊓ z := by rw [sup_inf_left]
-
 #align inf_sup_left inf_sup_left
 
 instance OrderDual.distribLattice (α : Type _) [DistribLattice α] : DistribLattice αᵒᵈ where
@@ -795,7 +790,6 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
     _ = y ⊔ x ⊓ z := sup_inf_left.symm
     _ ≤ y ⊔ y ⊓ z := sup_le_sup_left h₁ _
     _ ≤ _ := sup_le (le_refl y) inf_le_left
-
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
 theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
@@ -928,9 +922,9 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
   { ‹Lattice α› with
-    decidable_le := ‹_›,
-    decidable_eq := ‹_›,
-    decidable_lt := ‹_›,
+    decidableLE := ‹_›,
+    decidableEq := ‹_›,
+    decidableLT := ‹_›,
     le_total := total_of (· ≤ ·),
     max := (· ⊔ ·),
     max_def := by exact congr_fun₂ sup_eq_maxDefault,
@@ -1049,6 +1043,23 @@ instance distribLattice [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i,
   le_sup_inf _ _ _ _ := le_sup_inf
 
 end Pi
+
+namespace Function
+
+variable {ι : Type _} {π : ι → Type _} [DecidableEq ι]
+
+-- porting note: Dot notation on `Function.update` broke
+theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
+    update f i (a ⊔ b) = update f i a ⊔ update f i b :=
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+#align function.update_sup Function.update_sup
+
+theorem update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
+    update f i (a ⊓ b) = update f i a ⊓ update f i b :=
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+#align function.update_inf Function.update_inf
+
+end Function
 
 /-!
 ### Monotone functions and lattices

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.filter.n_ary
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit 78f647f8517f021d839a7553d5dc97e79b508dea
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

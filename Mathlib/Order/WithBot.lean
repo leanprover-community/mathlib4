@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -44,7 +43,8 @@ instance [Repr α] : Repr (WithBot α) :=
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
-instance coeTC : CoeTC α (WithBot α) :=
+-- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
+instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
 instance bot : Bot (WithBot α) :=
@@ -52,6 +52,9 @@ instance bot : Bot (WithBot α) :=
 
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
+  Option.nontrivial
 
 open Function
 
@@ -92,11 +95,9 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
-def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) :
-  ∀ n : WithBot α, C n
-| none => h₁
-| Option.some a => h₂ a
-
+def recBotCoe {C : WithBot α → Sort _} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
+| none => bot
+| Option.some a => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
@@ -359,6 +360,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+  strictMono_iff (β := βᵒᵈ)
+
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithBot.map f) ↔ StrictMono f :=
@@ -445,6 +450,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), ⊥, (a₃ : α) => inf_le_left
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
+
+-- porting note: added, previously this was found via unfolding `WithBot`
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
@@ -574,6 +582,9 @@ instance top : Top (WithTop α) :=
 instance inhabited : Inhabited (WithTop α) :=
   ⟨⊤⟩
 
+instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
+  Option.nontrivial
+
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall
 #align with_top.forall WithTop.forall
@@ -602,9 +613,9 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : WithTop α → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : α, C a) : ∀ n : WithTop α, C n
-| none => h₁
-| Option.some a => h₂ a
+def recTopCoe {C : WithTop α → Sort _} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
+| none => top
+| Option.some a => coe a
 #align with_top.rec_top_coe WithTop.recTopCoe
 
 @[simp]
@@ -1130,6 +1141,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
 
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+  strictMono_iff (β := βᵒᵈ)
+
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithTop.map f) ↔ StrictMono f :=
@@ -1198,6 +1213,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
       | (a₁ : α), (a₂ : α), ⊤ => le_rfl
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
+-- porting note: added, previously this was found via unfolding `WithTop`
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
+
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
   decidable_of_decidable_of_iff  toDual_le_toDual_iff
@@ -1251,7 +1269,7 @@ theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h)) _
+      (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1266,7 +1284,7 @@ theorem _root_.WithBot.wellFounded_gt [Preorder α] (h : @WellFounded α (· > �
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h)) _
+      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac

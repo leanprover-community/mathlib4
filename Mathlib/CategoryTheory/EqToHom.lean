@@ -32,7 +32,7 @@ result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 open Opposite
@@ -54,8 +54,7 @@ theorem eqToHom_refl (X : C) (p : X = X) : eqToHom p = 𝟙 X :=
 
 @[reassoc (attr := simp)]
 theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
-    eqToHom p ≫ eqToHom q = eqToHom (p.trans q) :=
-  by
+    eqToHom p ≫ eqToHom q = eqToHom (p.trans q) := by
   cases p
   cases q
   simp

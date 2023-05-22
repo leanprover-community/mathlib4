@@ -30,28 +30,28 @@ variable (C : Type u) [Category.{v} C]
 namespace Functor
 
 /-- The constant functor sending everything to `PUnit.star`. -/
-@[simps!] 
+@[simps!]
 def star : C ⥤ Discrete PUnit :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
--- Porting note: simp can simplify this 
+-- Porting note: simp can simplify this
 attribute [nolint simpNF] star_map_down_down
 variable {C}
 
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/
-@[simps!] 
+@[simps!]
 def pUnitExt (F G : C ⥤ Discrete PUnit) : F ≅ G := by
   refine NatIso.ofComponents (fun X => eqToIso ?_) fun {X} {Y} f => ?_
   · simp only [eq_iff_true_of_subsingleton]
-  · aesop_cat 
+  · aesop_cat
 #align category_theory.functor.punit_ext CategoryTheory.Functor.pUnitExt
--- Porting note: simp does indeed fire for these despite the linter warning 
-attribute [nolint simpNF] pUnitExt_hom_app_down_down pUnitExt_inv_app_down_down 
+-- Porting note: simp does indeed fire for these despite the linter warning
+attribute [nolint simpNF] pUnitExt_hom_app_down_down pUnitExt_inv_app_down_down
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `pUnitExt` instead of this. -/
-theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G := by 
-  refine Functor.ext (fun X => ?_) fun {X} {Y} f => ?_ 
+theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G := by
+  refine Functor.ext (fun X => ?_) fun {X} {Y} f => ?_
   · simp only [eq_iff_true_of_subsingleton]
   · aesop_cat
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.pUnit_ext'
@@ -87,7 +87,7 @@ def equiv : Discrete PUnit ⥤ C ≌ C where
 end Functor
 
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
-  any two objects. (In fact, such a category is also a groupoid; 
+  any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/
 theorem equiv_pUnit_iff_unique :
     Nonempty (C ≌ Discrete PUnit) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
@@ -113,7 +113,7 @@ theorem equiv_pUnit_iff_unique :
     haveI := fun x y => (h x y).some
     refine'
       Nonempty.intro
-        (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩) 
+        (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)
           ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.pUnitExt))
     exact
       NatIso.ofComponents
@@ -124,4 +124,3 @@ theorem equiv_pUnit_iff_unique :
 #align category_theory.equiv_punit_iff_unique CategoryTheory.equiv_pUnit_iff_unique
 
 end CategoryTheory
-

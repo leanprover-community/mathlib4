@@ -253,7 +253,7 @@ def DistribMulAction.toAddEquiv (x : α) : β ≃+ β :=
   { DistribMulAction.toAddMonoidHom β x, MulAction.toPermHom α β x with }
 #align distrib_mul_action.to_add_equiv DistribMulAction.toAddEquiv
 #align distrib_mul_action.to_add_equiv_apply DistribMulAction.toAddEquiv_apply
-#align distrib_mul_action.to_add_equiv_symm_apply DistribMulAction.toAddEquiv_symmApply
+#align distrib_mul_action.to_add_equiv_symm_apply DistribMulAction.toAddEquiv_symm_apply
 
 variable (α)
 
@@ -309,7 +309,7 @@ This is a stronger version of `MulAction.toPerm`. -/
 def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
   { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
 #align mul_distrib_mul_action.to_mul_equiv MulDistribMulAction.toMulEquiv
-#align mul_distrib_mul_action.to_mul_equiv_symm_apply MulDistribMulAction.toMulEquiv_symmApply
+#align mul_distrib_mul_action.to_mul_equiv_symm_apply MulDistribMulAction.toMulEquiv_symm_apply
 #align mul_distrib_mul_action.to_mul_equiv_apply MulDistribMulAction.toMulEquiv_apply
 
 variable (α)
@@ -365,7 +365,7 @@ def mulAutArrow {G A H} [Group G] [MulAction G A] [Monoid H] : G →* MulAut (A 
   MulDistribMulAction.toMulAut _ _
 #align mul_aut_arrow mulAutArrow
 #align mul_aut_arrow_apply_apply mulAutArrow_apply_apply
-#align mul_aut_arrow_apply_symm_apply mulAutArrow_apply_symmApply
+#align mul_aut_arrow_apply_symm_apply mulAutArrow_apply_symm_apply
 
 end Arrow
 

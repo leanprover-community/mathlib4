@@ -88,14 +88,15 @@ theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 #align add_nsmul add_nsmul
 
-@[to_additive nsmul_zero, simp]
+-- the attributes are intentionally out of order.
+@[to_additive existing nsmul_zero, simp]
 theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
 #align one_pow one_pow
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive existing (attr := simp) one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 #align pow_one pow_one
 
@@ -114,7 +115,7 @@ theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
 #align pow_three pow_three
 
-@[to_additive add_nsmul]
+@[to_additive existing add_nsmul]
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]

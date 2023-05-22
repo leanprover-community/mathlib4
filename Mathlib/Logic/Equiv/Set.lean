@@ -72,7 +72,6 @@ protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β
   calc
     s ⊆ e.symm '' t ↔ e.symm.symm '' s ⊆ t := by rw [e.symm.subset_image]
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
-
 #align equiv.subset_image' Equiv.subset_image'
 
 @[simp]
@@ -200,7 +199,7 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
 namespace Set
 
 
---Porting note: Removed attribute @[simps apply symmApply]
+--Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
@@ -227,7 +226,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     match o with
     | Sum.inl x => ⟨x, Or.inl x.2⟩
     | Sum.inr x => ⟨x, Or.inr x.2⟩
-  left_inv := fun ⟨x, h'⟩ => by by_cases p x <;> simp [h]
+  left_inv := fun ⟨x, h'⟩ => by by_cases h : p x <;> simp [h]
   right_inv o := by
     rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h], simp [ht _ h]]
 #align equiv.set.union' Equiv.Set.union'
@@ -268,10 +267,10 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
 
---Porting note: Removed attribute @[simps apply symmApply]
 /-- Equal sets are equivalent.
 
 TODO: this is the same as `Equiv.setCongr`! -/
+@[simps! apply symm_apply]
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
@@ -283,7 +282,6 @@ protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (
     (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.Set.ofEq (by simp)
     _ ≃ Sum s ({a} : Set α) := Equiv.Set.union fun x ⟨hx, _⟩ => by simp_all
     _ ≃ Sum s PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
-
 #align equiv.set.insert Equiv.Set.insert
 
 @[simp]
@@ -316,7 +314,6 @@ protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : Sum s (s�
     Sum s (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union (by simp [Set.ext_iff])).symm
     _ ≃ @univ α := Equiv.Set.ofEq (by simp)
     _ ≃ α := Equiv.Set.univ _
-
 #align equiv.set.sum_compl Equiv.Set.sumCompl
 
 @[simp]
@@ -365,7 +362,6 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
     Sum s (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union (by simp [inter_diff_self])).symm
     _ ≃ t := Equiv.Set.ofEq (by simp [union_diff_self, union_eq_self_of_subset_left h])
-
 #align equiv.set.sum_diff_subset Equiv.Set.sumDiffSubset
 
 @[simp]
@@ -412,7 +408,6 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_diff] }
-
 #align equiv.set.union_sum_inter Equiv.Set.unionSumInter
 
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
@@ -707,22 +702,26 @@ noncomputable def Set.BijOn.equiv {α : Type _} {β : Type _} {s : Set α} {t : 
   Equiv.ofBijective _ h.bijective
 #align set.bij_on.equiv Set.BijOn.equiv
 
-/-- The composition of an updated function with an equiv on a subset can be expressed as an
+/-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
-theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {s : Set α} (e : β ≃ s)
+-- porting note: replace `s : set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- former now unfolds syntactically to a less general case of the latter.
+theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {p : α → Prop}
+    (e : β ≃ Subtype p)
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
-    [∀ j, Decidable (j ∈ s)] :
-    (fun i : α => if h : i ∈ s then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
+    [∀ j, Decidable (p j)] :
+    (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
+      Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
   ext i
-  by_cases h : i ∈ s
+  by_cases h : p i
   · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,
       Function.update_apply, Function.update_apply, dif_pos h]
-    have h_coe : (⟨i, h⟩ : s) = e j ↔ i = e j := Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
+    have h_coe : (⟨i, h⟩ : Subtype p) = e j ↔ i = e j :=
+      Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
     simp [h_coe]
   · have : i ≠ e j := by
       contrapose! h
-      have : (e j : α) ∈ s := (e j).2
+      have : p (e j : α) := (e j).2
       rwa [← h] at this
     simp [h, this]
-#align dite_comp_equiv_update dite_comp_equiv_update
+#align dite_comp_equiv_update dite_comp_equiv_updateₓ

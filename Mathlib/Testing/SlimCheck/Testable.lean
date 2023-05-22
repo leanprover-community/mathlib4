@@ -3,8 +3,6 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-
-import Mathlib.Data.Array.Basic
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
@@ -108,6 +106,19 @@ structure Configuration where
   randomSeed : Option Nat := none
   quiet : Bool := false
   deriving Inhabited
+
+open Lean in
+instance : ToExpr Configuration where
+  toTypeExpr := mkConst `Configuration
+  toExpr cfg := mkApp9 (mkConst ``Configuration.mk)
+    (toExpr cfg.numInst) (toExpr cfg.maxSize) (toExpr cfg.numRetries) (toExpr cfg.traceDiscarded)
+    (toExpr cfg.traceSuccesses) (toExpr cfg.traceShrink) (toExpr cfg.traceShrinkCandidates)
+    (toExpr cfg.randomSeed) (toExpr cfg.quiet)
+
+/--
+Allow elaboration of `Configuration` arguments to tactics.
+-/
+declare_config_elab elabConfig Configuration
 
 /--
 `PrintableProp p` allows one to print a proposition so that
@@ -285,18 +296,20 @@ def addShrinks (n : Nat) : TestResult p → TestResult p
 | TestResult.failure p xs m => TestResult.failure p xs (m + n)
 | p => p
 
+instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
+
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (n : Nat) :
     OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
-  for ⟨candidate, h⟩ in candidates do
+  for candidate in candidates do
     if cfg.traceShrinkCandidates then
       slimTrace s!"Trying {var} := {repr candidate}"
     let res ← OptionT.lift $ Testable.runProp (β (SampleableExt.interp candidate)) cfg true
@@ -309,7 +322,6 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
-  termination_by minimizeAux cfg var x n => x
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
@@ -517,5 +529,10 @@ def Testable.check (p : Prop) (cfg : Configuration := {})
 -- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10)
 --   Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
+
+macro tk:"#test " e:term : command => `(command| #eval%$tk Testable.check $e)
+
+-- #test ∀ (x : Nat) (h : 5 < x), 10 < x
+-- #test ∀ (x : Nat) (h : 10 < x), 5 < x
 
 end SlimCheck

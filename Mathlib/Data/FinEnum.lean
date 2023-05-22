@@ -36,7 +36,7 @@ class FinEnum (α : Sort _) where
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
 
-attribute [instance] FinEnum.decEq
+attribute [instance 100] FinEnum.decEq
 
 namespace FinEnum
 
@@ -157,7 +157,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [and_imp, mem_sdiff, mem_singleton]
       simp only [or_iff_not_imp_left] at h
       exists h
-      by_cases xs_hd ∈ s
+      by_cases h : xs_hd ∈ s
       · have : {xs_hd} ⊆ s
         simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,

@@ -57,7 +57,7 @@ end FreeAddMonoid
 
 namespace FreeMonoid
 
-/-- `list.countp` as a bundled multiplicative monoid homomorphism. -/
+/-- `List.countp` as a bundled multiplicative monoid homomorphism. -/
 def countp : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countp p)
 #align free_monoid.countp FreeMonoid.countp

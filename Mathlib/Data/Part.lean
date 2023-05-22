@@ -68,11 +68,11 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 #align part.to_option Part.toOption
 
 @[simp] lemma toOption_isSome (o : Part α) [Decidable o.Dom] : o.toOption.isSome ↔ o.Dom := by
-  by_cases o.Dom <;> simp [h, toOption]
+  by_cases h : o.Dom <;> simp [h, toOption]
 #align part.to_option_is_some Part.toOption_isSome
 
 @[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
-  by_cases o.Dom <;> simp [h, toOption]
+  by_cases h : o.Dom <;> simp [h, toOption]
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
@@ -322,6 +322,7 @@ theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) 
 #align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `Option α` into a `Part α`. -/
+@[coe]
 def ofOption : Option α → Part α
   | Option.none => none
   | Option.some a => some a
@@ -531,7 +532,7 @@ theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = m
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
     (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
-  by_cases o.Dom
+  by_cases h : o.Dom
   · simp_rw [h.toOption, h.bind]
     rfl
   · rw [Part.toOption_eq_none_iff.2 h]

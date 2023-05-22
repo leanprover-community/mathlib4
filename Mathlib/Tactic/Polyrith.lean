@@ -112,16 +112,16 @@ instance : Quote ℚ where
 
 variable (vars : Array Syntax.Term) in
 /-- Converts a `Poly` expression into a `Syntax` suitable as an input to `linear_combination`. -/
-def Poly.toSyntax : Poly → Syntax.Term
-  | .const z => quote z
-  | .var n => vars[n]!
-  | .hyp stx => stx
-  | .add p q => Unhygienic.run `($p.toSyntax + $q.toSyntax)
-  | .sub p q => Unhygienic.run `($p.toSyntax - $q.toSyntax)
-  | .mul p q => Unhygienic.run `($p.toSyntax * $q.toSyntax)
-  | .div p q => Unhygienic.run `($p.toSyntax / $q.toSyntax)
-  | .pow p q => Unhygienic.run `($p.toSyntax ^ $q.toSyntax)
-  | .neg p => Unhygienic.run `(-$p.toSyntax)
+def Poly.toSyntax : Poly → Unhygienic Syntax.Term
+  | .const z => pure (quote z)
+  | .var n => pure vars[n]!
+  | .hyp stx => pure stx
+  | .add p q => do `($(← p.toSyntax) + $(← q.toSyntax))
+  | .sub p q => do `($(← p.toSyntax) - $(← q.toSyntax))
+  | .mul p q => do `($(← p.toSyntax) * $(← q.toSyntax))
+  | .div p q => do `($(← p.toSyntax) / $(← q.toSyntax))
+  | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
+  | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
@@ -141,7 +141,9 @@ partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | ~q(($a : ℕ) • ($b : «$α»)) => pure <| (← parse sℕ .nat a).mul (← parse sα c b)
     | _ => els
   | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
-    | ~q($a ^ $b) => pure <| (← parse sα c a).pow (← parse sℕ .nat b)
+    | ~q($a ^ $b) =>
+      try pure <| (← parse sα c a).pow (.const (← (← NormNum.derive (u := .zero) b).toRat))
+      catch _ => els
     | _ => els
   | ``Neg.neg, some _ => match e with
     | ~q(-$a) => pure <| (← parse sα c a).neg
@@ -162,10 +164,11 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
-  let .sort (.succ u) ← whnf (← inferType α) | fail
-  have α : Q(Type u) := α
+  let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
+  let some v := u.dec | throwError "not a type{indentExpr α}"
+  have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
@@ -339,7 +342,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
           pure <| match p.unDiv? with
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
-        let stx := p.toSyntax vars
+        let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
           else `(tactic| linear_combination $stx:term)

@@ -224,9 +224,6 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
 instance LieRing.intLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 #align lie_ring.int_lie_algebra LieRing.intLieAlgebra
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 instance : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
@@ -265,9 +262,6 @@ instance : LieModule R L (M →ₗ[R] N)
 
 end BasicProperties
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
 structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
@@ -300,14 +294,7 @@ instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h]  }
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this
-  case, because it is a composition of multiple projections. -/
-def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
-  h
-#align lie_hom.simps.apply LieHom.Simps.apply
-
--- Porting note: Does not work
--- initialize_simps_projections LieHom (toLinearMap_toFun → apply)
+initialize_simps_projections LieHom (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L₂) = f :=
@@ -1040,8 +1027,7 @@ theorem coe_to_linearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M 
   rfl
 #align lie_module_equiv.coe_to_linear_equiv LieModuleEquiv.coe_to_linearEquiv
 
-theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) :=
-  by
+theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
   intro h
   simp only [toEquiv_mk, LieModuleHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Equiv.mk.injEq] at h

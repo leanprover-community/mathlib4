@@ -21,7 +21,6 @@ inductive EqvGen : α → α → Prop
   | refl : ∀ x, EqvGen x x
   | symm : ∀ x y, EqvGen x y → EqvGen y x
   | trans : ∀ x y z, EqvGen x y → EqvGen y z → EqvGen x z
-
 #align eqv_gen EqvGen
 
 theorem EqvGen.is_equivalence : Equivalence (@EqvGen α r) :=

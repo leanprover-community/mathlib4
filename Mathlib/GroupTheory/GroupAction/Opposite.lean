@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and actions by the opposite
 type, `SMul Rᵐᵒᵖ M`.
 
-Note that `MulOpposite.instSMulMulOpposite` is provided in an earlier file as it is needed to
+Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 -/
 
@@ -130,6 +130,7 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α :=
   ⟨fun _ _ => mul_comm _ _⟩
 #align comm_semigroup.is_central_scalar CommSemigroup.isCentralScalar
+#align add_comm_semigroup.is_central_scalar AddCommSemigroup.isCentralVAdd
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive "Like `AddMonoid.toAddAction`, but adds on the right."]

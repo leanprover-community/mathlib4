@@ -125,14 +125,14 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
   rw [eq_comm, List.get?_eq_some] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
-    OrderEmbedding.ofMapLeIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
+    OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
       dsimp only
       rw [tsub_le_tsub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLeIff, add_tsub_cancel_of_le, ←hf, List.get?]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ←hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -156,7 +156,7 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
       simpa using hf
     · obtain ⟨f, hf⟩ := IH
       refine'
-        ⟨OrderEmbedding.ofMapLeIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
+        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
@@ -176,14 +176,13 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length :=
-      by
+    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length := by
       intro i hi
       specialize hf i
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
       obtain ⟨h, -⟩ := hf
       exact h
-    refine' ⟨OrderEmbedding.ofMapLeIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
+    refine' ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
     · simp
     · intro i
       apply Option.some_injective
@@ -208,9 +207,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · rw [get?_eq_none.mpr, get?_eq_none.mpr]
         · simp
         · simpa using hi
-#align
-  list.sublist_iff_exists_fin_order_embedding_nth_le_eq
-  List.sublist_iff_exists_fin_orderEmbedding_get_eq
+#align list.sublist_iff_exists_fin_order_embedding_nth_le_eq List.sublist_iff_exists_fin_orderEmbedding_get_eq
 
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.

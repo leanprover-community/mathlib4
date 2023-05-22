@@ -10,6 +10,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.ULift
 
 /-!
 
@@ -51,6 +52,10 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   id X := ⟨⟨le_refl X⟩⟩
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
+
+-- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
+instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+  Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
@@ -149,7 +154,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A functor between preorder categories is monotone.
 -/
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 #align category_theory.functor.monotone CategoryTheory.Functor.monotone
 

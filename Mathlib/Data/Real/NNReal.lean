@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module data.real.nnreal
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
+! leanprover-community/mathlib commit de29c328903507bb7aff506af9135f4bdaf1849c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Field.Canonical.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -252,13 +253,13 @@ theorem smul_def {M : Type _} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x 
 instance {M N : Type _} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) : _)
 
-instance sMulCommClass_left {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance smulCommClass_left {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) : _)
-#align nnreal.smul_comm_class_left NNReal.sMulCommClass_left
+#align nnreal.smul_comm_class_left NNReal.smulCommClass_left
 
-instance sMulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance smulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
-#align nnreal.smul_comm_class_right NNReal.sMulCommClass_right
+#align nnreal.smul_comm_class_right NNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
@@ -475,42 +476,42 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
 #align nnreal.bdd_below_coe NNReal.bddBelow_coe
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot Real.supₛ_empty.le
+  Nonneg.conditionallyCompleteLinearOrderBot Real.sSup_empty.le
 
 @[norm_cast]
-theorem coe_supₛ (s : Set ℝ≥0) : (↑(supₛ s) : ℝ) = supₛ (((↑) : ℝ≥0 → ℝ) '' s) :=
+theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) :=
   Eq.symm <|
-    @subset_supₛ_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
-      Real.supₛ_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
-#align nnreal.coe_Sup NNReal.coe_supₛ
+    @subset_sSup_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
+      Real.sSup_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
+#align nnreal.coe_Sup NNReal.coe_sSup
 
 @[simp, norm_cast] -- porting note: add `simp`
-theorem coe_supᵢ {ι : Sort _} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = ⨆ i, ↑(s i) := by
-  rw [supᵢ, supᵢ, coe_supₛ, ← Set.range_comp]; rfl
-#align nnreal.coe_supr NNReal.coe_supᵢ
+theorem coe_iSup {ι : Sort _} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = ⨆ i, ↑(s i) := by
+  rw [iSup, iSup, coe_sSup, ← Set.range_comp]; rfl
+#align nnreal.coe_supr NNReal.coe_iSup
 
 @[norm_cast]
-theorem coe_infₛ (s : Set ℝ≥0) : (↑(infₛ s) : ℝ) = infₛ (((↑) : ℝ≥0 → ℝ) '' s) :=
+theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) :=
   Eq.symm <|
-    @subset_infₛ_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
-      Real.infₛ_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
-#align nnreal.coe_Inf NNReal.coe_infₛ
+    @subset_sInf_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
+      Real.sInf_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
+#align nnreal.coe_Inf NNReal.coe_sInf
 
 @[simp]
-theorem infₛ_empty : infₛ (∅ : Set ℝ≥0) = 0 := by
-  rw [← NNReal.coe_eq_zero, coe_infₛ, Set.image_empty, Real.infₛ_empty]
-#align nnreal.Inf_empty NNReal.infₛ_empty
+theorem sInf_empty : sInf (∅ : Set ℝ≥0) = 0 := by
+  rw [← NNReal.coe_eq_zero, coe_sInf, Set.image_empty, Real.sInf_empty]
+#align nnreal.Inf_empty NNReal.sInf_empty
 
 @[norm_cast]
-theorem coe_infᵢ {ι : Sort _} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) = ⨅ i, ↑(s i) := by
-  rw [infᵢ, infᵢ, coe_infₛ, ← Set.range_comp]; rfl
-#align nnreal.coe_infi NNReal.coe_infᵢ
+theorem coe_iInf {ι : Sort _} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) = ⨅ i, ↑(s i) := by
+  rw [iInf, iInf, coe_sInf, ← Set.range_comp]; rfl
+#align nnreal.coe_infi NNReal.coe_iInf
 
-theorem le_infᵢ_add_infᵢ {ι ι' : Sort _} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0} {g : ι' → ℝ≥0}
+theorem le_iInf_add_iInf {ι ι' : Sort _} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0} {g : ι' → ℝ≥0}
     {a : ℝ≥0} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
-  rw [← NNReal.coe_le_coe, NNReal.coe_add, coe_infᵢ, coe_infᵢ]
-  exact le_cinfᵢ_add_cinfᵢ h
-#align nnreal.le_infi_add_infi NNReal.le_infᵢ_add_infᵢ
+  rw [← NNReal.coe_le_coe, NNReal.coe_add, coe_iInf, coe_iInf]
+  exact le_ciInf_add_ciInf h
+#align nnreal.le_infi_add_infi NNReal.le_iInf_add_iInf
 
 example : Archimedean ℝ≥0 := by infer_instance
 
@@ -691,7 +692,6 @@ theorem toNNReal_pow {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (x ^ n).toNNReal = x.t
 theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
-
 #align real.to_nnreal_mul Real.toNNReal_mul
 
 end ToNNReal
@@ -741,7 +741,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Bsic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=
@@ -752,7 +752,7 @@ theorem coe_sub_def {r p : ℝ≥0} : ↑(r - p) = max (r - p : ℝ) 0 :=
   rfl
 #align nnreal.coe_sub_def NNReal.coe_sub_def
 
-noncomputable example : OrderedSub ℝ≥0 := by infer_instance
+example : OrderedSub ℝ≥0 := by infer_instance
 
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
@@ -918,85 +918,85 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 #align nnreal.le_to_nnreal_of_coe_le NNReal.le_toNNReal_of_coe_le
 
-nonrec theorem supₛ_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.supₛ s = 0 := by
+nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
   rw [← bddAbove_coe] at hs
-  rw [← NNReal.coe_eq, coe_supₛ, NNReal.coe_zero]
-  exact supₛ_of_not_bddAbove hs
-#align nnreal.Sup_of_not_bdd_above NNReal.supₛ_of_not_bddAbove
+  rw [← NNReal.coe_eq, coe_sSup, NNReal.coe_zero]
+  exact sSup_of_not_bddAbove hs
+#align nnreal.Sup_of_not_bdd_above NNReal.sSup_of_not_bddAbove
 
-theorem supᵢ_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
-  supₛ_of_not_bddAbove hf
-#align nnreal.supr_of_not_bdd_above NNReal.supᵢ_of_not_bddAbove
+theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
+  sSup_of_not_bddAbove hf
+#align nnreal.supr_of_not_bdd_above NNReal.iSup_of_not_bddAbove
 
-theorem supᵢ_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨆ i, f i) = 0 := csupᵢ_of_empty f
+theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨆ i, f i) = 0 := ciSup_of_empty f
 
-theorem infᵢ_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
-  rw [infᵢ_of_empty', infₛ_empty]
-#align nnreal.infi_empty NNReal.infᵢ_empty
+theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
+  rw [iInf_of_empty', sInf_empty]
+#align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem infᵢ_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
-  rw [← NNReal.coe_eq, coe_infᵢ]
-  exact Real.cinfᵢ_const_zero
-#align nnreal.infi_const_zero NNReal.infᵢ_const_zero
+theorem iInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
+  rw [← NNReal.coe_eq, coe_iInf]
+  exact Real.ciInf_const_zero
+#align nnreal.infi_const_zero NNReal.iInf_const_zero
 
-theorem infᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : infᵢ f * a = ⨅ i, f i * a := by
-  rw [← NNReal.coe_eq, NNReal.coe_mul, coe_infᵢ, coe_infᵢ]
-  exact Real.infᵢ_mul_of_nonneg (NNReal.coe_nonneg _) _
-#align nnreal.infi_mul NNReal.infᵢ_mul
+theorem iInf_mul (f : ι → ℝ≥0) (a : ℝ≥0) : iInf f * a = ⨅ i, f i * a := by
+  rw [← NNReal.coe_eq, NNReal.coe_mul, coe_iInf, coe_iInf]
+  exact Real.iInf_mul_of_nonneg (NNReal.coe_nonneg _) _
+#align nnreal.infi_mul NNReal.iInf_mul
 
-theorem mul_infᵢ (f : ι → ℝ≥0) (a : ℝ≥0) : a * infᵢ f = ⨅ i, a * f i := by
-  simpa only [mul_comm] using infᵢ_mul f a
-#align nnreal.mul_infi NNReal.mul_infᵢ
+theorem mul_iInf (f : ι → ℝ≥0) (a : ℝ≥0) : a * iInf f = ⨅ i, a * f i := by
+  simpa only [mul_comm] using iInf_mul f a
+#align nnreal.mul_infi NNReal.mul_iInf
 
-theorem mul_supᵢ (f : ι → ℝ≥0) (a : ℝ≥0) : (a * ⨆ i, f i) = ⨆ i, a * f i := by
-  rw [← NNReal.coe_eq, NNReal.coe_mul, NNReal.coe_supᵢ, NNReal.coe_supᵢ]
-  exact Real.mul_supᵢ_of_nonneg (NNReal.coe_nonneg _) _
-#align nnreal.mul_supr NNReal.mul_supᵢ
+theorem mul_iSup (f : ι → ℝ≥0) (a : ℝ≥0) : (a * ⨆ i, f i) = ⨆ i, a * f i := by
+  rw [← NNReal.coe_eq, NNReal.coe_mul, NNReal.coe_iSup, NNReal.coe_iSup]
+  exact Real.mul_iSup_of_nonneg (NNReal.coe_nonneg _) _
+#align nnreal.mul_supr NNReal.mul_iSup
 
-theorem supᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) * a = ⨆ i, f i * a := by
-  rw [mul_comm, mul_supᵢ]
+theorem iSup_mul (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) * a = ⨆ i, f i * a := by
+  rw [mul_comm, mul_iSup]
   simp_rw [mul_comm]
-#align nnreal.supr_mul NNReal.supᵢ_mul
+#align nnreal.supr_mul NNReal.iSup_mul
 
-theorem supᵢ_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i, f i / a := by
-  simp only [div_eq_mul_inv, supᵢ_mul]
-#align nnreal.supr_div NNReal.supᵢ_div
-
--- porting note: generalized to allow empty `ι`
-theorem mul_supᵢ_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * supᵢ h ≤ a := by
-  rw [mul_supᵢ]
-  exact csupᵢ_le' H
-#align nnreal.mul_supr_le NNReal.mul_supᵢ_le
+theorem iSup_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i, f i / a := by
+  simp only [div_eq_mul_inv, iSup_mul]
+#align nnreal.supr_div NNReal.iSup_div
 
 -- porting note: generalized to allow empty `ι`
-theorem supᵢ_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : supᵢ g * h ≤ a := by
-  rw [supᵢ_mul]
-  exact csupᵢ_le' H
-#align nnreal.supr_mul_le NNReal.supᵢ_mul_le
+theorem mul_iSup_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a := by
+  rw [mul_iSup]
+  exact ciSup_le' H
+#align nnreal.mul_supr_le NNReal.mul_iSup_le
 
 -- porting note: generalized to allow empty `ι`
-theorem supᵢ_mul_supᵢ_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
-    supᵢ g * supᵢ h ≤ a :=
-  supᵢ_mul_le fun _ => mul_supᵢ_le <| H _
-#align nnreal.supr_mul_supr_le NNReal.supᵢ_mul_supᵢ_le
+theorem iSup_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a := by
+  rw [iSup_mul]
+  exact ciSup_le' H
+#align nnreal.supr_mul_le NNReal.iSup_mul_le
+
+-- porting note: generalized to allow empty `ι`
+theorem iSup_mul_iSup_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
+    iSup g * iSup h ≤ a :=
+  iSup_mul_le fun _ => mul_iSup_le <| H _
+#align nnreal.supr_mul_supr_le NNReal.iSup_mul_iSup_le
 
 variable [Nonempty ι]
 
-theorem le_mul_infᵢ {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, a ≤ g * h j) : a ≤ g * infᵢ h := by
-  rw [mul_infᵢ]
-  exact le_cinfᵢ H
-#align nnreal.le_mul_infi NNReal.le_mul_infᵢ
+theorem le_mul_iInf {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, a ≤ g * h j) : a ≤ g * iInf h := by
+  rw [mul_iInf]
+  exact le_ciInf H
+#align nnreal.le_mul_infi NNReal.le_mul_iInf
 
-theorem le_infᵢ_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, a ≤ g i * h) : a ≤ infᵢ g * h := by
-  rw [infᵢ_mul]
-  exact le_cinfᵢ H
-#align nnreal.le_infi_mul NNReal.le_infᵢ_mul
+theorem le_iInf_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, a ≤ g i * h) : a ≤ iInf g * h := by
+  rw [iInf_mul]
+  exact le_ciInf H
+#align nnreal.le_infi_mul NNReal.le_iInf_mul
 
-theorem le_infᵢ_mul_infᵢ {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
-    a ≤ infᵢ g * infᵢ h :=
-  le_infᵢ_mul fun i => le_mul_infᵢ <| H i
-#align nnreal.le_infi_mul_infi NNReal.le_infᵢ_mul_infᵢ
+theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
+    a ≤ iInf g * iInf h :=
+  le_iInf_mul fun i => le_mul_iInf <| H i
+#align nnreal.le_infi_mul_infi NNReal.le_iInf_mul_iInf
 
 end Csupr
 

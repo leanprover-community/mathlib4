@@ -63,6 +63,8 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app_hom CategoryTheory.Iso.app_hom
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
 
+pp_extended_field_notation Iso.app
+
 @[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=

@@ -346,8 +346,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
   cases' h : x.approx (succ n) with _ hd ch
-  have h' : hd = head' (x.approx 1) :=
-    by
+  have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
   revert ch
@@ -400,8 +399,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
-  induction n generalizing x <;> induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
-  rename_i n_ih _ _
+  induction' n with _ n_ih generalizing x <;>
+  induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
   intros
   apply n_ih
 set_option linter.uppercaseLean3 false in
@@ -422,8 +421,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       apply hagree
   · induction' n with _ n_ih generalizing x y
     constructor
-    · cases h
-      rename_i a x' y' _ _ _
+    · cases' h with _ _ _ a x' y'
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]

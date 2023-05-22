@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module logic.equiv.fin
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -226,14 +227,14 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
   rw [← Fin.succAbove_last, finSuccEquiv'_succAbove]
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
-    finSuccEquiv' (Fin.last n) i = Fin.castLt i (Fin.val_lt_last h) := by
+    finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
   rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
   rw [finSuccEquiv'_last_apply_castSucc]
   rfl
 #align fin_succ_equiv'_last_apply finSuccEquiv'_last_apply
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
-    finSuccEquiv' i j = (i.castLt (Fin.val_lt_last hi)).predAbove j := by
+    finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
   rcases Fin.exists_succAbove_eq hj with ⟨j, rfl⟩
   rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
   simp
@@ -251,14 +252,14 @@ theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
 #align fin_succ_above_equiv_apply finSuccAboveEquiv_apply
 
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
-    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLt x.1 (Fin.val_lt_last x.2) := by
+    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_last_apply x.property
 #align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
 
 theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
-    (finSuccAboveEquiv p).symm x = (p.castLt (Fin.val_lt_last h)).predAbove x := by
+    (finSuccAboveEquiv p).symm x = (p.castLT (Fin.val_lt_last h)).predAbove x := by
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
 #align fin_succ_above_equiv_symm_apply_ne_last finSuccAboveEquiv_symm_apply_ne_last
@@ -400,7 +401,6 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   ext
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, add_comm]
-
 #align fin_rotate_of_lt finRotate_of_lt
 
 theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
@@ -491,19 +491,54 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 #align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply
 
+/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
+This is like `finProdFinEquiv.symm` but with `m` infinite.
+See `Nat.div_mod_unique` for a similar propositional statement. -/
+@[simps]
+def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
+  toFun a := (a / n, ↑a)
+  invFun p := p.1 * n + ↑p.2
+  -- TODO: is there a canonical order of `*` and `+` here?
+  left_inv a := Nat.div_add_mod' _ _
+  right_inv p := by
+    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    dsimp only
+    rw [add_comm, Nat.add_mul_div_right _ _ (NeZero.pos n), Nat.div_eq_of_lt p.2.is_lt, zero_add]
+#align nat.div_mod_equiv Nat.divModEquiv
+
+/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
+See `Int.ediv_emod_unique` for a similar propositional statement. -/
+@[simps]
+def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
+  -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
+  -- about that coercion.
+  toFun a := (a / n, ↑(a.natMod n))
+  invFun p := p.1 * n + ↑p.2
+  left_inv a := by
+    simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
+      Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
+      Int.ediv_add_emod']
+  right_inv := fun ⟨q, r, hrn⟩ => by
+    simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
+    obtain ⟨h1, h2⟩ := Int.coe_nat_nonneg r, Int.ofNat_lt.2 hrn
+    rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne ↑n), Int.ediv_eq_zero_of_lt h1 h2,
+      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
+    exact ⟨zero_add q, Fin.val_cast_of_lt hrn⟩
+#align int.div_mod_equiv Int.divModEquiv
+
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
-values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
-@[simps apply symmApply]
-def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
+values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
+@[simps apply symm_apply]
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
     where
-  toFun i := ⟨Fin.castLe h i, by simp⟩
+  toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := by simp
-#align fin.cast_le_order_iso Fin.castLeOrderIso
-#align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symmApply
+#align fin.cast_le_order_iso Fin.castLEOrderIso
+#align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
+#align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

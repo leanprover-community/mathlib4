@@ -82,18 +82,18 @@ theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : Is
     IsSubmonoid.inter hS₁.toIsSubmonoid hS₂.toIsSubmonoid with }
 #align is_subring.inter IsSubring.inter
 
-theorem IsSubring.interᵢ {ι : Sort _} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
-    IsSubring (Set.interᵢ S) :=
-  { IsAddSubgroup.interᵢ fun i ↦ (h i).toIsAddSubgroup,
-    IsSubmonoid.interᵢ fun i ↦ (h i).toIsSubmonoid with }
-#align is_subring.Inter IsSubring.interᵢ
+theorem IsSubring.iInter {ι : Sort _} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
+    IsSubring (Set.iInter S) :=
+  { IsAddSubgroup.iInter fun i ↦ (h i).toIsAddSubgroup,
+    IsSubmonoid.iInter fun i ↦ (h i).toIsSubmonoid with }
+#align is_subring.Inter IsSubring.iInter
 
-theorem isSubring_unionᵢ_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set R}
+theorem isSubring_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set R}
     (h : ∀ i, IsSubring (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubring (⋃ i, s i) :=
-  { toIsAddSubgroup := isAddSubgroup_unionᵢ_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
-    toIsSubmonoid := isSubmonoid_unionᵢ_of_directed (fun i ↦ (h i).toIsSubmonoid) directed }
-#align is_subring_Union_of_directed isSubring_unionᵢ_of_directed
+  { toIsAddSubgroup := isAddSubgroup_iUnion_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
+    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i ↦ (h i).toIsSubmonoid) directed }
+#align is_subring_Union_of_directed isSubring_iUnion_of_directed
 
 namespace Ring
 
@@ -116,7 +116,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     fun {b} _ ih ↦ match b, ih with
     | _, ⟨L1, h1, rfl⟩ =>
       ⟨L1.map (List.cons (-1)),
-        fun L2 h2 ↦ match L2, List.mem_map'.1 h2 with
+        fun L2 h2 ↦ match L2, List.mem_map.1 h2 with
         | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
         simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
         refine' List.recOn L1 neg_zero.symm fun hd tl ih ↦ _

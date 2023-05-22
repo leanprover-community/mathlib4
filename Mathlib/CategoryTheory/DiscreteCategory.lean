@@ -10,7 +10,6 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
-import Mathlib.Tactic.CasesM
 
 /-!
 # Discrete categories
@@ -104,6 +103,9 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
     intros
     ext
     apply Subsingleton.elim⟩
+
+instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+  show Subsingleton (ULift (PLift _)) from inferInstance
 
 /-
 Porting note: It seems that `aesop` currently has no way to add lemmas locally.
@@ -285,10 +287,11 @@ open Opposite
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   Equivalence.mk F.leftOp F
-  (NatIso.ofComponents (fun ⟨X⟩ => Iso.refl _) <| fun {X Y} ⟨⟨f⟩⟩ => by
+  (NatIso.ofComponents (fun ⟨X⟩ => Iso.refl _) <| fun {X Y} => by
       induction X using Opposite.rec
       induction Y using Opposite.rec
       discrete_cases
+      intro f
       rcases f
       aesop_cat)
   (Discrete.natIso <| fun ⟨X⟩ => Iso.refl _)
@@ -299,14 +302,12 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 
   refine'
     Equivalence.mk (F.leftOp) F _
-      (Discrete.natIso fun X =>
-        by
-          discrete_cases
-          rfl)
+      (Discrete.natIso fun X => by
+        discrete_cases
+        rfl)
   refine'
     NatIso.ofComponents
-      (fun X =>
-        by
+      (fun X => by
         discrete_cases
         induction X using Opposite.rec
         discrete_cases
@@ -318,8 +319,8 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 variable {C : Type u₂} [Category.{v₂} C]
 
 @[simp]
-theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) : F.map f = 𝟙 (F.obj j) :=
-  by
+theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
+    F.map f = 𝟙 (F.obj j) := by
   have h : f = 𝟙 j := by
     rcases f with ⟨⟨f⟩⟩
     rfl

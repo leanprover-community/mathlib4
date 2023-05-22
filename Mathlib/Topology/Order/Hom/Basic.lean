@@ -59,8 +59,8 @@ class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorde
 end
 
 -- See note [lower instance priority]
-instance (priority := 100) ContinuousOrderHomClass.toOrderHomClass {_ : Preorder α} {_ : Preorder β}
-    {_ : TopologicalSpace α} {_ : TopologicalSpace β} [ContinuousOrderHomClass F α β] :
+instance (priority := 100) ContinuousOrderHomClass.toOrderHomClass [Preorder α] [Preorder β]
+    [TopologicalSpace α] [TopologicalSpace β] [ContinuousOrderHomClass F α β] :
     OrderHomClass F α β :=
   { ‹ContinuousOrderHomClass F α β› with
     map_rel := ContinuousOrderHomClass.map_monotone }

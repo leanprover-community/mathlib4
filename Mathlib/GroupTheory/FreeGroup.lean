@@ -666,7 +666,6 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
     mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
-
 #align free_group.red.exact FreeGroup.Red.exact
 #align free_add_group.red.exact FreeAddGroup.Red.exact
 
@@ -995,14 +994,19 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
-    simp [MonoidHom.Simps.apply]
+    simp only [quot_mk_eq_mk, map.mk, sum_mk, List.map_map]
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
         cases b <;> simp [zpow_add] at ih⊢ <;> rw [ih] <;> rfl)
   right_inv x :=
-    Int.induction_on x (by simp) (fun i ih => by simp at ih; simp [zpow_add, ih]) fun i ih => by
-      simp at ih; simp [zpow_add, ih, sub_eq_add_neg]
+    Int.induction_on x (by simp)
+      (fun i ih => by
+        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp [zpow_add, ih])
+      (fun i ih => by
+        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
 section Category
@@ -1015,7 +1019,7 @@ instance : Monad FreeGroup.{u} where
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
     (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
     (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=
@@ -1161,6 +1165,11 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
         simp [List.length] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
+        -- Porting note: needed to add this step in #3414.
+        -- However it is not caused by lean4#2210 (reenableeta)
+        -- but rather by https://github.com/leanprover/lean4/pull/2146.
+        -- Nevertheless the proof could be cleaned up.
+        cases this
       | cons hd tail =>
         cases' hd with y c
         dsimp only
@@ -1428,7 +1437,6 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
     _ = norm x + norm y := List.length_append _ _
-
 #align free_group.norm_mul_le FreeGroup.norm_mul_le
 #align free_add_group.norm_add_le FreeAddGroup.norm_add_le
 

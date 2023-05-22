@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.quot
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit 6ed6abbde29b8f630001a1b481603f657a3384f1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -826,6 +826,6 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, @Setoid.r α s₁ a₁ a₂ → @Setoid.r β s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=
-  Quotient.lift₂.decidablePred _ _ _ _
+  Quotient.lift₂.decidablePred _ h _ _
 
 end Quotient

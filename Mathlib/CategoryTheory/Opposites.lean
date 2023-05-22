@@ -30,7 +30,7 @@ set_option autoImplicit false
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 open Opposite
 
 variable {C : Type u₁}
@@ -161,13 +161,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  aesop_cat
+  aesop_cat_nonterminal
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
-  aesop_cat
+  aesop_cat_nonterminal
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
 
@@ -189,6 +189,8 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ
   obj X := op (F.obj (unop X))
   map := @fun X Y f => (F.map f.unop).op
 #align category_theory.functor.op CategoryTheory.Functor.op
+
+pp_extended_field_notation op
 
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
@@ -248,6 +250,8 @@ protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D
   map := @fun X Y f => (F.map f.unop).unop
 #align category_theory.functor.left_op CategoryTheory.Functor.leftOp
 
+pp_extended_field_notation Functor.leftOp
+
 /--
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
@@ -258,6 +262,8 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ
   obj X := op (F.obj (op X))
   map := @fun X Y f => (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
+
+pp_extended_field_notation Functor.rightOp
 
 instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
 

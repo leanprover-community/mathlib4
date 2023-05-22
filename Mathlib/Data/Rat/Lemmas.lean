@@ -12,7 +12,6 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -66,7 +65,6 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rw [←Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
-
 #align rat.num_mk Rat.num_mk
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
@@ -204,7 +202,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
     use ((m : ℚ) / n).num
     have hk := Rat.coe_int_num_of_den_eq_one h
-    simp_rw [eq_div_iff_mul_eq hn, ofInt_eq_cast, ← Int.cast_mul] at hk
+    simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
     rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]
