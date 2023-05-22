@@ -38,6 +38,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     MetaM (Array (Array (DiscrTree.Key true) × (Name × Bool × Nat))) := do
   if constInfo.isUnsafe then return #[]
   if ← name.isBlackListed then return #[]
+  -- We now remove some injectivity lemmas which are not useful to rewrite by.
   if name matches .str _ "injEq" then return #[]
   if name matches .str _ "sizeOf_spec" then return #[]
   match name with
