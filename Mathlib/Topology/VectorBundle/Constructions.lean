@@ -150,18 +150,17 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
-@[simp]
+@[simp] -- porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π E₁)}
-    {e₂ : Trivialization F₂ (π E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x ∈ e₁.baseSet)
-    (hx₂ : x ∈ e₂.baseSet) :
-    (e₁.prod e₂).continuousLinearEquivAt 𝕜 x ⟨hx₁, hx₂⟩ =
-      (e₁.continuousLinearEquivAt 𝕜 x hx₁).prod (e₂.continuousLinearEquivAt 𝕜 x hx₂) := by
-  ext1
-  funext v
+    {e₂ : Trivialization F₂ (π E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
+    (hx : x ∈ (e₁.prod e₂).baseSet) :
+    (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
+      (e₁.continuousLinearEquivAt 𝕜 x hx.1).prod (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
+  ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact (congr_arg Prod.snd (prod_apply 𝕜 hx₁ hx₂ v₁ v₂) : _)
-#align trivialization.continuous_linear_equiv_at_prod Trivialization.continuousLinearEquivAt_prod
+  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
+#align trivialization.continuous_linear_equiv_at_prod Trivialization.continuousLinearEquivAt_prodₓ
 
 end
 
@@ -201,4 +200,3 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 #align vector_bundle.pullback VectorBundle.pullback
 
 end
-
