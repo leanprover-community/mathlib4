@@ -238,7 +238,8 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [sum_eq_zero]
   intro m H
   rw [mem_range] at H
-  rw [RingHom.map_mul, RingHom.map_pow, IH m H, zero_pow, mul_zero]
+  simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
+  rw [zero_pow, mul_zero]
   apply pow_pos hp.1.pos
 set_option linter.uppercaseLean3 false in
 #align constant_coeff_X_in_terms_of_W constantCoeff_xInTermsOfW
@@ -319,7 +320,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
-  rw [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm, Nat.cast_pow,
+  rw [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm,
     tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
   apply sum_congr rfl
   intro i h
