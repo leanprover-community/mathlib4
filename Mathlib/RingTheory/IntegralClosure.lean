@@ -881,13 +881,13 @@ theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
 #align is_integral_closure.mk'_add IsIntegralClosure.mk'_add
 
-@[simp]
+-- Porting note: Left-hand side does not simplify @[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (isIntegral_mul hx hy) = mk' A x hx * mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]
 #align is_integral_closure.mk'_mul IsIntegralClosure.mk'_mul
 
-@[simp]
+-- Porting note: Left-hand side does not simplify @[simp]
 theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
     (h : IsIntegral R (algebraMap R B x) := isIntegral_algebraMap) :
     IsIntegralClosure.mk' A (algebraMap R B x) h = algebraMap R A x :=
