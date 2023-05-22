@@ -1,8 +1,30 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+
+/-!
+# Short complexes
+
+This file defines the category `ShortComplex C` of diagrams
+`X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
+
+TODO: An homology API for these objects shall be developped
+in the folder `Algebra.Homology.ShortComplex` and eventually
+the homology of objects in `HomologicalComplex C c` shall be
+redefined using this.
+
+Note: This structure `ShortComplex C` was first introduced in
+the Liquid Tensor Experiment.
+
+-/
 
 namespace CategoryTheory
 
-open Limits Category
+open Category Limits
 
 variable (C D : Type _) [Category C] [Category D]
 
@@ -59,33 +81,31 @@ def Hom.comp (φ₁₂ : Hom S₁ S₂) (φ₂₃ : Hom S₂ S₃) : Hom S₁ S�
   τ₂ := φ₁₂.τ₂ ≫ φ₂₃.τ₂
   τ₃ := φ₁₂.τ₃ ≫ φ₂₃.τ₃
 
-instance : Category (ShortComplex C) :=
-{ Hom := Hom,
-  id := Hom.id,
-  comp := Hom.comp, }
+instance : Category (ShortComplex C) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
 
 @[ext]
-lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) :
-    f = g :=
+lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
   Hom.ext _ _ h₁ h₂ h₃
 
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/
 @[simps]
 def Hom.mk' {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ : S₁.X₂ ⟶ S₂.X₂)
-  (τ₃ : S₁.X₃ ⟶ S₂.X₃) (comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂)
-  (comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃) : S₁ ⟶ S₂ :=
-⟨τ₁, τ₂, τ₃, comm₁₂, comm₂₃⟩
+    (τ₃ : S₁.X₃ ⟶ S₂.X₃) (comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂)
+    (comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃) : S₁ ⟶ S₂ := ⟨τ₁, τ₂, τ₃, comm₁₂, comm₂₃⟩
 
 @[simp] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_τ₂ : Hom.τ₂ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_τ₃ : Hom.τ₃ (𝟙 S) = 𝟙 _ := rfl
 @[reassoc] lemma comp_τ₁ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
-  (φ₁₂ ≫ φ₂₃).τ₁ = φ₁₂.τ₁ ≫ φ₂₃.τ₁ := rfl
+    (φ₁₂ ≫ φ₂₃).τ₁ = φ₁₂.τ₁ ≫ φ₂₃.τ₁ := rfl
 @[reassoc] lemma comp_τ₂ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
-  (φ₁₂ ≫ φ₂₃).τ₂ = φ₁₂.τ₂ ≫ φ₂₃.τ₂ := rfl
+    (φ₁₂ ≫ φ₂₃).τ₂ = φ₁₂.τ₂ ≫ φ₂₃.τ₂ := rfl
 @[reassoc] lemma comp_τ₃ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
-  (φ₁₂ ≫ φ₂₃).τ₃ = φ₁₂.τ₃ ≫ φ₂₃.τ₃ := rfl
+    (φ₁₂ ≫ φ₂₃).τ₃ = φ₁₂.τ₃ ≫ φ₂₃.τ₃ := rfl
 
 attribute [simp] comp_τ₁ comp_τ₂ comp_τ₃
 
@@ -119,33 +139,24 @@ def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
 
-instance π₁_preserves_zero_morphisms :
-  Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) := { }
-instance π₂_preserves_zero_morphisms :
-  Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) := { }
-instance π₃_preserves_zero_morphisms :
-  Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) := { }
+instance π₁_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+instance π₂_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
+instance π₃_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ :=
-  (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ :=
-  (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ :=
-  (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
-@[simps]
-def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
+@[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
   app S := S.f
 
 /-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/
-@[simps]
-def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
+@[simps] def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
   app S := S.g
 
 @[reassoc (attr := simp)]
-lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by
-  aesop_cat
+lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by aesop_cat
 
 variable {D}
 variable [HasZeroMorphisms D]
@@ -176,26 +187,25 @@ def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms]
 /-- The functor `ShortComplex C ⥤ ShortComplex D` induced by a functor `C ⥤ D` which
 preserves zero morphisms. -/
 @[simps]
-def _root_.CategoryTheory.Functor.mapShortComplex
-  (F : C ⥤ D) [F.PreservesZeroMorphisms] :
-  ShortComplex C ⥤ ShortComplex D where
+def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZeroMorphisms] :
+    ShortComplex C ⥤ ShortComplex D where
   obj S := S.map F
   map φ :=
-  { τ₁ := F.map φ.τ₁
-    τ₂ := F.map φ.τ₂
-    τ₃ := F.map φ.τ₃
-    comm₁₂ := by
-      dsimp
-      simp only [← F.map_comp, φ.comm₁₂]
-    comm₂₃ := by
-      dsimp
-      simp only [← F.map_comp, φ.comm₂₃] }
+    { τ₁ := F.map φ.τ₁
+      τ₂ := F.map φ.τ₂
+      τ₃ := F.map φ.τ₃
+      comm₁₂ := by
+        dsimp
+        simp only [← F.map_comp, φ.comm₁₂]
+      comm₂₃ := by
+        dsimp
+        simp only [← F.map_comp, φ.comm₂₃] }
 
 /-- A constructor for isomorphisms in the category `ShortComplex C`-/
 @[simps]
 def mkIso (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
-  (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom) (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) :
-  S₁ ≅ S₂ where
+    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom) (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) :
+    S₁ ≅ S₂ where
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
   inv := Hom.mk' e₁.inv e₂.inv e₃.inv
     (by rw [← cancel_mono e₂.hom, assoc, assoc, e₂.inv_hom_id, comp_id,
@@ -211,7 +221,7 @@ lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso 
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
 
-/-- The opposite morphism in `short_complex Cᵒᵖ` associated to a morphism in `short_complex C` -/
+/-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
 def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₁ := φ.τ₃.op
