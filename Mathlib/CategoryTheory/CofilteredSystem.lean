@@ -10,7 +10,7 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
 import Mathlib.CategoryTheory.Filtered
 import Mathlib.Data.Set.Finite
-import Mathlib.Topology.Category.Top.Limits.Konig
+import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered systems

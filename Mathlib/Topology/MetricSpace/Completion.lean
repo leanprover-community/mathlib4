@@ -169,7 +169,7 @@ protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p 
 #align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
-instance : MetricSpace (Completion α) where
+instance instMetricSpace : MetricSpace (Completion α) where
   dist_self := Completion.dist_self
   eq_of_dist_eq_zero := Completion.eq_of_dist_eq_zero _ _
   dist_comm := Completion.dist_comm
@@ -178,6 +178,7 @@ instance : MetricSpace (Completion α) where
   toUniformSpace := by infer_instance
   uniformity_dist := Completion.uniformity_dist
   edist_dist := fun x y ↦ rfl
+#align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
