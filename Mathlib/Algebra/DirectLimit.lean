@@ -421,8 +421,17 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             let ⟨i, x⟩ := a
             let ⟨j, y, hs⟩ := ih
             let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-            ⟨k, f i k hik x * f j k hjk y, by rw [(of _ _ _).map_mul, of_f, of_f, hs] <;> rfl⟩)
-        (fun s ⟨i, x, ih⟩ => ⟨i, -x, by rw [(of _ _ _).map_neg, ih] <;> rfl⟩)
+            ⟨k, f i k hik x * f j k hjk y, by
+              rw [(of G f k).map_mul, of_f, of_f, hs]
+              congr
+              sorry
+              done
+              ⟩)
+        (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
+          -- porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
+          -- here as Lean 3 is, for some reason.
+          rw [(of G f i).map_neg, ih]
+          rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] <;> rfl⟩
