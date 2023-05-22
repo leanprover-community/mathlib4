@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
-variable {C : Type _} [Category C] [Abelian C]
+variable {C : Type u} [Category C] [Abelian C]
 
 namespace CochainComplex
 
@@ -430,7 +430,7 @@ lemma isZero_homology_truncLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) :
 noncomputable abbrev truncLEι (X : DerivedCategory C) (n : ℤ) :=
   (natTransTruncLEι C n).app X
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma truncLEι_naturality {X Y : DerivedCategory C} (f : X ⟶ Y) (n : ℤ) :
     (functorTruncLE C n).map f ≫ Y.truncLEι n = X.truncLEι n ≫ f :=
   (natTransTruncLEι C n).naturality f

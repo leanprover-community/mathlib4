@@ -115,7 +115,7 @@ lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMor
 open ZeroObject
 
 lemma preservesZeroMorphisms_of_fac_of_essSurj (F : C ⥤ D) (G : D ⥤ E) (H : C ⥤ E)
-  [F.PreservesZeroMorphisms] [H.PreservesZeroMorphisms] [HasZeroObject C] (e : F ⋙ G ≅ H) :
+   [H.PreservesZeroMorphisms] [HasZeroObject C] (e : F ⋙ G ≅ H) :
     G.PreservesZeroMorphisms := ⟨by
   have := preservesZeroMorphisms_of_iso e.symm
   intro X Y

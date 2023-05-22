@@ -407,7 +407,6 @@ lemma inl_v_desc_f {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G �
     (inl φ : Cochain F (mappingCone φ) (-1)).v p₁ p₂ h ≫ (desc φ α β eq).f p₂ = α.v p₁ p₂ h := by
   aesop_cat
 
-@[simp]
 lemma inl_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
     (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
     (inl φ : Cochain F (mappingCone φ) (-1)).comp

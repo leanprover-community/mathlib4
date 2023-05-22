@@ -66,13 +66,13 @@ def shift (n : M) : C ⥤ A := ShiftSequence.sequence F n
 def shiftIso (n a a' : M) (ha' : n + a = a') : shiftFunctor C n ⋙ F.shift a ≅ F.shift a' :=
   ShiftSequence.shiftIso n a a' ha'
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp 1100)]
 lemma shiftIso_hom_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a).map (f⟦n⟧') ≫ (shiftIso F n a a' ha').hom.app Y =
       (shiftIso F n a a' ha').hom.app X ≫ (shift F a').map f :=
   (F.shiftIso n a a' ha').hom.naturality f
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp 1100)]
 lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a').map f ≫ (shiftIso F n a a' ha').inv.app Y =
       (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') :=
@@ -87,13 +87,15 @@ variable {M}
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=
   isoWhiskerLeft _ (F.isoShiftZero M).symm ≪≫ F.shiftIso _ _ _ (add_zero n)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma isoShift_hom_naturality (n : M) {X Y : C} (f : X ⟶ Y) :
   F.map (f⟦n⟧') ≫ (F.isoShift n).hom.app Y =
     (F.isoShift n).hom.app X ≫ (F.shift n).map f :=
   (F.isoShift n).hom.naturality f
 
-@[reassoc (attr := simp)]
+attribute [simp] isoShift_hom_naturality
+
+@[reassoc]
 lemma isoShift_inv_naturality (n : M) {X Y : C} (f : X ⟶ Y) :
   (F.shift n).map f ≫ (F.isoShift n).inv.app Y =
     (F.isoShift n).inv.app X ≫ F.map (f⟦n⟧') :=
@@ -162,12 +164,12 @@ def shiftMap {X Y : C} {n : M} (f : X ⟶ Y⟦n⟧) (a a' : M) (ha' : n + a = a'
     (F.shift a).obj X ⟶ (F.shift a').obj Y :=
   (F.shift a).map f ≫ (F.shiftIso _ _ _ ha').hom.app Y
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma shiftMap_comp {X Y Z : C} {n : M} (f : X ⟶ Y⟦n⟧) (g : Y ⟶ Z) (a a' : M) (ha' : n + a = a') :
     F.shiftMap (f ≫ g⟦n⟧') a a' ha' = F.shiftMap f a a' ha' ≫ (F.shift a').map g := by
   simp [shiftMap]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a' : M) (ha' : n + a = a') :
     F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
   simp [shiftMap]

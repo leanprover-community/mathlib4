@@ -196,14 +196,14 @@ noncomputable instance [HasFiniteColimits C] (n : ι) :
   PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
 def preservesLimitsOfShapeOfEval {D : Type _} [Category D]
-    (G : D ⥤ HomologicalComplex C c) [HasLimitsOfShape J C]
+    (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesLimitsOfShape J (G ⋙ eval C c i)) :
     PreservesLimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs =>  isLimitOfEval _ _
     (fun i => isLimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
 
 def preservesColimitsOfShapeOfEval {D : Type _} [Category D]
-    (G : D ⥤ HomologicalComplex C c) [HasColimitsOfShape J C]
+    (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesColimitsOfShape J (G ⋙ eval C c i)) :
     PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs =>  isColimitOfEval _ _
