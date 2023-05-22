@@ -385,6 +385,7 @@ import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
