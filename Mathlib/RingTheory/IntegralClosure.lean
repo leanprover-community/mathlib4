@@ -687,8 +687,10 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
   · simp only [Algebra.TensorProduct.includeLeftRingHom_apply, Algebra.TensorProduct.tmul_pow,
       one_pow]
     convert (MulZeroClass.mul_zero (M₀ := A ⊗[R] B) _).symm
-    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap, ← Polynomial.eval₂_map]
-    convert Polynomial.eval₂_at_apply (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).toRingHom y
+    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap,
+      ← Polynomial.eval₂_map]
+    convert Polynomial.eval₂_at_apply
+      (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).toRingHom y
     rw [Polynomial.eval_map, hp', _root_.map_zero]
 #align is_integral.tmul IsIntegral.tmul
 
@@ -769,7 +771,7 @@ theorem normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic 
 #align normalize_scale_roots_monic normalizeScaleRoots_monic
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
-`f p.leading_coeff * x` is integral. -/
+`f p.leadingCoeff * x` is integral. -/
 theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     f.IsIntegralElem (f p.leadingCoeff * x) := by
   by_cases h' : 1 ≤ p.natDegree
@@ -791,7 +793,7 @@ theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
 #align ring_hom.is_integral_elem_leading_coeff_mul RingHom.isIntegralElem_leadingCoeff_mul
 
 /-- Given a `p : R[X]` and a root `x : S`,
-then `p.leading_coeff • x : S` is integral over `R`. -/
+then `p.leadingCoeff • x : S` is integral over `R`. -/
 theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
     IsIntegral R (p.leadingCoeff • x) := by
   rw [aeval_def] at h
@@ -1137,7 +1139,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
   rw [mul_assoc, ← pow_succ', tsub_add_cancel_of_le this]
 #align is_field_of_is_integral_of_is_field isField_of_isIntegral_of_isField
 
-theorem isField_of_isIntegral_of_is_field' {R S : Type _} [CommRing R] [CommRing S] [IsDomain S]
+theorem isField_of_isIntegral_of_isField' {R S : Type _} [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S := by
   letI := hR.toField
   refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx => _⟩
@@ -1152,12 +1154,12 @@ theorem isField_of_isIntegral_of_is_field' {R S : Type _} [CommRing R] [CommRing
         hx (Subtype.ext_iff.mp h))
       1
   exact ⟨y, Subtype.ext_iff.mp hy⟩
-#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_is_field'
+#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
 
 theorem Algebra.IsIntegral.isField_iff_isField {R S : Type _} [CommRing R] [Nontrivial R]
     [CommRing S] [IsDomain S] [Algebra R S] (H : Algebra.IsIntegral R S)
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
-  ⟨isField_of_isIntegral_of_is_field' H, isField_of_isIntegral_of_isField H hRS⟩
+  ⟨isField_of_isIntegral_of_isField' H, isField_of_isIntegral_of_isField H hRS⟩
 #align algebra.is_integral.is_field_iff_is_field Algebra.IsIntegral.isField_iff_isField
 
 end Algebra
