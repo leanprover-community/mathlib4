@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DualNumber
-import Mathbin.Algebra.Quaternion
+import Mathlib.Algebra.DualNumber
+import Mathlib.Algebra.Quaternion
 
 /-!
 # Dual quaternions
@@ -36,8 +36,7 @@ namespace Quaternion
 or as a dual number with quaternion coefficients.
 
 See also `matrix.dual_number_equiv` for a similar result. -/
-def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion R)
-    where
+def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion R) where
   toFun q :=
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
   invFun d :=
