@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.Lebesgue
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 
@@ -24,8 +24,7 @@ theorem aEMeasurable_withDensity_iff {E : Type _} [NormedAddCommGroup E] [Normed
     [TopologicalSpace.SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
     (hf : Measurable f) {g : α → E} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
-      AEMeasurable (fun x => (f x : ℝ) • g x) μ :=
-  by
+      AEMeasurable (fun x => (f x : ℝ) • g x) μ := by
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet { x : α | f x ≠ 0 } := (hf (measurable_set_singleton 0)).compl
