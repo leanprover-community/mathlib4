@@ -78,13 +78,14 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
-@[simps (config := { fullyApplied := false }) apply symm_apply]
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact
 
 instance metricSpace : MetricSpace C(α, β) :=
   (uniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
+#align continuous_map.metric_space ContinuousMap.metricSpace
 
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
@@ -268,6 +269,7 @@ variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 instance normedSpace : NormedSpace 𝕜 C(α, E) where
   norm_smul_le c f := (norm_smul_le c (mkOfCompact f) : _)
+#align continuous_map.normed_space ContinuousMap.normedSpace
 
 section
 
@@ -278,12 +280,10 @@ the `𝕜`-algebra of bounded continuous maps `α →ᵇ β` is
 `𝕜`-linearly isometric to `C(α, β)`.
 -/
 def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
-  {
-    addEquivBoundedOfCompact α
-      E with
+  { addEquivBoundedOfCompact α E with
     map_smul' := fun c f => by
       ext
-      simp
+      norm_cast
     norm_map' := fun f => rfl }
 #align continuous_map.linear_isometry_bounded_of_compact ContinuousMap.linearIsometryBoundedOfCompact
 
@@ -445,7 +445,7 @@ def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [Com
     intro g ε ε_pos
     refine' ⟨ε, ε_pos, fun g' h => _⟩
     rw [ContinuousMap.dist_lt_iff ε_pos] at h⊢
-    · exact fun x => h (f x)
+    exact fun x => h (f x)
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 
 @[simp]
