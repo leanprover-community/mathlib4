@@ -16,14 +16,14 @@ import Mathlib.Topology.VectorBundle.Basic
 
 This file contains several standard constructions on vector bundles:
 
-* `bundle.trivial.vector_bundle 𝕜 B F`: the trivial vector bundle with scalar field `𝕜` and model
+* `Bundle.Trivial.vectorBundle 𝕜 B F`: the trivial vector bundle with scalar field `𝕜` and model
   fiber `F` over the base `B`
 
-* `vector_bundle.prod`: for vector bundles `E₁` and `E₂` with scalar field `𝕜` over a common base,
+* `VectorBundle.prod`: for vector bundles `E₁` and `E₂` with scalar field `𝕜` over a common base,
   a vector bundle structure on their direct sum `E₁ ×ᵇ E₂` (the notation stands for
   `λ x, E₁ x × E₂ x`).
 
-* `vector_bundle.pullback`: for a vector bundle `E` over `B`, a vector bundle structure on its
+* `VectorBundle.pullback`: for a vector bundle `E` over `B`, a vector bundle structure on its
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).
 
 ## Tags
