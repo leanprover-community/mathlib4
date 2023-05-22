@@ -19,119 +19,131 @@ open Lean
 
 namespace Mathlib.Explode
 
-/-- Prepend the `line` of the `Entry` to `deps` if it's not `none`. -/
-def consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
-  entry?.map Entry.line! :: deps
-
 /-- Core `explode` algorithm.
 
-- `filter` is a condition for which expressions to process
+- `select` is a condition for which expressions to process
+- `omitDeps` is whether to omit dependencies that were filtered out.
+  If `False`, then `None` is inserted for omitted dependencies
 - `e` is the expression to process
 - `depth` is the current abstraction depth
 - `entries` is the table so far
 - `start` is whether we are at the top-level of the expression, which
   causes lambdas to use `Status.sintro` to prevent a layer of nesting.
 -/
-partial def explode_core (filter : Expr → MetaM Bool) (e : Expr)
+partial def explode_core (select : Expr → MetaM Bool) (omitDeps : Bool) (e : Expr)
     (depth : Nat) (entries : Entries) (start : Bool := false) :
-    MetaM (Option Entry × Entries) := do
-  let e := e.cleanupAnnotations
-  if let some entry := entries.find? e then
-    return (entry, entries)
-  if !(← filter e) then
-    trace[explode] "filtered out {e}"
-    return (none, entries)
-  match e with
-  | .lam .. => do
-    trace[explode] ".lam"
-    Meta.lambdaTelescope e fun args body => do
+    MetaM (Option Entry × Entries) :=
+  explode_core' e depth entries start
+where
+  /-- Prepend the `line` of the `Entry` to `deps` if it's not `none`, but if the entry isn't marked
+  with `useAsDep` then it's not added to the list at all. -/
+  consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
+    if let some entry := entry? then
+      if entry.useAsDep then entry.line! :: deps else deps
+    else
+      deps
+  explode_core' (e : Expr) (depth : Nat) (entries : Entries) (start : Bool := false) :
+      MetaM (Option Entry × Entries) := do
+    trace[explode] "depth = {depth}, start = {start}, e = {e}"
+    let e := e.cleanupAnnotations
+    if let some entry := entries.find? e then
+      trace[explode] "already seen"
+      return (entry, entries)
+    if !(← select e) then
+      trace[explode] "filtered out"
+      return (none, entries)
+    match e with
+    | .lam .. => do
+      trace[explode] ".lam"
+      Meta.lambdaTelescope e fun args body => do
+        let mut entries' := entries
+        let mut rdeps := []
+        for arg in args, i in [0:args.size] do
+          let (argEntry, entries'') := entries'.add arg
+            { type    := ← addMessageContext <| ← Meta.inferType arg
+              depth   := depth
+              status  :=
+                if start
+                then Status.sintro
+                else if i == 0 then Status.intro else Status.cintro
+              thm     := ← addMessageContext <| arg
+              deps    := []
+              useAsDep  := ← select arg }
+          entries' := entries''
+          rdeps := some argEntry.line! :: rdeps
+        let (bodyEntry?, entries) ←
+          explode_core' body (if start then depth else depth + 1) entries'
+        rdeps := consDep bodyEntry? rdeps
+        let (entry, entries) := entries.add e
+          { type     := ← addMessageContext <| ← Meta.inferType e
+            depth    := depth
+            status   := Status.lam
+            thm      := "∀I" -- TODO use "→I" if it's purely implications?
+            deps     := rdeps.reverse
+            useAsDep := true }
+        return (entry, entries)
+    | .app .. => do
+      trace[explode] ".app"
+
+      -- We want to represent entire applications as a single line in the table
+      let fn := Expr.getAppFn e
+      let args := Expr.getAppArgs e
+
+      -- If the function is a `const`, then it's not local so we do not need an
+      -- entry in the table for it. We store the theorem name in the `thm` field
+      -- below, giving access to the theorem's type on hover in the UI.
+      -- Whether to include the entry could be controlled by a configuration option.
+      let (fnEntry?, entries) ←
+        if fn.isConst then
+          pure (none, entries)
+        else
+          explode_core' fn depth entries
+      let deps := if fn.isConst then [] else consDep fnEntry? []
+
       let mut entries' := entries
       let mut rdeps := []
-      for arg in args, i in [0:args.size] do
-        let (argEntry?, entries'') := entries'.add arg
-          { type    := ← addMessageContext <| ← Meta.inferType arg
-            depth   := depth
-            status  :=
-              if start
-              then Status.sintro
-              else if i == 0 then Status.intro else Status.cintro
-            thm     := ← addMessageContext <| arg
-            deps    := [] }
+      for arg in args do
+        let (appEntry?, entries'') ← explode_core' arg depth entries'
         entries' := entries''
-        rdeps := consDep argEntry? rdeps
-      let (bodyEntry?, entries) ←
-        explode_core filter body (if start then depth else depth + 1) entries'
-      rdeps := consDep bodyEntry? rdeps
-      let (entry, entries) := entries.add e
-        { type    := ← addMessageContext <| ← Meta.inferType e
-          depth   := depth
-          status  := Status.lam
-          thm     := "∀I" -- TODO use "→I" if it's purely implications?
-          deps    := rdeps.reverse }
+        rdeps := consDep appEntry? rdeps
+      let deps := deps ++ rdeps.reverse
+
+      let (entry, entries) := entries'.add e
+        { type     := ← addMessageContext <| ← Meta.inferType e
+          depth    := depth
+          status   := Status.reg
+          thm      := ← addMessageContext <| if fn.isConst then fn else "∀E"
+          deps     := deps
+          useAsDep := true }
       return (entry, entries)
-  | .app .. => do
-    trace[explode] ".app"
-
-    -- We want to represent entire applications as a single line in the table
-    let fn := Expr.getAppFn e
-    let args := Expr.getAppArgs e
-
-    -- If the function is a `const`, then it's not local so we do not need an
-    -- entry in the table for it. We store the theorem name in the `thm` field
-    -- below, giving access to the theorem's type on hover in the UI.
-    -- Whether to include the entry could be controlled by a configuration option.
-    let (fnEntry?, entries) ←
-      if fn.isConst then
-        pure (none, entries)
-      else
-        explode_core filter fn depth entries
-    let deps := if fn.isConst then [] else consDep fnEntry? []
-
-    let mut entries' := entries
-    let mut rdeps := []
-    for arg in args do
-      let (appEntry?, entries'') ← explode_core filter arg depth entries'
-      entries' := entries''
-      rdeps := consDep appEntry? rdeps
-    let deps := deps ++ rdeps.reverse
-
-    let (entry, entries) := entries'.add e
-      { type    := ← addMessageContext <| ← Meta.inferType e
-        depth   := depth
-        status  := Status.reg
-        thm     := ← addMessageContext <| if fn.isConst then fn else "∀E"
-        deps    := deps }
-    return (entry, entries)
-  | .letE varName varType val body _ => do
-    trace[explode] ".letE"
-    let varType := varType.cleanupAnnotations
-    Meta.withLocalDeclD varName varType fun var => do
-      let (valEntry?, entries) ← explode_core filter val depth entries
-      -- Add a synonym so that the substituted fvars refer to `valEntry?`
-      let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
-      explode_core filter (body.instantiate1 var) depth entries
-  | _ => do
-    -- Right now all of these are caught by this case case:
-    --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
-    --   (Note: Expr.mdata is stripped by cleanupAnnotations)
-    -- Might be good to handle them individually.
-    trace[explode] "default - .{e.ctorName}"
-    handleDefault e entries
-where
-  handleDefault (e : Expr) (entries : Entries) : MetaM (Option Entry × Entries) := do
-    let (entry, entries) := entries.add e
-      { type    := ← addMessageContext <| ← Meta.inferType e
-        depth   := depth
-        status  := Status.reg
-        thm     := ← addMessageContext e
-        deps    := [] }
-    return (entry, entries)
+    | .letE varName varType val body _ => do
+      trace[explode] ".letE"
+      let varType := varType.cleanupAnnotations
+      Meta.withLocalDeclD varName varType fun var => do
+        let (valEntry?, entries) ← explode_core' val depth entries
+        -- Add a synonym so that the substituted fvars refer to `valEntry?`
+        let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
+        explode_core' (body.instantiate1 var) depth entries
+    | _ => do
+      -- Right now all of these are caught by this case case:
+      --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
+      --   (Note: Expr.mdata is stripped by cleanupAnnotations)
+      -- Might be good to handle them individually.
+      trace[explode] ".{e.ctorName} (default handler)"
+      let (entry, entries) := entries.add e
+        { type     := ← addMessageContext <| ← Meta.inferType e
+          depth    := depth
+          status   := Status.reg
+          thm      := ← addMessageContext e
+          deps     := []
+          useAsDep := ← select e }
+      return (entry, entries)
 
 /-- Main definition behind `#explode` command. -/
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let filter (e : Expr) : MetaM Bool :=
     if filterProofs then Meta.isProof e else return true
-  let (_, entries) ← explode_core (start := true) filter e 0 default
+  let (_, entries) ← explode_core (start := true) filter true e 0 default
   return entries
 
 end Mathlib.Explode
@@ -223,7 +235,10 @@ proof displays like [this](http://us.metamath.org/mpeuni/ru.html). The headers o
     * `x` and `y` will be suppressed, because term construction is not interesting, and
     * the Hyp field will reference steps proving `A x` and `B y`. This corresponds to a proof term
       like `@foo x y pA pB` where `pA` and `pB` are subproofs.
-    * In the Hyp column, suppressed terms appear using "_" rather than a step number.
+    * In the Hyp column, suppressed terms are omitted, including terms that ought to be
+      suppressed but are not (in particular lambda arguments).
+      With an (unimplemented) configuration option, suppressed terms can be represented using
+      an `_` rather than a step number.
   * If the head of the proof term is a local constant or lambda, then in this case the Ref will
     say `∀E` for forall-elimination. This happens when you have for example `h : A -> B` and
     `ha : A` and prove `b` by `h ha`; we reinterpret this as if it said `∀E h ha` where `∀E` is

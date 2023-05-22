@@ -24,7 +24,7 @@ inductive Status where
   /-- `Entry.depth` * `│` + `┌` Normal intro -/
   | intro  : Status
   /-- `Entry.depth` * `│` + `├` Continuation intro -/
-  | cintro  : Status
+  | cintro : Status
   /-- `Entry.depth` * `│` -/
   | lam    : Status
   /-- `Entry.depth` * `│` -/
@@ -34,19 +34,22 @@ inductive Status where
 /-- The row in the Fitch table. -/
 structure Entry where
   /-- A type of this expression as a `MessageData`. Make sure to use `addMessageContext`. -/
-  type    : MessageData
+  type     : MessageData
   /-- The row number, starting from `0`. This is set by `Entries.add`. -/
-  line    : Option Nat := none
+  line     : Option Nat := none
   /-- How many `if`s (aka lambda-abstractions) this row is nested under. -/
-  depth   : Nat
+  depth    : Nat
   /-- What `Status` this entry has - this only affects how `│`s are displayed. -/
-  status  : Status
+  status   : Status
   /-- What to display in the "theorem applied" column.
   Make sure to use `addMessageContext` if needed. -/
-  thm     : MessageData
+  thm      : MessageData
   /-- Which other lines (aka rows) this row depends on.
   `none` means that the dependency has been filtered out of the table. -/
-  deps    : List (Option Nat)
+  deps     : List (Option Nat)
+  /-- Whether or not to use this in future deps lists. Generally controlled by the `select` function
+  passed to `explode_core`. Exception: `∀I` may ignore this for introduced hypotheses. -/
+  useAsDep : Bool
 
 /-- Get the `line` for an `Entry` that thas been added to the `Entries` structure. -/
 def Entry.line! (entry : Entry) : Nat := entry.line.get!
