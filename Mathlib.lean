@@ -382,6 +382,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory

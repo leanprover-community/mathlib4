@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Circle
-import Mathbin.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.Complex.Circle
+import Mathlib.Analysis.NormedSpace.BallAction
 
 /-!
 # Poincaré disc
