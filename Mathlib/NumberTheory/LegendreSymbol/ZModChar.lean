@@ -129,12 +129,13 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
     (-1 : ℤ) ^ (n / 2) = -1 := by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
   rfl
-#align zmpod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
+#align zmod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
 
 lemma test : IsUnit (7 : ZMod 8) := by
   have : (7 : ZMod 8) * 7 = 1 := by decide
   exact isUnit_of_mul_eq_one (7 : ZMod 8) 7 this
 
+set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
 @[simps]
@@ -142,22 +143,7 @@ def χ₈ : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, -1, 0, -1, 0, 1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
-  --porting note: Was `by decide`, which timed out
-  map_nonunit' := by
-    intro a
-    match a with
-    | 0 => decide
-    | 1 => decide
-    | 2 => decide
-    | 3 => decide
-    | 4 => decide
-    | 5 => decide
-    | 6 => decide
-    | 7 =>
-      have : IsUnit (7 : ZMod 8) := by
-        apply isUnit_of_mul_eq_one
-        exact (by decide : (7 : ZMod 8) * 7 = 1)
-      tauto
+  map_nonunit' := by decide
 #align zmod.χ₈ ZMod.χ₈
 
 /-- `χ₈` takes values in `{0, 1, -1}` -/
@@ -193,6 +179,7 @@ theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
   exact_mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
 
+set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the second primitive quadratic character on `ZMod 8`, `χ₈'`.
 It corresponds to the extension `ℚ(√-2)/ℚ`. -/
 @[simps]
@@ -200,22 +187,7 @@ def χ₈' : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, 1, 0, -1, 0, -1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
-  --porting note: Was `by decide`, which timed out
-  map_nonunit' := by
-    intro a
-    match a with
-    | 0 => decide
-    | 1 => decide
-    | 2 => decide
-    | 3 => decide
-    | 4 => decide
-    | 5 => decide
-    | 6 => decide
-    | 7 =>
-      have : IsUnit (7 : ZMod 8) := by
-        apply isUnit_of_mul_eq_one
-        exact (by decide : (7 : ZMod 8) * 7 = 1)
-      tauto
+  map_nonunit' := by decide
 #align zmod.χ₈' ZMod.χ₈'
 
 /-- `χ₈'` takes values in `{0, 1, -1}` -/
