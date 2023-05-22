@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SProd
 
 /-!
 # Sets in product and pi types
@@ -42,9 +43,8 @@ def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-infixr:82 " ×ˢ " => Set.prod
+instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+  sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
   rfl
@@ -615,7 +615,8 @@ theorem offDiag_union (h : Disjoint s t) :
       exact (Set.disjoint_right.mp h h0 h1).elim
 #align set.off_diag_union Set.offDiag_union
 
-theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+theorem offDiag_insert (ha : a ∉ s) :
+    (insert a s).offDiag = s.offDiag ∪ ({a} : Set α) ×ˢ s ∪ s ×ˢ ({a} : Set α) := by
   rw [insert_eq, union_comm, offDiag_union, offDiag_singleton, union_empty, union_right_comm]
   rw [disjoint_left]
   rintro b hb (rfl : b = a)

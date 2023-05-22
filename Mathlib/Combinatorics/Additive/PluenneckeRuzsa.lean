@@ -45,7 +45,7 @@ variable {α : Type _} [CommGroup α] [DecidableEq α] {A B C : Finset α}
       "**Ruzsa's triangle inequality**. Subtraction version."]
 theorem card_div_mul_le_card_div_mul_card_div (A B C : Finset α) :
     (A / C).card * B.card ≤ (A / B).card * (B / C).card := by
-  rw [← card_product (A / B), ← mul_one (Finset.product _ _).card]
+  rw [← card_product (A / B), ← mul_one ((A / B) ×ˢ (B / C)).card]
   refine' card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ _)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ((mem_bipartiteBelow _).1 hv).2

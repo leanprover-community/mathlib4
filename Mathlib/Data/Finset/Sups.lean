@@ -75,7 +75,7 @@ theorem card_sups_le : (s ⊻ t).card ≤ s.card * t.card :=
 #align finset.card_sups_le Finset.card_sups_le
 
 theorem card_sups_iff :
-    (s ⊻ t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊔ x.2 :=
+    (s ⊻ t).card = s.card * t.card ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun x => x.1 ⊔ x.2 :=
   card_image₂_iff
 #align finset.card_sups_iff Finset.card_sups_iff
 
@@ -192,7 +192,7 @@ theorem biUnion_image_sup_right : (t.biUnion fun b => s.image fun a => a ⊔ b) 
 #align finset.bUnion_image_sup_right Finset.biUnion_image_sup_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_sup_product (s t : Finset α) : (s ×ᶠˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
+theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
 
@@ -249,7 +249,7 @@ theorem card_infs_le : (s ⊼ t).card ≤ s.card * t.card :=
 #align finset.card_infs_le Finset.card_infs_le
 
 theorem card_infs_iff :
-    (s ⊼ t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊓ x.2 :=
+    (s ⊼ t).card = s.card * t.card ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun x => x.1 ⊓ x.2 :=
   card_image₂_iff
 #align finset.card_infs_iff Finset.card_infs_iff
 
@@ -366,7 +366,7 @@ theorem biUnion_image_inf_right : (t.biUnion fun b => s.image fun a => a ⊓ b) 
 #align finset.bUnion_image_inf_right Finset.biUnion_image_inf_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_inf_product (s t : Finset α) : (s ×ᶠˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
+theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
 
@@ -423,7 +423,7 @@ variable [SemilatticeSup α] [OrderBot α] [@DecidableRel α Disjoint] (s s₁ s
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
 def disjSups : Finset α :=
-  ((s ×ᶠˢ t).filter fun ab : α × α => Disjoint ab.1 ab.2).image fun ab => ab.1 ⊔ ab.2
+  ((s ×ˢ t).filter fun ab : α × α => Disjoint ab.1 ab.2).image fun ab => ab.1 ⊔ ab.2
 #align finset.disj_sups Finset.disjSups
 
 @[inherit_doc]

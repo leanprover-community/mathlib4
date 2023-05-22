@@ -1973,7 +1973,7 @@ noncomputable def fintypeSubtypeDvd {M : Type _} [CancelCommMonoidWithZero M]
   -- and has image exactly the divisors of `y`.
   refine'
     Fintype.ofFinset
-      (((normalizedFactors y).powerset.toFinset.product (Finset.univ : Finset Mˣ)).image fun s =>
+      (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => _
   simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,

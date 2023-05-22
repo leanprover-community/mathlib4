@@ -242,10 +242,9 @@ theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } 
   isTopologicalBasis_of_open_of_nhds (by tauto) (by tauto)
 #align topological_space.is_topological_basis_opens TopologicalSpace.isTopologicalBasis_opens
 
--- porting note: Lean 4 can't handle ambigous notation here
 protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
-    IsTopologicalBasis (image2 Set.prod B₁ B₂) := by
+    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
   refine' isTopologicalBasis_of_open_of_nhds _ _
   · rintro _ ⟨u₁, u₂, hu₁, hu₂, rfl⟩
     exact (h₁.isOpen hu₁).prod (h₂.isOpen hu₂)

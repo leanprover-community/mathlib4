@@ -1105,12 +1105,12 @@ variable (S₁ : Subalgebra R B)
 /-- The product of two subalgebras is a subalgebra. -/
 def prod : Subalgebra R (A × B) :=
   { S.toSubsemiring.prod S₁.toSubsemiring with
-    carrier := S ×ˢ S₁
+    carrier := (S : Set A) ×ˢ (S₁ : Set B)
     algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
 #align subalgebra.prod Subalgebra.prod
 
 @[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = S ×ˢ S₁ :=
+theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
   rfl
 #align subalgebra.coe_prod Subalgebra.coe_prod
 
