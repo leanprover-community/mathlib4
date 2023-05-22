@@ -52,7 +52,7 @@ theorem mapToFractionRing_apply {B : Type _} [CommRing B] [Algebra A B] [IsLocal
 theorem mem_range_mapToFractionRing_iff (B : Type _) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
-      ∃ (a s : A)(hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
+      ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
   ⟨by
     rintro ⟨x, rfl⟩
     obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S x
@@ -66,14 +66,11 @@ theorem mem_range_mapToFractionRing_iff (B : Type _) [CommRing B] [Algebra A B] 
 instance isLocalization_range_mapToFractionRing (B : Type _) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
-    show B ≃ₐ[A] _ from
-      AlgEquiv.ofBijective (mapToFractionRing K S B hS).range_restrict
-        (by
-          refine' ⟨fun a b h => _, Set.surjective_onto_range⟩
-          refine' (IsLocalization.lift_injective_iff _).2 (fun a b => _) (Subtype.ext_iff.1 h)
-          exact
-            ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h), fun h =>
-              congr_arg _ (IsFractionRing.injective A K h)⟩)
+    show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
+      refine' ⟨fun a b h => _, Set.surjective_onto_range⟩
+      refine' (IsLocalization.lift_injective_iff _).2 (fun a b => _) (Subtype.ext_iff.1 h)
+      exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
+        fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
 #align localization.is_localization_range_map_to_fraction_ring Localization.isLocalization_range_mapToFractionRing
 
 instance isFractionRing_range_mapToFractionRing (B : Type _) [CommRing B] [Algebra A B]
@@ -86,17 +83,17 @@ contains no zero divisor, this is the localization of `A` at `S`, considered as
 a subalgebra of `K` over `A`.
 
 The carrier of this subalgebra is defined as the set of all `x : K` of the form
-`is_localization.mk' K a ⟨s, _⟩`, where `s ∈ S`.
+`IsLocalization.mk' K a ⟨s, _⟩`, where `s ∈ S`.
 -/
 noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
   (mapToFractionRing K S (Localization S) hS).range.copy
-      { x | ∃ (a s : A)(hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ } <| by
+      { x | ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ } <| by
     ext
     symm
-    apply mem_range_map_to_fraction_ring_iff
+    apply mem_range_mapToFractionRing_iff
 #align localization.subalgebra Localization.subalgebra
 
-namespace Subalgebra
+namespace subalgebra
 
 instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
   dsimp only [Localization.subalgebra]
@@ -108,7 +105,7 @@ instance isFractionRing : IsFractionRing (subalgebra K S hS) K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.subalgebra.is_fraction_ring Localization.subalgebra.isFractionRing
 
-end Subalgebra
+end subalgebra
 
 end CommRing
 
@@ -116,29 +113,32 @@ section Field
 
 variable [Field K] [Algebra A K] [IsFractionRing A K]
 
-namespace Subalgebra
+namespace subalgebra
 
-theorem mem_range_mapToFractionRing_iff_of_field (B : Type _) [CommRing B] [Algebra A B]
+theorem mem_range_mapToFractionRing_iff_ofField (B : Type _) [CommRing B] [Algebra A B]
     [IsLocalization S B] (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
-      ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by
-  rw [mem_range_map_to_fraction_ring_iff]
-  iterate 3 congr with ; convert Iff.rfl; rw [Units.val_inv_eq_inv_val]; rfl
-#align localization.subalgebra.mem_range_map_to_fraction_ring_iff_of_field Localization.subalgebra.mem_range_mapToFractionRing_iff_of_field
+      ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by
+  rw [mem_range_mapToFractionRing_iff]
+  convert Iff.rfl
+  congr
+  rw [Units.val_inv_eq_inv_val]
+  rfl
+#align localization.subalgebra.mem_range_map_to_fraction_ring_iff_of_field Localization.subalgebra.mem_range_mapToFractionRing_iff_ofField
 
 /-- Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which
 contains no zero divisor, this is the localization of `A` at `S`, considered as
 a subalgebra of `K` over `A`.
 
 The carrier of this subalgebra is defined as the set of all `x : K` of the form
-`algebra_map A K a * (algebra_map A K s)⁻¹` where `a s : A` and `s ∈ S`.
+`algebraMap A K a * (algebraMap A K s)⁻¹` where `a s : A` and `s ∈ S`.
 -/
 noncomputable def ofField : Subalgebra A K :=
   (mapToFractionRing K S (Localization S) hS).range.copy
-      { x | ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ } <| by
+      { x | ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ } <| by
     ext
     symm
-    apply mem_range_map_to_fraction_ring_iff_of_field
+    apply mem_range_mapToFractionRing_iff_ofField
 #align localization.subalgebra.of_field Localization.subalgebra.ofField
 
 instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) := by
@@ -151,9 +151,8 @@ instance isFractionRing_ofField : IsFractionRing (subalgebra.ofField K S hS) K :
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.subalgebra.is_fraction_ring_of_field Localization.subalgebra.isFractionRing_ofField
 
-end Subalgebra
+end subalgebra
 
 end Field
 
 end Localization
-
