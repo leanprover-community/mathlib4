@@ -82,7 +82,7 @@ instance : CoeFun (BilinForm R M) fun _ => M → M → R :=
 
 initialize_simps_projections BilinForm (bilin → apply)
 
-@[simp]
+-- Porting note: removed for simpVarHead @[simp]
 theorem coeFn_mk (f : M → M → R) (h₁ h₂ h₃ h₄) : (BilinForm.mk f h₁ h₂ h₃ h₄ : M → M → R) = f :=
   rfl
 #align bilin_form.coe_fn_mk BilinForm.coeFn_mk
@@ -217,7 +217,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] : SMul 
 
 @[simp]
 theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
-    (B : BilinForm R M) : ⇑(a • B) = a • B :=
+    (B : BilinForm R M) : ⇑(a • B) = a • ⇑B :=
   rfl
 #align bilin_form.coe_smul BilinForm.coe_smul
 
@@ -636,8 +636,8 @@ theorem compRight_id (B : BilinForm R M) : B.compRight LinearMap.id = B := by
 #align bilin_form.comp_right_id BilinForm.compRight_id
 
 -- Shortcut for `comp_id_{left,right}` followed by `comp{Right,Left}_id`,
--- has to be declared after the former two to get the right priority
-@[simp]
+-- Needs higher priority to be applied
+@[simp high]
 theorem comp_id_id (B : BilinForm R M) : B.comp LinearMap.id LinearMap.id = B := by
   ext
   rfl
