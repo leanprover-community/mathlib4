@@ -690,7 +690,7 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
   rfl
 #align double_quot.coe_quot_left_to_quot_supₐ DoubleQuot.coe_quotLeftToQuotSupₐ
 
-/-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J) induced by `quot_left_to_quot_sup`,
+/-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J) induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
 def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
   AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
@@ -796,19 +796,19 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
 -- than a second according to `trace.profiler`.
 set_option maxHeartbeats 400000 in
 @[simp]
-theorem quot_quot_equiv_comm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I :=
+theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I :=
   rfl
-#align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quot_quot_equiv_comm_symmₐ
+#align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quotQuotEquivComm_symmₐ
 
 @[simp]
-theorem quot_quot_equiv_comm_comp_quotQuotMkₐ :
+theorem quotQuotEquivComm_comp_quotQuotMkₐ :
     AlgHom.comp (↑(quotQuotEquivCommₐ R I J)) (quotQuotMkₐ R I J) = quotQuotMkₐ R J I :=
   AlgHom.ext <| quotQuotEquivComm_quotQuotMk I J
-#align double_quot.quot_quot_equiv_comm_comp_quot_quot_mkₐ DoubleQuot.quot_quot_equiv_comm_comp_quotQuotMkₐ
+#align double_quot.quot_quot_equiv_comm_comp_quot_quot_mkₐ DoubleQuot.quotQuotEquivComm_comp_quotQuotMkₐ
 
 variable {I J}
 
-/-- The **third isomorphism theorem** for rings. See `quot_quot_equiv_quot_sup` for version
+/-- The **third isomorphism theorem** for rings. See `quotQuotEquivQuotSupₐ` for version
     that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLeₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
   @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotOfLe h) fun _ => rfl
