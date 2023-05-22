@@ -383,7 +383,7 @@ theorem hasStrictFDerivAt_pi' :
   exact isLittleO_pi
 #align has_strict_fderiv_at_pi' hasStrictFDerivAt_pi'
 
-@[simp]
+@[simp 1100] -- porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
     HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=
@@ -392,8 +392,8 @@ theorem hasStrictFDerivAt_pi :
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :
-    HasFDerivAtFilter Φ Φ' x L ↔ ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L :=
-  by
+    HasFDerivAtFilter Φ Φ' x L ↔
+      ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
   simp only [HasFDerivAtFilter, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 #align has_fderiv_at_filter_pi' hasFDerivAtFilter_pi'
@@ -467,4 +467,3 @@ end Pi
 end CartesianProduct
 
 end
-
