@@ -115,8 +115,8 @@ theorem not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
     exact not_isUnit_zero
 #align minpoly.not_is_unit minpoly.not_isUnit
 
-theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) : x ∈ (algebraMap A B).range :=
-  by
+theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
+    x ∈ (algebraMap A B).range := by
   have h : IsIntegral A x := by
     by_contra h
     rw [eq_zero h, degree_zero, ← WithBot.coe_one] at hx
@@ -137,8 +137,8 @@ theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
 #align minpoly.min minpoly.min
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
-    (hl : ∀ q : A[X], degree q < degree p → q = 0 ∨ Polynomial.aeval x q ≠ 0) : p = minpoly A x :=
-  by
+    (hl : ∀ q : A[X], degree q < degree p → q = 0 ∨ Polynomial.aeval x q ≠ 0) :
+    p = minpoly A x := by
   nontriviality A
   have hx : IsIntegral A x := ⟨p, hm, hp⟩
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
