@@ -417,12 +417,12 @@ theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
   addVal_def _ u hϖ n rfl
 #align discrete_valuation_ring.add_val_def' DiscreteValuationRing.addVal_def'
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem addVal_zero : addVal R 0 = ⊤ :=
   (addVal R).map_zero
 #align discrete_valuation_ring.add_val_zero DiscreteValuationRing.addVal_zero
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem addVal_one : addVal R 1 = 0 :=
   (addVal R).map_one
 #align discrete_valuation_ring.add_val_one DiscreteValuationRing.addVal_one
