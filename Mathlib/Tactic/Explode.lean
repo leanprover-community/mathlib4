@@ -37,15 +37,15 @@ def ppConst (e : Expr) : MessageData :=
 /-- Core `explode` algorithm.
 
 - `select` is a condition for which expressions to process
-- `omitDeps` is whether to omit dependencies that were filtered out.
-  If `False`, then `None` is inserted for omitted dependencies
+- `includeAllDeps` is whether to include dependencies even if they were filtered out.
+  If `True`, then `None` is inserted for omitted dependencies
 - `e` is the expression to process
 - `depth` is the current abstraction depth
 - `entries` is the table so far
 - `start` is whether we are at the top-level of the expression, which
   causes lambdas to use `Status.sintro` to prevent a layer of nesting.
 -/
-partial def explode_core (select : Expr → MetaM Bool) (omitDeps : Bool) (e : Expr)
+partial def explode_core (select : Expr → MetaM Bool) (includeAllDeps : Bool) (e : Expr)
     (depth : Nat) (entries : Entries) (start : Bool := false) :
     MetaM (Option Entry × Entries) :=
   explode_core' e depth entries start
@@ -54,7 +54,7 @@ where
   with `useAsDep` then it's not added to the list at all. -/
   consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
     if let some entry := entry? then
-      if entry.useAsDep then entry.line! :: deps else deps
+      if includeAllDeps || entry.useAsDep then entry.line! :: deps else deps
     else
       deps
 
@@ -159,7 +159,7 @@ where
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let filter (e : Expr) : MetaM Bool :=
     if filterProofs then Meta.isProof e else return true
-  let (_, entries) ← explode_core (start := true) filter true e 0 default
+  let (_, entries) ← explode_core (start := true) filter false e 0 default
   return entries
 
 open Elab in
