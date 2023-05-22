@@ -99,7 +99,6 @@ private def candidatesB : Set (Cb X Y) :=
 
 end Definitions
 
---section
 section Constructions
 
 variable {X : Type u} {Y : Type v} [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
@@ -429,7 +428,6 @@ private theorem HD_continuous : Continuous (HD : Cb X Y → ℝ) :=
 
 end Constructions
 
---section
 section Consequences
 
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
