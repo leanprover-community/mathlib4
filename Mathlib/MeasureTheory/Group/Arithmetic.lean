@@ -115,7 +115,7 @@ theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.const_mul [MeasurableMul M] (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c * f x) μ :=
-  (MeasurableMul.measurable_const_mul c).comp_aemeasurable hf
+  (MeasurableMul.measurable_const_mul c).comp_aeMeasurable hf
 #align ae_measurable.const_mul AEMeasurable.const_mul
 #align ae_measurable.const_add AEMeasurable.const_add
 
@@ -129,7 +129,7 @@ theorem Measurable.mul_const [MeasurableMul M] (hf : Measurable f) (c : M) :
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x * c) μ :=
-  (measurable_mul_const c).comp_aemeasurable hf
+  (measurable_mul_const c).comp_aeMeasurable hf
 #align ae_measurable.mul_const AEMeasurable.mul_const
 #align ae_measurable.add_const AEMeasurable.add_const
 
@@ -150,14 +150,14 @@ theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f * g) μ :=
-  measurable_mul.comp_aemeasurable (hf.prod_mk hg)
+  measurable_mul.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.mul' AEMeasurable.mul'
 #align ae_measurable.add' AEMeasurable.add'
 
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a * g a) μ :=
-  measurable_mul.comp_aemeasurable (hf.prod_mk hg)
+  measurable_mul.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.mul AEMeasurable.mul
 #align ae_measurable.add AEMeasurable.add
 
@@ -224,7 +224,7 @@ theorem Measurable.pow (hf : Measurable f) (hg : Measurable g) : Measurable fun 
 @[measurability]
 theorem AEMeasurable.pow (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => f x ^ g x) μ :=
-  measurable_pow.comp_aemeasurable (hf.prod_mk hg)
+  measurable_pow.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.pow AEMeasurable.pow
 
 @[measurability]
@@ -235,7 +235,7 @@ theorem Measurable.pow_const (hf : Measurable f) (c : γ) : Measurable fun x => 
 @[measurability]
 theorem AEMeasurable.pow_const (hf : AEMeasurable f μ) (c : γ) :
     AEMeasurable (fun x => f x ^ c) μ :=
-  hf.pow aemeasurable_const
+  hf.pow aeMeasurable_const
 #align ae_measurable.pow_const AEMeasurable.pow_const
 
 @[measurability]
@@ -246,7 +246,7 @@ theorem Measurable.const_pow (hg : Measurable g) (c : β) : Measurable fun x => 
 @[measurability]
 theorem AEMeasurable.const_pow (hg : AEMeasurable g μ) (c : β) :
     AEMeasurable (fun x => c ^ g x) μ :=
-  aemeasurable_const.pow hg
+  aeMeasurable_const.pow hg
 #align ae_measurable.const_pow AEMeasurable.const_pow
 
 end Pow
@@ -308,7 +308,7 @@ theorem Measurable.const_div [MeasurableDiv G] (hf : Measurable f) (c : G) :
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.const_div [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G) :
     AEMeasurable (fun x => c / f x) μ :=
-  (MeasurableDiv.measurable_const_div c).comp_aemeasurable hf
+  (MeasurableDiv.measurable_const_div c).comp_aeMeasurable hf
 #align ae_measurable.const_div AEMeasurable.const_div
 #align ae_measurable.const_sub AEMeasurable.const_sub
 
@@ -322,7 +322,7 @@ theorem Measurable.div_const [MeasurableDiv G] (hf : Measurable f) (c : G) :
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G) :
     AEMeasurable (fun x => f x / c) μ :=
-  (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
+  (MeasurableDiv.measurable_div_const c).comp_aeMeasurable hf
 #align ae_measurable.div_const AEMeasurable.div_const
 #align ae_measurable.sub_const AEMeasurable.sub_const
 
@@ -343,14 +343,14 @@ theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f / g) μ :=
-  measurable_div.comp_aemeasurable (hf.prod_mk hg)
+  measurable_div.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.div' AEMeasurable.div'
 #align ae_measurable.sub' AEMeasurable.sub'
 
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a / g a) μ :=
-  measurable_div.comp_aemeasurable (hf.prod_mk hg)
+  measurable_div.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.div AEMeasurable.div
 #align ae_measurable.sub AEMeasurable.sub
 
@@ -462,7 +462,7 @@ theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
 
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
-  measurable_inv.comp_aemeasurable hf
+  measurable_inv.comp_aeMeasurable hf
 #align ae_measurable.inv AEMeasurable.inv
 #align ae_measurable.neg AEMeasurable.neg
 
@@ -474,11 +474,11 @@ theorem measurable_inv_iff {G : Type _} [Group G] [MeasurableSpace G] [Measurabl
 #align measurable_neg_iff measurable_neg_iff
 
 @[to_additive (attr := simp)]
-theorem aemeasurable_inv_iff {G : Type _} [Group G] [MeasurableSpace G] [MeasurableInv G]
+theorem aeMeasurable_inv_iff {G : Type _} [Group G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
-#align ae_measurable_inv_iff aemeasurable_inv_iff
-#align ae_measurable_neg_iff aemeasurable_neg_iff
+#align ae_measurable_inv_iff aeMeasurable_inv_iff
+#align ae_measurable_neg_iff aeMeasurable_neg_iff
 
 @[simp]
 theorem measurable_inv_iff₀ {G₀ : Type _} [GroupWithZero G₀] [MeasurableSpace G₀]
@@ -487,10 +487,10 @@ theorem measurable_inv_iff₀ {G₀ : Type _} [GroupWithZero G₀] [MeasurableSp
 #align measurable_inv_iff₀ measurable_inv_iff₀
 
 @[simp]
-theorem aemeasurable_inv_iff₀ {G₀ : Type _} [GroupWithZero G₀] [MeasurableSpace G₀]
+theorem aeMeasurable_inv_iff₀ {G₀ : Type _} [GroupWithZero G₀] [MeasurableSpace G₀]
     [MeasurableInv G₀] {f : α → G₀} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
-#align ae_measurable_inv_iff₀ aemeasurable_inv_iff₀
+#align ae_measurable_inv_iff₀ aeMeasurable_inv_iff₀
 
 @[to_additive]
 instance Pi.measurableInv {ι : Type _} {α : ι → Type _} [∀ i, Inv (α i)]
@@ -617,7 +617,7 @@ theorem Measurable.smul [MeasurableSMul₂ M β] (hf : Measurable f) (hg : Measu
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.smul [MeasurableSMul₂ M β] {μ : Measure α} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun x => f x • g x) μ :=
-  MeasurableSMul₂.measurable_smul.comp_aemeasurable (hf.prod_mk hg)
+  MeasurableSMul₂.measurable_smul.comp_aeMeasurable (hf.prod_mk hg)
 #align ae_measurable.smul AEMeasurable.smul
 #align ae_measurable.vadd AEMeasurable.vadd
 
@@ -639,7 +639,7 @@ theorem Measurable.smul_const (hf : Measurable f) (y : β) : Measurable fun x =>
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.smul_const (hf : AEMeasurable f μ) (y : β) :
     AEMeasurable (fun x => f x • y) μ :=
-  (MeasurableSMul.measurable_smul_const y).comp_aemeasurable hf
+  (MeasurableSMul.measurable_smul_const y).comp_aeMeasurable hf
 #align ae_measurable.smul_const AEMeasurable.smul_const
 #align ae_measurable.vadd_const AEMeasurable.vadd_const
 
@@ -658,7 +658,7 @@ theorem Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g)
 @[to_additive (attr := measurability)]
 theorem AEMeasurable.const_smul' (hg : AEMeasurable g μ) (c : M) :
     AEMeasurable (fun x => c • g x) μ :=
-  (MeasurableSMul.measurable_const_smul c).comp_aemeasurable hg
+  (MeasurableSMul.measurable_const_smul c).comp_aeMeasurable hg
 #align ae_measurable.const_smul' AEMeasurable.const_smul'
 #align ae_measurable.const_vadd' AEMeasurable.const_vadd'
 
@@ -718,11 +718,11 @@ theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ 
 #align measurable_const_vadd_iff measurable_const_vadd_iff
 
 @[to_additive]
-theorem aemeasurable_const_smul_iff (c : G) :
+theorem aeMeasurable_const_smul_iff (c : G) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
-#align ae_measurable_const_smul_iff aemeasurable_const_smul_iff
-#align ae_measurable_const_vadd_iff aemeasurable_const_vadd_iff
+#align ae_measurable_const_smul_iff aeMeasurable_const_smul_iff
+#align ae_measurable_const_vadd_iff aeMeasurable_const_vadd_iff
 
 @[to_additive]
 instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.comap ((↑) : Mˣ → M) ‹_›
@@ -746,12 +746,12 @@ nonrec theorem IsUnit.measurable_const_smul_iff {c : M} (hc : IsUnit c) :
 #align is_add_unit.measurable_const_vadd_iff IsAddUnit.measurable_const_vadd_iff
 
 @[to_additive]
-nonrec theorem IsUnit.aemeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
+nonrec theorem IsUnit.aeMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   let ⟨u, hu⟩ := hc
-  hu ▸ aemeasurable_const_smul_iff u
-#align is_unit.ae_measurable_const_smul_iff IsUnit.aemeasurable_const_smul_iff
-#align is_add_unit.ae_measurable_const_vadd_iff IsAddUnit.aemeasurable_const_vadd_iff
+  hu ▸ aeMeasurable_const_smul_iff u
+#align is_unit.ae_measurable_const_smul_iff IsUnit.aeMeasurable_const_smul_iff
+#align is_add_unit.ae_measurable_const_vadd_iff IsAddUnit.aeMeasurable_const_vadd_iff
 
 variable {G₀ : Type _} [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β]
   [MeasurableSMul G₀ β]
@@ -761,10 +761,10 @@ theorem measurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
   (IsUnit.mk0 c hc).measurable_const_smul_iff
 #align measurable_const_smul_iff₀ measurable_const_smul_iff₀
 
-theorem aemeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
+theorem aeMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
-  (IsUnit.mk0 c hc).aemeasurable_const_smul_iff
-#align ae_measurable_const_smul_iff₀ aemeasurable_const_smul_iff₀
+  (IsUnit.mk0 c hc).aeMeasurable_const_smul_iff
+#align ae_measurable_const_smul_iff₀ aeMeasurable_const_smul_iff₀
 
 end MulAction
 
@@ -868,14 +868,14 @@ theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurabl
 #align list.measurable_sum' List.measurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem List.aemeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+theorem List.aeMeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
-  induction' l with f l ihl; · exact aemeasurable_one
+  induction' l with f l ihl; · exact aeMeasurable_one
   rw [List.forall_mem_cons] at hl
   rw [List.prod_cons]
   exact hl.1.mul (ihl hl.2)
-#align list.ae_measurable_prod' List.aemeasurable_prod'
-#align list.ae_measurable_sum' List.aemeasurable_sum'
+#align list.ae_measurable_prod' List.aeMeasurable_prod'
+#align list.ae_measurable_sum' List.aeMeasurable_sum'
 
 @[to_additive (attr := measurability)]
 theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
@@ -885,11 +885,11 @@ theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable
 #align list.measurable_sum List.measurable_sum
 
 @[to_additive (attr := measurability)]
-theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+theorem List.aeMeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod' hl
-#align list.ae_measurable_prod List.aemeasurable_prod
-#align list.ae_measurable_sum List.aemeasurable_sum
+  simpa only [← Pi.list_prod_apply] using l.aeMeasurable_prod' hl
+#align list.ae_measurable_prod List.aeMeasurable_prod
+#align list.ae_measurable_sum List.aeMeasurable_sum
 
 end Monoid
 
@@ -907,12 +907,12 @@ theorem Multiset.measurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, M
 #align multiset.measurable_sum' Multiset.measurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem Multiset.aemeasurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+theorem Multiset.aeMeasurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   rcases l with ⟨l⟩
-  simpa using l.aemeasurable_prod' (by simpa using hl)
-#align multiset.ae_measurable_prod' Multiset.aemeasurable_prod'
-#align multiset.ae_measurable_sum' Multiset.aemeasurable_sum'
+  simpa using l.aeMeasurable_prod' (by simpa using hl)
+#align multiset.ae_measurable_prod' Multiset.aeMeasurable_prod'
+#align multiset.ae_measurable_sum' Multiset.aeMeasurable_sum'
 
 @[to_additive (attr := measurability)]
 theorem Multiset.measurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
@@ -922,11 +922,11 @@ theorem Multiset.measurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Me
 #align multiset.measurable_sum Multiset.measurable_sum
 
 @[to_additive (attr := measurability)]
-theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
+theorem Multiset.aeMeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
     AEMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod' hs
-#align multiset.ae_measurable_prod Multiset.aemeasurable_prod
-#align multiset.ae_measurable_sum Multiset.aemeasurable_sum
+  simpa only [← Pi.multiset_prod_apply] using s.aeMeasurable_prod' hs
+#align multiset.ae_measurable_prod Multiset.aeMeasurable_prod
+#align multiset.ae_measurable_sum Multiset.aeMeasurable_sum
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
@@ -943,19 +943,19 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 #align finset.measurable_sum Finset.measurable_sum
 
 @[to_additive (attr := measurability)]
-theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
+theorem Finset.aeMeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i in s, f i) μ :=
-  Multiset.aemeasurable_prod' _ fun _g hg =>
+  Multiset.aeMeasurable_prod' _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
-#align finset.ae_measurable_prod' Finset.aemeasurable_prod'
-#align finset.ae_measurable_sum' Finset.aemeasurable_sum'
+#align finset.ae_measurable_prod' Finset.aeMeasurable_prod'
+#align finset.ae_measurable_sum' Finset.aeMeasurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
+theorem Finset.aeMeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i in s, f i a) μ := by
-  simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
-#align finset.ae_measurable_prod Finset.aemeasurable_prod
-#align finset.ae_measurable_sum Finset.aemeasurable_sum
+  simpa only [← Finset.prod_apply] using s.aeMeasurable_prod' hf
+#align finset.ae_measurable_prod Finset.aeMeasurable_prod
+#align finset.ae_measurable_sum Finset.aeMeasurable_sum
 
 end CommMonoid

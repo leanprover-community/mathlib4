@@ -1142,14 +1142,14 @@ irreducible_def map [MeasurableSpace α] (f : α → β) (μ : Measure α) : Mea
   if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
 #align measure_theory.measure.map MeasureTheory.Measure.map
 
-theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
+theorem mapₗ_mk_apply_of_aeMeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]
-#align measure_theory.measure.mapₗ_mk_apply_of_ae_measurable MeasureTheory.Measure.mapₗ_mk_apply_of_aemeasurable
+#align measure_theory.measure.mapₗ_mk_apply_of_ae_measurable MeasureTheory.Measure.mapₗ_mk_apply_of_aeMeasurable
 
 theorem mapₗ_apply_of_measurable {f : α → β} (hf : Measurable f) (μ : Measure α) :
     mapₗ f μ = map f μ := by
-  simp only [← mapₗ_mk_apply_of_aemeasurable hf.aemeasurable]
-  exact mapₗ_congr hf hf.aemeasurable.measurable_mk hf.aemeasurable.ae_eq_mk
+  simp only [← mapₗ_mk_apply_of_aeMeasurable hf.aeMeasurable]
+  exact mapₗ_congr hf hf.aeMeasurable.measurable_mk hf.aeMeasurable.ae_eq_mk
 #align measure_theory.measure.mapₗ_apply_of_measurable MeasureTheory.Measure.mapₗ_apply_of_measurable
 
 @[simp]
@@ -1162,18 +1162,18 @@ theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 #align measure_theory.measure.map_zero MeasureTheory.Measure.map_zero
 
-theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
+theorem map_of_not_aeMeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
     μ.map f = 0 := by simp [map, hf]
-#align measure_theory.measure.map_of_not_ae_measurable MeasureTheory.Measure.map_of_not_aemeasurable
+#align measure_theory.measure.map_of_not_ae_measurable MeasureTheory.Measure.map_of_not_aeMeasurable
 
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
   · have hg : AEMeasurable g μ := hf.congr h
-    simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hg]
+    simp only [← mapₗ_mk_apply_of_aeMeasurable hf, ← mapₗ_mk_apply_of_aeMeasurable hg]
     exact
       mapₗ_congr hf.measurable_mk hg.measurable_mk (hf.ae_eq_mk.symm.trans (h.trans hg.ae_eq_mk))
-  · have hg : ¬AEMeasurable g μ := by simpa [← aemeasurable_congr h] using hf
-    simp [map_of_not_aemeasurable, hf, hg]
+  · have hg : ¬AEMeasurable g μ := by simpa [← aeMeasurable_congr h] using hf
+    simp [map_of_not_aeMeasurable, hf, hg]
 #align measure_theory.measure.map_congr MeasureTheory.Measure.map_congr
 
 @[simp]
@@ -1183,7 +1183,7 @@ protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
       ⟨hf.mk f, hf.measurable_mk, (ae_smul_measure_iff hc).2 hf.ae_eq_mk⟩
-    simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc,
+    simp only [← mapₗ_mk_apply_of_aeMeasurable hf, ← mapₗ_mk_apply_of_aeMeasurable hfc,
       LinearMap.map_smulₛₗ, RingHom.id_apply]
     congr 1
     apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
@@ -1191,7 +1191,7 @@ protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
   · have hfc : ¬AEMeasurable f (c • μ) := by
       intro hfc
       exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
-    simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
+    simp [map_of_not_aeMeasurable hf, map_of_not_aeMeasurable hfc]
 #align measure_theory.measure.map_smul MeasureTheory.Measure.map_smul
 
 @[simp]
@@ -1203,24 +1203,24 @@ protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β
 /-- We can evaluate the pushforward on measurable sets. For non-measurable sets, see
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
-theorem map_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
+theorem map_apply_of_aeMeasurable {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) := by
   simpa only [mapₗ, hf.measurable_mk, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply,
-    ← mapₗ_mk_apply_of_aemeasurable hf] using
+    ← mapₗ_mk_apply_of_aeMeasurable hf] using
     measure_congr (hf.ae_eq_mk.symm.preimage s)
-#align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aemeasurable
+#align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aeMeasurable
 
 @[simp]
 theorem map_apply {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
     μ.map f s = μ (f ⁻¹' s) :=
-  map_apply_of_aemeasurable hf.aemeasurable hs
+  map_apply_of_aeMeasurable hf.aeMeasurable hs
 #align measure_theory.measure.map_apply MeasureTheory.Measure.map_apply
 
 theorem map_toOuterMeasure {f : α → β} (hf : AEMeasurable f μ) :
     (μ.map f).toOuterMeasure = (OuterMeasure.map f μ.toOuterMeasure).trim := by
   rw [← trimmed, OuterMeasure.trim_eq_trim_iff]
   intro s hs
-  rw [map_apply_of_aemeasurable hf hs, OuterMeasure.map_apply]
+  rw [map_apply_of_aeMeasurable hf hs, OuterMeasure.map_apply]
 #align measure_theory.measure.map_to_outer_measure MeasureTheory.Measure.map_toOuterMeasure
 
 @[simp]
@@ -1240,7 +1240,7 @@ theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measur
 
 @[mono]
 theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f ≤ ν.map f := fun s hs => by
-  simp [hf.aemeasurable, hs, h _ (hf hs)]
+  simp [hf.aeMeasurable, hs, h _ (hf hs)]
 #align measure_theory.measure.map_mono MeasureTheory.Measure.map_mono
 
 /-- Even if `s` is not measurable, we can bound `map f μ s` from below.
@@ -1250,7 +1250,7 @@ theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ 
     μ (f ⁻¹' s) ≤ μ (f ⁻¹' toMeasurable (μ.map f) s) :=
       measure_mono <| preimage_mono <| subset_toMeasurable _ _
     _ = μ.map f (toMeasurable (μ.map f) s) :=
-      (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
+      (map_apply_of_aeMeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
 
 #align measure_theory.measure.le_map_apply MeasureTheory.Measure.le_map_apply
@@ -1760,7 +1760,7 @@ theorem restrict_iUnion_apply_eq_iSup [Countable ι] {s : ι → Set α} (hd : D
 #align measure_theory.measure.restrict_Union_apply_eq_supr MeasureTheory.Measure.restrict_iUnion_apply_eq_iSup
 
 /-- The restriction of the pushforward measure is the pushforward of the restriction. For a version
-assuming only `AEMeasurable`, see `restrict_map_of_aemeasurable`. -/
+assuming only `AEMeasurable`, see `restrict_map_of_aeMeasurable`. -/
 theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
     (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
   ext fun t ht => by simp [*, hf ht]
@@ -2470,16 +2470,16 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
   | n + 1 => (hf.iterate n).comp hf
 #align measure_theory.measure.quasi_measure_preserving.iterate MeasureTheory.Measure.QuasiMeasurePreserving.iterate
 
-protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
-#align measure_theory.measure.quasi_measure_preserving.ae_measurable MeasureTheory.Measure.QuasiMeasurePreserving.aemeasurable
+protected theorem aeMeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
+  hf.1.aeMeasurable
+#align measure_theory.measure.quasi_measure_preserving.ae_measurable MeasureTheory.Measure.QuasiMeasurePreserving.aeMeasurable
 
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : (μa.map f).ae ≤ μb.ae :=
   h.2.ae_le
 #align measure_theory.measure.quasi_measure_preserving.ae_map_le MeasureTheory.Measure.QuasiMeasurePreserving.ae_map_le
 
 theorem tendsto_ae (h : QuasiMeasurePreserving f μa μb) : Tendsto f μa.ae μb.ae :=
-  (tendsto_ae_map h.aemeasurable).mono_right h.ae_map_le
+  (tendsto_ae_map h.aeMeasurable).mono_right h.ae_map_le
 #align measure_theory.measure.quasi_measure_preserving.tendsto_ae MeasureTheory.Measure.QuasiMeasurePreserving.tendsto_ae
 
 theorem ae (h : QuasiMeasurePreserving f μa μb) {p : β → Prop} (hg : ∀ᵐ x ∂μb, p x) :
@@ -2494,13 +2494,13 @@ theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg
 
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
-  preimage_null_of_map_null h.aemeasurable (h.2 hs)
+  preimage_null_of_map_null h.aeMeasurable (h.2 hs)
 #align measure_theory.measure.quasi_measure_preserving.preimage_null MeasureTheory.Measure.QuasiMeasurePreserving.preimage_null
 
 theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ≤ᵐ[μb] t) :
     f ⁻¹' s ≤ᵐ[μa] f ⁻¹' t :=
   eventually_map.mp <|
-    Eventually.filter_mono (tendsto_ae_map hf.aemeasurable) (Eventually.filter_mono hf.ae_map_le h)
+    Eventually.filter_mono (tendsto_ae_map hf.aeMeasurable) (Eventually.filter_mono hf.ae_map_le h)
 #align measure_theory.measure.quasi_measure_preserving.preimage_mono_ae MeasureTheory.Measure.QuasiMeasurePreserving.preimage_mono_ae
 
 theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐ[μb] t) :
@@ -2682,7 +2682,7 @@ theorem ae_mono (h : μ ≤ ν) : μ.ae ≤ ν.ae :=
 
 theorem mem_ae_map_iff {f : α → β} (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
     s ∈ (μ.map f).ae ↔ f ⁻¹' s ∈ μ.ae := by
-  simp only [mem_ae_iff, map_apply_of_aemeasurable hf hs.compl, preimage_compl]
+  simp only [mem_ae_iff, map_apply_of_aeMeasurable hf hs.compl, preimage_compl]
 #align measure_theory.mem_ae_map_iff MeasureTheory.mem_ae_map_iff
 
 theorem mem_ae_of_mem_ae_map {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
@@ -2707,7 +2707,7 @@ theorem ae_map_mem_range {m0 : MeasurableSpace α} (f : α → β) (hf : Measura
     rw [mem_ae_map_iff h hf]
     apply eventually_of_forall
     exact mem_range_self
-  · simp [map_of_not_aemeasurable h]
+  · simp [map_of_not_aeMeasurable h]
 #align measure_theory.ae_map_mem_range MeasureTheory.ae_map_mem_range
 
 @[simp]
@@ -2866,7 +2866,7 @@ theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : A
 
 theorem Measure.QuasiMeasurePreserving.ae_eq_comp {ν : Measure β} {f : α → β} {g g' : β → δ}
     (hf : QuasiMeasurePreserving f μ ν) (h : g =ᵐ[ν] g') : g ∘ f =ᵐ[μ] g' ∘ f :=
-  ae_eq_comp' hf.aemeasurable h hf.absolutelyContinuous
+  ae_eq_comp' hf.aeMeasurable h hf.absolutelyContinuous
 #align measure_theory.measure.quasi_measure_preserving.ae_eq_comp MeasureTheory.Measure.QuasiMeasurePreserving.ae_eq_comp
 
 theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
@@ -3113,9 +3113,9 @@ theorem Measure.finiteMeasureMap {m : MeasurableSpace α} (μ : Measure α) [Fin
     (f : α → β) : FiniteMeasure (μ.map f) := by
   by_cases hf : AEMeasurable f μ
   · constructor
-    rw [map_apply_of_aemeasurable hf MeasurableSet.univ]
+    rw [map_apply_of_aeMeasurable hf MeasurableSet.univ]
     exact measure_lt_top μ _
-  · rw [map_of_not_aemeasurable hf]
+  · rw [map_of_not_aeMeasurable hf]
     exact MeasureTheory.finiteMeasureZero
 #align measure_theory.measure.is_finite_measure_map MeasureTheory.Measure.finiteMeasureMap
 
@@ -3221,7 +3221,7 @@ theorem isProbabilityMeasureSmul [FiniteMeasure μ] (h : μ ≠ 0) :
 
 theorem isProbabilityMeasureMap [ProbabilityMeasure μ] {f : α → β} (hf : AEMeasurable f μ) :
     ProbabilityMeasure (map f μ) :=
-  ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+  ⟨by simp [map_apply_of_aeMeasurable, hf]⟩
 #align measure_theory.is_probability_measure_map MeasureTheory.isProbabilityMeasureMap
 
 @[simp]
@@ -3832,14 +3832,14 @@ instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] 
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
   ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by
-        simp only [← map_apply_of_aemeasurable hf, measurable_spanningSets,
+        simp only [← map_apply_of_aeMeasurable hf, measurable_spanningSets,
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 #align measure_theory.sigma_finite.of_map MeasureTheory.SigmaFinite.of_map
 
 theorem _root_.MeasurableEquiv.sigmaFinite_map {μ : Measure α} (f : α ≃ᵐ β) (h : SigmaFinite μ) :
     SigmaFinite (μ.map f) := by
-  refine' SigmaFinite.of_map _ f.symm.measurable.aemeasurable _
+  refine' SigmaFinite.of_map _ f.symm.measurable.aeMeasurable _
   rwa [map_map f.symm.measurable f.measurable, f.symm_comp_self, Measure.map_id]
 #align measurable_equiv.sigma_finite_map MeasurableEquiv.sigmaFinite_map
 
@@ -4159,7 +4159,7 @@ namespace MeasurableEmbedding
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
 
 nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻¹' s) := by
-  refine' le_antisymm _ (le_map_apply hf.measurable.aemeasurable s)
+  refine' le_antisymm _ (le_map_apply hf.measurable.aeMeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ range fᶜ
   have htm : MeasurableSet t :=
     (hf.measurableSet_image.2 <| measurableSet_toMeasurable _ _).union

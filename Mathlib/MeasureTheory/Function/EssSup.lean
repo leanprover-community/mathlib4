@@ -236,7 +236,7 @@ theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
 
 theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable)
+  refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf.measurable.aeMeasurable)
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => _)
   rw [eventually_map] at h_le ⊢
   exact hf.ae_map_iff.mpr h_le

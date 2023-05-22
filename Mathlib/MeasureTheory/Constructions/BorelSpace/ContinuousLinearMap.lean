@@ -92,7 +92,7 @@ theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ :
 @[measurability]
 theorem AEMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} {μ : Measure α}
     (hφ : AEMeasurable φ μ) (v : F) : AEMeasurable (fun a => φ a v) μ :=
-  (ContinuousLinearMap.apply 𝕜 E v).measurable.comp_aemeasurable hφ
+  (ContinuousLinearMap.apply 𝕜 E v).measurable.comp_aeMeasurable hφ
 #align ae_measurable.apply_continuous_linear_map AEMeasurable.apply_continuousLinearMap
 
 end ContinuousLinearMapNontriviallyNormedField
@@ -109,9 +109,9 @@ theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
   (closedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
 #align measurable_smul_const measurable_smul_const
 
-theorem aemeasurable_smul_const {f : α → 𝕜} {μ : Measure α} {c : E} (hc : c ≠ 0) :
+theorem aeMeasurable_smul_const {f : α → 𝕜} {μ : Measure α} {c : E} (hc : c ≠ 0) :
     AEMeasurable (fun x => f x • c) μ ↔ AEMeasurable f μ :=
-  (closedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
-#align ae_measurable_smul_const aemeasurable_smul_const
+  (closedEmbedding_smul_left hc).measurableEmbedding.aeMeasurable_comp_iff
+#align ae_measurable_smul_const aeMeasurable_smul_const
 
 end NormedSpace

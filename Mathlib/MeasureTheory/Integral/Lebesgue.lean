@@ -613,7 +613,7 @@ integral of `f + g` equals the sum of integrals. This lemma assumes that `g` is 
 @[simp]
 theorem lintegral_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg : Measurable g) :
     (∫⁻ a, f a + g a ∂μ) = (∫⁻ a, f a ∂μ) + ∫⁻ a, g a ∂μ :=
-  lintegral_add_right' f hg.aemeasurable
+  lintegral_add_right' f hg.aeMeasurable
 #align measure_theory.lintegral_add_right MeasureTheory.lintegral_add_right
 
 @[simp]
@@ -689,7 +689,7 @@ theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
 
 theorem lintegral_finset_sum (s : Finset β) {f : β → α → ℝ≥0∞} (hf : ∀ b ∈ s, Measurable (f b)) :
     (∫⁻ a, ∑ b in s, f b a ∂μ) = ∑ b in s, ∫⁻ a, f b a ∂μ :=
-  lintegral_finset_sum' s fun b hb => (hf b hb).aemeasurable
+  lintegral_finset_sum' s fun b hb => (hf b hb).aeMeasurable
 #align measure_theory.lintegral_finset_sum MeasureTheory.lintegral_finset_sum
 
 @[simp]
@@ -850,7 +850,7 @@ theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f
 `ae_measurable`, see `mul_meas_ge_le_lintegral₀`. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
-  mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
+  mul_meas_ge_le_lintegral₀ hf.aeMeasurable ε
 #align measure_theory.mul_meas_ge_le_lintegral MeasureTheory.mul_meas_ge_le_lintegral
 
 theorem lintegral_eq_top_of_measure_eq_top_pos {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
@@ -897,7 +897,7 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
 
 @[simp]
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : (∫⁻ a, f a ∂μ) = 0 ↔ f =ᵐ[μ] 0 :=
-  lintegral_eq_zero_iff' hf.aemeasurable
+  lintegral_eq_zero_iff' hf.aeMeasurable
 #align measure_theory.lintegral_eq_zero_iff MeasureTheory.lintegral_eq_zero_iff
 
 theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
@@ -933,7 +933,7 @@ theorem lintegral_sub' {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ) (hg_fi
 
 theorem lintegral_sub {f g : α → ℝ≥0∞} (hg : Measurable g) (hg_fin : (∫⁻ a, g a ∂μ) ≠ ∞)
     (h_le : g ≤ᵐ[μ] f) : (∫⁻ a, f a - g a ∂μ) = (∫⁻ a, f a ∂μ) - ∫⁻ a, g a ∂μ :=
-  lintegral_sub' hg.aemeasurable hg_fin h_le
+  lintegral_sub' hg.aeMeasurable hg_fin h_le
 #align measure_theory.lintegral_sub MeasureTheory.lintegral_sub
 
 theorem lintegral_sub_le' (f g : α → ℝ≥0∞) (hf : AEMeasurable f μ) :
@@ -948,7 +948,7 @@ theorem lintegral_sub_le' (f g : α → ℝ≥0∞) (hf : AEMeasurable f μ) :
 
 theorem lintegral_sub_le (f g : α → ℝ≥0∞) (hf : Measurable f) :
     ((∫⁻ x, g x ∂μ) - ∫⁻ x, f x ∂μ) ≤ ∫⁻ x, g x - f x ∂μ :=
-  lintegral_sub_le' f g hf.aemeasurable
+  lintegral_sub_le' f g hf.aeMeasurable
 #align measure_theory.lintegral_sub_le MeasureTheory.lintegral_sub_le
 
 theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
@@ -976,7 +976,7 @@ theorem lintegral_strict_mono {f g : α → ℝ≥0∞} (hμ : μ ≠ 0) (hg : A
 theorem set_lintegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hs : μ s ≠ 0) (hg : Measurable g) (hfi : (∫⁻ x in s, f x ∂μ) ≠ ∞)
     (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : (∫⁻ x in s, f x ∂μ) < ∫⁻ x in s, g x ∂μ :=
-  lintegral_strict_mono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
+  lintegral_strict_mono (by simp [hs]) hg.aeMeasurable hfi ((ae_restrict_iff' hsm).mpr h)
 #align measure_theory.set_lintegral_strict_mono MeasureTheory.set_lintegral_strict_mono
 
 /-- Monotone convergence theorem for nonincreasing sequences of functions -/
@@ -1023,7 +1023,7 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
     (∫⁻ a, liminf (fun n => f n a) atTop ∂μ) = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
       simp only [liminf_eq_iSup_iInf_of_nat]
     _ = ⨆ n : ℕ, ∫⁻ a, ⨅ i ≥ n, f i a ∂μ :=
-      (lintegral_iSup' (fun n => aemeasurable_biInf _ (to_countable _) h_meas)
+      (lintegral_iSup' (fun n => aeMeasurable_biInf _ (to_countable _) h_meas)
         (ae_of_all μ fun a n m hnm => iInf_le_iInf_of_subset fun i hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := (iSup_mono fun n => le_iInf₂_lintegral _)
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
@@ -1033,7 +1033,7 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
 /-- Known as Fatou's lemma -/
 theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
     (∫⁻ a, liminf (fun n => f n a) atTop ∂μ) ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
-  lintegral_liminf_le' fun n => (h_meas n).aemeasurable
+  lintegral_liminf_le' fun n => (h_meas n).aeMeasurable
 #align measure_theory.lintegral_liminf_le MeasureTheory.lintegral_liminf_le
 
 theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf_meas : ∀ n, Measurable (f n))
@@ -1188,7 +1188,7 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
   rw [lintegral_iSup_directed]
   · simp [lintegral_finset_sum' _ fun i _ => hf i]
   · intro b
-    exact Finset.aemeasurable_sum _ fun i _ => hf i
+    exact Finset.aeMeasurable_sum _ fun i _ => hf i
   · intro s t
     use s ∪ t
     constructor
@@ -1431,7 +1431,7 @@ theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α
     (a_mble : Measurable a) {c : ℝ≥0∞} (tsum_le_c : (∑' i, a i) ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0)
     (ε_ne_top : ε ≠ ∞) : Measure.count { i : α | ε ≤ a i } ≤ c / ε := by
   rw [← lintegral_count] at tsum_le_c
-  apply (MeasureTheory.meas_ge_le_lintegral_div a_mble.aemeasurable ε_ne_zero ε_ne_top).trans
+  apply (MeasureTheory.meas_ge_le_lintegral_div a_mble.aeMeasurable ε_ne_zero ε_ne_top).trans
   exact ENNReal.div_le_div tsum_le_c rfl.le
 #align ennreal.count_const_le_le_of_tsum_le ENNReal.count_const_le_le_of_tsum_le
 
@@ -1646,7 +1646,7 @@ theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable 
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change (∫⁻ x in s, (∑' n, f n) x ∂μ) = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
-  rw [← lintegral_tsum fun i => (h i).aemeasurable]
+  rw [← lintegral_tsum fun i => (h i).aeMeasurable]
   refine' lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum
 
