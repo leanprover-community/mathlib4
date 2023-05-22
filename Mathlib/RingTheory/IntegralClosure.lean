@@ -102,8 +102,7 @@ theorem isIntegral_of_noetherian (H : IsNoetherian R A) (x : A) : IsIntegral R x
 #align is_integral_of_noetherian isIntegral_of_noetherian
 
 theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
-    (H : IsNoetherian R (Subalgebra.toSubmodule S))
-    (x : A) (hx : x ∈ S) : IsIntegral R x := by
+    (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : A) (hx : x ∈ S) : IsIntegral R x := by
   suffices IsIntegral R (show S from ⟨x, hx⟩) by
     rcases this with ⟨p, hpm, hpx⟩
     replace hpx := congr_arg S.val hpx
@@ -262,10 +261,10 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
     ∃ (l : A →₀ R), l ∈ Finsupp.supported R R ↑y ∧ (Finsupp.total A A R id) l = x := by
     rwa [← @Finsupp.mem_span_image_iff_total A A R _ _ _ id (↑y) x, Set.image_id (y : Set A), hy]
   -- Note that `y ⊆ S`.
-  have hyS : ∀ {p}, p ∈ y → p ∈ S := fun {p} hp => by
-    show p ∈ Subalgebra.toSubmodule S
-    rw [← hy]
-    exact subset_span hp
+  have hyS : ∀ {p}, p ∈ y → p ∈ S := fun {p} hp =>
+    show p ∈ Subalgebra.toSubmodule S by
+      rw [← hy]
+      exact subset_span hp
   -- Now `S` is a subalgebra so the product of two elements of `y` is also in `S`.
   have : ∀ jk : (y ×ᶠ y : Set (A × A)), jk.1.1 * jk.1.2 ∈ (Subalgebra.toSubmodule S) := fun jk =>
     S.mul_mem (hyS (Finset.mem_product.1 jk.2).1) (hyS (Finset.mem_product.1 jk.2).2)
@@ -433,8 +432,8 @@ theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.Fin
       (by
         rw [RingHom.FiniteType]
         convert h'
-        refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra ?_ ?_
-        intros r x
+        -- Porting note: was `ext`
+        refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra _ fun r x => ?_
         exact (Algebra.smul_def _ _).symm)
   -- porting note: the rest of the proof was
   -- `delta RingHom.Finite at this; convert this; ext; exact Algebra.smul_def _ _`
