@@ -19,7 +19,7 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 
 ## Main results
 
-* `quaternion.dual_number_equiv`: quaternions over dual numbers or dual
+* `Quaternion.dualNumberEquiv`: quaternions over dual numbers or dual
   numbers over quaternions are equivalent constructions.
 
 ## References
@@ -35,7 +35,7 @@ namespace Quaternion
 /-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 
-See also `matrix.dual_number_equiv` for a similar result. -/
+See also `Matrix.dualNumberEquiv` for a similar result. -/
 def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion R) where
   toFun q :=
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
@@ -49,7 +49,7 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
     ext : 1
     · rfl
     · dsimp
-      congr 1 <;> ring
+      congr 1 <;> simp <;> ring
   map_add' := by
     rintro ⟨⟨xr, xrε⟩, ⟨xi, xiε⟩, ⟨xj, xjε⟩, ⟨xk, xkε⟩⟩
     rintro ⟨⟨yr, yrε⟩, ⟨yi, yiε⟩, ⟨yj, yjε⟩, ⟨yk, ykε⟩⟩
@@ -57,10 +57,10 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
   commutes' r := rfl
 #align quaternion.dual_number_equiv Quaternion.dualNumberEquiv
 
-/-! Lemmas characterizing `quaternion.dual_number_equiv`. -/
+/-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
 
 
--- `simps` can't work on `dual_number` because it's not a structure
+-- `simps` can't work on `DualNumber` because it's not a structure
 @[simp]
 theorem re_fst_dualNumberEquiv (q : Quaternion (DualNumber R)) :
     (dualNumberEquiv q).fst.re = q.re.fst :=
@@ -158,4 +158,3 @@ theorem snd_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
 #align quaternion.snd_im_k_dual_number_equiv_symm Quaternion.snd_imK_dualNumberEquiv_symm
 
 end Quaternion
-
