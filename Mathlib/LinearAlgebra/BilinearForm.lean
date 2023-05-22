@@ -54,7 +54,7 @@ open BigOperators
 
 universe u v w
 
-/-- `bilin_form R M` is the type of `R`-bilinear functions `M → M → R`. -/
+/-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
 structure BilinForm (R : Type _) (M : Type _) [Semiring R] [AddCommMonoid M] [Module R M] where
   bilin : M → M → R
   bilin_add_left : ∀ x y z : M, bilin (x + y) z = bilin x z + bilin y z
@@ -143,7 +143,7 @@ theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
 
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
--- TODO: instantiate `fun_like`
+-- TODO: instantiate `FunLike`
 theorem coe_injective : Function.Injective ((↑) : BilinForm R M → M → M → R) := fun B D h => by
   cases B
   cases D
@@ -203,10 +203,10 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 #align bilin_form.add_apply BilinForm.add_apply
 
-/-- `bilin_form R M` inherits the scalar action by `α` on `R` if this is compatible with
+/-- `BilinForm R M` inherits the scalar action by `α` on `R` if this is compatible with
 multiplication.
 
-When `R` itself is commutative, this provides an `R`-action via `algebra.id`. -/
+When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] : SMul α (BilinForm R M) where
   smul c B :=
     { bilin := fun x y => c • B x y
@@ -273,7 +273,7 @@ instance : AddCommGroup (BilinForm R₁ M₁) :=
 instance : Inhabited (BilinForm R M) :=
   ⟨0⟩
 
-/-- `coe_fn` as an `add_monoid_hom` -/
+/-- `coe_fn` as an `AddMonoidHom` -/
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   toFun := (↑)
   map_zero' := coe_zero
@@ -292,7 +292,7 @@ section flip
 variable (R₂)
 
 /-- Auxiliary construction for the flip of a bilinear form, obtained by exchanging the left and
-right arguments. This version is a `linear_map`; it is later upgraded to a `linear_equiv`
+right arguments. This version is a `LinearMap`; it is later upgraded to a `LinearEquiv`
 in `flip_hom`. -/
 def flipHomAux [Algebra R₂ R] : BilinForm R M →ₗ[R₂] BilinForm R M where
   toFun A :=
@@ -384,7 +384,7 @@ def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R₂] M →ₗ[R] R where
 
 variable (R₂)
 
-/-- The linear map obtained from a `bilin_form` by fixing the left co-ordinate and evaluating in
+/-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right.
 This is the most general version of the construction; it is `R₂`-linear for some distinguished
 commutative subsemiring `R₂` of the scalar ring.  Over a semiring with no particular distinguished
@@ -416,7 +416,7 @@ theorem toLin'_apply (A : BilinForm R M) (x : M) : ⇑(toLinHom R₂ A x) = A x 
   rfl
 #align bilin_form.to_lin'_apply BilinForm.toLin'_apply
 
-/-- The linear map obtained from a `bilin_form` by fixing the left co-ordinate and evaluating in
+/-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right.
 Over a commutative semiring, use `to_lin`, which is linear rather than `ℕ`-linear. -/
 abbrev toLin' : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
@@ -437,7 +437,7 @@ theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
 
 variable (R₂)
 
-/-- The linear map obtained from a `bilin_form` by fixing the right co-ordinate and evaluating in
+/-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left.
 This is the most general version of the construction; it is `R₂`-linear for some distinguished
 commutative subsemiring `R₂` of the scalar ring.  Over semiring with no particular distinguished
@@ -454,7 +454,7 @@ theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : ⇑(toLinHomFlip R₂ A x
   rfl
 #align bilin_form.to_lin'_flip_apply BilinForm.toLin'Flip_apply
 
-/-- The linear map obtained from a `bilin_form` by fixing the right co-ordinate and evaluating in
+/-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left.
 Over a commutative semiring, use `to_lin_flip`, which is linear rather than `ℕ`-linear. -/
 abbrev toLin'Flip : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
@@ -469,7 +469,7 @@ section EquivLin
 
 /-- A map with two arguments that is linear in both is a bilinear form.
 
-This is an auxiliary definition for the full linear equivalence `linear_map.to_bilin`.
+This is an auxiliary definition for the full linear equivalence `LinearMap.toBilin`.
 -/
 def LinearMap.toBilinAux (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) : BilinForm R₂ M₂ where
   bilin x y := f x y
@@ -760,7 +760,7 @@ theorem linMulLin_compRight (r : M₂ →ₗ[R₂] M₂) :
 end LinMulLin
 
 /-- The proposition that two elements of a bilinear form space are orthogonal. For orthogonality
-of an indexed set of elements, use `bilin_form.is_Ortho`. -/
+of an indexed set of elements, use `BilinForm.IsOrthoᵢ`. -/
 def IsOrtho (B : BilinForm R M) (x y : M) : Prop :=
   B x y = 0
 #align bilin_form.is_ortho BilinForm.IsOrtho
@@ -784,7 +784,7 @@ theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsO
 -- Porting note: TODO is this the right name?
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
-`bilin_form.is_ortho` -/
+`BilinForm.IsOrtho` -/
 def IsOrthoᵢ {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
   Pairwise (B.IsOrtho on v)
 set_option linter.uppercaseLean3 false in
@@ -1348,7 +1348,7 @@ theorem Nondegenerate.ker_eq_bot {B : BilinForm R₂ M₂} (h : B.Nondegenerate)
 #align bilin_form.nondegenerate.ker_eq_bot BilinForm.Nondegenerate.ker_eq_bot
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
-nondegenerate if `disjoint W (B.orthogonal W)`. -/
+nondegenerate if `Disjoint W (B.orthogonal W)`. -/
 theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₁ M₁) (b : B.IsRefl)
     {W : Submodule R₁ M₁} (hW : Disjoint W (B.orthogonal W)) : (B.restrict W).Nondegenerate := by
   rintro ⟨x, hx⟩ b₁
@@ -1524,9 +1524,9 @@ end DualBasis
 
 end
 
-/-! We note that we cannot use `bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal` for the
+/-! We note that we cannot use `BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal` for the
 lemma below since the below lemma does not require `V` to be finite dimensional. However,
-`bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal` does not require `B` to be nondegenerate
+`BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal` does not require `B` to be nondegenerate
 on the whole space. -/
 
 
@@ -1583,7 +1583,7 @@ theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinF
 
 /-- Given the nondegenerate bilinear form `B` and the linear map `φ`,
 `left_adjoint_of_nondegenerate` provides the left adjoint of `φ` with respect to `B`.
-The lemma proving this property is `bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate`. -/
+The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfNondegenerate`. -/
 noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : V →ₗ[K] V :=
   symmCompOfNondegenerate (B.compRight φ) B b
@@ -1595,7 +1595,7 @@ theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nonde
 #align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate BilinForm.isAdjointPairLeftAdjointOfNondegenerate
 
 /-- Given the nondegenerate bilinear form `B`, the linear map `φ` has a unique left adjoint given by
-`bilin_form.left_adjoint_of_nondegenerate`. -/
+`BilinForm.leftAdjointOfNondegenerate`. -/
 theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfNondegenerate b φ :=
   ⟨fun h =>
