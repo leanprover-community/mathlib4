@@ -100,7 +100,8 @@ theorem mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ �
 #align measure_theory.content.mono MeasureTheory.Content.mono
 
 theorem sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂) :
-    μ (K₁ ⊔ K₂) = μ K₁ + μ K₂ := by simp [apply_eq_coe_toFun, μ.sup_disjoint' _ _ h]
+    μ (K₁ ⊔ K₂) = μ K₁ + μ K₂ := by
+  simp [apply_eq_coe_toFun, μ.sup_disjoint' _ _ h]
 #align measure_theory.content.sup_disjoint MeasureTheory.Content.sup_disjoint
 
 theorem sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K₂ := by
@@ -127,7 +128,7 @@ def innerContent (U : Opens G) : ℝ≥0∞ :=
 
 theorem le_innerContent (K : Compacts G) (U : Opens G) (h2 : (K : Set G) ⊆ U) :
     μ K ≤ μ.innerContent U :=
-  le_iSup_of_le K <| le_iSup (fun _ ↦ (toFun μ K : ℝ≥0∞)) h2
+  le_iSup_of_le K <| le_iSup (fun _ ↦ (μ.toFun K : ℝ≥0∞)) h2
 #align measure_theory.content.le_inner_content MeasureTheory.Content.le_innerContent
 
 theorem innerContent_le (U : Opens G) (K : Compacts G) (h2 : (U : Set G) ⊆ K) :
@@ -162,9 +163,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
   cases' le_or_lt (μ.innerContent U) ε with h h
   · exact ⟨⊥, empty_subset _, le_add_left h⟩
   have h₂ := ENNReal.sub_lt_self hU h.ne_bot h'ε
-  conv at h₂ =>
-    rhs
-    rw [innerContent];
+  conv at h₂ => rhs; rw [innerContent]
   simp only [lt_iSup_iff] at h₂
   rcases h₂ with ⟨U, h1U, h2U⟩; refine' ⟨U, h1U, _⟩
   rw [← tsub_le_iff_right]; exact le_of_lt h2U
@@ -172,7 +171,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
 
 /-- The inner content of a supremum of opens is at most the sum of the individual inner
 contents. -/
-theorem innerContent_Sup_nat [T2Space G] (U : ℕ → Opens G) :
+theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
     intro t K
@@ -196,32 +195,33 @@ theorem innerContent_Sup_nat [T2Space G] (U : ℕ → Opens G) :
   refine' le_trans _ (le_iSup _ (L i))
   refine' le_trans _ (le_iSup _ (h2K' i))
   rfl
-#align measure_theory.content.inner_content_Sup_nat MeasureTheory.Content.innerContent_Sup_nat
+#align measure_theory.content.inner_content_Sup_nat MeasureTheory.Content.innerContent_iSup_nat
 
 /-- The inner content of a union of sets is at most the sum of the individual inner contents.
   This is the "unbundled" version of `inner_content_Sup_nat`.
   It required for the API of `induced_outer_measure`. -/
 theorem innerContent_iUnion_nat [T2Space G] ⦃U : ℕ → Set G⦄ (hU : ∀ i : ℕ, IsOpen (U i)) :
     μ.innerContent ⟨⋃ i : ℕ, U i, isOpen_iUnion hU⟩ ≤ ∑' i : ℕ, μ.innerContent ⟨U i, hU i⟩ := by
-  have := μ.innerContent_Sup_nat fun i => ⟨U i, hU i⟩
+  have := μ.innerContent_iSup_nat fun i => ⟨U i, hU i⟩
   rwa [Opens.iSup_def] at this
 #align measure_theory.content.inner_content_Union_nat MeasureTheory.Content.innerContent_iUnion_nat
 
 theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
     (U : Opens G) : μ.innerContent (Opens.comap f.toContinuousMap U) = μ.innerContent U := by
   refine' (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff _
-  intro hK; simp only [Equiv.coe_fn_mk, Subtype.mk_eq_mk, ENNReal.coe_eq_coe, Compacts.equiv]
+  intro hK
+  simp only [Equiv.coe_fn_mk, Subtype.mk_eq_mk, ENNReal.coe_eq_coe, Compacts.equiv]
   apply h
 #align measure_theory.content.inner_content_comap MeasureTheory.Content.innerContent_comap
 
 @[to_additive]
-theorem is_mulLeft_invariant_innerContent [Group G] [TopologicalGroup G]
+theorem is_mul_left_invariant_innerContent [Group G] [TopologicalGroup G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g).toContinuousMap U) = μ.innerContent U := by
   convert μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
-#align measure_theory.content.is_mul_left_invariant_inner_content MeasureTheory.Content.is_mulLeft_invariant_innerContent
-#align measure_theory.content.is_add_left_invariant_inner_content MeasureTheory.Content.is_addLeft_invariant_innerContent
+#align measure_theory.content.is_mul_left_invariant_inner_content MeasureTheory.Content.is_mul_left_invariant_innerContent
+#align measure_theory.content.is_add_left_invariant_inner_content MeasureTheory.Content.is_add_left_invariant_innerContent
 
 @[to_additive]
 theorem innerContent_pos_of_is_mul_left_invariant [T2Space G] [Group G] [TopologicalGroup G]
@@ -236,8 +236,8 @@ theorem innerContent_pos_of_is_mul_left_invariant [T2Space G] [Group G] [Topolog
     simpa only [Opens.iSup_def, Opens.coe_comap, Subtype.coe_mk]
   refine' (μ.le_innerContent _ _ this).trans _
   refine'
-    (rel_iSup_sum μ.innerContent μ.innerContent_bot (· ≤ ·) μ.innerContent_Sup_nat _ _).trans _
-  simp only [μ.is_mulLeft_invariant_innerContent h3, Finset.sum_const, nsmul_eq_mul, le_refl]
+    (rel_iSup_sum μ.innerContent μ.innerContent_bot (· ≤ ·) μ.innerContent_iSup_nat _ _).trans _
+  simp only [μ.is_mul_left_invariant_innerContent h3, Finset.sum_const, nsmul_eq_mul, le_refl]
 #align measure_theory.content.inner_content_pos_of_is_mul_left_invariant MeasureTheory.Content.innerContent_pos_of_is_mul_left_invariant
 #align measure_theory.content.inner_content_pos_of_is_add_left_invariant MeasureTheory.Content.innerContent_pos_of_is_add_left_invariant
 
@@ -302,10 +302,10 @@ theorem outerMeasure_exists_open {A : Set G} (hA : μ.outerMeasure A ≠ ∞) {�
 
 theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
     (A : Set G) : μ.outerMeasure (f ⁻¹' A) = μ.outerMeasure A := by
-  refine'
-    inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
-      (fun s => f.isOpen_preimage) _
-  intro s hs; convert μ.innerContent_comap f h ⟨s, hs⟩
+  refine' inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
+    (fun _ => f.isOpen_preimage) _
+  intro s hs
+  convert μ.innerContent_comap f h ⟨s, hs⟩
 #align measure_theory.content.outer_measure_preimage MeasureTheory.Content.outerMeasure_preimage
 
 theorem outerMeasure_lt_top_of_isCompact [LocallyCompactSpace G] {K : Set G} (hK : IsCompact K) :
@@ -321,7 +321,7 @@ theorem outerMeasure_lt_top_of_isCompact [LocallyCompactSpace G] {K : Set G} (hK
 @[to_additive]
 theorem is_mul_left_invariant_outerMeasure [Group G] [TopologicalGroup G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
-    (A : Set G) : μ.outerMeasure ((fun h => g * h) ⁻¹' A) = μ.outerMeasure A := by
+    (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
   convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
 #align measure_theory.content.is_mul_left_invariant_outer_measure MeasureTheory.Content.is_mul_left_invariant_outerMeasure
 #align measure_theory.content.is_add_left_invariant_outer_measure MeasureTheory.Content.is_add_left_invariant_outerMeasure
@@ -424,15 +424,12 @@ theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSp
     ∃ K' : TopologicalSpace.Compacts G, K.carrier ⊆ interior K'.carrier ∧ μ K' ≤ μ K + ε := by
   by_contra hc
   simp only [not_exists, not_and, not_le] at hc
-  have lower_bound_infi :
-    μ K + ε ≤
+  have lower_bound_iInf : μ K + ε ≤
       ⨅ (K' : TopologicalSpace.Compacts G) (_h : (K : Set G) ⊆ interior (K' : Set G)), μ K' :=
     le_iInf fun K' => le_iInf fun K'_hyp => le_of_lt (hc K' K'_hyp)
-  rw [← H] at lower_bound_infi
-  exact
-    (lt_self_iff_false (μ K)).mp
-      (lt_of_le_of_lt' lower_bound_infi
-        (ENNReal.lt_add_right (ne_top_of_lt (μ.lt_top K)) (ENNReal.coe_ne_zero.mpr hε)))
+  rw [← H] at lower_bound_iInf
+  exact (lt_self_iff_false (μ K)).mp (lt_of_le_of_lt' lower_bound_iInf
+    (ENNReal.lt_add_right (ne_top_of_lt (μ.lt_top K)) (ENNReal.coe_ne_zero.mpr hε)))
 #align measure_theory.content.content_regular_exists_compact MeasureTheory.Content.contentRegular_exists_compact
 
 variable [MeasurableSpace G] [T2Space G] [BorelSpace G]
