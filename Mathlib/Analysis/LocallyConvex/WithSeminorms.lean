@@ -415,9 +415,11 @@ section TopologicalAddGroup
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-variable [t : TopologicalSpace E] [TopologicalAddGroup E]
-
 variable [Nonempty ι]
+
+section TopologicalSpace
+
+variable [t : TopologicalSpace E] [TopologicalAddGroup E]
 
 theorem SeminormFamily.withSeminorms_of_nhds (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.moduleFilterBasis.toFilterBasis.filter) : WithSeminorms p := by
@@ -434,7 +436,7 @@ theorem SeminormFamily.withSeminorms_of_hasBasis (p : SeminormFamily 𝕜 E ι)
 #align seminorm_family.with_seminorms_of_has_basis SeminormFamily.withSeminorms_of_hasBasis
 
 theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf (p : SeminormFamily 𝕜 E ι) :
-    WithSeminorms p ↔ (𝓝 0 : Filter E) = ⨅ i, (𝓝 0).comap (p i) := by
+    WithSeminorms p ↔ (𝓝 (0 : E)) = ⨅ i, (𝓝 0).comap (p i) := by
   rw [← p.filter_eq_iInf]
   refine' ⟨fun h => _, p.withSeminorms_of_nhds⟩
   rw [h.topology_eq_withSeminorms]
@@ -459,13 +461,15 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf (p : SeminormF
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
-  trace
-    "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr = »(_, «expr⨅ , »((i), _))]]"
+  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
+  refine Eq.to_iff ?_
+  congr
+  funext i
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
-  all_goals infer_instance
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr = »(_, «expr⨅ , »((i), _))]] -/
+end TopologicalSpace
+
 /-- The uniform structure induced by a family of seminorms is exactly the infimum of the ones
 induced by each seminorm individually. We express this as a characterization of
 `with_seminorms p`. -/
@@ -473,13 +477,14 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔ u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace :=
   by
-  rw [p.withSeminorms_iff_nhds_eq_iInf,
-    UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
+  rw [p.withSeminorms_iff_nhds_eq_iInf] --,
+  rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
-  trace
-    "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr = »(_, «expr⨅ , »((i), _))]]"
+  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
+  refine Eq.to_iff ?_
+  congr
+  funext i
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
-  all_goals infer_instance
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
 
 end TopologicalAddGroup
