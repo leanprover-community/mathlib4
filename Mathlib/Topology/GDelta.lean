@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.G_delta
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
