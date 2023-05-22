@@ -16,21 +16,21 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
 
 ## Main statements
 
-* `ideal.is_homogeneous.is_prime_iff`: for any `I : ideal A`, if `I` is homogeneous, then
+* `Ideal.IsHomogeneous.isPrime_iff`: for any `I : Ideal A`, if `I` is homogeneous, then
   `I` is prime if and only if `I` is homogeneously prime, i.e. `I ≠ ⊤` and if `x, y` are
   homogeneous elements such that `x * y ∈ I`, then at least one of `x,y` is in `I`.
-* `ideal.is_prime.homogeneous_core`: for any `I : ideal A`, if `I` is prime, then
+* `Ideal.IsPrime.homogeneousCore`: for any `I : Ideal A`, if `I` is prime, then
   `I.homogeneous_core 𝒜` (i.e. the largest homogeneous ideal contained in `I`) is also prime.
-* `ideal.is_homogeneous.radical`: for any `I : ideal A`, if `I` is homogeneous, then the
+* `Ideal.IsHomogeneous.radical`: for any `I : Ideal A`, if `I` is homogeneous, then the
   radical of `I` is homogeneous as well.
-* `homogeneous_ideal.radical`: for any `I : homogeneous_ideal 𝒜`, `I.radical` is the the
-  radical of `I` as a `homogeneous_ideal 𝒜`
+* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the the
+  radical of `I` as a `HomogeneousIdeal 𝒜`
 
 ## Implementation details
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
-`linear_ordered_cancel_add_comm_monoid`. This might be stronger than necessary but cancelling
-property is strictly necessary; for a counterexample of how `ideal.is_homogeneous.is_prime_iff`
+`LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
+property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
 fails for a non-cancellative set see `counterexample/homogeneous_prime_not_prime.lean`.
 
 ## Tags
