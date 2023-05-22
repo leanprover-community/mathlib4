@@ -205,7 +205,7 @@ instance : (homologyFunctor C n).PreservesZeroMorphisms :=
 -- could be better to have `IsHomological` extend `PreservesZeroMorphisms` so that
 -- we do not have to prove both statement separately
 instance : (homologyFunctor C n).IsHomological :=
-  Functor.isHomological_of_localization Qh (HomotopyCategory.qis C)
+  Functor.isHomological_of_localization Qh
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
 
 noncomputable instance :

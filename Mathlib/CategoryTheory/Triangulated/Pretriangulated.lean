@@ -564,8 +564,6 @@ lemma productTriangle_distinguished {J : Type _} (T : J → Triangle C)
     simpa only [← cancel_mono φ'.hom₃] using ha
   . intro a
     obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
-      have eq := φ'.comm₃
-      rw [h₁, Functor.map_id, comp_id] at eq
       have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
         rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
           id_comp]

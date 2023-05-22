@@ -23,7 +23,6 @@ lemma induced_isoZero_hom_app_obj' (X : C) :
     (induced_isoZero e M F' e' hL).hom.app (L.obj X) =
       (e' 0).hom.app X ≫ (isoShiftZero G M).hom.app X ≫ e.inv.app X := by
   letI := hL.1.some
-  have := hL.2
   have h : whiskerLeft L (induced_isoZero e M F' e' hL).hom = _ :=
     ((whiskeringLeft C D A).obj L).image_preimage _
   refine' (NatTrans.congr_app h X).trans (by simp)
@@ -44,7 +43,6 @@ lemma induced_shiftIso_hom_app_obj' (n a a' : M) (ha' : n + a = a') (X : C) :
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
         (e' a).hom.app (X⟦n⟧) ≫ (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   letI := hL.1.some
-  have := hL.2
   have h : whiskerLeft L (induced_shiftIso L G M F' e' hL n a a' ha').hom = _ :=
     ((whiskeringLeft C D A).obj L).image_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)

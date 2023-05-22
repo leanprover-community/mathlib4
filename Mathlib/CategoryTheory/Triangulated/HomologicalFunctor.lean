@@ -123,6 +123,7 @@ lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ]
   simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
   rfl
 
+@[nolint unusedArguments]
 def IsHomological.W [F.IsHomological] : MorphismProperty C := fun _ _ f =>
   ∀ (n : ℤ), IsIso (F.map (f⟦n⟧'))
 
@@ -158,7 +159,7 @@ instance (L : C ⥤ D) [HasCommShift L ℤ] [IsTriangulated L]
     (L ⋙ F).IsHomological :=
   ⟨fun T hT => F.map_distinguished_exact _ (L.map_distinguished T hT)⟩
 
-lemma isHomological_of_localization (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+lemma isHomological_of_localization (L : C ⥤ D)
     [L.HasCommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
     (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.PreservesZeroMorphisms] [G.IsHomological]
     [F.PreservesZeroMorphisms] : F.IsHomological := by

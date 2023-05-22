@@ -44,7 +44,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
-open Classical
+--open Classical
 
 noncomputable section
 
@@ -140,14 +140,16 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
-  if h : ∃ j, c.Rel i j then h.choose else i
+  by classical
+  exact if h : ∃ j, c.Rel i j then h.choose else i
 #align complex_shape.next ComplexShape.next
 
 /-- An arbitary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/
 def prev (c : ComplexShape ι) (j : ι) : ι :=
-  if h : ∃ i, c.Rel i j then h.choose else j
+  by classical
+  exact if h : ∃ i, c.Rel i j then h.choose else j
 #align complex_shape.prev ComplexShape.prev
 
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
@@ -198,7 +200,7 @@ def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.up_rel ComplexShape.up_Rel
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (up α).Rel := inferInstance
+  DecidableRel (up α).Rel := fun _ _ => by dsimp ; infer_instance
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
@@ -209,7 +211,7 @@ def down (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :
 #align complex_shape.down_rel ComplexShape.down_Rel
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (down α).Rel := inferInstance
+  DecidableRel (down α).Rel := fun _ _ => by dsimp ; infer_instance
 
 theorem down_mk {α : Type _} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
   (down α).Rel i j :=

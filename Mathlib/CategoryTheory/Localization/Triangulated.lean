@@ -80,7 +80,6 @@ variable [Preadditive D] [HasZeroObject D]
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := Localization.essSurj L W
   let f' := MorphismProperty.HasLeftCalculusOfFractions.liftMap L W f
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle f'
   refine' ⟨L.obj Z, (MorphismProperty.HasLeftCalculusOfFractions.liftMapIso₂ L W f).hom ≫ L.map g,
