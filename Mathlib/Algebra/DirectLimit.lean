@@ -423,7 +423,10 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             let ⟨k, hik, hjk⟩ := exists_ge_ge i j
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
-              congr
+              /-
+              ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s) = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
+              -/
+              dsimp
               sorry
               done
               ⟩)
@@ -729,6 +732,8 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
+-- porting note: this takes some time, had to increase heartbeats
+set_option maxHeartbeats 1000000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
