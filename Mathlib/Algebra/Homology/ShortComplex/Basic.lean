@@ -139,9 +139,9 @@ def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
 
-instance π₁_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
-instance π₂_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
-instance π₃_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
