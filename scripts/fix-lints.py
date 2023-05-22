@@ -27,7 +27,7 @@ if log.returncode == 0:
 shutil.copyfile(leanfile, leanfile + '.bak')
 
 count = 0
-f = list(open(leanfile + '.bak',))
+f = list(open(leanfile + '.bak'))
 for l in reversed(log.stderr.decode().splitlines()):
     if 'linter.unusedVariables' in l:
         line, col = getpos(l)
