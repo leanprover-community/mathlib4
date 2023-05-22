@@ -636,7 +636,8 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   rcases hf i with ⟨s₁, C, hf⟩
   have hC' : 0 < C + 1 := by positivity
   rw [hp.hasBasis.eventually_iff]
-  refine' ⟨(s₁.sup p).ball 0 (r / (C + 1)), p.basisSets_mem _ (by positivity), _⟩
+  -- Porting note: `div_pos hr (by norm_cast)` was `by positivity`
+  refine' ⟨(s₁.sup p).ball 0 (r / (C + 1)), p.basisSets_mem _ (div_pos hr (by norm_cast)), _⟩
   simp_rw [← Metric.mem_ball, ← mem_preimage, ← ball_zero_eq_preimage_ball]
   refine' Subset.trans _ (ball_antitone hf)
   norm_cast
