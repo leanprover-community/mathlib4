@@ -217,10 +217,10 @@ protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurabl
 #align measure_theory.simple_func.measurable MeasureTheory.SimpleFunc.measurable
 
 @[measurability]
-protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
+protected theorem aeMeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
-  f.measurable.aemeasurable
-#align measure_theory.simple_func.ae_measurable MeasureTheory.SimpleFunc.aemeasurable
+  f.measurable.aeMeasurable
+#align measure_theory.simple_func.ae_measurable MeasureTheory.SimpleFunc.aeMeasurable
 
 protected theorem sum_measure_preimage_singleton (f : α →ₛ β) {μ : Measure α} (s : Finset β) :
     (∑ y in s, μ (f ⁻¹' {y})) = μ (f ⁻¹' ↑s) :=

@@ -61,9 +61,9 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 #align measure_theory.measure_preserving.id MeasureTheory.MeasurePreserving.id
 
-protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
-#align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aemeasurable
+protected theorem aeMeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
+  hf.1.aeMeasurable
+#align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aeMeasurable
 
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
@@ -87,10 +87,10 @@ theorem restrict_image_emb {f : α → β} (hf : MeasurePreserving f μa μb) (h
   simpa only [Set.preimage_image_eq _ h₂.injective] using hf.restrict_preimage_emb h₂ (f '' s)
 #align measure_theory.measure_preserving.restrict_image_emb MeasureTheory.MeasurePreserving.restrict_image_emb
 
-theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
+theorem aeMeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
     (h₂ : MeasurableEmbedding f) {g : β → γ} : AEMeasurable (g ∘ f) μa ↔ AEMeasurable g μb := by
-  rw [← hf.map_eq, h₂.aemeasurable_map_iff]
-#align measure_theory.measure_preserving.ae_measurable_comp_iff MeasureTheory.MeasurePreserving.aemeasurable_comp_iff
+  rw [← hf.map_eq, h₂.aeMeasurable_map_iff]
+#align measure_theory.measure_preserving.ae_measurable_comp_iff MeasureTheory.MeasurePreserving.aeMeasurable_comp_iff
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
@@ -118,7 +118,7 @@ protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : Measure
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
     SigmaFinite μa :=
-  SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
+  SigmaFinite.of_map μa hf.aeMeasurable (by rwa [hf.map_eq])
 #align measure_theory.measure_preserving.sigma_finite MeasureTheory.MeasurePreserving.sigmaFinite
 
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}

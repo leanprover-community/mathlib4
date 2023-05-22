@@ -177,10 +177,10 @@ theorem map {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} 
     (hB₁ : ∀ K, pb K → MeasurableSet K) (hB₂ : ∀ U, qb U → MeasurableSet U) :
     InnerRegular (map f μ) pb qb := by
   intro U hU r hr
-  rw [map_apply_of_aemeasurable hf (hB₂ _ hU)] at hr
+  rw [map_apply_of_aeMeasurable hf (hB₂ _ hU)] at hr
   rcases H (hAB U hU) r hr with ⟨K, hKU, hKc, hK⟩
   refine' ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, _⟩
-  rwa [map_apply_of_aemeasurable hf (hB₁ _ <| hAB' _ hKc), f.preimage_image]
+  rwa [map_apply_of_aeMeasurable hf (hB₁ _ <| hAB' _ hKc), f.preimage_image]
 #align measure_theory.measure.inner_regular.map MeasureTheory.Measure.InnerRegular.map
 
 theorem smul (H : InnerRegular μ p q) (c : ℝ≥0∞) : InnerRegular (c • μ) p q := by
@@ -538,7 +538,7 @@ protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [Topologica
   haveI := OuterRegular.map f μ
   haveI := IsFiniteMeasureOnCompacts.map μ f
   exact
-    ⟨Regular.innerRegular.map f.toEquiv f.measurable.aemeasurable
+    ⟨Regular.innerRegular.map f.toEquiv f.measurable.aeMeasurable
         (fun U hU => hU.preimage f.continuous) (fun K hK => hK.image f.continuous)
         (fun K hK => hK.measurableSet) fun U hU => hU.measurableSet⟩
 #align measure_theory.measure.regular.map MeasureTheory.Measure.Regular.map

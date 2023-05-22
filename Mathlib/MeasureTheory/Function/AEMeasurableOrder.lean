@@ -16,9 +16,9 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 Consider a function `f : α → ℝ≥0∞`. If the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
 `p < q`, then `f` is almost-everywhere measurable. This is proved in
-`ENNReal.aemeasurable_of_exist_almost_disjoint_supersets`, and deduced from an analogous statement
+`ENNReal.aeMeasurable_of_exist_almost_disjoint_supersets`, and deduced from an analogous statement
 for any target space which is a complete linear dense order, called
-`MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets`.
+`MeasureTheory.aeMeasurable_of_exist_almost_disjoint_supersets`.
 
 Note that it should be enough to assume that the space is a conditionally complete linear order,
 but the proof would be more painful. Since our only use for now is for `ℝ≥0∞`, we keep it as simple
@@ -33,7 +33,7 @@ open Classical ENNReal NNReal
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p < q`, then `f` is almost-everywhere
 measurable. It is even enough to have this for `p` and `q` in a countable dense set. -/
-theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type _}
+theorem MeasureTheory.aeMeasurable_of_exist_almost_disjoint_supersets {α : Type _}
     {m : MeasurableSpace α} (μ : Measure α) {β : Type _} [CompleteLinearOrder β] [DenselyOrdered β]
     [TopologicalSpace β] [OrderTopology β] [SecondCountableTopology β] [MeasurableSpace β]
     [BorelSpace β] (s : Set β) (s_count : s.Countable) (s_dense : Dense s) (f : α → β)
@@ -108,12 +108,12 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩
-#align measure_theory.ae_measurable_of_exist_almost_disjoint_supersets MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets
+#align measure_theory.ae_measurable_of_exist_almost_disjoint_supersets MeasureTheory.aeMeasurable_of_exist_almost_disjoint_supersets
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
 `p < q`, then `f` is almost-everywhere measurable. -/
-theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type _} {m : MeasurableSpace α}
+theorem ENNReal.aeMeasurable_of_exist_almost_disjoint_supersets {α : Type _} {m : MeasurableSpace α}
     (μ : Measure α) (f : α → ℝ≥0∞)
     (h : ∀ (p : ℝ≥0) (q : ℝ≥0), p < q →
       ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
@@ -123,9 +123,9 @@ theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type _} {m
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s :=
     ENNReal.exists_countable_dense_no_zero_top
   have I : ∀ x ∈ s, x ≠ ∞ := fun x xs hx => s_top (hx ▸ xs)
-  apply MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets μ s s_count s_dense _
+  apply MeasureTheory.aeMeasurable_of_exist_almost_disjoint_supersets μ s s_count s_dense _
   rintro p hp q hq hpq
   lift p to ℝ≥0 using I p hp
   lift q to ℝ≥0 using I q hq
   exact h p q (ENNReal.coe_lt_coe.1 hpq)
-#align ennreal.ae_measurable_of_exist_almost_disjoint_supersets ENNReal.aemeasurable_of_exist_almost_disjoint_supersets
+#align ennreal.ae_measurable_of_exist_almost_disjoint_supersets ENNReal.aeMeasurable_of_exist_almost_disjoint_supersets
