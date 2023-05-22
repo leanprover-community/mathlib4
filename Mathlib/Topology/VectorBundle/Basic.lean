@@ -521,8 +521,8 @@ variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
-    e.toLocalHomeomorph.symm ⟨b, z⟩ = totalSpaceMk b ((e.continuousLinearEquivAt R b hb).symm z) :=
-  by
+    e.toLocalHomeomorph.symm ⟨b, z⟩ =
+      totalSpaceMk b ((e.continuousLinearEquivAt R b hb).symm z) := by
   have h : (b, z) ∈ e.target
   · rw [e.target_eq]
     exact ⟨hb, mem_univ _⟩
