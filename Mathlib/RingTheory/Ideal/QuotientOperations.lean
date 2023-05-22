@@ -725,8 +725,8 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
 
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'`induced by `quot_quot_mk`,
   where `J'` is the projection `J` in `A / I`. -/
-def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (I.Quotient.mkₐ R) :=
-  AlgHom.mk (liftSupQuotQuotMk I J) rfl (map_mul _) rfl (map_add _) fun _ => rfl
+def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
+  AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl
 #align double_quot.lift_sup_quot_quot_mkₐ DoubleQuot.liftSupQuotQuotMkₐ
 
 @[simp]
@@ -742,7 +742,7 @@ theorem coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuot
 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
 `I ≤ J`, this is the Third Isomorphism Theorem (see `DoubleQuot.quotQuotEquivQuotOfLe`). -/
-def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (I.Quotient.mkₐ R)) ≃ₐ[R] A ⧸ I ⊔ J :=
+def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ I ⊔ J :=
   @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotSup I J) fun _ => rfl
 #align double_quot.quot_quot_equiv_quot_supₐ DoubleQuot.quotQuotEquivQuotSupₐ
 
@@ -753,7 +753,8 @@ theorem quotQuotEquivQuotSupₐ_toRingEquiv :
 #align double_quot.quot_quot_equiv_quot_supₐ_to_ring_equiv DoubleQuot.quotQuotEquivQuotSupₐ_toRingEquiv
 
 @[simp]
-theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQuotEquivQuotSup I J :=
+-- Porting note: had to add an extra coercion arrow on the right hand side.
+theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(quotQuotEquivQuotSup I J) :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_supₐ DoubleQuot.coe_quotQuotEquivQuotSupₐ
 
@@ -761,37 +762,41 @@ theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQ
 theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
     (quotQuotEquivQuotSupₐ R I J).symm.toRingEquiv = (quotQuotEquivQuotSup I J).symm :=
   rfl
-#align double_quot.quot_quot_equiv_quot_supₐ_symm_to_ring_equiv DoubleQuot.uotQuotEquivQuotSupₐ_symm_toRingEquiv
+#align double_quot.quot_quot_equiv_quot_supₐ_symm_to_ring_equiv DoubleQuot.quotQuotEquivQuotSupₐ_symm_toRingEquiv
 
 @[simp]
+-- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotSupₐ_symm :
-    ⇑(quotQuotEquivQuotSupₐ R I J).symm = (quotQuotEquivQuotSup I J).symm :=
+    ⇑(quotQuotEquivQuotSupₐ R I J).symm = ⇑(quotQuotEquivQuotSup I J).symm :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_supₐ_symm DoubleQuot.coe_quotQuotEquivQuotSupₐ_symm
 
 /-- The natural algebra isomorphism `(A / I) / J' → (A / J) / I'`,
   where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
 def quotQuotEquivCommₐ :
-    ((A ⧸ I) ⧸ J.map (I.Quotient.mkₐ R)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (J.Quotient.mkₐ R) :=
+    ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J) :=
   @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivComm I J) fun _ => rfl
 #align double_quot.quot_quot_equiv_commₐ DoubleQuot.quotQuotEquivCommₐ
 
 @[simp]
 theorem quotQuotEquivCommₐ_toRingEquiv :
     (quotQuotEquivCommₐ R I J).toRingEquiv = quotQuotEquivComm I J :=
-  rfl
+  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
+  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
+  -- and timing out.
+  RingEquiv.ext fun _ => rfl
 #align double_quot.quot_quot_equiv_commₐ_to_ring_equiv DoubleQuot.quotQuotEquivCommₐ_toRingEquiv
 
 @[simp]
-theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = quotQuotEquivComm I J :=
+theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuotEquivComm I J) :=
   rfl
 #align double_quot.coe_quot_quot_equiv_commₐ DoubleQuot.coe_quotQuotEquivCommₐ
 
-@[simp]
+@[simp] -- TODO: why is the `@[simp]` attribute (and nothing else) timing out?
 theorem quot_quot_equiv_comm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I :=
   -- TODO: should be `rfl` but times out
-    AlgEquiv.ext
-    fun x => (FunLike.congr_fun (quotQuotEquivComm_symm I J) x : _)
+  AlgEquiv.ext
+    fun x => rfl -- (FunLike.congr_fun (quotQuotEquivComm_symm I J) x : _)
 #align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quot_quot_equiv_comm_symmₐ
 
 @[simp]
@@ -804,7 +809,7 @@ variable {I J}
 
 /-- The **third isomorphism theorem** for rings. See `quot_quot_equiv_quot_sup` for version
     that does not assume an inclusion of ideals. -/
-def quotQuotEquivQuotOfLeₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (I.Quotient.mkₐ R)) ≃ₐ[R] A ⧸ J :=
+def quotQuotEquivQuotOfLeₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
   @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotOfLe h) fun _ => rfl
 #align double_quot.quot_quot_equiv_quot_of_leₐ DoubleQuot.quotQuotEquivQuotOfLeₐ
 
@@ -815,8 +820,9 @@ theorem quotQuotEquivQuotOfLeₐ_toRingEquiv (h : I ≤ J) :
 #align double_quot.quot_quot_equiv_quot_of_leₐ_to_ring_equiv DoubleQuot.quotQuotEquivQuotOfLeₐ_toRingEquiv
 
 @[simp]
+-- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotOfLeₐ (h : I ≤ J) :
-    ⇑(quotQuotEquivQuotOfLeₐ R h) = quotQuotEquivQuotOfLe h :=
+    ⇑(quotQuotEquivQuotOfLeₐ R h) = ⇑(quotQuotEquivQuotOfLe h) :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_of_leₐ DoubleQuot.coe_quotQuotEquivQuotOfLeₐ
 
@@ -827,20 +833,21 @@ theorem quotQuotEquivQuotOfLeₐ_symm_toRingEquiv (h : I ≤ J) :
 #align double_quot.quot_quot_equiv_quot_of_leₐ_symm_to_ring_equiv DoubleQuot.quotQuotEquivQuotOfLeₐ_symm_toRingEquiv
 
 @[simp]
+-- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotOfLeₐ_symm (h : I ≤ J) :
-    ⇑(quotQuotEquivQuotOfLeₐ R h).symm = (quotQuotEquivQuotOfLe h).symm :=
+    ⇑(quotQuotEquivQuotOfLeₐ R h).symm = ⇑(quotQuotEquivQuotOfLe h).symm :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_of_leₐ_symm DoubleQuot.coe_quotQuotEquivQuotOfLeₐ_symm
 
 @[simp]
 theorem quotQuotEquivQuotOfLe_comp_quotQuotMkₐ (h : I ≤ J) :
-    AlgHom.comp (↑(quotQuotEquivQuotOfLeₐ R h)) (quotQuotMkₐ R I J) = J.Quotient.mkₐ R :=
+    AlgHom.comp (↑(quotQuotEquivQuotOfLeₐ R h)) (quotQuotMkₐ R I J) = Quotient.mkₐ R J :=
   rfl
 #align double_quot.quot_quot_equiv_quot_of_le_comp_quot_quot_mkₐ DoubleQuot.quotQuotEquivQuotOfLe_comp_quotQuotMkₐ
 
 @[simp]
 theorem quotQuotEquivQuotOfLe_symm_comp_mkₐ (h : I ≤ J) :
-    AlgHom.comp (↑(quotQuotEquivQuotOfLeₐ R h).symm) (J.Quotient.mkₐ R) = quotQuotMkₐ R I J :=
+    AlgHom.comp (↑(quotQuotEquivQuotOfLeₐ R h).symm) (Quotient.mkₐ R J) = quotQuotMkₐ R I J :=
   rfl
 #align double_quot.quot_quot_equiv_quot_of_le_symm_comp_mkₐ DoubleQuot.quotQuotEquivQuotOfLe_symm_comp_mkₐ
 
