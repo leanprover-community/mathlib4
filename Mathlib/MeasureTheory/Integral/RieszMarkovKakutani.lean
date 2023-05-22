@@ -56,8 +56,8 @@ theorem riesz_content_aux_image_nonempty (K : Compacts X) :
     (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [nonempty_image_iff]
   use (1 : X →ᵇ ℝ≥0)
-  intro x x_in_K
-  simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]
+  intro x _
+  simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
 #align riesz_content_aux_image_nonempty riesz_content_aux_image_nonempty
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
@@ -65,7 +65,7 @@ monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K�
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
     rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
   csInf_le_csInf (OrderBot.bddBelow _) (riesz_content_aux_image_nonempty Λ K₂)
-    (image_subset Λ (setOf_subset_setOf.mpr fun f f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
+    (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
 #align riesz_content_aux_mono rieszContentAux_mono
 
 end RieszMonotone
@@ -111,9 +111,9 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
   apply (rieszContentAux_le Λ f_test_function_union).trans (le_of_lt _)
   rw [map_add]
   --use that `Λfi` are lower bounds for `λ(Ki) + ε/2`
-  apply lt_of_lt_of_le (add_lt_add f_test_function_K1.right f_test_function_K2.right) (le_of_eq _)
+  apply lt_of_lt_of_le (_root_.add_lt_add f_test_function_K1.right f_test_function_K2.right)
+    (le_of_eq _)
   rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
 #align riesz_content_aux_sup_le rieszContentAux_sup_le
 
 end RieszSubadditive
-
