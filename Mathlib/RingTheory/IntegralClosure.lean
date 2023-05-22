@@ -1099,9 +1099,10 @@ theorem isIntegral_quotient_of_isIntegral {I : Ideal A} (hRA : Algebra.IsIntegra
 theorem isIntegral_quotientMap_iff {I : Ideal S} :
     (Ideal.quotientMap I f le_rfl).IsIntegral ↔
       ((Ideal.Quotient.mk I).comp f : R →+* S ⧸ I).IsIntegral := by
-  stop
   let g := Ideal.Quotient.mk (I.comap f)
-  have := Ideal.quotientMap_comp_mk le_rfl
+  -- Porting note: added type ascription
+  have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
+    Ideal.quotientMap_comp_mk le_rfl
   refine' ⟨fun h => _, fun h => RingHom.isIntegral_tower_top_of_isIntegral g _ (this ▸ h)⟩
   refine' this ▸ RingHom.isIntegral_trans g (Ideal.quotientMap I f le_rfl) _ h
   exact RingHom.isIntegral_of_surjective g Ideal.Quotient.mk_surjective
