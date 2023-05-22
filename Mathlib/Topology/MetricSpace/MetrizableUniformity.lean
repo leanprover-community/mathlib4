@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.MetricSpace.Metrizable
 
 /-!
 # Metrizable uniform spaces
@@ -65,8 +65,7 @@ namespace PseudoMetricSpace
 /-- The maximal pseudo metric space structure on `X` such that `dist x y ≤ d x y` for all `x y`,
 where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y = d y x` for all `x`, `y`. -/
 noncomputable def ofPrenndist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
-    (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X
-    where
+    (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X where
   dist x y := ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).Sum : ℝ≥0)
   dist_self x :=
     (NNReal.coe_eq_zero _).2 <|
@@ -124,8 +123,7 @@ theorem le_two_mul_dist_ofPrenndist (d : X → X → ℝ≥0) (dist_self : ∀ x
       2 *
         @dist X
           (@PseudoMetricSpace.toHasDist X (PseudoMetricSpace.ofPrenndist d dist_self dist_comm)) x
-          y :=
-  by
+          y := by
   /- We need to show that `d x y` is at most twice the sum `L` of `d xᵢ xᵢ₊₁` over a path
     `x₀=x, ..., xₙ=y`. We prove it by induction on the length `n` of the sequence. Find an edge that
     splits the path into two parts of almost equal length: both `d x₀ x₁ + ... + d xₖ₋₁ xₖ` and
@@ -133,8 +131,7 @@ theorem le_two_mul_dist_ofPrenndist (d : X → X → ℝ≥0) (dist_self : ∀ x
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_of_prenndist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
   refine' le_ciInf fun l => _
-  have hd₀_trans : Transitive fun x y => d x y = 0 :=
-    by
+  have hd₀_trans : Transitive fun x y => d x y = 0 := by
     intro a b c hab hbc
     rw [← nonpos_iff_eq_zero]
     simpa only [*, max_eq_right, MulZeroClass.mul_zero] using hd a b c c
@@ -151,8 +148,7 @@ theorem le_two_mul_dist_ofPrenndist (d : X → X → ℝ≥0) (dist_self : ∀ x
   set s : Set ℕ := { m : ℕ | 2 * (take m L).Sum ≤ L.sum }
   have hs₀ : 0 ∈ s := by simp [s]
   have hsne : s.nonempty := ⟨0, hs₀⟩
-  obtain ⟨M, hMl, hMs⟩ : ∃ M ≤ length l, IsGreatest s M :=
-    by
+  obtain ⟨M, hMl, hMs⟩ : ∃ M ≤ length l, IsGreatest s M := by
     have hs_ub : length l ∈ upperBounds s := by
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
@@ -214,8 +210,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
     obtain ⟨U, hU_symm, hU_comp, hB⟩ :
       ∃ U : ℕ → Set (X × X),
         (∀ n, SymmetricRel (U n)) ∧
-          (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U :=
-      by
+          (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U := by
       rcases UniformSpace.has_seq_basis X with ⟨V, hB, hV_symm⟩
       rcases hB.subbasis_with_rel fun m =>
           hB.tendsto_small_sets.eventually
@@ -240,8 +235,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
     have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
     letI I := PseudoMetricSpace.ofPrenndist d (fun x => hd₀.2 (Setoid.refl _)) hd_symm
     have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPrenndist_le _ _ _
-    have hle_d : ∀ {x y : X} {n : ℕ}, (1 / 2) ^ n ≤ d x y ↔ (x, y) ∉ U n :=
-      by
+    have hle_d : ∀ {x y : X} {n : ℕ}, (1 / 2) ^ n ≤ d x y ↔ (x, y) ∉ U n := by
       intro x y n
       simp only [d]
       split_ifs with h
@@ -249,8 +243,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
         exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
       · push_neg  at h
         simp only [h, not_true, (pow_pos hr.1 _).not_le]
-    have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y :=
-      by
+    have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
       refine' PseudoMetricSpace.le_two_mul_dist_ofPrenndist _ _ _ fun x₁ x₂ x₃ x₄ => _
       by_cases H : ∃ n, (x₁, x₄) ∉ U n
       · refine' (dif_pos H).trans_le _
@@ -287,8 +280,7 @@ protected noncomputable def UniformSpace.metricSpace (X : Type _) [UniformSpace 
 
 /-- A uniform space with countably generated `𝓤 X` is pseudo metrizable. -/
 instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
-    [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X :=
-  by
+    [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X := by
   letI := UniformSpace.pseudoMetricSpace X
   infer_instance
 #align uniform_space.pseudo_metrizable_space UniformSpace.pseudoMetrizableSpace
@@ -296,8 +288,7 @@ instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
 /-- A T₀ uniform space with countably generated `𝓤 X` is metrizable. This is not an instance to
 avoid loops. -/
 theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (𝓤 X)] [T0Space X] :
-    TopologicalSpace.MetrizableSpace X :=
-  by
+    TopologicalSpace.MetrizableSpace X := by
   letI := UniformSpace.metricSpace X
   infer_instance
 #align uniform_space.metrizable_space UniformSpace.metrizableSpace
