@@ -794,10 +794,10 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
 
 -- Porting note: looks like this timeout comes from the kernel, since the `rfl` takes much less
 -- than a second according to `trace.profiler`.
-set_option maxHeartbeats 400000 in
 @[simp]
-theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I :=
-  rfl
+theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
+  apply AlgEquiv.ext
+  congr
 #align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quotQuotEquivComm_symmₐ
 
 @[simp]
