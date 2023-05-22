@@ -6,6 +6,9 @@ open Lean
 -- See that the explode command itself works
 #explode true_iff
 
+-- On command line, tests format functions with => rather than ↦ without this.
+set_option pp.unicode.fun true
+
 elab dc?:docComment ? tk:"#explode_test " stx:term : command => do
   let some msg ← Mathlib.Explode.runExplode stx
     | throwErrorAt tk "❌ failure in #explode"
