@@ -272,8 +272,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rcases H with ⟨j, hj, H⟩
     rw [vars_C_mul] at H
     swap
-    . rw [Nat.cast_pow]
-      apply pow_ne_zero
+    . apply pow_ne_zero
       exact_mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
@@ -293,7 +292,7 @@ end PPrime
 
 theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
     xInTermsOfW p R n * C ((p : R) ^ n) =
-      X n - ∑ i in range n, C (p ^ i : R) * xInTermsOfW p R i ^ p ^ (n - i) := by
+      X n - ∑ i in range n, C ((p : R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i) := by
   rw [xInTermsOfW_eq, mul_assoc, ← C_mul, ← mul_pow, invOf_mul_self,
     one_pow, C_1, mul_one]
 set_option linter.uppercaseLean3 false in
