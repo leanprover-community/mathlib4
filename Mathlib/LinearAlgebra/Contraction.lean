@@ -29,7 +29,7 @@ universe w u v₁ v₂ v₃ v₄
 variable {ι : Type w} (R : Type u) (M : Type v₁) (N : Type v₂)
   (P : Type v₃) (Q : Type v₄)
 
--- Porting note: apparently `high` is necessary for this to fire below, odd
+-- Porting note: we need high priority for this to fire first; not the case in ML3
 attribute [local ext high] TensorProduct.ext
 
 section Contraction
