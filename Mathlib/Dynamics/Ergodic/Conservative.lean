@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathbin.Dynamics.Ergodic.MeasurePreserving
-import Mathbin.Combinatorics.Pigeonhole
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems
@@ -84,8 +84,7 @@ protected theorem id (μ : Measure α) : Conservative id μ :=
 for infinitely many values of `m` a positive measure of points `x ∈ s` returns back to `s`
 after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : MeasurableSet s)
-    (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
-  by
+    (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
   by_contra H
   simp only [not_frequently, eventually_at_top, Ne.def, Classical.not_not] at H
   rcases H with ⟨N, hN⟩
@@ -98,8 +97,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   set T := s ∩ ⋃ n ≥ N + 1, f^[n] ⁻¹' s
   have hT : MeasurableSet T :=
     hs.inter (MeasurableSet.biUnion (to_countable _) fun _ _ => hf.measurable.iterate _ hs)
-  have hμT : μ T = 0 :=
-    by
+  have hμT : μ T = 0 := by
     convert(measure_bUnion_null_iff <| to_countable _).2 hN
     rw [← inter_Union₂]
     rfl
@@ -124,11 +122,9 @@ theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurabl
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`, the set
 of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iterations has measure zero. -/
 theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ) (hs : MeasurableSet s)
-    (n : ℕ) : μ ({ x ∈ s | ∀ m ≥ n, (f^[m]) x ∉ s }) = 0 :=
-  by
+    (n : ℕ) : μ ({ x ∈ s | ∀ m ≥ n, (f^[m]) x ∉ s }) = 0 := by
   by_contra H
-  have : MeasurableSet (s ∩ { x | ∀ m ≥ n, (f^[m]) x ∉ s }) :=
-    by
+  have : MeasurableSet (s ∩ { x | ∀ m ≥ n, (f^[m]) x ∉ s }) := by
     simp only [set_of_forall, ← compl_set_of]
     exact
       hs.inter (MeasurableSet.biInter (to_countable _) fun m _ => hf.measurable.iterate m hs.compl)
@@ -140,8 +136,7 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ) (hs
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : MeasurableSet s) :
-    ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, (f^[n]) x ∈ s :=
-  by
+    ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, (f^[n]) x ∈ s := by
   simp only [frequently_at_top, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
   filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_not_mem_eq_zero hs n)]
@@ -162,8 +157,7 @@ theorem measure_inter_frequently_image_mem_eq (hf : Conservative f μ) (hs : Mea
 set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then it visits `s`
 infinitely many times.  -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
-    (hs : MeasurableSet s) : ∀ᵐ x ∂μ, ∀ k, (f^[k]) x ∈ s → ∃ᶠ n in atTop, (f^[n]) x ∈ s :=
-  by
+    (hs : MeasurableSet s) : ∀ᵐ x ∂μ, ∀ k, (f^[k]) x ∈ s → ∃ᶠ n in atTop, (f^[n]) x ∈ s := by
   refine' ae_all_iff.2 fun k => _
   refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
   rw [← map_add_at_top_eq_nat k, frequently_map]
@@ -184,8 +178,7 @@ space with second countable topology and measurable open sets. Then almost every
 is recurrent: it visits every neighborhood `s ∈ 𝓝 x` infinitely many times. -/
 theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopology α]
     [OpensMeasurableSpace α] {f : α → α} {μ : Measure α} (h : Conservative f μ) :
-    ∀ᵐ x ∂μ, ∀ s ∈ 𝓝 x, ∃ᶠ n in atTop, (f^[n]) x ∈ s :=
-  by
+    ∀ᵐ x ∂μ, ∀ s ∈ 𝓝 x, ∃ᶠ n in atTop, (f^[n]) x ∈ s := by
   have : ∀ s ∈ countable_basis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in at_top, (f^[n]) x ∈ s := fun s hs =>
     h.ae_mem_imp_frequently_image_mem (is_open_of_mem_countable_basis hs).MeasurableSet
   refine' ((ae_ball_iff <| countable_countable_basis α).2 this).mono fun x hx s hs => _
@@ -194,8 +187,7 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
 #align measure_theory.conservative.ae_frequently_mem_of_mem_nhds MeasureTheory.Conservative.ae_frequently_mem_of_mem_nhds
 
 /-- Iteration of a conservative system is a conservative system. -/
-protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative (f^[n]) μ :=
-  by
+protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative (f^[n]) μ := by
   cases n
   · exact conservative.id μ
   -- Discharge the trivial case `n = 0`
