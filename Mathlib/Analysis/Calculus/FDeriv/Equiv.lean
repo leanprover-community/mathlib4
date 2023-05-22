@@ -464,8 +464,7 @@ theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
   symm
   rw [tendsto_iff_norm_tendsto_zero]
   refine' tendsto_congr fun x' => _
-  have : ‖x' - x‖⁻¹ ≥ 0 := inv_nonneg.mpr (norm_nonneg _)
-  simp [norm_smul, abs_of_nonneg this]
+  simp [norm_smul]
 #align has_fderiv_at_filter_real_equiv has_fderiv_at_filter_real_equiv
 
 theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
@@ -536,4 +535,3 @@ theorem ContinuousLinearEquiv.uniqueDiffOn_preimage_iff (e : F ≃L[𝕜] E) :
 #align continuous_linear_equiv.unique_diff_on_preimage_iff ContinuousLinearEquiv.uniqueDiffOn_preimage_iff
 
 end TangentCone
-
