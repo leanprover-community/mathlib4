@@ -518,11 +518,11 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
     {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
     (hw : (∑ i in s, w i) = 1) (hw₁ : (∑ i in s, w₁ i) = 1) (hw₂ : (∑ i in s, w₂ i) = 1)
-    (h :
-      s.affineCombination R p w ∈ line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])
+    (h : s.affineCombination R p w ∈
+      line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])
     {i : ι} (his : i ∈ s) (hs : Sbtw R (w₁ i) (w i) (w₂ i)) :
-    Sbtw R (s.affineCombination R p w₁) (s.affineCombination R p w) (s.affineCombination R p w₂) :=
-  by
+    Sbtw R (s.affineCombination R p w₁) (s.affineCombination R p w)
+      (s.affineCombination R p w₂) := by
   rw [affineCombination_mem_affineSpan_pair ha hw hw₁ hw₂] at h
   rcases h with ⟨r, hr⟩
   dsimp only at hr
@@ -923,5 +923,3 @@ theorem sbtw_midpoint_of_ne {x y : P} (h : x ≠ y) : Sbtw R x (midpoint R x y) 
 #align sbtw_midpoint_of_ne sbtw_midpoint_of_ne
 
 end LinearOrderedField
-
-#lint
