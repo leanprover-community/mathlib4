@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -431,11 +431,7 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 
 theorem smul_iSup [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {ι} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
-  ext fun s => by
-  rw [smul_apply, ← smul_one_mul, iSup]
-  simp only [iSup_apply, smul_apply, ← smul_one_mul c (f _ _)]
-  rw [←iSup, ←ENNReal.mul_iSup]
-  simp
+  ext fun s => by simp only [smul_apply, iSup_apply, ENNReal.smul_iSup]
 #align measure_theory.outer_measure.smul_supr MeasureTheory.OuterMeasure.smul_iSup
 
 end Supremum
@@ -1314,6 +1310,16 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 #align measure_theory.extend_eq_top MeasureTheory.extend_eq_top
+
+theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+    c • extend m = extend fun s h => c • m s h := by
+  ext1 s
+  dsimp [extend]
+  by_cases h : P s
+  · simp [h]
+  · simp [h, ENNReal.smul_top, hc]
+#align measure_theory.smul_extend MeasureTheory.smul_extend
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]

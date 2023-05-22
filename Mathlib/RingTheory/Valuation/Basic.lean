@@ -616,7 +616,9 @@ section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-  CoeFun (AddValuation R Γ₀) fun _ => R → Γ₀ where coe v := v.toMonoidWithZeroHom.toFun
+    FunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
+  coe v := v.toMonoidWithZeroHom.toFun
+  coe_injective' f g := by cases f; cases g; simp (config := {contextual:=true})
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀) {x y z : R}
