@@ -8,13 +8,13 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.Fderiv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The derivative of a composition (chain rule)
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `analysis/calculus/fderiv/basic.lean`.
+see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 composition of functions (the chain rule).
@@ -81,7 +81,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
         hg.comp_tendsto le_rfl
       _ =O[L] fun x' => x' - x := hf.is_O_sub
-      
+
   refine' this.triangle _
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x)) =ᶠ[L] fun x' =>
@@ -89,7 +89,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       eventually_of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.is_O_comp _ _)
     _ =o[L] fun x' => x' - x := hf
-    
+
 
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
@@ -263,4 +263,3 @@ protected theorem DifferentiableWithinAt.iterate {f : E → E} (hf : Differentia
 end Composition
 
 end
-
