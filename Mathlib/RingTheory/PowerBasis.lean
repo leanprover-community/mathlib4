@@ -115,10 +115,11 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       by_cases hf : f = 0
       · simp only [hf, natDegree_zero, degree_zero] at h⊢
         first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
-      simpa only [degree_eq_natDegree hf, WithBot.coe_lt_coe] using h
+      simp_all only [degree_eq_natDegree hf]
+      · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
 #align power_basis.mem_span_pow PowerBasis.mem_span_pow
 
-theorem dim_ne_zero [h : Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
+theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty
 #align power_basis.dim_ne_zero PowerBasis.dim_ne_zero
 
@@ -172,19 +173,19 @@ theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
 
 theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
-  refine' le_of_not_lt fun hlt => NeZero _
+  refine' le_of_not_lt fun hlt => ne_zero _
   rw [p.as_sum_range' _ hlt, Finset.sum_range]
   refine' Fintype.sum_eq_zero _ fun i => _
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
-  have := Fintype.linearIndependent_iff.1 pb.basis.linear_independent _ root
+  have := Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root
   dsimp only at this
   rw [this, monomial_zero_right]
 #align power_basis.dim_le_nat_degree_of_root PowerBasis.dim_le_natDegree_of_root
 
 theorem dim_le_degree_of_root (h : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval h.gen p = 0) : ↑h.dim ≤ p.degree := by
-  rw [degree_eq_natDegree NeZero, WithBot.coe_le_coe]
-  exact h.dim_le_nat_degree_of_root NeZero root
+  rw [degree_eq_natDegree ne_zero]
+  exact WithBot.coe_le_coe.2 (h.dim_le_natDegree_of_root ne_zero root)
 #align power_basis.dim_le_degree_of_root PowerBasis.dim_le_degree_of_root
 
 theorem degree_minpolyGen [Nontrivial A] (pb : PowerBasis A S) :
@@ -222,20 +223,19 @@ theorem natDegree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
 #align power_basis.nat_degree_minpoly PowerBasis.natDegree_minpoly
 
 protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb.basis pb.gen =
-    Matrix.of fun i j =>
-      if ↑j + 1 = pb.dim then -pb.minpolyGen.coeff ↑i else if ↑i = ↑j + 1 then 1 else 0 := by
+    @Matrix.of (Fin pb.dim) (Fin pb.dim) _ fun i j =>
+      if ↑j + 1 = pb.dim then -pb.minpolyGen.coeff ↑i else if (i : ℕ) = j + 1 then 1 else 0 := by
   cases subsingleton_or_nontrivial A; · apply Subsingleton.elim
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
   refine' pb.basis.ext fun k => _
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
   apply (pow_succ _ _).symm.trans
-  split_ifs with h h
+  split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
-    convert pb.aeval_minpoly_gen
-    rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leading_coeff,
-      pb.minpoly_gen_monic.leading_coeff, one_smul, nat_degree_minpoly_gen, Finset.sum_range]
-  · rw [Fintype.sum_eq_single (⟨↑k + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), if_pos, one_smul]
-    · rfl
+    convert pb.aeval_minpolyGen
+    rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leadingCoeff,
+      pb.minpolyGen_monic.leadingCoeff, one_smul, natDegree_minpolyGen, Finset.sum_range]
+  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), if_pos, one_smul]
     · rfl
     intro x hx
     rw [if_neg, zero_smul]
@@ -366,14 +366,14 @@ noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
       simp)
 #align power_basis.equiv_of_root PowerBasis.equivOfRoot
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem equivOfRoot_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0)
     (f : A[X]) : pb.equivOfRoot pb' h₁ h₂ (aeval pb.gen f) = aeval pb'.gen f :=
   pb.lift_aeval _ h₂ _
 #align power_basis.equiv_of_root_aeval PowerBasis.equivOfRoot_aeval
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem equivOfRoot_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     pb.equivOfRoot pb' h₁ h₂ pb.gen = pb'.gen :=
@@ -399,14 +399,14 @@ noncomputable def equivOfMinpoly (pb : PowerBasis A S) (pb' : PowerBasis A S')
   pb.equivOfRoot pb' (h ▸ minpoly.aeval _ _) (h.symm ▸ minpoly.aeval _ _)
 #align power_basis.equiv_of_minpoly PowerBasis.equivOfMinpoly
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem equivOfMinpoly_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) (f : A[X]) :
     pb.equivOfMinpoly pb' h (aeval pb.gen f) = aeval pb'.gen f :=
   pb.equivOfRoot_aeval pb' _ _ _
 #align power_basis.equiv_of_minpoly_aeval PowerBasis.equivOfMinpoly_aeval
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem equivOfMinpoly_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : pb.equivOfMinpoly pb' h pb.gen = pb'.gen :=
   pb.equivOfRoot_gen pb' _ _
@@ -435,7 +435,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   refine' Fintype.linearIndependent_iff.2 fun g hg i => _
   simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
-  apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => _) hn0) hg).not_lt).mtr
+  apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_lt).mtr
   · simp_rw [← C_mul_X_pow_eq_monomial]
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
@@ -471,7 +471,7 @@ noncomputable def map (pb : PowerBasis R S) (e : S ≃ₐ[R] S') : PowerBasis R 
 
 variable [Algebra A S] [Algebra A S']
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
     (pb.map e).minpolyGen = pb.minpolyGen := by
   dsimp only [minpolyGen, map_dim]
