@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Pi
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.Algebra.Category.Group.Limits
-import Mathbin.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Group.Limits
+import Mathlib.RingTheory.Subring.Basic
 
 /-!
 # The category of (commutative) rings has all limits
@@ -43,8 +43,7 @@ namespace SemiRingCat
 variable {J : Type v} [SmallCategory J]
 
 instance semiringObj (F : J ⥤ SemiRingCat.{max v u}) (j) :
-    Semiring ((F ⋙ forget SemiRingCat).obj j) :=
-  by
+    Semiring ((F ⋙ forget SemiRingCat).obj j) := by
   change Semiring (F.obj j)
   infer_instance
 #align SemiRing.semiring_obj SemiRingCat.semiringObj
@@ -83,8 +82,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `SemiRing`.
 (Internal use only; use the limits API.)
 -/
-def limitCone (F : J ⥤ SemiRingCat.{max v u}) : Cone F
-    where
+def limitCone (F : J ⥤ SemiRingCat.{max v u}) : Cone F where
   pt := SemiRingCat.of (Types.limitCone (F ⋙ forget _)).pt
   π :=
     { app := limitπRingHom F
@@ -188,8 +186,7 @@ namespace CommSemiRingCat
 variable {J : Type v} [SmallCategory J]
 
 instance commSemiringObj (F : J ⥤ CommSemiRingCat.{max v u}) (j) :
-    CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) :=
-  by
+    CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) := by
   change CommSemiring (F.obj j)
   infer_instance
 #align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
@@ -285,8 +282,7 @@ namespace RingCat
 
 variable {J : Type v} [SmallCategory J]
 
-instance ringObj (F : J ⥤ RingCat.{max v u}) (j) : Ring ((F ⋙ forget RingCat).obj j) :=
-  by
+instance ringObj (F : J ⥤ RingCat.{max v u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := by
   change Ring (F.obj j)
   infer_instance
 #align Ring.ring_obj RingCat.ringObj
@@ -407,8 +403,7 @@ namespace CommRingCat
 variable {J : Type v} [SmallCategory J]
 
 instance commRingObj (F : J ⥤ CommRingCat.{max v u}) (j) :
-    CommRing ((F ⋙ forget CommRingCat).obj j) :=
-  by
+    CommRing ((F ⋙ forget CommRingCat).obj j) := by
   change CommRing (F.obj j)
   infer_instance
 #align CommRing.comm_ring_obj CommRingCat.commRingObj
