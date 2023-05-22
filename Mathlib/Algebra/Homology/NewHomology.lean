@@ -475,7 +475,7 @@ noncomputable def singleHomologyIso (A : C) : ((single C c i).obj A).newHomology
     singleObjXSelf C c i A
 
 @[reassoc (attr := simp)]
-def singleHomologyIso_hom_naturality {A B : C} (f : A ⟶ B) :
+lemma singleHomologyIso_hom_naturality {A B : C} (f : A ⟶ B) :
     homologyMap ((single C c i).map f) i ≫ (singleHomologyIso c i B).hom =
       (singleHomologyIso c i A).hom ≫ f := by
   dsimp only [singleHomologyIso, Iso.trans, homologyMap]

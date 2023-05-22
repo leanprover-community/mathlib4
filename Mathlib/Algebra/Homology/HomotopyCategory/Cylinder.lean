@@ -103,7 +103,7 @@ namespace HomotopyCategory
 
 variable (C)
 
-lemma localization_strict_universal_property (D : Type _) [Category D] :
+def localization_strict_universal_property (D : Type _) [Category D] :
     Localization.StrictUniversalPropertyFixedTarget (quotient C (ComplexShape.up ℤ))
       (HomologicalComplex.homotopyEquivalences _ _) D where
   inverts := by

@@ -109,14 +109,14 @@ lemma hasFiniteProducts [W.ContainsIdentities] [HasFiniteProducts C]
   ⟨fun _ => hasProductsOfShape L W _
     (MorphismProperty.IsStableUnderFiniteProducts.isStableUnderProductsOfShape W _)⟩
 
-lemma preservesProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities]
+noncomputable def preservesProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities]
     [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J) :
     PreservesLimitsOfShape (Discrete J) L := by
   have := FiniteProductsAux.isIso_limitComparisonOfConstAdjunction L W hW
   exact preservesLimitsOfShape_of_const_adjunction (FiniteProductsAux.adj C J)
     (FiniteProductsAux.adj' L W hW) L
 
-lemma preservesFiniteProducts [W.ContainsIdentities]
+noncomputable def preservesFiniteProducts [W.ContainsIdentities]
     [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
     PreservesFiniteProducts L := ⟨by
   intro J hJ

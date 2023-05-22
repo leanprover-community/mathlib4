@@ -22,7 +22,9 @@ def t : TStructure (DerivedCategory C) where
       apply IsZero.eq_of_src
       rw [L.isZero_truncLE_iff 0 1 (by simp)]
       infer_instance
-    rw [← cancel_epi (K.truncLEι 0), comp_zero, ← truncLEι_naturality, hL', comp_zero]
+    rw [← cancel_epi (K.truncLEι 0), comp_zero, ← truncLEι_naturality, hL']
+    dsimp
+    rw [comp_zero]
   setLE_zero_subset {K} (hK : K.IsLE 0) := K.isLE_of_LE 0 1 (by linarith)
   setGE_one_subset {K} (hK : K.IsGE 1) := K.isGE_of_GE 0 1 (by linarith)
   exists_triangle_zero_one X := by

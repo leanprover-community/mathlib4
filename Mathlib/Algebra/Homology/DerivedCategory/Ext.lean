@@ -33,17 +33,35 @@ lemma ext_iff (e₁ e₂ : newExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom :
 
 lemma mk_surjective (e : newExt X Y n) : ∃ (f : _), e = mk f := ⟨e.hom, rfl⟩
 
-noncomputable instance : AddCommGroup (newExt X Y n) where
-  zero := mk 0
-  neg f := mk (-f.hom)
-  add f₁ f₂ := mk (f₁.hom + f₂.hom)
-  sub f₁ f₂ := mk (f₁.hom - f₂.hom)
-  add_assoc f₁ f₂ f₃ := hom_injective _ _ (add_assoc _ _ _)
-  zero_add f := hom_injective _ _ (zero_add _)
-  add_zero f := hom_injective _ _ (add_zero _)
-  add_comm f₁ f₂ := hom_injective _ _ (add_comm _ _)
-  add_left_neg f := hom_injective _ _ (add_left_neg _)
-  sub_eq_add_neg f₁ f₂ := hom_injective _ _ (sub_eq_add_neg _ _)
+variable (X Y n)
+
+def newExtEquiv :
+  newExt X Y n ≃ ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n where
+  toFun e := e.hom
+  invFun f := mk f
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+variable {X Y n}
+
+noncomputable instance : AddCommGroup (newExt X Y n) := Equiv.addCommGroup (newExtEquiv X Y n)
+
+--#exit
+--  zero := mk 0
+--  neg f := mk (-f.hom)
+--  add f₁ f₂ := mk (f₁.hom + f₂.hom)
+--  sub f₁ f₂ := mk (f₁.hom - f₂.hom)
+--  add_assoc := sorry
+--  zero_add := sorry
+--  add_zero := sorry
+--  add_left_neg := sorry
+--  sub_eq_add_neg := sorry #exit
+--  add_assoc f₁ f₂ f₃ := hom_injective _ _ (add_assoc _ _ _)
+--  zero_add f := hom_injective _ _ (zero_add _)
+--  add_zero f := hom_injective _ _ (add_zero _)
+--  add_comm f₁ f₂ := hom_injective _ _ (add_comm _ _)
+--  add_left_neg f := hom_injective _ _ (add_left_neg _)
+--  sub_eq_add_neg f₁ f₂ := hom_injective _ _ (sub_eq_add_neg _ _)
 
 @[simp]
 lemma add_hom (x y : newExt X Y n) : (x + y).hom = x.hom + y.hom := rfl
@@ -238,6 +256,7 @@ lemma covariant_newExt_exact₁ {A : C} {n₁ : ℕ}
     comp_zsmul, zsmul_comp, assoc, assoc,
     shiftFunctorComm_eq _ _ _ _ h', Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app]
   rfl
+
 lemma covariant_newExt_exact₂ {A : C} {n : ℕ}
     (x₂ : newExt A S.X₂ n) (hx₂ : (newExt.ofHom S.g) •[zero_add n] x₂ = 0) :
     ∃ (x₁ : newExt A S.X₁ n), x₂ = (newExt.ofHom S.f) •[zero_add n] x₁ := by

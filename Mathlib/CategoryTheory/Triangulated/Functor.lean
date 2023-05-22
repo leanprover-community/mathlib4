@@ -90,7 +90,7 @@ namespace IsTriangulated
 
 variable [F.IsTriangulated]
 
-lemma map_zero_object : F.obj 0 ≅ 0 := by
+noncomputable def map_zero_object : F.obj 0 ≅ 0 := by
   apply IsZero.isoZero
   apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
   dsimp

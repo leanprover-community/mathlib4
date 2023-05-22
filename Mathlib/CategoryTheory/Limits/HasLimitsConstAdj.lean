@@ -89,7 +89,7 @@ instance hasLimitsOfShape_of_isLeftAdjoint_const [IsLeftAdjoint (Functor.const J
     HasLimitsOfShape J C :=
   hasLimitsOfShape_of_const_adjunction (Adjunction.ofLeftAdjoint _)
 
-lemma isLimitOfIsIsoConstAdjunctionHomEquivApply {X : J ⥤ C} (c : Cone X)
+noncomputable def isLimitOfIsIsoConstAdjunctionHomEquivApply {X : J ⥤ C} (c : Cone X)
     (h : IsIso ((adj.homEquiv _ _) c.π)) : IsLimit c := by
   refine' IsLimit.ofIsoLimit (isLimitConeOfConstAdjunction adj X) (Iso.symm _)
   refine' Cones.ext (asIso ((adj.homEquiv _ _) c.π)) (fun j => _)
@@ -112,7 +112,7 @@ variable {C₁ C₂ J : Type _} [Category C₁] [Category C₂] [Category J]
 def limitComparisonOfConstAdjunction : F₁ ⋙ L ⟶ (whiskeringRight J _ _).obj L ⋙ F₂ :=
   Adjunction.natTransHomEquiv adj₁ adj₂ (L.compConstIso J).hom
 
-lemma preservesLimit_of_const_adjunction (X : J ⥤ C₁)
+noncomputable def preservesLimit_of_const_adjunction (X : J ⥤ C₁)
   [hX : IsIso ((limitComparisonOfConstAdjunction adj₁ adj₂ L).app X)] :
     PreservesLimit X L := by
   refine' preservesLimitOfPreservesLimitCone (isLimitConeOfConstAdjunction adj₁ X) _
@@ -123,7 +123,7 @@ lemma preservesLimit_of_const_adjunction (X : J ⥤ C₁)
   congr 2
   aesop_cat
 
-lemma preservesLimitsOfShape_of_const_adjunction
+noncomputable def preservesLimitsOfShape_of_const_adjunction
     [IsIso (limitComparisonOfConstAdjunction adj₁ adj₂ L)] :
     PreservesLimitsOfShape J L :=
   ⟨fun {X} => preservesLimit_of_const_adjunction adj₁ adj₂ L X⟩

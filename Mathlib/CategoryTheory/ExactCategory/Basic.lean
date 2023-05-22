@@ -93,11 +93,11 @@ instance respectsIso_shortExact : (shortExact C).RespectsIso := respectsIso_shor
 
 variable {C}
 
-lemma isLimit_kernelFork_of_shortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
+noncomputable def isLimit_kernelFork_of_shortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
     IsLimit (KernelFork.ofι _ S.zero) :=
   (shortExact_kernel' _ hS).some
 
-lemma isColimit_cokernelCofork_of_shortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
+noncomputable def isColimit_cokernelCofork_of_shortExact (S : ShortComplex C) (hS : S ∈ shortExact C) :
     IsColimit (CokernelCofork.ofπ _ S.zero) :=
   (shortExact_cokernel' _ hS).some
 

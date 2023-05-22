@@ -219,7 +219,7 @@ noncomputable def truncTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) : C ⥤ 
         erw [← NatTrans.naturality, Functor.id_map] }
 
 set_option maxHeartbeats 400000 in
-def truncTriangle_obj_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+lemma truncTriangle_obj_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     (truncTriangle t n₀ n₁ h).obj X ∈ distTriang C := by
   let e := TruncAux.congrTriangleFunctor t (n₁ - 1) n₁ n₀ (n₀ + 1) (by linarith) rfl (by linarith)
   refine' isomorphic_distinguished _ (TruncAux.triangleFunctor_obj_distinguished t (n₁-1) n₁ (by linarith) X) _ _

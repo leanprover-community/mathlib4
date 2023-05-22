@@ -40,7 +40,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
         Cochain.comp_v _ _ (add_neg_self 1) p (p+1) p (by linarith) (by linarith)])
 
 
-def hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
+lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
   dsimp [map']
   simp [lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl,

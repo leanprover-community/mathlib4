@@ -17,7 +17,7 @@ variable {C D : Type _} [Category C] [Category D] [HasFiniteProducts C]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [HasFiniteProducts D]
   [PreservesFiniteProducts L]
 
-lemma preadditive [Preadditive C] : Preadditive D := by
+noncomputable irreducible_def preadditive [Preadditive C] : Preadditive D := by
   have : PreservesLimitsOfShape (Discrete WalkingPair) L := PreservesFiniteProducts.preserves _
   have : PreservesLimitsOfShape (Discrete PEmpty) L := PreservesFiniteProducts.preserves _
   have : PreservesLimit (Functor.empty C) L := PreservesLimitsOfShape.preservesLimit

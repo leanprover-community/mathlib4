@@ -13,12 +13,12 @@ variable {J C D : Type _} [Category J] [Category C] [Category D]
   [HasZeroMorphisms D] [HasZeroObject D]
   (F : J ⥤ C) (hF : IsZero F) (G : C ⥤ D) (hG : IsZero G)
 
-lemma IsLimit.ofIsZero (c : Cone F) (hc : IsZero c.pt) : IsLimit c where
+def IsLimit.ofIsZero (c : Cone F) (hc : IsZero c.pt) : IsLimit c where
   lift _ := 0
   fac _ j := (F.isZero_iff.1 hF j).eq_of_tgt _ _
   uniq _ _ _ := hc.eq_of_tgt _ _
 
-lemma preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
+def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
     apply IsLimit.ofIsZero
@@ -27,12 +27,12 @@ lemma preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
       apply hG
     . apply hG⟩⟩
 
-lemma IsColimit.ofIsZero (c : Cocone F) (hc : IsZero c.pt) : IsColimit c where
+def IsColimit.ofIsZero (c : Cocone F) (hc : IsZero c.pt) : IsColimit c where
   desc _ := 0
   fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
   uniq _ _ _ := hc.eq_of_src _ _
 
-lemma preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
+def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
     apply IsColimit.ofIsZero
