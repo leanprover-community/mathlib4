@@ -273,29 +273,40 @@ def ofCocomplex (Z : C) : CochainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 
-/- TODO: Fix this. I can't work on this, because Lean 4 consumes all my memory (roughly 6 GB).
+-- Porting note: removed this from `of` due to timeouts
+theorem ofCocomplex_comm_sq_aux (Z : C) :
+    Injective.ι Z ≫ HomologicalComplex.d (ofCocomplex Z) 0 1 =
+    HomologicalComplex.d ((CochainComplex.single₀ C).obj Z) 0 1 ≫ 0 := by
+  simp only [ofCocomplex_d, eq_self_iff_true, eqToHom_refl, Category.comp_id,
+    dite_eq_ite, if_true, comp_zero]
+  exact (exact_f_d (Injective.ι Z)).w
+
+-- Porting note: still very slow
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
-irreducible_def of (Z : C) : InjectiveResolution Z :=
+def of (Z : C) : InjectiveResolution Z :=
   { cocomplex := ofCocomplex Z
     ι :=
-      CochainComplex.mkHom _ _ (Injective.ι Z) 0
-        (by
-          simp only [ofCocomplex_d, eq_self_iff_true, eqToHom_refl, Category.comp_id,
-            dite_eq_ite, if_true, comp_zero]
-          exact (exact_f_d (Injective.ι Z)).w)
-        fun n _ => ⟨0, by ext⟩
+      CochainComplex.mkHom
+        ((CochainComplex.single₀ C).obj Z) (ofCocomplex Z) (Injective.ι Z) 0
+          (ofCocomplex_comm_sq_aux Z) fun n _ => by
+          -- Porting note: used to be ⟨0, by ext⟩
+            use 0
+            apply HasZeroObject.from_zero_ext
     injective := by rintro (_ | _ | _ | n) <;> · apply Injective.injective_under
     exact₀ := by simpa using exact_f_d (Injective.ι Z)
-    exact := by
-      rintro (_ | n) <;>
-        · simp
-          apply exact_f_d
+    exact := fun n =>
+      match n with
+      | 0 => by simp; apply exact_f_d
+      | _ => by simp; sorry -- should be apply exact_f_d
+      -- rintro (_ | n) <;>
+        -- · simp
+        --   apply exact_f_d
     mono := Injective.ι_mono Z }
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of CategoryTheory.InjectiveResolution.of
--/
+
 
 instance (priority := 100) (Z : C) : HasInjectiveResolution Z where out := ⟨of Z⟩
 
