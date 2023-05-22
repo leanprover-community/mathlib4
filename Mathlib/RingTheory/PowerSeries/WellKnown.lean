@@ -17,10 +17,10 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 In this file we define the following power series:
 
-* `power_series.inv_units_sub`: given `u : Rˣ`, this is the series for `1 / (u - x)`.
+* `PowerSeries.invUnitsSub`: given `u : Rˣ`, this is the series for `1 / (u - x)`.
   It is given by `∑ n, x ^ n /ₚ u ^ (n + 1)`.
 
-* `power_series.sin`, `power_series.cos`, `power_series.exp` : power series for sin, cosine, and
+* `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
 
