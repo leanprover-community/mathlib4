@@ -17,11 +17,11 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # Irrational real numbers
 
-In this file we define a predicate `irrational` on `ℝ`, prove that the `n`-th root of an integer
+In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th root of an integer
 number is irrational if it is not integer, and that `sqrt q` is irrational if and only if
-`rat.sqrt q * rat.sqrt q ≠ q ∧ 0 ≤ q`.
+`Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q`.
 
-We also provide dot-style constructors like `irrational.add_rat`, `irrational.rat_sub` etc.
+We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
 -/
 
 
@@ -145,7 +145,7 @@ instance (q : ℚ) : Decidable (Irrational (Real.sqrt q)) :=
   decidable_of_iff' _ (irrational_sqrt_rat_iff q)
 
 /-!
-### Dot-style operations on `irrational`
+### Dot-style operations on `Irrational`
 
 #### Coercion of a rational/integer/natural number is not irrational
 -/
