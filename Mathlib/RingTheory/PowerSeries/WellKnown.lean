@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.PowerSeries.Basic
-import Mathbin.Data.Nat.Parity
-import Mathbin.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 /-!
 # Definition of well-known power series
@@ -47,8 +47,7 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 
 #align power_series.constant_coeff_inv_units_sub PowerSeries.constantCoeff_invUnitsSub
 
 @[simp]
-theorem invUnitsSub_mul_x (u : Rˣ) : invUnitsSub u * x = invUnitsSub u * c R u - 1 :=
-  by
+theorem invUnitsSub_mul_x (u : Rˣ) : invUnitsSub u * x = invUnitsSub u * c R u - 1 := by
   ext (_ | n)
   · simp
   · simp [n.succ_ne_zero, pow_succ]
@@ -60,8 +59,7 @@ theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (c R u - x) = 1 := by
 #align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
 theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
-    map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) :=
-  by
+    map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) := by
   ext
   simp [← map_pow]
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
@@ -97,8 +95,7 @@ theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
 #align power_series.coeff_exp PowerSeries.coeff_exp
 
 @[simp]
-theorem constantCoeff_exp : constantCoeff A (exp A) = 1 :=
-  by
+theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constant_coeff_apply, coeff_exp]
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
@@ -125,8 +122,7 @@ theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
 #align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
 
 @[simp]
-theorem map_exp : map (f : A →+* A') (exp A) = exp A' :=
-  by
+theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
 #align power_series.map_exp PowerSeries.map_exp
@@ -153,8 +149,7 @@ variable {A : Type _} [CommRing A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
-    rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) :=
-  by
+    rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext
   simp only [coeff_mul, exp, rescale, coeff_mk, coe_mk, factorial,
     nat.sum_antidiagonal_eq_sum_range_succ_mk, add_pow, sum_mul]
@@ -186,8 +181,7 @@ theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
-theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) :=
-  by
+theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction' k with k h
   ·
     simp only [rescale_zero, constant_coeff_exp, Function.comp_apply, map_one, cast_zero, pow_zero,
