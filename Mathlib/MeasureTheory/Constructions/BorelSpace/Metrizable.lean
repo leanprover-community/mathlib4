@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathbin.Topology.MetricSpace.Metrizable
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.Metrizable
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
@@ -34,8 +34,7 @@ theorem measurable_of_tendsto_ennreal' {ι} {f : ι → α → ℝ≥0∞} {g : 
     Measurable g := by
   rcases u.exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_pi_nhds] at lim
-  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) at_top) = g :=
-    by
+  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) at_top) = g := by
     ext1 y
     exact ((limUnder y).comp hx).liminf_eq
   rw [← this]
@@ -69,20 +68,17 @@ theorem measurable_of_tendsto_nNReal {f : ℕ → α → ℝ≥0} {g : α → �
 measurable. -/
 theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α → β} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
-    Measurable g :=
-  by
+    Measurable g := by
   letI : PseudoMetricSpace β := pseudo_metrizable_space_pseudo_metric β
   apply measurable_of_is_closed'
   intro s h1s h2s h3s
-  have : Measurable fun x => inf_nndist (g x) s :=
-    by
+  have : Measurable fun x => inf_nndist (g x) s := by
     suffices : tendsto (fun i x => inf_nndist (f i x) s) u (𝓝 fun x => inf_nndist (g x) s)
     exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
     rw [tendsto_pi_nhds] at lim⊢
     intro x
     exact ((continuous_inf_nndist_pt s).Tendsto (g x)).comp (limUnder x)
-  have h4s : g ⁻¹' s = (fun x => inf_nndist (g x) s) ⁻¹' {0} :=
-    by
+  have h4s : g ⁻¹' s = (fun x => inf_nndist (g x) s) ⁻¹' {0} := by
     ext x
     simp [h1s, ← h1s.mem_iff_inf_dist_zero h2s, ← NNReal.coe_eq_zero]
   rw [h4s]
@@ -98,8 +94,7 @@ theorem measurable_of_tendsto_metrizable {f : ℕ → α → β} {g : α → β}
 
 theorem aEMeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι → α → β} {g : α → β}
     (u : Filter ι) [hu : NeBot u] [IsCountablyGenerated u] (hf : ∀ n, AEMeasurable (f n) μ)
-    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) u (𝓝 (g x))) : AEMeasurable g μ :=
-  by
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) u (𝓝 (g x))) : AEMeasurable g μ := by
   rcases u.exists_seq_tendsto with ⟨v, hv⟩
   have h'f : ∀ n, AEMeasurable (f (v n)) μ := fun n => hf (v n)
   set p : α → (ℕ → β) → Prop := fun x f' => tendsto (fun n => f' n) at_top (𝓝 (g x))
@@ -131,14 +126,12 @@ theorem aEMeasurable_of_tendsto_metrizable_ae' {μ : Measure α} {f : ℕ → α
 theorem aEMeasurable_of_unif_approx {β} [MeasurableSpace β] [PseudoMetricSpace β] [BorelSpace β]
     {μ : Measure α} {g : α → β}
     (hf : ∀ ε > (0 : ℝ), ∃ f : α → β, AEMeasurable f μ ∧ ∀ᵐ x ∂μ, dist (f x) (g x) ≤ ε) :
-    AEMeasurable g μ :=
-  by
+    AEMeasurable g μ := by
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ tendsto u at_top (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   choose f Hf using fun n : ℕ => hf (u n) (u_pos n)
-  have : ∀ᵐ x ∂μ, tendsto (fun n => f n x) at_top (𝓝 (g x)) :=
-    by
+  have : ∀ᵐ x ∂μ, tendsto (fun n => f n x) at_top (𝓝 (g x)) := by
     have : ∀ᵐ x ∂μ, ∀ n, dist (f n x) (g x) ≤ u n := ae_all_iff.2 fun n => (Hf n).2
     filter_upwards [this]
     intro x hx
@@ -158,8 +151,7 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
     ∃ (f_lim : α → β)(hf_lim_meas : Measurable f_lim),
-      ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) :=
-  by
+      ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
   rcases eq_or_ne L ⊥ with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩
@@ -170,8 +162,7 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
   have h_ae_eq : ∀ᵐ x ∂μ, ∀ n, aeSeq hf p n x = f n x := aeSeq.aeSeq_eq_fun_ae hf h_ae_tendsto
   let f_lim : α → β := fun x =>
     dite (x ∈ aeSeqSet hf p) (fun h => (hp_mem x h).some) fun h => (⟨f default x⟩ : Nonempty β).some
-  have hf_lim : ∀ x, tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) :=
-    by
+  have hf_lim : ∀ x, tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) := by
     intro x
     simp only [f_lim, aeSeq]
     split_ifs
