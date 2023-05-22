@@ -11,7 +11,6 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.Data.Polynomial.IntegralNormalization
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -21,6 +20,7 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
+
 
 universe u v w
 
@@ -394,9 +394,8 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
 /-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
 theorem Subalgebra.isField_of_algebraic (hKL : Algebra.IsAlgebraic K L) : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
-    mul_inv_cancel := by
-      intros a ha
-      exact ⟨⟨a⁻¹, A.inv_mem_of_algebraic (hKL a)⟩,
+    mul_inv_cancel := fun {a} ha =>
+      ⟨⟨a⁻¹, A.inv_mem_of_algebraic (hKL a)⟩,
         Subtype.ext (mul_inv_cancel (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
 #align subalgebra.is_field_of_algebraic Subalgebra.isField_of_algebraic
 
