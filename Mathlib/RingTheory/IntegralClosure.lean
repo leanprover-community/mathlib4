@@ -1179,7 +1179,7 @@ theorem integralClosure_idem {R : Type _} {A : Type _} [CommRing R] [CommRing A]
   eq_bot_iff.2 fun x hx =>
     Algebra.mem_bot.2
       ⟨⟨x,
-          @isIntegral_trans _ _ _ _ _ _ _ _ (integralClosure R A).algebra' _
+          @isIntegral_trans _ _ _ _ _ _ _ _ (integralClosure R A).algebra _
             integralClosure.isIntegral x hx⟩,
         rfl⟩
 #align integral_closure_idem integralClosure_idem
