@@ -13,6 +13,7 @@ import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.Module.BigOperators
 
+import Mathlib.Tactic.LibrarySearch -- Porting note: delete me
 /-!
 # Graded Module
 
@@ -101,7 +102,7 @@ theorem smul_def [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, A i) (y 
 theorem smulAddMonoidHom_apply_of_of [DecidableEq ι] [GMonoid A] [Gmodule A M] {i j} (x : A i)
     (y : M j) :
     smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i + j) (GSmul.smul x y) := by
-  simp [smul_add_monoid_hom]
+  simp [smulAddMonoidHom]
 #align direct_sum.gmodule.smul_add_monoid_hom_apply_of_of DirectSum.Gmodule.smulAddMonoidHom_apply_of_of
 
 @[simp]
@@ -112,18 +113,21 @@ theorem of_smul_of [DecidableEq ι] [GMonoid A] [Gmodule A M] {i j} (x : A i) (y
 
 open AddMonoidHom
 
+-- Porting note: renamed to one_smul' since DirectSum.Gmodule.one_smul already exists
 -- Almost identical to the proof of `direct_sum.one_mul`
-private theorem one_smul [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, M i) :
+private theorem one_smul' [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
-  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from AddMonoidHom.congr_fun this x
+  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from FunLike.congr_fun this x
   apply DirectSum.addHom_ext; intro i xi
-  unfold One.one
-  rw [smul_add_monoid_hom_apply_of_of]
+  rw [show (1 : DirectSum ι fun i => A i) = (of A 0) GOne.one by rfl]
+  rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
-#align direct_sum.gmodule.one_smul direct_sum.gmodule.one_smul
+-- #align direct_sum.gmodule.one_smul DirectSum.Gmodule.one_smul'
+-- Porting note: #align removed on private declaration
 
+-- Porting note: renamed to mul_smul' since DirectSum.Gmodule.mul_smul already exists
 -- Almost identical to the proof of `direct_sum.mul_assoc`
-private theorem mul_smul [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁ i, A i)
+private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁ i, A i)
     (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
   suffices
     (-- `λ a b c, (a * b) • c` as a bundled hom
@@ -133,22 +137,22 @@ private theorem mul_smul [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
     from-- `λ a b c, a • (b • c)` as a bundled hom
-      AddMonoidHom.congr_fun
-      (AddMonoidHom.congr_fun (AddMonoidHom.congr_fun this a) b) c
+      FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext (ai ax bi bx ci cx) : 6
-  dsimp only [coe_comp, Function.comp_apply, comp_hom_apply_apply, flip_apply, flip_hom_apply]
-  rw [smul_add_monoid_hom_apply_of_of, smul_add_monoid_hom_apply_of_of, DirectSum.mulHom_of_of,
-    smul_add_monoid_hom_apply_of_of]
+  dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
+  rw [smulAddMonoidHom_apply_of_of, smulAddMonoidHom_apply_of_of, DirectSum.mulHom_of_of,
+    smulAddMonoidHom_apply_of_of]
   exact
     DirectSum.of_eq_of_gradedMonoid_eq
       (mul_smul (GradedMonoid.mk ai ax) (GradedMonoid.mk bi bx) (GradedMonoid.mk ci cx))
-#align direct_sum.gmodule.mul_smul direct_sum.gmodule.mul_smul
+-- #align direct_sum.gmodule.mul_smul direct_sum.gmodule.mul_smul
+-- Porting note: #align removed on private declaration
 
 /-- The `module` derived from `gmodule A M`. -/
 instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i) where
   smul := (· • ·)
-  one_smul := one_smul _ _
-  mul_smul := mul_smul _ _
+  one_smul := one_smul' _ _
+  mul_smul := mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
   smul_zero r := (smulAddMonoidHom A M r).map_zero
   add_smul r s x := by simp only [smul_def, map_add, AddMonoidHom.add_apply]
@@ -175,8 +179,6 @@ variable (𝓜 : ι → σ)
 
 namespace SetLike
 
-include σ' A σ M
-
 instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
     [SetLike.GradedSmul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
   {
@@ -192,8 +194,8 @@ instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
   {
     SetLike.gmulAction 𝓐
       𝓜 with
-    smul_add := fun i j a b c => Subtype.ext <| smul_add _ _ _
-    smul_zero := fun i j a => Subtype.ext <| smul_zero _ }
+    smul_add := fun a b c => Subtype.ext <| smul_add _ _ _
+    smul_zero := fun a => Subtype.ext <| smul_zero _ }
 #align set_like.gdistrib_mul_action SetLike.gdistribMulAction
 
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
@@ -205,16 +207,14 @@ instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   {
     SetLike.gdistribMulAction 𝓐
       𝓜 with
-    smul := fun i j x y => ⟨(x : A) • (y : M), SetLike.GradedSmul.smul_mem x.2 y.2⟩
-    add_smul := fun i j a a' b => Subtype.ext <| add_smul _ _ _
-    zero_smul := fun i j b => Subtype.ext <| zero_smul _ _ }
+    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSmul.smul_mem x.2 y.2⟩
+    add_smul := fun a a' b => Subtype.ext <| add_smul _ _ _
+    zero_smul := fun b => Subtype.ext <| zero_smul _ _ }
 #align set_like.gmodule SetLike.gmodule
 
 end SetLike
 
 namespace GradedModule
-
-include σ' A σ M
 
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSmul 𝓐 𝓜]
