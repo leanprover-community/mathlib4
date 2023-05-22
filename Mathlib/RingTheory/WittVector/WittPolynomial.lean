@@ -184,7 +184,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) :
     exact pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this]
-    convert @Finset.bunionᵢ_singleton_eq_self _ (range (n+1)) _
+    convert @Finset.biUnion_singleton_eq_self _ (range (n+1)) _
   · simp only [this]
     intro a b h
     apply disjoint_singleton_left.mpr
@@ -271,7 +271,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
   all_goals
     intro H
     replace H := vars_sum_subset _ _ H
-    rw [mem_bunionᵢ] at H
+    rw [mem_biUnion] at H
     rcases H with ⟨j, hj, H⟩
     rw [vars_C_mul] at H
     swap
