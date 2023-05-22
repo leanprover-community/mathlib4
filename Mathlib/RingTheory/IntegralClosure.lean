@@ -1150,19 +1150,19 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
 
 theorem isField_of_isIntegral_of_is_field' {R S : Type _} [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S := by
-  stop
   letI := hR.toField
-  refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun x hx => _⟩
+  refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx => _⟩
   let A := Algebra.adjoin R ({x} : Set S)
   haveI : IsNoetherian R A :=
-    isNoetherian_of_fg_of_noetherian A.to_submodule (FG_adjoin_singleton_of_integral x (H x))
+    isNoetherian_of_fg_of_noetherian (Subalgebra.toSubmodule A)
+    (FG_adjoin_singleton_of_integral x (H x))
   haveI : Module.Finite R A := Module.IsNoetherian.finite R A
   obtain ⟨y, hy⟩ :=
     LinearMap.surjective_of_injective
       (@LinearMap.mulLeft_injective R A _ _ _ _ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ fun h =>
-        hx (subtype.ext_iff.mp h))
+        hx (Subtype.ext_iff.mp h))
       1
-  exact ⟨y, subtype.ext_iff.mp hy⟩
+  exact ⟨y, Subtype.ext_iff.mp hy⟩
 #align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_is_field'
 
 theorem Algebra.IsIntegral.isField_iff_isField {R S : Type _} [CommRing R] [Nontrivial R]
