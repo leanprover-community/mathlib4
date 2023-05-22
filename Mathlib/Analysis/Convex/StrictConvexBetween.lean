@@ -24,8 +24,6 @@ variable {V P : Type _} [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetric
 
 variable [NormedAddTorsor V P] [StrictConvexSpace ℝ V]
 
-include V
-
 theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) :
     dist p₂ p < max (dist p₁ p) (dist p₃ p) := by
   have hp₁p₃ : p₁ -ᵥ p ≠ p₃ -ᵥ p := by simpa using h.left_ne_right
@@ -83,4 +81,3 @@ theorem Collinear.sbtw_of_dist_eq_of_dist_lt {p p₁ p₂ p₃ : P} {r : ℝ}
   · rintro rfl
     exact hp₂.ne hp₃
 #align collinear.sbtw_of_dist_eq_of_dist_lt Collinear.sbtw_of_dist_eq_of_dist_lt
-
