@@ -8,10 +8,10 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.EpiMono
-import Mathbin.Algebra.Category.Module.Kernels
-import Mathbin.CategoryTheory.Subobject.WellPowered
-import Mathbin.CategoryTheory.Subobject.Limits
+import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.Module.Kernels
+import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobjects in the category of `R`-modules
@@ -59,8 +59,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
             · apply LinearMap.ext
               intro x
               rfl)
-      left_inv := fun N =>
-        by
+      left_inv := fun N => by
         convert congr_arg LinearMap.range (underlying_iso_arrow (↾N.subtype)) using 1
         · have :
             (underlying_iso (↾N.subtype)).inv = (underlying_iso (↾N.subtype)).symm.toLinearEquiv :=
@@ -70,8 +69,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
             rfl
           rw [this, comp_def, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
-      map_rel_iff' := fun S T =>
-        by
+      map_rel_iff' := fun S T => by
         refine'
           ⟨fun h => _, fun h =>
             mk_le_mk_of_comm (↟(Submodule.ofLe h))
@@ -109,8 +107,7 @@ two elements in homology are equal if they differ by a boundary.
 @[ext]
 theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
-    (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y :=
-  by
+    (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
   simp
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
