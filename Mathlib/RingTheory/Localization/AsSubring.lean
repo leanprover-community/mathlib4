@@ -8,7 +8,7 @@ Authors: Adam Topaz, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 
@@ -90,8 +90,7 @@ The carrier of this subalgebra is defined as the set of all `x : K` of the form
 -/
 noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
   (mapToFractionRing K S (Localization S) hS).range.copy
-      { x | ∃ (a s : A)(hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ } <|
-    by
+      { x | ∃ (a s : A)(hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ } <| by
     ext
     symm
     apply mem_range_map_to_fraction_ring_iff
@@ -99,8 +98,7 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 
 namespace Subalgebra
 
-instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) :=
-  by
+instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
   dsimp only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
@@ -123,8 +121,7 @@ namespace Subalgebra
 theorem mem_range_mapToFractionRing_iff_of_field (B : Type _) [CommRing B] [Algebra A B]
     [IsLocalization S B] (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
-      ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ :=
-  by
+      ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by
   rw [mem_range_map_to_fraction_ring_iff]
   iterate 3 congr with ; convert Iff.rfl; rw [Units.val_inv_eq_inv_val]; rfl
 #align localization.subalgebra.mem_range_map_to_fraction_ring_iff_of_field Localization.subalgebra.mem_range_mapToFractionRing_iff_of_field
@@ -138,15 +135,13 @@ The carrier of this subalgebra is defined as the set of all `x : K` of the form
 -/
 noncomputable def ofField : Subalgebra A K :=
   (mapToFractionRing K S (Localization S) hS).range.copy
-      { x | ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ } <|
-    by
+      { x | ∃ (a s : A)(hs : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ } <| by
     ext
     symm
     apply mem_range_map_to_fraction_ring_iff_of_field
 #align localization.subalgebra.of_field Localization.subalgebra.ofField
 
-instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) :=
-  by
+instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) := by
   dsimp only [Localization.subalgebra.ofField]
   rw [Subalgebra.copy_eq]
   infer_instance
