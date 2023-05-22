@@ -22,18 +22,18 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 ## Main definitions
 
- * `thickened_indicator_aux δ E`: The `δ`-thickened indicator of a set `E` as an
+ * `thickenedIndicatorAux δ E`: The `δ`-thickened indicator of a set `E` as an
    unbundled `ℝ≥0∞`-valued function.
- * `thickened_indicator δ E`: The `δ`-thickened indicator of a set `E` as a bundled
+ * `thickenedIndicator δ E`: The `δ`-thickened indicator of a set `E` as a bundled
    bounded continuous `ℝ≥0`-valued function.
 
 ## Main results
 
  * For a sequence of thickening radii tending to 0, the `δ`-thickened indicators of a set `E` tend
    pointwise to the indicator of `closure E`.
-   - `thickened_indicator_aux_tendsto_indicator_closure`: The version is for the
+   - `thickenedIndicatorAux_tendsto_indicator_closure`: The version is for the
      unbundled `ℝ≥0∞`-valued functions.
-   - `thickened_indicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
+   - `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
      bounded continuous functions.
 
 -/
@@ -49,12 +49,12 @@ variable {α : Type _} [PseudoEMetricSpace α]
 
 /-- The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
 and `0` outside a `δ`-thickening of `E` and interpolates (continuously) between
-these values using `inf_edist _ E`.
+these values using `infEdist _ E`.
 
-`thickened_indicator_aux` is the unbundled `ℝ≥0∞`-valued function. See `thickened_indicator`
+`thickenedIndicatorAux` is the unbundled `ℝ≥0∞`-valued function. See `thickenedIndicator`
 for the (bundled) bounded continuous function with `ℝ≥0`-values. -/
-def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ := fun x : α =>
-  (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ
+def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ :=
+  fun x : α => (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ
 #align thickened_indicator_aux thickenedIndicatorAux
 
 theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
@@ -70,7 +70,8 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 #align continuous_thickened_indicator_aux continuous_thickenedIndicatorAux
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
-    thickenedIndicatorAux δ E x ≤ 1 := by apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
+    thickenedIndicatorAux δ E x ≤ 1 := by
+  apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
 #align thickened_indicator_aux_le_one thickenedIndicatorAux_le_one
 
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
@@ -105,8 +106,8 @@ theorem thickenedIndicatorAux_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x 
 #align thickened_indicator_aux_zero thickenedIndicatorAux_zero
 
 theorem thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
-    thickenedIndicatorAux δ₁ E ≤ thickenedIndicatorAux δ₂ E := fun _ =>
-  tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div rfl.le (ofReal_le_ofReal hle))
+    thickenedIndicatorAux δ₁ E ≤ thickenedIndicatorAux δ₂ E :=
+  fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div rfl.le (ofReal_le_ofReal hle))
 #align thickened_indicator_aux_mono thickenedIndicatorAux_mono
 
 theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
@@ -118,16 +119,16 @@ theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
 #align indicator_le_thickened_indicator_aux indicator_le_thickenedIndicatorAux
 
 theorem thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
-    thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ := fun _ =>
-  tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
+    thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ :=
+  fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
 #align thickened_indicator_aux_subset thickenedIndicatorAux_subset
 
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
 closure of E.
 
-This statement is for the unbundled `ℝ≥0∞`-valued functions `thickened_indicator_aux δ E`, see
-`thickened_indicator_tendsto_indicator_closure` for the version for bundled `ℝ≥0`-valued
+This statement is for the unbundled `ℝ≥0∞`-valued functions `thickenedIndicatorAux δ E`, see
+`thickenedIndicator_tendsto_indicator_closure` for the version for bundled `ℝ≥0`-valued
 bounded continuous functions. -/
 theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
@@ -157,17 +158,16 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
 
 /-- The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
 and `0` outside a `δ`-thickening of `E` and interpolates (continuously) between
-these values using `inf_edist _ E`.
+these values using `infEdist _ E`.
 
-`thickened_indicator` is the (bundled) bounded continuous function with `ℝ≥0`-values.
-See `thickened_indicator_aux` for the unbundled `ℝ≥0∞`-valued function. -/
+`thickenedIndicator` is the (bundled) bounded continuous function with `ℝ≥0`-values.
+See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function. -/
 @[simps]
 def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
   toFun := fun x : α => (thickenedIndicatorAux δ E x).toNNReal
   continuous_toFun := by
-    apply
-      ContinuousOn.comp_continuous continuousOn_toNNReal
-        (continuous_thickenedIndicatorAux δ_pos E)
+    apply ContinuousOn.comp_continuous continuousOn_toNNReal
+      (continuous_thickenedIndicatorAux δ_pos E)
     intro x
     exact (lt_of_le_of_lt (@thickenedIndicatorAux_le_one _ _ δ E x) one_lt_top).ne
   map_bounded' := by
@@ -179,8 +179,7 @@ def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ
     have key := @thickenedIndicatorAux_le_one _ _ δ E
     apply add_le_add <;>
       · norm_cast
-        refine'
-          (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
+        refine' (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
 #align thickened_indicator thickenedIndicator
 
 theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
@@ -191,9 +190,8 @@ theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 theorem thickenedIndicator_le_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) (x : α) :
     thickenedIndicator δ_pos E x ≤ 1 := by
   rw [thickenedIndicator.coeFn_eq_comp]
-  simpa using
-    (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne one_ne_top).mpr
-      (thickenedIndicatorAux_le_one δ E x)
+  simpa using (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne one_ne_top).mpr
+    (thickenedIndicatorAux_le_one δ E x)
 #align thickened_indicator_le_one thickenedIndicator_le_one
 
 theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
@@ -222,8 +220,7 @@ theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α
 theorem thickenedIndicator_mono {δ₁ δ₂ : ℝ} (δ₁_pos : 0 < δ₁) (δ₂_pos : 0 < δ₂) (hle : δ₁ ≤ δ₂)
     (E : Set α) : ⇑(thickenedIndicator δ₁_pos E) ≤ thickenedIndicator δ₂_pos E := by
   intro x
-  apply
-    (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne thickenedIndicatorAux_lt_top.ne).mpr
+  apply (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne thickenedIndicatorAux_lt_top.ne).mpr
   apply thickenedIndicatorAux_mono hle
 #align thickened_indicator_mono thickenedIndicator_mono
 
@@ -246,8 +243,7 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   have key := thickenedIndicatorAux_tendsto_indicator_closure δseq_lim E
   rw [tendsto_pi_nhds] at *
   intro x
-  rw [show
-      indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
+  rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
       by refine' (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
   refine' Tendsto.comp (tendsto_toNNReal _) (key x)
