@@ -255,7 +255,6 @@ theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
   isNoetherian_of_fg_of_noetherian _ (FG_adjoin_of_finite s.finite_toSet hs)
 #align is_noetherian_adjoin_finset isNoetherian_adjoin_finset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) :
@@ -265,12 +264,11 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
   cases' HS with y hy
   -- We can write `x` as `∑ rᵢ yᵢ` for `yᵢ ∈ Y`.
   obtain ⟨lx, hlx1, hlx2⟩ :
-    ∃ (l : A →₀ R)(H : l ∈ Finsupp.supported R R ↑y), (Finsupp.total A A R id) l = x := by
+    ∃ (l : A →₀ R)(_H : l ∈ Finsupp.supported R R ↑y), (Finsupp.total A A R id) l = x := by
     -- porting note: was
     -- `rwa [← @Finsupp.mem_span_image_iff_total A A R _ _ _ id (↑y) x, Set.image_id ↑y, hy]`
     simpa [← Finsupp.mem_span_image_iff_total, hy]
   -- Note that `y ⊆ S`.
-  save
   have hyS : ∀ {p}, p ∈ y → p ∈ S := by
     intros p hp
     show p ∈ Subalgebra.toSubmodule S
