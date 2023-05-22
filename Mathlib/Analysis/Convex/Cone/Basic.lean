@@ -808,13 +808,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     rw [mem_setOf_eq]
     exact hp_nonneg
   obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ _ ?_ _ hp_nonneg'
-  refine' ⟨q, hpq, _, hqs⟩
-  contrapose! hq
-  rcases step s q hqs _ hq with ⟨r, hqr, hr⟩
-  refine ⟨r, hr, hqr.le, hqr.ne'⟩
-
-  --exact ⟨r, hr, hqr.le, hqr.ne'⟩
-  /-· refine' ⟨q, hpq, _, hqs⟩
+  · refine' ⟨q, hpq, _, hqs⟩
     contrapose! hq
     rcases step s q hqs _ hq with ⟨r, hqr, hr⟩
     · exact ⟨r, hr, hqr.le, hqr.ne'⟩
@@ -835,7 +829,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     have : f ≤ LinearPMap.sSup c c_chain.directed_on := LinearPMap.le_sSup _ hfc
     convert← hcs hfc ⟨x, hfx⟩ hxs
     apply this.2
-    rfl-/
+    rfl
 #align riesz_extension.exists_top RieszExtension.exists_top
 
 #exit
