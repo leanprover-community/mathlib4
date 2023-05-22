@@ -8,7 +8,7 @@ Authors: Jujian Zhang, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 
 /-!
 
@@ -81,8 +81,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
       set set₁ := (decompose 𝒜 x).support.filterₓ fun i => proj 𝒜 i x ∉ I with set₁_eq
       set set₂ := (decompose 𝒜 y).support.filterₓ fun i => proj 𝒜 i y ∉ I with set₂_eq
       have nonempty :
-        ∀ x : A, x ∉ I → ((decompose 𝒜 x).support.filterₓ fun i => proj 𝒜 i x ∉ I).Nonempty :=
-        by
+        ∀ x : A, x ∉ I → ((decompose 𝒜 x).support.filterₓ fun i => proj 𝒜 i x ∉ I).Nonempty := by
         intro x hx
         rw [filter_nonempty_iff]
         contrapose! hx
@@ -94,14 +93,12 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
       have mem_max₁ : max₁ ∈ set₁ := max'_mem set₁ (Nonempty x rid₁)
       have mem_max₂ : max₂ ∈ set₂ := max'_mem set₂ (Nonempty y rid₂)
       replace hxy : proj 𝒜 (max₁ + max₂) (x * y) ∈ I := hI _ hxy
-      have mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∈ I :=
-        by
+      have mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∈ I := by
         set antidiag :=
           ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filterₓ fun z : ι × ι =>
             z.1 + z.2 = max₁ + max₂ with
           ha
-        have mem_antidiag : (max₁, max₂) ∈ antidiag :=
-          by
+        have mem_antidiag : (max₁, max₂) ∈ antidiag := by
           simp only [add_sum_erase, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, rfl⟩
         have eq_add_sum :=
@@ -118,8 +115,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rcases z with ⟨i, j⟩
         simp only [mem_erase, Prod.mk.inj_iff, Ne.def, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
-        have max_lt : max₁ < i ∨ max₂ < j :=
-          by
+        have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
           · exact Or.inl h
           · refine' False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
@@ -140,10 +136,8 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           rw [set₂_eq] at not_mem
           simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
           exact Ideal.mul_mem_left I _ (not_mem H₃)
-      have not_mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∉ I :=
-        by
-        have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I :=
-          by
+      have not_mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∉ I := by
+        have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I := by
           rw [mem_filter] at mem_max₁ mem_max₂
           exact ⟨mem_max₁.2, mem_max₂.2⟩
         intro rid
@@ -164,8 +158,7 @@ theorem Ideal.IsHomogeneous.isPrime_iff {I : Ideal A} (h : I.Homogeneous 𝒜) :
 #align ideal.is_homogeneous.is_prime_iff Ideal.IsHomogeneous.isPrime_iff
 
 theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
-    (I.homogeneousCore 𝒜).toIdeal.IsPrime :=
-  by
+    (I.homogeneousCore 𝒜).toIdeal.IsPrime := by
   apply (Ideal.homogeneousCore 𝒜 I).Homogeneous.isPrime_of_homogeneous_mem_or_mem
   · exact ne_top_of_le_ne_top h.ne_top (Ideal.toIdeal_homogeneousCore_le 𝒜 I)
   rintro x y hx hy hxy
@@ -176,8 +169,7 @@ theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
 #align ideal.is_prime.homogeneous_core Ideal.IsPrime.homogeneousCore
 
 theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.Homogeneous 𝒜) :
-    I.radical = sInf { J | J.Homogeneous 𝒜 ∧ I ≤ J ∧ J.IsPrime } :=
-  by
+    I.radical = sInf { J | J.Homogeneous 𝒜 ∧ I ≤ J ∧ J.IsPrime } := by
   rw [Ideal.radical_eq_sInf]
   apply le_antisymm
   · exact sInf_le_sInf fun J => And.right
