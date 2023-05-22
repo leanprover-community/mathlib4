@@ -44,7 +44,7 @@ and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
-  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ H`-/
+  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K`-/
   H : C
   /-- the inclusion of cycles in `S.X₂` -/
   i : K ⟶ S.X₂
