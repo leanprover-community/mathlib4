@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Basic
-import Mathbin.RingTheory.Algebraic
-import Mathbin.Data.Fintype.Card
+import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.RingTheory.Algebraic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Ax-Grothendieck for algebraic extensions of `zmod p`
@@ -35,8 +35,7 @@ open MvPolynomial Finset Function
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type _} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] (alg : Algebra.IsAlgebraic K R) (ps : ι → MvPolynomial ι R)
-    (hinj : Injective fun v i => eval v (ps i)) : Surjective fun v i => eval v (ps i) :=
-  by
+    (hinj : Injective fun v i => eval v (ps i)) : Surjective fun v i => eval v (ps i) := by
   have is_int : ∀ x : R, IsIntegral K x := fun x => isAlgebraic_iff_isIntegral.1 (alg x)
   classical
     intro v
