@@ -51,11 +51,8 @@ def χ₄ : MulChar (ZMod 4) ℤ where
 theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   intro a
   -- Porting note: was `decide!`
-  match a with
-  | 0 => decide
-  | 1 => decide
-  | 2 => decide
-  | 3 => decide
+  fin_cases a
+  all_goals decide
 #align zmod.is_quadratic_χ₄ ZMod.isQuadratic_χ₄
 
 /-- The value of `χ₄ n`, for `n : ℕ`, depends only on `n % 4`. -/
@@ -86,8 +83,9 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
-  nth_rw 1 [← Nat.div_add_mod n 4]
-  nth_rw 1 [(by norm_num : 4 = 2 * 2)]
+  --porting note: `nth_rw` didn't work here anymore. artifical workaround
+  nth_rw 3 [← Nat.div_add_mod n 4]
+  nth_rw 3 [(by norm_num : 4 = 2 * 2)]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ (by norm_num : 0 < 2), pow_add, pow_mul,
     neg_one_sq, one_pow, mul_one]
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → ite (m = 1) (1 : ℤ) (-1) = (-1) ^ (m / 2) := by decide
@@ -124,14 +122,18 @@ theorem χ₄_int_three_mod_four {n : ℤ} (hn : n % 4 = 3) : χ₄ n = -1 := by
 theorem neg_one_pow_div_two_of_one_mod_four {n : ℕ} (hn : n % 4 = 1) : (-1 : ℤ) ^ (n / 2) = 1 := by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_one hn), ← nat_cast_mod, hn]
   rfl
-#align neg_one_pow_div_two_of_one_mod_four neg_one_pow_div_two_of_one_mod_four
+#align zmod.neg_one_pow_div_two_of_one_mod_four ZMod.neg_one_pow_div_two_of_one_mod_four
 
 /-- If `n % 4 = 3`, then `(-1)^(n/2) = -1`. -/
 theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) : (-1 : ℤ) ^ (n / 2) = -1 :=
   by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
   rfl
-#align neg_one_pow_div_two_of_three_mod_four neg_one_pow_div_two_of_three_mod_four
+#align zmpod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
+
+lemma test : IsUnit (7 : ZMod 8) := by
+  have : (7 : ZMod 8) * 7 = 1 := by decide
+  exact isUnit_of_mul_eq_one (7 : ZMod 8) 7 this
 
 /-- Define the first primitive quadratic character on `zmod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
@@ -140,13 +142,30 @@ def χ₈ : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, -1, 0, -1, 0, 1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
-  map_nonunit' := by decide
+  --porting note: Was `by decide`, which timed out
+  map_nonunit' := by
+    intro a
+    match a with
+    | 0 => decide
+    | 1 => decide
+    | 2 => decide
+    | 3 => decide
+    | 4 => decide
+    | 5 => decide
+    | 6 => decide
+    | 7 =>
+      have : IsUnit (7 : ZMod 8) := by
+        apply isUnit_of_mul_eq_one
+        exact (by decide : (7 : ZMod 8) * 7 = 1)
+      tauto
 #align zmod.χ₈ ZMod.χ₈
 
 /-- `χ₈` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
   intro a
-  decide!
+  --porting note: was `decide!`
+  fin_cases a
+  all_goals decide
 #align zmod.is_quadratic_χ₈ ZMod.isQuadratic_χ₈
 
 /-- The value of `χ₈ n`, for `n : ℕ`, depends only on `n % 8`. -/
@@ -181,13 +200,30 @@ def χ₈' : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, 1, 0, -1, 0, -1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
-  map_nonunit' := by decide
+  --porting note: Was `by decide`, which timed out
+  map_nonunit' := by
+    intro a
+    match a with
+    | 0 => decide
+    | 1 => decide
+    | 2 => decide
+    | 3 => decide
+    | 4 => decide
+    | 5 => decide
+    | 6 => decide
+    | 7 =>
+      have : IsUnit (7 : ZMod 8) := by
+        apply isUnit_of_mul_eq_one
+        exact (by decide : (7 : ZMod 8) * 7 = 1)
+      tauto
 #align zmod.χ₈' ZMod.χ₈'
 
 /-- `χ₈'` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₈' : χ₈'.IsQuadratic := by
   intro a
-  decide!
+  --porting note: was `decide!`
+  fin_cases a
+  all_goals decide
 #align zmod.is_quadratic_χ₈' ZMod.isQuadratic_χ₈'
 
 /-- An explicit description of `χ₈'` on integers / naturals -/
@@ -206,7 +242,10 @@ theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
 
 /-- The relation between `χ₄`, `χ₈` and `χ₈'` -/
-theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ a * χ₈ a := by decide!
+theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ a * χ₈ a := by
+    --porting note: was `decide!`
+  fin_cases a
+  all_goals decide
 #align zmod.χ₈'_eq_χ₄_mul_χ₈ ZMod.χ₈'_eq_χ₄_mul_χ₈
 
 theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
