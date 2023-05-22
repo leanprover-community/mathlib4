@@ -53,14 +53,12 @@ variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCo
 theorem strongTopology.locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
     @LocallyConvexSpace R (E →SL[σ] F) _ _ _ (strongTopology σ F 𝔖) := by
-  letI : TopologicalSpace (E →SL[σ] F) := strong_topology σ F 𝔖
-  haveI : TopologicalAddGroup (E →SL[σ] F) := strong_topology.topological_add_group _ _ _
-  refine'
-    LocallyConvexSpace.ofBasisZero _ _ _ _
-      (strong_topology.has_basis_nhds_zero_of_basis _ _ _ h𝔖₁ h𝔖₂
-        (LocallyConvexSpace.convex_basis_zero R F))
-      _
-  rintro ⟨S, V⟩ ⟨hS, hVmem, hVconvex⟩ f hf g hg a b ha hb hab x hx
+  letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
+  haveI : TopologicalAddGroup (E →SL[σ] F) := strongTopology.topologicalAddGroup _ _ _
+  apply LocallyConvexSpace.ofBasisZero _ _ _ _
+    (strongTopology.hasBasis_nhds_zero_of_basis _ _ _ h𝔖₁ h𝔖₂
+      (LocallyConvexSpace.convex_basis_zero R F)) _
+  rintro ⟨S, V⟩ ⟨_, _, hVconvex⟩ f hf g hg a b ha hb hab x hx
   exact hVconvex (hf x hx) (hg x hx) ha hb hab
 #align continuous_linear_map.strong_topology.locally_convex_space ContinuousLinearMap.strongTopology.locallyConvexSpace
 
@@ -81,4 +79,3 @@ instance : LocallyConvexSpace R (E →SL[σ] F) :=
 end BoundedSets
 
 end ContinuousLinearMap
-
