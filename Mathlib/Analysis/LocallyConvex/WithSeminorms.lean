@@ -296,8 +296,7 @@ theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 :=
-  by
-  refine' ⟨fun V => _⟩
+  by refine' ⟨fun V => _⟩
   simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
   constructor
   · rintro ⟨-, ⟨s, r, hr, rfl⟩, hV⟩
@@ -308,8 +307,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (𝓝 (x : E)).HasBasis (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 :=
-  by
-  haveI : TopologicalAddGroup E := hp.topologicalAddGroup
+  by haveI : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
   convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
   ext sr : 1
@@ -402,8 +400,7 @@ variable [SemilatticeSup F] [Nonempty F]
 /-- Limit `→ ∞` for `WithSeminorms`. -/
 theorem WithSeminorms.tendsto_nhds_atTop (hp : WithSeminorms p) (u : F → E) (y₀ : E) :
     Filter.Tendsto u Filter.atTop (𝓝 y₀) ↔ ∀ i ε, 0 < ε → ∃ x₀, ∀ x, x₀ ≤ x → p i (u x - y₀) < ε :=
-  by
-  rw [hp.tendsto_nhds u y₀]
+  by rw [hp.tendsto_nhds u y₀]
   exact forall₃_congr fun _ _ _ => Filter.eventually_atTop
 #align with_seminorms.tendsto_nhds_at_top WithSeminorms.tendsto_nhds_atTop
 
@@ -454,8 +451,7 @@ each seminorm individually. We express this as a characterization of `WithSemino
 theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔
       t = ⨅ i,
-        (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace :=
-  by
+        (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
@@ -474,9 +470,8 @@ induced by each seminorm individually. We express this as a characterization of
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔ u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace :=
-  by
-  rw [p.withSeminorms_iff_nhds_eq_iInf] --,
-  rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
+  by rw [p.withSeminorms_iff_nhds_eq_iInf,
+    UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
   -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
   refine Eq.to_iff ?_
@@ -522,8 +517,7 @@ variable {p : SeminormFamily 𝕜 E ι}
 variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
-    Bornology.IsVonNBounded 𝕜 s ↔ ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p x < r :=
-  by
+    Bornology.IsVonNBounded 𝕜 s ↔ ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p x < r := by
   rw [hp.hasBasis.isVonNBounded_basis_iff]
   constructor
   · intro h I
@@ -551,8 +545,8 @@ set_option linter.uppercaseLean3 false in
 theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔
-      ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r :=
-  by simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
+      ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r := by
+  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
@@ -583,8 +577,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
-    Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r :=
-  by simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
+    Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r := by
+  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_seminorm_bounded
