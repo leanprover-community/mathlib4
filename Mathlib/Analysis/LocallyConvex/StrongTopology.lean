@@ -8,8 +8,8 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.StrongTopology
-import Mathbin.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Local convexity of the strong topology
@@ -52,8 +52,7 @@ variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCo
 
 theorem strongTopology.locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
-    @LocallyConvexSpace R (E →SL[σ] F) _ _ _ (strongTopology σ F 𝔖) :=
-  by
+    @LocallyConvexSpace R (E →SL[σ] F) _ _ _ (strongTopology σ F 𝔖) := by
   letI : TopologicalSpace (E →SL[σ] F) := strong_topology σ F 𝔖
   haveI : TopologicalAddGroup (E →SL[σ] F) := strong_topology.topological_add_group _ _ _
   refine'
