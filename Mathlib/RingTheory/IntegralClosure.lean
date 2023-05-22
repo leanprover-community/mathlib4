@@ -377,27 +377,38 @@ theorem isIntegral_of_smul_mem_submodule {M : Type _} [AddCommGroup M] [Module R
     (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
     { carrier := { x | ∀ n ∈ N, x • n ∈ N }
-      mul_mem' := sorry --fun a b ha hb n hn => smul_smul a b n ▸ ha _ (hb _ hn)
+      -- porting note: was
+              -- `fun a b ha hb n hn => smul_smul a b n ▸ ha _ (hb _ hn)`
+      mul_mem' := by intros a b ha hb n hn
+                     exact smul_smul a b n ▸ ha _ (hb _ hn)
       one_mem' := fun n hn => (one_smul A n).symm ▸ hn
-      add_mem' := sorry --fun a b ha hb n hn => (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
-      zero_mem' := fun n hn => (zero_smul A n).symm ▸ N.zero_mem
+      -- porting note: was
+              -- `fun a b ha hb n hn => (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)`
+      add_mem' := by intros a b ha hb n hn
+                     exact (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
+      zero_mem' := fun n _hn => (zero_smul A n).symm ▸ N.zero_mem
       algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        map_add' := sorry --fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n
-        map_smul' := sorry --fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n
-      }
-      (LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>
-      sorry --LinearMap.ext fun n => Subtype.ext <| mul_smul x y n
+        -- porting note: was
+                -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
+        map_add' := by intros x y; ext; exact add_smul _ _ _
+        -- porting note: was
+                --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
+        map_smul' := by intros r s; ext; apply smul_assoc }
+      -- porting note: the next two lines were
+      --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
+      --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
+      (by ext; apply one_smul)
+      (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
     by_contra h'
     push_neg  at h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
-    stop
-    show Function.Injective f.to_linear_map
+    show Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
     have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
@@ -445,27 +456,16 @@ theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.Fin
         refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra ?_ ?_
         intros r x
         exact (Algebra.smul_def _ _).symm)
-  --delta RingHom.Finite at this;
-  convert this;
-  simp [RingHom.Finite, Module.Finite]
-  simp_rw [Module.Finite]
-  convert Iff.rfl
-  simp
-  refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra ?_ ?_
-  intros r x
-  simp
-  stop
-  congr
-  exact Algebra.smul_def _ _
-  convert IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra ?_ ?_
-  simp
-  rfl
-  ext; exact Algebra.smul_def _ _
+  -- porting note: the rest of the proof was
+  -- `delta RingHom.Finite at this; convert this; ext; exact Algebra.smul_def _ _`
+  rw [RingHom.Finite] at this; convert this; ext; rfl
 #align algebra.is_integral.finite Algebra.IsIntegral.finite
 
 theorem Algebra.IsIntegral.of_finite [h : Module.Finite R A] : Algebra.IsIntegral R A := by
   apply RingHom.Finite.to_isIntegral
-  stop delta RingHom.Finite; convert h; ext--; exact (Algebra.smul_def _ _).symm
+  -- porting note: the rest of the proof was
+  -- `delta RingHom.Finite; convert h; ext--; exact (Algebra.smul_def _ _).symm`
+  rw [RingHom.Finite]; convert h; ext; rfl
 #align algebra.is_integral.of_finite Algebra.IsIntegral.of_finite
 
 /-- finite = integral + finite type -/
