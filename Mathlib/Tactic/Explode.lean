@@ -185,7 +185,7 @@ where
 end Mathlib.Explode
 
 /--
-`#explode decl_name` displays a proof term in a line-by-line format somewhat akin to a Fitch-style
+`#explode expr` displays a proof term in a line-by-line format somewhat akin to a Fitch-style
 proof or the Metamath proof style.
 
 For example, exploding the following theorem:
@@ -199,16 +199,16 @@ produces:
 ```lean
 iff_of_true : ∀ {a b : Prop}, a → b → (a ↔ b)
 
-0│         │ a          ├ Prop
-1│         │ b          ├ Prop
-2│         │ ha         ├ a
-3│         │ hb         ├ b
-4│         │ x✝         │ ┌ a
-5│4,3      │ ∀I         │ a → b
-6│         │ x✝         │ ┌ b
-7│6,2      │ ∀I         │ b → a
-8│0,1,5,7  │ @Iff.intro │ a ↔ b
-9│0,1,2,3,8│ ∀I         │ ∀ {a b : Prop}, a → b → (a ↔ b)
+0│         │ a         ├ Prop
+1│         │ b         ├ Prop
+2│         │ ha        ├ a
+3│         │ hb        ├ b
+4│         │ x✝        │ ┌ a
+5│4,3      │ ∀I        │ a → b
+6│         │ x✝        │ ┌ b
+7│6,2      │ ∀I        │ b → a
+8│5,7      │ Iff.intro │ a ↔ b
+9│0,1,2,3,8│ ∀I        │ ∀ {a b : Prop}, a → b → (a ↔ b)
 ```
 
 ## Overview
@@ -244,11 +244,12 @@ These are the main constructor types:
      2│**    │ c │ C
      3│1,2,3 │ f │ D
      ```
-     (and if `f` has implicit arguments, the pretty printer will write `@f`).
+
   - Let expressions (`Expr.letE`) do not display in any special way, but they do
     ensure that in `let x := v; b` that `v` is processed first and then `b`, rather
     than first doing zeta reduction. This keeps lambda merging and application merging
     from making proofs with `let` confusing to interpret.
+
   - Everything else (constants, fvars, etc.) display `x : X` as
     ```lean
     0│  │ x │ X
