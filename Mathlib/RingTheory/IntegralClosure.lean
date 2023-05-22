@@ -693,22 +693,24 @@ theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n)
 
 open TensorProduct
 
+-- porting note: I fought a lot with this proof.  I tried to follow the original,
+-- but was not really able to.
 theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine' ⟨(p.map (_root_.algebraMap R A)).scaleRoots x, _, _⟩
   · rw [Polynomial.monic_scaleRoots_iff]
     exact hp.map _
-  stop
-  convert@Polynomial.scaleRoots_eval₂_mul (A ⊗[R] B) A _ _ _
-      Algebra.TensorProduct.includeLeftRingHom ((1 : A) ⊗ₜ y) x using
-    2
-  · simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, mul_one, one_mul,
-      Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.tmul_mul_tmul]
-  convert(MulZeroClass.mul_zero _).symm
-  rw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap, ←
-    Polynomial.eval₂_map]
-  convert Polynomial.eval₂_at_apply algebra.tensor_product.include_right.to_ring_hom y
-  rw [Polynomial.eval_map, hp', _root_.map_zero]
+  convert Polynomial.scaleRoots_eval₂_mul (R := A ⊗[R] B) (S := A)
+      Algebra.TensorProduct.includeLeftRingHom (?_) x --(1 ⊗ₜ y : A ⊗[R] B) x -- using 2
+  any_goals exact 1 ⊗ₜ y
+  . simp only [Algebra.TensorProduct.includeLeftRingHom_apply,
+      Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+  · simp only [Algebra.TensorProduct.includeLeftRingHom_apply, Algebra.TensorProduct.tmul_pow,
+      one_pow]
+    convert (MulZeroClass.mul_zero (M₀ := A ⊗[R] B) _).symm
+    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap, ← Polynomial.eval₂_map]
+    convert Polynomial.eval₂_at_apply (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).toRingHom y
+    rw [Polynomial.eval_map, hp', _root_.map_zero]
 #align is_integral.tmul IsIntegral.tmul
 
 section
@@ -837,9 +839,12 @@ class IsIntegralClosure (A R B : Type _) [CommRing R] [CommSemiring A] [CommRing
 
 instance integralClosure.isIntegralClosure (R A : Type _) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A :=
-  by sorry <;> exact
-  ⟨Subtype.coe_injective, fun x =>
-    ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by
+  -- porting note: was
+  -- `⟨Subtype.coe_injective, fun x =>`
+  -- `  ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by`
+  ⟨Subtype.coe_injective, by
+    intro x
+    exact ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by
       rintro ⟨⟨_, h⟩, rfl⟩
       exact h⟩⟩
 #align integral_closure.is_integral_closure integralClosure.isIntegralClosure
