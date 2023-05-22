@@ -38,7 +38,6 @@ namespace Finset
 section Mul
 
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
--- porting note: replaced `×ˢ` by `×ᶠ`
 /-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
 @[to_additive additiveEnergy
@@ -144,7 +143,6 @@ section CommGroup
 
 variable [CommGroup α] [Fintype α] (s t : Finset α)
 
--- porting note: replaced `xˢ` by `xᶠ`
 @[to_additive (attr := simp) additiveEnergy_univ_left]
 theorem multiplicativeEnergy_univ_left :
     multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
