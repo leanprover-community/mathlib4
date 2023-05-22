@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.Tactic.ScopedNS
 
 /-! # The simplex category
 
@@ -583,8 +582,12 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext1; ext1
-  exact congr_arg (fun φ => OrderEmbedding.toOrderHom φ) (eq₁.trans eq₂.symm)
+  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
+  -- It could be investigated again to see if the original can be restored.
+  ext x
+  replace eq₁ := congr_arg (· x) eq₁
+  replace eq₂ := congr_arg (· x) eq₂.symm
+  simp_all
 #align simplex_category.iso_eq_iso_refl SimplexCategory.iso_eq_iso_refl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
