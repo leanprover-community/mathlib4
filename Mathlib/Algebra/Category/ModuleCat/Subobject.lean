@@ -50,52 +50,71 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
               apply LinearEquiv.ofBijective
                 (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
               constructor
-              · simpa only [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict] using
-                  ker_eq_bot_of_mono _
-              ·
-                rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
+              · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
+                rw [ker_eq_bot_of_mono]
+              · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
                   Submodule.comap_subtype_self]
-              · exact LinearMap.mem_range_self _
+                exact LinearMap.mem_range_self _
             · apply LinearMap.ext
               intro x
               rfl)
       left_inv := fun N => by
-        convert congr_arg LinearMap.range (underlying_iso_arrow (↾N.subtype)) using 1
+        --porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
+        --choice here
+        convert congr_arg LinearMap.range
+            (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M)) using 1
         · have :
-            (underlying_iso (↾N.subtype)).inv = (underlying_iso (↾N.subtype)).symm.toLinearEquiv :=
-            by
-            apply LinearMap.ext
-            intro x
-            rfl
+            --porting note: added the `toFun` ... is this a problem?
+            (underlyingIso (↾N.subtype : of R { x // x ∈ N } ⟶ M)).inv =
+        (underlyingIso (↾N.subtype : of R { x // x ∈ N } ⟶ M)).symm.toLinearEquiv.toLinearMap := by
+              apply LinearMap.ext
+              intro x
+              rfl
           rw [this, comp_def, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
-      map_rel_iff' := fun S T => by
+      map_rel_iff' := fun {S T} => by
         refine'
           ⟨fun h => _, fun h =>
             mk_le_mk_of_comm (↟(Submodule.ofLe h))
               (by
                 ext
                 rfl)⟩
-        convert LinearMap.range_comp_le_range (of_mk_le_mk _ _ h) (↾T.subtype)
-        · simpa only [← comp_def, of_mk_le_mk_comp] using (Submodule.range_subtype _).symm
+        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
+        · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
+set_option linter.uppercaseLean3 false in
 #align Module.subobject_Module ModuleCat.subobjectModule
 
 instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
+set_option linter.uppercaseLean3 false in
 #align Module.well_powered_Module ModuleCat.wellPowered_moduleCat
 
-attribute [local instance] has_kernels_Module
+attribute [local instance] hasKernels_moduleCat
 
 /-- Bundle an element `m : M` such that `f m = 0` as a term of `kernel_subobject f`. -/
 noncomputable def toKernelSubobject {M N : ModuleCat R} {f : M ⟶ N} :
     LinearMap.ker f →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
+set_option linter.uppercaseLean3 false in
 #align Module.to_kernel_subobject ModuleCat.toKernelSubobject
+
+lemma test {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
+    ((kernelIsoKer f).inv ≫ (kernelSubobjectIso f).inv) ≫ arrow (kernelSubobject f) =
+    (kernelIsoKer f).inv ≫ ((kernelSubobjectIso f).inv ≫ arrow (kernelSubobject f)) := by
+  simp?
 
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
-    (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by simp [to_kernel_subobject]
+    (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
+--porting note: used to be `simp [toKernelSubobject]`, doesn't suffice anymore
+  suffices
+      (((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x) by
+    convert this
+  rw [Iso.trans_inv, ← coe_comp, Category.assoc]
+  simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
+  aesop_cat
+set_option linter.uppercaseLean3 false in
 #align Module.to_kernel_subobject_arrow ModuleCat.toKernelSubobject_arrow
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
@@ -104,12 +123,19 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
+--porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
 @[ext]
 theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
-  simp
+  --porting note: Had to add the following manually
+  simp only [map_add, add_right_eq_self]
+  change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
+  rw [ ← coe_comp, ← coe_comp, Category.assoc]
+  simp only [cokernel.condition, comp_zero]
+  rfl
+set_option linter.uppercaseLean3 false in
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat
