@@ -39,8 +39,8 @@ Note that for definitional convenience, `k` is provided as a field even though `
 determines it. -/
 structure Basis {R : Type _} (A : Type _) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ : R) where
   (i j k : A)
-  i_mul_i : i * i = c₁ • 1
-  j_mul_j : j * j = c₂ • 1
+  i_mul_i : i * i = c₁ • (1 : A)
+  j_mul_j : j * j = c₂ • (1 : A)
   i_mul_j : i * j = k
   j_mul_i : j * i = -k
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
@@ -54,8 +54,8 @@ namespace Basis
 /-- Since `k` is redundant, it is not necessary to show `q₁.k = q₂.k` when showing `q₁ = q₂`. -/
 @[ext]
 protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) : q₁ = q₂ := by
-  cases q₁
-  cases q₂
+  cases q₁; rename_i q₁_i_mul_j _
+  cases q₂; rename_i q₂_i_mul_j _
   congr
   rw [← q₁_i_mul_j, ← q₂_i_mul_j]
   congr
@@ -82,8 +82,6 @@ instance : Inhabited (Basis ℍ[R,c₁,c₂] c₁ c₂) :=
 
 variable (q : Basis A c₁ c₂)
 
-include q
-
 attribute [simp] i_mul_i j_mul_j i_mul_j j_mul_i
 
 @[simp]
@@ -107,7 +105,7 @@ theorem j_mul_k : q.j * q.k = -c₂ • q.i := by
 #align quaternion_algebra.basis.j_mul_k QuaternionAlgebra.Basis.j_mul_k
 
 @[simp]
-theorem k_mul_k : q.k * q.k = -((c₁ * c₂) • 1) := by
+theorem k_mul_k : q.k * q.k = -((c₁ * c₂) • (1 : A)) := by
   rw [← i_mul_j, mul_assoc, ← mul_assoc q.j _ _, j_mul_i, ← i_mul_j, ← mul_assoc, mul_neg, ←
     mul_assoc, i_mul_i, smul_mul_assoc, one_mul, neg_mul, smul_mul_assoc, j_mul_j, smul_smul]
 #align quaternion_algebra.basis.k_mul_k QuaternionAlgebra.Basis.k_mul_k
@@ -148,7 +146,7 @@ theorem lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.li
 #align quaternion_algebra.basis.lift_smul QuaternionAlgebra.Basis.lift_smul
 
 /-- A `QuaternionAlgebra.Basis` implies an `AlgHom` from the quaternions. -/
-@[simps]
+@[simps!]
 def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
   AlgHom.mk'
     { toFun := q.lift
@@ -177,15 +175,14 @@ end Basis
 def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
   toFun := Basis.liftHom
   invFun := (Basis.self R).compHom
-  left_inv q := by ext <;> simp [basis.lift]
+  left_inv q := by ext <;> simp [Basis.lift]
   right_inv F := by
     ext
-    dsimp [basis.lift]
+    dsimp [Basis.lift]
     rw [← F.commutes]
     simp only [← F.commutes, ← F.map_smul, ← F.map_add, mk_add_mk, smul_mk, smul_zero,
-      algebra_map_eq]
-    congr
-    simp
+      algebraMap_eq]
+    congr <;> simp
 #align quaternion_algebra.lift QuaternionAlgebra.lift
 
 end QuaternionAlgebra
