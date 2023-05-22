@@ -14,7 +14,7 @@ import Mathlib.Analysis.NormedSpace.BallAction
 /-!
 # Poincaré disc
 
-In this file we define `complex.unit_disc` to be the unit disc in the complex plane. We also
+In this file we define `Complex.UnitDisc` to be the unit disc in the complex plane. We also
 introduce some basic operations on this disc.
 -/
 
@@ -25,26 +25,25 @@ open BigOperators
 
 noncomputable section
 
--- mathport name: exprconj'
 local notation "conj'" => starRingEnd ℂ
 
 namespace Complex
 
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler λ α,
-has_coe[has_coe] α exprℂ() -/
 /-- Complex unit disc. -/
 def UnitDisc : Type :=
-  ball (0 : ℂ) 1deriving CommSemigroup, HasDistribNeg,
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler λ α,
-  has_coe[has_coe] α exprℂ()», TopologicalSpace
+  ball (0 : ℂ) 1 deriving TopologicalSpace
 #align complex.unit_disc Complex.UnitDisc
 
--- mathport name: expr𝔻
+instance : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+instance : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
+instance : Coe UnitDisc ℂ := ⟨Subtype.val⟩
+
 scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
+open UnitDisc
 
 namespace UnitDisc
 
-theorem coe_injective : Injective (coe : 𝔻 → ℂ) :=
+theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
 #align complex.unit_disc.coe_injective Complex.UnitDisc.coe_injective
 
@@ -53,11 +52,12 @@ theorem abs_lt_one (z : 𝔻) : abs (z : ℂ) < 1 :=
 #align complex.unit_disc.abs_lt_one Complex.UnitDisc.abs_lt_one
 
 theorem abs_ne_one (z : 𝔻) : abs (z : ℂ) ≠ 1 :=
-  z.abs_lt_one.Ne
+  z.abs_lt_one.ne
 #align complex.unit_disc.abs_ne_one Complex.UnitDisc.abs_ne_one
 
-theorem normSq_lt_one (z : 𝔻) : normSq z < 1 :=
-  @one_pow ℝ _ 2 ▸ (Real.sqrt_lt' one_pos).1 z.abs_lt_one
+theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
+  convert (Real.sqrt_lt' one_pos).1 z.abs_lt_one
+  exact (one_pow 2).symm
 #align complex.unit_disc.norm_sq_lt_one Complex.UnitDisc.normSq_lt_one
 
 theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
@@ -79,8 +79,8 @@ theorem coe_mul (z w : 𝔻) : ↑(z * w) = (z * w : ℂ) :=
   rfl
 #align complex.unit_disc.coe_mul Complex.UnitDisc.coe_mul
 
-/-- A constructor that assumes `abs z < 1` instead of `dist z 0 < 1` and returns an element 
-of `𝔻` instead of `↥metric.ball (0 : ℂ) 1`. -/
+/-- A constructor that assumes `abs z < 1` instead of `dist z 0 < 1` and returns an element
+of `𝔻` instead of `↥Metric.ball (0 : ℂ) 1`. -/
 def mk (z : ℂ) (hz : abs z < 1) : 𝔻 :=
   ⟨z, mem_ball_zero_iff.2 hz⟩
 #align complex.unit_disc.mk Complex.UnitDisc.mk
@@ -101,11 +101,10 @@ theorem mk_neg (z : ℂ) (hz : abs (-z) < 1) : mk (-z) hz = -mk z (abs.map_neg z
 #align complex.unit_disc.mk_neg Complex.UnitDisc.mk_neg
 
 instance : SemigroupWithZero 𝔻 :=
-  {
-    UnitDisc.commSemigroup with
+  { instCommSemigroupUnitDisc with
     zero := mk 0 <| (map_zero _).trans_lt one_pos
-    zero_mul := fun z => coe_injective <| MulZeroClass.zero_mul _
-    mul_zero := fun z => coe_injective <| MulZeroClass.mul_zero _ }
+    zero_mul := fun _ => coe_injective <| MulZeroClass.zero_mul _
+    mul_zero := fun _ => coe_injective <| MulZeroClass.mul_zero _ }
 
 @[simp]
 theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
@@ -159,7 +158,7 @@ instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 
 #align complex.unit_disc.is_scalar_tower_closed_ball Complex.UnitDisc.isScalarTower_closedBall
 
 instance sMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
-  ⟨fun a b c => Subtype.ext <| mul_left_comm _ _ _⟩
+  ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
 #align complex.unit_disc.smul_comm_class_closed_ball Complex.UnitDisc.sMulCommClass_closedBall
 
 instance sMulCommClass_closed_ball' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
@@ -181,12 +180,12 @@ theorem coe_smul_closedBall (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • 
 
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝔻) : ℝ :=
-  re z
+  Complex.re z
 #align complex.unit_disc.re Complex.UnitDisc.re
 
 /-- Imaginary part of a point of the unit disc. -/
 def im (z : 𝔻) : ℝ :=
-  im z
+  Complex.im z
 #align complex.unit_disc.im Complex.UnitDisc.im
 
 @[simp, norm_cast]
@@ -226,7 +225,7 @@ theorem conj_zero : conj 0 = 0 :=
 
 @[simp]
 theorem conj_conj (z : 𝔻) : conj (conj z) = z :=
-  coe_injective <| Complex.conj_conj z
+  coe_injective <| Complex.conj_conj (z : ℂ)
 #align complex.unit_disc.conj_conj Complex.UnitDisc.conj_conj
 
 @[simp]
@@ -252,4 +251,3 @@ theorem conj_mul (z w : 𝔻) : (z * w).conj = z.conj * w.conj :=
 end UnitDisc
 
 end Complex
-
