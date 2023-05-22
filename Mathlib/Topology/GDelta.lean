@@ -211,8 +211,7 @@ theorem residual_of_dense_open {s : Set α} (ho : IsOpen s) (hd : Dense s) : s �
 #align residual_of_dense_open residual_of_dense_open
 
 /-- Dense Gδ sets are residual. -/
-theorem residual_of_dense_Gδ {s : Set α} (ho : IsGδ s) (hd : Dense s) : s ∈ residual α :=
-  by
+theorem residual_of_dense_Gδ {s : Set α} (ho : IsGδ s) (hd : Dense s) : s ∈ residual α := by
   rcases ho with ⟨T, To, Tct, rfl⟩
   exact
     (countable_sInter_mem Tct).mpr fun t tT =>
