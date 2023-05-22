@@ -27,7 +27,7 @@ if log.returncode == 0:
 shutil.copyfile(leanfile, leanfile + '.bak')
 
 count = 0
-f = list(open(leanfile + '.bak'))
+f = list(open(leanfile + '.bak', encoding='UTF-8'))
 for l in reversed(log.stderr.decode().splitlines()):
     if 'linter.unusedVariables' in l:
         line, col = getpos(l)
@@ -42,5 +42,5 @@ for l in reversed(log.stderr.decode().splitlines()):
 
 print(f'Fixed {count} warnings', file=sys.stderr)
 
-open(leanfile, 'w').write(''.join(f))
+open(leanfile, 'w', encoding='UTF-8').write(''.join(f))
 os.remove(leanfile + '.bak')

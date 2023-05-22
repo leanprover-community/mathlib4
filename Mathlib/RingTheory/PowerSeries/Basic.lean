@@ -180,7 +180,8 @@ theorem coeff_comp_monomial [DecidableEq σ] (n : σ →₀ ℕ) : (coeff R n).c
   LinearMap.ext <| coeff_monomial_same n
 #align mv_power_series.coeff_comp_monomial MvPowerSeries.coeff_comp_monomial
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
 #align mv_power_series.coeff_zero MvPowerSeries.coeff_zero
@@ -431,7 +432,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_zero_X MvPowerSeries.coeff_zero_X
 
 theorem commute_X [DecidableEq σ] (φ : MvPowerSeries σ R) (s : σ) : Commute φ (X s) :=
-  φ.commute_monomial.mpr fun m => Commute.one_right _
+  φ.commute_monomial.mpr fun _m => Commute.one_right _
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.commute_X MvPowerSeries.commute_X
 
@@ -468,10 +469,12 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_zero_mul_X [DecidableEq σ] (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (φ * X s) = 0 := by
   have : ¬single s 1 ≤ 0 := fun h => by simpa using h s
   simp only [X, coeff_mul_monomial, if_neg this]
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_zero_mul_X MvPowerSeries.coeff_zero_mul_X
 
 theorem coeff_zero_X_mul [DecidableEq σ] (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (X s * φ) = 0 := by
   rw [← (φ.commute_X s).eq, coeff_zero_mul_X]
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_zero_X_mul MvPowerSeries.coeff_zero_X_mul
 
 variable (σ) (R)
@@ -501,19 +504,23 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : MvPowerSeries σ R) :
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff σ R (C σ R a) = a :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_C MvPowerSeries.constantCoeff_C
 
 @[simp]
 theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_comp_C MvPowerSeries.constantCoeff_comp_C
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem constantCoeff_zero : constantCoeff σ R 0 = 0 :=
   rfl
 #align mv_power_series.constant_coeff_zero MvPowerSeries.constantCoeff_zero
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
   rfl
 #align mv_power_series.constant_coeff_one MvPowerSeries.constantCoeff_one
@@ -521,6 +528,7 @@ theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
 @[simp]
 theorem constantCoeff_X [DecidableEq σ] (s : σ) : constantCoeff σ R (X s) = 0 :=
   coeff_zero_X s
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_X MvPowerSeries.constantCoeff_X
 
 /-- If a multivariate formal power series is invertible,
@@ -530,7 +538,8 @@ theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
   h.map _
 #align mv_power_series.is_unit_constant_coeff MvPowerSeries.isUnit_constantCoeff
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = a * coeff _ n f :=
   rfl
 #align mv_power_series.coeff_smul MvPowerSeries.coeff_smul
@@ -538,6 +547,7 @@ theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = 
 theorem smul_eq_C_mul [DecidableEq σ] (f : MvPowerSeries σ R) (a : R) : a • f = C σ R a * f := by
   ext
   simp
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.smul_eq_C_mul MvPowerSeries.smul_eq_C_mul
 
 theorem X_inj [Nontrivial R] [DecidableEq σ] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s = t :=
@@ -551,6 +561,7 @@ theorem X_inj [Nontrivial R] [DecidableEq σ] {s t : σ} : (X s : MvPowerSeries 
         exact one_ne_zero H.1
     · exfalso
       exact one_ne_zero h, congr_arg X⟩
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_inj MvPowerSeries.X_inj
 
 end Semiring
@@ -566,7 +577,7 @@ variable (σ)
 /-- The map between multivariate formal power series induced by a map on the coefficients.-/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff R n φ
-  map_zero' := ext fun n => f.map_zero
+  map_zero' := ext fun _n => f.map_zero
   map_one' :=
     ext fun n =>
       show f ((coeff R n) 1) = (coeff S n) 1 by
@@ -616,10 +627,12 @@ theorem map_monomial [DecidableEq σ] (n : σ →₀ ℕ) (a : R) : map σ f (mo
 @[simp]
 theorem map_C [DecidableEq σ] (a : R) : map σ f (C σ R a) = C σ S (f a) :=
   map_monomial _ _ _
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.map_C MvPowerSeries.map_C
 
 @[simp]
 theorem map_X [DecidableEq σ] (s : σ) : map σ f (X s) = X s := by simp [MvPowerSeries.X]
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.map_X MvPowerSeries.map_X
 
 end Map
@@ -643,6 +656,7 @@ instance : Algebra R (MvPowerSeries σ A) :=
 
 theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.C_eq_algebra_map MvPowerSeries.c_eq_algebraMap
 
 theorem algebraMap_apply [DecidableEq σ] {r : R} :
@@ -730,6 +744,7 @@ theorem trunc_c [DecidableEq σ] (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : t
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all
     exfalso; apply H; subst m; exact Ne.bot_lt hnn
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.trunc_C MvPowerSeries.trunc_c
 
 end Trunc
@@ -791,6 +806,7 @@ theorem X_pow_dvd_iff [DecidableEq σ] {s : σ} {n : ℕ} {φ : MvPowerSeries σ
           · subst t
             simpa using tsub_add_cancel_of_le H
           · simp [Finsupp.single_apply, hst]
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_dvd_iff MvPowerSeries.X_pow_dvd_iff
 
 theorem X_dvd_iff [DecidableEq σ] {s : σ} {φ : MvPowerSeries σ R} :
@@ -799,6 +815,7 @@ theorem X_dvd_iff [DecidableEq σ] {s : σ} {φ : MvPowerSeries σ R} :
   constructor <;> intro h m hm
   · exact h m (hm.symm ▸ zero_lt_one)
   · exact h m (Nat.eq_zero_of_le_zero <| Nat.le_of_succ_le_succ hm)
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_dvd_iff MvPowerSeries.X_dvd_iff
 
 end Semiring
@@ -961,7 +978,7 @@ theorem inv_eq_zero [DecidableEq σ] {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔
     ext fun n => by
       rw [coeff_inv]
       split_ifs <;>
-        simp only [h, MvPowerSeries.coeff_zero, MulZeroClass.zero_mul, inv_zero, neg_zero]⟩
+        simp only [h, map_zero, zero_mul, inv_zero, neg_zero]⟩
 #align mv_power_series.inv_eq_zero MvPowerSeries.inv_eq_zero
 
 @[simp]
@@ -969,7 +986,8 @@ theorem zero_inv [DecidableEq σ] : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   rfl
@@ -1036,11 +1054,13 @@ theorem C_inv (r : k) : (C σ k r)⁻¹ = C σ k r⁻¹ := by
   · simp
   rw [MvPowerSeries.inv_eq_iff_mul_eq_one, ← map_mul, inv_mul_cancel hr, map_one]
   simpa using hr
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.C_inv MvPowerSeries.C_inv
 
 @[simp]
 theorem X_inv [DecidableEq σ] (s : σ) : (X s : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_X]
+set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_inv MvPowerSeries.X_inv
 
 @[simp]
@@ -1111,14 +1131,17 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
 @[simp, norm_cast]
 theorem coe_c (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C σ R a :=
   coe_monomial _ _
+set_option linter.uppercaseLean3 false in
 #align mv_polynomial.coe_C MvPolynomial.coe_c
 
+set_option linter.deprecated false in
 @[simp, norm_cast]
 theorem coe_bit0 :
     ((bit0 φ : MvPolynomial σ R) : MvPowerSeries σ R) = bit0 (φ : MvPowerSeries σ R) :=
   coe_add _ _
 #align mv_polynomial.coe_bit0 MvPolynomial.coe_bit0
 
+set_option linter.deprecated false in
 @[simp, norm_cast]
 theorem coe_bit1 :
     ((bit1 φ : MvPolynomial σ R) : MvPowerSeries σ R) = bit1 (φ : MvPowerSeries σ R) := by
@@ -1128,6 +1151,7 @@ theorem coe_bit1 :
 @[simp, norm_cast]
 theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.X s :=
   coe_monomial _ _
+set_option linter.uppercaseLean3 false in
 #align mv_polynomial.coe_X MvPolynomial.coe_X
 
 variable (σ R)
@@ -1377,6 +1401,7 @@ def constantCoeff : PowerSeries R →+* R :=
 /-- The constant formal power series.-/
 def C : R →+* PowerSeries R :=
   MvPowerSeries.C Unit R
+set_option linter.uppercaseLean3 false in
 #align power_series.C PowerSeries.C
 
 variable {R}
@@ -1384,10 +1409,12 @@ variable {R}
 /-- The variable of the formal power series ring.-/
 def X : PowerSeries R :=
   MvPowerSeries.X ()
+set_option linter.uppercaseLean3 false in
 #align power_series.X PowerSeries.X
 
 theorem commute_X (φ : PowerSeries R) : Commute φ X :=
   MvPowerSeries.commute_X _ _
+set_option linter.uppercaseLean3 false in
 #align power_series.commute_X PowerSeries.commute_X
 
 @[simp]
@@ -1404,53 +1431,65 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : PowerSeries R) : coeff R 0 φ = 
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
   rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C, MvPowerSeries.C]
   rfl
+set_option linter.uppercaseLean3 false in
 #align power_series.monomial_zero_eq_C PowerSeries.monomial_zero_eq_C
 
 theorem monomial_zero_eq_C_apply (a : R) : monomial R 0 a = C R a := by simp
+set_option linter.uppercaseLean3 false in
 #align power_series.monomial_zero_eq_C_apply PowerSeries.monomial_zero_eq_C_apply
 
 theorem coeff_C (n : ℕ) (a : R) : coeff R n (C R a : PowerSeries R) = if n = 0 then a else 0 := by
   rw [← monomial_zero_eq_C_apply, coeff_monomial]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_C PowerSeries.coeff_C
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff R 0 (C R a) = a := by
   rw [← monomial_zero_eq_C_apply, coeff_monomial_same 0 a]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_C PowerSeries.coeff_zero_C
 
 theorem X_eq : (X : PowerSeries R) = monomial R 1 1 :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align power_series.X_eq PowerSeries.X_eq
 
 theorem coeff_X (n : ℕ) : coeff R n (X : PowerSeries R) = if n = 1 then 1 else 0 := by
   rw [X_eq, coeff_monomial]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X PowerSeries.coeff_X
 
 @[simp]
 theorem coeff_zero_X : coeff R 0 (X : PowerSeries R) = 0 := by
   rw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X PowerSeries.coeff_zero_X
 
 @[simp]
 theorem coeff_one_X : coeff R 1 (X : PowerSeries R) = 1 := by rw [coeff_X, if_pos rfl]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_one_X PowerSeries.coeff_one_X
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : PowerSeries R) ≠ 0 := fun H => by
   simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff R 1) H
+set_option linter.uppercaseLean3 false in
 #align power_series.X_ne_zero PowerSeries.X_ne_zero
 
 theorem X_pow_eq (n : ℕ) : (X : PowerSeries R) ^ n = monomial R n 1 :=
   MvPowerSeries.X_pow_eq _ n
+set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_eq PowerSeries.X_pow_eq
 
 theorem coeff_X_pow (m n : ℕ) : coeff R m ((X : PowerSeries R) ^ n) = if m = n then 1 else 0 := by
   rw [X_pow_eq, coeff_monomial]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow PowerSeries.coeff_X_pow
 
 @[simp]
 theorem coeff_X_pow_self (n : ℕ) : coeff R n ((X : PowerSeries R) ^ n) = 1 := by
   rw [coeff_X_pow, if_pos rfl]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow_self PowerSeries.coeff_X_pow_self
 
 @[simp]
@@ -1465,13 +1504,13 @@ theorem coeff_zero_one : coeff R 0 (1 : PowerSeries R) = 1 :=
 theorem coeff_mul (n : ℕ) (φ ψ : PowerSeries R) :
     coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) h => (single () p.1, single () p.2)
+  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
   · rintro ⟨i, j⟩ hij
     rw [Finset.Nat.mem_antidiagonal] at hij
     rw [Finsupp.mem_antidiagonal, ← Finsupp.single_add, hij]
-  · rintro ⟨i, j⟩ hij
+  · rintro ⟨i, j⟩ _hij
     rfl
-  · rintro ⟨i, j⟩ ⟨k, l⟩ hij hkl
+  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
     simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
   · rintro ⟨f, g⟩ hfg
     refine' ⟨(f (), g ()), _, _⟩
@@ -1485,11 +1524,13 @@ theorem coeff_mul (n : ℕ) (φ ψ : PowerSeries R) :
 @[simp]
 theorem coeff_mul_C (n : ℕ) (φ : PowerSeries R) (a : R) : coeff R n (φ * C R a) = coeff R n φ * a :=
   MvPowerSeries.coeff_mul_C _ φ a
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_C PowerSeries.coeff_mul_C
 
 @[simp]
 theorem coeff_C_mul (n : ℕ) (φ : PowerSeries R) (a : R) : coeff R n (C R a * φ) = a * coeff R n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_C_mul PowerSeries.coeff_C_mul
 
 @[simp]
@@ -1501,6 +1542,7 @@ theorem coeff_smul {S : Type _} [Semiring S] [Module R S] (n : ℕ) (φ : PowerS
 theorem smul_eq_C_mul (f : PowerSeries R) (a : R) : a • f = C R a * f := by
   ext
   simp
+set_option linter.uppercaseLean3 false in
 #align power_series.smul_eq_C_mul PowerSeries.smul_eq_C_mul
 
 @[simp]
@@ -1508,6 +1550,7 @@ theorem coeff_succ_mul_X (n : ℕ) (φ : PowerSeries R) : coeff R (n + 1) (φ * 
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
   rw [mul_one]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_succ_mul_X PowerSeries.coeff_succ_mul_X
 
 @[simp]
@@ -1515,24 +1558,29 @@ theorem coeff_succ_X_mul (n : ℕ) (φ : PowerSeries R) : coeff R (n + 1) (X * �
   simp only [coeff, Finsupp.single_add, add_comm n 1]
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_succ_X_mul PowerSeries.coeff_succ_X_mul
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_C PowerSeries.constantCoeff_C
 
 @[simp]
 theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_comp_C PowerSeries.constantCoeff_comp_C
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 #align power_series.constant_coeff_zero PowerSeries.constantCoeff_zero
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
 #align power_series.constant_coeff_one PowerSeries.constantCoeff_one
@@ -1540,12 +1588,15 @@ theorem constantCoeff_one : constantCoeff R 1 = 1 :=
 @[simp]
 theorem constantCoeff_X : constantCoeff R X = 0 :=
   MvPowerSeries.coeff_zero_X _
+set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_X PowerSeries.constantCoeff_X
 
 theorem coeff_zero_mul_X (φ : PowerSeries R) : coeff R 0 (φ * X) = 0 := by simp
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_mul_X PowerSeries.coeff_zero_mul_X
 
 theorem coeff_zero_X_mul (φ : PowerSeries R) : coeff R 0 (X * φ) = 0 := by simp
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
 
 -- The following section duplicates the api of `data.polynomial.coeff` and should attempt to keep
@@ -1555,6 +1606,7 @@ section
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff R n (C R x * X ^ k : PowerSeries R) = if n = k then x else 0 := by
   simp [X_pow_eq, coeff_monomial]
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_C_mul_X_pow PowerSeries.coeff_C_mul_X_pow
 
 @[simp]
@@ -1569,6 +1621,7 @@ theorem coeff_mul_X_pow (p : PowerSeries R) (n d : ℕ) : coeff R (d + n) (p * X
     subst h1
     rfl
   · exact fun h1 => (h1 (Finset.Nat.mem_antidiagonal.2 rfl)).elim
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow PowerSeries.coeff_mul_X_pow
 
 @[simp]
@@ -1584,6 +1637,7 @@ theorem coeff_X_pow_mul (p : PowerSeries R) (n d : ℕ) : coeff R (d + n) (X ^ n
     rfl
   · rw [add_comm]
     exact fun h1 => (h1 (Finset.Nat.mem_antidiagonal.2 rfl)).elim
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow_mul PowerSeries.coeff_X_pow_mul
 
 theorem coeff_mul_X_pow' (p : PowerSeries R) (n d : ℕ) :
@@ -1593,6 +1647,7 @@ theorem coeff_mul_X_pow' (p : PowerSeries R) (n d : ℕ) :
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, MulZeroClass.mul_zero]
     exact ((le_of_add_le_right (Finset.Nat.mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow' PowerSeries.coeff_mul_X_pow'
 
 theorem coeff_X_pow_mul' (p : PowerSeries R) (n d : ℕ) :
@@ -1605,6 +1660,7 @@ theorem coeff_X_pow_mul' (p : PowerSeries R) (n d : ℕ) :
     have := Finset.Nat.mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
+set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow_mul' PowerSeries.coeff_X_pow_mul'
 
 end
@@ -1622,6 +1678,7 @@ theorem eq_shift_mul_X_add_const (φ : PowerSeries R) :
       coeff_zero_C, zero_add]
   · simp only [coeff_succ_mul_X, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
+set_option linter.uppercaseLean3 false in
 #align power_series.eq_shift_mul_X_add_const PowerSeries.eq_shift_mul_X_add_const
 
 /-- Split off the constant coefficient. -/
@@ -1632,6 +1689,7 @@ theorem eq_X_mul_shift_add_const (φ : PowerSeries R) :
       coeff_zero_C, zero_add]
   · simp only [coeff_succ_X_mul, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
+set_option linter.uppercaseLean3 false in
 #align power_series.eq_X_mul_shift_add_const PowerSeries.eq_X_mul_shift_add_const
 
 section Map
@@ -1663,12 +1721,14 @@ theorem coeff_map (n : ℕ) (φ : PowerSeries R) : coeff S n (map f φ) = f (coe
 theorem map_C (r : R) : map f (C _ r) = C _ (f r) := by
   ext
   simp [coeff_C, apply_ite f]
+set_option linter.uppercaseLean3 false in
 #align power_series.map_C PowerSeries.map_C
 
 @[simp]
 theorem map_X : map f X = X := by
   ext
   simp [coeff_X, apply_ite f]
+set_option linter.uppercaseLean3 false in
 #align power_series.map_X PowerSeries.map_X
 
 end Map
@@ -1682,6 +1742,7 @@ theorem X_pow_dvd_iff {n : ℕ} {φ : PowerSeries R} :
       convert h _ hm
     · apply h
       simpa only [Finsupp.single_eq_same] using hm
+set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_dvd_iff PowerSeries.X_pow_dvd_iff
 
 theorem X_dvd_iff {φ : PowerSeries R} : (X : PowerSeries R) ∣ φ ↔ constantCoeff R φ = 0 := by
@@ -1690,6 +1751,7 @@ theorem X_dvd_iff {φ : PowerSeries R} : (X : PowerSeries R) ∣ φ ↔ constant
   · exact h 0 zero_lt_one
   · intro m hm
     rwa [Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ hm)]
+set_option linter.uppercaseLean3 false in
 #align power_series.X_dvd_iff PowerSeries.X_dvd_iff
 
 end Semiring
@@ -1807,6 +1869,7 @@ theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all
+set_option linter.uppercaseLean3 false in
 #align power_series.trunc_C PowerSeries.trunc_C
 
 @[simp]
@@ -1843,11 +1906,11 @@ theorem coeff_Inv_aux (n : ℕ) (a : R) (φ : PowerSeries R) :
   split_ifs; · rfl
   congr 1
   symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) h => (single () p.1, single () p.2)
+  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
   · rintro ⟨i, j⟩ hij
     rw [Finset.Nat.mem_antidiagonal] at hij
     rw [Finsupp.mem_antidiagonal, ← Finsupp.single_add, hij]
-  · rintro ⟨i, j⟩ hij
+  · rintro ⟨i, j⟩ _hij
     by_cases H : j < n
     · rw [if_pos H, if_pos]
       · rfl
@@ -1859,11 +1922,11 @@ theorem coeff_Inv_aux (n : ℕ) (a : R) (φ : PowerSeries R) :
         apply H
         simpa [Finsupp.single_eq_same] using hh ()
     · rw [if_neg H, if_neg]
-      rintro ⟨h₁, h₂⟩
+      rintro ⟨_h₁, h₂⟩
       apply h₂
       rintro ⟨⟩
       simpa [Finsupp.single_eq_same] using not_lt.1 H
-  · rintro ⟨i, j⟩ ⟨k, l⟩ hij hkl
+  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
     simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
   · rintro ⟨f, g⟩ hfg
     refine' ⟨(f (), g ()), _, _⟩
@@ -1904,11 +1967,13 @@ theorem mul_invOfUnit (φ : PowerSeries R) (u : Rˣ) (h : constantCoeff R φ = u
 theorem sub_const_eq_shift_mul_X (φ : PowerSeries R) :
     φ - C R (constantCoeff R φ) = (PowerSeries.mk fun p => coeff R (p + 1) φ) * X :=
   sub_eq_iff_eq_add.mpr (eq_shift_mul_X_add_const φ)
+set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_shift_mul_X PowerSeries.sub_const_eq_shift_mul_X
 
 theorem sub_const_eq_X_mul_shift (φ : PowerSeries R) :
     φ - C R (constantCoeff R φ) = X * PowerSeries.mk fun p => coeff R (p + 1) φ :=
   sub_eq_iff_eq_add.mpr (eq_X_mul_shift_add_const φ)
+set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 end Ring
@@ -1922,10 +1987,12 @@ theorem rescale_X (a : A) : rescale a X = C A a * X := by
   ext
   simp only [coeff_rescale, coeff_C_mul, coeff_X]
   split_ifs with h <;> simp [h]
+set_option linter.uppercaseLean3 false in
 #align power_series.rescale_X PowerSeries.rescale_X
 
 theorem rescale_neg_one_X : rescale (-1 : A) X = -X := by
   rw [rescale_X, map_neg, map_one, neg_one_mul]
+set_option linter.uppercaseLean3 false in
 #align power_series.rescale_neg_one_X PowerSeries.rescale_neg_one_X
 
 /-- The ring homomorphism taking a power series `f(X)` to `f(-X)`. -/
@@ -1936,6 +2003,7 @@ noncomputable def evalNegHom : PowerSeries A →+* PowerSeries A :=
 @[simp]
 theorem evalNegHom_X : evalNegHom (X : PowerSeries A) = -X :=
   rescale_neg_one_X
+set_option linter.uppercaseLean3 false in
 #align power_series.eval_neg_hom_X PowerSeries.evalNegHom_X
 
 end CommRing
@@ -2005,6 +2073,7 @@ theorem span_X_isPrime : (Ideal.span ({X} : Set (PowerSeries R))).IsPrime := by
   apply Ideal.ext
   intro φ
   rw [RingHom.mem_ker, Ideal.mem_span_singleton, X_dvd_iff]
+set_option linter.uppercaseLean3 false in
 #align power_series.span_X_is_prime PowerSeries.span_X_isPrime
 
 /-- The variable of the power series ring over an integral domain is prime.-/
@@ -2013,6 +2082,7 @@ theorem X_prime : Prime (X : PowerSeries R) := by
   · exact span_X_isPrime
   · intro h
     simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
+set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
 
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
@@ -2050,6 +2120,7 @@ variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem c_eq_algebraMap {r : R} : C R r = (algebraMap R (PowerSeries R)) r :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align power_series.C_eq_algebra_map PowerSeries.c_eq_algebraMap
 
 theorem algebraMap_apply {r : R} : algebraMap R (PowerSeries A) r = C A (algebraMap R A r) :=
@@ -2101,7 +2172,8 @@ theorem zero_inv : (0 : PowerSeries k)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 #align power_series.zero_inv PowerSeries.zero_inv
 
-@[simp]
+-- Porting note: simp can prove this.
+-- @[simp]
 theorem invOfUnit_eq (φ : PowerSeries k) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq _ _
@@ -2149,11 +2221,13 @@ instance : InvOneClass (PowerSeries k) :=
 @[simp]
 theorem C_inv (r : k) : (C k r)⁻¹ = C k r⁻¹ :=
   MvPowerSeries.C_inv _
+set_option linter.uppercaseLean3 false in
 #align power_series.C_inv PowerSeries.C_inv
 
 @[simp]
 theorem X_inv : (X : PowerSeries k)⁻¹ = 0 :=
   MvPowerSeries.X_inv _
+set_option linter.uppercaseLean3 false in
 #align power_series.X_inv PowerSeries.X_inv
 
 @[simp]
@@ -2289,7 +2363,7 @@ theorem order_eq {φ : PowerSeries R} {n : PartENat} :
       · exfalso
         exact PartENat.natCast_ne_top ‹_› ‹_›
       · exact (coeff _ _).map_zero
-    · rintro ⟨h₁, h₂⟩
+    · rintro ⟨_h₁, h₂⟩
       ext i
       exact h₂ i (PartENat.natCast_lt_top i)
   · simpa [PartENat.natCast_inj] using order_eq_nat
@@ -2302,7 +2376,7 @@ theorem le_order_add (φ ψ : PowerSeries R) : min (order φ) (order ψ) ≤ ord
   simp (config := { contextual := true }) [coeff_of_lt_order]
 #align power_series.le_order_add PowerSeries.le_order_add
 
-private theorem order_add_of_order_eq.aux (φ ψ : PowerSeries R) (h : order φ ≠ order ψ)
+private theorem order_add_of_order_eq.aux (φ ψ : PowerSeries R) (_h : order φ ≠ order ψ)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
     rw [le_inf_iff, this]
@@ -2407,6 +2481,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   · simp only [Finset.sum_empty]
     refine' coeff_of_lt_order _ _
     simpa [PartENat.coe_lt_iff] using fun _ => hn
+set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
 theorem order_eq_multiplicity_X {R : Type _} [Semiring R] (φ : PowerSeries R) :
@@ -2429,6 +2504,7 @@ theorem order_eq_multiplicity_X {R : Type _} [Semiring R] (φ : PowerSeries R) :
     · exact PartENat.natCast_lt_top _
     · rw [← hn, PartENat.coe_lt_coe]
       exact Nat.lt_succ_self _
+set_option linter.uppercaseLean3 false in
 #align power_series.order_eq_multiplicity_X PowerSeries.order_eq_multiplicity_X
 
 end OrderBasic
@@ -2447,6 +2523,7 @@ theorem order_one : order (1 : PowerSeries R) = 0 := by
 @[simp]
 theorem order_X : order (X : PowerSeries R) = 1 := by
   simpa only [Nat.cast_one] using order_monomial_of_ne_zero 1 (1 : R) one_ne_zero
+set_option linter.uppercaseLean3 false in
 #align power_series.order_X PowerSeries.order_X
 
 /-- The order of the formal power series `X^n` is `n`.-/
@@ -2454,6 +2531,7 @@ theorem order_X : order (X : PowerSeries R) = 1 := by
 theorem order_X_pow (n : ℕ) : order ((X : PowerSeries R) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
   exact one_ne_zero
+set_option linter.uppercaseLean3 false in
 #align power_series.order_X_pow PowerSeries.order_X_pow
 
 end OrderZeroNeOne
@@ -2533,24 +2611,26 @@ theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
   have := coe_monomial 0 a
   rwa [PowerSeries.monomial_zero_eq_C_apply] at this
+set_option linter.uppercaseLean3 false in
 #align polynomial.coe_C Polynomial.coe_C
 
 
--- Porting note: deprecated
+set_option linter.deprecated false in
+@[simp, norm_cast]
+theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
+  coe_add φ φ
+#align polynomial.coe_bit0 Polynomial.coe_bit0
 
--- @[simp, norm_cast]
--- theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
---   coe_add φ φ
--- #align polynomial.coe_bit0 Polynomial.coe_bit0
-
--- @[simp, norm_cast]
--- theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
---   rw [bit1, bit1, coe_add, coe_one, coe_bit0]
--- #align polynomial.coe_bit1 Polynomial.coe_bit1
+set_option linter.deprecated false in
+@[simp, norm_cast]
+theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
+  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
+#align polynomial.coe_bit1 Polynomial.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
+set_option linter.uppercaseLean3 false in
 #align polynomial.coe_X Polynomial.coe_X
 
 @[simp]
