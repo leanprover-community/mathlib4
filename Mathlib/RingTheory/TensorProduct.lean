@@ -78,9 +78,9 @@ variable [AddCommMonoid N] [Module R N]
 
 variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
 
-theorem smul_eq_lsmul_rtensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a).rtensor N x :=
+theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a).rTensor N x :=
   rfl
-#align tensor_product.algebra_tensor_module.smul_eq_lsmul_rtensor TensorProduct.AlgebraTensorModule.smul_eq_lsmul_rtensor
+#align tensor_product.algebra_tensor_module.smul_eq_lsmul_rtensor TensorProduct.AlgebraTensorModule.smul_eq_lsmul_rTensor
 
 /-- Heterobasic version of `tensor_product.curry`:
 
@@ -250,14 +250,14 @@ variable (A)
 
 /-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := f.ltensor A
-  map_add' := (f.ltensor A).map_add
+  toFun := f.lTensor A
+  map_add' := (f.lTensor A).map_add
   map_smul' a x :=
     show
-      (f.ltensor A) (rtensor M (LinearMap.mul R A a) x) =
-        (rtensor N ((LinearMap.mul R A) a)) ((ltensor A f) x) by
+      (f.lTensor A) (rTensor M (LinearMap.mul R A a) x) =
+        (rTensor N ((LinearMap.mul R A) a)) ((lTensor A f) x) by
       rw [← comp_apply, ← comp_apply]
-      simp only [ltensor_comp_rtensor, rtensor_comp_ltensor]
+      simp only [lTensor_comp_rTensor, rTensor_comp_lTensor]
 #align linear_map.base_change LinearMap.baseChange
 
 variable {A}
@@ -267,7 +267,7 @@ theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ
   rfl
 #align linear_map.base_change_tmul LinearMap.baseChange_tmul
 
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.ltensor A :=
+theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
 #align linear_map.base_change_eq_ltensor LinearMap.baseChange_eq_ltensor
 
