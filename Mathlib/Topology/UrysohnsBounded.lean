@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UrysohnsLemma
-import Mathbin.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.ContinuousFunction.Bounded
 
 /-!
 # Urysohn's lemma for bounded continuous functions
