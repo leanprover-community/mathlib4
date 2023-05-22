@@ -72,6 +72,8 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
 #align has_fderiv_at_filter.comp HasFDerivAtFilter.comp
 
 /- A readable version of the previous theorem, a general form of the chain rule. -/
+/- porting note: todo: restore the example
+Compile fails because `calc` fails to generate a `Trans` instance
 example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
     (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   unfold HasFDerivAtFilter at hg
@@ -87,6 +89,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       eventually_of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.isBigO_comp _ _)
     _ =o[L] fun x' => x' - x := hf
+-/
 
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
