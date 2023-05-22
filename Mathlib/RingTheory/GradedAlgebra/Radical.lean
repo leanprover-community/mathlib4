@@ -138,7 +138,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I := by
           rw [mem_filter] at mem_max₁ mem_max₂
           exact ⟨mem_max₁.2, mem_max₂.2⟩
-        intro rid
+        intro _rid
         cases' homogeneous_mem_or_mem ⟨max₁, SetLike.coe_mem _⟩ ⟨max₂, SetLike.coe_mem _⟩ mem_I
           with h h
         · apply neither_mem.1 h
