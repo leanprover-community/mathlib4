@@ -17,7 +17,7 @@ import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 This file defines some quadratic characters on the rings ℤ/4ℤ and ℤ/8ℤ.
 
-We set them up to be of type `mul_char (zmod n) ℤ`, where `n` is `4` or `8`.
+We set them up to be of type `MulChar (ZMod n) ℤ`, where `n` is `4` or `8`.
 
 ## Tags
 
@@ -28,8 +28,8 @@ quadratic character, zmod
 /-!
 ### Quadratic characters mod 4 and 8
 
-We define the primitive quadratic characters `χ₄`on `zmod 4`
-and `χ₈`, `χ₈'` on `zmod 8`.
+We define the primitive quadratic characters `χ₄`on `ZMod 4`
+and `χ₈`, `χ₈'` on `ZMod 8`.
 -/
 
 
@@ -37,7 +37,7 @@ namespace ZMod
 
 section QuadCharModP
 
-/-- Define the nontrivial quadratic character on `zmod 4`, `χ₄`.
+/-- Define the nontrivial quadratic character on `ZMod 4`, `χ₄`.
 It corresponds to the extension `ℚ(√-1)/ℚ`. -/
 @[simps]
 def χ₄ : MulChar (ZMod 4) ℤ where
@@ -133,7 +133,7 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) : (-1 :
   rfl
 #align neg_one_pow_div_two_of_three_mod_four neg_one_pow_div_two_of_three_mod_four
 
-/-- Define the first primitive quadratic character on `zmod 8`, `χ₈`.
+/-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
 @[simps]
 def χ₈ : MulChar (ZMod 8) ℤ where
@@ -174,7 +174,7 @@ theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
   exact_mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
 
-/-- Define the second primitive quadratic character on `zmod 8`, `χ₈'`.
+/-- Define the second primitive quadratic character on `ZMod 8`, `χ₈'`.
 It corresponds to the extension `ℚ(√-2)/ℚ`. -/
 @[simps]
 def χ₈' : MulChar (ZMod 8) ℤ where
