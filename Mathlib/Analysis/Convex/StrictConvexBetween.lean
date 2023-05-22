@@ -8,8 +8,8 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Between
-import Mathbin.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Convex.StrictConvexSpace
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
@@ -27,8 +27,7 @@ variable [NormedAddTorsor V P] [StrictConvexSpace ℝ V]
 include V
 
 theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) :
-    dist p₂ p < max (dist p₁ p) (dist p₃ p) :=
-  by
+    dist p₂ p < max (dist p₁ p) (dist p₃ p) := by
   have hp₁p₃ : p₁ -ᵥ p ≠ p₃ -ᵥ p := by simpa using h.left_ne_right
   rw [Sbtw, ← wbtw_vsub_const_iff p, Wbtw, affineSegment_eq_segment, ← insert_endpoints_openSegment,
     Set.mem_insert_iff, Set.mem_insert_iff] at h
@@ -45,8 +44,7 @@ theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p�
 #align sbtw.dist_lt_max_dist Sbtw.dist_lt_max_dist
 
 theorem Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) :
-    dist p₂ p ≤ max (dist p₁ p) (dist p₃ p) :=
-  by
+    dist p₂ p ≤ max (dist p₁ p) (dist p₃ p) := by
   by_cases hp₁ : p₂ = p₁; · simp [hp₁]
   by_cases hp₃ : p₂ = p₃; · simp [hp₃]
   have hs : Sbtw ℝ p₁ p₂ p₃ := ⟨h, hp₁, hp₃⟩
@@ -57,8 +55,7 @@ theorem Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p�
 distance at most `r` from `p`, the third point is weakly between the other two points. -/
 theorem Collinear.wbtw_of_dist_eq_of_dist_le {p p₁ p₂ p₃ : P} {r : ℝ}
     (h : Collinear ℝ ({p₁, p₂, p₃} : Set P)) (hp₁ : dist p₁ p = r) (hp₂ : dist p₂ p ≤ r)
-    (hp₃ : dist p₃ p = r) (hp₁p₃ : p₁ ≠ p₃) : Wbtw ℝ p₁ p₂ p₃ :=
-  by
+    (hp₃ : dist p₃ p = r) (hp₁p₃ : p₁ ≠ p₃) : Wbtw ℝ p₁ p₂ p₃ := by
   rcases h.wbtw_or_wbtw_or_wbtw with (hw | hw | hw)
   · exact hw
   · by_cases hp₃p₂ : p₃ = p₂
@@ -79,8 +76,7 @@ theorem Collinear.wbtw_of_dist_eq_of_dist_le {p p₁ p₂ p₃ : P} {r : ℝ}
 distance less than `r` from `p`, the third point is strictly between the other two points. -/
 theorem Collinear.sbtw_of_dist_eq_of_dist_lt {p p₁ p₂ p₃ : P} {r : ℝ}
     (h : Collinear ℝ ({p₁, p₂, p₃} : Set P)) (hp₁ : dist p₁ p = r) (hp₂ : dist p₂ p < r)
-    (hp₃ : dist p₃ p = r) (hp₁p₃ : p₁ ≠ p₃) : Sbtw ℝ p₁ p₂ p₃ :=
-  by
+    (hp₃ : dist p₃ p = r) (hp₁p₃ : p₁ ≠ p₃) : Sbtw ℝ p₁ p₂ p₃ := by
   refine' ⟨h.wbtw_of_dist_eq_of_dist_le hp₁ hp₂.le hp₃ hp₁p₃, _, _⟩
   · rintro rfl
     exact hp₂.ne hp₁
