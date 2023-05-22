@@ -279,7 +279,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
   simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
 
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
-  ShortComplex.mkIso (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat)
     (by dsimp ; simp only [id_comp, comp_id, S.op_δ])
 
 lemma exact_L₂' : S.L₂'.Exact := by

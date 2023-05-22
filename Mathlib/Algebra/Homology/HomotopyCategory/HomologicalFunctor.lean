@@ -51,7 +51,7 @@ instance (n : ℤ) : (newHomologyFunctor C (ComplexShape.up ℤ) n).IsHomologica
     refine' ⟨_, e, _⟩
     refine' (ShortComplex.exact_iff_of_iso _).1
       (CochainComplex.MappingCone.homology_triangle_exact φ n)
-    refine' ShortComplex.mkIso
+    refine' ShortComplex.isoMk
       ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
       ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
       ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm _ _

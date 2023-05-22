@@ -193,7 +193,7 @@ lemma homology_sequence_exact₂ :
     (by simp only [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT,
       Functor.map_zero])).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (shift_distinguished _ hT n₀))
-  refine' ShortComplex.mkIso ((F.isoShift n₀).app _)
+  refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
     (mulIso ((-1 : Units ℤ)^n₀) ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
   . dsimp
     simp only [CochainComplex.ε_def', comp_zsmul, zsmul_comp, Functor.map_zsmul, smul_smul,
@@ -204,7 +204,7 @@ lemma homology_sequence_exact₂ :
 lemma homology_sequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homology_sequence_δ T hT _ _ h)).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (rot_of_dist_triangle _ hT) n₀)
-  refine' ShortComplex.mkIso (Iso.refl _) (Iso.refl _)
+  refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
     ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) _ _
   . dsimp
     simp
@@ -214,7 +214,7 @@ lemma homology_sequence_exact₃ :
 lemma homology_sequence_exact₁ :
     (ShortComplex.mk _ _ (F.homology_sequence_δ_comp T hT _ _ h)).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (inv_rot_of_dist_triangle _ hT) n₁)
-  refine' ShortComplex.mkIso (mulIso (-1) ((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+  refine' ShortComplex.isoMk (mulIso (-1) ((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
     (Iso.refl _) (Iso.refl _) _ _
   . dsimp
     simp only [neg_smul, one_smul, homology_sequence_δ, neg_comp, comp_id,

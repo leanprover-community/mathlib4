@@ -39,10 +39,10 @@ lemma fAdmissible_respectsIso [S.RespectsIso] : (fAdmissible S).RespectsIso := b
   constructor
   . intro X X' Y e f ⟨Z, g, zero, mem⟩
     refine' ⟨Z, g, by rw [assoc, zero, comp_zero], S.mem_of_iso _ mem⟩
-    exact ShortComplex.mkIso e.symm (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+    exact ShortComplex.isoMk e.symm (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
   . intro X Y Y' e f ⟨Z, g, zero, mem⟩
     refine' ⟨Z, e.inv ≫ g, by rw [assoc, e.hom_inv_id_assoc, zero], S.mem_of_iso _ mem⟩
-    exact ShortComplex.mkIso (Iso.refl _) e (Iso.refl _) (by aesop_cat) (by aesop_cat)
+    exact ShortComplex.isoMk (Iso.refl _) e (Iso.refl _) (by aesop_cat) (by aesop_cat)
 
 def gAdmissible : MorphismProperty C := fun Y _ g =>
   ∃ (X : C) (f : X ⟶ Y) (zero : f ≫ g = 0), ShortComplex.mk f g zero ∈ S
@@ -51,10 +51,10 @@ lemma gAdmissible_respectsIso [S.RespectsIso] : (gAdmissible S).RespectsIso := b
   constructor
   . intro Y Y' Z e g ⟨X, f, zero, mem⟩
     refine' ⟨X, f ≫ e.inv, by rw [assoc, e.inv_hom_id_assoc, zero], S.mem_of_iso _ mem⟩
-    exact ShortComplex.mkIso (Iso.refl _) e.symm (Iso.refl _) (by aesop_cat) (by aesop_cat)
+    exact ShortComplex.isoMk (Iso.refl _) e.symm (Iso.refl _) (by aesop_cat) (by aesop_cat)
   . intro Y Z Z' e g ⟨X, f, zero, mem⟩
     refine' ⟨X, f, by rw [reassoc_of% zero, zero_comp], S.mem_of_iso _ mem⟩
-    exact ShortComplex.mkIso (Iso.refl _) (Iso.refl _) e (by aesop_cat) (by aesop_cat)
+    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) e (by aesop_cat) (by aesop_cat)
 
 end ShortComplex
 
@@ -177,7 +177,7 @@ lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
   obtain ⟨X₃', g', zero, mem⟩ := hf.mem
   refine' Set.mem_of_iso _ _ mem
   have hg' := isColimit_cokernelCofork_of_shortExact _ mem
-  refine' ShortComplex.mkIso (Iso.refl _) (Iso.refl _)
+  refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
       (IsColimit.coconePointUniqueUpToIso hg' hS) (by aesop_cat) _
   have eq := IsColimit.comp_coconePointUniqueUpToIso_hom hg' hS WalkingParallelPair.one
   dsimp at eq ⊢
@@ -189,7 +189,7 @@ lemma shortExact_of_admissibleEpi_of_isLimit (S : ShortComplex C)
   obtain ⟨X₁', f', zero, mem⟩ := hg.mem
   refine' Set.mem_of_iso _ _ mem
   have hf' := isLimit_kernelFork_of_shortExact _ mem
-  refine' ShortComplex.mkIso (IsLimit.conePointUniqueUpToIso hf' hS) (Iso.refl _) (Iso.refl _)
+  refine' ShortComplex.isoMk (IsLimit.conePointUniqueUpToIso hf' hS) (Iso.refl _) (Iso.refl _)
     _ (by aesop_cat)
   have eq := IsLimit.conePointUniqueUpToIso_hom_comp hf' hS WalkingParallelPair.zero
   dsimp at eq ⊢

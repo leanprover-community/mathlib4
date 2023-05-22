@@ -191,7 +191,7 @@ def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : Shor
 def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
   shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
     (isomorphic_distinguished _ hT _ e.symm) :=
-  ShortComplex.mkIso (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
+  ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
     (by aesop_cat) (by aesop_cat)
 
 /-- Given any distinguished triangle
