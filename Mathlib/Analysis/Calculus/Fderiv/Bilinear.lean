@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Prod
+import Mathlib.Analysis.Calculus.Fderiv.Prod
 
 /-!
 # The derivative of bounded bilinear maps
@@ -61,12 +61,10 @@ variable {b : E × F → G} {u : Set (E × F)}
 open NormedField
 
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
-    HasStrictFDerivAt b (h.deriv p) p :=
-  by
+    HasStrictFDerivAt b (h.deriv p) p := by
   rw [HasStrictFDerivAt]
   set T := (E × F) × E × F
-  have : (fun q : T => b (q.1 - q.2)) =o[𝓝 (p, p)] fun q : T => ‖q.1 - q.2‖ * 1 :=
-    by
+  have : (fun q : T => b (q.1 - q.2)) =o[𝓝 (p, p)] fun q : T => ‖q.1 - q.2‖ * 1 := by
     refine' (h.is_O'.comp_tendsto le_top).trans_isLittleO _
     simp only [(· ∘ ·)]
     refine'
@@ -118,8 +116,7 @@ theorem IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) (p : E × 
 #align is_bounded_bilinear_map.fderiv IsBoundedBilinearMap.fderiv
 
 theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
-    (hxs : UniqueDiffWithinAt 𝕜 u p) : fderivWithin 𝕜 b u p = h.deriv p :=
-  by
+    (hxs : UniqueDiffWithinAt 𝕜 u p) : fderivWithin 𝕜 b u p = h.deriv p := by
   rw [DifferentiableAt.fderivWithin (h.differentiable_at p) hxs]
   exact h.fderiv p
 #align is_bounded_bilinear_map.fderiv_within IsBoundedBilinearMap.fderivWithin
