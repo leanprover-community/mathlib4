@@ -752,7 +752,7 @@ theorem linMulLin_compRight (r : M₂ →ₗ[R₂] M₂) :
 end LinMulLin
 
 /-- The proposition that two elements of a bilinear form space are orthogonal. For orthogonality
-of an indexed set of elements, use `BilinForm.IsOrthoᵢ`. -/
+of an indexed set of elements, use `BilinForm.iIsOrtho`. -/
 def IsOrtho (B : BilinForm R M) (x y : M) : Prop :=
   B x y = 0
 #align bilin_form.is_ortho BilinForm.IsOrtho
@@ -777,16 +777,16 @@ theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsO
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.IsOrtho` -/
-def IsOrthoᵢ {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
+def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
   Pairwise (B.IsOrtho on v)
 set_option linter.uppercaseLean3 false in
-#align bilin_form.is_Ortho BilinForm.IsOrthoᵢ
+#align bilin_form.is_Ortho BilinForm.iIsOrtho
 
-theorem isOrthoᵢ_def {n : Type w} {B : BilinForm R M} {v : n → M} :
-    B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
+theorem iIsOrtho_def {n : Type w} {B : BilinForm R M} {v : n → M} :
+    B.iIsOrtho v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
   Iff.rfl
 set_option linter.uppercaseLean3 false in
-#align bilin_form.is_Ortho_def BilinForm.isOrthoᵢ_def
+#align bilin_form.is_Ortho_def BilinForm.iIsOrtho_def
 
 section
 
@@ -810,8 +810,8 @@ theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
 
 /-- A set of orthogonal vectors `v` with respect to some bilinear form `B` is linearly independent
   if for all `i`, `B (v i) (v i) ≠ 0`. -/
-theorem linearIndependent_of_isOrthoᵢ {n : Type w} {B : BilinForm K V} {v : n → V}
-    (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K v := by
+theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n → V}
+    (hv₁ : B.iIsOrtho v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K v := by
   classical
     rw [linearIndependent_iff']
     intro s w hs i hi
@@ -819,11 +819,11 @@ theorem linearIndependent_of_isOrthoᵢ {n : Type w} {B : BilinForm K V} {v : n 
     have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _ hij
-      rw [isOrthoᵢ_def.1 hv₁ _ _ hij, MulZeroClass.mul_zero]
+      rw [iIsOrtho_def.1 hv₁ _ _ hij, MulZeroClass.mul_zero]
     simp_rw [sum_left, smul_left, hsum] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
 set_option linter.uppercaseLean3 false in
-#align bilin_form.linear_independent_of_is_Ortho BilinForm.linearIndependent_of_isOrthoᵢ
+#align bilin_form.linear_independent_of_is_Ortho BilinForm.linearIndependent_of_iIsOrtho
 
 end
 
@@ -1343,8 +1343,8 @@ theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₁ M₁) (b :
 
 /-- An orthogonal basis with respect to a nondegenerate bilinear form has no self-orthogonal
 elements. -/
-theorem IsOrthoᵢ.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivial R]
-    {B : BilinForm R M} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.Nondegenerate) (i : n) :
+theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivial R]
+    {B : BilinForm R M} {v : Basis n R M} (h : B.iIsOrtho v) (hB : B.Nondegenerate) (i : n) :
     ¬B.IsOrtho (v i) (v i) := by
   intro ho
   refine' v.ne_zero i (hB (v i) fun m => _)
@@ -1358,12 +1358,12 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontriv
   · exact ho
   · exact h hij
 set_option linter.uppercaseLean3 false in
-#align bilin_form.is_Ortho.not_is_ortho_basis_self_of_nondegenerate BilinForm.IsOrthoᵢ.not_isOrtho_basis_self_of_nondegenerate
+#align bilin_form.is_Ortho.not_is_ortho_basis_self_of_nondegenerate BilinForm.iIsOrtho.not_isOrtho_basis_self_of_nondegenerate
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
 iff the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivial R]
-    [NoZeroDivisors R] (B : BilinForm R M) (v : Basis n R M) (hO : B.IsOrthoᵢ v) :
+theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivial R]
+    [NoZeroDivisors R] (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
     B.Nondegenerate ↔ ∀ i, ¬B.IsOrtho (v i) (v i) := by
   refine' ⟨hO.not_isOrtho_basis_self_of_nondegenerate, fun ho m hB => _⟩
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
@@ -1381,7 +1381,7 @@ theorem IsOrthoᵢ.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontri
     convert MulZeroClass.zero_mul (M₀ := R) _ using 2
     exact Finsupp.not_mem_support_iff.mp hi
 set_option linter.uppercaseLean3 false in
-#align bilin_form.is_Ortho.nondegenerate_iff_not_is_ortho_basis_self BilinForm.IsOrthoᵢ.nondegenerate_iff_not_isOrtho_basis_self
+#align bilin_form.is_Ortho.nondegenerate_iff_not_is_ortho_basis_self BilinForm.iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self
 
 section
 
