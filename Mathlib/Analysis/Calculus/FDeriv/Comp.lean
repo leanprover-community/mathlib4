@@ -80,27 +80,27 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
     calc
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
         hg.comp_tendsto le_rfl
-      _ =O[L] fun x' => x' - x := hf.is_O_sub
+      _ =O[L] fun x' => x' - x := hf.isBigO_sub
 
   refine' this.triangle _
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x)) =ᶠ[L] fun x' =>
         g' (f x' - f x - f' (x' - x)) :=
       eventually_of_forall fun x' => by simp
-    _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.is_O_comp _ _)
+    _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.isBigO_comp _ _)
     _ =o[L] fun x' => x' - x := hf
 
 
-theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+nonrec theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  hg.comp x hf <| hf.ContinuousWithinAt.tendsto_nhdsWithin hst
+  hg.comp x hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
 #align has_fderiv_within_at.comp HasFDerivWithinAt.comp
 
 theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  hg.comp x hf hf.ContinuousWithinAt
+  hg.comp x hf hf.continuousWithinAt
 #align has_fderiv_at.comp_has_fderiv_within_at HasFDerivAt.comp_hasFDerivWithinAt
 
 theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
@@ -110,15 +110,15 @@ theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : S
 #align has_fderiv_within_at.comp_of_mem HasFDerivWithinAt.comp_of_mem
 
 /-- The chain rule. -/
-theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
+nonrec theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
-  hg.comp x hf hf.ContinuousAt
+  hg.comp x hf hf.continuousAt
 #align has_fderiv_at.comp HasFDerivAt.comp
 
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x)
     (h : MapsTo f s t) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
-  (hg.HasFDerivWithinAt.comp x hf.HasFDerivWithinAt h).DifferentiableWithinAt
+  (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).differentiableWithinAt
 #align differentiable_within_at.comp DifferentiableWithinAt.comp
 
 theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
@@ -129,21 +129,21 @@ theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
 
 theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (g ∘ f) x :=
-  (hg.HasFDerivAt.comp x hf.HasFDerivAt).DifferentiableAt
+  (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
 #align differentiable_at.comp DifferentiableAt.comp
 
 theorem DifferentiableAt.comp_differentiableWithinAt {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
-  hg.DifferentiableWithinAt.comp x hf (mapsTo_univ _ _)
+  hg.differentiableWithinAt.comp x hf (mapsTo_univ _ _)
 #align differentiable_at.comp_differentiable_within_at DifferentiableAt.comp_differentiableWithinAt
 
 theorem fderivWithin.comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
-  (hg.HasFDerivWithinAt.comp x hf.HasFDerivWithinAt h).fderivWithin hxs
+  (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).fderivWithin hxs
 #align fderiv_within.comp fderivWithin.comp
 
-/-- A version of `fderiv_within.comp` that is useful to rewrite the composition of two derivatives
+/-- A version of `fderivWithin.comp` that is useful to rewrite the composition of two derivatives
   into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
 theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s : Set E} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
@@ -164,20 +164,20 @@ theorem fderivWithin.comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
       (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
   substs h3g h3f
   exact
-    (hg'.has_fderiv_within_at.comp x (hg.has_fderiv_within_at.comp x hf.has_fderiv_within_at h2f) <|
+    (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
           h2g.comp h2f).fderivWithin
       hxs
 #align fderiv_within.comp₃ fderivWithin.comp₃
 
 theorem fderiv.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (g ∘ f) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
-  (hg.HasFDerivAt.comp x hf.HasFDerivAt).fderiv
+  (hg.hasFDerivAt.comp x hf.hasFDerivAt).fderiv
 #align fderiv.comp fderiv.comp
 
 theorem fderiv.comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderiv 𝕜 g (f x)).comp (fderivWithin 𝕜 f s x) :=
-  (hg.HasFDerivAt.comp_hasFDerivWithinAt x hf.HasFDerivWithinAt).fderivWithin hxs
+  (hg.hasFDerivAt.comp_hasFDerivWithinAt x hf.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv.comp_fderiv_within fderiv.comp_fderivWithin
 
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
@@ -191,26 +191,26 @@ theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Dif
 
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
-  hg.DifferentiableOn.comp hf (mapsTo_univ _ _)
+  hg.differentiableOn.comp hf (mapsTo_univ _ _)
 #align differentiable.comp_differentiable_on Differentiable.comp_differentiableOn
 
 /-- The chain rule for derivatives in the sense of strict differentiability. -/
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  ((hg.comp_tendsto (hf.ContinuousAt.prod_map' hf.ContinuousAt)).trans_isBigO
+  ((hg.comp_tendsto (hf.continuousAt.prod_map' hf.continuousAt)).trans_isBigO
         hf.isBigO_sub).triangle <|
-    by simpa only [g'.map_sub, f'.coe_comp'] using (g'.is_O_comp _ _).trans_isLittleO hf
+    by simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
 #align has_strict_fderiv_at.comp HasStrictFDerivAt.comp
 
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
     Differentiable 𝕜 (f^[n]) :=
-  Nat.recOn n differentiable_id fun n ihn => ihn.comp hf
+  Nat.recOn n differentiable_id fun _ ihn => ihn.comp hf
 #align differentiable.iterate Differentiable.iterate
 
 protected theorem DifferentiableOn.iterate {f : E → E} (hf : DifferentiableOn 𝕜 f s)
     (hs : MapsTo f s s) (n : ℕ) : DifferentiableOn 𝕜 (f^[n]) s :=
-  Nat.recOn n differentiableOn_id fun n ihn => ihn.comp hf hs
+  Nat.recOn n differentiableOn_id fun _ ihn => ihn.comp hf hs
 #align differentiable_on.iterate DifferentiableOn.iterate
 
 variable {x}
@@ -225,19 +225,22 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     exact ihn.comp x hf hL
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
-protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
+protected nonrec theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt (f^[n]) (f' ^ n) x := by
   refine' hf.iterate _ hx n
-  convert hf.continuous_at
+  -- Porting note: was `convert hf.continuousAt`
+  have := hf.continuousAt
+  unfold ContinuousAt at this
+  convert this
   exact hx.symm
 #align has_fderiv_at.iterate HasFDerivAt.iterate
 
-protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
+protected nonrec theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt (f^[n]) (f' ^ n) s x := by
   refine' hf.iterate _ hx n
-  convert tendsto_inf.2 ⟨hf.continuous_within_at, _⟩
-  exacts[hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
+  convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
+  exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
 #align has_fderiv_within_at.iterate HasFDerivWithinAt.iterate
 
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
@@ -252,12 +255,12 @@ protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
 
 protected theorem DifferentiableAt.iterate {f : E → E} (hf : DifferentiableAt 𝕜 f x) (hx : f x = x)
     (n : ℕ) : DifferentiableAt 𝕜 (f^[n]) x :=
-  (hf.HasFDerivAt.iterate hx n).DifferentiableAt
+  (hf.hasFDerivAt.iterate hx n).differentiableAt
 #align differentiable_at.iterate DifferentiableAt.iterate
 
 protected theorem DifferentiableWithinAt.iterate {f : E → E} (hf : DifferentiableWithinAt 𝕜 f s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : DifferentiableWithinAt 𝕜 (f^[n]) s x :=
-  (hf.HasFDerivWithinAt.iterate hx hs n).DifferentiableWithinAt
+  (hf.hasFDerivWithinAt.iterate hx hs n).differentiableWithinAt
 #align differentiable_within_at.iterate DifferentiableWithinAt.iterate
 
 end Composition
