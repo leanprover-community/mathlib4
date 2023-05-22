@@ -17,10 +17,10 @@ import Mathlib.Topology.FiberBundle.Basic
 In this file we define (topological) vector bundles.
 
 Let `B` be the base space, let `F` be a normed space over a normed field `R`, and let
-`E : B → Type*` be a `fiber_bundle` with fiber `F`, in which, for each `x`, the fiber `E x` is a
+`E : B → Type*` be a `FiberBundle` with fiber `F`, in which, for each `x`, the fiber `E x` is a
 topological vector space over `R`.
 
-To have a vector bundle structure on `bundle.total_space E`, one should additionally have the
+To have a vector bundle structure on `Bundle.TotalSpace E`, one should additionally have the
 following properties:
 
 * The bundle trivializations in the trivialization atlas should be continuous linear equivs in the
@@ -29,23 +29,23 @@ fibers;
 from `B` into `F →L[R] F` is continuous on `e.base_set ∩ e'.base_set` with respect to the operator
 norm topology on `F →L[R] F`.
 
-If these conditions are satisfied, we register the typeclass `vector_bundle R F E`.
+If these conditions are satisfied, we register the typeclass `VectorBundle R F E`.
 
 We define constructions on vector bundles like pullbacks and direct sums in other files.
 
 ## Main Definitions
 
-* `trivialization.is_linear`: a class stating that a trivialization is fiberwise linear on its base
+* `Trivialization.IsLinear`: a class stating that a trivialization is fiberwise linear on its base
   set.
-* `trivialization.linear_equiv_at` and `trivialization.continuous_linear_map_at` are the
+* `Trivialization.linearEquivAt` and `Trivialization.continuousLinearMapAt` are the
   (continuous) linear fiberwise equivalences a trivialization induces.
-* They have forward maps `trivialization.linear_map_at` / `trivialization.continuous_linear_map_at`
-  and inverses `trivialization.symmₗ` / `trivialization.symmL`. Note that these are all defined
+* They have forward maps `Trivialization.linearMapAt` / `Trivialization.continuousLinearMapAt`
+  and inverses `Trivialization.symmₗ` / `Trivialization.symmL`. Note that these are all defined
   everywhere, since they are extended using the zero function.
-* `trivialization.coord_changeL` is the coordinate change induced by two trivializations. It only
+* `Trivialization.coordChangeL` is the coordinate change induced by two trivializations. It only
   makes sense on the intersection of their base sets, but is extended outside it using the identity.
 * Given a continuous (semi)linear map between `E x` and `E' y` where `E` and `E'` are bundles over
-  possibly different base sets, `continuous_linear_map.in_coordinates` turns this into a continuous
+  possibly different base sets, `ContinuousLinearMap.inCoordinates` turns this into a continuous
   (semi)linear map between the chosen fibers of those bundles.
 
 ## Implementation notes
@@ -69,7 +69,7 @@ section TopologicalVectorSpace
 variable {F E}
 variable [Semiring R] [TopologicalSpace F] [TopologicalSpace B]
 
-/-- A mixin class for `pretrivialization`, stating that a pretrivialization is fiberwise linear with
+/-- A mixin class for `Pretrivialization`, stating that a pretrivialization is fiberwise linear with
 respect to given module structures on its fibers and the model fiber. -/
 protected class Pretrivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module R (E x)] (e : Pretrivialization F (π E)) : Prop where
@@ -166,7 +166,7 @@ end Pretrivialization
 
 variable [TopologicalSpace (TotalSpace E)]
 
-/-- A mixin class for `trivialization`, stating that a trivialization is fiberwise linear with
+/-- A mixin class for `Trivialization`, stating that a trivialization is fiberwise linear with
 respect to given module structures on its fibers and the model fiber. -/
 protected class Trivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module R (E x)] (e : Trivialization F (π E)) : Prop where
@@ -398,7 +398,7 @@ variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module
 
 /-- The space `total_space E` (for `E : B → Type*` such that each `E x` is a topological vector
 space) has a topological vector space structure with fiber `F` (denoted with
-`vector_bundle R F E`) if around every point there is a fiber bundle trivialization
+`VectorBundle R F E`) if around every point there is a fiber bundle trivialization
 which is linear in the fibers. -/
 class VectorBundle : Prop where
   trivialization_linear' : ∀ (e : Trivialization F (π E)) [MemTrivializationAtlas e], e.IsLinear R
@@ -546,7 +546,7 @@ end Trivialization
 
 variable (B F)
 
-/-- Analogous construction of `fiber_bundle_core` for vector bundles. This
+/-- Analogous construction of `FiberBundleCore` for vector bundles. This
 construction gives a way to construct vector bundles from a structure registering how
 trivialization changes act on fibers. -/
 structure VectorBundleCore (ι : Type _) where
@@ -582,7 +582,7 @@ namespace VectorBundleCore
 variable {R B F} {ι : Type _}
 variable (Z : VectorBundleCore R B F ι)
 
-/-- Natural identification to a `fiber_bundle_core`. -/
+/-- Natural identification to a `FiberBundleCore`. -/
 @[simps (config := mfld_cfg)]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
@@ -626,7 +626,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
--- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroup F]`
+-- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
@@ -642,7 +642,7 @@ protected def proj : TotalSpace Z.Fiber → B :=
 #align vector_bundle_core.proj VectorBundleCore.proj
 
 /-- The total space of the vector bundle, as a convenience function for dot notation.
-It is by definition equal to `bundle.total_space Z.fiber`, a.k.a. `Σ x, Z.fiber x` but with a
+It is by definition equal to `Bundle.TotalSpace Z.fiber`, a.k.a. `Σ x, Z.fiber x` but with a
 different name for typeclass inference. -/
 @[nolint unusedArguments, reducible]
 protected def TotalSpace :=
@@ -855,7 +855,7 @@ The topology on the fibers is induced from the one on the total space.
 The field `exists_coord_change` is stated as an existential statement (instead of 3 separate
 fields), since it depends on propositional information (namely `e e' ∈ pretrivialization_atlas`).
 This makes it inconvenient to explicitly define a `coord_change` function when constructing a
-`vector_prebundle`. -/
+`VectorPrebundle`. -/
 -- porting note: was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π E))
@@ -872,7 +872,7 @@ namespace VectorPrebundle
 
 variable {R E F}
 
-/-- A randomly chosen coordinate change on a `vector_prebundle`, given by
+/-- A randomly chosen coordinate change on a `VectorPrebundle`, given by
   the field `exists_coord_change`. -/
 def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[R] F :=
@@ -903,7 +903,7 @@ theorem mk_coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (
   · exact a.coordChange_apply he he' hb v
 #align vector_prebundle.mk_coord_change VectorPrebundle.mk_coordChange
 
-/-- Natural identification of `vector_prebundle` as a `fiber_prebundle`. -/
+/-- Natural identification of `VectorPrebundle` as a `FiberPrebundle`. -/
 def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
   { a with
     continuous_trivChange := fun e he e' he' ↦ by
@@ -923,8 +923,8 @@ def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpac
   a.toFiberPrebundle.totalSpaceTopology
 #align vector_prebundle.total_space_topology VectorPrebundle.totalSpaceTopology
 
-/-- Promotion from a `trivialization` in the `pretrivialization_atlas` of a
-`vector_prebundle` to a `trivialization`. -/
+/-- Promotion from a `Trivialization` in the `pretrivialization_atlas` of a
+`VectorPrebundle` to a `Trivialization`. -/
 def trivializationOfMemPretrivializationAtlas (a : VectorPrebundle R F E)
     {e : Pretrivialization F (π E)} (he : e ∈ a.pretrivializationAtlas) :
     @Trivialization B F _ _ _ a.totalSpaceTopology (π E) :=
@@ -969,17 +969,17 @@ theorem continuous_totalSpaceMk (b : B) :
   a.toFiberPrebundle.continuous_totalSpaceMk b
 #align vector_prebundle.continuous_total_space_mk VectorPrebundle.continuous_totalSpaceMk
 
-/-- Make a `fiber_bundle` from a `vector_prebundle`; auxiliary construction for
+/-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
 `vector_prebundle.vector_bundle`. -/
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology a.fiberTopology :=
   a.toFiberPrebundle.toFiberBundle
 #align vector_prebundle.to_fiber_bundle VectorPrebundle.toFiberBundle
 
-/-- Make a `vector_bundle` from a `vector_prebundle`.  Concretely this means
-that, given a `vector_prebundle` structure for a sigma-type `E` -- which consists of a
+/-- Make a `VectorBundle` from a `VectorPrebundle`.  Concretely this means
+that, given a `VectorPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
 establishes that for the topology constructed on the sigma-type using
-`vector_prebundle.total_space_topology`, these "pretrivializations" are actually
+`VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
 theorem to_vectorBundle :
     @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology a.fiberTopology a.toFiberBundle :=
@@ -1022,18 +1022,18 @@ variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜
 variable (F' E')
 
 /-- When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector
-bundles `E` and `E'`, `continuous_linear_map.in_coordinates F E F' E' x₀ x y₀ y ϕ` is a coordinate
+bundles `E` and `E'`, `ContinuousLinearMap.inCoordinates F E F' E' x₀ x y₀ y ϕ` is a coordinate
 change of this continuous linear map w.r.t. the chart around `x₀` and the chart around `y₀`.
 
 It is defined by composing `ϕ` with appropriate coordinate changes given by the vector bundles
 `E` and `E'`.
-We use the operations `trivialization.continuous_linear_map_at` and `trivialization.symmL` in the
-definition, instead of `trivialization.continuous_linear_equiv_at`, so that
-`continuous_linear_map.in_coordinates` is defined everywhere (but see
-`continuous_linear_map.in_coordinates_eq`).
+We use the operations `Trivialization.continuousLinearMapAt` and `Trivialization.symmL` in the
+definition, instead of `Trivialization.continuousLinearEquivAt`, so that
+`ContinuousLinearMap.inCoordinates` is defined everywhere (but see
+`ContinuousLinearMap.inCoordinates_eq`).
 
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
-(see `hom_trivialization_at_apply`). However, note that `continuous_linear_map.in_coordinates` is
+(see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
 Therefore, it is is also convenient when working with the hom-bundle between pulled back bundles.
 -/
@@ -1056,7 +1056,7 @@ theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 #align continuous_linear_map.in_coordinates_eq ContinuousLinearMap.inCoordinates_eq
 
-/-- rewrite `in_coordinates` in a `vector_bundle_core`. -/
+/-- rewrite `in_coordinates` in a `VectorBundleCore`. -/
 protected theorem VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
     (Z' : VectorBundleCore 𝕜₂ B' F' ι') {x₀ x : B} {y₀ y : B'} (ϕ : F →SL[σ] F')
     (hx : x ∈ Z.baseSet (Z.indexAt x₀)) (hy : y ∈ Z'.baseSet (Z'.indexAt y₀)) :
