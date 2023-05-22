@@ -212,7 +212,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
     throwError "CancelDenoms.derive failed to normalize {e}.\n{E.toMessageData}"
 
 /--
-`findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
+`findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =, ≠}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
 In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
 it is not, the final component of the return value tracks this.
@@ -229,7 +229,7 @@ def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
 
 /--
 `cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
-where `R ∈ {<, ≤, =, ≥, >}`.
+where `R ∈ {<, ≤, =, ≠, ≥, >}`.
 It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h'`.
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
@@ -237,7 +237,6 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let some (lhs, rhs, lem, ord) := findCompLemma h | throwError "cannot kill factors"
   let (al, lhs_p) ← derive lhs
   let ⟨u, α, _⟩ ← inferTypeQ' lhs
-  let _ ← synthInstanceQ q(Field $α)
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   let (ar, rhs_p) ← derive rhs
   let gcd := al.gcd ar
