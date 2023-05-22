@@ -728,7 +728,7 @@ we use this isomorphism to prove the theorem.
 
 variable [AddCommGroup E] [Module ℝ E]
 
-namespace riesz_extension
+namespace RieszExtension
 
 open Submodule
 
@@ -759,7 +759,8 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     rw [add_assoc, add_sub_cancel'_right, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
-  have hy' : y ≠ 0 := fun hy₀ => hy (hy₀.symm ▸ zero_mem _)
+  -- Porting note: this `have` is unused
+  --have hy' : y ≠ 0 := fun hy₀ => hy (hy₀.symm ▸ zero_mem _)
   refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
   · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
     replace H := LinearPMap.domain_mono.monotone H
@@ -774,33 +775,50 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
           mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
-      have this' := le_c (r⁻¹ • ⟨x, hx⟩)
-      simp only [SetLike.mk_smul_mk, this, forall_true_left] at this'
-      rw [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, ← smul_eq_mul] at this'--, f.map_smul,
-
-        --smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this'
+      -- Porting note: rest of proof was
+      /-replace := le_c (r⁻¹ • ⟨x, hx⟩) this
+      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
+        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this-/
+      have this' : f (r⁻¹ • ⟨x, hx⟩) ≤ c := by
+        refine le_c (r⁻¹ • ⟨x, hx⟩) ?_
+        simp only [SetLike.mk_smul_mk, this]
+      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
+        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this'
     · subst r
       simp only [zero_smul, add_zero] at hzs⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel hr.ne', one_smul]
-      replace := c_le (r⁻¹ • ⟨x, hx⟩) this
+      -- Porting note: rest of proof was
+      /-replace := c_le (r⁻¹ • ⟨x, hx⟩) this
       rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
-        one_mul] at this
+        one_mul] at this-/
+      have this' : c ≤ f (r⁻¹ • ⟨x, hx⟩) := by
+        refine c_le (r⁻¹ • ⟨x, hx⟩) ?_
+        simp only [SetLike.mk_smul_mk, this]
+      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
+        one_mul] at this'
 #align riesz_extension.step RieszExtension.step
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
-  replace hp_nonneg : p ∈ { p | _ };
-  · rw [mem_setOf_eq]
+  have hp_nonneg' : p ∈ { p | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x } := by
+    rw [mem_setOf_eq]
     exact hp_nonneg
-  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ _ _ _ hp_nonneg
-  · refine' ⟨q, hpq, _, hqs⟩
+  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ _ ?_ _ hp_nonneg'
+  refine' ⟨q, hpq, _, hqs⟩
+  contrapose! hq
+  rcases step s q hqs _ hq with ⟨r, hqr, hr⟩
+  refine ⟨r, hr, hqr.le, hqr.ne'⟩
+
+  --exact ⟨r, hr, hqr.le, hqr.ne'⟩
+  /-· refine' ⟨q, hpq, _, hqs⟩
     contrapose! hq
     rcases step s q hqs _ hq with ⟨r, hqr, hr⟩
     · exact ⟨r, hr, hqr.le, hqr.ne'⟩
+
     ·
       exact fun y =>
         let ⟨x, hx⟩ := hp_dense y
@@ -817,10 +835,12 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     have : f ≤ LinearPMap.sSup c c_chain.directed_on := LinearPMap.le_sSup _ hfc
     convert← hcs hfc ⟨x, hfx⟩ hxs
     apply this.2
-    rfl
+    rfl-/
 #align riesz_extension.exists_top RieszExtension.exists_top
 
-end riesz_extension
+#exit
+
+end RieszExtension
 
 /-- M. **Riesz extension theorem**: given a convex cone `s` in a vector space `E`, a submodule `p`,
 and a linear `f : p → ℝ`, assume that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then
