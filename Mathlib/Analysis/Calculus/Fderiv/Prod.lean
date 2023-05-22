@@ -8,8 +8,8 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Linear
-import Mathbin.Analysis.Calculus.Fderiv.Comp
+import Mathlib.Analysis.Calculus.Fderiv.Linear
+import Mathlib.Analysis.Calculus.Fderiv.Comp
 
 /-!
 # Derivative of the cartesian product of functions
@@ -378,8 +378,7 @@ variable {ι : Type _} [Fintype ι] {F' : ι → Type _} [∀ i, NormedAddCommGr
 
 @[simp]
 theorem hasStrictFDerivAt_pi' :
-    HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x :=
-  by
+    HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
   simp only [HasStrictFDerivAt, ContinuousLinearMap.coe_pi]
   exact is_o_pi
 #align has_strict_fderiv_at_pi' hasStrictFDerivAt_pi'
