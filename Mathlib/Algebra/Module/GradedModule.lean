@@ -52,12 +52,12 @@ class Gmodule [AddMonoid ι] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [
 
 /-- A graded version of `semiring.to_module`. -/
 instance GSemiring.toGmodule [DecidableEq ι] [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)]
-    [GSemiring A] : Gmodule A A :=
+    [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
-    smul_add := fun _ _ => GSemiring.mul_add
-    smul_zero := fun i j => GSemiring.mul_zero
-    add_smul := fun i j => GSemiring.add_mul
-    zero_smul := fun i j => GSemiring.zero_mul }
+    smul_add := fun _ _ _ => h.mul_add _ _ _
+    smul_zero := fun _ => h.mul_zero _
+    add_smul := fun _ _ => h.add_mul _ _
+    zero_smul := fun _ => h.zero_mul _ }
 #align direct_sum.gsemiring.to_gmodule DirectSum.GSemiring.toGmodule
 
 variable [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)] [∀ i, AddCommMonoid (M i)]
@@ -250,4 +250,3 @@ def linearEquiv [DecidableEq ι] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜
 #align graded_module.linear_equiv GradedModule.linearEquiv
 
 end GradedModule
-
