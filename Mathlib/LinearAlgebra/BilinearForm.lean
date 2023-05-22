@@ -773,7 +773,6 @@ theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsO
   fun hx₂ => hx₁ (hx₂.symm ▸ isOrtho_zero_left _)
 #align bilin_form.ne_zero_of_not_is_ortho_self BilinForm.ne_zero_of_not_isOrtho_self
 
--- Porting note: TODO is this the right name?
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.IsOrtho` -/
