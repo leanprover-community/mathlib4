@@ -485,8 +485,7 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     calc
       j1 ≤ j2 := hj
       _ < w.get ⟨i2, _⟩  := h2
-      _ ≤ w.get ⟨i1, _⟩ :=
-      by
+      _ ≤ w.get ⟨i1, _⟩ := by
         obtain rfl | h := eq_or_lt_of_le hi
         · convert le_refl (w.get ⟨i1, h1⟩)
         · exact List.pairwise_iff_get.mp hw _ _ h

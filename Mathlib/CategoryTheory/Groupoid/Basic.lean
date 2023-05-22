@@ -23,8 +23,7 @@ variable (C : Type _) [Groupoid C]
 
 section Thin
 
-theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) :=
-  by
+theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) := by
   refine' ⟨fun h c => h c c, fun h c d => Subsingleton.intro fun f g => _⟩
   haveI := h d
   calc

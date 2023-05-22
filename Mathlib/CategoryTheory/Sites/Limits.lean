@@ -171,7 +171,7 @@ instance : HasLimitsOfShape K (Sheaf J D) :=
 
 end
 
-instance [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
 instance [HasLimits D] : HasLimits (Sheaf J D) :=

@@ -65,8 +65,7 @@ theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c :
   mul_left_mem_nonZeroDivisors_eq_zero_iff c.prop
 #align mul_left_coe_non_zero_divisors_eq_zero_iff mul_left_coe_nonZeroDivisors_eq_zero_iff
 
-theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
-  by
+theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
   refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
   rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
 #align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_nonZeroDivisors
