@@ -367,29 +367,27 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
-  uniq s m w := by
-    ext x
+  uniq s m w := RingHom.ext fun x => by
+    change (colimitCocone F).pt →+* s.pt at m
     refine Quot.inductionOn x ?_
-    induction x
-    · have w' :=
-        congr_fun (congr_arg (fun f : F.obj x_j ⟶ s.X => (f : F.obj x_j → s.X)) (w x_j)) x_x
-      erw [w']
-      rfl
-    · simp
-    · simp
-    · simp [*]
-    · simp [*]
-    · simp [*]
-    rfl
+    intro x
+    induction x with
+    | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
+    | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
+    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]
+    | of j x =>
+      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+    | add x y ih_x ih_y => erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]
+    | mul x y ih_x ih_y => erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
 instance hasColimits_commRingCat : HasColimits CommRingCat
-    where HasColimitsOfShape J 𝒥 :=
-    {
-      HasColimit := fun F =>
-        has_colimit.mk
-          { Cocone := colimit_cocone F
-            IsColimit := colimit_is_colimit F } }
+  where has_colimits_of_shape _ _ :=
+  {
+    has_colimit := fun F =>
+      HasColimit.mk
+        { cocone := colimitCocone F
+          isColimit := colimitIsColimit F } }
 #align CommRing.colimits.has_colimits_CommRing CommRingCat.Colimits.hasColimits_commRingCat
 
 end CommRingCat.Colimits
