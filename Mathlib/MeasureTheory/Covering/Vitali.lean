@@ -20,9 +20,9 @@ Consider a family of balls `(B (x_i, r_i))_{i ∈ I}` in a metric space, with un
 radii. Then one can extract a disjoint subfamily indexed by `J ⊆ I`, such that any `B (x_i, r_i)`
 is included in a ball `B (x_j, 5 r_j)`.
 
-We prove this theorem in `vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball`.
+We prove this theorem in `Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall`.
 It is deduced from a more general version, called
-`vitali.exists_disjoint_subfamily_covering_enlargment`, which applies to any family of sets
+`Vitali.exists_disjoint_subfamily_covering_enlargment`, which applies to any family of sets
 together with a size function `δ` (think "radius" or "diameter").
 
 We deduce the measurable Vitali covering theorem. Assume one is given a family `t` of closed sets
@@ -31,11 +31,11 @@ definite proportion of the ball `B (x, 6 r)` for a given measure `μ` (think of 
 where `μ` is a doubling measure and `t` is a family of balls). Consider a set `s` at which the
 family is fine, i.e., every point of `s` belongs to arbitrarily small elements of `t`. Then one
 can extract from `t` a disjoint subfamily that covers almost all `s`. It is proved in
-`vitali.exists_disjoint_covering_ae`.
+`Vitali.exists_disjoint_covering_ae`.
 
 A way to restate this theorem is to say that the set of closed sets `a` with nonempty interior
-covering a fixed proportion `1/C` of the ball `closed_ball x (3 * diam a)` forms a Vitali family.
-This version is given in `vitali.vitali_family`.
+covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
+This version is given in `Vitali.vitaliFamily`.
 -/
 
 
@@ -47,7 +47,6 @@ open NNReal Classical ENNReal Topology
 
 namespace Vitali
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (u «expr ⊆ » t) -/
 /-- Vitali covering theorem: given a set `t` of subsets of a type, one may extract a disjoint
 subfamily `u` such that the `τ`-enlargment of this family covers all elements of `t`, where `τ > 1`
 is any fixed number.
@@ -66,18 +65,18 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     ∃ (u : _) (_ : u ⊆ t),
       u.PairwiseDisjoint B ∧ ∀ a ∈ t, ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ δ a ≤ τ * δ b := by
   /- The proof could be formulated as a transfinite induction. First pick an element of `t` with `δ`
-    as large as possible (up to a factor of `τ`). Then among the remaining elements not intersecting
-    the already chosen one, pick another element with large `δ`. Go on forever (transfinitely) until
-    there is nothing left.
+  as large as possible (up to a factor of `τ`). Then among the remaining elements not intersecting
+  the already chosen one, pick another element with large `δ`. Go on forever (transfinitely) until
+  there is nothing left.
 
-    Instead, we give a direct Zorn-based argument. Consider a maximal family `u` of disjoint sets
-    with the following property: if an element `a` of `t` intersects some element `b` of `u`, then it
-    intersects some `b' ∈ u` with `δ b' ≥ δ a / τ`. Such a maximal family exists by Zorn. If this
-    family did not intersect some element `a ∈ t`, then take an element `a' ∈ t` which does not
-    intersect any element of `u`, with `δ a'` almost as large as possible. One checks easily
-    that `u ∪ {a'}` still has this property, contradicting the maximality. Therefore, `u`
-    intersects all elements of `t`, and by definition it satisfies all the desired properties.
-    -/
+  Instead, we give a direct Zorn-based argument. Consider a maximal family `u` of disjoint sets
+  with the following property: if an element `a` of `t` intersects some element `b` of `u`, then it
+  intersects some `b' ∈ u` with `δ b' ≥ δ a / τ`. Such a maximal family exists by Zorn. If this
+  family did not intersect some element `a ∈ t`, then take an element `a' ∈ t` which does not
+  intersect any element of `u`, with `δ a'` almost as large as possible. One checks easily
+  that `u ∪ {a'}` still has this property, contradicting the maximality. Therefore, `u`
+  intersects all elements of `t`, and by definition it satisfies all the desired properties.
+  -/
   let T : Set (Set ι) := { u | u ⊆ t ∧ u.PairwiseDisjoint B ∧
     ∀ a ∈ t, ∀ b ∈ u, (B a ∩ B b).Nonempty → ∃ c ∈ u, (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c }
   -- By Zorn, choose a maximal family in the good set `T` of disjoint families.
@@ -92,7 +91,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     obtain ⟨c, cu, ac, hc⟩ : ∃ c, c ∈ u ∧ (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c :=
       ((UT uU).2.2) a hat b hbu hab
     exact ⟨c, ⟨u, uU, cu⟩, ac, hc⟩
-  -- the only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
+  -- The only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
   -- comparatively large `δ b`. Assume this is not the case, then we will contradict the maximality.
   refine' ⟨u, uT.1, uT.2.1, fun a hat => _⟩
   contrapose! hu
@@ -128,25 +127,25 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   have a'_ne_u : a' ∉ u := fun H => (hne _ a'A.1).ne_empty (disjoint_self.1 (a'A.2 _ H))
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
   refine' ⟨insert a' u, ⟨_, _, _⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
-  -- check that `u ∪ {a'}` is made of elements of `t`.
-  · rw [insert_subset]
+  · -- check that `u ∪ {a'}` is made of elements of `t`.
+    rw [insert_subset]
     exact ⟨a'A.1, uT.1⟩
-  -- check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
-  -- intersect `u`.
-  · exact uT.2.1.insert fun b bu _ => a'A.2 b bu
-  -- check that every element `c` of `t` intersecting `u ∪ {a'}` intersects an element of this
-  -- family with large `δ`.
-  · intro c ct b ba'u hcb
+  · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
+    -- intersect `u`.
+    exact uT.2.1.insert fun b bu _ => a'A.2 b bu
+  · -- check that every element `c` of `t` intersecting `u ∪ {a'}` intersects an element of this
+    -- family with large `δ`.
+    intro c ct b ba'u hcb
     -- if `c` already intersects an element of `u`, then it intersects an element of `u` with
     -- large `δ` by the assumption on `u`, and there is nothing left to do.
     by_cases H : ∃ d ∈ u, (B c ∩ B d).Nonempty
     · rcases H with ⟨d, du, hd⟩
       rcases uT.2.2 c ct d du hd with ⟨d', d'u, hd'⟩
       exact ⟨d', mem_insert_of_mem _ d'u, hd'⟩
-    -- otherwise, `c` belongs to `A`. The element of `u ∪ {a'}` that it intersects has to be `a'`.
-    -- moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
-    -- thanks to the good choice of `a'`. This is the desired inequality.
-    · push_neg at H
+    · -- Otherwise, `c` belongs to `A`. The element of `u ∪ {a'}` that it intersects has to be `a'`.
+      -- Moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
+      -- thanks to the good choice of `a'`. This is the desired inequality.
+      push_neg at H
       simp only [← not_disjoint_iff_nonempty_inter, Classical.not_not] at H
       rcases mem_insert_iff.1 ba'u with (rfl | H')
       · refine' ⟨b, mem_insert _ _, hcb, _⟩
@@ -160,7 +159,6 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
         exact (hcb (H _ H')).elim
 #align vitali.exists_disjoint_subfamily_covering_enlargment Vitali.exists_disjoint_subfamily_covering_enlargment
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (u «expr ⊆ » t) -/
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the 5-times
 dilations of balls in `u`. -/
@@ -196,8 +194,6 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
     refine' ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 #align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (u «expr ⊆ » t') -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (u «expr ⊆ » t) -/
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
 nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
 proportion of the ball `B (x, 3 r)` for a given measure `μ` (think of the situation where `μ` is
@@ -215,23 +211,23 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     (hf : ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x) :
     ∃ (u : _) (_ : u ⊆ t), u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
   /- The idea of the proof is the following. Assume for simplicity that `μ` is finite. Applying the
-    abstract Vitali covering theorem with `δ = r` given by `hf`, one obtains a disjoint subfamily `u`,
-    such that any element of `t` intersects an element of `u` with comparable radius. Fix `ε > 0`.
-    Since the elements of `u` have summable measure, one can remove finitely elements `w_1, ..., w_n`.
-    so that the measure of the remaining elements is `< ε`. Consider now a point `z` not
-    in the `w_i`. There is a small ball around `z` not intersecting the `w_i` (as they are closed),
-    an element `a ∈ t` contained in this small ball (as the family `t` is fine at `z`) and an element
-    `b ∈ u` intersecting `a`, with comparable radius (by definition of `u`). Then `z` belongs to the
-    enlargement of `b`. This shows that `s \ (w_1 ∪ ... ∪ w_n)` is contained in
-    `⋃ (b ∈ u \ {w_1, ... w_n}) (enlargement of b)`. The measure of the latter set is bounded by
-    `∑ (b ∈ u \ {w_1, ... w_n}) C * μ b` (by the doubling property of the measure), which is at most
-    `C ε`. Letting `ε` tend to `0` shows that `s` is almost everywhere covered by the family `u`.
+  abstract Vitali covering theorem with `δ = r` given by `hf`, one obtains a disjoint subfamily `u`,
+  such that any element of `t` intersects an element of `u` with comparable radius. Fix `ε > 0`.
+  Since the elements of `u` have summable measure, one can remove finitely elements `w_1, ..., w_n`.
+  so that the measure of the remaining elements is `< ε`. Consider now a point `z` not
+  in the `w_i`. There is a small ball around `z` not intersecting the `w_i` (as they are closed),
+  an element `a ∈ t` contained in this small ball (as the family `t` is fine at `z`) and an element
+  `b ∈ u` intersecting `a`, with comparable radius (by definition of `u`). Then `z` belongs to the
+  enlargement of `b`. This shows that `s \ (w_1 ∪ ... ∪ w_n)` is contained in
+  `⋃ (b ∈ u \ {w_1, ... w_n}) (enlargement of b)`. The measure of the latter set is bounded by
+  `∑ (b ∈ u \ {w_1, ... w_n}) C * μ b` (by the doubling property of the measure), which is at most
+  `C ε`. Letting `ε` tend to `0` shows that `s` is almost everywhere covered by the family `u`.
 
-    For the real argument, the measure is only locally finite. Therefore, we implement the same
-    strategy, but locally restricted to balls on which the measure is finite. For this, we do not
-    use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
-    the family is assumed to be fine at every point of `s`).
-    -/
+  For the real argument, the measure is only locally finite. Therefore, we implement the same
+  strategy, but locally restricted to balls on which the measure is finite. For this, we do not
+  use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
+  the family is assumed to be fine at every point of `s`).
+  -/
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := by
     intro x
@@ -367,7 +363,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       rw [inter_comm]
       exact inter_subset_inter_right _ ax
     let b' : v := ⟨b, bv⟩
-    -- `b` can not belong to `w`, as the elements of `w` do not intersect `closed_ball z d`,
+    -- `b` cannot belong to `w`, as the elements of `w` do not intersect `closedBall z d`,
     -- contrary to `b`
     have b'_notmem_w : b' ∉ w := by
       intro b'w
@@ -403,8 +399,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
 #align vitali.exists_disjoint_covering_ae Vitali.exists_disjoint_covering_ae
 
 /-- Assume that around every point there are arbitrarily small scales at which the measure is
-doubling. Then the set of closed sets `a` with nonempty interior contained in `closed_ball x r` and
-covering a fixed proportion `1/C` of the ball `closed_ball x (3 * r)` forms a Vitali family.
+doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
+covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
 protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (C : ℝ≥0)
