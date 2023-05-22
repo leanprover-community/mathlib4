@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Basic
 
 /-!
 # The derivative of a composition (chain rule)
@@ -64,8 +64,7 @@ variable (x)
 
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter F}
     (hg : HasFDerivAtFilter g g' (f x) L') (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L') :
-    HasFDerivAtFilter (g ∘ f) (g'.comp f') x L :=
-  by
+    HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf
   let eq₂ := (hg.comp_tendsto hL).trans_isBigO hf.isBigO_sub
   refine' eq₂.triangle (eq₁.congr_left fun x' => _)
@@ -75,8 +74,7 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
 /- A readable version of the previous theorem,
    a general form of the chain rule. -/
 example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
-    (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L :=
-  by
+    (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   unfold HasFDerivAtFilter at hg
   have :=
     calc
@@ -150,8 +148,7 @@ theorem fderivWithin.comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt
 theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s : Set E} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
-    fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v :=
-  by
+    fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v := by
   subst y
   rw [fderivWithin.comp x hg hf h hxs]
   rfl
@@ -164,8 +161,7 @@ theorem fderivWithin.comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
     (hf : DifferentiableWithinAt 𝕜 f s x) (h2g : MapsTo g t u) (h2f : MapsTo f s t) (h3g : g y = y')
     (h3f : f x = y) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
-      (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) :=
-  by
+      (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
   substs h3g h3f
   exact
     (hg'.has_fderiv_within_at.comp x (hg.has_fderiv_within_at.comp x hf.has_fderiv_within_at h2f) <|
@@ -221,8 +217,7 @@ variable {x}
 
 protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
-    HasFDerivAtFilter (f^[n]) (f' ^ n) x L :=
-  by
+    HasFDerivAtFilter (f^[n]) (f' ^ n) x L := by
   induction' n with n ihn
   · exact hasFDerivAtFilter_id x L
   · rw [Function.iterate_succ, pow_succ']
@@ -231,8 +226,7 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
-    (hx : f x = x) (n : ℕ) : HasFDerivAt (f^[n]) (f' ^ n) x :=
-  by
+    (hx : f x = x) (n : ℕ) : HasFDerivAt (f^[n]) (f' ^ n) x := by
   refine' hf.iterate _ hx n
   convert hf.continuous_at
   exact hx.symm
@@ -240,8 +234,7 @@ protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : 
 
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
-    HasFDerivWithinAt (f^[n]) (f' ^ n) s x :=
-  by
+    HasFDerivWithinAt (f^[n]) (f' ^ n) s x := by
   refine' hf.iterate _ hx n
   convert tendsto_inf.2 ⟨hf.continuous_within_at, _⟩
   exacts[hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
