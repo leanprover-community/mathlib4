@@ -8,8 +8,8 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Linear
-import Mathbin.Analysis.Calculus.Fderiv.Comp
+import Mathlib.Analysis.Calculus.Fderiv.Linear
+import Mathlib.Analysis.Calculus.Fderiv.Comp
 
 /-!
 # Additive operations on derivatives
@@ -121,16 +121,14 @@ section Add
 
 theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-  (hf.add hg).congr_left fun y =>
-    by
+  (hf.add hg).congr_left fun y => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 #align has_strict_fderiv_at.add HasStrictFDerivAt.add
 
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L) (hg : HasFDerivAtFilter g g' x L) :
     HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
-  (hf.add hg).congr_left fun _ =>
-    by
+  (hf.add hg).congr_left fun _ => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 #align has_fderiv_at_filter.add HasFDerivAtFilter.add
@@ -241,8 +239,7 @@ theorem differentiable_add_const_iff (c : F) :
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
   if hf : DifferentiableWithinAt 𝕜 f s x then (hf.HasFDerivWithinAt.AddConst c).fderivWithin hxs
-  else
-    by
+  else by
     rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
       fderivWithin_zero_of_not_differentiableWithinAt]
     simpa
@@ -335,16 +332,14 @@ open BigOperators
 variable {ι : Type _} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x :=
-  by
+    HasStrictFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
   dsimp [HasStrictFDerivAt] at *
   convert is_o.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 #align has_strict_fderiv_at.sum HasStrictFDerivAt.sum
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x L) :
-    HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L :=
-  by
+    HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
   dsimp [HasFDerivAtFilter] at *
   convert is_o.sum h
   simp [ContinuousLinearMap.sum_apply]
@@ -460,8 +455,7 @@ theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differe
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=
   if h : DifferentiableWithinAt 𝕜 f s x then h.HasFDerivWithinAt.neg.fderivWithin hxs
-  else
-    by
+  else by
     rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
