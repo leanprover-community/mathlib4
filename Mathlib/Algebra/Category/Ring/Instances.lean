@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.RingTheory.Localization.Away.Basic
-import Mathbin.RingTheory.Ideal.LocalRing
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Ideal.LocalRing
 
 /-!
 # Ring-theoretic results in terms of categorical languages
@@ -25,8 +25,7 @@ instance localization_unit_isIso (R : CommRingCat) :
 #align localization_unit_is_iso localization_unit_isIso
 
 instance localization_unit_is_iso' (R : CommRingCat) :
-    @IsIso CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) :=
-  by
+    @IsIso CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) := by
   cases R
   exact localization_unit_isIso _
 #align localization_unit_is_iso' localization_unit_is_iso'
@@ -42,8 +41,7 @@ instance Localization.epi {R : Type _} [CommRing R] (M : Submonoid R) :
 #align localization.epi Localization.epi
 
 instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
-    @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) :=
-  by
+    @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) := by
   cases R
   exact IsLocalization.epi M _
 #align localization.epi' Localization.epi'
