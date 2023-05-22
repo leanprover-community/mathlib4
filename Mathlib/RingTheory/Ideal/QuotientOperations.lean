@@ -792,11 +792,12 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
   rfl
 #align double_quot.coe_quot_quot_equiv_commₐ DoubleQuot.coe_quotQuotEquivCommₐ
 
-@[simp] -- TODO: why is the `@[simp]` attribute (and nothing else) timing out?
+-- Porting note: looks like this timeout comes from the kernel, since the `rfl` takes much less
+-- than a second according to `trace.profiler`.
+set_option maxHeartbeats 400000 in
+@[simp]
 theorem quot_quot_equiv_comm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I :=
-  -- TODO: should be `rfl` but times out
-  AlgEquiv.ext
-    fun x => rfl -- (FunLike.congr_fun (quotQuotEquivComm_symm I J) x : _)
+  rfl
 #align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quot_quot_equiv_comm_symmₐ
 
 @[simp]
