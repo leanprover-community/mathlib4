@@ -143,7 +143,10 @@ theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) 
 @[to_additive "Construct a `continuous_add_monoid_hom` from a `continuous` `add_monoid_hom`.",
   simps]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
-  { f with continuous_toFun := hf }
+  { f with continuous_toFun := Continuous.congr hf (by
+   intros x
+
+   ) }
 #align continuous_monoid_hom.mk' ContinuousMonoidHom.mk'
 #align continuous_add_monoid_hom.mk' ContinuousAddMonoidHom.mk'
 
