@@ -25,6 +25,7 @@ open CategoryTheory CategoryTheory.Limits TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
+--Porting Note: Had to change `trivial` to `True.intro` due to collision
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
   obtain rfl | hne := eq_or_ne U ⊥
@@ -33,13 +34,13 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     · refine' ⟨it.from _, fun U hU hs => IsTerminal.hom_ext _ _ _⟩
       rwa [le_bot_iff.1 hU.le]
     · apply it.hom_ext
-  · convert @Presieve.isSheafFor_top_sieve _ _ _ _
-    rw [← sieve.id_mem_iff_eq_top]
+  · convert Presieve.isSheafFor_top_sieve (F ⋙ coyoneda.obj (@op C c))
+    rw [← Sieve.id_mem_iff_eq_top]
     have := (U.eq_bot_or_top hind).resolve_left hne
     subst this
     obtain he | ⟨⟨x⟩⟩ := isEmpty_or_nonempty X
     · exact (hne <| SetLike.ext'_iff.2 <| Set.univ_eq_empty_iff.2 he).elim
-    obtain ⟨U, f, hf, hm⟩ := hs x trivial
+    obtain ⟨U, f, hf, hm⟩ := hs x True.intro
     obtain rfl | rfl := U.eq_bot_or_top hind
     · cases hm
     · convert hf
