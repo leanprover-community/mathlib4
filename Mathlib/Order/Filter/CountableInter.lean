@@ -250,8 +250,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff
 
 theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [CountableInterFilter f] :
-    f ≤ countableGenerate g ↔ g ⊆ f.sets :=
-  by
+    f ≤ countableGenerate g ↔ g ⊆ f.sets := by
   constructor <;> intro h
   · exact subset_trans (fun s => CountableGenerateSets.basic) h
   intro s hs
@@ -266,8 +265,7 @@ variable (g)
 
 /-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`.-/
 theorem countableGenerate_isGreatest :
-    IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) :=
-  by
+    IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
   refine' ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, _⟩
   rintro f ⟨fct, hf⟩
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
