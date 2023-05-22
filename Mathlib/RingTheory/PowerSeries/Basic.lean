@@ -53,18 +53,18 @@ If the coefficients form an integral domain, then `order` is a valuation
 
 In this file we define multivariate formal power series with
 variables indexed by `σ` and coefficients in `R` as
-`mv_power_series σ R := (σ →₀ ℕ) → R`.
+`MvPowerSeries σ R := (σ →₀ ℕ) → R`.
 Unfortunately there is not yet enough API to show that they are the completion
 of the ring of multivariate polynomials. However, we provide most of the infrastructure
 that is needed to do this. Once I-adic completion (topological or algebraic) is available
 it should not be hard to fill in the details.
 
 Formal power series in one variable are defined as
-`power_series R := mv_power_series unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 
 This allows us to port a lot of proofs and properties
 from the multivariate case to the single variable case.
-However, it means that formal power series are indexed by `unit →₀ ℕ`,
+However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
 We then build some glue to treat formal power series as if they are indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
@@ -146,10 +146,10 @@ theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
   rw [monomial]
+  -- unify the `Decidable` arguments
   convert rfl
 #align mv_power_series.monomial_def MvPowerSeries.monomial_def
 
--- unify the `decidable` arguments
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
   rw [coeff, monomial_def, LinearMap.proj_apply]
@@ -813,7 +813,7 @@ well-founded recursion on the coeffients of the inverse.
 /-- Auxiliary definition that unifies
  the totalised inverse formal power series `(_)⁻¹` and
  the inverse formal power series that depends on
- an inverse of the constant coefficient `inv_of_unit`.-/
+ an inverse of the constant coefficient `invOfUnit`.-/
 protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
   | n =>
     if n = 0 then a
@@ -831,10 +831,10 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
           ∑ x in n.antidiagonal, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
   show inv.aux a φ n = _ by
     rw [inv.aux]
+    -- unify `Decidable` instances
     convert rfl
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
 
--- unify `decidable` instances
 /-- A multivariate formal power series is invertible if the constant coefficient is invertible.-/
 def invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) : MvPowerSeries σ R :=
   inv.aux (↑u⁻¹) φ
@@ -2226,7 +2226,7 @@ theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔
   simp [PowerSeries.ext_iff]
 #align power_series.exists_coeff_ne_zero_iff_ne_zero PowerSeries.exists_coeff_ne_zero_iff_ne_zero
 
-/-- The order of a formal power series `φ` is the greatest `n : part_enat`
+/-- The order of a formal power series `φ` is the greatest `n : PartENat`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : PowerSeries R) : PartENat :=
   if h : φ = 0 then ⊤ else Nat.find (exists_coeff_ne_zero_iff_ne_zero.mpr h)
@@ -2505,7 +2505,7 @@ end OrderZeroNeOne
 
 section OrderIsDomain
 
--- TODO: generalize to `[semiring R] [no_zero_divisors R]`
+-- TODO: generalize to `[Semiring R] [NoZeroDivisors R]`
 variable [CommRing R] [IsDomain R]
 
 /-- The order of the product of two formal power series over an integral domain
