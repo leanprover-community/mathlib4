@@ -11,9 +11,9 @@ Authors: Jujian Zhang
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
-# Presheaves on punit
+# Presheaves on `PUnit`
 
-Presheaves on punit satisfy sheaf condition iff its value at empty set is a terminal object.
+Presheaves on `PUnit` satisfy sheaf condition iff its value at empty set is a terminal object.
 -/
 
 
@@ -25,7 +25,6 @@ open CategoryTheory CategoryTheory.Limits TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
---Porting Note: Had to change `trivial` to `True.intro` due to collision
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
   obtain rfl | hne := eq_or_ne U ⊥
@@ -40,7 +39,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     subst this
     obtain he | ⟨⟨x⟩⟩ := isEmpty_or_nonempty X
     · exact (hne <| SetLike.ext'_iff.2 <| Set.univ_eq_empty_iff.2 he).elim
-    obtain ⟨U, f, hf, hm⟩ := hs x True.intro
+    obtain ⟨U, f, hf, hm⟩ := hs x _root_.trivial
     obtain rfl | rfl := U.eq_bot_or_top hind
     · cases hm
     · convert hf
