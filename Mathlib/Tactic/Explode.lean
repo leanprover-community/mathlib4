@@ -19,6 +19,21 @@ open Lean
 
 namespace Mathlib.Explode
 
+/-- Pretty print a const expression using `delabConst` and generate terminfo.
+This function avoids inserting `@` if the constant is for a function whose first
+argument is implicit, which is what the default `toMessageData` for `Expr` does.
+Panics if `e` is not a constant. -/
+def ppConst (e : Expr) : MessageData :=
+  if not e.isConst then
+    panic! "not a constant"
+  else
+    .ofPPFormat { pp := fun
+      | some ctx => ctx.runMetaM <| withOptions (pp.tagAppFns.set · true) <|
+          -- The pp.tagAppFns option causes the `delabConst` function to annotate
+          -- the constant with terminfo, which is necessary for seeing the type on mouse hover.
+          PrettyPrinter.ppExprWithInfos (delab := PrettyPrinter.Delaborator.delabConst) e
+      | none     => return f!"{e}" }
+
 /-- Core `explode` algorithm.
 
 - `select` is a condition for which expressions to process
@@ -113,7 +128,7 @@ where
         { type     := ← addMessageContext <| ← Meta.inferType e
           depth    := depth
           status   := Status.reg
-          thm      := ← addMessageContext <| if fn.isConst then appConstMsg fn else "∀E"
+          thm      := ← addMessageContext <| if fn.isConst then ppConst fn else "∀E"
           deps     := deps
           useAsDep := true }
       return (entry, entries)
@@ -140,17 +155,6 @@ where
           useAsDep := ← select e }
       return (entry, entries)
 
-  /-- Generate the pretty printed name for the given constant expression. Can't just use the
-  default `toMessageData` for `Expr` since that inserts `@` if the constant is a function
-  with implicit arguments. -/
-  appConstMsg (e : Expr) : MessageData :=
-    .ofPPFormat { pp := fun
-      | some ctx => ctx.runMetaM <| withOptions (pp.tagAppFns.set · true) <|
-          -- The pp.tagAppFns option causes the `delabConst` function to annotate
-          -- the constant with terminfo, which is necessary for seeing the type on mouse hover.
-          PrettyPrinter.ppExprWithInfos (delab := PrettyPrinter.Delaborator.delabConst) e
-      | none     => return f!"{e}" }
-
 /-- Main definition behind `#explode` command. -/
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let filter (e : Expr) : MetaM Bool :=
@@ -161,26 +165,26 @@ def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
 open Elab in
 def runExplode (stx : Term) : Command.CommandElabM (Option MessageData) :=
   withoutModifyingEnv <| Command.runTermElabM fun _ => do
-    let (name?, e, ety) ← elabT stx
+    let (heading, e) ← elabT stx
     if e.isSyntheticSorry then
       return none
     let entries ← Mathlib.Explode.explode e
     let fitchTable : MessageData ← Mathlib.Explode.entriesToMessageData entries
-    let eMsg : MessageData := if let some name := name? then name else e
-    addMessageContext m!"{eMsg} : {ety}\n\n{fitchTable}\n"
+    addMessageContext m!"{heading}\n\n{fitchTable}\n"
 where
   -- Adapted from `#check` implementation
-  elabT (stx : Syntax) : TermElabM (Option Name × Expr × Expr) := do
+  elabT (stx : Syntax) : TermElabM (MessageData × Expr) := do
     try
       let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo stx
       addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
-      let const := ((← getEnv).find? theoremName).get!
-      return (some theoremName, const.value!, const.type)
+      let decl ← getConstInfo theoremName
+      let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
+      return (m!"{ppConst c} : {decl.type}", decl.value!)
     catch _ =>
       let e ← Term.elabTerm stx none
       Term.synthesizeSyntheticMVarsNoPostponing
       let e ← Term.levelMVarToParam (← instantiateMVars e)
-      return (none, e, ← Meta.inferType e)
+      return (m!"{e} : {← Meta.inferType e}", e)
 
 end Mathlib.Explode
 
