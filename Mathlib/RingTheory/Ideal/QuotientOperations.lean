@@ -792,11 +792,13 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
   rfl
 #align double_quot.coe_quot_quot_equiv_commₐ DoubleQuot.coe_quotQuotEquivCommₐ
 
--- Porting note: looks like this timeout comes from the kernel, since the `rfl` takes much less
--- than a second according to `trace.profiler`.
 @[simp]
 theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
-  apply AlgEquiv.ext
+  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
+  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
+  -- and timing out.
+  ext
+  unfold quotQuotEquivCommₐ
   congr
 #align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quotQuotEquivComm_symmₐ
 
