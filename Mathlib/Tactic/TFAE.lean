@@ -118,43 +118,24 @@ add_decl_doc getTFAEListQ.guardExplicitList
 
 /-! # Proof construction -/
 
-/-- Prove an implication via `scc`. -/
-def proveImpl (P P' : Q(Prop)) : TacticM Q($P → $P') := do
-  let t ← mkFreshExprMVar q($P → $P')
-  try
-    let [] ← run t.mvarId! <| evalTactic (← `(tactic| apply Iff.mp; scc)) |
-      failure
-  catch _ =>
-    throwError "couldn't prove {P} → {P'}"
-  instantiateMVars t
-
-/-- Generate a proof of `Chain (· → ·) P l`. We assume `P : Prop` and `l : List Prop`, and that `l`
-is an explicit list. -/
-partial def proveChain (P : Q(Prop)) (l : Q(List Prop)) :
-    TacticM Q(Chain (· → ·) $P $l) := do
-  match l with
-  | ~q([]) => return q(Chain.nil)
-  | ~q($P' :: $l') =>
-    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain q($P') q($l')
-    let p ← proveImpl P P'
-    return q(Chain.cons $p $cl')
-
-/-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
-partial def proveILast'Impl (P P' : Q(Prop)) (l : Q(List Prop)) :
-    TacticM Q(ilast' $P' $l → $P) := do
-  match l with
-  | ~q([]) => proveImpl P' P
-  | ~q($P'' :: $l') => proveILast'Impl P P'' l'
-
+open SCC in
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
-def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
+partial def proveTFAEAux (P : Q(Prop)) (l : Q(List Prop)) : ClosureM Q(TFAE ($P :: $l)) := do
   match l with
-  | ~q([]) => return q(tfae_nil)
-  | ~q([$P]) => return q(tfae_singleton $P)
-  | ~q($P :: $P' :: $l') =>
-    let c ← proveChain P q($P' :: $l')
-    let il ← proveILast'Impl P P' l'
-    return q(tfae_of_cycle $c $il)
+  | ~q([]) => return q(tfae_singleton $P)
+  | ~q($P' :: $l') =>
+    let h₁ ← proveEqv P P'
+    let h₂ ← proveTFAEAux P' l'
+    return q(tfae_cons_cons.mpr ⟨$h₁, $h₂⟩)
+
+open SCC in
+/-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
+def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) :=
+  ClosureM.run do
+    discard mkSCC
+    match l with
+    | ~q([]) => return q(tfae_nil)
+    | ~q($P :: $l') => proveTFAEAux P l'
 
 /-! # `tfae_have` components -/
 
