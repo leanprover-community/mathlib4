@@ -124,6 +124,8 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
   | left_distrib : ∀ x y z, Relation (mul x (add y z)) (add (mul x y) (mul x z))
   | right_distrib : ∀ x y z, Relation (mul (add x y) z) (add (mul x z) (mul y z))
+  | zero_mul : ∀ x, Relation (mul zero x) zero
+  | mul_zero : ∀ x, Relation (mul x zero) zero
 #align CommRing.colimits.Relation CommRingCat.Colimits.Relation
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
@@ -181,44 +183,9 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
 instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
   { ColimitType.AddGroup F with one := Quot.mk _ one }
 
--- Porting note : In Lean 4, `Ring` needs a proof of `mul_zero` and `zero_mul`, these are not
--- entirely obvious from `Relation F`. So I first prove that `ColimitType F` is such that
--- `a + b = a + c → b = c`. Then prove that `a * 0 + a * 0 = a * 0 + 0` hence `a * 0 = 0`.
--- In `mathlib3`, `ring` axioms do not include `mul_zero` and `zero_mul`, so this is not necessary.
--- This might not be the best solution. For example, one can add addition axioms to `Relation F`.
-instance : IsLeftCancelAdd (ColimitType F) where
-  add_left_cancel := fun a b c => Quot.induction_on₃ a b c fun a b c h => by
-    simp only [(. + .), Add.add] at h ⊢
-    have h1 := Relation.add_2 (neg a) (add a b) (add a c) <| Quotient.exact h
-    have h21 : Relation F (add (neg a) (add a b)) (add (add (neg a) a) b) :=
-      (Relation.add_assoc (neg a) a b).symm
-    have h22 : Relation F (add (add (neg a) a) b) b :=
-      Relation.trans _ _ _ (Relation.add_1 _ _ _ (Relation.add_left_neg _)) (Relation.zero_add _)
-    have h31 : Relation F (add (neg a) (add a c)) (add (add (neg a) a) c) :=
-      (Relation.add_assoc (neg a) a c).symm
-    have h32 : Relation F (add (add (neg a) a) c) c :=
-      Relation.trans _ _ _ (Relation.add_1 _ _ _ (Relation.add_left_neg _)) (Relation.zero_add _)
-    exact Quot.sound (Relation.trans _ _ _
-      (Relation.trans _ _ _
-        (Relation.trans _ _ _
-          (Relation.trans _ _ _ h1 h31) h32).symm h21) h22).symm
-
-instance ColimitType.Mul : Mul (ColimitType.{v} F) where
-  mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-
-instance ColimitType.LeftDistribClass : LeftDistribClass (ColimitType.{v} F) where
-  left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-    simp only [(. + .), (. * .), Add.add]
-    exact Quot.sound (Relation.left_distrib _ _ _)
-
-instance ColimitType.RightDistribClass : RightDistribClass (ColimitType.{v} F) where
-  right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-    simp only [(. + .), (. * .), Add.add]
-    exact Quot.sound (Relation.right_distrib _ _ _)
-
 instance : CommRing (ColimitType.{v} F) :=
-  { ColimitType.AddGroupWithOne F, ColimitType.Mul F, ColimitType.LeftDistribClass F,
-      ColimitType.RightDistribClass F with
+  { ColimitType.AddGroupWithOne F with
+    mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
     one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
     mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
     add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
@@ -229,10 +196,14 @@ instance : CommRing (ColimitType.{v} F) :=
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(. * .)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun a => add_left_cancel (a := a * 0) (b := a * 0) (c := 0) <|
-      by simp_rw [add_zero, ←mul_add, zero_add]
-    zero_mul := fun a => add_left_cancel (a := 0 * a) (b := 0 * a) (c := 0) <|
-      by simp_rw [add_zero, ←add_mul, zero_add] }
+    mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+    left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+      simp only [(. + .), (. * .), Add.add]
+      exact Quot.sound (Relation.left_distrib _ _ _)
+    right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+      simp only [(. + .), (. * .), Add.add]
+      exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
@@ -352,6 +323,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | mul_assoc x y z => dsimp; rw [mul_assoc]
     | left_distrib x y z => dsimp; rw [mul_add]
     | right_distrib x y z => dsimp; rw [add_mul]
+    | zero_mul x => dsimp; rw [zero_mul]
+    | mul_zero x => dsimp; rw [mul_zero]
 #align CommRing.colimits.desc_fun CommRingCat.Colimits.descFun
 
 /-- The ring homomorphism from the colimit commutative ring to the cone point of any other
