@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doo
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.FiberBundle.Constructions
-import Mathbin.Topology.VectorBundle.Basic
+import Mathlib.Topology.FiberBundle.Constructions
+import Mathlib.Topology.VectorBundle.Basic
 
 /-!
 # Standard constructions on vector bundles
@@ -61,8 +61,7 @@ theorem trivialization.coordChangeL (b : B) :
 
 variable (𝕜)
 
-instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F)
-    where
+instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
   trivialization_linear' := by
     intro e he
     rw [eq_trivialization B F e]
@@ -102,8 +101,7 @@ instance prod.isLinear [e₁.isLinear 𝕜] [e₂.isLinear 𝕜] : (e₁.Prod e�
 theorem coordChangeL_prod [e₁.isLinear 𝕜] [e₁'.isLinear 𝕜] [e₂.isLinear 𝕜] [e₂'.isLinear 𝕜] ⦃b⦄
     (hb : b ∈ (e₁.Prod e₂).baseSet ∩ (e₁'.Prod e₂').baseSet) :
     ((e₁.Prod e₂).coordChangeL 𝕜 (e₁'.Prod e₂') b : F₁ × F₂ →L[𝕜] F₁ × F₂) =
-      (e₁.coordChangeL 𝕜 e₁' b : F₁ →L[𝕜] F₁).Prod_map (e₂.coordChangeL 𝕜 e₂' b) :=
-  by
+      (e₁.coordChangeL 𝕜 e₁' b : F₁ →L[𝕜] F₁).Prod_map (e₂.coordChangeL 𝕜 e₂' b) := by
   rw [ContinuousLinearMap.ext_iff, ContinuousLinearMap.coe_prodMap']
   rintro ⟨v₁, v₂⟩
   show
@@ -133,13 +131,11 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, A
 
 /-- The product of two vector bundles is a vector bundle. -/
 instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] :
-    VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂)
-    where
+    VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) where
   trivialization_linear' := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩; skip
     infer_instance
-  continuousOn_coord_change' :=
-    by
+  continuousOn_coord_change' := by
     rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩; skip
     refine'
         (((continuousOn_coord_change 𝕜 e₁ e₁').mono _).prodMapL 𝕜
@@ -165,8 +161,7 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
     {e₂ : Trivialization F₂ (π E₂)} [e₁.isLinear 𝕜] [e₂.isLinear 𝕜] {x : B} (hx₁ : x ∈ e₁.baseSet)
     (hx₂ : x ∈ e₂.baseSet) :
     (e₁.Prod e₂).continuousLinearEquivAt 𝕜 x ⟨hx₁, hx₂⟩ =
-      (e₁.continuousLinearEquivAt 𝕜 x hx₁).Prod (e₂.continuousLinearEquivAt 𝕜 x hx₂) :=
-  by
+      (e₁.continuousLinearEquivAt 𝕜 x hx₁).Prod (e₂.continuousLinearEquivAt 𝕜 x hx₂) := by
   ext1
   funext v
   obtain ⟨v₁, v₂⟩ := v
@@ -199,13 +194,11 @@ instance Trivialization.pullback_linear (e : Trivialization F (π E)) [e.isLinea
 #align trivialization.pullback_linear Trivialization.pullback_linear
 
 instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E]
-    (f : K) : VectorBundle 𝕜 F ((f : B' → B) *ᵖ E)
-    where
+    (f : K) : VectorBundle 𝕜 F ((f : B' → B) *ᵖ E) where
   trivialization_linear' := by
     rintro _ ⟨e, he, rfl⟩; skip
     infer_instance
-  continuousOn_coord_change' :=
-    by
+  continuousOn_coord_change' := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩; skip
     refine'
       ((continuousOn_coord_change 𝕜 e e').comp (map_continuous f).ContinuousOn fun b hb => hb).congr
