@@ -91,10 +91,10 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
     _ =o[L] fun x' => x' - x := hf
 
 
-nonrec theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  hg.comp x hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
+  HasFDerivAtFilter.comp x hg hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
 #align has_fderiv_within_at.comp HasFDerivWithinAt.comp
 
 theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
@@ -110,9 +110,9 @@ theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : S
 #align has_fderiv_within_at.comp_of_mem HasFDerivWithinAt.comp_of_mem
 
 /-- The chain rule. -/
-nonrec theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
+theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
-  hg.comp x hf hf.continuousAt
+  HasFDerivAtFilter.comp x hg hf hf.continuousAt
 #align has_fderiv_at.comp HasFDerivAt.comp
 
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
@@ -225,9 +225,9 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     exact ihn.comp x hf hL
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
-protected nonrec theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
+protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt (f^[n]) (f' ^ n) x := by
-  refine' hf.iterate _ hx n
+  refine' HasFDerivAtFilter.iterate hf _ hx n
   -- Porting note: was `convert hf.continuousAt`
   have := hf.continuousAt
   unfold ContinuousAt at this
@@ -235,10 +235,11 @@ protected nonrec theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
   exact hx.symm
 #align has_fderiv_at.iterate HasFDerivAt.iterate
 
-protected nonrec theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
+protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt (f^[n]) (f' ^ n) s x := by
-  refine' hf.iterate _ hx n
+  refine' HasFDerivAtFilter.iterate hf _ hx n
+  rw [_root_.nhdsWithin]
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
 #align has_fderiv_within_at.iterate HasFDerivWithinAt.iterate
