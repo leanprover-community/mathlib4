@@ -841,14 +841,15 @@ of `M × N`. -/
       as an `AddSubmonoid` of `A × B`."]
 def prod (s : Submonoid M) (t : Submonoid N) :
     Submonoid (M × N) where
-  carrier := s ×ˢ t
+  carrier := (s : Set M) ×ˢ (t : Set N)
   one_mem' := ⟨s.one_mem, t.one_mem⟩
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 #align submonoid.prod Submonoid.prod
 #align add_submonoid.prod AddSubmonoid.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Submonoid M) (t : Submonoid N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align submonoid.coe_prod Submonoid.coe_prod
 #align add_submonoid.coe_prod AddSubmonoid.coe_prod

@@ -86,8 +86,8 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
   refine' { open_closure := fun U hU => _ }
-  let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {true}
-  let Z₂ : Set (X × Bool) := closure U ×ˢ {false}
+  let Z₁ : Set (X × Bool) := Uᶜ ×ˢ ({true} : Set Bool)
+  let Z₂ : Set (X × Bool) := closure U ×ˢ ({false} : Set Bool)
   let Z : Set (X × Bool) := Z₁ ∪ Z₂
   have hZ₁₂ : Disjoint Z₁ Z₂ := disjoint_left.2 fun x hx₁ hx₂ => by cases hx₁.2.symm.trans hx₂.2
   have hZ₁ : IsClosed Z₁ := hU.isClosed_compl.prod (T1Space.t1 _)

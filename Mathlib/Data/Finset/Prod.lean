@@ -44,69 +44,66 @@ protected def product (s : Finset α) (t : Finset β) : Finset (α × β) :=
   ⟨_, s.nodup.product t.nodup⟩
 #align finset.product Finset.product
 
---Porting note: Change notation from  "×ˢ" to "×ᶠˢ" to avoid ambiguity
-@[inherit_doc]
-infixr:82
-  " ×ᶠˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
-  Finset.product
+instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
+  sprod := Finset.product
 
 @[simp]
-theorem product_val : (s ×ᶠˢ t).1 = s.1 ×ᵐˢ t.1 :=
+theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
   rfl
 #align finset.product_val Finset.product_val
 
 @[simp]
-theorem mem_product {p : α × β} : p ∈ s ×ᶠˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
+theorem mem_product {p : α × β} : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Multiset.mem_product
 #align finset.mem_product Finset.mem_product
 
-theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ᶠˢ t :=
+theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
   mem_product.2 ⟨ha, hb⟩
 #align finset.mk_mem_product Finset.mk_mem_product
 
 @[simp, norm_cast]
 theorem coe_product (s : Finset α) (t : Finset β) :
-    (↑(s ×ᶠˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
+    (s ×ˢ t : Set (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
   Set.ext fun _ => Finset.mem_product
 #align finset.coe_product Finset.coe_product
 
-theorem subset_product_image_fst [DecidableEq α] : (s ×ᶠˢ t).image Prod.fst ⊆ s := fun i => by
+theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
   simp (config := { contextual := true }) [mem_image]
 #align finset.subset_product_image_fst Finset.subset_product_image_fst
 
-theorem subset_product_image_snd [DecidableEq β] : (s ×ᶠˢ t).image Prod.snd ⊆ t := fun i => by
+theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
   simp (config := { contextual := true }) [mem_image]
 #align finset.subset_product_image_snd Finset.subset_product_image_snd
 
-theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ᶠˢ t).image Prod.fst = s := by
+theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
   simp [mem_image, ht.bex]
 #align finset.product_image_fst Finset.product_image_fst
 
-theorem product_image_snd [DecidableEq β] (ht : s.Nonempty) : (s ×ᶠˢ t).image Prod.snd = t := by
+theorem product_image_snd [DecidableEq β] (ht : s.Nonempty) : (s ×ˢ t).image Prod.snd = t := by
   ext i
   simp [mem_image, ht.bex]
 #align finset.product_image_snd Finset.product_image_snd
 
 theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)} :
-    s ⊆ s.image Prod.fst ×ᶠˢ s.image Prod.snd := fun _ hp =>
+    s ⊆ s.image Prod.fst ×ˢ s.image Prod.snd := fun _ hp =>
   mem_product.2 ⟨mem_image_of_mem _ hp, mem_image_of_mem _ hp⟩
 #align finset.subset_product Finset.subset_product
 
-theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ᶠˢ t ⊆ s' ×ᶠˢ t' := fun ⟨_, _⟩ h =>
+theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s' ×ˢ t' := fun ⟨_, _⟩ h =>
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
 
-theorem product_subset_product_left (hs : s ⊆ s') : s ×ᶠˢ t ⊆ s' ×ᶠˢ t :=
+theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
   product_subset_product hs (Subset.refl _)
 #align finset.product_subset_product_left Finset.product_subset_product_left
 
-theorem product_subset_product_right (ht : t ⊆ t') : s ×ᶠˢ t ⊆ s ×ᶠˢ t' :=
+theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 #align finset.product_subset_product_right Finset.product_subset_product_right
 
 theorem map_swap_product (s : Finset α) (t : Finset β) :
-    (t ×ᶠˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ᶠˢ t :=
+    (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
   coe_injective <| by
     push_cast
     exact Set.image_swap_prod _ _
@@ -114,21 +111,21 @@ theorem map_swap_product (s : Finset α) (t : Finset β) :
 
 @[simp]
 theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    (t ×ᶠˢ s).image Prod.swap = s ×ᶠˢ t :=
+    (t ×ˢ s).image Prod.swap = s ×ˢ t :=
   coe_injective <| by
     push_cast
     exact Set.image_swap_prod _ _
 #align finset.image_swap_product Finset.image_swap_product
 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ᶠˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
+    s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 #align finset.product_eq_bUnion Finset.product_eq_biUnion
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ᶠˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
+    s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
@@ -137,34 +134,34 @@ theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : F
 /-- See also `Finset.sup_product_left`. -/
 @[simp]
 theorem product_biUnion [DecidableEq γ] (s : Finset α) (t : Finset β) (f : α × β → Finset γ) :
-    (s ×ᶠˢ t).biUnion f = s.biUnion fun a => t.biUnion fun b => f (a, b) := by
+    (s ×ˢ t).biUnion f = s.biUnion fun a => t.biUnion fun b => f (a, b) := by
   classical simp_rw [product_eq_biUnion, biUnion_biUnion, image_biUnion]
 #align finset.product_bUnion Finset.product_biUnion
 
 @[simp]
-theorem card_product (s : Finset α) (t : Finset β) : card (s ×ᶠˢ t) = card s * card t :=
+theorem card_product (s : Finset α) (t : Finset β) : card (s ×ˢ t) = card s * card t :=
   Multiset.card_product _ _
 #align finset.card_product Finset.card_product
 
 theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
-    ((s ×ᶠˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ᶠˢ t.filter q := by
+    ((s ×ˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ˢ t.filter q := by
   ext ⟨a, b⟩
   simp [mem_filter, mem_product, decide_eq_true_eq, and_comm, and_left_comm, and_assoc]
 #align finset.filter_product Finset.filter_product
 
 theorem filter_product_left (p : α → Prop) [DecidablePred p] :
-    ((s ×ᶠˢ t).filter fun x : α × β => p x.1) = s.filter p ×ᶠˢ t := by
+    ((s ×ˢ t).filter fun x : α × β => p x.1) = s.filter p ×ˢ t := by
   simpa using filter_product p fun _ => true
 #align finset.filter_product_left Finset.filter_product_left
 
 theorem filter_product_right (q : β → Prop) [DecidablePred q] :
-    ((s ×ᶠˢ t).filter fun x : α × β => q x.2) = s ×ᶠˢ t.filter q := by
+    ((s ×ˢ t).filter fun x : α × β => q x.2) = s ×ˢ t.filter q := by
   simpa using filter_product (fun _ : α => true) q
 #align finset.filter_product_right Finset.filter_product_right
 
 theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q : β → Prop)
     [DecidablePred p] [DecidablePred q] :
-    ((s ×ᶠˢ t).filter fun x : α × β => (p x.1) = (q x.2)).card =
+    ((s ×ˢ t).filter fun x : α × β => (p x.1) = (q x.2)).card =
       (s.filter p).card * (t.filter q).card +
         (s.filter (¬ p ·)).card * (t.filter (¬ q ·)).card := by
   classical
@@ -181,100 +178,101 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
 
-theorem empty_product (t : Finset β) : (∅ : Finset α) ×ᶠˢ t = ∅ :=
+theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
   rfl
 #align finset.empty_product Finset.empty_product
 
-theorem product_empty (s : Finset α) : s ×ᶠˢ (∅ : Finset β) = ∅ :=
+theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 #align finset.product_empty Finset.product_empty
 
-theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ᶠˢ t).Nonempty :=
+theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
   let ⟨x, hx⟩ := hs
   let ⟨y, hy⟩ := ht
   ⟨(x, y), mem_product.2 ⟨hx, hy⟩⟩
 #align finset.nonempty.product Finset.Nonempty.product
 
-theorem Nonempty.fst (h : (s ×ᶠˢ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.fst (h : (s ×ˢ t).Nonempty) : s.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.1, (mem_product.1 hxy).1⟩
 #align finset.nonempty.fst Finset.Nonempty.fst
 
-theorem Nonempty.snd (h : (s ×ᶠˢ t).Nonempty) : t.Nonempty :=
+theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 #align finset.nonempty.snd Finset.Nonempty.snd
 
 @[simp]
-theorem nonempty_product : (s ×ᶠˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 #align finset.nonempty_product Finset.nonempty_product
 
 @[simp]
-theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ᶠˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   rw [← not_nonempty_iff_eq_empty, nonempty_product, not_and_or, not_nonempty_iff_eq_empty,
     not_nonempty_iff_eq_empty]
 #align finset.product_eq_empty Finset.product_eq_empty
 
 @[simp]
 theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ᶠˢ t = t.map ⟨Prod.mk a, Prod.mk.inj_left _⟩ := by
+    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk.inj_left _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 #align finset.singleton_product Finset.singleton_product
 
 @[simp]
-theorem product_singleton {b : β} : s ×ᶠˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+theorem product_singleton {b : β} :
+    s ×ˢ ({b} : Finset β) = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 #align finset.product_singleton Finset.product_singleton
 
 theorem singleton_product_singleton {a : α} {b : β} :
-    ({a} : Finset α) ×ᶠˢ ({b} : Finset β) = {(a, b)} := by
+    ({a} : Finset α) ×ˢ ({b} : Finset β) = {(a, b)} := by
   simp only [product_singleton, Function.Embedding.coeFn_mk, map_singleton]
 #align finset.singleton_product_singleton Finset.singleton_product_singleton
 
 @[simp]
-theorem union_product [DecidableEq α] [DecidableEq β] : (s ∪ s') ×ᶠˢ t = s ×ᶠˢ t ∪ s' ×ᶠˢ t := by
+theorem union_product [DecidableEq α] [DecidableEq β] : (s ∪ s') ×ˢ t = s ×ˢ t ∪ s' ×ˢ t := by
   ext ⟨x, y⟩
   simp only [or_and_right, mem_union, mem_product]
 #align finset.union_product Finset.union_product
 
 @[simp]
-theorem product_union [DecidableEq α] [DecidableEq β] : s ×ᶠˢ (t ∪ t') = s ×ᶠˢ t ∪ s ×ᶠˢ t' := by
+theorem product_union [DecidableEq α] [DecidableEq β] : s ×ˢ (t ∪ t') = s ×ˢ t ∪ s ×ˢ t' := by
   ext ⟨x, y⟩
   simp only [and_or_left, mem_union, mem_product]
 #align finset.product_union Finset.product_union
 
-theorem inter_product [DecidableEq α] [DecidableEq β] : (s ∩ s') ×ᶠˢ t = s ×ᶠˢ t ∩ s' ×ᶠˢ t := by
+theorem inter_product [DecidableEq α] [DecidableEq β] : (s ∩ s') ×ˢ t = s ×ˢ t ∩ s' ×ˢ t := by
   ext ⟨x, y⟩
   simp only [← and_and_right, mem_inter, mem_product]
 #align finset.inter_product Finset.inter_product
 
-theorem product_inter [DecidableEq α] [DecidableEq β] : s ×ᶠˢ (t ∩ t') = s ×ᶠˢ t ∩ s ×ᶠˢ t' := by
+theorem product_inter [DecidableEq α] [DecidableEq β] : s ×ˢ (t ∩ t') = s ×ˢ t ∩ s ×ˢ t' := by
   ext ⟨x, y⟩
   simp only [← and_and_left, mem_inter, mem_product]
 #align finset.product_inter Finset.product_inter
 
 theorem product_inter_product [DecidableEq α] [DecidableEq β] :
-    s ×ᶠˢ t ∩ s' ×ᶠˢ t' = (s ∩ s') ×ᶠˢ (t ∩ t') := by
+    s ×ˢ t ∩ s' ×ˢ t' = (s ∩ s') ×ˢ (t ∩ t') := by
   ext ⟨x, y⟩
   simp only [and_assoc, and_left_comm, mem_inter, mem_product]
 #align finset.product_inter_product Finset.product_inter_product
 
-theorem disjoint_product : Disjoint (s ×ᶠˢ t) (s' ×ᶠˢ t') ↔ Disjoint s s' ∨ Disjoint t t' := by
+theorem disjoint_product : Disjoint (s ×ˢ t) (s' ×ˢ t') ↔ Disjoint s s' ∨ Disjoint t t' := by
   simp_rw [← disjoint_coe, coe_product, Set.disjoint_prod]
 #align finset.disjoint_product Finset.disjoint_product
 
 @[simp]
 theorem disjUnion_product (hs : Disjoint s s') :
-    s.disjUnion s' hs ×ᶠˢ t = (s ×ᶠˢ t).disjUnion (s' ×ᶠˢ t) (disjoint_product.mpr <| Or.inl hs) :=
+    s.disjUnion s' hs ×ˢ t = (s ×ˢ t).disjUnion (s' ×ˢ t) (disjoint_product.mpr <| Or.inl hs) :=
   eq_of_veq <| Multiset.add_product _ _ _
 #align finset.disj_union_product Finset.disjUnion_product
 
 @[simp]
 theorem product_disjUnion (ht : Disjoint t t') :
-    s ×ᶠˢ t.disjUnion t' ht = (s ×ᶠˢ t).disjUnion (s ×ᶠˢ t') (disjoint_product.mpr <| Or.inr ht) :=
+    s ×ˢ t.disjUnion t' ht = (s ×ˢ t).disjUnion (s ×ˢ t') (disjoint_product.mpr <| Or.inr ht) :=
   eq_of_veq <| Multiset.product_add _ _ _
 #align finset.product_disj_union Finset.product_disjUnion
 
@@ -287,13 +285,13 @@ variable [DecidableEq α] (s t : Finset α)
 /-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
 def diag :=
-  (s ×ᶠˢ s).filter fun a : α × α => a.fst = a.snd
+  (s ×ˢ s).filter fun a : α × α => a.fst = a.snd
 #align finset.diag Finset.diag
 
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
 def offDiag :=
-  (s ×ᶠˢ s).filter fun a : α × α => a.fst ≠ a.snd
+  (s ×ˢ s).filter fun a : α × α => a.fst ≠ a.snd
 #align finset.off_diag Finset.offDiag
 
 variable {s} {x : α × α}
@@ -364,21 +362,21 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 #align finset.off_diag_empty Finset.offDiag_empty
 
 @[simp]
-theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ᶠˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ᶠˢ s)]
+theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
+  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
 #align finset.diag_union_off_diag Finset.diag_union_offDiag
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ᶠˢ s) (s ×ᶠˢ s) (fun a => a.1 = a.2)
+  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
 #align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
 
-theorem product_sdiff_diag : s ×ᶠˢ s \ s.diag = s.offDiag := by
+theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by
   rw [← diag_union_offDiag, union_comm, union_sdiff_self,
     sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _).symm]
 #align finset.product_sdiff_diag Finset.product_sdiff_diag
 
-theorem product_sdiff_offDiag : s ×ᶠˢ s \ s.offDiag = s.diag := by
+theorem product_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
   rw [← diag_union_offDiag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
 #align finset.product_sdiff_off_diag Finset.product_sdiff_offDiag
 
@@ -400,7 +398,7 @@ theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by
 variable {s t}
 
 theorem offDiag_union (h : Disjoint s t) :
-    (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ᶠˢ t ∪ t ×ᶠˢ s :=
+    (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
     exact Set.offDiag_union (disjoint_coe.2 h)
@@ -421,7 +419,7 @@ theorem diag_insert : (insert a s).diag = insert (a, a) s.diag := by
 #align finset.diag_insert Finset.diag_insert
 
 theorem offDiag_insert (has : a ∉ s) :
-    (insert a s).offDiag = s.offDiag ∪ {a} ×ᶠˢ s ∪ s ×ᶠˢ {a} := by
+    (insert a s).offDiag = s.offDiag ∪ ({a} : Finset α) ×ˢ s ∪ s ×ˢ ({a} : Finset α) := by
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 #align finset.off_diag_insert Finset.offDiag_insert
