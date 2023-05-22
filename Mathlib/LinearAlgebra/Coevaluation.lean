@@ -8,9 +8,9 @@ Authors: Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Contraction
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Contraction
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # The coevaluation map on finite dimensional vector spaces
@@ -53,8 +53,7 @@ def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
 theorem coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
       let bV := Basis.ofVectorSpace K V
-      ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.Coord i :=
-  by
+      ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.Coord i := by
   simp only [coevaluation, id]
   rw [(Basis.singleton Unit K).constr_apply_fintype K]
   simp only [Fintype.univ_punit, Finset.sum_const, one_smul, Basis.singleton_repr,
@@ -69,8 +68,7 @@ theorem contractLeft_assoc_coevaluation :
     (contractLeft K V).rtensor _ ∘ₗ
         (TensorProduct.assoc K _ _ _).symm.toLinearMap ∘ₗ
           (coevaluation K V).ltensor (Module.Dual K V) =
-      (TensorProduct.lid K _).symm.toLinearMap ∘ₗ (TensorProduct.rid K _).toLinearMap :=
-  by
+      (TensorProduct.lid K _).symm.toLinearMap ∘ₗ (TensorProduct.rid K _).toLinearMap := by
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply (Basis.ofVectorSpace K V).dualBasis.ext; intro j; apply LinearMap.ext_ring
@@ -89,8 +87,7 @@ theorem contractLeft_assoc_coevaluation :
 theorem contractLeft_assoc_coevaluation' :
     (contractLeft K V).ltensor _ ∘ₗ
         (TensorProduct.assoc K _ _ _).toLinearMap ∘ₗ (coevaluation K V).rtensor V =
-      (TensorProduct.rid K _).symm.toLinearMap ∘ₗ (TensorProduct.lid K _).toLinearMap :=
-  by
+      (TensorProduct.rid K _).symm.toLinearMap ∘ₗ (TensorProduct.lid K _).toLinearMap := by
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply LinearMap.ext_ring; apply (Basis.ofVectorSpace K V).ext; intro j
