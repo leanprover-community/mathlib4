@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Dual
-import Mathbin.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Dual space, linear maps and matrices.
@@ -34,8 +34,7 @@ variable {K V₁ V₂ ι₁ ι₂ : Type _} [Field K] [AddCommGroup V₁] [Modul
 @[simp]
 theorem LinearMap.toMatrix_transpose (u : V₁ →ₗ[K] V₂) :
     LinearMap.toMatrix B₂.dualBasis B₁.dualBasis (Module.Dual.transpose u) =
-      (LinearMap.toMatrix B₁ B₂ u)ᵀ :=
-  by
+      (LinearMap.toMatrix B₁ B₂ u)ᵀ := by
   ext (i j)
   simp only [LinearMap.toMatrix_apply, Module.Dual.transpose_apply, B₁.dual_basis_repr,
     B₂.dual_basis_apply, Matrix.transpose_apply, LinearMap.comp_apply]
@@ -43,8 +42,7 @@ theorem LinearMap.toMatrix_transpose (u : V₁ →ₗ[K] V₂) :
 
 @[simp]
 theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) :
-    Matrix.toLin B₁.dualBasis B₂.dualBasis Mᵀ = Module.Dual.transpose (Matrix.toLin B₂ B₁ M) :=
-  by
+    Matrix.toLin B₁.dualBasis B₂.dualBasis Mᵀ = Module.Dual.transpose (Matrix.toLin B₂ B₁ M) := by
   apply (LinearMap.toMatrix B₁.dual_basis B₂.dual_basis).Injective
   rw [LinearMap.toMatrix_toLin, LinearMap.toMatrix_transpose, LinearMap.toMatrix_toLin]
 #align matrix.to_lin_transpose Matrix.toLin_transpose
