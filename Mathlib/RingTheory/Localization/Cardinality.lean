@@ -8,8 +8,8 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Cardinal.Ordinal
-import Mathbin.RingTheory.Artinian
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Cardinality of localizations
