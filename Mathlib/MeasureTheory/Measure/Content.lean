@@ -26,23 +26,23 @@ We show that:
 * Given a content `λ` on compact sets, let us define a function `λ*` on open sets, by letting
   `λ* U` be the supremum of `λ K` for `K` included in `U`. This is a countably subadditive map that
   vanishes at `∅`. In Halmos (1950) this is called the *inner content* `λ*` of `λ`, and formalized
-  as `inner_content`.
+  as `innerContent`.
 * Given an inner content, we define an outer measure `μ*`, by letting `μ* E` be the infimum of
   `λ* U` over the open sets `U` containing `E`. This is indeed an outer measure. It is formalized
-  as `outer_measure`.
+  as `outerMeasure`.
 * Restricting this outer measure to Borel sets gives a regular measure `μ`.
 
-We define bundled contents as `content`.
+We define bundled contents as `Content`.
 In this file we only work on contents on compact sets, and inner contents on open sets, and both
 contents and inner contents map into the extended nonnegative reals. However, in other applications
 other choices can be made, and it is not a priori clear what the best interface should be.
 
 ## Main definitions
 
-For `μ : content G`, we define
-* `μ.inner_content` : the inner content associated to `μ`.
-* `μ.outer_measure` : the outer measure associated to `μ`.
-* `μ.measure`       : the Borel measure associated to `μ`.
+For `μ : Content G`, we define
+* `μ.innerContent` : the inner content associated to `μ`.
+* `μ.outerMeasure` : the outer measure associated to `μ`.
+* `μ.measure`      : the Borel measure associated to `μ`.
 
 We prove that, on a locally compact space, the measure `μ.measure` is regular.
 
@@ -81,8 +81,8 @@ instance : Inhabited (Content G) :=
       sup_disjoint' := by simp
       sup_le' := by simp }⟩
 
-/-- Although the `to_fun` field of a content takes values in `ℝ≥0`, we register a coercion to
-functions taking values in `ℝ≥0∞` as most constructions below rely on taking suprs and infs, which
+/-- Although the `toFun` field of a content takes values in `ℝ≥0`, we register a coercion to
+functions taking values in `ℝ≥0∞` as most constructions below rely on taking iSups and iInfs, which
 is more convenient in a complete lattice, and aim at constructing a measure. -/
 instance : CoeFun (Content G) fun _ => Compacts G → ℝ≥0∞ :=
   ⟨fun μ s => μ.toFun s⟩
@@ -151,7 +151,7 @@ theorem innerContent_bot : μ.innerContent ⊥ = 0 := by
   rw [this]
 #align measure_theory.content.inner_content_bot MeasureTheory.Content.innerContent_bot
 
-/-- This is "unbundled", because that it required for the API of `induced_outer_measure`. -/
+/-- This is "unbundled", because that is required for the API of `inducedOuterMeasure`. -/
 theorem innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
     μ.innerContent ⟨U, hU⟩ ≤ μ.innerContent ⟨V, hV⟩ :=
   biSup_mono fun _ hK => hK.trans h2
@@ -169,8 +169,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
   rw [← tsub_le_iff_right]; exact le_of_lt h2U
 #align measure_theory.content.inner_content_exists_compact MeasureTheory.Content.innerContent_exists_compact
 
-/-- The inner content of a supremum of opens is at most the sum of the individual inner
-contents. -/
+/-- The inner content of a supremum of opens is at most the sum of the individual inner contents. -/
 theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
@@ -198,8 +197,8 @@ theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
 #align measure_theory.content.inner_content_Sup_nat MeasureTheory.Content.innerContent_iSup_nat
 
 /-- The inner content of a union of sets is at most the sum of the individual inner contents.
-  This is the "unbundled" version of `inner_content_Sup_nat`.
-  It required for the API of `induced_outer_measure`. -/
+  This is the "unbundled" version of `innerContent_iSup_nat`.
+  It is required for the API of `inducedOuterMeasure`. -/
 theorem innerContent_iUnion_nat [T2Space G] ⦃U : ℕ → Set G⦄ (hU : ∀ i : ℕ, IsOpen (U i)) :
     μ.innerContent ⟨⋃ i : ℕ, U i, isOpen_iUnion hU⟩ ≤ ∑' i : ℕ, μ.innerContent ⟨U i, hU i⟩ := by
   have := μ.innerContent_iSup_nat fun i => ⟨U i, hU i⟩
@@ -413,7 +412,7 @@ end OuterMeasure
 section RegularContents
 
 /-- A content `μ` is called regular if for every compact set `K`,
-  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'`. See Paul Halmos (1950), Measure Theory, §54-/
+  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54-/
 def ContentRegular :=
   ∀ ⦃K : TopologicalSpace.Compacts G⦄,
     μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_hK : (K : Set G) ⊆ interior (K' : Set G)), μ K'
@@ -435,7 +434,7 @@ theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSp
 variable [MeasurableSpace G] [T2Space G] [BorelSpace G]
 
 /-- If `μ` is a regular content, then the measure induced by `μ` will agree with `μ`
-  on compact sets.-/
+  on compact sets. -/
 theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
     (K : TopologicalSpace.Compacts G) : μ.measure ↑K = μ K := by
   refine' le_antisymm _ _
