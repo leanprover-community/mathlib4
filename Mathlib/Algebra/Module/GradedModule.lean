@@ -8,10 +8,10 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.GradedAlgebra.Basic
-import Mathbin.Algebra.GradedMulAction
-import Mathbin.Algebra.DirectSum.Decomposition
-import Mathbin.Algebra.Module.BigOperators
+import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Graded Module
@@ -64,8 +64,7 @@ variable [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)] [∀ i, AddCommMonoid 
 
 /-- The piecewise multiplication from the `has_mul` instance, as a bundled homomorphism. -/
 @[simps]
-def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i + j)
-    where
+def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i + j) where
   toFun a :=
     { toFun := fun b => GSmul.smul a b
       map_zero' := GdistribMulAction.smul_zero _
@@ -115,8 +114,7 @@ open AddMonoidHom
 
 -- Almost identical to the proof of `direct_sum.one_mul`
 private theorem one_smul [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, M i) :
-    (1 : ⨁ i, A i) • x = x :=
-  by
+    (1 : ⨁ i, A i) • x = x := by
   suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from AddMonoidHom.congr_fun this x
   apply DirectSum.addHom_ext; intro i xi
   unfold One.one
@@ -126,8 +124,7 @@ private theorem one_smul [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, 
 
 -- Almost identical to the proof of `direct_sum.mul_assoc`
 private theorem mul_smul [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁ i, A i)
-    (c : ⨁ i, M i) : (a * b) • c = a • b • c :=
-  by
+    (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
   suffices
     (-- `λ a b c, (a * b) • c` as a bundled hom
               smulAddMonoidHom
@@ -148,8 +145,7 @@ private theorem mul_smul [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁
 #align direct_sum.gmodule.mul_smul direct_sum.gmodule.mul_smul
 
 /-- The `module` derived from `gmodule A M`. -/
-instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i)
-    where
+instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i) where
   smul := (· • ·)
   one_smul := one_smul _ _
   mul_smul := mul_smul _ _
