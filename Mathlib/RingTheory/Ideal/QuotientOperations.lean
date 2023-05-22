@@ -690,16 +690,12 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
   rfl
 #align double_quot.coe_quot_left_to_quot_supₐ DoubleQuot.coe_quotLeftToQuotSupₐ
 
-set_option maxHeartbeats 1000000 in
-set_option synthInstance.etaExperiment true in
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J) induced by `quot_left_to_quot_sup`,
   where `J'` is the projection of `J` in `A / I`. -/
 def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
   AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
 #align double_quot.quot_quot_to_quot_supₐ DoubleQuot.quotQuotToQuotSupₐ
 
-set_option maxHeartbeats 10000000 in
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
     (quotQuotToQuotSupₐ R I J).toRingHom = quotQuotToQuotSup I J :=
