@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.BilinearForm
-import Mathbin.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # The bilinear form on a tensor product
