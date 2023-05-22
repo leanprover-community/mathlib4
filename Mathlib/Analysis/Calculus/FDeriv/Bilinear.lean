@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.Fderiv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # The derivative of bounded bilinear maps
