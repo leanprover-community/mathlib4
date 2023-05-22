@@ -48,7 +48,7 @@ structure Entry where
   `none` means that the dependency has been filtered out of the table. -/
   deps     : List (Option Nat)
   /-- Whether or not to use this in future deps lists. Generally controlled by the `select` function
-  passed to `explode_core`. Exception: `∀I` may ignore this for introduced hypotheses. -/
+  passed to `explodeCore`. Exception: `∀I` may ignore this for introduced hypotheses. -/
   useAsDep : Bool
 
 /-- Get the `line` for an `Entry` that thas been added to the `Entries` structure. -/

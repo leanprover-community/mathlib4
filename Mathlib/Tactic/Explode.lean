@@ -45,10 +45,10 @@ def ppConst (e : Expr) : MessageData :=
 - `start` is whether we are at the top-level of the expression, which
   causes lambdas to use `Status.sintro` to prevent a layer of nesting.
 -/
-partial def explode_core (select : Expr → MetaM Bool) (includeAllDeps : Bool) (e : Expr)
+partial def explodeCore (select : Expr → MetaM Bool) (includeAllDeps : Bool) (e : Expr)
     (depth : Nat) (entries : Entries) (start : Bool := false) :
     MetaM (Option Entry × Entries) :=
-  explode_core' e depth entries start
+  explodeCore' e depth entries start
 where
   /-- Prepend the `line` of the `Entry` to `deps` if it's not `none`, but if the entry isn't marked
   with `useAsDep` then it's not added to the list at all. -/
@@ -58,7 +58,7 @@ where
     else
       deps
 
-  explode_core' (e : Expr) (depth : Nat) (entries : Entries) (start : Bool := false) :
+  explodeCore' (e : Expr) (depth : Nat) (entries : Entries) (start : Bool := false) :
       MetaM (Option Entry × Entries) := do
     trace[explode] "depth = {depth}, start = {start}, e = {e}"
     let e := e.cleanupAnnotations
@@ -88,7 +88,7 @@ where
           entries' := entries''
           rdeps := some argEntry.line! :: rdeps
         let (bodyEntry?, entries) ←
-          explode_core' body (if start then depth else depth + 1) entries'
+          explodeCore' body (if start then depth else depth + 1) entries'
         rdeps := consDep bodyEntry? rdeps
         let (entry, entries) := entries.add e
           { type     := ← addMessageContext <| ← Meta.inferType e
@@ -113,13 +113,13 @@ where
         if fn.isConst then
           pure (none, entries)
         else
-          explode_core' fn depth entries
+          explodeCore' fn depth entries
       let deps := if fn.isConst then [] else consDep fnEntry? []
 
       let mut entries' := entries
       let mut rdeps := []
       for arg in args do
-        let (appEntry?, entries'') ← explode_core' arg depth entries'
+        let (appEntry?, entries'') ← explodeCore' arg depth entries'
         entries' := entries''
         rdeps := consDep appEntry? rdeps
       let deps := deps ++ rdeps.reverse
@@ -136,10 +136,10 @@ where
       trace[explode] ".letE"
       let varType := varType.cleanupAnnotations
       Meta.withLocalDeclD varName varType fun var => do
-        let (valEntry?, entries) ← explode_core' val depth entries
+        let (valEntry?, entries) ← explodeCore' val depth entries
         -- Add a synonym so that the substituted fvars refer to `valEntry?`
         let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
-        explode_core' (body.instantiate1 var) depth entries
+        explodeCore' (body.instantiate1 var) depth entries
     | _ => do
       -- Right now all of these are caught by this case case:
       --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
@@ -159,7 +159,7 @@ where
 def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let filter (e : Expr) : MetaM Bool :=
     if filterProofs then Meta.isProof e else return true
-  let (_, entries) ← explode_core (start := true) filter false e 0 default
+  let (_, entries) ← explodeCore (start := true) filter false e 0 default
   return entries
 
 open Elab in
@@ -278,7 +278,7 @@ proof displays like [this](http://us.metamath.org/mpeuni/ru.html). The headers o
       like `@foo x y pA pB` where `pA` and `pB` are subproofs.
     * In the Hyp column, suppressed terms are omitted, including terms that ought to be
       suppressed but are not (in particular lambda arguments).
-      With an (unimplemented) configuration option, suppressed terms can be represented using
+      TODO: implement a configuration option to enable representing suppressed terms using
       an `_` rather than a step number.
   * If the head of the proof term is a local constant or lambda, then in this case the Ref will
     say `∀E` for forall-elimination. This happens when you have for example `h : A -> B` and
