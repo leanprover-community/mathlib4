@@ -147,7 +147,7 @@ theorem isAlgebraic_algebraMap_of_isAlgebraic {a : S} :
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 #align is_algebraic_algebra_map_of_is_algebraic isAlgebraic_algebraMap_of_isAlgebraic
 
-/-- This is slightly more general than `is_algebraic_algebra_map_of_is_algebraic` in that it
+/-- This is slightly more general than `isAlgebraic_algebraMap_of_isAlgebraic` in that it
   allows noncommutative intermediate rings `A`. -/
 theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
@@ -155,7 +155,7 @@ theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →�
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
 #align is_algebraic_alg_hom_of_is_algebraic isAlgebraic_algHom_of_isAlgebraic
 
-/-- Transfer `algebra.is_algebraic` across an `alg_equiv`. -/
+/-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
 theorem AlgEquiv.IsAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
     (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
   convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _) ; refine e.apply_symm_apply ?_
@@ -411,14 +411,14 @@ section Pi
 
 variable (R' : Type u) (S' : Type v) (T' : Type w)
 
-/-- This is not an instance as it forms a diamond with `pi.has_smul`.
+/-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
 def Polynomial.hasSmulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
   ⟨fun p f x => eval x p • f x⟩
 #align polynomial.has_smul_pi Polynomial.hasSmulPi
 
-/-- This is not an instance as it forms a diamond with `pi.has_smul`.
+/-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
 noncomputable def Polynomial.hasSmulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
@@ -444,7 +444,7 @@ variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [
 
 -- porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
-/-- This is not an instance for the same reasons as `polynomial.has_smul_pi'`. -/
+/-- This is not an instance for the same reasons as `Polynomial.hasSmulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
   {
     Polynomial.hasSmulPi' R' S'
