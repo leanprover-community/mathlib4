@@ -696,16 +696,9 @@ end Convex
 
 theorem convexHull_toCone_isLeast (s : Set E) :
     IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert (convex_convexHull 𝕜 s).toCone_isLeast
+  convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
-  refine ⟨fun h => (subset_convexHull 𝕜 s) h, fun h => ?_⟩
-
-  refine convexHull_min ?_ ?_ h
-
-  refine ⟨fun h => ?_/-convexHull_min h t.convex-/, ?_/-(subset_convexHull 𝕜 s).trans-/⟩
-  · refine (subset_convexHull 𝕜 s) h
-    sorry
-  · sorry
+  exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 #align convex_hull_to_cone_is_least convexHull_toCone_isLeast
 
 theorem convexHull_toCone_eq_sInf (s : Set E) :
