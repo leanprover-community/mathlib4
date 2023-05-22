@@ -16,13 +16,13 @@ import Mathlib.LinearAlgebra.LinearPMap
 # Convex cones
 
 In a `𝕜`-module `E`, we define a convex cone as a set `s` such that `a • x + b • y ∈ s` whenever
-`x, y ∈ s` and `a, b > 0`. We prove that convex cones form a `complete_lattice`, and define their
-images (`convex_cone.map`) and preimages (`convex_cone.comap`) under linear maps.
+`x, y ∈ s` and `a, b > 0`. We prove that convex cones form a `CompleteLattice`, and define their
+images (`ConvexCone.map`) and preimages (`ConvexCone.comap`) under linear maps.
 
 We define pointed, blunt, flat and salient cones, and prove the correspondence between
 convex cones and ordered modules.
 
-We define `convex.to_cone` to be the minimal cone that includes a given convex set.
+We define `Convex.toCone` to be the minimal cone that includes a given convex set.
 
 ## Main statements
 
@@ -52,7 +52,7 @@ We prove the following theorems:
 
 ## Implementation notes
 
-While `convex 𝕜` is a predicate on sets, `convex_cone 𝕜 E` is a bundled convex cone.
+While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled convex cone.
 
 ## References
 
@@ -70,7 +70,7 @@ open Classical Pointwise
 
 variable {𝕜 E F G : Type _}
 
-/-! ### Definition of `convex_cone` and basic properties -/
+/-! ### Definition of `ConvexCone` and basic properties -/
 
 
 section Definitions
@@ -112,7 +112,7 @@ theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ @mk 𝕜 _ _ _ _ s h₁ h₂ �
   Iff.rfl
 #align convex_cone.mem_mk ConvexCone.mem_mk
 
-/-- Two `convex_cone`s are equal if they have the same elements. -/
+/-- Two `ConvexCone`s are equal if they have the same elements. -/
 @[ext]
 theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
@@ -429,7 +429,7 @@ def toPartialOrder (h₁ : S.Pointed) (h₂ : S.Salient) : PartialOrder E :=
       exact H ba }
 #align convex_cone.to_partial_order ConvexCone.toPartialOrder
 
-/-- A pointed and salient cone defines an `ordered_add_comm_group`. -/
+/-- A pointed and salient cone defines an `OrderedAddCommGroup`. -/
 def toOrderedAddCommGroup (h₁ : S.Pointed) (h₂ : S.Salient) : OrderedAddCommGroup E :=
   { toPartialOrder S h₁ h₂, show AddCommGroup E by infer_instance with
     add_le_add_left := by
@@ -602,7 +602,7 @@ theorem pointed_positive : Pointed (positive 𝕜 E) :=
 /-- The cone of strictly positive elements.
 
 Note that this naming diverges from the mathlib convention of `pos` and `nonneg` due to "positive
-cone" (`convex_cone.positive`) being established terminology for the non-negative elements. -/
+cone" (`ConvexCone.positive`) being established terminology for the non-negative elements. -/
 def strictlyPositive : ConvexCone 𝕜 E where
   carrier := Set.Ioi 0
   smul_mem' _ hc _ (hx : _ < _) := smul_pos hc hx
@@ -708,13 +708,13 @@ Given a convex cone `s` in a vector space `E`, a submodule `p`, and a linear `f 
 that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then there exists a globally defined linear
 function `g : E → ℝ` that agrees with `f` on `p`, and is nonnegative on `s`.
 
-We prove this theorem using Zorn's lemma. `riesz_extension.step` is the main part of the proof.
+We prove this theorem using Zorn's lemma. `RieszExtension.step` is the main part of the proof.
 It says that if the domain `p` of `f` is not the whole space, then `f` can be extended to a larger
 subspace `p ⊔ span ℝ {y}` without breaking the non-negativity condition.
 
-In `riesz_extension.exists_top` we use Zorn's lemma to prove that we can extend `f`
-to a linear map `g` on `⊤ : submodule E`. Mathematically this is the same as a linear map on `E`
-but in Lean `⊤ : submodule E` is isomorphic but is not equal to `E`. In `riesz_extension`
+In `RieszExtension.exists_top` we use Zorn's lemma to prove that we can extend `f`
+to a linear map `g` on `⊤ : Submodule E`. Mathematically this is the same as a linear map on `E`
+but in Lean `⊤ : Submodule E` is isomorphic but is not equal to `E`. In `riesz_extension`
 we use this isomorphism to prove the theorem.
 -/
 
