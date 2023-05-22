@@ -1561,6 +1561,7 @@ import Mathlib.LinearAlgebra.Alternating
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.LinearAlgebra.Determinant
