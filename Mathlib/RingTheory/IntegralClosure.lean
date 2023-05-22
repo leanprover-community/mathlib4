@@ -31,7 +31,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 * `RingHom.IsIntegralElem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
 
 * `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
-                           coefficients in `R`.
+                          coefficients in `R`.
 * `integralClosure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
 -/
 
