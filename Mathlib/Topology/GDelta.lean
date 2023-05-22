@@ -198,7 +198,7 @@ variable [TopologicalSpace α]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
 def residual (α : Type _) [TopologicalSpace α] : Filter α :=
-   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
+  Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 
 instance countableInterFilter_residual : CountableInterFilter (residual α) := by
@@ -219,7 +219,8 @@ theorem residual_of_dense_Gδ {s : Set α} (ho : IsGδ s) (hd : Dense s) : s ∈
 #align residual_of_dense_Gδ residual_of_dense_Gδ
 
 /-- A set is residual iff it includes a countable intersection of dense open sets. -/
-theorem mem_residual_iff {s : Set α} : s ∈ residual α ↔
+theorem mem_residual_iff {s : Set α} :
+    s ∈ residual α ↔
       ∃ S : Set (Set α), (∀ t ∈ S, IsOpen t) ∧ (∀ t ∈ S, Dense t) ∧ S.Countable ∧ ⋂₀ S ⊆ s :=
   mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_setOf, forall_and, and_assoc]
 #align mem_residual_iff mem_residual_iff
