@@ -681,7 +681,7 @@ def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
 
 @[simp]
 theorem quotLeftToQuotSupₐ_toRingHom :
-    (quotLeftToQuotSupₐ R I J).toRingHom = quotLeftToQuotSup I J :=
+    (quotLeftToQuotSupₐ R I J : _ →+* _) = quotLeftToQuotSup I J :=
   rfl
 #align double_quot.quot_left_to_quot_supₐ_to_ring_hom DoubleQuot.quotLeftToQuotSupₐ_toRingHom
 
@@ -698,7 +698,8 @@ def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A 
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
-    (quotQuotToQuotSupₐ R I J).toRingHom = quotQuotToQuotSup I J :=
+    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I) J →+* _) =
+      quotQuotToQuotSup I J :=
   rfl
 #align double_quot.quot_quot_to_quot_supₐ_to_ring_hom DoubleQuot.quotQuotToQuotSupₐ_toRingHom
 
@@ -714,7 +715,8 @@ def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
 #align double_quot.quot_quot_mkₐ DoubleQuot.quotQuotMkₐ
 
 @[simp]
-theorem quotQuotMkₐ_toRingHom : (quotQuotMkₐ R I J).toRingHom = quotQuotMk I J :=
+theorem quotQuotMkₐ_toRingHom :
+    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = quotQuotMk I J :=
   rfl
 #align double_quot.quot_quot_mkₐ_to_ring_hom DoubleQuot.quotQuotMkₐ_toRingHom
 
@@ -731,7 +733,7 @@ def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :
-    (liftSupQuotQuotMkₐ R I J).toRingHom = liftSupQuotQuotMk I J :=
+    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = liftSupQuotQuotMk I J :=
   rfl
 #align double_quot.lift_sup_quot_quot_mkₐ_to_ring_hom DoubleQuot.liftSupQuotQuotMkₐ_toRingHom
 
@@ -748,7 +750,7 @@ def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_toRingEquiv :
-    (quotQuotEquivQuotSupₐ R I J).toRingEquiv = quotQuotEquivQuotSup I J :=
+    (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _) = quotQuotEquivQuotSup I J :=
   rfl
 #align double_quot.quot_quot_equiv_quot_supₐ_to_ring_equiv DoubleQuot.quotQuotEquivQuotSupₐ_toRingEquiv
 
@@ -760,7 +762,8 @@ theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(q
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
-    (quotQuotEquivQuotSupₐ R I J).symm.toRingEquiv = (quotQuotEquivQuotSup I J).symm :=
+    ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
+      (quotQuotEquivQuotSup I J).symm :=
   rfl
 #align double_quot.quot_quot_equiv_quot_supₐ_symm_to_ring_equiv DoubleQuot.quotQuotEquivQuotSupₐ_symm_toRingEquiv
 
@@ -780,7 +783,8 @@ def quotQuotEquivCommₐ :
 
 @[simp]
 theorem quotQuotEquivCommₐ_toRingEquiv :
-    (quotQuotEquivCommₐ R I J).toRingEquiv = quotQuotEquivComm I J :=
+    (quotQuotEquivCommₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _ ⧸ I.map (Quotient.mkₐ R J)) =
+      quotQuotEquivComm I J :=
   -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
   -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
   -- and timing out.
@@ -818,7 +822,7 @@ def quotQuotEquivQuotOfLeₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mk�
 
 @[simp]
 theorem quotQuotEquivQuotOfLeₐ_toRingEquiv (h : I ≤ J) :
-    (quotQuotEquivQuotOfLeₐ R h).toRingEquiv = quotQuotEquivQuotOfLe h :=
+    (quotQuotEquivQuotOfLeₐ R h : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _) = quotQuotEquivQuotOfLe h :=
   rfl
 #align double_quot.quot_quot_equiv_quot_of_leₐ_to_ring_equiv DoubleQuot.quotQuotEquivQuotOfLeₐ_toRingEquiv
 
@@ -831,7 +835,8 @@ theorem coe_quotQuotEquivQuotOfLeₐ (h : I ≤ J) :
 
 @[simp]
 theorem quotQuotEquivQuotOfLeₐ_symm_toRingEquiv (h : I ≤ J) :
-    (quotQuotEquivQuotOfLeₐ R h).symm.toRingEquiv = (quotQuotEquivQuotOfLe h).symm :=
+    ((quotQuotEquivQuotOfLeₐ R h).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
+      (quotQuotEquivQuotOfLe h).symm :=
   rfl
 #align double_quot.quot_quot_equiv_quot_of_leₐ_symm_to_ring_equiv DoubleQuot.quotQuotEquivQuotOfLeₐ_symm_toRingEquiv
 
