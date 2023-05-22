@@ -89,13 +89,15 @@ open Prequotient
 because of the commutative ring laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
-inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equivalence Relation:
+inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equivalence Relation:
   | refl : ∀ x, Relation x x
   | symm : ∀ (x y) (_ : Relation x y), Relation y x
-  | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z), Relation x z -- There's always a `map` Relation
+  | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z), Relation x z
+  -- There's always a `map` Relation
   | map : ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
       Relation (Prequotient.of j' (F.map f x))
-        (Prequotient.of j x)-- Then one Relation per operation, describing the interaction with `of`
+        (Prequotient.of j x)
+  -- Then one Relation per operation, describing the interaction with `of`
   | zero : ∀ j, Relation (Prequotient.of j 0) zero
   | one : ∀ j, Relation (Prequotient.of j 1) one
   | neg : ∀ (j) (x : F.obj j), Relation (Prequotient.of j (-x)) (neg (Prequotient.of j x))
@@ -103,12 +105,14 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
       (add (Prequotient.of j x) (Prequotient.of j y))
   | mul : ∀ (j) (x y : F.obj j),
       Relation (Prequotient.of j (x * y))
-        (mul (Prequotient.of j x) (Prequotient.of j y))-- Then one Relation per argument of each operation
+        (mul (Prequotient.of j x) (Prequotient.of j y))
+  -- Then one Relation per argument of each operation
   | neg_1 : ∀ (x x') (_ : Relation x x'), Relation (neg x) (neg x')
   | add_1 : ∀ (x x' y) (_ : Relation x x'), Relation (add x y) (add x' y)
   | add_2 : ∀ (x y y') (_ : Relation y y'), Relation (add x y) (add x y')
   | mul_1 : ∀ (x x' y) (_ : Relation x x'), Relation (mul x y) (mul x' y)
-  | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')-- And one Relation per axiom
+  | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')
+  -- And one Relation per axiom
   | zero_add : ∀ x, Relation (add zero x) x
   | add_zero : ∀ x, Relation (add x zero) x
   | one_mul : ∀ x, Relation (mul one x) x
