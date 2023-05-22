@@ -26,7 +26,7 @@ following properties:
 * The bundle trivializations in the trivialization atlas should be continuous linear equivs in the
 fibers;
 * For any two trivializations `e`, `e'` in the atlas the transition function considered as a map
-from `B` into `F →L[R] F` is continuous on `e.base_set ∩ e'.base_set` with respect to the operator
+from `B` into `F →L[R] F` is continuous on `e.baseSet ∩ e'.baseSet` with respect to the operator
 norm topology on `F →L[R] F`.
 
 If these conditions are satisfied, we register the typeclass `VectorBundle R F E`.
@@ -51,7 +51,7 @@ We define constructions on vector bundles like pullbacks and direct sums in othe
 ## Implementation notes
 
 The implementation choices in the vector bundle definition are discussed in the "Implementation
-notes" section of `topology.fiber_bundle.basic`.
+notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 
 ## Tags
 Vector bundle
@@ -112,7 +112,7 @@ def linearEquivAt (e : Pretrivialization F (π E)) [e.IsLinear R] (b : B) (hb : 
   map_smul' c v := (e.linear R hb).map_smul c v
 #align pretrivialization.linear_equiv_at Pretrivialization.linearEquivAt
 
-/-- A fiberwise linear map equal to `e` on `e.base_set`. -/
+/-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
 protected def linearMapAt (e : Pretrivialization F (π E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   if hb : b ∈ e.baseSet then e.linearEquivAt R b hb else 0
 #align pretrivialization.linear_map_at Pretrivialization.linearMapAt
@@ -226,7 +226,7 @@ theorem coe_symmₗ (e : Trivialization F (π E)) [e.IsLinear R] (b : B) : ⇑(e
 
 variable (R)
 
-/-- A fiberwise linear map equal to `e` on `e.base_set`. -/
+/-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
 protected def linearMapAt (e : Trivialization F (π E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   e.toPretrivialization.linearMapAt R b
 #align trivialization.linear_map_at Trivialization.linearMapAt
@@ -349,8 +349,9 @@ theorem apply_symm_apply_eq_coordChangeL (e e' : Trivialization F (π E)) [e.IsL
 set_option linter.uppercaseLean3 false in
 #align trivialization.apply_symm_apply_eq_coord_changeL Trivialization.apply_symm_apply_eq_coordChangeL
 
-/-- A version of `coord_change_apply` that fully unfolds `coord_change`. The right-hand side is
-ugly, but has good definitional properties for specifically defined trivializations. -/
+/-- A version of `Trivialization.coordChangeL_apply` that fully unfolds `coordChange`. The
+right-hand side is ugly, but has good definitional properties for specifically defined
+trivializations. -/
 theorem coordChangeL_apply' (e e' : Trivialization F (π E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
     coordChangeL R e e' b y = (e' (e.toLocalHomeomorph.symm (b, y))).2 := by
@@ -396,10 +397,10 @@ variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module
   [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
-/-- The space `total_space E` (for `E : B → Type*` such that each `E x` is a topological vector
-space) has a topological vector space structure with fiber `F` (denoted with
-`VectorBundle R F E`) if around every point there is a fiber bundle trivialization
-which is linear in the fibers. -/
+/-- The space `Bundle.TotalSpace E` (for `E : B → Type _` such that each `E x` is a topological
+vector space) has a topological vector space structure with fiber `F` (denoted with
+`VectorBundle R F E`) if around every point there is a fiber bundle trivialization which is linear
+in the fibers. -/
 class VectorBundle : Prop where
   trivialization_linear' : ∀ (e : Trivialization F (π E)) [MemTrivializationAtlas e], e.IsLinear R
   continuousOn_coord_change' :
@@ -424,7 +425,7 @@ theorem continuousOn_coord_change [VectorBundle R F E] (e e' : Trivialization F 
 
 namespace Trivialization
 
-/-- Forward map of `continuousLinearEquivAt` (only propositionally equal),
+/-- Forward map of `Trivialization.continuousLinearEquivAt` (only propositionally equal),
   defined everywhere (`0` outside domain). -/
 @[simps (config := { fullyApplied := false }) apply]
 def continuousLinearMapAt (e : Trivialization F (π E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
@@ -438,7 +439,7 @@ def continuousLinearMapAt (e : Trivialization F (π E)) [e.IsLinear R] (b : B) :
         fun x => e.mem_source.mpr hb).snd }
 #align trivialization.continuous_linear_map_at Trivialization.continuousLinearMapAt
 
-/-- Backwards map of `continuousLinearEquivAt`, defined everywhere. -/
+/-- Backwards map of `Trivialization.continuousLinearEquivAt`, defined everywhere. -/
 @[simps (config := { fullyApplied := false }) apply]
 def symmL (e : Trivialization F (π E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
@@ -852,9 +853,9 @@ The total space is hence given a topology in such a way that there is a fiber bu
 which the local equivalences are also local homeomorphisms and hence vector bundle trivializations.
 The topology on the fibers is induced from the one on the total space.
 
-The field `exists_coord_change` is stated as an existential statement (instead of 3 separate
-fields), since it depends on propositional information (namely `e e' ∈ pretrivialization_atlas`).
-This makes it inconvenient to explicitly define a `coord_change` function when constructing a
+The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
+fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
+This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
 -- porting note: was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
@@ -873,7 +874,7 @@ namespace VectorPrebundle
 variable {R E F}
 
 /-- A randomly chosen coordinate change on a `VectorPrebundle`, given by
-  the field `exists_coord_change`. -/
+  the field `exists_coordChange`. -/
 def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[R] F :=
   Classical.choose (a.exists_coordChange e he e' he') b
@@ -923,7 +924,7 @@ def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpac
   a.toFiberPrebundle.totalSpaceTopology
 #align vector_prebundle.total_space_topology VectorPrebundle.totalSpaceTopology
 
-/-- Promotion from a `Trivialization` in the `pretrivialization_atlas` of a
+/-- Promotion from a `Pretrivialization` in the `pretrivializationAtlas` of a
 `VectorPrebundle` to a `Trivialization`. -/
 def trivializationOfMemPretrivializationAtlas (a : VectorPrebundle R F E)
     {e : Pretrivialization F (π E)} (he : e ∈ a.pretrivializationAtlas) :
@@ -952,7 +953,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
   a.toFiberPrebundle.totalSpaceMk_preimage_source b
 #align vector_prebundle.total_space_mk_preimage_source VectorPrebundle.totalSpaceMk_preimage_source
 
-/-- Topology on the fibers `E b` induced by the map `E b → E.total_space`. -/
+/-- Topology on the fibers `E b` induced by the map `E b → Bundle.TotalSpace E`. -/
 def fiberTopology (b : B) : TopologicalSpace (E b) :=
   a.toFiberPrebundle.fiberTopology b
 #align vector_prebundle.fiber_topology VectorPrebundle.fiberTopology
@@ -970,7 +971,7 @@ theorem continuous_totalSpaceMk (b : B) :
 #align vector_prebundle.continuous_total_space_mk VectorPrebundle.continuous_totalSpaceMk
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
-`vector_prebundle.vector_bundle`. -/
+`VectorPrebundle.to_vectorBundle`. -/
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology a.fiberTopology :=
   a.toFiberPrebundle.toFiberBundle
 #align vector_prebundle.to_fiber_bundle VectorPrebundle.toFiberBundle
@@ -1044,7 +1045,7 @@ def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL
 
 variable {F}
 
-/-- rewrite `in_coordinates` using continuous linear equivalences. -/
+/-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences. -/
 theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)
     (hx : x ∈ (trivializationAt F E x₀).baseSet) (hy : y ∈ (trivializationAt F' E' y₀).baseSet) :
     inCoordinates F E F' E' x₀ x y₀ y ϕ =
@@ -1056,8 +1057,8 @@ theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 #align continuous_linear_map.in_coordinates_eq ContinuousLinearMap.inCoordinates_eq
 
-/-- rewrite `in_coordinates` in a `VectorBundleCore`. -/
-protected theorem VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
+/-- Rewrite `ContinuousLinearMap.inCoordinates` in a `VectorBundleCore`. -/
+protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
     (Z' : VectorBundleCore 𝕜₂ B' F' ι') {x₀ x : B} {y₀ y : B'} (ϕ : F →SL[σ] F')
     (hx : x ∈ Z.baseSet (Z.indexAt x₀)) (hy : y ∈ Z'.baseSet (Z'.indexAt y₀)) :
     inCoordinates F Z.Fiber F' Z'.Fiber x₀ x y₀ y ϕ =
@@ -1065,7 +1066,7 @@ protected theorem VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCo
         (ϕ.comp <| Z.coordChange (Z.indexAt x₀) (Z.indexAt x) x) := by
   simp_rw [inCoordinates, Z'.trivializationAt_continuousLinearMapAt hy,
     Z.trivializationAt_symmL hx]
-#align continuous_linear_map.vector_bundle_core.in_coordinates_eq ContinuousLinearMap.VectorBundleCore.inCoordinates_eq
+#align continuous_linear_map.vector_bundle_core.in_coordinates_eq VectorBundleCore.inCoordinates_eq
 
 end ContinuousLinearMap
 
