@@ -146,6 +146,30 @@ def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let (_, entries) ← explode_core (start := true) filter true e 0 default
   return entries
 
+open Elab in
+def runExplode (stx : Term) : Command.CommandElabM (Option MessageData) :=
+  withoutModifyingEnv <| Command.runTermElabM fun _ => do
+    let (name?, e, ety) ← elabT stx
+    if e.isSyntheticSorry then
+      return none
+    let entries ← Mathlib.Explode.explode e
+    let fitchTable : MessageData ← Mathlib.Explode.entriesToMessageData entries
+    let eMsg : MessageData := if let some name := name? then name else e
+    addMessageContext m!"{eMsg} : {ety}\n\n{fitchTable}\n"
+where
+  -- Adapted from `#check` implementation
+  elabT (stx : Syntax) : TermElabM (Option Name × Expr × Expr) := do
+    try
+      let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo stx
+      addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
+      let const := ((← getEnv).find? theoremName).get!
+      return (some theoremName, const.value!, const.type)
+    catch _ =>
+      let e ← Term.elabTerm stx none
+      Term.synthesizeSyntheticMVarsNoPostponing
+      let e ← Term.levelMVarToParam (← instantiateMVars e)
+      return (none, e, ← Meta.inferType e)
+
 end Mathlib.Explode
 
 /--
@@ -256,9 +280,6 @@ the proof will be introduced in a group and the indentation will stay fixed. (Th
 brackets are only needed in order to delimit the scope of assumptions, and these assumptions
 have global scope anyway so detailed tracking is not necessary.)
 -/
-elab "#explode " theoremStx:ident : command => Elab.Command.liftTermElabM do
-  let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
-  let const := ((← getEnv).find? theoremStx.getId).get!
-  let entries ← Mathlib.Explode.explode const.value!
-  let fitchTable : MessageData ← Mathlib.Explode.entriesToMessageData entries
-  Lean.logInfo m!"{theoremName} : {const.type}\n\n{fitchTable}\n"
+elab "#explode " stx:term : command => do
+  let some msg ← Mathlib.Explode.runExplode stx | return
+  logInfo msg
