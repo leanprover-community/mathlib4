@@ -26,13 +26,13 @@ form a sub-R-algebra of A.
 
 ## Main definitions
 
-Let `R` be a `comm_ring` and let `A` be an R-algebra.
+Let `R` be a `CommRing` and let `A` be an R-algebra.
 
-* `ring_hom.is_integral_elem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
+* `RingHom.IsIntegralElem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
 
-* `is_integral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
+* `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
                            coefficients in `R`.
-* `integral_closure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
+* `integralClosure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
 -/
 
 
@@ -60,7 +60,7 @@ variable [Algebra R A] (R)
 
 /-- An element `x` of an algebra `A` over a commutative ring `R` is said to be *integral*,
 if it is a root of some monic polynomial `p : R[X]`.
-Equivalently, the element is integral over `R` with respect to the induced `algebra_map` -/
+Equivalently, the element is integral over `R` with respect to the induced `algebraMap` -/
 def IsIntegral (x : A) : Prop :=
   (algebraMap R A).IsIntegralElem x
 #align is_integral IsIntegral
@@ -582,7 +582,7 @@ theorem isIntegral_sup {S T : Subalgebra R A} :
   simp only [← le_integralClosure_iff_isIntegral, sup_le_iff]
 #align is_integral_sup isIntegral_sup
 
-/-- Mapping an integral closure along an `alg_equiv` gives the integral closure. -/
+/-- Mapping an integral closure along an `AlgEquiv` gives the integral closure. -/
 theorem integralClosure_map_algEquiv (f : A ≃ₐ[R] B) :
     (integralClosure R A).map (f : A →ₐ[R] B) = integralClosure R B := by
   ext y
@@ -615,7 +615,7 @@ theorem isIntegral_of_isIntegral_mul_unit {x y : A} {r : R} (hr : algebraMap R A
   (algebraMap R A).is_integral_of_is_integral_mul_unit x y r hr hx
 #align is_integral_of_is_integral_mul_unit isIntegral_of_isIntegral_mul_unit
 
-/-- Generalization of `is_integral_of_mem_closure` bootstrapped up from that lemma -/
+/-- Generalization of `isIntegral_of_mem_closure` bootstrapped up from that lemma -/
 theorem isIntegral_of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x) :
     ∀ x ∈ Subring.closure G, IsIntegral R x := fun _ hx =>
   Subring.closure_induction hx hG isIntegral_zero isIntegral_one (fun _ _ => isIntegral_add)
@@ -805,7 +805,7 @@ end
 
 section IsIntegralClosure
 
-/-- `is_integral_closure A R B` is the characteristic predicate stating `A` is
+/-- `IsIntegralClosure A R B` is the characteristic predicate stating `A` is
 the integral closure of `R` in `B`,
 i.e. that an element of `B` is integral over `R` iff it is an element of (the image of) `A`.
 -/
@@ -1103,8 +1103,8 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
     [IsDomain S] [Algebra R S] (H : Algebra.IsIntegral R S)
     (hRS : Function.Injective (algebraMap R S)) (hS : IsField S) : IsField R := by
   refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha => _⟩
-  -- Let `a_inv` be the inverse of `algebra_map R S a`,
-  -- then we need to show that `a_inv` is of the form `algebra_map R S b`.
+  -- Let `a_inv` be the inverse of `algebraMap R S a`,
+  -- then we need to show that `a_inv` is of the form `algebraMap R S b`.
   obtain ⟨a_inv, ha_inv⟩ := hS.mul_inv_cancel fun h => ha (hRS (_root_.trans h (RingHom.map_zero _).symm))
   -- Let `p : R[X]` be monic with root `a_inv`,
   -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
@@ -1112,7 +1112,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
   obtain ⟨p, p_monic, hp⟩ := H a_inv
   use -∑ i : ℕ in Finset.range p.natDegree, p.coeff i * a ^ (p.natDegree - i - 1)
   -- `q(a) = 0`, because multiplying everything with `a_inv^n` gives `p(a_inv) = 0`.
-  -- TODO: this could be a lemma for `polynomial.reverse`.
+  -- TODO: this could be a lemma for `Polynomial.reverse`.
   have hq : (∑ i : ℕ in Finset.range (p.natDegree + 1), p.coeff i * a ^ (p.natDegree - i)) = 0 :=
     by
     apply (injective_iff_map_eq_zero (algebraMap R S)).mp hRS
@@ -1127,7 +1127,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
       rw [← pow_add a_inv, tsub_add_cancel_of_le (Nat.le_of_lt_succ (Finset.mem_range.mp hi))]
     rw [RingHom.map_pow, this, ← mul_assoc, ← mul_pow, ha_inv, one_pow, one_mul]
   -- Since `q(a) = 0` and `q(a) = q'(a) * a + 1`, we have `a * -q'(a) = 1`.
-  -- TODO: we could use a lemma for `polynomial.div_X` here.
+  -- TODO: we could use a lemma for `Polynomial.divX` here.
   rw [Finset.sum_range_succ_comm, p_monic.coeff_natDegree, one_mul, tsub_self, pow_zero,
     add_eq_zero_iff_eq_neg, eq_comm] at hq
   rw [mul_comm, neg_mul, Finset.sum_mul]
