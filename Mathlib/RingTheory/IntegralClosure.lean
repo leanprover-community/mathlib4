@@ -16,7 +16,6 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.TensorProduct
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Integral closure of a subring.
@@ -36,12 +35,8 @@ Let `R` be a `comm_ring` and let `A` be an R-algebra.
 * `integral_closure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
 -/
 
-set_option autoImplicit false
-open Classical
 
-open BigOperators Polynomial
-
-open Polynomial Submodule
+open Classical BigOperators Polynomial Submodule
 
 section Ring
 
