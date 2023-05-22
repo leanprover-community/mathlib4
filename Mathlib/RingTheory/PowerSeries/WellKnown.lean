@@ -43,25 +43,28 @@ theorem coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /�
 
 @[simp]
 theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
-  rw [← coeff_zero_eq_constant_coeff_apply, coeff_inv_units_sub, zero_add, pow_one]
+  rw [← coeff_zero_eq_constantCoeff_apply, coeff_invUnitsSub, zero_add, pow_one]
 #align power_series.constant_coeff_inv_units_sub PowerSeries.constantCoeff_invUnitsSub
 
 @[simp]
-theorem invUnitsSub_mul_x (u : Rˣ) : invUnitsSub u * x = invUnitsSub u * c R u - 1 := by
+theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
   · simp [n.succ_ne_zero, pow_succ]
-#align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_x
+set_option linter.uppercaseLean3 false in
+#align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
 @[simp]
-theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (c R u - x) = 1 := by
+theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
 #align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
 theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
     map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) := by
   ext
-  simp [← map_pow]
+  simp only [← map_pow, coeff_map, coeff_invUnitsSub, one_divp]
+  rfl
+
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
 
 end Ring
@@ -87,7 +90,7 @@ def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 #align power_series.cos PowerSeries.cos
 
-variable {A A'} (n : ℕ) (f : A →+* A')
+variable {A A' : Type _} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (f : A →+* A')
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
@@ -96,26 +99,31 @@ theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
 
 @[simp]
 theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
-  rw [← coeff_zero_eq_constant_coeff_apply, coeff_exp]
+  rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
+set_option linter.deprecated false in
 @[simp]
-theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by rw [sin, coeff_mk, if_pos (even_bit0 n)]
+theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
+  rw [sin, coeff_mk, if_pos (even_bit0 n)]
 #align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
 
+set_option linter.deprecated false in
 @[simp]
 theorem coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
   rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
 
+set_option linter.deprecated false in
 @[simp]
 theorem coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
   rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
 
+set_option linter.deprecated false in
 @[simp]
 theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
   rw [cos, coeff_mk, if_neg n.not_even_bit1]
@@ -150,9 +158,11 @@ variable {A : Type _} [CommRing A]
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
-  ext
-  simp only [coeff_mul, exp, rescale, coeff_mk, coe_mk, factorial,
-    nat.sum_antidiagonal_eq_sum_range_succ_mk, add_pow, sum_mul]
+  ext n
+
+  simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, OneHom.coe_mk, coe_mk,
+    factorial, Nat.sum_antidiagonal_eq_sum_range_succ_mk, add_pow, sum_mul]
+
   apply sum_congr rfl
   rintro x hx
   suffices
@@ -163,11 +173,11 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
   refine' RingHom.congr_arg _ _
-  rw [mul_one_div ↑(n.choose x) _, one_div_mul_one_div]
+  rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
   norm_cast
-  rw [cast_div_char_zero]
+  rw [cast_div_charZero]
   · apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)
   · apply mem_range_succ_iff.1 hx
   · rintro h
@@ -183,23 +193,22 @@ theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction' k with k h
-  ·
-    simp only [rescale_zero, constant_coeff_exp, Function.comp_apply, map_one, cast_zero, pow_zero,
-      coe_comp]
-  simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one, id_apply,
-    rescale_one] using pow_succ' (exp A) k
+  · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
+      pow_zero (exp A), coe_comp]
+  · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
+    id_apply, rescale_one] using pow_succ' (exp A) k
 #align power_series.exp_pow_eq_rescale_exp PowerSeries.exp_pow_eq_rescale_exp
 
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
 theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
-    ((Finset.range n).Sum fun k => exp A ^ k) =
-      PowerSeries.mk fun p => (Finset.range n).Sum fun k => k ^ p * algebraMap ℚ A p.factorial⁻¹ :=
-  by
+    ((Finset.range n).sum fun k => exp A ^ k) =
+      PowerSeries.mk fun p => (Finset.range n).sum
+        fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
-  simp only [one_div, coeff_mk, coe_mk, coeff_exp, factorial, LinearMap.map_sum]
+  simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    coeff_exp, factorial, LinearMap.map_sum]
 #align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
 end PowerSeries
-
