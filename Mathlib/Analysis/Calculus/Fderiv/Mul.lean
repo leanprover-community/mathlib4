@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Bilinear
+import Mathlib.Analysis.Calculus.Fderiv.Bilinear
 
 /-!
 # Multiplicative operations on derivatives
@@ -290,8 +290,7 @@ theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
 #align has_strict_fderiv_at.mul' HasStrictFDerivAt.mul'
 
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
-    HasStrictFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x :=
-  by
+    HasStrictFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
@@ -304,8 +303,7 @@ theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDeriv
 #align has_fderiv_within_at.mul' HasFDerivWithinAt.mul'
 
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
-    HasFDerivWithinAt (fun y => c y * d y) (c x • d' + d x • c') s x :=
-  by
+    HasFDerivWithinAt (fun y => c y * d y) (c x • d' + d x • c') s x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
@@ -317,8 +315,7 @@ theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
 #align has_fderiv_at.mul' HasFDerivAt.mul'
 
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
-    HasFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x :=
-  by
+    HasFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
@@ -395,8 +392,7 @@ theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) 
 #align has_strict_fderiv_at.mul_const' HasStrictFDerivAt.mul_const'
 
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
-    HasStrictFDerivAt (fun y => c y * d) (d • c') x :=
-  by
+    HasStrictFDerivAt (fun y => c y * d) (d • c') x := by
   convert hc.mul_const' d
   ext z
   apply mul_comm
@@ -408,8 +404,7 @@ theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸
 #align has_fderiv_within_at.mul_const' HasFDerivWithinAt.mul_const'
 
 theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸') :
-    HasFDerivWithinAt (fun y => c y * d) (d • c') s x :=
-  by
+    HasFDerivWithinAt (fun y => c y * d) (d • c') s x := by
   convert hc.mul_const' d
   ext z
   apply mul_comm
@@ -421,8 +416,7 @@ theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
 #align has_fderiv_at.mul_const' HasFDerivAt.mul_const'
 
 theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
-    HasFDerivAt (fun y => c y * d) (d • c') x :=
-  by
+    HasFDerivAt (fun y => c y * d) (d • c') x := by
   convert hc.mul_const' d
   ext z
   apply mul_comm
@@ -523,8 +517,7 @@ open NormedRing ContinuousLinearMap Ring
 /-- At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
 operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
-  by
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] fun t : R => t :=
     by
     refine' (inverse_add_norm_diff_second_order x).trans_isLittleO (is_o_norm_norm.mp _)
@@ -533,8 +526,7 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
     convert(Asymptotics.isLittleO_pow_pow h12).comp_tendsto tendsto_norm_zero
     ext
     simp
-  have h_lim : tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) :=
-    by
+  have h_lim : tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
     refine' tendsto_zero_iff_norm_tendsto_zero.mpr _
     exact tendsto_iff_norm_tendsto_zero.mp tendsto_id
   simp only [HasFDerivAt, HasFDerivAtFilter]
