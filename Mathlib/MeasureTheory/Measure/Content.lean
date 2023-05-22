@@ -180,9 +180,9 @@ theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
       rw [Finset.sup_insert, Finset.sum_insert hn]
       exact le_trans (μ.sup_le _ _) (add_le_add_left ih _)
   refine' iSup₂_le fun K hK => _
-  obtain ⟨t, ht⟩ := K.isCompact.elim_finite_subcover _ (fun i => (U i).isOpen) (by rwa [← Opens.coe_iSup])
-  rcases K.isCompact.finite_compact_cover t ((↑) ∘ U) (fun i _ => (U _).isOpen)
-      (by simp only [ht]) with
+  obtain ⟨t, ht⟩ :=
+    K.isCompact.elim_finite_subcover _ (fun i => (U i).isOpen) (by rwa [← Opens.coe_iSup])
+  rcases K.isCompact.finite_compact_cover t (SetLike.coe ∘ U) (fun i _ => (U i).isOpen) ht with
     ⟨K', h1K', h2K', h3K'⟩
   let L : ℕ → Compacts G := fun n => ⟨K' n, h1K' n⟩
   convert le_trans (h3 t L) _
@@ -190,7 +190,7 @@ theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
   refine' le_trans (Finset.sum_le_sum _) (ENNReal.sum_le_tsum t)
-  intro i hi
+  intro i _
   refine' le_trans _ (le_iSup _ (L i))
   refine' le_trans _ (le_iSup _ (h2K' i))
   rfl
