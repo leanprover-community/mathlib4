@@ -81,11 +81,11 @@ It is defined as:
 
 `∑_{i ≤ n} p^i X_i^{p^{n-i}} ∈ R[X_0, X_1, X_2, …]`. -/
 noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
-  ∑ i in range (n + 1), monomial (single i (p ^ (n - i))) (p ^ i : R)
+  ∑ i in range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
 #align witt_polynomial wittPolynomial
 
 theorem wittPolynomial_eq_sum_c_mul_x_pow (n : ℕ) :
-    wittPolynomial p R n = ∑ i in range (n + 1), C (p ^ i : R) * X i ^ p ^ (n - i) := by
+    wittPolynomial p R n = ∑ i in range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
   apply sum_congr rfl
   rintro i -
   rw [monomial_eq, Finsupp.prod_single_index]
@@ -120,7 +120,9 @@ variable {R} {S : Type _} [CommRing S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
-  simp only [wittPolynomial, map_sum, map_monomial, map_natCast f]
+  rw [wittPolynomial, map_sum, wittPolynomial]
+  refine sum_congr rfl fun i _ => ?_
+  rw [map_monomial, RingHom.map_pow, map_natCast]
 #align map_witt_polynomial map_wittPolynomial
 
 variable (R)
@@ -138,53 +140,48 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
-  simp only [wittPolynomial, zero_add, range_one, ge_iff_le, zero_le, tsub_eq_zero_of_le,
-    pow_zero, Nat.cast_pow, sum_singleton]
-  rfl
+  simp only [wittPolynomial, X, sum_singleton, range_one, pow_zero, zero_add, tsub_self]
 #align witt_polynomial_zero wittPolynomial_zero
 
 @[simp]
 theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p := by
   simp only [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm, range_one, sum_singleton,
-    pow_one, pow_zero, Nat.cast_one, C_1, one_mul, Nat.sub_self, tsub_zero]
+    one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 #align witt_polynomial_one wittPolynomial_one
 
 theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
-  simp only [wittPolynomial, ge_iff_le, Nat.cast_pow, AlgHom.map_sum, aeval_monomial, map_pow,
-    map_natCast (algebraMap R A), pow_zero, Finsupp.prod_single_index]
+  simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
 
-/-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
+/-- Over the ring `zmod (p^(n+1))`, we produce the `n+1`st Witt polynomial
 by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]
 theorem wittPolynomial_zMod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_c_mul_x_pow]
-  rw [sum_range_succ, AlgHom.map_sum, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)),
-    C_0, zero_mul, add_zero, sum_congr rfl]
+  rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
+    MulZeroClass.zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
   intro k hk
+  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ]
+  congr
   rw [mem_range] at hk
-  rw [AlgHom.map_mul, AlgHom.map_pow, algHom_C, expand_X, ← pow_mul]
-  congr 2
-  rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm, pow_succ]
+  rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
 #align witt_polynomial_zmod_self wittPolynomial_zMod_self
 
 section PPrime
 
 variable [hp : NeZero p]
 
-theorem wittPolynomial_vars [CharZero R] (n : ℕ) :
-    (wittPolynomial p R n).vars = range (n + 1) := by
-  have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) (p ^ i : R)).vars = {i} := by
+theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
+  have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine' vars_monomial_single i (pow_ne_zero _ hp.1) _
-    rw [Nat.cast_ne_zero]
+    rw [← Nat.cast_pow, Nat.cast_ne_zero]
     exact pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
-  · simp only [this]
-    convert @Finset.biUnion_singleton_eq_self _ (range (n+1)) _
+  · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
     intro a b h
     apply disjoint_singleton_left.mpr
