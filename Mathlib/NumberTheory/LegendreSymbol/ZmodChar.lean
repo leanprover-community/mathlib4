@@ -125,8 +125,8 @@ theorem neg_one_pow_div_two_of_one_mod_four {n : ℕ} (hn : n % 4 = 1) : (-1 : �
 #align zmod.neg_one_pow_div_two_of_one_mod_four ZMod.neg_one_pow_div_two_of_one_mod_four
 
 /-- If `n % 4 = 3`, then `(-1)^(n/2) = -1`. -/
-theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) : (-1 : ℤ) ^ (n / 2) = -1 :=
-  by
+theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
+    (-1 : ℤ) ^ (n / 2) = -1 := by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
   rfl
 #align zmpod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
