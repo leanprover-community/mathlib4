@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.Data.IsROrC.Lemmas
 
 /-!
-# Measurability of the basic `is_R_or_C` functions
+# Measurability of the basic `IsROrC` functions
 
 -/
 
@@ -27,12 +27,12 @@ variable {𝕜 : Type _} [IsROrC 𝕜]
 
 @[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
-  continuous_re.Measurable
+  continuous_re.measurable
 #align is_R_or_C.measurable_re IsROrC.measurable_re
 
 @[measurability]
 theorem measurable_im : Measurable (im : 𝕜 → ℝ) :=
-  continuous_im.Measurable
+  continuous_im.measurable
 #align is_R_or_C.measurable_im IsROrC.measurable_im
 
 end IsROrC
@@ -40,8 +40,6 @@ end IsROrC
 section IsROrCComposition
 
 variable {α 𝕜 : Type _} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
-
-include m
 
 @[measurability]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => IsROrC.re (f x) :=
@@ -63,8 +61,6 @@ theorem AEMeasurable.im (hf : AEMeasurable f μ) : AEMeasurable (fun x => IsROrC
   IsROrC.measurable_im.comp_aemeasurable hf
 #align ae_measurable.im AEMeasurable.im
 
-omit m
-
 end IsROrCComposition
 
 section
@@ -72,27 +68,22 @@ section
 variable {α 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
-theorem IsROrC.measurable_of_real : Measurable (coe : ℝ → 𝕜) :=
-  IsROrC.continuous_ofReal.Measurable
+theorem IsROrC.measurable_of_real : Measurable ((↑) : ℝ → 𝕜) :=
+  IsROrC.continuous_ofReal.measurable
 #align is_R_or_C.measurable_of_real IsROrC.measurable_of_real
 
 theorem measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
     (him : Measurable fun x => IsROrC.im (f x)) : Measurable f := by
-  convert(is_R_or_C.measurable_of_real.comp hre).add
-      ((is_R_or_C.measurable_of_real.comp him).mul_const IsROrC.i)
-  · ext1 x
-    exact (IsROrC.re_add_im _).symm
-  all_goals infer_instance
+  convert Measurable.add (M := 𝕜) (IsROrC.measurable_of_real.comp hre)
+      ((IsROrC.measurable_of_real.comp him).mul_const IsROrC.I)
+  exact (IsROrC.re_add_im _).symm
 #align measurable_of_re_im measurable_of_re_im
 
-theorem aEMeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
+theorem aemeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
     (him : AEMeasurable (fun x => IsROrC.im (f x)) μ) : AEMeasurable f μ := by
-  convert(is_R_or_C.measurable_of_real.comp_ae_measurable hre).add
-      ((is_R_or_C.measurable_of_real.comp_ae_measurable him).mul_const IsROrC.i)
-  · ext1 x
-    exact (IsROrC.re_add_im _).symm
-  all_goals infer_instance
-#align ae_measurable_of_re_im aEMeasurable_of_re_im
+  convert AEMeasurable.add (M := 𝕜) (IsROrC.measurable_of_real.comp_aemeasurable hre)
+      ((IsROrC.measurable_of_real.comp_aemeasurable him).mul_const IsROrC.I)
+  exact (IsROrC.re_add_im _).symm
+#align ae_measurable_of_re_im aemeasurable_of_re_im
 
 end
-
