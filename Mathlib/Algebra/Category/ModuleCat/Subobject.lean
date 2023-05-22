@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.EpiMono
-import Mathlib.Algebra.Category.Module.Kernels
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subobject.Limits
 
@@ -40,17 +40,17 @@ variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
     submodules.-/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
-    { invFun := fun S => S.arrow.range
-      toFun := fun N => Subobject.mk (↾N.Subtype)
+    { invFun := fun S => LinearMap.range S.arrow
+      toFun := fun N => Subobject.mk (↾N.subtype)
       right_inv := fun S =>
         Eq.symm
           (by
             fapply eq_mk_of_comm
             · apply LinearEquiv.toModuleIso'Left
-              apply LinearEquiv.ofBijective (LinearMap.codRestrict S.arrow.range S.arrow _)
+              apply LinearEquiv.ofBijective
+                (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
               constructor
-              ·
-                simpa only [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict] using
+              · simpa only [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict] using
                   ker_eq_bot_of_mono _
               ·
                 rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
@@ -113,4 +113,3 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat
-
