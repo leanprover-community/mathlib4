@@ -403,7 +403,7 @@ vector space) has a topological vector space structure with fiber `F` (denoted w
 in the fibers. -/
 class VectorBundle : Prop where
   trivialization_linear' : ∀ (e : Trivialization F (π E)) [MemTrivializationAtlas e], e.IsLinear R
-  continuousOn_coord_change' :
+  continuousOn_coordChange' :
     ∀ (e e' : Trivialization F (π E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
       ContinuousOn (fun b => Trivialization.coordChangeL R e e' b : B → F →L[R] F)
         (e.baseSet ∩ e'.baseSet)
@@ -416,12 +416,12 @@ instance (priority := 100) trivialization_linear [VectorBundle R F E] (e : Trivi
   VectorBundle.trivialization_linear' e
 #align trivialization_linear trivialization_linear
 
-theorem continuousOn_coord_change [VectorBundle R F E] (e e' : Trivialization F (π E))
+theorem continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (π E))
     [MemTrivializationAtlas e] [MemTrivializationAtlas e'] :
     ContinuousOn (fun b => Trivialization.coordChangeL R e e' b : B → F →L[R] F)
       (e.baseSet ∩ e'.baseSet) :=
-  VectorBundle.continuousOn_coord_change' e e'
-#align continuous_on_coord_change continuousOn_coord_change
+  VectorBundle.continuousOn_coordChange' e e'
+#align continuous_on_coord_change continuousOn_coordChange
 
 namespace Trivialization
 
@@ -771,7 +771,7 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by
     rintro _ ⟨i, rfl⟩
     apply localTriv.isLinear
-  continuousOn_coord_change' := by
+  continuousOn_coordChange' := by
     rintro _ _ ⟨i, rfl⟩ ⟨i', rfl⟩
     refine' (Z.continuousOn_coordChange i i').congr fun b hb => _
     ext v
@@ -988,7 +988,7 @@ theorem to_vectorBundle :
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
       apply linear_trivializationOfMemPretrivializationAtlas
-    continuousOn_coord_change' := by
+    continuousOn_coordChange' := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
