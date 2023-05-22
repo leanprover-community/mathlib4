@@ -381,7 +381,7 @@ Specifically, the following instance cannot be found without this `NormedSpace.t
 example
   (𝕜 ι : Type*) (E : ι → Type*)
   [NormedField 𝕜] [Π i, NormedAddCommGroup (E i)] [Π i, NormedSpace 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by apply_instance
+  Π i, Module 𝕜 (E i) := by infer_instance
 ```
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
@@ -536,7 +536,7 @@ Specifically, the following instance cannot be found without this `NormedSpace.t
 example
   (𝕜 ι : Type*) (E : ι → Type*)
   [NormedField 𝕜] [Π i, NormedRing (E i)] [Π i, NormedAlgebra 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by apply_instance
+  Π i, Module 𝕜 (E i) := by infer_instance
 ```
 
 See `NormedSpace.toModule'` for a similar situation. -/
