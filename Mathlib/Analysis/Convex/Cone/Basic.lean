@@ -294,15 +294,14 @@ theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : 
   rfl
 #align convex_cone.coe_comap ConvexCone.coe_comap
 
-@[simp]
+@[simp] -- porting note: was not a `dsimp` lemma
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
-  SetLike.coe_injective preimage_id
+  rfl
 #align convex_cone.comap_id ConvexCone.comap_id
 
 theorem comap_comap (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 G) :
     (S.comap g).comap f = S.comap (g.comp f) :=
-  SetLike.coe_injective <| by simp only [coe_comap, coe_comp, preimage_comp]
-  -- Porting note: `by simp only [..]` was `preimage.symm`
+  rfl
 #align convex_cone.comap_comap ConvexCone.comap_comap
 
 @[simp]
@@ -481,8 +480,8 @@ theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
 #align convex_cone.mem_add ConvexCone.mem_add
 
 instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
-  zero_add := by intro; ext; simp
-  add_zero := by intro; ext; simp
+  zero_add _ := by ext; simp
+  add_zero _ := by ext; simp
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
@@ -735,7 +734,7 @@ submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ (y : E), y ∈ ⊤ ∧ y ∉ f.domain :=
+  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain :=
     @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
       ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
@@ -843,29 +842,20 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
           N (c • p.1) = c * N p.1 := N_hom c hc p.1
           _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
       add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
-  have := riesz_extension s ((-f).coprod (LinearMap.id.toPMap ⊤)) ?_ ?_
-  obtain ⟨g, g_eq, g_nonneg⟩ := this
-  replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x
-  · intro x y
-    have := g_eq ⟨(x,y), ⟨x.2, trivial⟩⟩
-    simp only [LinearPMap.neg_domain, LinearPMap.coprod_apply, Subtype.coe_eta,
-      LinearPMap.neg_apply, toPMap_apply, id_coe, id_eq] at this
-    rw [this]
-    ring
-    -- simpa only [Subtype.coe_mk, Subtype.coe_eta] using g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩
-  · refine' ⟨-g.comp (inl ℝ E ℝ), _, _⟩ <;> simp only [neg_apply, inl_apply, comp_apply]
-    · intro x
-      simp [g_eq x 0]
-    · intro x
-      have A : (x, N x) = (x, 0) + (0, N x) := by simp
-      have B := g_nonneg ⟨x, N x⟩ (le_refl (N x))
-      rw [A, map_add, ← neg_le_iff_add_nonneg'] at B
-      have C := g_eq 0 (N x)
-      simp only [Submodule.coe_zero, f.map_zero, sub_zero] at C
-      rwa [← C]
-  · exact fun x hx => le_trans (hf _) hx
+  set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
+  have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
+    simpa using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
+  have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s
   · rintro ⟨x, y⟩
     refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
-    simp only [ConvexCone.mem_mk, mem_setOf_eq, Subtype.coe_mk, Prod.fst_add, Prod.snd_add,
-      zero_add, sub_add_cancel, le_rfl]
+    simp only [ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
+      sub_add_cancel, le_rfl]
+  obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
+  replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
+    (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
+  refine ⟨-g.comp (inl ℝ E ℝ), fun x ↦ ?_, fun x ↦ ?_⟩
+  · simp [g_eq x 0]
+  · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]
+      _ = N x - g (x, N x) := by simpa using g_eq 0 (N x)
+      _ ≤ N x := by simpa using g_nonneg ⟨x, N x⟩ (le_refl (N x))
 #align exists_extension_of_le_sublinear exists_extension_of_le_sublinear
