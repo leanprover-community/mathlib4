@@ -263,7 +263,7 @@ theorem commute_monomial {a : R} {n} :
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
-    split_ifs <;> [apply h, rfl]
+    split_ifs <;> [apply h; rfl]
 #align mv_power_series.commute_monomial MvPowerSeries.commute_monomial
 
 protected theorem one_mul : (1 : MvPowerSeries σ R) * φ = φ :=

@@ -140,7 +140,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
   · simp only at h
   · rename_i c cs
     simp only [toList, List.cons.injEq]
-    constructor <;> [rfl, simp [drop_eq]]
+    constructor <;> [rfl; simp [drop_eq]]
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]

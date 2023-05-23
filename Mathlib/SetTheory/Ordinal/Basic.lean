@@ -919,7 +919,7 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
-  induction n <;> [rfl, simp only [card_add, card_one, Nat.cast_succ, *]]
+  induction n <;> [rfl; simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
@@ -962,7 +962,7 @@ instance add_swap_covariantClass_le :
                 constructor <;> intro H
                 · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
                     [rwa [← fo], assumption]
-                · cases H <;> constructor <;> [rwa [fo], assumption]⟩
+                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
 #align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
