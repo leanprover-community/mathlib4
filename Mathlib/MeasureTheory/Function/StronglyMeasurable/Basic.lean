@@ -235,7 +235,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
         · exact min_le_left _ _
         · exact le_min zero_le_one (div_nonneg ((norm_nonneg _).trans hfx) (norm_nonneg _))
       _ = ‖hf.approx n x‖ := by rw [norm_one, one_mul]
-      
+
   rw [← one_smul ℝ (f x)]
   refine' tendsto.smul _ h_tendsto
   have : min 1 (c / ‖f x‖) = 1 := by
@@ -1277,6 +1277,7 @@ protected theorem prod_mk {f : α → β} {g : α → γ} (hf : AeStronglyMeasur
 #align measure_theory.ae_strongly_measurable.prod_mk MeasureTheory.AeStronglyMeasurable.prod_mk
 
 /-- In a space with second countable topology, measurable implies ae strongly measurable. -/
+@[aesop unsafe 30% apply (rule_sets [Measurable])]
 theorem Measurable.aeStronglyMeasurable {m : MeasurableSpace α} {μ : Measure α} [MeasurableSpace β]
     [PseudoMetrizableSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
     (hf : Measurable f) : AeStronglyMeasurable f μ :=
@@ -2039,4 +2040,3 @@ end MeasureTheory
 
 -- Guard against import creep
 assert_not_exists inner_product_space
-
