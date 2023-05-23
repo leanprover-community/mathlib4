@@ -28,11 +28,11 @@ which is constructed in `algebraic_geometry.structure_sheaf`.)
 
 ## Main definitions
 
-* `prime_spectrum R`: The prime spectrum of a commutative ring `R`,
+* `PrimeSpectrum R`: The prime spectrum of a commutative ring `R`,
   i.e., the set of all prime ideals of `R`.
 * `zero_locus s`: The zero locus of a subset `s` of `R`
-  is the subset of `prime_spectrum R` consisting of all prime ideals that contain `s`.
-* `vanishing_ideal t`: The vanishing ideal of a subset `t` of `prime_spectrum R`
+  is the subset of `PrimeSpectrum R` consisting of all prime ideals that contain `s`.
+* `vanishing_ideal t`: The vanishing ideal of a subset `t` of `PrimeSpectrum R`
   is the intersection of points in `t` (viewed as prime ideals).
 
 ## Conventions
@@ -132,7 +132,7 @@ of the ring that contain the set `s`.
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
 At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in the quotient ring
 `R` modulo the prime ideal `x`. In this manner, `zero_locus s` is exactly the subset of
-`prime_spectrum R` where all "functions" in `s` vanish simultaneously.
+`PrimeSpectrum R` where all "functions" in `s` vanish simultaneously.
 -/
 def zeroLocus (s : Set R) : Set (PrimeSpectrum R) :=
   { x | s ⊆ x.asIdeal }
@@ -908,7 +908,7 @@ section Order
 /-!
 ## The specialization order
 
-We endow `prime_spectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
+We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/
 
 
