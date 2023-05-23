@@ -183,7 +183,7 @@ theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b =
   support_single_subset h
 #align hahn_series.eq_of_mem_support_single HahnSeries.eq_of_mem_support_single
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 #align hahn_series.single_eq_zero HahnSeries.single_eq_zero
@@ -631,7 +631,8 @@ instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R)
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPwo_support_addAntidiagonal.mono h }
 
-@[simp]
+/-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
+failures elsewhere-/
 theorem mul_coeff [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} :
     (x * y).coeff a =
       ∑ ij in addAntidiagonal x.isPwo_support y.isPwo_support a, x.coeff ij.fst * y.coeff ij.snd :=
@@ -689,7 +690,7 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
 theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
     {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
   by_cases hr : r = 0
-  · simp [hr]
+  · simp [hr, mul_coeff]
   simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
   · simp only [hx, MulZeroClass.mul_zero]
@@ -718,7 +719,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
 theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
     {b : Γ} : (x * single b r).coeff (a + b) = x.coeff a * r := by
   by_cases hr : r = 0
-  · simp [hr]
+  · simp [hr, mul_coeff]
   simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
   · simp only [hx, MulZeroClass.zero_mul]
@@ -767,14 +768,14 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
   intro x hx
   contrapose! hx
   simp only [not_nonempty_iff_eq_empty, Ne.def, Set.mem_setOf_eq] at hx
-  simp [hx]
+  simp [hx, mul_coeff]
 #align hahn_series.support_mul_subset_add_support HahnSeries.support_mul_subset_add_support
 
 theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.coeff x.order * y.coeff y.order := by
-  by_cases hx : x = 0; · simp [hx]
-  by_cases hy : y = 0; · simp [hy]
+  by_cases hx : x = 0; · simp [hx, mul_coeff]
+  by_cases hy : y = 0; · simp [hy, mul_coeff]
   rw [order_of_ne hx, order_of_ne hy, mul_coeff, Finset.addAntidiagonal_min_add_min,
     Finset.sum_singleton]
 #align hahn_series.mul_coeff_order_add_order HahnSeries.mul_coeff_order_add_order
@@ -815,10 +816,10 @@ instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries �
     mul := (· * ·)
     zero_mul := fun _ => by
       ext
-      simp
+      simp [mul_coeff]
     mul_zero := fun _ => by
       ext
-      simp }
+      simp [mul_coeff] }
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
@@ -962,12 +963,12 @@ def C : R →+* HahnSeries Γ R where
   map_mul' x y := by rw [single_mul_single, zero_add]
 #align hahn_series.C HahnSeries.C
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem C_zero : C (0 : R) = (0 : HahnSeries Γ R) :=
   C.map_zero
 #align hahn_series.C_zero HahnSeries.C_zero
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
   C.map_one
 #align hahn_series.C_one HahnSeries.C_one
@@ -1173,7 +1174,8 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 #align hahn_series.of_power_series_injective HahnSeries.ofPowerSeries_injective
 
-@[simp]
+/-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
+failures elsewhere-/
 theorem ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain
@@ -1185,7 +1187,7 @@ theorem ofPowerSeries_apply (x : PowerSeries R) :
 #align hahn_series.of_power_series_apply HahnSeries.ofPowerSeries_apply
 
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
-    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff R n x := by simp
+    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff R n x := by simp [ofPowerSeries_apply]
 #align hahn_series.of_power_series_apply_coeff HahnSeries.ofPowerSeries_apply_coeff
 
 @[simp]
