@@ -601,7 +601,7 @@ def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree
   basis := powerBasisAux hf
-  basis_eq_pow := Basis.mk_apply _ sorry  -- porting note: was `_` in mathlib3
+  basis_eq_pow := by simp [powerBasisAux]
 #align adjoin_root.power_basis AdjoinRoot.powerBasis
 
 theorem minpoly_powerBasis_gen (hf : f ≠ 0) :
