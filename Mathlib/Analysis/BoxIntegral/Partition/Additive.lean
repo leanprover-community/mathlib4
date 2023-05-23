@@ -70,7 +70,7 @@ initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 
 #noalign box_integral.box_additive_map.to_fun_eq_coe
 
-@[simp]
+-- Porting note: Left-hand side has variable as head symbol @[simp]
 theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 #align box_integral.box_additive_map.coe_mk BoxIntegral.BoxAdditiveMap.coe_mk
 
@@ -109,7 +109,7 @@ instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
-@[simp]
+-- Porting note: LHS not in simp normal form due to Option.elim' @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
     (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I := by
   rw [← f.sum_partition_boxes hI (isPartitionSplit I i x), sum_split_boxes]
