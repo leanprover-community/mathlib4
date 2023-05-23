@@ -1234,7 +1234,7 @@ theorem ofPowerSeries_x_pow {R} [CommSemiring R] (n : ℕ) :
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Fintype σ` as this is more natural for alignment with `MvPowerSeries`.
-After importing `algebra.order.pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
+After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
  -/
 @[simps]
 def toMvPowerSeries {σ : Type _} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
@@ -1493,7 +1493,7 @@ instance : AddCommMonoid (SummableFamily Γ R α) where
     ext
     apply add_assoc
 
-/-- The infinite sum of a `summable_family` of Hahn series. -/
+/-- The infinite sum of a `SummableFamily` of Hahn series. -/
 def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
   coeff g := ∑ᶠ i, (s i).coeff g
   isPwo_support' :=
