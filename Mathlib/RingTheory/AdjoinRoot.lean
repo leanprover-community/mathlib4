@@ -904,7 +904,7 @@ then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ideal R) :
     (S ⧸ I.map (algebraMap R S)) ≃ₐ[R]
       Polynomial (R ⧸ I) ⧸
-        Ideal.span ({(minpoly R pb).map I.Quotient.mk} : Set (Polynomial (R ⧸ I))) :=
+        Ideal.span ({(minpoly R pb).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=
   (ofRingEquiv
         (show
           ∀ x,
