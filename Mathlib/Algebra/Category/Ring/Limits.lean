@@ -368,7 +368,8 @@ instance (F : J ⥤ RingCatMax.{v, u}) :
   { pt := RingCat.of (Types.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => SemiRingCat.ofHom _
-        naturality := (SemiRingCat.HasLimits.limitCone (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).π.naturality } }
+        naturality := (SemiRingCat.HasLimits.limitCone
+          (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).π.naturality } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -512,8 +513,8 @@ instance (F : J ⥤ CommRingCatMax.{v, u}) :
       π :=
         { app := fun x => ofHom <|
               SemiRingCat.limitπRingHom.{v, u}
-                (F ⋙
-                  forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u} ⋙ forget₂ RingCatMax.{v, u} SemiRingCatMax.{v, u}) x
+                (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u} ⋙
+                  forget₂ RingCatMax.{v, u} SemiRingCatMax.{v, u}) x
           naturality :=
             (SemiRingCat.HasLimits.limitCone.{v, u}
                   (F ⋙
@@ -527,7 +528,8 @@ instance (F : J ⥤ CommRingCatMax.{v, u}) :
         IsLimit.ofFaithful (forget₂ _ RingCatMax.{v, u})
           (RingCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}))
           (fun s : Cone F => ofHom <|
-              (RingCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u})).lift
+              (RingCat.limitConeIsLimit.{v, u}
+                (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u})).lift
                 ((forget₂ _ RingCatMax.{v, u}).mapCone s)) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `CommRing`.
