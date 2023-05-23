@@ -20,13 +20,13 @@ In this file we prove the analytic Hahn-Banach theorem. For any continuous linea
 subspace, we can extend it to a function on the entire space without changing its norm.
 
 We prove
-* `real.exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed
+* `Real.exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed
   spaces over `ℝ`.
 * `exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed spaces
   over `ℝ` or `ℂ`.
 
 In order to state and prove the corollaries uniformly, we prove the statements for a field `𝕜`
-satisfying `is_R_or_C 𝕜`.
+satisfying `IsROrC 𝕜`.
 
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
@@ -49,15 +49,13 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
       (fun x y => _) fun x => le_trans (le_abs_self _) (f.le_op_norm _) with
     ⟨g, g_eq, g_le⟩
   set g' :=
-    g.mk_continuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
+    g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
   · refine' ⟨g', g_eq, _⟩
-    · apply le_antisymm (g.mk_continuous_norm_le (norm_nonneg f) _)
+    · apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
       refine' f.op_norm_le_bound (norm_nonneg _) fun x => _
       dsimp at g_eq
       rw [← g_eq]
       apply g'.le_op_norm
-  · simp only [← mul_add]
-    exact mul_le_mul_of_nonneg_left (norm_add_le x y) (norm_nonneg f)
 #align real.exists_extension_norm_eq Real.exists_extension_norm_eq
 
 end Real
@@ -68,48 +66,41 @@ open IsROrC
 
 variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisyfing `is_R_or_C 𝕜`. -/
+/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisyfing `IsROrC 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F
   letI : IsScalarTower ℝ 𝕜 F := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ F := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
-  let fr := re_clm.comp (f.restrict_scalars ℝ)
-  have fr_apply : ∀ x, fr x = re (f x) := by
-    intro x
-    rfl
+  let fr := reClm.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
   -- we'll call `g : F →L[ℝ] ℝ`.
-  rcases Real.exists_extension_norm_eq (p.restrict_scalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
+  rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
   -- Now `g` can be extended to the `F →L[𝕜] 𝕜` we need.
-  refine' ⟨g.extend_to_𝕜, _⟩
+  refine' ⟨g.extendTo𝕜, _⟩
   -- It is an extension of `f`.
-  have h : ∀ x : p, g.extend_to_𝕜 x = f x := by
+  have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
     rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
     have : (fr x : 𝕜) - I * ↑(fr (I • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
       rfl
     rw [this]
     apply ext
-    ·
-      simp only [add_zero, Algebra.id.smul_eq_mul, I_re, of_real_im, AddMonoidHom.map_add, zero_sub,
-        I_im', MulZeroClass.zero_mul, of_real_re, eq_self_iff_true, sub_zero, mul_neg, of_real_neg,
+    · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
+        I_im', MulZeroClass.zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
         mul_re, MulZeroClass.mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
-    ·
-      simp only [Algebra.id.smul_eq_mul, I_re, of_real_im, AddMonoidHom.map_add, zero_sub, I_im',
-        MulZeroClass.zero_mul, of_real_re, mul_neg, mul_im, zero_add, of_real_neg, mul_re,
+    · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
+        MulZeroClass.zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩
-  ·
-    calc
-      ‖g.extend_to_𝕜‖ = ‖g‖ := g.norm_extend_to_𝕜
+  · calc
+      ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
-      _ ≤ ‖re_clm‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
-      _ = ‖f‖ := by rw [re_clm_norm, one_mul]
-      
-  · exact f.op_norm_le_bound g.extend_to_𝕜.op_norm_nonneg fun x => h x ▸ g.extend_to_𝕜.le_op_norm x
+      _ ≤ ‖reClm‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
+      _ = ‖f‖ := by rw [reClm_norm, one_mul]
+  · exact f.op_norm_le_bound g.extendTo𝕜.op_norm_nonneg fun x => h x ▸ g.extendTo𝕜.le_op_norm x
 #align exists_extension_norm_eq exists_extension_norm_eq
 
 end IsROrC
@@ -125,10 +116,11 @@ open ContinuousLinearEquiv Submodule
 open Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  rw [norm_smul, IsROrC.norm_coe_norm, coord_norm, mul_inv_cancel (mt norm_eq_zero.mp h)]
+  rw [norm_smul (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,
+    mul_inv_cancel (mt norm_eq_zero.mp h)]
 #align coord_norm' coord_norm'
 
-/-- Corollary of Hahn-Banach.  Given a nonzero element `x` of a normed space, there exists an
+/-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
     element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   let p : Submodule 𝕜 E := 𝕜 ∙ x
@@ -136,12 +128,10 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
   refine' ⟨g, _, _⟩
   · rw [hg.2, coord_norm']
-  ·
-    calc
+  · calc
       g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
       _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
       _ = ‖x‖ := by simp
-      
 #align exists_dual_vector exists_dual_vector
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
@@ -168,4 +158,3 @@ theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 
 #align exists_dual_vector'' exists_dual_vector''
 
 end DualVector
-
