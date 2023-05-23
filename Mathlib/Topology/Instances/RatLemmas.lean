@@ -21,14 +21,14 @@ compactification.
 
 ## Main statements
 
-- `rat.totally_disconnected_space`: `ℚ` is a totally disconnected space;
+- `Rat.TotallyDisconnectedSpace`: `ℚ` is a totally disconnected space;
 
-- `rat.not_countably_generated_nhds_infty_alexandroff`: the filter of neighbourhoods of infinity in
-  `alexandroff ℚ` is not countably generated.
+- `Rat.not_countably_generated_nhds_infty_alexandroff`: the filter of neighbourhoods of infinity in
+  `Alexandroff ℚ` is not countably generated.
 
 ## Notation
 
-- `ℚ∞` is used as a local notation for `alexandroff ℚ`
+- `ℚ∞` is used as a local notation for `Alexandroff ℚ`
 -/
 
 
@@ -40,6 +40,10 @@ open Topology Alexandroff
 local notation "ℚ∞" => Alexandroff ℚ
 
 namespace Rat
+
+set_option maxHeartbeats 0
+example (p q :Prop) (h : p ∨ q) (g : ¬ p) : q := by
+  simp_all only [false_or]
 
 variable {p q : ℚ} {s t : Set ℚ}
 
@@ -87,11 +91,16 @@ instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
   by_contra' H : x ≠ y
   wlog hlt : x < y
-  · exact this s hs y hy x hx H.symm (H.lt_or_lt.resolve_left hlt)
+  . refine' this s hs y hy x hx H.symm _
+    . assumption
+    . assumption
+    . assumption
+    . assumption
+    . exact H.lt_or_lt.resolve_left hlt
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
-  have := hs.image coe continuous_coe_real.continuous_on
+  have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this
-  have : z ∈ coe '' s := this.out (mem_image_of_mem _ hx) (mem_image_of_mem _ hy) ⟨hxz.le, hzy.le⟩
+  have : z ∈ Rat.cast '' s := this.out (mem_image_of_mem _ hx) (mem_image_of_mem _ hy) ⟨hxz.le, hzy.le⟩
   exact hz (image_subset_range _ _ this)
 
 end Rat
