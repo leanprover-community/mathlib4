@@ -49,15 +49,16 @@ variable [Semiring R]
 instance : Coe (PowerSeries R) (LaurentSeries R) :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
+/-- Porting note: now a syntactic tautology and not needed elsewhere
 theorem coe_powerSeries (x : PowerSeries R) :
     (x : LaurentSeries R) = HahnSeries.ofPowerSeries ℤ R x :=
   rfl
-#align laurent_series.coe_power_series LaurentSeries.coe_powerSeries
+#align laurent_series.coe_power_series LaurentSeries.coe_powerSeries -/
 
 @[simp]
 theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
     HahnSeries.coeff (x : LaurentSeries R) n = PowerSeries.coeff R n x := by
-  rw [coe_powerSeries, ofPowerSeries_apply_coeff]
+  rw [ofPowerSeries_apply_coeff]
 #align laurent_series.coeff_coe_power_series LaurentSeries.coeff_coe_powerSeries
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
@@ -101,7 +102,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
       add_sub_cancel'_right]
-  · rw [coe_powerSeries, ofPowerSeries_apply, embDomain_notin_range]
+  · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose! h
@@ -114,8 +115,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
   refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
-  rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul,
-    coe_powerSeries]
+  rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 
 end Semiring
@@ -147,7 +147,7 @@ instance of_powerSeries_localization [CommRing R] :
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
-      rw [Int.natAbs_of_nonneg h, ← coe_powerSeries, single_order_mul_powerSeriesPart]
+      rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
     · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
@@ -186,17 +186,17 @@ open LaurentSeries
 
 variable {R' : Type _} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 #align power_series.coe_zero PowerSeries.coe_zero
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
   (ofPowerSeries ℤ R).map_one
 #align power_series.coe_one PowerSeries.coe_one
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
@@ -211,7 +211,7 @@ theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 #align power_series.coe_mul PowerSeries.coe_mul
@@ -222,28 +222,27 @@ theorem coeff_coe (i : ℤ) :
   cases i
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries,
       if_neg (Int.coe_nat_nonneg _).not_lt, Int.natAbs_ofNat]
-  · rw [coe_powerSeries, ofPowerSeries_apply, embDomain_notin_image_support,
-      if_pos (Int.negSucc_lt_zero _)]
+  · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
-@[simp] -- Porting note: `norm_cast` removed because RHS starts with coe
+-- Porting note: simp can prove this, and removed norm_cast attribute
 theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
   ofPowerSeries_C _
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
   ofPowerSeries_X
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
-@[simp] -- Porting note: `norm_cast` removed because RHS starts with coe
+@[simp, norm_cast]
 theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
-    ((r • x : PowerSeries S) : LaurentSeries S) = r • x := by
+    ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
 #align power_series.coe_smul PowerSeries.coe_smul
@@ -259,9 +258,9 @@ theorem coe_bit1 : ((bit1 f : PowerSeries R) : LaurentSeries R) = bit1 f :=
   (ofPowerSeries ℤ R).map_bit1 _
 #align power_series.coe_bit1 PowerSeries.coe_bit1 -/
 
-@[simp] -- Porting note: `norm_cast` removed because RHS starts with coe
-theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = f ^ n :=
-  rfl
+@[simp, norm_cast]
+theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
+  (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow
 
 end PowerSeries
