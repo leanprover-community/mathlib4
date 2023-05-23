@@ -55,7 +55,7 @@ theorem separable_def' (f : R[X]) : f.Separable ↔ ∃ a b : R[X], a * f + b * 
 
 theorem not_separable_zero [Nontrivial R] : ¬Separable (0 : R[X]) := by
   rintro ⟨x, y, h⟩
-  simp only [derivative_zero, MulZeroClass.mul_zero, add_zero, zero_ne_one] at h
+  simp only [derivative_zero, mul_zero, add_zero, zero_ne_one] at h
 #align polynomial.not_separable_zero Polynomial.not_separable_zero
 
 theorem separable_one : (1 : R[X]).Separable :=
@@ -144,7 +144,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
   have : IsCoprime (q * (q * p))
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
-    dsimp [Separable] at hp
+    dsimp only [Separable] at hp
     convert hp using 1
     rw [derivative_mul, derivative_mul]
     ring
@@ -157,10 +157,9 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
   apply multiplicity.pow_dvd_of_le_multiplicity
-  have h := PartENat.add_one_le_of_lt hq
-  change ⟨Part.Dom 1 ∧ Part.Dom 1, fun _h ↦ 2⟩ ≤ multiplicity q p at h
+  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
   rw [and_self] at h
-  apply h
+  exact h
 #align polynomial.multiplicity_le_one_of_separable Polynomial.multiplicity_le_one_of_separable
 
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
@@ -247,6 +246,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
     _ = 1 := by
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ,
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
+set_option linter.uppercaseLean3 false in
 #align polynomial.separable_X_pow_sub_C_unit Polynomial.separable_X_pow_sub_C_unit
 
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
@@ -277,24 +277,21 @@ end IsDomain
 
 section Field
 
-variable {F : Type u} [Field F]
--- Porting note: The declaration of the following variables affects the `wlog` tactic
--- in the proof of `unique_separable_of_irreducible`.
--- {K : Type v} [Field K]
+variable {F : Type u} [Field F] {K : Type v} [Field K]
 
 theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
-    f.Separable ↔ (derivative f) ≠ 0 :=
+    f.Separable ↔ derivative f ≠ 0 :=
   ⟨fun h1 h2 => hf.not_unit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
     EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
       let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
-      have : f ∣ (derivative f) := by
+      have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
       not_lt_of_le (natDegree_le_of_dvd this h) <|
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 #align polynomial.separable_iff_derivative_ne_zero Polynomial.separable_iff_derivative_ne_zero
 
-theorem separable_map {K : Type v} [Field K] (f : F →+* K) {p : F[X]} :
+theorem separable_map (f : F →+* K) {p : F[X]} :
     (p.map f).Separable ↔ p.Separable := by
   simp_rw [separable_def, derivative_map, isCoprime_map]
 #align polynomial.separable_map Polynomial.separable_map
@@ -324,7 +321,7 @@ variable (p : ℕ) [HF : CharP F p]
 
 theorem separable_or {f : F[X]} (hf : Irreducible f) :
     f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f :=
-  if H : (derivative f) = 0 then by
+  if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
     · haveI := CharP.charP_to_charZero F
       have := natDegree_eq_zero_of_derivative_eq_zero H
@@ -383,11 +380,13 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
     (g₁ : F[X]) (hg₁ : g₁.Separable) (hgf₁ : expand F (p ^ n₁) g₁ = f) (n₂ : ℕ) (g₂ : F[X])
     (hg₂ : g₂.Separable) (hgf₂ : expand F (p ^ n₂) g₂ = f) : n₁ = n₂ ∧ g₁ = g₂ := by
   revert g₁ g₂
+  -- Porting note: the variable `K` affects the `wlog` tactic.
+  clear! K
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
   have hf0 : f ≠ 0 := hf.ne_zero
-  intros  g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
+  intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
   rcases hn with ⟨k, rfl⟩
   rw [← hgf₁, pow_add, expand_mul, expand_inj (pow_pos hp n₁)] at hgf₂
@@ -425,8 +424,6 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_separable_iff Polynomial.X_pow_sub_one_separable_iff
 
 section Splits
-
-variable {K : Type v} [Field K]
 
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
@@ -520,7 +517,7 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
 variable {F K : Type _} [CommRing F] [Ring K] [Algebra F K]
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
-  ⟨fun _h x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
+  ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
     ⟨fun x => (h x).1, fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
 
