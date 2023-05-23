@@ -106,7 +106,7 @@ example {X : Type _} [C : Category X] (A : X) : Category (Σ (Z : X), C.Hom A Z)
 -- identities and compositions in C make C' into a category. A subcategory C' is _full_ if
 -- Hom_C'(A, B) = Hom_C(A, B) for all A, B in Obj(C'). Construct a category of infinite sets and
 -- explain how it may be viewed as a full subcategory of Set. [4.4, §VI.1.1, §VIII.1.3]
-instance exercise38 {X : Type _} [C : Category X] (S : Set X) : Category S where
+def exercise38 {X : Type _} [C : Category X] (S : Set X) : Category S where
   Hom a b := C.Hom a b
   id a := 𝟙 a.val
   comp f g := f ≫ g
@@ -114,8 +114,29 @@ instance exercise38 {X : Type _} [C : Category X] (S : Set X) : Category S where
   comp_id := C.comp_id
   assoc := C.assoc
 
-def exercise38full {X : Type _} [Category X] (S : Set X) : Prop :=
-  ∀ a b : S, (a ⟶ b) = (a.val ⟶ b.val)
+instance exercise38' {X : Type _} [C : Category X] (S : Set X) (P : ∀ a b, C.Hom a b → Prop)
+  (hrefl : ∀ a, P a a (𝟙 a)) (htrans : ∀ a b c f g, P a b f → P b c g → P a c (f ≫ g)) :
+    Category S where
+  Hom a b := {f : C.Hom a b // P a b f}
+  id a := ⟨𝟙 a.val, hrefl a⟩
+  comp f g := ⟨f.val ≫ g.val, htrans _ _ _ _ _ f.prop g.prop⟩
+  id_comp := by
+    intros
+    exact Subtype.ext (C.id_comp _)
+  comp_id := by
+    intros
+    exact Subtype.ext (C.comp_id _)
+  assoc := by
+    intros
+    exact Subtype.ext (C.assoc _ _ _)
+
+-- def exercise38full {X : Type _} [Category X] (S : Set X) : Prop :=
+--   ∀ a b : S, (a ⟶ b) = (a.val ⟶ b.val)
+
+def exercise38full' {X : Type _} [C : Category X] (S : Set X) (P : ∀ a b, C.Hom a b → Prop)
+  (_hrefl : ∀ a, P a a (𝟙 a)) (_htrans : ∀ a b c f g, P a b f → P b c g → P a c (f ≫ g))
+  : Prop :=
+  ∀ a b : S, (C.Hom a b) = (a.val ⟶ b.val)
 
 instance : Category (Type u) where
   Hom X Y := X → Y
@@ -126,11 +147,14 @@ instance : Category (Type u) where
   assoc _ _ _ := Function.comp.assoc _ _ _
 
 instance exercise38infinite : Category ({X : Type u | Infinite X}) :=
-  exercise38 ({X : Type u | Infinite X})
+  exercise38' ({X : Type u | Infinite X}) (λ _ _ _ => True) (λ _ => trivial)
+    (λ _ _ _ _ _ _ _ => trivial)
 
 -- this is somehow too easy -- it's because I defined subcategories to have the same Hom
 -- instead of some predicate on Hom
-example : exercise38full {X : Type u | Infinite X} := λ _ _ => rfl
+-- example : exercise38full {X : Type u | Infinite X} := λ _ _ => rfl
+-- and after setting to `exercise38full'`, it's obvious that they're "equal",
+-- it's the subtype by True
 
 -- 3.9 An alternative to the notion of multiset introduced in §2.2 is obtained by considering sets
 -- endowed with equivalence relations; equivalent elements are taken to be multiple instances of
@@ -217,3 +241,9 @@ def example310_up {D : Type _} [hD : Category D] {A B C : D} (α : C ⟶ A) (β 
   assoc := by
     intros
     exact Subtype.ext (hD.assoc _ _ _)
+
+
+example {S : Type u} (r : S → S → Prop) (a b : S) : Subsingleton (example33Hom r a b) := by
+  constructor
+  rintro ⟨⟩ ⟨⟩
+  exact congrArg _ rfl
