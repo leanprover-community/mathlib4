@@ -8,6 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
@@ -169,11 +170,9 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     obtain rfl := eq_of_cmp_eq h₁
     revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
-    dsimp; congr
-    simp only [_root_.cmp, cmpUsing] at h₂ ; dsimp at h₂
-    revert h₂
-    split_ifs with h₃ h₄ <;> intro h₂ <;> try exact False.elim h₂
-    exact lt_by_cases.proof_1 n₁ n₂ h₃ h₄
+    rw [_root_.cmp, cmpUsing_eq_eq] at h₂
+    obtain rfl := Subtype.eq (eq_of_incomp h₂)
+    simp
 #align onote.eq_of_cmp_eq Onote.eq_of_cmp_eq
 
 protected theorem zero_lt_one : (0 : Onote) < 1 := by
