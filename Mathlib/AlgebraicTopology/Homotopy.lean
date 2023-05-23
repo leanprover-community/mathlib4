@@ -7,11 +7,37 @@ open CategoryTheory Limits
 
 namespace CategoryTheory
 
+-- TODO: Do we have such things somewhere?
+
+def isTerminalHom {C : Type _} [Category C] (X Y : C) (hY : IsTerminal Y) :
+    IsTerminal (X ⟶ Y) :=
+  letI : ∀ (W : Type _), Unique (W ⟶ (X ⟶ Y)) := fun W =>
+    { default := fun _ => hY.from _
+      uniq := fun a => by ext ; apply hY.hom_ext }
+  IsTerminal.ofUnique _
+
 def Functor.isTerminalOfObjIsTerminal {C D : Type _} [Category C] [Category D]
     (F : C ⥤ D) (hF : ∀ X : C, IsTerminal (F.obj X)) :
-  IsTerminal F := sorry
+    IsTerminal F :=
+  letI : ∀ (G : C ⥤ D), Unique (G ⟶ F) := fun _ => {
+    default := {
+      app := fun _ => (hF _).from _
+      naturality := fun _ _ _ => (hF _).hom_ext _ _ }
+    uniq := fun _ => NatTrans.ext _ _ <| funext fun _ => (hF _).hom_ext _ _ }
+  IsTerminal.ofUnique _
 
 end CategoryTheory
+
+namespace SimplexCategory
+
+def isTerminalZero : IsTerminal ([0] : SimplexCategory) :=
+  letI : ∀ t : SimplexCategory, Unique (t ⟶ [0]) := fun t => {
+    default := SimplexCategory.Hom.mk <| OrderHom.const _ 0
+    uniq := fun m => SimplexCategory.Hom.ext _ _ <| OrderHom.ext _ _ <|
+      funext fun _ => Fin.ext <| by simp }
+  IsTerminal.ofUnique _
+
+end SimplexCategory
 
 namespace SSet
 
@@ -24,7 +50,7 @@ def i0 : pt ⟶ 𝕀 := SSet.standardSimplex.map (δ 1)
 def i1 : pt ⟶ 𝕀 := SSet.standardSimplex.map (δ 0)
 
 def ptIsTerminal : IsTerminal pt := Functor.isTerminalOfObjIsTerminal _ <|
-  fun t => show IsTerminal (t.unop ⟶ [0]) by sorry
+  fun t => show IsTerminal (t.unop ⟶ [0]) from isTerminalHom _ _ isTerminalZero
 
 def binaryFan (X : SSet.{0}) : BinaryFan pt X :=
   BinaryFan.mk (ptIsTerminal.from X) (𝟙 X)
