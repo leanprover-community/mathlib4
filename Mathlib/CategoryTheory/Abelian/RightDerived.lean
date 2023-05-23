@@ -102,6 +102,7 @@ def Functor.rightDerivedObjInjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X
       (CochainComplex.homologyFunctorSuccSingle₀ D n).app (F.obj X) ≪≫ (Functor.zero_obj _).isoZero
 #align category_theory.functor.right_derived_obj_injective_succ CategoryTheory.Functor.rightDerivedObjInjectiveSucc
 
+set_option maxHeartbeats 0 in
 /-- We can compute a right derived functor on a morphism using a descent of that morphism
 to a cochain map between chosen injective resolutions.
 -/
@@ -113,19 +114,18 @@ theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : 
         (homologyFunctor D _ n).map ((F.mapHomologicalComplex _).map g) ≫
           (F.rightDerivedObjIso n P).inv := by
   dsimp only [Functor.rightDerived, Functor.rightDerivedObjIso]
-  dsimp; simp only [category.comp_id, category.id_comp]
+  dsimp
+  simp only [Category.comp_id, Category.id_comp]
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
   simp only [← Functor.map_comp]
   congr 1
   apply HomotopyCategory.eq_of_homotopy
   apply Functor.mapHomotopy
-  apply Homotopy.trans
-  exact HomotopyCategory.homotopyOutMap _
-  apply InjectiveResolution.desc_homotopy f
+  apply InjectiveResolution.descHomotopy f
   · simp
-  · simp only [InjectiveResolution.homotopy_equiv_hom_ι_assoc]
-    rw [← category.assoc, w, category.assoc]
-    simp only [InjectiveResolution.homotopy_equiv_inv_ι]
+  · simp only [InjectiveResolution.homotopyEquiv_hom_ι_assoc]
+    rw [← Category.assoc, w, Category.assoc]
+    simp only [InjectiveResolution.homotopyEquiv_inv_ι]
 #align category_theory.functor.right_derived_map_eq CategoryTheory.Functor.rightDerived_map_eq
 
 /-- The natural transformation between right-derived functors induced by a natural transformation.-/
@@ -215,10 +215,17 @@ def rightDerivedZeroToSelfApp [EnoughInjectives C] [PreservesFiniteLimits F] {X 
     (P : InjectiveResolution X) : (F.rightDerived 0).obj X ⟶ F.obj X :=
   (rightDerivedObjIso F 0 P).hom ≫
     (homologyIsoKernelDesc _ _ _).hom ≫
-      kernel.map _ _ (cokernel.desc _ (𝟙 _) (by simp)) (𝟙 _)
+      kernel.map _ (((F.mapHomologicalComplex (ComplexShape.up ℕ)).obj P.cocomplex).dFrom 0)
+      (cokernel.desc _ (𝟙 _) (by simp)) (𝟙 _)
           (by
-            ext
+            -- Porting note: was ext; simp
+            apply coequalizer.hom_ext
+            dsimp
             simp) ≫
+        -- Porting note: isIso_kernel_lift_of_exact_of_mono is no longer allowed as an
+        -- instance for reasons am I not privy to
+        have : IsIso <| kernel.lift _ _ (exact_of_map_injectiveResolution F P).w :=
+          isIso_kernel_lift_of_exact_of_mono _ _ (exact_of_map_injectiveResolution F P)
         (asIso (kernel.lift _ _ (exact_of_map_injectiveResolution F P).w)).inv
 #align category_theory.abelian.functor.right_derived_zero_to_self_app CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfApp
 
@@ -239,14 +246,14 @@ theorem rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFinite
     rightDerivedZeroToSelfApp F P ≫ rightDerivedZeroToSelfAppInv F P = 𝟙 _ := by
   dsimp [rightDerivedZeroToSelfApp, rightDerivedZeroToSelfAppInv]
   rw [← Category.assoc, Iso.comp_inv_eq, Category.id_comp, Category.assoc, Category.assoc, ←
-    iso.eq_inv_comp, iso.inv_hom_id]
+    Iso.eq_inv_comp, Iso.inv_hom_id]
   ext
-  rw [category.assoc, category.assoc, homology.lift_ι, category.id_comp, homology.π'_ι,
-    category.assoc, ← category.assoc _ _ (cokernel.π _), abelian.kernel.lift.inv, ← category.assoc,
-    ← category.assoc _ (kernel.ι _), limits.kernel.lift_ι, category.assoc, category.assoc, ←
-    category.assoc (homologyIsoKernelDesc _ _ _).Hom _ _, ← homology.ι, ← category.assoc,
-    homology.π'_ι, category.assoc, ← category.assoc (cokernel.π _), cokernel.π_desc, whisker_eq]
-  convert category.id_comp (cokernel.π _)
+  rw [Category.assoc, Category.assoc, homology.lift_ι, Category.id_comp, homology.π'_ι,
+    Category.assoc, ← Category.assoc _ _ (cokernel.π _), abelian.kernel.lift.inv, ← Category.assoc,
+    ← Category.assoc _ (kernel.ι _), limits.kernel.lift_ι, Category.assoc, Category.assoc, ←
+    Category.assoc (homologyIsoKernelDesc _ _ _).hom _ _, ← homology.ι, ← Category.assoc,
+    homology.π'_ι, Category.assoc, ← Category.assoc (cokernel.π _), cokernel.π_desc, whisker_eq]
+  convert Category.id_comp (cokernel.π _)
 #align category_theory.abelian.functor.right_derived_zero_to_self_app_comp_inv CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfApp_comp_inv
 
 theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
@@ -298,7 +305,7 @@ theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f :
 def rightDerivedZeroIsoSelf [EnoughInjectives C] [PreservesFiniteLimits F] : F.rightDerived 0 ≅ F :=
   Iso.symm <|
     NatIso.ofComponents
-      (fun X => (rightDerivedZeroToSelfAppIso _ (InjectiveResolution.of X)).symm) fun f =>
+      (fun X => (rightDerivedZeroToSelfAppIso _ (InjectiveResolution.of X)).symm) fun _ =>
       rightDerivedZeroToSelf_natural _ _ _ _
 #align category_theory.abelian.functor.right_derived_zero_iso_self CategoryTheory.Abelian.Functor.rightDerivedZeroIsoSelf
 
