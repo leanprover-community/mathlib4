@@ -8,11 +8,11 @@ Authors: Jujian Zhang, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.InjectiveResolution
-import Mathbin.Algebra.Homology.Additive
-import Mathbin.CategoryTheory.Limits.Constructions.EpiMono
-import Mathbin.CategoryTheory.Abelian.Homology
-import Mathbin.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.InjectiveResolution
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Abelian.Homology
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Right-derived functors
@@ -111,8 +111,7 @@ theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : 
     (F.rightDerived n).map f =
       (F.rightDerivedObjIso n Q).Hom ≫
         (homologyFunctor D _ n).map ((F.mapHomologicalComplex _).map g) ≫
-          (F.rightDerivedObjIso n P).inv :=
-  by
+          (F.rightDerivedObjIso n P).inv := by
   dsimp only [functor.right_derived, functor.right_derived_obj_iso]
   dsimp; simp only [category.comp_id, category.id_comp]
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
@@ -139,8 +138,7 @@ def NatTrans.rightDerived {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ 
 
 @[simp]
 theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
-    NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) :=
-  by
+    NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) := by
   simp [nat_trans.right_derived]
   rfl
 #align category_theory.nat_trans.right_derived_id CategoryTheory.NatTrans.rightDerived_id
@@ -160,8 +158,7 @@ theorem NatTrans.rightDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α :
     (NatTrans.rightDerived α n).app X =
       (F.rightDerivedObjIso n P).Hom ≫
         (homologyFunctor D _ n).map ((NatTrans.mapHomologicalComplex α _).app P.cocomplex) ≫
-          (G.rightDerivedObjIso n P).inv :=
-  by
+          (G.rightDerivedObjIso n P).inv := by
   symm
   dsimp [nat_trans.right_derived, functor.right_derived_obj_iso]
   simp only [category.comp_id, category.id_comp]
@@ -239,8 +236,7 @@ def rightDerivedZeroToSelfAppInv [EnoughInjectives C] {X : C} (P : InjectiveReso
 
 theorem rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) :
-    right_derived_zero_to_self_app F P ≫ right_derived_zero_to_self_app_inv F P = 𝟙 _ :=
-  by
+    right_derived_zero_to_self_app F P ≫ right_derived_zero_to_self_app_inv F P = 𝟙 _ := by
   dsimp [right_derived_zero_to_self_app, right_derived_zero_to_self_app_inv]
   rw [← category.assoc, iso.comp_inv_eq, category.id_comp, category.assoc, category.assoc, ←
     iso.eq_inv_comp, iso.inv_hom_id]
@@ -255,8 +251,7 @@ theorem rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFinite
 
 theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) :
-    right_derived_zero_to_self_app_inv F P ≫ right_derived_zero_to_self_app F P = 𝟙 _ :=
-  by
+    right_derived_zero_to_self_app_inv F P ≫ right_derived_zero_to_self_app F P = 𝟙 _ := by
   dsimp [right_derived_zero_to_self_app, right_derived_zero_to_self_app_inv]
   rw [← category.assoc _ (F.right_derived_obj_iso 0 P).Hom,
     category.assoc _ _ (F.right_derived_obj_iso 0 P).Hom, iso.inv_hom_id, category.comp_id, ←
@@ -270,8 +265,7 @@ theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteL
 /-- Given `P : InjectiveResolution X`, the isomorphism `(F.right_derived 0).obj X ≅ F.obj X` if
 `preserves_finite_limits F`. -/
 def rightDerivedZeroToSelfAppIso [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
-    (P : InjectiveResolution X) : (F.rightDerived 0).obj X ≅ F.obj X
-    where
+    (P : InjectiveResolution X) : (F.rightDerived 0).obj X ≅ F.obj X where
   Hom := right_derived_zero_to_self_app _ P
   inv := right_derived_zero_to_self_app_inv _ P
   hom_inv_id' := right_derived_zero_to_self_app_comp_inv _ P
@@ -283,8 +277,7 @@ naturality of the square given by `right_derived_zero_to_self_natural`. -/
 theorem rightDerived_zero_to_self_natural [EnoughInjectives C] {X : C} {Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y) :
     F.map f ≫ right_derived_zero_to_self_app_inv F Q =
-      right_derived_zero_to_self_app_inv F P ≫ (F.rightDerived 0).map f :=
-  by
+      right_derived_zero_to_self_app_inv F P ≫ (F.rightDerived 0).map f := by
   dsimp [right_derived_zero_to_self_app_inv]
   simp only [CategoryTheory.Functor.map_id, category.id_comp, ← category.assoc]
   rw [iso.comp_inv_eq, right_derived_map_eq F 0 f (InjectiveResolution.desc f Q P) (by simp),
