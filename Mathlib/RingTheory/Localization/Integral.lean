@@ -16,14 +16,13 @@ import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.NonZeroDivisors
--- import Mathlib.Tactic.RingExp
 
 /-!
 # Integral and algebraic elements of a fraction field
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
