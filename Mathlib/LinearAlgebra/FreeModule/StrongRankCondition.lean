@@ -8,8 +8,8 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Charpoly.Basic
-import Mathbin.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 
@@ -41,8 +41,7 @@ variable (R : Type _) [CommRing R] [Nontrivial R]
 open Polynomial Function Fin LinearMap
 
 /-- Any commutative ring satisfies the `strong_rank_condition`. -/
-instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R :=
-  by
+instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬injective f by
     rwa [strongRankCondition_iff_succ R]
   intro n f
@@ -56,8 +55,7 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
   have hnex : ¬∃ i : Fin n, cast_succ i = last n := fun ⟨i, hi⟩ => ne_of_lt (cast_succ_lt_last i) hi
   let a₀ := (minpoly R g).coeff 0
   have : a₀ ≠ 0 := minpoly_coeff_zero_of_injective hg
-  have : a₀ = 0 :=
-    by
+  have : a₀ = 0 := by
     -- Evaluate `(minpoly R g) g` at the vector `(0,...,0,1)`
     have heval := LinearMap.congr_fun (minpoly.aeval R g) (Pi.single (Fin.last n) 1)
     obtain ⟨P, hP⟩ := X_dvd_iff.2 (erase_same (minpoly R g) 0)
