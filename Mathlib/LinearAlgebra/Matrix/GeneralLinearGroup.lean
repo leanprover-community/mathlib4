@@ -166,20 +166,20 @@ variable (n R)
 
 /-- This is the subgroup of `nxn` matrices with entries over a
 linear ordered ring and positive determinant. -/
-def gLPos : Subgroup (GL n R) :=
+def GLPos : Subgroup (GL n R) :=
   (Units.posSubgroup R).comap GeneralLinearGroup.det
-#align matrix.GL_pos Matrix.gLPos
+#align matrix.GL_pos Matrix.GLPos
 
 end
 
 @[simp]
-theorem mem_gLPos (A : GL n R) : A ∈ gLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
+theorem mem_GLPos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
   Iff.rfl
-#align matrix.mem_GL_pos Matrix.mem_gLPos
+#align matrix.mem_GL_pos Matrix.mem_GLPos
 
-theorem gLPos.det_ne_zero (A : gLPos n R) : (A : Matrix n n R).det ≠ 0 :=
+theorem GLPos.det_ne_zero (A : GLPos n R) : (A : Matrix n n R).det ≠ 0 :=
   ne_of_gt A.prop
-#align matrix.GL_pos.det_ne_zero Matrix.gLPos.det_ne_zero
+#align matrix.GL_pos.det_ne_zero Matrix.GLPos.det_ne_zero
 
 end
 
@@ -190,7 +190,7 @@ variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCom
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (gLPos n R) :=
+instance : Neg (GLPos n R) :=
   ⟨fun g =>
     ⟨-g, by
       rw [mem_GL_pos, general_linear_group.coe_det_apply, Units.val_neg, det_neg,
@@ -198,23 +198,23 @@ instance : Neg (gLPos n R) :=
       exact g.prop⟩⟩
 
 @[simp]
-theorem gLPos.coe_neg_GL (g : gLPos n R) : ↑(-g) = -(g : GL n R) :=
+theorem GLPos.coe_neg_GL (g : GLPos n R) : ↑(-g) = -(g : GL n R) :=
   rfl
-#align matrix.GL_pos.coe_neg_GL Matrix.gLPos.coe_neg_GL
+#align matrix.GL_pos.coe_neg_GL Matrix.GLPos.coe_neg_GL
 
 @[simp]
-theorem gLPos.coe_neg (g : gLPos n R) : ↑(-g) = -(g : Matrix n n R) :=
+theorem GLPos.coe_neg (g : GLPos n R) : ↑(-g) = -(g : Matrix n n R) :=
   rfl
-#align matrix.GL_pos.coe_neg Matrix.gLPos.coe_neg
+#align matrix.GL_pos.coe_neg Matrix.GLPos.coe_neg
 
 @[simp]
-theorem gLPos.coe_neg_apply (g : gLPos n R) (i j : n) :
+theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
     (↑(-g) : Matrix n n R) i j = -(↑g : Matrix n n R) i j :=
   rfl
-#align matrix.GL_pos.coe_neg_apply Matrix.gLPos.coe_neg_apply
+#align matrix.GL_pos.coe_neg_apply Matrix.GLPos.coe_neg_apply
 
-instance : HasDistribNeg (gLPos n R) :=
-  Subtype.coe_injective.HasDistribNeg _ gLPos.coe_neg_GL (gLPos n R).val_mul
+instance : HasDistribNeg (GLPos n R) :=
+  Subtype.coe_injective.HasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).val_mul
 
 end Neg
 
@@ -223,43 +223,43 @@ namespace SpecialLinearGroup
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
 
 /-- `special_linear_group n R` embeds into `GL_pos n R` -/
-def toGLPos : SpecialLinearGroup n R →* gLPos n R where
+def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.Prop.symm ▸ zero_lt_one⟩
   map_one' := Subtype.ext <| Units.ext <| rfl
   map_mul' A₁ A₂ := Subtype.ext <| Units.ext <| rfl
 #align matrix.special_linear_group.to_GL_pos Matrix.SpecialLinearGroup.toGLPos
 
-instance : Coe (SpecialLinearGroup n R) (gLPos n R) :=
+instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
   ⟨toGLPos⟩
 
-theorem coe_eq_toGLPos : (coe : SpecialLinearGroup n R → gLPos n R) = toGLPos :=
+theorem coe_eq_toGLPos : (coe : SpecialLinearGroup n R → GLPos n R) = toGLPos :=
   rfl
 #align matrix.special_linear_group.coe_eq_to_GL_pos Matrix.SpecialLinearGroup.coe_eq_toGLPos
 
-theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → gLPos n R) :=
-  (show Function.Injective ((coe : gLPos n R → Matrix n n R) ∘ toGLPos) from
+theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
+  (show Function.Injective ((coe : GLPos n R → Matrix n n R) ∘ toGLPos) from
       Subtype.coe_injective).of_comp
 #align matrix.special_linear_group.to_GL_pos_injective Matrix.SpecialLinearGroup.toGLPos_injective
 
 /-- Coercing a `special_linear_group` via `GL_pos` and `GL` is the same as coercing striaght to a
 matrix. -/
 @[simp]
-theorem coe_gLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :
-    (↑(↑(↑g : gLPos n R) : GL n R) : Matrix n n R) = ↑g :=
+theorem coe_GLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :
+    (↑(↑(↑g : GLPos n R) : GL n R) : Matrix n n R) = ↑g :=
   rfl
-#align matrix.special_linear_group.coe_GL_pos_coe_GL_coe_matrix Matrix.SpecialLinearGroup.coe_gLPos_coe_GL_coe_matrix
+#align matrix.special_linear_group.coe_GL_pos_coe_GL_coe_matrix Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix
 
 @[simp]
-theorem coe_to_gLPos_to_GL_det (g : SpecialLinearGroup n R) : ((g : gLPos n R) : GL n R).det = 1 :=
+theorem coe_to_GLPos_to_GL_det (g : SpecialLinearGroup n R) : ((g : GLPos n R) : GL n R).det = 1 :=
   Units.ext g.Prop
-#align matrix.special_linear_group.coe_to_GL_pos_to_GL_det Matrix.SpecialLinearGroup.coe_to_gLPos_to_GL_det
+#align matrix.special_linear_group.coe_to_GL_pos_to_GL_det Matrix.SpecialLinearGroup.coe_to_GLPos_to_GL_det
 
 variable [Fact (Even (Fintype.card n))]
 
 @[norm_cast]
-theorem coe_gLPos_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(↑g : gLPos n R) :=
+theorem coe_GLPos_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(↑g : GLPos n R) :=
   Subtype.ext <| Units.ext rfl
-#align matrix.special_linear_group.coe_GL_pos_neg Matrix.SpecialLinearGroup.coe_gLPos_neg
+#align matrix.special_linear_group.coe_GL_pos_neg Matrix.SpecialLinearGroup.coe_GLPos_neg
 
 end SpecialLinearGroup
 
