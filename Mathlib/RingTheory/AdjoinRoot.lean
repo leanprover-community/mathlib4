@@ -916,12 +916,11 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                       ← AdjoinRoot.algebraMap_eq, AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) =
               algebraMap R _ x
-          from fun x => by sorry
-          -- rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply, RingHom.toFun_eq_coe,
-          --   Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toRingHom,
-          --   AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]
-            )).trans
-    (AdjoinRoot.quotEquivQuotMap _ _)
+          from fun x => by
+            rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply, RingHom.toFun_eq_coe,
+              Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toRingHom,
+              AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]; rfl)).trans
+                (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 @[simp]
