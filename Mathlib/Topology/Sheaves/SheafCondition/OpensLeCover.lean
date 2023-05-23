@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.SheafCondition.Sites
+import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Another version of the sheaf condition.
@@ -83,8 +83,7 @@ end OpensLeCover
 
 (In fact this is a colimit cocone.)
 -/
-def opensLeCoverCocone : Cocone (fullSubcategoryInclusion _ : OpensLeCover U ⥤ Opens X)
-    where
+def opensLeCoverCocone : Cocone (fullSubcategoryInclusion _ : OpensLeCover U ⥤ Opens X) where
   pt := iSup U
   ι := { app := fun V : OpensLeCover U => V.homToIndex ≫ Opens.leSupr U _ }
 #align Top.presheaf.sheaf_condition.opens_le_cover_cocone TopCat.Presheaf.SheafCondition.opensLeCoverCocone
@@ -117,8 +116,7 @@ variable {Y : Opens X} (hY : Y = iSup U)
 @[simps]
 def generateEquivalenceOpensLe :
     (FullSubcategory fun f : Over Y => (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.Hom) ≌
-      OpensLeCover U
-    where
+      OpensLeCover U where
   Functor :=
     { obj := fun f =>
         ⟨f.1.left,
@@ -162,8 +160,7 @@ def generateEquivalenceOpensLe :
 @[simps]
 def whiskerIsoMapGenerateCocone :
     (F.mapCone (opensLeCoverCocone U).op).whisker (generateEquivalenceOpensLe U hY).op.Functor ≅
-      F.mapCone (Sieve.generate (presieveOfCoveringAux U Y)).arrows.Cocone.op
-    where
+      F.mapCone (Sieve.generate (presieveOfCoveringAux U Y)).arrows.Cocone.op where
   Hom :=
     { Hom := F.map (eqToHom (congr_arg op hY.symm))
       w' := fun j => by
@@ -203,8 +200,7 @@ def isLimitOpensLeEquivGenerate₁ :
 def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
     (hR : Sieve.generate R ∈ Opens.grothendieckTopology X Y) :
     IsLimit (F.mapCone (opensLeCoverCocone (coveringOfPresieve Y R)).op) ≃
-      IsLimit (F.mapCone (Sieve.generate R).arrows.Cocone.op) :=
-  by
+      IsLimit (F.mapCone (Sieve.generate R).arrows.Cocone.op) := by
   convert is_limit_opens_le_equiv_generate₁ F (covering_of_presieve Y R)
         (covering_of_presieve.supr_eq_of_mem_grothendieck Y R hR).symm using
       2 <;>
@@ -215,8 +211,7 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
     it satisfies the `is_sheaf_opens_le_cover` sheaf condition. The latter is not the
     official definition of sheaves on spaces, but has the advantage that it does not
     require `has_products C`. -/
-theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover :=
-  by
+theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
   refine' (presheaf.is_sheaf_iff_is_limit _ _).trans _
   constructor
   · intro h ι U
