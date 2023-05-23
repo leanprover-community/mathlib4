@@ -146,7 +146,7 @@ section InheritedLemmas
 
 /-! ### Lemmas inherited from more general structures
 
-The declarations in this section derive from the fact that an `intermediate_field` is also a
+The declarations in this section derive from the fact that an `IntermediateField` is also a
 subalgebra or subfield. Their use should be replaceable with the corresponding lemma from a
 subobject class.
 -/
@@ -217,19 +217,19 @@ protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) �
   multiset_prod_mem m
 #align intermediate_field.multiset_prod_mem IntermediateField.multiset_prod_mem
 
-/-- Sum of a multiset of elements in a `intermediate_field` is in the `intermediate_field`. -/
+/-- Sum of a multiset of elements in a `IntermediateField` is in the `IntermediateField`. -/
 protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
   multiset_sum_mem m
 #align intermediate_field.multiset_sum_mem IntermediateField.multiset_sum_mem
 
-/-- Product of elements of an intermediate field indexed by a `finset` is in the intermediate_field.
+/-- Product of elements of an intermediate field indexed by a `Finset` is in the intermediate_field.
 -/
 protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∏ i in t, f i) ∈ S :=
   prod_mem h
 #align intermediate_field.prod_mem IntermediateField.prod_mem
 
-/-- Sum of elements in a `intermediate_field` indexed by a `finset` is in the `intermediate_field`.
+/-- Sum of elements in a `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
 -/
 protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∑ i in t, f i) ∈ S :=
@@ -305,7 +305,7 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
   rfl
 #align to_intermediate_field_to_subalgebra toIntermediateField_toSubalgebra
 
-/-- Turn a subalgebra satisfying `is_field` into an intermediate_field -/
+/-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
   S.toIntermediateField fun x hx => by
     by_cases hx0 : x = 0
@@ -362,7 +362,7 @@ theorem coe_prod {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : 
     · rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
 #align intermediate_field.coe_prod IntermediateField.coe_prod
 
-/-! `intermediate_field`s inherit structure from their `subalgebra` coercions. -/
+/-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
 
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
@@ -544,7 +544,7 @@ theorem coe_isIntegral_iff {R : Type _} [CommRing R] [Algebra R K] [Algebra R L]
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
-This is the intermediate field version of `subalgebra.inclusion`. -/
+This is the intermediate field version of `Subalgebra.inclusion`. -/
 def inclusion {E F : IntermediateField K L} (hEF : E ≤ F) : E →ₐ[K] F :=
   Subalgebra.inclusion hEF
 #align intermediate_field.inclusion IntermediateField.inclusion
@@ -677,14 +677,13 @@ instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L
   right K F L
 #align intermediate_field.finite_dimensional_right IntermediateField.finiteDimensional_right
 
-set_option maxHeartbeats 1000000
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
   rfl
 #align intermediate_field.rank_eq_rank_subalgebra IntermediateField.rank_eq_rank_subalgebra
 
 @[simp]
-theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
+theorem finrank_eq_finrank_subalgebra (F : Subalgebra K L) : finrank K F = finrank K F :=
   rfl
 #align intermediate_field.finrank_eq_finrank_subalgebra IntermediateField.finrank_eq_finrank_subalgebra
 
