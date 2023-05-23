@@ -100,7 +100,7 @@ def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
 #align adjoin_root.mk AdjoinRoot.mk
 
-@[elab_as_elim]  -- porting note: removing `elab_as_elim` seems to help Lean find `C`.
+@[elab_as_elim]
 theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
   Quotient.inductionOn' x ih
@@ -243,8 +243,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on
-  rename_i p
-  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+  next p =>  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
