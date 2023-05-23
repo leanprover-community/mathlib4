@@ -17,8 +17,8 @@ import Mathlib.Topology.Algebra.Polynomial
 
 ## Main definitions
 
-In a real normed space `E` we define `pos_tangent_cone_at (s : set E) (x : E)`.
-This would be the same as `tangent_cone_at ℝ≥0 s x` if we had a theory of normed semifields.
+In a real normed space `E` we define `posTangentConeAt (s : Set E) (x : E)`.
+This would be the same as `tangentConeAt ℝ≥0 s x` if we had a theory of normed semifields.
 This set is used in the proof of Fermat's Theorem (see below), and can be used to formalize
 [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) and/or
 [Karush–Kuhn–Tucker conditions](https://en.wikipedia.org/wiki/Karush–Kuhn–Tucker_conditions).
@@ -76,9 +76,9 @@ section Module
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {a : E} {f' : E →L[ℝ] ℝ}
 
-/-- "Positive" tangent cone to `s` at `x`; the only difference from `tangent_cone_at`
-is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think about `pos_tangent_cone_at`
-as `tangent_cone_at nnreal` but we have no theory of normed semifields yet. -/
+/-- "Positive" tangent cone to `s` at `x`; the only difference from `tangentConeAt`
+is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think about `posTangentConeAt`
+as `tangentConeAt NNReal` but we have no theory of normed semifields yet. -/
 def posTangentConeAt (s : Set E) (x : E) : Set E :=
   { y : E | ∃ (c : ℕ → ℝ) (d : ℕ → E), (∀ᶠ n in atTop, x + d n ∈ s) ∧
     Tendsto c atTop atTop ∧ Tendsto (fun n => c n • d n) atTop (𝓝 y) }
@@ -295,7 +295,7 @@ theorem exists_local_extr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hf
   ⟨c, cmem, hc.isLocalExtr <| Icc_mem_nhds cmem.1 cmem.2⟩
 #align exists_local_extr_Ioo exists_local_extr_Ioo
 
-/-- **Rolle's Theorem** `has_deriv_at` version -/
+/-- **Rolle's Theorem** `HasDerivAt` version -/
 theorem exists_hasDerivAt_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b)
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) : ∃ c ∈ Ioo a b, f' c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_local_extr_Ioo f hab hfc hfI
