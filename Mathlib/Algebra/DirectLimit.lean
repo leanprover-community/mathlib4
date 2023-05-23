@@ -424,7 +424,8 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
               /-
-              Lean 3 ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s) = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
+              Lean 3 ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s)
+                       = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
               -/
               dsimp
               sorry
@@ -662,8 +663,8 @@ to a unique map out of the direct limit.
 def lift : DirectLimit G f →+* P :=
   Ideal.Quotient.lift _ (FreeCommRing.lift fun x : Σi, G i => g x.1 x.2)
     (by
-      suffices Ideal.span _ ≤ Ideal.comap (FreeCommRing.lift fun x : Σi : ι, G i => g x.fst x.snd) ⊥
-        by
+      suffices Ideal.span _ ≤
+          Ideal.comap (FreeCommRing.lift fun x : Σi : ι, G i => g x.fst x.snd) ⊥ by
         intro x hx
         exact (mem_bot P).1 (this hx)
       rw [Ideal.span_le]
