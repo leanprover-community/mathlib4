@@ -904,10 +904,9 @@ then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ideal R) :
     (S ⧸ I.map (algebraMap R S)) ≃ₐ[R]
       Polynomial (R ⧸ I) ⧸
-        Ideal.span ({(minpoly R pb).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=
+        Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=
   (ofRingEquiv
-        (show
-          ∀ x,
+        (show ∀ x,
             (Ideal.quotientEquiv _ (Ideal.map (AdjoinRoot.of (minpoly R pb.gen)) I)
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
@@ -917,31 +916,36 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                       ← AdjoinRoot.algebraMap_eq, AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) =
               algebraMap R _ x
-          from fun x => by
-          rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply, RingHom.toFun_eq_coe,
-            Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toRingHom,
-            AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, quotient.mk_algebra_map])).trans
+          from fun x => by sorry
+          -- rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply, RingHom.toFun_eq_coe,
+          --   Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toRingHom,
+          --   AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]
+            )).trans
     (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 @[simp]
 theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Ideal R) (g : R[X]) :
-    pb.quotientEquivQuotientMinpolyMap I (Ideal.Quotient.mk _ (aeval pb.gen g)) =
-      Ideal.Quotient.mk _ (g.map (instHasQuotientIdealToSemiringToCommSemiring.Quotient.mk I)) := by
+    pb.quotientEquivQuotientMinpolyMap I (Ideal.Quotient.mk (I.map (algebraMap R S))
+      (aeval pb.gen g)) = Ideal.Quotient.mk
+        (Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
+          (g.map (Ideal.Quotient.mk I)) := by
   rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofRingEquiv_apply,
-    quotient_equiv_mk, AlgEquiv.coe_ringEquiv', AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
+    quotientEquiv_mk, AlgEquiv.coe_ringEquiv', AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
     AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 #align power_basis.quotient_equiv_quotient_minpoly_map_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_apply_mk
 
 @[simp]
 theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I : Ideal R)
     (g : R[X]) :
-    (pb.quotientEquivQuotientMinpolyMap I).symm (Ideal.Quotient.mk _ (g.map (Ideal.Quotient.mk I))) =
-      Ideal.Quotient.mk _ (aeval pb.gen g) := by
-  simp only [quotient_equiv_quotient_minpoly_map, to_ring_equiv_eq_coe, symm_trans_apply,
-    quot_equiv_quot_map_symm_apply_mk, of_ring_equiv_symm_apply, quotient_equiv_symm_mk,
-    to_ring_equiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ring_equiv, lift_hom_mk,
-    symm_to_ring_equiv]
+    (pb.quotientEquivQuotientMinpolyMap I).symm (Ideal.Quotient.mk (Ideal.span
+      ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
+        (g.map (Ideal.Quotient.mk I))) = Ideal.Quotient.mk (I.map (algebraMap R S))
+          (aeval pb.gen g) := by
+  simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
+    quotEquivQuotMap_symm_apply_mk, ofRingEquiv_symm_apply, quotientEquiv_symm_mk,
+    toRingEquiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
+    symm_toRingEquiv]
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
