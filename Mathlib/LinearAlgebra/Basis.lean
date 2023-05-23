@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 
 ! This file was ported from Lean 3 source module linear_algebra.basis
-! leanprover-community/mathlib commit 04cdee31e196e30f507e8e9eb2d06e02c9ff6310
+! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -979,6 +979,12 @@ theorem Basis.ofEquivFun_equivFun (v : Basis ι R M) : Basis.ofEquivFun v.equivF
     simp_rw [Function.update_apply, ite_smul]
     simp only [Finset.mem_univ, if_true, Pi.zero_apply, one_smul, Finset.sum_ite_eq', zero_smul]
 #align basis.of_equiv_fun_equiv_fun Basis.ofEquivFun_equivFun
+
+@[simp]
+theorem Basis.equivFun_ofEquivFun (e : M ≃ₗ[R] ι → R) : (Basis.ofEquivFun e).equivFun = e := by
+  ext j
+  simp_rw [Basis.equivFun_apply, Basis.ofEquivFun_repr_apply]
+#align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
 
 variable (S : Type _) [Semiring S] [Module S M']
 
