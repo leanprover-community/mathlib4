@@ -683,7 +683,7 @@ theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F
 #align intermediate_field.rank_eq_rank_subalgebra IntermediateField.rank_eq_rank_subalgebra
 
 @[simp]
-theorem finrank_eq_finrank_subalgebra (F : Subalgebra K L) : finrank K F = finrank K F :=
+theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
   rfl
 #align intermediate_field.finrank_eq_finrank_subalgebra IntermediateField.finrank_eq_finrank_subalgebra
 
