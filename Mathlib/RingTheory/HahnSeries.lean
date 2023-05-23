@@ -249,8 +249,8 @@ theorem order_single (h : r ≠ 0) : (single a r).order = a :=
       ((single a r).isWf_support.min_mem (support_nonempty_iff.2 (single_ne_zero h))))
 #align hahn_series.order_single HahnSeries.order_single
 
-theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.order) : x.coeff i = 0 :=
-  by
+theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.order) :
+    x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   contrapose! hi
