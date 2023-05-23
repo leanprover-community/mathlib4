@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Irrational
-import Mathbin.Topology.Instances.Rat
-import Mathbin.Topology.Alexandroff
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Instances.Rat
+import Mathlib.Topology.Alexandroff
 
 /-!
 # Additional lemmas about the topology on rational numbers
@@ -51,15 +51,13 @@ theorem dense_compl_compact (hs : IsCompact s) : Dense (sᶜ) :=
   interior_eq_empty_iff_dense_compl.1 (interior_compact_eq_empty hs)
 #align rat.dense_compl_compact Rat.dense_compl_compact
 
-instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) :=
-  by
+instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
   refine' (has_basis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 _
   rintro ⟨s, o⟩ ⟨hs, hpo, ho⟩; rw [inter_comm]
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot
 
-theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact ℚ) :=
-  by
+theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact ℚ) := by
   intro H
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
@@ -68,28 +66,24 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 
-theorem not_countably_generated_nhds_infty_alexandroff : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) :=
-  by
+theorem not_countably_generated_nhds_infty_alexandroff : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
   intro
   have : is_countably_generated (comap (coe : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
   rw [Alexandroff.comap_coe_nhds_infty, coclosed_compact_eq_cocompact] at this
   exact not_countably_generated_cocompact this
 #align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_alexandroff
 
-theorem not_firstCountableTopology_alexandroff : ¬FirstCountableTopology ℚ∞ :=
-  by
+theorem not_firstCountableTopology_alexandroff : ¬FirstCountableTopology ℚ∞ := by
   intro
   exact not_countably_generated_nhds_infty_alexandroff inferInstance
 #align rat.not_first_countable_topology_alexandroff Rat.not_firstCountableTopology_alexandroff
 
-theorem not_secondCountableTopology_alexandroff : ¬SecondCountableTopology ℚ∞ :=
-  by
+theorem not_secondCountableTopology_alexandroff : ¬SecondCountableTopology ℚ∞ := by
   intro
   exact not_first_countable_topology_alexandroff inferInstance
 #align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_alexandroff
 
-instance : TotallyDisconnectedSpace ℚ :=
-  by
+instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
   by_contra' H : x ≠ y
   wlog hlt : x < y
