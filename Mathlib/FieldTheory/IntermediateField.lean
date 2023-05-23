@@ -82,7 +82,7 @@ instance : SubfieldClass (IntermediateField K L) L where
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align intermediate_field.mem_carrier IntermediateField.mem_carrier
@@ -354,7 +354,7 @@ theorem coe_sum {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L
     · rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
 #align intermediate_field.coe_sum IntermediateField.coe_sum
 
-@[simp, norm_cast]
+@[norm_cast] --Porting note: `simp` can prove it
 theorem coe_prod {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
@@ -380,7 +380,7 @@ instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R
 
 @[simp]
 theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] (r : R) (x : S) :
-    ↑(r • x) = (r • x : L) :=
+    ↑(r • x : S) = (r • (x : L)) :=
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
