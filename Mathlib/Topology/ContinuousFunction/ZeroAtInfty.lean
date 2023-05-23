@@ -21,8 +21,8 @@ compact space, this type has nice properties.
 
 ## TODO
 
-* Create more intances of algebraic structures (e.g., `non_unital_semiring`) once the necessary
-  type classes (e.g., `topological_ring`) are sufficiently generalized.
+* Create more intances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
+  type classes (e.g., `TopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
 
@@ -39,9 +39,9 @@ open Filter Metric
 topological space to a metric space with a zero element.
 
 When possible, instead of parametrizing results over `(f : C₀(α, β))`,
-you should parametrize over `(F : Type*) [zero_at_infty_continuous_map_class F α β] (f : F)`.
+you should parametrize over `(F : Type _) [ZeroAtInftyContinuousMapClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `zero_at_infty_continuous_map_class`. -/
+When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`. -/
 structure ZeroAtInftyContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]
   [TopologicalSpace β] extends ContinuousMap α β : Type max u v where
   zero_at_infty' : Tendsto toFun (cocompact α) (𝓝 0)
@@ -53,10 +53,10 @@ open ZeroAtInfty
 
 section
 
-/-- `zero_at_infty_continuous_map_class F α β` states that `F` is a type of continuous maps which
+/-- `ZeroAtInftyContinuousMapClass F α β` states that `F` is a type of continuous maps which
 vanish at infinity.
 
-You should also extend this typeclass when you extend `zero_at_infty_continuous_map`. -/
+You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
 class ZeroAtInftyContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
   [Zero β] [TopologicalSpace β] extends ContinuousMapClass F α β where
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
@@ -81,7 +81,7 @@ instance : ZeroAtInftyContinuousMapClass C₀(α, β) α β where
   map_continuous f := f.continuous_toFun
   zero_at_infty f := f.zero_at_infty'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun C₀(α, β) fun _ => α → β :=
   FunLike.hasCoeToFun
@@ -102,7 +102,7 @@ theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align zero_at_infty_continuous_map.ext ZeroAtInftyContinuousMap.ext
 
-/-- Copy of a `zero_at_infinity_continuous_map` with a new `to_fun` equal to the old one. Useful
+/-- Copy of a `ZeroAtInftyContinuousMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : C₀(α, β)) (f' : α → β) (h : f' = f) : C₀(α, β) where
   toFun := f'
@@ -377,7 +377,7 @@ end Uniform
 /-! ### Metric structure
 
 When `β` is a metric space, then every element of `C₀(α, β)` is bounded, and so there is a natural
-inclusion map `zero_at_infty_continuous_map.to_bcf : C₀(α, β) → (α →ᵇ β)`. Via this map `C₀(α, β)`
+inclusion map `ZeroAtInftyContinuousMap.toBcf : C₀(α, β) → (α →ᵇ β)`. Via this map `C₀(α, β)`
 inherits a metric as the pullback of the metric on `α →ᵇ β`. Moreover, this map has closed range
 in `α →ᵇ β` and consequently `C₀(α, β)` is a complete space whenever `β` is complete.
 -/
@@ -437,7 +437,7 @@ end
 variable {C : ℝ} {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
-inclusion `zero_at_infinity_continuous_map.to_bcf`, is a metric space. -/
+inclusion `ZeroAtInftyContinuousMap.toBcf`, is a metric space. -/
 noncomputable instance : MetricSpace C₀(α, β) :=
   MetricSpace.induced _ (toBcf_injective α β) (by infer_instance)
 
@@ -490,7 +490,7 @@ section Norm
 
 /-! ### Normed space
 
-The norm structure on `C₀(α, β)` is the one induced by the inclusion `to_bcf : C₀(α, β) → (α →ᵇ b)`,
+The norm structure on `C₀(α, β)` is the one induced by the inclusion `toBcf : C₀(α, β) → (α →ᵇ b)`,
 viewed as an additive monoid homomorphism. Then `C₀(α, β)` is naturally a normed space over a normed
 field `𝕜` whenever `β` is as well.
 -/
@@ -531,9 +531,9 @@ section Star
 
 It is possible to equip `C₀(α, β)` with a pointwise `star` operation whenever there is a continuous
 `star : β → β` for which `star (0 : β) = 0`. We don't have quite this weak a typeclass, but
-`star_add_monoid` is close enough.
+`StarAddMonoid` is close enough.
 
-The `star_add_monoid` and `normed_star_group` classes on `C₀(α, β)` are inherited from their
+The `StarAddMonoid` and `NormedStarGroup` classes on `C₀(α, β)` are inherited from their
 counterparts on `α →ᵇ β`. Ultimately, when `β` is a C⋆-ring, then so is `C₀(α, β)`.
 -/
 
@@ -601,13 +601,12 @@ end CstarRing
 /-! ### C₀ as a functor
 
 For each `β` with sufficient structure, there is a contravariant functor `C₀(-, β)` from the
-category of topological spaces with morphisms given by `cocompact_map`s.
+category of topological spaces with morphisms given by `CocompactMap`s.
 -/
 
 
 variable {δ : Type _} [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
--- mathport name: «expr →co »
 local notation α " →co " β => CocompactMap α β
 
 section
