@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.HahnSeries
-import Mathbin.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Laurent Series
@@ -74,15 +74,13 @@ theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
 #align laurent_series.power_series_part_coeff LaurentSeries.powerSeriesPart_coeff
 
 @[simp]
-theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 :=
-  by
+theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
   ext
   simp
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
 
 @[simp]
-theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 :=
-  by
+theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 := by
   constructor
   · contrapose!
     intro h
@@ -95,8 +93,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
 
 @[simp]
 theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
-    (single x.order 1 : LaurentSeries R) * x.powerSeriesPart = x :=
-  by
+    (single x.order 1 : LaurentSeries R) * x.powerSeriesPart = x := by
   ext n
   rw [← sub_add_cancel n x.order, single_mul_coeff_add, sub_add_cancel, one_mul]
   by_cases h : x.order ≤ n
@@ -115,8 +112,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 #align laurent_series.single_order_mul_power_series_part LaurentSeries.single_order_mul_powerSeriesPart
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
-    ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x :=
-  by
+    ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
   refine' Eq.trans _ (congr rfl x.single_order_mul_power_series_part)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul,
     coe_power_series]
@@ -136,8 +132,7 @@ theorem coe_algebraMap [CommSemiring R] :
 /-- The localization map from power series to Laurent series. -/
 @[simps]
 instance of_powerSeries_localization [CommRing R] :
-    IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R)
-    where
+    IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units := by
     rintro ⟨_, n, rfl⟩
     refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
@@ -220,8 +215,7 @@ theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
 
 theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
-      if i < 0 then 0 else PowerSeries.coeff R i.natAbs f :=
-  by
+      if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
   ·
     rw [Int.natAbs_ofNat_core, Int.ofNat_eq_coe, coeff_coe_power_series,
@@ -245,8 +239,7 @@ theorem coe_x : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
 
 @[simp, norm_cast]
 theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
-    ((r • x : PowerSeries S) : LaurentSeries S) = r • x :=
-  by
+    ((r • x : PowerSeries S) : LaurentSeries S) = r • x := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
 #align power_series.coe_smul PowerSeries.coe_smul
