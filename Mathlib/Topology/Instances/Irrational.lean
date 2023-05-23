@@ -40,11 +40,12 @@ open Filter Topology
 
 theorem isGδ_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
+set_option linter.uppercaseLean3 false in
 #align is_Gδ_irrational isGδ_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
-  refine' real.is_topological_basis_Ioo_rat.dense_iff.2 _
-  simp only [mem_Union, mem_singleton_iff]
+  refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
+  simp only [mem_union, mem_singleton_iff]
   rintro _ ⟨a, b, hlt, rfl⟩ hne; rw [inter_comm]
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
 #align dense_irrational dense_irrational
@@ -63,10 +64,10 @@ instance : OrderTopology { x // Irrational x } :=
     ⟨⟨a, ha⟩, hxa, hay⟩
 
 instance : NoMaxOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.addNat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
 
 instance : NoMinOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.subNat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
 
 instance : DenselyOrdered { x // Irrational x } :=
   ⟨fun x y hlt =>
@@ -75,9 +76,9 @@ instance : DenselyOrdered { x // Irrational x } :=
 
 theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) := by
-  have A : IsClosed (range (fun m => n⁻¹ * m : ℤ → ℝ)) :=
+  have A : IsClosed (range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ)) :=
     ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp int.closed_embedding_coe_real.is_closed_map).closed_range
-  have B : x ∉ range (fun m => n⁻¹ * m : ℤ → ℝ) := by
+  have B : x ∉ range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ) := by
     rintro ⟨m, rfl⟩
     simpa using hx
   rcases Metric.mem_nhds_iff.1 (A.is_open_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
@@ -95,8 +96,7 @@ theorem eventually_forall_le_dist_cast_div_of_denom_le (hx : Irrational x) (n : 
 theorem eventually_forall_le_dist_cast_rat_of_den_le (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ r : ℚ, r.den ≤ n → ε ≤ dist x r :=
   (hx.eventually_forall_le_dist_cast_div_of_denom_le n).mono fun ε H r hr => by
-    simpa only [Rat.cast_def] using H r.denom hr r.num
+    simpa only [Rat.cast_def] using H r.den hr r.num
 #align irrational.eventually_forall_le_dist_cast_rat_of_denom_le Irrational.eventually_forall_le_dist_cast_rat_of_den_le
 
 end Irrational
-
