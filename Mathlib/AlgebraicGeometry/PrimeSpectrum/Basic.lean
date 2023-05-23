@@ -764,7 +764,7 @@ section BasicOpen
 /-- `basic_open r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : R) : TopologicalSpace.Opens (PrimeSpectrum R) where
   carrier := { x | r ∉ x.asIdeal }
-  is_open' := ⟨{r}, Set.ext fun x => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
 #align prime_spectrum.basic_open PrimeSpectrum.basicOpen
 
 @[simp]
