@@ -1441,7 +1441,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     from fun S h => (this _ h nil S (by simp) (by simp [h])).resolve_left (not_mem_nil _)
   intro ss h; apply mem_rec_on h <;> [intro b ss o; intro ss IH] <;> intro s S
   · induction' s using WSeq.recOn with b' s s <;>
-      [induction' S using WSeq.recOn with s S S, skip, skip] <;>
+      [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this;
       try cases this; try contradiction
     substs b' ss
@@ -1452,19 +1452,19 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     · simp [e]
     exact Or.imp_left Or.inr (IH _ _ rfl m)
   · induction' s using WSeq.recOn with b' s s <;>
-      [induction' S using WSeq.recOn with s S S, skip, skip] <;>
+      [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this <;>
       try { try { have := this.1 }; contradiction } <;> subst ss
     · apply Or.inr
       -- Porting note: `exists_eq_or_imp` should be excluded.
-      simp [-exists_eq_or_imp] at m⊢
+      simp [-exists_eq_or_imp] at m ⊢
       cases' IH s S rfl m with as ex
       · exact ⟨s, Or.inl rfl, as⟩
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
     · apply Or.inr
       simp at m
-      rcases(IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
+      rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
     · simp at m IH⊢
       apply IH _ _ rfl m

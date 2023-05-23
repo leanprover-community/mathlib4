@@ -253,7 +253,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
   apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
     have := lem1 l <;> simp only [parallel.aux1, corec_eq, destruct_pure, destruct_think] at e' <;>
     revert this e' <;> cases' parallel.aux2 l with a' l' <;> intro this e' <;>
-    [injection e' with h', injection e', injection e', injection e' with h']
+    [injection e' with h'; injection e'; injection e'; injection e' with h']
   · rw [h'] at this
     rcases this with ⟨c, cl, ac⟩
     exact ⟨c, Or.inl cl, ac⟩
