@@ -65,7 +65,7 @@ noncomputable section
 @[ext]
 structure HahnSeries (Γ : Type _) (R : Type _) [PartialOrder Γ] [Zero R] where
   coeff : Γ → R
-  isPwo_support' : (support coeff).IsPwo
+  isPwo_support' : (Function.support coeff).IsPwo
 #align hahn_series HahnSeries
 
 variable {Γ : Type _} {R : Type _}
@@ -77,7 +77,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  ext
+  HahnSeries.ext
 #align hahn_series.coeff_injective HahnSeries.coeff_injective
 
 @[simp]
@@ -87,7 +87,7 @@ theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
 
 /-- The support of a Hahn series is just the set of indices whose coefficients are nonzero.
   Notably, it is well-founded. -/
-def support (x : HahnSeries Γ R) : Set Γ :=
+nonrec def support (x : HahnSeries Γ R) : Set Γ :=
   support x.coeff
 #align hahn_series.support HahnSeries.support
 
@@ -98,7 +98,7 @@ theorem isPwo_support (x : HahnSeries Γ R) : x.support.IsPwo :=
 
 @[simp]
 theorem isWf_support (x : HahnSeries Γ R) : x.support.IsWf :=
-  x.isPwo_support.IsWf
+  x.isPwo_support.isWf
 #align hahn_series.is_wf_support HahnSeries.isWf_support
 
 @[simp]
@@ -136,7 +136,7 @@ theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
 #align hahn_series.support_zero HahnSeries.support_zero
 
 @[simp]
-theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
+nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
   rw [support, support_nonempty_iff, Ne.def, coeff_fun_eq_zero_iff]
 #align hahn_series.support_nonempty_iff HahnSeries.support_nonempty_iff
 
@@ -150,19 +150,19 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPwo_support' := (Set.isPwo_singleton a).mono Pi.support_single_subset }
-  map_zero' := ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
 #align hahn_series.single HahnSeries.single
 
 variable {a b : Γ} {r : R}
 
 @[simp]
 theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
-  Pi.single_eq_same a r
+  Pi.single_eq_same (f := fun _ => R) a r
 #align hahn_series.single_coeff_same HahnSeries.single_coeff_same
 
 @[simp]
 theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
-  Pi.single_eq_of_ne h r
+  Pi.single_eq_of_ne (f := fun _ => R) h r
 #align hahn_series.single_coeff_of_ne HahnSeries.single_coeff_of_ne
 
 theorem single_coeff : (single a r).coeff b = if b = a then r else 0 := by
@@ -192,7 +192,7 @@ theorem single_injective (a : Γ) : Function.Injective (single a : R → HahnSer
 #align hahn_series.single_injective HahnSeries.single_injective
 
 theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
-  h (single_injective a (Con.trans single_eq_zero.symm))
+  h (single_injective a (con.trans single_eq_zero.symm))
 #align hahn_series.single_ne_zero HahnSeries.single_ne_zero
 
 @[simp]
@@ -207,8 +207,8 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
-    refine' ⟨single (Inhabited.default Γ) r, single (Inhabited.default Γ) s, fun con => rs _⟩
-    rw [← single_coeff_same (Inhabited.default Γ) r, Con, single_coeff_same]⟩
+    refine' ⟨single default r, single default s, fun con => rs _⟩
+    rw [← single_coeff_same (default : Γ) r, con, single_coeff_same]⟩
 
 section Order
 
@@ -232,7 +232,7 @@ theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
 
 theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]
-  exact x.is_wf_support.min_mem (support_nonempty_iff.2 hx)
+  exact x.isWf_support.min_mem (support_nonempty_iff.2 hx)
 #align hahn_series.coeff_order_ne_zero HahnSeries.coeff_order_ne_zero
 
 theorem order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
@@ -253,7 +253,7 @@ theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.ord
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   contrapose! hi
-  rw [← Ne.def, ← mem_support] at hi
+  rw [← mem_support] at hi
   rw [order_of_ne hx]
   exact Set.IsWf.not_lt_min _ _ hi
 #align hahn_series.coeff_eq_zero_of_lt_order HahnSeries.coeff_eq_zero_of_lt_order
@@ -268,7 +268,7 @@ variable {Γ' : Type _} [PartialOrder Γ']
 def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0
     isPwo_support' :=
-      (x.isPwo_support.image_of_monotone f.Monotone).mono fun b hb => by
+      (x.isPwo_support.image_of_monotone f.monotone).mono fun b hb => by
         contrapose! hb
         rw [Function.mem_support, dif_neg hb, Classical.not_not] }
 #align hahn_series.emb_domain HahnSeries.embDomain
@@ -276,7 +276,7 @@ def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x 
 @[simp]
 theorem embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
     (embDomain f x).coeff (f a) = x.coeff a := by
-  rw [emb_domain]
+  rw [embDomain]
   dsimp only
   by_cases ha : a ∈ x.support
   · rw [dif_pos (Set.mem_image_of_mem f ha)]
@@ -290,7 +290,7 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
 @[simp]
 theorem embDomain_mk_coeff {f : Γ → Γ'} (hfi : Function.Injective f)
     (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') {x : HahnSeries Γ R} {a : Γ} :
-    (embDomain ⟨⟨f, hfi⟩, hf⟩ x).coeff (f a) = x.coeff a :=
+    (embDomain ⟨⟨f, hfi⟩, hf _ _⟩ x).coeff (f a) = x.coeff a :=
   embDomain_coeff
 #align hahn_series.emb_domain_mk_coeff HahnSeries.embDomain_mk_coeff
 
@@ -303,18 +303,18 @@ theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
     support (embDomain f x) ⊆ f '' x.support := by
   intro g hg
   contrapose! hg
-  rw [mem_support, emb_domain_notin_image_support hg, Classical.not_not]
+  rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 #align hahn_series.support_emb_domain_subset HahnSeries.support_embDomain_subset
 
 theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {b : Γ'} (hb : b ∉ Set.range f) :
     (embDomain f x).coeff b = 0 :=
-  embDomain_notin_image_support fun con => hb (Set.image_subset_range _ _ Con)
+  embDomain_notin_image_support fun con => hb (Set.image_subset_range _ _ con)
 #align hahn_series.emb_domain_notin_range HahnSeries.embDomain_notin_range
 
 @[simp]
 theorem embDomain_zero {f : Γ ↪o Γ'} : embDomain f (0 : HahnSeries Γ R) = 0 := by
   ext
-  simp [emb_domain_notin_image_support]
+  simp [embDomain_notin_image_support]
 #align hahn_series.emb_domain_zero HahnSeries.embDomain_zero
 
 @[simp]
@@ -323,7 +323,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
   ext g'
   by_cases h : g' = f g
   · simp [h]
-  rw [emb_domain_notin_image_support, single_coeff_of_ne h]
+  rw [embDomain_notin_image_support, single_coeff_of_ne h]
   by_cases hr : r = 0
   · simp [hr]
   rwa [support_single_of_ne hr, Set.image_singleton, Set.mem_singleton_iff]
@@ -332,9 +332,9 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
 theorem embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : HahnSeries Γ R → HahnSeries Γ' R) := fun x y xy => by
   ext g
-  rw [ext_iff, Function.funext_iff] at xy
+  rw [HahnSeries.ext_iff, Function.funext_iff] at xy
   have xyg := xy (f g)
-  rwa [emb_domain_coeff, emb_domain_coeff] at xyg
+  rwa [embDomain_coeff, embDomain_coeff] at xyg
 #align hahn_series.emb_domain_injective HahnSeries.embDomain_injective
 
 end Domain
@@ -389,8 +389,8 @@ theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  refine' le_trans _ (Set.IsWf.min_le_min_of_subset support_add_subset)
-  · exact x.is_wf_support.union y.is_wf_support
+  refine le_trans ?_ (Set.IsWf.min_le_min_of_subset support_add_subset)
+  · exact x.isWf_support.union y.isWf_support
   · exact Set.Nonempty.mono (Set.subset_union_left _ _) (support_nonempty_iff.2 hx)
   rw [Set.IsWf.min_union]
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
@@ -409,7 +409,7 @@ def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
 def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
   toFun f := f.coeff g
   map_zero' := zero_coeff
-  map_add' x y := add_coeff
+  map_add' _ _ := add_coeff
 #align hahn_series.coeff.add_monoid_hom HahnSeries.coeff.addMonoidHom
 
 section Domain
@@ -422,7 +422,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [emb_domain_notin_range, hg]
+  · simp [embDomain_notin_range hg]
 #align hahn_series.emb_domain_add HahnSeries.embDomain_add
 
 end Domain
@@ -430,7 +430,7 @@ end Domain
 end AddMonoid
 
 instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
-  { HahnSeries.addMonoid with
+  { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
@@ -440,13 +440,12 @@ section AddGroup
 variable [AddGroup R]
 
 instance : AddGroup (HahnSeries Γ R) :=
-  {
-    HahnSeries.addMonoid with
+  { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     neg := fun x =>
       { coeff := fun a => -x.coeff a
         isPwo_support' := by
           rw [Function.support_neg]
-          exact x.is_pwo_support }
+          exact x.isPwo_support }
     add_left_neg := fun x => by
       ext
       apply add_left_neg }
@@ -486,7 +485,8 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
 end AddGroup
 
 instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
-  { HahnSeries.addCommMonoid, HahnSeries.addGroup with }
+  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
+    inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
 
 end Addition
 
@@ -538,8 +538,7 @@ section Module
 variable [PartialOrder Γ] [Semiring R] {V : Type _} [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
-  {
-    HahnSeries.distribMulAction with
+  { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
     zero_smul := fun _ => by
       ext
       simp
@@ -559,7 +558,7 @@ def single.linearMap (a : Γ) : R →ₗ[R] HahnSeries Γ R :=
 /-- `coeff g` as a linear map -/
 @[simps]
 def coeff.linearMap (g : Γ) : HahnSeries Γ R →ₗ[R] R :=
-  { coeff.addMonoidHom g with map_smul' := fun r s => rfl }
+  { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 #align hahn_series.coeff.linear_map HahnSeries.coeff.linearMap
 
 section Domain
@@ -572,7 +571,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [emb_domain_notin_range, hg]
+  · simp [embDomain_notin_range hg]
 #align hahn_series.emb_domain_smul HahnSeries.embDomain_smul
 
 /-- Extending the domain of Hahn series is a linear map. -/
@@ -624,14 +623,14 @@ instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R)
       isPwo_support' :=
         haveI h :
           { a : Γ |
-              (∑ ij : Γ × Γ in add_antidiagonal x.is_pwo_support y.is_pwo_support a,
+              (∑ ij : Γ × Γ in addAntidiagonal x.isPwo_support y.isPwo_support a,
                   x.coeff ij.fst * y.coeff ij.snd) ≠
                 0 } ⊆
-            { a : Γ | (add_antidiagonal x.is_pwo_support y.is_pwo_support a).Nonempty } := by
+            { a : Γ | (addAntidiagonal x.isPwo_support y.isPwo_support a).Nonempty } := by
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
-        is_pwo_support_add_antidiagonal.mono h }
+        isPwo_support_addAntidiagonal.mono h }
 
 @[simp]
 theorem mul_coeff [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} :
@@ -645,9 +644,9 @@ theorem mul_coeff_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {
     (x * y).coeff a =
       ∑ ij in addAntidiagonal x.isPwo_support hs a, x.coeff ij.fst * y.coeff ij.snd := by
   rw [mul_coeff]
-  apply sum_subset_zero_on_sdiff (add_antidiagonal_mono_right hys) _ fun _ _ => rfl
+  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_right hys) _ fun _ _ => rfl
   intro b hb
-  simp only [not_and, mem_sdiff, mem_add_antidiagonal, mem_support, not_imp_not] at hb
+  simp only [not_and, mem_sdiff, mem_addAntidiagonal, mem_support, not_imp_not] at hb
   rw [hb.2 hb.1.1 hb.1.2.2, MulZeroClass.mul_zero]
 #align hahn_series.mul_coeff_right' HahnSeries.mul_coeff_right'
 
@@ -656,18 +655,18 @@ theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a
     (x * y).coeff a =
       ∑ ij in addAntidiagonal hs y.isPwo_support a, x.coeff ij.fst * y.coeff ij.snd := by
   rw [mul_coeff]
-  apply sum_subset_zero_on_sdiff (add_antidiagonal_mono_left hxs) _ fun _ _ => rfl
+  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
   intro b hb
-  simp only [not_and', mem_sdiff, mem_add_antidiagonal, mem_support, not_ne_iff] at hb
+  simp only [not_and', mem_sdiff, mem_addAntidiagonal, mem_support, not_ne_iff] at hb
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, MulZeroClass.zero_mul]
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
 
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
-  { HahnSeries.hasMul,
-    HahnSeries.hasAdd with
+  { inferInstanceAs (Mul (HahnSeries Γ R)),
+    inferInstanceAs (Add (HahnSeries Γ R)) with
     left_distrib := fun x y z => by
       ext a
-      have hwf := y.is_pwo_support.union z.is_pwo_support
+      have hwf := y.isPwo_support.union z.isPwo_support
       rw [mul_coeff_right' hwf, add_coeff, mul_coeff_right' hwf (Set.subset_union_right _ _),
         mul_coeff_right' hwf (Set.subset_union_left _ _)]
       · simp only [add_coeff, mul_add, sum_add_distrib]
@@ -678,7 +677,7 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
         rw [h.1, h.2, add_zero]
     right_distrib := fun x y z => by
       ext a
-      have hwf := x.is_pwo_support.union y.is_pwo_support
+      have hwf := x.isPwo_support.union y.isPwo_support
       rw [mul_coeff_left' hwf, add_coeff, mul_coeff_left' hwf (Set.subset_union_right _ _),
         mul_coeff_left' hwf (Set.subset_union_left _ _)]
       · simp only [add_coeff, add_mul, sum_add_distrib]
@@ -698,7 +697,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_add_antidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
     rintro rfl h2 h1
     rw [add_comm] at h1
     rw [← add_right_cancel h1] at hx
@@ -706,10 +705,10 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   trans ∑ ij : Γ × Γ in {(b, a)}, (single b r).coeff ij.fst * x.coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_add_antidiagonal, mem_singleton,
+    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,
       Set.mem_setOf_eq]
     constructor
-    · rintro ⟨rfl, h2, h1⟩
+    · rintro ⟨rfl, _, h1⟩
       rw [add_comm] at h1
       refine' ⟨rfl, add_right_cancel h1⟩
     · rintro ⟨rfl, rfl⟩
@@ -727,17 +726,17 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_add_antidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
   trans ∑ ij : Γ × Γ in {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_add_antidiagonal, mem_singleton,
+    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,
       Set.mem_setOf_eq]
     constructor
-    · rintro ⟨h2, rfl, h1⟩
+    · rintro ⟨_, rfl, h1⟩
       refine' ⟨add_right_cancel h1, rfl⟩
     · rintro ⟨rfl, rfl⟩
       simp [hx]
@@ -750,7 +749,8 @@ theorem mul_single_zero_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSer
 #align hahn_series.mul_single_zero_coeff HahnSeries.mul_single_zero_coeff
 
 theorem single_zero_mul_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
-    (single 0 r * x).coeff a = r * x.coeff a := by rw [← add_zero a, single_mul_coeff_add, add_zero]
+    ((single 0 r : HahnSeries Γ R) * x).coeff a = r * x.coeff a :=
+  by rw [← add_zero a, single_mul_coeff_add, add_zero]
 #align hahn_series.single_zero_mul_coeff HahnSeries.single_zero_mul_coeff
 
 @[simp]
@@ -762,9 +762,10 @@ theorem single_zero_mul_eq_smul [Semiring R] {r : R} {x : HahnSeries Γ R} :
 
 theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
     support (x * y) ⊆ support x + support y := by
-  apply Set.Subset.trans (fun x hx => _) support_add_antidiagonal_subset_add
-  · exact x.is_pwo_support
-  · exact y.is_pwo_support
+  apply Set.Subset.trans (fun x hx => _) support_addAntidiagonal_subset_add
+  · exact x.isPwo_support
+  · exact y.isPwo_support
+  intro x hx
   contrapose! hx
   simp only [not_nonempty_iff_eq_empty, Ne.def, Set.mem_setOf_eq] at hx
   simp [hx]
@@ -782,34 +783,34 @@ theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
   ext b
-  rw [mul_coeff_left' (x.is_pwo_support.add y.is_pwo_support) support_mul_subset_add_support,
-    mul_coeff_right' (y.is_pwo_support.add z.is_pwo_support) support_mul_subset_add_support]
+  rw [mul_coeff_left' (x.isPwo_support.add y.isPwo_support) support_mul_subset_add_support,
+    mul_coeff_right' (y.isPwo_support.add z.isPwo_support) support_mul_subset_add_support]
   simp only [mul_coeff, add_coeff, sum_mul, mul_sum, sum_sigma']
   refine' sum_bij_ne_zero (fun a has ha0 => ⟨⟨a.2.1, a.2.2 + a.1.2⟩, ⟨a.2.2, a.1.2⟩⟩) _ _ _ _
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
-    simp only [and_true_iff, Set.image2_add, eq_self_iff_true, mem_add_antidiagonal, Ne.def,
+    simp only [and_true_iff, Set.image2_add, eq_self_iff_true, mem_addAntidiagonal, Ne.def,
       Set.image_prod, mem_sigma, Set.mem_setOf_eq] at H1 H2⊢
     obtain ⟨⟨H3, nz, rfl⟩, nx, ny, rfl⟩ := H1
     exact ⟨⟨nx, Set.add_mem_add ny nz, (add_assoc _ _ _).symm⟩, ny, nz⟩
   · rintro ⟨⟨i1, j1⟩, k1, l1⟩ ⟨⟨i2, j2⟩, k2, l2⟩ H1 H2 H3 H4 H5
-    simp only [Set.image2_add, Prod.mk.inj_iff, mem_add_antidiagonal, Ne.def, Set.image_prod,
+    simp only [Set.image2_add, Prod.mk.inj_iff, mem_addAntidiagonal, Ne.def, Set.image_prod,
       mem_sigma, Set.mem_setOf_eq, heq_iff_eq] at H1 H3 H5
-    obtain ⟨⟨rfl, H⟩, rfl, rfl⟩ := H5
+    obtain (⟨⟨rfl, _⟩, rfl, rfl⟩ : (k1 = k2 ∧ l1 + j1 = l2 + j2) ∧ l1 = l2 ∧ j1 = j2) :=
+      by simpa using H5
     simp only [and_true_iff, Prod.mk.inj_iff, eq_self_iff_true, heq_iff_eq, ← H1.2.2.2, ← H3.2.2.2]
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
-    simp only [exists_prop, Set.image2_add, Prod.mk.inj_iff, mem_add_antidiagonal, Sigma.exists,
+    simp only [exists_prop, Set.image2_add, Prod.mk.inj_iff, mem_addAntidiagonal, Sigma.exists,
       Ne.def, Set.image_prod, mem_sigma, Set.mem_setOf_eq, heq_iff_eq, Prod.exists] at H1 H2⊢
     obtain ⟨⟨nx, H, rfl⟩, ny, nz, rfl⟩ := H1
     exact
-      ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩, nx, ny, rfl⟩, fun con =>
-        H2 ((mul_assoc _ _ _).symm.trans Con), ⟨rfl, rfl⟩, rfl, rfl⟩
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
+      ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩ , nx, ny, rfl⟩,
+        fun h => H2 <| by rw [←h, mul_assoc], rfl⟩
+  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _ _
     simp [mul_assoc]
-#align hahn_series.mul_assoc' hahn_series.mul_assoc'
 
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
-  { HahnSeries.addCommMonoid,
-    HahnSeries.distrib with
+  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
+    inferInstanceAs (Distrib (HahnSeries Γ R)) with
     zero := 0
     add := (· + ·)
     mul := (· * ·)
@@ -1872,4 +1873,3 @@ instance [Field R] : Field (HahnSeries Γ R) :=
 end Inversion
 
 end HahnSeries
-
