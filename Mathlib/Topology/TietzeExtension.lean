@@ -25,7 +25,7 @@ bounded function, then there exists a bounded extension of the same norm.
 
 The proof mostly follows <https://ncatlab.org/nlab/show/Tietze+extension+theorem>. We patch a small
 gap in the proof for unbounded functions, see
-`exists_extension_forall_exists_le_ge_of_closed_embedding`.
+`exists_extension_forall_exists_le_ge_of_closedEmbedding`.
 
 ## Implementation notes
 
@@ -184,7 +184,7 @@ If `e : X → Y` is a closed embedding and `f : X →ᵇ ℝ` is a bounded conti
 theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a b : ℝ} {e : X → Y}
     (hf : ∀ x, f x ∈ Icc a b) (hle : a ≤ b) (he : ClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ Icc a b) ∧ g ∘ e = f := by
-  rcases exists_extension_norm_eq_of_closed_embedding (f - const X ((a + b) / 2)) he with
+  rcases exists_extension_norm_eq_of_closedEmbedding (f - const X ((a + b) / 2)) he with
     ⟨g, hgf, hge⟩
   refine' ⟨const Y ((a + b) / 2) + g, fun y => _, _⟩
   · suffices ‖f - const X ((a + b) / 2)‖ ≤ (b - a) / 2 by
@@ -232,7 +232,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     `f`, then we need to ensure that these points do not belong to the range of `g`. This is done
     in two almost identical steps. First we deal with the case `∀ x, f x ≠ a`. -/
   obtain ⟨g, hg_mem, hgf⟩ : ∃ g : Y →ᵇ ℝ, (∀ y, ∃ x, g y ∈ Icc (f x) b) ∧ g ∘ e = f := by
-    rcases exists_extension_forall_mem_Icc_of_closed_embedding f hmem hle he with ⟨g, hg_mem, hgf⟩
+    rcases exists_extension_forall_mem_Icc_of_closedEmbedding f hmem hle he with ⟨g, hg_mem, hgf⟩
     -- If `a ∈ range f`, then we are done.
     rcases em (∃ x, f x = a) with (⟨x, rfl⟩ | ha')
     · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
@@ -246,8 +246,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         exact ha' ⟨x, (congr_fun hgf x).symm⟩
       · exact Set.disjoint_singleton_right.2 hac.not_le
     rcases exists_bounded_mem_Icc_of_closed_of_le
-        (he.closed_range.union <| is_closed_Ici.preimage g.continuous)
-        (is_closed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
+        (he.closed_range.union <| isClosed_Ici.preimage g.continuous)
+        (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
       ⟨dg, dg0, dga, dgmem⟩
     replace hgf : ∀ x, (g + dg) (e x) = f x
     · intro x
@@ -282,8 +282,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       exact hb' ⟨x, (congr_fun hgf x).symm⟩
     · exact Set.disjoint_singleton_right.2 hcb.not_le
   rcases exists_bounded_mem_Icc_of_closed_of_le
-      (he.closed_range.union <| is_closed_Iic.preimage g.continuous)
-      (is_closed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
+      (he.closed_range.union <| isClosed_Iic.preimage g.continuous)
+      (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
     ⟨dg, dg0, dgb, dgmem⟩
   replace hgf : ∀ x, (g - dg) (e x) = f x
   · intro x
@@ -330,7 +330,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
     refine' ⟨const Y c, fun y => hc, funext fun x => isEmptyElim x⟩
-  rcases exists_extension_forall_exists_le_ge_of_closed_embedding f he with ⟨g, hg, hgf⟩
+  rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
   refine' ⟨g, fun y => _, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
@@ -345,7 +345,7 @@ that `f x ∈ t` for all `x : s`. Then there exists a bounded continuous real-va
 theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s)
     {t : Set ℝ} [OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g.restrict s = f := by
-  rcases exists_extension_forall_mem_of_closed_embedding f hf hne
+  rcases exists_extension_forall_mem_of_closedEmbedding f hf hne
       (closedEmbedding_subtype_val hs) with
     ⟨g, hg, hgf⟩
   exact ⟨g, hg, FunLike.coe_injective hgf⟩
@@ -367,13 +367,13 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   set F : X →ᵇ ℝ :=
     { toFun := coe ∘ h ∘ f
-      continuous_toFun := continuous_subtype_coe.comp (h.continuous.comp f.continuous)
+      continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
       map_bounded' :=
         bounded_range_iff.1
           ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
   set t' : Set ℝ := coe ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x hx => (h x).2
-  have : ord_connected t' := by
+  have : OrdConnected t' := by
     constructor
     rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
     lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).2.1 (h y).2.2 hz
