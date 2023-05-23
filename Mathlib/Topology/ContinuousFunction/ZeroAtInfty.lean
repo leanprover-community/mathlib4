@@ -43,7 +43,7 @@ you should parametrize over `(F : Type _) [ZeroAtInftyContinuousMapClass F α β
 
 When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`. -/
 structure ZeroAtInftyContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]
-  [TopologicalSpace β] extends ContinuousMap α β : Type max u v where
+    [TopologicalSpace β] extends ContinuousMap α β : Type max u v where
   zero_at_infty' : Tendsto toFun (cocompact α) (𝓝 0)
 #align zero_at_infty_continuous_map ZeroAtInftyContinuousMap
 
@@ -58,7 +58,7 @@ vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
 class ZeroAtInftyContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
-  [Zero β] [TopologicalSpace β] extends ContinuousMapClass F α β where
+    [Zero β] [TopologicalSpace β] extends ContinuousMapClass F α β where
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
 #align zero_at_infty_continuous_map_class ZeroAtInftyContinuousMapClass
 
@@ -229,8 +229,8 @@ theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
 #align zero_at_infty_continuous_map.coe_nsmul_rec ZeroAtInftyContinuousMap.coe_nsmulRec
 
 instance hasNatScalar : SMul ℕ C₀(α, β) :=
-  -- Porting note: Original version didn't have `show Continuous (n • (⇑f) ·) by continuity`
-  ⟨fun n f => ⟨⟨n • ⇑f, show Continuous (n • (⇑f) ·) by continuity⟩,
+  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous n`
+  ⟨fun n f => ⟨⟨n • ⇑f, Continuous.const_smul f.continuous n⟩,
     by simpa [coe_nsmulRec] using zero_at_infty (nsmulRec n f)⟩⟩
 #align zero_at_infty_continuous_map.has_nat_scalar ZeroAtInftyContinuousMap.hasNatScalar
 
@@ -277,8 +277,8 @@ theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
 #align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_zsmulRec
 
 instance hasIntScalar : SMul ℤ C₀(α, β) :=
-  -- Porting note: Original version didn't have `show Continuous (n • (⇑f) ·) by continuity`
-  ⟨fun n f => ⟨⟨n • ⇑f, show Continuous (n • (⇑f) ·) by continuity⟩,
+  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous n`
+  ⟨fun n f => ⟨⟨n • ⇑f, Continuous.const_smul f.continuous n⟩,
     by simpa using zero_at_infty (zsmulRec n f)⟩⟩
 #align zero_at_infty_continuous_map.has_int_scalar ZeroAtInftyContinuousMap.hasIntScalar
 
@@ -293,8 +293,8 @@ instance [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C₀(α, β) 
 
 instance [Zero β] {R : Type _} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C₀(α, β) :=
-  -- Porting note: Original version didn't have `show Continuous (r • (⇑f) ·) by ...`
-  ⟨fun r f => ⟨⟨r • ⇑f, show Continuous (r • (⇑f) ·) by apply Continuous.const_smul; continuity⟩,
+  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
+  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩,
     by simpa [smul_zero] using (zero_at_infty f).const_smul r⟩⟩
 
 @[simp]
@@ -390,9 +390,8 @@ open Metric Set
 variable [MetricSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
 
 protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
-  obtain ⟨K : Set α, hK₁, hK₂⟩ :=
-    mem_cocompact.mp
-      (tendsto_def.mp (zero_at_infty (f : F)) _ (closedBall_mem_nhds (0 : β) zero_lt_one))
+  obtain ⟨K : Set α, hK₁, hK₂⟩ := mem_cocompact.mp
+    (tendsto_def.mp (zero_at_infty (f : F)) _ (closedBall_mem_nhds (0 : β) zero_lt_one))
   obtain ⟨C, hC⟩ := (hK₁.image (map_continuous f)).bounded.subset_ball (0 : β)
   refine' ⟨max C 1 + max C 1, fun x y => _⟩
   have : ∀ x, f x ∈ closedBall (0 : β) (max C 1) := by
@@ -400,9 +399,8 @@ protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x
     by_cases hx : x ∈ K
     · exact (mem_closedBall.mp <| hC ⟨x, hx, rfl⟩).trans (le_max_left _ _)
     · exact (mem_closedBall.mp <| mem_preimage.mp (hK₂ hx)).trans (le_max_right _ _)
-  exact
-    (dist_triangle (f x) 0 (f y)).trans
-      (add_le_add (mem_closedBall.mp <| this x) (mem_closedBall'.mp <| this y))
+  exact (dist_triangle (f x) 0 (f y)).trans
+    (add_le_add (mem_closedBall.mp <| this x) (mem_closedBall'.mp <| this y))
 #align zero_at_infty_continuous_map.bounded ZeroAtInftyContinuousMap.bounded
 
 theorem bounded_range (f : C₀(α, β)) : Bounded (range f) :=
@@ -439,7 +437,7 @@ variable {C : ℝ} {f g : C₀(α, β)}
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBcf`, is a metric space. -/
 noncomputable instance : MetricSpace C₀(α, β) :=
-  MetricSpace.induced _ (toBcf_injective α β) (by infer_instance)
+  MetricSpace.induced _ (toBcf_injective α β) inferInstance
 
 @[simp]
 theorem dist_toBcf_eq_dist {f g : C₀(α, β)} : dist f.toBcf g.toBcf = dist f g :=
@@ -465,17 +463,13 @@ theorem closed_range_toBcf : IsClosed (range (toBcf : C₀(α, β) → α →ᵇ
   have : Tendsto f (cocompact α) (𝓝 0) := by
     refine' Metric.tendsto_nhds.mpr fun ε hε => _
     obtain ⟨_, hg, g, rfl⟩ := hf (ball f (ε / 2)) (ball_mem_nhds f <| half_pos hε)
-    refine'
-      (Metric.tendsto_nhds.mp (zero_at_infty g) (ε / 2) (half_pos hε)).mp
-        (eventually_of_forall fun x hx => _)
+    refine' (Metric.tendsto_nhds.mp (zero_at_infty g) (ε / 2) (half_pos hε)).mp
+      (eventually_of_forall fun x hx => _)
     calc
       dist (f x) 0 ≤ dist (g.toBcf x) (f x) + dist (g x) 0 := dist_triangle_left _ _ _
       _ < dist g.toBcf f + ε / 2 := (add_lt_add_of_le_of_lt (dist_coe_le_dist x) hx)
       _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
-  exact
-    ⟨⟨f.toContinuousMap, this⟩, by
-      ext
-      rfl⟩
+  exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 #align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.closed_range_toBcf
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
@@ -576,7 +570,8 @@ section StarModule
 variable {𝕜 : Type _} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β] [TopologicalSpace β]
   [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
-instance : StarModule 𝕜 C₀(α, β) where star_smul k f := ext fun x => star_smul k (f x)
+instance : StarModule 𝕜 C₀(α, β) where
+  star_smul k f := ext fun x => star_smul k (f x)
 
 end StarModule
 
@@ -621,8 +616,7 @@ def comp (f : C₀(γ, δ)) (g : β →co γ) : C₀(β, δ) where
 #align zero_at_infty_continuous_map.comp ZeroAtInftyContinuousMap.comp
 
 @[simp]
-theorem coe_comp_to_continuous_fun (f : C₀(γ, δ)) (g : β →co γ) :
-    ((f.comp g).toContinuousMap : β → δ) = f ∘ g :=
+theorem coe_comp_to_continuous_fun (f : C₀(γ, δ)) (g : β →co γ) : ((f.comp g) : β → δ) = f ∘ g :=
   rfl
 #align zero_at_infty_continuous_map.coe_comp_to_continuous_fun ZeroAtInftyContinuousMap.coe_comp_to_continuous_fun
 
