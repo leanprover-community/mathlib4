@@ -274,12 +274,29 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 
 -- Porting note: removed this from `of` due to timeouts
-theorem ofCocomplex_comm_sq_aux (Z : C) :
+theorem ofCocomplex_sq_01_comm (Z : C) :
     Injective.ι Z ≫ HomologicalComplex.d (ofCocomplex Z) 0 1 =
     HomologicalComplex.d ((CochainComplex.single₀ C).obj Z) 0 1 ≫ 0 := by
   simp only [ofCocomplex_d, eq_self_iff_true, eqToHom_refl, Category.comp_id,
     dite_eq_ite, if_true, comp_zero]
   exact (exact_f_d (Injective.ι Z)).w
+
+-- Porting note: removed this from `of` due to timeouts
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
+theorem exact_ofCocomplex (Z : C) (n : ℕ) :
+    Exact (HomologicalComplex.d (ofCocomplex Z) n (n + 1))
+    (HomologicalComplex.d (ofCocomplex Z) (n + 1) (n + 2)) :=
+  match n with
+    | 0 => by simp; apply exact_f_d
+    | m+1 => by
+      change Exact (HomologicalComplex.d (ofCocomplex Z) (m + 1) (m + 2))
+        (HomologicalComplex.d (ofCocomplex Z) (m + 2) (m + 3))
+      simp
+      rw [if_pos (c := m + 1 + 1 = m + 2) rfl]
+      erw [if_pos (c := m + 2 + 1 = m + 3) rfl]
+      apply exact_f_d
+-- Porting note: used to be simp; apply exact_f_d
 
 -- Porting note: still very slow
 /-- In any abelian category with enough injectives,
@@ -290,19 +307,13 @@ def of (Z : C) : InjectiveResolution Z :=
     ι :=
       CochainComplex.mkHom
         ((CochainComplex.single₀ C).obj Z) (ofCocomplex Z) (Injective.ι Z) 0
-          (ofCocomplex_comm_sq_aux Z) fun n _ => by
+          (ofCocomplex_sq_01_comm Z) fun n _ => by
           -- Porting note: used to be ⟨0, by ext⟩
             use 0
             apply HasZeroObject.from_zero_ext
     injective := by rintro (_ | _ | _ | n) <;> · apply Injective.injective_under
     exact₀ := by simpa using exact_f_d (Injective.ι Z)
-    exact := fun n =>
-      match n with
-      | 0 => by simp; apply exact_f_d
-      | _ => by simp; sorry -- should be apply exact_f_d
-      -- rintro (_ | n) <;>
-        -- · simp
-        --   apply exact_f_d
+    exact := exact_ofCocomplex Z
     mono := Injective.ι_mono Z }
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of CategoryTheory.InjectiveResolution.of
