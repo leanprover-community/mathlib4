@@ -175,7 +175,7 @@ theorem exists_norm_eq_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs 
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding and a bounded continuous function that takes values in a non-trivial closed interval.
-See also `exists_extension_forall_mem_of_closed_embedding` for a more general statement that works
+See also `exists_extension_forall_mem_of_closedEmbedding` for a more general statement that works
 for any interval (finite or infinite, open or closed).
 
 If `e : X → Y` is a closed embedding and `f : X →ᵇ ℝ` is a bounded continuous function such that
@@ -226,7 +226,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   have hsub : c - a = b - c := by
     field_simp
     ring
-  /- Due to `exists_extension_forall_mem_Icc_of_closed_embedding`, there exists an extension `g`
+  /- Due to `exists_extension_forall_mem_Icc_of_closedEmbedding`, there exists an extension `g`
     such that `g y ∈ [a, b]` for all `y`. However, if `a` and/or `b` do not belong to the range of
     `f`, then we need to ensure that these points do not belong to the range of `g`. This is done
     in two almost identical steps. First we deal with the case `∀ x, f x ≠ a`. -/
@@ -381,7 +381,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
     rcases hz with ⟨z, hz, rfl⟩
     exact ⟨z, hs.out hx hy hz, rfl⟩
   have hFt : ∀ x, F x ∈ t' := fun x => mem_image_of_mem _ (hf x)
-  rcases F.exists_extension_forall_mem_of_closed_embedding hFt (hne.image _) he with ⟨G, hG, hGF⟩
+  rcases F.exists_extension_forall_mem_of_closedEmbedding hFt (hne.image _) he with ⟨G, hG, hGF⟩
   set g : C(Y, ℝ) :=
     ⟨h.symm ∘ cod_restrict G _ fun y => ht_sub (hG y),
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
