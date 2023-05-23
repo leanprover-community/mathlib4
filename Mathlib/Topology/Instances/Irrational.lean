@@ -17,7 +17,7 @@ import Mathlib.Topology.MetricSpace.Baire
 
 In this file we prove the following theorems:
 
-* `is_Gδ_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
+* `isGδ_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
   form a dense Gδ set;
 
 * `Irrational.eventually_forall_le_dist_cast_div`,
