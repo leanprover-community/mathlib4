@@ -8,10 +8,10 @@ Authors: Jeremy Avigad, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Functor.Multivariate
-import Mathbin.Data.Pfunctor.Multivariate.Basic
-import Mathbin.Data.Pfunctor.Multivariate.M
-import Mathbin.Data.Qpf.Multivariate.Basic
+import Mathlib.Control.Functor.Multivariate
+import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.M
+import Mathlib.Data.Qpf.Multivariate.Basic
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.
@@ -118,8 +118,7 @@ def Cofix.map {α β : TypeVec n} (g : α ⟹ β) : Cofix F α → Cofix F β :=
               intro a₁ a₂ ra₁a₂
               apply Quot.sound
               exact ⟨a₁, a₂, ra₁a₂, rfl, rfl⟩)
-        have hu : (Quot.mk r' ∘ fun x : q.P.M α => g <$$> x) = u ∘ Quot.mk r :=
-          by
+        have hu : (Quot.mk r' ∘ fun x : q.P.M α => g <$$> x) = u ∘ Quot.mk r := by
           ext x
           rfl
         rw [b₁eq, b₂eq, M.dest_map, M.dest_map, ← q.P.comp_map, ← q.P.comp_map]
@@ -189,8 +188,7 @@ def Cofix.corec₁ {α : TypeVec n} {β : Type u}
 #align mvqpf.cofix.corec₁ MvQPF.Cofix.corec₁
 
 theorem Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
-    Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x :=
-  by
+    Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x := by
   conv =>
     lhs
     rw [cofix.dest, cofix.corec];
@@ -240,8 +238,7 @@ private theorem cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
       append_fun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> abs (M.dest q.P a) =
         append_fun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> abs (M.dest q.P b) :=
       by rw [append_fun_comp_id, comp_map, comp_map] <;> exact h _ _ r'ab
-    have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v :=
-      by
+    have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
       dsimp [r']
@@ -326,8 +323,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β 
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F α => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
-    (fun x y ⟨x', Qx', xeq, yeq⟩ =>
-      by
+    (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f', f₀, f₁, ux'eq, vx'eq, h'⟩
       rw [liftr_iff]
       refine'
@@ -340,8 +336,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β 
     _ _ ⟨x, Qx, rfl, rfl⟩
 #align mvqpf.cofix.bisim' MvQPF.Cofix.bisim'
 
-theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x :=
-  by
+theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
   apply cofix.bisim_rel (fun x y : cofix F α => x = cofix.mk (cofix.dest y)) _ _ _ rfl; dsimp
   intro x y h; rw [h]
   conv =>
@@ -356,8 +351,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
 #align mvqpf.cofix.mk_dest MvQPF.Cofix.mk_dest
 
 theorem Cofix.dest_mk {α : TypeVec n} (x : F (α.append1 <| Cofix F α)) :
-    Cofix.dest (Cofix.mk x) = x :=
-  by
+    Cofix.dest (Cofix.mk x) = x := by
   have : cofix.mk ∘ cofix.dest = @_root_.id (cofix F α) := funext cofix.mk_dest
   rw [cofix.mk, cofix.dest_corec, ← comp_map, ← cofix.mk, ← append_fun_comp, this, id_comp,
     append_fun_id_id, MvFunctor.id_map]
@@ -384,8 +378,7 @@ omit q
 
 theorem liftr_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F'] [LawfulMvFunctor F']
     (R : β ⊗ β ⟹ repeat n Prop) (x : F' α) (f g : α ⟹ β) (h : α ⟹ Subtype_ R)
-    (hh : subtypeVal _ ⊚ h = (f ⊗' g) ⊚ prod.diag) : LiftR' R (f <$$> x) (g <$$> x) :=
-  by
+    (hh : subtypeVal _ ⊚ h = (f ⊗' g) ⊚ prod.diag) : LiftR' R (f <$$> x) (g <$$> x) := by
   rw [liftr_def]
   exists h <$$> x
   rw [MvFunctor.map_map, comp_assoc, hh, ← comp_assoc, fst_prod_mk, comp_assoc, fst_diag]
@@ -416,8 +409,7 @@ theorem liftr_map_last [LawfulMvFunctor F] {α : TypeVec n} {ι ι'} (R : ι' �
     ofSubtype _ ::: id
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
-      ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag :=
-    by
+      ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
     dsimp [c, b]
     apply eq_of_drop_last_eq
     · dsimp
@@ -440,8 +432,7 @@ theorem liftr_map_last [LawfulMvFunctor F] {α : TypeVec n} {ι ι'} (R : ι' �
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem liftr_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
-    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x :=
-  by
+    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
   have := liftr_map_last R x f id hh
   rwa [append_fun_id_id, MvFunctor.id_map] at this
 #align mvqpf.liftr_map_last' MvQPF.liftr_map_last'
@@ -449,8 +440,7 @@ theorem liftr_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι
 end LiftrMap
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x :=
-  by
+theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : cofix F α => cofix.abs (cofix.repr y) = x
   refine' cofix.bisim₂ R _ _ _ rfl
   clear x; rintro x y h; dsimp [R] at h; subst h
@@ -522,8 +512,7 @@ end Tactic
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
-    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) :=
-  by
+    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) := by
   mv_bisim x₀
   rw [Ha, Hb, cofix.dest_corec, cofix.dest_corec]
   rw [MvFunctor.map_map, ← append_fun_comp_id]
@@ -533,8 +522,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
 
 theorem Cofix.dest_corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β)))
     (x : β) :
-    Cofix.dest (Cofix.corec' g x) = appendFun id (Sum.elim id (Cofix.corec' g)) <$$> g x :=
-  by
+    Cofix.dest (Cofix.corec' g x) = appendFun id (Sum.elim id (Cofix.corec' g)) <$$> g x := by
   rw [cofix.corec', cofix.dest_corec]; dsimp
   congr with (i | i) <;> rw [corec_roll] <;> dsimp [cofix.corec']
   · mv_bisim i
