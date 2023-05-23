@@ -43,10 +43,10 @@ theorem Squarefree.factorization_le_one {n : ℕ} (p : ℕ) (hn : Squarefree n) 
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp
   rw [multiplicity.squarefree_iff_multiplicity_le_one] at hn
-  by_cases hp : p.prime
+  by_cases hp : p.Prime
   · have := hn p
-    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff] at
-      this
+    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff]
+      at this
     exact_mod_cast this
   · rw [factorization_eq_zero_of_non_prime _ hp]
     exact zero_le_one
@@ -71,14 +71,14 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     ⟨by
       rintro rfl
       simp, fun h => eq_of_factorization_eq hn.ne_zero hm.ne_zero fun p => _⟩
-  by_cases hp : p.prime
+  by_cases hp : p.Prime
   · have h₁ := h _ hp
     rw [← not_iff_not, hp.dvd_iff_one_le_factorization hn.ne_zero, not_le, lt_one_iff,
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
-    have h₂ := squarefree.factorization_le_one p hn
-    have h₃ := squarefree.factorization_le_one p hm
+    have h₂ := Squarefree.factorization_le_one p hn
+    have h₃ := Squarefree.factorization_le_one p hm
     rw [Nat.le_add_one_iff, le_zero_iff] at h₂ h₃
-    cases h₂
+    cases' h₂ with h₂ h₂
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
       rw [← h₁, h₂]
@@ -92,8 +92,8 @@ theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     ⟨fun h => _, by
       rintro ⟨hn, rfl⟩
       simpa⟩
-  rcases eq_or_ne n 0 with (rfl | hn₀)
-  · simpa [zero_pow hk.bot_lt] using h
+  rcases eq_or_ne n 0 with (rfl | -)
+  · simp [zero_pow hk.bot_lt] at h
   refine' ⟨h.squarefree_of_dvd (dvd_pow_self _ hk), by_contradiction fun h₁ => _⟩
   have : 2 ≤ k := k.two_le_iff.mpr ⟨hk, h₁⟩
   apply hn (Nat.isUnit_iff.1 (h _ _))
@@ -102,7 +102,7 @@ theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
 #align nat.squarefree_pow_iff Nat.squarefree_pow_iff
 
 theorem squarefree_and_prime_pow_iff_prime {n : ℕ} : Squarefree n ∧ IsPrimePow n ↔ Prime n := by
-  refine' Iff.symm ⟨fun hn => ⟨hn.Squarefree, hn.IsPrimePow⟩, _⟩
+  refine' Iff.symm ⟨fun hn => ⟨hn.squarefree, hn.isPrimePow⟩, _⟩
   rw [isPrimePow_nat_iff]
   rintro ⟨h, p, k, hp, hk, rfl⟩
   rw [squarefree_pow_iff hp.ne_one hk.ne'] at h
@@ -115,19 +115,15 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
   | n, k =>
     if h : n < k * k then none
     else
-      have : Nat.sqrt n + 2 - (k + 2) < Nat.sqrt n + 2 - k := by
-        rw [Nat.add_sub_add_right]
+      have : Nat.sqrt n - k < Nat.sqrt n + 2 - k := by
         exact Nat.minFac_lemma n k h
       if k ∣ n then
         let n' := n / k
-        have : Nat.sqrt n' + 2 - (k + 2) < Nat.sqrt n + 2 - k :=
-          lt_of_le_of_lt
-            (Nat.sub_le_sub_right (Nat.add_le_add_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) _)
-              _)
-            this
-        if k ∣ n' then some k else min_sq_fac_aux n' (k + 2)
-      else min_sq_fac_aux n (k + 2)termination_by'
-  ⟨_, measure_wf fun ⟨n, k⟩ => Nat.sqrt n + 2 - k⟩
+        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
+        lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
+        if k ∣ n' then some k else minSqFacAux n' (k + 2)
+      else minSqFacAux n (k + 2)
+termination_by  _ n k => sqrt n + 2 - k
 #align nat.min_sq_fac_aux Nat.minSqFacAux
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
@@ -156,7 +152,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
         contradiction
     (coprime_mul_iff_right.2 ⟨this, this⟩).mul_dvd_of_dvd_of_dvd dk dp
   cases' o with d
-  · rw [min_sq_fac_prop, squarefree_iff_prime_squarefree] at H⊢
+  · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H⊢
     exact fun p pp dp => H p pp ((dvd_div_iff dk).2 (this _ pp dp))
   · obtain ⟨H1, H2, H3⟩ := H
     simp only [dvd_div_iff dk] at H2 H3
@@ -167,7 +163,7 @@ theorem minSqFacAux_has_prop :
     ∀ {n : ℕ} (k),
       0 < n → ∀ i, k = 2 * i + 3 → (∀ m, Prime m → m ∣ n → k ≤ m) → MinSqFacProp n (minSqFacAux n k)
   | n, k => fun n0 i e ih => by
-    rw [min_sq_fac_aux]
+    rw [minSqFacAux]
     by_cases h : n < k * k <;> simp [h]
     · refine' squarefree_iff_prime_squarefree.2 fun p pp d => _
       have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
@@ -376,6 +372,9 @@ theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
 
 end Nat
 
+-- Porting note: comment out NormNum tactic, to be moved to another file.
+/-
+
 /-! ### Square-free prover -/
 
 
@@ -567,3 +566,4 @@ end NormNum
 
 end Tactic
 
+-/
