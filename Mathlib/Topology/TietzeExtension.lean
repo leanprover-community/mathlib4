@@ -147,7 +147,8 @@ theorem exists_extension_norm_eq_of_closed_embedding' (f : X →ᵇ ℝ) (e : C(
   refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
     refine'
-      (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1) hg_dist hg_cau.tendsto_limUnder).trans_eq _
+      (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1)
+        hg_dist hg_cau.tendsto_limUnder).trans_eq _
     field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
   · rw [← hge]
     exact norm_compContinuous_le _ _
