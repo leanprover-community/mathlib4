@@ -17,6 +17,7 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Adjoining roots of polynomials
@@ -49,6 +50,7 @@ The main definitions are in the `adjoin_root` namespace.
   bijection between algebra homomorphisms from `adjoin_root` and roots of `f` in `S`
 
 -/
+set_option autoImplicit false
 
 
 noncomputable section
@@ -161,11 +163,11 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
 variable {S}
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  (Algebra.FiniteType.polynomial R).ofSurjective _ (Ideal.Quotient.mkₐ_surjective R _)
+  (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
 #align adjoin_root.finite_type AdjoinRoot.finiteType
 
 theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
-  (Algebra.FinitePresentation.polynomial R).Quotient (Submodule.fg_span_singleton f)
+  (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
 #align adjoin_root.finite_presentation AdjoinRoot.finitePresentation
 
 /-- The adjoined root. -/
@@ -203,23 +205,25 @@ theorem mk_self : mk f f = 0 :=
 #align adjoin_root.mk_self AdjoinRoot.mk_self
 
 @[simp]
-theorem mk_c (x : R) : mk f (C x) = x :=
+theorem mk_C (x : R) : mk f (C x) = x :=
   rfl
-#align adjoin_root.mk_C AdjoinRoot.mk_c
+set_option linter.uppercaseLean3 false in
+#align adjoin_root.mk_C AdjoinRoot.mk_C
 
 @[simp]
-theorem mk_x : mk f X = root f :=
+theorem mk_X : mk f X = root f :=
   rfl
-#align adjoin_root.mk_X AdjoinRoot.mk_x
+set_option linter.uppercaseLean3 false in
+#align adjoin_root.mk_X AdjoinRoot.mk_X
 
 theorem mk_ne_zero_of_degree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0) (hd : degree g < degree f) :
     mk f g ≠ 0 :=
-  mk_eq_zero.Not.2 <| hf.not_dvd_of_degree_lt h0 hd
+  mk_eq_zero.not.2 <| hf.not_dvd_of_degree_lt h0 hd
 #align adjoin_root.mk_ne_zero_of_degree_lt AdjoinRoot.mk_ne_zero_of_degree_lt
 
 theorem mk_ne_zero_of_natDegree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0)
     (hd : natDegree g < natDegree f) : mk f g ≠ 0 :=
-  mk_eq_zero.Not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
+  mk_eq_zero.not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
 #align adjoin_root.mk_ne_zero_of_nat_degree_lt AdjoinRoot.mk_ne_zero_of_natDegree_lt
 
 @[simp]
@@ -228,13 +232,14 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     (fun x => by
       rw [aeval_C]
       rfl)
-    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x ih => by
+    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ih => by
     rw [AlgHom.map_mul, aeval_C, AlgHom.map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow,
       mk_X]
     rfl
 #align adjoin_root.aeval_eq AdjoinRoot.aeval_eq
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ :=
+  by sorry <;> exact
   Algebra.eq_top_iff.2 fun x =>
     induction_on f x fun p =>
       (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
@@ -242,11 +247,11 @@ theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = �
 
 @[simp]
 theorem eval₂_root (f : R[X]) : f.eval₂ (of f) (root f) = 0 := by
-  rw [← algebra_map_eq, ← aeval_def, aeval_eq, mk_self]
+  rw [← algebraMap_eq, ← aeval_def, aeval_eq, mk_self]
 #align adjoin_root.eval₂_root AdjoinRoot.eval₂_root
 
 theorem isRoot_root (f : R[X]) : IsRoot (f.map (of f)) (root f) := by
-  rw [is_root, eval_map, eval₂_root]
+  rw [IsRoot, eval_map, eval₂_root]
 #align adjoin_root.is_root_root AdjoinRoot.isRoot_root
 
 theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R (root f) :=
@@ -270,10 +275,10 @@ variable [CommRing S]
 
 /-- Lift a ring homomorphism `i : R →+* S` to `adjoin_root f →+* S`. -/
 def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S := by
-  apply Ideal.Quotient.lift _ (eval₂_ring_hom i x)
+  apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂_ring_hom, h, MulZeroClass.zero_mul]
+  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, MulZeroClass.zero_mul]
 #align adjoin_root.lift AdjoinRoot.lift
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
@@ -313,18 +318,18 @@ theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
 
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
-  have h : ϕ.to_ring_hom.comp (of f) = algebraMap R S := ring_hom.ext_iff.mpr ϕ.commutes
-  rw [aeval_def, ← h, ← RingHom.map_zero ϕ.to_ring_hom, ← eval₂_root f, hom_eval₂]
+  have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
+  rw [aeval_def, ← h, ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 #align adjoin_root.aeval_alg_hom_eq_zero AdjoinRoot.aeval_algHom_eq_zero
 
 @[simp]
 theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
-  suffices ϕ.equalizer (lift_hom f (ϕ (root f)) (aeval_alg_hom_eq_zero f ϕ)) = ⊤ by
-    exact (AlgHom.ext fun x => (set_like.ext_iff.mp this x).mpr Algebra.mem_top).symm
-  rw [eq_top_iff, ← adjoin_root_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
-  exact (@lift_root _ _ _ _ _ _ _ (aeval_alg_hom_eq_zero f ϕ)).symm
+  suffices ϕ.equalizer (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
+    exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
+  rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
+  exact (@lift_root _ _ _ _ _ _ _ (aeval_algHom_eq_zero f ϕ)).symm
 #align adjoin_root.lift_hom_eq_alg_hom AdjoinRoot.liftHom_eq_algHom
 
 variable (hfx : aeval a f = 0)
@@ -357,8 +362,8 @@ theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← f.map_mul, algebra_map_eq, root_is_inv, map_one])
-        (by rw [← g.commutes, ← g.map_mul, algebra_map_eq, root_is_inv, map_one]))⟩
+        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_is_inv, map_one])
+        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_is_inv, map_one]))⟩
 #align adjoin_root.alg_hom_subsingleton AdjoinRoot.algHom_subsingleton
 
 end AdjoinInv
@@ -369,13 +374,13 @@ variable {f}
 
 theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
-    (Ideal.span_singleton_prime hf.NeZero).mpr hf
+    (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 #align adjoin_root.is_domain_of_prime AdjoinRoot.isDomain_of_prime
 
 theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : NoZeroSMulDivisors R (AdjoinRoot f) :=
-  haveI := is_domain_of_prime hf
-  no_zero_smul_divisors.iff_algebra_map_injective.mpr (of.injective_of_degree_ne_zero hf')
+  haveI := isDomain_of_prime hf
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
 #align adjoin_root.no_zero_smul_divisors_of_prime_of_degree_ne_zero AdjoinRoot.noZeroSMulDivisors_of_prime_of_degree_ne_zero
 
 end Prime
@@ -387,36 +392,43 @@ section Irreducible
 variable [Field K] {f : K[X]}
 
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
-  PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out _
+  PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { AdjoinRoot.commRing f,
+  { instCommRingAdjoinRoot f,
     Ideal.Quotient.field
       (span {f} : Ideal K[X]) with
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
-      rw [Rat.cast_mk', _root_.map_mul, _root_.map_int_cast, map_inv₀, map_natCast]
+      -- porting note: was
+      -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
+      convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
+      . simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      . simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
-      AdjoinRoot.induction_on _ x fun p => by
-        rw [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul] }
+      -- porting note: I gave the explicit motive and changed `rw` to `simp`.
+      AdjoinRoot.induction_on (C := fun y => a • y = (of f) a * y) x fun p => by
+        simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
+  }
 #align adjoin_root.field AdjoinRoot.field
 
-theorem coe_injective (h : degree f ≠ 0) : Function.Injective (coe : K → AdjoinRoot f) :=
+theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
   have := AdjoinRoot.nontrivial f h
-  (of f).Injective
+  (of f).injective
 #align adjoin_root.coe_injective AdjoinRoot.coe_injective
 
-theorem coe_injective' [Fact (Irreducible f)] : Function.Injective (coe : K → AdjoinRoot f) :=
-  (of f).Injective
+theorem coe_injective' [Fact (Irreducible f)] : Function.Injective ((↑) : K → AdjoinRoot f) :=
+  (of f).injective
 #align adjoin_root.coe_injective' AdjoinRoot.coe_injective'
 
 variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
-    (X - C (root f)) * (f.map (of f) / (X - C (root f))) = f.map (of f) :=
+    -- porting note: I do not know how to get this to typecheck without using the ugly `Div.div`
+    (X - C (root f)) * (Div.div (f.map (of f)) (X - C (root f))) = f.map (of f) :=
   mul_div_eq_iff_isRoot.2 <| isRoot_root _
 #align adjoin_root.mul_div_root_cancel AdjoinRoot.mul_div_root_cancel
 
@@ -452,15 +464,18 @@ theorem modByMonicHom_mk (hg : g.Monic) (f : R[X]) : modByMonicHom hg (mk g f) =
   rfl
 #align adjoin_root.mod_by_monic_hom_mk AdjoinRoot.modByMonicHom_mk
 
-theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicHom hg) := fun f =>
-  induction_on g f fun f => by
-    rw [mod_by_monic_hom_mk hg, mk_eq_mk, mod_by_monic_eq_sub_mul_div _ hg, sub_sub_cancel_left,
-      dvd_neg]
-    apply dvd_mul_right
+-- porting note: the following proof was partly in term-mode, but I was not able to fix it.
+theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicHom hg) := by
+  intro f
+  apply AdjoinRoot.induction_on (C := fun h => (mk g) ((modByMonicHom hg) h) = h)
+  intro f
+  rw [modByMonicHom_mk hg, mk_eq_mk, modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel_left,
+    dvd_neg]
+  apply dvd_mul_right
 #align adjoin_root.mk_left_inverse AdjoinRoot.mk_leftInverse
 
 theorem mk_surjective (hg : g.Monic) : Function.Surjective (mk g) :=
-  (mk_leftInverse hg).Surjective
+  (mk_leftInverse hg).surjective
 #align adjoin_root.mk_surjective AdjoinRoot.mk_surjective
 
 /-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `adjoin_root g`,
@@ -470,25 +485,29 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
     { toFun := fun f i => (modByMonicHom hg f).coeff i
       invFun := fun c => mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
       map_add' := fun f₁ f₂ =>
-        funext fun i => by simp only [(mod_by_monic_hom hg).map_add, coeff_add, Pi.add_apply]
+        funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
-          simp only [(mod_by_monic_hom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
-      left_inv := fun f =>
-        induction_on g f fun f =>
+          simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
+      -- porting note: another proof that I converted to tactic mode
+      left_inv := by
+        intro f
+        apply AdjoinRoot.induction_on (C := fun j => (mk g) (∑ i : Fin (natDegree g), (monomial i) (coeff ((modByMonicHom hg) j) i)) = j)
+        intro f
+        exact
           Eq.symm <|
             mk_eq_mk.mpr <| by
-              simp only [mod_by_monic_hom_mk, sum_mod_by_monic_coeff hg degree_le_nat_degree]
-              rw [mod_by_monic_eq_sub_mul_div _ hg, sub_sub_cancel]
+              simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
+              rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
               exact dvd_mul_right _ _
       right_inv := fun x =>
         funext fun i => by
           nontriviality R
-          simp only [mod_by_monic_hom_mk]
-          rw [(mod_by_monic_eq_self_iff hg).mpr, finset_sum_coeff]
+          simp only [modByMonicHom_mk]
+          rw [(modByMonic_eq_self_iff hg).mpr, finset_sum_coeff]
           · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
-            exact (degree_eq_nat_degree <| hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
+            exact (degree_eq_natDegree <| hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
 #align adjoin_root.power_basis_aux' AdjoinRoot.powerBasisAux'
 
 /-- This lemma could be autogenerated by `@[simps]` but unfortunately that would require
@@ -513,9 +532,9 @@ where `g` is a monic polynomial of degree `d`. -/
 def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
   gen := root g
   dim := g.natDegree
-  Basis := powerBasisAux' hg
+  basis := powerBasisAux' hg
   basis_eq_pow i := by
-    simp only [power_basis_aux', Basis.coe_ofEquivFun, LinearEquiv.coe_symm_mk]
+    simp only [powerBasisAux', Basis.coe_ofEquivFun, LinearEquiv.coe_symm_mk]
     rw [Finset.sum_eq_single i]
     · rw [Function.update_same, monomial_one_right_eq_X_pow, (mk g).map_pow, mk_X]
     · intro j _ hj
@@ -534,7 +553,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
-  have f'_monic : monic _ := monic_mul_leading_coeff_inv hf
+  have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, MulZeroClass.zero_mul]
   intro q q_monic q_aeval
@@ -543,29 +562,32 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
     · simp only [RingHom.comp_apply, mk_C, lift_of]
       rfl
     · simp only [RingHom.comp_apply, mk_X, lift_root]
-  rw [degree_eq_nat_degree f'_monic.ne_zero, degree_eq_nat_degree q_monic.ne_zero,
-    WithBot.coe_le_coe, nat_degree_mul hf, nat_degree_C, add_zero]
-  apply nat_degree_le_of_dvd
+  rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
+    Nat.cast_withBot, Nat.cast_withBot, -- porting note: added
+    WithBot.coe_le_coe, natDegree_mul hf, natDegree_C, add_zero]
+  apply natDegree_le_of_dvd
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
-    rwa [← Ideal.mem_span_singleton, ← Ideal.Quotient.eq_zero_iff_mem]
+    -- porting note: `rwa` should be enough, but Lean gets stuck on `exact this`.
+    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.eq_zero_iff_mem]
+    sorry
   · exact q_monic.ne_zero
-  · rwa [Ne.def, C_eq_zero, inv_eq_zero, leading_coeff_eq_zero]
+  · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 #align adjoin_root.minpoly_root AdjoinRoot.minpoly_root
 
 /-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `adjoin_root f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
 def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := by
-  set f' := f * C f.leading_coeff⁻¹ with f'_def
-  have deg_f' : f'.nat_degree = f.nat_degree := by
-    rw [nat_degree_mul hf, nat_degree_C, add_zero]
-    · rwa [Ne.def, C_eq_zero, inv_eq_zero, leading_coeff_eq_zero]
+  let f' := f * C f.leadingCoeff⁻¹
+  have deg_f' : f'.natDegree = f.natDegree := by
+    rw [natDegree_mul hf, natDegree_C, add_zero]
+    · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
-  apply @Basis.mk _ _ _ fun i : Fin f.nat_degree => root f ^ i.val
+  apply @Basis.mk _ _ _ fun i : Fin f.natDegree => root f ^ i.val
   · rw [← deg_f', ← minpoly_eq]
     exact linearIndependent_pow (root f)
   · rintro y -
     rw [← deg_f', ← minpoly_eq]
-    apply (is_integral_root hf).mem_span_pow
+    apply (isIntegral_root hf).mem_span_pow
     obtain ⟨g⟩ := y
     use g
     rw [aeval_eq]
@@ -574,22 +596,22 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `adjoin_root f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
-@[simps]
+@[simps!]  -- porting note: was `[simps]`
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree
-  Basis := powerBasisAux hf
-  basis_eq_pow := Basis.mk_apply _ _
+  basis := powerBasisAux hf
+  basis_eq_pow := Basis.mk_apply _ sorry  -- porting note: was `_` in mathlib3
 #align adjoin_root.power_basis AdjoinRoot.powerBasis
 
 theorem minpoly_powerBasis_gen (hf : f ≠ 0) :
     minpoly K (powerBasis hf).gen = f * C f.leadingCoeff⁻¹ := by
-  rw [power_basis_gen, minpoly_root hf]
+  rw [powerBasis_gen, minpoly_root hf]
 #align adjoin_root.minpoly_power_basis_gen AdjoinRoot.minpoly_powerBasis_gen
 
-theorem minpoly_powerBasis_gen_of_monic (hf : f.Monic) (hf' : f ≠ 0 := hf.NeZero) :
+theorem minpoly_powerBasis_gen_of_monic (hf : f.Monic) (hf' : f ≠ 0 := hf.ne_zero) :
     minpoly K (powerBasis hf').gen = f := by
-  rw [minpoly_power_basis_gen hf', hf.leading_coeff, inv_one, C.map_one, mul_one]
+  rw [minpoly_powerBasis_gen hf', hf.leadingCoeff, inv_one, C.map_one, mul_one]
 #align adjoin_root.minpoly_power_basis_gen_of_monic AdjoinRoot.minpoly_powerBasis_gen_of_monic
 
 end PowerBasis
@@ -620,9 +642,10 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
   rfl
 #align adjoin_root.minpoly.to_adjoin_apply' AdjoinRoot.Minpoly.toAdjoin_apply'
 
-theorem Minpoly.toAdjoin.apply_x :
-    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by simp
-#align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_x
+theorem Minpoly.toAdjoin.applyX :
+    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by simp; sorry
+set_option linter.uppercaseLean3 false in
+#align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.applyX
 
 variable (R x)
 
@@ -631,7 +654,7 @@ theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x)
   refine' adjoin_le _
   simp only [AlgHom.coe_range, Set.mem_range]
   rintro ⟨y₁, y₂⟩ h
-  refine' ⟨mk (minpoly R x) X, by simpa using h.symm⟩
+  refine' ⟨mk (minpoly R x) X, by sorry <;> simpa using h.symm⟩
 #align adjoin_root.minpoly.to_adjoin.surjective AdjoinRoot.Minpoly.toAdjoin.surjective
 
 end minpoly
@@ -656,11 +679,15 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
       h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
-    left_inv := fun x => induction_on g x fun f => by rw [lift_hom_mk, pb.lift_aeval, aeval_eq]
+    -- porting note: another term-mode proof converted to tactic-mode.
+    left_inv := fun x => by
+      apply induction_on (C := fun y => (PowerBasis.lift pb (root g) h₁) ((liftHom g pb.gen h₂) y) = y)
+      intro f
+      rw [liftHom_mk, pb.lift_aeval, aeval_eq]
     right_inv := fun x => by
       nontriviality S
-      obtain ⟨f, hf, rfl⟩ := pb.exists_eq_aeval x
-      rw [pb.lift_aeval, aeval_eq, lift_hom_mk] }
+      obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
+      rw [pb.lift_aeval, aeval_eq, liftHom_mk] }
 #align adjoin_root.equiv' AdjoinRoot.equiv'
 
 @[simp]
@@ -689,15 +716,16 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
     (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ (f.map (algebraMap F L)).roots } :=
   (powerBasis hf).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [power_basis_gen, minpoly_root hf, Polynomial.map_mul, roots_mul, Polynomial.map_C,
+      rw [powerBasis_gen, minpoly_root hf, Polynomial.map_mul, roots_mul, Polynomial.map_C,
         roots_C, add_zero, Equiv.refl_apply]
-      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leading_coeff_inv hf))
+      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leadingCoeff_inv hf))
 #align adjoin_root.equiv AdjoinRoot.equiv
 
 end Field
 
 end Equiv
-
+#exit
+-- porting note: hic sunt leones
 section
 
 open Ideal DoubleQuot Polynomial
@@ -904,4 +932,3 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
-
