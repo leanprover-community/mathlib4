@@ -424,7 +424,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
               /-
-              ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s) = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
+              Lean 3 ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s) = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
               -/
               dsimp
               sorry
@@ -534,7 +534,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · rw [(restriction _).map_sub, RingHom.map_sub, restriction_of, dif_pos,
           restriction_of, dif_pos, lift_of, lift_of]
         dsimp only
-        have := DirectedSystem.map_map fun i j h => f' i j h
+        have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
         dsimp only at this
         rw [this]
         exact sub_self _
@@ -542,7 +542,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl
-      · rw [(restriction _).map_sub, (FreeCommRing.lift _).map_sub, restriction_of, dif_pos,
+        -- porting note: was things like (restriction _).map_sub
+        -- and (FreeCommRing,lift _).map_sub
+      · rw [RingHom.map_sub, RingHom.map_sub, restriction_of, dif_pos,
           (restriction _).map_one, lift_of, (FreeCommRing.lift _).map_one]
         dsimp only
         rw [(f' i i _).map_one, sub_self]
@@ -555,7 +557,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
-          restriction_of, dif_pos, dif_pos, dif_pos, (FreeCommRing.lift _).map_sub,
+          restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
           (FreeCommRing.lift _).map_add, lift_of, lift_of, lift_of]
         dsimp only
         rw [(f' i i _).map_add]
@@ -569,14 +571,15 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
-          restriction_of, dif_pos, dif_pos, dif_pos, (FreeCommRing.lift _).map_sub,
+          restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
           (FreeCommRing.lift _).map_mul, lift_of, lift_of, lift_of]
         dsimp only
         rw [(f' i i _).map_mul]
         exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
     refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
-    rw [(restriction _).map_zero, (FreeCommRing.lift _).map_zero]
+    -- porting note: `RingHom.map_zero` was `(restriction _).map_zero`
+    rw [RingHom.map_zero, (FreeCommRing.lift _).map_zero]
   · rintro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
@@ -588,8 +591,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
           (isSupported_upwards hyt <| Set.subset_union_right s t),
         _⟩
-    ·
-      rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, ←
+    · -- porting note: was `(restriction _).map_add`
+      rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
         of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
         of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
         (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
@@ -606,7 +609,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
           (isSupported_upwards hyt <| Set.subset_union_right (↑s) t),
         _⟩
-    rw [(restriction _).map_mul, (FreeCommRing.lift _).map_mul, ←
+    -- porting note: RingHom.map_mul was `(restriction _).map_mul`
+    rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
       (f' j k hjk).map_zero, MulZeroClass.mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
