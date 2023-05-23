@@ -220,16 +220,16 @@ theorem sOppSide_comm {s : AffineSubspace R P} {x y : P} : s.SOppSide x y ↔ s.
 alias sOppSide_comm ↔ SOppSide.symm _
 #align affine_subspace.s_opp_side.symm AffineSubspace.SOppSide.symm
 
-theorem not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y := by
-  simp [WSameSide, not_mem_bot]
+theorem not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y :=
+  fun ⟨_, h, _⟩ => h.elim
 #align affine_subspace.not_w_same_side_bot AffineSubspace.not_wSameSide_bot
 
 theorem not_sSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SSameSide x y := fun h =>
   not_wSameSide_bot x y h.wSameSide
 #align affine_subspace.not_s_same_side_bot AffineSubspace.not_sSameSide_bot
 
-theorem not_wOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WOppSide x y := by
-  simp [WOppSide, not_mem_bot]
+theorem not_wOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WOppSide x y :=
+  fun ⟨_, h, _⟩ => h.elim
 #align affine_subspace.not_w_opp_side_bot AffineSubspace.not_wOppSide_bot
 
 theorem not_sOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SOppSide x y := fun h =>
@@ -250,7 +250,8 @@ theorem sSameSide_self_iff {s : AffineSubspace R P} {x : P} :
 theorem wSameSide_of_left_mem {s : AffineSubspace R P} {x : P} (y : P) (hx : x ∈ s) :
     s.WSameSide x y := by
   refine' ⟨x, hx, x, hx, _⟩
-  simp
+  rw [vsub_self]
+  apply SameRay.zero_left
 #align affine_subspace.w_same_side_of_left_mem AffineSubspace.wSameSide_of_left_mem
 
 theorem wSameSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y ∈ s) :
@@ -261,7 +262,8 @@ theorem wSameSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y 
 theorem wOppSide_of_left_mem {s : AffineSubspace R P} {x : P} (y : P) (hx : x ∈ s) :
     s.WOppSide x y := by
   refine' ⟨x, hx, x, hx, _⟩
-  simp
+  rw [vsub_self]
+  apply SameRay.zero_left
 #align affine_subspace.w_opp_side_of_left_mem AffineSubspace.wOppSide_of_left_mem
 
 theorem wOppSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y ∈ s) :
@@ -392,8 +394,10 @@ theorem _root_.Wbtw.w_opp_side₁₃ {s : AffineSubspace R P} {x y z : P} (h : W
     s.WOppSide x z := by
   rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
   refine' ⟨_, hy, _, hy, _⟩
-  rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
-  rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
+  rcases ht1.lt_or_eq with (ht1' | rfl); swap
+  · rw [lineMap_apply_one]; simp
+  rcases ht0.lt_or_eq with (ht0' | rfl); swap
+  · rw [lineMap_apply_zero]; simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
   simp_rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
     vsub_self, zero_sub, ← neg_one_smul R (z -ᵥ x), ← add_smul, smul_neg, ← neg_smul, smul_smul]
@@ -425,7 +429,8 @@ theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ 
 #align affine_subspace.w_opp_side_self_iff AffineSubspace.wOppSide_self_iff
 
 theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
-  simp [SOppSide]
+  rw [SOppSide]
+  simp
 #align affine_subspace.not_s_opp_side_self AffineSubspace.not_sOppSide_self
 
 theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p₁ ∈ s) :
