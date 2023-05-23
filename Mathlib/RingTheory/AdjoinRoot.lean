@@ -840,25 +840,26 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
       (p.map (Ideal.Quotient.mk I)) := rfl
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_mk_of AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of
 
+set_option maxHeartbeats 300000 in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
         (Ideal.Quotient.mk (span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]))
         (p.map (Ideal.Quotient.mk I))) =
       Ideal.Quotient.mk (I.map (of f)) (mk f p) := by
-  rw [quot_adjoin_root_equiv_quot_polynomial_quot, RingEquiv.symm_trans_apply,
+  rw [quotAdjoinRootEquivQuotPolynomialQuot, RingEquiv.symm_trans_apply,
     RingEquiv.symm_trans_apply, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
-    polynomial.quot_quot_equiv_comm_mk, Ideal.quotEquivOfEq_symm, Ideal.quotEquivOfEq_mk, ←
+    Polynomial.quotQuotEquivComm_mk, Ideal.quotEquivOfEq_symm, Ideal.quotEquivOfEq_mk, ←
     RingHom.comp_apply, ← DoubleQuot.quotQuotMk,
-    quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_symm_quot_quot_mk,
-    quot_map_of_equiv_quot_map_C_map_span_mk_symm_mk]
+    quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk,
+    quotMapOfEquivQuotMapCMapSpanMk_symm_mk]
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_symm_mk_mk AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk
 
 /-- Promote `adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot` to an alg_equiv.  -/
-@[simps apply symm_apply]
+@[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]
-      (R ⧸ I)[X] ⧸ Ideal.span ({Polynomial.map I.Quotient.mk f} : Set (R ⧸ I)[X]) :=
+      (R ⧸ I)[X] ⧸ Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]) :=
   AlgEquiv.ofRingEquiv
     (show ∀ x, (quotAdjoinRootEquivQuotPolynomialQuot I f) (algebraMap R _ x) = algebraMap R _ x
       from fun x => by
@@ -866,20 +867,23 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         algebraMap R (AdjoinRoot f ⧸ Ideal.map (of f) I) x =
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
-      simpa only [this, quot_adjoin_root_equiv_quot_polynomial_quot_mk_of, map_C] )
+      rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
+      rfl )
 #align adjoin_root.quot_equiv_quot_map AdjoinRoot.quotEquivQuotMap
 
 @[simp]
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
-    AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk _ (AdjoinRoot.mk f g)) =
-      Ideal.Quotient.mk _ (g.map I.Quotient.mk) :=
+    AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
+      Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
+      (g.map (Ideal.Quotient.mk I)) :=
   by rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
 #align adjoin_root.quot_equiv_quot_map_apply_mk AdjoinRoot.quotEquivQuotMap_apply_mk
 
 @[simp]
 theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
-    (AdjoinRoot.quotEquivQuotMap f I).symm (Ideal.Quotient.mk _ (map (Ideal.Quotient.mk I) g)) =
-      Ideal.Quotient.mk _ (AdjoinRoot.mk f g) := by
+    (AdjoinRoot.quotEquivQuotMap f I).symm (Ideal.Quotient.mk _
+      (Polynomial.map (Ideal.Quotient.mk I) g)) =
+        Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g) := by
   rw [AdjoinRoot.quotEquivQuotMap_symm_apply,
     AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk]
 #align adjoin_root.quot_equiv_quot_map_symm_apply_mk AdjoinRoot.quotEquivQuotMap_symm_apply_mk
