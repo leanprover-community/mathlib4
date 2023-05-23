@@ -395,6 +395,17 @@ example : 1 % 1 = 0 := by norm_num1
 
 end Nat.mod
 
+section Nat.div
+
+example : 10 / 1 = 10 := by norm_num1
+example : 5 / 4 = 1 := by norm_num1
+example : 9 / 4 = 2 := by norm_num1
+example : 0 / 1 = 0 := by norm_num1
+example : Nat.div 10 9 = 1 := by norm_num1
+example : 1099 / 100 = 10 := by norm_num1
+
+end Nat.div
+
 /-!
 # Numbers in algebraic structures
 -/

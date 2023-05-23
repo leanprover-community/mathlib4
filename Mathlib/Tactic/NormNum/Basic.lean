@@ -934,7 +934,7 @@ theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) % _, HDiv.hDiv (_ : ℕ) _, Nat.div _ _] def evalNatDiv :
+@[norm_num (_ : ℕ) / _, Div.Div (_ : ℕ) _, Nat.div _ _] def evalNatDiv :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We trust that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
