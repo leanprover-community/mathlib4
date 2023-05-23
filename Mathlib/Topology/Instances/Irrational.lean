@@ -26,7 +26,7 @@ In this file we prove the following theorems:
   an irrational number is disjoint with the set of rational numbers with bounded denominator.
 
 We also provide `OrderTopology`, `NoMinOrder`, `NoMaxOrder`, and `DenselyOrdered`
-instances for `{x // irrational x}`.
+instances for `{x // Irrational x}`.
 
 ## Tags
 
