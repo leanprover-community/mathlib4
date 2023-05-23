@@ -517,6 +517,18 @@ noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ 
   r := biprod.fst
   s := biprod.inr
 
+variable (S)
+
+noncomputable def ofIsZeroOfIsIso (hf : IsZero S.X₁) (hg : IsIso S.g) : Splitting S where
+  r := 0
+  s := inv S.g
+  f_r := hf.eq_of_src _ _
+
+noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitting S where
+  r := inv S.f
+  s := 0
+  s_g := hg.eq_of_src _ _
+
 end Splitting
 
 section Balanced

@@ -585,6 +585,7 @@ import Mathlib.CategoryTheory.ExactCategory.Abelian
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.CategoryTheory.ExactCategory.GrothendieckGroup
 import Mathlib.CategoryTheory.ExactCategory.Q
+import Mathlib.CategoryTheory.ExactCategory.Split
 import Mathlib.CategoryTheory.Filtered
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.FintypeCat
