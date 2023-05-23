@@ -54,6 +54,16 @@ namespace GeneralLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
+section CoeFnInstance
+
+-- Porting note: this instance was not the simp-normal form in mathlib3 but it is fine in mathlib4
+-- because coercions get unfolded.
+/-- This instance is here for convenience, but is not the simp-normal form. -/
+instance : CoeFun (GL n R) fun _ => n → n → R where
+  coe A := (A : Matrix n n R)
+
+end CoeFnInstance
+
 /-- The determinant of a unit matrix is itself a unit. -/
 @[simps]
 def det : GL n R →* Rˣ where
@@ -143,18 +153,25 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
-instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
-  ⟨fun A => ⟨↑A, ↑A⁻¹,
+-- Porting note: added implementation for the Coe
+/-- The map from SL(n) to GL(n) underlying the coercion, forgetting the value of the determinant.
+-/
+@[coe]
+def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
+  ⟨↑A, ↑A⁻¹,
     congr_arg ((↑) : _ → Matrix n n R) (mul_right_inv A),
-    congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩⟩
+    congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩
+
+instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
+  ⟨coeToGL⟩
 #align matrix.special_linear_group.has_coe_to_general_linear_group Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup
 
 @[simp]
-theorem coe_to_GL_det (g : SpecialLinearGroup n R) :
+theorem coeToGL_det (g : SpecialLinearGroup n R) :
     Matrix.GeneralLinearGroup.det (g : GL n R) = 1 :=
   Units.ext g.prop
 set_option linter.uppercaseLean3 false in
-#align matrix.special_linear_group.coe_to_GL_det Matrix.SpecialLinearGroup.coe_to_GL_det
+#align matrix.special_linear_group.coe_to_GL_det Matrix.SpecialLinearGroup.coeToGL_det
 
 end SpecialLinearGroup
 
@@ -293,25 +310,5 @@ def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
   `k_θ=!![cos θ, sin θ; -sin θ, cos θ]`
 -/
 end Examples
-
-namespace GeneralLinearGroup
-
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
-
--- this section should be last to ensure we do not use it in lemmas
-section CoeFnInstance
-
-/-- This instance is here for convenience, but is not the simp-normal form. -/
-instance : CoeFun (GL n R) fun _ => n → n → R where
-  coe A := A.val
-
-@[simp]
-theorem coeFn_eq_coe (A : GL n R) : ⇑A = (↑A : Matrix n n R) :=
-  rfl
-#align matrix.general_linear_group.coe_fn_eq_coe Matrix.GeneralLinearGroup.coeFn_eq_coe
-
-end CoeFnInstance
-
-end GeneralLinearGroup
 
 end Matrix
