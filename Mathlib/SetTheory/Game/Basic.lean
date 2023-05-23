@@ -8,8 +8,8 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva 
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.Pgame
-import Mathbin.Tactic.Abel
+import Mathlib.SetTheory.Game.Pgame
+import Mathlib.Tactic.Abel
 
 /-!
 # Combinatorial games.
@@ -77,8 +77,7 @@ instance : AddCommGroupWithOne Game where
 instance : Inhabited Game :=
   ⟨0⟩
 
-instance : PartialOrder Game
-    where
+instance : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
   le_refl := by
     rintro ⟨x⟩
@@ -107,16 +106,14 @@ local infixl:50 " ⧏ " => Lf
 
 /-- On `game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
-theorem not_le : ∀ {x y : Game}, ¬x ≤ y ↔ y ⧏ x :=
-  by
+theorem not_le : ∀ {x y : Game}, ¬x ≤ y ↔ y ⧏ x := by
   rintro ⟨x⟩ ⟨y⟩
   exact PGame.not_le
 #align game.not_le Game.not_le
 
 /-- On `game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
-theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x :=
-  by
+theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   rintro ⟨x⟩ ⟨y⟩
   exact not_lf
 #align game.not_lf Game.not_lf
@@ -186,14 +183,12 @@ instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) 
     exact @add_lt_add_right _ _ _ _ b c h a⟩
 #align game.covariant_class_swap_add_lt Game.covariantClass_swap_add_lt
 
-theorem add_lf_add_right : ∀ {b c : Game} (h : b ⧏ c) (a), b + a ⧏ c + a :=
-  by
+theorem add_lf_add_right : ∀ {b c : Game} (h : b ⧏ c) (a), b + a ⧏ c + a := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply add_lf_add_right h
 #align game.add_lf_add_right Game.add_lf_add_right
 
-theorem add_lf_add_left : ∀ {b c : Game} (h : b ⧏ c) (a), a + b ⧏ a + c :=
-  by
+theorem add_lf_add_left : ∀ {b c : Game} (h : b ⧏ c) (a), a + b ⧏ a + c := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply add_lf_add_left h
 #align game.add_lf_add_left Game.add_lf_add_left
@@ -224,8 +219,7 @@ theorem quot_sub (a b : PGame) : ⟦a - b⟧ = ⟦a⟧ - ⟦b⟧ :=
 
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, ⟦x.moveLeft i⟧ = ⟦y.moveLeft (L i)⟧)
-    (hr : ∀ j, ⟦x.moveRight j⟧ = ⟦y.moveRight (R j)⟧) : ⟦x⟧ = ⟦y⟧ :=
-  by
+    (hr : ∀ j, ⟦x.moveRight j⟧ = ⟦y.moveRight (R j)⟧) : ⟦x⟧ = ⟦y⟧ := by
   simp_rw [Quotient.eq'] at hl hr
   exact Quot.sound (equiv_of_mk_equiv L R hl hr)
 #align pgame.quot_eq_of_mk_quot_eq PGame.quot_eq_of_mk'_quot_eq
@@ -288,8 +282,7 @@ theorem mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 @[simp]
 theorem mul_moveLeft_inl {x y : PGame} {i j} :
     (x * y).moveLeft (toLeftMovesMul (Sum.inl (i, j))) =
-      x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j :=
-  by
+      x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j := by
   cases x
   cases y
   rfl
@@ -305,8 +298,7 @@ theorem mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 @[simp]
 theorem mul_moveLeft_inr {x y : PGame} {i j} :
     (x * y).moveLeft (toLeftMovesMul (Sum.inr (i, j))) =
-      x.moveRight i * y + x * y.moveRight j - x.moveRight i * y.moveRight j :=
-  by
+      x.moveRight i * y + x * y.moveRight j - x.moveRight i * y.moveRight j := by
   cases x
   cases y
   rfl
@@ -322,8 +314,7 @@ theorem mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 @[simp]
 theorem mul_moveRight_inl {x y : PGame} {i j} :
     (x * y).moveRight (toRightMovesMul (Sum.inl (i, j))) =
-      x.moveLeft i * y + x * y.moveRight j - x.moveLeft i * y.moveRight j :=
-  by
+      x.moveLeft i * y + x * y.moveRight j - x.moveLeft i * y.moveRight j := by
   cases x
   cases y
   rfl
@@ -339,8 +330,7 @@ theorem mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 @[simp]
 theorem mul_moveRight_inr {x y : PGame} {i j} :
     (x * y).moveRight (toRightMovesMul (Sum.inr (i, j))) =
-      x.moveRight i * y + x * y.moveLeft j - x.moveRight i * y.moveLeft j :=
-  by
+      x.moveRight i * y + x * y.moveLeft j - x.moveRight i * y.moveLeft j := by
   cases x
   cases y
   rfl
@@ -376,8 +366,7 @@ theorem neg_mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 
 theorem leftMoves_mul_cases {x y : PGame} (k) {P : (x * y).LeftMoves → Prop}
     (hl : ∀ ix iy, P <| toLeftMovesMul (Sum.inl ⟨ix, iy⟩))
-    (hr : ∀ jx jy, P <| toLeftMovesMul (Sum.inr ⟨jx, jy⟩)) : P k :=
-  by
+    (hr : ∀ jx jy, P <| toLeftMovesMul (Sum.inr ⟨jx, jy⟩)) : P k := by
   rw [← to_left_moves_mul.apply_symm_apply k]
   rcases to_left_moves_mul.symm k with (⟨ix, iy⟩ | ⟨jx, jy⟩)
   · apply hl
@@ -386,8 +375,7 @@ theorem leftMoves_mul_cases {x y : PGame} (k) {P : (x * y).LeftMoves → Prop}
 
 theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
     (hl : ∀ ix jy, P <| toRightMovesMul (Sum.inl ⟨ix, jy⟩))
-    (hr : ∀ jx iy, P <| toRightMovesMul (Sum.inr ⟨jx, iy⟩)) : P k :=
-  by
+    (hr : ∀ jx iy, P <| toRightMovesMul (Sum.inr ⟨jx, iy⟩)) : P k := by
   rw [← to_right_moves_mul.apply_symm_apply k]
   rcases to_right_moves_mul.symm k with (⟨ix, iy⟩ | ⟨jx, jy⟩)
   · apply hl
@@ -419,26 +407,22 @@ theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
   Quotient.exact <| quot_mul_comm _ _
 #align pgame.mul_comm_equiv PGame.mul_comm_equiv
 
-instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves :=
-  by
+instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves := by
   cases x
   apply Sum.isEmpty
 #align pgame.is_empty_mul_zero_left_moves PGame.isEmpty_mul_zero_leftMoves
 
-instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves :=
-  by
+instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves := by
   cases x
   apply Sum.isEmpty
 #align pgame.is_empty_mul_zero_right_moves PGame.isEmpty_mul_zero_rightMoves
 
-instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves :=
-  by
+instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves := by
   cases x
   apply Sum.isEmpty
 #align pgame.is_empty_zero_mul_left_moves PGame.isEmpty_zero_mul_leftMoves
 
-instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves :=
-  by
+instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves := by
   cases x
   apply Sum.isEmpty
 #align pgame.is_empty_zero_mul_right_moves PGame.isEmpty_zero_mul_rightMoves
@@ -500,8 +484,7 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = -⟦x * y⟧ :=
 
 @[simp]
 theorem quot_left_distrib : ∀ x y z : PGame, ⟦x * (y + z)⟧ = ⟦x * y⟧ + ⟦x * z⟧
-  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR =>
-    by
+  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
@@ -574,8 +557,7 @@ theorem left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
 #align pgame.left_distrib_equiv PGame.left_distrib_equiv
 
 @[simp]
-theorem quot_left_distrib_sub (x y z : PGame) : ⟦x * (y - z)⟧ = ⟦x * y⟧ - ⟦x * z⟧ :=
-  by
+theorem quot_left_distrib_sub (x y z : PGame) : ⟦x * (y - z)⟧ = ⟦x * y⟧ - ⟦x * z⟧ := by
   change ⟦x * (y + -z)⟧ = ⟦x * y⟧ + -⟦x * z⟧
   rw [quot_left_distrib, quot_mul_neg]
 #align pgame.quot_left_distrib_sub PGame.quot_left_distrib_sub
@@ -591,8 +573,7 @@ theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
 #align pgame.right_distrib_equiv PGame.right_distrib_equiv
 
 @[simp]
-theorem quot_right_distrib_sub (x y z : PGame) : ⟦(y - z) * x⟧ = ⟦y * x⟧ - ⟦z * x⟧ :=
-  by
+theorem quot_right_distrib_sub (x y z : PGame) : ⟦(y - z) * x⟧ = ⟦y * x⟧ - ⟦z * x⟧ := by
   change ⟦(y + -z) * x⟧ = ⟦y * x⟧ + -⟦z * x⟧
   rw [quot_right_distrib, quot_neg_mul]
 #align pgame.quot_right_distrib_sub PGame.quot_right_distrib_sub
@@ -641,8 +622,7 @@ theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=
 #align pgame.one_mul_equiv PGame.one_mul_equiv
 
 theorem quot_mul_assoc : ∀ x y z : PGame, ⟦x * y * z⟧ = ⟦x * (y * z)⟧
-  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR =>
-    by
+  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
@@ -814,11 +794,9 @@ theorem inv'_zero_equiv : inv' 0 ≈ 1 :=
 #align pgame.inv'_zero_equiv PGame.inv'_zero_equiv
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
-def inv'One : inv' 1 ≡r (1 : PGame.{u}) :=
-  by
+def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   change relabelling (mk _ _ _ _) 1
-  have : IsEmpty { i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } :=
-    by
+  have : IsEmpty { i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
   refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩ <;> dsimp
