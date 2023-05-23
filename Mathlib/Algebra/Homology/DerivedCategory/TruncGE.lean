@@ -3,6 +3,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 open CategoryTheory Category Limits Preadditive ZeroObject
 
 variable {C : Type _} [Category C] [Abelian C]
+  [HasDerivedCategory C]
 
 namespace CochainComplex
 

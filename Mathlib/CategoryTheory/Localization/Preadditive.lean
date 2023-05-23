@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Localization.FiniteProducts
+import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Internal.Preadditive
 
@@ -35,12 +36,27 @@ noncomputable irreducible_def preadditive [Preadditive C] : Preadditive D := by
     (Localization.liftNatIso L W (G ⋙ Internal.objFunctor AddCommGroupCat D) L _ _ e)
 
 
-variable [Preadditive C] [HasFiniteProducts W.Localization]
-  [PreservesFiniteProducts W.Q]
+variable [Preadditive C]
+
+section
+
+variable [HasFiniteProducts W.Localization] [PreservesFiniteProducts W.Q]
 
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 
 noncomputable instance : W.Q.Additive := Functor.additive_of_preserves_finite_products _
+
+end
+
+section
+
+variable [W.HasLocalization] [HasFiniteProducts W.Localization'] [PreservesFiniteProducts W.Q']
+
+noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
+
+noncomputable instance : W.Q'.Additive := Functor.additive_of_preserves_finite_products _
+
+end
 
 end Localization
 

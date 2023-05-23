@@ -6,7 +6,7 @@ open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
 namespace DerivedCategory
 
-variable {C : Type _} [Category C] [Abelian C]
+variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory C]
 
 namespace TStructure
 

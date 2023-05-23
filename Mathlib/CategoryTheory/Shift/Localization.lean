@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.HasLocalization
 
 namespace CategoryTheory
 
@@ -66,5 +67,18 @@ noncomputable instance MorphismProperty.hasCommShift_Q
   Functor.HasCommShift.localized W.Q W A
 
 attribute [irreducible] HasShift.localization MorphismProperty.hasCommShift_Q
+
+variable [W.HasLocalization]
+
+noncomputable instance HasShift.localization' [W.IsCompatibleWithShift A] :
+    HasShift W.Localization' A :=
+  HasShift.localized W.Q' W A
+
+noncomputable instance MorphismProperty.hasCommShift_Q'
+    [W.IsCompatibleWithShift A] :
+    W.Q'.HasCommShift A :=
+  Functor.HasCommShift.localized W.Q' W A
+
+attribute [irreducible] HasShift.localization MorphismProperty.hasCommShift_Q'
 
 end CategoryTheory

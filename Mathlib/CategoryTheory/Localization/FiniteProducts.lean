@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.CategoryTheory.Localization.HasLocalization
 
 namespace CategoryTheory
 
@@ -128,6 +129,18 @@ instance [W.ContainsIdentities] [HasFiniteProducts C] [W.IsStableUnderFiniteProd
 
 noncomputable instance [W.ContainsIdentities] [HasFiniteProducts C]
     [W.IsStableUnderFiniteProducts] : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
+
+section
+
+variable [W.HasLocalization]
+
+instance [W.ContainsIdentities] [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
+    HasFiniteProducts (W.Localization') := hasFiniteProducts W.Q' W
+
+noncomputable instance [W.ContainsIdentities] [HasFiniteProducts C]
+    [W.IsStableUnderFiniteProducts] : PreservesFiniteProducts W.Q' := preservesFiniteProducts W.Q' W
+
+end
 
 end Localization
 

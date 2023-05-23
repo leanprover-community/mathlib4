@@ -306,6 +306,7 @@ noncomputable example : W.Q.HasCommShift ℤ := inferInstance
 variable
   [HasFiniteProducts C]
   [W.IsStableUnderFiniteProducts]
+  [W.HasLocalization]
 
 example : HasTerminal W.Localization := inferInstance
 example : HasFiniteProducts W.Localization := inferInstance
@@ -314,8 +315,17 @@ noncomputable example : PreservesFiniteProducts W.Q := inferInstance
 instance : HasZeroObject W.Localization :=
   Limits.hasZeroObject_of_additive_functor W.Q
 
+instance : HasZeroObject W.Localization' :=
+  Limits.hasZeroObject_of_additive_functor W.Q'
+
 noncomputable instance (n : ℤ) :
     PreservesFiniteProducts (shiftFunctor (MorphismProperty.Localization W) n) := by
+  constructor
+  intros
+  infer_instance
+
+noncomputable instance (n : ℤ) :
+    PreservesFiniteProducts (shiftFunctor (MorphismProperty.Localization' W) n) := by
   constructor
   intros
   infer_instance
@@ -323,12 +333,19 @@ noncomputable instance (n : ℤ) :
 instance (n : ℤ) : (shiftFunctor W.Localization n).Additive :=
   Functor.additive_of_preserves_finite_products _
 
+instance (n : ℤ) : (shiftFunctor W.Localization' n).Additive :=
+  Functor.additive_of_preserves_finite_products _
+
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
+noncomputable instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
 noncomputable instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
+noncomputable instance : W.Q'.IsTriangulated := isTriangulated_functor W.Q' W
 
 instance : EssSurj W.Q.mapArrow := essSurj_mapArrow W.Q W
+instance : EssSurj W.Q'.mapArrow := essSurj_mapArrow W.Q' W
 
 noncomputable instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
+noncomputable instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
 
 end
 

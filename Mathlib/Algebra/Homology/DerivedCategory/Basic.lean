@@ -4,10 +4,11 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
 import Mathlib.CategoryTheory.Localization.Composition
+import Mathlib.CategoryTheory.Localization.HasLocalization
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 
-universe v u
+universe w v u
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
@@ -38,7 +39,11 @@ lemma mem_qis_iff' {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
 
 end HomotopyCategory
 
-def DerivedCategory := (HomotopyCategory.qis C).Localization
+abbrev HasDerivedCategory := MorphismProperty.HasLocalization.{w} (HomotopyCategory.qis C)
+
+variable [HasDerivedCategory.{w} C]
+
+def DerivedCategory := (HomotopyCategory.qis C).Localization'
 
 namespace DerivedCategory
 
@@ -73,7 +78,7 @@ noncomputable instance : IsTriangulated (DerivedCategory C) := by
 variable {C}
 
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
-  MorphismProperty.Q _
+  MorphismProperty.Q' _
 
 instance : Qh.IsLocalization (HomotopyCategory.qis C) := by
   dsimp only [Qh, DerivedCategory]
@@ -101,16 +106,16 @@ instance : EssSurj (Functor.mapArrow (Qh : _ ⥤ DerivedCategory C)) := by
 
 lemma Qh_obj_surjective (X : DerivedCategory C) :
     ∃ (K : HomotopyCategory _ _), X = Qh.obj K := by
-  obtain ⟨⟨K⟩⟩ := X
-  exact ⟨K, rfl⟩
+  obtain ⟨K, rfl⟩ := MorphismProperty.Q'_obj_surjective  (HomotopyCategory.qis C) X
+  exact ⟨_, rfl⟩
 
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
 
 lemma Q_obj_surjective (X : DerivedCategory C) :
     ∃ (K : CochainComplex C ℤ), X = Q.obj K := by
-  obtain ⟨⟨⟨K⟩⟩⟩ := X
-  exact ⟨K, rfl⟩
+  obtain ⟨⟨K⟩, rfl⟩ := Qh_obj_surjective X
+  exact ⟨_, rfl⟩
 
 instance : (Q : CochainComplex C ℤ ⥤ _).Additive := by
   dsimp only [Q]

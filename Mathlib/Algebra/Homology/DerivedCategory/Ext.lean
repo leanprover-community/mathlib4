@@ -1,11 +1,14 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 
-universe v u
+universe w v u
 
 open CategoryTheory Category Preadditive DerivedCategory Limits Pretriangulated
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
+
+attribute [instance] MorphismProperty.HasLocalization.standard
+--variable [HasDerivedCategory.{v} C]
 
 namespace CategoryTheory
 
@@ -13,7 +16,7 @@ namespace Abelian
 
 variable (X Y Z : C) (n : ℕ)
 
-structure newExt : Type (max u v) :=
+structure newExt : Type _ :=
   hom : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n
 
 namespace newExt

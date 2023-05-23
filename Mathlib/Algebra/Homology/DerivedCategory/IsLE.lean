@@ -130,6 +130,7 @@ end CochainComplex
 
 namespace DerivedCategory
 
+variable [HasDerivedCategory C]
 variable (K L : DerivedCategory C) (e : K ≅ L) (n : ℤ)
 
 class IsLE : Prop where
