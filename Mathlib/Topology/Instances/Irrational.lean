@@ -77,10 +77,10 @@ instance : DenselyOrdered { x // Irrational x } :=
 theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) := by
   have A : IsClosed (range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ)) :=
-    ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp int.closed_embedding_coe_real.is_closed_map).closed_range
+    ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp Int.closedEmbedding_coe_real.isClosedMap).closed_range
   have B : x ∉ range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ) := by
     rintro ⟨m, rfl⟩
-    simpa using hx
+    simp at hx
   rcases Metric.mem_nhds_iff.1 (A.is_open_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
   refine' (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => _
   rw [dist_comm] at hlt
