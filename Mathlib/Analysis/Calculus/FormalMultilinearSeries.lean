@@ -32,7 +32,9 @@ noncomputable section
 
 open Set Fin Topology
 
-variable {𝕜 𝕜' E F G : Type _}
+-- porting note: added explicit universes to fix compile
+universe u u' v w x
+variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
 
 section
 
@@ -52,14 +54,14 @@ def FormalMultilinearSeries (𝕜 : Type _) (E : Type _) (F : Type _) [Ring 𝕜
 #align formal_multilinear_series FormalMultilinearSeries
 
 -- Porting note: was `deriving`
-instance (𝕜 : Type _) (E : Type _) (F : Type _) [Ring 𝕜] [AddCommGroup E]
-    [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
-    [ContinuousConstSMul 𝕜 F] : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
+instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
   inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
   ⟨0⟩
+
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 section Module
 
@@ -109,7 +111,7 @@ multilinear series are equal, then the values are also equal. -/
 theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → E} {w : Fin n → E}
     (h1 : m = n) (h2 : ∀ (i : ℕ) (him : i < m) (hin : i < n), v ⟨i, him⟩ = w ⟨i, hin⟩) :
     p m v = p n w := by
-  cases h1
+  subst n
   congr with ⟨i, hi⟩
   exact h2 i hi hi
 #align formal_multilinear_series.congr FormalMultilinearSeries.congr
@@ -160,7 +162,9 @@ corresponds to starting from a Taylor series for the derivative of a function, a
 series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
-  | n + 1 => continuousMultilinearCurryRightEquiv' 𝕜 n E F (q n)
+  | n + 1 => -- porting note: added type hint here and explicit universes to fix compile
+    (continuousMultilinearCurryRightEquiv' 𝕜 n E F :
+      (E [×n]→L[𝕜] E →L[𝕜] F) → (E [×n.succ]→L[𝕜] F)) (q n)
 #align formal_multilinear_series.unshift FormalMultilinearSeries.unshift
 
 end FormalMultilinearSeries
@@ -212,11 +216,11 @@ noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
 theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp [order]
 #align formal_multilinear_series.order_zero FormalMultilinearSeries.order_zero
 
-theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simpa [h] using hp
+theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 #align formal_multilinear_series.ne_zero_of_order_ne_zero FormalMultilinearSeries.ne_zero_of_order_ne_zero
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by simp [order, sInf, hp]
+    p.order = Nat.find hp := by convert Nat.sInf_def hp
 #align formal_multilinear_series.order_eq_find FormalMultilinearSeries.order_eq_find
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
@@ -224,32 +228,25 @@ theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
   order_eq_find _
 #align formal_multilinear_series.order_eq_find' FormalMultilinearSeries.order_eq_find'
 
-theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
-  classical
-    have : ∃ n, p n ≠ 0 := FormalMultilinearSeries.ne_iff.mp hp
-    simp [order_eq_find this, hp]
-#align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
-
 theorem order_eq_zero_iff' : p.order = 0 ↔ p = 0 ∨ p 0 ≠ 0 := by
-  by_cases h : p = 0 <;> simp [h, order_eq_zero_iff]
+  simpa [order, Nat.sInf_eq_zero, FormalMultilinearSeries.ext_iff, eq_empty_iff_forall_not_mem]
+    using or_comm
 #align formal_multilinear_series.order_eq_zero_iff' FormalMultilinearSeries.order_eq_zero_iff'
 
-theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 := by
-  classical
-    let h := FormalMultilinearSeries.ne_iff.mp hp
-    exact (order_eq_find h).symm ▸ Nat.find_spec h
+theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
+  simp [order_eq_zero_iff', hp]
+#align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
+
+theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
+  Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
 #align formal_multilinear_series.apply_order_ne_zero FormalMultilinearSeries.apply_order_ne_zero
 
 theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)
 #align formal_multilinear_series.apply_order_ne_zero' FormalMultilinearSeries.apply_order_ne_zero'
 
-theorem apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 := by
-  by_cases h : p = 0
-  · simp [h]
-  · classical
-      rw [order_eq_find' h] at hp
-      simpa using Nat.find_min _ hp
+theorem apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 :=
+  by_contra <| Nat.not_mem_of_lt_sInf hp
 #align formal_multilinear_series.apply_eq_zero_of_lt_order FormalMultilinearSeries.apply_eq_zero_of_lt_order
 
 end Order
@@ -273,12 +270,13 @@ theorem mkPiField_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
-  convert(p n).toMultilinearMap.map_smul_univ y 1
-  funext <;> simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
+  convert (p n).toMultilinearMap.map_smul_univ y 1
+  funext
+  simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
 #align formal_multilinear_series.apply_eq_prod_smul_coeff FormalMultilinearSeries.apply_eq_prod_smul_coeff
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
-  rw [← mk_pi_field_coeff_eq p, ContinuousMultilinearMap.mkPiField_eq_zero_iff]
+  rw [← mkPiField_coeff_eq p, ContinuousMultilinearMap.mkPiField_eq_zero_iff]
 #align formal_multilinear_series.coeff_eq_zero FormalMultilinearSeries.coeff_eq_zero
 
 @[simp]
@@ -287,7 +285,7 @@ theorem apply_eq_pow_smul_coeff : (p n fun _ => z) = z ^ n • p.coeff n := by s
 
 @[simp]
 theorem norm_apply_eq_norm_coef : ‖p n‖ = ‖coeff p n‖ := by
-  rw [← mk_pi_field_coeff_eq p, ContinuousMultilinearMap.norm_mkPiField]
+  rw [← mkPiField_coeff_eq p, ContinuousMultilinearMap.norm_mkPiField]
 #align formal_multilinear_series.norm_apply_eq_norm_coef FormalMultilinearSeries.norm_apply_eq_norm_coef
 
 end Coef
@@ -305,13 +303,16 @@ noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMulti
 
 @[simp]
 theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
-  have : @Fin.cons n (fun _ => 𝕜) 1 (1 : Fin n → 𝕜) = 1 := Fin.cons_self_tail 1
-  simp only [fslope, coeff, ContinuousMultilinearMap.curryLeft_apply, this]
+  simp only [fslope, coeff, ContinuousMultilinearMap.curryLeft_apply]
+  congr 1
+  exact Fin.cons_self_tail 1
 #align formal_multilinear_series.coeff_fslope FormalMultilinearSeries.coeff_fslope
 
 @[simp]
 theorem coeff_iterate_fslope (k n : ℕ) : ((fslope^[k]) p).coeff n = p.coeff (n + k) := by
-  induction' k with k ih generalizing p <;> first |rfl|simpa [ih]
+  induction k generalizing p with
+  | zero => rfl
+  | succ k ih => simp [ih, add_assoc]
 #align formal_multilinear_series.coeff_iterate_fslope FormalMultilinearSeries.coeff_iterate_fslope
 
 end Fslope
