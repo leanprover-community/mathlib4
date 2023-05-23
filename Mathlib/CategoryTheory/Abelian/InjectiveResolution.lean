@@ -282,21 +282,17 @@ theorem ofCocomplex_sq_01_comm (Z : C) :
   exact (exact_f_d (Injective.ι Z)).w
 
 -- Porting note: removed this from `of` due to timeouts
-set_option synthInstance.maxHeartbeats 0 in
-set_option maxHeartbeats 0 in
 theorem exact_ofCocomplex (Z : C) (n : ℕ) :
     Exact (HomologicalComplex.d (ofCocomplex Z) n (n + 1))
     (HomologicalComplex.d (ofCocomplex Z) (n + 1) (n + 2)) :=
   match n with
+-- Porting note: used to be simp; apply exact_f_d on both branches
     | 0 => by simp; apply exact_f_d
     | m+1 => by
-      change Exact (HomologicalComplex.d (ofCocomplex Z) (m + 1) (m + 2))
-        (HomologicalComplex.d (ofCocomplex Z) (m + 2) (m + 3))
-      simp
-      rw [if_pos (c := m + 1 + 1 = m + 2) rfl]
-      erw [if_pos (c := m + 2 + 1 = m + 3) rfl]
+      simp only [ofCocomplex_X, ComplexShape.up_Rel, not_true, ofCocomplex_d,
+        eqToHom_refl, Category.comp_id, dite_eq_ite, ite_true]
+      erw [if_pos (c := m + 1 + 1 + 1 = m + 2 + 1) rfl]
       apply exact_f_d
--- Porting note: used to be simp; apply exact_f_d
 
 -- Porting note: still very slow
 /-- In any abelian category with enough injectives,
