@@ -8,8 +8,8 @@ Authors: Justin Thomas
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Minpoly.Field
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Annihilating Ideal
@@ -101,8 +101,7 @@ end
 /-- `ann_ideal_generator 𝕜 a` is indeed a generator. -/
 @[simp]
 theorem span_singleton_annIdealGenerator (a : A) :
-    Ideal.span {annIdealGenerator 𝕜 a} = annIdeal 𝕜 a :=
-  by
+    Ideal.span {annIdealGenerator 𝕜 a} = annIdeal 𝕜 a := by
   by_cases h : ann_ideal_generator 𝕜 a = 0
   · rw [h, ann_ideal_generator_eq_zero_iff.mp h, Set.singleton_zero, Ideal.span_zero]
   · rw [ann_ideal_generator, Ideal.span_singleton_mul_right_unit, Ideal.span_singleton_generator]
@@ -157,8 +156,7 @@ theorem degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ ann
 variable (𝕜)
 
 /-- The generator of the annihilating ideal is the minimal polynomial. -/
-theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpoly 𝕜 a :=
-  by
+theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpoly 𝕜 a := by
   by_cases h : ann_ideal_generator 𝕜 a = 0
   · rw [h, minpoly.eq_zero]
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
@@ -175,8 +173,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
 /-- If a monic generates the annihilating ideal, it must match our choice
  of the annihilating ideal generator. -/
 theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
-    (p_gen : Ideal.span {p} = annIdeal 𝕜 a) : annIdealGenerator 𝕜 a = p :=
-  by
+    (p_gen : Ideal.span {p} = annIdeal 𝕜 a) : annIdealGenerator 𝕜 a = p := by
   by_cases h : p = 0
   · rwa [h, ann_ideal_generator_eq_zero_iff, ← p_gen, ideal.span_singleton_eq_bot.mpr]
   · rw [← span_singleton_ann_ideal_generator, Ideal.span_singleton_eq_span_singleton] at p_gen
