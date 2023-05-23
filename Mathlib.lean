@@ -49,6 +49,7 @@ import Mathlib.Algebra.Category.Mon.FilteredColimits
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
@@ -400,6 +401,7 @@ import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
@@ -414,6 +416,7 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Analysis.Convex.Side
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.Star
@@ -1195,6 +1198,7 @@ import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
@@ -1583,6 +1587,7 @@ import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.CrossProduct
@@ -1604,6 +1609,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -1631,6 +1637,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.Trace
@@ -1927,6 +1934,7 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
@@ -1947,6 +1955,7 @@ import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Module
@@ -1978,6 +1987,7 @@ import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Prime
@@ -2279,6 +2289,7 @@ import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int
+import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
