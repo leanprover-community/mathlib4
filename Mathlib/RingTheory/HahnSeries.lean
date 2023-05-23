@@ -390,10 +390,8 @@ theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  refine le_trans ?_ (Set.IsWf.min_le_min_of_subset (support_add_subset (R := R)))
-  · exact x.isWf_support.union y.isWf_support
-  · exact Set.Nonempty.mono (Set.subset_union_left _ _) (support_nonempty_iff.2 hx)
-  rw [Set.IsWf.min_union]
+  refine' le_of_eq_of_le _ (Set.IsWf.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
+  . exact (Set.IsWf.min_union _ _ _ _).symm
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
