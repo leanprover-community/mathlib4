@@ -41,9 +41,6 @@ local notation "ℚ∞" => Alexandroff ℚ
 
 namespace Rat
 
-set_option maxHeartbeats 0
-example (p q :Prop) (h : p ∨ q) (g : ¬ p) : q := by
-  simp_all only [false_or]
 
 variable {p q : ℚ} {s t : Set ℚ}
 
