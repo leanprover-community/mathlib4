@@ -318,7 +318,7 @@ theorem coeIdeal_inj' (h : S ≤ nonZeroDivisors R) {I J : Ideal R} :
   (coeIdeal_injective' h).eq_iff
 #align fractional_ideal.coe_ideal_inj' FractionalIdeal.coeIdeal_inj'
 
-@[simp]
+-- Porting note: doesn't need to be @[simp] because it can be proved by coeIdeal_eq_zero
 theorem coeIdeal_eq_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (I : FractionalIdeal S P) = 0 ↔ I = (⊥ : Ideal R) :=
   coeIdeal_inj' h
@@ -596,8 +596,8 @@ theorem coe_pow (I : FractionalIdeal S P) (n : ℕ) : ↑(I ^ n) = (I : Submodul
 
 @[elab_as_elim]
 protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} {r : P}
-    (hr : r ∈ I * J) (hm : ∀ i ∈ I, ∀ j ∈ J, C (i * j)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
-  by
+    (hr : r ∈ I * J) (hm : ∀ i ∈ I, ∀ j ∈ J, C (i * j)) (ha : ∀ x y, C x → C y → C (x + y)) :
+    C r := by
   simp only [mul_def] at hr
   exact Submodule.mul_induction_on hr hm ha
 #align fractional_ideal.mul_induction_on FractionalIdeal.mul_induction_on
@@ -1163,8 +1163,8 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
     exact Submodule.smul_mem _ y' h
 #align fractional_ideal.div_one FractionalIdeal.div_one
 
-theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = 1 / I :=
-  by
+theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
+    J = 1 / I := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
   suffices h' : I * (1 / I) = 1
   · exact
@@ -1199,7 +1199,7 @@ theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     simp [Submodule.map_div]
 #align fractional_ideal.map_div FractionalIdeal.map_div
 
-@[simp]
+-- Porting note: doesn't need to be @[simp] because this follows from `map_one` and `map_div`
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by rw [map_div, map_one]
 #align fractional_ideal.map_one_div FractionalIdeal.map_one_div
@@ -1631,4 +1631,3 @@ theorem mem_adjoinIntegral_self : x ∈ adjoinIntegral S x hx :=
 end Adjoin
 
 end FractionalIdeal
-
