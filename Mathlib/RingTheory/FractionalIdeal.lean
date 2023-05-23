@@ -855,12 +855,12 @@ theorem isFractional_span_iff {s : Set P} :
         exact isInteger_smul hx⟩⟩
 #align fractional_ideal.is_fractional_span_iff FractionalIdeal.isFractional_span_iff
 
-theorem isFractional_of_fG {I : Submodule R P} (hI : I.FG) : IsFractional S I := by
+theorem isFractional_of_fg {I : Submodule R P} (hI : I.FG) : IsFractional S I := by
   rcases hI with ⟨I, rfl⟩
   rcases exist_integer_multiples_of_finset S I with ⟨⟨s, hs1⟩, hs⟩
   rw [isFractional_span_iff]
   exact ⟨s, hs1, hs⟩
-#align fractional_ideal.is_fractional_of_fg FractionalIdeal.isFractional_of_fG
+#align fractional_ideal.is_fractional_of_fg FractionalIdeal.isFractional_of_fg
 
 theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx : x ∈ I * J) :
     ∃ T T' : Finset P, (T : Set P) ⊆ I ∧ (T' : Set P) ⊆ J ∧ x ∈ span R (T * T' : Set P) :=
@@ -1607,7 +1607,7 @@ variable (x : P) (hx : IsIntegral R x)
 /-- `A[x]` is a fractional ideal for every integral `x`. -/
 theorem isFractional_adjoin_integral :
     IsFractional S (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
-  isFractional_of_fG (FG_adjoin_singleton_of_integral x hx)
+  isFractional_of_fg (FG_adjoin_singleton_of_integral x hx)
 #align fractional_ideal.is_fractional_adjoin_integral FractionalIdeal.isFractional_adjoin_integral
 
 /-- `FractionalIdeal.adjoinIntegral (S : submonoid R) x hx` is `R[x]` as a fractional ideal,
