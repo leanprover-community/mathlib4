@@ -961,7 +961,7 @@ instance add_swap_covariantClass_le :
                 intro a b
                 constructor <;> intro H
                 · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo], assumption]
+                    [rwa [← fo]; assumption]
                 · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
 #align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
 
@@ -988,11 +988,7 @@ instance linearOrder : LinearOrder Ordinal :=
         rw [← typein_top f, ← typein_top g, le_iff_lt_or_eq, le_iff_lt_or_eq,
                  typein_lt_typein, typein_lt_typein]
         rcases trichotomous_of (Sum.Lex r₁ r₂) g.top f.top with (h | h | h) <;>
-                [exact Or.inl (Or.inl h),
-                · left
-                  right
-                  rw [h],
-                  exact Or.inr (Or.inl h)]
+          [exact Or.inl (Or.inl h); (left; right; rw [h]); exact Or.inr (Or.inl h)]
     decidableLE := Classical.decRel _ }
 
 instance wellFoundedLT : WellFoundedLT Ordinal :=

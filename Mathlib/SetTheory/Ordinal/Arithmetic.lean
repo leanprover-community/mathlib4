@@ -624,7 +624,7 @@ theorem one_add_omega : 1 + ω = ω := by
     exact Nat.succ
   · intro a b
     cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
-      [exact H.elim, exact Nat.succ_pos _, exact Nat.succ_lt_succ H]
+      [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
 #align ordinal.one_add_omega Ordinal.one_add_omega
 
 @[simp]
