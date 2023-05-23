@@ -171,7 +171,6 @@ instance : Group (SpecialLinearGroup n R) :=
       ext1
       simp [adjugate_mul] }
 
-set_option maxHeartbeats 0 in
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
@@ -179,7 +178,7 @@ def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
       (by rw [← toLin'_mul, ← coe_mul, mul_right_inv, coe_one, toLin'_one])
       (by rw [← toLin'_mul, ← coe_mul, mul_left_inv, coe_one, toLin'_one])
   map_one' := LinearEquiv.toLinearMap_injective Matrix.toLin'_one
-  map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.toLin'_mul A B
+  map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.toLin'_mul ↑ₘA ↑ₘB
 #align matrix.special_linear_group.to_lin' Matrix.SpecialLinearGroup.toLin'
 
 theorem toLin'_apply (A : SpecialLinearGroup n R) (v : n → R) :
@@ -203,7 +202,7 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
 #align matrix.special_linear_group.to_lin'_symm_to_linear_map Matrix.SpecialLinearGroup.toLin'_symm_to_linearMap
 
 theorem toLin'_injective :
-    Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun A B h =>
+    Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 #align matrix.special_linear_group.to_lin'_injective Matrix.SpecialLinearGroup.toLin'_injective
 
@@ -221,17 +220,16 @@ set_option linter.uppercaseLean3 false in
 
 variable {S : Type _} [CommRing S]
 
-set_option maxHeartbeats 0 in
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
 @[simps]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
   toFun g :=
-    ⟨f.mapMatrix ↑g, by
+    ⟨f.mapMatrix ↑ₘg, by
       rw [← f.map_det]
-      simp [g.2]⟩
+      simp [g.prop]⟩
   map_one' := Subtype.ext <| f.mapMatrix.map_one
-  map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul x y
+  map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 #align matrix.special_linear_group.map Matrix.SpecialLinearGroup.map
 
 section cast
