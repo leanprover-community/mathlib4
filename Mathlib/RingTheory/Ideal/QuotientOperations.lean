@@ -814,7 +814,7 @@ theorem quotQuotEquivComm_comp_quotQuotMkₐ :
 
 variable {I J}
 
-/-- The **third isomorphism theorem** for rings. See `quotQuotEquivQuotSupₐ` for version
+/-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
     that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLeₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
   @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotOfLe h) fun _ => rfl
