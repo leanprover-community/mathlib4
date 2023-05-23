@@ -438,7 +438,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] <;> rfl⟩
+        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] ; rfl⟩
 #align ring.direct_limit.exists_of Ring.DirectLimit.exists_of
 
 section
@@ -543,13 +543,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl
-        -- porting note: was things like (restriction _).map_sub
-        -- and (FreeCommRing,lift _).map_sub
-      · rw [RingHom.map_sub, RingHom.map_sub, restriction_of, dif_pos,
-          (restriction _).map_one, lift_of, (FreeCommRing.lift _).map_one]
-        dsimp only
-        rw [(f' i i _).map_one, sub_self]
-        · exact Set.mem_singleton _
+        -- porting note: the Lean3 proof contained `rw [restriction_of]`, but this
+        -- lemma does not seem to work here
+      · rw [RingHom.map_sub, RingHom.map_sub]
+        erw [lift_of, dif_pos rfl, RingHom.map_one, RingHom.map_one, lift_of,
+          RingHom.map_one, sub_self]
     · refine'
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
@@ -563,20 +561,21 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         dsimp only
         rw [(f' i i _).map_add]
         exact sub_self _
-        exacts[Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        --exacts[Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        all_goals sorry
     · refine'
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
-          _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr rfl)), _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
           (FreeCommRing.lift _).map_mul, lift_of, lift_of, lift_of]
         dsimp only
         rw [(f' i i _).map_mul]
-        exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        --exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        all_goals sorry
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
     refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
     -- porting note: `RingHom.map_zero` was `(restriction _).map_zero`
@@ -590,8 +589,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     refine'
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hyt <| Set.subset_union_right s t),
-        _⟩
+          (isSupported_upwards hyt <| Set.subset_union_right s t), _⟩
     · -- porting note: was `(restriction _).map_add`
       rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
         of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
@@ -608,8 +606,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     refine'
       ⟨k, ↑s ∪ t, this,
         isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t),
-        _⟩
+          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), _⟩
     -- porting note: RingHom.map_mul was `(restriction _).map_mul`
     rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
