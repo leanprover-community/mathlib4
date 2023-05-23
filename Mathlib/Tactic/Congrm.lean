@@ -35,11 +35,34 @@ partial def congrm_core (pat : Expr) : TacticM Unit := withMainContext do
       liftMetaTactic fun mvarId => do
         pure [(← mvarId.intro localDecl.userName).2]
     congrm_core k
-  if pat.isMVar then
-  return
-  else
   dbg_trace s!"Pattern {← ppExpr pat}"
-  match pat with
+  if pat.isForall then
+    dbg_trace s!"Forall pattern"
+    forallTelescope pat (binders (← `(tactic| apply pi_congr)))
+  else if pat.isLambda then
+    dbg_trace s!"Lambda pattern"
+    lambdaTelescope pat (binders (← `(tactic| apply funext)))
+  else if pat.isApp then
+    let some congrThm ← mkCongrSimp? pat.getAppFn (subsingletonInstImplicitRhs := false) | return
+    if congrThm.type.isMVar then
+      dbg_trace s!"Invalid congr lemma"
+      return
+
+    if pat.getAppFn.isMVar then
+      dbg_trace s!"Fun is metavar"
+      return
+    -- Should check whether the congr_lem is valid
+
+    let foo ← applyCongrThm? (← getMainGoal) congrThm
+    -- We should not set the goals, but see from which part each goal came and recursively apply
+    -- patterns
+
+    -- I think we can assume that #goals = #arguments
+    setGoals foo
+
+    dbg_trace s!"Apply pattern, fun: {← ppExpr pat.getAppFn}"
+  --return
+  /-match pat with
   | .forallE _name _type _body _info =>
     dbg_trace s!"Forall pattern"
     --return
@@ -74,14 +97,15 @@ partial def congrm_core (pat : Expr) : TacticM Unit := withMainContext do
       return list-/
     --congrm_core arg -- Recursion on argument
     --congrm_core fn -- Recursion on function
-  | _ =>
-  return
+  | _ =>-/
+  --return
 
 
 elab_rules : tactic | `(tactic| congrm $expr:term) => withMainContext do
   evalTactic (← `(tactic| try apply Eq.to_iff))
   let e ← elabTerm expr none
   congrm_core e
+
 
 -- Fancy new tests
 
@@ -93,8 +117,7 @@ example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ b
 example (f : α → α → Prop) (h : ∀ a b, f a b = True) :
     (∀ a b, f a b) ↔ (∀ a b : α, True) := by
   congrm (∀ x y, _)
-  have : ∀ a b, f a b = True := sorry
-  exact this x y
+  exact h x y
 
 -- Testing that the trivial `lambda` rule works:
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
@@ -106,11 +129,26 @@ example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
   congrm (f _)
   exact h
 
+-- Testing that application rule with two arguments works
+example (a b c d : ℕ) (h : a = b) (h' : c = d) (f : ℕ → ℕ → ℕ) : f a c = f b d := by
+  congrm (f _) -- this is slightly stupid
+  exact h
+  exact h'
+
+-- Testing that application rule with recursion works
+example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f (f a) = f (f b) := by
+  congrm (f (f _))
+  exact h
+
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  congrm (a = _)
+  congrm (_ = _)
   rfl -- Todo: this should not be here
   exact h
 
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+  congrm λ x => ∀ w, (_ + a = w)
+  simp only [h]
+  rfl
 
 #exit
 
