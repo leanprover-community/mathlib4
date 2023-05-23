@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Algebraic
-import Mathbin.RingTheory.Localization.AtPrime
-import Mathbin.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Ideals over/under ideals
@@ -45,8 +45,7 @@ section CommRing
 variable {S : Type _} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
-    (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f :=
-  by
+    (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
   rw [← p.div_X_mul_X_add, eval₂_add, eval₂_C, eval₂_mul, eval₂_X] at hp
   refine' mem_comap.mpr ((I.add_mem_iff_right _).mp hp)
   exact I.mul_mem_left _ hr
@@ -59,8 +58,7 @@ theorem coeff_zero_mem_comap_of_root_mem {r : S} (hr : r ∈ I) {p : R[X]} (hp :
 
 theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     (r_non_zero_divisor : ∀ {x}, x * r = 0 → x = 0) (hr : r ∈ I) {p : R[X]} :
-    ∀ (p_ne_zero : p ≠ 0) (hp : p.eval₂ f r = 0), ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f :=
-  by
+    ∀ (p_ne_zero : p ≠ 0) (hp : p.eval₂ f r = 0), ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f := by
   refine' p.rec_on_horner _ _ _
   · intro h
     contradiction
@@ -80,8 +78,7 @@ is injective.
 theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
     Function.Injective
       ((map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P).quotientMap
-        (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map) :=
-  by
+        (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map) := by
   refine' quotient_map_injective' (le_of_eq _)
   rw [comap_map_of_surjective (map_ring_hom (Quotient.mk' (P.comap (C : R →+* R[X]))))
       (map_surjective (Quotient.mk' (P.comap (C : R →+* R[X]))) quotient.mk_surjective)]
@@ -105,8 +102,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
         (Quotient.mk (P.comap (C : R →+* R[X]))) =
       ((map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P).quotientMap
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
-        ((Quotient.mk P).comp C) :=
-  by
+        ((Quotient.mk P).comp C) := by
   refine' RingHom.ext fun x => _
   repeat' rw [RingHom.coe_comp, Function.comp_apply]
   rw [quotient_map_mk, coe_map_ring_hom, map_C]
@@ -117,8 +113,7 @@ that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equiv
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
 theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
-    ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 :=
-  by
+    ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 := by
   obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr Pb)
   refine' ⟨m, Submodule.coe_mem m, fun pp0 => hm (submodule.coe_eq_zero.mp _)⟩
   refine'
@@ -203,8 +198,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_ze
 
 theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
-    (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f :=
-  by
+    (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f := by
   obtain ⟨hrJ, hrI⟩ := hr
   have rbar_ne_zero : Quotient.mk' I r ≠ 0 := mt (quotient.mk_eq_zero I).mp hrI
   have rbar_mem_J : Quotient.mk' I r ∈ J.map (Quotient.mk' I) := mem_map_of_mem _ hrJ
@@ -213,8 +207,7 @@ theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : 
   have rbar_root :
     (p.map (Quotient.mk' (I.comap f))).eval₂ (Quotient.lift (I.comap f) _ quotient_f)
         (Quotient.mk' I r) =
-      0 :=
-    by
+      0 := by
     convert quotient.eq_zero_iff_mem.mpr hpI
     exact trans (eval₂_map _ _ _) (hom_eval₂ p f (Quotient.mk' I) r).symm
   obtain ⟨i, ne_zero, mem⟩ :=
@@ -238,8 +231,7 @@ theorem mem_of_one_mem (h : (1 : S) ∈ I) (x) : x ∈ I :=
 
 theorem comap_lt_comap_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ : I ≤ J) {x : S}
     (mem : x ∈ (J : Set S) \ I) (integral : IsIntegral R x) :
-    I.comap (algebraMap R S) < J.comap (algebraMap R S) :=
-  by
+    I.comap (algebraMap R S) < J.comap (algebraMap R S) := by
   obtain ⟨p, p_monic, hpx⟩ := integral
   refine' comap_lt_comap_of_root_mem_sdiff hIJ mem _ _
   swap
@@ -283,8 +275,7 @@ theorem comap_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_z
 #align ideal.comap_ne_bot_of_integral_mem Ideal.comap_ne_bot_of_integral_mem
 
 theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] (hRS : Algebra.IsIntegral R S)
-    (hI : I.comap (algebraMap R S) = ⊥) : I = ⊥ :=
-  by
+    (hI : I.comap (algebraMap R S) = ⊥) : I = ⊥ := by
   refine' eq_bot_iff.2 fun x hx => _
   by_cases hx0 : x = 0
   · exact hx0.symm ▸ Ideal.zero_mem ⊥
@@ -292,8 +283,7 @@ theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] (hRS : Algebra.IsInte
 #align ideal.eq_bot_of_comap_eq_bot Ideal.eq_bot_of_comap_eq_bot
 
 theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S) (I : Ideal S)
-    [hI : I.IsMaximal] : IsMaximal (I.comap (algebraMap R S)) :=
-  by
+    [hI : I.IsMaximal] : IsMaximal (I.comap (algebraMap R S)) := by
   refine' quotient.maximal_of_is_field _ _
   haveI : is_prime (I.comap (algebraMap R S)) := comap_is_prime _ _
   exact
@@ -367,10 +357,8 @@ theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integr
 `hP : (algebra_map R S).ker ≤ P` is a slight generalization of the extension being injective -/
 theorem exists_ideal_over_prime_of_is_integral' (H : Algebra.IsIntegral R S) (P : Ideal R)
     [IsPrime P] (hP : (algebraMap R S).ker ≤ P) :
-    ∃ Q : Ideal S, IsPrime Q ∧ Q.comap (algebraMap R S) = P :=
-  by
-  have hP0 : (0 : S) ∉ Algebra.algebraMapSubmonoid S P.prime_compl :=
-    by
+    ∃ Q : Ideal S, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
+  have hP0 : (0 : S) ∉ Algebra.algebraMapSubmonoid S P.prime_compl := by
     rintro ⟨x, ⟨hx, x0⟩⟩
     exact absurd (hP x0) hx
   let Rₚ := Localization P.prime_compl
@@ -394,8 +382,7 @@ TODO: Version of going-up theorem with arbitrary length chains (by induction on 
   Not sure how best to write an ascending chain in Lean -/
 theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : Ideal R) [IsPrime P]
     (I : Ideal S) [IsPrime I] (hIP : I.comap (algebraMap R S) ≤ P) :
-    ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P :=
-  by
+    ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
   let quot := R ⧸ I.comap (algebraMap R S)
   obtain ⟨Q' : Ideal (S ⧸ I), ⟨Q'_prime, hQ'⟩⟩ :=
     @exists_ideal_over_prime_of_is_integral' Quot _ (S ⧸ I) _ Ideal.quotientAlgebra _
@@ -416,8 +403,7 @@ theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : 
 `hP : (algebra_map R S).ker ≤ P` is a slight generalization of the extension being injective -/
 theorem exists_ideal_over_maximal_of_isIntegral [IsDomain S] (H : Algebra.IsIntegral R S)
     (P : Ideal R) [P_max : IsMaximal P] (hP : (algebraMap R S).ker ≤ P) :
-    ∃ Q : Ideal S, IsMaximal Q ∧ Q.comap (algebraMap R S) = P :=
-  by
+    ∃ Q : Ideal S, IsMaximal Q ∧ Q.comap (algebraMap R S) = P := by
   obtain ⟨Q, ⟨Q_prime, hQ⟩⟩ := exists_ideal_over_prime_of_is_integral' H P hP
   haveI : Q.is_prime := Q_prime
   exact ⟨Q, is_maximal_of_is_integral_of_is_maximal_comap H _ (hQ.symm ▸ P_max), hQ⟩
