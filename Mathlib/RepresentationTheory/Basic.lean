@@ -23,11 +23,11 @@ representations.
 
 ## Main definitions
 
-  * representation.representation
-  * representation.character
-  * representation.tprod
-  * representation.lin_hom
-  * represensation.dual
+  * Representation.Representation
+  * Representation.character
+  * Representation.tprod
+  * Representation.linHom
+  * Represensation.dual
 
 ## Implementation notes
 
@@ -79,7 +79,7 @@ variable {k G V : Type _} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module 
 variable (ρ : Representation k G V)
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
-an algebra map from `monoid_algebra k G` into the `k`-linear endomorphisms of `V`.
+an algebra map from `MonoidAlgebra k G` into the `k`-linear endomorphisms of `V`.
 -/
 noncomputable def asAlgebraHom : MonoidAlgebra k G →ₐ[k] Module.End k V :=
   (lift k G _) ρ
@@ -106,7 +106,7 @@ which we equip with an instance `Module (MonoidAlgebra k G) ρ.asModule`.
 
 You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 -/
--- @[nolint unused_arguments] -- Porting note: removed
+@[nolint unusedArguments]
 def asModule (_ : Representation k G V) :=
   V
 #align representation.as_module Representation.asModule
@@ -124,6 +124,11 @@ a module over `MonoidAlgebra k G`.
 noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 #align representation.as_module_module Representation.asModuleModule
+
+-- Porting note: ρ.asModule doesn't unfold now
+instance : Module k ρ.asModule := by
+  change Module k V
+  infer_instance
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
 of the representative.
@@ -172,9 +177,9 @@ section
 
 variable (M : Type _) [AddCommMonoid M] [Module (MonoidAlgebra k G) M]
 
-/-- Build a `representation` from a `[module (monoid_algebra k G) M]`.
+/-- Build a `Representation` from a `[Module (MonoidAlgebra k G) M]`.
 
-Note that the representation is built on `restrict_scalars k (monoid_algebra k G) M`,
+Note that the representation is built on `restrictScalars k (MonoidAlgebra k G) M`,
 rather than on `M` itself.
 -/
 noncomputable def ofModule : Representation k G (RestrictScalars k (MonoidAlgebra k G) M) :=
@@ -194,11 +199,11 @@ See `Rep.equivalenceModuleMonoidAlgebra` for the full statement.
 
 Starting with `ρ : Representation k G V`, converting to a module and back again
 we have a `Representation k G (restrictScalars k (MonoidAlgebra k G) ρ.asModule)`.
-To compare these, we use the composition of `restrict_scalars_add_equiv` and `ρ.as_module_equiv`.
+To compare these, we use the composition of `restrictScalarsAddEquiv` and `ρ.asModuleEquiv`.
 
-Similarly, starting with `module (monoid_algebra k G) M`,
+Similarly, starting with `Module (MonoidAlgebra k G) M`,
 after we convert to a representation and back to a module,
-we have `module (monoid_algebra k G) (restrict_scalars k (monoid_algebra k G) M)`.
+we have `Module (MonoidAlgebra k G) (restrictScalars k (MonoidAlgebra k G) M)`.
 -/
 
 
@@ -300,9 +305,10 @@ theorem ofMulAction_apply {H : Type _} [MulAction G H] (g : G) (f : H →₀ k) 
 #align representation.of_mul_action_apply Representation.ofMulAction_apply
 
 -- Porting note: did not need this in ML3; noncomputable because IR check complains
-noncomputable instance : HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) := by
-    change HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
-    infer_instance
+noncomputable instance :
+    HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) := by
+  change HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
+  infer_instance
 
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := -- by
@@ -310,10 +316,16 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
-      sorry
+      simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
+        ofMulAction_apply, smul_eq_mul]
+      -- Porting note : single_mul_apply not firing in simp
+      rw [MonoidAlgebra.single_mul_apply, one_mul]
     )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
-    show asAlgebraHom _ _ _ = _ <;> simpa [← hx]
+    show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
+    simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
+    rw [←hx]
+    rfl
 #align representation.of_mul_action_self_smul_eq_mul Representation.ofMulAction_self_smul_eq_mul
 
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
@@ -357,7 +369,6 @@ def tprod : Representation k G (V ⊗[k] W) where
   map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]
 #align representation.tprod Representation.tprod
 
--- mathport name: «expr ⊗ »
 local notation ρV " ⊗ " ρW => tprod ρV ρW
 
 @[simp]
@@ -366,8 +377,11 @@ theorem tprod_apply (g : G) : (ρV ⊗ ρW) g = TensorProduct.map (ρV g) (ρW g
 #align representation.tprod_apply Representation.tprod_apply
 
 theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
-    (r • x ⊗ₜ y : (ρV.tprod 1).asModule) = (r • x : ρV.asModule) ⊗ₜ y := by
-  show asAlgebraHom _ _ _ = asAlgebraHom _ _ _ ⊗ₜ _
+    -- Porting note: required to since Lean 4 doesn't unfold asModule
+    let x' : ρV.asModule := x
+    let z : (ρV.tprod 1).asModule := x ⊗ₜ y
+    r • z = (r • x') ⊗ₜ y := by
+  show asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
@@ -375,8 +389,11 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
 #align representation.smul_tprod_one_as_module Representation.smul_tprod_one_asModule
 
 theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
-    (r • x ⊗ₜ y : ((1 : Representation k G V).tprod ρW).asModule) = x ⊗ₜ (r • y : ρW.asModule) := by
-  show asAlgebraHom _ _ _ = _ ⊗ₜ asAlgebraHom _ _ _
+    -- Porting note: required to since Lean 4 doesn't unfold asModule
+    let y' : ρW.asModule := y
+    let z : (1 ⊗ ρW).asModule := x ⊗ₜ y
+    r • z = x ⊗ₜ (r • y') := by
+  show asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
