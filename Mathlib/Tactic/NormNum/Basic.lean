@@ -629,10 +629,13 @@ theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
 
+theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
+  rw [← Nat.not_le, ← Bool.not_eq_true, Nat.ble_eq]
+
 theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble b' a' = false → a < b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
-    Nat.cast_lt.2 <| Nat.not_le.1 <| Nat.not_le_of_not_ble_eq_true <| ne_true_of_eq_false h
+    Nat.cast_lt.2 <| ble_eq_false.1 h
 
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b

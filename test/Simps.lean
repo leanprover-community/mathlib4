@@ -958,7 +958,7 @@ def some_test1 (M : Type _) [CommMonoid M] : Subtype (λ _ : M => True) := ⟨1,
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `some_test2_val |>.isSome
+  guard <| env.find? `some_test2_coe |>.isSome
 
 end
 
