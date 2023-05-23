@@ -96,7 +96,7 @@ section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
 `hasCoeToMatrix`. -/
-instance : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
+instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
 
 end CoeFnInstance
 
