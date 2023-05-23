@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Irrational
-import Mathbin.Data.Rat.Encodable
-import Mathbin.Topology.MetricSpace.Baire
+import Mathlib.Data.Real.Irrational
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Topology.MetricSpace.Baire
 
 /-!
 # Topology of irrational numbers
@@ -42,8 +42,7 @@ theorem isGδ_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 #align is_Gδ_irrational isGδ_irrational
 
-theorem dense_irrational : Dense { x : ℝ | Irrational x } :=
-  by
+theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' real.is_topological_basis_Ioo_rat.dense_iff.2 _
   simp only [mem_Union, mem_singleton_iff]
   rintro _ ⟨a, b, hlt, rfl⟩ hne; rw [inter_comm]
@@ -75,12 +74,10 @@ instance : DenselyOrdered { x // Irrational x } :=
     ⟨⟨z, hz⟩, hxz, hzy⟩⟩
 
 theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
-    ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) :=
-  by
+    ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) := by
   have A : IsClosed (range (fun m => n⁻¹ * m : ℤ → ℝ)) :=
     ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp int.closed_embedding_coe_real.is_closed_map).closed_range
-  have B : x ∉ range (fun m => n⁻¹ * m : ℤ → ℝ) :=
-    by
+  have B : x ∉ range (fun m => n⁻¹ * m : ℤ → ℝ) := by
     rintro ⟨m, rfl⟩
     simpa using hx
   rcases Metric.mem_nhds_iff.1 (A.is_open_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
