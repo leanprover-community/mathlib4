@@ -49,23 +49,6 @@ variable {X Y n}
 
 noncomputable instance : AddCommGroup (newExt X Y n) := Equiv.addCommGroup (newExtEquiv X Y n)
 
---#exit
---  zero := mk 0
---  neg f := mk (-f.hom)
---  add f₁ f₂ := mk (f₁.hom + f₂.hom)
---  sub f₁ f₂ := mk (f₁.hom - f₂.hom)
---  add_assoc := sorry
---  zero_add := sorry
---  add_zero := sorry
---  add_left_neg := sorry
---  sub_eq_add_neg := sorry #exit
---  add_assoc f₁ f₂ f₃ := hom_injective _ _ (add_assoc _ _ _)
---  zero_add f := hom_injective _ _ (zero_add _)
---  add_zero f := hom_injective _ _ (add_zero _)
---  add_comm f₁ f₂ := hom_injective _ _ (add_comm _ _)
---  add_left_neg f := hom_injective _ _ (add_left_neg _)
---  sub_eq_add_neg f₁ f₂ := hom_injective _ _ (sub_eq_add_neg _ _)
-
 @[simp]
 lemma add_hom (x y : newExt X Y n) : (x + y).hom = x.hom + y.hom := rfl
 
