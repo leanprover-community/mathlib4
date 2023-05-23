@@ -173,11 +173,11 @@ def GLPos : Subgroup (GL n R) :=
 end
 
 @[simp]
-theorem mem_GLPos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
+theorem mem_glpos (A : GL n R) : A ∈ GLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
   Iff.rfl
-#align matrix.mem_GL_pos Matrix.mem_GLPos
+#align matrix.mem_GL_pos Matrix.mem_glpos
 
-theorem GLPos.det_ne_zero (A : GLPos n R) : (A : Matrix n n R).det ≠ 0 :=
+theorem GLPos.det_ne_zero (A : GLPos n R) : ((A : GL n R) : Matrix n n R).det ≠ 0 :=
   ne_of_gt A.prop
 #align matrix.GL_pos.det_ne_zero Matrix.GLPos.det_ne_zero
 
@@ -193,8 +193,8 @@ each element. -/
 instance : Neg (GLPos n R) :=
   ⟨fun g =>
     ⟨-g, by
-      rw [mem_GL_pos, general_linear_group.coe_det_apply, Units.val_neg, det_neg,
-        (Fact.out <| Even <| Fintype.card n).neg_one_pow, one_mul]
+      rw [mem_glpos, GeneralLinearGroup.det_apply_val, Units.val_neg, det_neg,
+        (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]
       exact g.prop⟩⟩
 
 @[simp]
@@ -203,18 +203,18 @@ theorem GLPos.coe_neg_GL (g : GLPos n R) : ↑(-g) = -(g : GL n R) :=
 #align matrix.GL_pos.coe_neg_GL Matrix.GLPos.coe_neg_GL
 
 @[simp]
-theorem GLPos.coe_neg (g : GLPos n R) : ↑(-g) = -(g : Matrix n n R) :=
+theorem GLPos.coe_neg (g : GLPos n R) : (↑(-g) : GL n R) = -((g : GL n R) : Matrix n n R) :=
   rfl
 #align matrix.GL_pos.coe_neg Matrix.GLPos.coe_neg
 
 @[simp]
 theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
-    (↑(-g) : Matrix n n R) i j = -(↑g : Matrix n n R) i j :=
+    ((↑(-g) : GL n R) : Matrix n n R) i j = -((g : GL n R) : Matrix n n R) i j :=
   rfl
 #align matrix.GL_pos.coe_neg_apply Matrix.GLPos.coe_neg_apply
 
 instance : HasDistribNeg (GLPos n R) :=
-  Subtype.coe_injective.HasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).val_mul
+  Subtype.coe_injective.hasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).coe_mul
 
 end Neg
 
@@ -224,7 +224,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCom
 
 /-- `special_linear_group n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
-  toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.Prop.symm ▸ zero_lt_one⟩
+  toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
   map_one' := Subtype.ext <| Units.ext <| rfl
   map_mul' A₁ A₂ := Subtype.ext <| Units.ext <| rfl
 #align matrix.special_linear_group.to_GL_pos Matrix.SpecialLinearGroup.toGLPos
@@ -232,9 +232,7 @@ def toGLPos : SpecialLinearGroup n R →* GLPos n R where
 instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
   ⟨toGLPos⟩
 
-theorem coe_eq_toGLPos : (coe : SpecialLinearGroup n R → GLPos n R) = toGLPos :=
-  rfl
-#align matrix.special_linear_group.coe_eq_to_GL_pos Matrix.SpecialLinearGroup.coe_eq_toGLPos
+#noalign matrix.special_linear_group.coe_eq_to_GL_pos
 
 theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
   (show Function.Injective ((coe : GLPos n R → Matrix n n R) ∘ toGLPos) from
@@ -250,8 +248,9 @@ theorem coe_GLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :
 #align matrix.special_linear_group.coe_GL_pos_coe_GL_coe_matrix Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix
 
 @[simp]
-theorem coe_to_GLPos_to_GL_det (g : SpecialLinearGroup n R) : ((g : GLPos n R) : GL n R).det = 1 :=
-  Units.ext g.Prop
+theorem coe_to_GLPos_to_GL_det (g : SpecialLinearGroup n R) :
+    Matrix.GeneralLinearGroup.det ((g : GLPos n R) : GL n R) = 1 :=
+  Units.ext g.prop
 #align matrix.special_linear_group.coe_to_GL_pos_to_GL_det Matrix.SpecialLinearGroup.coe_to_GLPos_to_GL_det
 
 variable [Fact (Even (Fintype.card n))]
@@ -267,7 +266,7 @@ section Examples
 
 /-- The matrix [a, -b; b, a] (inspired by multiplication by a complex number); it is an element of
 $GL_2(R)$ if `a ^ 2 + b ^ 2` is nonzero. -/
-@[simps (config := { fullyApplied := false }) coe]
+@[simps! (config := { fullyApplied := false }) val]
 def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
     Matrix.GeneralLinearGroup (Fin 2) R :=
   GeneralLinearGroup.mkOfDetNeZero !![a, -b; b, a] (by simpa [det_fin_two, sq] using hab)
@@ -286,7 +285,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 section CoeFnInstance
 
 /-- This instance is here for convenience, but is not the simp-normal form. -/
-instance : CoeFun (GL n R) fun _ => n → n → R where coe A := A.val
+instance : CoeFun (GL n R) fun _ => n → n → R where
+  coe A := A.val
 
 @[simp]
 theorem coeFn_eq_coe (A : GL n R) : ⇑A = (↑A : Matrix n n R) :=
