@@ -20,8 +20,8 @@ consisting of all invertible `n` by `n` `R`-matrices.
 
 ## Main definitions
 
-* `matrix.general_linear_group` is the type of matrices over R which are units in the matrix ring.
-* `matrix.GL_pos` gives the subgroup of matrices with
+* `Matrix.GeneralLinearGroup` is the type of matrices over R which are units in the matrix ring.
+* `Matrix.GLPos` gives the subgroup of matrices with
   positive determinant (over a linear ordered ring).
 
 ## Tags
@@ -124,7 +124,7 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 #align matrix.general_linear_group.coe_inv Matrix.GeneralLinearGroup.coe_inv
 
-/-- An element of the matrix general linear group on `(n) [fintype n]` can be considered as an
+/-- An element of the matrix general linear group on `(n) [Fintype n]` can be considered as an
 element of the endomorphism general linear group on `n → R`. -/
 def toLinear : GeneralLinearGroup n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv Matrix.toLinAlgEquiv'.toRingEquiv.toMulEquiv
