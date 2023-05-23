@@ -2918,60 +2918,27 @@ theorem splitOnP_nil : [].splitOnP p = [[]] :=
 #noalign list.split_on_p_aux_eq
 #noalign list.split_on_p_aux_nil
 
-theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α)) :
-    splitOnP.go p xs acc r = r.toListAppend (splitOnP.go p xs acc #[]) := by
-  cases xs with
-  | nil => rfl
-  | cons a as =>
-    simp only [go]
-    by_cases h : p a
-    · simp only [h, cond_true]
-      rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
-      simp only [Array.toListAppend_eq, Array.push_data]
-      rw [Array.data_toArray, nil_append, append_assoc]
-    · simp only [eq_false_of_ne_true h, cond_false]
-      exact go_append as _ _
+theorem splitOnP.go_ne_nil (xs acc : List α) : splitOnP.go p xs acc ≠ [] := by
+  induction xs generalizing acc <;> simp [go]; split <;> simp [*]
 
-theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
-    splitOnP.go p xs acc #[] = modifyHead (acc.toListAppend) (splitOnP.go p xs #[] #[]) := by
-  cases xs with
-  | nil => rfl
-  | cons hd tl =>
-    simp only [go]
-    by_cases h : p hd
-    · simp only [h, cond_true]
-      rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
-      rfl
-    · simp only [eq_false_of_ne_true h, cond_false]
-      rw [go_acc tl, go_acc tl (Array.push #[] hd), modifyHead_modifyHead]
-      change modifyHead (fun a ↦ Array.toListAppend (Array.push acc hd) a) _ =
-        modifyHead (fun a ↦ Array.toListAppend acc <| Array.toListAppend (Array.push #[] hd) a) _
-      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
-        append_assoc]
+theorem splitOnP.go_acc (xs acc : List α) :
+    splitOnP.go p xs acc = modifyHead (acc.reverse ++ ·) (splitOnP p xs) := by
+  induction xs generalizing acc with
+  | nil => simp only [go, modifyHead, splitOnP_nil, append_nil]
+  | cons hd tl ih =>
+    simp only [splitOnP, go]; split
+    · simp only [modifyHead, reverse_nil, append_nil]
+    · rw [ih [hd], modifyHead_modifyHead, ih]
+      congr; funext x; simp only [reverse_cons, append_assoc]; rfl
 
-theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
-  cases xs with
-  | nil => exact cons_ne_nil [] []
-  | cons hd tl =>
-    rw [splitOnP, splitOnP.go]
-    by_cases h : p hd
-    · rw [h, cond_true, splitOnP.go_append]
-      exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
-    · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
-      exact modifyHead_ne_nil_of_ne_nil (splitOnP_ne_nil tl)
-where
-  modifyHead_ne_nil_of_ne_nil {α} {f} {l : List α} (_ : l ≠ []) : modifyHead f l ≠ [] := by
-    cases l with | nil => contradiction | cons => rw [modifyHead]; exact cons_ne_nil _ _
+theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := splitOnP.go_ne_nil _ _ _
 #align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
 
 @[simp]
 theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
-  rw [splitOnP, splitOnP.go]
-  by_cases h : p x
-  · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
-  · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
+  rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 #align list.split_on_p_cons List.splitOnP_consₓ
 
 /-- The original list `L` can be recovered by joining the lists produced by `splitOnP p L`,
@@ -3646,8 +3613,9 @@ theorem filter_false (l : List α) :
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
   ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
-  | [], l₂ => by simp [span.loop]
-  | (a :: l), l₂ => by cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop]
+  | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
+  | (a :: l), l₂ => by
+    cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
 
 @[simp]
 theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
@@ -3702,9 +3670,8 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
-  induction' l with hd tl IH
-  · simp at hx
-  · simp only [takeWhile] at hx
+  induction l with simp [takeWhile] at hx
+  | cons hd tl IH =>
     cases hp : p hd
     · simp [hp] at hx
     · rw [hp, mem_cons] at hx
