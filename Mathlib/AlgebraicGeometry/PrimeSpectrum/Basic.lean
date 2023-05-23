@@ -8,7 +8,6 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
--- import Mathlib.Algebra.PunitInstances
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
@@ -79,7 +78,7 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
 
 /-- The prime spectrum of the zero ring is empty. -/
 theorem pUnit (x : PrimeSpectrum PUnit) : False :=
-  x.1.ne_top_iff_one.1 x.2.1 <| Eq.substr (Subsingleton.elim 1 (0 : PUnit)) x.1.zero_mem -- Subsingleton.elim (0 : PUnit) 1 ▸ x.1.zero_mem
+  x.1.ne_top_iff_one.1 x.2.1 <| Eq.substr (Subsingleton.elim 1 (0 : PUnit)) x.1.zero_mem
 #align prime_spectrum.punit PrimeSpectrum.pUnit
 
 variable (R S)
@@ -737,13 +736,15 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
       rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 
-theorem range_comap_of_surjective (hf : Surjective f) : Set.range (comap f) = zeroLocus (ker f) := by
+theorem range_comap_of_surjective (hf : Surjective f) :
+    Set.range (comap f) = zeroLocus (ker f) := by
   rw [← Set.image_univ]
   convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
 #align prime_spectrum.range_comap_of_surjective PrimeSpectrum.range_comap_of_surjective
 
-theorem isClosed_range_comap_of_surjective (hf : Surjective f) : IsClosed (Set.range (comap f)) := by
+theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
+    IsClosed (Set.range (comap f)) := by
   rw [range_comap_of_surjective _ f hf]
   exact isClosed_zeroLocus _
 #align prime_spectrum.is_closed_range_comap_of_surjective PrimeSpectrum.isClosed_range_comap_of_surjective
