@@ -224,7 +224,6 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   have hac : a < c := left_lt_add_div_two.2 hlt
   have hcb : c < b := add_div_two_lt_right.2 hlt
   have hsub : c - a = b - c := by
-    simp only [c]
     field_simp
     ring
   /- Due to `exists_extension_forall_mem_Icc_of_closed_embedding`, there exists an extension `g`
@@ -261,7 +260,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
             _ = dg y := (dga rfl).symm
 
         · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
-      rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, hax, hxy⟩
+      rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
       refine' ⟨x, hxy.le, _⟩
       cases' le_total c (g y) with hc hc
       · simp [dg0 (Or.inr hc), (hg_mem y).2]
@@ -297,9 +296,9 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
           _ = dg y := (dgb rfl).symm
 
       · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
-    rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, hxub⟩
+    rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, _⟩
     cases' lt_or_le c (g y) with hc hc
-    · rcases em (a ∈ range f) with (⟨x, rfl⟩ | ha')
+    · rcases em (a ∈ range f) with (⟨x, rfl⟩ | _)
       · refine' ⟨x, xu, _, hyxu.le⟩
         calc
           f x = c - (b - c) := by rw [← hsub, sub_sub_cancel]
@@ -311,7 +310,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
             _ < g y - (b - c) := (sub_lt_sub_right hc _)
             _ ≤ g y - dg y := sub_le_sub_left (dgmem _).2 _
 
-        rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, ha, hxy⟩
+        rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
         exact ⟨x, xu, hxy.le, hyxu.le⟩
     · refine' ⟨xl y, xu, _, hyxu.le⟩
       simp [dg0 (Or.inr hc), hxl]
@@ -329,7 +328,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
-    refine' ⟨const Y c, fun y => hc, funext fun x => isEmptyElim x⟩
+    refine' ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
   refine' ⟨g, fun y => _, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
@@ -366,12 +365,12 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   set F : X →ᵇ ℝ :=
-    { toFun := coe ∘ h ∘ f
+    { toFun := Coe ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
       map_bounded' :=
         bounded_range_iff.1
           ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
-  set t' : Set ℝ := coe ∘ h '' t
+  set t' : Set ℝ := Coe ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x hx => (h x).2
   have : OrdConnected t' := by
     constructor
@@ -402,8 +401,8 @@ topological space `Y`. Let `f` be a continuous real-valued function on `X`. Then
 continuous real-valued function `g : C(Y, ℝ)` such that `g ∘ e = f`. -/
 theorem exists_extension_of_closedEmbedding (f : C(X, ℝ)) (e : X → Y) (he : ClosedEmbedding e) :
     ∃ g : C(Y, ℝ), g ∘ e = f :=
-  (exists_extension_forall_mem_of_closedEmbedding f (fun x => mem_univ _) univ_nonempty he).imp
-    fun g => And.right
+  (exists_extension_forall_mem_of_closedEmbedding f (fun _ => mem_univ _) univ_nonempty he).imp
+    fun _ => And.right
 #align continuous_map.exists_extension_of_closed_embedding ContinuousMap.exists_extension_of_closedEmbedding
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
@@ -426,7 +425,7 @@ on `s`. Then there exists a continuous real-valued function `g : C(Y, ℝ)` such
 `g.restrict s = f`. -/
 theorem exists_restrict_eq_of_closed {s : Set Y} (f : C(s, ℝ)) (hs : IsClosed s) :
     ∃ g : C(Y, ℝ), g.restrict s = f :=
-  let ⟨g, hg, hgf⟩ :=
+  let ⟨g, _, hgf⟩ :=
     exists_restrict_eq_forall_mem_of_closed f (fun _ => mem_univ _) univ_nonempty hs
   ⟨g, hgf⟩
 #align continuous_map.exists_restrict_eq_of_closed ContinuousMap.exists_restrict_eq_of_closed
