@@ -8,9 +8,9 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.FreeModule.Finite.Basic
-import Mathbin.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathbin.FieldTheory.Minpoly.Field
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 
@@ -68,8 +68,7 @@ section CayleyHamilton
 to the linear map itself, is zero.
 
 See `matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
-theorem aeval_self_charpoly : aeval f f.charpoly = 0 :=
-  by
+theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (choose_basis R M)).toLinearEquiv).1
   rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_algHom, ← Polynomial.aeval_algHom_apply _ _ _,
     charpoly_def]
@@ -103,14 +102,12 @@ theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) : (minpoly R
   by
   intro h
   obtain ⟨P, hP⟩ := X_dvd_iff.2 h
-  have hdegP : P.degree < (minpoly R f).degree :=
-    by
+  have hdegP : P.degree < (minpoly R f).degree := by
     rw [hP, mul_comm]
     refine' degree_lt_degree_mul_X fun h => _
     rw [h, MulZeroClass.mul_zero] at hP
     exact minpoly.ne_zero (IsIntegral f) hP
-  have hPmonic : P.monic :=
-    by
+  have hPmonic : P.monic := by
     suffices (minpoly R f).Monic by
       rwa [monic.def, hP, mul_comm, leading_coeff_mul_X, ← monic.def] at this
     exact minpoly.monic (IsIntegral f)
