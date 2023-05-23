@@ -8,14 +8,10 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Data.Ordering.Basic
-import Leanbin.Init.Meta.Default
-import Leanbin.Init.Algebra.Classes
-import Leanbin.Init.IteSimp
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option default_priority -/
-set_option default_priority 100
+import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Init.Algebra.Classes
+import Mathlib.Init.IteSimp
 
 universe u
 
@@ -55,12 +51,15 @@ theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := 
 @[simp]
 theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) : (cmpUsing lt a b = Ordering.gt) = lt b a :=
   by
-  simp; apply propext; apply Iff.intro
+  simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right_eq_and, and_true,
+    if_false_left_eq_and]
+  apply propext
+  apply Iff.intro
   · exact fun h => h.2
   · intro hba
     constructor
     · intro hab
-      exact absurd (trans hab hba) (irrefl a)
+      exact absurd (_root_.trans hab hba) (irrefl a)
     · assumption
 #align cmp_using_eq_gt cmpUsing_eq_gt
 
@@ -69,4 +68,3 @@ theorem cmpUsing_eq_eq (a b : α) : (cmpUsing lt a b = Ordering.eq) = (¬lt a b 
 #align cmp_using_eq_eq cmpUsing_eq_eq
 
 end
-
