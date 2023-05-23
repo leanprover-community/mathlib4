@@ -53,7 +53,7 @@ of a topological space into a normal topological space and `f : X →ᵇ ℝ` is
 function, then there exists a bounded continuous function `g : Y →ᵇ ℝ` of the norm `‖g‖ ≤ ‖f‖ / 3`
 such that the distance between `g ∘ e` and `f` is at most `(2 / 3) * ‖f‖`. -/
 theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbedding e) :
-    ∃ g : Y →ᵇ ℝ, ‖g‖ ≤ ‖f‖ / 3 ∧ dist (g.comp_continuous e) f ≤ 2 / 3 * ‖f‖ := by
+    ∃ g : Y →ᵇ ℝ, ‖g‖ ≤ ‖f‖ / 3 ∧ dist (g.compContinuous e) f ≤ 2 / 3 * ‖f‖ := by
   have h3 : (0 : ℝ) < 3 := by norm_num1
   have h23 : 0 < (2 / 3 : ℝ) := by norm_num1
   -- In the trivial case `f = 0`, we take `g = 0`
@@ -67,9 +67,9 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
     assertions of the lemma. -/
   have hf3 : -‖f‖ / 3 < ‖f‖ / 3 := (div_lt_div_right h3).2 (Left.neg_lt_self hf)
   have hc₁ : IsClosed (e '' (f ⁻¹' Iic (-‖f‖ / 3))) :=
-    he.is_closed_map _ (is_closed_Iic.preimage f.continuous)
+    he.isClosedMap _ (isClosed_Iic.preimage f.continuous)
   have hc₂ : IsClosed (e '' (f ⁻¹' Ici (‖f‖ / 3))) :=
-    he.is_closed_map _ (is_closed_Ici.preimage f.continuous)
+    he.isClosedMap _ (isClosed_Ici.preimage f.continuous)
   have hd : Disjoint (e '' (f ⁻¹' Iic (-‖f‖ / 3))) (e '' (f ⁻¹' Ici (‖f‖ / 3))) := by
     refine' disjoint_image_of_injective he.inj (Disjoint.preimage _ _)
     rwa [Iic_disjoint_Ici, not_le]
@@ -84,22 +84,24 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
     ·
       calc
         |g (e x) - f x| = -‖f‖ / 3 - f x := by
-          rw [hg₁ (mem_image_of_mem _ hle₁), abs_of_nonneg (sub_nonneg.2 hle₁)]
+          rw [hg₁ (mem_image_of_mem _ hle₁), Function.const_apply,
+            abs_of_nonneg (sub_nonneg.2 hle₁)]
         _ ≤ 2 / 3 * ‖f‖ := by linarith
-        
+
     · cases' le_total (f x) (‖f‖ / 3) with hle₂ hle₂
       · simp only [neg_div] at *
         calc
           dist (g (e x)) (f x) ≤ |g (e x)| + |f x| := dist_le_norm_add_norm _ _
           _ ≤ ‖f‖ / 3 + ‖f‖ / 3 := (add_le_add (abs_le.2 <| hgf _) (abs_le.2 ⟨hle₁, hle₂⟩))
           _ = 2 / 3 * ‖f‖ := by linarith
-          
+
       ·
         calc
           |g (e x) - f x| = f x - ‖f‖ / 3 := by
-            rw [hg₂ (mem_image_of_mem _ hle₂), abs_sub_comm, abs_of_nonneg (sub_nonneg.2 hle₂)]
+            rw [hg₂ (mem_image_of_mem _ hle₂), abs_sub_comm, Function.const_apply,
+              abs_of_nonneg (sub_nonneg.2 hle₂)]
           _ ≤ 2 / 3 * ‖f‖ := by linarith
-          
+
 #align bounded_continuous_function.tietze_extension_step BoundedContinuousFunction.tietze_extension_step
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
@@ -107,48 +109,48 @@ embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a t
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists
 a bounded continuous function `g : Y →ᵇ ℝ` of the same norm such that `g ∘ e = f`. -/
 theorem exists_extension_norm_eq_of_closed_embedding' (f : X →ᵇ ℝ) (e : C(X, Y))
-    (he : ClosedEmbedding e) : ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g.comp_continuous e = f := by
+    (he : ClosedEmbedding e) : ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g.compContinuous e = f := by
   /- For the proof, we iterate `tietze_extension_step`. Each time we apply it to the difference
     between the previous approximation and `f`. -/
   choose F hF_norm hF_dist using fun f : X →ᵇ ℝ => tietze_extension_step f e he
-  set g : ℕ → Y →ᵇ ℝ := fun n => ((fun g => g + F (f - g.comp_continuous e))^[n]) 0
+  set g : ℕ → Y →ᵇ ℝ := fun n => ((fun g => g + F (f - g.compContinuous e))^[n]) 0
   have g0 : g 0 = 0 := rfl
-  have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).comp_continuous e) := fun n =>
+  have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).compContinuous e) := fun n =>
     Function.iterate_succ_apply' _ _ _
-  have hgf : ∀ n, dist ((g n).comp_continuous e) f ≤ (2 / 3) ^ n * ‖f‖ := by
+  have hgf : ∀ n, dist ((g n).compContinuous e) f ≤ (2 / 3) ^ n * ‖f‖ := by
     intro n
     induction' n with n ihn
     · simp [g0]
-    · rw [g_succ n, add_comp_continuous, ← dist_sub_right, add_sub_cancel', pow_succ, mul_assoc]
+    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel', pow_succ, mul_assoc]
       refine' (hF_dist _).trans (mul_le_mul_of_nonneg_left _ (by norm_num1))
       rwa [← dist_eq_norm']
   have hg_dist : ∀ n, dist (g n) (g (n + 1)) ≤ 1 / 3 * ‖f‖ * (2 / 3) ^ n := by
     intro n
     calc
-      dist (g n) (g (n + 1)) = ‖F (f - (g n).comp_continuous e)‖ := by
+      dist (g n) (g (n + 1)) = ‖F (f - (g n).compContinuous e)‖ := by
         rw [g_succ, dist_eq_norm', add_sub_cancel']
-      _ ≤ ‖f - (g n).comp_continuous e‖ / 3 := (hF_norm _)
-      _ = 1 / 3 * dist ((g n).comp_continuous e) f := by rw [dist_eq_norm', one_div, div_eq_inv_mul]
+      _ ≤ ‖f - (g n).compContinuous e‖ / 3 := (hF_norm _)
+      _ = 1 / 3 * dist ((g n).compContinuous e) f := by rw [dist_eq_norm', one_div, div_eq_inv_mul]
       _ ≤ 1 / 3 * ((2 / 3) ^ n * ‖f‖) := (mul_le_mul_of_nonneg_left (hgf n) (by norm_num1))
       _ = 1 / 3 * ‖f‖ * (2 / 3) ^ n := by ac_rfl
-      
+
   have hg_cau : CauchySeq g := cauchySeq_of_le_geometric _ _ (by norm_num1) hg_dist
   have :
-    tendsto (fun n => (g n).comp_continuous e) at_top
-      (𝓝 <| (limUnder at_top g).comp_continuous e) :=
-    ((continuous_comp_continuous e).Tendsto _).comp hg_cau.tendsto_lim
-  have hge : (limUnder at_top g).comp_continuous e = f := by
+    Tendsto (fun n => (g n).compContinuous e) atTop
+      (𝓝 <| (limUnder atTop g).compContinuous e) :=
+    ((continuous_compContinuous e).tendsto _).comp hg_cau.tendsto_limUnder
+  have hge : (limUnder atTop g).compContinuous e = f := by
     refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
     rw [← MulZeroClass.zero_mul ‖f‖]
     refine' (tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num1
-  refine' ⟨limUnder at_top g, le_antisymm _ _, hge⟩
+  refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
     refine'
-      (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1) hg_dist hg_cau.tendsto_lim).trans_eq _
+      (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1) hg_dist hg_cau.tendsto_limUnder).trans_eq _
     field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
   · rw [← hge]
-    exact norm_comp_continuous_le _ _
+    exact norm_compContinuous_le _ _
 #align bounded_continuous_function.exists_extension_norm_eq_of_closed_embedding' BoundedContinuousFunction.exists_extension_norm_eq_of_closed_embedding'
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
@@ -257,7 +259,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
           calc
             0 < c - g y := sub_pos.2 hac
             _ = dg y := (dga rfl).symm
-            
+
         · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
       rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, hax, hxy⟩
       refine' ⟨x, hxy.le, _⟩
@@ -267,7 +269,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         calc
           g y + dg y ≤ c + (c - a) := add_le_add hc (dgmem _).2
           _ = b := by rw [hsub, add_sub_cancel'_right]
-          
+
   /- Now we deal with the case `∀ x, f x ≠ b`. The proof is the same as in the first case, with
     minor modifications that make it hard to deduplicate code. -/
   choose xl hxl hgb using hg_mem
@@ -293,7 +295,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         calc
           0 < g y - c := sub_pos.2 hcb
           _ = dg y := (dgb rfl).symm
-          
+
       · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
     rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, hxub⟩
     cases' lt_or_le c (g y) with hc hc
@@ -302,13 +304,13 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         calc
           f x = c - (b - c) := by rw [← hsub, sub_sub_cancel]
           _ ≤ g y - dg y := sub_le_sub hc.le (dgmem _).2
-          
+
       · have hay : a < (g - dg) y := by
           calc
             a = c - (b - c) := by rw [← hsub, sub_sub_cancel]
             _ < g y - (b - c) := (sub_lt_sub_right hc _)
             _ ≤ g y - dg y := sub_le_sub_left (dgmem _).2 _
-            
+
         rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, ha, hxy⟩
         exact ⟨x, xu, hxy.le, hyxu.le⟩
     · refine' ⟨xl y, xu, _, hyxu.le⟩
@@ -430,4 +432,3 @@ theorem exists_restrict_eq_of_closed {s : Set Y} (f : C(s, ℝ)) (hs : IsClosed 
 #align continuous_map.exists_restrict_eq_of_closed ContinuousMap.exists_restrict_eq_of_closed
 
 end ContinuousMap
-
