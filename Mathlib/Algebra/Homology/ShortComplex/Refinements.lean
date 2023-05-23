@@ -65,7 +65,6 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
   constructor
   . intro hy
     let T := ShortComplex.mk _ _ c.condition
-    have : Epi T.g := epi_of_isColimit_cofork hc
     have hT := T.exact_of_g_is_cokernel
       (IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp)))
     rw [T.exact_iff_exact_up_to_refinements] at hT
