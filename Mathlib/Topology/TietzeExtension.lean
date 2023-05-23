@@ -372,7 +372,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
         bounded_range_iff.1
           ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
   set t' : Set ℝ := Subtype.val ∘ h '' t
-  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x hx => (h x).2
+  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
   have : OrdConnected t' := by
     constructor
     rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
@@ -386,7 +386,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
   set g : C(Y, ℝ) :=
     ⟨h.symm ∘ codRestrict G _ fun y => ht_sub (hG y),
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
-  have hgG : ∀ {y a}, g y = a ↔ G y = h a := fun y a =>
+  have hgG : ∀ {y a}, g y = a ↔ G y = h a := @fun y a =>
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
   refine' ⟨g, fun y => _, _⟩
   · rcases hG y with ⟨a, ha, hay⟩
