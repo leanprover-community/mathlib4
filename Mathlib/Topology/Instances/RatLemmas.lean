@@ -68,8 +68,8 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
 
 theorem not_countably_generated_nhds_infty_alexandroff : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
   intro
-  have : IsCountablyGenerated (comap (coe : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
-  rw [Alexandroff.comap_coe_nhds_infty, coclosed_compact_eq_cocompact] at this
+  have : IsCountablyGenerated (comap (Alexandroff.some : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
+  rw [Alexandroff.comap_coe_nhds_infty, coclosedCompact_eq_cocompact] at this
   exact not_countably_generated_cocompact this
 #align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_alexandroff
 
