@@ -231,7 +231,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     (fun x => by
       rw [aeval_C]
       rfl)
-    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x ih => by
+    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
     rw [AlgHom.map_mul, aeval_C, AlgHom.map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow,
       mk_X]
     rfl
@@ -560,7 +560,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
 /-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `adjoin_root f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
 def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := by
-  set f' := f * C f.leadingCoeff⁻¹ with f'_def
+  set f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
     · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
