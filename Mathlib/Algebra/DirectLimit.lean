@@ -493,20 +493,22 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
   ·
     rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
-  ·
-    rw [(restriction _).map_neg, (restriction _).map_one, (FreeCommRing.lift _).map_neg,
+  · -- porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
+  -- `RingHom.map_neg` to get the rewrite to compile
+    rw [(restriction _).map_neg, (restriction _).map_one, RingHom.map_neg,
       (FreeCommRing.lift _).map_one, (f' j k hjk).map_neg, (f' j k hjk).map_one,
-      (restriction _).map_neg, (restriction _).map_one, (FreeCommRing.lift _).map_neg,
+      -- porting note: similarly here I give strictly less information
+      (restriction _).map_neg, (restriction _).map_one, RingHom.map_neg,
       (FreeCommRing.lift _).map_one]
   · rintro _ ⟨p, hps, rfl⟩ n ih
     rw [(restriction _).map_mul, (FreeCommRing.lift _).map_mul, (f' j k hjk).map_mul, ih,
       (restriction _).map_mul, (FreeCommRing.lift _).map_mul, restriction_of, dif_pos hps, lift_of,
       restriction_of, dif_pos (hst hps), lift_of]
     dsimp only
-    have := DirectedSystem.map_map fun i j h => f' i j h
+    -- porting note: Lean 3 could get away with far fewer hints for inputs in the line below
+    have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
     dsimp only at this
     rw [this]
-    rfl
   · rintro x y ihx ihy
     rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, (f' j k hjk).map_add, ihx, ihy,
       (restriction _).map_add, (FreeCommRing.lift _).map_add]
@@ -529,7 +531,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · rintro k (rfl | ⟨rfl | _⟩)
         exact hij
         rfl
-      · rw [(restriction _).map_sub, (FreeCommRing.lift _).map_sub, restriction_of, dif_pos,
+      · rw [(restriction _).map_sub, RingHom.map_sub, restriction_of, dif_pos,
           restriction_of, dif_pos, lift_of, lift_of]
         dsimp only
         have := DirectedSystem.map_map fun i j h => f' i j h
