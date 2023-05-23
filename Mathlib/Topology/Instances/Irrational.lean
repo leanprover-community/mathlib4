@@ -61,10 +61,10 @@ namespace Irrational
 variable {x : ℝ}
 
 instance : OrderTopology { x // Irrational x } :=
-  induced_orderTopology _ Iff.rfl <| by
-    rintro x y hlt
-    obtain ⟨a, ha, hxa, hay⟩ := exists_irrational_btwn hlt
-    simpa only [Subtype.exists, exists_and_left, exists_prop] using ⟨a, hxa, ha, hay⟩
+  induced_orderTopology _ Iff.rfl <| @fun _ _ hlt =>
+    let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
+    ⟨⟨z, hz⟩, hxz, hzy⟩
+
 
 instance : NoMaxOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
