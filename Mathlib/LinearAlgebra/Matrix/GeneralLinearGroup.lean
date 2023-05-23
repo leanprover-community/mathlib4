@@ -39,7 +39,7 @@ open Matrix
 open LinearMap
 
 -- disable this instance so we do not accidentally use it in lemmas.
-attribute [-instance] special_linear_group.has_coe_to_fun
+attribute [-instance] SpecialLinearGroup.instCoeFun
 
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices-/
@@ -48,7 +48,6 @@ abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] 
   (Matrix n n R)ˣ
 #align matrix.general_linear_group Matrix.GeneralLinearGroup
 
--- mathport name: exprGL
 notation "GL" => GeneralLinearGroup
 
 namespace GeneralLinearGroup
@@ -112,7 +111,7 @@ theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
 
 theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
-  inv_of_eq_nonsing_inv (↑A : Matrix n n R)
+  invOf_eq_nonsing_inv (↑A : Matrix n n R)
 #align matrix.general_linear_group.coe_inv Matrix.GeneralLinearGroup.coe_inv
 
 /-- An element of the matrix general linear group on `(n) [fintype n]` can be considered as an
@@ -131,7 +130,7 @@ theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] 
 #align matrix.general_linear_group.coe_to_linear Matrix.GeneralLinearGroup.coe_toLinear
 
 @[simp]
-theorem toLinear_apply (v : n → R) : (@toLinear n ‹_› ‹_› _ _ A) v = Matrix.mulVecLin (↑A) v :=
+theorem toLinear_apply (v : n → R) : (toLinear A) v = Matrix.mulVecLin (↑A) v :=
   rfl
 #align matrix.general_linear_group.to_linear_apply Matrix.GeneralLinearGroup.toLinear_apply
 
@@ -144,12 +143,15 @@ namespace SpecialLinearGroup
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
-  ⟨fun A => ⟨↑A, ↑A⁻¹, congr_arg coe (mul_right_inv A), congr_arg coe (mul_left_inv A)⟩⟩
+  ⟨fun A => ⟨↑A, ↑A⁻¹,
+    congr_arg ((↑) : _ → Matrix n n R) (mul_right_inv A),
+    congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩⟩
 #align matrix.special_linear_group.has_coe_to_general_linear_group Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup
 
 @[simp]
-theorem coe_to_GL_det (g : SpecialLinearGroup n R) : (g : GL n R).det = 1 :=
-  Units.ext g.Prop
+theorem coe_to_GL_det (g : SpecialLinearGroup n R) :
+    Matrix.GeneralLinearGroup.det (g : GL n R) = 1 :=
+  Units.ext g.prop
 #align matrix.special_linear_group.coe_to_GL_det Matrix.SpecialLinearGroup.coe_to_GL_det
 
 end SpecialLinearGroup
@@ -171,12 +173,12 @@ def gLPos : Subgroup (GL n R) :=
 end
 
 @[simp]
-theorem mem_gLPos (A : GL n R) : A ∈ gLPos n R ↔ 0 < (A.det : R) :=
+theorem mem_gLPos (A : GL n R) : A ∈ gLPos n R ↔ 0 < (Matrix.GeneralLinearGroup.det A : R) :=
   Iff.rfl
 #align matrix.mem_GL_pos Matrix.mem_gLPos
 
 theorem gLPos.det_ne_zero (A : gLPos n R) : (A : Matrix n n R).det ≠ 0 :=
-  ne_of_gt A.Prop
+  ne_of_gt A.prop
 #align matrix.GL_pos.det_ne_zero Matrix.gLPos.det_ne_zero
 
 end
@@ -296,4 +298,3 @@ end CoeFnInstance
 end GeneralLinearGroup
 
 end Matrix
-
