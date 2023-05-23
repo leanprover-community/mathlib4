@@ -13,6 +13,10 @@ import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.IteSimp
 
+/-!
+# Some `Ordering` lemmas
+-/
+
 universe u
 
 namespace Ordering
@@ -35,7 +39,6 @@ theorem ite_eq_gt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
   by_cases c <;> simp [*]
 #align ordering.ite_eq_gt_distrib Ordering.ite_eq_gt_distrib
 
--- ------------------------------------------------------------------
 end Ordering
 
 section
