@@ -398,6 +398,14 @@ def plus : Triangulated.Subcategory C where
 
 def bounded : Triangulated.Subcategory C := t.plus ⊓ t.minus
 
+/- Now, we need the octahedron axiom -/
+
+variable [IsTriangulated C]
+
+/-lemma isIso₁_truncLEmap_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : t.IsGE T.obj₃ n₁) :
+    IsIso ((t.truncLE n₀).map T.mor₁) := sorry-/
+
 end TStructure
 
 end Triangulated
