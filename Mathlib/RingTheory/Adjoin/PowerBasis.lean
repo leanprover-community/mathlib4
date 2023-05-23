@@ -13,9 +13,9 @@ import Mathlib.RingTheory.PowerBasis
 import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
-# Power basis for `algebra.adjoin R {x}`
+# Power basis for `Algebra.adjoin R {x}`
 
-This file defines the canonical power basis on `algebra.adjoin R {x}`,
+This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
 
@@ -59,7 +59,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
 #align algebra.adjoin.power_basis_aux Algebra.adjoin.powerBasisAux
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
-where `d` is the degree of the minimal polynomial of `x`. See `algebra.adjoin.power_basis'` for
+where `d` is the degree of the minimal polynomial of `x`. See `Algebra.adjoin.powerBasis'` for
 a version over a more general base ring. -/
 @[simps gen dim]
 noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
@@ -74,7 +74,7 @@ end Algebra
 
 open Algebra
 
-/-- The power basis given by `x` if `B.gen ∈ adjoin K {x}`. See `power_basis.of_gen_mem_adjoin'`
+/-- The power basis given by `x` if `B.gen ∈ adjoin K {x}`. See `PowerBasis.ofGenMemAdjoin'`
 for a version over a more general base ring. -/
 @[simps!]
 noncomputable def PowerBasis.ofGenMemAdjoin {x : S} (B : PowerBasis K S) (hint : IsIntegral K x)
@@ -98,9 +98,9 @@ variable {A : Type _} [CommRing A] [Algebra R A] [Algebra S A]
 
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
-/-- If `B : power_basis S A` is such that `is_integral R B.gen`, then
-`is_integral R (B.basis.repr (B.gen ^ n) i)` for all `i` if
-`minpoly S B.gen = (minpoly R B.gen).map (algebra_map R S)`. This is the case if `R` is a GCD domain
+/-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
+`IsIntegral R (B.basis.repr (B.gen ^ n) i)` for all `i` if
+`minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD domain
 and `S` is its fraction ring. -/
 theorem repr_gen_pow_isIntegral [IsDomain S]
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
@@ -131,9 +131,9 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
   · simp [hij, isIntegral_zero]
 #align power_basis.repr_gen_pow_is_integral PowerBasis.repr_gen_pow_isIntegral
 
-/-- Let `B : power_basis S A` be such that `is_integral R B.gen`, and let `x y : A` be elements with
-integral coordinates in the base `B.basis`. Then `is_integral R ((B.basis.repr (x * y) i)` for all
-`i` if `minpoly S B.gen = (minpoly R B.gen).map (algebra_map R S)`. This is the case if `R` is a GCD
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x y : A` be elements with
+integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x * y) i)` for all
+`i` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD
 domain and `S` is its fraction ring. -/
 theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.basis.repr x i))
     (hy : ∀ i, IsIntegral R (B.basis.repr y i))
@@ -150,9 +150,9 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   refine' repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
-/-- Let `B : power_basis S A` be such that `is_integral R B.gen`, and let `x : A` be and element
-with integral coordinates in the base `B.basis`. Then `is_integral R ((B.basis.repr (x ^ n) i)` for
-all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebra_map R S)`. This is the case
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be and element
+with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
+all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/
 theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.basis.repr x i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
@@ -174,9 +174,9 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
     exact repr_mul_isIntegral hB hx (fun _ => hn _ le_rfl (fun _ => hx _) _) hmin
 #align power_basis.repr_pow_is_integral PowerBasis.repr_pow_isIntegral
 
-/-- Let `B B' : power_basis K S` be such that `is_integral R B.gen`, and let `P : R[X]` be such that
-`aeval B.gen P = B'.gen`. Then `is_integral R (B.basis.to_matrix B'.basis i j)` for all `i` and `j`
-if `minpoly K B.gen = (minpoly R B.gen).map (algebra_map R L)`. This is the case
+/-- Let `B B' : PowerBasis K S` be such that `IsIntegral R B.gen`, and let `P : R[X]` be such that
+`aeval B.gen P = B'.gen`. Then `IsIntegral R (B.basis.to_matrix B'.basis i j)` for all `i` and `j`
+if `minpoly K B.gen = (minpoly R B.gen).map (algebraMap R L)`. This is the case
 if `R` is a GCD domain and `K` is its fraction ring. -/
 theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen P = B'.gen)
     (hB : IsIntegral R B.gen) (hmin : minpoly K B.gen = (minpoly R B.gen).map (algebraMap R K)) :
