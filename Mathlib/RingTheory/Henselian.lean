@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Taylor
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.LinearAlgebra.AdicCompletion
+import Mathlib.Data.Polynomial.Taylor
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.LinearAlgebra.AdicCompletion
 
 /-!
 # Henselian rings
@@ -68,12 +68,10 @@ open BigOperators Polynomial
 open LocalRing Polynomial Function
 
 theorem isLocalRingHom_of_le_jacobson_bot {R : Type _} [CommRing R] (I : Ideal R)
-    (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) :=
-  by
+    (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h
-  have : IsUnit (Ideal.Quotient.mk (Ideal.jacobson ⊥) a) :=
-    by
+  have : IsUnit (Ideal.Quotient.mk (Ideal.jacobson ⊥) a) := by
     rw [isUnit_iff_exists_inv] at *
     obtain ⟨b, hb⟩ := h
     obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective b
@@ -120,8 +118,7 @@ class HenselianLocalRing (R : Type _) [CommRing R] extends LocalRing R : Prop wh
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.henselian (K : Type _) [Field K] : HenselianLocalRing K
-    where is_henselian f hf a₀ h₁ h₂ :=
-    by
+    where is_henselian f hf a₀ h₁ h₂ := by
     refine' ⟨a₀, _, _⟩ <;> rwa [(maximal_ideal K).eq_bot_of_prime, Ideal.mem_bot] at *
     rw [sub_self]
 #align field.henselian Field.henselian
@@ -134,8 +131,7 @@ theorem HenselianLocalRing.tFAE (R : Type u) [CommRing R] [LocalRing R] :
         ∀ {K : Type u} [Field K],
           ∀ (φ : R →+* K) (hφ : surjective φ) (f : R[X]) (hf : f.Monic) (a₀ : K)
             (h₁ : f.eval₂ φ a₀ = 0) (h₂ : f.derivative.eval₂ φ a₀ ≠ 0),
-            ∃ a : R, f.IsRoot a ∧ φ a = a₀] :=
-  by
+            ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
   tfae_have _3_2 : 3 → 2;
   · intro H
     exact H (residue R) Ideal.Quotient.mk_surjective
@@ -182,8 +178,7 @@ instance (R : Type _) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R
 -- see Note [lower instance priority]
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
 instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R] (I : Ideal R)
-    [IsAdicComplete I R] : HenselianRing R I
-    where
+    [IsAdicComplete I R] : HenselianRing R I where
   jac := IsAdicComplete.le_jacobson_bot _
   is_henselian := by
     intro f hf a₀ h₁ h₂
@@ -193,8 +188,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
       -- applying the function sending `b` to `b - f(b)/f'(b)` (Newton's method).
       -- Note that `f'.eval b` is a unit, because `b` has the same residue as `a₀` modulo `I`.
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
-      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) :=
-        by
+      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
         dsimp only [c, Nat.rec_add_one]
         rfl
@@ -218,8 +212,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
         apply isUnit_of_map_unit (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact smodeq.def.mp ((hc_mod n).eval _)
-      have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) :=
-        by
+      have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih
         · simpa only [pow_one]
@@ -244,8 +237,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
           rw [pow_mul']
           refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
-      have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] :=
-        by
+      have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] := by
         intro m n hmn
         rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
