@@ -1283,7 +1283,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
           Continuous (⇑(if h : i ∈ I then LinearMap.proj (R := R) (ι := ↥I)
             (φ := fun i : ↥I => φ i) ⟨i, h⟩ else
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
-        split_ifs <;> [apply continuous_apply, exact continuous_zero])
+        split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
 #align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.iInfKerProjEquiv
 
