@@ -94,9 +94,8 @@ theorem integerNormalization_spec (p : S[X]) :
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
   · rw [dif_neg hi]
-    convert(smul_zero _).symm
-    · apply RingHom.map_zero
-    · exact not_mem_support_iff.mp hi
+    rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
+    -- Porting note: was `convert (smul_zero _).symm, ...`
 #align is_localization.integer_normalization_spec IsLocalization.integerNormalization_spec
 
 theorem integerNormalization_map_to_map (p : S[X]) :
@@ -137,17 +136,15 @@ variable [CommRing C]
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
   refine' Polynomial.ext_iff.trans (Polynomial.ext_iff.trans _).symm
-  obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec _ p
+  obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
   constructor <;> intro h i
-  · apply to_map_eq_zero_iff.mp
-    rw [hb i, h i]
-    apply smul_zero
-    assumption
+  · -- Porting note: avoided some defeq abuse
+    rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
   · have hi := h i
     rw [Polynomial.coeff_zero, ← @to_map_eq_zero_iff A _ K, hb i, Algebra.smul_def] at hi
     apply Or.resolve_left (eq_zero_or_eq_zero_of_mul_eq_zero hi)
     intro h
-    apply mem_non_zero_divisors_iff_ne_zero.mp nonzero
+    apply mem_nonZeroDivisors_iff_ne_zero.mp nonzero
     exact to_map_eq_zero_iff.mp h
 #align is_fraction_ring.integer_normalization_eq_zero_iff IsFractionRing.integerNormalization_eq_zero_iff
 
@@ -223,6 +220,9 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
+  -- Porting note: added `haveI`
+  haveI : IsLocalization (Submonoid.map (algebraMap R S) M) Sₘ :=
+    inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
 #align is_integral_localization_at_leading_coeff is_integral_localization_at_leadingCoeff
 
@@ -243,7 +243,9 @@ theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
       _
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
     rw [RingHom.map_mul, RingHom.map_one, ← RingHom.comp_apply _ (algebraMap R Rₘ)] at hv'
-    erw [IsLocalization.map_comp] at hv'
+    -- Porting note: added argument
+    erw [IsLocalization.map_comp
+      (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map)] at hv'
     exact hv.2 ▸ hv'
   · obtain ⟨p, hp⟩ := H s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
