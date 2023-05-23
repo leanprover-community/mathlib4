@@ -8,9 +8,9 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.GeneralLinearGroup
-import Mathbin.LinearAlgebra.Matrix.NonsingularInverse
-import Mathbin.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -57,8 +57,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 /-- The determinant of a unit matrix is itself a unit. -/
 @[simps]
-def det : GL n R →* Rˣ
-    where
+def det : GL n R →* Rˣ where
   toFun A :=
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
@@ -191,8 +190,7 @@ variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCom
 each element. -/
 instance : Neg (gLPos n R) :=
   ⟨fun g =>
-    ⟨-g,
-      by
+    ⟨-g, by
       rw [mem_GL_pos, general_linear_group.coe_det_apply, Units.val_neg, det_neg,
         (Fact.out <| Even <| Fintype.card n).neg_one_pow, one_mul]
       exact g.prop⟩⟩
@@ -223,8 +221,7 @@ namespace SpecialLinearGroup
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
 
 /-- `special_linear_group n R` embeds into `GL_pos n R` -/
-def toGLPos : SpecialLinearGroup n R →* gLPos n R
-    where
+def toGLPos : SpecialLinearGroup n R →* gLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.Prop.symm ▸ zero_lt_one⟩
   map_one' := Subtype.ext <| Units.ext <| rfl
   map_mul' A₁ A₂ := Subtype.ext <| Units.ext <| rfl
