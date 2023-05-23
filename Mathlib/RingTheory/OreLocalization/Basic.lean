@@ -942,6 +942,3 @@ instance divisionRing : DivisionRing R[R⁰⁻¹] :=
 end DivisionRing
 
 end OreLocalization
-
-open Lean
-#check Lean.Expr.const `a []
