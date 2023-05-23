@@ -72,7 +72,7 @@ instance : NoMinOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
 
 instance : DenselyOrdered { x // Irrational x } :=
-  ⟨fun x y hlt =>
+  ⟨fun _ _ hlt =>
     let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩⟩
 
