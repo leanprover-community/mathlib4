@@ -193,6 +193,11 @@ instance : EssSurj (singleFunctor₀ToHeart C) := ⟨fun X => by
 noncomputable instance : IsEquivalence (singleFunctor₀ToHeart C) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
+-- this should be redone with better definitional properties for the inverse
+noncomputable def singleFunctor₀ToHeartEquivalence :
+    C ≌ (t : TStructure (DerivedCategory C)).Heart :=
+  Functor.asEquivalence (singleFunctor₀ToHeart C)
+
 end TStructure
 
 open DerivedCategory.TStructure

@@ -82,6 +82,15 @@ def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j ≅ A :=
 set_option linter.uppercaseLean3 false in
 #align homological_complex.single_obj_X_self HomologicalComplex.singleObjXSelf
 
+def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
+    ((single V c j).obj A).X i ≅ A := eqToIso (by subst hi ; simp)
+
+lemma isZeroSingleObjX (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
+    IsZero (((single V c j).obj A).X i) := by
+  dsimp
+  rw [if_neg hi]
+  apply Limits.isZero_zero
+
 @[simp 1100]
 theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
     ((single V c j).map f).f j = (singleObjXSelf V c j A).hom ≫

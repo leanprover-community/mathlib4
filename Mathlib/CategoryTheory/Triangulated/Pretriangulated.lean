@@ -429,7 +429,7 @@ instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
 instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
 
-lemma exists_iso_binaryBiroduct_of_dist_triang (T : Triangle C) (hT : T ∈ distTriang C)
+lemma exists_iso_binaryBiproduct_of_dist_triang (T : Triangle C) (hT : T ∈ distTriang C)
   (zero : T.mor₃ = 0) :
     ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
       T.mor₂ = e.hom ≫ biprod.snd := by
@@ -446,7 +446,7 @@ lemma exists_iso_binaryBiroduct_of_dist_triang (T : Triangle C) (hT : T ∈ dist
 lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
     binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
   obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
-  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiroduct_of_dist_triang _ mem rfl
+  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_dist_triang _ mem rfl
   dsimp at he₁ he₂
   refine' isomorphic_distinguished _ mem _ (Iso.symm _)
   refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)

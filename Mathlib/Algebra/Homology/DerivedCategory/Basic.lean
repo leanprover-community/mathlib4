@@ -178,6 +178,12 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor]
   infer_instance
 
+noncomputable def singleFunctorShiftIso (n a a' : ℤ) (ha' : n + a = a') :
+    singleFunctor C a' ⋙ shiftFunctor _ n ≅ singleFunctor C a :=
+  Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Q.commShiftIso n).symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (CochainComplex.singleShiftIso C n a a' ha') Q
+
 lemma homologyFunctor_inverts_qis (n : ℤ) :
     (HomotopyCategory.qis C).IsInvertedBy
       (HomotopyCategory.newHomologyFunctor C _ n) := fun X Y f hf => by
