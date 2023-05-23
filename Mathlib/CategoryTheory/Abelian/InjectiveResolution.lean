@@ -298,7 +298,7 @@ theorem exact_ofCocomplex (Z : C) (n : ℕ) :
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
-def of (Z : C) : InjectiveResolution Z :=
+irreducible_def of (Z : C) : InjectiveResolution Z :=
   { cocomplex := ofCocomplex Z
     ι :=
       CochainComplex.mkHom
