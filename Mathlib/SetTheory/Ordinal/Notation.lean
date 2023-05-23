@@ -589,9 +589,9 @@ theorem oadd_mul (e₁ n₁ a₁ e₂ n₂ a₂) :
 
 theorem oadd_mul_NFBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a₁) b₁) :
     ∀ {o₂ b₂}, NFBelow o₂ b₂ → NFBelow (oadd e₁ n₁ a₁ * o₂) (repr e₁ + b₂)
-  | 0, b₂, h₂ => NFBelow.zero
+  | 0, b₂, _ => NFBelow.zero
   | oadd e₂ n₂ a₂, b₂, h₂ => by
-    have IH := oadd_mul_NFBelow h₂.snd
+    have IH := oadd_mul_NFBelow h₁ h₂.snd
     by_cases e0 : e₂ = 0 <;> simp [e0, oadd_mul]
     · apply NFBelow.oadd h₁.fst h₁.snd
       simpa using (add_lt_add_iff_left (repr e₁)).2 (lt_of_le_of_lt (Ordinal.zero_le _) h₂.lt)
@@ -858,7 +858,7 @@ theorem scale_opowAux (e a0 a : Onote) [NF e] [NF a0] [NF a] :
     ∀ k m, repr (opowAux e a0 a k m) = ω ^ repr e * repr (opowAux 0 a0 a k m)
   | 0, m => by cases m <;> simp [opowAux]
   | k + 1, m => by
-    by_cases m = 0 <;> simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux]
+    by_cases h : m = 0 <;> simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux]
 #align onote.scale_opow_aux Onote.scale_opowAux
 
 theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr e ≠ 0)
@@ -895,14 +895,14 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     (k ≠ 0 → R < ((ω^repr a0)^succ k)) ∧
       ((ω^repr a0)^k) * ((ω^repr a0) * (n : ℕ) + repr a') + R =
         ((ω^repr a0) * (n : ℕ) + repr a' + m^succ k) := by
-  intro R
+  intro R'
   haveI No : NF (oadd a0 n a') :=
     N0.oadd n (Na'.below_of_lt' <| lt_of_le_of_lt (le_add_right _ _) h)
   induction' k with k IH
   · cases m <;> dsimp <;>
     simp only [opow_zero, Nat.cast_succ, add_one_eq_succ, one_mul, add_zero, Nat.cast_zero,
       _root_.zero_add, opow_one, IsEmpty.forall_iff, and_self]
-  rename R => R'
+  -- rename R => R'
   let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
   let ω0 := ω^repr a0
   let α' := ω0 * n + repr a'
