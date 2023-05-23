@@ -256,7 +256,11 @@ theorem isIntegral_localization' {R S : Type _} [CommRing R] [CommRing S] {f : R
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
         Localization M →+* _).IsIntegral :=
-  @isIntegral_localization R _ M S _ f.toAlgebra _ _ _ _ _ _ _ _ hf
+  -- Porting note: added
+  letI := f.toAlgebra
+  haveI : IsLocalization (Algebra.algebraMapSubmonoid S M)
+    (Localization (Submonoid.map (f : R →* S) M)) := Localization.isLocalization
+  isIntegral_localization hf
 #align is_integral_localization' isIntegral_localization'
 
 variable (M)
