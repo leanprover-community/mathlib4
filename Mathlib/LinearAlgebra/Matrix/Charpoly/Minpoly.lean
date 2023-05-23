@@ -40,7 +40,7 @@ open Matrix
 variable (M : Matrix n n R)
 
 @[simp]
-theorem minpoly_toLin' : minpoly R M.toLin' = minpoly R M :=
+theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
   minpoly.minpoly_algEquiv (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin' Matrix.minpoly_toLin'
 
@@ -63,7 +63,7 @@ end Matrix
 namespace LinearMap
 
 @[simp]
-theorem minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R f.toMatrix' = minpoly R f :=
+theorem minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R (toMatrix' f) = minpoly R f :=
   minpoly.minpoly_algEquiv (toMatrixAlgEquiv' : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix' LinearMap.minpoly_toMatrix'
 
@@ -79,17 +79,18 @@ section PowerBasis
 
 open Algebra
 
-/-- The characteristic polynomial of the map `λ x, a * x` is the minimal polynomial of `a`.
+/-- The characteristic polynomial of the map `fun x => a * x` is the minimal polynomial of `a`.
 
 In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff`
 and a bit of rewriting, this will allow us to conclude the
 field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
 theorem charpoly_leftMulMatrix {S : Type _} [Ring S] [Algebra R S] (h : PowerBasis R S) :
-    (leftMulMatrix h.Basis h.gen).charpoly = minpoly R h.gen := by
+    (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
   apply minpoly.unique' R h.gen (charpoly_monic _)
-  · apply (injective_iff_map_eq_zero (left_mul_matrix _)).mp (left_mul_matrix_injective h.basis)
+  · apply (injective_iff_map_eq_zero (G := S) (leftMulMatrix _)).mp
+      (leftMulMatrix_injective h.basis)
     rw [← Polynomial.aeval_algHom_apply, aeval_self_charpoly]
   refine' fun q hq => or_iff_not_imp_left.2 fun h0 => _
   rw [Matrix.charpoly_degree_eq_dim, Fintype.card_fin] at hq
@@ -97,4 +98,3 @@ theorem charpoly_leftMulMatrix {S : Type _} [Ring S] [Algebra R S] (h : PowerBas
 #align charpoly_left_mul_matrix charpoly_leftMulMatrix
 
 end PowerBasis
-
