@@ -369,28 +369,28 @@ theorem wOppSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x �
   (wOppSide_lineMap_left y h ht).symm
 #align affine_subspace.w_opp_side_line_map_right AffineSubspace.wOppSide_lineMap_right
 
-theorem _root_.Wbtw.w_same_side₂₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
+theorem _root_.Wbtw.wSameSide₂₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
     s.WSameSide y z := by
   rcases h with ⟨t, ⟨ht0, -⟩, rfl⟩
   exact wSameSide_lineMap_left z hx ht0
-#align wbtw.w_same_side₂₃ Wbtw.w_same_side₂₃
+#align wbtw.w_same_side₂₃ Wbtw.wSameSide₂₃
 
-theorem _root_.Wbtw.w_same_side₃₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
+theorem _root_.Wbtw.wSameSide₃₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
     s.WSameSide z y :=
-  (h.w_same_side₂₃ hx).symm
-#align wbtw.w_same_side₃₂ Wbtw.w_same_side₃₂
+  (h.wSameSide₂₃ hx).symm
+#align wbtw.w_same_side₃₂ Wbtw.wSameSide₃₂
 
-theorem _root_.Wbtw.w_same_side₁₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
+theorem _root_.Wbtw.wSameSide₁₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
     s.WSameSide x y :=
-  h.symm.w_same_side₃₂ hz
-#align wbtw.w_same_side₁₂ Wbtw.w_same_side₁₂
+  h.symm.wSameSide₃₂ hz
+#align wbtw.w_same_side₁₂ Wbtw.wSameSide₁₂
 
-theorem _root_.Wbtw.w_same_side₂₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
+theorem _root_.Wbtw.wSameSide₂₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
     s.WSameSide y x :=
-  h.symm.w_same_side₂₃ hz
-#align wbtw.w_same_side₂₁ Wbtw.w_same_side₂₁
+  h.symm.wSameSide₂₃ hz
+#align wbtw.w_same_side₂₁ Wbtw.wSameSide₂₁
 
-theorem _root_.Wbtw.w_opp_side₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
+theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
     s.WOppSide x z := by
   rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
   refine' ⟨_, hy, _, hy, _⟩
@@ -402,12 +402,12 @@ theorem _root_.Wbtw.w_opp_side₁₃ {s : AffineSubspace R P} {x y z : P} (h : W
   simp_rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
     vsub_self, zero_sub, ← neg_one_smul R (z -ᵥ x), ← add_smul, smul_neg, ← neg_smul, smul_smul]
   ring_nf
-#align wbtw.w_opp_side₁₃ Wbtw.w_opp_side₁₃
+#align wbtw.w_opp_side₁₃ Wbtw.wOppSide₁₃
 
-theorem _root_.Wbtw.w_opp_side₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
+theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
     s.WOppSide z x :=
-  h.symm.w_opp_side₁₃ hy
-#align wbtw.w_opp_side₃₁ Wbtw.w_opp_side₃₁
+  h.symm.wOppSide₁₃ hy
+#align wbtw.w_opp_side₃₁ Wbtw.wOppSide₃₁
 
 end StrictOrderedCommRing
 
@@ -672,7 +672,7 @@ theorem SOppSide.not_sSameSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSid
 
 theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     s.WOppSide x y ↔ ∃ p ∈ s, Wbtw R x p y := by
-  refine' ⟨fun h => _, fun ⟨p, hp, h⟩ => h.w_opp_side₁₃ hp⟩
+  refine' ⟨fun h => _, fun ⟨p, hp, h⟩ => h.wOppSide₁₃ hp⟩
   rcases h with ⟨p₁, hp₁, p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
   · rw [vsub_eq_zero_iff_eq] at h
     rw [h]
@@ -707,7 +707,7 @@ theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide 
 
 theorem _root_.Sbtw.sOppSide_of_not_mem_of_mem {s : AffineSubspace R P} {x y z : P} (h : Sbtw R x y z)
     (hx : x ∉ s) (hy : y ∈ s) : s.SOppSide x z := by
-  refine' ⟨h.wbtw.w_opp_side₁₃ hy, hx, fun hz => hx _⟩
+  refine' ⟨h.wbtw.wOppSide₁₃ hy, hx, fun hz => hx _⟩
   rcases h with ⟨⟨t, ⟨ht0, ht1⟩, rfl⟩, hyx, hyz⟩
   rw [lineMap_apply] at hy
   have ht : t ≠ 1 := by
@@ -839,7 +839,7 @@ theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
 
 theorem wOppSide_pointReflection {s : AffineSubspace R P} {x : P} (y : P) (hx : x ∈ s) :
     s.WOppSide y (pointReflection R x y) :=
-  (wbtw_pointReflection R _ _).w_opp_side₁₃ hx
+  (wbtw_pointReflection R _ _).wOppSide₁₃ hx
 #align affine_subspace.w_opp_side_point_reflection AffineSubspace.wOppSide_pointReflection
 
 theorem sOppSide_pointReflection {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) :
