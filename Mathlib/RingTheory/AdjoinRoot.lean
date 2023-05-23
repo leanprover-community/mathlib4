@@ -100,7 +100,7 @@ def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
 #align adjoin_root.mk AdjoinRoot.mk
 
-@[elab_as_elim]
+--@[elab_as_elim]  -- porting note: removing `elab_as_elim` seems to help Lean find `C`.
 theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
   Quotient.inductionOn' x ih
@@ -242,9 +242,8 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 -- porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ :=
   Algebra.eq_top_iff.2 fun x => by
-    apply AdjoinRoot.induction_on (C := fun y => y ∈ Algebra.adjoin R {root f})
-    intro p
-    exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+    apply induction_on f x fun p =>
+      (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
@@ -469,7 +468,7 @@ theorem modByMonicHom_mk (hg : g.Monic) (f : R[X]) : modByMonicHom hg (mk g f) =
 -- porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicHom hg) := by
   intro f
-  apply AdjoinRoot.induction_on (C := fun h => (mk g) ((modByMonicHom hg) h) = h)
+  apply AdjoinRoot.induction_on _ f
   intro f
   rw [modByMonicHom_mk hg, mk_eq_mk, modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel_left,
     dvd_neg]
@@ -494,7 +493,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
       -- porting note: another proof that I converted to tactic mode
       left_inv := by
         intro f
-        apply AdjoinRoot.induction_on (C := fun j => (mk g) (∑ i : Fin (natDegree g), (monomial i) (coeff ((modByMonicHom hg) j) i)) = j)
+        apply AdjoinRoot.induction_on _ f
         intro f
         exact
           Eq.symm <|
@@ -683,7 +682,7 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.
     left_inv := fun x => by
-      apply induction_on (C := fun y => (PowerBasis.lift pb (root g) h₁) ((liftHom g pb.gen h₂) y) = y)
+      apply induction_on _ x
       intro f
       rw [liftHom_mk, pb.lift_aeval, aeval_eq]
     right_inv := fun x => by
