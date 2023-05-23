@@ -8,8 +8,8 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.Basic
-import Mathbin.Algebra.Category.Mon.FilteredColimits
+import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.Algebra.Category.Mon.FilteredColimits
 
 /-!
 # The forgetful functor from (commutative) (additive) groups preserves filtered colimits.
@@ -83,8 +83,7 @@ def colimitInvAux (x : Σj, F.obj j) : G :=
 @[to_additive]
 theorem colimitInvAux_eq_of_rel (x y : Σj, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget GroupCat) x y) :
-    colimit_inv_aux x = colimit_inv_aux y :=
-  by
+    colimit_inv_aux x = colimit_inv_aux y := by
   apply G.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
@@ -142,8 +141,7 @@ def colimitCocone : cocone F where
 
 /-- The proposed colimit cocone is a colimit in `Group`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddGroup`."]
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     MonCat.FilteredColimits.colimitDesc (F ⋙ forget₂ GroupCat MonCat.{max v u})
       ((forget₂ GroupCat MonCat).mapCocone t)
@@ -224,8 +222,7 @@ def colimitCocone : cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommGroup`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommGroup`."]
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     (GroupCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ CommGroupCat GroupCat.{max v u})).desc
