@@ -723,7 +723,6 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
 end Field
 
 end Equiv
--- porting note: hic sunt leones
 
 section
 
@@ -831,7 +830,7 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
       ((Ideal.quotEquivOfEq
             (show
               (span ({f} : Set R[X])).map (I.map (C : R →+* R[X])).Quotient.mk =
-                span ({(Ideal.Quotient.mk (I Polynomial.C)) f} : Set (R[X] ⧸ map C I))
+                span ({(Ideal.Quotient.mk (I Polynomial.C)) f} : Set (R[X] ⧸ (I.map C)))
               by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot
