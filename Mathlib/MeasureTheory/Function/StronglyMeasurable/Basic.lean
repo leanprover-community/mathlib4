@@ -72,6 +72,7 @@ the two spaces has second countable topology. This is the right assumption to en
 maps from `α` to `β` are strongly measurable. -/
 class SecondCountableTopologyEither (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] :
   Prop where
+  /-- The projection out of `SecondCountableTopologyEither` -/
   out : SecondCountableTopology α ∨ SecondCountableTopology β
 #align second_countable_topology_either SecondCountableTopologyEither
 
@@ -89,7 +90,6 @@ variable {α β γ ι : Type _} [Countable ι]
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 section Definitions
@@ -101,7 +101,7 @@ def StronglyMeasurable [MeasurableSpace α] (f : α → β) : Prop :=
   ∃ fs : ℕ → α →ₛ β, ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
 #align measure_theory.strongly_measurable MeasureTheory.StronglyMeasurable
 
--- mathport name: strongly_measurable_of
+/-- The notation for StronglyMeasurable giving the measurable space instance explicitly. -/
 scoped notation "StronglyMeasurable[" m "]" => @MeasureTheory.StronglyMeasurable _ _ _ m
 
 /-- A function is `FinStronglyMeasurable` with respect to a measure if it is the limit of simple
@@ -934,10 +934,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
           rw [hg_seq_zero y hys n]
           exact Ne.symm hx
       finite_range' := @SimpleFunc.finite_range _ _ m (g_seq_s n) }
-  have hg_eq : ∀ x n, g_seq_s₂ n x = g_seq_s n x := fun x n => rfl
-  refine' ⟨g_seq_s₂, fun x => _⟩
-  simp_rw [hg_eq]
-  exact hg_seq_tendsto x
+  exact ⟨g_seq_s₂, hg_seq_tendsto⟩
 #align measure_theory.strongly_measurable.strongly_measurable_of_measurable_space_le_on MeasureTheory.StronglyMeasurable.stronglyMeasurable_of_measurableSpace_le_on
 
 /-- If a function `f` is strongly measurable w.r.t. a sub-σ-algebra `m` and the measure is σ-finite
@@ -1678,9 +1675,9 @@ theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι
 
 @[simp]
 theorem _root_.aestronglyMeasurable_sum_measure_iff [PseudoMetrizableSpace β]
-    {m : MeasurableSpace α} {μ : ι → Measure α} :
+    {_m : MeasurableSpace α} {μ : ι → Measure α} :
     AEStronglyMeasurable f (sum μ) ↔ ∀ i, AEStronglyMeasurable f (μ i) :=
-  ⟨fun h i => h.mono_measure (Measure.le_sum _ _), sum_measure⟩
+  ⟨fun h _ => h.mono_measure (Measure.le_sum _ _), sum_measure⟩
 #align ae_strongly_measurable_sum_measure_iff aestronglyMeasurable_sum_measure_iff
 
 @[simp]
@@ -1706,7 +1703,7 @@ protected theorem iUnion [PseudoMetrizableSpace β] {s : ι → Set α}
 theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : ι → Set α} :
     AEStronglyMeasurable f (μ.restrict (⋃ i, s i)) ↔
       ∀ i, AEStronglyMeasurable f (μ.restrict (s i)) :=
-  ⟨fun h i => h.mono_measure <| restrict_mono (subset_iUnion _ _) le_rfl,
+  ⟨fun h _ => h.mono_measure <| restrict_mono (subset_iUnion _ _) le_rfl,
     AEStronglyMeasurable.iUnion⟩
 #align ae_strongly_measurable_Union_iff aestronglyMeasurable_iUnion_iff
 
@@ -1774,7 +1771,7 @@ variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-theorem _root_.StronglyMeasurable.apply_continuousLinearMap {m : MeasurableSpace α}
+theorem _root_.StronglyMeasurable.apply_continuousLinearMap {_m : MeasurableSpace α}
     {φ : α → F →L[𝕜] E}
     (hφ : StronglyMeasurable φ) (v : F) : StronglyMeasurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
@@ -1953,14 +1950,14 @@ variable {G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure
 
 /-- In a space with second countable topology and a sigma-finite measure, `FinStronglyMeasurable`
   and `Measurable` are equivalent. -/
-theorem finStronglyMeasurable_iff_measurable {m0 : MeasurableSpace α} (μ : Measure α)
+theorem finStronglyMeasurable_iff_measurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : FinStronglyMeasurable f μ ↔ Measurable f :=
   ⟨fun h => h.measurable, fun h => (Measurable.stronglyMeasurable h).finStronglyMeasurable μ⟩
 #align measure_theory.fin_strongly_measurable_iff_measurable MeasureTheory.finStronglyMeasurable_iff_measurable
 
 /-- In a space with second countable topology and a sigma-finite measure,
   `AEFinStronglyMeasurable` and `AEMeasurable` are equivalent. -/
-theorem aefinStronglyMeasurable_iff_aemeasurable {m0 : MeasurableSpace α} (μ : Measure α)
+theorem aefinStronglyMeasurable_iff_aemeasurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : AEFinStronglyMeasurable f μ ↔ AEMeasurable f μ := by
   simp_rw [AEFinStronglyMeasurable, AEMeasurable, finStronglyMeasurable_iff_measurable]
 #align measure_theory.ae_fin_strongly_measurable_iff_ae_measurable MeasureTheory.aefinStronglyMeasurable_iff_aemeasurable
