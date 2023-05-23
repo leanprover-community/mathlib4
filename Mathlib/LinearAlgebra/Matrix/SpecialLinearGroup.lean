@@ -391,5 +391,3 @@ theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 
 #align modular_group.T_inv_mul_apply_one ModularGroup.T_inv_mul_apply_one
 
 end ModularGroup
-
-#lint
