@@ -118,8 +118,8 @@ theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g 
 
 /-- The trace of an endomorphism is invariant under conjugation -/
 @[simp]
-theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) : trace R M (↑f * g * ↑f⁻¹) = trace R M g :=
-  by
+theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
+    trace R M (↑f * g * ↑f⁻¹) = trace R M g := by
   rw [trace_mul_comm]
   simp
 #align linear_map.trace_conj LinearMap.trace_conj
