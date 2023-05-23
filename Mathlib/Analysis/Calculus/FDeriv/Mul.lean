@@ -65,31 +65,31 @@ variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G �
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMapComp.HasStrictFDerivAt (c x, d x)).comp x <| hc.Prod hd
+  (isBoundedBilinearMapComp.hasStrictFDerivAt (c x, d x)).comp x <| hc.prod hd
 #align has_strict_fderiv_at.clm_comp HasStrictFDerivAt.clm_comp
 
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x :=
-  (isBoundedBilinearMapComp.HasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.Prod hd
+  (isBoundedBilinearMapComp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.prod hd
 #align has_fderiv_within_at.clm_comp HasFDerivWithinAt.clm_comp
 
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMapComp.HasFDerivAt (c x, d x)).comp x <| hc.Prod hd
+  (isBoundedBilinearMapComp.hasFDerivAt (c x, d x)).comp x <| hc.prod hd
 #align has_fderiv_at.clm_comp HasFDerivAt.clm_comp
 
 theorem DifferentiableWithinAt.clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)
     (hd : DifferentiableWithinAt 𝕜 d s x) :
     DifferentiableWithinAt 𝕜 (fun y => (c y).comp (d y)) s x :=
-  (hc.HasFDerivWithinAt.clm_comp hd.HasFDerivWithinAt).DifferentiableWithinAt
+  (hc.hasFDerivWithinAt.clm_comp hd.hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.clm_comp DifferentiableWithinAt.clm_comp
 
 theorem DifferentiableAt.clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     DifferentiableAt 𝕜 (fun y => (c y).comp (d y)) x :=
-  (hc.HasFDerivAt.clm_comp hd.HasFDerivAt).DifferentiableAt
+  (hc.hasFDerivAt.clm_comp hd.hasFDerivAt).differentiableAt
 #align differentiable_at.clm_comp DifferentiableAt.clm_comp
 
 theorem DifferentiableOn.clm_comp (hc : DifferentiableOn 𝕜 c s) (hd : DifferentiableOn 𝕜 d s) :
@@ -105,41 +105,41 @@ theorem fderivWithin_clm_comp (hxs : UniqueDiffWithinAt 𝕜 s x) (hc : Differen
     fderivWithin 𝕜 (fun y => (c y).comp (d y)) s x =
       (compL 𝕜 F G H (c x)).comp (fderivWithin 𝕜 d s x) +
         ((compL 𝕜 F G H).flip (d x)).comp (fderivWithin 𝕜 c s x) :=
-  (hc.HasFDerivWithinAt.clm_comp hd.HasFDerivWithinAt).fderivWithin hxs
+  (hc.hasFDerivWithinAt.clm_comp hd.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_clm_comp fderivWithin_clm_comp
 
 theorem fderiv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     fderiv 𝕜 (fun y => (c y).comp (d y)) x =
       (compL 𝕜 F G H (c x)).comp (fderiv 𝕜 d x) +
         ((compL 𝕜 F G H).flip (d x)).comp (fderiv 𝕜 c x) :=
-  (hc.HasFDerivAt.clm_comp hd.HasFDerivAt).fderiv
+  (hc.hasFDerivAt.clm_comp hd.hasFDerivAt).fderiv
 #align fderiv_clm_comp fderiv_clm_comp
 
 theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     (hu : HasStrictFDerivAt u u' x) :
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.HasStrictFDerivAt (c x, u x)).comp x (hc.Prod hu)
+  (isBoundedBilinearMapApply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_strict_fderiv_at.clm_apply HasStrictFDerivAt.clm_apply
 
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
     HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x :=
-  (isBoundedBilinearMapApply.HasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.Prod hu)
+  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
 #align has_fderiv_within_at.clm_apply HasFDerivWithinAt.clm_apply
 
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.HasFDerivAt (c x, u x)).comp x (hc.Prod hu)
+  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_fderiv_at.clm_apply HasFDerivAt.clm_apply
 
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
     (hu : DifferentiableWithinAt 𝕜 u s x) : DifferentiableWithinAt 𝕜 (fun y => (c y) (u y)) s x :=
-  (hc.HasFDerivWithinAt.clm_apply hu.HasFDerivWithinAt).DifferentiableWithinAt
+  (hc.hasFDerivWithinAt.clm_apply hu.hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.clm_apply DifferentiableWithinAt.clm_apply
 
 theorem DifferentiableAt.clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 𝕜 u x) :
     DifferentiableAt 𝕜 (fun y => (c y) (u y)) x :=
-  (hc.HasFDerivAt.clm_apply hu.HasFDerivAt).DifferentiableAt
+  (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).differentiableAt
 #align differentiable_at.clm_apply DifferentiableAt.clm_apply
 
 theorem DifferentiableOn.clm_apply (hc : DifferentiableOn 𝕜 c s) (hu : DifferentiableOn 𝕜 u s) :
@@ -154,12 +154,12 @@ theorem fderivWithin_clm_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (hu : DifferentiableWithinAt 𝕜 u s x) :
     fderivWithin 𝕜 (fun y => (c y) (u y)) s x =
       (c x).comp (fderivWithin 𝕜 u s x) + (fderivWithin 𝕜 c s x).flip (u x) :=
-  (hc.HasFDerivWithinAt.clm_apply hu.HasFDerivWithinAt).fderivWithin hxs
+  (hc.hasFDerivWithinAt.clm_apply hu.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_clm_apply fderivWithin_clm_apply
 
 theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 𝕜 u x) :
     fderiv 𝕜 (fun y => (c y) (u y)) x = (c x).comp (fderiv 𝕜 u x) + (fderiv 𝕜 c x).flip (u x) :=
-  (hc.HasFDerivAt.clm_apply hu.HasFDerivAt).fderiv
+  (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).fderiv
 #align fderiv_clm_apply fderiv_clm_apply
 
 end ClmCompApply
@@ -182,29 +182,29 @@ variable {𝕜' : Type _} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 �
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 
 theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smul_right (f x)) x :=
-  (isBoundedBilinearMapSmul.HasStrictFDerivAt (c x, f x)).comp x <| hc.Prod hf
+    HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
+  (isBoundedBilinearMapSmul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prod hf
 #align has_strict_fderiv_at.smul HasStrictFDerivAt.smul
 
 theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smul_right (f x)) s x :=
-  (isBoundedBilinearMapSmul.HasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.Prod hf
+    HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x :=
+  (isBoundedBilinearMapSmul.hasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.prod hf
 #align has_fderiv_within_at.smul HasFDerivWithinAt.smul
 
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
-    HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smul_right (f x)) x :=
-  (isBoundedBilinearMapSmul.HasFDerivAt (c x, f x)).comp x <| hc.Prod hf
+    HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
+  (isBoundedBilinearMapSmul.hasFDerivAt (c x, f x)).comp x <| hc.prod hf
 #align has_fderiv_at.smul HasFDerivAt.smul
 
 theorem DifferentiableWithinAt.smul (hc : DifferentiableWithinAt 𝕜 c s x)
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (fun y => c y • f y) s x :=
-  (hc.HasFDerivWithinAt.smul hf.HasFDerivWithinAt).DifferentiableWithinAt
+  (hc.hasFDerivWithinAt.smul hf.hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.smul DifferentiableWithinAt.smul
 
 @[simp]
 theorem DifferentiableAt.smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun y => c y • f y) x :=
-  (hc.HasFDerivAt.smul hf.HasFDerivAt).DifferentiableAt
+  (hc.hasFDerivAt.smul hf.hasFDerivAt).differentiableAt
 #align differentiable_at.smul DifferentiableAt.smul
 
 theorem DifferentiableOn.smul (hc : DifferentiableOn 𝕜 c s) (hf : DifferentiableOn 𝕜 f s) :
@@ -219,38 +219,38 @@ theorem Differentiable.smul (hc : Differentiable 𝕜 c) (hf : Differentiable �
 theorem fderivWithin_smul (hxs : UniqueDiffWithinAt 𝕜 s x) (hc : DifferentiableWithinAt 𝕜 c s x)
     (hf : DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 (fun y => c y • f y) s x =
-      c x • fderivWithin 𝕜 f s x + (fderivWithin 𝕜 c s x).smul_right (f x) :=
-  (hc.HasFDerivWithinAt.smul hf.HasFDerivWithinAt).fderivWithin hxs
+      c x • fderivWithin 𝕜 f s x + (fderivWithin 𝕜 c s x).smulRight (f x) :=
+  (hc.hasFDerivWithinAt.smul hf.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_smul fderivWithin_smul
 
 theorem fderiv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun y => c y • f y) x = c x • fderiv 𝕜 f x + (fderiv 𝕜 c x).smul_right (f x) :=
-  (hc.HasFDerivAt.smul hf.HasFDerivAt).fderiv
+    fderiv 𝕜 (fun y => c y • f y) x = c x • fderiv 𝕜 f x + (fderiv 𝕜 c x).smulRight (f x) :=
+  (hc.hasFDerivAt.smul hf.hasFDerivAt).fderiv
 #align fderiv_smul fderiv_smul
 
 theorem HasStrictFDerivAt.smul_const (hc : HasStrictFDerivAt c c' x) (f : F) :
-    HasStrictFDerivAt (fun y => c y • f) (c'.smul_right f) x := by
+    HasStrictFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasStrictFDerivAt_const f x)
 #align has_strict_fderiv_at.smul_const HasStrictFDerivAt.smul_const
 
 theorem HasFDerivWithinAt.smul_const (hc : HasFDerivWithinAt c c' s x) (f : F) :
-    HasFDerivWithinAt (fun y => c y • f) (c'.smul_right f) s x := by
+    HasFDerivWithinAt (fun y => c y • f) (c'.smulRight f) s x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasFDerivWithinAt_const f x s)
 #align has_fderiv_within_at.smul_const HasFDerivWithinAt.smul_const
 
 theorem HasFDerivAt.smul_const (hc : HasFDerivAt c c' x) (f : F) :
-    HasFDerivAt (fun y => c y • f) (c'.smul_right f) x := by
+    HasFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasFDerivAt_const f x)
 #align has_fderiv_at.smul_const HasFDerivAt.smul_const
 
 theorem DifferentiableWithinAt.smul_const (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
     DifferentiableWithinAt 𝕜 (fun y => c y • f) s x :=
-  (hc.HasFDerivWithinAt.smul_const f).DifferentiableWithinAt
+  (hc.hasFDerivWithinAt.smul_const f).differentiableWithinAt
 #align differentiable_within_at.smul_const DifferentiableWithinAt.smul_const
 
 theorem DifferentiableAt.smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
     DifferentiableAt 𝕜 (fun y => c y • f) x :=
-  (hc.HasFDerivAt.smul_const f).DifferentiableAt
+  (hc.hasFDerivAt.smul_const f).differentiableAt
 #align differentiable_at.smul_const DifferentiableAt.smul_const
 
 theorem DifferentiableOn.smul_const (hc : DifferentiableOn 𝕜 c s) (f : F) :
@@ -263,13 +263,13 @@ theorem Differentiable.smul_const (hc : Differentiable 𝕜 c) (f : F) :
 
 theorem fderivWithin_smul_const (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
-    fderivWithin 𝕜 (fun y => c y • f) s x = (fderivWithin 𝕜 c s x).smul_right f :=
-  (hc.HasFDerivWithinAt.smul_const f).fderivWithin hxs
+    fderivWithin 𝕜 (fun y => c y • f) s x = (fderivWithin 𝕜 c s x).smulRight f :=
+  (hc.hasFDerivWithinAt.smul_const f).fderivWithin hxs
 #align fderiv_within_smul_const fderivWithin_smul_const
 
 theorem fderiv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
-    fderiv 𝕜 (fun y => c y • f) x = (fderiv 𝕜 c x).smul_right f :=
-  (hc.HasFDerivAt.smul_const f).fderiv
+    fderiv 𝕜 (fun y => c y • f) x = (fderiv 𝕜 c x).smulRight f :=
+  (hc.hasFDerivAt.smul_const f).fderiv
 #align fderiv_smul_const fderiv_smul_const
 
 end Smul
@@ -284,9 +284,9 @@ variable {𝔸 𝔸' : Type _} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedA
 
 theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
     (hb : HasStrictFDerivAt b b' x) :
-    HasStrictFDerivAt (fun y => a y * b y) (a x • b' + a'.smul_right (b x)) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).IsBoundedBilinearMap.HasStrictFDerivAt (a x, b x)).comp x
-    (ha.Prod hb)
+    HasStrictFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
+    (ha.prod hb)
 #align has_strict_fderiv_at.mul' HasStrictFDerivAt.mul'
 
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
@@ -297,9 +297,9 @@ theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDe
 #align has_strict_fderiv_at.mul HasStrictFDerivAt.mul
 
 theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
-    HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a'.smul_right (b x)) s x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).IsBoundedBilinearMap.HasFDerivAt (a x, b x)).comp_hasFDerivWithinAt
-    x (ha.Prod hb)
+    HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) s x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt (a x, b x)).comp_hasFDerivWithinAt
+    x (ha.prod hb)
 #align has_fderiv_within_at.mul' HasFDerivWithinAt.mul'
 
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
@@ -310,8 +310,8 @@ theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivW
 #align has_fderiv_within_at.mul HasFDerivWithinAt.mul
 
 theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
-    HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smul_right (b x)) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).IsBoundedBilinearMap.HasFDerivAt (a x, b x)).comp x (ha.Prod hb)
+    HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt (a x, b x)).comp x (ha.prod hb)
 #align has_fderiv_at.mul' HasFDerivAt.mul'
 
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
@@ -323,13 +323,13 @@ theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
 
 theorem DifferentiableWithinAt.mul (ha : DifferentiableWithinAt 𝕜 a s x)
     (hb : DifferentiableWithinAt 𝕜 b s x) : DifferentiableWithinAt 𝕜 (fun y => a y * b y) s x :=
-  (ha.HasFDerivWithinAt.mul' hb.HasFDerivWithinAt).DifferentiableWithinAt
+  (ha.hasFDerivWithinAt.mul' hb.hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.mul DifferentiableWithinAt.mul
 
 @[simp]
 theorem DifferentiableAt.mul (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 𝕜 b x) :
     DifferentiableAt 𝕜 (fun y => a y * b y) x :=
-  (ha.HasFDerivAt.mul' hb.HasFDerivAt).DifferentiableAt
+  (ha.hasFDerivAt.mul' hb.hasFDerivAt).differentiableAt
 #align differentiable_at.mul DifferentiableAt.mul
 
 theorem DifferentiableOn.mul (ha : DifferentiableOn 𝕜 a s) (hb : DifferentiableOn 𝕜 b s) :
@@ -344,13 +344,13 @@ theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable �
 theorem DifferentiableWithinAt.pow (ha : DifferentiableWithinAt 𝕜 a s x) :
     ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x => a x ^ n) s x
   | 0 => by simp only [pow_zero, differentiableWithinAt_const]
-  | n + 1 => by simp only [pow_succ, DifferentiableWithinAt.pow n, ha.mul]
+  | n + 1 => by simp only [pow_succ, DifferentiableWithinAt.pow ha n, ha.mul]
 #align differentiable_within_at.pow DifferentiableWithinAt.pow
 
 @[simp]
 theorem DifferentiableAt.pow (ha : DifferentiableAt 𝕜 a x) (n : ℕ) :
     DifferentiableAt 𝕜 (fun x => a x ^ n) x :=
-  differentiableWithinAt_univ.mp <| ha.DifferentiableWithinAt.pow n
+  differentiableWithinAt_univ.mp <| ha.differentiableWithinAt.pow n
 #align differentiable_at.pow DifferentiableAt.pow
 
 theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 a s) (n : ℕ) :
@@ -365,30 +365,30 @@ theorem Differentiable.pow (ha : Differentiable 𝕜 a) (n : ℕ) : Differentiab
 theorem fderivWithin_mul' (hxs : UniqueDiffWithinAt 𝕜 s x) (ha : DifferentiableWithinAt 𝕜 a s x)
     (hb : DifferentiableWithinAt 𝕜 b s x) :
     fderivWithin 𝕜 (fun y => a y * b y) s x =
-      a x • fderivWithin 𝕜 b s x + (fderivWithin 𝕜 a s x).smul_right (b x) :=
-  (ha.HasFDerivWithinAt.mul' hb.HasFDerivWithinAt).fderivWithin hxs
+      a x • fderivWithin 𝕜 b s x + (fderivWithin 𝕜 a s x).smulRight (b x) :=
+  (ha.hasFDerivWithinAt.mul' hb.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_mul' fderivWithin_mul'
 
 theorem fderivWithin_mul (hxs : UniqueDiffWithinAt 𝕜 s x) (hc : DifferentiableWithinAt 𝕜 c s x)
     (hd : DifferentiableWithinAt 𝕜 d s x) :
     fderivWithin 𝕜 (fun y => c y * d y) s x =
       c x • fderivWithin 𝕜 d s x + d x • fderivWithin 𝕜 c s x :=
-  (hc.HasFDerivWithinAt.mul hd.HasFDerivWithinAt).fderivWithin hxs
+  (hc.hasFDerivWithinAt.mul hd.hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_mul fderivWithin_mul
 
 theorem fderiv_mul' (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 𝕜 b x) :
-    fderiv 𝕜 (fun y => a y * b y) x = a x • fderiv 𝕜 b x + (fderiv 𝕜 a x).smul_right (b x) :=
-  (ha.HasFDerivAt.mul' hb.HasFDerivAt).fderiv
+    fderiv 𝕜 (fun y => a y * b y) x = a x • fderiv 𝕜 b x + (fderiv 𝕜 a x).smulRight (b x) :=
+  (ha.hasFDerivAt.mul' hb.hasFDerivAt).fderiv
 #align fderiv_mul' fderiv_mul'
 
 theorem fderiv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     fderiv 𝕜 (fun y => c y * d y) x = c x • fderiv 𝕜 d x + d x • fderiv 𝕜 c x :=
-  (hc.HasFDerivAt.mul hd.HasFDerivAt).fderiv
+  (hc.hasFDerivAt.mul hd.hasFDerivAt).fderiv
 #align fderiv_mul fderiv_mul
 
 theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) :
-    HasStrictFDerivAt (fun y => a y * b) (a'.smul_right b) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).HasStrictFDerivAt.comp x ha
+    HasStrictFDerivAt (fun y => a y * b) (a'.smulRight b) x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).hasStrictFDerivAt.comp x ha
 #align has_strict_fderiv_at.mul_const' HasStrictFDerivAt.mul_const'
 
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
@@ -399,8 +399,8 @@ theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') 
 #align has_strict_fderiv_at.mul_const HasStrictFDerivAt.mul_const
 
 theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸) :
-    HasFDerivWithinAt (fun y => a y * b) (a'.smul_right b) s x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).HasFDerivAt.comp_hasFDerivWithinAt x ha
+    HasFDerivWithinAt (fun y => a y * b) (a'.smulRight b) s x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).hasFDerivAt.comp_hasFDerivWithinAt x ha
 #align has_fderiv_within_at.mul_const' HasFDerivWithinAt.mul_const'
 
 theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸') :
@@ -411,8 +411,8 @@ theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸'
 #align has_fderiv_within_at.mul_const HasFDerivWithinAt.mul_const
 
 theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
-    HasFDerivAt (fun y => a y * b) (a'.smul_right b) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).HasFDerivAt.comp x ha
+    HasFDerivAt (fun y => a y * b) (a'.smulRight b) x :=
+  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).hasFDerivAt.comp x ha
 #align has_fderiv_at.mul_const' HasFDerivAt.mul_const'
 
 theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
@@ -424,12 +424,12 @@ theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
 
 theorem DifferentiableWithinAt.mul_const (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
     DifferentiableWithinAt 𝕜 (fun y => a y * b) s x :=
-  (ha.HasFDerivWithinAt.mul_const' b).DifferentiableWithinAt
+  (ha.hasFDerivWithinAt.mul_const' b).differentiableWithinAt
 #align differentiable_within_at.mul_const DifferentiableWithinAt.mul_const
 
 theorem DifferentiableAt.mul_const (ha : DifferentiableAt 𝕜 a x) (b : 𝔸) :
     DifferentiableAt 𝕜 (fun y => a y * b) x :=
-  (ha.HasFDerivAt.mul_const' b).DifferentiableAt
+  (ha.hasFDerivAt.mul_const' b).differentiableAt
 #align differentiable_at.mul_const DifferentiableAt.mul_const
 
 theorem DifferentiableOn.mul_const (ha : DifferentiableOn 𝕜 a s) (b : 𝔸) :
@@ -442,49 +442,49 @@ theorem Differentiable.mul_const (ha : Differentiable 𝕜 a) (b : 𝔸) :
 
 theorem fderivWithin_mul_const' (hxs : UniqueDiffWithinAt 𝕜 s x)
     (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
-    fderivWithin 𝕜 (fun y => a y * b) s x = (fderivWithin 𝕜 a s x).smul_right b :=
-  (ha.HasFDerivWithinAt.mul_const' b).fderivWithin hxs
+    fderivWithin 𝕜 (fun y => a y * b) s x = (fderivWithin 𝕜 a s x).smulRight b :=
+  (ha.hasFDerivWithinAt.mul_const' b).fderivWithin hxs
 #align fderiv_within_mul_const' fderivWithin_mul_const'
 
 theorem fderivWithin_mul_const (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝔸') :
     fderivWithin 𝕜 (fun y => c y * d) s x = d • fderivWithin 𝕜 c s x :=
-  (hc.HasFDerivWithinAt.mul_const d).fderivWithin hxs
+  (hc.hasFDerivWithinAt.mul_const d).fderivWithin hxs
 #align fderiv_within_mul_const fderivWithin_mul_const
 
 theorem fderiv_mul_const' (ha : DifferentiableAt 𝕜 a x) (b : 𝔸) :
-    fderiv 𝕜 (fun y => a y * b) x = (fderiv 𝕜 a x).smul_right b :=
-  (ha.HasFDerivAt.mul_const' b).fderiv
+    fderiv 𝕜 (fun y => a y * b) x = (fderiv 𝕜 a x).smulRight b :=
+  (ha.hasFDerivAt.mul_const' b).fderiv
 #align fderiv_mul_const' fderiv_mul_const'
 
 theorem fderiv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸') :
     fderiv 𝕜 (fun y => c y * d) x = d • fderiv 𝕜 c x :=
-  (hc.HasFDerivAt.mul_const d).fderiv
+  (hc.hasFDerivAt.mul_const d).fderiv
 #align fderiv_mul_const fderiv_mul_const
 
 theorem HasStrictFDerivAt.const_mul (ha : HasStrictFDerivAt a a' x) (b : 𝔸) :
     HasStrictFDerivAt (fun y => b * a y) (b • a') x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸) b).HasStrictFDerivAt.comp x ha
+  ((ContinuousLinearMap.mul 𝕜 𝔸) b).hasStrictFDerivAt.comp x ha
 #align has_strict_fderiv_at.const_mul HasStrictFDerivAt.const_mul
 
 theorem HasFDerivWithinAt.const_mul (ha : HasFDerivWithinAt a a' s x) (b : 𝔸) :
     HasFDerivWithinAt (fun y => b * a y) (b • a') s x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸) b).HasFDerivAt.comp_hasFDerivWithinAt x ha
+  ((ContinuousLinearMap.mul 𝕜 𝔸) b).hasFDerivAt.comp_hasFDerivWithinAt x ha
 #align has_fderiv_within_at.const_mul HasFDerivWithinAt.const_mul
 
 theorem HasFDerivAt.const_mul (ha : HasFDerivAt a a' x) (b : 𝔸) :
     HasFDerivAt (fun y => b * a y) (b • a') x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸) b).HasFDerivAt.comp x ha
+  ((ContinuousLinearMap.mul 𝕜 𝔸) b).hasFDerivAt.comp x ha
 #align has_fderiv_at.const_mul HasFDerivAt.const_mul
 
 theorem DifferentiableWithinAt.const_mul (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
     DifferentiableWithinAt 𝕜 (fun y => b * a y) s x :=
-  (ha.HasFDerivWithinAt.const_mul b).DifferentiableWithinAt
+  (ha.hasFDerivWithinAt.const_mul b).differentiableWithinAt
 #align differentiable_within_at.const_mul DifferentiableWithinAt.const_mul
 
 theorem DifferentiableAt.const_mul (ha : DifferentiableAt 𝕜 a x) (b : 𝔸) :
     DifferentiableAt 𝕜 (fun y => b * a y) x :=
-  (ha.HasFDerivAt.const_mul b).DifferentiableAt
+  (ha.hasFDerivAt.const_mul b).differentiableAt
 #align differentiable_at.const_mul DifferentiableAt.const_mul
 
 theorem DifferentiableOn.const_mul (ha : DifferentiableOn 𝕜 a s) (b : 𝔸) :
@@ -498,12 +498,12 @@ theorem Differentiable.const_mul (ha : Differentiable 𝕜 a) (b : 𝔸) :
 theorem fderivWithin_const_mul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
     fderivWithin 𝕜 (fun y => b * a y) s x = b • fderivWithin 𝕜 a s x :=
-  (ha.HasFDerivWithinAt.const_mul b).fderivWithin hxs
+  (ha.hasFDerivWithinAt.const_mul b).fderivWithin hxs
 #align fderiv_within_const_mul fderivWithin_const_mul
 
 theorem fderiv_const_mul (ha : DifferentiableAt 𝕜 a x) (b : 𝔸) :
     fderiv 𝕜 (fun y => b * a y) x = b • fderiv 𝕜 a x :=
-  (ha.HasFDerivAt.const_mul b).fderiv
+  (ha.hasFDerivAt.const_mul b).fderiv
 #align fderiv_const_mul fderiv_const_mul
 
 end Mul
@@ -515,29 +515,20 @@ variable {R : Type _} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 open NormedRing ContinuousLinearMap Ring
 
 /-- At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
-operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
+operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
+
+TODO: prove that `Ring.inverse` is analytic and use it to prove a `HasStrictFDerivAt` lemma.
+TODO (low prio): prove a version without assumption `[CompleteSpace R]` but within the set of
+units. -/
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
-  have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] fun t : R => t :=
-    by
-    refine' (inverse_add_norm_diff_second_order x).trans_isLittleO (is_o_norm_norm.mp _)
-    simp only [norm_pow, norm_norm]
-    have h12 : 1 < 2 := by norm_num
-    convert(Asymptotics.isLittleO_pow_pow h12).comp_tendsto tendsto_norm_zero
-    ext
-    simp
-  have h_lim : tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
-    refine' tendsto_zero_iff_norm_tendsto_zero.mpr _
-    exact tendsto_iff_norm_tendsto_zero.mp tendsto_id
-  simp only [HasFDerivAt, HasFDerivAtFilter]
-  convert h_is_o.comp_tendsto h_lim
-  ext y
-  simp only [coe_comp', Function.comp_apply, mul_left_right_apply, neg_apply, inverse_unit x,
-    Units.inv_mul, add_sub_cancel'_right, mul_sub, sub_mul, one_mul, sub_neg_eq_add]
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
+  have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
+    (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
+  by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 #align has_fderiv_at_ring_inverse hasFDerivAt_ring_inverse
 
 theorem differentiableAt_inverse (x : Rˣ) : DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  (hasFDerivAt_ring_inverse x).DifferentiableAt
+  (hasFDerivAt_ring_inverse x).differentiableAt
 #align differentiable_at_inverse differentiableAt_inverse
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
@@ -547,4 +538,3 @@ theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftR
 end AlgebraInverse
 
 end
-
