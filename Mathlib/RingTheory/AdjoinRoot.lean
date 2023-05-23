@@ -553,7 +553,6 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
   isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
---set_option maxHeartbeats 4000000 in
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
@@ -741,13 +740,14 @@ def quotMapOfEquivQuotMapCMapSpanMk :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f})) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
+
+set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk
 
 @[simp]
 theorem quotMapOfEquivQuotMapCMapSpanMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapSpanMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
-      Ideal.Quotient.mk _ x :=
-  rfl
+      Ideal.Quotient.mk _ x := rfl
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
