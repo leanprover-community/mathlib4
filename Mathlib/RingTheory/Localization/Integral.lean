@@ -46,8 +46,8 @@ variable [IsLocalization M S]
 
 open Classical
 
-/-- `coeff_integer_normalization p` gives the coefficients of the polynomial
-`integer_normalization p` -/
+/-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
+`integerNormalization p` -/
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   if hi : i ∈ p.support then
     Classical.choose
@@ -68,7 +68,7 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
   rw [Ne.def, Classical.not_not, coeffIntegerNormalization, dif_neg h]
 #align is_localization.coeff_integer_normalization_mem_support IsLocalization.coeffIntegerNormalization_mem_support
 
-/-- `integer_normalization g` normalizes `g` to have integer coefficients
+/-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
   ∑ i in p.support, monomial i (coeffIntegerNormalization M p i)
@@ -160,8 +160,7 @@ theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C
         _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
     · exact (Polynomial.aeval_map_algebraMap K _ _).trans px
-  ·
-    exact
+  · exact
       ⟨integerNormalization _ p, mt integerNormalization_eq_zero_iff.mp hp,
         integerNormalization_aeval_eq_zero _ p px⟩
 #align is_fraction_ring.is_algebraic_iff IsFractionRing.isAlgebraic_iff
