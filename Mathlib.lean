@@ -1583,6 +1583,7 @@ import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.CrossProduct
@@ -1604,6 +1605,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
