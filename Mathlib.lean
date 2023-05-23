@@ -1413,6 +1413,7 @@ import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
