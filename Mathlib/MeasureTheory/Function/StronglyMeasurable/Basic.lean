@@ -1952,14 +1952,14 @@ variable {G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure
   {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure, `FinStronglyMeasurable`
-  and `measurable` are equivalent. -/
+  and `Measurable` are equivalent. -/
 theorem finStronglyMeasurable_iff_measurable {m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : FinStronglyMeasurable f μ ↔ Measurable f :=
   ⟨fun h => h.measurable, fun h => (Measurable.stronglyMeasurable h).finStronglyMeasurable μ⟩
 #align measure_theory.fin_strongly_measurable_iff_measurable MeasureTheory.finStronglyMeasurable_iff_measurable
 
 /-- In a space with second countable topology and a sigma-finite measure,
-  `ae_fin_strongly_measurable` and `ae_measurable` are equivalent. -/
+  `AEFinStronglyMeasurable` and `AEMeasurable` are equivalent. -/
 theorem aefinStronglyMeasurable_iff_aemeasurable {m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : AEFinStronglyMeasurable f μ ↔ AEMeasurable f μ := by
   simp_rw [AEFinStronglyMeasurable, AEMeasurable, finStronglyMeasurable_iff_measurable]
