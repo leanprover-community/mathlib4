@@ -1913,6 +1913,7 @@ import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
