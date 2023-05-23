@@ -355,6 +355,7 @@ end BoundedContinuousFunction
 
 namespace ContinuousMap
 
+set_option maxHeartbeats 0 in
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a continuous real-valued function on `X`. Let `t` be a nonempty
