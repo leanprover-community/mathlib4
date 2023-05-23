@@ -193,7 +193,8 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.filtered_colimits.forget₂_AddMon_preserves_filtered_colimits AddGroupCat.FilteredColimits.forget₂AddMonPreservesFilteredColimits
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget GroupCat.{u}) :=
+noncomputable instance forgetPreservesFilteredColimits :
+    PreservesFilteredColimits (forget GroupCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ GroupCat MonCat) (forget MonCat.{u})
 set_option linter.uppercaseLean3 false in
 #align Group.filtered_colimits.forget_preserves_filtered_colimits GroupCat.FilteredColimits.forgetPreservesFilteredColimits
@@ -291,7 +292,8 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.filtered_colimits.forget₂_AddGroup_preserves_filtered_colimits AddCommGroupCat.FilteredColimits.forget₂AddGroupPreservesFilteredColimits
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget CommGroupCat.{u}) :=
+noncomputable instance forgetPreservesFilteredColimits :
+    PreservesFilteredColimits (forget CommGroupCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommGroupCat GroupCat) (forget GroupCat.{u})
 set_option linter.uppercaseLean3 false in
 #align CommGroup.filtered_colimits.forget_preserves_filtered_colimits CommGroupCat.FilteredColimits.forgetPreservesFilteredColimits
