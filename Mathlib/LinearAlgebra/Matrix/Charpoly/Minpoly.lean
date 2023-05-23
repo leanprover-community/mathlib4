@@ -8,9 +8,9 @@ Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathbin.LinearAlgebra.Matrix.ToLin
-import Mathbin.RingTheory.PowerBasis
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.RingTheory.PowerBasis
 
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.
@@ -86,8 +86,7 @@ and a bit of rewriting, this will allow us to conclude the
 field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
 theorem charpoly_leftMulMatrix {S : Type _} [Ring S] [Algebra R S] (h : PowerBasis R S) :
-    (leftMulMatrix h.Basis h.gen).charpoly = minpoly R h.gen :=
-  by
+    (leftMulMatrix h.Basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
   apply minpoly.unique' R h.gen (charpoly_monic _)
   · apply (injective_iff_map_eq_zero (left_mul_matrix _)).mp (left_mul_matrix_injective h.basis)
