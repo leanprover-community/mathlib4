@@ -467,7 +467,8 @@ theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (
 
 end Splits
 
-theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) : f.Separable := by
+theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
+    f.Separable := by
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
   rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
