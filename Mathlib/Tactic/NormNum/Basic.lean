@@ -890,6 +890,23 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 /-! # Nat operations -/
 
+theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
+    IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
+  |  _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
+such that `norm_num` successfully recognises `a`. -/
+@[norm_num Nat.succ _] def evalNatSucc :
+    NormNumExt where eval {u α} e := do
+  let .app f (a : Q(ℕ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(Nat.succ)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ
+  have pa : Q(IsNat $a $na) := pa
+  have nc : Q(ℕ) := mkRawNatLit (na.natLit!.succ)
+  let r : Q(Nat.succ $na = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_natSucc $pa $r) : Result q(Nat.succ $a))
+
 theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩

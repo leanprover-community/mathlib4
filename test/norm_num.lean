@@ -336,7 +336,7 @@ example : (1:ℝ) ≠ 2 := by norm_num1
 -- example : (5 / 2:ℕ) = 2 := by norm_num1
 -- example : (5 / -2:ℤ) < -1 := by norm_num1
 -- example : (0 + 1) / 2 < 0 + 1 := by norm_num1
--- example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
+example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
 -- example : 10 = (-1 : ℤ) % 11 := by norm_num1 -- [fixme] ⊢ False ???
 example : (12321 - 2 : ℤ) = 12319 := by norm_num1
 example : (63:ℚ) ≥ 5 := by norm_num1
