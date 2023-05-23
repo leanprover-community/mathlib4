@@ -553,6 +553,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
   isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
+--set_option maxHeartbeats 4000000 in
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
@@ -568,9 +569,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
     WithBot.coe_le_coe, natDegree_mul hf, natDegree_C, add_zero]
   apply natDegree_le_of_dvd
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
-    -- porting note: `rwa` should be enough, but Lean gets stuck on `exact this`.
-    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.eq_zero_iff_mem]
-    sorry
+    exact mk_eq_zero.1 this
   · exact q_monic.ne_zero
   · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 #align adjoin_root.minpoly_root AdjoinRoot.minpoly_root
