@@ -796,12 +796,12 @@ set_option linter.uppercaseLean3 false in
   `f : R[X]` and `I : ideal R`-/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
-      (R[X] ⧸ map C I) ⧸ span ({(Ideal.Quotient.mk (I C)) f} : Set (R[X] ⧸ map C I)) :=
-  quotientEquiv (span ({f.map I.Quotient.mk} : Set (Polynomial (R ⧸ I))))
+      (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=
+  quotientEquiv (span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
     (span {Ideal.Quotient.mk (I.map Polynomial.C) f}) (polynomialQuotientEquivQuotientPolynomial I)
     (by
       rw [map_span, Set.image_singleton, RingEquiv.coe_toRingHom,
-        polynomial_quotient_equiv_quotient_polynomial_map_mk I f])
+        polynomialQuotientEquivQuotientPolynomial_map_mk I f])
 #align adjoin_root.polynomial.quot_quot_equiv_comm AdjoinRoot.Polynomial.quotQuotEquivComm
 
 @[simp]
