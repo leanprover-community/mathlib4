@@ -683,13 +683,15 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     rw [← h]
     exact ⟨p₂, hp₂, wbtw_self_right _ _ _⟩
   · refine' ⟨lineMap x y (r₂ / (r₁ + r₂)), _, _⟩
-    · rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
-        ← vadd_assoc, vadd_eq_add]
-      convert s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
-      rw [add_comm (y -ᵥ p₂), smul_sub, smul_add, add_sub_assoc, add_assoc, add_right_eq_self,
-        div_eq_inv_mul, ← neg_vsub_eq_vsub_rev, smul_neg, ← smul_smul, ← h, smul_smul, ← neg_smul, ←
-        sub_smul, ← div_eq_inv_mul, ← div_eq_inv_mul, ← neg_div, ← sub_div, sub_eq_add_neg, ←
-        neg_add, neg_div, div_self (Left.add_pos hr₁ hr₂).Ne.symm, neg_one_smul, neg_add_self]
+    · have : (r₂ / (r₁ + r₂)) • (y -ᵥ p₂ + (p₂ -ᵥ p₁) - (x -ᵥ p₁)) + (x -ᵥ p₁) =
+          (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
+        rw [add_comm (y -ᵥ p₂), smul_sub, smul_add, add_sub_assoc, add_assoc, add_right_eq_self,
+          div_eq_inv_mul, ← neg_vsub_eq_vsub_rev, smul_neg, ← smul_smul, ← h, smul_smul, ← neg_smul,
+          ← sub_smul, ← div_eq_inv_mul, ← div_eq_inv_mul, ← neg_div, ← sub_div, sub_eq_add_neg,
+          ← neg_add, neg_div, div_self (Left.add_pos hr₁ hr₂).ne.symm, neg_one_smul, neg_add_self]
+      rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
+        ← vadd_assoc, vadd_eq_add, this]
+      exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
     · exact Set.mem_image_of_mem _
         ⟨div_nonneg hr₂.le (Left.add_pos hr₁ hr₂).le,
           div_le_one_of_le (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
