@@ -13,9 +13,9 @@ import Mathlib.Analysis.NormedSpace.Multilinear
 /-!
 # Formal multilinear series
 
-In this file we define `formal_multilinear_series 𝕜 E F` to be a family of `n`-multilinear maps for
+In this file we define `FormalMultilinearSeries 𝕜 E F` to be a family of `n`-multilinear maps for
 all `n`, designed to model the sequence of derivatives of a function. In other files we use this
-notion to define `C^n` functions (called `cont_diff` in `mathlib`) and analytic functions.
+notion to define `C^n` functions (called `contDiff` in `mathlib`) and analytic functions.
 
 ## Notations
 
@@ -117,7 +117,7 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
 #align formal_multilinear_series.congr FormalMultilinearSeries.congr
 
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
-continuous linear map, gives a new formal multilinear series `p.comp_continuous_linear_map u`. -/
+continuous linear map, gives a new formal multilinear series `p.compContinuousLinearMap u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
     FormalMultilinearSeries 𝕜 E G := fun n => (p n).compContinuousLinearMap fun _ : Fin n => u
 #align formal_multilinear_series.comp_continuous_linear_map FormalMultilinearSeries.compContinuousLinearMap
@@ -177,7 +177,7 @@ variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-- Composing each term `pₙ` in a formal multilinear series with a continuous linear map `f` on the
-left gives a new formal multilinear series `f.comp_formal_multilinear_series p` whose general term
+left gives a new formal multilinear series `f.compFormalMultilinearSeries p` whose general term
 is `f ∘ pₙ`. -/
 def compFormalMultilinearSeries (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F) :
     FormalMultilinearSeries 𝕜 E G := fun n => f.compContinuousMultilinearMap (p n)
