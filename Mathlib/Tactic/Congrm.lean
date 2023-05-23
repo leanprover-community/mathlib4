@@ -19,7 +19,15 @@ syntax (name := congrM) "congrm " term : tactic
 #check liftMetaTactic
 #check MVarId.apply
 
+private def applyCongrThm? (mvarId : MVarId) (congrThm : CongrTheorem) : MetaM (List MVarId) := do
+  let mvarId ← mvarId.assert (← mkFreshUserName `h_congr_thm) congrThm.type congrThm.proof
+  let (fvarId, mvarId) ← mvarId.intro1P
+  let mvarIds ← mvarId.apply (mkFVar fvarId) { synthAssignedInstances := false }
+  mvarIds.mapM fun mvarId => mvarId.tryClear fvarId
+
 partial def congrm_core (pat : Expr) : TacticM Unit := withMainContext do
+  -- Helper function (stolen from somewhere) that creates the correct FVars in `λ` and `∀`
+  -- and does the recursion
   let binders (stx : Syntax) (xs : Array Expr) (k : Expr) : TacticM Unit := do
     for x in xs do
       let localDecl ← x.fvarId!.getDecl
@@ -29,33 +37,43 @@ partial def congrm_core (pat : Expr) : TacticM Unit := withMainContext do
     congrm_core k
   if pat.isMVar then
   return
-  else match pat with
+  else
+  dbg_trace s!"Pattern {← ppExpr pat}"
+  match pat with
   | .forallE _name _type _body _info =>
+    dbg_trace s!"Forall pattern"
+    --return
     forallTelescope pat (binders (← `(tactic| apply pi_congr)))
-    -- `apply pi_congr; intro`
-    --evalTactic (← `(tactic| apply pi_congr)) -- Maybe needs better error reporting
-    -- Maybe replace by `forallTelescope`
-    --liftMetaTactic fun mvarId => do pure [(← mvarId.intro name).2]
-    --congrm_core body
   | .lam _name _type _body _info =>
+    dbg_trace s!"Lambda pattern"
+    --return
     lambdaTelescope pat (binders (← `(tactic| apply funext)))
-    -- `apply funext; intro`
-    --evalTactic (← `(tactic| apply funext))
-    --liftMetaTactic fun mvarId => do pure [(← mvarId.intro name).2]
-    --congrm_core body
   | .app fn arg =>
-    --evalTactic (← `(tactic| congr 1))
+    --let congr_lem ← mkHCongr pat
+    let some congrThm ← mkCongrSimp? pat.getAppFn (subsingletonInstImplicitRhs := false) | return
+    if congrThm.type.isMVar then
+      dbg_trace s!"Invalid congr lemma"
+      return
+
+    if fn.isMVar then
+      dbg_trace s!"Fun is metavar"
+      return
+    -- Should check whether the congr_lem is valid
+
+    let foo ← applyCongrThm? (← getMainGoal) congrThm
+    setGoals foo
+    dbg_trace s!"Apply pattern, fun: {← ppExpr fn}, arg: {← ppExpr arg }"
+    -- Todo: We want to make sure that `fn` is the correct function name
+    --evalTactic (← `(tactic| apply congr_arg))
     --congrm_core fn
     --let fn' ← whnf fn
     --evalTactic (← `(tactic| apply congr_arg))
     -- Need to get LHS and RHS of application in the goal
-    liftMetaTactic fun mvarId => do
+    /-liftMetaTactic fun mvarId => do
       let list ← mvarId.apply (← mkAppOptM ``congrArg #[none, none, none, none, some fn, none])
-      return list
-    --congrm_core arg
-    --let fn' ← elabTerm fn
-    --evalTactic (← `(tactic| apply congr))
-    return
+      return list-/
+    --congrm_core arg -- Recursion on argument
+    --congrm_core fn -- Recursion on function
   | _ =>
   return
 
@@ -65,6 +83,42 @@ elab_rules : tactic | `(tactic| congrm $expr:term) => withMainContext do
   let e ← elabTerm expr none
   congrm_core e
 
+-- Fancy new tests
+
+-- Testing that the trivial `forall` rule works:
+example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ b : α, True) := by
+  congrm (∀ x, _)
+  exact h x
+
+example (f : α → α → Prop) (h : ∀ a b, f a b = True) :
+    (∀ a b, f a b) ↔ (∀ a b : α, True) := by
+  congrm (∀ x y, _)
+  have : ∀ a b, f a b = True := sorry
+  exact this x y
+
+-- Testing that the trivial `lambda` rule works:
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
+  congrm λ x => _
+  rw [h]
+
+-- Testing that trivial application rule works
+example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
+  congrm (f _)
+  exact h
+
+example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
+  congrm (a = _)
+  rfl -- Todo: this should not be here
+  exact h
+
+
+#exit
+
+-- Old bad tests
+
+example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
+  congrm (a = _)
+  exact h
 
 example (f : α → Prop): (∀ a : α, f a) ↔ (∀ b : α, True) := by
   congrm (∀ x, _)
