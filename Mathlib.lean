@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
+import Mathlib.Algebra.AlgebraicCard
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
@@ -48,6 +49,7 @@ import Mathlib.Algebra.Category.Mon.FilteredColimits
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
@@ -1411,6 +1413,7 @@ import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
@@ -2092,6 +2095,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
