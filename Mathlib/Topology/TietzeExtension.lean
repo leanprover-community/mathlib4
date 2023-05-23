@@ -366,12 +366,12 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   set F : X →ᵇ ℝ :=
-    { toFun := Coe ∘ h ∘ f
+    { toFun := Subtype.val ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
       map_bounded' :=
         bounded_range_iff.1
           ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
-  set t' : Set ℝ := Coe ∘ h '' t
+  set t' : Set ℝ := Subtype.val ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x hx => (h x).2
   have : OrdConnected t' := by
     constructor
@@ -384,10 +384,10 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
   have hFt : ∀ x, F x ∈ t' := fun x => mem_image_of_mem _ (hf x)
   rcases F.exists_extension_forall_mem_of_closedEmbedding hFt (hne.image _) he with ⟨G, hG, hGF⟩
   set g : C(Y, ℝ) :=
-    ⟨h.symm ∘ cod_restrict G _ fun y => ht_sub (hG y),
+    ⟨h.symm ∘ codRestrict G _ fun y => ht_sub (hG y),
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
   have hgG : ∀ {y a}, g y = a ↔ G y = h a := fun y a =>
-    h.to_equiv.symm_apply_eq.trans Subtype.ext_iff
+    h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
   refine' ⟨g, fun y => _, _⟩
   · rcases hG y with ⟨a, ha, hay⟩
     convert ha
