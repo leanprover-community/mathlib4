@@ -18,35 +18,35 @@ import Mathlib.Algebra.Order.Group.WithTop
 
 /-!
 # Hahn Series
-If `Γ` is ordered and `R` has zero, then `hahn_series Γ R` consists of formal series over `Γ` with
+If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `hahn_series Γ R`, with the most studied case being when `Γ` is
-a linearly ordered abelian group and `R` is a field, in which case `hahn_series Γ R` is a
+`Γ`, we can add further structure on `HahnSeries Γ R`, with the most studied case being when `Γ` is
+a linearly ordered abelian group and `R` is a field, in which case `HahnSeries Γ R` is a
 valued field, with value group `Γ`.
 
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
 in the file `ring_theory/laurent_series`.
 
 ## Main Definitions
-  * If `Γ` is ordered and `R` has zero, then `hahn_series Γ R` consists of
+  * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
-  * If `R` is a (commutative) additive monoid or group, then so is `hahn_series Γ R`.
-  * If `R` is a (comm_)(semi)ring, then so is `hahn_series Γ R`.
-  * `hahn_series.add_val Γ R` defines an `add_valuation` on `hahn_series Γ R` when `Γ` is linearly
+  * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
+  * If `R` is a (comm_)(semi)ring, then so is `HahnSeries Γ R`.
+  * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
-  * A `hahn_series.summable_family` is a family of Hahn series such that the union of their supports
+  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
   is well-founded and only finitely many are nonzero at any given coefficient. They have a formal
-  sum, `hahn_series.summable_family.hsum`, which can be bundled as a `linear_map` as
-  `hahn_series.summable_family.lsum`. Note that this is different from `summable` in the valuation
+  sum, `HahnSeries.SummableFamily.hsum`, which can be bundled as a `LinearMap` as
+  `HahnSeries.SummableFamily.lsum`. Note that this is different from `Summable` in the valuation
   topology, because there are topologically summable families that do not satisfy the axioms of
-  `hahn_series.summable_family`, and formally summable families whose sums do not converge
+  `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
   topologically.
-  * Laurent series over `R` are implemented as `hahn_series ℤ R` in the file
+  * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
     `ring_theory/laurent_series`.
 
 ## TODO
-  * Build an API for the variable `X` (defined to be `single 1 1 : hahn_series Γ R`) in analogy to
-    `X : R[X]` and `X : power_series R`
+  * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
+    `X : R[X]` and `X : PowerSeries R`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -61,7 +61,7 @@ open BigOperators Classical Pointwise Polynomial
 
 noncomputable section
 
-/-- If `Γ` is linearly ordered and `R` has zero, then `hahn_series Γ R` consists of
+/-- If `Γ` is linearly ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
 structure HahnSeries (Γ : Type _) (R : Type _) [PartialOrder Γ] [Zero R] where
@@ -265,7 +265,7 @@ section Domain
 
 variable {Γ' : Type _} [PartialOrder Γ']
 
-/-- Extends the domain of a `hahn_series` by an `order_embedding`. -/
+/-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
 def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0
     isPwo_support' :=
@@ -1123,7 +1123,7 @@ section Semiring
 
 variable [Semiring R]
 
-/-- The ring `hahn_series ℕ R` is isomorphic to `power_series R`. -/
+/-- The ring `HahnSeries ℕ R` is isomorphic to `PowerSeries R`. -/
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
@@ -1161,7 +1161,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [StrictOrderedSemiring Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from an `strict_ordered_semiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -1231,10 +1231,10 @@ theorem ofPowerSeries_x_pow {R} [CommSemiring R] (n : ℕ) :
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_x_pow
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
-/-- The ring `hahn_series (σ →₀ ℕ) R` is isomorphic to `mv_power_series σ R` for a `fintype` `σ`.
-We take the index set of the hahn series to be `finsupp` rather than `pi`,
-even though we assume `fintype σ` as this is more natural for alignment with `mv_power_series`.
-After importing `algebra.order.pi` the ring `hahn_series (σ → ℕ) R` could be constructed instead.
+/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
+We take the index set of the hahn series to be `Finsupp` rather than `pi`,
+even though we assume `Fintype σ` as this is more natural for alignment with `MvPowerSeries`.
+After importing `algebra.order.pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
  -/
 @[simps]
 def toMvPowerSeries {σ : Type _} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
@@ -1281,7 +1281,7 @@ section Algebra
 
 variable (R) [CommSemiring R] {A : Type _} [Semiring A] [Algebra R A]
 
-/-- The `R`-algebra `hahn_series ℕ A` is isomorphic to `power_series A`. -/
+/-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
 @[simps!]
 def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
@@ -1297,7 +1297,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [StrictOrderedSemiring Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from an `strict_ordered_semiring`
+/-- Casting a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
@@ -1336,7 +1336,7 @@ section Valuation
 
 variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
 
-/-- The additive valuation on `hahn_series Γ R`, returning the smallest index at which
+/-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series.  -/
 def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
   AddValuation.of (fun x => if x = (0 : HahnSeries Γ R) then (⊤ : WithTop Γ) else x.order)
@@ -1637,7 +1637,7 @@ theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} : (x • s)
         MulZeroClass.mul_zero]
 #align hahn_series.summable_family.hsum_smul HahnSeries.SummableFamily.hsum_smul
 
-/-- The summation of a `summable_family` as a `linear_map`. -/
+/-- The summation of a `summable_family` as a `LinearMap`. -/
 @[simps]
 def lsum : SummableFamily Γ R α →ₗ[HahnSeries Γ R] HahnSeries Γ R where
   toFun := hsum
