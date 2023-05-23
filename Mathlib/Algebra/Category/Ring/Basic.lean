@@ -126,6 +126,19 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
+@[simps]
+def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) : SemiRingCat.of X ≅ SemiRingCat.of Y
+    where
+  hom := e.toRingHom
+  inv := e.symm.toRingHom
+
+instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget SemiRingCat).map f)
+    let ff : X →+* Y := f
+    let e : X ≃+* Y := { ff, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+
 end SemiRingCat
 
 /-- The category of rings. -/
@@ -298,6 +311,20 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRing.hasForgetToCommMonCat
+
+
+@[simps]
+def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) : SemiRingCat.of X ≅ SemiRingCat.of Y
+    where
+  hom := e.toRingHom
+  inv := e.symm.toRingHom
+
+instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget CommSemiRingCat).map f)
+    let ff : X →+* Y := f
+    let e : X ≃+* Y := { ff, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
 
 end CommSemiRing
 
