@@ -28,28 +28,28 @@ The theory is developed analogously to the [Fréchet
 derivatives](./fderiv.html). We first introduce predicates defined in terms
 of the corresponding predicates for Fréchet derivatives:
 
- - `has_deriv_at_filter f f' x L` states that the function `f` has the
+ - `HasDerivAtFilter f f' x L` states that the function `f` has the
     derivative `f'` at the point `x` as `x` goes along the filter `L`.
 
- - `has_deriv_within_at f f' s x` states that the function `f` has the
+ - `HasDerivWithinAt f f' s x` states that the function `f` has the
     derivative `f'` at the point `x` within the subset `s`.
 
- - `has_deriv_at f f' x` states that the function `f` has the derivative `f'`
+ - `HasDerivAt f f' x` states that the function `f` has the derivative `f'`
     at the point `x`.
 
- - `has_strict_deriv_at f f' x` states that the function `f` has the derivative `f'`
+ - `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
     at the point `x` in the sense of strict differentiability, i.e.,
    `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
 
 For the last two notions we also define a functional version:
 
-  - `deriv_within f s x` is a derivative of `f` at `x` within `s`. If the
-    derivative does not exist, then `deriv_within f s x` equals zero.
+  - `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
+    derivative does not exist, then `derivWithin f s x` equals zero.
 
   - `deriv f x` is a derivative of `f` at `x`. If the derivative does not
     exist, then `deriv f x` equals zero.
 
-The theorems `fderiv_within_deriv_within` and `fderiv_deriv` show that the
+The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
 one-dimensional derivatives coincide with the general Fréchet derivatives.
 
 We also show the existence and compute the derivatives of:
@@ -71,7 +71,7 @@ We also show the existence and compute the derivatives of:
   - polynomials
 
 For most binary operations we also define `const_op` and `op_const` theorems for the cases when
-the first or second argument is a constant. This makes writing chains of `has_deriv_at`'s easier,
+the first or second argument is a constant. This makes writing chains of `HasDerivAt`'s easier,
 and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
@@ -142,8 +142,8 @@ def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
 
 /-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
 
-If the derivative exists (i.e., `∃ f', has_deriv_within_at f f' s x`), then
-`f x' = f x + (x' - x) • deriv_within f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
+If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
+`f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
 def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
   fderivWithin 𝕜 f s x 1
@@ -151,7 +151,7 @@ def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
 
 /-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
 
-If the derivative exists (i.e., `∃ f', has_deriv_at f f' x`), then
+If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.
 -/
 def deriv (f : 𝕜 → F) (x : 𝕜) :=
@@ -168,7 +168,7 @@ variable {s t : Set 𝕜}
 
 variable {L L₁ L₂ : Filter 𝕜}
 
-/-- Expressing `has_fderiv_at_filter f f' x L` in terms of `has_deriv_at_filter` -/
+/-- Expressing `HasFDerivAtFilter f f' x L` in terms of `HasDerivAtFilter` -/
 theorem hasFDerivAtFilter_iff_hasDerivAtFilter {f' : 𝕜 →L[𝕜] F} :
     HasFDerivAtFilter f f' x L ↔ HasDerivAtFilter f (f' 1) x L := by simp [HasDerivAtFilter]
 #align has_fderiv_at_filter_iff_has_deriv_at_filter hasFDerivAtFilter_iff_hasDerivAtFilter
@@ -178,13 +178,13 @@ theorem HasFDerivAtFilter.hasDerivAtFilter {f' : 𝕜 →L[𝕜] F} :
   hasFDerivAtFilter_iff_hasDerivAtFilter.mp
 #align has_fderiv_at_filter.has_deriv_at_filter HasFDerivAtFilter.hasDerivAtFilter
 
-/-- Expressing `has_fderiv_within_at f f' s x` in terms of `has_deriv_within_at` -/
+/-- Expressing `HasFDerivWithinAt f f' s x` in terms of `HasDerivWithinAt` -/
 theorem hasFDerivWithinAt_iff_hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
     HasFDerivWithinAt f f' s x ↔ HasDerivWithinAt f (f' 1) s x :=
   hasFDerivAtFilter_iff_hasDerivAtFilter
 #align has_fderiv_within_at_iff_has_deriv_within_at hasFDerivWithinAt_iff_hasDerivWithinAt
 
-/-- Expressing `has_deriv_within_at f f' s x` in terms of `has_fderiv_within_at` -/
+/-- Expressing `HasDerivWithinAt f f' s x` in terms of `HasFDerivWithinAt` -/
 theorem hasDerivWithinAt_iff_hasFDerivWithinAt {f' : F} :
     HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') s x :=
   Iff.rfl
@@ -200,7 +200,7 @@ theorem HasDerivWithinAt.hasFDerivWithinAt {f' : F} :
   hasDerivWithinAt_iff_hasFDerivWithinAt.mp
 #align has_deriv_within_at.has_fderiv_within_at HasDerivWithinAt.hasFDerivWithinAt
 
-/-- Expressing `has_fderiv_at f f' x` in terms of `has_deriv_at` -/
+/-- Expressing `HasFDerivAt f f' x` in terms of `HasDerivAt` -/
 theorem hasFDerivAt_iff_hasDerivAt {f' : 𝕜 →L[𝕜] F} : HasFDerivAt f f' x ↔ HasDerivAt f (f' 1) x :=
   hasFDerivAtFilter_iff_hasDerivAtFilter
 #align has_fderiv_at_iff_has_deriv_at hasFDerivAt_iff_hasDerivAt
@@ -227,7 +227,7 @@ theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
 alias hasStrictDerivAt_iff_hasStrictFDerivAt ↔ HasStrictDerivAt.hasStrictFDerivAt _
 #align has_strict_deriv_at.has_strict_fderiv_at HasStrictDerivAt.hasStrictFDerivAt
 
-/-- Expressing `has_deriv_at f f' x` in terms of `has_fderiv_at` -/
+/-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
 theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
     HasDerivAt f f' x ↔ HasFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x :=
   Iff.rfl
@@ -2512,7 +2512,7 @@ theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (
 In other words, the limit superior of this ratio as `z` tends to `x` along `s`
 is less than or equal to `‖f'‖`.
 
-This lemma is a weaker version of `has_deriv_within_at.limsup_norm_slope_le`
+This lemma is a weaker version of `HasDerivWithinAt.limsup_norm_slope_le`
 where `‖f z‖ - ‖f x‖` is replaced by `‖f z - f x‖`. -/
 theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
@@ -2525,7 +2525,7 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
 /-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
 `‖f z - f x‖ / ‖z - x‖` is frequently less than `r` as `z → x+0`.
 In other words, the limit inferior of this ratio as `z` tends to `x+0`
-is less than or equal to `‖f'‖`. See also `has_deriv_within_at.limsup_norm_slope_le`
+is less than or equal to `‖f'‖`. See also `HasDerivWithinAt.limsup_norm_slope_le`
 for a stronger version using limit superior and any set `s`. -/
 theorem HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r :=
@@ -2539,9 +2539,9 @@ is less than or equal to `‖f'‖`.
 
 See also
 
-* `has_deriv_within_at.limsup_norm_slope_le` for a stronger version using
+* `HasDerivWithinAt.limsup_norm_slope_le` for a stronger version using
   limit superior and any set `s`;
-* `has_deriv_within_at.liminf_right_norm_slope_le` for a stronger version using
+* `HasDerivWithinAt.liminf_right_norm_slope_le` for a stronger version using
   `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`. -/
 theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, (z - x)⁻¹ * (‖f z‖ - ‖f x‖) < r := by
