@@ -45,8 +45,10 @@ set_option linter.uppercaseLean3 false in
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
-  simp only [mem_union, mem_singleton_iff]
-  rintro _ ⟨a, b, hlt, rfl⟩ hne; rw [inter_comm]
+  simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
+    exists_prop, forall_exists_index, and_imp]
+  rintro _ a b hlt rfl _
+  rw [inter_comm]
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
 #align dense_irrational dense_irrational
 
