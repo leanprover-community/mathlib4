@@ -806,18 +806,20 @@ def Polynomial.quotQuotEquivComm :
 
 @[simp]
 theorem Polynomial.quotQuotEquivComm_mk (p : R[X]) :
-    (Polynomial.quotQuotEquivComm I f) (Ideal.Quotient.mk _ (p.map I.Quotient.mk)) =
-      Ideal.Quotient.mk _ (Ideal.Quotient.mk _ p) := by
-  simp only [polynomial.quot_quot_equiv_comm, quotient_equiv_mk,
-    polynomial_quotient_equiv_quotient_polynomial_map_mk]
+    (Polynomial.quotQuotEquivComm I f) (Ideal.Quotient.mk _ (p.map (Ideal.Quotient.mk I))) =
+      Ideal.Quotient.mk (span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))))
+      (Ideal.Quotient.mk (I.map C) p) := by
+  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_mk,
+    polynomialQuotientEquivQuotientPolynomial_map_mk]
 #align adjoin_root.polynomial.quot_quot_equiv_comm_mk AdjoinRoot.Polynomial.quotQuotEquivComm_mk
 
 @[simp]
 theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
-    (Polynomial.quotQuotEquivComm I f).symm (Ideal.Quotient.mk _ (Ideal.Quotient.mk _ p)) =
-      Ideal.Quotient.mk _ (p.map I.Quotient.mk) := by
-  simp only [polynomial.quot_quot_equiv_comm, quotient_equiv_symm_mk,
-    polynomial_quotient_equiv_quotient_polynomial_symm_mk]
+    (Polynomial.quotQuotEquivComm I f).symm (Ideal.Quotient.mk (span
+    ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C)))) (Ideal.Quotient.mk (I.map C) p)) =
+      Ideal.Quotient.mk (span {f.map (Ideal.Quotient.mk I)}) (p.map (Ideal.Quotient.mk I)) := by
+  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_symm_mk,
+    polynomialQuotientEquivQuotientPolynomial_symm_mk]
 #align adjoin_root.polynomial.quot_quot_equiv_comm_symm_mk_mk AdjoinRoot.Polynomial.quotQuotEquivComm_symm_mk_mk
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
