@@ -3622,14 +3622,7 @@ theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p
   simpa using span.loop_eq_take_drop p l []
 #align list.span_eq_take_drop List.span_eq_take_drop
 
-@[simp]
-theorem takeWhile_append_drop : ∀ l : List α, takeWhile p l ++ dropWhile p l = l
-  | [] => rfl
-  | a :: l =>
-    if pa : p a then by
-      simp [takeWhile, dropWhile, pa, cons_append, takeWhile_append_drop l]
-    else by simp [takeWhile, dropWhile, pa, nil_append]
-#align list.take_while_append_drop List.takeWhile_append_drop
+#align list.take_while_append_drop List.takeWhile_append_dropWhile
 
 theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).nthLe 0 hl) := by
