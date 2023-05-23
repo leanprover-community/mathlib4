@@ -22,8 +22,7 @@ open Function
 
 open Nat hiding one_pos
 
--- Porting note: missing impl
--- assert_not_exists Set.range
+assert_not_exists Set.range
 
 namespace List
 

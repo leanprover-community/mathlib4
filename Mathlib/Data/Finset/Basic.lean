@@ -3805,8 +3805,7 @@ theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset 
 
 end List
 
--- Porting note: `assert_not_exists` not yet available
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
--- assert_not_exists list.sublists_len
--- assert_not_exists multiset.powerset
+assert_not_exists List.sublistsLen
+assert_not_exists Multiset.powerset

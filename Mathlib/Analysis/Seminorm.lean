@@ -1226,5 +1226,4 @@ theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
 
 end normSeminorm
 
--- Porting note: no guards here
--- assert_not_exists balancedCore
+assert_not_exists balancedCore

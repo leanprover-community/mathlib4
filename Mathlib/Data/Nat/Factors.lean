@@ -307,5 +307,4 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 end Nat
 
--- Porting note: `assert_not_exists` is not implemented yet.
---assert_not_exists Multiset
+assert_not_exists Multiset
