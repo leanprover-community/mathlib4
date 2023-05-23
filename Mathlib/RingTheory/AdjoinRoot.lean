@@ -239,11 +239,12 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     rfl
 #align adjoin_root.aeval_eq AdjoinRoot.aeval_eq
 
+-- porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ :=
-  by sorry <;> exact
-  Algebra.eq_top_iff.2 fun x =>
-    induction_on f x fun p =>
-      (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+  Algebra.eq_top_iff.2 fun x => by
+    apply AdjoinRoot.induction_on (C := fun y => y ∈ Algebra.adjoin R {root f})
+    intro p
+    exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
