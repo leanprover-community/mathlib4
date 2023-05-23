@@ -394,6 +394,12 @@ lemma epi_g (s : S.Splitting) : Epi S.g := by
   have := s.isSplitEpi_g
   infer_instance
 
+@[reassoc (attr := simp)]
+lemma s_r (s : S.Splitting) : s.s ≫ s.r = 0 := by
+  have := s.epi_g
+  simp only [← cancel_epi S.g, comp_zero, g_s_assoc, sub_comp, id_comp,
+    assoc, f_r, comp_id, sub_self]
+
 lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have := s.epi_g
   have eq : 𝟙 S.X₂ = 𝟙 S.X₂ := rfl
@@ -528,6 +534,28 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
   r := inv S.f
   s := 0
   s_g := hg.eq_of_src _ _
+
+@[simps]
+def op (h : Splitting S) : Splitting S.op where
+  r := h.s.op
+  s := h.r.op
+  f_r := Quiver.Hom.unop_inj (by simp)
+  s_g := Quiver.Hom.unop_inj (by simp)
+  id := Quiver.Hom.unop_inj (by
+    simp only [op_X₂, Opposite.unop_op, op_X₁, op_f, op_X₃, op_g, unop_add, unop_comp,
+      Quiver.Hom.unop_op, unop_id, ← h.id]
+    abel)
+
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
+  r := h.s.unop
+  s := h.r.unop
+  f_r := Quiver.Hom.op_inj (by simp)
+  s_g := Quiver.Hom.op_inj (by simp)
+  id := Quiver.Hom.op_inj (by
+    simp only [unop_X₂, Opposite.op_unop, unop_X₁, unop_f, unop_X₃, unop_g, op_add,
+      op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
+    abel)
 
 end Splitting
 
