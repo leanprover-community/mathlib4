@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Adjoin.Basic
-import Mathbin.RingTheory.PowerBasis
-import Mathbin.LinearAlgebra.Matrix.Basis
+import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.PowerBasis
+import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 # Power basis for `algebra.adjoin R {x}`
@@ -33,12 +33,10 @@ open BigOperators
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
-    Basis (Fin (minpoly K x).natDegree) K (adjoin K ({x} : Set S)) :=
-  by
+    Basis (Fin (minpoly K x).natDegree) K (adjoin K ({x} : Set S)) := by
   have hST : Function.Injective (algebraMap (adjoin K ({x} : Set S)) S) := Subtype.coe_injective
   have hx' :
-    IsIntegral K (show adjoin K ({x} : Set S) from ⟨x, subset_adjoin (Set.mem_singleton x)⟩) :=
-    by
+    IsIntegral K (show adjoin K ({x} : Set S) from ⟨x, subset_adjoin (Set.mem_singleton x)⟩) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
     infer_instance
@@ -64,8 +62,7 @@ where `d` is the degree of the minimal polynomial of `x`. See `algebra.adjoin.po
 a version over a more general base ring. -/
 @[simps gen dim]
 noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
-    PowerBasis K (adjoin K ({x} : Set S))
-    where
+    PowerBasis K (adjoin K ({x} : Set S)) where
   gen := ⟨x, subset_adjoin (Set.mem_singleton x)⟩
   dim := (minpoly K x).natDegree
   Basis := adjoin.powerBasisAux hx
@@ -108,18 +105,15 @@ include hB
 and `S` is its fraction ring. -/
 theorem repr_gen_pow_isIntegral [IsDomain S]
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
-    ∀ i, IsIntegral R (B.Basis.repr (B.gen ^ n) i) :=
-  by
+    ∀ i, IsIntegral R (B.Basis.repr (B.gen ^ n) i) := by
   intro i
   let Q := X ^ n %ₘ minpoly R B.gen
-  have : B.gen ^ n = aeval B.gen Q :=
-    by
+  have : B.gen ^ n = aeval B.gen Q := by
     rw [← @aeval_X_pow R _ _ _ _ B.gen, ← mod_by_monic_add_div (X ^ n) (minpoly.monic hB)]
     simp
   by_cases hQ : Q = 0
   · simp [this, hQ, isIntegral_zero]
-  have hlt : Q.nat_degree < B.dim :=
-    by
+  have hlt : Q.nat_degree < B.dim := by
     rw [← B.nat_degree_minpoly, hmin, (minpoly.monic hB).natDegree_map,
       nat_degree_lt_nat_degree_iff hQ]
     letI : Nontrivial R := nontrivial.of_polynomial_ne hQ
@@ -148,8 +142,7 @@ domain and `S` is its fraction ring. -/
 theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.Basis.repr x i))
     (hy : ∀ i, IsIntegral R (B.Basis.repr y i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
-    ∀ i, IsIntegral R (B.Basis.repr (x * y) i) :=
-  by
+    ∀ i, IsIntegral R (B.Basis.repr (x * y) i) := by
   intro i
   rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, LinearEquiv.map_sum,
     Finset.sum_apply']
@@ -167,8 +160,7 @@ all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebra_map R S
 if `R` is a GCD domain and `S` is its fraction ring. -/
 theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.Basis.repr x i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
-    ∀ i, IsIntegral R (B.Basis.repr (x ^ n) i) :=
-  by
+    ∀ i, IsIntegral R (B.Basis.repr (x ^ n) i) := by
   nontriviality A using Subsingleton.elim (x ^ n) 0, isIntegral_zero
   revert hx
   refine' Nat.case_strong_induction_on n _ fun n hn => _
@@ -189,8 +181,7 @@ if `minpoly K B.gen = (minpoly R B.gen).map (algebra_map R L)`. This is the case
 if `R` is a GCD domain and `K` is its fraction ring. -/
 theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen P = B'.gen)
     (hB : IsIntegral R B.gen) (hmin : minpoly K B.gen = (minpoly R B.gen).map (algebraMap R K)) :
-    ∀ i j, IsIntegral R (B.Basis.toMatrix B'.Basis i j) :=
-  by
+    ∀ i j, IsIntegral R (B.Basis.toMatrix B'.Basis i j) := by
   intro i j
   rw [B.basis.to_matrix_apply, B'.coe_basis]
   refine' repr_pow_is_integral hB (fun i => _) hmin _ _
