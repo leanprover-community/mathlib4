@@ -112,8 +112,7 @@ def asModule (_ : Representation k G V) :=
 #align representation.as_module Representation.asModule
 
 -- Porting note: no derive handler
-instance : AddCommMonoid (ρ.asModule) := by
-  dsimp [asModule]; infer_instance
+instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
   default := 0
@@ -126,9 +125,7 @@ noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :
 #align representation.as_module_module Representation.asModuleModule
 
 -- Porting note: ρ.asModule doesn't unfold now
-instance : Module k ρ.asModule := by
-  change Module k V
-  infer_instance
+instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
 of the representative.
@@ -306,9 +303,8 @@ theorem ofMulAction_apply {H : Type _} [MulAction G H] (g : G) (f : H →₀ k) 
 
 -- Porting note: did not need this in ML3; noncomputable because IR check complains
 noncomputable instance :
-    HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) := by
-  change HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
-  infer_instance
+    HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) :=
+  inferInstanceAs <| HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
 
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := -- by
