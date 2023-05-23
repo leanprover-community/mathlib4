@@ -15,7 +15,7 @@ import Mathlib.Topology.Alexandroff
 /-!
 # Additional lemmas about the topology on rational numbers
 
-The structure of a metric space on `ℚ` (`rat.metric_space`) is introduced elsewhere, induced from
+The structure of a metric space on `ℚ` (`Rat.MetricSpace`) is introduced elsewhere, induced from
 `ℝ`. In this file we prove some properties of this topological space and its one-point
 compactification.
 
