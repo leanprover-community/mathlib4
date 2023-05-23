@@ -77,8 +77,9 @@ section CommRing
 
 variable [CommRing R] (f : R[X])
 
-instance : CommRing (AdjoinRoot f) :=
+instance instCommRing : CommRing (AdjoinRoot f) :=
   Ideal.Quotient.commRing _
+#align adjoin_root.comm_ring AdjoinRoot.instCommRing
 
 instance : Inhabited (AdjoinRoot f) :=
   ⟨0⟩
@@ -232,7 +233,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     (fun x => by
       rw [aeval_C]
       rfl)
-    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ih => by
+    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
     rw [AlgHom.map_mul, aeval_C, AlgHom.map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow,
       mk_X]
     rfl
@@ -396,7 +397,7 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { instCommRingAdjoinRoot f,
+  { AdjoinRoot.instCommRing f,
     Ideal.Quotient.field
       (span {f} : Ideal K[X]) with
     ratCast := fun a => of f (a : K)
@@ -627,7 +628,7 @@ open Algebra Polynomial
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
 see `adjoin_root.minpoly.equiv_adjoin`. -/
-@[simps]
+@[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
     (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe])
@@ -642,10 +643,10 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
   rfl
 #align adjoin_root.minpoly.to_adjoin_apply' AdjoinRoot.Minpoly.toAdjoin_apply'
 
-theorem Minpoly.toAdjoin.applyX :
-    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by simp; sorry
+theorem Minpoly.toAdjoin.apply_X :
+    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by simp
 set_option linter.uppercaseLean3 false in
-#align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.applyX
+#align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
 variable (R x)
 
@@ -654,7 +655,7 @@ theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x)
   refine' adjoin_le _
   simp only [AlgHom.coe_range, Set.mem_range]
   rintro ⟨y₁, y₂⟩ h
-  refine' ⟨mk (minpoly R x) X, by sorry <;> simpa using h.symm⟩
+  refine' ⟨mk (minpoly R x) X, by simpa using h.symm⟩
 #align adjoin_root.minpoly.to_adjoin.surjective AdjoinRoot.Minpoly.toAdjoin.surjective
 
 end minpoly
@@ -724,8 +725,8 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
 end Field
 
 end Equiv
-#exit
 -- porting note: hic sunt leones
+
 section
 
 open Ideal DoubleQuot Polynomial
@@ -738,7 +739,7 @@ variable [CommRing R] (I : Ideal R) (f : R[X])
 See `adjoin_root.quot_map_of_equiv` for the isomorphism with `(R/I)[X] / (f mod I)`. -/
 def quotMapOfEquivQuotMapCMapSpanMk :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
-      AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (span {f}).Quotient.mk :=
+      AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f})) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk
 
@@ -752,15 +753,15 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_mk (x : AdjoinRoot f) :
 --this lemma should have the simp tag but this causes a lint issue
 theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
     (quotMapOfEquivQuotMapCMapSpanMk I f).symm
-        (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (span {f}).Quotient.mk) x) =
-      Ideal.Quotient.mk (I.map (of f)) x :=
-  by rw [quot_map_of_equiv_quot_map_C_map_span_mk, Ideal.quotEquivOfEq_symm, quot_equiv_of_eq_mk]
+        (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f}))) x) =
+      Ideal.Quotient.mk (I.map (of f)) x := by
+  rw [quotMapOfEquivQuotMapCMapSpanMk, Ideal.quotEquivOfEq_symm, quot_equiv_of_eq_mk]
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_symm_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_symm_mk
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
   for `α` a root of `f : R[X]` and `I : ideal R`-/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
-    AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (span ({f} : Set R[X])).Quotient.mk ≃+*
+    AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
         (span ({f} : Set R[X])).map (I.map (C : R →+* R[X])).Quotient.mk :=
   quotQuotEquivComm (Ideal.span ({f} : Set R[X])) (I.map (C : R →+* R[X]))
@@ -783,7 +784,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
   `f : R[X]` and `I : ideal R`-/
 def Polynomial.quotQuotEquivComm :
-    (R ⧸ I)[X] ⧸ span ({f.map I.Quotient.mk} : Set (Polynomial (R ⧸ I))) ≃+*
+    (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ map C I) ⧸ span ({(Ideal.Quotient.mk (I C)) f} : Set (R[X] ⧸ map C I)) :=
   quotientEquiv (span ({f.map I.Quotient.mk} : Set (Polynomial (R ⧸ I))))
     (span {Ideal.Quotient.mk (I.map Polynomial.C) f}) (polynomialQuotientEquivQuotientPolynomial I)
