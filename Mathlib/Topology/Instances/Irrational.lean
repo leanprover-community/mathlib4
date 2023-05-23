@@ -65,7 +65,6 @@ instance : OrderTopology { x // Irrational x } :=
     let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩
 
-
 instance : NoMaxOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
 
