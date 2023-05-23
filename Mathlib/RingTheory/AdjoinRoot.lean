@@ -824,31 +824,27 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
   and `I : ideal R`.-/
 def quotAdjoinRootEquivQuotPolynomialQuot :
-    AdjoinRoot f ⧸ I.map (of f) ≃+* (R ⧸ I)[X] ⧸ span ({f.map I.Quotient.mk} : Set (R ⧸ I)[X]) :=
+    AdjoinRoot f ⧸ I.map (of f) ≃+*
+    (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]) :=
   (quotMapOfEquivQuotMapCMapSpanMk I f).trans
     ((quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk I f).trans
-      ((Ideal.quotEquivOfEq
-            (show
-              (span ({f} : Set R[X])).map (I.map (C : R →+* R[X])).Quotient.mk =
-                span ({(Ideal.Quotient.mk (I Polynomial.C)) f} : Set (R[X] ⧸ (I.map C)))
-              by rw [map_span, Set.image_singleton])).trans
+      ((Ideal.quotEquivOfEq (by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot
 
+-- porting note: mathlib3 proof was a long `rw` that timeouts.
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =
-      Ideal.Quotient.mk (span ({f.map I.Quotient.mk} : Set (R ⧸ I)[X])) (p.map I.Quotient.mk) := by
-  rw [quot_adjoin_root_equiv_quot_polynomial_quot, RingEquiv.trans_apply, RingEquiv.trans_apply,
-    RingEquiv.trans_apply, quot_map_of_equiv_quot_map_C_map_span_mk_mk,
-    quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_mk, quot_quot_mk, RingHom.comp_apply,
-    quot_equiv_of_eq_mk, polynomial.quot_quot_equiv_comm_symm_mk_mk]
+      Ideal.Quotient.mk (span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]))
+      (p.map (Ideal.Quotient.mk I)) := rfl
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_mk_of AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of
 
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
-        (Ideal.Quotient.mk (span ({f.map I.Quotient.mk} : Set (R ⧸ I)[X])) (p.map I.Quotient.mk)) =
+        (Ideal.Quotient.mk (span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]))
+        (p.map (Ideal.Quotient.mk I))) =
       Ideal.Quotient.mk (I.map (of f)) (mk f p) := by
   rw [quot_adjoin_root_equiv_quot_polynomial_quot, RingEquiv.symm_trans_apply,
     RingEquiv.symm_trans_apply, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
