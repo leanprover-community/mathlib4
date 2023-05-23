@@ -43,8 +43,6 @@ variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
-include V
-
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (p₁ p₂ «expr ∈ » s) -/
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
@@ -67,17 +65,15 @@ def SOppSide (s : AffineSubspace R P) (x y : P) : Prop :=
   s.WOppSide x y ∧ x ∉ s ∧ y ∉ s
 #align affine_subspace.s_opp_side AffineSubspace.SOppSide
 
-include V'
-
 theorem WSameSide.map {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) (f : P →ᵃ[R] P') :
     (s.map f).WSameSide (f x) (f y) := by
   rcases h with ⟨p₁, hp₁, p₂, hp₂, h⟩
   refine' ⟨f p₁, mem_map_of_mem f hp₁, f p₂, mem_map_of_mem f hp₂, _⟩
-  simp_rw [← linear_map_vsub]
+  simp_rw [← linearMap_vsub]
   exact h.map f.linear
 #align affine_subspace.w_same_side.map AffineSubspace.WSameSide.map
 
-theorem Function.Injective.wSameSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
+theorem _root_.Function.Injective.wSameSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
     (hf : Function.Injective f) : (s.map f).WSameSide (f x) (f y) ↔ s.WSameSide x y := by
   refine' ⟨fun h => _, fun h => h.map _⟩
   rcases h with ⟨fp₁, hfp₁, fp₂, hfp₂, h⟩
@@ -85,36 +81,36 @@ theorem Function.Injective.wSameSide_map_iff {s : AffineSubspace R P} {x y : P} 
   rcases hfp₁ with ⟨p₁, hp₁, rfl⟩
   rcases hfp₂ with ⟨p₂, hp₂, rfl⟩
   refine' ⟨p₁, hp₁, p₂, hp₂, _⟩
-  simp_rw [← linear_map_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
+  simp_rw [← linearMap_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
   exact h
 #align function.injective.w_same_side_map_iff Function.Injective.wSameSide_map_iff
 
-theorem Function.Injective.sSameSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
+theorem _root_.Function.Injective.sSameSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
     (hf : Function.Injective f) : (s.map f).SSameSide (f x) (f y) ↔ s.SSameSide x y := by
-  simp_rw [s_same_side, hf.w_same_side_map_iff, mem_map_iff_mem_of_injective hf]
+  simp_rw [SSameSide, hf.wSameSide_map_iff, mem_map_iff_mem_of_injective hf]
 #align function.injective.s_same_side_map_iff Function.Injective.sSameSide_map_iff
 
 @[simp]
-theorem AffineEquiv.wSameSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
+theorem _root_.AffineEquiv.wSameSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
     (s.map ↑f).WSameSide (f x) (f y) ↔ s.WSameSide x y :=
-  (show Function.Injective f.toAffineMap from f.Injective).wSameSide_map_iff
+  (show Function.Injective f.toAffineMap from f.injective).wSameSide_map_iff
 #align affine_equiv.w_same_side_map_iff AffineEquiv.wSameSide_map_iff
 
 @[simp]
-theorem AffineEquiv.sSameSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
+theorem _root_.AffineEquiv.sSameSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
     (s.map ↑f).SSameSide (f x) (f y) ↔ s.SSameSide x y :=
-  (show Function.Injective f.toAffineMap from f.Injective).sSameSide_map_iff
+  (show Function.Injective f.toAffineMap from f.injective).sSameSide_map_iff
 #align affine_equiv.s_same_side_map_iff AffineEquiv.sSameSide_map_iff
 
 theorem WOppSide.map {s : AffineSubspace R P} {x y : P} (h : s.WOppSide x y) (f : P →ᵃ[R] P') :
     (s.map f).WOppSide (f x) (f y) := by
   rcases h with ⟨p₁, hp₁, p₂, hp₂, h⟩
   refine' ⟨f p₁, mem_map_of_mem f hp₁, f p₂, mem_map_of_mem f hp₂, _⟩
-  simp_rw [← linear_map_vsub]
+  simp_rw [← linearMap_vsub]
   exact h.map f.linear
 #align affine_subspace.w_opp_side.map AffineSubspace.WOppSide.map
 
-theorem Function.Injective.wOppSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
+theorem _root_.Function.Injective.wOppSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
     (hf : Function.Injective f) : (s.map f).WOppSide (f x) (f y) ↔ s.WOppSide x y := by
   refine' ⟨fun h => _, fun h => h.map _⟩
   rcases h with ⟨fp₁, hfp₁, fp₂, hfp₂, h⟩
@@ -122,47 +118,45 @@ theorem Function.Injective.wOppSide_map_iff {s : AffineSubspace R P} {x y : P} {
   rcases hfp₁ with ⟨p₁, hp₁, rfl⟩
   rcases hfp₂ with ⟨p₂, hp₂, rfl⟩
   refine' ⟨p₁, hp₁, p₂, hp₂, _⟩
-  simp_rw [← linear_map_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
+  simp_rw [← linearMap_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
   exact h
 #align function.injective.w_opp_side_map_iff Function.Injective.wOppSide_map_iff
 
-theorem Function.Injective.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
+theorem _root_.Function.Injective.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} {f : P →ᵃ[R] P'}
     (hf : Function.Injective f) : (s.map f).SOppSide (f x) (f y) ↔ s.SOppSide x y := by
-  simp_rw [s_opp_side, hf.w_opp_side_map_iff, mem_map_iff_mem_of_injective hf]
+  simp_rw [SOppSide, hf.wOppSide_map_iff, mem_map_iff_mem_of_injective hf]
 #align function.injective.s_opp_side_map_iff Function.Injective.sOppSide_map_iff
 
 @[simp]
-theorem AffineEquiv.wOppSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
+theorem _root_.AffineEquiv.wOppSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
     (s.map ↑f).WOppSide (f x) (f y) ↔ s.WOppSide x y :=
-  (show Function.Injective f.toAffineMap from f.Injective).wOppSide_map_iff
+  (show Function.Injective f.toAffineMap from f.injective).wOppSide_map_iff
 #align affine_equiv.w_opp_side_map_iff AffineEquiv.wOppSide_map_iff
 
 @[simp]
-theorem AffineEquiv.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
+theorem _root_.AffineEquiv.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} (f : P ≃ᵃ[R] P') :
     (s.map ↑f).SOppSide (f x) (f y) ↔ s.SOppSide x y :=
-  (show Function.Injective f.toAffineMap from f.Injective).sOppSide_map_iff
+  (show Function.Injective f.toAffineMap from f.injective).sOppSide_map_iff
 #align affine_equiv.s_opp_side_map_iff AffineEquiv.sOppSide_map_iff
-
-omit V'
 
 theorem WSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.some, h.choose_spec.some⟩
+  ⟨h.choose, h.choose_spec.choose⟩
 #align affine_subspace.w_same_side.nonempty AffineSubspace.WSameSide.nonempty
 
 theorem SSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.some, h.1.choose_spec.some⟩
+  ⟨h.1.choose, h.1.choose_spec.choose⟩
 #align affine_subspace.s_same_side.nonempty AffineSubspace.SSameSide.nonempty
 
 theorem WOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.some, h.choose_spec.some⟩
+  ⟨h.choose, h.choose_spec.choose⟩
 #align affine_subspace.w_opp_side.nonempty AffineSubspace.WOppSide.nonempty
 
 theorem SOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.some, h.1.choose_spec.some⟩
+  ⟨h.1.choose, h.1.choose_spec.choose⟩
 #align affine_subspace.s_opp_side.nonempty AffineSubspace.SOppSide.nonempty
 
 theorem SSameSide.wSameSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
@@ -196,14 +190,14 @@ theorem wSameSide_comm {s : AffineSubspace R P} {x y : P} : s.WSameSide x y ↔ 
     ⟨p₂, hp₂, p₁, hp₁, h.symm⟩⟩
 #align affine_subspace.w_same_side_comm AffineSubspace.wSameSide_comm
 
-alias w_same_side_comm ↔ w_same_side.symm _
+alias wSameSide_comm ↔ WSameSide.symm _
 #align affine_subspace.w_same_side.symm AffineSubspace.WSameSide.symm
 
 theorem sSameSide_comm {s : AffineSubspace R P} {x y : P} : s.SSameSide x y ↔ s.SSameSide y x := by
-  rw [s_same_side, s_same_side, w_same_side_comm, and_comm' (x ∉ s)]
+  rw [SSameSide, SSameSide, wSameSide_comm, and_comm (b := x ∉ s)]
 #align affine_subspace.s_same_side_comm AffineSubspace.sSameSide_comm
 
-alias s_same_side_comm ↔ s_same_side.symm _
+alias sSameSide_comm ↔ SSameSide.symm _
 #align affine_subspace.s_same_side.symm AffineSubspace.SSameSide.symm
 
 theorem wOppSide_comm {s : AffineSubspace R P} {x y : P} : s.WOppSide x y ↔ s.WOppSide y x := by
@@ -216,36 +210,36 @@ theorem wOppSide_comm {s : AffineSubspace R P} {x y : P} : s.WOppSide x y ↔ s.
     rwa [SameRay.sameRay_comm, ← sameRay_neg_iff, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev]
 #align affine_subspace.w_opp_side_comm AffineSubspace.wOppSide_comm
 
-alias w_opp_side_comm ↔ w_opp_side.symm _
+alias wOppSide_comm ↔ WOppSide.symm _
 #align affine_subspace.w_opp_side.symm AffineSubspace.WOppSide.symm
 
 theorem sOppSide_comm {s : AffineSubspace R P} {x y : P} : s.SOppSide x y ↔ s.SOppSide y x := by
-  rw [s_opp_side, s_opp_side, w_opp_side_comm, and_comm' (x ∉ s)]
+  rw [SOppSide, SOppSide, wOppSide_comm, and_comm (b := x ∉ s)]
 #align affine_subspace.s_opp_side_comm AffineSubspace.sOppSide_comm
 
-alias s_opp_side_comm ↔ s_opp_side.symm _
+alias sOppSide_comm ↔ SOppSide.symm _
 #align affine_subspace.s_opp_side.symm AffineSubspace.SOppSide.symm
 
 theorem not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y := by
-  simp [w_same_side, not_mem_bot]
+  simp [WSameSide, not_mem_bot]
 #align affine_subspace.not_w_same_side_bot AffineSubspace.not_wSameSide_bot
 
 theorem not_sSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SSameSide x y := fun h =>
-  not_wSameSide_bot x y h.WSameSide
+  not_wSameSide_bot x y h.wSameSide
 #align affine_subspace.not_s_same_side_bot AffineSubspace.not_sSameSide_bot
 
 theorem not_wOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WOppSide x y := by
-  simp [w_opp_side, not_mem_bot]
+  simp [WOppSide, not_mem_bot]
 #align affine_subspace.not_w_opp_side_bot AffineSubspace.not_wOppSide_bot
 
 theorem not_sOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SOppSide x y := fun h =>
-  not_wOppSide_bot x y h.WOppSide
+  not_wOppSide_bot x y h.wOppSide
 #align affine_subspace.not_s_opp_side_bot AffineSubspace.not_sOppSide_bot
 
 @[simp]
 theorem wSameSide_self_iff {s : AffineSubspace R P} {x : P} :
     s.WSameSide x x ↔ (s : Set P).Nonempty :=
-  ⟨fun h => h.Nonempty, fun ⟨p, hp⟩ => ⟨p, hp, p, hp, SameRay.rfl⟩⟩
+  ⟨fun h => h.nonempty, fun ⟨p, hp⟩ => ⟨p, hp, p, hp, SameRay.rfl⟩⟩
 #align affine_subspace.w_same_side_self_iff AffineSubspace.wSameSide_self_iff
 
 theorem sSameSide_self_iff {s : AffineSubspace R P} {x : P} :
@@ -289,17 +283,17 @@ theorem wSameSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv :
 
 theorem wSameSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.WSameSide x (v +ᵥ y) ↔ s.WSameSide x y := by
-  rw [w_same_side_comm, w_same_side_vadd_left_iff hv, w_same_side_comm]
+  rw [wSameSide_comm, wSameSide_vadd_left_iff hv, wSameSide_comm]
 #align affine_subspace.w_same_side_vadd_right_iff AffineSubspace.wSameSide_vadd_right_iff
 
 theorem sSameSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.SSameSide (v +ᵥ x) y ↔ s.SSameSide x y := by
-  rw [s_same_side, s_same_side, w_same_side_vadd_left_iff hv, vadd_mem_iff_mem_of_mem_direction hv]
+  rw [SSameSide, SSameSide, wSameSide_vadd_left_iff hv, vadd_mem_iff_mem_of_mem_direction hv]
 #align affine_subspace.s_same_side_vadd_left_iff AffineSubspace.sSameSide_vadd_left_iff
 
 theorem sSameSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.SSameSide x (v +ᵥ y) ↔ s.SSameSide x y := by
-  rw [s_same_side_comm, s_same_side_vadd_left_iff hv, s_same_side_comm]
+  rw [sSameSide_comm, sSameSide_vadd_left_iff hv, sSameSide_comm]
 #align affine_subspace.s_same_side_vadd_right_iff AffineSubspace.sSameSide_vadd_right_iff
 
 theorem wOppSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
@@ -316,17 +310,17 @@ theorem wOppSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : 
 
 theorem wOppSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.WOppSide x (v +ᵥ y) ↔ s.WOppSide x y := by
-  rw [w_opp_side_comm, w_opp_side_vadd_left_iff hv, w_opp_side_comm]
+  rw [wOppSide_comm, wOppSide_vadd_left_iff hv, wOppSide_comm]
 #align affine_subspace.w_opp_side_vadd_right_iff AffineSubspace.wOppSide_vadd_right_iff
 
 theorem sOppSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.SOppSide (v +ᵥ x) y ↔ s.SOppSide x y := by
-  rw [s_opp_side, s_opp_side, w_opp_side_vadd_left_iff hv, vadd_mem_iff_mem_of_mem_direction hv]
+  rw [SOppSide, SOppSide, wOppSide_vadd_left_iff hv, vadd_mem_iff_mem_of_mem_direction hv]
 #align affine_subspace.s_opp_side_vadd_left_iff AffineSubspace.sOppSide_vadd_left_iff
 
 theorem sOppSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.SOppSide x (v +ᵥ y) ↔ s.SOppSide x y := by
-  rw [s_opp_side_comm, s_opp_side_vadd_left_iff hv, s_opp_side_comm]
+  rw [sOppSide_comm, sOppSide_vadd_left_iff hv, sOppSide_comm]
 #align affine_subspace.s_opp_side_vadd_right_iff AffineSubspace.sOppSide_vadd_right_iff
 
 theorem wSameSide_smul_vsub_vadd_left {s : AffineSubspace R P} {p₁ p₂ : P} (x : P) (hp₁ : p₁ ∈ s)
@@ -373,40 +367,40 @@ theorem wOppSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x �
   (wOppSide_lineMap_left y h ht).symm
 #align affine_subspace.w_opp_side_line_map_right AffineSubspace.wOppSide_lineMap_right
 
-theorem Wbtw.w_same_side₂₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
+theorem _root_.Wbtw.w_same_side₂₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
     s.WSameSide y z := by
   rcases h with ⟨t, ⟨ht0, -⟩, rfl⟩
-  exact w_same_side_line_map_left z hx ht0
+  exact wSameSide_lineMap_left z hx ht0
 #align wbtw.w_same_side₂₃ Wbtw.w_same_side₂₃
 
-theorem Wbtw.w_same_side₃₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
+theorem _root_.Wbtw.w_same_side₃₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hx : x ∈ s) :
     s.WSameSide z y :=
   (h.w_same_side₂₃ hx).symm
 #align wbtw.w_same_side₃₂ Wbtw.w_same_side₃₂
 
-theorem Wbtw.w_same_side₁₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
+theorem _root_.Wbtw.w_same_side₁₂ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
     s.WSameSide x y :=
   h.symm.w_same_side₃₂ hz
 #align wbtw.w_same_side₁₂ Wbtw.w_same_side₁₂
 
-theorem Wbtw.w_same_side₂₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
+theorem _root_.Wbtw.w_same_side₂₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hz : z ∈ s) :
     s.WSameSide y x :=
   h.symm.w_same_side₂₃ hz
 #align wbtw.w_same_side₂₁ Wbtw.w_same_side₂₁
 
-theorem Wbtw.w_opp_side₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
+theorem _root_.Wbtw.w_opp_side₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
     s.WOppSide x z := by
   rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
   refine' ⟨_, hy, _, hy, _⟩
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp_rw [line_map_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
+  simp_rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
     vsub_self, zero_sub, ← neg_one_smul R (z -ᵥ x), ← add_smul, smul_neg, ← neg_smul, smul_smul]
   ring_nf
 #align wbtw.w_opp_side₁₃ Wbtw.w_opp_side₁₃
 
-theorem Wbtw.w_opp_side₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
+theorem _root_.Wbtw.w_opp_side₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z) (hy : y ∈ s) :
     s.WOppSide z x :=
   h.symm.w_opp_side₁₃ hy
 #align wbtw.w_opp_side₃₁ Wbtw.w_opp_side₃₁
@@ -419,10 +413,6 @@ variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
-include V
-
-variable {R}
-
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by
   constructor
@@ -434,7 +424,8 @@ theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ 
   · exact fun h => ⟨x, h, x, h, SameRay.rfl⟩
 #align affine_subspace.w_opp_side_self_iff AffineSubspace.wOppSide_self_iff
 
-theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by simp [s_opp_side]
+theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
+  simp [SOppSide]
 #align affine_subspace.not_s_opp_side_self AffineSubspace.not_sOppSide_self
 
 theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p₁ ∈ s) :
@@ -454,26 +445,26 @@ theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p
       rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel' _ hr₂.ne.symm, ←
         smul_sub, vsub_sub_vsub_cancel_right]
   · rintro (h' | h')
-    · exact w_same_side_of_left_mem y h'
+    · exact wSameSide_of_left_mem y h'
     · exact ⟨p₁, h, h'⟩
 #align affine_subspace.w_same_side_iff_exists_left AffineSubspace.wSameSide_iff_exists_left
 
 theorem wSameSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p₂ ∈ s) :
     s.WSameSide x y ↔ y ∈ s ∨ ∃ p₁ ∈ s, SameRay R (x -ᵥ p₁) (y -ᵥ p₂) := by
-  rw [w_same_side_comm, w_same_side_iff_exists_left h]
+  rw [wSameSide_comm, wSameSide_iff_exists_left h]
   simp_rw [SameRay.sameRay_comm]
 #align affine_subspace.w_same_side_iff_exists_right AffineSubspace.wSameSide_iff_exists_right
 
 theorem sSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p₁ ∈ s) :
     s.SSameSide x y ↔ x ∉ s ∧ y ∉ s ∧ ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (y -ᵥ p₂) := by
-  rw [s_same_side, and_comm', w_same_side_iff_exists_left h, and_assoc', and_congr_right_iff]
+  rw [SSameSide, and_comm, wSameSide_iff_exists_left h, and_assoc, and_congr_right_iff]
   intro hx
   rw [or_iff_right hx]
 #align affine_subspace.s_same_side_iff_exists_left AffineSubspace.sSameSide_iff_exists_left
 
 theorem sSameSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p₂ ∈ s) :
     s.SSameSide x y ↔ x ∉ s ∧ y ∉ s ∧ ∃ p₁ ∈ s, SameRay R (x -ᵥ p₁) (y -ᵥ p₂) := by
-  rw [s_same_side_comm, s_same_side_iff_exists_left h, ← and_assoc', and_comm' (y ∉ s), and_assoc']
+  rw [sSameSide_comm, sSameSide_iff_exists_left h, ← and_assoc, and_comm (a := y ∉ s), and_assoc]
   simp_rw [SameRay.sameRay_comm]
 #align affine_subspace.s_same_side_iff_exists_right AffineSubspace.sSameSide_iff_exists_right
 
@@ -495,13 +486,13 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
         mul_div_cancel' _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
         vsub_sub_vsub_cancel_right]
   · rintro (h' | h')
-    · exact w_opp_side_of_left_mem y h'
+    · exact wOppSide_of_left_mem y h'
     · exact ⟨p₁, h, h'⟩
 #align affine_subspace.w_opp_side_iff_exists_left AffineSubspace.wOppSide_iff_exists_left
 
 theorem wOppSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p₂ ∈ s) :
     s.WOppSide x y ↔ y ∈ s ∨ ∃ p₁ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y) := by
-  rw [w_opp_side_comm, w_opp_side_iff_exists_left h]
+  rw [wOppSide_comm, wOppSide_iff_exists_left h]
   constructor
   · rintro (hy | ⟨p, hp, hr⟩)
     · exact Or.inl hy
@@ -515,23 +506,23 @@ theorem wOppSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p
 
 theorem sOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p₁ ∈ s) :
     s.SOppSide x y ↔ x ∉ s ∧ y ∉ s ∧ ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y) := by
-  rw [s_opp_side, and_comm', w_opp_side_iff_exists_left h, and_assoc', and_congr_right_iff]
+  rw [SOppSide, and_comm, wOppSide_iff_exists_left h, and_assoc, and_congr_right_iff]
   intro hx
   rw [or_iff_right hx]
 #align affine_subspace.s_opp_side_iff_exists_left AffineSubspace.sOppSide_iff_exists_left
 
 theorem sOppSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p₂ ∈ s) :
     s.SOppSide x y ↔ x ∉ s ∧ y ∉ s ∧ ∃ p₁ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y) := by
-  rw [s_opp_side, and_comm', w_opp_side_iff_exists_right h, and_assoc', and_congr_right_iff,
+  rw [SOppSide, and_comm, wOppSide_iff_exists_right h, and_assoc, and_congr_right_iff,
     and_congr_right_iff]
-  rintro hx hy
+  rintro _ hy
   rw [or_iff_right hy]
 #align affine_subspace.s_opp_side_iff_exists_right AffineSubspace.sOppSide_iff_exists_right
 
 theorem WSameSide.trans {s : AffineSubspace R P} {x y z : P} (hxy : s.WSameSide x y)
     (hyz : s.WSameSide y z) (hy : y ∉ s) : s.WSameSide x z := by
   rcases hxy with ⟨p₁, hp₁, p₂, hp₂, hxy⟩
-  rw [w_same_side_iff_exists_left hp₂, or_iff_right hy] at hyz
+  rw [wSameSide_iff_exists_left hp₂, or_iff_right hy] at hyz
   rcases hyz with ⟨p₃, hp₃, hyz⟩
   refine' ⟨p₁, hp₁, p₃, hp₃, hxy.trans hyz _⟩
   refine' fun h => False.elim _
@@ -547,7 +538,7 @@ theorem WSameSide.trans_sSameSide {s : AffineSubspace R P} {x y z : P} (hxy : s.
 theorem WSameSide.trans_wOppSide {s : AffineSubspace R P} {x y z : P} (hxy : s.WSameSide x y)
     (hyz : s.WOppSide y z) (hy : y ∉ s) : s.WOppSide x z := by
   rcases hxy with ⟨p₁, hp₁, p₂, hp₂, hxy⟩
-  rw [w_opp_side_iff_exists_left hp₂, or_iff_right hy] at hyz
+  rw [wOppSide_iff_exists_left hp₂, or_iff_right hy] at hyz
   rcases hyz with ⟨p₃, hp₃, hyz⟩
   refine' ⟨p₁, hp₁, p₃, hp₃, hxy.trans hyz _⟩
   refine' fun h => False.elim _
@@ -567,12 +558,12 @@ theorem SSameSide.trans_wSameSide {s : AffineSubspace R P} {x y z : P} (hxy : s.
 
 theorem SSameSide.trans {s : AffineSubspace R P} {x y z : P} (hxy : s.SSameSide x y)
     (hyz : s.SSameSide y z) : s.SSameSide x z :=
-  ⟨hxy.WSameSide.trans_sSameSide hyz, hxy.2.1, hyz.2.2⟩
+  ⟨hxy.wSameSide.trans_sSameSide hyz, hxy.2.1, hyz.2.2⟩
 #align affine_subspace.s_same_side.trans AffineSubspace.SSameSide.trans
 
 theorem SSameSide.trans_wOppSide {s : AffineSubspace R P} {x y z : P} (hxy : s.SSameSide x y)
     (hyz : s.WOppSide y z) : s.WOppSide x z :=
-  hxy.WSameSide.trans_wOppSide hyz hxy.2.2
+  hxy.wSameSide.trans_wOppSide hyz hxy.2.2
 #align affine_subspace.s_same_side.trans_w_opp_side AffineSubspace.SSameSide.trans_wOppSide
 
 theorem SSameSide.trans_sOppSide {s : AffineSubspace R P} {x y z : P} (hxy : s.SSameSide x y)
@@ -593,7 +584,7 @@ theorem WOppSide.trans_sSameSide {s : AffineSubspace R P} {x y z : P} (hxy : s.W
 theorem WOppSide.trans {s : AffineSubspace R P} {x y z : P} (hxy : s.WOppSide x y)
     (hyz : s.WOppSide y z) (hy : y ∉ s) : s.WSameSide x z := by
   rcases hxy with ⟨p₁, hp₁, p₂, hp₂, hxy⟩
-  rw [w_opp_side_iff_exists_left hp₂, or_iff_right hy] at hyz
+  rw [wOppSide_iff_exists_left hp₂, or_iff_right hy] at hyz
   rcases hyz with ⟨p₃, hp₃, hyz⟩
   rw [← sameRay_neg_iff, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev] at hyz
   refine' ⟨p₁, hp₁, p₃, hp₃, hxy.trans hyz _⟩
@@ -631,19 +622,19 @@ theorem wSameSide_and_wOppSide_iff {s : AffineSubspace R P} {x y : P} :
     s.WSameSide x y ∧ s.WOppSide x y ↔ x ∈ s ∨ y ∈ s := by
   constructor
   · rintro ⟨hs, ho⟩
-    rw [w_opp_side_comm] at ho
+    rw [wOppSide_comm] at ho
     by_contra h
     rw [not_or] at h
-    exact h.1 (w_opp_side_self_iff.1 (hs.trans_w_opp_side ho h.2))
+    exact h.1 (wOppSide_self_iff.1 (hs.trans_wOppSide ho h.2))
   · rintro (h | h)
-    · exact ⟨w_same_side_of_left_mem y h, w_opp_side_of_left_mem y h⟩
-    · exact ⟨w_same_side_of_right_mem x h, w_opp_side_of_right_mem x h⟩
+    · exact ⟨wSameSide_of_left_mem y h, wOppSide_of_left_mem y h⟩
+    · exact ⟨wSameSide_of_right_mem x h, wOppSide_of_right_mem x h⟩
 #align affine_subspace.w_same_side_and_w_opp_side_iff AffineSubspace.wSameSide_and_wOppSide_iff
 
 theorem WSameSide.not_sOppSide {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) :
     ¬s.SOppSide x y := by
   intro ho
-  have hxy := w_same_side_and_w_opp_side_iff.1 ⟨h, ho.1⟩
+  have hxy := wSameSide_and_wOppSide_iff.1 ⟨h, ho.1⟩
   rcases hxy with (hx | hy)
   · exact ho.2.1 hx
   · exact ho.2.2 hy
@@ -652,7 +643,7 @@ theorem WSameSide.not_sOppSide {s : AffineSubspace R P} {x y : P} (h : s.WSameSi
 theorem SSameSide.not_wOppSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
     ¬s.WOppSide x y := by
   intro ho
-  have hxy := w_same_side_and_w_opp_side_iff.1 ⟨h.1, ho⟩
+  have hxy := wSameSide_and_wOppSide_iff.1 ⟨h.1, ho⟩
   rcases hxy with (hx | hy)
   · exact h.2.1 hx
   · exact h.2.2 hy
@@ -684,8 +675,8 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
   · rw [vsub_eq_zero_iff_eq] at h
     rw [← h]
     exact ⟨p₂, hp₂, wbtw_self_right _ _ _⟩
-  · refine' ⟨line_map x y (r₂ / (r₁ + r₂)), _, _⟩
-    · rw [line_map_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub,
+  · refine' ⟨lineMap x y (r₂ / (r₁ + r₂)), _, _⟩
+    · rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub,
         vadd_vsub_assoc, ← vadd_assoc, vadd_eq_add]
       convert s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
       rw [add_comm (y -ᵥ p₂), smul_sub, smul_add, add_sub_assoc, add_assoc, add_right_eq_self,
@@ -701,7 +692,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
 
 theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     ∃ p ∈ s, Sbtw R x p y := by
-  obtain ⟨p, hp, hw⟩ := w_opp_side_iff_exists_wbtw.1 h.w_opp_side
+  obtain ⟨p, hp, hw⟩ := wOppSide_iff_exists_wbtw.1 h.wOppSide
   refine' ⟨p, hp, hw, _, _⟩
   · rintro rfl
     exact h.2.1 hp
@@ -709,14 +700,14 @@ theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide 
     exact h.2.2 hp
 #align affine_subspace.s_opp_side.exists_sbtw AffineSubspace.SOppSide.exists_sbtw
 
-theorem Sbtw.sOppSide_of_not_mem_of_mem {s : AffineSubspace R P} {x y z : P} (h : Sbtw R x y z)
+theorem _root_.Sbtw.sOppSide_of_not_mem_of_mem {s : AffineSubspace R P} {x y z : P} (h : Sbtw R x y z)
     (hx : x ∉ s) (hy : y ∈ s) : s.SOppSide x z := by
   refine' ⟨h.wbtw.w_opp_side₁₃ hy, hx, fun hz => hx _⟩
   rcases h with ⟨⟨t, ⟨ht0, ht1⟩, rfl⟩, hyx, hyz⟩
-  rw [line_map_apply] at hy
+  rw [lineMap_apply] at hy
   have ht : t ≠ 1 := by
     rintro rfl
-    simpa [line_map_apply] using hyz
+    simp [lineMap_apply] at hyz
   have hy' := vsub_mem_direction hy hz
   rw [vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z, ← neg_one_smul R (z -ᵥ x), ← add_smul, ←
     sub_eq_add_neg, s.direction.smul_mem_iff (sub_ne_zero_of_ne ht)] at hy'
@@ -725,7 +716,7 @@ theorem Sbtw.sOppSide_of_not_mem_of_mem {s : AffineSubspace R P} {x y z : P} (h 
 
 theorem sSameSide_smul_vsub_vadd_left {s : AffineSubspace R P} {x p₁ p₂ : P} (hx : x ∉ s)
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : 0 < t) : s.SSameSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by
-  refine' ⟨w_same_side_smul_vsub_vadd_left x hp₁ hp₂ ht.le, fun h => hx _, hx⟩
+  refine' ⟨wSameSide_smul_vsub_vadd_left x hp₁ hp₂ ht.le, fun h => hx _, hx⟩
   rwa [vadd_mem_iff_mem_direction _ hp₂, s.direction.smul_mem_iff ht.ne.symm,
     vsub_right_mem_direction_iff_mem hp₁] at h
 #align affine_subspace.s_same_side_smul_vsub_vadd_left AffineSubspace.sSameSide_smul_vsub_vadd_left
@@ -747,7 +738,7 @@ theorem sSameSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s
 
 theorem sOppSide_smul_vsub_vadd_left {s : AffineSubspace R P} {x p₁ p₂ : P} (hx : x ∉ s)
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : t < 0) : s.SOppSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by
-  refine' ⟨w_opp_side_smul_vsub_vadd_left x hp₁ hp₂ ht.le, fun h => hx _, hx⟩
+  refine' ⟨wOppSide_smul_vsub_vadd_left x hp₁ hp₂ ht.le, fun h => hx _, hx⟩
   rwa [vadd_mem_iff_mem_direction _ hp₂, s.direction.smul_mem_iff ht.ne,
     vsub_right_mem_direction_iff_mem hp₁] at h
 #align affine_subspace.s_opp_side_smul_vsub_vadd_left AffineSubspace.sOppSide_smul_vsub_vadd_left
@@ -772,7 +763,7 @@ theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
   ext y
   simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ici, mem_coe]
   constructor
-  · rw [w_same_side_iff_exists_left hp, or_iff_right hx]
+  · rw [wSameSide_iff_exists_left hp, or_iff_right hx]
     rintro ⟨p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
@@ -783,7 +774,7 @@ theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
       rw [div_eq_inv_mul, ← smul_smul, h, smul_smul, inv_mul_cancel hr₂.ne.symm, one_smul,
         vsub_vadd]
   · rintro ⟨t, p', ht, hp', rfl⟩
-    exact w_same_side_smul_vsub_vadd_right x hp hp' ht
+    exact wSameSide_smul_vsub_vadd_right x hp hp' ht
 #align affine_subspace.set_of_w_same_side_eq_image2 AffineSubspace.setOf_wSameSide_eq_image2
 
 theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
@@ -791,7 +782,7 @@ theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
   ext y
   simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ioi, mem_coe]
   constructor
-  · rw [s_same_side_iff_exists_left hp]
+  · rw [sSameSide_iff_exists_left hp]
     rintro ⟨-, hy, p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
@@ -801,7 +792,7 @@ theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
       rw [div_eq_inv_mul, ← smul_smul, h, smul_smul, inv_mul_cancel hr₂.ne.symm, one_smul,
         vsub_vadd]
   · rintro ⟨t, p', ht, hp', rfl⟩
-    exact s_same_side_smul_vsub_vadd_right hx hp hp' ht
+    exact sSameSide_smul_vsub_vadd_right hx hp hp' ht
 #align affine_subspace.set_of_s_same_side_eq_image2 AffineSubspace.setOf_sSameSide_eq_image2
 
 theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
@@ -809,7 +800,7 @@ theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
   ext y
   simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iic, mem_coe]
   constructor
-  · rw [w_opp_side_iff_exists_left hp, or_iff_right hx]
+  · rw [wOppSide_iff_exists_left hp, or_iff_right hx]
     rintro ⟨p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
@@ -820,7 +811,7 @@ theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
       rw [div_eq_inv_mul, ← smul_smul, neg_smul, h, smul_neg, smul_smul, inv_mul_cancel hr₂.ne.symm,
         one_smul, neg_vsub_eq_vsub_rev, vsub_vadd]
   · rintro ⟨t, p', ht, hp', rfl⟩
-    exact w_opp_side_smul_vsub_vadd_right x hp hp' ht
+    exact wOppSide_smul_vsub_vadd_right x hp hp' ht
 #align affine_subspace.set_of_w_opp_side_eq_image2 AffineSubspace.setOf_wOppSide_eq_image2
 
 theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
@@ -828,7 +819,7 @@ theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
   ext y
   simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iio, mem_coe]
   constructor
-  · rw [s_opp_side_iff_exists_left hp]
+  · rw [sOppSide_iff_exists_left hp]
     rintro ⟨-, hy, p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
@@ -838,7 +829,7 @@ theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
       rw [div_eq_inv_mul, ← smul_smul, neg_smul, h, smul_neg, smul_smul, inv_mul_cancel hr₂.ne.symm,
         one_smul, neg_vsub_eq_vsub_rev, vsub_vadd]
   · rintro ⟨t, p', ht, hp', rfl⟩
-    exact s_opp_side_smul_vsub_vadd_right hx hp hp' ht
+    exact sOppSide_smul_vsub_vadd_right hx hp hp' ht
 #align affine_subspace.set_of_s_opp_side_eq_image2 AffineSubspace.setOf_sOppSide_eq_image2
 
 theorem wOppSide_pointReflection {s : AffineSubspace R P} {x : P} (y : P) (hx : x ∈ s) :
@@ -860,8 +851,6 @@ variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 
 variable [NormedAddTorsor V P]
 
-include V
-
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WSameSide x y } := by
   obtain ⟨p, hp⟩ := h
@@ -870,9 +859,9 @@ theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s :
   · convert isConnected_univ
     · simp [w_same_side_of_left_mem, hx]
     · exact AddTorsor.connectedSpace V P
-  · rw [set_of_w_same_side_eq_image2 hx hp, ← Set.image_prod]
+  · rw [setOf_wSameSide_eq_image2 hx hp, ← Set.image_prod]
     refine'
-      (is_connected_Ici.prod (isConnected_iff_connectedSpace.2 _)).image _
+      (isConnected_Ici.prod (isConnected_iff_connectedSpace.2 _)).image _
         ((continuous_fst.smul continuous_const).vadd continuous_snd).ContinuousOn
     convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_w_same_side AffineSubspace.isConnected_setOf_wSameSide
@@ -884,17 +873,17 @@ theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
     rw [coe_eq_bot_iff] at h
     simp only [h, not_w_same_side_bot]
     rfl
-  · exact (is_connected_set_of_w_same_side x h).IsPreconnected
+  · exact (isConnected_setOf_wSameSide x h).isPreconnected
 #align affine_subspace.is_preconnected_set_of_w_same_side AffineSubspace.isPreconnected_setOf_wSameSide
 
 theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SSameSide x y } := by
   obtain ⟨p, hp⟩ := h
   haveI : Nonempty s := ⟨⟨p, hp⟩⟩
-  rw [set_of_s_same_side_eq_image2 hx hp, ← Set.image_prod]
+  rw [setOf_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine'
-    (is_connected_Ioi.prod (isConnected_iff_connectedSpace.2 _)).image _
-      ((continuous_fst.smul continuous_const).vadd continuous_snd).ContinuousOn
+    (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 _)).image _
+      ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
   convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_s_same_side AffineSubspace.isConnected_setOf_sSameSide
 
@@ -907,9 +896,9 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
     rfl
   · by_cases hx : x ∈ s
     · convert isPreconnected_empty
-      simp only [hx, s_same_side, not_true, false_and_iff, and_false_iff]
+      simp only [hx, SSameSide, not_true, false_and_iff, and_false_iff]
       rfl
-    · exact (is_connected_set_of_s_same_side hx h).IsPreconnected
+    · exact (isConnected_setOf_sSameSide hx h).isPreconnected
 #align affine_subspace.is_preconnected_set_of_s_same_side AffineSubspace.isPreconnected_setOf_sSameSide
 
 theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
@@ -918,12 +907,12 @@ theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : 
   haveI : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · convert isConnected_univ
-    · simp [w_opp_side_of_left_mem, hx]
+    · simp [wOppSide_of_left_mem, hx]
     · exact AddTorsor.connectedSpace V P
-  · rw [set_of_w_opp_side_eq_image2 hx hp, ← Set.image_prod]
+  · rw [setOf_wOppSide_eq_image2 hx hp, ← Set.image_prod]
     refine'
-      (is_connected_Iic.prod (isConnected_iff_connectedSpace.2 _)).image _
-        ((continuous_fst.smul continuous_const).vadd continuous_snd).ContinuousOn
+      (isConnected_Iic.prod (isConnected_iff_connectedSpace.2 _)).image _
+        ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
     convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_w_opp_side AffineSubspace.isConnected_setOf_wOppSide
 
@@ -934,17 +923,17 @@ theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
     rw [coe_eq_bot_iff] at h
     simp only [h, not_w_opp_side_bot]
     rfl
-  · exact (is_connected_set_of_w_opp_side x h).IsPreconnected
+  · exact (isConnected_setOf_wOppSide x h).isPreconnected
 #align affine_subspace.is_preconnected_set_of_w_opp_side AffineSubspace.isPreconnected_setOf_wOppSide
 
 theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h
   haveI : Nonempty s := ⟨⟨p, hp⟩⟩
-  rw [set_of_s_opp_side_eq_image2 hx hp, ← Set.image_prod]
+  rw [setOf_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine'
-    (is_connected_Iio.prod (isConnected_iff_connectedSpace.2 _)).image _
-      ((continuous_fst.smul continuous_const).vadd continuous_snd).ContinuousOn
+    (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 _)).image _
+      ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
   convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_s_opp_side AffineSubspace.isConnected_setOf_sOppSide
 
@@ -957,12 +946,11 @@ theorem isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
     rfl
   · by_cases hx : x ∈ s
     · convert isPreconnected_empty
-      simp only [hx, s_opp_side, not_true, false_and_iff, and_false_iff]
+      simp only [hx, SOppSide, not_true, false_and_iff, and_false_iff]
       rfl
-    · exact (is_connected_set_of_s_opp_side hx h).IsPreconnected
+    · exact (isConnected_setOf_sOppSide hx h).isPreconnected
 #align affine_subspace.is_preconnected_set_of_s_opp_side AffineSubspace.isPreconnected_setOf_sOppSide
 
 end Normed
 
 end AffineSubspace
-
