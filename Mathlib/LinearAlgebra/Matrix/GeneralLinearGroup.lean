@@ -244,8 +244,12 @@ instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
 #noalign matrix.special_linear_group.coe_eq_to_GL_pos
 
 theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
-  (show Function.Injective ((coe : GLPos n R → Matrix n n R) ∘ toGLPos) from
-      Subtype.coe_injective).of_comp
+  -- Porting note: had to rewrite this to hint the correct types to Lean
+  -- (It can't find the coercion GLPos n R → Matrix n n R)
+  Function.Injective.of_comp
+    (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
+    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
+      from Subtype.coe_injective)
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL_pos_injective Matrix.SpecialLinearGroup.toGLPos_injective
 
