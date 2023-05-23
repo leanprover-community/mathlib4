@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Minpoly.Field
-import Mathbin.FieldTheory.Subfield
-import Mathbin.FieldTheory.Tower
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.FieldTheory.Subfield
+import Mathlib.FieldTheory.Tower
 
 /-!
 # Intermediate fields
@@ -71,8 +71,7 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨h⟩
     congr ⟩
 
-instance : SubfieldClass (IntermediateField K L) L
-    where
+instance : SubfieldClass (IntermediateField K L) L where
   add_mem s _ _ := s.add_mem'
   zero_mem s := s.zero_mem'
   neg_mem := neg_mem'
@@ -291,16 +290,14 @@ def Subalgebra.toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, 
 
 @[simp]
 theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
-    (S.toIntermediateField inv_mem).toSubalgebra = S :=
-  by
+    (S.toIntermediateField inv_mem).toSubalgebra = S := by
   ext
   rfl
 #align to_subalgebra_to_intermediate_field toSubalgebra_toIntermediateField
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S :=
-  by
+    (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
   ext
   rfl
 #align to_intermediate_field_to_subalgebra toIntermediateField_toSubalgebra
@@ -319,16 +316,14 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
 
 @[simp]
 theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
-    (S.toIntermediateField' hS).toSubalgebra = S :=
-  by
+    (S.toIntermediateField' hS).toSubalgebra = S := by
   ext
   rfl
 #align to_subalgebra_to_intermediate_field' toSubalgebra_toIntermediateField'
 
 @[simp]
 theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
-    S.toSubalgebra.toIntermediateField' (Field.toIsField S) = S :=
-  by
+    S.toSubalgebra.toIntermediateField' (Field.toIsField S) = S := by
   ext
   rfl
 #align to_intermediate_field'_to_subalgebra toIntermediateField'_toSubalgebra
@@ -517,8 +512,7 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 #align intermediate_field.alg_hom.inhabited IntermediateField.AlgHom.inhabited
 
 theorem aeval_coe {R : Type _} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
-    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
-  by
+    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
   refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
   · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
@@ -527,8 +521,7 @@ theorem aeval_coe {R : Type _} [CommRing R] [Algebra R K] [Algebra R L] [IsScala
 #align intermediate_field.aeval_coe IntermediateField.aeval_coe
 
 theorem coe_isIntegral_iff {R : Type _} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
-  by
+    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain ⟨P, hPmo, hProot⟩ := h
     refine' ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).Injective _ _⟩
@@ -572,8 +565,7 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 variable {S}
 
 theorem toSubalgebra_injective {S S' : IntermediateField K L}
-    (h : S.toSubalgebra = S'.toSubalgebra) : S = S' :=
-  by
+    (h : S.toSubalgebra = S'.toSubalgebra) : S = S' := by
   ext
   rw [← mem_to_subalgebra, ← mem_to_subalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
@@ -685,8 +677,7 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
 variable {F} {E}
 
 @[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E :=
-  by
+theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
   rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
   rfl
 #align intermediate_field.to_subalgebra_eq_iff IntermediateField.toSubalgebra_eq_iff
@@ -703,8 +694,7 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E)
 #align intermediate_field.eq_of_le_of_finrank_eq IntermediateField.eq_of_le_of_finrank_eq
 
 theorem eq_of_le_of_finrank_le' [FiniteDimensional K L] (h_le : F ≤ E)
-    (h_finrank : finrank F L ≤ finrank E L) : F = E :=
-  by
+    (h_finrank : finrank F L ≤ finrank E L) : F = E := by
   apply eq_of_le_of_finrank_le h_le
   have h1 := finrank_mul_finrank K F L
   have h2 := finrank_mul_finrank K E L
@@ -727,8 +717,7 @@ theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, is_algebraic_iff, isAlgebraic_iff_isIntegral]
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
-  by
+theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
   by_cases hx : IsIntegral K x
   · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).Injective hx rfl
   · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt is_integral_iff.mpr hx)).symm
@@ -738,8 +727,7 @@ end IntermediateField
 
 /-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields.  -/
 def subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) :
-    Subalgebra K L ≃o IntermediateField K L
-    where
+    Subalgebra K L ≃o IntermediateField K L where
   toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic (alg (⟨x, hx⟩ : S))
   invFun S := S.toSubalgebra
   left_inv S := toSubalgebra_toIntermediateField _ _
