@@ -644,7 +644,9 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
 #align adjoin_root.minpoly.to_adjoin_apply' AdjoinRoot.Minpoly.toAdjoin_apply'
 
 theorem Minpoly.toAdjoin.apply_X :
-    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by simp
+    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
+    simp [toAdjoin]
+
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
@@ -655,7 +657,7 @@ theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x)
   refine' adjoin_le _
   simp only [AlgHom.coe_range, Set.mem_range]
   rintro ⟨y₁, y₂⟩ h
-  refine' ⟨mk (minpoly R x) X, by simpa using h.symm⟩
+  refine' ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
 #align adjoin_root.minpoly.to_adjoin.surjective AdjoinRoot.Minpoly.toAdjoin.surjective
 
 end minpoly
