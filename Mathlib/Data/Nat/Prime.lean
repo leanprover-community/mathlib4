@@ -262,10 +262,8 @@ termination_by _ n k => sqrt n + 2 - k
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
-def minFac : ℕ → ℕ
-  | 0 => 2
-  | 1 => 1
-  | n + 2 => if 2 ∣ n then 2 else minFacAux (n + 2) 3
+def minFac (n : ℕ) : ℕ :=
+  if 2 ∣ n then 2 else minFacAux n 3
 #align nat.min_fac Nat.minFac
 
 @[simp]
@@ -278,11 +276,7 @@ theorem minFac_one : minFac 1 = 1 :=
   rfl
 #align nat.min_fac_one Nat.minFac_one
 
-theorem minFac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
-  | 0 => by simp
-  | 1 => by simp [show 2 ≠ 1 by decide]
-  | n + 2 => by
-    simp [minFac]
+theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 #align nat.min_fac_eq Nat.minFac_eq
 
 private def minFacProp (n k : ℕ) :=
