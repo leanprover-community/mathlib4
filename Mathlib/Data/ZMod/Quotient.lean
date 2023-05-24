@@ -18,15 +18,15 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 # `ZMod n` and quotient groups / rings
 
 This file relates `ZMod n` to the quotient group
-`quotient_add_group.quotient (AddSubgroup.zmultiples n)` and to the quotient ring
-`(Ideal.span {n}).quotient`.
+`ℤ / AddSubgroup.zmultiples (n : ℤ)` and to the quotient ring
+`ℤ ⧸ Ideal.span {(n : ℤ)}`.
 
 ## Main definitions
 
- - `zmod.quotient_zmultiples_nat_equiv_zmod` and `zmod.quotient_zmultiples_equiv_zmod`:
+ - `ZMod.quotientZmultiplesNatEquivZmod` and `ZMod.quotientZmultiplesEquivZmod`:
    `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
    (where `n : ℕ` and `n : ℤ` respectively)
- - `zmod.quotient_span_nat_equiv_zmod` and `zmod.quotient_span_equiv_zmod`:
+ - `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZmod `:
    `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
    (where `n : ℕ` and `n : ℤ` respectively)
  - `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
