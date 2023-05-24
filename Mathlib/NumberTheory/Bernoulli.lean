@@ -161,14 +161,15 @@ def bernoulli'PowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli' n / n !)
 #align bernoulli'_power_series bernoulli'PowerSeries
 
-theorem bernoulli'PowerSeries_mul_exp_sub_one : bernoulli'PowerSeries A * (exp A - 1) = X * exp A :=
-  by
+theorem bernoulli'PowerSeries_mul_exp_sub_one :
+  bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
   -- constant coefficient is a special case
   cases' n with n
   · simp
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
-  suffices (∑ p in antidiagonal n, bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
+  suffices (∑ p in antidiagonal n,
+      bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
     simpa [map_sum] using congr_arg (algebraMap ℚ A) this
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
@@ -176,8 +177,6 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one : bernoulli'PowerSeries A * (exp A
   apply sum_congr rfl
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
-  have : (j + 1 : ℚ) ≠ 0 := by norm_cast; exact succ_ne_zero j
-  have : (j + 1 : ℚ) * j ! * i ! ≠ 0 := by simpa [factorial_ne_zero]
   have := factorial_mul_factorial_dvd_factorial_add i j
   field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
   norm_cast
@@ -320,8 +319,8 @@ theorem sum_range_pow (n p : ℕ) :
   -- compute the Cauchy product of two power series
   have h_cauchy :
     ((mk fun p => bernoulli p / p !) * mk fun q => coeff ℚ (q + 1) (exp ℚ ^ n)) =
-      mk fun p =>
-        ∑ i in range (p + 1), bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
+      mk fun p => ∑ i in range (p + 1),
+          bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1
     let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
     -- key step: use `power_series.coeff_mul` and then rewrite sums
@@ -347,8 +346,7 @@ theorem sum_range_pow (n p : ℕ) :
   have hps :
     (∑ k in range n, (k : ℚ) ^ p) =
       (∑ i in range (p + 1),
-          bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)!) * p ! :=
-    by
+          bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)!) * p ! := by
     suffices
       (mk fun p => ∑ k in range n, (k : ℚ) ^ p * algebraMap ℚ ℚ p !⁻¹) =
         mk fun p =>
