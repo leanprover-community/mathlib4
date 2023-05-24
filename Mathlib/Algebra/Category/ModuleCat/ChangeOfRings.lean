@@ -8,7 +8,7 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.RingTheory.TensorProduct
 
 /-!
@@ -42,6 +42,7 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
+set_option linter.uppercaseLean3 false -- Porting note: Module
 
 namespace CategoryTheory.Module
 
@@ -76,15 +77,25 @@ end RestrictScalars
 def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     ModuleCat.{v} S ⥤ ModuleCat.{v} R where
   obj := RestrictScalars.obj' f
-  map _ _ := RestrictScalars.map' f
-  map_id' _ := LinearMap.ext fun m => rfl
-  map_comp' _ _ _ g h := LinearMap.ext fun m => rfl
+  map := RestrictScalars.map' f
+  map_id _ := LinearMap.ext fun _ => rfl
+  map_comp _ _ := LinearMap.ext fun _ => rfl
 #align category_theory.Module.restrict_scalars CategoryTheory.Module.restrictScalars
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    CategoryTheory.Faithful (restrictScalars.{v} f)
-    where map_injective' _ _ _ _ h :=
+    CategoryTheory.Faithful (restrictScalars.{v} f) where
+  map_injective h :=
     LinearMap.ext fun x => by simpa only using FunLike.congr_fun h x
+
+-- -- Porting note: this should be automatic
+-- instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+--     {M : ModuleCat.{v} S} : Module R <| (restrictScalars f).obj M :=
+--   inferInstanceAs <| Module R <| RestrictScalars.obj' f M
+--
+-- -- Porting note: this should be automatic
+-- instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+--     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
+--   inferInstanceAs <| Module S M
 
 @[simp]
 theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
@@ -103,10 +114,12 @@ theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring
   rfl
 #align category_theory.Module.restrict_scalars.smul_def' CategoryTheory.Module.restrictScalars.smul_def'
 
+
 instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
-    (f : R →+* S) (M : Type v) [AddCommGroup M] [Module S M] :
+    (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
     @SMulCommClass R S M (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul _
-    where smul_comm r s m := (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+    where
+  smul_comm r s m := (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 #align category_theory.Module.smul_comm_class_mk CategoryTheory.Module.sMulCommClass_mk
 
 namespace ExtendScalars
@@ -173,8 +186,8 @@ def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f :
     ModuleCat.{v} R ⥤ ModuleCat.{max v u₂} S where
   obj M := ExtendScalars.obj' f M
   map M1 M2 l := ExtendScalars.map' f l
-  map_id' _ := ExtendScalars.map'_id f
-  map_comp' _ _ _ := ExtendScalars.map'_comp f
+  map_id _ := ExtendScalars.map'_id f
+  map_comp _ _ _ := ExtendScalars.map'_comp f
 #align category_theory.Module.extend_scalars CategoryTheory.Module.extendScalars
 
 namespace ExtendScalars
@@ -285,9 +298,9 @@ scalars and `g : M ⟶ M'` is sent to `h ↦ g ∘ h`.
 def coextendScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     ModuleCat R ⥤ ModuleCat S where
   obj := CoextendScalars.obj' f
-  map _ _ := CoextendScalars.map' f
-  map_id' M := LinearMap.ext fun h => LinearMap.ext fun x => rfl
-  map_comp' _ _ _ g h := LinearMap.ext fun h => LinearMap.ext fun x => rfl
+  map  _ := CoextendScalars.map' f
+  map_id M := LinearMap.ext fun h => LinearMap.ext fun x => rfl
+  map_comp g h := LinearMap.ext fun h => LinearMap.ext fun x => rfl
 #align category_theory.Module.coextend_scalars CategoryTheory.Module.coextendScalars
 
 namespace CoextendScalars
@@ -499,7 +512,7 @@ def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X where
   map_add' x x' := by rw [TensorProduct.tmul_add]
   map_smul' r x := by
     letI m1 : Module R S := Module.compHom S f
-    tidy
+    aesop_cat
 #align category_theory.Module.extend_restrict_scalars_adj.unit.map CategoryTheory.Module.ExtendRestrictScalarsAdj.Unit.map
 
 /--
@@ -509,7 +522,6 @@ restriction of scalars.
 @[simps]
 def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars f where
   app _ := Unit.map f
-  naturality' X X' g := by tidy
 #align category_theory.Module.extend_restrict_scalars_adj.unit CategoryTheory.Module.ExtendRestrictScalarsAdj.unit
 
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
@@ -546,7 +558,7 @@ identity functor on `S`-module.
 @[simps]
 def counit : restrictScalars f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
   app _ := Counit.map f
-  naturality' Y Y' g := by
+  naturality Y Y' g := by
     ext z; induction z using TensorProduct.induction_on
     · simp only [map_zero]
     ·
@@ -565,7 +577,7 @@ scalars by `f` are adjoint to each other.
 def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     extendScalars f ⊣ restrictScalars f where
   homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv f
-  Unit := ExtendRestrictScalarsAdj.unit f
+  unit := ExtendRestrictScalarsAdj.unit f
   counit := ExtendRestrictScalarsAdj.counit f
   homEquiv_unit X Y g := LinearMap.ext fun x => by simp
   homEquiv_counit X Y g :=
