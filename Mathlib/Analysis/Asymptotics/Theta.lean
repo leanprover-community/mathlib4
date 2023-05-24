@@ -102,7 +102,9 @@ theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁
   h₁.1.trans h₂
 #align asymptotics.is_Theta.trans_is_O Asymptotics.IsTheta.trans_isBigO
 
--- Porting note: Add more `Trans` instances?
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsBigO l) (IsBigO l) :=
+  ⟨IsTheta.trans_isBigO⟩
 
 @[trans]
 theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h₁ : f =o[l] g)
@@ -110,11 +112,19 @@ theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h
   h₁.trans_isBigO h₂.1
 #align asymptotics.is_o.trans_is_Theta Asymptotics.IsLittleO.trans_isTheta
 
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F') (γ := α → G') (IsLittleO l) (IsTheta l) (IsLittleO l) :=
+  ⟨IsLittleO.trans_isTheta⟩
+
 @[trans]
 theorem IsTheta.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =Θ[l] g)
     (h₂ : g =o[l] k) : f =o[l] k :=
   h₁.1.trans_isLittleO h₂
 #align asymptotics.is_Theta.trans_is_o Asymptotics.IsTheta.trans_isLittleO
+
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsLittleO l) (IsLittleO l) :=
+  ⟨IsTheta.trans_isLittleO⟩
 
 @[trans]
 theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =Θ[l] g₁) (hg : g₁ =ᶠ[l] g₂) :
@@ -122,11 +132,19 @@ theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f 
   ⟨h.1.trans_eventuallyEq hg, hg.symm.trans_isBigO h.2⟩
 #align asymptotics.is_Theta.trans_eventually_eq Asymptotics.IsTheta.trans_eventuallyEq
 
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → F) (γ := α → F) (IsTheta l) (EventuallyEq l) (IsTheta l) :=
+  ⟨IsTheta.trans_eventuallyEq⟩
+
 @[trans]
 theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α → F} (hf : f₁ =ᶠ[l] f₂)
     (h : f₂ =Θ[l] g) : f₁ =Θ[l] g :=
   ⟨hf.trans_isBigO h.1, h.2.trans_eventuallyEq hf.symm⟩
 #align filter.eventually_eq.trans_is_Theta Filter.EventuallyEq.trans_isTheta
+
+-- Porting note: added
+instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
+  ⟨EventuallyEq.trans_isTheta⟩
 
 @[simp]
 theorem isTheta_norm_left : (fun x ↦ ‖f' x‖) =Θ[l] g ↔ f' =Θ[l] g := by simp [IsTheta]

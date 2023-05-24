@@ -170,22 +170,26 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
 theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
     (fun x => f x ^ g x) =O[l] fun x => abs (f x) ^ (g x).re :=
   calc
-    (fun x => f x ^ g x) =O[l] fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x)) :=
+    (fun x => f x ^ g x) =O[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
       isBigO_of_le _ fun x => (abs_cpow_le _ _).trans (le_abs_self _)
-    _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
+    _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
-    _ =ᶠ[l] fun x => abs (f x) ^ (g x).re := by simp only [of_real_one, div_one]
+    _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
+      simp only [ofReal_one, div_one]
+      rfl
 #align complex.is_O_cpow_rpow Complex.isBigO_cpow_rpow
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
     (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re :=
   calc
-    (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x)) :=
+    (fun x => f x ^ g x) =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
       isTheta_of_norm_eventuallyEq' <| hl.mono fun x => abs_cpow_of_imp
-    _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
+    _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im))
-    _ =ᶠ[l] fun x => abs (f x) ^ (g x).re := by simp only [of_real_one, div_one]
+    _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
+      simp only [ofReal_one, div_one]
+      rfl
 #align complex.is_Theta_cpow_rpow Complex.isTheta_cpow_rpow
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
