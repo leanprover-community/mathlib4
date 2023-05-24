@@ -8,9 +8,9 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Isometry
-import Mathbin.Analysis.NormedSpace.ConformalLinearMap
-import Mathbin.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Complex.Isometry
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
+import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
 # Conformal maps between complex vector spaces
@@ -52,8 +52,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace �
   {g : ℂ →L[ℝ] E} {f : ℂ → E}
 
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
-    IsConformalMap (map.restrictScalars ℝ) :=
-  by
+    IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by simpa only [ext_ring_iff, Ne.def, norm_eq_zero] using nonzero
   refine' ⟨‖map 1‖, minor₁, ⟨‖map 1‖⁻¹ • map, _⟩, _⟩
   · intro x
@@ -85,8 +84,7 @@ variable {f : ℂ → ℂ} {z : ℂ} {g : ℂ →L[ℝ] ℂ}
 
 theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
-      ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle :=
-  by
+      ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle := by
   rcases h with ⟨c, hc, li, rfl⟩
   obtain ⟨li, rfl⟩ : ∃ li' : ℂ ≃ₗᵢ[ℝ] ℂ, li'.toLinearIsometry = li
   exact
@@ -113,16 +111,14 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
           ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle) ∧
-        g ≠ 0 :=
-  by
+        g ≠ 0 := by
   constructor
   · exact fun h => ⟨h.is_complex_or_conj_linear, h.NeZero⟩
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine' isConformalMap_complex_linear _
       contrapose! h₂ with w
       simp only [w, restrict_scalars_zero]
-    · have minor₁ : g = map.restrict_scalars ℝ ∘L ↑conj_cle :=
-        by
+    · have minor₁ : g = map.restrict_scalars ℝ ∘L ↑conj_cle := by
         ext1
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
           conj_cle_apply, starRingEnd_self_apply]
