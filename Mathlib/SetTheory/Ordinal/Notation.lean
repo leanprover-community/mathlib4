@@ -676,7 +676,7 @@ exponentiation in `opow` -/
 def opowAux (e a0 a : Onote) : ℕ → ℕ → Onote
   | _, 0 => 0
   | 0, m + 1 => oadd e m.succPNat 0
-  | k + 1, m => scale (e + mulNat a0 k) (a + (opowAux e a0 a k m))
+  | k + 1, m => scale (e + mulNat a0 k) a + (opowAux e a0 a k m)
 #align onote.opow_aux Onote.opowAux
 
 /-- `opow o₁ o₂` calculates the ordinal notation for
@@ -858,7 +858,13 @@ theorem scale_opowAux (e a0 a : Onote) [NF e] [NF a0] [NF a] :
     ∀ k m, repr (opowAux e a0 a k m) = ω ^ repr e * repr (opowAux 0 a0 a k m)
   | 0, m => by cases m <;> simp [opowAux]
   | k + 1, m => by
-    by_cases h : m = 0 <;> simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux]
+    by_cases h : m = 0
+    · simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux _ _ _ k]
+    · -- Porting note: rewrote proof
+      rw [opowAux]; swap; assumption
+      rw [opowAux]; swap; assumption
+      rw [repr_add, repr_scale, scale_opowAux _ _ _ k]
+      simp only [repr_add, repr_scale, opow_add, mul_assoc, zero_add, mul_add]
 #align onote.scale_opow_aux Onote.scale_opowAux
 
 theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr e ≠ 0)
