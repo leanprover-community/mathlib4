@@ -85,26 +85,24 @@ partial def congrm_loop (goal : MVarId) (pat : Expr) : MetaM (List MVarId) := do
     return (← blubb.mapM (λ (m,e) => congrm_loop m e)).join
   else return [goal]
 
-partial def congrm_core_rly (goal : MVarId) (pat : Expr) : MetaM (List MVarId) := do
+partial def congrm_core (goal : MVarId) (pat : Expr) : MetaM (List MVarId) := do
   -- First change `iff` to `=` and then run the loop:
   let mvars ← congrm_loop (← goal.iffOfEq) pat
   mvars.filterMapM try_refl
 
+def evalTactic (f : MVarId → MetaM (List MVarId)) : TacticM Unit := withMainContext do
+  setGoals (← f (← getMainGoal))
+
 elab_rules : tactic | `(tactic| congrm $expr:term) => withMainContext do
-  setGoals (← congrm_core_rly (← getMainGoal) (← elabTerm expr none))
-
-syntax (name := prettyExpr) "prettyExpr " term : tactic
-
---elab_rules : tactic | `(tactic| prettyExpr $expr:term) => withMainContext do
-
+  setGoals (← congrm_core (← getMainGoal) (← elabTerm expr none))
 
 -- Testing that the trivial `forall` rule works:
-example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ b : α, True) := by
+example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
   congrm (∀ x, _)
   exact h x
 
 example (f : α → α → Prop) (h : ∀ a b, f a b = True) :
-    (∀ a b, f a b) ↔ (∀ a b : α, True) := by
+    (∀ a b, f a b) ↔ (∀ _ _ : α, True) := by
   congrm (∀ x y, _)
   exact h x y
 
@@ -135,43 +133,10 @@ example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
   exact h
 
 -- Testing for implicit arguments in function application
-example {α : Type} {f : α → α} (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  congrm (@Eq _ _ _)
-  exact h
-
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
-  congrm λ x => ∀ w, (_ + a = w)
-  simp only [h]
-
-#exit
-
--- Old bad tests
-
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  congrm (a = _)
+  congrm (Eq _ _ _) -- Todo: good error message
   exact h
 
-example (f : α → Prop): (∀ a : α, f a) ↔ (∀ b : α, True) := by
-  congrm (∀ x, _)
-
-  --apply Eq.to_iff
-  have : ∀ a, f a = True := sorry
-  exact this x
-
-example (f : α → α → Prop): (∀ a b, f a b) ↔ (∀ a b : α, True) := by
-  congrm (∀ x y, _)
-  have : ∀ a b, f a b = True := sorry
-  exact this x y
-
-example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
-  congrm (f _)
-  exact h
-
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
   congrm λ x => ∀ w, (_ + a = w)
-  --apply propext
-  congr 1
   simp only [h]
-
-example : (3 : ℤ) ≤ (3 : ℕ) := by
-  simp only
