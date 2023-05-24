@@ -78,23 +78,28 @@ variable {𝕜 E F : Type _} [IsROrC 𝕜]
 
 /-- Syntactic typeclass for types endowed with an inner product -/
 class Inner (𝕜 E : Type _) where
+  /-- The inner product function. -/
   inner : E → E → 𝕜
 #align has_inner Inner
 
 export Inner (inner)
 
 -- mathport name: «expr⟪ , ⟫_ℝ»
+/-- The inner product with values in `ℝ`. -/
 notation "⟪" x ", " y "⟫_ℝ" => @inner ℝ _ _ x y
 
 -- mathport name: «expr⟪ , ⟫_ℂ»
+/-- The inner product with values in `ℂ`. -/
 notation "⟪" x ", " y "⟫_ℂ" => @inner ℂ _ _ x y
 
 section Notations
 
 -- mathport name: inner.real
+/-- The inner product with values in `ℝ`. -/
 scoped[RealInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
 -- mathport name: inner.complex
+/-- The inner product with values in `ℂ`. -/
 scoped[ComplexInnerProductSpace] notation "⟪" x ", " y "⟫" => @inner ℂ _ _ x y
 
 end Notations
@@ -108,9 +113,13 @@ To construct a norm from an inner product, see `inner_product_space.of_core`.
 -/
 class InnerProductSpace (𝕜 : Type _) (E : Type _) [IsROrC 𝕜] [NormedAddCommGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
+  /-- The inner product induces the norm. -/
   norm_sq_eq_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
+  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
   conj_symm : ∀ x y, conj (inner y x) = inner x y
+  /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
+  /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
 #align inner_product_space InnerProductSpace
 
@@ -138,10 +147,15 @@ can construct an `inner_product_space` instance in `inner_product_space.of_core`
 -- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
 structure InnerProductSpace.Core (𝕜 : Type _) (F : Type _) [IsROrC 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
+  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
   conj_symm : ∀ x y, conj (inner y x) = inner x y
+  /-- The inner product is positive (semi)definite. -/
   nonneg_re : ∀ x, 0 ≤ re (inner x x)
+  /-- The inner product is positive definite. -/
   definite : ∀ x, inner x x = 0 → x = 0
+  /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
+  /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
 #align inner_product_space.core InnerProductSpace.Core
 
@@ -643,9 +657,8 @@ theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 #align inner_neg_neg inner_neg_neg
 
-@[simp]
-theorem inner_self_conj (x : E) : ⟪x, x⟫† = ⟪x, x⟫ := by
-  rw [IsROrC.ext_iff]; exact ⟨by rw [conj_re], by rw [conj_im, inner_self_im, neg_zero]⟩
+-- porting note: removed `simp` because it can prove it using `inner_conj_symm`
+theorem inner_self_conj (x : E) : ⟪x, x⟫† = ⟪x, x⟫ := inner_conj_symm _ _
 #align inner_self_conj inner_self_conj
 
 theorem inner_sub_left (x y z : E) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
@@ -2365,3 +2378,4 @@ instance : InnerProductSpace 𝕜 (Completion E) where
       fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion
+#lint
