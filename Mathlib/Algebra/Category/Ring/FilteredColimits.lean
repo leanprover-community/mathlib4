@@ -308,7 +308,8 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
       ((forget₂ RingCat SemiRingCat).mapCocone t)
   fac t j :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget RingCat)).fac ((forget RingCat).mapCocone t) j
+      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget RingCat)).fac
+        ((forget RingCat).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
       (Types.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq ((forget RingCat).mapCocone t) _
