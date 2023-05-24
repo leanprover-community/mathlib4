@@ -128,7 +128,6 @@ theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1)
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLie := by
   have h0 : f I = I ∨ f I = -I := by
-    have : |f I| = 1 := by rw [← norm_eq_abs, f.norm_map, norm_eq_abs, abs_I]
     simp only [ext_iff, ← and_or_left, neg_re, I_re, neg_im, neg_zero]
     constructor
     · rw [← I_re]
