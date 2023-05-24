@@ -839,9 +839,9 @@ theorem comp_assoc {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₁₄ 
   rfl
 #align continuous_linear_map.comp_assoc ContinuousLinearMap.comp_assoc
 
-instance mul : Mul (M₁ →L[R₁] M₁) :=
+instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
-#align continuous_linear_map.has_mul ContinuousLinearMap.mul
+#align continuous_linear_map.has_mul ContinuousLinearMap.instMul
 
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
@@ -1283,7 +1283,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
           Continuous (⇑(if h : i ∈ I then LinearMap.proj (R := R) (ι := ↥I)
             (φ := fun i : ↥I => φ i) ⟨i, h⟩ else
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
-        split_ifs <;> [apply continuous_apply, exact continuous_zero])
+        split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
 #align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.iInfKerProjEquiv
 

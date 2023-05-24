@@ -100,7 +100,7 @@ theorem terminates_parallel.aux :
             match o with
             | Sum.inl a => Sum.inl a
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr []) l with a' ls <;> intro e' <;> [injection e', injection e' with e']
+          (Sum.inr []) l with a' ls <;> intro e' <;> [injection e'; injection e' with e']
         rw [← e']
         simp
       · induction' e : List.foldr (fun c o =>
@@ -113,7 +113,7 @@ theorem terminates_parallel.aux :
         simp [parallel.aux2] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
-        cases destruct c <;> intro e' <;> [injection e', injection e' with h']
+        cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
         rw [← h']
         simp [this]
     induction' h : parallel.aux2 l with a l'
@@ -250,10 +250,10 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
             exact ⟨d, List.Mem.tail _ dm, ad⟩
   intro C aC
   -- Porting note: `revert e'` & `intro e'` are required.
-  apply memRecOn aC <;> [skip, intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
+  apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
     have := lem1 l <;> simp only [parallel.aux1, corec_eq, destruct_pure, destruct_think] at e' <;>
     revert this e' <;> cases' parallel.aux2 l with a' l' <;> intro this e' <;>
-    [injection e' with h', injection e', injection e', injection e' with h']
+    [injection e' with h'; injection e'; injection e'; injection e' with h']
   · rw [h'] at this
     rcases this with ⟨c, cl, ac⟩
     exact ⟨c, Or.inl cl, ac⟩

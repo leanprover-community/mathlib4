@@ -11,8 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
+import Mathlib.Util.AssertExists
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -356,5 +355,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 end NoncomputableDefs
 
 -- Guard against import creep
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists multiplicative
+assert_not_exists Multiplicative

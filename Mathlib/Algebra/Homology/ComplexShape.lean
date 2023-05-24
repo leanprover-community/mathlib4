@@ -10,7 +10,6 @@ Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Shapes of homological complexes
