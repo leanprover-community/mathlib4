@@ -19,16 +19,16 @@ import Mathlib.RingTheory.Localization.Integer
 /-!
 # Matrices and linear equivalences
 
-This file gives the map `matrix.to_linear_equiv` from matrices with invertible determinant,
+This file gives the map `Matrix.toLinearEquiv` from matrices with invertible determinant,
 to linear equivs.
 
 ## Main definitions
 
- * `matrix.to_linear_equiv`: a matrix with an invertible determinant forms a linear equiv
+ * `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
 
 ## Main results
 
- * `matrix.exists_mul_vec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
+ * `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
 
 ## Tags
 
@@ -51,7 +51,7 @@ variable [DecidableEq n]
 
 /-- An invertible matrix yields a linear equivalence from the free module to itself.
 
-See `matrix.to_linear_equiv` for the same map on arbitrary modules.
+See `Matrix.toLinearEquiv` for the same map on arbitrary modules.
 -/
 def toLinearEquiv' (P : Matrix n n R) (_ : Invertible P) : (n → R) ≃ₗ[R] n → R :=
   GeneralLinearGroup.generalLinearEquiv _ _ <|
@@ -76,10 +76,10 @@ section ToLinearEquiv
 
 variable (b : Basis n R M)
 
-/-- Given `hA : is_unit A.det` and `b : basis R b`, `A.to_linear_equiv b hA` is
-the `linear_equiv` arising from `to_lin b b A`.
+/-- Given `hA : IsUnit A.det` and `b : Basis R b`, `A.to_linear_equiv b hA` is
+the `LinearEquiv` arising from `to_lin b b A`.
 
-See `matrix.to_linear_equiv'` for this result on `n → R`.
+See `Matrix.toLinearEquiv'` for this result on `n → R`.
 -/
 @[simps apply]
 noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
@@ -112,7 +112,7 @@ section Nondegenerate
 
 open Matrix
 
-/-- This holds for all integral domains (see `matrix.exists_mul_vec_eq_zero_iff`),
+/-- This holds for all integral domains (see `Matrix.exists_mulVec_eq_zero_iff`),
 not just fields, but it's easier to prove it for the field of fractions first. -/
 theorem exists_mulVec_eq_zero_iff_aux {K : Type _} [DecidableEq n] [Field K] {M : Matrix n n K} :
     (∃ (v : _)(_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 := by
