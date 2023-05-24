@@ -22,11 +22,11 @@ We show that `ℤ_[p]`
 * is a local ring, and
 * is a discrete valuation ring.
 
-The relation between `ℤ_[p]` and `zmod p` is established in another file.
+The relation between `ℤ_[p]` and `ZMod p` is established in another file.
 
 ## Important definitions
 
-* `padic_int` : the type of `p`-adic integers
+* `PadicInt` : the type of `p`-adic integers
 
 ## Notation
 
@@ -35,7 +35,7 @@ We introduce the notation `ℤ_[p]` for the `p`-adic integers.
 ## Implementation notes
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
-by taking `[fact p.prime]` as a type class argument.
+by taking `[Fact p.prime]` as a type class argument.
 
 Coercions into `ℤ_[p]` are set up to work with the `norm_cast` tactic.
 
@@ -62,7 +62,7 @@ def PadicInt (p : ℕ) [Fact p.Prime] :=
   { x : ℚ_[p] // ‖x‖ ≤ 1 }
 #align padic_int PadicInt
 
--- mathport name: «exprℤ_[ ]»
+/-- The ring of `p`-adic integers. -/
 notation "ℤ_[" p "]" => PadicInt p
 
 namespace PadicInt
@@ -171,7 +171,7 @@ def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 #align padic_int.coe_pow PadicInt.coe_pow
 
-@[simp]
+@[simp 1001] -- Porting note: simpNF linter
 theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := Subtype.coe_eta _ _
 #align padic_int.mk_coe PadicInt.mk_coe
 
@@ -188,7 +188,7 @@ instance : CharZero ℤ_[p]
         rw [Subtype.ext_iff] at h
         norm_cast at h)
 
-@[simp, norm_cast]
+@[simp 1001, norm_cast] -- Porting note: simpNF linter
 theorem coe_int_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
   suffices (z1 : ℚ_[p]) = z2 ↔ z1 = z2 from Iff.trans (by norm_cast) this
   norm_cast
@@ -313,7 +313,7 @@ theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ 
 theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 #align padic_int.norm_p PadicInt.norm_p
 
-@[simp]
+@[simp 1001] -- Porting note: simpNF linter
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := padicNormE.norm_p_pow n
 #align padic_int.norm_p_pow PadicInt.norm_p_pow
 
@@ -371,7 +371,7 @@ theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
 /-! ### Valuation on `ℤ_[p]` -/
 
 
-/-- `padic_int.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`.  -/
+/-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`.  -/
 def valuation (x : ℤ_[p]) :=
   Padic.valuation (x : ℚ_[p])
 #align padic_int.valuation PadicInt.valuation
@@ -463,7 +463,7 @@ theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ <
 
 #align padic_int.norm_lt_one_mul PadicInt.norm_lt_one_mul
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simpNF wants to change the LHS to ¬ IsUnit z
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
   rw [lt_iff_le_and_ne]; simp [norm_le_one z, nonunits, isUnit_iff]
 #align padic_int.mem_nonunits PadicInt.mem_nonunits
@@ -576,9 +576,9 @@ theorem norm_lt_one_iff_dvd (x : ℤ_[p]) : ‖x‖ < 1 ↔ ↑p ∣ x := by
 #align padic_int.norm_lt_one_iff_dvd PadicInt.norm_lt_one_iff_dvd
 
 @[simp]
-theorem pow_p_dvd_int_iff (n : ℕ) (a : ℤ) : (p ^ n : ℤ_[p]) ∣ a ↔ (p ^ n : ℤ) ∣ a := by
-  rw [← norm_int_le_pow_iff_dvd, norm_le_pow_iff_mem_span_pow, Ideal.mem_span_singleton,
-    Nat.cast_pow]
+theorem pow_p_dvd_int_iff (n : ℕ) (a : ℤ) : (p : ℤ_[p]) ^ n ∣ a ↔ (p ^ n : ℤ) ∣ a := by
+  rw [← Nat.cast_pow, ← norm_int_le_pow_iff_dvd, norm_le_pow_iff_mem_span_pow,
+    Ideal.mem_span_singleton, Nat.cast_pow]
 #align padic_int.pow_p_dvd_int_iff PadicInt.pow_p_dvd_int_iff
 
 end NormLeIff
