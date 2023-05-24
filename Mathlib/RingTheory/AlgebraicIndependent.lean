@@ -427,7 +427,8 @@ def AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin (hx : Algebraic
     (Polynomial.mapEquiv hx.aevalEquiv.toRingEquiv)
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin
 
-@[simp]
+/-@[simp] Porting note: removed simp to placate linter on
+`mvPolynomialOptionEquivPolynomialAdjoin_C`-/
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
     (hx : AlgebraicIndependent R x) (y) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin y =
@@ -446,7 +447,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_C AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
@@ -455,7 +456,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_none AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =
@@ -465,6 +466,8 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_some AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1000000 in
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :
     RingHom.comp
@@ -480,17 +483,19 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
       IsScalarTower.algebraMap_apply R (adjoin R (range x)) A]
   · rintro (⟨⟩ | ⟨i⟩)
     · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_none, aeval_X, Polynomial.aeval_X,
-        Option.elim']
+        Option.elim]
     · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_some, Polynomial.aeval_C,
-        hx.algebraMap_aeval_equiv, aeval_X, aeval_X, Option.elim']
+        hx.algebraMap_aevalEquiv, aeval_X, aeval_X, Option.elim]
 #align algebraic_independent.aeval_comp_mv_polynomial_option_equiv_polynomial_adjoin AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
 
 theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
     (AlgebraicIndependent R fun o : Option ι => o.elim a x) ↔
       ¬IsAlgebraic (adjoin R (Set.range x)) a := by
-  erw [algebraicIndependent_iff_injective_aeval, isAlgebraic_iff_not_injective, Classical.not_not, ←
+  rw [algebraicIndependent_iff_injective_aeval, isAlgebraic_iff_not_injective, Classical.not_not, ←
     AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
-    RingHom.coe_comp, Injective.of_comp_iff' _ (RingEquiv.bijective _), AlgHom.coe_toRingHom]
+    RingHom.coe_comp]
+  exact Injective.of_comp_iff' (Polynomial.aeval a)
+    (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
 #align algebraic_independent.option_iff AlgebraicIndependent.option_iff
 
 variable (R)
@@ -559,7 +564,8 @@ section Field
 
 variable [Field K] [Algebra K A]
 
-@[simp]
+/-Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
+simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _
