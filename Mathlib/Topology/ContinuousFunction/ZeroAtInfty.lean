@@ -8,8 +8,8 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousFunction.Bounded
-import Mathbin.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousFunction.CocompactMap
 
 /-!
 # Continuous functions vanishing at infinity
@@ -74,8 +74,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
 
-instance : ZeroAtInftyContinuousMapClass C₀(α, β) α β
-    where
+instance : ZeroAtInftyContinuousMapClass C₀(α, β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -107,8 +106,7 @@ theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `zero_at_infinity_continuous_map` with a new `to_fun` equal to the old one. Useful
 to fix definitional equalities. -/
-protected def copy (f : C₀(α, β)) (f' : α → β) (h : f' = f) : C₀(α, β)
-    where
+protected def copy (f : C₀(α, β)) (f' : α → β) (h : f' = f) : C₀(α, β) where
   toFun := f'
   continuous_toFun := by
     rw [h]
@@ -134,8 +132,7 @@ theorem eq_of_empty [IsEmpty α] (f g : C₀(α, β)) : f = g :=
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. -/
 @[simps]
-def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
-    where
+def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β) where
   toFun f :=
     { toFun := f
       continuous_toFun := f.Continuous
@@ -153,8 +150,7 @@ def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
 infinity. This is not an instance to avoid type class loops. -/
 @[simps]
 def zeroAtInftyContinuousMapClass.ofCompact {G : Type _} [ContinuousMapClass G α β]
-    [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β
-    where
+    [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β where
   coe g := g
   coe_injective' f g h := FunLike.coe_fn_eq.mp h
   map_continuous := map_continuous
@@ -387,15 +383,13 @@ open Metric Set
 
 variable [MetricSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
 
-protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C :=
-  by
+protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
   obtain ⟨K : Set α, hK₁, hK₂⟩ :=
     mem_cocompact.mp
       (tendsto_def.mp (zero_at_infty (f : F)) _ (closed_ball_mem_nhds (0 : β) zero_lt_one))
   obtain ⟨C, hC⟩ := (hK₁.image (map_continuous f)).Bounded.subset_ball (0 : β)
   refine' ⟨max C 1 + max C 1, fun x y => _⟩
-  have : ∀ x, f x ∈ closed_ball (0 : β) (max C 1) :=
-    by
+  have : ∀ x, f x ∈ closed_ball (0 : β) (max C 1) := by
     intro x
     by_cases hx : x ∈ K
     · exact (mem_closed_ball.mp <| hC ⟨x, hx, rfl⟩).trans (le_max_left _ _)
@@ -427,8 +421,7 @@ section
 
 variable (α) (β)
 
-theorem toBcf_injective : Function.Injective (toBcf : C₀(α, β) → α →ᵇ β) := fun f g h =>
-  by
+theorem toBcf_injective : Function.Injective (toBcf : C₀(α, β) → α →ᵇ β) := fun f g h => by
   ext
   simpa only using FunLike.congr_fun h x
 #align zero_at_infty_continuous_map.to_bcf_injective ZeroAtInftyContinuousMap.toBcf_injective
@@ -460,12 +453,10 @@ theorem tendsto_iff_tendstoUniformly {ι : Type _} {F : ι → C₀(α, β)} {f 
 theorem isometry_toBcf : Isometry (toBcf : C₀(α, β) → α →ᵇ β) := by tauto
 #align zero_at_infty_continuous_map.isometry_to_bcf ZeroAtInftyContinuousMap.isometry_toBcf
 
-theorem closed_range_toBcf : IsClosed (range (toBcf : C₀(α, β) → α →ᵇ β)) :=
-  by
+theorem closed_range_toBcf : IsClosed (range (toBcf : C₀(α, β) → α →ᵇ β)) := by
   refine' is_closed_iff_cluster_pt.mpr fun f hf => _
   rw [clusterPt_principal_iff] at hf
-  have : tendsto f (cocompact α) (𝓝 0) :=
-    by
+  have : tendsto f (cocompact α) (𝓝 0) := by
     refine' metric.tendsto_nhds.mpr fun ε hε => _
     obtain ⟨_, hg, g, rfl⟩ := hf (ball f (ε / 2)) (ball_mem_nhds f <| half_pos hε)
     refine'
@@ -560,8 +551,7 @@ theorem star_apply (f : C₀(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 #align zero_at_infty_continuous_map.star_apply ZeroAtInftyContinuousMap.star_apply
 
-instance [ContinuousAdd β] : StarAddMonoid C₀(α, β)
-    where
+instance [ContinuousAdd β] : StarAddMonoid C₀(α, β) where
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
 
@@ -620,8 +610,7 @@ variable [Zero δ]
 
 /-- Composition of a continuous function vanishing at infinity with a cocompact map yields another
 continuous function vanishing at infinity. -/
-def comp (f : C₀(γ, δ)) (g : β →co γ) : C₀(β, δ)
-    where
+def comp (f : C₀(γ, δ)) (g : β →co γ) : C₀(β, δ) where
   toContinuousMap := (f : C(γ, δ)).comp g
   zero_at_infty' := (zero_at_infty f).comp (cocompact_tendsto g)
 #align zero_at_infty_continuous_map.comp ZeroAtInftyContinuousMap.comp
@@ -651,24 +640,21 @@ theorem zero_comp (g : β →co γ) : (0 : C₀(γ, δ)).comp g = 0 :=
 end
 
 /-- Composition as an additive monoid homomorphism. -/
-def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C₀(γ, δ) →+ C₀(β, δ)
-    where
+def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C₀(γ, δ) →+ C₀(β, δ) where
   toFun f := f.comp g
   map_zero' := zero_comp g
   map_add' f₁ f₂ := rfl
 #align zero_at_infty_continuous_map.comp_add_monoid_hom ZeroAtInftyContinuousMap.compAddMonoidHom
 
 /-- Composition as a semigroup homomorphism. -/
-def compMulHom [MulZeroClass δ] [ContinuousMul δ] (g : β →co γ) : C₀(γ, δ) →ₙ* C₀(β, δ)
-    where
+def compMulHom [MulZeroClass δ] [ContinuousMul δ] (g : β →co γ) : C₀(γ, δ) →ₙ* C₀(β, δ) where
   toFun f := f.comp g
   map_mul' f₁ f₂ := rfl
 #align zero_at_infty_continuous_map.comp_mul_hom ZeroAtInftyContinuousMap.compMulHom
 
 /-- Composition as a linear map. -/
 def compLinearMap [AddCommMonoid δ] [ContinuousAdd δ] {R : Type _} [Semiring R] [Module R δ]
-    [ContinuousConstSMul R δ] (g : β →co γ) : C₀(γ, δ) →ₗ[R] C₀(β, δ)
-    where
+    [ContinuousConstSMul R δ] (g : β →co γ) : C₀(γ, δ) →ₗ[R] C₀(β, δ) where
   toFun f := f.comp g
   map_add' f₁ f₂ := rfl
   map_smul' r f := rfl
