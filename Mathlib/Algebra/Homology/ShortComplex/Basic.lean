@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: An homology API for these objects shall be developped
+TODO: A homology API for these objects shall be developed
 in the folder `Algebra.Homology.ShortComplex` and eventually
 the homology of objects in `HomologicalComplex C c` shall be
 redefined using this.
@@ -32,8 +32,12 @@ variable (C D : Type _) [Category C] [Category D]
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
 `f ≫ g = 0`. -/
 structure ShortComplex [HasZeroMorphisms C] where
-  /-- the three objects of a `ShortComplex` -/
-  {X₁ X₂ X₃ : C}
+  /-- the first (left) object of a `ShortComplex` -/
+  {X₁ : C}
+  /-- the second (middle) object of a `ShortComplex` -/
+  {X₂ : C}
+  /-- the third (right) object of a `ShortComplex` -/
+  {X₃ : C}
   /-- the first morphism of a `ShortComplex` -/
   f : X₁ ⟶ X₂
   /-- the second morphism of a `ShortComplex` -/
@@ -209,14 +213,14 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
   inv := homMk e₁.inv e₂.inv e₃.inv
     (by rw [← cancel_mono e₂.hom, assoc, assoc, e₂.inv_hom_id, comp_id,
-      ← comm₁₂, e₁.inv_hom_id_assoc])
+          ← comm₁₂, e₁.inv_hom_id_assoc])
     (by rw [← cancel_mono e₃.hom, assoc, assoc, e₃.inv_hom_id, comp_id,
-        ← comm₂₃, e₂.inv_hom_id_assoc])
+          ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃) (by aesop_cat) (by aesop_cat))
 
-/-- The opposite short_complex in `Cᵒᵖ` associated to a short complex in `C`. -/
+/-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
@@ -237,7 +241,7 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
 @[simp]
 lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 
-/-- The short_complex in `C` associated to a short complex in `Cᵒᵖ`. -/
+/-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero] ; rfl)

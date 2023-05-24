@@ -160,11 +160,11 @@ lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropS
 #align list.mem_of_mem_slice List.mem_of_mem_dropSlice
 
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
-  ⟨l.dropWhile p, takeWhile_append_drop p l⟩
+  ⟨l.dropWhile p, takeWhile_append_dropWhile p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
 
 theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
-  ⟨l.takeWhile p, takeWhile_append_drop p l⟩
+  ⟨l.takeWhile p, takeWhile_append_dropWhile p l⟩
 #align list.drop_while_suffix List.dropWhile_suffix
 
 theorem dropLast_prefix : ∀ l : List α, l.dropLast <+: l
