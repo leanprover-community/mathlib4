@@ -76,8 +76,8 @@ section ToLinearEquiv
 
 variable (b : Basis n R M)
 
-/-- Given `hA : IsUnit A.det` and `b : Basis R b`, `A.to_linear_equiv b hA` is
-the `LinearEquiv` arising from `to_lin b b A`.
+/-- Given `hA : IsUnit A.det` and `b : Basis R b`, `A.toLinearEquiv b hA` is
+the `LinearEquiv` arising from `toLin b b A`.
 
 See `Matrix.toLinearEquiv'` for this result on `n → R`.
 -/
