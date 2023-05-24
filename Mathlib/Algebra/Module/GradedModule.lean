@@ -13,7 +13,6 @@ import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.Module.BigOperators
 
-import Mathlib.Tactic.LibrarySearch -- Porting note: delete me
 /-!
 # Graded Module
 
@@ -94,8 +93,7 @@ instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, 
 
 @[simp]
 theorem smul_def [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, A i) (y : ⨁ i, M i) :
-    x • y = smulAddMonoidHom _ _ x y :=
-  rfl
+    x • y = smulAddMonoidHom _ _ x y := rfl
 #align direct_sum.gmodule.smul_def DirectSum.Gmodule.smul_def
 
 @[simp]
@@ -228,26 +226,34 @@ def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
   smul := fun a b => DirectSum.decompose 𝓐 a • b }
 #align graded_module.is_module GradedModule.isModule
 
-attribute [local instance] GradedModule.isModule
+-- Porting note: TODO
+-- attribute [local instance] GradedModule.isModule
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
 "The internal version" and "the external version" are isomorphism as `A`-modules.
 -/
-def linearEquiv [DecidableEq ι] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] : M ≃ₗ[A] ⨁ i, 𝓜 i :=
-  {
-    DirectSum.decomposeAddEquiv
-      𝓜 with
-    toFun := DirectSum.decomposeAddEquiv 𝓜
-    map_smul' := fun x y => by
-      classical
-        rw [← DirectSum.sum_support_decompose 𝓐 x, map_sum, Finset.sum_smul, map_sum,
-          Finset.sum_smul, Finset.sum_congr rfl fun i hi => _]
-        rw [RingHom.id_apply, ← DirectSum.sum_support_decompose 𝓜 y, map_sum, Finset.smul_sum,
-          map_sum, Finset.smul_sum, Finset.sum_congr rfl fun j hj => _]
-        simp only [(· • ·), DirectSum.decomposeAddEquiv_apply, DirectSum.decompose_coe,
-          DirectSum.Gmodule.smulAddMonoidHom_apply_of_of]
-        convert DirectSum.decompose_coe 𝓜 _
-        rfl }
+def linearEquiv [DecidableEq ι] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] :
+    @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
+    _ _ (by letI := GradedModule.isModule 𝓐 𝓜 ; infer_instance) := by
+  letI h := GradedModule.isModule 𝓐 𝓜
+  refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
+    (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,
+    (DirectSum.decomposeAddEquiv 𝓜).right_inv⟩
+  intro x y
+  classical
+  rw [AddHom.toFun_eq_coe, ← DirectSum.sum_support_decompose 𝓐 x, map_sum, Finset.sum_smul,
+    AddEquiv.coe_toAddHom, map_sum, Finset.sum_smul]
+  refine Finset.sum_congr rfl (fun i hi => ?_)
+  rw [RingHom.id_apply, ← DirectSum.sum_support_decompose 𝓜 y, map_sum, Finset.smul_sum, map_sum,
+    Finset.smul_sum]
+  refine Finset.sum_congr rfl (fun j hj => ?_)
+  rw [show (decompose 𝓐 x i : A) • (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j) : (⨁ i, 𝓜 i)) =
+    DirectSum.Gmodule.smulAddMonoidHom _ _ (decompose 𝓐 ↑(decompose 𝓐 x i))
+    (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j)) from DirectSum.Gmodule.smul_def _ _ _ _]
+  simp only [decomposeAddEquiv_apply, Equiv.invFun_as_coe, Equiv.symm_symm, decompose_coe,
+    Gmodule.smulAddMonoidHom_apply_of_of]
+  convert DirectSum.decompose_coe 𝓜 _
+  rfl
 #align graded_module.linear_equiv GradedModule.linearEquiv
 
 end GradedModule
