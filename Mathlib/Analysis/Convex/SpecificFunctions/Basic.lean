@@ -103,7 +103,8 @@ theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
+nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) :
+    ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   refine' ⟨convex_univ, _⟩
   rintro a - b - μ ν hμ hν h
   obtain ⟨k, rfl⟩ := hn.exists_two_nsmul _
