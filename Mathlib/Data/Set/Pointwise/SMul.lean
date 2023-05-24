@@ -11,7 +11,6 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Tactic.ByContra
 
 /-!
 # Pointwise operations of sets
@@ -310,11 +309,13 @@ section SMulSet
 
 variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem image_smul : (fun x ↦ a • x) '' t = a • t :=
   rfl
 #align set.image_smul Set.image_smul
 #align set.image_vadd Set.image_vadd
+
+scoped[Pointwise] attribute [simp] Set.image_smul Set.image_vadd
 
 @[to_additive]
 theorem mem_smul_set : x ∈ a • t ↔ ∃ y, y ∈ t ∧ a • y = x :=

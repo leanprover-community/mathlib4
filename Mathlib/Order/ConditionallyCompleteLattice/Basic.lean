@@ -1549,5 +1549,4 @@ theorem WithTop.iSup_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyComple
 end WithTopBot
 
 -- Guard against import creep
--- Porting note: `assert_not_exists` has not been ported yet.
---assert_not_exists multiset
+assert_not_exists Multiset
