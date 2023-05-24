@@ -481,7 +481,7 @@ nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [e
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubmodule.mem_bot] at hx; subst hx
+  ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [Submodule.mem_bot] at hx; subst hx
   simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, LieSubmodule.mem_bot, mem_top]
 #align lie_submodule.subsingleton_of_bot LieSubmodule.subsingleton_of_bot
 
@@ -766,7 +766,13 @@ Note that `f` makes `L'` into a Lie module over `L` (turning `f` into a morphism
 and so this is a special case of `LieSubmodule.comap` but we do not exploit this fact. -/
 def comap : LieIdeal R L :=
   { (J : Submodule R L').comap (f.toLinearMap : L →ₗ[R] L') with
-    lie_mem := fun {x y} h ↦ by suffices ⁅f x, f y⁆ ∈ J by simp [this]; apply J.lie_mem h }
+    lie_mem := fun {x y} h ↦ by
+      suffices ⁅f x, f y⁆ ∈ J by
+        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+          Submodule.mem_toAddSubmonoid, Submodule.mem_comap, LieHom.coe_toLinearMap, LieHom.map_lie,
+          LieSubalgebra.mem_coe_submodule]
+        exact this
+      apply J.lie_mem h }
 #align lie_ideal.comap LieIdeal.comap
 
 @[simp]
