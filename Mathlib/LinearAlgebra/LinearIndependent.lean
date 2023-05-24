@@ -982,7 +982,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (hs : LinearIndependent R (fun x => x : s → M))
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
-  refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp, simp, skip]
+  refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp; simp; skip]
   simp only [span_image]
   simp [disjoint_iff, prod_inf_prod]
 #align linear_independent.inl_union_inr LinearIndependent.inl_union_inr
