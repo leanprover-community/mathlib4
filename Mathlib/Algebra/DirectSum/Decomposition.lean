@@ -129,8 +129,7 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
--- Porting note : this causes a maximum recursion depth
--- @[simps (config := { fullyApplied := false })]
+@[simps (config := {rhsMd := .default})]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
 #align direct_sum.decompose_add_equiv DirectSum.decomposeAddEquiv
