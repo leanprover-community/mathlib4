@@ -1976,6 +1976,8 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     exp x ≤ _ := exp_bound' h1.le h2.le zero_lt_three
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
+      -- This proof should be restored after the norm_num plugin for big operators is ported.
+      -- (It may also need the positivity extensions in #3907.)
       rw [Finset.sum, range_val]
       nth_rw 1 [← two_add_one_eq_three]
       rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
