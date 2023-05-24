@@ -85,6 +85,10 @@ instance (X : MonCat) : Monoid X := X.str
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
+@[to_additive]
+instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
@@ -94,7 +98,7 @@ lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
+@[to_additive (attr := simp)] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -186,6 +190,10 @@ instance (X : CommMonCat) : CommMonoid X := X.str
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance Hom_FunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+show FunLike (X →* Y) X (fun _ => Y) by infer_instance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -402,6 +410,7 @@ set_option linter.uppercaseLean3 false in
 -- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
-instance : Full (forget₂ CommMonCat MonCat) where preimage f := f
+@[to_additive]
+instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
 
 example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance

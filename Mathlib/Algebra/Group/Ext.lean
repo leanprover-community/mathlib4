@@ -9,7 +9,6 @@ Authors: Bryan Gin-ge Chen, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
-import Mathlib.Tactic.Basic
 
 /-!
 # Extensionality lemmas for monoid and group structures

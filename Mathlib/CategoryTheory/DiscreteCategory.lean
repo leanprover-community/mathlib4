@@ -10,7 +10,6 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
-import Mathlib.Tactic.CasesM
 
 /-!
 # Discrete categories
@@ -105,7 +104,7 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
     ext
     apply Subsingleton.elim⟩
 
-instance (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
   show Subsingleton (ULift (PLift _)) from inferInstance
 
 /-

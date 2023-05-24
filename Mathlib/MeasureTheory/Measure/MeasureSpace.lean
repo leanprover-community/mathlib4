@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.measure_space
-! leanprover-community/mathlib commit 88fcb83fe7996142dfcfe7368d31304a9adc874a
+! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1057,6 +1057,21 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
 #align measure_theory.measure.complete_lattice MeasureTheory.Measure.instCompleteLattice
 
 end sInf
+
+@[simp]
+theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
+    (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
+      (⊤ : Measure α) :=
+  top_unique fun s hs => by
+    cases' s.eq_empty_or_nonempty with h h <;>
+      simp [h, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
+#align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
+
+@[simp]
+theorem toOuterMeasure_top [MeasurableSpace α] :
+    (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) := by
+  rw [← OuterMeasure.toMeasure_top, toMeasure_toOuterMeasure, OuterMeasure.trim_top]
+#align measure_theory.measure.to_outer_measure_top MeasureTheory.Measure.toOuterMeasure_top
 
 @[simp]
 theorem top_add : ⊤ + μ = ⊤ :=
@@ -2424,6 +2439,8 @@ structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
   protected measurable : Measurable f
   protected absolutelyContinuous : μa.map f ≪ μb
 #align measure_theory.measure.quasi_measure_preserving MeasureTheory.Measure.QuasiMeasurePreserving
+#align measure_theory.measure.quasi_measure_preserving.measurable MeasureTheory.Measure.QuasiMeasurePreserving.measurable
+#align measure_theory.measure.quasi_measure_preserving.absolutely_continuous MeasureTheory.Measure.QuasiMeasurePreserving.absolutelyContinuous
 
 namespace QuasiMeasurePreserving
 
@@ -3018,6 +3035,7 @@ section FiniteMeasure
 class FiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 #align measure_theory.is_finite_measure MeasureTheory.FiniteMeasure
+#align measure_theory.is_finite_measure.measure_univ_lt_top MeasureTheory.FiniteMeasure.measure_univ_lt_top
 
 theorem not_finiteMeasure_iff : ¬FiniteMeasure μ ↔ μ Set.univ = ∞ := by
   refine' ⟨fun h => _, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
@@ -3256,6 +3274,7 @@ the converse is not true. -/
 class NoAtoms {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   measure_singleton : ∀ x, μ {x} = 0
 #align measure_theory.has_no_atoms MeasureTheory.NoAtoms
+#align measure_theory.has_no_atoms.measure_singleton MeasureTheory.NoAtoms.measure_singleton
 
 export MeasureTheory.NoAtoms (measure_singleton)
 
@@ -3399,11 +3418,15 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   finite spanning sets in the collection of all measurable sets. -/
 -- @[nolint has_nonempty_instance] -- Porting note: deleted
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
-  protected Set : ℕ → Set α
-  protected set_mem : ∀ i, Set i ∈ C
-  protected finite : ∀ i, μ (Set i) < ∞
-  protected spanning : (⋃ i, Set i) = univ
+  protected set : ℕ → Set α
+  protected set_mem : ∀ i, set i ∈ C
+  protected finite : ∀ i, μ (set i) < ∞
+  protected spanning : (⋃ i, set i) = univ
 #align measure_theory.measure.finite_spanning_sets_in MeasureTheory.Measure.FiniteSpanningSetsIn
+#align measure_theory.measure.finite_spanning_sets_in.set MeasureTheory.Measure.FiniteSpanningSetsIn.set
+#align measure_theory.measure.finite_spanning_sets_in.set_mem MeasureTheory.Measure.FiniteSpanningSetsIn.set_mem
+#align measure_theory.measure.finite_spanning_sets_in.finite MeasureTheory.Measure.FiniteSpanningSetsIn.finite
+#align measure_theory.measure.finite_spanning_sets_in.spanning MeasureTheory.Measure.FiniteSpanningSetsIn.spanning
 
 end Measure
 
@@ -3414,6 +3437,7 @@ open Measure
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 #align measure_theory.sigma_finite MeasureTheory.SigmaFinite
+#align measure_theory.sigma_finite.out' MeasureTheory.SigmaFinite.out'
 
 theorem sigmaFinite_iff : SigmaFinite μ ↔ Nonempty (μ.FiniteSpanningSetsIn univ) :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
@@ -3426,7 +3450,7 @@ theorem SigmaFinite.out (h : SigmaFinite μ) : Nonempty (μ.FiniteSpanningSetsIn
 /-- If `μ` is σ-finite it has finite spanning sets in the collection of all measurable sets. -/
 def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } where
-  Set n := toMeasurable μ (h.out.some.Set n)
+  set n := toMeasurable μ (h.out.some.set n)
   set_mem n := measurableSet_toMeasurable _ _
   finite n := by
     rw [measure_toMeasurable]
@@ -3438,7 +3462,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
 def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
-  Accumulate μ.toFiniteSpanningSetsIn.Set i
+  Accumulate μ.toFiniteSpanningSetsIn.set i
 #align measure_theory.spanning_sets MeasureTheory.spanningSets
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
@@ -3714,7 +3738,7 @@ variable {C D : Set (Set α)}
 sets in `D`. -/
 protected def mono' (h : μ.FiniteSpanningSetsIn C) (hC : C ∩ { s | μ s < ∞ } ⊆ D) :
     μ.FiniteSpanningSetsIn D :=
-  ⟨h.Set, fun i => hC ⟨h.set_mem i, h.finite i⟩, h.finite, h.spanning⟩
+  ⟨h.set, fun i => hC ⟨h.set_mem i, h.finite i⟩, h.finite, h.spanning⟩
 #align measure_theory.measure.finite_spanning_sets_in.mono' MeasureTheory.Measure.FiniteSpanningSetsIn.mono'
 
 /-- If `μ` has finite spanning sets in `C` and `C ⊆ D` then `μ` has finite spanning sets in `D`. -/
@@ -3736,7 +3760,7 @@ protected theorem ext {ν : Measure α} {C : Set (Set α)} (hA : ‹_› = gener
 #align measure_theory.measure.finite_spanning_sets_in.ext MeasureTheory.Measure.FiniteSpanningSetsIn.ext
 
 protected theorem isCountablySpanning (h : μ.FiniteSpanningSetsIn C) : IsCountablySpanning C :=
-  ⟨h.Set, h.set_mem, h.spanning⟩
+  ⟨h.set, h.set_mem, h.spanning⟩
 #align measure_theory.measure.finite_spanning_sets_in.is_countably_spanning MeasureTheory.Measure.FiniteSpanningSetsIn.isCountablySpanning
 
 end FiniteSpanningSetsIn
@@ -3752,7 +3776,7 @@ theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : �
 `FiniteSpanningSet` with respect to `ν` from a `FiniteSpanningSet` with respect to `μ`. -/
 def FiniteSpanningSetsIn.ofLE (h : ν ≤ μ) {C : Set (Set α)} (S : μ.FiniteSpanningSetsIn C) :
     ν.FiniteSpanningSetsIn C where
-  Set := S.Set
+  set := S.set
   set_mem := S.set_mem
   finite n := lt_of_le_of_lt (le_iff'.1 h _) (S.finite n)
   spanning := S.spanning
@@ -3860,6 +3884,7 @@ theorem ae_of_forall_measure_lt_top_ae_restrict {μ : Measure α} [SigmaFinite �
 class LocallyFiniteMeasure [TopologicalSpace α] (μ : Measure α) : Prop where
   finiteAtNhds : ∀ x, μ.FiniteAtFilter (𝓝 x)
 #align measure_theory.is_locally_finite_measure MeasureTheory.LocallyFiniteMeasure
+#align measure_theory.is_locally_finite_measure.finite_at_nhds MeasureTheory.LocallyFiniteMeasure.finiteAtNhds
 
 -- see Note [lower instance priority]
 instance (priority := 100) FiniteMeasure.toLocallyFiniteMeasure [TopologicalSpace α]
@@ -3907,6 +3932,7 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
 class FiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop where
   protected lt_top_of_isCompact : ∀ ⦃K : Set α⦄, IsCompact K → μ K < ∞
 #align measure_theory.is_finite_measure_on_compacts MeasureTheory.FiniteMeasureOnCompacts
+#align measure_theory.is_finite_measure_on_compacts.lt_top_of_is_compact MeasureTheory.FiniteMeasureOnCompacts.lt_top_of_isCompact
 
 /-- A compact subset has finite measure for a measure which is finite on compacts. -/
 theorem _root_.IsCompact.measure_lt_top [TopologicalSpace α] {μ : Measure α}
@@ -4047,20 +4073,20 @@ such that its underlying sets are pairwise disjoint. -/
 protected def FiniteSpanningSetsIn.disjointed {μ : Measure α}
     (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s }) :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } :=
-  ⟨disjointed S.Set, MeasurableSet.disjointed S.set_mem, fun n =>
-    lt_of_le_of_lt (measure_mono (disjointed_subset S.Set n)) (S.finite _),
+  ⟨disjointed S.set, MeasurableSet.disjointed S.set_mem, fun n =>
+    lt_of_le_of_lt (measure_mono (disjointed_subset S.set n)) (S.finite _),
     S.spanning ▸ iUnion_disjointed⟩
 #align measure_theory.measure.finite_spanning_sets_in.disjointed MeasureTheory.Measure.FiniteSpanningSetsIn.disjointed
 
 theorem FiniteSpanningSetsIn.disjointed_set_eq {μ : Measure α}
-    (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s }) : S.disjointed.Set = disjointed S.Set :=
+    (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s }) : S.disjointed.set = disjointed S.set :=
   rfl
 #align measure_theory.measure.finite_spanning_sets_in.disjointed_set_eq MeasureTheory.Measure.FiniteSpanningSetsIn.disjointed_set_eq
 
 theorem exists_eq_disjoint_finiteSpanningSetsIn (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     ∃ (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s })(T :
       ν.FiniteSpanningSetsIn { s | MeasurableSet s }),
-      S.Set = T.Set ∧ Pairwise (Disjoint on S.Set) :=
+      S.set = T.set ∧ Pairwise (Disjoint on S.set) :=
   let S := (μ + ν).toFiniteSpanningSetsIn.disjointed
   ⟨S.ofLE (Measure.le_add_right le_rfl), S.ofLE (Measure.le_add_left le_rfl), rfl,
     disjoint_disjointed _⟩
@@ -4402,7 +4428,7 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
   refine' Measure.FiniteSpanningSetsIn.sigmaFinite _
   · exact Set.univ
   · refine'
-      { Set := spanningSets (μ.trim (hm₂.trans hm))
+      { set := spanningSets (μ.trim (hm₂.trans hm))
         set_mem := fun _ => Set.mem_univ _
         finite := fun i => _ -- This is the only one left to prove
         spanning := iUnion_spanningSets _ }
@@ -4488,7 +4514,7 @@ theorem finiteMeasure_iff_finiteMeasureOnCompacts_of_compactSpace [TopologicalSp
 def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [LocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsCompact K } where
-  Set := compactCovering α
+  set := compactCovering α
   set_mem := isCompact_compactCovering α
   finite n := (isCompact_compactCovering α n).measure_lt_top
   spanning := iUnion_compactCovering α
@@ -4499,7 +4525,7 @@ of open sets. -/
 def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [LocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
-  Set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
+  set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
   set_mem n :=
     ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.1
   finite n :=
@@ -4522,7 +4548,7 @@ irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpac
   exact H.some
   cases isEmpty_or_nonempty α
   · exact
-      ⟨{  Set := fun _ => ∅
+      ⟨{  set := fun _ => ∅
           set_mem := fun _ => by simp
           finite := fun _ => by simp
           spanning := by simp }⟩
@@ -4543,7 +4569,7 @@ irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpac
     rw [hf]
     exact mem_range_self n
   refine'
-    ⟨{  Set := f
+    ⟨{  set := f
         set_mem := fun n => (fS n).1
         finite := fun n => (fS n).2
         spanning := _ }⟩
