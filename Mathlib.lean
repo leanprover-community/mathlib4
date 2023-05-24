@@ -1598,6 +1598,7 @@ import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.CrossProduct
