@@ -120,8 +120,6 @@ private theorem one_smul' [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i,
   rw [show (1 : DirectSum ι fun i => A i) = (of A 0) GOne.one by rfl]
   rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
--- #align direct_sum.gmodule.one_smul DirectSum.Gmodule.one_smul'
--- Porting note: #align removed on private declaration
 
 -- Porting note: renamed to mul_smul' since DirectSum.Gmodule.mul_smul already exists
 -- Almost identical to the proof of `direct_sum.mul_assoc`
@@ -143,8 +141,6 @@ private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : �
   exact
     DirectSum.of_eq_of_gradedMonoid_eq
       (mul_smul (GradedMonoid.mk ai ax) (GradedMonoid.mk bi bx) (GradedMonoid.mk ci cx))
--- #align direct_sum.gmodule.mul_smul direct_sum.gmodule.mul_smul
--- Porting note: #align removed on private declaration
 
 /-- The `module` derived from `gmodule A M`. -/
 instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i) where
@@ -217,7 +213,7 @@ namespace GradedModule
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSmul 𝓐 𝓜]
 
-set_option maxHeartbeats 300000 in -- Porting note: TODO
+set_option maxHeartbeats 300000 in -- Porting note: needs more Hearbeats to elaborate
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
@@ -225,9 +221,6 @@ def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
 { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
   smul := fun a b => DirectSum.decompose 𝓐 a • b }
 #align graded_module.is_module GradedModule.isModule
-
--- Porting note: TODO
--- attribute [local instance] GradedModule.isModule
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
 "The internal version" and "the external version" are isomorphism as `A`-modules.
