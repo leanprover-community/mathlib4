@@ -8,10 +8,10 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.GroupTheory.GroupAction.ConjAct
-import Mathbin.GroupTheory.Subgroup.Pointwise
-import Mathbin.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Data.ZMod.Basic
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
 # Congruence subgroups
@@ -61,8 +61,7 @@ theorem gamma_mem (N : ℕ) (γ : SL(2, ℤ)) :
     γ ∈ gamma N ↔
       ((↑ₘγ 0 0 : ℤ) : ZMod N) = 1 ∧
         ((↑ₘγ 0 1 : ℤ) : ZMod N) = 0 ∧
-          ((↑ₘγ 1 0 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 1 : ℤ) : ZMod N) = 1 :=
-  by
+          ((↑ₘγ 1 0 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 1 : ℤ) : ZMod N) = 1 := by
   rw [gamma_mem']
   constructor
   · intro h
@@ -98,8 +97,7 @@ theorem gamma_zero_bot : gamma 0 = ⊥ := by
 
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
-def gamma0 (N : ℕ) : Subgroup SL(2, ℤ)
-    where
+def gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
   carrier := { g : SL(2, ℤ) | ((↑ₘg 1 0 : ℤ) : ZMod N) = 0 }
   one_mem' := by simp
   mul_mem' := by
@@ -129,8 +127,7 @@ theorem gamma0_det (N : ℕ) (A : gamma0 N) : (A.1.1.det : ZMod N) = 1 := by sim
 
 /-- The group homomorphism from `Gamma0` to `zmod N` given by mapping a matrix to its lower
 right-hand entry. -/
-def gamma0Map (N : ℕ) : gamma0 N →* ZMod N
-    where
+def gamma0Map (N : ℕ) : gamma0 N →* ZMod N where
   toFun g := ((↑ₘg 1 1 : ℤ) : ZMod N)
   map_one' := by simp
   map_mul' := by
@@ -200,8 +197,7 @@ theorem gamma1_mem (N : ℕ) (A : SL(2, ℤ)) :
   · intro ha
     simp_rw [gamma1, Subgroup.mem_map]
     have hA : A ∈ gamma0 N := by simp [ha.right.right, gamma0_mem, Subtype.val_eq_coe]
-    have HA : (⟨A, hA⟩ : gamma0 N) ∈ gamma1' N :=
-      by
+    have HA : (⟨A, hA⟩ : gamma0 N) ∈ gamma1' N := by
       simp only [Gamma1_to_gamma0_mem, Subgroup.coe_mk, coe_coe, coe_matrix_coe,
         Int.coe_castRingHom, map_apply]
       exact ha
@@ -209,8 +205,7 @@ theorem gamma1_mem (N : ℕ) (A : SL(2, ℤ)) :
     simp
 #align Gamma1_mem gamma1_mem
 
-theorem gamma1_in_gamma0 (N : ℕ) : gamma1 N ≤ gamma0 N :=
-  by
+theorem gamma1_in_gamma0 (N : ℕ) : gamma1 N ≤ gamma0 N := by
   intro x HA
   simp only [gamma0_mem, gamma1_mem, coe_coe, coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
   exact HA.2.2
@@ -225,8 +220,7 @@ def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
 #align is_congruence_subgroup IsCongruenceSubgroup
 
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
-    (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K :=
-  by
+    (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
   refine' ⟨N, le_trans hN h⟩
 #align is_congruence_subgroup_trans isCongruenceSubgroup_trans
@@ -235,8 +229,7 @@ theorem gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (gamma N) :=
   ⟨N, by simp only [le_refl]⟩
 #align Gamma_is_cong_sub gamma_is_cong_sub
 
-theorem gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (gamma1 N) :=
-  by
+theorem gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (gamma1 N) := by
   refine' ⟨N, _⟩
   intro A hA
   simp only [gamma1_mem, gamma_mem] at *
@@ -258,8 +251,7 @@ theorem gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • gamma N = 
 #align Gamma_cong_eq_self gamma_cong_eq_self
 
 theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
-    (h : IsCongruenceSubgroup Γ) : IsCongruenceSubgroup (g • Γ) :=
-  by
+    (h : IsCongruenceSubgroup Γ) : IsCongruenceSubgroup (g • Γ) := by
   obtain ⟨N, HN⟩ := h
   refine' ⟨N, _⟩
   rw [← gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
