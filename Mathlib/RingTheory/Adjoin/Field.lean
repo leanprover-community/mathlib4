@@ -81,13 +81,15 @@ theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F
       ((Submodule.fg_iff_finiteDimensional _).1
           (FG_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
     letI := fieldOfFiniteDimensional F (Algebra.adjoin F (↑s : Set K))
-    have H5 : IsIntegral (Algebra.adjoin F (↑s : Set K)) a := isIntegral_of_isScalarTower H1
+    have H5 : IsIntegral (Algebra.adjoin F (s : Set K)) a := isIntegral_of_isScalarTower H1
     have H6 :
-      (minpoly (Algebra.adjoin F (↑s : Set K)) a).Splits
-        (algebraMap (Algebra.adjoin F (↑s : Set K)) L) := by
+      (minpoly (Algebra.adjoin F (s : Set K)) a).Splits
+        (algebraMap (Algebra.adjoin F (s : Set K)) L) := by
+      have : Polynomial.map (algebraMap F (Algebra.adjoin F (s : Set K))) (minpoly F a) ≠ 0 :=
+        Polynomial.map_ne_zero <| minpoly.ne_zero H1
       refine'
         Polynomial.splits_of_splits_of_dvd _
-          (Polynomial.map_ne_zero <| minpoly.ne_zero H1 : Polynomial.map (algebraMap _ _) _ ≠ 0)
+          this
           ((Polynomial.splits_map_iff _ _).2 _) (minpoly.dvd _ _ _)
       · rw [← IsScalarTower.algebraMap_eq]
         exact H2
@@ -99,4 +101,3 @@ theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F
 #align lift_of_splits lift_of_splits
 
 end Embeddings
-
