@@ -331,9 +331,9 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
   rfl
 #align continuous_map.linear_isometry_bounded_of_compact_to_isometry_equiv ContinuousMap.linearIsometryBoundedOfCompact_toIsometryEquiv
 
-@[simp]
+@[simp] -- porting note: adjusted LHS because `simpNF` complained it simplified.
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
-    (linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv.toAddEquiv =
+    ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=
   rfl
 #align continuous_map.linear_isometry_bounded_of_compact_to_add_equiv ContinuousMap.linearIsometryBoundedOfCompact_toAddEquiv
