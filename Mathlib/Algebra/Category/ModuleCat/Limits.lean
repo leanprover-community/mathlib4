@@ -57,13 +57,9 @@ instance moduleObj (F : J ⥤ ModuleCatMax.{u, v, w} R) (j) :
 /-- The flat sections of a functor into `Module R` form a submodule of all sections.
 -/
 def sectionsSubmodule (F : J ⥤ ModuleCatMax.{u, v, w} R) : Submodule R (∀ j, F.obj j) :=
-  {
-    AddGroupCat.sectionsAddSubgroup
-      (F ⋙
-        forget₂ (ModuleCat R) AddCommGroupCat.{max v w} ⋙
-          forget₂ AddCommGroupCat
-            AddGroupCat.{max v
-                w}) with
+  { AddGroupCat.sectionsAddSubgroup.{v, w}
+      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v w} ⋙
+          forget₂ AddCommGroupCat AddGroupCat.{max v w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
       simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
@@ -71,30 +67,30 @@ def sectionsSubmodule (F : J ⥤ ModuleCatMax.{u, v, w} R) : Submodule R (∀ j,
       rw [sh f] }
 #align Module.sections_submodule ModuleCat.sectionsSubmodule
 
--- Adding the following instance speeds up `limit_module` noticeably,
--- by preventing a bad unfold of `limit_add_comm_group`.
-instance limitAddCommMonoid (F : J ⥤ ModuleCat R) :
-    AddCommMonoid (Types.limitCone (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
+-- Adding the following instance speeds up `limitModule` noticeably,
+-- by preventing a bad unfold of `limitAddCommGroup`.
+instance limitAddCommMonoid (F : J ⥤ ModuleCatMax.{u, v, w} R) :
+    AddCommMonoid (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{u, v, w} R))).pt :=
   show AddCommMonoid (sectionsSubmodule F) by infer_instance
 #align Module.limit_add_comm_monoid ModuleCat.limitAddCommMonoid
 
-instance limitAddCommGroup (F : J ⥤ ModuleCat R) :
-    AddCommGroup (Types.limitCone (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
+instance limitAddCommGroup (F : J ⥤ ModuleCatMax.{u, v, w} R) :
+    AddCommGroup (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{u, v, w} R))).pt :=
   show AddCommGroup (sectionsSubmodule F) by infer_instance
 #align Module.limit_add_comm_group ModuleCat.limitAddCommGroup
 
-instance limitModule (F : J ⥤ ModuleCat R) :
-    Module R (Types.limitCone (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
+instance limitModule (F : J ⥤ ModuleCatMax.{u, v, w} R) :
+    Module R (Types.limitCone.{v, w} (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
   show Module R (sectionsSubmodule F) by infer_instance
 #align Module.limit_module ModuleCat.limitModule
 
-/-- `limit.π (F ⋙ forget Ring) j` as a `ring_hom`. -/
-def limitπLinearMap (F : J ⥤ ModuleCat R) (j) :
+/-- `limit.π (F ⋙ forget Ring) j` as a `RingHom`. -/
+def limitπLinearMap (F : J ⥤ ModuleCatMax.{u, v, w} R) (j) :
     (Types.limitCone (F ⋙ forget (ModuleCat.{max v w} R))).pt →ₗ[R] (F ⋙ forget (ModuleCat R)).obj j
     where
   toFun := (Types.limitCone (F ⋙ forget (ModuleCat R))).π.app j
-  map_smul' x y := rfl
-  map_add' x y := rfl
+  map_smul' _ _ := rfl
+  map_add' _ _ := rfl
 #align Module.limit_π_linear_map ModuleCat.limitπLinearMap
 
 namespace HasLimits
