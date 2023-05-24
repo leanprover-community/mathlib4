@@ -131,6 +131,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
           rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          -- porting note: was `rfl`
           simp only [Submodule.Quotient.mk''_eq_mk, Quotient.mk_add]⟩
 #align module.direct_limit.exists_of Module.DirectLimit.exists_of
 
@@ -264,8 +265,7 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0
       -- porting note: this had been
       -- simpa [totalize_of_le hij] using hxj
       simp only [DirectSum.toModule_lof] at hxj
-      rw [totalize_of_le hij] at hxj
-      exact hxj⟩
+      rwa [totalize_of_le hij] at hxj⟩
 #align module.direct_limit.of.zero_exact Module.DirectLimit.of.zero_exact
 
 end DirectLimit
@@ -385,7 +385,7 @@ instance ring : Ring (DirectLimit G f) :=
   CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance : Zero (DirectLimit G f) := by
+instance oo : Zero (DirectLimit G f) := by
   unfold DirectLimit
   exact ⟨0⟩
 
@@ -423,7 +423,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             let ⟨k, hik, hjk⟩ := exists_ge_ge i j
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
-              /- In Lean3, from here, this was `by refl`. I have added
+              /- porting note: In Lean3, from here, this was `by refl`. I have added
               the lemma `FreeCommRing.of_cons` to fix this proof. -/
               apply congr_arg Quotient.mk''
               symm
@@ -572,6 +572,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         rw [(f' i i _).map_mul]
         exact sub_self _
         all_goals tauto
+        -- porting note: was
         --exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
     refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
