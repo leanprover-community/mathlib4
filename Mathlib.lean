@@ -49,6 +49,7 @@ import Mathlib.Algebra.Category.Mon.FilteredColimits
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
@@ -378,6 +379,7 @@ import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
+import Mathlib.Analysis.BoxIntegral.Partition.Additive
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
@@ -389,6 +391,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.Circle
@@ -1419,10 +1422,12 @@ import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Manifold.ChartedSpace
@@ -1609,6 +1614,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -1622,6 +1628,7 @@ import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -1664,6 +1671,7 @@ import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.Logic.Basic
@@ -1720,6 +1728,7 @@ import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.IsROrC
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Group.Pointwise
@@ -1906,6 +1915,7 @@ import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
@@ -1926,18 +1936,22 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat
+import Mathlib.RingTheory.FractionalIdeal
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
@@ -1952,6 +1966,7 @@ import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Module
@@ -2357,6 +2372,7 @@ import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
 import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
