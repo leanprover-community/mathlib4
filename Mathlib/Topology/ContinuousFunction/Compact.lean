@@ -338,7 +338,7 @@ section
 variable {𝕜 : Type _} {γ : Type _} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
-  { ContinuousMap.normedSpace with }
+  { ContinuousMap.normedSpace, ContinuousMap.algebra with }
 
 end
 
