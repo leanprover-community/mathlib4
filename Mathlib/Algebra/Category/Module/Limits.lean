@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Basic
-import Mathbin.Algebra.Category.Group.Limits
-import Mathbin.Algebra.DirectLimit
+import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.Group.Limits
+import Mathlib.Algebra.DirectLimit
 
 /-!
 # The category of R-modules has all limits
@@ -36,15 +36,13 @@ variable {R : Type u} [Ring R]
 variable {J : Type v} [SmallCategory J]
 
 instance addCommGroupObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
-    AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
-  by
+    AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
   change AddCommGroup (F.obj j)
   infer_instance
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
 instance moduleObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
-    Module R ((F ⋙ forget (ModuleCat R)).obj j) :=
-  by
+    Module R ((F ⋙ forget (ModuleCat R)).obj j) := by
   change Module R (F.obj j)
   infer_instance
 #align Module.module_obj ModuleCat.moduleObj
@@ -60,8 +58,7 @@ def sectionsSubmodule (F : J ⥤ ModuleCat.{max v w} R) : Submodule R (∀ j, F.
             AddGroupCat.{max v
                 w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
-    smul_mem' := fun r s sh j j' f =>
-      by
+    smul_mem' := fun r s sh j j' f => by
       simp only [forget_map_eq_coe, functor.comp_map, Pi.smul_apply, LinearMap.map_smul]
       dsimp [functor.sections] at sh
       rw [sh f] }
@@ -101,8 +98,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `Module R`.
 (Internal use only; use the limits API.)
 -/
-def limitCone (F : J ⥤ ModuleCat.{max v w} R) : Cone F
-    where
+def limitCone (F : J ⥤ ModuleCat.{max v w} R) : Cone F where
   pt := ModuleCat.of R (Types.limitCone (F ⋙ forget _)).pt
   π :=
     { app := limitπLinearMap F
@@ -198,8 +194,7 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j 
 /-- The diagram (in the sense of `category_theory`)
  of an unbundled `direct_limit` of modules. -/
 @[simps]
-def directLimitDiagram : ι ⥤ ModuleCat R
-    where
+def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
   map i j hij := f i j hij.le
   map_id' i := by
@@ -220,8 +215,7 @@ the unbundled `direct_limit` of modules.
 
 In `direct_limit_is_colimit` we show that it is a colimit cocone. -/
 @[simps]
-def directLimitCocone : Cocone (directLimitDiagram G f)
-    where
+def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
     { app := Module.DirectLimit.of R ι G f
@@ -237,8 +231,7 @@ in the sense of `category_theory`. -/
 def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
     where
   desc s :=
-    DirectLimit.lift R ι G f s.ι.app fun i j h x =>
-      by
+    DirectLimit.lift R ι G f s.ι.app fun i j h x => by
       rw [← s.w (hom_of_le h)]
       rfl
   fac s i := by
@@ -246,12 +239,10 @@ def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (
     intro x
     dsimp
     exact direct_limit.lift_of s.ι.app _ x
-  uniq s m h :=
-    by
+  uniq s m h := by
     have :
       s.ι.app = fun i =>
-        LinearMap.comp m (direct_limit.of R ι (fun i => G i) (fun i j H => f i j H) i) :=
-      by
+        LinearMap.comp m (direct_limit.of R ι (fun i => G i) (fun i j H => f i j H) i) := by
       funext i
       rw [← h]
       rfl
