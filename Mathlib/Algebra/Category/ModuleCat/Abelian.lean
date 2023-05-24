@@ -37,15 +37,16 @@ def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f)
   g := f.range.mkQ
   w := LinearMap.range_mkQ_comp _
-  isLimit :=/- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)
-                might help you understand what's going on here:
-                ```
-                calc
-                M   ≃ₗ[R] f.ker.quotient  : (submodule.quot_equiv_of_eq_bot _ (ker_eq_bot_of_mono _)).symm
-                ... ≃ₗ[R] f.range         : linear_map.quot_ker_equiv_range f
-                ... ≃ₗ[R] r.range.mkq.ker : linear_equiv.of_eq _ _ (submodule.ker_mkq _).symm
-                ```
-              -/
+  isLimit :=
+    /- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)
+        might help you understand what's going on here:
+        ```
+        calc
+        M   ≃ₗ[R] f.ker.quotient  : (submodule.quot_equiv_of_eq_bot _ (ker_eq_bot_of_mono _)).symm
+        ... ≃ₗ[R] f.range         : linear_map.quot_ker_equiv_range f
+        ... ≃ₗ[R] r.range.mkq.ker : linear_equiv.of_eq _ _ (submodule.ker_mkq _).symm
+        ```
+      -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
           (LinearEquiv.toModuleIso'
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
@@ -59,14 +60,15 @@ def normalEpi (hf : Epi f) : NormalEpi f where
   W := of R (LinearMap.ker f)
   g := (LinearMap.ker f).subtype
   w := LinearMap.comp_ker_subtype _
-  isColimit :=/- The following invalid Lean code might help you understand what's going on here:
-                ```
-                calc f.ker.subtype.range.quotient
-                    ≃ₗ[R] f.ker.quotient : submodule.quot_equiv_of_eq _ _ (submodule.range_subtype _)
-                ... ≃ₗ[R] f.range        : linear_map.quot_ker_equiv_range f
-                ... ≃ₗ[R] N              : linear_equiv.of_top _ (range_eq_top_of_epi _)
-                ```
-              -/
+  isColimit :=
+    /- The following invalid Lean code might help you understand what's going on here:
+        ```
+        calc f.ker.subtype.range.quotient
+            ≃ₗ[R] f.ker.quotient : submodule.quot_equiv_of_eq _ _ (submodule.range_subtype _)
+        ... ≃ₗ[R] f.range        : linear_map.quot_ker_equiv_range f
+        ... ≃ₗ[R] N              : linear_equiv.of_top _ (range_eq_top_of_epi _)
+        ```
+      -/
         IsCokernel.cokernelIso _ _ (cokernelIsColimit _)
           (LinearEquiv.toModuleIso'
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
