@@ -17,13 +17,13 @@ import Mathlib.Tactic.LinearCombination
 
 In this file we prove that the following functions are convex or strictly convex:
 
-* `strict_convex_on_exp` : The exponential function is strictly convex.
-* `even.convex_on_pow`: For an even `n : ℕ`, `λ x, x ^ n` is convex.
-* `convex_on_pow`: For `n : ℕ`, `λ x, x ^ n` is convex on $[0, +∞)$.
-* `convex_on_zpow`: For `m : ℤ`, `λ x, x ^ m` is convex on $[0, +∞)$.
-* `strict_concave_on_log_Ioi`, `strict_concave_on_log_Iio`: `real.log` is strictly concave on
+* `strictConvexOn_exp` : The exponential function is strictly convex.
+* `Even.convexOn_pow`: For an even `n : ℕ`, `λ x, x ^ n` is convex.
+* `convexOn_pow`: For `n : ℕ`, `λ x, x ^ n` is convex on $[0, +∞)$.
+* `convexOn_zpow`: For `m : ℤ`, `λ x, x ^ m` is convex on $[0, +∞)$.
+* `strictConcaveOn_log_Ioi`, `strictConcaveOn_log_Iio`: `Real.log` is strictly concave on
   $(0, +∞)$ and $(-∞, 0)$ respectively.
-* `convex_on_rpow`, `strict_convex_on_rpow` : For `p : ℝ`, `λ x, x ^ p` is convex on $[0, +∞)$ when
+* `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `λ x, x ^ p` is convex on $[0, +∞)$ when
   `1 ≤ p` and strictly convex when `1 < p`.
 
 The proofs in this file are deliberately elementary, *not* by appealing to the sign of the second
@@ -42,7 +42,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 open Real Set BigOperators NNReal
 
-/-- `exp` is strictly convex on the whole real line.
+/-- `Real.exp` is strictly convex on the whole real line.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
@@ -68,7 +68,7 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     linarith [add_one_lt_exp_of_nonzero h1.ne']
 #align strict_convex_on_exp strictConvexOn_exp
 
-/-- `exp` is convex on the whole real line. -/
+/-- `Real.exp` is convex on the whole real line. -/
 theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
@@ -153,7 +153,7 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     · positivity
 #align convex_on_zpow convexOn_zpow
 
-/- `real.log` is strictly concave on $(0, +∞)$.
+/- `Real.log` is strictly concave on $(0, +∞)$.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
