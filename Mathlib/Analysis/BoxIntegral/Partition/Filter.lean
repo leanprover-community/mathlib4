@@ -275,11 +275,11 @@ def GP : IntegrationParams := ⊥
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.GP BoxIntegral.IntegrationParams.GP
 
-theorem henstock_le_riemann : Henstock ≤ Riemann := by decide
+theorem henstock_le_riemann : Henstock ≤ Riemann := by trivial
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.Henstock_le_Riemann BoxIntegral.IntegrationParams.henstock_le_riemann
 
-theorem henstock_le_mcShane : Henstock ≤ McShane := by decide
+theorem henstock_le_mcShane : Henstock ≤ McShane := by trivial
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.Henstock_le_McShane BoxIntegral.IntegrationParams.henstock_le_mcShane
 
