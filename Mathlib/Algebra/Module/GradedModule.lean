@@ -51,7 +51,7 @@ class Gmodule [AddMonoid ι] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [
 #align direct_sum.gmodule DirectSum.Gmodule
 
 /-- A graded version of `Semiring.toModule`. -/
-instance GSemiring.toGmodule [DecidableEq ι] [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)]
+instance GSemiring.toGmodule [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)]
     [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
     smul_add := fun _ _ _ => h.mul_add _ _ _
@@ -103,7 +103,7 @@ theorem smulAddMonoidHom_apply_of_of [DecidableEq ι] [GMonoid A] [Gmodule A M] 
   simp [smulAddMonoidHom]
 #align direct_sum.gmodule.smul_add_monoid_hom_apply_of_of DirectSum.Gmodule.smulAddMonoidHom_apply_of_of
 
-@[simp]
+-- @[simp] -- Porting note: simpNF lint
 theorem of_smul_of [DecidableEq ι] [GMonoid A] [Gmodule A M] {i j} (x : A i) (y : M j) :
     DirectSum.of A i x • of M j y = of M (i + j) (GSmul.smul x y) :=
   smulAddMonoidHom_apply_of_of _ _ _ _
