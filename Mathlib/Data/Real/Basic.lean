@@ -22,9 +22,9 @@ lifting everything to `ℚ`.
 -/
 
 
---assert_not_exists finset
---assert_not_exists Module
---assert_not_exists Submonoid
+assert_not_exists Finset
+assert_not_exists Module
+assert_not_exists Submonoid
 
 open Pointwise
 

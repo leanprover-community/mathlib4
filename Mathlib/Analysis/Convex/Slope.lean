@@ -37,13 +37,13 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   set b := (y - x) / (z - x)
   have hy : a • x + b • z = y := by
     field_simp
-    rw [div_eq_iff] <;> [ring, linarith]
+    rw [div_eq_iff] <;> [ring; linarith]
   have key :=
     hf.2 hx hz (show 0 ≤ a by apply div_nonneg <;> linarith)
       (show 0 ≤ b by apply div_nonneg <;> linarith)
       (show a + b = 1 by
         field_simp
-        rw [div_eq_iff] <;> [ring, linarith])
+        rw [div_eq_iff] <;> [ring; linarith])
   rw [hy] at key
   replace key := mul_le_mul_of_nonneg_left key hxz.le
   field_simp [hxy.ne', hyz.ne', hxz.ne', mul_comm (z - x) _]  at key⊢
@@ -77,12 +77,12 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   set b := (y - x) / (z - x)
   have hy : a • x + b • z = y := by
     field_simp
-    rw [div_eq_iff] <;> [ring, linarith]
+    rw [div_eq_iff] <;> [ring; linarith]
   have key :=
     hf.2 hx hz hxz' (div_pos hyz hxz) (div_pos hxy hxz)
       (show a + b = 1 by
         field_simp
-        rw [div_eq_iff] <;> [ring, linarith])
+        rw [div_eq_iff] <;> [ring; linarith])
   rw [hy] at key
   replace key := mul_lt_mul_of_pos_left key hxz
   field_simp [hxy.ne', hyz.ne', hxz.ne', mul_comm (z - x) _]  at key⊢
