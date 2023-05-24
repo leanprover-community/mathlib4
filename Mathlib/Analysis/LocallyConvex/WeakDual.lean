@@ -8,9 +8,9 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.WeakDual
-import Mathbin.Analysis.Normed.Field.Basic
-import Mathbin.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -74,8 +74,7 @@ theorem toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
 #align linear_map.to_seminorm_ball_zero LinearMap.toSeminorm_ball_zero
 
 theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
-    f.toSeminorm.comp g = (f.comp g).toSeminorm :=
-  by
+    f.toSeminorm.comp g = (f.comp g).toSeminorm := by
   ext
   simp only [Seminorm.comp_apply, to_seminorm_apply, coe_comp]
 #align linear_map.to_seminorm_comp LinearMap.toSeminorm_comp
@@ -103,8 +102,7 @@ variable [Nonempty ι]
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basis_sets id :=
-  by
+    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basis_sets id := by
   let p := B.to_seminorm_family
   rw [nhds_induced, nhds_pi]
   simp only [map_zero, LinearMap.zero_apply]
