@@ -15,16 +15,16 @@ import Mathlib.Analysis.LocallyConvex.Polar
 /-!
 # The topological dual of a normed space
 
-In this file we define the topological dual `normed_space.dual` of a normed space, and the
-continuous linear map `normed_space.inclusion_in_double_dual` from a normed space into its double
+In this file we define the topological dual `NormedSpace.Dual` of a normed space, and the
+continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed space into its double
 dual.
 
 For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
-version `normed_space.inclusion_in_double_dual_li` of the map which is of type a bundled linear
+version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear
 isometric embedding, `E →ₗᵢ[𝕜] (dual 𝕜 (dual 𝕜 E))`.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
-theory for `seminormed_add_comm_group` and we specialize to `normed_add_comm_group` when needed.
+theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 
 ## Main definitions
 
@@ -133,7 +133,7 @@ section BidualIsometry
 variable (𝕜 : Type v) [IsROrC 𝕜] {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
-    Compare `continuous_linear_map.op_norm_le_bound`. -/
+    Compare `ContinuousLinearMap.op_norm_le_bound`. -/
 theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) :
     ‖x‖ ≤ M := by
   classical
