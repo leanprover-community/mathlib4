@@ -77,10 +77,6 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of R-modules is abelian. -/
 instance abelian : Abelian (ModuleCat.{v} R) where
-  has_finite_products := ⟨fun n => Limits.hasLimitsOfShapeOfHasLimits⟩
-  has_kernels := by
-    have : HasEqualizers (ModuleCat.{v} R) := sorry
-    apply Limits.hasKernels_of_hasEqualizers _
   has_cokernels := hasCokernels_moduleCat
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
@@ -89,18 +85,18 @@ set_option linter.uppercaseLean3 false in
 
 section ReflectsLimits
 
+instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{u, v, w} R) := ModuleCat.hasLimitsOfSize
+
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
 instance forgetReflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{u, v, w} R)) := by
-  have : HasLimitsOfSize.{v,v} (ModuleCatMax.{u, v, w} R) := sorry
-  exact reflectsLimitsOfReflectsIsomorphisms
+    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{u, v, w} R)) :=
+  reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget_reflects_limits_of_size ModuleCat.forgetReflectsLimitsOfSize
 
 instance forget₂ReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{u, v, w} R) AddCommGroupCat.{max v w}) :=
-  have : HasLimitsOfSize.{v,v} (ModuleCatMax.{u, v, w} R) := sorry
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize
