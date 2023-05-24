@@ -385,7 +385,7 @@ instance ring : Ring (DirectLimit G f) :=
   CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance oo : Zero (DirectLimit G f) := by
+instance zero : Zero (DirectLimit G f) := by
   unfold DirectLimit
   exact ⟨0⟩
 
@@ -404,7 +404,8 @@ nonrec def of (i) : G i →+* DirectLimit G f :=
 
 variable {G f}
 
-@[simp]
+-- porting note: the @[simp] attribute would trigger a `simpNF` linter error:
+-- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
 theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
 #align ring.direct_limit.of_f Ring.DirectLimit.of_f
@@ -672,14 +673,15 @@ def lift : DirectLimit G f →+* P :=
 
 variable {G f}
 
-@[simp]
+-- porting note: the @[simp] attribute would trigger a `simpNF` linter error:
+-- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 #align ring.direct_limit.lift_of Ring.DirectLimit.lift_of
 
 theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
-    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp) x :=
-  DirectLimit.induction_on x fun i x => by simp
+    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x :=
+  DirectLimit.induction_on x fun i x => by simp [lift_of]
 #align ring.direct_limit.lift_unique Ring.DirectLimit.lift_unique
 
 end DirectLimit
