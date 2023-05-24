@@ -122,7 +122,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
     (h_expand : expand F (q ^ m) g = expand F (q ^ m') g') (hg : g.Separable) (hg' : g'.Separable) :
     g.natDegree = g'.natDegree := by
   wlog hm : m ≤ m'
-  · exact (this g' g m' m h_expand.symm hg' hg (le_of_not_le hm)).symm
+  · exact (this q hf g' g m' m h_expand.symm hg' hg (le_of_not_le hm)).symm
   obtain ⟨s, rfl⟩ := exists_add_of_le hm
   rw [pow_add, expand_mul, expand_inj (pow_pos (NeZero.pos q) m)] at h_expand
   subst h_expand
@@ -135,7 +135,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by
   cases hF
-  · rcases hg with ⟨g, m, hm⟩
+  · rcases hg with ⟨_, m, hm⟩
     rw [one_pow, expand_one] at hm
     rw [hf.eq_degree, hm]
   · rcases hg with ⟨hg, m, hm⟩
