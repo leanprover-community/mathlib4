@@ -283,13 +283,13 @@ def bernoulliPowerSeries :=
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
-  cases' n;
+  cases' n with n n;
   · simp
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero_iff, if_false, _root_.inv_one, zero_add, one_ne_zero,
-    MulZeroClass.mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← RingHom.map_sum]
-  cases n; · simp
+    MulZeroClass.mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
+  cases' n with n n; · simp
   rw [if_neg n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => by exact_mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
@@ -341,7 +341,7 @@ theorem sum_range_pow (n p : ℕ) :
     · simp [hne, factorial_ne_zero]
   -- same as our goal except we pull out `p!` for convenience
   have hps :
-    (∑ k in range n, ↑k ^ p) =
+    (∑ k in range n, (k : ℚ) ^ p) =
       (∑ i in range (p + 1),
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)!) * p ! :=
     by
@@ -361,9 +361,17 @@ theorem sum_range_pow (n p : ℕ) :
       have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
-    rw [← mul_right_inj' hexp, mul_comm, ← exp_pow_sum, geom_sum_mul, h_r, ←
-      bernoulliPowerSeries_mul_exp_sub_one, bernoulliPowerSeries, mul_right_comm]
-    simp [h_cauchy, mul_comm]
+    -- porting note: altered proof slightly, TODO: golf this a bit
+    rw [← mul_right_inj' hexp, mul_comm]
+    simp only [← cast_pow]
+    rw [←exp_pow_sum,  geom_sum_mul, h_r, ← bernoulliPowerSeries_mul_exp_sub_one,
+    bernoulliPowerSeries, mul_right_comm]
+    simp [h_cauchy, mul_comm, hexp]
+    refine' Eq.trans _ (Eq.trans h_cauchy _)
+    simp [mul_comm, hexp]
+    left
+    congr
+    simp [factorial, mul_comm]
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine' sum_congr rfl fun x hx => _
@@ -394,7 +402,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   have :
     (∑ i in range p, bernoulli (i + 2) * (p + 2).choose (i + 2) * (n : ℚ) ^ (p - i) / ↑(p + 2)) =
       ∑ i in range p, bernoulli' (i + 2) * (p + 2).choose (i + 2) * (n : ℚ) ^ (p - i) / ↑(p + 2) :=
-    sum_congr rfl fun i h => by rw [bernoulli_eq_bernoulli'_of_ne_one (succ_succ_ne_one i)]
+    sum_congr rfl fun i _ => by rw [bernoulli_eq_bernoulli'_of_ne_one (succ_succ_ne_one i)]
   calc
     (-- replace sum over `Ico` with sum over `range` and simplify
         ∑ k in Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ k in range n.succ, (k : ℚ) ^ p.succ :=
