@@ -61,8 +61,19 @@ instance : SetLike (SubObj X) X
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
 
--- Note: this only works because the last argument of `SubObj` is a type.
--- For other algebra subobjects, an instance argument comes next -- perhaps we should strip
--- these off in the calculation?
+-- Note: this easily works because the last argument of `SubObj` is a type.
 def SubObj.prod (s : SubObj X) (t : SubObj Y) : SubObj (X × Y) where
+  carrier := s ×ˢ' t
+
+/-- Modeling subobjects of algebraic types, which have an instance argument after the type. -/
+structure DecSubObj (X : Type _) [DecidableEq X] where
+  carrier : Set X
+
+instance [DecidableEq X] : SetLike (DecSubObj X) X
+    where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr
+
+-- Note: this is testing instance arguments after the type.
+def DecSubObj.prod [DecidableEq X] [DecidableEq Y] (s : DecSubObj X) (t : DecSubObj Y) : DecSubObj (X × Y) where
   carrier := s ×ˢ' t

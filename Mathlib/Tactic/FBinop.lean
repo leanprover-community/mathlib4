@@ -84,43 +84,39 @@ structure SRec where
   args : Array Expr
   deriving Inhabited, ToExpr
 
-/-- Given a type expression, try to remove the last argument and create an `SRec` for the
-underlying "functor". Only applies to function applications with a constant head, and it
-requires that that argument be a type.
+/-- Given a type expression, try to remove the last argument(s) and create an `SRec` for the
+underlying "functor". Only applies to function applications with a constant head, and,
+after dropping all instance arguments, it requires that the remaining last argument be a type.
 Returns the `SRec` and the argument. -/
 private partial def extractS (e : Expr) : TermElabM (Option (SRec × Expr)) :=
   match e with
   | .letE .. => extractS (e.letBody!.instantiate1 e.letValue!)
   | .mdata _ b => extractS b
-  | .app S x => do
-    let .const n _ := S.getAppFn | return none
+  | .app .. => do
+    let f := e.getAppFn
+    let .const n _ := f | return none
+    let mut args := e.getAppArgs
+    let mut info := (← getFunInfoNArgs f args.size).paramInfo
+    for _ in [0 : args.size - 1] do
+      if info.back.isInstImplicit then
+        args := args.pop
+        info := info.pop
+      else
+        break
+    let x := args.back
     unless ← Meta.isType x do return none
-    return some ({name := n, args := S.getAppArgs}, x)
+    return some ({name := n, args := args.pop}, x)
   | _ => return none
 
-/-- Does `mkAppN` but also checks all types (and unifies metavariables). -/
-private partial def mkAppN' (f : Expr) (args : Array Expr) : MetaM Expr := do
-  loop 0 (← inferType f)
-where
-  loop (i : Nat) (fty : Expr) : MetaM Expr := do
-    if i < args.size then
-      let x := args[i]!
-      forallBoundedTelescope fty (some 1) fun fvars fty' => do
-        if let #[fvar] := fvars then
-          if ← isDefEq (← inferType fvar) (← inferType x) then
-            loop (i + 1) fty'
-          else
-            throwAppTypeMismatch (mkAppN f (args.extract 0 i)) x
-        else
-          throwError "too many arguments provided to{indentExpr f}\narguments{indentD args}"
-    else
-      return mkAppN f args
-
-/-- Computes `S x := c a1 ... an x` if it is type correct. -/
+/-- Computes `S x := c a1 ... an x` if it is type correct.
+Inserts instance arguments after `x`. -/
 private def applyS (S : SRec) (x : Expr) : TermElabM (Option Expr) :=
   try
     let f ← mkConstWithFreshMVarLevels S.name
-    return some (← mkAppN' f (S.args.push x))
+    let v ← elabAppArgs f #[] ((S.args.push x).map .expr)
+      (expectedType? := none) (explicit := true) (ellipsis := false)
+    -- Now elaborate any remaining instance arguments
+    elabAppArgs v #[] #[] (expectedType? := none) (explicit := false) (ellipsis := false)
   catch _ =>
     return none
 
