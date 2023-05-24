@@ -70,7 +70,7 @@ variable (A : Type _) [CommRing A] [Algebra ℚ A]
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
 def bernoulli' : ℕ → ℚ :=
-  WellFounded.fix lt_wfRel fun n bernoulli' =>
+  WellFounded.fix lt_wfRel.wf fun n bernoulli' =>
     1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
 #align bernoulli' bernoulli'
 
@@ -86,9 +86,10 @@ theorem bernoulli'_def (n : ℕ) :
 
 theorem bernoulli'_spec (n : ℕ) :
     (∑ k in range n.succ, (n.choose (n - k) : ℚ) / (n - k + 1) * bernoulli' k) = 1 := by
-  rw [sum_range_succ_comm, bernoulli'_def n, tsub_self]
-  conv in (n.choose (n - _)) => rw [choose_symm (mem_range.1 _).le]
-  simp only [one_mul, cast_one, sub_self, sub_add_cancel, choose_zero_right, zero_add, div_one]
+  rw [sum_range_succ_comm, bernoulli'_def n, tsub_self, choose_zero_right, sub_self, zero_add,
+    div_one, cast_one, one_mul, sub_add, ← sum_sub_distrib, ← sub_eq_zero, sub_sub_cancel_left,
+    neg_eq_zero]
+  exact Finset.sum_eq_zero (fun x hx => by rw [choose_symm (le_of_lt (mem_range.1 hx)), sub_self])
 #align bernoulli'_spec bernoulli'_spec
 
 theorem bernoulli'_spec' (n : ℕ) :
