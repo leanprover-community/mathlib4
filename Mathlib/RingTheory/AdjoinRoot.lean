@@ -22,32 +22,32 @@ import Mathlib.Tactic.LibrarySearch
 /-!
 # Adjoining roots of polynomials
 
-This file defines the commutative ring `adjoin_root f`, the ring R[X]/(f) obtained from a
+This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtained from a
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
-irreducible, the field structure on `adjoin_root f` is constructed.
+irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `adjoin_root` to achieve higher
+We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
 generality, since `is_adjoin_root` works for all different constructions of `R[α]`
-including `adjoin_root f = R[X]/(f)` itself.
+including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
 
-The main definitions are in the `adjoin_root` namespace.
+The main definitions are in the `AdjoinRoot` namespace.
 
-*  `mk f : R[X] →+* adjoin_root f`, the natural ring homomorphism.
+*  `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
 
-*  `of f : R →+* adjoin_root f`, the natural ring homomorphism.
+*  `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
 
-* `root f : adjoin_root f`, the image of X in R[X]/(f).
+* `root f : AdjoinRoot f`, the image of X in R[X]/(f).
 
-* `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (adjoin_root f) →+* S`, the ring
+* `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`, the ring
   homomorphism from R[X]/(f) to S extending `i : R →+* S` and sending `X` to `x`.
 
-* `lift_hom (x : S) (hfx : aeval x f = 0) : adjoin_root f →ₐ[R] S`, the algebra
-  homomorphism from R[X]/(f) to S extending `algebra_map R S` and sending `X` to `x`
+* `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
+  homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 
-* `equiv : (adjoin_root f →ₐ[F] E) ≃ {x // x ∈ (f.map (algebra_map F E)).roots}` a
-  bijection between algebra homomorphisms from `adjoin_root` and roots of `f` in `S`
+* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ (f.map (algebraMap F E)).roots}` a
+  bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
 
@@ -93,7 +93,7 @@ protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (Adj
       exact h (degree_C hx.ne_zero))
 #align adjoin_root.nontrivial AdjoinRoot.nontrivial
 
-/-- Ring homomorphism from `R[x]` to `adjoin_root f` sending `X` to the `root`. -/
+/-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
 #align adjoin_root.mk AdjoinRoot.mk
@@ -104,7 +104,7 @@ theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p 
   Quotient.inductionOn' x ih
 #align adjoin_root.induction_on AdjoinRoot.induction_on
 
-/-- Embedding of the original ring `R` into `adjoin_root f`. -/
+/-- Embedding of the original ring `R` into `AdjoinRoot f`. -/
 def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
@@ -180,7 +180,7 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
   ⟨of f⟩
 #align adjoin_root.has_coe_t AdjoinRoot.hasCoeT
 
-/-- Two `R`-`alg_hom` from `adjoin_root f` to the same `R`-algebra are the same iff
+/-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
     they agree on `root f`. -/
 @[ext]
 theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
@@ -272,7 +272,7 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
 
 variable [CommRing S]
 
-/-- Lift a ring homomorphism `i : R →+* S` to `adjoin_root f →+* S`. -/
+/-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
 def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S := by
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
@@ -302,7 +302,7 @@ theorem lift_comp_of : (lift i a h).comp (of f) = i :=
 
 variable (f) [Algebra R S]
 
-/-- Produce an algebra homomorphism `adjoin_root f →ₐ[R] S` sending `root f` to
+/-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
 a root of `f` in `S`. -/
 def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
   { lift (algebraMap R S) x hfx with
@@ -448,9 +448,9 @@ theorem isIntegral_root' (hg : g.Monic) : IsIntegral R (root g) :=
   ⟨g, hg, eval₂_root g⟩
 #align adjoin_root.is_integral_root' AdjoinRoot.isIntegral_root'
 
-/-- `adjoin_root.mod_by_monic_hom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
+/-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
-This is a well-defined right inverse to `adjoin_root.mk`, see `adjoin_root.mk_left_inverse`. -/
+This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_leftInverse`. -/
 def modByMonicHom (hg : g.Monic) : AdjoinRoot g →ₗ[R] R[X] :=
   (Submodule.liftQ _ (Polynomial.modByMonicHom g)
         fun f (hf : f ∈ (Ideal.span {g}).restrictScalars R) =>
@@ -476,7 +476,7 @@ theorem mk_surjective (hg : g.Monic) : Function.Surjective (mk g) :=
   (mk_leftInverse hg).surjective
 #align adjoin_root.mk_surjective AdjoinRoot.mk_surjective
 
-/-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `adjoin_root g`,
+/-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
   Basis.ofEquivFun
@@ -521,7 +521,7 @@ theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : 
   rfl
 #align adjoin_root.power_basis_aux'_repr_apply_to_fun AdjoinRoot.powerBasisAux'_repr_apply_to_fun
 
-/-- The power basis `1, root g, ..., root g ^ (d - 1)` for `adjoin_root g`,
+/-- The power basis `1, root g, ..., root g ^ (d - 1)` for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 @[simps]
 def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
@@ -535,7 +535,7 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
     · intro j _ hj
       rw [← monomial_zero_right _]
       convert congr_arg _ (Function.update_noteq hj _ _)
-    -- Fix `decidable_eq` mismatch
+    -- Fix `DecidableEq` mismatch
     · intros
       have := Finset.mem_univ i
       contradiction
@@ -567,7 +567,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 #align adjoin_root.minpoly_root AdjoinRoot.minpoly_root
 
-/-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `adjoin_root f`,
+/-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
 def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := by
   let f' := f * C f.leadingCoeff⁻¹
@@ -587,7 +587,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
     rfl
 #align adjoin_root.power_basis_aux AdjoinRoot.powerBasisAux
 
-/-- The power basis `1, root f, ..., root f ^ (d - 1)` for `adjoin_root f`,
+/-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
 @[simps!]  -- porting note: was `[simps]`
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
@@ -661,9 +661,9 @@ variable [CommRing R] [CommRing S] [Algebra R S]
 variable (g : R[X]) (pb : PowerBasis R S)
 
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
-such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `adjoin_root g`.
+such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `AdjoinRoot g`.
 
-Compare `power_basis.equiv_of_root`, which would require
+Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
@@ -723,7 +723,7 @@ end Equiv
 -- that depends any of these lemmas is
 -- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
 -- that uses
--- `power_basis.quotient_equiv_quotient_minpoly_map == PowerBasis.quotientEquivQuotientMinpolyMap`
+-- `PowerBasis.quotientEquivQuotientMinpolyMap == PowerBasis.quotientEquivQuotientMinpolyMap`
 section
 
 open Ideal DoubleQuot Polynomial
@@ -731,7 +731,7 @@ open Ideal DoubleQuot Polynomial
 variable [CommRing R] (I : Ideal R) (f : R[X])
 
 /-- The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
-`f : R[X]` and `I : ideal R`.
+`f : R[X]` and `I : Ideal R`.
 
 See `adjoin_root.quot_map_of_equiv` for the isomorphism with `(R/I)[X] / (f mod I)`. -/
 def quotMapOfEquivQuotMapCMapSpanMk :
@@ -762,7 +762,7 @@ set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_symm_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_symm_mk
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
-  for `α` a root of `f : R[X]` and `I : ideal R`-/
+  for `α` a root of `f : R[X]` and `I : Ideal R`-/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
     AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
@@ -792,7 +792,7 @@ set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_symm_quot_quot_mk AdjoinRoot.quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
-  `f : R[X]` and `I : ideal R`-/
+  `f : R[X]` and `I : Ideal R`-/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=
@@ -822,7 +822,7 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
 #align adjoin_root.polynomial.quot_quot_equiv_comm_symm_mk_mk AdjoinRoot.Polynomial.quotQuotEquivComm_symm_mk_mk
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
-  and `I : ideal R`.-/
+  and `I : Ideal R`.-/
 def quotAdjoinRootEquivQuotPolynomialQuot :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]) :=
@@ -855,7 +855,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     quotMapOfEquivQuotMapCMapSpanMk_symm_mk]
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_symm_mk_mk AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk
 
-/-- Promote `adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot` to an alg_equiv.  -/
+/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv.  -/
 @[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]
