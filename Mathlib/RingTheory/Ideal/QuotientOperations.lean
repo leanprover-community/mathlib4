@@ -15,10 +15,6 @@ import Mathlib.RingTheory.Ideal.Quotient
 # More operations on modules and ideals related to quotients
 -/
 
-
--- Porting note: Without this line, timeouts occur (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w
 
 namespace RingHom
@@ -290,12 +286,18 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
--- Porting note: short circuit tc synth and use unification (_)
-@[simp]
+-- Porting note: not sure about this simpNF
+-- The linter says:
+-- #check Ideal.kerLiftAlg_toRingHom.{u_3, u_2, u_1} /- Left-hand side simplifies from
+--   ↑(Ideal.kerLiftAlg f)
+-- to
+--   ↑(Ideal.kerLiftAlg f)
+-- using
+--   simp only [@AlgHom.toRingHom_eq_coe]
+@[simp, nolint simpNF]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    @AlgHom.toRingHom (R := R₁) (A := A ⧸ RingHom.ker f) (B := B) _ (_) _ (_) _ (kerLiftAlg f)
-      = RingHom.kerLift (R := A) (S := B)
-        (@AlgHom.toRingHom (R := R₁) (A := A) (B := B) _ _ _ _ _ f) := rfl
+    (kerLiftAlg f).toRingHom = RingHom.kerLift (f : A →+* B) :=
+  rfl
 #align ideal.ker_lift_alg_to_ring_hom Ideal.kerLiftAlg_toRingHom
 
 -- Porting note: short circuit tc synth and use unification (_)
@@ -665,14 +667,6 @@ theorem quotQuotEquivComm_algebraMap (x : R) :
     quotQuotEquivComm I J (algebraMap R _ x) = algebraMap _ _ x :=
   rfl
 #align double_quot.quot_quot_equiv_comm_algebra_map DoubleQuot.quotQuotEquivComm_algebraMap
-
--- Porting note: timing out due to Lean4#2074
-attribute [nolint simpNF] Ideal.kerLiftAlg_toRingHom
-Ideal.quotientKerAlgEquivOfRightInverse.apply
-Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
-DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
-DoubleQuot.quotQuotEquivComm_mk_mk
-Ideal.kerLiftAlg_mk
 
 end Algebra
 

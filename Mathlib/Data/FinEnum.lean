@@ -79,7 +79,7 @@ theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective, apply List.nodup_finRange]
+  simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 #align fin_enum.nodup_to_list FinEnum.nodup_toList
 
 /-- create a `FinEnum` instance using a surjection -/

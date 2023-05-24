@@ -1749,7 +1749,7 @@ def UniformSpace.Core.sum : UniformSpace.Core (Sum α β) :=
     (map (fun p : α × α => (inl p.1, inl p.2)) (𝓤 α) ⊔
       map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β))
     (fun r ⟨H₁, H₂⟩ x => by
-      cases x <;> [apply refl_mem_uniformity H₁, apply refl_mem_uniformity H₂])
+      cases x <;> [apply refl_mem_uniformity H₁; apply refl_mem_uniformity H₂])
     (fun r ⟨H₁, H₂⟩ => ⟨symm_le_uniformity H₁, symm_le_uniformity H₂⟩)
     (fun r ⟨Hrα, Hrβ⟩ => by
       rcases comp_mem_uniformity_sets Hrα with ⟨tα, htα, Htα⟩
