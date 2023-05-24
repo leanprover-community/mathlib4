@@ -134,9 +134,7 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     simp_rw [zpow_negSucc]
     refine' ⟨convex_Ioi _, _⟩
     rintro a (ha : 0 < a) b (hb : 0 < b) μ ν hμ hν h
-    have ha' : 0 < a ^ (n + 1) := by positivity
-    have hb' : 0 < b ^ (n + 1) := by positivity
-    field_simp [ha.ne', hb.ne', ha'.ne', hb'.ne']
+    field_simp [ha.ne', hb.ne']
     rw [div_le_div_iff]
     · -- Porting note: added type ascription to LHS
       calc
