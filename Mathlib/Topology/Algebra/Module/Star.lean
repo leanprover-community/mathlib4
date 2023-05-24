@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module topology.algebra.module.star
-! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
+! leanprover-community/mathlib commit ad84a13c884fd19e286fb7abb36f4b9ba7e2f615
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
