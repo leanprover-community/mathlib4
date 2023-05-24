@@ -85,7 +85,8 @@ structure SRec where
   deriving Inhabited, ToExpr
 
 /-- Given a type expression, try to remove the last argument and create an `SRec` for the
-underlying "functor". Only applies to function applications with a constant head.
+underlying "functor". Only applies to function applications with a constant head, and it
+requires that that argument be a type.
 Returns the `SRec` and the argument. -/
 private partial def extractS (e : Expr) : TermElabM (Option (SRec × Expr)) :=
   match e with
@@ -93,6 +94,7 @@ private partial def extractS (e : Expr) : TermElabM (Option (SRec × Expr)) :=
   | .mdata _ b => extractS b
   | .app S x => do
     let .const n _ := S.getAppFn | return none
+    unless ← Meta.isType x do return none
     return some ({name := n, args := S.getAppArgs}, x)
   | _ => return none
 
@@ -205,8 +207,8 @@ where
       let rhs' ← go rhs f
       return .binop ref f lhs' rhs'
     | .term ref trees e =>
-      trace[Elab.fbinop] "visiting {e}"
       let type ← instantiateMVars (← inferType e)
+      trace[Elab.fbinop] "visiting {e} : {type}"
       let some (_, x) ← extractS type
         | -- We want our operators to be "homogenous" so do a defeq check as an elaboration hint
           let x' ← mkFreshExprMVar none
@@ -215,7 +217,8 @@ where
           _ ← isDefEqGuarded maxType type
           return t
       let some maxType ← applyS maxS x
-        | return t
+        | trace[Elab.fbinop] "applying {Lean.toExpr maxS} {x} failed"
+          return t
       trace[Elab.fbinop] "{type} =?= {maxType}"
       if ← isDefEqGuarded maxType type then
         return t
