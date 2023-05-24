@@ -385,7 +385,7 @@ instance ring : Ring (DirectLimit G f) :=
   CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance oo : Zero (DirectLimit G f) := by
+instance zero : Zero (DirectLimit G f) := by
   unfold DirectLimit
   exact ⟨0⟩
 
