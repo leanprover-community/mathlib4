@@ -20,19 +20,19 @@ This file contains basics about the separable degree of a polynomial.
 
 ## Main results
 
-- `is_separable_contraction`: is the condition that, for `g` a separable polynomial, we have that
+- `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
    `g(x^(q^m)) = f(x)` for some `m : ℕ`.
-- `has_separable_contraction`: the condition of having a separable contraction
-- `has_separable_contraction.degree`: the separable degree, defined as the degree of some
+- `HasSeparableContraction`: the condition of having a separable contraction
+- `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
-- `irreducible.has_separable_contraction`: any irreducible polynomial can be contracted
+- `Irreducible.HasSeparableContraction`: any irreducible polynomial can be contracted
   to a separable polynomial
-- `has_separable_contraction.dvd_degree'`: the degree of a separable contraction divides the degree,
+- `HasSeparableContraction.dvd_degree'`: the degree of a separable contraction divides the degree,
   in function of the exponential characteristic of the field
-- `has_separable_contraction.dvd_degree` and `has_separable_contraction.eq_degree` specialize the
+- `HasSeparableContraction.dvd_degree` and `HasSeparableContraction.eq_degree` specialize the
   statement of `separable_degree_dvd_degree`
-- `is_separable_contraction.degree_eq`: the separable degree is well-defined, implemented as the
-  statement that the degree of any separable contraction equals `has_separable_contraction.degree`
+- `IsSeparableContraction.degree_eq`: the separable degree is well-defined, implemented as the
+  statement that the degree of any separable contraction equals `HasSeparableContraction.degree`
 
 ## Tags
 
