@@ -9,7 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace
-import Mathlib.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Sheaves.Limits
 
 /-!
@@ -64,42 +64,36 @@ namespace AlgebraicGeometry
 
 namespace PresheafedSpace
 
-attribute [local simp] eq_to_hom_map
+attribute [local simp] eqToHom_map
 
-attribute [local tidy] tactic.auto_cases_opens
+-- Porting note : `tidy` no longer exist
+-- attribute [local tidy] tactic.auto_cases_opens
 
 @[simp]
-theorem map_id_c_app (F : J ⥤ PresheafedSpace.{v} C) (j) (U) :
+theorem map_id_c_app (F : J ⥤ PresheafedSpace.{u, v, v} C) (j) (U) :
     (F.map (𝟙 j)).c.app (op U) =
-      (Pushforward.id (F.obj j).Presheaf).inv.app (op U) ≫
-        (pushforwardEq
-                (by
-                  simp
-                  rfl)
-                (F.obj j).Presheaf).Hom.app
+      (Pushforward.id (F.obj j).presheaf).inv.app (op U) ≫
+        (pushforwardEq (by simp) (F.obj j).presheaf).hom.app
           (op U) := by
   cases U
   dsimp
   simp [PresheafedSpace.congr_app (F.map_id j)]
-  rfl
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.map_id_c_app AlgebraicGeometry.PresheafedSpace.map_id_c_app
 
 @[simp]
-theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{v} C) {j₁ j₂ j₃} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
+theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{u, v, v} C) {j₁ j₂ j₃} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
     (F.map (f ≫ g)).c.app (op U) =
       (F.map g).c.app (op U) ≫
         (pushforwardMap (F.map g).base (F.map f).c).app (op U) ≫
-          (Pushforward.comp (F.obj j₁).Presheaf (F.map f).base (F.map g).base).inv.app (op U) ≫
-            (pushforwardEq
-                    (by
-                      rw [F.map_comp]
-                      rfl)
-                    _).Hom.app
+          (Pushforward.comp (F.obj j₁).presheaf (F.map f).base (F.map g).base).inv.app (op U) ≫
+            (pushforwardEq (by rw [F.map_comp]; rfl) _).hom.app
               _ := by
   cases U
   dsimp
   simp only [PresheafedSpace.congr_app (F.map_comp f g)]
-  dsimp; simp; dsimp; simp
+  dsimp; simp
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.map_comp_c_app AlgebraicGeometry.PresheafedSpace.map_comp_c_app
 
 -- See note [dsimp, simp]
@@ -108,27 +102,30 @@ the colimit of the underlying spaces, and taking componentwise limit.
 This is the componentwise diagram for an open set `U` of the colimit of the underlying spaces.
 -/
 @[simps]
-def componentwiseDiagram (F : J ⥤ PresheafedSpace.{v} C) [HasColimit F]
+def componentwiseDiagram (F : J ⥤ PresheafedSpace.{u, v, v} C) [HasColimit F]
     (U : Opens (Limits.colimit F).carrier) : Jᵒᵖ ⥤ C where
-  obj j := (F.obj (unop j)).Presheaf.obj (op ((Opens.map (colimit.ι F (unop j)).base).obj U))
-  map j k f :=
+  obj j := (F.obj (unop j)).presheaf.obj (op ((Opens.map (colimit.ι F (unop j)).base).obj U))
+  map {j k} f :=
     (F.map f.unop).c.app _ ≫
-      (F.obj (unop k)).Presheaf.map
-        (eqToHom
-          (by
-            rw [← colimit.w F f.unop, comp_base]
-            rfl))
-  map_comp' i j k f g := by
-    cases U
+      (F.obj (unop k)).presheaf.map
+        (eqToHom (by rw [← colimit.w F f.unop, comp_base]; rfl))
+  map_comp {i j k} f g := by
     dsimp
-    simp_rw [map_comp_c_app, category.assoc]
+    simp_rw [map_comp_c_app]
+    simp only [op_obj, unop_op, eqToHom_op, id_eq, id_comp, assoc, eqToHom_trans]
     congr 1
     rw [TopCat.Presheaf.Pushforward.comp_inv_app, TopCat.Presheaf.pushforwardEq_hom_app,
       CategoryTheory.NatTrans.naturality_assoc, TopCat.Presheaf.pushforwardMap_app]
     congr 1
-    rw [category.id_comp, ← (F.obj (unop k)).Presheaf.map_comp]
-    erw [← (F.obj (unop k)).Presheaf.map_comp]
-    congr
+    simp
+  map_id x := by
+    dsimp
+    simp [map_id_c_app, pushforwardObj_obj, op_obj, unop_op, pushforwardEq_hom_app, eqToHom_op,
+      id_eq, eqToHom_map, assoc, eqToHom_trans, eqToHom_refl, comp_id,
+      TopCat.Presheaf.Pushforward.id_inv_app']
+    rw [TopCat.Presheaf.Pushforward.id_inv_app']
+    simp only [Opens.carrier_eq_coe, Opens.mk_coe, map_id]
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.componentwise_diagram AlgebraicGeometry.PresheafedSpace.componentwiseDiagram
 
 variable [HasColimitsOfShape J TopCat.{v}]
@@ -138,54 +135,73 @@ we can push all the presheaves forward to the colimit `X` of the underlying topo
 obtaining a diagram in `(presheaf C X)ᵒᵖ`.
 -/
 @[simps]
-def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{v} C) :
+def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{u, v, v} C) :
     J ⥤ (Presheaf C (colimit (F ⋙ PresheafedSpace.forget C)))ᵒᵖ where
-  obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).Presheaf)
-  map j j' f :=
+  obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
+  map {j j'} f :=
     (pushforwardMap (colimit.ι (F ⋙ PresheafedSpace.forget C) j') (F.map f).c ≫
-        (Pushforward.comp (F.obj j).Presheaf ((F ⋙ PresheafedSpace.forget C).map f)
+        (Pushforward.comp (F.obj j).presheaf ((F ⋙ PresheafedSpace.forget C).map f)
               (colimit.ι (F ⋙ PresheafedSpace.forget C) j')).inv ≫
-          (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).Presheaf).Hom).op
-  map_id' j := by
-    apply (op_equiv _ _).Injective
-    ext U
-    induction U using Opposite.rec'
-    cases U
-    dsimp; simp; dsimp; simp
-  map_comp' j₁ j₂ j₃ f g := by
-    apply (op_equiv _ _).Injective
-    ext U
+          (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).presheaf).hom).op
+  map_id j := by
+    apply (opEquiv _ _).injective
+    refine NatTrans.ext _ _ (funext fun U => ?_)
+    induction U using Opposite.rec' with
+    | h U =>
+      rcases U with ⟨U, hU⟩
+      dsimp [comp_obj, forget_obj, Functor.comp_map, forget_map, op_comp, unop_op,
+        pushforwardObj_obj, op_obj, Opens.map_obj, opEquiv, Equiv.coe_fn_mk, unop_comp,
+        Quiver.Hom.unop_op, unop_id]
+      -- Porting note : some `simp` lemmas are not picked up
+      rw [NatTrans.comp_app, pushforwardMap_app, NatTrans.id_app]
+      simp only [op_obj, unop_op, Opens.map_obj, map_id_c_app, Opens.map_id_obj',
+        map_id, pushforwardEq_hom_app, eqToHom_op, id_eq, eqToHom_map, id_comp,
+        TopCat.Presheaf.Pushforward.id_inv_app']
+      rw [NatTrans.comp_app, Pushforward.comp_inv_app, id_comp]
+      dsimp
+      simp
+  map_comp {j₁ j₂ j₃} f g := by
+    apply (opEquiv _ _).injective
+    refine NatTrans.ext _ _ (funext fun U => ?_)
+    dsimp only [comp_obj, forget_obj, Functor.comp_map, forget_map, op_comp, unop_op,
+      pushforwardObj_obj, op_obj, opEquiv, Equiv.coe_fn_mk, unop_comp, Quiver.Hom.unop_op]
+    -- Porting note : some `simp` lemmas are not picked up
+    rw [NatTrans.comp_app, pushforwardMap_app, NatTrans.comp_app, Pushforward.comp_inv_app,
+      id_comp, pushforwardEq_hom_app, NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app,
+      pushforwardMap_app, Pushforward.comp_inv_app, id_comp, pushforwardEq_hom_app,
+      NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, Pushforward.comp_inv_app,
+      id_comp, pushforwardMap_app]
+    simp only [pushforwardObj_obj, op_obj, unop_op, map_comp_c_app, pushforwardMap_app,
+      Opens.map_comp_obj, Pushforward.comp_inv_app, pushforwardEq_hom_app, eqToHom_op, id_eq,
+      eqToHom_map, id_comp, assoc, eqToHom_trans]
     dsimp
-    simp only [map_comp_c_app, id.def, eq_to_hom_op, pushforward_map_app, eq_to_hom_map, assoc,
-      id_comp, pushforward.comp_inv_app, pushforward_eq_hom_app]
-    dsimp
-    simp only [eq_to_hom_trans, id_comp]
+    simp only [eqToHom_trans, id_comp]
     congr 1
     -- The key fact is `(F.map f).c.congr`,
     -- which allows us in rewrite in the argument of `(F.map f).c.app`.
-    rw [(F.map f).c.congr]
-    -- Now we pick up the pieces. First, we say what we want to replace that open set by:
-    pick_goal 3
-    refine' op ((opens.map (colimit.ι (F ⋙ PresheafedSpace.forget C) j₂)).obj (unop U))
+    rw [@NatTrans.congr (α := (F.map f).c)
+      (op ((Opens.map (F.map g).base).obj ((Opens.map (colimit.ι (F ⋙ forget C) j₃)).obj U.unop)))
+      (op ((Opens.map (colimit.ι (F ⋙ PresheafedSpace.forget C) j₂)).obj (unop U)))
+      _]
     -- Now we show the open sets are equal.
     swap
     · apply unop_injective
-      rw [← opens.map_comp_obj]
+      rw [← Opens.map_comp_obj]
       congr
       exact colimit.w (F ⋙ PresheafedSpace.forget C) g
     -- Finally, the original goal is now easy:
-    swap
-    · simp
-      rfl
+    simp
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.pushforward_diagram_to_colimit AlgebraicGeometry.PresheafedSpace.pushforwardDiagramToColimit
 
 variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)]
 
 /-- Auxiliary definition for `PresheafedSpace.has_colimits`.
 -/
-def colimit (F : J ⥤ PresheafedSpace.{v} C) : PresheafedSpace C where
-  carrier := colimit (F ⋙ PresheafedSpace.forget C)
-  Presheaf := limit (pushforwardDiagramToColimit F).leftOp
+def colimit (F : J ⥤ PresheafedSpace.{u, v, v} C) : PresheafedSpace C where
+  carrier := colimit (F ⋙ PresheafedSpace.forget.{u, v, v} C)
+  presheaf := limit (pushforwardDiagramToColimit F).leftOp
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit AlgebraicGeometry.PresheafedSpace.colimit
 
 @[simp]
@@ -448,4 +464,3 @@ theorem colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpac
 end PresheafedSpace
 
 end AlgebraicGeometry
-
