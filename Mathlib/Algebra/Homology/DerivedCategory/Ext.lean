@@ -104,8 +104,8 @@ variable {X Y}
 
 noncomputable instance : HasGradedHMul (newExt Y Z) (newExt X Y)
     (newExt X Z) where
-  γhmul' a b c h α β :=
-    mk (α.hom •[show (a : ℤ) + b = c by rw [← h, Nat.cast_add]] β.hom)
+  γhmul' p q r h α β :=
+    mk (α.hom •[show (p : ℤ) + q = r by rw [← h, Nat.cast_add]] β.hom)
 
 @[simp]
 lemma γhmul_hom {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :

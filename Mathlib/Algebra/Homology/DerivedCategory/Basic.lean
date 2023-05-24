@@ -55,11 +55,11 @@ noncomputable instance : Preadditive (DerivedCategory C) := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
 
-noncomputable instance : HasShift (DerivedCategory C) ℤ := by
+instance : HasZeroObject (DerivedCategory C) := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
 
-instance : HasZeroObject (DerivedCategory C) := by
+noncomputable instance : HasShift (DerivedCategory C) ℤ := by
   dsimp only [DerivedCategory, HomotopyCategory.qis]
   infer_instance
 

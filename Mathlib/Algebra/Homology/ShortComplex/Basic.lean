@@ -43,7 +43,7 @@ structure ShortComplex [HasZeroMorphisms C] where
 
 namespace ShortComplex
 
-attribute [reassoc (attr := simp)] ShortComplex.zero
+attribute [reassoc (attr := simp)] zero
 
 variable {C}
 variable [HasZeroMorphisms C]

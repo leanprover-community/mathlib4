@@ -14,11 +14,13 @@ namespace MappingCone
 
 attribute [simp] comp_liftCycles_assoc
 
-lemma homology_triangle_exact {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) :
-  (ShortComplex.mk ((newHomologyFunctor _ _ n).map φ)
-    ((newHomologyFunctor _ _ n).map (inr φ))
-      (by dsimp ; rw [← homologyMap_comp, (homotopySelfCompInr φ).homologyMap_eq,
-        homologyMap_zero])).Exact := by
+-- exactness of H^n K ⟶ H^n L ⟶ H^n cône
+lemma homology_triangle_exact {K L : CochainComplex C ℤ}
+    (φ : K ⟶ L) (n : ℤ) :
+    (ShortComplex.mk ((newHomologyFunctor _ _ n).map φ)
+      ((newHomologyFunctor _ _ n).map (inr φ))
+        (by dsimp ; rw [← homologyMap_comp, (homotopySelfCompInr φ).homologyMap_eq,
+          homologyMap_zero])).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   dsimp
   intro A x hx
