@@ -388,7 +388,7 @@ def AlgebraicIndependent.aevalEquiv (hx : AlgebraicIndependent R x) :
       simp
 #align algebraic_independent.aeval_equiv AlgebraicIndependent.aevalEquiv
 
-@[simp]
+--@[simp] Porting note: removing simp because the linter complains about deterministic timeout
 theorem AlgebraicIndependent.algebraMap_aevalEquiv (hx : AlgebraicIndependent R x)
     (p : MvPolynomial ι R) :
     algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
@@ -427,8 +427,7 @@ def AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin (hx : Algebraic
     (Polynomial.mapEquiv hx.aevalEquiv.toRingEquiv)
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin
 
-/-@[simp] Porting note: removed simp to placate linter on
-`mvPolynomialOptionEquivPolynomialAdjoin_C`-/
+@[simp]
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
     (hx : AlgebraicIndependent R x) (y) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin y =
@@ -437,7 +436,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
   rfl
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_apply AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
 
-@[simp]
+--@[simp] Porting note: removing simp because the linter complains about deterministic timeout
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
     (hx : AlgebraicIndependent R x) (r) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (C r) = Polynomial.C (algebraMap _ _ r) := by
