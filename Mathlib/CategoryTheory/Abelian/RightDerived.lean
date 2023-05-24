@@ -17,12 +17,12 @@ import Mathlib.CategoryTheory.Abelian.Exact
 /-!
 # Right-derived functors
 
-We define the right-derived functors `F.right_derived n : C ⥤ D` for any additive functor `F`
+We define the right-derived functors `F.rightDerived n : C ⥤ D` for any additive functor `F`
 out of a category with injective resolutions.
 
 The definition is
 ```
-injective_resolutions C ⋙ F.map_homotopy_category _ ⋙ homotopy_category.homology_functor D _ n
+injective_resolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homologyFunctor D _ n
 ```
 that is, we pick an injective resolution (thought of as an object of the homotopy category),
 we apply `F` objectwise, and compute `n`-th homology.
@@ -36,18 +36,18 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
-* `category_theory.functor.right_derived_obj_injective_zero`: the `0`-th derived functor of `F` on
+* `CategoryTheory.Functor.rightDerivedObj_injective_zero`: the `0`-th derived functor of `F` on
   an injective object `X` is isomorphic to `F.obj X`.
-* `category_theory.functor.right_derived_obj_injective_succ`: injective objects have no higher
+* `CategoryTheory.Functor.rightDerivedObj_injective_succ`: injective objects have no higher
   right derived functor.
-* `category_theory.nat_trans.right_derived`: the natural isomorphism between right derived functors
+* `CategoryTheory.NatTrans.rightDerived`: the natural isomorphism between right derived functors
   induced by natural transformation.
 
-Now, we assume `preserves_finite_limits F`, then
-* `category_theory.abelian.functor.preserves_exact_of_preserves_finite_limits_of_mono`: if `f` is
-  mono and `exact f g`, then `exact (F.map f) (F.map g)`.
-* `category_theory.abelian.functor.right_derived_zero_iso_self`: if there are enough injectives,
-  then there is a natural isomorphism `(F.right_derived 0) ≅ F`.
+Now, we assume `PreservesFiniteLimits F`, then
+* `CategoryTheory.Abelian.Functor.preserves_exact_of_preservesFiniteLimits_of_mono`: if `f` is
+  mono and `Exact f g`, then `Exact (F.map f) (F.map g)`.
+* `CategoryTheory.Abelian.Functor.rightDerivedZeroIsoSelf`: if there are enough injectives,
+  then there is a natural isomorphism `(F.rightDerived 0) ≅ F`.
 -/
 
 
@@ -102,7 +102,6 @@ def Functor.rightDerivedObjInjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X
       (CochainComplex.homologyFunctorSuccSingle₀ D n).app (F.obj X) ≪≫ (Functor.zero_obj _).isoZero
 #align category_theory.functor.right_derived_obj_injective_succ CategoryTheory.Functor.rightDerivedObjInjectiveSucc
 
-set_option maxHeartbeats 0 in
 /-- We can compute a right derived functor on a morphism using a descent of that morphism
 to a cochain map between chosen injective resolutions.
 -/
@@ -191,7 +190,7 @@ open CategoryTheory.Preadditive
 
 variable [Abelian C] [Abelian D] [Additive F]
 
-/-- If `preserves_finite_limits F` and `mono f`, then `exact (F.map f) (F.map g)` if
+/-- If `PreservesFiniteLimits F` and `Mono f`, then `Exact (F.map f) (F.map g)` if
 `exact f g`. -/
 theorem preserves_exact_of_preservesFiniteLimits_of_mono [PreservesFiniteLimits F] [Mono f]
     (ex : Exact f g) : Exact (F.map f) (F.map g) :=
@@ -209,8 +208,8 @@ theorem exact_of_map_injectiveResolution (P : InjectiveResolution X) [PreservesF
     (preserves_exact_of_preservesFiniteLimits_of_mono _ P.exact₀)
 #align category_theory.abelian.functor.exact_of_map_injective_resolution CategoryTheory.Abelian.Functor.exact_of_map_injectiveResolution
 
-/-- Given `P : InjectiveResolution X`, a morphism `(F.right_derived 0).obj X ⟶ F.obj X` given
-`preserves_finite_limits F`. -/
+/-- Given `P : InjectiveResolution X`, a morphism `(F.rightDerived 0).obj X ⟶ F.obj X` given
+`PreservesFiniteLimits F`. -/
 def rightDerivedZeroToSelfApp [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) : (F.rightDerived 0).obj X ⟶ F.obj X :=
   (rightDerivedObjIso F 0 P).hom ≫
@@ -229,7 +228,7 @@ def rightDerivedZeroToSelfApp [EnoughInjectives C] [PreservesFiniteLimits F] {X 
         (asIso (kernel.lift _ _ (exact_of_map_injectiveResolution F P).w)).inv
 #align category_theory.abelian.functor.right_derived_zero_to_self_app CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfApp
 
-/-- Given `P : InjectiveResolution X`, a morphism `F.obj X ⟶ (F.right_derived 0).obj X`. -/
+/-- Given `P : InjectiveResolution X`, a morphism `F.obj X ⟶ (F.rightDerived 0).obj X`. -/
 def rightDerivedZeroToSelfAppInv [EnoughInjectives C] {X : C} (P : InjectiveResolution X) :
     F.obj X ⟶ (F.rightDerived 0).obj X :=
   homology.lift _ _ _ (F.map (P.ι.f 0) ≫ cokernel.π _)
@@ -286,8 +285,8 @@ theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteL
   · apply isIso_kernel_lift_of_exact_of_mono _ _ (exact_of_map_injectiveResolution F P)
 #align category_theory.abelian.functor.right_derived_zero_to_self_app_inv_comp CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfAppInv_comp
 
-/-- Given `P : InjectiveResolution X`, the isomorphism `(F.right_derived 0).obj X ≅ F.obj X` if
-`preserves_finite_limits F`. -/
+/-- Given `P : InjectiveResolution X`, the isomorphism `(F.rightDerived 0).obj X ≅ F.obj X` if
+`PreservesFiniteLimits F`. -/
 def rightDerivedZeroToSelfAppIso [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) : (F.rightDerived 0).obj X ≅ F.obj X where
   hom := rightDerivedZeroToSelfApp _ P
@@ -297,7 +296,7 @@ def rightDerivedZeroToSelfAppIso [EnoughInjectives C] [PreservesFiniteLimits F] 
 #align category_theory.abelian.functor.right_derived_zero_to_self_app_iso CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfAppIso
 
 /-- Given `P : InjectiveResolution X` and `Q : InjectiveResolution Y` and a morphism `f : X ⟶ Y`,
-naturality of the square given by `right_derived_zero_to_self_natural`. -/
+naturality of the square given by `rightDerivedZeroToSelf_natural`. -/
 theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y) :
     F.map f ≫ rightDerivedZeroToSelfAppInv F Q =
@@ -324,7 +323,7 @@ theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f :
   rfl -- Porting note: extra rfl
 #align category_theory.abelian.functor.right_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.rightDerivedZeroToSelf_natural
 
-/-- Given `preserves_finite_limits F`, the natural isomorphism `(F.right_derived 0) ≅ F`. -/
+/-- Given `PreservesFiniteLimits F`, the natural isomorphism `(F.rightDerived 0) ≅ F`. -/
 def rightDerivedZeroIsoSelf [EnoughInjectives C] [PreservesFiniteLimits F] : F.rightDerived 0 ≅ F :=
   Iso.symm <|
     NatIso.ofComponents
