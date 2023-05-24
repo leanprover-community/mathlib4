@@ -548,64 +548,66 @@ def toFractionRingRingEquiv : Ratfunc K ≃+* FractionRing K[X] where
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic ratfunc.smul_tac -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic ratfunc.smul_tac -/
 instance : CommRing (Ratfunc K) where
+  mul_zero := sorry
+  zero_mul := sorry
   add := (· + ·)
   add_assoc := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   add_comm := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
-  zero := 0
+  zero := Ratfunc.zero
   zero_add := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   add_zero := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   neg := Neg.neg
   add_left_neg := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   sub := Sub.sub
   sub_eq_add_neg := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   mul := (· * ·)
   mul_assoc := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   mul_comm := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   left_distrib := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   right_distrib := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
-  one := 1
+  one := Ratfunc.one
   one_mul := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   mul_one := by
-    run_tac
+    sorry <;> run_tac
       frac_tac
   nsmul := (· • ·)
   nsmul_zero := by
-    run_tac
+    sorry <;> run_tac
       smul_tac
   nsmul_succ _ := by
-    run_tac
+    sorry <;> run_tac
       smul_tac
   zsmul := (· • ·)
   zsmul_zero' := by
-    run_tac
+    sorry <;> run_tac
       smul_tac
   zsmul_succ' _ := by
-    run_tac
+    sorry <;> run_tac
       smul_tac
   zsmul_neg' _ := by
-    run_tac
+    sorry <;> run_tac
       smul_tac
   npow := npowRec
 
@@ -613,10 +615,10 @@ variable {K}
 
 section LiftHom
 
-variable {G₀ L R S F : Type _} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
+variable {G₀ L R S F : Type _} [CommGroupWithZero G₀] [Field L] [CommRing R] [IsDomain R] [CommRing S] [IsDomain S]
 
-omit hring
-
+-- porting note: removed `omit hring`
+#synth MulOneClass (Ratfunc R)
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `ratfunc R →* ratfunc S`,
 on the condition that `φ` maps non zero divisors to non zero divisors,
@@ -626,27 +628,36 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
   toFun f :=
     Ratfunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then of_fraction_ring (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
-      fun p q p' q' hq hq' h => by
-      rw [dif_pos, dif_pos, of_fraction_ring.inj_eq, Localization.mk_eq_mk_iff]
+      fun {p q p' q'} hq hq' h => by
+      dsimp
+      rw [dif_pos, dif_pos, of_fraction_ring.injEq, Localization.mk_eq_mk_iff]
       rotate_left
-      · exact hφ hq'
       · exact hφ hq
+      · exact hφ hq'
       refine' Localization.r_of_eq _
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
-    rw [← of_fraction_ring_one, ← Localization.mk_one, lift_on_of_fraction_ring_mk, dif_pos]
+    dsimp
+    rw [← of_fraction_ring_one, ← Localization.mk_one, liftOn_of_fraction_ring_mk, dif_pos]
     · simpa using of_fraction_ring_one
     · simpa using Submonoid.one_mem _
   map_mul' x y := by
-    cases x; cases y; induction' x with p q; induction' y with p' q'
-    · have hq : φ q ∈ S[X]⁰ := hφ q.prop
-      have hq' : φ q' ∈ S[X]⁰ := hφ q'.prop
-      have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
-      simp_rw [← of_fraction_ring_mul, Localization.mk_mul, lift_on_of_fraction_ring_mk, dif_pos hq,
-        dif_pos hq', dif_pos hqq', ← of_fraction_ring_mul, Submonoid.coe_mul, map_mul,
-        Localization.mk_mul, Submonoid.mk_mul_mk]
-    · rfl
-    · rfl
+    --cases x; rename_i x; cases y; rename_i y;
+    induction x using Ratfunc.induction_on'
+    next p q q0 =>
+      induction y using Ratfunc.induction_on'
+      next p' q' q0 =>
+        · have hq : φ q ∈ S[X]⁰ := hφ (mem_nonZeroDivisors_of_ne_zero ‹_›)
+          have hq' : φ q' ∈ S[X]⁰ := hφ (mem_nonZeroDivisors_of_ne_zero ‹_›)
+          have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
+          stop
+          rw [← of_fraction_ring_mul, Localization.mk_mul, liftOn_of_fraction_ring_mk, dif_pos hq,
+            dif_pos hq', dif_pos hqq', ← of_fraction_ring_mul, Submonoid.coe_mul, map_mul,
+            Localization.mk_mul, Submonoid.mk_mul_mk]
+          simp
+          dsimp
+        · rfl
+        · rfl
 #align ratfunc.map Ratfunc.map
 #exit
 
