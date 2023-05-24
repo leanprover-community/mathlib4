@@ -14,7 +14,7 @@ In this file, we shall define the homology of short complexes `S`, i.e. diagrams
 for `S` consists of compatible left/right homology data `left` and `right`. The
 left homology data `left` involves an object `left.H` that is a cokernel of the canonical
 map `S.X₁ ⟶ K` where `K` is a kernel of `g`. On the other hand, the dual notion `right.H`
-is a cokernel of the canonical morphism `Q ⟶ S.X₃` when `Q` is a cokernel of `f`.
+is a kernel of the canonical morphism `Q ⟶ S.X₃` when `Q` is a cokernel of `f`.
 The compatibility that is required involves an isomorphism `left.H ≅ right.H` which
 makes a certain pentagon commute.
 
