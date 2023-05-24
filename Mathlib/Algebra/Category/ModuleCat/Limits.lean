@@ -31,31 +31,32 @@ noncomputable section
 
 namespace ModuleCat
 
-variable {R : Type u} [Ring R]
+variable (R : Type u) [Ring R]
 
 variable {J : Type v} [SmallCategory J]
 
-instance addCommGroupObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues. -/
+abbrev ModuleCatMax.{u₁, u₂} := ModuleCat.{max u₁ u₂} R
+
+variable {R}
+
+instance addCommGroupObj (F : J ⥤ ModuleCatMax.{u, v, w} R) (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
   change AddCommGroup (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
--- porting note: there is a missing instance
-example (X : ModuleCat R) : AddCommGroup ((forget (ModuleCat R)).obj X) := by
-  infer_instance
-  sorry
-
-instance moduleObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
-    Module R ((F ⋙ forget (ModuleCat R)).obj j) := by
+instance moduleObj (F : J ⥤ ModuleCatMax.{u, v, w} R) (j) :
+    Module.{u, max v w} R ((F ⋙ forget (ModuleCat R)).obj j) := by
   change Module R (F.obj j)
   infer_instance
 #align Module.module_obj ModuleCat.moduleObj
 
 /-- The flat sections of a functor into `Module R` form a submodule of all sections.
 -/
-def sectionsSubmodule (F : J ⥤ ModuleCat.{max v w} R) : Submodule R (∀ j, F.obj j) :=
+def sectionsSubmodule (F : J ⥤ ModuleCatMax.{u, v, w} R) : Submodule R (∀ j, F.obj j) :=
   {
     AddGroupCat.sectionsAddSubgroup
       (F ⋙
@@ -65,8 +66,8 @@ def sectionsSubmodule (F : J ⥤ ModuleCat.{max v w} R) : Submodule R (∀ j, F.
                 w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simp only [forget_map_eq_coe, functor.comp_map, Pi.smul_apply, LinearMap.map_smul]
-      dsimp [functor.sections] at sh
+      simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
+      dsimp [Functor.sections] at sh
       rw [sh f] }
 #align Module.sections_submodule ModuleCat.sectionsSubmodule
 
