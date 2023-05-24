@@ -638,7 +638,6 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
 theorem Minpoly.toAdjoin.apply_X :
     Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
     simp [toAdjoin]
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
@@ -738,7 +737,6 @@ def quotMapOfEquivQuotMapCMapSpanMk :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f})) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk
 
@@ -746,7 +744,6 @@ set_option linter.uppercaseLean3 false in
 theorem quotMapOfEquivQuotMapCMapSpanMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapSpanMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X]))) x := rfl
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_mk
 
@@ -757,7 +754,6 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
       Ideal.Quotient.mk (I.map (of f)) x := by
   rw [quotMapOfEquivQuotMapCMapSpanMk, Ideal.quotEquivOfEq_symm]
   exact Ideal.quotEquivOfEq_mk _ _
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_symm_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_symm_mk
 
@@ -768,7 +764,6 @@ def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
         (span ({f} : Set R[X])).map (Ideal.Quotient.mk (I.map (C : R →+* R[X]))) :=
   quotQuotEquivComm (Ideal.span ({f} : Set R[X])) (I.map (C : R →+* R[X]))
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk AdjoinRoot.quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk
 
@@ -777,7 +772,6 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk I f (Ideal.Quotient.mk _ (mk f p)) =
       quotQuotMk (I.map C) (span {f}) p :=
   rfl
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_mk AdjoinRoot.quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk
 
@@ -787,7 +781,6 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X])))
         (mk f p) :=
   rfl
-
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_symm_quot_quot_mk AdjoinRoot.quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk
 
