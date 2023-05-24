@@ -8,8 +8,8 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathbin.RingTheory.Polynomial.Basic
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
@@ -38,8 +38,7 @@ def imageOfDf (f) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 #align algebraic_geometry.polynomial.image_of_Df AlgebraicGeometry.Polynomial.imageOfDf
 
-theorem isOpen_imageOfDf : IsOpen (imageOfDf f) :=
-  by
+theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
   rw [image_of_Df, set_of_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
   exact isOpen_iUnion fun i => is_open_basic_open
 #align algebraic_geometry.polynomial.is_open_image_of_Df AlgebraicGeometry.Polynomial.isOpen_imageOfDf
@@ -56,8 +55,7 @@ theorem comap_c_mem_imageOfDf {I : PrimeSpectrum R[X]}
 /-- The open set `image_of_Df f` coincides with the image of `basic_open f` under the
 morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_c_compl_zeroLocus :
-    imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' zeroLocus {f}ᶜ :=
-  by
+    imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' zeroLocus {f}ᶜ := by
   ext x
   refine' ⟨fun hx => ⟨⟨map C x.as_ideal, is_prime_map_C_of_is_prime x.is_prime⟩, ⟨_, _⟩⟩, _⟩
   · rw [mem_compl_iff, mem_zero_locus, singleton_subset_iff]
@@ -76,8 +74,7 @@ Stacks Project "Lemma 00FB", first part.
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
-theorem isOpenMap_comap_c : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) :=
-  by
+theorem isOpenMap_comap_c : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
   rintro U ⟨s, z⟩
   rw [← compl_compl U, ← z, ← Union_of_singleton_coe s, zero_locus_Union, compl_Inter, image_Union]
   simp_rw [← image_of_Df_eq_comap_C_compl_zero_locus]
