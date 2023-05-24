@@ -263,7 +263,7 @@ theorem commute_monomial {a : R} {n} :
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
-    split_ifs <;> [apply h, rfl]
+    split_ifs <;> [apply h; rfl]
 #align mv_power_series.commute_monomial MvPowerSeries.commute_monomial
 
 protected theorem one_mul : (1 : MvPowerSeries σ R) * φ = φ :=
@@ -898,7 +898,7 @@ instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
     rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
-        [left, right] <;>
+        [left; right] <;>
       · refine' isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u _)
         simpa using h.symm
 
