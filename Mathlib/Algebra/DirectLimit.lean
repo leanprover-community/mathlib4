@@ -423,14 +423,11 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
             let ⟨k, hik, hjk⟩ := exists_ge_ge i j
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
-              /-
-              Lean 3 ⊢ ⇑(of G f i) x * quotient.mk' (free_abelian_group.of s)
-                       = quotient.mk' (free_abelian_group.of (⟨i, x⟩ ::ₘ s))
-              -/
-              dsimp
-              sorry
-              done
-              ⟩)
+              /- In Lean3, from here, this was `by refl`. I have added
+              the lemma `FreeCommRing.of_cons` to fix this proof. -/
+              apply congr_arg Quotient.mk''
+              symm
+              apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
           -- porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
           -- here as Lean 3 is, for some reason.
@@ -561,8 +558,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         dsimp only
         rw [(f' i i _).map_add]
         exact sub_self _
-        --exacts[Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
-        all_goals sorry
+        all_goals tauto
     · refine'
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
@@ -574,8 +570,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           (FreeCommRing.lift _).map_mul, lift_of, lift_of, lift_of]
         dsimp only
         rw [(f' i i _).map_mul]
+        exact sub_self _
+        all_goals tauto
         --exacts[sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
-        all_goals sorry
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
     refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
     -- porting note: `RingHom.map_zero` was `(restriction _).map_zero`
