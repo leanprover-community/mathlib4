@@ -38,10 +38,10 @@ The reader familiar with C⋆-algebra theory may recognize that one
 only needs `L` and `R` to be functions instead of continuous linear maps, at least when `A` is a
 C⋆-algebra. Our intention is simply to eventually provide a constructor for this situation.
 
-We pull back the `normed_algebra` structure (and everything contained therein) through the
+We pull back the `NormedAlgebra` structure (and everything contained therein) through the
 ring (even algebra) homomorphism
-`double_centralizer.to_prod_mul_opposite_hom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` which
-sends `a : 𝓜(𝕜, A)` to `(a.fst, mul_opposite.op a.snd)`. The star structure is provided
+`DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` which
+sends `a : 𝓜(𝕜, A)` to `(a.fst, MulOpposite.op a.snd)`. The star structure is provided
 separately.
 
 ## References
@@ -73,10 +73,11 @@ If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to
 structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
+  /-- The centrality codnition that the maps linear maps intertwine one another. -/
   central : ∀ x y : A, snd x * y = x * fst y
 #align double_centralizer DoubleCentralizer
 
--- mathport name: «expr𝓜( , )»
+@[inherit_doc]
 scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 𝕜 A
 
 open MultiplierAlgebra
@@ -100,8 +101,8 @@ variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 ### Algebraic structure
 
 Because the multiplier algebra is defined as the algebra of double centralizers, there is a natural
-injection `double_centralizer.to_prod_mul_opposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`
-defined by `λ a, (a.fst, mul_opposite.op a.snd)`. We use this map to pull back the ring, module and
+injection `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`
+defined by `λ a, (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module and
 algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
 
 variable {𝕜 A}
@@ -182,7 +183,7 @@ instance instIsCentralScalar {R : Type _} [Semiring R] [Module R A] [SMulCommCla
 end Scalars
 
 instance instOne : One 𝓜(𝕜, A) :=
-  ⟨⟨1, fun x y => rfl⟩⟩
+  ⟨⟨1, fun _x _y => rfl⟩⟩
 
 instance instMul : Mul 𝓜(𝕜, A)
     where mul a b :=
@@ -327,14 +328,14 @@ theorem pow_snd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
 #align double_centralizer.pow_snd DoubleCentralizer.pow_snd
 
 /-- The natural injection from `double_centralizer.to_prod` except the second coordinate inherits
-`mul_opposite.op`. The ring structure on `𝓜(𝕜, A)` is the pullback under this map. -/
+`MulOpposite.op`. The ring structure on `𝓜(𝕜, A)` is the pullback under this map. -/
 def toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ := fun a =>
   (a.fst, MulOpposite.op a.snd)
 #align double_centralizer.to_prod_mul_opposite DoubleCentralizer.toProdMulOpposite
 
 theorem toProdMulOpposite_injective :
     Function.Injective (toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ) :=
-  fun a b h =>
+  fun _a _b h =>
     let h' := Prod.ext_iff.mp h
     ext (𝕜 := 𝕜) (A := A) _ _ <| Prod.ext h'.1 <| MulOpposite.op_injective h'.2
 #align double_centralizer.to_prod_mul_opposite_injective DoubleCentralizer.toProdMulOpposite_injective
@@ -349,38 +350,38 @@ theorem range_toProdMulOpposite :
 #align double_centralizer.range_to_prod_mul_opposite DoubleCentralizer.range_toProdMulOpposite
 
 /-- The ring structure is inherited as the pullback under the injective map
-`double_centralizer.to_prod_mul_opposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
+`DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
 instance instRing : Ring 𝓜(𝕜, A) :=
   toProdMulOpposite_injective.ring _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun x n => Prod.ext rfl <| MulOpposite.op_smul _ _)
-    (fun x n => Prod.ext rfl <| MulOpposite.op_smul _ _)
-    (fun x n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
 /-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
   map_zero' := rfl
-  map_add' x y := rfl
+  map_add' _x _y := rfl
 #align double_centralizer.to_prod_hom DoubleCentralizer.toProdHom
 
-/-- The canonical map `double_centralizer.to_prod_mul_opposite` as a ring homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProdMulOpposite` as a ring homomorphism. -/
 @[simps]
 def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ where
   toFun := toProdMulOpposite
   map_zero' := rfl
   map_one' := rfl
-  map_add' x y := rfl
-  map_mul' x y := rfl
+  map_add' _x _y := rfl
+  map_mul' _x _y := rfl
 #align double_centralizer.to_prod_mul_opposite_hom DoubleCentralizer.toProdMulOppositeHom
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
 `double_centralizer.to_prod : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
 instance instModule {S : Type _} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
-  Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun x y => rfl
+  Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
 
--- TODO: generalize to `algebra S 𝓜(𝕜, A)` once `continuous_linear_map.algebra` is generalized.
+-- TODO: generalize to `Algebra S 𝓜(𝕜, A)` once `ContinuousLinearMap.algebra` is generalized.
 instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
   toFun k :=
     { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
@@ -471,12 +472,18 @@ end Star
 
 variable (𝕜)
 
+/-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
+maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
+
+Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
+`algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
+`DoubleCentralizer.coe_eq_algebraMap` below. -/
 -- porting note: added `noncomputable` because an IR check failed?
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
     snd := (ContinuousLinearMap.mul 𝕜 A).flip a
-    central := fun x y => mul_assoc _ _ _ }
+    central := fun _x _y => mul_assoc _ _ _ }
 
 variable {𝕜}
 
@@ -484,8 +491,8 @@ variable {𝕜}
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
 
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
-`algebra_map 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
-`double_centralizer.coe_eq_algebra_map` below. -/
+`algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
+`DoubleCentralizer.coe_eq_algebraMap` below. -/
 noncomputable instance : CoeTC A 𝓜(𝕜, A) where
   coe := DoubleCentralizer.coe 𝕜
 
@@ -529,7 +536,7 @@ noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [Norme
 /-!
 ### Norm structures
 We define the norm structure on `𝓜(𝕜, A)` as the pullback under
-`double_centralizer.to_prod_mul_opposite_hom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`, which
+`DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`, which
 provides a definitional isometric embedding. Consequently, completeness of `𝓜(𝕜, A)` is obtained
 by proving that the range of this map is closed.
 
@@ -539,13 +546,13 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 
 
 /-- The normed group structure is inherited as the pullback under the ring monomoprhism
-`double_centralizer.to_prod_mul_opposite_hom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
+`DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
 noncomputable instance : NormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
     (by simpa using toProdMulOpposite_injective)
 
--- even though the definition is actually in terms of `double_centralizer.to_prod_mul_opposite`, we
--- choose to see through that here to avoid `mul_opposite.op` appearing.
+-- even though the definition is actually in terms of `DoubleCentralizer.toProdMulOpposite`, we
+-- choose to see through that here to avoid `MulOpposite.op` appearing.
 theorem norm_def (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdHom a‖ :=
   rfl
 #align double_centralizer.norm_def DoubleCentralizer.norm_def
@@ -662,56 +669,53 @@ variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
 
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
-instance : CstarRing 𝓜(𝕜, A) where
-  norm_star_mul_self :=
-    @fun (a : 𝓜(𝕜, A)) =>  congr_arg ((↑) : ℝ≥0 → ℝ) <|
-      show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
-        /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
-            `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have
-            `‖star a * a‖ = ‖(star a * a).snd‖ = ‖R (star (L (star x))) * y‖ = ‖star (L (star x)) * L y‖`
-            Now, on the one hand,
-            `‖star (L (star x)) * L y‖ ≤ ‖star (L (star x))‖ * ‖L y‖ = ‖L (star x)‖ * ‖L y‖ ≤ ‖L‖ ^ 2`
-            whenever `‖x‖, ‖y‖ ≤ 1`, so the supremum over all such `x, y` is at most `‖L‖ ^ 2`.
-            On the other hand, for any `‖z‖ ≤ 1`, we may choose `x := star z` and `y := z` to get:
-            `‖star (L (star x)) * L y‖ = ‖star (L z) * (L z)‖ = ‖L z‖ ^ 2`, and taking the supremum over
-            all such `z` yields that the supremum is at least `‖L‖ ^ 2`. It is the latter part of the
-            argument where `densely_normed_field 𝕜` is required (for `Sup_closed_unit_ball_eq_nnnorm`). -/
-        have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
-          Metric.nonempty_closedBall.2 zero_le_one
-        have key :
-          ∀ x y, ‖x‖₊ ≤ 1 → ‖y‖₊ ≤ 1 → ‖a.snd (star (a.fst (star x))) * y‖₊ ≤ ‖a‖₊ * ‖a‖₊ := by
-          intro x y hx hy
-          rw [a.central]
-          calc
-            ‖star (a.fst (star x)) * a.fst y‖₊ ≤ ‖a.fst (star x)‖₊ * ‖a.fst y‖₊ :=
-              nnnorm_star (a.fst (star x)) ▸ nnnorm_mul_le _ _
-            _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
-              (mul_le_mul' (a.fst.le_op_norm_of_le ((nnnorm_star x).trans_le hx))
-                (a.fst.le_op_norm_of_le hy))
-            _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
-
-        rw [← nnnorm_snd]
-        simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-        simp only [← @op_nnnorm_mul 𝕜 A]
-        simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
-        refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
-        · rintro - ⟨x, hx, rfl⟩
-          refine' csSup_le (hball.image _) _
+instance instCstarRing : CstarRing 𝓜(𝕜, A) where
+  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) =>  congr_arg ((↑) : ℝ≥0 → ℝ) <|
+    show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
+    /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
+    `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have
+    `‖star a * a‖ = ‖(star a * a).snd‖ = ‖R (star (L (star x))) * y‖ = ‖star (L (star x)) * L y‖`
+    Now, on the one hand,
+    `‖star (L (star x)) * L y‖ ≤ ‖star (L (star x))‖ * ‖L y‖ = ‖L (star x)‖ * ‖L y‖ ≤ ‖L‖ ^ 2`
+    whenever `‖x‖, ‖y‖ ≤ 1`, so the supremum over all such `x, y` is at most `‖L‖ ^ 2`.
+    On the other hand, for any `‖z‖ ≤ 1`, we may choose `x := star z` and `y := z` to get:
+    `‖star (L (star x)) * L y‖ = ‖star (L z) * (L z)‖ = ‖L z‖ ^ 2`, and taking the supremum over
+    all such `z` yields that the supremum is at least `‖L‖ ^ 2`. It is the latter part of the
+    argument where `DenselyNormedField 𝕜` is required (for `sSup_closed_unit_ball_eq_nnnorm`). -/
+      have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
+        Metric.nonempty_closedBall.2 zero_le_one
+      have key :
+        ∀ x y, ‖x‖₊ ≤ 1 → ‖y‖₊ ≤ 1 → ‖a.snd (star (a.fst (star x))) * y‖₊ ≤ ‖a‖₊ * ‖a‖₊ := by
+        intro x y hx hy
+        rw [a.central]
+        calc
+          ‖star (a.fst (star x)) * a.fst y‖₊ ≤ ‖a.fst (star x)‖₊ * ‖a.fst y‖₊ :=
+            nnnorm_star (a.fst (star x)) ▸ nnnorm_mul_le _ _
+          _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
+            (mul_le_mul' (a.fst.le_op_norm_of_le ((nnnorm_star x).trans_le hx))
+              (a.fst.le_op_norm_of_le hy))
+          _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
+      rw [← nnnorm_snd]
+      simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
+      simp only [← @op_nnnorm_mul 𝕜 A]
+      simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
+      refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
+      · rintro - ⟨x, hx, rfl⟩
+        refine' csSup_le (hball.image _) _
+        rintro - ⟨y, hy, rfl⟩
+        exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
+      · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
+        have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt_iff.2 hr
+        simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
+        obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
+        have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
+        refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
+        refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
+        · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
           rintro - ⟨y, hy, rfl⟩
-          exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
-        · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
-          have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt_iff.2 hr
-          simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
-          obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
-          have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
-          refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
-          refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
-          · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
-            rintro - ⟨y, hy, rfl⟩
-            exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
-          ·
-            simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ←
-              sq] using pow_lt_pow_of_lt_left hxr zero_le' two_pos
+          exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
+        · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
+            using pow_lt_pow_of_lt_left hxr zero_le' two_pos
 
 end DenselyNormed
 
