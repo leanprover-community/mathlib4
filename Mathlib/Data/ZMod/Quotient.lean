@@ -145,8 +145,8 @@ theorem orbitZpowersEquiv_symm_apply (k : ZMod (minimalPeriod ((· • ·) a) b)
 #align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbit_zmultiples_equiv_symm_apply
 
 theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
-    (orbitZpowersEquiv a b).symm k = (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ :=
-  by
+    (orbitZpowersEquiv a b).symm k =
+      (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
   rw [orbitZpowersEquiv_symm_apply, ZMod.coe_int_cast]
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 #align mul_action.orbit_zpowers_equiv_symm_apply' MulAction.orbitZpowersEquiv_symm_apply'
