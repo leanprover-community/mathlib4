@@ -33,23 +33,30 @@ section Embeddings
 
 variable (F : Type _) [Field F]
 
+-- Porting note: timed out in term mode; still atrociously slow.
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type _} [CommRing R] [Algebra F R] (x : R) :
-    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) :=
-  AlgEquiv.symm <|
+    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) := by
+  refine AlgEquiv.symm ?_
+  refine
     AlgEquiv.ofBijective
-      (AlgHom.codRestrict (AdjoinRoot.liftHom _ x <| minpoly.aeval F x) _ fun p =>
-        AdjoinRoot.induction_on _ p fun p =>
-          (Algebra.adjoin_singleton_eq_range_aeval F x).symm ▸
-            (Polynomial.aeval _).mem_range.mpr ⟨p, rfl⟩)
-      ⟨(AlgHom.injective_codRestrict _ _ _).2 <|
-          (injective_iff_map_eq_zero _).2 fun p =>
-            AdjoinRoot.induction_on _ p fun p hp =>
-              Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| minpoly.dvd F x hp,
-        fun y =>
-        let ⟨p, hp⟩ :=
-          (SetLike.ext_iff.1 (Algebra.adjoin_singleton_eq_range_aeval F x) (y : R)).1 y.2
-        ⟨AdjoinRoot.mk _ p, Subtype.eq hp⟩⟩
+      (AlgHom.codRestrict (AdjoinRoot.liftHom _ x <| minpoly.aeval F x) _ fun p => ?_) ⟨?_, ?_⟩
+  · induction p using AdjoinRoot.induction_on with
+    | ih p =>
+      exact (Algebra.adjoin_singleton_eq_range_aeval F x).symm ▸
+            (Polynomial.aeval _).mem_range.mpr ⟨p, rfl⟩
+  · exact
+      (AlgHom.injective_codRestrict _ _ _).2 <|
+        (injective_iff_map_eq_zero _).2 fun p => by
+          induction p using AdjoinRoot.induction_on with
+          | ih p =>
+            intro hp
+            exact Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <|
+              minpoly.dvd F x hp
+  · intro y
+    let ⟨p, hp⟩ :=
+      (SetLike.ext_iff.1 (Algebra.adjoin_singleton_eq_range_aeval F x) (y : R)).1 y.2
+    exact ⟨AdjoinRoot.mk _ p, Subtype.eq hp⟩
 #align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
 
 open Finset
