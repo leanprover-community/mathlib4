@@ -229,8 +229,7 @@ theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
 #align zero_at_infty_continuous_map.coe_nsmul_rec ZeroAtInftyContinuousMap.coe_nsmulRec
 
 instance hasNatScalar : SMul ℕ C₀(α, β) :=
-  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous n`
-  ⟨fun n f => ⟨⟨n • ⇑f, Continuous.const_smul f.continuous n⟩,
+  ⟨fun n f => ⟨n • (f : C(α, β)),
     by simpa [coe_nsmulRec] using zero_at_infty (nsmulRec n f)⟩⟩
 #align zero_at_infty_continuous_map.has_nat_scalar ZeroAtInftyContinuousMap.hasNatScalar
 
