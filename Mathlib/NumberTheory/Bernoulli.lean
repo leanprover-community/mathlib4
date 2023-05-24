@@ -118,22 +118,23 @@ theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
 
 @[simp]
 theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
-  rw [bernoulli'_def]
-  norm_num [sum_range_succ]
+  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_zero]
+  norm_num
 #align bernoulli'_two bernoulli'_two
 
 @[simp]
 theorem bernoulli'_three : bernoulli' 3 = 0 := by
-  rw [bernoulli'_def]
-  norm_num [sum_range_succ]
+  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ, sum_range_zero]
+  norm_num
 #align bernoulli'_three bernoulli'_three
 
 @[simp]
 theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
   have : Nat.choose 4 2 = 6 := by decide
   -- shrug
-  rw [bernoulli'_def]
-  norm_num [sum_range_succ, this]
+  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ,
+    sum_range_succ, sum_range_zero, this]
+  norm_num
 #align bernoulli'_four bernoulli'_four
 
 end Examples
@@ -197,6 +198,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]
   suffices evalNegHom (B * (exp ℚ - 1)) * exp ℚ = evalNegHom (X * exp ℚ) * exp ℚ by
+    rw [map_mul, map_mul] at this --Porting note: Why doesn't simp do this?
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 #align bernoulli'_odd_eq_zero bernoulli'_odd_eq_zero
@@ -281,7 +283,7 @@ def bernoulliPowerSeries :=
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
-  cases n;
+  cases' n;
   · simp
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
@@ -298,7 +300,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   field_simp [← h, mul_ne_zero hj (hfact x.2), hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc,
     add_choose, cast_div_char_zero (factorial_mul_factorial_dvd_factorial_add _ _),
     Nat.factorial_ne_zero, hj]
-  cc
+
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one
 
 section Faulhaber
