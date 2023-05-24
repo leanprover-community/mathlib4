@@ -21,13 +21,13 @@ to be conformal.
 ## Main results
 
 * `isConformalMap_complex_linear`: a nonzero complex linear map into an arbitrary complex
-                                     normed space is conformal.
+                                   normed space is conformal.
 * `isConformalMap_complex_linear_conj`: the composition of a nonzero complex linear map with
-                                          `conj` is complex linear.
+                                        `conj` is complex linear.
 * `isConformalMap_iff_is_complex_or_conj_linear`: a real linear map between the complex
-                                                            plane is conformal iff it's complex
-                                                            linear or the composition of
-                                                            some complex linear map and `conj`.
+                                                  plane is conformal iff it's complex
+                                                  linear or the composition of
+                                                  some complex linear map and `conj`.
 
 ## Warning
 
