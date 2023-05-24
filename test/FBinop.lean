@@ -18,7 +18,7 @@ macro_rules | `($x ×ˢ' $y)   => `(fbinop% SProd.sprod $x $y)
 instance : SProd (Set α) (Set β) (Set (α × β)) := ⟨Set.prod⟩
 instance : SProd (Finset α) (Finset β) (Finset (α × β)) := ⟨Finset.product⟩
 
-set_option trace.Elab.fbinop true
+-- set_option trace.Elab.fbinop true
 
 -- These work without `fbinop%`. They're tests that we haven't broken anything.
 
