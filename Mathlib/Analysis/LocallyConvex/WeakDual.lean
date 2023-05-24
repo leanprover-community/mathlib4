@@ -31,7 +31,7 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 neighborhood basis of `0` in the weak topology.
 * `LinearMap.toSeminormFamily.withSeminorms`: the topology of a weak space is induced by the
 family of seminorms `B.toSeminormFamily`.
-* `WeakBilin.locallyConvexSpace`: a spaced endowed with a weak topology is locally convex.
+* `WeakBilin.locallyConvexSpace`: a space endowed with a weak topology is locally convex.
 
 ## References
 
