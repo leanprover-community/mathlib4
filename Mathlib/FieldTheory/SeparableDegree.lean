@@ -8,9 +8,9 @@ Authors: Jakob Scholbach
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.CharP.ExpChar
-import Mathbin.FieldTheory.Separable
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -75,8 +75,7 @@ def HasSeparableContraction.degree : ℕ :=
 
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
 theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
-    ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree :=
-  by
+    ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
   obtain ⟨m, rfl⟩ := hf.2
   use m
   rw [nat_degree_expand]
@@ -110,8 +109,7 @@ variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 /-- Every irreducible polynomial can be contracted to a separable polynomial.
 https://stacks.math.columbia.edu/tag/09H0 -/
 theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[X])
-    (irred : Irreducible f) : HasSeparableContraction q f :=
-  by
+    (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
   · rcases exists_separable_of_irreducible q irred ‹q.prime›.NeZero with ⟨n, g, hgs, hge⟩
@@ -135,8 +133,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
 
 /-- The separable degree equals the degree of any separable contraction, i.e., it is unique. -/
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
-    (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree :=
-  by
+    (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by
   cases hF
   · rcases hg with ⟨g, m, hm⟩
     rw [one_pow, expand_one] at hm
