@@ -112,9 +112,9 @@ theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
-  · rcases exists_separable_of_irreducible q irred ‹q.Prime›.NeZero with ⟨n, g, hgs, hge⟩
+  · rcases exists_separable_of_irreducible q irred ‹q.Prime›.ne_zero with ⟨n, g, hgs, hge⟩
     exact ⟨g, hgs, n, hge⟩
-#align irreducible.has_separable_contraction Irreducible.hasSeparableContraction
+#align irreducible.has_separable_contraction Polynomial.Irreducible.hasSeparableContraction
 
 /-- If two expansions (along the positive characteristic) of two separable polynomials `g` and `g'`
 agree, then they have the same degree. -/
@@ -137,12 +137,11 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
   cases hF
   · rcases hg with ⟨g, m, hm⟩
     rw [one_pow, expand_one] at hm
-    rw [hf.eq_degree]
-    rw [hm]
+    rw [hf.eq_degree, hm]
   · rcases hg with ⟨hg, m, hm⟩
     let g' := Classical.choose hf
     cases' (Classical.choose_spec hf).2 with m' hm'
-    haveI : Fact q.prime := fact_iff.2 hF_hprime
+    haveI : Fact q.Prime := ⟨by assumption⟩
     apply contraction_degree_eq_or_insep q g g' m m'
     rw [hm, hm']
     exact hg
