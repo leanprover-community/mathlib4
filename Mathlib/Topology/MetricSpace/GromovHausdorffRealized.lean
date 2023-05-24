@@ -230,14 +230,9 @@ theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidate
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
     (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
-  simp only [candidates, dist_comm, forall_const, and_true_iff, add_comm, eq_self_iff_true,
-    and_self_iff, Sum.forall, Set.mem_setOf_eq, dist_self]
-  repeat'
-    first
-      |constructor
-      |exact fun a y z => dist_triangle_left _ _ _
-      |exact fun x y => by rfl
-      |exact fun x y => maxVar_bound
+  simp_rw [candidates, Set.mem_setOf_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
+    forall_const, and_true]
+  exact ⟨fun x y => rfl, fun x y => rfl⟩
 
 /-- The distance on `X ⊕ Y` as a candidate -/
 def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Inhabited X]
