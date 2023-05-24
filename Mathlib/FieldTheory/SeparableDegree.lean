@@ -39,10 +39,9 @@ This file contains basics about the separable degree of a polynomial.
 separable degree, degree, polynomial
 -/
 
+noncomputable section
 
 namespace Polynomial
-
-noncomputable section
 
 open Classical Polynomial
 
