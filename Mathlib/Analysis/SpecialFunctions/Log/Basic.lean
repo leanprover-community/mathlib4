@@ -222,7 +222,7 @@ theorem log_injOn_pos : Set.InjOn log (Set.Ioi 0) :=
 theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := by
   have h : log x ≠ 0
   · rwa [← log_one, log_injOn_pos.ne_iff hx1]
-    norm_num
+    exact mem_Ioi.mpr zero_lt_one
   linarith [add_one_lt_exp_of_nonzero h, exp_log hx1]
 #align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
 
