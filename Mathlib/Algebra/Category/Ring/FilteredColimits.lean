@@ -8,8 +8,8 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.Algebra.Category.Group.FilteredColimits
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Group.FilteredColimits
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
@@ -135,8 +135,7 @@ def colimitCocone : cocone F where
 #align SemiRing.filtered_colimits.colimit_cocone SemiRingCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `SemiRing`. -/
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     {
       (MonCat.FilteredColimits.colimitCoconeIsColimit
@@ -208,8 +207,7 @@ def colimitCocone : cocone F where
 #align CommSemiRing.filtered_colimits.colimit_cocone CommSemiRingCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `CommSemiRing`. -/
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).desc
@@ -279,8 +277,7 @@ def colimitCocone : cocone F where
 #align Ring.filtered_colimits.colimit_cocone RingCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `Ring`. -/
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).desc
@@ -346,8 +343,7 @@ def colimitCocone : cocone F where
 #align CommRing.filtered_colimits.colimit_cocone CommRingCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `CommRing`. -/
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc t :=
     (RingCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ CommRingCat RingCat.{max v u})).desc
