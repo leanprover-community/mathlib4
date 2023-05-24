@@ -25,8 +25,7 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
--- Porting note: this does not exist in Lean 4:
---assert_not_exists Norm
+assert_not_exists Norm
 
 open Metric Set Pointwise Convex
 

@@ -342,7 +342,7 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
-  cases n <;> [exact absurd h (by decide), rfl]
+  cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
 theorem modDivAux_spec :
