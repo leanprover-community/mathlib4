@@ -24,19 +24,19 @@ it is equal to the lowest common multiple of the order of all elements of the gr
 
 ## Main definitions
 
-* `monoid.exponent_exists` is a predicate on a monoid `G` saying that there is some positive `n`
+* `Monoid.ExponentExists` is a predicate on a monoid `G` saying that there is some positive `n`
   such that `g ^ n = 1` for all `g ∈ G`.
-* `monoid.exponent` defines the exponent of a monoid `G` as the minimal positive `n` such that
+* `Monoid.exponent` defines the exponent of a monoid `G` as the minimal positive `n` such that
   `g ^ n = 1` for all `g ∈ G`, by convention it is `0` if no such `n` exists.
-* `add_monoid.exponent_exists` the additive version of `monoid.exponent_exists`.
-* `add_monoid.exponent` the additive version of `monoid.exponent`.
+* `AddMonoid.ExponentExists` the additive version of `Monoid.ExponentExists`.
+* `AddMonoid.exponent` the additive version of `Monoid.exponent`.
 
 ## Main results
 
-* `monoid.lcm_order_eq_exponent`: For a finite left cancel monoid `G`, the exponent is equal to the
-  `finset.lcm` of the order of its elements.
-* `monoid.exponent_eq_supr_order_of(')`: For a commutative cancel monoid, the exponent is
-  equal to `⨆ g : G, order_of g` (or zero if it has any order-zero elements).
+* `Monoid.lcm_order_eq_exponent`: For a finite left cancel monoid `G`, the exponent is equal to the
+  `Finset.lcm` of the order of its elements.
+* `Monoid.exponent_eq_iSup_orderOf(')`: For a commutative cancel monoid, the exponent is
+  equal to `⨆ g : G, orderOf g` (or zero if it has any order-zero elements).
 
 ## TODO
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
@@ -58,7 +58,8 @@ variable (G) [Monoid G]
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
   for all `g`.-/
 @[to_additive
-      "A predicate on an additive monoid saying that there is a positive integer `n` such\n  that `n • g = 0` for all `g`."]
+      "A predicate on an additive monoid saying that there is a positive integer `n` such\n
+      that `n • g = 0` for all `g`."]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
 #align monoid.exponent_exists Monoid.ExponentExists
@@ -67,7 +68,8 @@ def ExponentExists :=
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
   `g ∈ G` if it exists, otherwise it is zero by convention.-/
 @[to_additive
-      "The exponent of an additive group is the smallest positive integer `n` such that\n  `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
+      "The exponent of an additive group is the smallest positive integer `n` such that\n
+      `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
 noncomputable def exponent :=
   if h : ExponentExists G then Nat.find h else 0
 #align monoid.exponent Monoid.exponent
@@ -116,8 +118,8 @@ theorem pow_eq_mod_exponent {n : ℕ} (g : G) : g ^ n = g ^ (n % exponent G) :=
 #align add_monoid.nsmul_eq_mod_exponent AddMonoid.nsmul_eq_mod_exponent
 
 @[to_additive]
-theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : 0 < exponent G :=
-  by
+theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) :
+    0 < exponent G := by
   have h : ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1 := ⟨n, hpos, hG⟩
   rw [exponent, dif_pos]
   exact (Nat.find_spec h).1
@@ -178,8 +180,8 @@ theorem exponent_dvd_of_forall_pow_eq_one (G) [Monoid G] (n : ℕ) (hG : ∀ g :
 #align add_monoid.exponent_dvd_of_forall_nsmul_eq_zero AddMonoid.exponent_dvd_of_forall_nsmul_eq_zero
 
 @[to_additive]
-theorem lcm_orderOf_dvd_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf ∣ exponent G :=
-  by
+theorem lcm_orderOf_dvd_exponent [Fintype G] :
+    (Finset.univ : Finset G).lcm orderOf ∣ exponent G := by
   apply Finset.lcm_dvd
   intro g _
   exact order_dvd_exponent g
@@ -280,8 +282,8 @@ section CommMonoid
 variable [CommMonoid G]
 
 @[to_additive]
-theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) : exponent G = ⨆ g : G, orderOf g :=
-  by
+theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
+    exponent G = ⨆ g : G, orderOf g := by
   rw [iSup]
   rcases eq_or_ne (exponent G) 0 with (he | he)
   · rw [he, Set.Infinite.Nat.sSup_eq_zero <| (exponent_eq_zero_iff_range_orderOf_infinite h).1 he]
