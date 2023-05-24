@@ -10,7 +10,6 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Analysis.NormedSpace.Basic
-import Mathlib.Tactic.WLOG
 
 /-!
 # Rays in a real normed vector space

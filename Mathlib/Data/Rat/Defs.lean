@@ -560,6 +560,5 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
 
 end Rat
 
--- Porting note: `assert_not_exists` is not implemented yet.
 -- Guard against import creep.
--- assert_not_exists field
+assert_not_exists Field

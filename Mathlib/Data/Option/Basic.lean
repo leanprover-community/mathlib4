@@ -12,7 +12,7 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Common
 
 /-!
 # Option of a type
