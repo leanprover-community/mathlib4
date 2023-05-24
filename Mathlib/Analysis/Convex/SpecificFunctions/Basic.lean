@@ -54,7 +54,7 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     have h2 : x - y < 0 := by linarith
     rw [div_lt_iff h1]
     calc
-      exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add] <;> ring_nf
+      exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add]; ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
       _ < exp y * -(x - y) := (mul_lt_mul_of_pos_left ?_ y.exp_pos)
       _ = exp y * (y - x) := by ring
@@ -62,7 +62,7 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   · have h1 : 0 < z - y := by linarith
     rw [lt_div_iff h1]
     calc
-      exp y * (z - y) < exp y * (exp (z - y) - 1) := mul_lt_mul_of_pos_left _ y.exp_pos
+      exp y * (z - y) < exp y * (exp (z - y) - 1) := mul_lt_mul_of_pos_left ?_ y.exp_pos
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
     linarith [add_one_lt_exp_of_nonzero h1.ne']
@@ -202,16 +202,22 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
   have hp : 0 < p := by positivity
-  have hs3 : 1 + s ≠ 1 := by contrapose! hs' <;> linarith
-  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs' <;> nlinarith
+  have hs3 : 1 + s ≠ 1 := by contrapose! hs'; linarith
+  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs'; nlinarith
   cases' lt_or_gt_of_ne hs' with hs' hs'
   · rw [← div_lt_iff hp, ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strictMono zero_lt_one hs2 hs1 hs4 hs3 _ using 1
+    -- Porting note: previously we could write `zero_lt_one` inline,
+    -- but now Lean doesn't guess we are talking about `1` fast enough.
+    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
+    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
     · field_simp [log_one]
     · field_simp [log_one]
     · nlinarith
   · rw [← div_lt_iff hp, ← div_lt_div_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strictMono zero_lt_one hs1 hs2 hs3 hs4 _ using 1
+    -- Porting note: previously we could write `zero_lt_one` inline,
+    -- but now Lean doesn't guess we are talking about `1` fast enough.
+    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
+    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
     · field_simp [log_one, hp.ne']
     · field_simp [log_one]
     · nlinarith
