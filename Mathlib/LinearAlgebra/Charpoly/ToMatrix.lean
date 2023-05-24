@@ -8,8 +8,8 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Charpoly.Basic
-import Mathbin.LinearAlgebra.Matrix.Basis
+import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 
@@ -42,8 +42,7 @@ section Basic
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [Fintype ι] (b : Basis ι R M) :
-    (toMatrix b b f).charpoly = f.charpoly :=
-  by
+    (toMatrix b b f).charpoly = f.charpoly := by
   set A := to_matrix b b f
   set b' := choose_basis R M
   set ι' := choose_basis_index R M
