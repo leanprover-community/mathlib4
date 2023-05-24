@@ -127,7 +127,7 @@ variable {f}
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
   ext c
   constructor
-  · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
+  · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left; right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
   · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_left Set.image2_union_left
