@@ -41,12 +41,13 @@ example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {n | 0 < n} = t := sorry
 example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
 example (s : Set α) (t : Set (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
 
--- These need `fbinop%`.
+-- These need `fbinop%`. (Comment out `macro_rules` above to check.)
 
 example {α : Type u} {β : Type v} (s : Finset α) (t : Set β) : s ×ˢ' t = s ×ˢ' t := rfl
 example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
 example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
 example (s : Finset α) (t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := sorry
+#check ({1,2,3} ×ˢ' {4,5,6} : Finset _)
 
 example (s : Finset α) (t : Set β) (u : Finset γ) : Nat.card (s ×ˢ' t ×ˢ' u) = 0 := sorry
 
