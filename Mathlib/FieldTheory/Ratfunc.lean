@@ -284,7 +284,7 @@ then `P` holds on all elements of `ratfunc K`.
 
 See also `induction_on`, which is a recursion principle defined in terms of `algebra_map`.
 -/
-protected irreducible_def induction_on' {P : Ratfunc K → Prop} :
+protected theorem induction_on' {P : Ratfunc K → Prop} :
   ∀ (x : Ratfunc K) (f : ∀ (p q : K[X]) (hq : q ≠ 0), P (Ratfunc.mk p q)), P x
   | ⟨x⟩, f =>
     Localization.induction_on x fun ⟨p, q⟩ => by
