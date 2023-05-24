@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Fderiv.Linear
-import Mathbin.Analysis.Calculus.Fderiv.Comp
-import Mathbin.Analysis.Calculus.Fderiv.Equiv
-import Mathbin.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Linear
+import Mathlib.Analysis.Calculus.Fderiv.Comp
+import Mathlib.Analysis.Calculus.Fderiv.Equiv
+import Mathlib.Analysis.NormedSpace.Star.Basic
 
 /-!
 # Star operations on derivatives
