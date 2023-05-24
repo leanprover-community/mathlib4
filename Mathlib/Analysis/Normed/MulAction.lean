@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Algebra
-import Mathbin.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Lemmas for `has_bounded_smul` over normed additive groups
@@ -83,16 +83,14 @@ theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : 
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
-instance NonUnitalSeminormedRing.to_boundedSMul [NonUnitalSeminormedRing α] : BoundedSMul α α
-    where
+instance NonUnitalSeminormedRing.to_boundedSMul [NonUnitalSeminormedRing α] : BoundedSMul α α where
   dist_smul_pair' x y₁ y₂ := by simpa [mul_sub, dist_eq_norm] using norm_mul_le x (y₁ - y₂)
   dist_pair_smul' x₁ x₂ y := by simpa [sub_mul, dist_eq_norm] using norm_mul_le (x₁ - x₂) y
 #align non_unital_semi_normed_ring.to_has_bounded_smul NonUnitalSeminormedRing.to_boundedSMul
 
 /-- Right multiplication is bounded. -/
 instance NonUnitalSeminormedRing.to_has_bounded_op_smul [NonUnitalSeminormedRing α] :
-    BoundedSMul αᵐᵒᵖ α
-    where
+    BoundedSMul αᵐᵒᵖ α where
   dist_smul_pair' x y₁ y₂ := by
     simpa [sub_mul, dist_eq_norm, mul_comm] using norm_mul_le (y₁ - y₂) x.unop
   dist_pair_smul' x₁ x₂ y := by
@@ -123,8 +121,7 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u2}} {β : Type.{u1}} [_inst_1 : NormedField.{u2} α] [_inst_2 : SeminormedAddCommGroup.{u1} β] [_inst_3 : NormedSpace.{u2, u1} α β _inst_1 _inst_2] (_inst_4 : α) (r : β), Eq.{1} Real (Norm.norm.{u1} β (SeminormedAddCommGroup.toNorm.{u1} β _inst_2) (HSMul.hSMul.{u2, u1, u1} α β β (instHSMul.{u2, u1} α β (SMulZeroClass.toSMul.{u2, u1} α β (NegZeroClass.toZero.{u1} β (SubNegZeroMonoid.toNegZeroClass.{u1} β (SubtractionMonoid.toSubNegZeroMonoid.{u1} β (SubtractionCommMonoid.toSubtractionMonoid.{u1} β (AddCommGroup.toDivisionAddCommMonoid.{u1} β (SeminormedAddCommGroup.toAddCommGroup.{u1} β _inst_2)))))) (SMulWithZero.toSMulZeroClass.{u2, u1} α β (CommMonoidWithZero.toZero.{u2} α (CommGroupWithZero.toCommMonoidWithZero.{u2} α (Semifield.toCommGroupWithZero.{u2} α (Field.toSemifield.{u2} α (NormedField.toField.{u2} α _inst_1))))) (NegZeroClass.toZero.{u1} β (SubNegZeroMonoid.toNegZeroClass.{u1} β (SubtractionMonoid.toSubNegZeroMonoid.{u1} β (SubtractionCommMonoid.toSubtractionMonoid.{u1} β (AddCommGroup.toDivisionAddCommMonoid.{u1} β (SeminormedAddCommGroup.toAddCommGroup.{u1} β _inst_2)))))) (MulActionWithZero.toSMulWithZero.{u2, u1} α β (Semiring.toMonoidWithZero.{u2} α (DivisionSemiring.toSemiring.{u2} α (Semifield.toDivisionSemiring.{u2} α (Field.toSemifield.{u2} α (NormedField.toField.{u2} α _inst_1))))) (NegZeroClass.toZero.{u1} β (SubNegZeroMonoid.toNegZeroClass.{u1} β (SubtractionMonoid.toSubNegZeroMonoid.{u1} β (SubtractionCommMonoid.toSubtractionMonoid.{u1} β (AddCommGroup.toDivisionAddCommMonoid.{u1} β (SeminormedAddCommGroup.toAddCommGroup.{u1} β _inst_2)))))) (Module.toMulActionWithZero.{u2, u1} α β (DivisionSemiring.toSemiring.{u2} α (Semifield.toDivisionSemiring.{u2} α (Field.toSemifield.{u2} α (NormedField.toField.{u2} α _inst_1)))) (AddCommGroup.toAddCommMonoid.{u1} β (SeminormedAddCommGroup.toAddCommGroup.{u1} β _inst_2)) (NormedSpace.toModule.{u2, u1} α β _inst_1 _inst_2 _inst_3)))))) _inst_4 r)) (HMul.hMul.{0, 0, 0} Real Real Real (instHMul.{0} Real Real.instMulReal) (Norm.norm.{u2} α (NormedField.toNorm.{u2} α _inst_1) _inst_4) (Norm.norm.{u1} β (SeminormedAddCommGroup.toNorm.{u1} β _inst_2) r))
 Case conversion may be inaccurate. Consider using '#align norm_smul norm_smulₓ'. -/
-theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ :=
-  by
+theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   by_cases h : r = 0
   · simp [h, zero_smul α x]
   · refine' le_antisymm (norm_smul_le r x) _
