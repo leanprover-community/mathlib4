@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Splits
-import Mathbin.RingTheory.Adjoin.Basic
-import Mathbin.RingTheory.AdjoinRoot
+import Mathlib.Data.Polynomial.Splits
+import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Adjoining elements to a field
@@ -59,8 +59,7 @@ the minimal polynomial of each `x ∈ s` splits in `L` then `algebra.adjoin F s`
 theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
     (s : Finset K) :
     (∀ x ∈ s, IsIntegral F x ∧ Polynomial.Splits (algebraMap F L) (minpoly F x)) →
-      Nonempty (Algebra.adjoin F (↑s : Set K) →ₐ[F] L) :=
-  by
+      Nonempty (Algebra.adjoin F (↑s : Set K) →ₐ[F] L) := by
   classical
     refine' Finset.induction_on s (fun H => _) fun a s has ih H => _
     · rw [coe_empty, Algebra.adjoin_empty]
@@ -78,8 +77,7 @@ theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F
     have H5 : IsIntegral (Algebra.adjoin F (↑s : Set K)) a := isIntegral_of_isScalarTower H1
     have H6 :
       (minpoly (Algebra.adjoin F (↑s : Set K)) a).Splits
-        (algebraMap (Algebra.adjoin F (↑s : Set K)) L) :=
-      by
+        (algebraMap (Algebra.adjoin F (↑s : Set K)) L) := by
       refine'
         Polynomial.splits_of_splits_of_dvd _
           (Polynomial.map_ne_zero <| minpoly.ne_zero H1 : Polynomial.map (algebraMap _ _) _ ≠ 0)
