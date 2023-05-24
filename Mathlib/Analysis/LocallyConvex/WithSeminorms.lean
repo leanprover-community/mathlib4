@@ -295,8 +295,9 @@ theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
 #align with_seminorms.has_basis WithSeminorms.hasBasis
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
-    (𝓝 (0 : E)).HasBasis (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 :=
-  by refine' ⟨fun V => _⟩
+    (𝓝 (0 : E)).HasBasis
+    (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 := by
+  refine' ⟨fun V => _⟩
   simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
   constructor
   · rintro ⟨-, ⟨s, r, hr, rfl⟩, hV⟩
@@ -306,8 +307,9 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
 #align with_seminorms.has_basis_zero_ball WithSeminorms.hasBasis_zero_ball
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
-    (𝓝 (x : E)).HasBasis (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 :=
-  by haveI : TopologicalAddGroup E := hp.topologicalAddGroup
+    (𝓝 (x : E)).HasBasis
+    (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
+  haveI : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
   convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
   ext sr : 1
@@ -399,8 +401,9 @@ variable [SemilatticeSup F] [Nonempty F]
 
 /-- Limit `→ ∞` for `WithSeminorms`. -/
 theorem WithSeminorms.tendsto_nhds_atTop (hp : WithSeminorms p) (u : F → E) (y₀ : E) :
-    Filter.Tendsto u Filter.atTop (𝓝 y₀) ↔ ∀ i ε, 0 < ε → ∃ x₀, ∀ x, x₀ ≤ x → p i (u x - y₀) < ε :=
-  by rw [hp.tendsto_nhds u y₀]
+    Filter.Tendsto u Filter.atTop (𝓝 y₀) ↔
+    ∀ i ε, 0 < ε → ∃ x₀, ∀ x, x₀ ≤ x → p i (u x - y₀) < ε := by
+  rw [hp.tendsto_nhds u y₀]
   exact forall₃_congr fun _ _ _ => Filter.eventually_atTop
 #align with_seminorms.tendsto_nhds_at_top WithSeminorms.tendsto_nhds_atTop
 
@@ -469,8 +472,9 @@ induced by each seminorm individually. We express this as a characterization of
 `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
-    WithSeminorms p ↔ u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace :=
-  by rw [p.withSeminorms_iff_nhds_eq_iInf,
+    WithSeminorms p ↔
+    u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace := by
+  rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
   -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
