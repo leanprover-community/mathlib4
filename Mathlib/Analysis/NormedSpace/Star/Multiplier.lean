@@ -8,11 +8,11 @@ Authors: Jireh Loreaux, Jon Bannon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.StarAlgHom
-import Mathbin.Analysis.NormedSpace.Star.Basic
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Analysis.SpecialFunctions.Pow.Nnreal
-import Mathbin.Analysis.NormedSpace.Star.Mul
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.NormedSpace.Star.Mul
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
@@ -348,8 +348,7 @@ instance : Ring 𝓜(𝕜, A) :=
 
 /-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
 @[simps]
-def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)
-    where
+def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
   map_zero' := rfl
   map_add' x y := rfl
@@ -357,8 +356,7 @@ def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)
 
 /-- The canonical map `double_centralizer.to_prod_mul_opposite` as a ring homomorphism. -/
 @[simps]
-def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ
-    where
+def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ where
   toFun := toProdMulOpposite
   map_zero' := rfl
   map_one' := rfl
@@ -373,8 +371,7 @@ instance {S : Type _} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A] [Contin
   Function.Injective.module S toProdHom ext fun x y => rfl
 
 -- TODO: generalize to `algebra S 𝓜(𝕜, A)` once `continuous_linear_map.algebra` is generalized.
-instance : Algebra 𝕜 𝓜(𝕜, A)
-    where
+instance : Algebra 𝕜 𝓜(𝕜, A) where
   toFun k :=
     { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
       central := fun x y => by
@@ -557,8 +554,7 @@ theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposit
   uniformEmbedding_comap toProdMulOpposite_injective
 #align double_centralizer.uniform_embedding_to_prod_mul_opposite DoubleCentralizer.uniformEmbedding_toProdMulOpposite
 
-instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) :=
-  by
+instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range uniform_embedding_to_prod_mul_opposite.to_uniform_inducing]
   apply IsClosed.isComplete
   simp only [range_to_prod_mul_opposite, Set.setOf_forall]
@@ -572,14 +568,11 @@ variable [StarRing A] [CstarRing A]
 
 /-- For `a : 𝓜(𝕜, A)`, the norms of `a.fst` and `a.snd` coincide, and hence these
 also coincide with `‖a‖` which is `max (‖a.fst‖) (‖a.snd‖)`. -/
-theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ :=
-  by
+theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   -- a handy lemma for this proof
-  have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C :=
-    by
+  have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C := by
     intro f C h
-    have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 :=
-      by
+    have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
       intro b
       convert mul_le_mul_right' (mul_le_mul_left' (f.le_op_nnnorm b) C) ‖b‖₊ using 1
       ring
@@ -593,8 +586,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ :=
     · simp only [rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]
     · simp only [rpow_two, sq_sqrt]
-  have h1 : ∀ b, ‖a.fst b‖₊ ^ 2 ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
-    by
+  have h1 : ∀ b, ‖a.fst b‖₊ ^ 2 ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ := by
     intro b
     calc
       ‖a.fst b‖₊ ^ 2 = ‖star (a.fst b) * a.fst b‖₊ := by
@@ -603,8 +595,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ :=
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_op_nnnorm _) _
       
-  have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
-    by
+  have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
     calc
       ‖a.snd b‖₊ ^ 2 = ‖a.snd b * star (a.snd b)‖₊ := by
@@ -655,8 +646,7 @@ variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] 
 instance : CstarRing 𝓜(𝕜, A)
     where norm_star_mul_self a :=
     congr_arg (coe : ℝ≥0 → ℝ) <|
-      show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊
-        by
+      show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
         /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
             `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have
             `‖star a * a‖ = ‖(star a * a).snd‖ = ‖R (star (L (star x))) * y‖ = ‖star (L (star x)) * L y‖`
@@ -670,8 +660,7 @@ instance : CstarRing 𝓜(𝕜, A)
         have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
           Metric.nonempty_closedBall.2 zero_le_one
         have key :
-          ∀ x y, ‖x‖₊ ≤ 1 → ‖y‖₊ ≤ 1 → ‖a.snd (star (a.fst (star x))) * y‖₊ ≤ ‖a‖₊ * ‖a‖₊ :=
-          by
+          ∀ x y, ‖x‖₊ ≤ 1 → ‖y‖₊ ≤ 1 → ‖a.snd (star (a.fst (star x))) * y‖₊ ≤ ‖a‖₊ * ‖a‖₊ := by
           intro x y hx hy
           rw [a.central]
           calc
