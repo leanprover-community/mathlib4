@@ -28,10 +28,10 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
-  let l ← hashMap.foldM (init := []) fun acc _ hash => do
+  hashMap.foldM (init := "") fun acc _ hash => do
     let fileName := hash.asTarGz
-    pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
-  return "\n".intercalate l
+    pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
+      (IO.CACHEDIR / fileName).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
