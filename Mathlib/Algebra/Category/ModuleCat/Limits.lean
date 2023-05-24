@@ -39,7 +39,13 @@ instance addCommGroupObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
   change AddCommGroup (F.obj j)
   infer_instance
+set_option linter.uppercaseLean3 false
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
+
+-- porting note: there is a missing instance
+example (X : ModuleCat R) : AddCommGroup ((forget (ModuleCat R)).obj X) := by
+  infer_instance
+  sorry
 
 instance moduleObj (F : J ⥤ ModuleCat.{max v w} R) (j) :
     Module R ((F ⋙ forget (ModuleCat R)).obj j) := by
@@ -255,4 +261,3 @@ def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (
 end DirectLimit
 
 end ModuleCat
-
