@@ -8,10 +8,10 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.Lebesgue
-import Mathbin.Order.Filter.Germ
-import Mathbin.Topology.ContinuousFunction.Algebra
-import Mathbin.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.Order.Filter.Germ
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 
@@ -157,8 +157,7 @@ theorem mk_eq_mk {f g : α → β} {hf hg} : (mk f hf : α →ₘ[μ] β) = mk g
 #align measure_theory.ae_eq_fun.mk_eq_mk MeasureTheory.AeEqFun.mk_eq_mk
 
 @[simp]
-theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.AEStronglyMeasurable = f :=
-  by
+theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.AEStronglyMeasurable = f := by
   conv_rhs => rw [← Quotient.out_eq' f]
   set g : { f : α → β // ae_strongly_measurable f μ } := Quotient.out' f with hg
   have : g = ⟨g.1, g.2⟩ := Subtype.eq rfl
@@ -175,8 +174,7 @@ theorem ext_iff {f g : α →ₘ[μ] β} : f = g ↔ f =ᵐ[μ] g :=
   ⟨fun h => by rw [h], fun h => ext h⟩
 #align measure_theory.ae_eq_fun.ext_iff MeasureTheory.AeEqFun.ext_iff
 
-theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f :=
-  by
+theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
   apply (ae_strongly_measurable.ae_eq_mk _).symm.trans
   exact @Quotient.mk_out' _ (μ.ae_eq_setoid β) (⟨f, hf⟩ : { f // ae_strongly_measurable f μ })
 #align measure_theory.ae_eq_fun.coe_fn_mk MeasureTheory.AeEqFun.coeFn_mk
@@ -221,8 +219,7 @@ theorem comp_eq_mk (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
   rw [← comp_mk g hg f f.ae_strongly_measurable, mk_coe_fn]
 #align measure_theory.ae_eq_fun.comp_eq_mk MeasureTheory.AeEqFun.comp_eq_mk
 
-theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : comp g hg f =ᵐ[μ] g ∘ f :=
-  by
+theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : comp g hg f =ᵐ[μ] g ∘ f := by
   rw [comp_eq_mk]
   apply coe_fn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp MeasureTheory.AeEqFun.coeFn_comp
@@ -255,8 +252,7 @@ theorem compMeasurable_eq_mk (g : β → γ) (hg : Measurable g) (f : α →ₘ[
 #align measure_theory.ae_eq_fun.comp_measurable_eq_mk MeasureTheory.AeEqFun.compMeasurable_eq_mk
 
 theorem coeFn_compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) :
-    compMeasurable g hg f =ᵐ[μ] g ∘ f :=
-  by
+    compMeasurable g hg f =ᵐ[μ] g ∘ f := by
   rw [comp_measurable_eq_mk]
   apply coe_fn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp_measurable MeasureTheory.AeEqFun.coeFn_compMeasurable
@@ -280,8 +276,7 @@ theorem pair_eq_mk (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) :
   by simp only [← pair_mk_mk, mk_coe_fn]
 #align measure_theory.ae_eq_fun.pair_eq_mk MeasureTheory.AeEqFun.pair_eq_mk
 
-theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] fun x => (f x, g x) :=
-  by
+theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] fun x => (f x, g x) := by
   rw [pair_eq_mk]
   apply coe_fn_mk
 #align measure_theory.ae_eq_fun.coe_fn_pair MeasureTheory.AeEqFun.coeFn_pair
@@ -317,8 +312,7 @@ theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁
 #align measure_theory.ae_eq_fun.comp₂_eq_mk MeasureTheory.AeEqFun.comp₂_eq_mk
 
 theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) :=
-  by
+    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) := by
   rw [comp₂_eq_mk]
   apply coe_fn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp₂ MeasureTheory.AeEqFun.coeFn_comp₂
@@ -361,8 +355,7 @@ theorem comp₂Measurable_eq_mk (g : β → γ → δ) (hg : Measurable (uncurry
 #align measure_theory.ae_eq_fun.comp₂_measurable_eq_mk MeasureTheory.AeEqFun.comp₂Measurable_eq_mk
 
 theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) : comp₂Measurable g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) :=
-  by
+    (f₂ : α →ₘ[μ] γ) : comp₂Measurable g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) := by
   rw [comp₂_measurable_eq_mk]
   apply coe_fn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp₂_measurable MeasureTheory.AeEqFun.coeFn_comp₂Measurable
@@ -464,24 +457,21 @@ theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x 
   coeFn_comp₂ _ _ _ _
 #align measure_theory.ae_eq_fun.coe_fn_sup MeasureTheory.AeEqFun.coeFn_sup
 
-protected theorem le_sup_left (f g : α →ₘ[μ] β) : f ≤ f ⊔ g :=
-  by
+protected theorem le_sup_left (f g : α →ₘ[μ] β) : f ≤ f ⊔ g := by
   rw [← coe_fn_le]
   filter_upwards [coe_fn_sup f g]with _ ha
   rw [ha]
   exact le_sup_left
 #align measure_theory.ae_eq_fun.le_sup_left MeasureTheory.AeEqFun.le_sup_left
 
-protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g :=
-  by
+protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g := by
   rw [← coe_fn_le]
   filter_upwards [coe_fn_sup f g]with _ ha
   rw [ha]
   exact le_sup_right
 #align measure_theory.ae_eq_fun.le_sup_right MeasureTheory.AeEqFun.le_sup_right
 
-protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' :=
-  by
+protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' := by
   rw [← coe_fn_le] at hf hg⊢
   filter_upwards [hf, hg, coe_fn_sup f g]with _ haf hag ha_sup
   rw [ha_sup]
@@ -500,24 +490,21 @@ theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x 
   coeFn_comp₂ _ _ _ _
 #align measure_theory.ae_eq_fun.coe_fn_inf MeasureTheory.AeEqFun.coeFn_inf
 
-protected theorem inf_le_left (f g : α →ₘ[μ] β) : f ⊓ g ≤ f :=
-  by
+protected theorem inf_le_left (f g : α →ₘ[μ] β) : f ⊓ g ≤ f := by
   rw [← coe_fn_le]
   filter_upwards [coe_fn_inf f g]with _ ha
   rw [ha]
   exact inf_le_left
 #align measure_theory.ae_eq_fun.inf_le_left MeasureTheory.AeEqFun.inf_le_left
 
-protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g :=
-  by
+protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g := by
   rw [← coe_fn_le]
   filter_upwards [coe_fn_inf f g]with _ ha
   rw [ha]
   exact inf_le_right
 #align measure_theory.ae_eq_fun.inf_le_right MeasureTheory.AeEqFun.inf_le_right
 
-protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g :=
-  by
+protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g := by
   rw [← coe_fn_le] at hf hg⊢
   filter_upwards [hf, hg, coe_fn_inf f g]with _ haf hag ha_inf
   rw [ha_inf]
@@ -681,8 +668,7 @@ instance : Monoid (α →ₘ[μ] γ) :=
 
 /-- `ae_eq_fun.to_germ` as a `monoid_hom`. -/
 @[to_additive "`ae_eq_fun.to_germ` as an `add_monoid_hom`.", simps]
-def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ
-    where
+def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
   map_mul' := mul_toGerm
@@ -848,8 +834,7 @@ theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral 
 section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
-    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑(|f|) =ᵐ[μ] fun x => |f x| :=
-  by
+    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑(|f|) =ᵐ[μ] fun x => |f x| := by
   simp_rw [abs_eq_sup_neg]
   filter_upwards [ae_eq_fun.coe_fn_sup f (-f), ae_eq_fun.coe_fn_neg f]with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
@@ -908,8 +893,7 @@ variable [Group β] [TopologicalGroup β]
 classes of `μ`-almost-everywhere measurable functions. -/
 @[to_additive
       "The `add_hom` from the group of continuous maps from `α` to `β` to the group of\nequivalence classes of `μ`-almost-everywhere measurable functions."]
-def toAeEqFunMulHom : C(α, β) →* α →ₘ[μ] β
-    where
+def toAeEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
   toFun := ContinuousMap.toAeEqFun μ
   map_one' := rfl
   map_mul' f g :=
