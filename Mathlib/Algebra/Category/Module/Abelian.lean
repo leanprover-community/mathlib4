@@ -8,10 +8,10 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Isomorphisms
-import Mathbin.Algebra.Category.Module.Kernels
-import Mathbin.Algebra.Category.Module.Limits
-import Mathbin.CategoryTheory.Abelian.Exact
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.Category.Module.Kernels
+import Mathlib.Algebra.Category.Module.Limits
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # The category of left R-modules is abelian.
@@ -33,8 +33,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- In the category of modules, every monomorphism is normal. -/
-def normalMono (hf : Mono f) : NormalMono f
-    where
+def normalMono (hf : Mono f) : NormalMono f where
   z := of R (N ⧸ f.range)
   g := f.range.mkQ
   w := LinearMap.range_mkQ_comp _
@@ -58,8 +57,7 @@ def normalMono (hf : Mono f) : NormalMono f
 #align Module.normal_mono ModuleCat.normalMono
 
 /-- In the category of modules, every epimorphism is normal. -/
-def normalEpi (hf : Epi f) : NormalEpi f
-    where
+def normalEpi (hf : Epi f) : NormalEpi f where
   w := of R f.ker
   g := f.ker.Subtype
   w := LinearMap.comp_ker_subtype _
@@ -76,15 +74,13 @@ def normalEpi (hf : Epi f) : NormalEpi f
         (LinearEquiv.toModuleIso'
           (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
               LinearMap.quotKerEquivRange f ≪≫ₗ
-            LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <|
-      by
+            LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by
       ext
       rfl
 #align Module.normal_epi ModuleCat.normalEpi
 
 /-- The category of R-modules is abelian. -/
-instance abelian : Abelian (ModuleCat R)
-    where
+instance abelian : Abelian (ModuleCat R) where
   HasFiniteProducts := ⟨fun n => Limits.hasLimitsOfShapeOfHasLimits⟩
   HasKernels := Limits.hasKernels_of_hasEqualizers (ModuleCat R)
   HasCokernels := hasCokernels_moduleCat
@@ -122,8 +118,7 @@ open LinearMap
 
 attribute [local instance] preadditive.has_equalizers_of_has_kernels
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker :=
-  by
+theorem exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [abelian.exact_iff' f g (kernel_is_limit _) (cokernel_is_colimit _)]
   exact
     ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
