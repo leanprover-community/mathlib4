@@ -169,20 +169,67 @@ lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.
   . exact H_zero
   . exact H_add a 1 _ rfl ha H_one
 
+class IsLE (X : C) (n : ℤ) : Prop where
+  mem : X ∈ t.setLE n
+
+lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : X ∈ t.setLE n := IsLE.mem
+
+class IsGE (X : C) (n : ℤ) : Prop where
+  mem : X ∈ t.setGE n
+
+lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : X ∈ t.setGE n := IsGE.mem
+
+lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n where
+  mem := (t.setLE n).mem_of_iso e (t.mem_of_isLE X n)
+
+lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
+  mem := (t.setGE n).mem_of_iso e (t.mem_of_isGE X n)
+
+lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsLE X p] : t.IsLE X q where
+  mem := setLE_monotone t p q hpq (t.mem_of_isLE X p)
+
+lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsGE X q] : t.IsGE X p where
+  mem := setGE_antitone t p q hpq (t.mem_of_isGE X q)
+
+lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsLE X n] :
+    t.IsLE (X⟦a⟧) n' :=
+  ⟨t.shift_mem_setLE n a n' hn' X (t.mem_of_isLE X n)⟩
+
+lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsGE X n] :
+    t.IsGE (X⟦a⟧) n' :=
+  ⟨t.shift_mem_setGE n a n' hn' X (t.mem_of_isGE X n)⟩
+
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    (hX : X ∈ t.setLE n₀) (hY : Y ∈ t.setGE n₁) : f = 0 := by
+    [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
+  have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)
+  have := t.isGE_shift Y n₁ n₀ (n₁-n₀) (by linarith)
+  have := t.isGE_of_GE (Y⟦n₀⟧) 1 (n₁-n₀) (by linarith)
   apply (shiftFunctor C n₀).map_injective
   simp only [Functor.map_zero]
   apply t.zero'
-  . exact t.shift_mem_setLE n₀ n₀ 0 (add_zero n₀) _ hX
-  . rw [← Set.mem_shift_iff, t.shift_setGE n₀ 1 (n₀ + 1) rfl]
-    exact t.setGE_antitone (n₀ + 1) n₁ (by simpa only [Int.add_one_le_iff] using h) hY
+  . apply t.mem_of_isLE
+  . apply t.mem_of_isGE
+
+lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    (_ : t.IsLE X n₀) (_ : t.IsGE Y n₁) : f = 0 :=
+  t.zero f n₀ n₁ h
 
 def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
 abbrev Heart := FullSubcategory t.heart
 
 abbrev heartInclusion : t.Heart ⥤ C := fullSubcategoryInclusion _
+
+lemma mem_heart_iff (X : C) :
+    X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
+  constructor
+  . rintro ⟨h₁, h₂⟩
+    exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
+  . rintro ⟨h₁, h₂⟩
+    exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
+
+instance (X : t.Heart) : t.IsLE (t.heartInclusion.obj X) 0 := ⟨X.2.1⟩
+instance (X : t.Heart) : t.IsGE (t.heartInclusion.obj X) 0 := ⟨X.2.2⟩
 
 end TStructure
 
