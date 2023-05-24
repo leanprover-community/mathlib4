@@ -175,11 +175,11 @@ namespace SetLike
 
 instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
     [SetLike.GradedSmul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
-  {
-    SetLike.toGSmul 𝓐
+  { SetLike.toGSmul 𝓐
       𝓜 with
     one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_add _) (one_smul _ _)
-    mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ => Sigma.subtype_ext (add_assoc _ _ _) (mul_smul _ _ _) }
+    mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ =>
+      Sigma.subtype_ext (add_assoc _ _ _) (mul_smul _ _ _) }
 #align set_like.gmul_action SetLike.gmulAction
 
 instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
