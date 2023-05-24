@@ -8,9 +8,9 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.FieldTheory.IntermediateField
-import Mathbin.Topology.Algebra.UniformRing
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.FieldTheory.IntermediateField
+import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Some results about the topology of ℂ
@@ -25,10 +25,8 @@ open ComplexConjugate
 
 /-- The only closed subfields of `ℂ` are `ℝ` and `ℂ`. -/
 theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :
-    K = ofReal.fieldRange ∨ K = ⊤ :=
-  by
-  suffices range (coe : ℝ → ℂ) ⊆ K
-    by
+    K = ofReal.fieldRange ∨ K = ⊤ := by
+  suffices range (coe : ℝ → ℂ) ⊆ K by
     rw [range_subset_iff, ← coe_algebra_map] at this
     have :=
       (Subalgebra.isSimpleOrder_of_finrank finrank_real_complex).eq_bot_or_eq_top
@@ -36,8 +34,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     simp_rw [← SetLike.coe_set_eq] at this⊢
     convert this using 2
     simpa only [RingHom.coe_fieldRange, Algebra.coe_bot, coe_algebra_map]
-  suffices range (coe : ℝ → ℂ) ⊆ closure (Set.range ((coe : ℝ → ℂ) ∘ (coe : ℚ → ℝ)))
-    by
+  suffices range (coe : ℝ → ℂ) ⊆ closure (Set.range ((coe : ℝ → ℂ) ∘ (coe : ℚ → ℝ))) by
     refine' subset_trans this _
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
@@ -55,8 +52,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
-    (hc : UniformContinuous ψ) : ψ.toFun = K.Subtype ∨ ψ.toFun = conj ∘ K.Subtype :=
-  by
+    (hc : UniformContinuous ψ) : ψ.toFun = K.Subtype ∨ ψ.toFun = conj ∘ K.Subtype := by
   letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
   letI : TopologicalRing K.topological_closure :=
     Subring.topologicalRing K.topological_closure.to_subring
