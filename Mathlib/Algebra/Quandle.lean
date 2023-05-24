@@ -266,7 +266,7 @@ instance oppositeRack : Rack Rᵐᵒᵖ
     induction x using MulOpposite.rec'
     induction y using MulOpposite.rec'
     induction z using MulOpposite.rec'
-    simp only [op.injEq]
+    simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
   left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp

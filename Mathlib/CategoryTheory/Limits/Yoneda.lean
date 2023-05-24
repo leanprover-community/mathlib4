@@ -9,6 +9,7 @@ Authors: Scott Morrison, Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.Util.AssertExists
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -176,9 +177,7 @@ instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) :=
 
 end CategoryTheory
 
--- Porting note: assert_not_exists doesn't exist in Lean 4 now. Is there value in keeping this?
--- We don't need to have developed any algebra or set theory to reach (at least) this point
--- in the category theory hierarchy.
--- assert_not_exists Set.range
+assert_not_exists Set.range
 
+-- Porting note: after the port see if this import can be removed
 -- assert_not_exists AddCommMonoid
