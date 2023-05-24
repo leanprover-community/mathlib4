@@ -2100,8 +2100,8 @@ theorem OrthogonalFamily.norm_sq_diff_sum (f : ∀ i, G i) (s₁ s₂ : Finset �
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
     (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
   classical
-    simp only [summable_iff_cauchySeq_finset]
-    rw [NormedAddCommGroup.cauchySeq_iff] -- Real.norm_eq_abs]
+    clear dec_ι
+    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, Real.norm_eq_abs]
     constructor
     · intro hf ε hε
       obtain ⟨a, H⟩ := hf _ (sqrt_pos.mpr hε)
@@ -2148,14 +2148,14 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     CompleteLattice.Independent V := by
   classical
     apply CompleteLattice.independent_of_dfinsupp_lsum_injective
-    rw [← @LinearMap.ker_eq_bot _ _ _ _ _ _ (DirectSum.instAddCommGroupDirectSumToAddCommMonoid fun i => V i),
-      Submodule.eq_bot_iff (f := DFinsupp.lsum ℕ)]
+    refine LinearMap.ker_eq_bot.mp ?_
+    rw [Submodule.eq_bot_iff]
     intro v hv
     rw [LinearMap.mem_ker] at hv
     ext i
     suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
     calc
-      ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).Subtype) v⟫ := by
+      ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
         simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
           (hV.inner_right_dfinsupp v i (v i)).symm
       _ = 0 := by simp only [hv, inner_zero_right]
