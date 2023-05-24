@@ -78,10 +78,23 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
+-- porting note: the following `simps` received a "maximum recursion depth" error
+-- @[simps! (config := { fullyApplied := false }) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact
+
+-- porting note: added this `simp` lemma manually because of the `simps` error above
+@[simp]
+theorem addEquivBoundedOfCompact_symm_apply [AddMonoid β] [LipschitzAdd β] :
+    ⇑((addEquivBoundedOfCompact α β).symm) = toContinuousMapAddHom α β :=
+  rfl
+
+-- porting note: added this `simp` lemma manually because of the `simps` error above
+@[simp]
+theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
+    ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
+  rfl
 
 instance metricSpace : MetricSpace C(α, β) :=
   (uniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
