@@ -76,7 +76,7 @@ open AddSubgroup AddMonoidHom AddEquiv Function
 
 variable {α β : Type _} [AddGroup α] (a : α) [AddAction α β] (b : β)
 
-/-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimal_period ((+ᵥ) a) b`. -/
+/-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((+ᵥ) a) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (minimalPeriod ((· +ᵥ ·) a) b) :=
   (ofBijective
@@ -109,7 +109,7 @@ open AddAction Subgroup AddSubgroup Function
 
 variable {α β : Type _} [Group α] (a : α) [MulAction α β] (b : β)
 
-/-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimal_period ((•) a) b`. -/
+/-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
     zpowers a ⧸ stabilizer (zpowers a) b ≃* Multiplicative (ZMod (minimalPeriod ((· • ·) a) b)) :=
   letI f := zmultiplesQuotientStabilizerEquiv (Additive.ofMul a) b
@@ -121,12 +121,12 @@ theorem zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod ((· 
   rfl
 #align mul_action.zpowers_quotient_stabilizer_equiv_symm_apply MulAction.zpowersQuotientStabilizerEquiv_symm_apply
 
-/-- The orbit `(a ^ ℤ) • b` is a cycle of order `minimal_period ((•) a) b`. -/
+/-- The orbit `(a ^ ℤ) • b` is a cycle of order `minimalPeriod ((•) a) b`. -/
 noncomputable def orbitZpowersEquiv : orbit (zpowers a) b ≃ ZMod (minimalPeriod ((· • ·) a) b) :=
   (orbitEquivQuotientStabilizer _ b).trans (zpowersQuotientStabilizerEquiv a b).toEquiv
 #align mul_action.orbit_zpowers_equiv MulAction.orbitZpowersEquiv
 
-/-- The orbit `(ℤ • a) +ᵥ b` is a cycle of order `minimal_period ((+ᵥ) a) b`. -/
+/-- The orbit `(ℤ • a) +ᵥ b` is a cycle of order `minimalPeriod ((+ᵥ) a) b`. -/
 noncomputable def _root_.AddAction.orbitZmultiplesEquiv {α β : Type _} [AddGroup α] (a : α)
     [AddAction α β] (b : β) :
     AddAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod ((· +ᵥ ·) a) b) :=
