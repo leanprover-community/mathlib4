@@ -17,7 +17,7 @@ import Mathlib.Algebra.Module.BigOperators
 # Graded Module
 
 Given an `R`-algebra `A` graded by `𝓐`, a graded `A`-module `M` is expressed as
-`direct_sum.decomposition 𝓜` and `set_like.has_graded_smul 𝓐 𝓜`.
+`DirectSum.Decomposition 𝓜` and `SetLike.GradedSmul 𝓐 𝓜`.
 Then `⨁ i, 𝓜 i` is an `A`-module and is isomorphic to `M`.
 
 ## Tags
@@ -36,21 +36,21 @@ namespace DirectSum
 
 open GradedMonoid
 
-/-- A graded version of `distrib_mul_action`. -/
+/-- A graded version of `DistribMulAction`. -/
 class GdistribMulAction [AddMonoid ι] [GMonoid A] [∀ i, AddMonoid (M i)] extends
   GMulAction A M where
   smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c
   smul_zero {i j} (a : A i) : smul a (0 : M j) = 0
 #align direct_sum.gdistrib_mul_action DirectSum.GdistribMulAction
 
-/-- A graded version of `module`. -/
+/-- A graded version of `Module`. -/
 class Gmodule [AddMonoid ι] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [GMonoid A] extends
   GdistribMulAction A M where
   add_smul {i j} (a a' : A i) (b : M j) : smul (a + a') b = smul a b + smul a' b
   zero_smul {i j} (b : M j) : smul (0 : A i) b = 0
 #align direct_sum.gmodule DirectSum.Gmodule
 
-/-- A graded version of `semiring.to_module`. -/
+/-- A graded version of `Semiring.toModule`. -/
 instance GSemiring.toGmodule [DecidableEq ι] [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)]
     [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
@@ -62,7 +62,7 @@ instance GSemiring.toGmodule [DecidableEq ι] [AddMonoid ι] [∀ i : ι, AddCom
 
 variable [AddMonoid ι] [∀ i : ι, AddCommMonoid (A i)] [∀ i, AddCommMonoid (M i)]
 
-/-- The piecewise multiplication from the `has_mul` instance, as a bundled homomorphism. -/
+/-- The piecewise multiplication from the `Mul` instance, as a bundled homomorphism. -/
 @[simps]
 def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i + j) where
   toFun a :=
@@ -142,7 +142,7 @@ private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : �
     DirectSum.of_eq_of_gradedMonoid_eq
       (mul_smul (GradedMonoid.mk ai ax) (GradedMonoid.mk bi bx) (GradedMonoid.mk ci cx))
 
-/-- The `module` derived from `gmodule A M`. -/
+/-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i) where
   smul := (· • ·)
   one_smul := one_smul' _ _
@@ -195,7 +195,7 @@ instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSmul 𝓐 𝓜]
 
-/-- `[set_like.graded_monoid 𝓐] [set_like.has_graded_smul 𝓐 𝓜]` is the internal version of graded
+/-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSmul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
 instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   {
