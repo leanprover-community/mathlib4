@@ -491,13 +491,10 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
       left_inv := by
         intro f
         induction f using AdjoinRoot.induction_on
---        intro f
-        exact
-          Eq.symm <|
-            mk_eq_mk.mpr <| by
-              simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
-              rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
-              exact dvd_mul_right _ _
+        simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
+        refine (mk_eq_mk.mpr ?_).symm
+        rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
+        exact dvd_mul_right _ _
       right_inv := fun x =>
         funext fun i => by
           nontriviality R
@@ -722,6 +719,11 @@ end Field
 
 end Equiv
 
+-- porting note: consider splitting the file here.  In the current mathlib3, the only result
+-- that depends any of these lemmas is
+-- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
+-- that uses
+-- `power_basis.quotient_equiv_quotient_minpoly_map == PowerBasis.quotientEquivQuotientMinpolyMap`
 section
 
 open Ideal DoubleQuot Polynomial
