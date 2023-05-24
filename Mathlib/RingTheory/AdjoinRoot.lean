@@ -50,8 +50,6 @@ The main definitions are in the `adjoin_root` namespace.
   bijection between algebra homomorphisms from `adjoin_root` and roots of `f` in `S`
 
 -/
-set_option autoImplicit false
-
 
 noncomputable section
 
@@ -868,6 +866,7 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
+      -- Porting note: the following `rfl` was not needed
       rfl )
 #align adjoin_root.quot_equiv_quot_map AdjoinRoot.quotEquivQuotMap
 
@@ -910,16 +909,14 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
-                  (by
-                    rw [Ideal.map_map, AlgEquiv.toRingEquiv_eq_coe, ← AlgEquiv.coe_ringHom_commutes,
-                      ← AdjoinRoot.algebraMap_eq, AlgHom.comp_algebraMap]))
-                (algebraMap R (S ⧸ I.map (algebraMap R S)) x) =
-              algebraMap R _ x
-          from fun x => by
-            rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply, RingHom.toFun_eq_coe,
-              Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toRingHom,
-              AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]; rfl)).trans
-                (AdjoinRoot.quotEquivQuotMap _ _)
+                  (by rw [Ideal.map_map, AlgEquiv.toRingEquiv_eq_coe,
+                      ← AlgEquiv.coe_ringHom_commutes, ← AdjoinRoot.algebraMap_eq,
+                      AlgHom.comp_algebraMap]))
+                (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
+                  rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
+                    RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
+                    RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
+                    Quotient.mk_algebraMap]; rfl)).trans (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 -- This lemma should have the simp tag but this causes a lint issue.
