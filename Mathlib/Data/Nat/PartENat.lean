@@ -411,7 +411,7 @@ instance isTotal: IsTotal PartENat (· ≤ ·) where
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
     le_total := IsTotal.total
-    decidable_le := Classical.decRel _
+    decidableLE := Classical.decRel _
     max := (· ⊔ ·)
     -- Porting note: was `max_def := @sup_eq_maxDefault _ _ (id _) _ }`
     max_def := fun a b => by

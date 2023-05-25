@@ -11,7 +11,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Unbundled relation classes
@@ -226,7 +225,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := hD }
+    decidableLE := hD }
 set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 

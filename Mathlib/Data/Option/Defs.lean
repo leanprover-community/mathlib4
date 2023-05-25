@@ -60,11 +60,15 @@ variable {α : Type _} {β : Type _}
 -- attribute [inline] Option.isSome Option.isNone
 
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
-@[simp]
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
   | none => b
 #align option.elim Option.elim'
+
+@[simp]
+theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
+@[simp]
+theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 #align option.mem_some_iff Option.mem_some_iff

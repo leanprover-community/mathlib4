@@ -9,7 +9,6 @@ Authors: Leonardo de Moura, Jeremy Avigad
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
-import Mathlib.Tactic.ByContra
 
 /-!
 # Cardinality of a finite set

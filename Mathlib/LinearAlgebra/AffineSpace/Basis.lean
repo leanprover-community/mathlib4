@@ -146,7 +146,6 @@ theorem basisOf_reindex (i : ι') :
   simp
 #align affine_basis.basis_of_reindex AffineBasis.basisOf_reindex
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The `i`th barycentric coordinate of a point. -/
 noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
@@ -157,7 +156,6 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
       sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
 #align affine_basis.coord AffineBasis.coord
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
   rfl

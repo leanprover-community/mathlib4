@@ -228,7 +228,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     | Sum.inr x => ⟨x, Or.inr x.2⟩
   left_inv := fun ⟨x, h'⟩ => by by_cases h : p x <;> simp [h]
   right_inv o := by
-    rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h], simp [ht _ h]]
+    rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h]; simp [ht _ h]]
 #align equiv.set.union' Equiv.Set.union'
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/

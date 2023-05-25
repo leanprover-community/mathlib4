@@ -12,7 +12,6 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
-import Mathlib.Tactic.Eqns
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -554,7 +553,7 @@ theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.
   induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
     simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
   · simp only [← k_ih]
-  · split_ifs <;> [rfl, simp only [← k_ih, bind_assoc]]
+  · split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 #align turing.to_partrec.cont.then_eval Turing.ToPartrec.Cont.then_eval
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
@@ -622,7 +621,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   case case f g IHf IHg =>
     rw [stepNormal]
     simp only []
-    cases v.headI <;> simp only [] <;> [apply IHf, apply IHg]
+    cases v.headI <;> simp only [] <;> [apply IHf; apply IHg]
   case fix f IHf => apply IHf
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret
 
@@ -671,7 +670,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
         · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
           simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂)),
+          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
             exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
@@ -715,7 +714,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [stepRet, IHf]
   case case f g IHf IHg =>
     simp only [Code.eval]
-    cases v.headI <;> simp only [Code.eval] <;> [apply IHf, apply IHg]
+    cases v.headI <;> simp only [Code.eval] <;> [apply IHf; apply IHg]
   case fix f IHf => rw [cont_eval_fix IHf]
 #align turing.to_partrec.code_is_ok Turing.ToPartrec.code_is_ok
 
@@ -1748,7 +1747,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
 def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.move _ _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.push _ _ q) => insert Q <| trStmts₁ q
-  | Q@(Λ'.read q) => insert Q <| Finset.univ.bunionᵢ fun s => trStmts₁ (q s)
+  | Q@(Λ'.read q) => insert Q <| Finset.univ.biUnion fun s => trStmts₁ (q s)
   | Q@(Λ'.clear _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.copy q) => insert Q <| trStmts₁ q
   | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| trStmts₁ q
@@ -1951,10 +1950,10 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
   simp [Supports, or_imp, forall_and]
 #align turing.partrec_to_TM2.supports_union Turing.PartrecToTM2.supports_union
 
-theorem supports_bunionᵢ {K : Option Γ' → Finset Λ'} {S} :
-    Supports (Finset.univ.bunionᵢ K) S ↔ ∀ a, Supports (K a) S := by
+theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
+    Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
   simp [Supports]; apply forall_swap
-#align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_bunionᵢ
+#align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_biUnion
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H
@@ -1988,7 +1987,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- copy
   · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- push
   · refine' supports_insert.2 ⟨fun _ => h₂ _ W, _⟩ -- read
-    exact supports_bunionᵢ.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
+    exact supports_biUnion.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
   · refine' supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, _⟩ -- succ
     exact supports_insert.2 ⟨⟨fun _ => h₂.2 _ W, fun _ => h₂.1⟩, q_ih H₁ h₂.2⟩
   · refine' -- pred

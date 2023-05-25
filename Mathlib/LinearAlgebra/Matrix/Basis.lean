@@ -121,7 +121,6 @@ theorem sum_toMatrix_smul_self [Fintype ι] : (∑ i : ι, e.toMatrix v i j • 
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 
-set_option synthInstance.etaExperiment true in
 theorem toMatrix_map_vecMul {S : Type _} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
     (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
   ext i

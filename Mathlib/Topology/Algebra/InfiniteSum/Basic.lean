@@ -343,7 +343,7 @@ theorem hasSum_sum_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι →
     (hs : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, HasSum (f ∘ (↑) : t i → α) (a i)) :
     HasSum (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∑ i in s, a i) := by
   simp_rw [hasSum_subtype_iff_indicator] at *
-  rw [Set.indicator_finset_bunionᵢ _ _ hs]
+  rw [Set.indicator_finset_biUnion _ _ hs]
   exact hasSum_sum hf
 #align has_sum_sum_disjoint hasSum_sum_disjoint
 
@@ -691,7 +691,7 @@ variable [Encodable γ]
 
 /-- You can compute a sum over an encodably type by summing over the natural numbers and
   taking a supremum. This is useful for outer measures. -/
-theorem tsum_supᵢ_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
+theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     (∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b)) = ∑' b : γ, m (s b) := by
   have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
     intro n h
@@ -718,13 +718,13 @@ theorem tsum_supᵢ_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ =
     rw [show decode₂ γ n = _ from Option.get_mem (H n h)]
     congr
     simp [ext_iff, -Option.some_get]
-#align tsum_supr_decode₂ tsum_supᵢ_decode₂
+#align tsum_supr_decode₂ tsum_iSup_decode₂
 
-/-- `tsum_supᵢ_decode₂` specialized to the complete lattice of sets. -/
-theorem tsum_unionᵢ_decode₂ (m : Set β → α) (m0 : m ∅ = 0) (s : γ → Set β) :
+/-- `tsum_iSup_decode₂` specialized to the complete lattice of sets. -/
+theorem tsum_iUnion_decode₂ (m : Set β → α) (m0 : m ∅ = 0) (s : γ → Set β) :
     (∑' i, m (⋃ b ∈ decode₂ γ i, s b)) = ∑' b, m (s b) :=
-  tsum_supᵢ_decode₂ m m0 s
-#align tsum_Union_decode₂ tsum_unionᵢ_decode₂
+  tsum_iSup_decode₂ m m0 s
+#align tsum_Union_decode₂ tsum_iUnion_decode₂
 
 end Encodable
 
@@ -740,28 +740,28 @@ section Countable
 variable [Countable γ]
 
 /-- If a function is countably sub-additive then it is sub-additive on countable types -/
-theorem rel_supᵢ_tsum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : γ → β) :
+theorem rel_iSup_tsum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : γ → β) :
     R (m (⨆ b : γ, s b)) (∑' b : γ, m (s b)) := by
   cases nonempty_encodable γ
-  rw [← supᵢ_decode₂, ← tsum_supᵢ_decode₂ _ m0 s]
-  exact m_supᵢ _
-#align rel_supr_tsum rel_supᵢ_tsum
+  rw [← iSup_decode₂, ← tsum_iSup_decode₂ _ m0 s]
+  exact m_iSup _
+#align rel_supr_tsum rel_iSup_tsum
 
 /-- If a function is countably sub-additive then it is sub-additive on finite sets -/
-theorem rel_supᵢ_sum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : δ → β) (t : Finset δ) :
+theorem rel_iSup_sum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : δ → β) (t : Finset δ) :
     R (m (⨆ d ∈ t, s d)) (∑ d in t, m (s d)) := by
-  rw [supᵢ_subtype', ← Finset.tsum_subtype]
-  exact rel_supᵢ_tsum m m0 R m_supᵢ _
-#align rel_supr_sum rel_supᵢ_sum
+  rw [iSup_subtype', ← Finset.tsum_subtype]
+  exact rel_iSup_tsum m m0 R m_iSup _
+#align rel_supr_sum rel_iSup_sum
 
 /-- If a function is countably sub-additive then it is binary sub-additive -/
 theorem rel_sup_add [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s₁ s₂ : β) :
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s₁ s₂ : β) :
     R (m (s₁ ⊔ s₂)) (m s₁ + m s₂) := by
-  convert rel_supᵢ_tsum m m0 R m_supᵢ fun b => cond b s₁ s₂
-  · simp only [supᵢ_bool_eq, cond]
+  convert rel_iSup_tsum m m0 R m_iSup fun b => cond b s₁ s₂
+  · simp only [iSup_bool_eq, cond]
   · rw [tsum_fintype, Fintype.sum_bool, cond, cond]
 #align rel_sup_add rel_sup_add
 

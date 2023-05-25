@@ -21,23 +21,20 @@ We define a `SemilatticeInf` with `OrderBot` instance on this this, and define t
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their
   domains, and returns the unique partial linear map on `f.domain ⊔ g.domain` that
   extends both `f` and `g`.
-* `supₛ` takes a `DirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
-  partial linear map on the `supₛ` of their domains that extends all these maps.
+* `sSup` takes a `DirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
+  partial linear map on the `sSup` of their domains that extends all these maps.
 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
 
 Partially defined maps are currently used in `Mathlib` to prove Hahn-Banach theorem
-and its variations. Namely, `LinearPMap.supₛ` implies that every chain of `LinearPMap`s
+and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.
 
 -/
 
 open Set
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 universe u v w
 
@@ -276,7 +273,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
-        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip, exact ⟨x, hx⟩, skip] <;> rfl⟩,
+        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
@@ -568,27 +565,27 @@ theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x �
 
 end
 
-private theorem supₛ_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
-    ∃ f : ↥(supₛ (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
+private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
+    ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
   cases' c.eq_empty_or_nonempty with ceq cne
   · subst c
     simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
     directedOn_image.2 (hc.mono @(domain_mono.monotone))
-  have P : ∀ x : ↥(supₛ (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
+  have P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
     rintro x
     apply Classical.indefiniteDescription
-    have := (mem_supₛ_of_directed (cne.image _) hdir).1 x.2
+    have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
     rwa [bex_image_iff, ← bex_def, SetCoe.exists'] at this
-  set f : ↥(supₛ (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
-  have f_eq : ∀ (p : c) (x : ↥(supₛ (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
+  set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
+  have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
     intro p x y hxy
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
     -- Porting note: `refine' ..; exacts [ofLe hpq.1 y, hxy, rfl]`
-    --               → `refine' .. <;> [skip, exact ofLe hpq.1 y, rfl]; exact hxy`
-    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip, exact ofLe hpq.1 y, rfl]; exact hxy
+    --               → `refine' .. <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy`
+    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy
   refine' ⟨{ toFun := f.. }, _⟩
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
@@ -600,34 +597,34 @@ private theorem supₛ_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ �
     -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
     simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
   · intro p hpc
-    refine' ⟨le_supₛ <| mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
+    refine' ⟨le_sSup <| mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
-protected noncomputable def supₛ (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
-  ⟨_, Classical.choose <| supₛ_aux c hc⟩
-#align linear_pmap.Sup LinearPMap.supₛ
+protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
+  ⟨_, Classical.choose <| sSup_aux c hc⟩
+#align linear_pmap.Sup LinearPMap.sSup
 
-protected theorem le_supₛ {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
-    (hf : f ∈ c) : f ≤ LinearPMap.supₛ c hc :=
-  Classical.choose_spec (supₛ_aux c hc) hf
-#align linear_pmap.le_Sup LinearPMap.le_supₛ
+protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
+    (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=
+  Classical.choose_spec (sSup_aux c hc) hf
+#align linear_pmap.le_Sup LinearPMap.le_sSup
 
-protected theorem supₛ_le {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {g : E →ₗ.[R] F}
-    (hg : ∀ f ∈ c, f ≤ g) : LinearPMap.supₛ c hc ≤ g :=
+protected theorem sSup_le {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {g : E →ₗ.[R] F}
+    (hg : ∀ f ∈ c, f ≤ g) : LinearPMap.sSup c hc ≤ g :=
   le_of_eqLocus_ge <|
-    supₛ_le fun _ ⟨f, hf, Eq⟩ =>
+    sSup_le fun _ ⟨f, hf, Eq⟩ =>
       Eq ▸
-        have : f ≤ LinearPMap.supₛ c hc ⊓ g := le_inf (LinearPMap.le_supₛ _ hf) (hg f hf)
+        have : f ≤ LinearPMap.sSup c hc ⊓ g := le_inf (LinearPMap.le_sSup _ hf) (hg f hf)
         this.1
-#align linear_pmap.Sup_le LinearPMap.supₛ_le
+#align linear_pmap.Sup_le LinearPMap.sSup_le
 
-protected theorem supₛ_apply {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {l : E →ₗ.[R] F}
+protected theorem sSup_apply {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {l : E →ₗ.[R] F}
     (hl : l ∈ c) (x : l.domain) :
-    (LinearPMap.supₛ c hc) ⟨x, (LinearPMap.le_supₛ hc hl).1 x.2⟩ = l x := by
+    (LinearPMap.sSup c hc) ⟨x, (LinearPMap.le_sSup hc hl).1 x.2⟩ = l x := by
   symm
-  apply (Classical.choose_spec (supₛ_aux c hc) hl).2
+  apply (Classical.choose_spec (sSup_aux c hc) hl).2
   rfl
-#align linear_pmap.Sup_apply LinearPMap.supₛ_apply
+#align linear_pmap.Sup_apply LinearPMap.sSup_apply
 
 end LinearPMap
 
