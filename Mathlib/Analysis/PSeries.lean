@@ -17,7 +17,7 @@ In this file we prove that the series `∑' k in ℕ, 1 / k ^ p` converges if an
 The proof is based on the
 [Cauchy condensation test](https://en.wikipedia.org/wiki/Cauchy_condensation_test): `∑ k, f k`
 converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. We prove this test in
-`nnreal.summable_condensed_iff` and `summable_condensed_iff_of_nonneg`, then use it to prove
+`NNReal.summable_condensed_iff` and `summable_condensed_iff_of_nonneg`, then use it to prove
 `summable_one_div_rpow`. After this transformation, a `p`-series turns into a geometric series.
 
 ## TODO
@@ -120,7 +120,7 @@ end ENNReal
 
 namespace NNReal
 
-/-- Cauchy condensation test for a series of `nnreal` version. -/
+/-- Cauchy condensation test for a series of `NNReal` version. -/
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => 2 ^ k * f (2 ^ k)) ↔ Summable f := by
   simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul,
@@ -219,8 +219,8 @@ theorem Real.summable_one_div_nat_pow {p : ℕ} : Summable (fun n => 1 / n ^ p :
 #align real.summable_one_div_nat_pow Real.summable_one_div_nat_pow
 
 /-- Summability of the `p`-series over `ℤ`. -/
-theorem Real.summable_one_div_int_pow {p : ℕ} : (Summable fun n : ℤ => 1 / (n : ℝ) ^ p) ↔ 1 < p :=
-  by
+theorem Real.summable_one_div_int_pow {p : ℕ} :
+    (Summable fun n : ℤ => 1 / (n : ℝ) ^ p) ↔ 1 < p := by
   refine'
     ⟨fun h => Real.summable_one_div_nat_pow.mp (h.comp_injective Nat.cast_injective), fun h =>
       summable_int_of_summable_nat (Real.summable_one_div_nat_pow.mpr h)
@@ -232,8 +232,8 @@ theorem Real.summable_one_div_int_pow {p : ℕ} : (Summable fun n : ℤ => 1 / (
   norm_cast
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
-theorem Real.summable_abs_int_rpow {b : ℝ} (hb : 1 < b) : Summable fun n : ℤ => |(n : ℝ)| ^ (-b) :=
-  by
+theorem Real.summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
+    Summable fun n : ℤ => |(n : ℝ)| ^ (-b) := by
   refine'
     summable_int_of_summable_nat (_ : Summable fun n : ℕ => |(n : ℝ)| ^ _)
       (_ : Summable fun n : ℕ => |((-n : ℤ) : ℝ)| ^ _)
@@ -271,7 +271,8 @@ section pow_macro
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 @[simp]
-theorem NNReal.summable_rpow_inv {p : ℝ} : Summable (fun n => ((n : ℝ≥0) ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
+theorem NNReal.summable_rpow_inv {p : ℝ} :
+    Summable (fun n => ((n : ℝ≥0) ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
   simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow_inv NNReal.summable_rpow_inv
 
@@ -280,7 +281,8 @@ theorem NNReal.summable_rpow {p : ℝ} : Summable (fun n => (n : ℝ≥0) ^ p : 
   simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow NNReal.summable_rpow
 
-theorem NNReal.summable_one_div_rpow {p : ℝ} : Summable (fun n => 1 / (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
+theorem NNReal.summable_one_div_rpow {p : ℝ} :
+    Summable (fun n => 1 / (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
   simp
 #align nnreal.summable_one_div_rpow NNReal.summable_one_div_rpow
 
