@@ -102,7 +102,7 @@ open nonZeroDivisors Polynomial
 
 universe u v
 
-variable (K : Type u) [hring : CommRing K] [hdomain : IsDomain K]
+variable (K : Type u) [CommRing K] [IsDomain K]
 
 -- porting note: removed `include hring`
 
@@ -1080,7 +1080,7 @@ section NumDenom
 
 open GCDMonoid Polynomial
 
-variable {K : Type u} [hfield : Field K]
+variable {K : Type u} [Field K]
 
 /-- `ratfunc.num_denom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
@@ -1419,7 +1419,7 @@ theorem algebraMap_X : algebraMap K[X] (Ratfunc K) Polynomial.X = X :=
 set_option linter.uppercaseLean3 false in
 #align ratfunc.algebra_map_X Ratfunc.algebraMap_X
 
-variable [hfield : Field K]
+variable [Field K]
 
 @[simp]
 theorem num_C (c : K) : num (C c) = Polynomial.C c :=
