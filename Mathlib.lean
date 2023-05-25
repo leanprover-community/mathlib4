@@ -1788,6 +1788,7 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Skolem
 import Mathlib.ModelTheory.Substructures
 import Mathlib.ModelTheory.Syntax
+import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
