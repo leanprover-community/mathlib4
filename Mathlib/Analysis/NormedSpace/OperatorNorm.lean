@@ -725,7 +725,10 @@ lemma norm_mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] 
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and existence of a bound on the norm of the image. The linear map can be constructed using
-`LinearMap.mk₂`. -/
+`LinearMap.mk₂`.
+
+If you have an explicit bound, use `LinearMap.mkContinuous₂` instead, as a norm estimate will
+follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
 def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
     (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuousOfExistsBound
@@ -742,7 +745,8 @@ def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and a bound on the norm of the image. The linear map can be constructed using
-`LinearMap.mk₂`. -/
+`LinearMap.mk₂`. Lemmas `LinearMap.mkContinuous₂_norm_le'` and `LinearMap.mkContinuous₂_norm_le`
+provide estimates on the norm of an operator constructed using this function. -/
 def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
     E →SL[σ₁₃] F →SL[σ₂₃] G :=
   mkContinuousOfExistsBound₂ f ⟨C, hC⟩

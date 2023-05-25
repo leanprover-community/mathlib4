@@ -34,11 +34,3 @@ macro "measurability" (config)? : tactic =>
 syntax (name := measurability!) "measurability!" (config)? : tactic
 syntax (name := measurability?) "measurability?" (config)? : tactic
 syntax (name := measurability!?) "measurability!?" (config)? : tactic
-
-/- Todo:
-Give the below attr to `Measurable.aestronglyMeasurable` when we port
-`MeasureTheory.Function.StronglyMeasurable`.
-```
-@[aesop unsafe 30% apply (rule_sets [Measurable])]
-theorem MeasureTheory.Function.StronglyMeasurable ...
-``` -/
