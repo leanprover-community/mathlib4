@@ -386,57 +386,58 @@ partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := 
   Expr.withApp' e fun f xs => do
     let some (fName, _) := f.const? | throwError "{f} must be a constant"
     let backDeps := (← getFunInfo f).paramInfo.map (·.backDeps)
-    let (f, fType, env) ← mkFunWithLevels fName
-    forallBoundedTelescope fType xs.size fun allFVars _ => do
-      unless (allFVars.size == xs.size) do
-        throwError "{xs.size} inputs expected in {fType}; only found {allFVars.size}"
-      let mut hasEncounteredUnabstractedArg := false
-      let mut fvars := Array.mkEmpty (α := Expr) n
-      let mut args := Array.mkEmpty (α := Expr) xs.size
-      let mut explicitArgs := Array.mkEmpty (α := Expr) n
-      let mut exclusiveDeps : Array (Option Bool) := Array.mkArray xs.size none
-      for i in [: xs.size] do
-        -- work backwards, starting with the outermost argument
-        let i := xs.size - i - 1
-        let fvar := allFVars[i]!
-        let bi ← fvar.fvarId!.getBinderInfo
-        -- abstract this argument if it's either
-        -- * one of the explicit args we're abstracting
-        -- * an implicit argument which is a dependency of abstracted args (exclusively)
-        let isAbstracted :=
-          if bi.isExplicit then
-            n - explicitArgs.size > 0
+    let (abstractedExprWithLevels, explicitArgs) ← withConstLevelsExpr' fName fun _ f fType =>
+      forallBoundedTelescope fType xs.size fun allFVars _ => do
+        unless (allFVars.size == xs.size) do
+          throwError "{xs.size} inputs expected in {fType}; only found {allFVars.size}"
+        let mut hasEncounteredUnabstractedArg := false
+        let mut fvars := Array.mkEmpty (α := Expr) n
+        let mut args := Array.mkEmpty (α := Expr) xs.size
+        let mut explicitArgs := Array.mkEmpty (α := Expr) n
+        let mut exclusiveDeps : Array (Option Bool) := Array.mkArray xs.size none
+        for i in [: xs.size] do
+          -- work backwards, starting with the outermost argument
+          let i := xs.size - i - 1
+          let fvar := allFVars[i]!
+          let bi ← fvar.fvarId!.getBinderInfo
+          -- abstract this argument if it's either
+          -- * one of the explicit args we're abstracting
+          -- * an implicit argument which is a dependency of abstracted args (exclusively)
+          let isAbstracted :=
+            if bi.isExplicit then
+              n - explicitArgs.size > 0
+            else
+              -- Is it an exclusive dependency (`some true`)?
+              exclusiveDeps[i]!.any id
+          if isAbstracted then
+            exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! true
+            -- Only use a lambda to abstract this arg if it's "behind" an unabstracted one.
+            -- Otherwise, simply removing it will suffice.
+            if hasEncounteredUnabstractedArg then
+              fvars := fvars.push fvar
+              args := args.push fvar
+            if bi.isExplicit && (n - explicitArgs.size > 0) then
+              explicitArgs := explicitArgs.push xs[i]!
           else
-            -- Is it an exclusive dependency of abstracted arguments (`some true`)?
-            exclusiveDeps[i]!.any id
-        if isAbstracted then
-          exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! true
-          -- Only use a lambda to abstract this arg if it's "behind" an unabstracted one.
-          -- Otherwise, simply removing it will suffice.
-          if hasEncounteredUnabstractedArg then
-            fvars := fvars.push fvar
-            args := args.push fvar
-          if bi.isExplicit && (n - explicitArgs.size > 0) then
-            explicitArgs := explicitArgs.push xs[i]!
-        else
-          hasEncounteredUnabstractedArg := true
-          args := args.push xs[i]!
-          exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! false
-      unless explicitArgs.size == n do
-        throwError "not enough explicit arguments present; found {explicitArgs.reverse}, needed {n
-          - explicitArgs.size} more"
-      let fApp ← mkAppNUnifyingTypes f args.reverse
-      let abstractedExpr := (← getLCtx).mkLambda fvars.reverse fApp
-      let abstractedExprWithLevels ← abstract env abstractedExpr
-      explicitArgs := explicitArgs.reverse
-      if ensureReconstructable then
-        let e' ← mkAppMWithLevels' abstractedExprWithLevels explicitArgs
-        let some e' := toExpr? e'
-          | throwError "could not resolve all universe levels; reconstructed {e'} from {e}"
-        unless ← withNewMCtxDepth <| isDefEq e e' do
-          throwError "could not reconstruct {e} from {abstractedExprWithLevels} {explicitArgs
-            }; got {e'} instead"
-      pure (abstractedExprWithLevels, explicitArgs)
+            hasEncounteredUnabstractedArg := true
+            args := args.push xs[i]!
+            exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! false
+        unless explicitArgs.size == n do
+          throwError "not enough explicit arguments present; found {explicitArgs.reverse}, needed {n
+            - explicitArgs.size} more"
+        let fApp ← mkAppNUnifyingTypes f args.reverse
+        let abstractedExpr := (← getLCtx).mkLambda fvars.reverse fApp
+        explicitArgs := explicitArgs.reverse
+        pure (abstractedExpr, explicitArgs)
+    -- Check that the original is reconstructable if necessary
+    if ensureReconstructable then
+      let e' ← mkAppMWithLevels' abstractedExprWithLevels explicitArgs
+      let some e' := toExpr? e'
+        | throwError "could not resolve all universe levels; reconstructed {e'} from {e}"
+      unless ← withNewMCtxDepth <| isDefEq e e' do
+        throwError "could not reconstruct {e} from {abstractedExprWithLevels} {explicitArgs
+          }; got {e'} instead"
+    pure (abstractedExprWithLevels, explicitArgs)
 where
   /-- We start with `exclusiveDeps := #[none, none, ..., none]`, each position representing the
   status of the corresponding argument. We work backwards from the end of the argument list,
