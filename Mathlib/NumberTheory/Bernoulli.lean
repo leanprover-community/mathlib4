@@ -363,17 +363,17 @@ theorem sum_range_pow (n p : ℕ) :
       have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
-    -- porting note: altered proof slightly, TODO: golf this a bit
+    -- porting note: altered proof slightly
     rw [← mul_right_inj' hexp, mul_comm]
     simp only [← cast_pow]
     rw [←exp_pow_sum,  geom_sum_mul, h_r, ← bernoulliPowerSeries_mul_exp_sub_one,
     bernoulliPowerSeries, mul_right_comm]
-    simp [h_cauchy, mul_comm, hexp]
-    refine' Eq.trans _ (Eq.trans h_cauchy _)
-    simp [mul_comm, hexp]
-    left
-    congr
-    simp [factorial, mul_comm]
+    simp only [mul_comm, mul_eq_mul_left_iff, hexp, or_false]
+    refine' Eq.trans (mul_eq_mul_right_iff.mpr _) (Eq.trans h_cauchy _)
+    · left
+      congr
+    · simp only [mul_comm, factorial, cast_succ, cast_pow]
+
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine' sum_congr rfl fun x _ => _
