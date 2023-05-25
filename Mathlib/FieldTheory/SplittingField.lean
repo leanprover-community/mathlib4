@@ -103,6 +103,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
 theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegree - 1 := by
+-- Porting note: `(map (AdjoinRoot.of f.factor) f)` was `_`
   rw [removeFactor, natDegree_divByMonic (map (AdjoinRoot.of f.factor) f) (monic_X_sub_C _),
     natDegree_map, natDegree_X_sub_C]
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
@@ -119,7 +120,7 @@ including `splitting_field_aux` (such as instances) should be defined using
 this recursion in each field, rather than defining the whole tuple through
 recursion.
 -/
-def SplittingFieldAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ f : K[X], Type u :=
+def SplittingFieldAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X], Type u :=
   -- Porting note: added motive
   Nat.recOn (motive := fun (_x : ℕ) => ∀ {K : Type u} [_inst_4 : Field K], K[X] → Type u)
     n (fun {K} _ _ => K) fun _ ih _ _ f => ih f.removeFactor
@@ -165,6 +166,7 @@ protected def add (n : ℕ) :
     n (fun {K} _ _ => @Add.add K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.add Polynomial.SplittingFieldAux.add
 
+set_option synthInstance.maxHeartbeats 30000 in
 /-- Splitting fields inherit scalar multiplication. -/
 protected def smul (n : ℕ) :
     ∀ (α : Type _) {K : Type u} [Field K],
@@ -174,7 +176,7 @@ protected def smul (n : ℕ) :
     (motive := fun n => ∀ (α : Type _) {K : Type u} [Field K],
       ∀ [DistribSMul α K],
         ∀ [IsScalarTower α K K] {f : K[X]}, α → SplittingFieldAux n f → SplittingFieldAux n f)
-    n (fun α {K} fK ds ist f => @SMul.smul _ K _) fun n ih α K fK ds ist f => by exact ih α
+    n (fun α {K} fK ds _ _ => @SMul.smul _ K _) fun n ih α K fK ds ist f => by exact ih α
 #align polynomial.splitting_field_aux.smul Polynomial.SplittingFieldAux.smul
 
 instance hasSmul (α : Type _) (n : ℕ) {K : Type u} [Field K] [DistribSMul α K] [IsScalarTower α K K]
@@ -182,6 +184,7 @@ instance hasSmul (α : Type _) (n : ℕ) {K : Type u} [Field K] [DistribSMul α 
   ⟨SplittingFieldAux.smul n α⟩
 #align polynomial.splitting_field_aux.has_smul Polynomial.SplittingFieldAux.hasSmul
 
+set_option synthInstance.maxHeartbeats 30000 in
 instance isScalarTower (n : ℕ) :
     ∀ (R₁ R₂ : Type _) {K : Type u} [SMul R₁ R₂] [Field K],
       ∀ [DistribSMul R₂ K] [DistribSMul R₁ K],
