@@ -40,6 +40,11 @@ example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := b
   congrm λ x => _
   rw [h]
 
+-- Testing that the recursion works:
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
+  congrm λ (x : ℕ) => x + _
+  exact h
+
 -- Testing that trivial application rule works
 example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
   congrm (f _)
@@ -47,9 +52,7 @@ example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
 
 -- Testing that application rule with two arguments works
 example (a b c d : ℕ) (h : a = b) (h' : c = d) (f : ℕ → ℕ → ℕ) : f a c = f b d := by
-  congrm (f _ _)
-  exact h
-  exact h'
+  congrm (f _ _) <;> assumption
 
 -- Testing that application rule with recursion works
 example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f (f a) = f (f b) := by
@@ -73,7 +76,7 @@ example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
 
 example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
   congrm λ x => ∀ w, (_ + a = w)
-  simp only [h]
+  exact h
 
 -- Tests that should fail:
 
