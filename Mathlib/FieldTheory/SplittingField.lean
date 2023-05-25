@@ -315,116 +315,90 @@ private theorem nsmul_succ (n : ℕ) :
   · intro K fK f
     apply hn
 
-
+set_option maxHeartbeats 3500000 in
 instance field (n : ℕ) {K : Type u} [Field K] {f : K[X]} : Field (SplittingFieldAux n f) := by
   refine'
     { zero := SplittingFieldAux.zero n
       one := SplittingFieldAux.one n
       add := SplittingFieldAux.add n
-      zero_add :=
-        have h := @zero_add
+      zero_add := have h := @zero_add
         _
-      add_zero :=
-        have h := @add_zero
+      add_zero := have h := @add_zero
         _
-      add_assoc :=
-        have h := @add_assoc
+      add_assoc := have h := @add_assoc
         _
-      add_comm :=
-        have h := @add_comm
+      add_comm := have h := @add_comm
         _
       neg := SplittingFieldAux.neg n
-      add_left_neg :=
-        have h := @add_left_neg
+      add_left_neg := have h := @add_left_neg
         _
       sub := SplittingFieldAux.sub n
-      sub_eq_add_neg :=
-        have h := @sub_eq_add_neg
+      sub_eq_add_neg := have h := @sub_eq_add_neg
         _
       mul := SplittingFieldAux.mul n
-      one_mul :=
-        have h := @one_mul
+      zero_mul := have h := @zero_mul
         _
-      mul_one :=
-        have h := @mul_one
+      mul_zero := have h := @mul_zero
         _
-      mul_assoc :=
-        have h := @mul_assoc
+      one_mul := have h := @one_mul
         _
-      left_distrib :=
-        have h := @left_distrib
+      mul_one := have h := @mul_one
         _
-      right_distrib :=
-        have h := @right_distrib
+      mul_assoc := have h := @mul_assoc
         _
-      mul_comm :=
-        have h := @mul_comm
+      left_distrib := have h := @left_distrib
+        _
+      right_distrib := have h := @right_distrib
+        _
+      mul_comm := have h := @mul_comm
         _
       inv := SplittingFieldAux.inv n
-      inv_zero :=
-        have h := @inv_zero
+      inv_zero := have h := @inv_zero
         _
       div := SplittingFieldAux.div n
-      div_eq_mul_inv :=
-        have h := @div_eq_mul_inv
+      div_eq_mul_inv := have h := @div_eq_mul_inv
         _
-      mul_inv_cancel :=
-        have h := @mul_inv_cancel
+      mul_inv_cancel := have h := @mul_inv_cancel
         _
-      exists_pair_ne :=
-        have h := @exists_pair_ne
+      exists_pair_ne := have h := @exists_pair_ne
         _
-      natCast := SplittingFieldAux.mk n ∘ (coe : ℕ → K)
-      natCast_zero :=
-        have h := @CommRing.natCast_zero
+      natCast := SplittingFieldAux.mk n ∘ (fun (k : ℕ) => (k : K))
+      natCast_zero := have h := @AddMonoidWithOne.natCast_zero
         _
-      natCast_succ :=
-        have h := @CommRing.natCast_succ
+      natCast_succ := have h := @AddMonoidWithOne.natCast_succ
         _
       nsmul := (· • ·)
-      nsmul_zero := fun x => nsmul_zero n
+      nsmul_zero := fun x => nsmul_zero n x
       nsmul_succ := nsmul_succ n
       intCast := SplittingFieldAux.mk n ∘ ((↑) : ℤ → K)
-      intCast_ofNat :=
-        have h := @CommRing.intCast_ofNat
+      intCast_ofNat := have h := @AddGroupWithOne.intCast_ofNat
         _
-      intCast_negSucc :=
-        have h := @CommRing.intCast_neg_succ_ofNat
+      intCast_negSucc := have h := @AddGroupWithOne.intCast_negSucc
         _
       zsmul := (· • ·)
-      zsmul_zero' :=
-        have h := @SubtractionCommMonoid.zsmul_zero'
+      zsmul_zero' :=  have h := @SubNegMonoid.zsmul_zero'
         _
-      zsmul_succ' :=
-        have h := @SubtractionCommMonoid.zsmul_succ'
+      zsmul_succ' := have h := @SubNegMonoid.zsmul_succ'
         _
-      zsmul_neg' :=
-        have h := @SubtractionCommMonoid.zsmul_neg'
+      zsmul_neg' := have h := @SubNegMonoid.zsmul_neg'
         _
       ratCast := SplittingFieldAux.mk n ∘ ((↑) : ℚ → K)
-      ratCast_mk :=
-        have h := @Field.ratCast_mk
+      ratCast_mk := have h := @Field.ratCast_mk
         _
       qsmul := (· • ·)
-      qsmul_eq_mul' :=
-        have h := @Field.qsmul_eq_mul'
+      qsmul_eq_mul' := have h := @Field.qsmul_eq_mul'
         _
       npow := SplittingFieldAux.npow n
-      npow_zero :=
-        have h := @CommRing.npow_zero'
+      npow_zero := have h := @Monoid.npow_zero
         _
-      npow_succ :=
-        have h := @CommRing.npow_succ'
+      npow_succ :=  have h := @Monoid.npow_succ
         _
       zpow := SplittingFieldAux.zpow n
-      zpow_zero' :=
-        have h := @Field.zpow_zero'
+      zpow_zero' := have h := @Field.zpow_zero'
         _
-      zpow_succ' :=
-        have h := @Field.zpow_succ'
+      zpow_succ' := have h := @Field.zpow_succ'
         _
-      zpow_neg' :=
-        have h := @Field.zpow_neg'
+      zpow_neg' := have h := @Field.zpow_neg'
         _ }
   all_goals
     induction' n with n ih generalizing K
