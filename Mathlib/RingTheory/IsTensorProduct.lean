@@ -226,7 +226,7 @@ theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) :
   delta IsBaseChange
   convert TensorProduct.isTensorProduct R S M using 1
   ext (s x)
-  change s • 1 ⊗ₜ x = s ⊗ₜ x
+  change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
   congr 1
   exact mul_one _
