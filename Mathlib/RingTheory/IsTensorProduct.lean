@@ -269,7 +269,9 @@ theorem IsBaseChange.ofLiftUnique
   obtain ⟨g, hg, -⟩ :=
     h (ULift.{v₂} <| S ⊗[R] M)
       (ULift.moduleEquiv.symm.toLinearMap.comp <| TensorProduct.mk R S M 1)
-  let f' : S ⊗[R] M →ₗ[R] N := ?_
+  let f' : S ⊗[R] M →ₗ[R] N :=
+    TensorProduct.lift (((LinearMap.flip (AlgHom.toLinearMap (Algebra.ofId S
+      (Module.End S (M →ₗ[R] N))))) f).restrictScalars R)
   change Function.Bijective f'
   let f'' : S ⊗[R] M →ₗ[S] N := by
     refine'
@@ -277,15 +279,14 @@ theorem IsBaseChange.ofLiftUnique
         toFun := f'
         map_smul' := fun s x =>
           TensorProduct.induction_on x _ (fun s' y => smul_assoc s s' _) fun x y hx hy => _ }
-    · rw [map_zero, smul_zero, map_zero, smul_zero]
-    · rw [smul_add, map_add, map_add, smul_add, hx, hy]
+    · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
+    · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
   simp_rw [FunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
-    LinearEquiv.ofLinear f'' (ULift.moduleEquiv.symm.toLinearMap.comp g) _ _
+    LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
-  · rw [← LinearMap.cancel_left (ULift.moduleEquiv : ULift.{max v₁ v₃} N ≃ₗ[S] N).symm.Injective]
-    refine' (h (ULift.{max v₁ v₃} N) <| ulift.module_equiv.symm.to_linear_map.comp f).unique _ rfl
-    · infer_instance
+  · rw [← LinearMap.cancel_left (ULift.moduleEquiv : ULift.{max v₁ v₃} N ≃ₗ[S] N).symm.injective]
+    refine' (h (ULift.{max v₁ v₃} N) <| ULift.moduleEquiv.symm.toLinearMap.comp f).unique _ rfl
     ext x
     simp only [LinearMap.comp_apply, LinearMap.restrictScalars_apply, hg]
     apply one_smul
