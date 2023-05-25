@@ -200,7 +200,7 @@ set_option linter.uppercaseLean3 false in
 end SemiRingCat
 
 -- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommSemiring.{max u v}`, to deal around unification issues. -/
+/-- An alias for `CommSemiring.{max u v}`, to deal with unification issues. -/
 @[nolint checkUnivs]
 abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
 
