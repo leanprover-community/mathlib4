@@ -8,9 +8,9 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.LocallyConvex.BalancedCoreHull
-import Mathbin.Analysis.LocallyConvex.WithSeminorms
-import Mathbin.Analysis.Convex.Gauge
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex sets
@@ -56,8 +56,7 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_basis_abs_convex :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s ∧ Convex ℝ s) id :=
-  by
+    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine'
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => _) fun s hs =>
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
@@ -127,8 +126,7 @@ theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
 
 end AbsConvexOpenSets
 
-instance : Nonempty (AbsConvexOpenSets 𝕜 E) :=
-  by
+instance : Nonempty (AbsConvexOpenSets 𝕜 E) := by
   rw [← exists_true_iff_nonempty]
   dsimp only [AbsConvexOpenSets]
   rw [Subtype.exists]
@@ -154,8 +152,7 @@ noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets
 variable {𝕜 E}
 
 theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
-    (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) :=
-  by
+    (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) := by
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_to_fun]
@@ -167,8 +164,7 @@ variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
-theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
-  by
+theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
