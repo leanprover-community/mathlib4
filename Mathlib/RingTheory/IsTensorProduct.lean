@@ -429,14 +429,13 @@ instance TensorProduct.isPushout' {R S T : Type _} [CommRing R] [CommRing S] [Co
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomoprhism `S' → A`.
 -/
-@[simps /-(config := lemmasOnly)-/ apply]
+@[simps! /-(config := lemmasOnly)-/ apply] --Porting note: added `!`
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type _} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A := by
   letI := Module.compHom A f.toRingHom
   haveI : IsScalarTower R S A :=
-    {
-      smul_assoc := fun r s a =>
+    { smul_assoc := fun r s a =>
         show f (r • s) * a = r • (f s * a) by rw [f.map_smul, smul_mul_assoc] }
   haveI : IsScalarTower S A A := { smul_assoc := fun r a b => mul_assoc _ _ _ }
   have : ∀ x, H.out.lift g.toLinearMap (algebraMap R' S' x) = g x := H.out.lift_eq _
@@ -473,7 +472,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
 theorem Algebra.pushoutDesc_left [H : Algebra.IsPushout R S R' S'] {A : Type _} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : S) :
     Algebra.pushoutDesc S' f g H (algebraMap S S' x) = f x := by
-  rw [Algebra.pushoutDesc_apply, Algebra.algebraMap_eq_smul_one, LinearMap.map_smul, ←
+  rw [Algebra.pushoutDesc_apply, Algebra.algebraMap_eq_smul_one, map_smul, ←
     Algebra.pushoutDesc_apply S' f g H, _root_.map_one]
   exact mul_one (f x)
 #align algebra.pushout_desc_left Algebra.pushoutDesc_left
@@ -487,8 +486,12 @@ theorem Algebra.lift_algHom_comp_left [H : Algebra.IsPushout R S R' S'] {A : Typ
 @[simp]
 theorem Algebra.pushoutDesc_right [H : Algebra.IsPushout R S R' S'] {A : Type _} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : R') :
-    Algebra.pushoutDesc S' f g H (algebraMap R' S' x) = g x := by
-  apply (config := { instances := false }) @IsBaseChange.lift_eq
+    Algebra.pushoutDesc S' f g H (algebraMap R' S' x) = g x :=
+  letI := Module.compHom A f.toRingHom
+  haveI : IsScalarTower R S A :=
+    { smul_assoc := fun r s a =>
+        show f (r • s) * a = r • (f s * a) by rw [f.map_smul, smul_mul_assoc] }
+  IsBaseChange.lift_eq _ _ _
 #align algebra.pushout_desc_right Algebra.pushoutDesc_right
 
 theorem Algebra.lift_algHom_comp_right [H : Algebra.IsPushout R S R' S'] {A : Type _} [Semiring A]
