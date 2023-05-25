@@ -50,6 +50,10 @@ theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : 
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 #align lipschitz_with_smul lipschitzWith_smul
 
+theorem edist_smul_le (s : α) (x y : β) : edist (s • x) (s • y) ≤ ‖s‖₊ • edist x y :=
+  lipschitzWith_smul s x y
+#align edist_smul_le edist_smul_le
+
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
@@ -114,5 +118,9 @@ theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * 
 theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s‖₊ * nndist x y :=
   NNReal.eq <| dist_smul₀ s x y
 #align nndist_smul₀ nndist_smul₀
+
+theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
+  simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+#align edist_smul₀ edist_smul₀
 
 end NormedDivisionRingModule

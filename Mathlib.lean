@@ -542,6 +542,7 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Generator
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.CategoryTheory.Abelian.Images
+import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
@@ -783,6 +784,7 @@ import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
@@ -1437,6 +1439,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.ZMod.Quotient
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
@@ -1816,6 +1819,7 @@ import Mathlib.ModelTheory.Types
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
+import Mathlib.NumberTheory.Bernoulli
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
@@ -1828,6 +1832,7 @@ import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.Multiplicity
+import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicVal
@@ -1974,6 +1979,7 @@ import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.Congruence
@@ -2009,6 +2015,7 @@ import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Localization.AsSubring
