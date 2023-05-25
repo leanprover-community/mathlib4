@@ -104,6 +104,10 @@ open nonZeroDivisors Polynomial
 
 universe u v
 
+-- porting note: added a `section` to avoid the typeclasses
+-- `CommRing` and `IsDomain` to interfere with `Field`.
+-- This was expecially useful for the section `Numerator and denominator`
+-- and in particular for the definition `num_denom`.
 section CommRing
 
 variable (K : Type u) [hring : CommRing K] [hdomain : IsDomain K]
