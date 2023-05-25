@@ -9,7 +9,7 @@ Authors: Markus Himmel
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits
@@ -19,7 +19,7 @@ The Yoneda embedding for preadditive categories preserves limits.
 ## Implementation notes
 
 This is in a separate file to avoid having to import the development of the abelian structure on
-`Module` in the main file about the preadditive Yoneda embedding.
+`ModuleCat` in the main file about the preadditive Yoneda embedding.
 
 -/
 
@@ -37,14 +37,14 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 instance preservesLimitsPreadditiveYonedaObj (X : C) : PreservesLimits (preadditiveYonedaObj X) :=
   have : PreservesLimits (preadditiveYonedaObj X ⋙ forget _) :=
     (inferInstance : PreservesLimits (yoneda.obj X))
-  preserves_limits_of_reflects_of_preserves _ (forget _)
+  preservesLimitsOfReflectsOfPreserves _ (forget _)
 #align category_theory.preserves_limits_preadditive_yoneda_obj CategoryTheory.preservesLimitsPreadditiveYonedaObj
 
 instance preservesLimitsPreadditiveCoyonedaObj (X : Cᵒᵖ) :
     PreservesLimits (preadditiveCoyonedaObj X) :=
   have : PreservesLimits (preadditiveCoyonedaObj X ⋙ forget _) :=
     (inferInstance : PreservesLimits (coyoneda.obj X))
-  preserves_limits_of_reflects_of_preserves _ (forget _)
+  preservesLimitsOfReflectsOfPreserves _ (forget _)
 #align category_theory.preserves_limits_preadditive_coyoneda_obj CategoryTheory.preservesLimitsPreadditiveCoyonedaObj
 
 instance PreservesLimitsPreadditiveYoneda.obj (X : C) : PreservesLimits (preadditiveYoneda.obj X) :=
@@ -57,4 +57,3 @@ instance PreservesLimitsPreadditiveCoyoneda.obj (X : Cᵒᵖ) :
 #align category_theory.preserves_limits_preadditive_coyoneda.obj CategoryTheory.PreservesLimitsPreadditiveCoyoneda.obj
 
 end CategoryTheory
-
