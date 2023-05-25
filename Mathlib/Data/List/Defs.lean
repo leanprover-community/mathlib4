@@ -364,14 +364,9 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
+#align list.chain_cons List.chain_cons
 
 section Chain
-
-@[simp]
-theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
-  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
-   fun ⟨n, p⟩ ↦ p.cons n⟩
-#align list.chain_cons List.chain_cons
 
 instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
