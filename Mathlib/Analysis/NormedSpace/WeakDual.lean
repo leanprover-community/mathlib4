@@ -193,7 +193,7 @@ variable (𝕜)
 /-- The polar set `polar 𝕜 s` of `s : set E` seen as a subset of the dual of `E` with the
 weak-star topology is `weak_dual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
-  toNormedDual ⁻¹' polar 𝕜 s
+  toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
 #align weak_dual.polar WeakDual.polar
 
 theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
