@@ -252,7 +252,10 @@ protected def npow (n : ℕ) :
 
 /-- Splitting fields have an injection from the base field. -/
 protected def mk (n : ℕ) : ∀ {K : Type u} [Field K], ∀ {f : K[X]}, K → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => id) fun n ih K fK f => ih ∘ (↑)
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, K → SplittingFieldAux n f)
+    n (fun {_} _ _ => id) fun _ ih _ _ _ => ih ∘ (↑)
 #align polynomial.splitting_field_aux.mk Polynomial.SplittingFieldAux.mk
 
 -- note that `coe` goes from `K → adjoin_root f`, and then `ih` lifts to the full splitting field
@@ -260,20 +263,29 @@ protected def mk (n : ℕ) : ∀ {K : Type u} [Field K], ∀ {f : K[X]}, K → S
 /-- Splitting fields have an inverse. -/
 protected def inv (n : ℕ) :
     ∀ {K : Type u} [Field K], ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @Inv.inv K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ => @Inv.inv K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.inv Polynomial.SplittingFieldAux.inv
 
 /-- Splitting fields have a division. -/
 protected def div (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @Div.div K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ => @Div.div K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.div Polynomial.SplittingFieldAux.div
 
 /-- Splitting fields have powers by integers. -/
 protected def zpow (n : ℕ) :
     ∀ {K : Type u} [Field K], ∀ {f : K[X]}, ℤ → SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f n x => @Pow.pow K _ _ x n) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, ℤ → SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ n x => @Pow.pow K _ _ x n) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.zpow Polynomial.SplittingFieldAux.zpow
 
 -- I'm not sure why these two lemmas break, but inlining them seems to not work.
