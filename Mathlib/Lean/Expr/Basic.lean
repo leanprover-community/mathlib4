@@ -425,7 +425,7 @@ partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := 
         unless explicitArgs.size == n do
           throwError "not enough explicit arguments present; found {explicitArgs.reverse}, needed {n
             - explicitArgs.size} more"
-        let fApp ← mkAppNUnifyingTypes f args.reverse
+        let fApp ← mkAppNUnifying f args.reverse
         let abstractedExpr := (← getLCtx).mkLambda fvars.reverse fApp
         explicitArgs := explicitArgs.reverse
         pure (abstractedExpr, explicitArgs)
