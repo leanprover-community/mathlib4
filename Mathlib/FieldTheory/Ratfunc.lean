@@ -116,8 +116,17 @@ The inclusion of polynomials into `ratfunc` is `algebra_map K[X] (ratfunc K)`,
 the maps between `ratfunc K` and another field of fractions of `K[X]`,
 especially `fraction_ring K[X]`, are given by `is_localization.algebra_equiv`.
 -/
-structure Ratfunc : Type u where of_fraction_ring ::
-  toFractionRing : FractionRing K[X]
+structure Ratfunc : Type u where
+  /-- (implementation detail): a rational function is given by an element of the fraction field.
+
+  You should prefer `isLocalization.alg_equiv` over `of_fraction_ring`.
+  -/
+  of_fraction_ring ::
+    /-- (implementation detail): a rational function gives an element of the fraction field.
+
+    You should prefer `isLocalization.alg_equiv` over `toFractionRing`.
+    -/
+    toFractionRing : FractionRing K[X]
 #align ratfunc Ratfunc
 
 namespace Ratfunc
@@ -519,6 +528,7 @@ def toFractionRingRingEquiv : Ratfunc R ≃+* FractionRing R[X] where
 
 -- porting note: reimplemented the `frac_tac` and `smul_tac` as close to the originals as I could
 open Lean Elab.Tactic in
+/-- Solve equations for `ratfunc K` by working in `fraction_ring K[X]`. -/
 elab (name := frac_tac) "frac_tac" : tactic => do
   evalTactic (← `(tactic| repeat (rintro (⟨⟩ : Ratfunc _))
   <;>
@@ -530,6 +540,7 @@ elab (name := frac_tac) "frac_tac" : tactic => do
     add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg]))
 
 open Lean Elab.Tactic in
+/-- Solve equations for `ratfunc K` by applying `ratfunc.induction_on`. -/
 elab (name := smul_tac) "smul_tac" : tactic => do
   evalTactic (← `(tactic|
     repeat
@@ -546,6 +557,10 @@ elab (name := smul_tac) "smul_tac" : tactic => do
 
 -- Porting note: split the CommRing instance up into multiple defs because it was hard to see
 -- if the big instance declaration made any progress.
+/-- `Ratfunc R` is a commutative monoid.
+
+This is an intermediate step on the way to the full instance `Ratfunc.instCommRing`.
+-/
 def instCommMonoid : CommMonoid (Ratfunc R) where
   mul := (· * ·)
   mul_assoc := by frac_tac
@@ -555,6 +570,10 @@ def instCommMonoid : CommMonoid (Ratfunc R) where
   mul_one := by frac_tac
   npow := npowRec
 
+/-- `Ratfunc R` is an additive commutative group.
+
+This is an intermediate step on the way to the full instance `Ratfunc.instCommRing`.
+-/
 def instAddCommGroup : AddCommGroup (Ratfunc R) where
   add := (· + ·)
   add_assoc := by frac_tac
@@ -847,7 +866,7 @@ theorem map_apply_div_ne_zero {R F : Type _} [CommRing R] [IsDomain R] [MonoidHo
   simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_of_fraction_ring_mk,
     mk_eq_localization_mk _ hq']
 #align ratfunc.map_apply_div_ne_zero Ratfunc.map_apply_div_ne_zero
-set_option maxHeartbeats 0
+
 @[simp]
 theorem map_apply_div {R F : Type _} [CommRing R] [IsDomain R] [MonoidWithZeroHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) :
@@ -862,7 +881,6 @@ theorem map_apply_div {R F : Type _} [CommRing R] [IsDomain R] [MonoidWithZeroHo
   exact map_apply_div_ne_zero _ _ _ _ hq
 #align ratfunc.map_apply_div Ratfunc.map_apply_div
 
-@[simp]
 theorem liftMonoidWithZeroHom_apply_div {L : Type _} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
@@ -872,11 +890,25 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type _} [CommGroupWithZero L]
     liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
 #align ratfunc.lift_monoid_with_zero_hom_apply_div Ratfunc.liftMonoidWithZeroHom_apply_div
 
+-- Porting note: added `simpNF` form of `liftMonoidWithZeroHom_apply_div`
 @[simp]
+theorem liftMonoidWithZeroHom_apply_div' {L : Type _} [CommGroupWithZero L]
+    (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
+    liftMonoidWithZeroHom φ hφ (algebraMap _ _ p) / liftMonoidWithZeroHom φ hφ (algebraMap _ _ q) =
+      φ p / φ q :=
+  by rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
+
 theorem liftRingHom_apply_div {L : Type _} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _  -- porting note: gave explicitly the `hφ`
 #align ratfunc.lift_ring_hom_apply_div Ratfunc.liftRingHom_apply_div
+
+-- Porting note: added `simpNF` form of `liftRingHom_apply_div`
+@[simp]
+theorem liftRingHom_apply_div' {L : Type _} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
+    (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
+      φ p / φ q :=
+  liftMonoidWithZeroHom_apply_div' _ hφ _ _  -- porting note: gave explicitly the `hφ`
 
 variable (K)
 
@@ -943,7 +975,12 @@ theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective �
   liftMonoidWithZeroHom_injective _ hφ
 #align ratfunc.lift_alg_hom_injective Ratfunc.liftAlgHom_injective
 
+-- Porting note: added `simpNF` form of `liftAlgHom_apply_div`
 @[simp]
+theorem liftAlgHom_apply_div' (p q : K[X]) :
+    liftAlgHom φ hφ (algebraMap _ _ p) / liftAlgHom φ hφ (algebraMap _ _ q) = φ p / φ q :=
+  liftMonoidWithZeroHom_apply_div' _ hφ _ _  -- porting note: gave explicitly the `hφ`
+
 theorem liftAlgHom_apply_div (p q : K[X]) :
     liftAlgHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _  -- porting note: gave explicitly the `hφ`
@@ -1715,7 +1752,9 @@ theorem coe_smul (r : F) : ((r • f : Ratfunc F) : LaurentSeries F) = r • (f 
   by rw [smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
 #align ratfunc.coe_smul Ratfunc.coe_smul
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
+-- even though `single 1 1` is a bundled function application, not a "real" coercion
+@[simp]
 theorem coe_X : ((X : Ratfunc F) : LaurentSeries F) = single 1 1 := by
   rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, -- porting note: removed `coe_C`
      Polynomial.coe_one,
