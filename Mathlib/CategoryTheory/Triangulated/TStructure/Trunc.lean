@@ -568,6 +568,57 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
     (asIso ((t.truncGE (b+1)).map ((t.truncGEπ  a).app X))).symm
 
+noncomputable def truncLELEIsoTruncLE₁ (a b : ℤ) (h : a ≤ b) :
+    t.truncLE b ⋙ t.truncLE a ≅ t.truncLE a :=
+  have : ∀ (X : C), IsIso ((t.truncLE a).map ((t.truncLEι b).app X)) := fun X =>
+    t.isIso₁_truncLEmap_of_GE _ (t.truncTriangle_obj_distinguished b (b+1) rfl X) a _ rfl
+      (by dsimp ;exact t.isGE_of_GE _ (a+1) (b+1) (by linarith))
+  NatIso.ofComponents (fun X => asIso ((t.truncLE a).map ((t.truncLEι b).app X))) (fun f => by
+    dsimp
+    rw [← Functor.map_comp, ← Functor.map_comp, NatTrans.naturality, Functor.id_map])
+
+@[simp]
+lemma truncLELEIsoTruncLE₁_hom_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    (t.truncLELEIsoTruncLE₁ a b h).hom.app X =
+      (t.truncLE a).map ((t.truncLEι b).app X) := rfl
+
+@[simps!]
+noncomputable def truncLEFiltrationTriangle (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C where
+  obj X := Triangle.mk ((t.natTransTruncLEOfLE _ _ h).app X)
+    ((t.truncGEπ (a+1)).app ((t.truncLE b).obj X))
+    ((t.truncδ a (a+1) rfl).app ((t.truncLE b).obj X) ≫
+      ((t.truncLE a).map ((t.truncLEι b).app X))⟦(1 : ℤ)⟧')
+  map φ :=
+    { hom₁ := (t.truncLE a).map φ
+      hom₂ := (t.truncLE b).map φ
+      hom₃ := (t.truncGE (a+1)).map ((t.truncLE b).map φ)
+      comm₁ := by
+        dsimp
+        rw [NatTrans.naturality]
+      comm₂ := by
+        dsimp
+        rw [← NatTrans.naturality, Functor.id_map]
+      comm₃ := by
+        dsimp
+        simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map, ← Functor.map_comp,
+          NatTrans.naturality]
+        rfl }
+
+lemma truncLEFiltrationTriangle_obj_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
+    (t.truncLEFiltrationTriangle a b h).obj X ∈ distTriang C := by
+  refine' isomorphic_distinguished _
+    (t.truncTriangle_obj_distinguished a (a+1) rfl ((t.truncLE b).obj X)) _ (Iso.symm _)
+  refine' Triangle.isoMk _ _ ((t.truncLELEIsoTruncLE₁ _ _ h).app X) (Iso.refl _) (Iso.refl _)
+      _ _ _
+  . have : t.IsLE ((t.truncLE a).obj X) b := t.isLE_of_LE _ a b h
+    dsimp [natTransTruncLEOfLE]
+    apply to_truncLE_obj_ext
+    simp only [Functor.id_obj, comp_id, assoc, liftTruncLE_ι, NatTrans.naturality, Functor.id_map]
+  . dsimp
+    simp
+  . dsimp
+    simp
+
 noncomputable def truncGELEIsoTruncLEGE_hom_app (a b : ℤ) (X : C) :
     (t.truncGE a).obj ((t.truncLE b).obj X) ⟶
       (t.truncLE b).obj ((t.truncGE a).obj X) :=
@@ -579,7 +630,8 @@ lemma truncGELEIsoTruncLEGE_hom_app_pentagon (a b : ℤ) (X : C) :
     (t.truncLEι b).app X ≫ (t.truncGEπ a).app X := by
   simp [truncGELEIsoTruncLEGE_hom_app]
 
-/-instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := sorry
+/-instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := by
+  sorry
 
 noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
     t.truncLE b ⋙ t.truncGE a ≅ t.truncGE a ⋙ t.truncLE b :=
@@ -593,9 +645,32 @@ noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
       ← NatTrans.naturality_assoc,
       truncGELEIsoTruncLEGE_hom_app_pentagon,
       Functor.id_map, ← NatTrans.naturality, Functor.id_map,
-      NatTrans.naturality_assoc, Functor.id_map])
+      NatTrans.naturality_assoc, Functor.id_map])-/
 
-noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a-/
+noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
+
+instance (a b : ℤ) (X : C) : t.IsLE ((t.truncGELE a b).obj X) b := by
+  dsimp [truncGELE]
+  infer_instance
+
+instance (a b : ℤ) (X : C) : t.IsGE ((t.truncGELE a b).obj X) a := by
+  dsimp [truncGELE]
+  infer_instance
+
+noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
+  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n)
+    (fun _ => (t.mem_heart_iff _).2 ⟨t.isLE_shift _ n n 0 (add_zero n),
+      t.isGE_shift _ n n 0 (add_zero n)⟩)
+
+/-instance (n : ℤ) : (t.truncLE n).Additive := sorry
+instance (n : ℤ) : (t.truncGE n).Additive := sorry
+
+instance (a b : ℤ) : (t.truncGELE a b).Additive := by
+  dsimp only [truncGELE]
+  infer_instance
+
+instance (n : ℤ) : (t.homology n).Additive where
+  map_add := fun {_ _ f₁ f₂} => by simp [homology] -/
 
 end TStructure
 
