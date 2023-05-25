@@ -1518,6 +1518,7 @@ import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.NielsenSchreier
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
