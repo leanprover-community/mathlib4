@@ -17,10 +17,10 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
-`normed_space.dual 𝕜 E` or `weak_dual 𝕜 E`, depending on whether it is viewed as equipped with its
+`NormedSpace.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its
 usual operator norm topology or the weak-* topology.
 
-It is shown that the canonical mapping `normed_space.dual 𝕜 E → weak_dual 𝕜 E` is continuous, and
+It is shown that the canonical mapping `NormedSpace.Dual 𝕜 E → WeakDual 𝕜 E` is continuous, and
 as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
 (dual norm).
 
@@ -30,24 +30,24 @@ topology.
 
 ## Main definitions
 
-The main definitions concern the canonical mapping `dual 𝕜 E → weak_dual 𝕜 E`.
+The main definitions concern the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E`.
 
-* `normed_space.dual.to_weak_dual` and `weak_dual.to_normed_dual`: Linear equivalences from
-  `dual 𝕜 E` to `weak_dual 𝕜 E` and in the converse direction.
-* `normed_space.dual.continuous_linear_map_to_weak_dual`: A continuous linear mapping from
-  `dual 𝕜 E` to `weak_dual 𝕜 E` (same as `normed_space.dual.to_weak_dual` but different bundled
+* `NormedSpace.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
+  `dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
+* `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
+  `Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `NormedSpace.Dual.toWeakDual` but different bundled
   data).
 
 ## Main results
 
 The first main result concerns the comparison of the operator norm topology on `dual 𝕜 E` and the
-weak-* topology on (its type synonym) `weak_dual 𝕜 E`:
+weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
-* `weak_dual.is_compact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
-  neighborhood of the origin in a normed space `E` over `𝕜` is compact in `weak_dual _ E`, if the
+* `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
+  neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
   nontrivially normed field `𝕜` is proper as a topological space.
-* `weak_dual.is_compact_closed_ball` (the most common special case of the Banach-Alaoglu theorem):
+* `WeakDual.isCompact_closedBall` (the most common special case of the Banach-Alaoglu theorem):
   Closed balls in the dual of a normed space `E` over `ℝ` or `ℂ` are compact in the weak-star
   topology.
 
@@ -56,7 +56,7 @@ TODOs:
 * Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
   topology.
 * Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
-  `weak_dual 𝕜 E` under the assumption of separability of `E`.
+  `WeakDual 𝕜 E` under the assumption of separability of `E`.
 * Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
@@ -66,17 +66,17 @@ No new notation is introduced.
 
 ## Implementation notes
 
-Weak-* topology is defined generally in the file `topology.algebra.module.weak_dual`.
+Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
 
-When `E` is a normed space, the duals `dual 𝕜 E` and `weak_dual 𝕜 E` are type synonyms with
+When `E` is a normed space, the duals `Dual 𝕜 E` and `WeakDual 𝕜 E` are type synonyms with
 different topology instances.
 
 For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the space of
 functions `E → 𝕜` with the topology of pointwise convergence.
 
 The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a subset of the dual
-`dual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose give
-the definition `weak_dual.polar 𝕜 s` for the "same" subset viewed as a subset of `weak_dual 𝕜 E`
+`Dual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose give
+the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a subset of `WeakDual 𝕜 E`
 (a type synonym of the dual but with a different topology instance).
 
 ## References
