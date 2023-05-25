@@ -8,10 +8,10 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Quotient
-import Mathbin.LinearAlgebra.FreeModule.Finite.Basic
-import Mathbin.LinearAlgebra.FreeModule.Pid
-import Mathbin.LinearAlgebra.QuotientPi
+import Mathlib.Data.ZMod.Quotient
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Pid
+import Mathlib.LinearAlgebra.QuotientPi
 
 /-! # Ideals in free modules over PIDs
 
@@ -32,8 +32,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Fintype ι]
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
 -/
 noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I ≠ ⊥) :
-    (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set R) :=
-  by
+    (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set R) := by
   -- Choose `e : S ≃ₗ I` and a basis `b'` for `S` that turns the map
   -- `f := ((submodule.subtype I).restrict_scalars R).comp e` into a diagonal matrix:
   -- there is an `a : ι → ℤ` such that `f (b' i) = a i • b' i`.
@@ -47,12 +46,10 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
   have ha : ∀ i, f (b' i) = a i • b' i := by
     intro i
     rw [f_apply, b'.equiv_apply, Equiv.refl_apply, ab_eq]
-  have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i :=
-    by
+  have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
     intro x
     simp_rw [ab.mem_ideal_iff', ab_eq]
-    have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i :=
-      by
+    have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
       simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
     constructor
@@ -64,8 +61,7 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
   -- which maps `I` to `I' := Π i, a i ℤ`.
   let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => Ideal.span ({a i} : Set R)
-  have : Submodule.map (b'.equiv_fun : S →ₗ[R] ι → R) (I.restrict_scalars R) = I' :=
-    by
+  have : Submodule.map (b'.equiv_fun : S →ₗ[R] ι → R) (I.restrict_scalars R) = I' := by
     ext x
     simp only [Submodule.mem_map, Submodule.mem_pi, Ideal.mem_span_singleton, Set.mem_univ,
       Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
@@ -105,8 +101,7 @@ Can't be an instance because of the side condition `I ≠ ⊥`, and more importa
 because the choice of `fintype` instance is non-canonical.
 -/
 noncomputable def Ideal.fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
-    (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) :=
-  by
+    (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) := by
   let b := Module.Free.chooseBasis ℤ S
   let a := I.smithCoeffs b hI
   let e := I.quotientEquivPiZmod b hI
