@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -44,7 +43,8 @@ instance [Repr α] : Repr (WithBot α) :=
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
-instance coeTC : CoeTC α (WithBot α) :=
+-- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
+instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
 instance bot : Bot (WithBot α) :=
