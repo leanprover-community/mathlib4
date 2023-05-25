@@ -77,7 +77,7 @@ To provide good API encapsulation and speed up unification problems,
 `ratfunc` is defined as a structure, and all operations are `@[irreducible] def`s
 
 We need a couple of maps to set up the `field` and `is_fraction_ring` structure,
-namely `ratfunc.of_fraction_ring`, `ratfunc.to_fraction_ring`, `ratfunc.mk` and
+namely `ratfunc.ofFractionRing`, `ratfunc.to_fraction_ring`, `ratfunc.mk` and
 `ratfunc.to_fraction_ring_ring_equiv`.
 All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (ratfunc K)`
 and `is_localization.alg_equiv`.
@@ -113,9 +113,11 @@ the maps between `ratfunc K` and another field of fractions of `K[X]`,
 especially `fraction_ring K[X]`, are given by `is_localization.algebra_equiv`.
 -/
 structure Ratfunc : Type u where
-  of_fraction_ring ::
+  ofFractionRing ::
     toFractionRing : FractionRing K[X]
 #align ratfunc Ratfunc
+#align ratfunc.of_fraction_ring Ratfunc.ofFractionRing
+#align ratfunc.to_fraction_ring Ratfunc.toFractionRing
 
 namespace Ratfunc
 
@@ -126,9 +128,9 @@ section Rec
 /-! ### Constructing `ratfunc`s and their induction principles -/
 
 
-theorem of_fraction_ring_injective : Function.Injective (of_fraction_ring : _ → Ratfunc K) :=
-  fun _ _ => of_fraction_ring.inj
-#align ratfunc.of_fraction_ring_injective Ratfunc.of_fraction_ring_injective
+theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → Ratfunc K) :=
+  fun _ _ => ofFractionRing.inj
+#align ratfunc.of_fraction_ring_injective Ratfunc.ofFractionRing_injective
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
   -- porting note: the `xy` input was `rfl` and then there was no need for the `subst`
@@ -164,12 +166,12 @@ protected irreducible_def liftOn {P : Sort v} (x : Ratfunc K) (f : ∀ _p _q : K
 --      mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 #align ratfunc.lift_on Ratfunc.liftOn
 
-theorem liftOn_of_fraction_ring_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : ∀ _p _q : K[X], P)
+theorem liftOn_ofFractionRing_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : ∀ _p _q : K[X], P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
-    Ratfunc.liftOn (of_fraction_ring (Localization.mk n d)) f @H = f n d := by
+    Ratfunc.liftOn (ofFractionRing (Localization.mk n d)) f @H = f n d := by
   rw [Ratfunc.liftOn]
   exact Localization.liftOn_mk _ _ _ _
-#align ratfunc.lift_on_of_fraction_ring_mk Ratfunc.liftOn_of_fraction_ring_mk
+#align ratfunc.lift_on_of_fraction_ring_mk Ratfunc.liftOn_ofFractionRing_mk
 
 -- porting note: removed `include hdomain`
 
@@ -181,53 +183,53 @@ This is an auxiliary definition used to define an `algebra` structure on `ratfun
 the `simp` normal form of `mk p q` is `algebra_map _ _ p / algebra_map _ _ q`.
 -/
 protected irreducible_def mk (p q : K[X]) : Ratfunc K :=
-  of_fraction_ring (algebraMap _ _ p / algebraMap _ _ q)
+  ofFractionRing (algebraMap _ _ p / algebraMap _ _ q)
 #align ratfunc.mk Ratfunc.mk
 
 theorem mk_eq_div' (p q : K[X]) :
-    Ratfunc.mk p q = of_fraction_ring (algebraMap _ _ p / algebraMap _ _ q) := by rw [Ratfunc.mk]
+    Ratfunc.mk p q = ofFractionRing (algebraMap _ _ p / algebraMap _ _ q) := by rw [Ratfunc.mk]
 #align ratfunc.mk_eq_div' Ratfunc.mk_eq_div'
 
-theorem mk_zero (p : K[X]) : Ratfunc.mk p 0 = of_fraction_ring 0 := by
+theorem mk_zero (p : K[X]) : Ratfunc.mk p 0 = ofFractionRing 0 := by
   rw [mk_eq_div', RingHom.map_zero, div_zero]
 #align ratfunc.mk_zero Ratfunc.mk_zero
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) :
     -- porting note: filled in `(FractionRing K[X])` that was an underscore.
-    Ratfunc.mk p q = of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) p q) := by
+    Ratfunc.mk p q = ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p q) := by
   simp only [mk_eq_div', ← Localization.mk_eq_mk', FractionRing.mk_eq_div]
 #align ratfunc.mk_coe_def Ratfunc.mk_coe_def
 
 theorem mk_def_of_mem (p : K[X]) {q} (hq : q ∈ K[X]⁰) :
-    Ratfunc.mk p q = of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) p ⟨q, hq⟩) := by
+    Ratfunc.mk p q = ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p ⟨q, hq⟩) := by
   -- porting note: there was an `[anonymous]` in the simp set
   simp only [← mk_coe_def]
 #align ratfunc.mk_def_of_mem Ratfunc.mk_def_of_mem
 
 theorem mk_def_of_ne (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     Ratfunc.mk p q =
-      of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) p
+      ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p
         ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) :=
   mk_def_of_mem p _
 #align ratfunc.mk_def_of_ne Ratfunc.mk_def_of_ne
 
 theorem mk_eq_localization_mk (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     Ratfunc.mk p q =
-      of_fraction_ring (Localization.mk p ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) :=
+      ofFractionRing (Localization.mk p ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) :=
   -- porting note: the original proof, did not need `<;> exact hq`
   by rw [mk_def_of_ne, Localization.mk_eq_mk'] <;> exact hq
 #align ratfunc.mk_eq_localization_mk Ratfunc.mk_eq_localization_mk
 
 --  porting note: replaced `algebraMap _ _` with `algebraMap K[X] (FractionRing K[X])`
 theorem mk_one' (p : K[X]) :
-    Ratfunc.mk p 1 = of_fraction_ring (algebraMap K[X] (FractionRing K[X]) p) := by
+    Ratfunc.mk p 1 = ofFractionRing (algebraMap K[X] (FractionRing K[X]) p) := by
   -- Porting note: had to hint `M := K[X]⁰` below
   rw [← IsLocalization.mk'_one (M := K[X]⁰) (FractionRing K[X]) p, ← mk_coe_def, Submonoid.coe_one]
 #align ratfunc.mk_one' Ratfunc.mk_one'
 
 theorem mk_eq_mk {p q p' q' : K[X]} (hq : q ≠ 0) (hq' : q' ≠ 0) :
     Ratfunc.mk p q = Ratfunc.mk p' q' ↔ p * q' = p' * q := by
-  rw [mk_def_of_ne _ hq, mk_def_of_ne _ hq', of_fraction_ring_injective.eq_iff,
+  rw [mk_def_of_ne _ hq, mk_def_of_ne _ hq', ofFractionRing_injective.eq_iff,
     IsLocalization.mk'_eq_iff_eq', -- porting note: removed `[anonymous], [anonymous]`
     (IsFractionRing.injective K[X] (FractionRing K[X])).eq_iff]
 #align ratfunc.mk_eq_mk Ratfunc.mk_eq_mk
@@ -240,9 +242,9 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : ∀ _p _q : K[X], P) (f0 : ∀ 
   by_cases hq : q = 0
   · subst hq
     simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
-      liftOn_of_fraction_ring_mk, Submonoid.coe_one]
+      liftOn_ofFractionRing_mk, Submonoid.coe_one]
   ·
-    simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_of_fraction_ring_mk]
+    simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
 #align ratfunc.lift_on_mk Ratfunc.liftOn_mk
 
 -- porting note: removed `omit hdomain`
@@ -313,9 +315,9 @@ instance : Zero (Ratfunc R) :=
 
 -- porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [zero_def]`
 -- that does not close the goal
-theorem of_fraction_ring_zero : (of_fraction_ring 0 : Ratfunc R) = 0 := by
+theorem ofFractionRing_zero : (ofFractionRing 0 : Ratfunc R) = 0 := by
   simp only [Zero.zero, OfNat.ofNat, Ratfunc.zero]
-#align ratfunc.of_fraction_ring_zero Ratfunc.of_fraction_ring_zero
+#align ratfunc.of_fraction_ring_zero Ratfunc.ofFractionRing_zero
 
 /-- Addition of rational functions. -/
 protected irreducible_def add : Ratfunc R → Ratfunc R → Ratfunc R
@@ -327,10 +329,10 @@ instance : Add (Ratfunc K) :=
 
 -- porting note: added `HAdd.hAdd`.  using `simp?` produces `simp only [add_def]`
 -- that does not close the goal
-theorem of_fraction_ring_add (p q : FractionRing R[X]) :
-    of_fraction_ring (p + q) = of_fraction_ring p + of_fraction_ring q := by
+theorem ofFractionRing_add (p q : FractionRing R[X]) :
+    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q := by
   simp only [HAdd.hAdd, Add.add, Ratfunc.add]
-#align ratfunc.of_fraction_ring_add Ratfunc.of_fraction_ring_add
+#align ratfunc.of_fraction_ring_add Ratfunc.ofFractionRing_add
 
 /-- Subtraction of rational functions. -/
 protected irreducible_def sub : Ratfunc R → Ratfunc R → Ratfunc R
@@ -342,10 +344,10 @@ instance : Sub (Ratfunc R) :=
 
 -- porting note: added `HSub.hSub`.  using `simp?` produces `simp only [sub_def]`
 -- that does not close the goal
-theorem of_fraction_ring_sub (p q : FractionRing R[X]) :
-    of_fraction_ring (p - q) = of_fraction_ring p - of_fraction_ring q := by
+theorem ofFractionRing_sub (p q : FractionRing R[X]) :
+    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q := by
   simp only [Sub.sub, HSub.hSub, Ratfunc.sub]
-#align ratfunc.of_fraction_ring_sub Ratfunc.of_fraction_ring_sub
+#align ratfunc.of_fraction_ring_sub Ratfunc.ofFractionRing_sub
 
 /-- Additive inverse of a rational function. -/
 protected irreducible_def neg : Ratfunc R → Ratfunc R
@@ -355,9 +357,9 @@ protected irreducible_def neg : Ratfunc R → Ratfunc R
 instance : Neg (Ratfunc R) :=
   ⟨Ratfunc.neg⟩
 
-theorem of_fraction_ring_neg (p : FractionRing R[X]) :
-    of_fraction_ring (-p) = -of_fraction_ring p := by simp only [Neg.neg, Ratfunc.neg]
-#align ratfunc.of_fraction_ring_neg Ratfunc.of_fraction_ring_neg
+theorem ofFractionRing_neg (p : FractionRing R[X]) :
+    ofFractionRing (-p) = -ofFractionRing p := by simp only [Neg.neg, Ratfunc.neg]
+#align ratfunc.of_fraction_ring_neg Ratfunc.ofFractionRing_neg
 
 /-- The multiplicative unit of rational functions. -/
 protected irreducible_def one : Ratfunc R :=
@@ -369,9 +371,9 @@ instance : One (Ratfunc R) :=
 
 -- porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [one_def]`
 -- that does not close the goal
-theorem of_fraction_ring_one : (of_fraction_ring 1 : Ratfunc R) = 1 := by
+theorem ofFractionRing_one : (ofFractionRing 1 : Ratfunc R) = 1 := by
   simp only [One.one, OfNat.ofNat, Ratfunc.one]
-#align ratfunc.of_fraction_ring_one Ratfunc.of_fraction_ring_one
+#align ratfunc.of_fraction_ring_one Ratfunc.ofFractionRing_one
 
 /-- Multiplication of rational functions. -/
 protected irreducible_def mul : Ratfunc R → Ratfunc R → Ratfunc R
@@ -383,10 +385,10 @@ instance : Mul (Ratfunc R) :=
 
 -- porting note: added `HMul.hMul`.  using `simp?` produces `simp only [mul_def]`
 -- that does not close the goal
-theorem of_fraction_ring_mul (p q : FractionRing R[X]) :
-    of_fraction_ring (p * q) = of_fraction_ring p * of_fraction_ring q := by
+theorem ofFractionRing_mul (p q : FractionRing R[X]) :
+    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q := by
   simp only [Mul.mul, HMul.hMul, Ratfunc.mul]
-#align ratfunc.of_fraction_ring_mul Ratfunc.of_fraction_ring_mul
+#align ratfunc.of_fraction_ring_mul Ratfunc.ofFractionRing_mul
 
 -- porting note: removed `include hdomain`
 
@@ -400,10 +402,10 @@ instance : Div (Ratfunc K) :=
 
 -- porting note: added `HDiv.hDiv`.  using `simp?` produces `simp only [div_def]`
 -- that does not close the goal
-theorem of_fraction_ring_div (p q : FractionRing K[X]) :
-    of_fraction_ring (p / q) = of_fraction_ring p / of_fraction_ring q := by
+theorem ofFractionRing_div (p q : FractionRing K[X]) :
+    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := by
   simp only [Div.div, HDiv.hDiv,  Ratfunc.div]
-#align ratfunc.of_fraction_ring_div Ratfunc.of_fraction_ring_div
+#align ratfunc.of_fraction_ring_div Ratfunc.ofFractionRing_div
 
 /-- Multiplicative inverse of a rational function. -/
 protected irreducible_def inv : Ratfunc K → Ratfunc K
@@ -413,17 +415,17 @@ protected irreducible_def inv : Ratfunc K → Ratfunc K
 instance : Inv (Ratfunc K) :=
   ⟨Ratfunc.inv⟩
 
-theorem of_fraction_ring_inv (p : FractionRing K[X]) :
-    of_fraction_ring p⁻¹ = (of_fraction_ring p)⁻¹ := by
+theorem ofFractionRing_inv (p : FractionRing K[X]) :
+    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ := by
   simp only [Inv.inv, Ratfunc.inv]
-#align ratfunc.of_fraction_ring_inv Ratfunc.of_fraction_ring_inv
+#align ratfunc.of_fraction_ring_inv Ratfunc.ofFractionRing_inv
 
 -- Auxiliary lemma for the `field` instance
 theorem mul_inv_cancel : ∀ {p : Ratfunc K} (_hp : p ≠ 0), p * p⁻¹ = 1
   | ⟨p⟩, h => by
-    have : p ≠ 0 := fun hp => h <| by rw [hp, of_fraction_ring_zero]
-    simpa only [← of_fraction_ring_inv, ← of_fraction_ring_mul, ← of_fraction_ring_one,
-      of_fraction_ring.injEq] using  -- porting note: `of_fraction_ring.injEq` was not present
+    have : p ≠ 0 := fun hp => h <| by rw [hp, ofFractionRing_zero]
+    simpa only [← ofFractionRing_inv, ← ofFractionRing_mul, ← ofFractionRing_one,
+      ofFractionRing.injEq] using  -- porting note: `ofFractionRing.injEq` was not present
       _root_.mul_inv_cancel this
 #align ratfunc.mul_inv_cancel Ratfunc.mul_inv_cancel
 
@@ -445,22 +447,22 @@ instance [SMul R (FractionRing K[X])] : SMul R (Ratfunc K) :=
 
 -- porting note: added `SMul.hSMul`.  using `simp?` produces `simp only [smul_def]`
 -- that does not close the goal
-theorem of_fraction_ring_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
-    of_fraction_ring (c • p) = c • of_fraction_ring p := by
+theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
+    ofFractionRing (c • p) = c • ofFractionRing p := by
   simp only [SMul.smul, HSMul.hSMul, Ratfunc.smul]
-#align ratfunc.of_fraction_ring_smul Ratfunc.of_fraction_ring_smul
+#align ratfunc.of_fraction_ring_smul Ratfunc.ofFractionRing_smul
 
 theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : Ratfunc K) :
     toFractionRing (c • p) = c • toFractionRing p := by
   cases p
-  rw [← of_fraction_ring_smul]
+  rw [← ofFractionRing_smul]
 #align ratfunc.to_fraction_ring_smul Ratfunc.toFractionRing_smul
 
 theorem smul_eq_C_smul (x : Ratfunc K) (r : K) : r • x = Polynomial.C r • x := by
   cases' x with x
   -- Porting note: had to specify the induction principle manually
   induction x using Localization.induction_on
-  · rw [← of_fraction_ring_smul, ← of_fraction_ring_smul, Localization.smul_mk,
+  · rw [← ofFractionRing_smul, ← ofFractionRing_smul, Localization.smul_mk,
       Localization.smul_mk, smul_eq_mul, Polynomial.smul_eq_C_mul]
 set_option linter.uppercaseLean3 false in
 #align ratfunc.smul_eq_C_smul Ratfunc.smul_eq_C_smul
@@ -475,9 +477,9 @@ variable [htower : IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : Ratfunc.mk (c • p) q = c • Ratfunc.mk p q := by
   by_cases hq : q = 0
-  · rw [hq, mk_zero, mk_zero, ← of_fraction_ring_smul, smul_zero]
+  · rw [hq, mk_zero, mk_zero, ← ofFractionRing_smul, smul_zero]
   · rw [mk_eq_localization_mk _ hq, mk_eq_localization_mk _ hq, ← Localization.smul_mk, ←
-      of_fraction_ring_smul]
+      ofFractionRing_smul]
 #align ratfunc.mk_smul Ratfunc.mk_smul
 
 -- porting note: was term-mode.  `exact` instead of `apply` does not work.
@@ -497,7 +499,7 @@ instance : Inhabited (Ratfunc R) :=
   ⟨0⟩
 
 instance instNontrivial [Nontrivial R] : Nontrivial (Ratfunc R) :=
-  of_fraction_ring_injective.nontrivial
+  ofFractionRing_injective.nontrivial
 #align ratfunc.nontrivial Ratfunc.instNontrivial
 
 /-- `ratfunc R` is isomorphic to the field of fractions of `R[X]`, as rings.
@@ -507,11 +509,11 @@ This is an auxiliary definition; `simp`-normal form is `is_localization.alg_equi
 @[simps apply]
 def toFractionRingRingEquiv : Ratfunc R ≃+* FractionRing R[X] where
   toFun := toFractionRing
-  invFun := of_fraction_ring
+  invFun := ofFractionRing
   left_inv := fun ⟨_⟩ => rfl
   right_inv _ := rfl
-  map_add' := fun ⟨_⟩ ⟨_⟩ => by simp [← of_fraction_ring_add]
-  map_mul' := fun ⟨_⟩ ⟨_⟩ => by simp [← of_fraction_ring_mul]
+  map_add' := fun ⟨_⟩ ⟨_⟩ => by simp [← ofFractionRing_add]
+  map_mul' := fun ⟨_⟩ ⟨_⟩ => by simp [← ofFractionRing_mul]
 #align ratfunc.to_fraction_ring_ring_equiv Ratfunc.toFractionRingRingEquiv
 
 -- porting note: reimplemented the `frac_tac` and `smul_tac` as close to the originals as I could
@@ -520,9 +522,9 @@ open Lean Elab.Tactic in
 elab (name := frac_tac) "frac_tac" : tactic => do
   evalTactic (← `(tactic| repeat (rintro (⟨⟩ : Ratfunc _))
   <;>
-  simp only [← of_fraction_ring_zero, ← of_fraction_ring_add, ← of_fraction_ring_sub,
-    ← of_fraction_ring_neg, ← of_fraction_ring_one, ← of_fraction_ring_mul, ← of_fraction_ring_div,
-    ← of_fraction_ring_inv,
+  simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
+    ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
+    ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
     add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
     add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg]))
@@ -535,13 +537,13 @@ elab (name := smul_tac) "smul_tac" : tactic => do
       (first
         | rintro (⟨⟩ : Ratfunc _)
         | intro) <;>
-    simp_rw [←of_fraction_ring_smul] <;>
+    simp_rw [←ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
       Int.cast_negSucc, Int.cast_ofNat, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
-      of_fraction_ring_zero, ← of_fraction_ring_add, ← of_fraction_ring_neg]))
+      ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg]))
 
 -- Porting note: split the CommRing instance up into multiple defs because it was hard to see
 -- if the big instance declaration made any progress.
@@ -566,7 +568,7 @@ def instAddCommGroup : AddCommGroup (Ratfunc R) where
   add := (· + ·)
   add_assoc := by frac_tac
  -- porting note: `by frac_tac` didn't work:
-  add_comm := by repeat rintro (⟨⟩ : Ratfunc _) <;> simp only [← of_fraction_ring_add, add_comm]
+  add_comm := by repeat rintro (⟨⟩ : Ratfunc _) <;> simp only [← ofFractionRing_add, add_comm]
   zero := 0
   zero_add := by frac_tac
   add_zero := by frac_tac
@@ -611,11 +613,11 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     where
   toFun f :=
     Ratfunc.liftOn f
-      (fun n d => if h : φ d ∈ S[X]⁰ then of_fraction_ring (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
+      (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
       dsimp only -- porting note: force the function to be applied
       rw [dif_pos, dif_pos]
-      congr 1 -- porting note: this was a `rw [of_fraction_ring.inj_eq]` which was overkill anyway
+      congr 1 -- porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
       rw [Localization.mk_eq_mk_iff]
       rotate_left
       · exact hφ hq
@@ -624,8 +626,8 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
     dsimp only -- porting note: force the function to be applied
-    rw [← of_fraction_ring_one, ← Localization.mk_one, liftOn_of_fraction_ring_mk, dif_pos]
-    · simpa using of_fraction_ring_one
+    rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk, dif_pos]
+    · simpa using ofFractionRing_one
     · simpa using Submonoid.one_mem _
   map_mul' x y := by
     dsimp only -- porting note: force the function to be applied
@@ -636,21 +638,21 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     · have hq : φ q ∈ S[X]⁰ := hφ q.prop
       have hq' : φ q' ∈ S[X]⁰ := hφ q'.prop
       have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
-      simp_rw [← of_fraction_ring_mul, Localization.mk_mul, liftOn_of_fraction_ring_mk, dif_pos hq,
-        dif_pos hq', dif_pos hqq', ← of_fraction_ring_mul, Submonoid.coe_mul, map_mul,
+      simp_rw [← ofFractionRing_mul, Localization.mk_mul, liftOn_ofFractionRing_mk, dif_pos hq,
+        dif_pos hq', dif_pos hqq', ← ofFractionRing_mul, Submonoid.coe_mul, map_mul,
         Localization.mk_mul, Submonoid.mk_mul_mk]
     · rfl
     · rfl
 #align ratfunc.map Ratfunc.map
 
-theorem map_apply_of_fraction_ring_mk [MonoidHomClass F R[X] S[X]] (φ : F)
+theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) (n : R[X]) (d : R[X]⁰) :
-    map φ hφ (of_fraction_ring (Localization.mk n d)) =
-      of_fraction_ring (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
+    map φ hφ (ofFractionRing (Localization.mk n d)) =
+      ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
   -- porting note: replaced `convert` with `refine Eq.trans`
-  refine (liftOn_of_fraction_ring_mk n _ _ _).trans ?_
+  refine (liftOn_ofFractionRing_mk n _ _ _).trans ?_
   rw [dif_pos]
-#align ratfunc.map_apply_of_fraction_ring_mk Ratfunc.map_apply_of_fraction_ring_mk
+#align ratfunc.map_apply_of_fraction_ring_mk Ratfunc.map_apply_ofFractionRing_mk
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
@@ -658,7 +660,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
   -- porting note: had to hint `induction` which induction principle to use
   induction x using Localization.induction_on
   induction y using Localization.induction_on
-  · simpa only [map_apply_of_fraction_ring_mk, of_fraction_ring_injective.eq_iff,
+  · simpa only [map_apply_ofFractionRing_mk, ofFractionRing_injective.eq_iff,
       Localization.mk_eq_mk_iff, Localization.r_iff_exists, mul_cancel_left_coe_nonZeroDivisors,
       exists_const, ← map_mul, hf.eq_iff] using h
 #align ratfunc.map_injective Ratfunc.map_injective
@@ -671,16 +673,16 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
     Ratfunc R →+* Ratfunc S :=
   { map φ hφ with
     map_zero' := by
-      simp_rw [MonoidHom.toFun_eq_coe, ← of_fraction_ring_zero, ← Localization.mk_zero (1 : R[X]⁰),
-        ← Localization.mk_zero (1 : S[X]⁰), map_apply_of_fraction_ring_mk, map_zero,
+      simp_rw [MonoidHom.toFun_eq_coe, ← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰),
+        ← Localization.mk_zero (1 : S[X]⁰), map_apply_ofFractionRing_mk, map_zero,
         Localization.mk_eq_mk', IsLocalization.mk'_zero]
     map_add' := by
       rintro ⟨x⟩ ⟨y⟩
       -- porting note: had to hint `induction` which induction principle to use
       induction x using Localization.rec
       induction y using Localization.rec
-      · simp only [← of_fraction_ring_add, Localization.add_mk, map_add, map_mul,
-          MonoidHom.toFun_eq_coe, map_apply_of_fraction_ring_mk, Submonoid.coe_mul]
+      · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+          MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul]
         -- Porting note: `Submonoid.mk_mul_mk` couldn't be applied: motive incorrect,
         -- even though it is a rfl lemma.
         rfl
@@ -706,28 +708,28 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
         exact nonZeroDivisors.ne_zero (hφ ‹_›)
   map_one' := by
     dsimp only -- porting note: force the function to be applied
-    rw [← of_fraction_ring_one, ← Localization.mk_one, liftOn_of_fraction_ring_mk]
+    rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk]
     simp only [map_one, Submonoid.coe_one, div_one]
   map_mul' x y := by
     cases' x with x
     cases' y with y
     induction' x using Localization.rec with p q
     induction' y using Localization.rec with p' q'
-    · rw [← of_fraction_ring_mul, Localization.mk_mul]
-      simp only [liftOn_of_fraction_ring_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
+    · rw [← ofFractionRing_mul, Localization.mk_mul]
+      simp only [liftOn_ofFractionRing_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
     · rfl
     · rfl
   map_zero' := by
     dsimp only -- porting note: force the function to be applied
-    rw [← of_fraction_ring_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_of_fraction_ring_mk]
+    rw [← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_ofFractionRing_mk]
     simp only [map_zero, zero_div]
 #align ratfunc.lift_monoid_with_zero_hom Ratfunc.liftMonoidWithZeroHom
 
-theorem liftMonoidWithZeroHom_apply_of_fraction_ring_mk (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ)
+theorem liftMonoidWithZeroHom_apply_ofFractionRing_mk (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ)
     (n : R[X]) (d : R[X]⁰) :
-    liftMonoidWithZeroHom φ hφ (of_fraction_ring (Localization.mk n d)) = φ n / φ d :=
-  liftOn_of_fraction_ring_mk _ _ _ _
-#align ratfunc.lift_monoid_with_zero_hom_apply_of_fraction_ring_mk Ratfunc.liftMonoidWithZeroHom_apply_of_fraction_ring_mk
+    liftMonoidWithZeroHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
+  liftOn_ofFractionRing_mk _ _ _ _
+#align ratfunc.lift_monoid_with_zero_hom_apply_ofFractionRing_mk Ratfunc.liftMonoidWithZeroHom_apply_ofFractionRing_mk
 
 theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ G₀⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
@@ -735,7 +737,7 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   rintro ⟨x⟩ ⟨y⟩
   induction' x using Localization.induction_on with a
   induction' y using Localization.induction_on with a'
-  · simp_rw [liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
+  · simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
     intro h
     congr 1
     refine Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq (M := R[X]) ?_)
@@ -758,9 +760,9 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : Ratfunc 
       -- Porting note: had to add the recursor explicitly below
       induction' x using Localization.rec with p q
       induction' y using Localization.rec with p' q'
-      · rw [← of_fraction_ring_add, Localization.add_mk]
+      · rw [← ofFractionRing_add, Localization.add_mk]
         simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-          liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
+          liftMonoidWithZeroHom_apply_ofFractionRing_mk]
         rw [div_add_div, div_eq_div_iff]
         · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
           simp only [map_add, map_mul, Submonoid.coe_mul]
@@ -771,10 +773,10 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : Ratfunc 
       · rfl }
 #align ratfunc.lift_ring_hom Ratfunc.liftRingHom
 
-theorem liftRingHom_apply_of_fraction_ring_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
-    (d : R[X]⁰) : liftRingHom φ hφ (of_fraction_ring (Localization.mk n d)) = φ n / φ d :=
-  liftMonoidWithZeroHom_apply_of_fraction_ring_mk _ hφ _ _
-#align ratfunc.lift_ring_hom_apply_of_fraction_ring_mk Ratfunc.liftRingHom_apply_of_fraction_ring_mk
+theorem liftRingHom_apply_ofFractionRing_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
+    (d : R[X]⁰) : liftRingHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
+  liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
+#align ratfunc.lift_ring_hom_apply_of_fraction_ring_mk Ratfunc.liftRingHom_apply_ofFractionRing_mk
 
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
@@ -790,7 +792,7 @@ instance : Field (Ratfunc K) :=
   { Ratfunc.instCommRing K, Ratfunc.instNontrivial K with
     inv := Inv.inv
     -- porting note: used to be `by frac_tac`
-    inv_zero := by rw [← of_fraction_ring_zero, ← of_fraction_ring_inv, inv_zero]
+    inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
     div := (· / ·)
     div_eq_mul_inv := by frac_tac
     mul_inv_cancel := fun _ => mul_inv_cancel
@@ -805,31 +807,31 @@ section IsFractionRing
 
 instance (R : Type _) [CommSemiring R] [Algebra R K[X]] : Algebra R (Ratfunc K) where
   toFun x := Ratfunc.mk (algebraMap _ _ x) 1
-  map_add' x y := by simp only [mk_one', RingHom.map_add, of_fraction_ring_add]
-  map_mul' x y := by simp only [mk_one', RingHom.map_mul, of_fraction_ring_mul]
-  map_one' := by simp only [mk_one', RingHom.map_one, of_fraction_ring_one]
-  map_zero' := by simp only [mk_one', RingHom.map_zero, of_fraction_ring_zero]
+  map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
+  map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
+  map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
+  map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero]
   smul := (· • ·)
   smul_def' c x := by
     induction' x using Ratfunc.induction_on' with p q hq
       -- porting note: the first `rw [...]` was not needed
     · rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
       rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
-        of_fraction_ring_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
+        ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' c x := mul_comm _ _
 
 theorem mk_one (x : K[X]) : Ratfunc.mk x 1 = algebraMap _ _ x :=
   rfl
 #align ratfunc.mk_one Ratfunc.mk_one
 
-theorem of_fraction_ring_algebraMap (x : K[X]) :
-    of_fraction_ring (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
+theorem ofFractionRing_algebraMap (x : K[X]) :
+    ofFractionRing (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
   rw [← mk_one, mk_one']
-#align ratfunc.of_fraction_ring_algebra_map Ratfunc.of_fraction_ring_algebraMap
+#align ratfunc.of_fraction_ring_algebra_map Ratfunc.ofFractionRing_algebraMap
 
 @[simp]
 theorem mk_eq_div (p q : K[X]) : Ratfunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
-  simp only [mk_eq_div', of_fraction_ring_div, of_fraction_ring_algebraMap]
+  simp only [mk_eq_div', ofFractionRing_div, ofFractionRing_algebraMap]
 #align ratfunc.mk_eq_div Ratfunc.mk_eq_div
 
 @[simp]
@@ -851,7 +853,7 @@ theorem map_apply_div_ne_zero {R F : Type _} [CommRing R] [IsDomain R] [MonoidHo
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   have hq' : φ q ≠ 0 := nonZeroDivisors.ne_zero (hφ (mem_nonZeroDivisors_iff_ne_zero.mpr hq))
-  simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_of_fraction_ring_mk,
+  simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_ofFractionRing_mk,
     mk_eq_localization_mk _ hq']
 #align ratfunc.map_apply_div_ne_zero Ratfunc.map_apply_div_ne_zero
 
@@ -875,7 +877,7 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type _} [CommGroupWithZero L]
   rcases eq_or_ne q 0 with (rfl | hq)
   · simp only [div_zero, map_zero]
   simp only [← mk_eq_div, mk_eq_localization_mk _ hq,
-    liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
+    liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 #align ratfunc.lift_monoid_with_zero_hom_apply_div Ratfunc.liftMonoidWithZeroHom_apply_div
 
 -- Porting note: added `simpNF` form of `liftMonoidWithZeroHom_apply_div`
@@ -900,14 +902,14 @@ theorem liftRingHom_apply_div' {L : Type _} [Field L] (φ : K[X] →+* L) (hφ :
 
 variable (K)
 
-theorem of_fraction_ring_comp_algebraMap :
-    of_fraction_ring ∘ algebraMap K[X] (FractionRing K[X]) = algebraMap _ _ :=
-  funext of_fraction_ring_algebraMap
-#align ratfunc.of_fraction_ring_comp_algebra_map Ratfunc.of_fraction_ring_comp_algebraMap
+theorem ofFractionRing_comp_algebraMap :
+    ofFractionRing ∘ algebraMap K[X] (FractionRing K[X]) = algebraMap _ _ :=
+  funext ofFractionRing_algebraMap
+#align ratfunc.of_fraction_ring_comp_algebra_map Ratfunc.ofFractionRing_comp_algebraMap
 
 theorem algebraMap_injective : Function.Injective (algebraMap K[X] (Ratfunc K)) := by
-  rw [← of_fraction_ring_comp_algebraMap]
-  exact of_fraction_ring_injective.comp (IsFractionRing.injective _ _)
+  rw [← ofFractionRing_comp_algebraMap]
+  exact ofFractionRing_injective.comp (IsFractionRing.injective _ _)
 #align ratfunc.algebra_map_injective Ratfunc.algebraMap_injective
 
 @[simp]
@@ -952,10 +954,10 @@ def liftAlgHom : Ratfunc K →ₐ[S] L :=
         liftRingHom_apply_div, AlgHom.coe_toRingHom, map_one, div_one, AlgHom.commutes] }
 #align ratfunc.lift_alg_hom Ratfunc.liftAlgHom
 
-theorem liftAlgHom_apply_of_fraction_ring_mk (n : K[X]) (d : K[X]⁰) :
-    liftAlgHom φ hφ (of_fraction_ring (Localization.mk n d)) = φ n / φ d :=
-  liftMonoidWithZeroHom_apply_of_fraction_ring_mk _ hφ _ _ -- porting note: gave explicitly the `hφ`
-#align ratfunc.lift_alg_hom_apply_of_fraction_ring_mk Ratfunc.liftAlgHom_apply_of_fraction_ring_mk
+theorem liftAlgHom_apply_ofFractionRing_mk (n : K[X]) (d : K[X]⁰) :
+    liftAlgHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
+  liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _ -- porting note: gave explicitly the `hφ`
+#align ratfunc.lift_alg_hom_apply_of_fraction_ring_mk Ratfunc.liftAlgHom_apply_ofFractionRing_mk
 
 theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective φ)
     (hφ' : K[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
@@ -981,18 +983,18 @@ variable (K)
 /-- `ratfunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (Ratfunc K) where
   map_units' y := by
-    rw [← of_fraction_ring_algebraMap]
+    rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
   eq_iff_exists' {x y} := by
-    rw [← of_fraction_ring_algebraMap, ← of_fraction_ring_algebraMap]
+    rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.injective.eq_iff.trans
       (IsLocalization.eq_iff_exists _ _)
   surj' := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
     -- porting note: `ext ⟨x, y⟩` no longer necessary
-    simp only [← of_fraction_ring_algebraMap, Function.comp_apply, ← of_fraction_ring_mul]
-    rw [of_fraction_ring.injEq]  -- porting note: added
+    simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul]
+    rw [ofFractionRing.injEq]  -- porting note: added
 
 variable {K}
 
@@ -1024,32 +1026,32 @@ protected theorem induction_on {P : Ratfunc K → Prop} (x : Ratfunc K)
   x.induction_on' fun p q hq => by simpa using f p q hq
 #align ratfunc.induction_on Ratfunc.induction_on
 
-theorem of_fraction_ring_mk' (x : K[X]) (y : K[X]⁰) :
+theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :
     -- porting note: I gave explicitly the argument `(FractionRing K[X])`
-    of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) x y) =
+    ofFractionRing (IsLocalization.mk' (FractionRing K[X]) x y) =
       IsLocalization.mk' (Ratfunc K) x y := by
   rw [IsFractionRing.mk'_eq_div, IsFractionRing.mk'_eq_div, ← mk_eq_div', ← mk_eq_div]
-#align ratfunc.of_fraction_ring_mk' Ratfunc.of_fraction_ring_mk'
+#align ratfunc.of_fraction_ring_mk' Ratfunc.ofFractionRing_mk'
 
 @[simp]
-theorem of_fraction_ring_eq :
-    (of_fraction_ring : FractionRing K[X] → Ratfunc K) = IsLocalization.algEquiv K[X]⁰ _ _ :=
+theorem ofFractionRing_eq :
+    (ofFractionRing : FractionRing K[X] → Ratfunc K) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun x =>
     Localization.induction_on x fun x => by
       simp only [IsLocalization.algEquiv_apply, IsLocalization.ringEquivOfRingEquiv_apply,
-        Localization.mk_eq_mk'_apply, IsLocalization.map_mk', of_fraction_ring_mk',
+        Localization.mk_eq_mk'_apply, IsLocalization.map_mk', ofFractionRing_mk',
         RingEquiv.coe_toRingHom, RingEquiv.refl_apply, SetLike.eta]
       -- porting note: added following `simp`.  The previous one can be squeezed.
       simp only [IsFractionRing.mk'_eq_div, RingHom.id_apply, Subtype.coe_eta]
 
-#align ratfunc.of_fraction_ring_eq Ratfunc.of_fraction_ring_eq
+#align ratfunc.of_fraction_ring_eq Ratfunc.ofFractionRing_eq
 
 @[simp]
 theorem toFractionRing_eq :
     (toFractionRing : Ratfunc K → FractionRing K[X]) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun ⟨x⟩ =>
     Localization.induction_on x fun x => by
-      simp only [Localization.mk_eq_mk'_apply, of_fraction_ring_mk', IsLocalization.algEquiv_apply,
+      simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.ringEquivOfRingEquiv_apply, IsLocalization.map_mk',
         RingEquiv.coe_toRingHom, RingEquiv.refl_apply, SetLike.eta]
       -- porting note: added following `simp`.  The previous one can be squeezed.
@@ -1060,7 +1062,7 @@ theorem toFractionRing_eq :
 theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
   ext x
-  simp [toFractionRingRingEquiv, of_fraction_ring_eq, AlgEquiv.coe_ringEquiv']
+  simp [toFractionRingRingEquiv, ofFractionRing_eq, AlgEquiv.coe_ringEquiv']
 #align ratfunc.to_fraction_ring_ring_equiv_symm_eq Ratfunc.toFractionRingRingEquiv_symm_eq
 
 end IsFractionRing
