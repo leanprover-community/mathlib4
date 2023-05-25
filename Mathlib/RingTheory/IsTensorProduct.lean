@@ -383,19 +383,19 @@ class Algebra.IsPushout : Prop where
 variable {R S R' S'}
 
 theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
-  letI := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
+  let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
   let e : R' ⊗[R] S ≃ₗ[R'] S' := by
-    refine' { (TensorProduct.comm R R' S).trans <| h.1.equiv.restrictScalars R with map_smul' := _ }
+    refine' { (_root_.TensorProduct.comm R R' S).trans <| h.1.equiv.restrictScalars R with map_smul' := _ }
     intro r x
     change
       h.1.equiv (TensorProduct.comm R R' S (r • x)) = r • h.1.equiv (TensorProduct.comm R R' S x)
-    apply TensorProduct.induction_on x
+    refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp only [smul_zero, map_zero]
     · intro x y
       simp [smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra, h.1.equiv_tmul]
       ring
     · intro x y hx hy
-      simp only [map_add, smul_add, hx, hy]
+      rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
   have :
     (toAlgHom R S S').toLinearMap =
       (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
