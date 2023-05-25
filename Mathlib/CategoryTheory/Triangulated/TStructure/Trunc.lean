@@ -568,6 +568,35 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
     (asIso ((t.truncGE (b+1)).map ((t.truncGEπ  a).app X))).symm
 
+noncomputable def truncGELEIsoTruncLEGE_hom_app (a b : ℤ) (X : C) :
+    (t.truncGE a).obj ((t.truncLE b).obj X) ⟶
+      (t.truncLE b).obj ((t.truncGE a).obj X) :=
+  t.liftTruncLE (t.descTruncGE ((t.truncLEι b).app X ≫ (t.truncGEπ a).app X) a) b
+
+@[reassoc (attr := simp)]
+lemma truncGELEIsoTruncLEGE_hom_app_pentagon (a b : ℤ) (X : C) :
+  (t.truncGEπ a).app _ ≫ t.truncGELEIsoTruncLEGE_hom_app a b X ≫ (t.truncLEι b).app _ =
+    (t.truncLEι b).app X ≫ (t.truncGEπ a).app X := by
+  simp [truncGELEIsoTruncLEGE_hom_app]
+
+/-instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := sorry
+
+noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
+    t.truncLE b ⋙ t.truncGE a ≅ t.truncGE a ⋙ t.truncLE b :=
+  NatIso.ofComponents (fun X => asIso (t.truncGELEIsoTruncLEGE_hom_app a b X)) (fun {X Y} f => by
+    dsimp [asIso]
+    apply from_truncGE_obj_ext
+    dsimp
+    apply to_truncLE_obj_ext
+    rw [assoc, assoc, assoc, assoc, NatTrans.naturality,
+      truncGELEIsoTruncLEGE_hom_app_pentagon_assoc, Functor.id_map,
+      ← NatTrans.naturality_assoc,
+      truncGELEIsoTruncLEGE_hom_app_pentagon,
+      Functor.id_map, ← NatTrans.naturality, Functor.id_map,
+      NatTrans.naturality_assoc, Functor.id_map])
+
+noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a-/
+
 end TStructure
 
 end Triangulated
