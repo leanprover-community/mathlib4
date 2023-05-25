@@ -9,7 +9,7 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Instances.ENNReal
 
 /-!
@@ -37,7 +37,7 @@ This files introduces:
 
 noncomputable section
 
-open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter
+open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter Pointwise
 
 universe u v w
 
@@ -196,6 +196,13 @@ theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x 
 theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdist x t := by
   simp only [infEdist, iInf_image, hΦ.edist_eq]
 #align emetric.inf_edist_image EMetric.infEdist_image
+
+@[to_additive (attr := simp)]
+theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+    infEdist (c • x) (c • s) = infEdist x s :=
+  infEdist_image (isometry_smul _ _)
+#align emetric.inf_edist_smul EMetric.infEdist_smul
+#align emetric.inf_edist_vadd EMetric.infEdist_vadd
 
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ (⋃ n, F n) = U ∧ Monotone F := by
