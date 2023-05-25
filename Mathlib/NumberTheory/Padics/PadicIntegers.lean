@@ -236,7 +236,7 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 variable (p)
 
 instance : NormedCommRing ℤ_[p] :=
-  { PadicInt.instCommRingPadicInt with 
+  { PadicInt.instCommRingPadicInt with
     dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
     norm_mul := by simp [norm_def]
     norm := norm }
@@ -481,8 +481,8 @@ theorem mkUnits_eq {u : ℚ_[p]} (h : ‖u‖ = 1) : ((mkUnits h : ℤ_[p]) : �
 theorem norm_units (u : ℤ_[p]ˣ) : ‖(u : ℤ_[p])‖ = 1 := isUnit_iff.mp <| by simp
 #align padic_int.norm_units PadicInt.norm_units
 
-/-- `unit_coeff hx` is the unit `u` in the unique representation `x = u * p ^ n`.
-See `unit_coeff_spec`. -/
+/-- `unitCoeff hx` is the unit `u` in the unique representation `x = u * p ^ n`.
+See `unitCoeff_spec`. -/
 def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
   let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
   have hu : ‖u‖ = 1 := by
