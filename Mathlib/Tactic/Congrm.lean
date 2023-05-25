@@ -23,11 +23,13 @@ def _root_.Lean.Expr.getExplicitArgs (f : Expr) : MetaM (Array Expr) := do
   let pinfo := (← Lean.Meta.getFunInfo f.getAppFn').paramInfo
   return (pinfo.zip args).filterMap (λ arg => if arg.1.isExplicit then some arg.2 else none)
 
+/-- try to close the goal using refl, return the `mvarId` if it fails-/
 def tryRefl (goal : MVarId) : MetaM (Option MVarId) := do
   let res ← observing? do
     goal.refl
   if res == none then return some goal else return none
 
+/-- to be moved somewhere else-/
 def _root_.Lean.MVarId.applyWithFreshMVarLevels (goal : MVarId) (lem : Name) :
     MetaM (List MVarId) := do
   goal.apply (← mkConstWithFreshMVarLevels lem)
@@ -44,6 +46,7 @@ private partial def telescopingFn (lem : Name) (goal : MVarId) (x : Expr) : Meta
 
 open private applyCongrThm? from Lean.Meta.Tactic.Congr in
 
+/-- Main loop for `congrm` -/
 partial def congrmLoop (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
   -- Helper function (stolen from somewhere) that creates the correct FVars in `λ` and `∀`
   -- and does the recursion
@@ -88,6 +91,7 @@ partial def congrmLoop (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
     trace[congrm] s!"We have an unhandled expression: {← ppExpr pat}"
     throwTacticEx `congrm goal m!"Invalid pattern"
 
+/-- the core function for `congrm` -/
 partial def congrmCore (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
   -- First change `iff` to `=` and then run the loop:
   let mvars ← congrmLoop pat (← goal.iffOfEq)
