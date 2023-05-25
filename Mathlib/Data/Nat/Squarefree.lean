@@ -332,14 +332,14 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type _} [A
 theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
     ∃ a b : ℕ, 0 < a ∧ 0 < b ∧ b ^ 2 * a = n ∧ Squarefree a := by
   classical -- Porting note: This line is not needed in Lean 3
-  set S := (Finset.range (n + 1)).filter (fun s => s ∣ n ∧ ∃ x, s = x ^ 2) with hS
+  set S := (Finset.range (n + 1)).filter (fun s => s ∣ n ∧ ∃ x, s = x ^ 2)
   have hSne : S.Nonempty := by
     use 1
     have h1 : 0 < n ∧ ∃ x : ℕ, 1 = x ^ 2 := ⟨hn, ⟨1, (one_pow 2).symm⟩⟩
     simp [h1]
   let s := Finset.max' S hSne
   have hs : s ∈ S := Finset.max'_mem S hSne
-  simp only [hS, Finset.mem_filter, Finset.mem_range] at hs
+  simp only [Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
   obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
@@ -354,9 +354,8 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
       (one_lt_pow 2 x zero_lt_two (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
     rw [mul_pow]
-  · simp_rw [hS, hsa, Finset.mem_filter, Finset.mem_range]
+  · simp_rw [hsa, Finset.mem_filter, Finset.mem_range]
     refine' ⟨lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
-
 #align nat.sq_mul_squarefree_of_pos Nat.sq_mul_squarefree_of_pos
 
 theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
