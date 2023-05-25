@@ -66,8 +66,12 @@ variable (R : Type _)
   often instead defined as functions from `ℕ+`. Multiplication on `arithmetic_functions` is by
   Dirichlet convolution. -/
 def ArithmeticFunction [Zero R] :=
-  ZeroHom ℕ R deriving Zero, Inhabited
+  ZeroHom ℕ R
 #align nat.arithmetic_function Nat.ArithmeticFunction
+
+instance [Zero R] : Zero (ArithmeticFunction R) := inferInstanceAs (Zero (ZeroHom ℕ R))
+
+instance [Zero R] : Inhabited (ArithmeticFunction R) := inferInstanceAs (Inhabited (ZeroHom ℕ R))
 
 variable {R}
 
@@ -77,8 +81,8 @@ section Zero
 
 variable [Zero R]
 
-instance : CoeFun (ArithmeticFunction R) fun _ => ℕ → R :=
-  ZeroHom.hasCoeToFun
+instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
+  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f :=
@@ -91,7 +95,7 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 #align nat.arithmetic_function.map_zero Nat.ArithmeticFunction.map_zero
 
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
-  ⟨fun h => ZeroHom.coe_inj h, fun h => h ▸ rfl⟩
+  ⟨fun h => FunLike.coe_injective h, fun h => h ▸ rfl⟩
 #align nat.arithmetic_function.coe_inj Nat.ArithmeticFunction.coe_inj
 
 @[simp]
@@ -105,7 +109,7 @@ theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
 #align nat.arithmetic_function.ext Nat.ArithmeticFunction.ext
 
 theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  ZeroHom.ext_iff
+  FunLike.ext_iff
 #align nat.arithmetic_function.ext_iff Nat.ArithmeticFunction.ext_iff
 
 section One
@@ -133,18 +137,18 @@ end One
 
 end Zero
 
+/- Coerc an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
+this in `natCoe` because it gets unfolded too much. -/
+def natToArithmeticFunction [AddMonoidWithOne R] :
+  (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
+  fun f => ⟨fun n => ↑(f n), by simp⟩
+
 instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticFunction R) :=
-  ⟨fun f =>
-    ⟨↑(f : ℕ → ℕ), by
-      trans ↑(f 0)
-      rfl
-      simp⟩⟩
+  ⟨natToArithmeticFunction⟩
 #align nat.arithmetic_function.nat_coe Nat.ArithmeticFunction.natCoe
 
-@[simp]
-theorem natCoe_nat (f : ArithmeticFunction ℕ) : (↑f : ArithmeticFunction ℕ) = f :=
-  ext fun _ => cast_id _
-#align nat.arithmetic_function.nat_coe_nat Nat.ArithmeticFunction.natCoe_nat
+-- Porting note : there was a theorem `(↑f : ArithmeticFunction ℕ) = f` that is now a sintactic
+-- equality.
 
 @[simp]
 theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ} :
@@ -152,28 +156,27 @@ theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ}
   rfl
 #align nat.arithmetic_function.nat_coe_apply Nat.ArithmeticFunction.natCoe_apply
 
+/- Coerc an arithmetic function with values in `ℤ` to one with values in `R`. We cannot inline
+this in `intCoe` because it gets unfolded too much. -/
+def intToArithmeticFunction [AddGroupWithOne R] :
+  (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
+  fun f => ⟨fun n => ↑(f n), by simp⟩
+
 instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFunction R) :=
-  ⟨fun f =>
-    ⟨↑(f : ℕ → ℤ), by
-      trans ↑(f 0)
-      rfl
-      simp⟩⟩
+  ⟨intToArithmeticFunction⟩
 #align nat.arithmetic_function.int_coe Nat.ArithmeticFunction.intCoe
 
-@[simp]
-theorem intCoe_int (f : ArithmeticFunction ℤ) : (↑f : ArithmeticFunction ℤ) = f :=
-  ext fun _ => Int.cast_id _
-#align nat.arithmetic_function.int_coe_int Nat.ArithmeticFunction.intCoe_int
+-- Porting note : there was a theorem `(↑f : ArithmeticFunction ℤ) = f` that is now a sintactic
+-- equality.
 
 @[simp]
 theorem intCoe_apply [AddGroupWithOne R] {f : ArithmeticFunction ℤ} {x : ℕ} :
-    (f : ArithmeticFunction R) x = f x :=
-  rfl
+    (f : ArithmeticFunction R) x = f x := rfl
 #align nat.arithmetic_function.int_coe_apply Nat.ArithmeticFunction.intCoe_apply
 
 @[simp]
 theorem coe_coe [AddGroupWithOne R] {f : ArithmeticFunction ℕ} :
-    ((f : ArithmeticFunction ℤ) : ArithmeticFunction R) = f := by
+    ((f : ArithmeticFunction ℤ) : ArithmeticFunction R) = (f : ArithmeticFunction R) := by
   ext
   simp
 #align nat.arithmetic_function.coe_coe Nat.ArithmeticFunction.coe_coe
@@ -1091,4 +1094,3 @@ end SpecialFunctions
 end ArithmeticFunction
 
 end Nat
-
