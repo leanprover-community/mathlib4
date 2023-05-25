@@ -58,12 +58,8 @@ linear map
 -/
 
 
--- Porting note: `assert_not_exists` is not defined yet
-/-
 assert_not_exists Submonoid
-
-assert_not_exists finset
--/
+assert_not_exists Finset
 
 open Function
 

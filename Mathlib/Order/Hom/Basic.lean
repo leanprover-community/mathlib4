@@ -13,6 +13,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.AssertExists
 
 /-!
 # Order homomorphisms
@@ -1388,6 +1389,5 @@ end BoundedOrder
 
 end LatticeIsos
 
--- Developments relating order homs and sets belong in `order.hom.set` or later.
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists set.range
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range
