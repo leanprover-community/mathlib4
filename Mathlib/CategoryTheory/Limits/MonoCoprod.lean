@@ -50,8 +50,7 @@ class MonoCoprod : Prop where
 variable {C}
 
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
-  ⟨fun A B c hc =>
-    by
+  ⟨fun A B c hc => by
     haveI : IsSplitMono c.inl :=
       IsSplitMono.mk' (SplitMono.mk (hc.desc (BinaryCofan.mk (𝟙 A) 0)) (IsColimit.fac _ _ _))
     infer_instance⟩
@@ -93,8 +92,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
 #align category_theory.limits.mono_coprod.mk' CategoryTheory.Limits.MonoCoprod.mk'
 
 instance monoCoprodType : MonoCoprod (Type u) :=
-  MonoCoprod.mk' fun A B =>
-    by
+  MonoCoprod.mk' fun A B => by
     refine' ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, _, _⟩
     · exact BinaryCofan.IsColimit.mk _
         (fun f₁ f₂ x => by
