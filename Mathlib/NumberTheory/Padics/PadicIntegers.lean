@@ -171,7 +171,7 @@ def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 #align padic_int.coe_pow PadicInt.coe_pow
 
-@[simp 1001] -- Porting note: simpNF linter
+-- @[simp] -- Porting note: not in simpNF
 theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := Subtype.coe_eta _ _
 #align padic_int.mk_coe PadicInt.mk_coe
 
@@ -188,7 +188,7 @@ instance : CharZero ℤ_[p]
         rw [Subtype.ext_iff] at h
         norm_cast at h)
 
-@[simp 1001, norm_cast] -- Porting note: simpNF linter
+@[norm_cast] -- @[simp] -- Porting note: not in simpNF
 theorem coe_int_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
   suffices (z1 : ℚ_[p]) = z2 ↔ z1 = z2 from Iff.trans (by norm_cast) this
   norm_cast
@@ -312,7 +312,7 @@ theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ 
 theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 #align padic_int.norm_p PadicInt.norm_p
 
-@[simp 1001] -- Porting note: simpNF linter
+-- @[simp] -- Porting note: not in simpNF
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := padicNormE.norm_p_pow n
 #align padic_int.norm_p_pow PadicInt.norm_p_pow
 
@@ -462,7 +462,7 @@ theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ <
 
 #align padic_int.norm_lt_one_mul PadicInt.norm_lt_one_mul
 
-@[simp, nolint simpNF] -- Porting note: simpNF wants to change the LHS to ¬ IsUnit z
+-- @[simp] -- Porting note: not in simpNF
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
   rw [lt_iff_le_and_ne]; simp [norm_le_one z, nonunits, isUnit_iff]
 #align padic_int.mem_nonunits PadicInt.mem_nonunits
