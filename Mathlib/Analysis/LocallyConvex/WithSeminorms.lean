@@ -344,8 +344,6 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
   rw [← isOpen_compl_iff, hp.isOpen_iff_mem_balls]
   rintro x (hx : x ≠ 0)
   cases' h x hx with i pi_nonzero
-  -- Porting note: the following line shouldn't be needed, but otherwise `positivity` fails later
-  have : p i x ≥ 0 := map_nonneg _ _
   refine' ⟨{i}, p i x, by positivity, subset_compl_singleton_iff.mpr _⟩
   rw [Finset.sup_singleton, mem_ball, zero_sub, map_neg_eq_map, not_lt]
 #align with_seminorms.t1_of_separating WithSeminorms.T1_of_separating
