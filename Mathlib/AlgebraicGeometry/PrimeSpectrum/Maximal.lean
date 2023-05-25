@@ -19,7 +19,7 @@ It is naturally a subset of the prime spectrum endowed with the subspace topolog
 
 ## Main definitions
 
-* `maximal_spectrum R`: The maximal spectrum of a commutative ring `R`,
+* `MaximalSpectrum R`: The maximal spectrum of a commutative ring `R`,
   i.e., the set of all maximal ideals of `R`.
 
 ## Implementation notes
@@ -41,10 +41,10 @@ variable (R : Type u) [CommRing R]
 @[ext]
 structure MaximalSpectrum where
   asIdeal : Ideal R
-  IsMaximal : as_ideal.IsMaximal
+  IsMaximal : asIdeal.IsMaximal
 #align maximal_spectrum MaximalSpectrum
 
-attribute [instance] MaximalSpectrum.isMaximal
+attribute [instance] MaximalSpectrum.IsMaximal
 
 variable {R}
 
@@ -56,18 +56,18 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
-  ⟨x.asIdeal, x.IsMaximal.IsPrime⟩
+  ⟨x.asIdeal, x.IsMaximal.isPrime⟩
 #align maximal_spectrum.to_prime_spectrum MaximalSpectrum.toPrimeSpectrum
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
-  simpa only [mk.inj_eq] using (PrimeSpectrum.ext_iff _ _).mp h
+  simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
 #align maximal_spectrum.to_prime_spectrum_injective MaximalSpectrum.toPrimeSpectrum_injective
 
 open PrimeSpectrum Set
 
 theorem toPrimeSpectrum_range :
     Set.range (@toPrimeSpectrum R _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } := by
-  simp only [is_closed_singleton_iff_is_maximal]
+  simp only [isClosed_singleton_iff_isMaximal]
   ext ⟨x, _⟩
   exact ⟨fun ⟨y, hy⟩ => hy ▸ y.IsMaximal, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 #align maximal_spectrum.to_prime_spectrum_range MaximalSpectrum.toPrimeSpectrum_range
@@ -79,47 +79,44 @@ instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R :=
 #align maximal_spectrum.zariski_topology MaximalSpectrum.zariskiTopology
 
 instance : T1Space <| MaximalSpectrum R :=
-  ⟨fun x =>
-    isClosed_induced_iff.mpr
-      ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.IsMaximal, by
-        simpa only [← image_singleton] using preimage_image_eq {x} to_prime_spectrum_injective⟩⟩
+  ⟨fun x => isClosed_induced_iff.mpr
+    ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.IsMaximal, by
+      simpa only [← image_singleton] using preimage_image_eq {x} toPrimeSpectrum_injective⟩⟩
 
 theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
   continuous_induced_dom
 #align maximal_spectrum.to_prime_spectrum_continuous MaximalSpectrum.toPrimeSpectrum_continuous
 
-variable (R) [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R)
+
+variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its maximal ideals
 viewed as subalgebras of its field of fractions. -/
-theorem iInf_localization_eq_bot :
-    (⨅ v : MaximalSpectrum R,
-        Localization.subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) =
-      ⊥ := by
+theorem iInf_localization_eq_bot : (⨅ v : MaximalSpectrum R,
+    Localization.subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
   ext x
   rw [Algebra.mem_bot, Algebra.mem_iInf]
   constructor
-  · apply imp_of_not_imp_not
+  · contrapose
     intro hrange hlocal
     let denom : Ideal R := (Submodule.span R {1} : Submodule R K).colon (Submodule.span R {x})
     have hdenom : (1 : R) ∉ denom := by
       intro hdenom
-      rcases submodule.mem_span_singleton.mp
-          (submodule.mem_colon.mp hdenom x <| Submodule.mem_span_singleton_self x) with
-        ⟨y, hy⟩
+      rcases Submodule.mem_span_singleton.mp
+        (Submodule.mem_colon.mp hdenom x <| Submodule.mem_span_singleton_self x) with ⟨y, hy⟩
       exact hrange ⟨y, by rw [← mul_one <| algebraMap R K y, ← Algebra.smul_def, hy, one_smul]⟩
     rcases denom.exists_le_maximal fun h => (h ▸ hdenom) Submodule.mem_top with ⟨max, hmax, hle⟩
     rcases hlocal ⟨max, hmax⟩ with ⟨n, d, hd, rfl⟩
-    apply hd (hle <| submodule.mem_colon.mpr fun _ hy => _)
-    rcases submodule.mem_span_singleton.mp hy with ⟨y, rfl⟩
-    exact
-      submodule.mem_span_singleton.mpr
-        ⟨y * n, by
-          rw [Algebra.smul_def, mul_one, map_mul, smul_comm, Algebra.smul_def, Algebra.smul_def,
-            mul_comm <| algebraMap R K d,
-            inv_mul_cancel_right₀ <|
-              (map_ne_zero_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K).mpr fun h =>
-                (h ▸ hd) max.zero_mem]⟩
+    apply hd (hle <| Submodule.mem_colon.mpr fun _ hy => _)
+    intro _ hy
+    rcases Submodule.mem_span_singleton.mp hy with ⟨y, rfl⟩
+    exact Submodule.mem_span_singleton.mpr ⟨y * n, by
+      rw [Algebra.smul_def, mul_one, map_mul, smul_comm, Algebra.smul_def, Algebra.smul_def,
+        mul_comm <| algebraMap R K d,
+        inv_mul_cancel_right₀ <|
+          (map_ne_zero_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K).mpr fun h =>
+            (h ▸ hd) max.zero_mem]⟩
   · rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
 #align maximal_spectrum.infi_localization_eq_bot MaximalSpectrum.iInf_localization_eq_bot
@@ -128,23 +125,22 @@ end MaximalSpectrum
 
 namespace PrimeSpectrum
 
-variable (R) [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R)
+
+variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals
 viewed as subalgebras of its field of fractions. -/
-theorem iInf_localization_eq_bot :
-    (⨅ v : PrimeSpectrum R,
-        Localization.subalgebra.ofField K _ <| v.asIdeal.primeCompl_le_nonZeroDivisors) =
-      ⊥ := by
+theorem iInf_localization_eq_bot : (⨅ v : PrimeSpectrum R,
+    Localization.subalgebra.ofField K _ <| v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
   ext x
   rw [Algebra.mem_iInf]
   constructor
   · rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
-    exact fun hx ⟨v, hv⟩ => hx ⟨v, hv.IsPrime⟩
+    exact fun hx ⟨v, hv⟩ => hx ⟨v, hv.isPrime⟩
   · rw [Algebra.mem_bot]
     rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
 #align prime_spectrum.infi_localization_eq_bot PrimeSpectrum.iInf_localization_eq_bot
 
 end PrimeSpectrum
-
