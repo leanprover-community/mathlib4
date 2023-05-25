@@ -42,20 +42,20 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -/
 theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
   (Abelian.exact_iff _ _).2 <|
-    ⟨by simp, zero_of_epi_comp (π _) <| by rw [← category.assoc, cokernel.condition]⟩
+    ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
 #align category_theory.exact_d_f CategoryTheory.exact_d_f
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
-  letI := (projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj' P).mp hP
+  letI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
   apply functor.preserves_finite_colimits_of_preserves_epis_and_kernels
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
-  rw [projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj']
+  rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
   infer_instance
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
@@ -127,4 +127,3 @@ def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
 #align homological_complex.hom.to_single₀_ProjectiveResolution HomologicalComplex.Hom.toSingle₀ProjectiveResolution
 
 end HomologicalComplex.Hom
-
