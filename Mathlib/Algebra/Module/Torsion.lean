@@ -255,7 +255,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
-  refine' ⟨fun h ⟨a, ha⟩ => mem_inf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_inf.mpr _⟩
+  refine' ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr _⟩
   rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 #align submodule.mem_torsion_by_set_iff Submodule.mem_torsionBySet_iff
 
