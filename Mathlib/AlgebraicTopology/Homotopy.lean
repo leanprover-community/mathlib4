@@ -69,9 +69,31 @@ noncomputable
 def leftUnitor (X : SSet.{0}) : pt ⨯ X ≅ X :=
   (limit.isLimit _).conePointUniqueUpToIso (isLimitBinaryFan X)
 
+structure Path {X : SSet.{0}} (a b : pt ⟶ X) where
+  p : 𝕀 ⟶ X
+  hp0 : i0 ≫ p = a
+  hp1 : i1 ≫ p = b
+
+def Path.rfl {X : SSet.{0}} (a : pt ⟶ X) : Path a a where
+  p := sorry
+  hp0 := sorry
+  hp1 := sorry
+
+def Path.trans {X : SSet.{0}} {a b c : pt ⟶ X} :
+  Path a b → Path b c → Path a c := sorry
+
+def Path.symm {X : SSet.{0}} {a b : pt ⟶ X} :
+  Path a b → Path b a := sorry
+
+/-
+TODO: Define this in terms of paths.
 structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
   F : 𝕀 ⨯ X ⟶ Y
   F0 : (leftUnitor X).inv ≫ (prod.map i0 (𝟙 X)) ≫ F = f
   F1 : (leftUnitor X).inv ≫ (prod.map i1 (𝟙 X)) ≫ F = g
+-/
+
+class HomotopyInvariant {X : SSet.{0}} (motive : (pt ⟶ X) → Sort u) where
+  ind : ∀ (a b : pt ⟶ X), motive a → Path a b → motive b
 
 end SSet
