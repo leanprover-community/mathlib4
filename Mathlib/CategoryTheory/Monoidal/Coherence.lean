@@ -204,8 +204,8 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 
 /-- Coherence tactic for monoidal categories. -/
 def monoidal_coherence (g : MVarId) : TermElabM Unit := do
-  -- TODO this used to be `class.instance_max_depth`. Is this the correct replacement?
-  withOptions (fun opts => opts.setNat `synthInstance.maxSize 128) do
+  withOptions (fun opts => opts.setNat `synthInstance.maxSize
+    (max 256 (opts.getNat `synthInstance.maxSize))) do
   -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
   let some (_, lhs, rhs) := ty.eq? | throwError "Not an equation of morphisms."
@@ -354,7 +354,7 @@ where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`.
 
 (If you have very large equations on which `coherence` is unexpectedly failing,
 you may need to increase the typeclass search depth,
-using e.g. `set_option class.instance_max_depth 500`.)
+using e.g. `set_option synthInstance.maxSize 500`.)
 -/
 syntax (name := coherence) "coherence" : tactic
 
