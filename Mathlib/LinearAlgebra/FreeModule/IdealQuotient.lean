@@ -48,20 +48,24 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
     rw [f_apply, b'.equiv_apply, Equiv.refl_apply, ab_eq]
   have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
     intro x
-    simp_rw [ab.mem_ideal_iff', ab_eq]
+    -- Porting note: these lines used to be `simp_rw [ab.mem_ideal_iff', ab_eq]`
+    rw [ab.mem_ideal_iff']
+    simp_rw [ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
       simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
-      exact ⟨c i, this c i⟩
+      use c i
+      convert this c i
+      sorry
     · rintro ha
       choose c hc using ha
-      exact ⟨c, b'.ext_elem fun i => trans (hc i) (this c i).symm⟩
+      exact ⟨c, b'.ext_elem fun i => Eq.trans (hc i) (this c i).symm⟩
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
   -- which maps `I` to `I' := Π i, a i ℤ`.
   let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => Ideal.span ({a i} : Set R)
-  have : Submodule.map (b'.equiv_fun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
+  have : Submodule.map (b'.equivFun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
     ext x
     simp only [Submodule.mem_map, Submodule.mem_pi, Ideal.mem_span_singleton, Set.mem_univ,
       Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
