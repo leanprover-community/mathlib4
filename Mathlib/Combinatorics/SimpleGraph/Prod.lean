@@ -232,8 +232,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
 theorem boxProd_neighborFinset (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
-      (G.neighborFinset x.1 ×ˢ ({x.2} : Finset β)).disjUnion
-        (({x.1} : Finset α) ×ˢ H.neighborFinset x.2)
+      (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
