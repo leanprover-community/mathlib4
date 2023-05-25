@@ -53,6 +53,7 @@ import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
