@@ -36,9 +36,6 @@ They are also the basis for the theory of unbounded operators.
 
 open Set
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w
 
 /-- A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/
@@ -276,7 +273,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
-        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip, exact ⟨x, hx⟩, skip] <;> rfl⟩,
+        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
@@ -587,8 +584,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     intro p x y hxy
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
     -- Porting note: `refine' ..; exacts [ofLe hpq.1 y, hxy, rfl]`
-    --               → `refine' .. <;> [skip, exact ofLe hpq.1 y, rfl]; exact hxy`
-    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip, exact ofLe hpq.1 y, rfl]; exact hxy
+    --               → `refine' .. <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy`
+    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy
   refine' ⟨{ toFun := f.. }, _⟩
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩

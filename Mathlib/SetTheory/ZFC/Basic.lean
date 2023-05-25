@@ -1305,7 +1305,7 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
   · rintro rfl
     exact Or.inl ax
-  · rintro (rfl | rfl) <;> [left, right] <;> assumption
+  · rintro (rfl | rfl) <;> [left; right] <;> assumption
 #align Set.mem_pair_sep ZFSet.mem_pairSep
 
 theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by

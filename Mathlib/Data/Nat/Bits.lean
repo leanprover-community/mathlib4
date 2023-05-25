@@ -100,7 +100,7 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
 #align nat.bit_add' Nat.bit_add'
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h, exact Nat.bit1_ne_zero _]
+  cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
 theorem bit0_mod_two : bit0 n % 2 = 0 := by

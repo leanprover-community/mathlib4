@@ -10,7 +10,6 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
 import Std.Data.Rat
 import Mathlib.Data.Rat.Init
 

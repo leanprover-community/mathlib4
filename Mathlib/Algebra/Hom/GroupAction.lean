@@ -39,8 +39,7 @@ The above types have corresponding classes:
 
 -/
 
---Porting note: assert_not_exists is not yet implemented
---assert_not_exists Submonoid
+assert_not_exists Submonoid
 
 variable (M' : Type _)
 variable (X : Type _) [SMul M' X]

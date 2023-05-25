@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.SwapVar
 
 /-!
 # Set enumeration
