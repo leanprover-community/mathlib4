@@ -251,6 +251,6 @@ instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
 end PowInstances
 
 -- Guard against import creep:
--- assert_not_exists InnerProductSpace
--- assert_not_exists Real.arctan
--- assert_not_exists FiniteDimensional.proper
+assert_not_exists InnerProductSpace
+assert_not_exists Real.arctan
+assert_not_exists FiniteDimensional.proper
