@@ -108,10 +108,11 @@ def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : Frame
 
 
 /- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
-def neighborhoods (X : Type _) [TopologicalSpace X] : pt_obj (Opens X) := sorry
+def neighborhoods (X : Type _) [TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) := sorry
 
 
 /- Main result: `pt` is adjoint to `𝒪`. -/
-theorem frame_top_adjunction : pt ⊣ 𝒪 := by
-  apply Adjunction.mkOfUnitCounit
-  sorry
+theorem frame_top_adjunction : 𝒪 ⊣ pt :=
+Adjunction.mkOfUnitCounit
+{ unit := ⟨fun X ↦ neighborhoods X, _⟩
+  counit := _ }
