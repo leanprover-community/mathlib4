@@ -207,32 +207,47 @@ instance isScalarTower (n : ℕ) :
 /-- Splitting fields have a negation. -/
 protected def neg (n : ℕ) :
     ∀ {K : Type u} [Field K], ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @Neg.neg K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ => @Neg.neg K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.neg Polynomial.SplittingFieldAux.neg
 
 /-- Splitting fields have subtraction. -/
 protected def sub (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @Sub.sub K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ => @Sub.sub K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.sub Polynomial.SplittingFieldAux.sub
 
 /-- Splitting fields have a one. -/
 protected def one (n : ℕ) : ∀ {K : Type u} [Field K], ∀ {f : K[X]}, SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @One.one K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f)
+    n (fun {K} _ _ => @One.one K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.one Polynomial.SplittingFieldAux.one
 
 /-- Splitting fields have a multiplication. -/
 protected def mul (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f => @Mul.mul K _) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, SplittingFieldAux n f → SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ => @Mul.mul K _) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.mul Polynomial.SplittingFieldAux.mul
 
 /-- Splitting fields have a power operation. -/
 protected def npow (n : ℕ) :
     ∀ {K : Type u} [Field K], ∀ {f : K[X]}, ℕ → SplittingFieldAux n f → SplittingFieldAux n f :=
-  Nat.recOn n (fun K fK f n x => @Pow.pow K _ _ x n) fun n ih K fK f => ih
+  Nat.recOn
+    (motive := fun n => ∀ {K : Type u} [Field K],
+      ∀ {f : K[X]}, ℕ → SplittingFieldAux n f → SplittingFieldAux n f)
+    n (fun {K} _ _ n x => @Pow.pow K _ _ x n) fun _ ih _ _ _ => ih
 #align polynomial.splitting_field_aux.npow Polynomial.SplittingFieldAux.npow
 
 /-- Splitting fields have an injection from the base field. -/
