@@ -431,12 +431,14 @@ partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := 
         pure (abstractedExpr, explicitArgs)
     -- Check that the original is reconstructable if necessary
     if ensureReconstructable then
+      let s ← saveState
       let e' ← mkAppMWithLevels' abstractedExprWithLevels explicitArgs
       let some e' := toExpr? e'
         | throwError "could not resolve all universe levels; reconstructed {e'} from {e}"
       unless ← withNewMCtxDepth <| isDefEq e e' do
         throwError "could not reconstruct {e} from {abstractedExprWithLevels} {explicitArgs
           }; got {e'} instead"
+      s.restore
     pure (abstractedExprWithLevels, explicitArgs)
 where
   /-- We start with `exclusiveDeps := #[none, none, ..., none]`, each position representing the
