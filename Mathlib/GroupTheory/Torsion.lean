@@ -8,11 +8,11 @@ Authors: Julian Berman
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Exponent
-import Mathbin.GroupTheory.OrderOfElement
-import Mathbin.GroupTheory.PGroup
-import Mathbin.GroupTheory.QuotientGroup
-import Mathbin.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.PGroup
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
 # Torsion groups
@@ -77,8 +77,7 @@ open Monoid
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
-    mul_left_inv := fun g =>
-      by
+    mul_left_inv := fun g => by
       erw [← pow_succ', tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact orderOf_pos' (tG g) }
 #align is_torsion.group IsTorsion.group
@@ -110,8 +109,7 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 @[to_additive AddIsTorsion.extension_closed "Additive torsion groups are closed under extensions."]
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g =>
-  (isOfFinOrder_iff_pow_eq_one _).mpr <|
-    by
+  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
     obtain ⟨ngn, ngnpos, hngn⟩ := (isOfFinOrder_iff_pow_eq_one _).mp (tH <| f g)
     have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
     lift g ^ ngn to N using hN.symm ▸ hmem with gn
@@ -134,8 +132,7 @@ theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN :
 /-- If a group exponent exists, the group is torsion. -/
 @[to_additive ExponentExists.is_add_torsion
       "If a group exponent exists, the group is additively torsion."]
-theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =>
-  by
+theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g => by
   obtain ⟨n, npos, hn⟩ := h
   exact (isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, npos, hn g⟩
 #align exponent_exists.is_torsion ExponentExists.isTorsion
@@ -170,8 +167,7 @@ namespace AddMonoid
 /-- A module whose scalars are additively torsion is additively torsion. -/
 theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R) : IsTorsion M :=
   fun f =>
-  (isOfFinAddOrder_iff_nsmul_eq_zero _).mpr <|
-    by
+  (isOfFinAddOrder_iff_nsmul_eq_zero _).mpr <| by
     obtain ⟨n, npos, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero _).mp (tR 1)
     exact ⟨n, npos, by simp only [nsmul_eq_smul_cast R _ f, ← nsmul_one, hn, zero_smul]⟩
 #align add_monoid.is_torsion.module_of_torsion AddMonoid.IsTorsion.module_of_torsion
@@ -223,13 +219,11 @@ include hp
 @[to_additive
       "The `p`-primary component is the submonoid of elements with additive order prime-power of `p`.",
   simps]
-def primaryComponent : Submonoid G
-    where
+def primaryComponent : Submonoid G where
   carrier := { g | ∃ n : ℕ, orderOf g = p ^ n }
   one_mem' := ⟨0, by rw [pow_zero, orderOf_one]⟩
   mul_mem' g₁ g₂ hg₁ hg₂ :=
-    exists_orderOf_eq_prime_pow_iff.mpr <|
-      by
+    exists_orderOf_eq_prime_pow_iff.mpr <| by
       obtain ⟨m, hm⟩ := exists_order_of_eq_prime_pow_iff.mp hg₁
       obtain ⟨n, hn⟩ := exists_order_of_eq_prime_pow_iff.mp hg₂
       exact
@@ -387,8 +381,7 @@ variable [Group G]
 @[to_additive AddMonoid.IsTorsion.not_torsion_free
       "A nontrivial additive torsion group is not torsion-free."]
 theorem IsTorsion.not_torsion_free [hN : Nontrivial G] : IsTorsion G → ¬IsTorsionFree G := fun tG =>
-  (not_isTorsionFree_iff _).mpr <|
-    by
+  (not_isTorsionFree_iff _).mpr <| by
     obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
     exact ⟨x, hx, tG x⟩
 #align is_torsion.not_torsion_free IsTorsion.not_torsion_free
@@ -398,8 +391,7 @@ theorem IsTorsion.not_torsion_free [hN : Nontrivial G] : IsTorsion G → ¬IsTor
 @[to_additive AddMonoid.IsTorsionFree.not_torsion
       "A nontrivial torsion-free additive group is not torsion."]
 theorem IsTorsionFree.not_torsion [hN : Nontrivial G] : IsTorsionFree G → ¬IsTorsion G := fun tfG =>
-  (not_isTorsion_iff _).mpr <|
-    by
+  (not_isTorsion_iff _).mpr <| by
     obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
     exact ⟨x, (tfG x) hx⟩
 #align is_torsion_free.not_torsion IsTorsionFree.not_torsion
