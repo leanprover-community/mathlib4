@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 
 ! This file was ported from Lean 3 source module analysis.complex.arg
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
+! leanprover-community/mathlib commit 45a46f4f03f8ae41491bf3605e8e0e363ba192fd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
