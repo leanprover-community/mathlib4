@@ -16,12 +16,12 @@ import Mathlib.Algebra.Module.ULift
 
 ## Main definitions
 
-- `is_tensor_product`: A predicate on `f : M₁ →ₗ[R] M₂ →ₗ[R] M` expressing that `f` realizes `M` as
+- `IsTensorProduct`: A predicate on `f : M₁ →ₗ[R] M₂ →ₗ[R] M` expressing that `f` realizes `M` as
   the tensor product of `M₁ ⊗[R] M₂`. This is defined by requiring the lift `M₁ ⊗[R] M₂ → M` to be
   bijective.
-- `is_base_change`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being a
+- `IsBaseChange`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being a
   `S`-module, expressing that `f` realizes `N` as the base change of `M` along `R → S`.
-- `algebra.is_pushout`: A predicate on the following diagram of scalar towers
+- `Algebra.IsPushout`: A predicate on the following diagram of scalar towers
   ```
     R  →  S
     ↓     ↓
@@ -30,7 +30,7 @@ import Mathlib.Algebra.Module.ULift
     asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
-- `tensor_product.is_base_change`: `S ⊗[R] M` is the base change of `M` along `R → S`.
+- `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/
 
@@ -57,7 +57,7 @@ variable [Module R N₁] [Module R N₂] [Module R N]
 
 variable {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
 
-/-- Given a bilinear map `f : M₁ →ₗ[R] M₂ →ₗ[R] M`, `is_tensor_product f` means that
+/-- Given a bilinear map `f : M₁ →ₗ[R] M₂ →ₗ[R] M`, `IsTensorProduct f` means that
 `M` is the tensor product of `M₁` and `M₂` via `f`.
 This is defined by requiring the lift `M₁ ⊗[R] M₂ → M` to be bijective.
 -/
