@@ -821,6 +821,17 @@ instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [Topolo
     [IrreducibleSpace α] : ConnectedSpace α where toNonempty := IrreducibleSpace.toNonempty
 #align irreducible_space.connected_space IrreducibleSpace.connectedSpace
 
+/-- A continuous map from a connected space to a `Σ`-type can be lifted to one of the
+components `π i`. -/
+theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
+    {f : α → Σ i, π i} (hf : Continuous f) :
+    ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
+  rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
+  choose g hgs hgf using range_subset_iff.1 hs.subset
+  replace hgf : f = Sigma.mk i ∘ g := (funext hgf).symm
+  refine ⟨i, g, ?_, hgf⟩
+  rwa [hgf, ← embedding_sigmaMk.continuous_iff] at hf
+
 theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
     IsOpen s → IsOpen t → s ∪ t = univ → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
   simpa only [univ_inter, univ_subset_iff] using @PreconnectedSpace.isPreconnected_univ α _ _ s t
