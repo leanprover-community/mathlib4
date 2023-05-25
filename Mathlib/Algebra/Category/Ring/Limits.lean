@@ -229,6 +229,10 @@ and then reuse the existing limit.
 -/
 instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
     CreatesLimit F (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) :=
+  -- Porting note : `CommSemiRing ⥤ Type` reflecting isomorphism is needed to make Lean see that
+  -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRing ⥤ Type` reflecting
+  -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
+  -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
   letI : ReflectsIsomorphisms (forget CommSemiRingCatMax.{v, u}) :=
     CommSemiRing.forgetReflectIsos.{max v u}
   letI : ReflectsIsomorphisms
