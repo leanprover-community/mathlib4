@@ -11,6 +11,7 @@ Authors: Johan Commelin, Chris Hughes
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Integral domains
@@ -30,6 +31,7 @@ Prove Wedderburn's little theorem, which shows that all finite division rings ar
 
 integral domain, finite integral domain, finite field
 -/
+set_option autoImplicit false
 
 
 section
@@ -67,14 +69,16 @@ def Fintype.groupWithZeroOfCancel (M : Type _) [CancelMonoidWithZero M] [Decidab
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type _} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
-  refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _ _) h
+  refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
-  exact
-    dvd_add (dvd_mul_of_dvd_right (gcd_dvd_left _ _) _) (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
+  exact  -- porting note: added `GCDMonoid.` twice
+    dvd_add (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_left _ _) _)
+      (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
 #align exists_eq_pow_of_mul_eq_pow_of_coprime exists_eq_pow_of_mul_eq_pow_of_coprime
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i j «expr ∈ » s) -/
+nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type _} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → IsCoprime (f i) (f j))
@@ -125,9 +129,10 @@ variable [CommRing R] [IsDomain R] [Group G]
 
 theorem card_nthRoots_subgroup_units [Fintype G] (f : G →* R) (hf : Injective f) {n : ℕ}
     (hn : 0 < n) (g₀ : G) :
-    ({ g ∈ univ | g ^ n = g₀ } : Finset G).card ≤ (nthRoots n (f g₀)).card := by
+    Finset.card ({ g ∈ univ (α := G) | g ^ n = g₀ } : Finset G) ≤ Multiset.card (nthRoots n (f g₀)) := by
+  stop
   haveI : DecidableEq R := Classical.decEq _
-  refine' le_trans _ (nth_roots n (f g₀)).toFinset_card_le
+  refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
   apply card_le_card_of_inj_on f
   · intro g hg
     rw [sep_def, mem_filter] at hg
@@ -143,7 +148,8 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
     cases nonempty_fintype G
     apply isCyclic_of_card_pow_eq_one_le
     intro n hn
-    convert le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nth_roots n (f 1))
+    stop
+    convert le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 #align is_cyclic_of_subgroup_is_domain isCyclic_of_subgroup_isDomain
 
 /-- The unit group of a finite integral domain is cyclic.
@@ -159,10 +165,10 @@ variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
 instance subgroup_units_cyclic : IsCyclic S := by
-  refine' isCyclic_of_subgroup_isDomain ⟨(coe : S → R), _, _⟩ (units.ext.comp Subtype.val_injective)
-  · simp
-  · intros
-    simp
+  -- porting note: the original proof used a `coe`, but I was not able to get it to work.
+  apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
+  . exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+  . exact Units.ext.comp Subtype.val_injective
 #align subgroup_units_cyclic subgroup_units_cyclic
 
 end
@@ -174,15 +180,20 @@ namespace Polynomial
 open Polynomial
 
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
-
+set_option maxHeartbeats 0
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
-    ∃ q r : R[X], r.degree < g.degree ∧ (↑f : K) / ↑g = ↑q + ↑r / ↑g := by
+    ∃ q r : R[X], r.degree < g.degree ∧
+      (algebraMap R[X] K f) / (algebraMap R[X] K g) =
+        algebraMap R[X] K q + (algebraMap R[X] K r) / (algebraMap R[X] K g) := by
   refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
-  · exact degree_mod_by_monic_lt _ hg
-  · have hg' : (↑g : K) ≠ 0 := by exact_mod_cast monic.ne_zero hg
+  · exact degree_modByMonic_lt _ hg
+  · have hg' : algebraMap R[X] K g ≠ 0 :=
+      -- porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
+      (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp [hg']
-    norm_cast
-    rw [add_comm, mul_comm, mod_by_monic_add_div f hg]
+    -- porting note: `norm_cast` was here, but does nothing.
+    rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+
 #align polynomial.div_eq_quo_add_rem_div Polynomial.div_eq_quo_add_rem_div
 
 end Polynomial
@@ -193,18 +204,22 @@ variable [Fintype G]
 
 theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
     (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    (univ.filterₓ fun g => f g = x).card = (univ.filterₓ fun g => f g = y).card := by
+    -- porting note: the `filter` had an index `ₓ` that I removed.
+    (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
   refine' card_congr (fun g _ => g * x⁻¹ * y) _ _ fun g hg => ⟨g * y⁻¹ * x, _⟩
-  ·
-    simp (config := { contextual := true }) only [mem_filter, one_mul, MonoidHom.map_mul, mem_univ,
+  · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul, mem_univ,
       mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff, forall_true_iff]
+    -- porting note: added the following `simp`
+    simp only [true_and, map_inv, mul_right_inv, one_mul, and_self, implies_true, forall_const]
   · simp only [mul_left_inj, imp_self, forall₂_true_iff]
   · simp only [true_and_iff, mem_filter, mem_univ] at hg
     simp only [hg, mem_filter, one_mul, MonoidHom.map_mul, mem_univ, mul_right_inv,
       eq_self_iff_true, exists_prop_of_true, MonoidHom.map_mul_inv, and_self_iff,
       mul_inv_cancel_right, inv_mul_cancel_right]
+    -- porting note: added the next line.  It is weird!
+    simp only [map_inv, mul_right_inv, one_mul, and_self, exists_prop]
 #align card_fiber_eq_of_mem_range card_fiber_eq_of_mem_range
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
@@ -212,39 +227,39 @@ theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) = 0 := by
   classical
     obtain ⟨x, hx⟩ :
-      ∃ x : MonoidHom.range f.to_hom_units,
-        ∀ y : MonoidHom.range f.to_hom_units, y ∈ Submonoid.powers x
+      ∃ x : MonoidHom.range f.toHomUnits,
+        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x
     exact IsCyclic.exists_monoid_generator
     have hx1 : x ≠ 1 := by
       rintro rfl
       apply hf
       ext g
       rw [MonoidHom.one_apply]
-      cases' hx ⟨f.to_hom_units g, g, rfl⟩ with n hn
+      cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
-    replace hx1 : (x : R) - 1 ≠ 0
+    replace hx1 : (x.val : R) - 1 ≠ 0  -- porting note: was `(x : R)
     exact fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
-    let c := (univ.filter fun g => f.to_hom_units g = 1).card
+    let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
-      (∑ g : G, f g) = ∑ g : G, f.to_hom_units g := rfl
+      (∑ g : G, f g) = ∑ g : G, f.toHomUnits g := rfl
       _ =
-          ∑ u : Rˣ in univ.image f.to_hom_units,
-            (univ.filter fun g => f.to_hom_units g = u).card • u :=
-        (sum_comp (coe : Rˣ → R) f.to_hom_units)
-      _ = ∑ u : Rˣ in univ.image f.to_hom_units, c • u :=
+          ∑ u : Rˣ in univ.image f.toHomUnits,
+            (univ.filter fun g => f.toHomUnits g = u).card • u :=
+        (sum_comp (coe : Rˣ → R) f.toHomUnits)
+      _ = ∑ u : Rˣ in univ.image f.toHomUnits, c • u :=
         (sum_congr rfl fun u hu => congr_arg₂ _ _ rfl)
       -- remaining goal 1, proven below
           _ =
-          ∑ b : MonoidHom.range f.to_hom_units, c • ↑b :=
+          ∑ b : MonoidHom.range f.toHomUnits, c • ↑b :=
         (Finset.sum_subtype _ (by simp) _)
-      _ = c • ∑ b : MonoidHom.range f.to_hom_units, (b : R) := smul_sum.symm
+      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b : R) := smul_sum.symm
       _ = c • 0 := (congr_arg₂ _ rfl _)
       -- remaining goal 2, proven below
           _ =
           0 :=
         smul_zero _
-      
+
     · -- remaining goal 1
       show (univ.filter fun g : G => f.to_hom_units g = u).card = c
       apply card_fiber_eq_of_mem_range f.to_hom_units
@@ -267,7 +282,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
             ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)), by
               rw [← pow_eq_mod_orderOf, hn]⟩
       _ = 0 := _
-      
+
     rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul, coe_coe]
     norm_cast
     simp [pow_orderOf_eq_one]
@@ -278,10 +293,10 @@ unless the homomorphism is trivial, in which case the sum is equal to the cardin
 -/
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     (∑ g : G, f g) = if f = 1 then Fintype.card G else 0 := by
-  split_ifs with h h
+  split_ifs with h
   · simp [h, card_univ]
-  · exact sum_hom_units_eq_zero f h
+  · rw [cast_zero] -- porting note: added
+    exact sum_hom_units_eq_zero f h
 #align sum_hom_units sum_hom_units
 
 end
-
