@@ -1730,8 +1730,9 @@ instance : Algebra (Ratfunc F) (LaurentSeries F) :=
 theorem algebraMap_apply_div :
     algebraMap (Ratfunc F) (LaurentSeries F) (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] (LaurentSeries F) p / algebraMap _ _ q := by
-  convert coe_div ?_ ?_ <;>
-    rw [← mk_one, coe_def, coe_alg_hom, mk_eq_div, lift_alg_hom_apply_div, map_one, div_one,
+  -- porting note: had to supply implicit arguments to `convert`
+  convert coe_div (algebraMap F[X] (Ratfunc F) p) (algebraMap F[X] (Ratfunc F) q) <;>
+    rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
 #align ratfunc.algebra_map_apply_div Ratfunc.algebraMap_apply_div
 
