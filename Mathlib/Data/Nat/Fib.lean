@@ -15,7 +15,6 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 
 /-!

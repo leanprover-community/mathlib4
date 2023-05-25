@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Control.Basic
 
 /-!
 # Saving the `library_search` cache.
@@ -20,4 +19,4 @@ open Mathlib.Tactic.LibrarySearch
 run_cmd liftTermElabM do
   let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
-  pickle path (← (← buildDiscrTree).get) `LibrarySearch
+  pickle path (← (← buildDiscrTree).get).2 `LibrarySearch

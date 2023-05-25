@@ -25,8 +25,7 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
--- Porting note: this does not exist in Lean 4:
---assert_not_exists Norm
+assert_not_exists Norm
 
 open Metric Set Pointwise Convex
 
@@ -65,7 +64,7 @@ theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_interᵢ fun i => isClosed_le continuous_const (continuous_apply i))
+    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
       (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
 #align is_closed_std_simplex isClosed_stdSimplex
 
@@ -307,8 +306,8 @@ the result includes the closure of the original set.
 
 TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
 theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs : Convex ℝ s)
-    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : closure s ⊆ homothety x t '' interior s :=
-  by
+    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) :
+    closure s ⊆ homothety x t '' interior s := by
   intro y hy
   have hne : t ≠ 0 := (one_pos.trans ht).ne'
   refine'

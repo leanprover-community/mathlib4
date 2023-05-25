@@ -261,7 +261,7 @@ theorem preimage_floor_zero : (floor : α → ℕ) ⁻¹' {0} = Iio 1 :=
   ext fun _ => floor_eq_zero
 #align nat.preimage_floor_zero Nat.preimage_floor_zero
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(n:α)`
+-- Porting note: in mathlib3 there was no need for the type annotation in `(n:α)`
 theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (floor : α → ℕ) ⁻¹' {n} = Ico (n:α) (n + 1) :=
   ext fun _ => floor_eq_iff' hn
@@ -458,16 +458,15 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha, floor_of_nonpos (tsub_nonpos_of_le (ha.trans n.cast_nonneg)), zero_tsub]
   cases' le_total a n with h h
-  . rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
+  · rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
     exact Nat.cast_le.1 ((Nat.floor_le ha).trans h)
-  . rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_nat _, tsub_add_cancel_of_le h]
+  · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_nat _, tsub_add_cancel_of_le h]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 #align nat.floor_sub_nat Nat.floor_sub_nat
 
 theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
-    rw [← not_lt, ← not_lt, not_iff_not]
-    rw [lt_ceil]
+    rw [← not_lt, ← not_lt, not_iff_not, lt_ceil]
     obtain hb | hb := le_or_lt n b
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_comm n, add_comm (n : α), add_lt_add_iff_right, add_lt_add_iff_right,
@@ -927,17 +926,16 @@ theorem fract_eq_iff {a b : α} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : 
   ⟨fun h => by
     rw [← h]
     exact ⟨fract_nonneg _, fract_lt_one _, ⟨⌊a⌋, sub_sub_cancel _ _⟩⟩,
-    by
+   by
     rintro ⟨h₀, h₁, z, hz⟩
-    show a - ⌊a⌋ = b; apply Eq.symm
-    rw [eq_sub_iff_add_eq, add_comm, ← eq_sub_iff_add_eq]
-    rw [hz, Int.cast_inj, floor_eq_iff, ← hz]
-    clear hz; constructor <;> simpa [sub_eq_add_neg, add_assoc] ⟩
+    rw [← self_sub_floor, eq_comm, eq_sub_iff_add_eq, add_comm, ← eq_sub_iff_add_eq, hz,
+      Int.cast_inj, floor_eq_iff, ← hz]
+    constructor <;> simpa [sub_eq_add_neg, add_assoc] ⟩
 #align int.fract_eq_iff Int.fract_eq_iff
 
 theorem fract_eq_fract {a b : α} : fract a = fract b ↔ ∃ z : ℤ, a - b = z :=
   ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by unfold fract at h; rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩,
-    by
+   by
     rintro ⟨z, hz⟩
     refine' fract_eq_iff.2 ⟨fract_nonneg _, fract_lt_one _, z + ⌊b⌋, _⟩
     rw [eq_add_of_sub_eq hz, add_comm, Int.cast_add]
@@ -980,8 +978,8 @@ theorem fract_neg_eq_zero {x : α} : fract (-x) = 0 ↔ fract x = 0 := by
 
 theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a * b) = z := by
   induction' b with c hc
-  . use 0; simp
-  . rcases hc with ⟨z, hz⟩
+  · use 0; simp
+  · rcases hc with ⟨z, hz⟩
     rw [Nat.succ_eq_add_one, Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
@@ -993,21 +991,20 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
 theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
-  simp only [mem_preimage, mem_unionᵢ, mem_inter_iff]
+  simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine' ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, _⟩
   rintro ⟨m, hms, hm0, hm1⟩
-  obtain rfl : ⌊x⌋ = m; exact floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
+  obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
   exact hms
 #align int.preimage_fract Int.preimage_fract
 
 theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - m) '' s ∩ Ico 0 1 := by
   ext x
-  simp only [mem_image, mem_inter_iff, mem_unionᵢ]; constructor
+  simp only [mem_image, mem_inter_iff, mem_iUnion]; constructor
   · rintro ⟨y, hy, rfl⟩
     exact ⟨⌊y⌋, ⟨y, hy, rfl⟩, fract_nonneg y, fract_lt_one y⟩
   · rintro ⟨m, ⟨y, hys, rfl⟩, h0, h1⟩
-    obtain rfl : ⌊y⌋ = m
-    exact floor_eq_iff.2 ⟨sub_nonneg.1 h0, sub_lt_iff_lt_add'.1 h1⟩
+    obtain rfl : ⌊y⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 h0, sub_lt_iff_lt_add'.1 h1⟩
     exact ⟨y, hys, rfl⟩
 #align int.image_fract Int.image_fract
 
@@ -1044,8 +1041,8 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
-  · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne.symm, mul_div_cancel' _ hn'.ne.symm, mul_add,
-      mul_div_cancel' _ hn'.ne.symm]
+  · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel' _ hn'.ne', mul_add,
+      mul_div_cancel' _ hn'.ne']
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 #align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_natCast_eq_div_natCast_mod
@@ -1413,7 +1410,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left, right]
+  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]
@@ -1436,27 +1433,19 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
     constructor
-    . linarith [fract_nonneg x]
-    · -- Porting note: `add_halves` can be removed after linarith learns about fractions
-      linarith [add_halves (1:α)]
+    · linarith [fract_nonneg x]
+    · linarith
   · have : ⌊fract x + 1 / 2⌋ = 1 := by
       rw [floor_eq_iff]
       constructor
-      . -- norm_num at *
-        -- linarith
-        -- Porting note: linarith broke here after the move to ℚ in norm_num.
-        have := add_le_add_right hx (1/2)
-        norm_num at *
-        assumption
-      · -- Porting note: `norm_num at *` can lose the *, after linarith learns about fractions
-        norm_num at *
+      · norm_num
+        linarith
+      · norm_num
         linarith [fract_lt_one x]
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
       ceil_add_int, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
     constructor
-    . -- Porting note: can be just `norm_num ; linarith` after linarith learns about fractions
-      have : (0:α) < 1/2 := half_pos <| by norm_num
-      linarith
+    · linarith
     · linarith [fract_lt_one x]
 #align round_eq round_eq
 
@@ -1473,7 +1462,6 @@ theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by
   rw [round_eq, floor_eq_zero_iff, add_mem_Ico_iff_left]
-  rw [← add_halves (1:α)] -- porting note: line can be removed after norm_num learns about fractions
   norm_num
 #align round_eq_zero_iff round_eq_zero_iff
 
@@ -1481,10 +1469,7 @@ theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
   rw [round_eq, abs_sub_le_iff]
   have := floor_le (x + 1 / 2)
   have := lt_floor_add_one (x + 1 / 2)
-  constructor
-  . -- Porting note: `add_halves` can be removed after linarith learns about fractions
-    linarith [add_halves (1:α)]
-  . linarith
+  constructor <;> linarith
 #align abs_sub_round abs_sub_round
 
 theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
@@ -1494,8 +1479,7 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
   have hn' : 0 < (n : α) := by
     norm_cast
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
-    fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div,
-    div_self hn'.ne.symm]
+    fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div, div_self hn'.ne']
 #align abs_sub_round_div_nat_cast_eq abs_sub_round_div_natCast_eq
 
 end LinearOrderedField
