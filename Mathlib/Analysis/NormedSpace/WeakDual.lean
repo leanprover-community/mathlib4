@@ -8,9 +8,9 @@ Authors: Kalle Kytölä, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.WeakDual
-import Mathbin.Analysis.NormedSpace.Dual
-import Mathbin.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 /-!
 # Weak dual of normed space
@@ -145,8 +145,7 @@ def continuousLinearMapToWeakDual : Dual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (by infer_instance : TopologicalSpace (Dual 𝕜 E)) ≤
-      (by infer_instance : TopologicalSpace (WeakDual 𝕜 E)) :=
-  by
+      (by infer_instance : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert to_weak_dual_continuous.le_induced
   exact induced_id.symm
 #align normed_space.dual.dual_norm_topology_le_weak_dual_topology NormedSpace.Dual.dual_norm_topology_le_weak_dual_topology
@@ -203,8 +202,7 @@ theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈
 
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) :=
-  by
+theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, set_of_forall]
   exact isClosed_biInter fun x hx => is_closed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 #align weak_dual.is_closed_polar WeakDual.isClosed_polar
