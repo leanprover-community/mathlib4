@@ -75,8 +75,8 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
   · simp
   suffices 2 ^ n • f (2 ^ (n + 1)) ≤ ∑ k in Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f k by
     rw [sum_range_succ, ← sum_Ico_consecutive]
-    exact add_le_add ihn this
-    exacts[add_le_add_right n.one_le_two_pow _,
+    exacts [add_le_add ihn this,
+      (add_le_add_right n.one_le_two_pow _ : 1 + 1 ≤ 2 ^ n + 1),
       add_le_add_right (Nat.pow_le_pow_of_le_right zero_lt_two n.le_succ) _]
   have : ∀ k ∈ Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f (2 ^ (n + 1)) ≤ f k := fun k hk =>
     hf (n.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
@@ -244,8 +244,11 @@ theorem Real.summable_abs_int_rpow {b : ℝ} (hb : 1 < b) : Summable fun n : ℤ
 
 /-- Harmonic series is not unconditionally summable. -/
 theorem Real.not_summable_nat_cast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) := by
-  have : ¬Summable (fun n => (n ^ 1)⁻¹ : ℕ → ℝ) := mt Real.summable_nat_pow_inv.1 (lt_irrefl 1)
-  simpa only [pow_one]
+  have : ¬Summable (fun n => ((n : ℝ) ^ ((1 : ℕ) : ℝ))⁻¹ : ℕ → ℝ) :=
+    mt (Real.summable_nat_pow_inv (p := 1)).1 (lt_irrefl 1)
+  -- porting note: I can't figure out why `simp` can't apply `pow_one` (even after `Nat.cast_one`)
+  convert this
+  simp
 #align real.not_summable_nat_cast_inv Real.not_summable_nat_cast_inv
 
 /-- Harmonic series is not unconditionally summable. -/
@@ -261,23 +264,26 @@ theorem Real.tendsto_sum_range_one_div_nat_succ_atTop :
   · exact fun i => div_nonneg zero_le_one i.cast_add_one_pos.le
 #align real.tendsto_sum_range_one_div_nat_succ_at_top Real.tendsto_sum_range_one_div_nat_succ_atTop
 
+section pow_macro
+-- porting note: without these local macro rules Lean fails to elaborate `^` properly.
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234085
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+
 @[simp]
-theorem NNReal.summable_rpow_inv {p : ℝ} : Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
-  --simp [← NNReal.summable_coe]
-  simp only [← NNReal.summable_coe, Nonneg.coe_inv, NNReal.coe_rpow, NNReal.coe_nat_cast,
-    Real.summable_nat_rpow_inv]
+theorem NNReal.summable_rpow_inv {p : ℝ} : Summable (fun n => ((n : ℝ≥0) ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
+  simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow_inv NNReal.summable_rpow_inv
 
 @[simp]
-theorem NNReal.summable_rpow {p : ℝ} : Summable (fun n => n ^ p : ℕ → ℝ≥0) ↔ p < -1 := by
-  simp only [← NNReal.summable_coe, NNReal.coe_rpow, NNReal.coe_nat_cast, Real.summable_nat_rpow]
-  --simp [← NNReal.summable_coe]
+theorem NNReal.summable_rpow {p : ℝ} : Summable (fun n => (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ p < -1 := by
+  simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow NNReal.summable_rpow
 
-theorem NNReal.summable_one_div_rpow {p : ℝ} : Summable (fun n => 1 / n ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
-  simp only [one_div, NNReal.summable_rpow_inv]
-  --simp
+theorem NNReal.summable_one_div_rpow {p : ℝ} : Summable (fun n => 1 / (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
+  simp
 #align nnreal.summable_one_div_rpow NNReal.summable_one_div_rpow
+
+end pow_macro
 
 section
 
@@ -311,13 +317,13 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, ((i ^ 2 : ℕ) : α)�
       · intro x hx
         simp only [mem_Ioo] at hx
         simp only [hx, hx.2.le, mem_Ioc, le_max_iff, or_true_iff, and_self_iff]
-      · intro i hi hident
-        exact inv_nonneg.2 (sq_nonneg _)
-    _ ≤ ((k + 1) ^ 2)⁻¹ + ∑ i in Ioc k.succ (max (k + 1) n), ((i ^ 2 : ℕ) : α)⁻¹ := by
+      · intro i _hi _hident
+        positivity
+    _ ≤ ((k + 1 : α) ^ 2)⁻¹ + ∑ i in Ioc k.succ (max (k + 1) n), ((i ^ 2 : ℕ) : α)⁻¹ := by
       rw [← Nat.Icc_succ_left, ← Nat.Ico_succ_right, sum_eq_sum_Ico_succ_bot]
       swap; · exact Nat.succ_lt_succ ((Nat.lt_succ_self k).trans_le (le_max_left _ _))
-      rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
-    _ ≤ ((k + 1) ^ 2)⁻¹ + (k + 1)⁻¹ := by
+      rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_pow, Nat.cast_succ]
+    _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
       refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
       · simp only [Ne.def, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
