@@ -10,7 +10,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 /-!
 # The Fréchet derivative

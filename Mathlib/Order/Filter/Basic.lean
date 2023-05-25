@@ -1732,6 +1732,22 @@ theorem EventuallyLE.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] 
   h.inter h'.compl
 #align filter.eventually_le.diff Filter.EventuallyLE.diff
 
+theorem set_eventuallyLE_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
+    s ≤ᶠ[l] t ↔ t ∈ l ⊓ 𝓟 s :=
+  eventually_inf_principal.symm
+#align filter.set_eventually_le_iff_mem_inf_principal Filter.set_eventuallyLE_iff_mem_inf_principal
+
+theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
+    s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
+  set_eventuallyLE_iff_mem_inf_principal.trans <| by
+    simp only [le_inf_iff, inf_le_left, true_and_iff, le_principal_iff]
+#align filter.set_eventually_le_iff_inf_principal_le Filter.set_eventuallyLE_iff_inf_principal_le
+
+theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
+    s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
+  simp only [eventuallyLE_antisymm_iff, le_antisymm_iff, set_eventuallyLE_iff_inf_principal_le]
+#align filter.set_eventually_eq_iff_inf_principal Filter.set_eventuallyEq_iff_inf_principal
+
 theorem EventuallyLE.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
     {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) (hg₀ : 0 ≤ᶠ[l] g₁)
     (hf₀ : 0 ≤ᶠ[l] f₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by

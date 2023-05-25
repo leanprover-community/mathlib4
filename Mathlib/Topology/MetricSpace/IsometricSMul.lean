@@ -83,6 +83,13 @@ theorem edist_smul_left [SMul M X] [IsometricSMul M X] (c : M) (x y : X) :
 #align edist_smul_left edist_smul_left
 #align edist_vadd_left edist_vadd_left
 
+@[to_additive (attr := simp)]
+theorem ediam_smul [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    EMetric.diam (c • s) = EMetric.diam s :=
+  (isometry_smul _ _).ediam_image s
+#align ediam_smul ediam_smul
+#align ediam_vadd ediam_vadd
+
 @[to_additive]
 theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a : M) :
     Isometry ((· * ·) a) :=
@@ -339,6 +346,13 @@ theorem nndist_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M)
   (isometry_smul X c).nndist_eq x y
 #align nndist_smul nndist_smul
 #align nndist_vadd nndist_vadd
+
+@[to_additive (attr := simp)]
+theorem diam_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    Metric.diam (c • s) = Metric.diam s :=
+  (isometry_smul _ _).diam_image s
+#align diam_smul diam_smul
+#align diam_vadd diam_vadd
 
 @[to_additive (attr := simp)]
 theorem dist_mul_left [PseudoMetricSpace M] [Mul M] [IsometricSMul M M] (a b c : M) :
