@@ -14,7 +14,8 @@ import Mathlib.Data.List.Zip
 /-!
 # Ranges of naturals as lists
 
-This file shows basic results about `List.iota`, `List.range`, `List.range'` and defines `List.finRange`.
+This file shows basic results about `List.iota`, `List.range`, `List.range'`
+and defines `List.finRange`.
 `finRange n` is the list of elements of `Fin n`.
 `iota n = [n, n - 1, ..., 1]` and `range n = [0, ..., n - 1]` are basic list constructions used for
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
