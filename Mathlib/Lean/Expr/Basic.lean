@@ -7,6 +7,7 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 import Lean
 import Std.Lean.Expr
 import Std.Data.List.Basic
+import Mathlib.Lean.Meta.AppBuilder
 
 /-!
 # Additional operations on Expr and related types
@@ -365,6 +366,102 @@ def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
 
 end Expr
+
+namespace Meta.ExprWithLevels
+
+/-- Given `e : Expr` an application `f a₁ ... aₖ`, `e.abstractExplicitArgs n` abstracts the
+outermost `n` arguments present in the application. (Note that `f` must be a constant.)
+
+It returns the abstracted expression as an `ExprWithLevels` (in case any universe levels were
+abstracted) together with an array of the explicit arguments that have been removed.
+
+To construct an application of the result, use e.g. `mkAppMWithLevels'` or `mkAppNWithLevels`.
+
+`ensureReconstructable := true` checks that
+`let (f', args) ← e.abstractExplicitArgs n; mkAppMWithLevels' f' args` is an `ExprWithLevels` that
+has no universe parameters and is defeq to `e`.
+ -/
+partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := false) :
+    MetaM (ExprWithLevels × Array Expr) :=
+  Expr.withApp' e fun f xs => do
+    let some (fName, _) := f.const? | throwError "{f} must be a constant"
+    let backDeps := (← getFunInfo f).paramInfo.map (·.backDeps)
+    let (f, fType, env) ← mkFunWithLevels fName
+    forallBoundedTelescope fType xs.size fun allFVars _ => do
+      unless (allFVars.size == xs.size) do
+        throwError "{xs.size} inputs expected in {fType}; only found {allFVars.size}"
+      let mut hasEncounteredUnabstractedArg := false
+      let mut fvars := Array.mkEmpty (α := Expr) n
+      let mut args := Array.mkEmpty (α := Expr) xs.size
+      let mut explicitArgs := Array.mkEmpty (α := Expr) n
+      let mut exclusiveDeps : Array (Option Bool) := Array.mkArray xs.size none
+      for i in [: xs.size] do
+        -- work backwards, starting with the outermost argument
+        let i := xs.size - i - 1
+        let fvar := allFVars[i]!
+        let bi ← fvar.fvarId!.getBinderInfo
+        -- abstract this argument if it's either
+        -- * one of the explicit args we're abstracting
+        -- * an implicit argument which is a dependency of abstracted args (exclusively)
+        let isAbstracted :=
+          if bi.isExplicit then
+            n - explicitArgs.size > 0
+          else
+            -- Is it an exclusive dependency of abstracted arguments (`some true`)?
+            exclusiveDeps[i]!.any id
+        if isAbstracted then
+          exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! true
+          -- Only use a lambda to abstract this arg if it's "behind" an unabstracted one.
+          -- Otherwise, simply removing it will suffice.
+          if hasEncounteredUnabstractedArg then
+            fvars := fvars.push fvar
+            args := args.push fvar
+          if bi.isExplicit && (n - explicitArgs.size > 0) then
+            explicitArgs := explicitArgs.push xs[i]!
+        else
+          hasEncounteredUnabstractedArg := true
+          args := args.push xs[i]!
+          exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! false
+      unless explicitArgs.size == n do
+        throwError "not enough explicit arguments present; found {explicitArgs.reverse}, needed {n
+          - explicitArgs.size} more"
+      let fApp ← mkAppNUnifyingTypes f args.reverse
+      let abstractedExpr := (← getLCtx).mkLambda fvars.reverse fApp
+      let abstractedExprWithLevels ← abstract env abstractedExpr
+      explicitArgs := explicitArgs.reverse
+      if ensureReconstructable then
+        let e' ← mkAppMWithLevels' abstractedExprWithLevels explicitArgs
+        let some e' := toExpr? e'
+          | throwError "could not resolve all universe levels; reconstructed {e'} from {e}"
+        unless ← withNewMCtxDepth <| isDefEq e e' do
+          throwError "could not reconstruct {e} from {abstractedExprWithLevels} {explicitArgs
+            }; got {e'} instead"
+      pure (abstractedExprWithLevels, explicitArgs)
+where
+  /-- We start with `exclusiveDeps := #[none, none, ..., none]`, each position representing the
+  status of the corresponding argument. We work backwards from the end of the argument list,
+  examining the `backDeps` of that argument and Given the `backDeps` for an argument (which takes
+  the form of an array of indices which that argument.  depends on) together with an indicator
+  `isAbstracted` of whether the argument at hand is to be abstracted or not, we update
+  `exclusiveDeps` at the indices given in `backDeps`.
+
+  The interpretation of different values of `exclusiveDeps[i]` for argument `aᵢ` is:
+
+  * `none`: `aᵢ` is not yet known to have (forward) dependents.
+  * `some false`: `aᵢ` is known to have (forward) dependents which are not abstracted. It therefore
+  cannot be abstracted away.
+  * `some true`: `aᵢ` is known to be a (backwards) dependency of arguments which have been
+  abstracted and *only* of arguments which have been abstracted. It can therefore be abstracted
+  away.
+   -/
+  updateExclusiveDeps (exclusiveDeps : Array (Option Bool)) (backDeps : Array Nat)
+      (isAbstracted : Bool) : Array (Option Bool) :=
+    backDeps.foldl (init := exclusiveDeps) fun exclusiveDeps i =>
+      exclusiveDeps.modifyOp i fun
+        | none   => isAbstracted
+        | some b => isAbstracted && b
+
+end Meta.ExprWithLevels
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
