@@ -5,6 +5,7 @@ Authors: Newell Jensen
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -28,14 +29,14 @@ initialize reflExt :
 initialize registerBuiltinAttribute {
   name := `refl
   descr := "reflexivity relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind ↦ MetaM.run' <| withReducible do
     let declTy := (← getConstInfo decl).type
-    let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+    let (_, _, targetTy) ← forallMetaTelescope declTy
     let fail := throwError
-      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
-    let .app (.app rel lhs) rhs := targetTy | fail
-    unless ← withNewMCtxDepth <| isDefEq lhs rhs do fail
-    let key ← DiscrTree.mkPath rel
+      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy} with target {targetTy}"
+    let (_, args) ← targetTy.abstractExplicitArgs 2 true
+    unless ← withNewMCtxDepth <| isDefEq args[0]! args[1]! do fail
+    let key ← DiscrTree.mkPath (← whnfR targetTy)
     reflExt.add (decl, key) kind
 }
 
@@ -47,12 +48,10 @@ This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a 
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
 def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
-  let .app (.app rel _) _ ← whnfR <|← instantiateMVars <|← goal.getType
-    | throwError "reflexivity lemmas only apply to binary relations, not
-      {indentExpr (← goal.getType)}"
+  let t ← whnfR <|← instantiateMVars <|← goal.getType
   let s ← saveState
   let mut ex? := none
-  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
+  for lem in ← (reflExt.getState (← getEnv)).getMatch t do
     try
       let gs ← goal.apply (← mkConstWithFreshMVarLevels lem)
       if gs.isEmpty then return () else
