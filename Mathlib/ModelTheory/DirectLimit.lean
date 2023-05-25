@@ -8,10 +8,10 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Order
-import Mathbin.Algebra.DirectLimit
-import Mathbin.ModelTheory.Quotients
-import Mathbin.ModelTheory.FinitelyGenerated
+import Mathlib.Data.Fintype.Order
+import Mathlib.Algebra.DirectLimit
+import Mathlib.ModelTheory.Quotients
+import Mathlib.ModelTheory.FinitelyGenerated
 
 /-!
 # Direct Limits of First-Order Structures
@@ -64,8 +64,7 @@ def natLeRec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
 
 @[simp]
 theorem coe_natLeRec (m n : ℕ) (h : m ≤ n) :
-    (natLeRec f' m n h : G' m → G' n) = Nat.leRecOn h fun n => f' n :=
-  by
+    (natLeRec f' m n h : G' m → G' n) = Nat.leRecOn h fun n => f' n := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
@@ -94,16 +93,14 @@ variable [DirectedSystem G fun i j h => f i j h]
 
 @[simp]
 theorem unify_sigma_mk_self {α : Type _} {i : ι} {x : α → G i} :
-    (unify f (Sigma.mk i ∘ x) i fun j ⟨a, hj⟩ => trans (le_of_eq hj.symm) (refl _)) = x :=
-  by
+    (unify f (Sigma.mk i ∘ x) i fun j ⟨a, hj⟩ => trans (le_of_eq hj.symm) (refl _)) = x := by
   ext a
   simp only [unify, DirectedSystem.map_self]
 #align first_order.language.direct_limit.unify_sigma_mk_self FirstOrder.Language.DirectLimit.unify_sigma_mk_self
 
 theorem comp_unify {α : Type _} {x : α → Σi, G i} {i j : ι} (ij : i ≤ j)
     (h : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    f i j ij ∘ unify f x i h = unify f x j fun k hk => trans (mem_upperBounds.1 h k hk) ij :=
-  by
+    f i j ij ∘ unify f x i h = unify f x j fun k hk => trans (mem_upperBounds.1 h k hk) ij := by
   ext a
   simp [unify, DirectedSystem.map_map]
 #align first_order.language.direct_limit.comp_unify FirstOrder.Language.DirectLimit.comp_unify
@@ -115,8 +112,7 @@ variable (G)
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σi, G i)
-    where
+def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σi, G i) where
   R := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι)(ik : i ≤ k)(jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, x⟩ => ⟨i, refl i, refl i, rfl⟩, fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, ik, jk, h⟩ =>
@@ -131,8 +127,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
  -/
-noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σi, G i)
-    where
+noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σi, G i) where
   funMap n F x :=
     ⟨_,
       funMap F
@@ -162,8 +157,7 @@ namespace DirectLimit
 variable [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => f i j h]
 
 theorem equiv_iff {x y : Σi, G i} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
-    x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 :=
-  by
+    x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
   cases x
   cases y
   refine' ⟨fun xy => _, fun xy => ⟨i, hx, hy, xy⟩⟩
@@ -177,8 +171,7 @@ theorem equiv_iff {x y : Σi, G i} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
 
 theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → Σi, G i) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    (⟨i, funMap F (unify f x i hi)⟩ : Σi, G i) ≈ ⟨j, funMap F (unify f x j hj)⟩ :=
-  by
+    (⟨i, funMap F (unify f x i hi)⟩ : Σi, G i) ≈ ⟨j, funMap F (unify f x j hj)⟩ := by
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
   refine' ⟨k, ik, jk, _⟩
   rw [(f i k ik).map_fun, (f j k jk).map_fun, comp_unify, comp_unify]
@@ -186,8 +179,7 @@ theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → Σi, G i
 
 theorem relMap_unify_equiv {n : ℕ} (R : L.Relations n) (x : Fin n → Σi, G i) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    RelMap R (unify f x i hi) = RelMap R (unify f x j hj) :=
-  by
+    RelMap R (unify f x i hi) = RelMap R (unify f x j hj) := by
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
   rw [← (f i k ik).map_rel, comp_unify, ← (f j k jk).map_rel, comp_unify]
 #align first_order.language.direct_limit.rel_map_unify_equiv FirstOrder.Language.DirectLimit.relMap_unify_equiv
@@ -196,8 +188,7 @@ variable [Nonempty ι]
 
 theorem exists_unify_eq {α : Type _} [Fintype α] {x y : α → Σi, G i} (xy : x ≈ y) :
     ∃ (i : ι)(hx : i ∈ upperBounds (range (Sigma.fst ∘ x)))(hy :
-      i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy :=
-  by
+      i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy := by
   obtain ⟨i, hi⟩ := Fintype.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
   rw [sum.elim_range, upperBounds_union] at hi
   simp_rw [← Function.comp_apply Sigma.fst _] at hi
@@ -218,8 +209,7 @@ theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σi, G i
 
 /-- The direct limit `setoid` respects the structure `sigma_structure`, so quotienting by it
   gives rise to a valid structure. -/
-noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f)
-    where
+noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) where
   toStructure := sigmaStructure G f
   fun_equiv n F x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
@@ -241,8 +231,7 @@ noncomputable instance structure : L.Structure (DirectLimit G f) :=
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
-    (funMap F fun a => (⟦⟨i, x a⟩⟧ : DirectLimit G f)) = ⟦⟨i, funMap F x⟩⟧ :=
-  by
+    (funMap F fun a => (⟦⟨i, x a⟩⟧ : DirectLimit G f)) = ⟦⟨i, funMap F x⟩⟧ := by
   simp only [Function.comp_apply, fun_map_quotient_mk, Quotient.eq']
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun a : Fin n => i))
@@ -253,8 +242,7 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
 
 @[simp]
 theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
-    (RelMap R fun a => (⟦⟨i, x a⟩⟧ : DirectLimit G f)) = RelMap R x :=
-  by
+    (RelMap R fun a => (⟦⟨i, x a⟩⟧ : DirectLimit G f)) = RelMap R x := by
   rw [rel_map_quotient_mk]
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun a : Fin n => i))
@@ -262,8 +250,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
 #align first_order.language.direct_limit.rel_map_quotient_mk_sigma_mk FirstOrder.Language.DirectLimit.relMap_quotient_mk'_sigma_mk'
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type _} [Fintype α] (x : α → DirectLimit G f) :
-    ∃ (i : ι)(y : α → G i), x = Quotient.mk' ∘ Sigma.mk i ∘ y :=
-  by
+    ∃ (i : ι)(y : α → G i), x = Quotient.mk' ∘ Sigma.mk i ∘ y := by
   obtain ⟨i, hi⟩ := Fintype.bddAbove_range fun a => (x a).out.1
   refine' ⟨i, unify f (Quotient.out ∘ x) i hi, _⟩
   ext a
@@ -275,8 +262,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type _} [Fintype α] (x : α → 
 variable (L ι)
 
 /-- The canonical map from a component to the direct limit. -/
-def of (i : ι) : G i ↪[L] DirectLimit G f
-    where
+def of (i : ι) : G i ↪[L] DirectLimit G f where
   toFun := Quotient.mk' ∘ Sigma.mk i
   inj' x y h := by
     simp only [Quotient.eq'] at h
@@ -292,8 +278,7 @@ theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦⟨i, x⟩⟧ :=
 #align first_order.language.direct_limit.of_apply FirstOrder.Language.DirectLimit.of_apply
 
 @[simp]
-theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x :=
-  by
+theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   simp only [of_apply, Quotient.eq']
   refine' Setoid.symm ⟨j, hij, refl j, _⟩
   simp only [DirectedSystem.map_self]
@@ -323,17 +308,14 @@ variable (L ι G f)
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift : DirectLimit G f ↪[L] P
-    where
+def lift : DirectLimit G f ↪[L] P where
   toFun :=
-    Quotient.lift (fun x : Σi, G i => (g x.1) x.2) fun x y xy =>
-      by
+    Quotient.lift (fun x : Σi, G i => (g x.1) x.2) fun x y xy => by
       simp only
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
       exact congr_arg _ ((equiv_iff _ _ _ _).1 xy)
-  inj' x y xy :=
-    by
+  inj' x y xy := by
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
@@ -354,8 +336,7 @@ variable {L ι G f}
 omit Hg
 
 @[simp]
-theorem lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦⟨i, x⟩⟧ = (g i) x :=
-  by
+theorem lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦⟨i, x⟩⟧ = (g i) x := by
   change (lift L ι G f g Hg).toFun ⟦⟨i, x⟩⟧ = _
   simp only [lift, Quotient.lift_mk]
 #align first_order.language.direct_limit.lift_quotient_mk_sigma_mk FirstOrder.Language.DirectLimit.lift_quotient_mk'_sigma_mk'
@@ -374,8 +355,7 @@ theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
 theorem cG {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
-    Structure.CG L (DirectLimit G f) :=
-  by
+    Structure.CG L (DirectLimit G f) := by
   refine' ⟨⟨⋃ i, direct_limit.of L ι G f i '' Classical.choose (h i).out, _, _⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
   · rw [eq_top_iff, substructure.closure_Union]
