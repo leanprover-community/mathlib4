@@ -365,9 +365,9 @@ Fails if the rewrite produces any subgoals.
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
 
-end Expr
+section ExprWithLevels
 
-namespace Meta.ExprWithLevels
+open ExprWithLevels
 
 /-- Given `e : Expr` an application `f a₁ ... aₖ`, `e.abstractExplicitArgs n` abstracts the
 outermost `n` arguments present in the application. (Note that `f` must be a constant.)
@@ -462,7 +462,9 @@ where
         | none   => isAbstracted
         | some b => isAbstracted && b
 
-end Meta.ExprWithLevels
+end ExprWithLevels
+
+end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
