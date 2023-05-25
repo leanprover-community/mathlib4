@@ -276,6 +276,14 @@ lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
   . intro
     exact t.isGE_of_iso (asIso ((truncGEπ t n).app X)).symm n
 
+instance (X : C) (n : ℤ) [t.IsLE X n] : IsIso ((t.truncLEι n).app X) := by
+  rw [← isLE_iff_isIso_truncLEι_app ]
+  infer_instance
+
+instance (X : C) (n : ℤ) [t.IsGE X n] : IsIso ((t.truncGEπ n).app X) := by
+  rw [← isGE_iff_isIso_truncGEπ_app ]
+  infer_instance
+
 lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsZero ((t.truncGE n₁).obj X) := by
   rw [t.isLE_iff_isIso_truncLEι_app n₀ X]
@@ -285,6 +293,16 @@ lemma isGE_iff_isZero_truncLE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C
     t.IsGE X n₁ ↔ IsZero ((t.truncLE n₀).obj X) := by
   rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]
   exact isIso₂_iff_isZero₁ _ (t.truncTriangle_obj_distinguished n₀ n₁ h X)
+
+lemma isZero_truncGE_obj_of_isLE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) [t.IsLE X n₀] :
+    IsZero ((t.truncGE n₁).obj X) := by
+  rw [← t.isLE_iff_isZero_truncGE_obj _ _ h X]
+  infer_instance
+
+lemma isZero_truncLE_obj_of_isGE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) [t.IsGE X n₁] :
+    IsZero ((t.truncLE n₀).obj X) := by
+  rw [← t.isGE_iff_isZero_truncLE_obj _ _ h X]
+  infer_instance
 
 lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
     (f₁ f₂ : (t.truncGE n).obj X ⟶ Y) (h : (t.truncGEπ n).app X ≫ f₁ = (t.truncGEπ n).app X ≫ f₂)
@@ -453,14 +471,58 @@ lemma isIso_truncLEmap_iff {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (hn₁ : n�
       (t.truncTriangle_obj_distinguished n₀ n₁ hn₁ Y) (Iso.refl _)
       (by dsimp ; infer_instance) (by dsimp ; infer_instance)
       (by dsimp ; infer_instance) (by dsimp ; infer_instance)
-    suffices ((truncLE t n₀).map f) = e.hom.hom₁ by
+    suffices ((t.truncLE n₀).map f) = e.hom.hom₁ by
       rw [this]
       infer_instance
     apply to_truncLE_obj_ext
     refine' Eq.trans _ e.hom.comm₁
     aesop_cat
 
--- insert dual statement to isIso_truncLEmap_iff
+lemma isIso_truncGEmap_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    IsIso ((t.truncGE n₁).map g) ↔
+      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGE n₁).obj Z) ⟶ X⟦(1 : ℤ)⟧)
+        (_ : Triangle.mk f (g ≫ (t.truncGEπ n₁).app Z) h ∈ distTriang _), t.IsLE X n₀ := by
+  constructor
+  . intro hf
+    refine' ⟨(t.truncLE n₀).obj Y, (t.truncLEι n₀).app Y,
+      inv ((t.truncGE n₁).map g) ≫ (t.truncδ n₀ n₁ hn₁).app Y,
+      isomorphic_distinguished _ (t.truncTriangle_obj_distinguished n₀ n₁ hn₁ Y) _ _,
+      inferInstance⟩
+
+    refine' Iso.symm (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      (asIso ((truncGE t n₁).map g)) _ _ _)
+    . aesop_cat
+    . dsimp
+      rw [id_comp]
+      exact ((t.truncGEπ n₁).naturality g).symm
+    . aesop_cat
+  . rintro ⟨X, f, h, mem, _⟩
+    obtain ⟨e, he⟩ := t.triangle_iso_exists n₀ n₁ (by linarith) _ _
+      (t.truncTriangle_obj_distinguished n₀ n₁ hn₁ Y) mem (Iso.refl _)
+      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+    suffices ((t.truncGE n₁).map g) = e.hom.hom₃ by
+      rw [this]
+      infer_instance
+    apply from_truncGE_obj_ext
+    refine' Eq.trans _ e.hom.comm₂.symm
+    dsimp at he ⊢
+    rw [he, id_comp]
+    exact ((t.truncGEπ n₁).naturality g).symm
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLE a).obj X) b := by
+  by_cases a ≤ b
+  . exact t.isLE_of_LE _ _ _ h
+  . simp only [not_le] at h
+    have : t.IsLE X a := t.isLE_of_LE X b a (by linarith)
+    apply t.isLE_of_iso (show X ≅ _ from (asIso ((t.truncLEι a).app X)).symm)
+
+instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
+  by_cases a ≤ b
+  . exact t.isGE_of_GE _ _ _ h
+  . simp only [not_le] at h
+    have : t.IsGE X b := t.isGE_of_GE X b a (by linarith)
+    apply t.isGE_of_iso (show X ≅ _ from asIso ((t.truncGEπ b).app X))
 
 /- Now, we need the octahedron axiom -/
 
@@ -475,9 +537,36 @@ lemma isIso₁_truncLEmap_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
   have H := someOctahedron rfl (t.truncTriangle_obj_distinguished n₀ n₁ h T.obj₁) hT mem
   exact t.isGE₂ _ H.mem n₁ (by dsimp ; infer_instance) (by dsimp ; infer_instance)
 
--- insert dual statement to isIso₁_truncLEmap_of_GE
+lemma isIso₂_truncGEmap_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
+    IsIso ((t.truncGE n₁).map T.mor₂) := by
+  rw [isIso_truncGEmap_iff _ _ _ _ h]
+  obtain ⟨X, f, k, mem⟩ := distinguished_cocone_triangle₁ (T.mor₂ ≫ (t.truncGEπ n₁).app T.obj₃)
+  refine' ⟨_, _, _, mem, _⟩
+  have H := someOctahedron rfl (rot_of_dist_triangle _ hT)
+    (rot_of_dist_triangle _ (t.truncTriangle_obj_distinguished n₀ n₁ h T.obj₃))
+    (rot_of_dist_triangle _ mem)
+  have : t.IsLE (T.obj₁⟦(1 : ℤ)⟧) (n₀-1) := t.isLE_shift T.obj₁ n₀ 1 (n₀-1) (by linarith)
+  have : t.IsLE (X⟦(1 : ℤ)⟧) (n₀-1) := t.isLE₂ _ H.mem (n₀-1)
+    (t.isLE_shift T.obj₁ n₀ 1 (n₀-1) (by linarith))
+    (t.isLE_shift ((t.truncLE n₀).obj T.obj₃) n₀ 1 (n₀-1) (by linarith))
+  exact t.isLE_of_shift X n₀ 1 (n₀-1) (by linarith)
 
--- show that if X is ≥ b then (t.truncLE a) ≥ b
+instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLE b).obj X) a := by
+  rw [t.isGE_iff_isZero_truncLE_obj (a-1) a (by linarith)]
+  have := t.isIso₁_truncLEmap_of_GE _ ((t.truncTriangle_obj_distinguished b (b+1) rfl X))
+    (a-1) a (by linarith) (by dsimp ; infer_instance)
+  dsimp at this
+  exact IsZero.of_iso (t.isZero_truncLE_obj_of_isGE (a-1) a (by linarith) X)
+    (asIso ((t.truncLE (a - 1)).map ((t.truncLEι b).app X)))
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
+  rw [t.isLE_iff_isZero_truncGE_obj b (b+1) rfl]
+  have := t.isIso₂_truncGEmap_of_LE _ ((t.truncTriangle_obj_distinguished (a-1) a (by linarith) X))
+    b (b+1) rfl (by dsimp ; infer_instance)
+  dsimp at this
+  exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
+    (asIso ((t.truncGE (b+1)).map ((t.truncGEπ  a).app X))).symm
 
 end TStructure
 

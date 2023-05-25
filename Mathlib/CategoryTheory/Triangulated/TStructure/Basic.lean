@@ -199,6 +199,16 @@ lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsGE X n] :
     t.IsGE (X⟦a⟧) n' :=
   ⟨t.shift_mem_setGE n a n' hn' X (t.mem_of_isGE X n)⟩
 
+lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsLE (X⟦a⟧) n'] :
+    t.IsLE X n := by
+  have h := t.isLE_shift (X⟦a⟧) n' (-a) n (by linarith)
+  exact t.isLE_of_iso (show X⟦a⟧⟦-a⟧ ≅ X from (shiftEquiv C a).unitIso.symm.app X) n
+
+lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsGE (X⟦a⟧) n'] :
+    t.IsGE X n := by
+  have h := t.isGE_shift (X⟦a⟧) n' (-a) n (by linarith)
+  exact t.isGE_of_iso (show X⟦a⟧⟦-a⟧ ≅ X from (shiftEquiv C a).unitIso.symm.app X) n
+
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
   have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)
