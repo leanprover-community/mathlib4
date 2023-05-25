@@ -782,7 +782,8 @@ variable (K)
 instance : Field (Ratfunc K) :=
   { Ratfunc.instCommRing K, Ratfunc.instNontrivial K with
     inv := Inv.inv
-    inv_zero := by frac_tac
+    -- porting note: used to be `by frac_tac`
+    inv_zero := by rw [← of_fraction_ring_zero, ← of_fraction_ring_inv, inv_zero]
     div := (· / ·)
     div_eq_mul_inv := by frac_tac
     mul_inv_cancel := fun _ => mul_inv_cancel
