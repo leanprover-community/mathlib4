@@ -35,6 +35,11 @@ def SemiRingCat : Type (u + 1) :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing SemiRingCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `Semiring.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
+
 namespace SemiRingCat
 
 /-- `RingHom` doesn't actually assume associativity. This alias is needed to make the category

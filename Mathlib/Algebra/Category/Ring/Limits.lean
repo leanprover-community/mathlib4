@@ -38,11 +38,6 @@ universe v u
 
 noncomputable section
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `Semiring.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
-
 namespace SemiRingCat
 
 variable {J : Type v} [SmallCategory J]
