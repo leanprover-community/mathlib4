@@ -1628,8 +1628,16 @@ def coeAlgHom (F : Type u) [Field F] : Ratfunc F →ₐ[F[X]] LaurentSeries F :=
       Polynomial.algebraMap_hahnSeries_injective _
 #align ratfunc.coe_alg_hom Ratfunc.coeAlgHom
 
+/-- The coercion `ratfunc F → laurent_series F` as a function.
+
+This is the implementation of `coeToLaurentSeries`.
+-/
+@[coe]
+def coeToLaurentSeries_fun {F : Type u} [Field F] : Ratfunc F → LaurentSeries F :=
+  coeAlgHom F
+
 instance coeToLaurentSeries : Coe (Ratfunc F) (LaurentSeries F) :=
-  ⟨coeAlgHom F⟩
+  ⟨coeToLaurentSeries_fun⟩
 #align ratfunc.coe_to_laurent_series Ratfunc.coeToLaurentSeries
 
 theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
@@ -1722,7 +1730,7 @@ instance : Algebra (Ratfunc F) (LaurentSeries F) :=
 theorem algebraMap_apply_div :
     algebraMap (Ratfunc F) (LaurentSeries F) (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] (LaurentSeries F) p / algebraMap _ _ q := by
-  convert coe_div _ _ <;>
+  convert coe_div ?_ ?_ <;>
     rw [← mk_one, coe_def, coe_alg_hom, mk_eq_div, lift_alg_hom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
 #align ratfunc.algebra_map_apply_div Ratfunc.algebraMap_apply_div
