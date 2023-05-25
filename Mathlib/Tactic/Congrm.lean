@@ -8,6 +8,12 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Congr!
 import Mathlib.Logic.Basic
 
+/-!
+# The `congrm` tactic
+
+to be written
+ -/
+
 namespace Mathlib.Tactic
 open Lean Parser Tactic Elab Tactic Meta
 
