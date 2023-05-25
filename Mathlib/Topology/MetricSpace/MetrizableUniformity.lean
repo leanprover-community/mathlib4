@@ -14,30 +14,31 @@ import Mathlib.Topology.MetricSpace.Metrizable
 # Metrizable uniform spaces
 
 In this file we prove that a uniform space with countably generated uniformity filter is
-pseudometrizable: there exists a `pseudo_metric_space` structure that generates the same uniformity.
+pseudometrizable: there exists a `PseudoMetricSpace` structure that generates the same uniformity.
 The proof follows [Sergey Melikhov, Metrizable uniform spaces][melikhov2011].
+
 ## Main definitions
 
-* `pseudo_metric_space.of_prenndist`: given a function `d : X → X → ℝ≥0` such that `d x x = 0` and
+* `PseudoMetricSpace.ofPreNNDist`: given a function `d : X → X → ℝ≥0` such that `d x x = 0` and
   `d x y = d y x` for all `x y : X`, constructs the maximal pseudo metric space structure such that
-  `nndist x y ≤ d x y` for all `x y : X`.
+  `NNDist x y ≤ d x y` for all `x y : X`.
 
-* `uniform_space.pseudo_metric_space`: given a uniform space `X` with countably generated `𝓤 X`,
-  constructs a `pseudo_metric_space X` instance that is compatible with the uniform space structure.
+* `UniformSpace.pseudoMetricSpace`: given a uniform space `X` with countably generated `𝓤 X`,
+  constructs a `PseudoMetricSpace X` instance that is compatible with the uniform space structure.
 
-* `uniform_space.metric_space`: given a T₀ uniform space `X` with countably generated `𝓤 X`,
-  constructs a `metric_space X` instance that is compatible with the uniform space structure.
+* `UniformSpace.metricSpace`: given a T₀ uniform space `X` with countably generated `𝓤 X`,
+  constructs a `MetricSpace X` instance that is compatible with the uniform space structure.
 
 ## Main statements
 
-* `uniform_space.metrizable_uniformity`: if `X` is a uniform space with countably generated `𝓤 X`,
-  then there exists a `pseudo_metric_space` structure that is compatible with this `uniform_space`
-  structure. Use `uniform_space.pseudo_metric_space` or `uniform_space.metric_space` instead.
+* `UniformSpace.metrizable_uniformity`: if `X` is a uniform space with countably generated `𝓤 X`,
+  then there exists a `PseudoMetricSpace` structure that is compatible with this `UniformSpace`
+  structure. Use `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead.
 
-* `uniform_space.pseudo_metrizable_space`: a uniform space with countably generated `𝓤 X` is pseudo
+* `UniformSpace.pseudoMetrizableSpace`: a uniform space with countably generated `𝓤 X` is pseudo
   metrizable.
 
-* `uniform_space.metrizable_space`: a T₀ uniform space with countably generated `𝓤 X` is
+* `UniformSpace.metrizableSpace`: a T₀ uniform space with countably generated `𝓤 X` is
   metrizable. This is not an instance to avoid loops.
 
 ## Tags
@@ -102,12 +103,9 @@ theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x 
   NNReal.coe_le_coe.2 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp
 #align pseudo_metric_space.dist_of_prenndist_le PseudoMetricSpace.dist_ofPreNNDist_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Consider a function `d : X → X → ℝ≥0` such that `d x x = 0` and `d x y = d y x` for all `x`,
 `y`. Let `dist` be the largest pseudometric distance such that `dist x y ≤ d x y`, see
-`pseudo_metric_space.of_prenndist`. Suppose that `d` satisfies the following triangle-like
+`PseudoMetricSpace.ofPreNNDist`. Suppose that `d` satisfies the following triangle-like
 inequality: `d x₁ x₄ ≤ 2 * max (d x₁ x₂, d x₂ x₃, d x₃ x₄)`. Then `d x y ≤ 2 * dist x y` for all
 `x`, `y`. -/
 theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
@@ -191,16 +189,16 @@ end PseudoMetricSpace
 
 -- Porting note: this is slower than in Lean3 for some reason...
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
-`pseudo_metric_space` structure compatible with the `uniform_space` structure. Use
-`uniform_space.pseudo_metric_space` or `uniform_space.metric_space` instead. -/
+`PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
+`UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/
 protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : ∃ I : PseudoMetricSpace X, I.toUniformSpace = ‹_› := by
   classical
   /- Choose a fast decreasing antitone basis `U : ℕ → set (X × X)` of the uniformity filter `𝓤 X`.
-    Define `d x y : ℝ≥0` to be `(1 / 2) ^ n`, where `n` is the minimal index of `U n` that separates
-    `x` and `y`: `(x, y) ∉ U n`, or `0` if `x` is not separated from `y`. This function satisfies the
-    assumptions of `pseudo_metric_space.of_prenndist` and
-    `pseudo_metric_space.le_two_mul_dist_of_prenndist`, hence the distance given by the former pseudo
+    Define `d x y : ℝ≥0` to be `(1 / 2) ^ n`, where `n` is the minimal index of `U n` that
+    separates `x` and `y`: `(x, y) ∉ U n`, or `0` if `x` is not separated from `y`. This function
+    satisfies the assumptions of `PseudoMetricSpace.ofPreNNDist` and
+    `PseudoMetricSpace.le_two_mul_dist_ofPreNNDist`, hence the distance given by the former pseudo
     metric space structure is Lipschitz equivalent to the `d`. Thus the uniformities generated by
     `d` and `dist` are equal. Since the former uniformity is equal to `𝓤 X`, the latter is equal to
     `𝓤 X` as well. -/
@@ -266,14 +264,14 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
       Prod.mk.eta]
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
 
-/-- A `pseudo_metric_space` instance compatible with a given `uniform_space` structure. -/
+/-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type _) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : PseudoMetricSpace X :=
   (UniformSpace.metrizable_uniformity X).choose.replaceUniformity <|
     congr_arg _ (UniformSpace.metrizable_uniformity X).choose_spec.symm
 #align uniform_space.pseudo_metric_space UniformSpace.pseudoMetricSpace
 
-/-- A `metric_space` instance compatible with a given `uniform_space` structure. -/
+/-- A `MetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.metricSpace (X : Type _) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] [T0Space X] : MetricSpace X :=
   @MetricSpace.ofT0PseudoMetricSpace X (UniformSpace.pseudoMetricSpace X) _
