@@ -8,11 +8,11 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.ConformalLinearMap
-import Mathbin.Analysis.Calculus.Fderiv.Add
-import Mathbin.Analysis.Calculus.Fderiv.Mul
-import Mathbin.Analysis.Calculus.Fderiv.Equiv
-import Mathbin.Analysis.Calculus.Fderiv.RestrictScalars
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
+import Mathlib.Analysis.Calculus.Fderiv.Add
+import Mathlib.Analysis.Calculus.Fderiv.Mul
+import Mathlib.Analysis.Calculus.Fderiv.Equiv
+import Mathlib.Analysis.Calculus.Fderiv.RestrictScalars
 
 /-!
 # Conformal Maps
@@ -78,8 +78,7 @@ theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : Confor
 
 /-- A function is a conformal map if and only if its differential is a conformal linear map-/
 theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
-    ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) :=
-  by
+    ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) := by
   constructor
   · rintro ⟨f', hf, hf'⟩
     rwa [hf.fderiv]
