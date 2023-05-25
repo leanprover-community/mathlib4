@@ -65,7 +65,6 @@ variable {A : Type _} [CommRing A]
 
 variable {m n : Type _} [Fintype m] [Fintype n]
 
-set_option synthInstance.etaExperiment true in
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
 def equivOfPiLEquivPi {R : Type _} [CommRing R] [Nontrivial R] (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
   Basis.indexEquiv (Basis.ofEquivFun e.symm) (Pi.basisFun _ _)
@@ -126,7 +125,6 @@ theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Ba
     rw [Basis.toMatrix_mul_toMatrix, Basis.toMatrix_self]
 #align linear_map.det_to_matrix_eq_det_to_matrix LinearMap.det_toMatrix_eq_det_toMatrix
 
-set_option synthInstance.etaExperiment true
 
 /-- The determinant of an endomorphism given a basis.
 
@@ -368,7 +366,6 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type _} [Field 𝕜] [Module 𝕜 M] {
 
 end LinearMap
 
-set_option synthInstance.etaExperiment true
 
 namespace LinearEquiv
 
@@ -399,7 +396,6 @@ theorem det_trans (f g : M ≃ₗ[R] M) :
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
--- Porting note: The lint can't use `synthInstance.etaExperiment`.
 @[simp, nolint simpNF]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
@@ -478,12 +474,6 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   rfl
 #align linear_equiv.coe_of_is_unit_det LinearEquiv.coe_ofIsUnitDet
 
--- Porting note: The next line should be deleted in future.
--- The problem here is a slow `isDefEq` problem:
--- [Meta.isDefEq] [8.157421s] ✅ Matrix.det
---       (↑(LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M) (FiniteDimensional.finBasis 𝕜 M))
---         f) =?= Matrix.det (↑(LinearMap.toMatrix ?b ?b) ?f) ▶
-set_option maxHeartbeats 300000 in
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 @[reducible]

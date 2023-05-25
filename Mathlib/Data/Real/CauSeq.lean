@@ -15,7 +15,6 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Set
 
 /-!
 # Cauchy sequences
@@ -928,7 +927,6 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (sup_equiv_sup h (Setoid.refl _)) _
     rw [CauSeq.sup_idem]
-    exact Setoid.refl _
 #align cau_seq.sup_eq_right CauSeq.sup_eq_right
 
 protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈ b := by
@@ -941,7 +939,6 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) _
     rw [CauSeq.inf_idem]
-    exact Setoid.refl _
 #align cau_seq.inf_eq_right CauSeq.inf_eq_right
 
 protected theorem sup_eq_left {a b : CauSeq α abs} (h : b ≤ a) : a ⊔ b ≈ a := by

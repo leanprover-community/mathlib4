@@ -8,7 +8,6 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic

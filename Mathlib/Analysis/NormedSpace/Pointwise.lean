@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -25,7 +25,63 @@ open Metric Set
 
 open Pointwise Topology
 
-variable {𝕜 E : Type _} [NormedField 𝕜]
+variable {𝕜 E : Type _}
+
+section SMulZeroClass
+
+variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
+
+variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
+
+theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
+  (lipschitzWith_smul c).ediam_image_le s
+#align ediam_smul_le ediam_smul_le
+
+end SMulZeroClass
+
+section DivisionRing
+
+variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+
+variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
+
+theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
+  refine' le_antisymm (ediam_smul_le c s) _
+  obtain rfl | hc := eq_or_ne c 0
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · simp
+    simp [zero_smul_set hs, ← Set.singleton_zero]
+  · have := (lipschitzWith_smul c⁻¹).ediam_image_le (c • s)
+    rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnnorm_inv,
+      ENNReal.le_inv_smul_iff (nnnorm_ne_zero_iff.mpr hc)] at this
+#align ediam_smul₀ ediam_smul₀
+
+theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
+  simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
+#align diam_smul₀ diam_smul₀
+
+theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
+    EMetric.infEdist (c • x) (c • s) = ‖c‖₊ • EMetric.infEdist x s := by
+  simp_rw [EMetric.infEdist]
+  have : Function.Surjective ((c • ·) : E → E) :=
+    Function.RightInverse.surjective (smul_inv_smul₀ hc)
+  trans ⨅ (y) (_H : y ∈ s), ‖c‖₊ • edist x y
+  · refine' (this.iInf_congr _ fun y => _).symm
+    simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
+  · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
+    simp_rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_iInf_of_ne this ENNReal.coe_ne_top]
+#align inf_edist_smul₀ infEdist_smul₀
+
+theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
+    Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
+  simp_rw [Metric.infDist, infEdist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
+    smul_eq_mul]
+#align inf_dist_smul₀ infDist_smul₀
+
+end DivisionRing
+
+
+variable [NormedField 𝕜]
 
 section SeminormedAddCommGroup
 

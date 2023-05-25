@@ -274,21 +274,20 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 #align dist_nonneg dist_nonneg
 
-/-
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
--- porting note: todo: restore `positivity` plugin
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_dist : expr → tactic strictness
-  | q(dist $(a) $(b)) => nonnegative <$> mk_app `` dist_nonneg [a, b]
-  | _ => failed
-#align tactic.positivity_dist tactic.positivity_dist
+@[positivity Dist.dist _ _]
+def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (.app _ a) b ← whnfR e | throwError "not dist"
+  let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
+  pure (.nonnegative p)
 
-end
--/
+end Mathlib.Meta.Positivity
+
+example {x y : α} : 0 ≤ dist x y := by positivity
 
 @[simp] theorem abs_dist {a b : α} : |dist a b| = dist a b := abs_of_nonneg dist_nonneg
 #align abs_dist abs_dist
@@ -2132,8 +2131,8 @@ theorem isCompact_sphere {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
-instance {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
-    CompactSpace (sphere x r) :=
+instance Metric.sphere.compactSpace {α : Type _} [PseudoMetricSpace α] [ProperSpace α]
+    (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
   isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
 
 -- see Note [lower instance priority]
@@ -2777,21 +2776,18 @@ theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
 
 end Metric
 
-/-
-Porting note: restore positivity extension
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
-@[positivity]
-unsafe def positivity_diam : expr → tactic strictness
-  | q(Metric.diam $(s)) => nonnegative <$> mk_app `` Metric.diam_nonneg [s]
-  | e => pp e >>= fail ∘ format.bracket "The expression " " is not of the form `metric.diam s`"
-#align tactic.positivity_diam tactic.positivity_diam
+@[positivity Metric.diam _]
+def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ s ← whnfR e | throwError "not Metric.diam"
+  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
+  pure (.nonnegative p)
 
-end Tactic
--/
+end Mathlib.Meta.Positivity
 
 theorem comap_dist_right_atTop_le_cocompact (x : α) :
     comap (fun y => dist y x) atTop ≤ cocompact α := by

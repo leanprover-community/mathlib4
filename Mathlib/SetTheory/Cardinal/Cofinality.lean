@@ -524,7 +524,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           Eq.symm <|
             Quotient.sound
               ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone _ fun x y => _) fun x => _⟩⟩
-      · apply Sum.rec <;> [exact Subtype.val, exact fun _ => a]
+      · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
       · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
           simp [Subrel, Order.Preimage, EmptyRelation]
         exact x.2

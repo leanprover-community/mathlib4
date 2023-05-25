@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
-import Aesop
 
 /-!
 # (Generalized) Boolean algebras

@@ -53,28 +53,45 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   if size > 0 then
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
-    let mut failed := 0
-    if parallel then
+    let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-      let out ← IO.runCurl
-        #["--request", "GET", "--parallel", "--fail", "--silent",
-          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString] false
+      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      let (_, failed, done) ← IO.runCurlStreaming args (← IO.monoMsNow, 0, 0) fun a line => do
+        let mut (last, failed, done) := a
+        -- output errors other than 404 and remove corresponding partial downloads
+        let line := line.trim
+        if !line.isEmpty then
+          let result ← IO.ofExcept <| Lean.Json.parse line
+          if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
+            failed := failed + 1
+            if let .ok e := result.getObjValAs? String "errormsg" then
+              IO.println e
+            -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+            if let .ok fn := result.getObjValAs? String "filename_effective" then
+              if (← System.FilePath.pathExists fn) then
+                IO.FS.removeFile fn
+          done := done + 1
+          let now ← IO.monoMsNow
+          if now - last ≥ 100 then -- max 10/s update rate
+            let mut msg := s!"\rDownloaded {done}/{size} file(s) [{100*done/size}%]"
+            if failed != 0 then
+              msg := msg ++ ", {failed} failed"
+            IO.eprint msg
+            last := now
+        pure (last, failed, done)
+      if done > 0 then
+        -- to avoid confusingly moving on without finishing the count
+        let mut msg := s!"\rDownloaded {size}/{size} file(s) [100%]"
+        if failed != 0 then
+          msg := msg ++ ", {failed} failed"
+        IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
-      -- output errors other than 404 and remove corresponding partial downloads
-      for line in out.splitOn "\n" |>.filter (!·.isEmpty) do
-        let result ← IO.ofExcept <| Lean.Json.parse line.trim
-        if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
-          failed := failed + 1
-          if let .ok e := result.getObjValAs? String "errormsg" then
-            IO.println e
-          -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-          if let .ok fn := result.getObjValAs? String "filename_effective" then
-            if (← System.FilePath.pathExists fn) then
-              IO.FS.removeFile fn
+      pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
         pure <| (← IO.asTask do downloadFile hash) :: acc
-      failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     if failed > 0 then
       IO.println s!"{failed} download(s) failed"
       IO.Process.exit 1

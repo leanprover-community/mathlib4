@@ -1185,7 +1185,8 @@ theorem sUnion_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
 #align Set.sUnion_pair ZFSet.sUnion_pair
 
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
-  wellFounded_lift₂_iff.mpr PSet.mem_wf
+  (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
+    propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 #align Set.mem_wf ZFSet.mem_wf
 
 /-- Induction on the `∈` relation. -/
@@ -1304,7 +1305,7 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
   · rintro rfl
     exact Or.inl ax
-  · rintro (rfl | rfl) <;> [left, right] <;> assumption
+  · rintro (rfl | rfl) <;> [left; right] <;> assumption
 #align Set.mem_pair_sep ZFSet.mem_pairSep
 
 theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by

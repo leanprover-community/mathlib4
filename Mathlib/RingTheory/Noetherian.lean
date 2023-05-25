@@ -406,10 +406,6 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : 
       (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
 #align is_noetherian_of_range_eq_ker isNoetherian_of_range_eq_ker
 
-/- Porting note (lean4#2074): this seems to cause a diamond with Ring.toSemiring when going to
-NonAssocSemiring -/
-attribute [-instance] Ring.toNonAssocRing
-
 /-- For any endomorphism of a Noetherian module, there is some nontrivial iterate
 with disjoint kernel and range.
 -/
@@ -480,7 +476,7 @@ noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f :
   -- Porting note: refine' makes this line time out at elaborator
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
-  exact Submodule.botEquivPUnit
+  apply Submodule.botEquivPUnit
 #align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPunitOfProdInjective
 
 end
@@ -537,7 +533,6 @@ theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid
   refine' (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
 #align is_noetherian_of_tower isNoetherian_of_tower
 
-set_option synthInstance.etaExperiment true in
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [I : IsNoetherianRing R] (hN : N.FG) : IsNoetherian R N := by
   let ⟨s, hs⟩ := hN

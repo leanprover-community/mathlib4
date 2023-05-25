@@ -83,6 +83,19 @@ def getPackageDir (path : FilePath) : IO FilePath :=
     | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
+/-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
+partial def runCurlStreaming (args : Array String) (init : α)
+    (processLine : α → String → IO α) : IO α := do
+  let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
+  loop child.stdout init
+where
+  loop (h : IO.FS.Handle) (a : α) : IO α := do
+    let line ← h.getLine
+    if line.isEmpty then
+      return a
+    else
+      loop h (← processLine a line)
+
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }

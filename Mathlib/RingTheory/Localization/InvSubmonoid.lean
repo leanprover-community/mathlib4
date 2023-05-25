@@ -111,7 +111,6 @@ theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
 
 variable (S)
 
-set_option synthInstance.etaExperiment true in
 theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
