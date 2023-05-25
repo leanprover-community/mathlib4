@@ -413,6 +413,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.TangentCone
+import Mathlib.Analysis.Complex.Arg
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
