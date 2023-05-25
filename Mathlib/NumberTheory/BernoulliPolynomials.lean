@@ -56,11 +56,11 @@ namespace Polynomial
 
 /-- The Bernoulli polynomials are defined in terms of the negative Bernoulli numbers. -/
 def bernoulli (n : ℕ) : ℚ[X] :=
-  ∑ i in range (n + 1), Polynomial.monomial (n - i) (bernoulli i * choose n i)
+  ∑ i in range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
 #align polynomial.bernoulli Polynomial.bernoulli
 
-theorem bernoulli_def (n : ℕ) :
-    bernoulli n = ∑ i in range (n + 1), Polynomial.monomial i (bernoulli (n - i) * choose n i) := by
+theorem bernoulli_def (n : ℕ) : bernoulli n =
+    ∑ i in range (n + 1), Polynomial.monomial i (_root_.bernoulli (n - i) * choose n i) := by
   rw [← sum_range_reflect, add_succ_sub_one, add_zero, bernoulli]
   apply sum_congr rfl
   rintro x hx
@@ -77,11 +77,12 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]
-theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = bernoulli n := by
+theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
-    apply sum_eq_zero fun x hx => _
-    have h : 0 < n - x := tsub_pos_of_lt (mem_range.1 hx)
+    apply sum_eq_zero <| fun x hx => _
+    intros x hx
+    have h : x  <  n := (mem_range.1 hx)
     simp [h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
@@ -90,9 +91,10 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = bernoulli n := by
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
-    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial]
+    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
   by_cases h : n = 1
-  · norm_num [h]
+  · simp [h]
+    norm_num
   · simp [h]
     exact bernoulli_eq_bernoulli'_of_ne_one h
 #align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
@@ -100,21 +102,22 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
 end Examples
 
 theorem derivative_bernoulli_add_one (k : ℕ) :
-    (bernoulli (k + 1)).derivative = (k + 1) * bernoulli k := by
+    Polynomial.derivative (bernoulli (k + 1))= (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
   rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, MulZeroClass.mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine' sum_congr (by rfl) fun m hm => _
+  refine' sum_congr (by rfl) fun m _ => _
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_nat_cast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
   rw [(choose_mul_succ_eq k m).symm, mul_comm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
-theorem derivative_bernoulli (k : ℕ) : (bernoulli k).derivative = k * bernoulli (k - 1) := by
-  cases k
+theorem derivative_bernoulli (k : ℕ) : Polynomial.derivative (bernoulli k) =
+    k * bernoulli (k - 1) := by
+  cases' k with k
   · rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
   · exact_mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
@@ -165,14 +168,16 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 
 /-- Another version of `bernoulli.sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
-    ((p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval n - bernoulli p.succ := by
+    ((p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
+    _root_.bernoulli p.succ := by
   rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel' _ _]
   · simp_rw [eval_monomial]
     symm
     rw [← sum_flip _, sum_range_succ]
-    simp only [tsub_self, tsub_zero, choose_zero_right, cast_one, mul_one, pow_zero,
+    simp only [tsub_self, tsub_zero, choose_zero_right, cast_one, mul_one, _root_.pow_zero,
       add_tsub_cancel_right]
     apply sum_congr rfl fun x hx => _
+    intro x hx
     apply congr_arg₂ _ (congr_arg₂ _ _ _) rfl
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
@@ -265,4 +270,3 @@ theorem bernoulli_generating_function (t : A) :
 #align polynomial.bernoulli_generating_function Polynomial.bernoulli_generating_function
 
 end Polynomial
-
