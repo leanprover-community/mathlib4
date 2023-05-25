@@ -96,7 +96,9 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
       (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
-    rwa [IsComplement'_def, IsComplement, ← ϕ.bijective_comp, ← hf, ψ.comp_bijective]
+    rw [IsComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
+    apply (congr_arg Function.Bijective hf).mp -- porting note: This was a `rw` in mathlib3
+    rwa [ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
 #align subgroup.is_complement'.symm Subgroup.IsComplement'.symm
 #align add_subgroup.is_complement'.symm AddSubgroup.IsComplement'.symm
@@ -133,7 +135,7 @@ theorem IsComplement_singleton_left {g : G} : IsComplement {g} S ↔ S = ⊤ := 
 @[to_additive]
 theorem IsComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = ⊤ := by
   refine'
-    ⟨fun h => top_le_iff.mp fun x hx => _, fun h => (congr_arg _ h).mpr IsComplement_top_singleton⟩
+    ⟨fun h => top_le_iff.mp fun x _ => _, fun h => h ▸ IsComplement_top_singleton⟩
   obtain ⟨y, hy⟩ := h.2 (x * g)
   conv_rhs at hy => rw [← show y.2.1 = g from y.2.2]
   rw [← mul_right_cancel hy]
@@ -216,8 +218,8 @@ theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
         (Prod.ext_iff.mp (h2 ⟨y, (↑y)⁻¹ * g, hy⟩ (mul_inv_cancel_left ↑y g))).1⟩
   · obtain ⟨x, h1, h2⟩ := h g
     refine' ⟨⟨x, (↑x)⁻¹ * g, h1⟩, mul_inv_cancel_left (↑x) g, fun y hy => _⟩
-    have := h2 y.1 ((congr_arg (· ∈ T) (eq_inv_mul_of_mul_eq hy)).mp y.2.2)
-    exact Prod.ext this (Subtype.ext (eq_inv_mul_of_mul_eq ((congr_arg _ this).mp hy)))
+    have hf := h2 y.1 ((congr_arg (· ∈ T) (eq_inv_mul_of_mul_eq hy)).mp y.2.2)
+    exact Prod.ext hf (Subtype.ext (eq_inv_mul_of_mul_eq (hf ▸ hy)))
 #align subgroup.mem_left_transversals_iff_exists_unique_inv_mul_mem Subgroup.mem_leftTransversals_iff_existsUnique_inv_mul_mem
 #align add_subgroup.mem_left_transversals_iff_exists_unique_neg_add_mem AddSubgroup.mem_leftTransversals_iff_existsUnique_neg_add_mem
 
@@ -232,8 +234,8 @@ theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
         (Prod.ext_iff.mp (h2 ⟨⟨g * (↑y)⁻¹, hy⟩, y⟩ (inv_mul_cancel_right g y))).2⟩
   · obtain ⟨x, h1, h2⟩ := h g
     refine' ⟨⟨⟨g * (↑x)⁻¹, h1⟩, x⟩, inv_mul_cancel_right g x, fun y hy => _⟩
-    have := h2 y.2 ((congr_arg (· ∈ T) (eq_mul_inv_of_mul_eq hy)).mp y.1.2)
-    exact Prod.ext (Subtype.ext (eq_mul_inv_of_mul_eq ((congr_arg _ this).mp hy))) this
+    have hf := h2 y.2 ((congr_arg (· ∈ T) (eq_mul_inv_of_mul_eq hy)).mp y.1.2)
+    exact Prod.ext (Subtype.ext (eq_mul_inv_of_mul_eq (hf ▸ hy))) hf
 #align subgroup.mem_right_transversals_iff_exists_unique_mul_inv_mem Subgroup.mem_rightTransversals_iff_existsUnique_mul_inv_mem
 #align add_subgroup.mem_right_transversals_iff_exists_unique_add_neg_mem AddSubgroup.mem_rightTransversals_iff_existsUnique_add_neg_mem
 
@@ -293,9 +295,8 @@ theorem card_right_transversal (h : S ∈ rightTransversals (H : Set G)) : Nat.c
 theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
     Set.range f ∈ leftTransversals (H : Set G) :=
   mem_leftTransversals_iff_bijective.mpr
-    ⟨by
-      rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h <;>
-        exact congr_arg _ (((hf q₁).symm.trans h).trans (hf q₂)),
+    ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
+        exact Subtype.ext $ congr_arg f $ ((hf q₁).symm.trans h).trans (hf q₂),
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 #align subgroup.range_mem_left_transversals Subgroup.range_mem_leftTransversals
 #align add_subgroup.range_mem_left_transversals AddSubgroup.range_mem_leftTransversals
@@ -304,9 +305,8 @@ theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q
 theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) → G}
     (hf : ∀ q, Quotient.mk'' (f q) = q) : Set.range f ∈ rightTransversals (H : Set G) :=
   mem_rightTransversals_iff_bijective.mpr
-    ⟨by
-      rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h <;>
-        exact congr_arg _ (((hf q₁).symm.trans h).trans (hf q₂)),
+    ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
+        exact Subtype.ext $ congr_arg f $ ((hf q₁).symm.trans h).trans (hf q₂),
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 #align subgroup.range_mem_right_transversals Subgroup.range_mem_rightTransversals
 #align add_subgroup.range_mem_right_transversals AddSubgroup.range_mem_rightTransversals
@@ -315,11 +315,12 @@ theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) →
 theorem exists_left_transversal (g : G) : ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
     refine'
-      ⟨Set.range (Function.update Quotient.out' (↑g) g), range_mem_leftTransversals fun q => _, g,
-        Function.update_same g g Quotient.out'⟩
-    by_cases hq : q = g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same g g Quotient.out')
-    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out')) q.out_eq'
+      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_leftTransversals fun q => _,
+        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
+    by_cases hq : q = Quotient.mk'' g
+    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
+    · refine' (Function.update_noteq _ g Quotient.out') ▸ q.out_eq'
+      exact hq
 #align subgroup.exists_left_transversal Subgroup.exists_left_transversal
 #align add_subgroup.exists_left_transversal AddSubgroup.exists_left_transversal
 
@@ -558,7 +559,7 @@ theorem IsComplement'_stabilizer {α : Type _} [MulAction G α] (a : α)
   refine' IsComplement_iff_existsUnique.mpr fun g => _
   obtain ⟨h, hh⟩ := h2 g
   have hh' : (↑h * g) • a = a := by rwa [mul_smul]
-  refine' ⟨⟨h⁻¹, h * g, hh'⟩, inv_mul_cancel_left h g, _⟩
+  refine' ⟨⟨h⁻¹, h * g, hh'⟩, inv_mul_cancel_left ↑h g, _⟩
   rintro ⟨h', g, hg : g • a = a⟩ rfl
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine' Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext _)
