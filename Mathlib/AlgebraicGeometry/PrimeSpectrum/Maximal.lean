@@ -8,8 +8,8 @@ Authors: David Kurniadi Angdinata
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathbin.RingTheory.Localization.AsSubring
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Localization.AsSubring
 
 /-!
 # Maximal spectrum of a commutative ring
@@ -66,8 +66,7 @@ theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_
 open PrimeSpectrum Set
 
 theorem toPrimeSpectrum_range :
-    Set.range (@toPrimeSpectrum R _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } :=
-  by
+    Set.range (@toPrimeSpectrum R _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } := by
   simp only [is_closed_singleton_iff_is_maximal]
   ext ⟨x, _⟩
   exact ⟨fun ⟨y, hy⟩ => hy ▸ y.IsMaximal, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
@@ -96,8 +95,7 @@ viewed as subalgebras of its field of fractions. -/
 theorem iInf_localization_eq_bot :
     (⨅ v : MaximalSpectrum R,
         Localization.subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) =
-      ⊥ :=
-  by
+      ⊥ := by
   ext x
   rw [Algebra.mem_bot, Algebra.mem_iInf]
   constructor
@@ -137,8 +135,7 @@ viewed as subalgebras of its field of fractions. -/
 theorem iInf_localization_eq_bot :
     (⨅ v : PrimeSpectrum R,
         Localization.subalgebra.ofField K _ <| v.asIdeal.primeCompl_le_nonZeroDivisors) =
-      ⊥ :=
-  by
+      ⊥ := by
   ext x
   rw [Algebra.mem_iInf]
   constructor
