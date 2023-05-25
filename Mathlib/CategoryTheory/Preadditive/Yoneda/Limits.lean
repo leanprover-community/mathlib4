@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathbin.Algebra.Category.Module.Abelian
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.Algebra.Category.Module.Abelian
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits
