@@ -9,34 +9,33 @@ Authors: Yourong Zang
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-import Mathlib.Analysis.Calculus.Fderiv.Add
-import Mathlib.Analysis.Calculus.Fderiv.Mul
-import Mathlib.Analysis.Calculus.Fderiv.Equiv
-import Mathlib.Analysis.Calculus.Fderiv.RestrictScalars
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 # Conformal Maps
 
-A continuous linear map between real normed spaces `X` and `Y` is `conformal_at` some point `x`
-if it is real differentiable at that point and its differential `is_conformal_linear_map`.
+A continuous linear map between real normed spaces `X` and `Y` is `ConformalAt` some point `x`
+if it is real differentiable at that point and its differential is a conformal linear map.
 
 ## Main definitions
 
-* `conformal_at`: the main definition of conformal maps
-* `conformal`: maps that are conformal at every point
-* `conformal_factor_at`: the conformal factor of a conformal map at some point
+* `ConformalAt`: the main definition of conformal maps
+* `Conformal`: maps that are conformal at every point
 
 ## Main results
 * The conformality of the composition of two conformal maps, the identity map
   and multiplications by nonzero constants
-* `conformal_at_iff_is_conformal_map_fderiv`: an equivalent definition of the conformality of a map
+* `conformalAt_iff_isConformalMap_fderiv`: an equivalent definition of the conformality of a map
 
-In `analysis.calculus.conformal.inner_product`:
-* `conformal_at_iff`: an equivalent definition of the conformality of a map
+In `Analysis.Calculus.Conformal.InnerProduct`:
+* `conformalAt_iff`: an equivalent definition of the conformality of a map
 
-In `geometry.euclidean.angle.unoriented.conformal`:
-* `conformal_at.preserves_angle`: if a map is conformal at `x`, then its differential
-                                  preserves all angles at `x`
+In `Geometry.Euclidean.Angle.Unoriented.Conformal`:
+* `ConformalAt.preserves_angle`: if a map is conformal at `x`, then its differential preserves
+  all angles at `x`
 
 ## Tags
 
@@ -63,7 +62,7 @@ def ConformalAt (f : X → Y) (x : X) :=
   ∃ f' : X →L[ℝ] Y, HasFDerivAt f f' x ∧ IsConformalMap f'
 #align conformal_at ConformalAt
 
-theorem conformalAt_id (x : X) : ConformalAt id x :=
+theorem conformalAt_id (x : X) : ConformalAt _root_.id x :=
   ⟨id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
 #align conformal_at_id conformalAt_id
 
@@ -84,7 +83,7 @@ theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
     rwa [hf.fderiv]
   · intro H
     by_cases h : DifferentiableAt ℝ f x
-    · exact ⟨fderiv ℝ f x, h.has_fderiv_at, H⟩
+    · exact ⟨fderiv ℝ f x, h.hasFDerivAt, H⟩
     · nontriviality X
       exact absurd (fderiv_zero_of_not_differentiableAt h) H.ne_zero
 #align conformal_at_iff_is_conformal_map_fderiv conformalAt_iff_isConformalMap_fderiv
@@ -93,7 +92,7 @@ namespace ConformalAt
 
 theorem differentiableAt {f : X → Y} {x : X} (h : ConformalAt f x) : DifferentiableAt ℝ f x :=
   let ⟨_, h₁, _⟩ := h
-  h₁.DifferentiableAt
+  h₁.differentiableAt
 #align conformal_at.differentiable_at ConformalAt.differentiableAt
 
 theorem congr {f g : X → Y} {x : X} {u : Set X} (hx : x ∈ u) (hu : IsOpen u) (hf : ConformalAt f x)
@@ -139,7 +138,7 @@ theorem conformalAt {f : X → Y} (h : Conformal f) (x : X) : ConformalAt f x :=
 #align conformal.conformal_at Conformal.conformalAt
 
 theorem differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f := fun x =>
-  (h x).DifferentiableAt
+  (h x).differentiableAt
 #align conformal.differentiable Conformal.differentiable
 
 theorem comp {f : X → Y} {g : Y → Z} (hf : Conformal f) (hg : Conformal g) : Conformal (g ∘ f) :=
@@ -153,4 +152,3 @@ theorem const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : C
 end Conformal
 
 end GlobalConformality
-
