@@ -108,7 +108,9 @@ def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : Frame
 
 
 /- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
-def neighborhoods (X : Type _) [TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) := sorry
+def neighborhoods (X : Type _) [TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
+  toFun := frame_point_of_space_point X
+  continuous_toFun := _
 
 
 /- Main result: `pt` is adjoint to `𝒪`. -/
