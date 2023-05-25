@@ -1075,7 +1075,7 @@ section NumDenom
 open GCDMonoid Polynomial
 
 -- porting note: add a new variable `K`, instead of recycling the old one, since otherwise
--- typeclass inference gets confused about the three typeclass assumptions `Field`, `CommRingCat` and
+-- typeclass inference gets confused about the three typeclass assumptions `Field`, `CommRing` and
 -- `IsDomain` on the same type `K`.
 variable {K : Type u} [Field K]
 
