@@ -12,7 +12,6 @@ import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # The field of rational functions
@@ -78,8 +77,8 @@ To provide good API encapsulation and speed up unification problems,
 `ratfunc` is defined as a structure, and all operations are `@[irreducible] def`s
 
 We need a couple of maps to set up the `field` and `is_fraction_ring` structure,
-namely `ratfunc.of_fraction_ring`, `ratfunc.toFractionRing`, `ratfunc.mk` and
-`ratfunc.toFractionRing_ring_equiv`.
+namely `ratfunc.of_fraction_ring`, `ratfunc.to_fraction_ring`, `ratfunc.mk` and
+`ratfunc.to_fraction_ring_ring_equiv`.
 All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (ratfunc K)`
 and `is_localization.alg_equiv`.
 
@@ -93,7 +92,6 @@ the codomain is not a field or even an integral domain.
 * https://stacks.math.columbia.edu/tag/01X1
 
 -/
-set_option autoImplicit false
 
 
 noncomputable section
@@ -103,12 +101,6 @@ open Classical
 open nonZeroDivisors Polynomial
 
 universe u v
-
--- porting note: added a `section` to avoid the typeclasses
--- `CommRing` and `IsDomain` to interfere with `Field`.
--- This was expecially useful for the section `Numerator and denominator`
--- and in particular for the definition `num_denom`.
-section CommRing
 
 variable (K : Type u) [hring : CommRing K] [hdomain : IsDomain K]
 
@@ -1081,11 +1073,6 @@ theorem toFractionRingRingEquiv_symm_eq :
 
 end IsFractionRing
 
-end Ratfunc
-
-end CommRing
-
-namespace Ratfunc
 section NumDenom
 
 /-! ### Numerator and denominator -/
