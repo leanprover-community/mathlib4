@@ -299,10 +299,10 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S
       algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal Ideal.isMaximal_comap_of_isIntegral_of_isMaximal
 
-theorem isMaximal_comap_of_isIntegral_of_is_maximal' {R S : Type _} [CommRing R] [CommRing S]
+theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type _} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S) (hI : I.IsMaximal) : IsMaximal (I.comap f) :=
   @isMaximal_comap_of_isIntegral_of_isMaximal R _ S _ f.toAlgebra hf I hI
-#align ideal.is_maximal_comap_of_is_integral_of_is_maximal' Ideal.isMaximal_comap_of_isIntegral_of_is_maximal'
+#align ideal.is_maximal_comap_of_is_integral_of_is_maximal' Ideal.isMaximal_comap_of_isIntegral_of_isMaximal'
 
 section IsIntegralClosure
 
