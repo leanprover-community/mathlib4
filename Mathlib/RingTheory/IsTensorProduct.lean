@@ -262,11 +262,9 @@ theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m 
 variable (f)
 
 theorem IsBaseChange.ofLiftUnique
-    (h :
-      ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
-        ∀ [Module R Q] [Module S Q],
-          ∀ [IsScalarTower R S Q],
-            ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g) :
+    (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
+      ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
+        ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g) :
     IsBaseChange S f := by
   obtain ⟨g, hg, -⟩ :=
     h (ULift.{v₂} <| S ⊗[R] M)
@@ -315,8 +313,11 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   apply IsBaseChange.ofLiftUnique
   intro Q I₁ I₂ I₃ I₄ g
   have : I₂ = I₃ := by
-    ext (r q)
-    rw [← one_smul R q, smul_smul, ← smul_assoc, smul_eq_mul, mul_one]
+    ext r q
+    show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
+    dsimp
+    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul,
+      mul_one]
   cases this
   refine'
     ⟨g.comp e.symm.toLinearMap, by
