@@ -10,14 +10,14 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.Pid
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.QuotientPi
 
 /-! # Ideals in free modules over PIDs
 
 ## Main results
 
- - `ideal.quotient_equiv_pi_span`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
+ - `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
    can be written as a product of quotients of `R` by principal ideals.
 
 -/
@@ -86,14 +86,14 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
 
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
 `zmod`. -/
-noncomputable def Ideal.quotientEquivPiZmod (I : Ideal S) (b : Basis ι ℤ S) (hI : I ≠ ⊥) :
+noncomputable def Ideal.quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I ≠ ⊥) :
     S ⧸ I ≃+ ∀ i, ZMod (I.smithCoeffs b hI i).natAbs :=
   let a := I.smithCoeffs b hI
   let e := I.quotientEquivPiSpan b hI
   let e' : (∀ i : ι, ℤ ⧸ Ideal.span ({a i} : Set ℤ)) ≃+ ∀ i : ι, ZMod (a i).natAbs :=
     AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (S ⧸ I) ≃ₗ[ℤ] _) : S ⧸ I ≃+ _).trans e'
-#align ideal.quotient_equiv_pi_zmod Ideal.quotientEquivPiZmod
+#align ideal.quotient_equiv_pi_zmod Ideal.quotientEquivPiZMod
 
 /-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
 
@@ -104,7 +104,7 @@ noncomputable def Ideal.fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module
     (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) := by
   let b := Module.Free.chooseBasis ℤ S
   let a := I.smithCoeffs b hI
-  let e := I.quotientEquivPiZmod b hI
+  let e := I.quotientEquivPiZMod b hI
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
         ⟨Int.natAbs_ne_zero_of_ne_zero (Ideal.smithCoeffs_ne_zero b I hI i)⟩ <;>
       classical skip <;>
