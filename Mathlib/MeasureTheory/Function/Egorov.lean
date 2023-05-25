@@ -8,7 +8,7 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Egorov theorem
@@ -50,8 +50,7 @@ def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : �
 variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
-    x ∈ notConvergentSeq f g n j ↔ ∃ (k : _)(hk : j ≤ k), 1 / (n + 1 : ℝ) < dist (f k x) (g x) :=
-  by
+    x ∈ notConvergentSeq f g n j ↔ ∃ (k : _)(hk : j ≤ k), 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
   simp_rw [not_convergent_seq, mem_Union]
   rfl
 #align measure_theory.egorov.mem_not_convergent_seq_iff MeasureTheory.Egorov.mem_notConvergentSeq_iff
@@ -62,8 +61,7 @@ theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g
 
 theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
-    μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 :=
-  by
+    μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
   simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine' measure_mono fun x => _
@@ -86,8 +84,7 @@ theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
 theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
-    Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) :=
-  by
+    Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
   cases isEmpty_or_nonempty ι
   · have : (fun j => μ (s ∩ not_convergent_seq f g n j)) = fun j => 0 := by
       simp only [eq_iff_true_of_subsingleton]
@@ -105,8 +102,7 @@ variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
 theorem exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
-    ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n) :=
-  by
+    ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n) := by
   obtain ⟨N, hN⟩ :=
     (ENNReal.tendsto_atTop ENNReal.zero_ne_top).1
       (measure_not_convergent_seq_tendsto_zero hf hg hsm hs hfg n) (ENNReal.ofReal (ε * 2⁻¹ ^ n)) _
@@ -155,8 +151,7 @@ theorem unionNotConvergentSeq_measurableSet (hε : 0 < ε) (hf : ∀ n, Strongly
 theorem measure_unionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    μ (unionNotConvergentSeq hε hf hg hsm hs hfg) ≤ ENNReal.ofReal ε :=
-  by
+    μ (unionNotConvergentSeq hε hf hg hsm hs hfg) ≤ ENNReal.ofReal ε := by
   refine'
     le_trans (measure_Union_le _)
       (le_trans
@@ -173,8 +168,7 @@ theorem measure_unionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasur
 theorem unionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    unionNotConvergentSeq hε hf hg hsm hs hfg ⊆ s :=
-  by
+    unionNotConvergentSeq hε hf hg hsm hs hfg ⊆ s := by
   rw [Union_not_convergent_seq, ← inter_Union]
   exact inter_subset_left _ _
 #align measure_theory.egorov.Union_not_convergent_seq_subset MeasureTheory.Egorov.unionNotConvergentSeq_subset
@@ -182,8 +176,7 @@ theorem unionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasura
 theorem tendstoUniformlyOn_diff_unionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    TendstoUniformlyOn f g atTop (s \ Egorov.unionNotConvergentSeq hε hf hg hsm hs hfg) :=
-  by
+    TendstoUniformlyOn f g atTop (s \ Egorov.unionNotConvergentSeq hε hf hg hsm hs hfg) := by
   rw [Metric.tendstoUniformlyOn_iff]
   intro δ hδ
   obtain ⟨N, hN⟩ := exists_nat_one_div_lt hδ
@@ -228,8 +221,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
 theorem tendstoUniformlyOn_of_ae_tendsto' [FiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) {ε : ℝ}
     (hε : 0 < ε) :
-    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop (tᶜ) :=
-  by
+    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop (tᶜ) := by
   obtain ⟨t, _, ht, htendsto⟩ :=
     tendsto_uniformly_on_of_ae_tendsto hf hg MeasurableSet.univ (measure_ne_top μ univ) _ hε
   · refine' ⟨_, ht, _⟩
