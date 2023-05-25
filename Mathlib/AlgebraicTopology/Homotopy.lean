@@ -94,6 +94,6 @@ structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
 -/
 
 class HomotopyInvariant {X : SSet.{0}} (motive : (pt ⟶ X) → Sort u) where
-  ind : ∀ (a b : pt ⟶ X), motive a → Path a b → motive b
+  ind : ∀ (a b : pt ⟶ X), Path a b → motive a → motive b
 
 end SSet
