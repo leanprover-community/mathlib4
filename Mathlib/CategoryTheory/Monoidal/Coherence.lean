@@ -9,8 +9,6 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
--- Porting note: restore when ported
--- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
 /-!
 # A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
@@ -29,6 +27,9 @@ We also provide `f ⊗≫ g`, the `monoidal_comp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
+
+-- Porting note: restore when ported
+-- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
 noncomputable section
 
@@ -231,7 +232,8 @@ example {C : Type} [Category C] [MonoidalCategory C] :
 by pure_coherence
 ```
 
-Users will typically just use the `coherence` tactic, which can also cope with identities of the form
+Users will typically just use the `coherence` tactic,
+which can also cope with identities of the form
 `a ≫ f ≫ b ≫ g ≫ c = a' ≫ f ≫ b' ≫ g ≫ c'`
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
