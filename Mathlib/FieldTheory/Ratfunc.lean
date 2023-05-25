@@ -1584,7 +1584,8 @@ theorem intDegree_neg (x : Ratfunc K) : intDegree (-x) = intDegree x := by
 #align ratfunc.int_degree_neg Ratfunc.intDegree_neg
 
 theorem intDegree_add {x y : Ratfunc K} (hxy : x + y ≠ 0) :
-    (x + y).intDegree = (x.num * y.denom + x.denom * y.num).natDegree - (x.denom * y.denom).natDegree :=
+    (x + y).intDegree =
+      (x.num * y.denom + x.denom * y.num).natDegree - (x.denom * y.denom).natDegree :=
   natDegree_sub_eq_of_prod_eq (num_ne_zero hxy) (x + y).denom_ne_zero
     (num_mul_denom_add_denom_mul_num_ne_zero hxy) (mul_ne_zero x.denom_ne_zero y.denom_ne_zero)
     (num_denom_add x y)
