@@ -80,7 +80,7 @@ def upperSetTopology : TopologicalSpace α :=
 { IsOpen := IsUpperSet,
   isOpen_univ := isUpperSet_univ,
   isOpen_inter := fun _ _ => IsUpperSet.inter,
-  isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
+  isOpen_sUnion := fun _ h => isUpperSet_sUnion h, }
 
 /--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
@@ -109,14 +109,14 @@ def ScottHausdorffTopology : TopologicalSpace α :=
           apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
         _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
-  isOpen_unionₛ := by
+  isOpen_sUnion := by
     intros s h d a hd₁ hd₂ hd₃ ha
     obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
     obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
     use b
     constructor
     . exact hb_w
-    . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w }
+    . exact Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w }
 
 
 lemma ScottHausdorffTopology.Lower_IsOpen (s : Set α) (h : IsLowerSet s) :
@@ -351,22 +351,22 @@ variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
-    d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
+    d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
   rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   constructor
-  . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
-  . exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
+  . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
+  . exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
 (u : Set α) : IsOpen u ↔
-(IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u →
+(IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
 (d∩u).Nonempty) := by
   rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
-  . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
-  . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
+  . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
+  . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 end complete_lattice
 
