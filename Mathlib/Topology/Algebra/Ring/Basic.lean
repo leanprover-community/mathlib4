@@ -241,7 +241,7 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
-instance (S : Subring α) : TopologicalRing S :=
+instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological-space) closure of a subring of a topological ring is
