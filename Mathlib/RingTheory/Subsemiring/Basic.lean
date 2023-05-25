@@ -1028,7 +1028,7 @@ theorem comap_top (f : R →+* S) : (⊤ : Subsemiring S).comap f = ⊤ :=
 as a subsemiring of `R × S`. -/
 def prod (s : Subsemiring R) (t : Subsemiring S) : Subsemiring (R × S) :=
   { s.toSubmonoid.prod t.toSubmonoid, s.toAddSubmonoid.prod t.toAddSubmonoid with
-    carrier := (s : Set R) ×ˢ (t : Set S) }
+    carrier := s ×ˢ t }
 #align subsemiring.prod Subsemiring.prod
 
 @[norm_cast]

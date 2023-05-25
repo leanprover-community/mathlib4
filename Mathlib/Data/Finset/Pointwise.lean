@@ -346,7 +346,7 @@ theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
 
 @[to_additive]
 theorem card_mul_iff :
-    (s * t).card = s.card * t.card ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun p => p.1 * p.2 :=
+    (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
   card_image₂_iff
 #align finset.card_mul_iff Finset.card_mul_iff
 #align finset.card_add_iff Finset.card_add_iff
@@ -1878,7 +1878,7 @@ variable [LeftCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun p => p.1 * p.2 := by
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 #align finset.pairwise_disjoint_smul_iff Finset.pairwiseDisjoint_smul_iff
 #align finset.pairwise_disjoint_vadd_iff Finset.pairwiseDisjoint_vadd_iff

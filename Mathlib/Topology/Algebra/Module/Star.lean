@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module topology.algebra.module.star
-! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
+! leanprover-community/mathlib commit ad84a13c884fd19e286fb7abb36f4b9ba7e2f615
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,6 +29,23 @@ def starL (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid
   continuous_toFun := continuous_star
   continuous_invFun := continuous_star
 #align starL starL
+
+-- TODO: this could be replaced with something like `(starL R).restrict_scalarsₛₗ h` if we
+-- implemented the idea in
+-- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Star-semilinear.20maps.20are.20semilinear.20when.20star.20is.20trivial/near/359557835
+/-- If `A` is a topological module over a commutative `R` with trivial star and compatible actions,
+then `star` is a continuous linear equivalence. -/
+@[simps!]
+def starL' (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TrivialStar R] [AddCommMonoid A]
+    [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A] :
+    A ≃L[R] A :=
+  (starL R : A ≃L⋆[R] A).trans
+    ({ AddEquiv.refl A with
+        map_smul' := fun r a => by simp [starRingEnd_apply]
+        continuous_toFun := continuous_id
+        continuous_invFun := continuous_id } :
+      A ≃L⋆[R] A)
+#align starL' starL'
 
 variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]

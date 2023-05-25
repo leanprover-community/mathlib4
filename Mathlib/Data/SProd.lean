@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
 
+import Mathlib.Tactic.FBinop
+
 /-!
 # Set Product Notation
 This file provides notation for a product of sets, and other similar types.
@@ -28,3 +30,4 @@ class SProd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 
 -- This notation binds more strongly than (pre)images, unions and intersections.
 @[inherit_doc SProd.sprod] infixr:82 " ×ˢ " => SProd.sprod
+macro_rules | `($x ×ˢ $y)   => `(fbinop% SProd.sprod $x $y)

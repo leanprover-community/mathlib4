@@ -374,7 +374,8 @@ instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R'
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
 
-instance : Algebra R S := S.algebra'
+instance algebra : Algebra R S := S.algebra'
+#align subalgebra.algebra Subalgebra.algebra
 
 end
 
@@ -1105,7 +1106,7 @@ variable (S₁ : Subalgebra R B)
 /-- The product of two subalgebras is a subalgebra. -/
 def prod : Subalgebra R (A × B) :=
   { S.toSubsemiring.prod S₁.toSubsemiring with
-    carrier := (S : Set A) ×ˢ (S₁ : Set B)
+    carrier := S ×ˢ S₁
     algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
 #align subalgebra.prod Subalgebra.prod
 

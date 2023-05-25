@@ -314,8 +314,7 @@ theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j 
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 #align young_diagram.mem_iff_lt_row_len YoungDiagram.mem_iff_lt_rowLen
 
-theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} :
-    μ.row i = ({i} : Finset ℕ) ×ˢ Finset.range (μ.rowLen i) := by
+theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_row_iff,
     mem_iff_lt_rowLen, and_comm, and_congr_right_iff]
@@ -381,8 +380,7 @@ theorem mem_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ i 
   simp
 #align young_diagram.mem_iff_lt_col_len YoungDiagram.mem_iff_lt_colLen
 
-theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} :
-    μ.col j = Finset.range (μ.colLen j) ×ˢ ({j} : Finset ℕ) := by
+theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ˢ {j} := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_col_iff,
     mem_iff_lt_colLen, and_comm, and_congr_right_iff]

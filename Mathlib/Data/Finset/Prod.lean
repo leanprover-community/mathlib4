@@ -63,7 +63,7 @@ theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
 
 @[simp, norm_cast]
 theorem coe_product (s : Finset α) (t : Finset β) :
-    (s ×ˢ t : Set (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+    ((s ×ˢ t : Finset (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 #align finset.coe_product Finset.coe_product
 
@@ -221,8 +221,7 @@ theorem singleton_product {a : α} :
 #align finset.singleton_product Finset.singleton_product
 
 @[simp]
-theorem product_singleton {b : β} :
-    s ×ˢ ({b} : Finset β) = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 #align finset.product_singleton Finset.product_singleton
@@ -418,8 +417,7 @@ theorem diag_insert : (insert a s).diag = insert (a, a) s.diag := by
   rw [insert_eq, insert_eq, diag_union, diag_singleton]
 #align finset.diag_insert Finset.diag_insert
 
-theorem offDiag_insert (has : a ∉ s) :
-    (insert a s).offDiag = s.offDiag ∪ ({a} : Finset α) ×ˢ s ∪ s ×ˢ ({a} : Finset α) := by
+theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 #align finset.off_diag_insert Finset.offDiag_insert

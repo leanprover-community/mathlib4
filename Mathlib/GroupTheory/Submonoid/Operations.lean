@@ -841,7 +841,7 @@ of `M × N`. -/
       as an `AddSubmonoid` of `A × B`."]
 def prod (s : Submonoid M) (t : Submonoid N) :
     Submonoid (M × N) where
-  carrier := (s : Set M) ×ˢ (t : Set N)
+  carrier := s ×ˢ t
   one_mem' := ⟨s.one_mem, t.one_mem⟩
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 #align submonoid.prod Submonoid.prod

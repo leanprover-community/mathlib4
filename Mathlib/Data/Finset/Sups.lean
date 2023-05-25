@@ -75,7 +75,7 @@ theorem card_sups_le : (s ⊻ t).card ≤ s.card * t.card :=
 #align finset.card_sups_le Finset.card_sups_le
 
 theorem card_sups_iff :
-    (s ⊻ t).card = s.card * t.card ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun x => x.1 ⊔ x.2 :=
+    (s ⊻ t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊔ x.2 :=
   card_image₂_iff
 #align finset.card_sups_iff Finset.card_sups_iff
 
@@ -249,7 +249,7 @@ theorem card_infs_le : (s ⊼ t).card ≤ s.card * t.card :=
 #align finset.card_infs_le Finset.card_infs_le
 
 theorem card_infs_iff :
-    (s ⊼ t).card = s.card * t.card ↔ ((s : Set α) ×ˢ (t : Set α)).InjOn fun x => x.1 ⊓ x.2 :=
+    (s ⊼ t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊓ x.2 :=
   card_image₂_iff
 #align finset.card_infs_iff Finset.card_infs_iff
 
