@@ -53,7 +53,7 @@ theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
 
 end RelIso
 
-/-- `subrel r p` is the inherited relation on a subset. -/
+/-- `Subrel r p` is the inherited relation on a subset. -/
 def Subrel (r : α → α → Prop) (p : Set α) : p → p → Prop :=
   (Subtype.val : p → α) ⁻¹'o r
 #align subrel Subrel

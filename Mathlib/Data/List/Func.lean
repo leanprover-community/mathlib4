@@ -254,7 +254,7 @@ theorem eq_of_equiv : ∀ {as1 as2 : List α}, as1.length = as2.length → Equiv
 
 end Func
 
--- We want to drop the `inhabited` instances for a moment,
+-- We want to drop the `Inhabited` instances for a moment,
 -- so we close and open the namespace
 namespace Func
 

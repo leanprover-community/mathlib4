@@ -18,7 +18,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 # Tropical algebraic structures
 
 This file defines algebraic structures of the (min-)tropical numbers, up to the tropical semiring.
-Some basic lemmas about conversion from the base type `R` to `tropical R` are provided, as
+Some basic lemmas about conversion from the base type `R` to `Tropical R` are provided, as
 well as the expected implementations of tropical addition and tropical multiplication.
 
 ## Main declarations
@@ -200,7 +200,7 @@ instance [Preorder R] : Preorder (Tropical R) :=
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
     lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
 
-/-- Reinterpret `x : R` as an element of `tropical R`, preserving the order. -/
+/-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=
   { tropEquiv with map_rel_iff' := untrop_le_iff }
 #align tropical.trop_order_iso Tropical.tropOrderIso

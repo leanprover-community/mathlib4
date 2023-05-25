@@ -50,7 +50,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 

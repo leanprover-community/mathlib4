@@ -39,9 +39,9 @@ section Semiring
 variable [OrderedSemiring k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M}
   {c : k}
 
-/- can be generalized from `module k M` to `distrib_mul_action_with_zero k M` once it exists.
-where `distrib_mul_action_with_zero k M`is the conjunction of `distrib_mul_action k M` and
-`smul_with_zero k M`.-/
+/- Can be generalized from `Module k M` to `DistribMulActionWithZero k M` once it exists.
+where `DistribMulActionWithZero k M`is the conjunction of `DistribMulAction k M` and
+`SMulWithZero k M`.-/
 theorem smul_neg_iff_of_pos (hc : 0 < c) : c • a < 0 ↔ a < 0 := by
   rw [← neg_neg a, smul_neg, neg_neg_iff_pos, neg_neg_iff_pos]
   exact smul_pos_iff_of_pos hc

@@ -303,7 +303,7 @@ variable (R M N P Q)
 
 /-- When `M` and `N` are free `R` modules, the map `homTensorHomMap` is an equivalence. Note that
 `homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the equivalence
-between the two is given by `hom_tensor_hom_equiv_to_linear_map` and `hom_tensor_hom_equiv_apply`.
+between the two is given by `homTensorHomEquiv_toLinearMap` and `homTensorHomEquiv_apply`.
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   rTensorHomEquivHomRTensor R M P _ ≪≫ₗ

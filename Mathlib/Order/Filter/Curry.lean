@@ -14,7 +14,7 @@ import Mathlib.Order.Filter.Prod
 # Curried Filters
 
 This file provides an operation (`Filter.curry`) on filters which provides the equivalence
-`∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `filter.eventually_curry_iff`).
+`∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `Filter.eventually_curry_iff`).
 
 To understand when this operation might arise, it is helpful to think of `∀ᶠ` as a combination of
 the quantifiers `∃ ∀`. For instance, `∀ᶠ n in at_top, p n ↔ ∃ N, ∀ n ≥ N, p n`. A curried filter

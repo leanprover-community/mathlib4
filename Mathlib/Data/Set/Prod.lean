@@ -37,7 +37,7 @@ section Prod
 
 variable {α β γ δ : Type _} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
-/-- The cartesian product `prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
@@ -631,7 +631,7 @@ section Pi
 
 variable {ι : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
 
-/-- Given an index set `ι` and a family of sets `t : Π i, set (α i)`, `pi s t`
+/-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
 whenever `a ∈ s`. -/
 def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=

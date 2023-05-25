@@ -30,7 +30,7 @@ import Mathlib.Data.TypeMax -- Porting note: added for universe issues
   Q
   ```
 * `Module.Baer`: an `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an
-  `ideal R` extends to an `R`-linear map `R ⟶  Q`
+  `Ideal R` extends to an `R`-linear map `R ⟶  Q`
 
 ## Main statements
 
@@ -89,7 +89,7 @@ theorem Module.injective_iff_injective_object :
     @Module.injective_module_of_injective_object R _ Q _ _ h⟩
 #align module.injective_iff_injective_object Module.injective_iff_injective_object
 
-/-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `ideal R` extends to
+/-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `Ideal R` extends to
 an `R`-linear map `R ⟶ Q`-/
 def Module.Baer : Prop :=
   ∀ (I : Ideal R) (g : I →ₗ[R] Q), ∃ g' : R →ₗ[R] Q, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩

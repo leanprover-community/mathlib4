@@ -45,7 +45,7 @@ to register the ring structure on `ZMod n` as type class instance.
 
 open Nat.ModEq Int
 
-/-- Multiplicative commutative semigroup structure on `fin n`. -/
+/-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>

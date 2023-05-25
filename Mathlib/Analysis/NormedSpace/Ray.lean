@@ -14,7 +14,7 @@ import Mathlib.Analysis.NormedSpace.Basic
 /-!
 # Rays in a real normed vector space
 
-In this file we prove some lemmas about the `same_ray` predicate in case of a real normed space. In
+In this file we prove some lemmas about the `SameRay` predicate in case of a real normed space. In
 this case, for two vectors `x y` in the same ray, the norm of their sum is equal to the sum of their
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/

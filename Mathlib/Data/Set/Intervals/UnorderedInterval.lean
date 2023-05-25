@@ -32,7 +32,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
 make the notation available.
 
 -/

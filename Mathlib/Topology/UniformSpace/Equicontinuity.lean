@@ -371,7 +371,7 @@ theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `fun_like` types where
+embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :

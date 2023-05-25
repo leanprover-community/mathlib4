@@ -884,7 +884,7 @@ theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
 #align finset.centroid_pair_fin Finset.centroid_pair_fin
 
 /-- A centroid, over the image of an embedding, equals a centroid with
-the same points and weights over the original `finset`. -/
+the same points and weights over the original `Finset`. -/
 theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) : (s₂.map e).centroid k p = s₂.centroid k (p ∘ e) :=
   by simp [centroid_def, affineCombination_map, centroidWeights]
 #align finset.centroid_map Finset.centroid_map

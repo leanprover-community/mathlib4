@@ -15,7 +15,7 @@ import Mathlib.Logic.Function.Iterate
 # Shadows
 
 This file defines shadows of a set family. The shadow of a set family is the set family of sets we
-get by removing any element from any set of the original family. If one pictures `finset α` as a big
+get by removing any element from any set of the original family. If one pictures `Finset α` as a big
 hypercube (each dimension being membership of a given element), then taking the shadow corresponds
 to projecting each finset down once in all available directions.
 
@@ -32,8 +32,8 @@ We define notation in locale `FinsetFamily`:
 * `∂ 𝒜`: Shadow of `𝒜`.
 * `∂⁺ 𝒜`: Upper shadow of `𝒜`.
 
-We also maintain the convention that `a, b : α` are elements of the ground type, `s, t : finset α`
-are finsets, and `𝒜, ℬ : finset (finset α)` are finset families.
+We also maintain the convention that `a, b : α` are elements of the ground type, `s, t : Finset α`
+are finsets, and `𝒜, ℬ : Finset (Finset α)` are finset families.
 
 ## References
 
@@ -80,7 +80,7 @@ theorem shadow_singleton_empty : (∂ ) ({∅} : Finset (Finset α)) = ∅ :=
   rfl
 #align finset.shadow_singleton_empty Finset.shadow_singleton_empty
 
---TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `grade_order`
+--TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `GradeOrder`
 /-- The shadow is monotone. -/
 @[mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>

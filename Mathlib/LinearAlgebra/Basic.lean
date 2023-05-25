@@ -2426,7 +2426,7 @@ section Module
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given `p` a submodule of the module `M` and `q` a submodule of `p`, `p.equivSubtypeMap q`
-is the natural `linear_equiv` between `q` and `q.map p.subtype`. -/
+is the natural `LinearEquiv` between `q` and `q.map p.subtype`. -/
 def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map p.subtype :=
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by

@@ -42,7 +42,7 @@ of finsets of morphisms.
 
 Furthermore, we give special support for two diagram categories: The `bowtie` and the `tulip`.
 This is because these shapes show up in the proofs that forgetful functors of algebraic categories
-(e.g. `Mon`, `CommRing`, ...) preserve filtered colimits.
+(e.g. `MonCat`, `CommRingCat`, ...) preserve filtered colimits.
 
 All of the above API, except for the `bowtie` and the `tulip`, is also provided for cofiltered
 categories.
@@ -566,8 +566,8 @@ noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose_spec.choose
 #align category_theory.is_cofiltered.min_to_right CategoryTheory.IsCofiltered.minToRight
 
-/-- `eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
-which admits a morphism `eqHom f f' : eq f f' ⟶ j` such that
+/-- `Eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
+which admits a morphism `eqHom f f' : Eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 Its existence is ensured by `IsCofiltered`.
 -/
@@ -576,7 +576,7 @@ noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
 #align category_theory.is_cofiltered.eq CategoryTheory.IsCofiltered.eq
 
 /-- `eqHom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
-`eqHom f f' : eq f f' ⟶ j` such that
+`eqHom f f' : Eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 Its existence is ensured by `IsCofiltered`.
 -/

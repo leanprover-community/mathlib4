@@ -72,12 +72,12 @@ def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => DMatrix.transpose
 
-/-- `dmatrix.col u` is the column matrix whose entries are given by `u`. -/
+/-- `DMatrix.col u` is the column matrix whose entries are given by `u`. -/
 def col {α : m → Type v} (w : ∀ i, α i) : DMatrix m Unit fun i _j => α i
   | x, _y => w x
 #align dmatrix.col DMatrix.col
 
-/-- `dmatrix.row u` is the row matrix whose entries are given by `u`. -/
+/-- `DMatrix.row u` is the row matrix whose entries are given by `u`. -/
 def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 #align dmatrix.row DMatrix.row

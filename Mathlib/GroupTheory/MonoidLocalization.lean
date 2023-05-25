@@ -61,7 +61,7 @@ this structure.
 To reason about the localization as a quotient type, use `mk_eq_monoidOf_mk'` and associated
 lemmas. These show the quotient map `mk : M → S → Localization S` equals the
 surjection `LocalizationMap.mk'` induced by the map
-`monoid_of : localization_map S (localization S)` (where `of` establishes the
+`monoid_of : localization_map S (Localization S)` (where `of` establishes the
 localization as a quotient type satisfies the characteristic predicate). The lemma
 `mk_eq_monoidOf_mk'` hence gives you access to the results in the rest of the file, which are
 about the `LocalizationMap.mk'` induced by any localization map.
@@ -70,7 +70,7 @@ about the `LocalizationMap.mk'` induced by any localization map.
 
 * Show that the localization at the top monoid is a group.
 * Generalise to (nonempty) subsemigroups.
-* If we acquire more bundlings, we can make `localization.mk_order_embedding` be an ordered monoid
+* If we acquire more bundlings, we can make `Localization.mkOrderEmbedding` be an ordered monoid
   embedding.
 
 ## Tags
@@ -1311,7 +1311,7 @@ noncomputable def AwayMap.negSelf : B :=
   F.mk' 0 ⟨x, mem_multiples _⟩
 #align add_submonoid.localization_map.away_map.neg_self AddSubmonoid.LocalizationMap.AwayMap.negSelf
 
-/-- Given `x : A`, a localization map `F : A →+ B` away from `x`, and a map of `add_comm_monoid`s
+/-- Given `x : A`, a localization map `F : A →+ B` away from `x`, and a map of `AddCommMonoid`s
 `g : A →+ C` such that `g x` is invertible, the homomorphism induced from `B` to `C` sending
 `z : B` to `g y - n • g x`, where `y : A, n : ℕ` are such that `z = F y - n • F x`. -/
 noncomputable def AwayMap.lift (hg : IsAddUnit (g x)) : B →+ C :=
@@ -1892,7 +1892,7 @@ theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
 
 @[to_additive]
 theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * b₁ := by
-  -- porting note: times out unless we add this `have`. Even `infer_instance` times out here.
+  -- porting note: times out unless we add this `have`. Even `inferInstance` times out here.
   have : Nonempty s := One.nonempty
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
 #align localization.mk_eq_mk_iff' Localization.mk_eq_mk_iff'

@@ -231,7 +231,7 @@ theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n 
 #align nat.cast_le_pow_sub_div_sub Nat.cast_le_pow_sub_div_sub
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also
-`nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
+`Nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
 theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a - 1) :=
   (n.cast_le_pow_sub_div_sub H).trans <|
     div_le_div_of_le (sub_nonneg.2 H.le) (sub_le_self _ zero_le_one)

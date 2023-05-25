@@ -140,7 +140,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- We say that a measure `μ` is *inner regular* with respect to predicates `p q : set α → Prop`,
+/-- We say that a measure `μ` is *inner regular* with respect to predicates `p q : Set α → Prop`,
 if for every `U` such that `q U` and `r < μ U`, there exists a subset `K ⊆ U` satisfying `p K`
 of measure greater than `r`.
 

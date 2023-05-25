@@ -49,7 +49,7 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
 * `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `measure_theory.measure_space`)
+  `MeasureTheory.MeasureSpace`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
@@ -2775,7 +2775,7 @@ end Bind
 
 section ListTraverse
 
-/- This is a separate section in order to open `list`, but mostly because of universe
+/- This is a separate section in order to open `List`, but mostly because of universe
    equality requirements in `traverse` -/
 open List
 

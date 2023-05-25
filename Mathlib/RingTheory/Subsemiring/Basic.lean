@@ -1304,7 +1304,7 @@ end RingEquiv
 These are just copies of the definitions about `Submonoid` starting from `submonoid.mul_action`.
 The only new result is `subsemiring.module`.
 
-When `R` is commutative, `algebra.of_subsemiring` provides a stronger result than those found in
+When `R` is commutative, `Algebra.ofSubsemiring` provides a stronger result than those found in
 this file, which uses the same scalar action.
 -/
 

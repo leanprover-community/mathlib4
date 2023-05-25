@@ -72,7 +72,7 @@ something the simplifier can easily do). This means that one can write
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
 ```lean
-example (x : ℝ) (h : 1 + sin x ≠ 0) : differentiable_at ℝ (λ x, exp x / (1 + sin x)) x :=
+example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (λ x, exp x / (1 + sin x)) x :=
 by simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
