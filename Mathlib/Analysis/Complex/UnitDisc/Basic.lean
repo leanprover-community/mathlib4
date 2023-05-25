@@ -213,7 +213,9 @@ def conj (z : 𝔻) : 𝔻 :=
   mk (conj' ↑z) <| (abs_conj z).symm ▸ z.abs_lt_one
 #align complex.unit_disc.conj Complex.UnitDisc.conj
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
+-- because both sides have a head coe
+@[simp]
 theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=
   rfl
 #align complex.unit_disc.coe_conj Complex.UnitDisc.coe_conj
