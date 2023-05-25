@@ -324,7 +324,6 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
     refine'
       (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
-    -- Porting note: used `continuity`
     continuity
   source' := by norm_num
   target' := by norm_num
@@ -678,7 +677,6 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
 @[continuity]
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  -- Porting note: used `continuity`
   have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
