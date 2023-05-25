@@ -238,8 +238,8 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
 neighborhood `s` of the origin is a closed set. -/
 theorem NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsClosed ((coeFn : Dual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
-  isClosed_image_polar_of_mem_nhds 𝕜 s_nhd
-#align normed_space.dual.is_closed_image_polar_of_mem_nhds NormedSpace.Dual.isClosed_image_polar_of_mem_nhds
+  isClosed_image_polar_of_mem_nhds s_nhd
+#align normed_space.dual.is_closed_image_polar_of_mem_nhds WeakDual.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds
 
 /-- The **Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in a
 normed space `E` is a compact subset of `weak_dual 𝕜 E`. -/
