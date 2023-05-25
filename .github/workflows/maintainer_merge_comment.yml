@@ -30,7 +30,7 @@ jobs:
           type: 'stream'
           topic: 'maintainer merge'
           content: |
-            ${{ format('{0} requested a maintainer merge on PR #{1}:', github.event.comment.user.login, github.event.issue.number) }}
+            ${{ format('{0} requested a maintainer merge on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}
 
             > ${{ github.event.issue.title }}
 
