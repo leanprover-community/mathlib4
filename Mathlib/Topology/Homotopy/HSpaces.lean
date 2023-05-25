@@ -81,7 +81,12 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by continuity⟩
+  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
+    -- porting note: was `continuity`
+    exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
+        (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
+        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
+  ⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
@@ -93,9 +98,9 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    use ⟨G, hG, _⟩
+    use ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts[prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
     · rintro t ⟨x, y⟩ h
@@ -112,9 +117,9 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.hmulE.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    use ⟨G, hG, _⟩
+    use ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts[prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
     · rintro t ⟨x, y⟩ h
