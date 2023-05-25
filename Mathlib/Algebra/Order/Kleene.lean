@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.ScopedNS  -- Porting note: `scoped[]`
 
 /-!
 # Kleene Algebras

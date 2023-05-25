@@ -836,7 +836,7 @@ theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = �
         nonempty_inter hs.1 hs.2.isOpen_compl (union_compl_self s) (nonempty_iff_ne_empty.2 h1.1)
           (nonempty_iff_ne_empty.2 h1.2)
       h3 h2,
-    by rintro (rfl | rfl) <;> [exact isClopen_empty, exact isClopen_univ]⟩
+    by rintro (rfl | rfl) <;> [exact isClopen_empty; exact isClopen_univ]⟩
 #align is_clopen_iff isClopen_iff
 
 theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (h : s.Nonempty) :
