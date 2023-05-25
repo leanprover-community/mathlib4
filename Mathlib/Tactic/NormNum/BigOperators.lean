@@ -8,9 +8,28 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.List.FinRange
 
 /-!
-## `norm_num` plugin for big operators
+# `norm_num` plugin for big operators
 
 This file adds `norm_num` plugins for `Finset.prod` and `Finset.sum`.
+
+The driving part of this plugin is `Mathlib.Meta.NormNum.evalFinsetBigop`.
+We repeatedly use `Finset.proveEmptyOrCons` to try to find a proof that the given set is empty,
+or that it consists of one element inserted into a strict subset, and evaluate the big operator
+on that subset until the set is completely exhausted.
+
+## Porting notes
+
+This plugin is noticeably less powerful than the equivalent version in Mathlib 3: the design of
+`norm_num` means plugins have to return numerals, rather than a generic expression.
+In particular, we can't use the plugin on sums containing variables.
+(See also the TODO note "To support variables".)
+
+## TODOs
+
+ * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
+ * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
+   the sum/prod, without computing its numeric value (using the `ring` tactic to do some
+   normalization?)
 -/
 
 namespace Mathlib.Meta
@@ -67,20 +86,19 @@ def List.ProveNilOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(List $α)}
 | .nil pf => .nil q(Eq.trans $eq $pf)
 | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
-#check List.finRange_succ_eq_map
-
 /-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
 
-Fails if neither of the options succeed.
+Fails if we cannot determine which of the alternatives apply to the expression.
 -/
 partial def List.proveNilOrCons {α : Q(Type u)} :
   (s : Q(List $α)) → MetaM (List.ProveNilOrConsResult s) :=
 fun s ↦
-match Expr.getAppFnArgs s with
-| (`EmptyCollection.EmptyCollection, _) => pure (.nil (q(rfl) : Q((∅ : List $α) = [])))
-| (`List.nil, _) => pure (.nil (q(rfl) : Q(([] : List $α) = [])))
-| (`List.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
-| (`List.range, #[(n : Q(ℕ))]) => do
+s.withApp fun e a =>
+match (e, e.constName, a) with
+| (_, `EmptyCollection.EmptyCollection, _) => pure (.nil (q(rfl) : Q((∅ : List $α) = [])))
+| (_, `List.nil, _) => pure (.nil (q(rfl) : Q(([] : List $α) = [])))
+| (_, `List.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
+| (_, `List.range, #[(n : Q(ℕ))]) => do
   match ← Nat.unifyZeroOrSucc n with
   | .zero _pf => do
     pure (.nil (q(List.range_zero) : Q(List.range 0 = [])))
@@ -88,15 +106,26 @@ match Expr.getAppFnArgs s with
       q(0)
       (q(List.map Nat.succ (List.range $n')))
       (q(List.range_succ_eq_map $n'))).uncheckedCast (q(List.range ($n' + 1)) : Q(List ℕ)) s
-| (`List.finRange, #[(n : Q(ℕ))]) => do
+| (_, `List.finRange, #[(n : Q(ℕ))]) => do
   match ← Nat.unifyZeroOrSucc n with
   | .zero _pf => do
     pure (.nil (q(List.finRange_zero) : Q(List.finRange 0 = [])))
-  | .succ n' _pf => pure <| (List.ProveNilOrConsResult.cons
+  | .succ n' _pf => pure <| ((List.ProveNilOrConsResult.cons
       q(0 : Fin (Nat.succ $n'))
       (q(List.map Fin.succ (List.finRange $n')))
-      (q(List.finRange_succ_eq_map $n'))).uncheckedCast (q(List.finRange (Nat.succ $n')) : Q(List (Fin (Nat.succ $n')))) s
-| (fn, args) => throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
+      (q(List.finRange_succ_eq_map $n'))).uncheckedCast
+        (q(List.finRange (Nat.succ $n')) : Q(List (Fin (Nat.succ $n'))))
+        s)
+| (.const `List.map [v, _], _, #[β, _, f, xxs]) => do
+  have β : Q(Type v) := β
+  have f : Q($β → $α) := f
+  have xxs : Q(List $β) := xxs
+  match ← List.proveNilOrCons xxs with
+  | .nil pf => pure <| (.nil
+    (q($pf ▸ List.map_nil) : Q(List.map $f $xxs = [])))
+  | .cons x xs pf => pure <| (.cons q($f $x) q(List.map $f $xs)
+    (q($pf ▸ List.map_cons $f $x $xs) : Q(List.map $f $xxs = $f $x :: List.map $f $xs)))
+| (_, fn, args) => throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 
 /-- This represents the result of trying to determine whether the given expression
 `s : Q(Multiset $α)` is either empty or consists of an element inserted into a strict subset. -/
@@ -130,7 +159,7 @@ by ext; simp
 
 /-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
 
-Fails if neither of the options succeed.
+Fails if we cannot determine which of the alternatives apply to the expression.
 -/
 partial def Multiset.proveZeroOrCons {α : Q(Type u)} :
   (s : Q(Multiset $α)) → MetaM (Multiset.ProveZeroOrConsResult s) :=
@@ -149,11 +178,14 @@ match Expr.getAppFnArgs s with
   match ← Nat.unifyZeroOrSucc n with
   | .zero _pf => do
     pure (.zero (q(Multiset.range_zero) : Q(Multiset.range 0 = 0)))
-  | .succ n' _pf => pure <| (Multiset.ProveZeroOrConsResult.cons
+  | .succ n' _pf => pure <| ((Multiset.ProveZeroOrConsResult.cons
       n'
       (q(Multiset.range $n'))
-      (q(Multiset.range_succ $n'))).uncheckedCast (q(Multiset.range (Nat.succ $n')) : Q(Multiset ℕ)) s
-| (fn, args) => throwError "Multiset.proveZeroOrCons: unsupported Multiset expression {s} ({fn}, {args})"
+      (q(Multiset.range_succ $n'))).uncheckedCast
+        (q(Multiset.range (Nat.succ $n')) : Q(Multiset ℕ))
+        s)
+| (fn, args) =>
+  throwError "Multiset.proveZeroOrCons: unsupported multiset expression {s} ({fn}, {args})"
 
 /-- This represents the result of trying to determine whether the given expression
 `s : Q(Finset $α)` is either empty or consists of an element inserted into a strict subset. -/
@@ -197,7 +229,7 @@ lemma Finset.univ_eq_elems {α : Type _} [Fintype α] (elems : Finset α)
 
 /-- Either show the expression `s : Q(Finset α)` is empty, or remove one element from it.
 
-Fails if neither of the options succeed.
+Fails if we cannot determine which of the alternatives apply to the expression.
 -/
 partial def Finset.proveEmptyOrCons {α : Q(Type u)} :
   (s : Q(Finset $α)) → MetaM (Finset.ProveEmptyOrConsResult s) :=
@@ -218,11 +250,13 @@ match Expr.getAppFnArgs s with
   match ← Nat.unifyZeroOrSucc n with
   | .zero _pf => do
     pure (.empty (q(Finset.range_zero) : Q(Finset.range 0 = ∅)))
-  | .succ n' _pf => pure <| (Finset.ProveEmptyOrConsResult.cons
+  | .succ n' _pf => pure <| ((Finset.ProveEmptyOrConsResult.cons
       n'
       (q(Finset.range $n'))
       (q(@Finset.not_mem_range_self $n'))
-      (q(Finset.range_succ_eq_cons $n'))).uncheckedCast (q(Finset.range (Nat.succ $n')) : Q(Finset ℕ)) s
+      (q(Finset.range_succ_eq_cons $n'))).uncheckedCast
+        (q(Finset.range (Nat.succ $n')) : Q(Finset ℕ))
+        s)
 | (`Finset.univ, #[_, instFT]) => do
   match Expr.getAppFnArgs (← whnfI instFT) with
   | (`Fintype.mk, #[_, (elems : Q(Finset $α)), (complete : Q(∀ x : $α, x ∈ $elems))]) => do
@@ -230,7 +264,8 @@ match Expr.getAppFnArgs s with
     let res ← Finset.proveEmptyOrCons elems
     pure <| res.eq_trans (q(Finset.univ_eq_elems $elems $complete) : Q(Finset.univ = $elems))
   | e => throwError "Finset.proveEmptyOrCons: could not determine elements of Fintype instance {e}"
-| _ => throwError "Finset.proveEmptyOrCons: unsupported finset expression {s}"
+| (fn, args) =>
+  throwError "Finset.proveEmptyOrCons: unsupported finset expression {s} ({fn}, {args})"
 
 namespace NormNum
 
@@ -279,7 +314,6 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
     let res_op_s' : Result q($op $s' $f) ← evalFinsetBigop op f res_empty @res_cons s'
     let res ← res_cons res_fa res_op_s'
     let eq : Q($op $s $f = $op (Finset.cons $a $s' $h) $f) := q(congr_fun (congr_arg _ $pf) _)
-    dbg_trace "cons. fa: {fa} res_fa: {res_fa.toRat} res_op_s': {res_op_s'.toRat}"
     pure (res.eq_trans eq)
 
 /-- `norm_num` plugin for evaluating products of finsets.
@@ -288,19 +322,17 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.prod _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  dbg_trace "evalFinsetProd"
   let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) β') α) _) s) f ←
     whnfR e | failure
-  dbg_trace "s: {s} f: {f}"
   guard <| ←withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
   let instCS ← synthInstanceQ (q(CommSemiring $β) : Q(Type u)) <|>
     throwError "not a commutative semiring: {β}"
-  dbg_trace "s: {s} f: {f}"
   let instS : Q(Semiring $β) := q(CommSemiring.toSemiring)
-  let n : Q(ℕ) := .lit (.natVal 1) -- Have to construct this expression manually, `q(1)` doesn't parse correctly.
+  -- Have to construct this expression manually, `q(1)` doesn't parse correctly:
+  let n : Q(ℕ) := .lit (.natVal 1)
   let pf : Q(IsNat (Finset.prod ∅ $f) $n) := q(@Finset.prod_empty $β $α $instCS $f)
   let res_empty := Result.isNat _ n pf
 
@@ -318,18 +350,16 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.sum _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  dbg_trace "evalFinsetSum"
   let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) β') α) _) s) f ←
     whnfR e | failure
-  dbg_trace "s: {s} f: {f}"
   guard <| ←withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
   let instCS ← synthInstanceQ (q(CommSemiring $β) : Q(Type u)) <|>
     throwError "not a commutative semiring: {β}"
-  dbg_trace "s: {s} f: {f}"
-  let n : Q(ℕ) := .lit (.natVal 0) -- Have to construct this expression manually, `q(0)` doesn't parse correctly.
+  -- Have to construct this expression manually, `q(0)` doesn't parse correctly:
+  let n : Q(ℕ) := .lit (.natVal 0) 
   let pf : Q(IsNat (Finset.sum ∅ $f) $n) := q(@Finset.sum_empty $β $α $instCS $f)
   let res_empty := Result.isNat _ n pf
 
@@ -340,65 +370,3 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
-
-set_option trace.Tactic.norm_num true
-
-example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
-example : Finset.prod (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num)) (λ x => x) = 12 := by norm_num1
-
-section big_operators
-
-variable {α : Type _} [CommRing α]
-
-open BigOperators
-
--- Lists:
-example : ([1, 2, 1, 3]).sum = 7 := by norm_num only
-example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map]
-example : (List.range 10).sum = 45 := by norm_num only
-example : (List.finRange 10).sum = 45 := by norm_num only
-
--- Multisets:
-example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num only
-example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by norm_num only
-example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
-  norm_num [-Multiset.map_cons]
-example : (Multiset.range 10).sum = 45 := by norm_num only
-example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
-
--- Finsets:
-example (f : ℕ → α) : ∏ i in Finset.range 0, f i = 1 := by norm_num1
-example (f : Fin 0 → α) : ∏ i : Fin 0, f i = 1 := by norm_num1
-example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num1
-example (f : ℕ → α) : ∑ i in (∅ : Finset ℕ), f i = 0 := by norm_num1
-example : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
-example : ((0 : Fin 3) : ℕ) = 0 := by norm_num1
-/-
-example (f : Fin 3 → α) : ∑ i : Fin 3, f i = f 0 + f 1 + f 2 := by norm_num <;> ring
-example (f : Fin 4 → α) : ∑ i : Fin 4, f i = f 0 + f 1 + f 2 + f 3 := by norm_num <;> ring
-example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_num; ring
-example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
-example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
--/
-example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num1
-example : (∏ i in Finset.range 4, ((i+1)^2 : ℕ)) = 576 := by norm_num1
-/-
-example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
-example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
-example : (∑ i in Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
-example : (∑ i in Finset.Ioo 5 10, (i^2 : ℕ)) = 230 := by norm_num
-example : (∑ i : ℤ in Finset.Ioo (-5) 5, i^2) = 60 := by norm_num
-example (f : ℕ → α) : ∑ i in Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 :=
-  by norm_num; ring
--/
-
--- Combined with other `norm_num` extensions:
-example : ∏ i in Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
-example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
-example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
-
--- Nested operations:
-example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1
-
-end big_operators
-
