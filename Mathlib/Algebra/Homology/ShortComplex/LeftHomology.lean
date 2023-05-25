@@ -10,20 +10,21 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 /-! LeftHomology of short complexes
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
-maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we define
-here the "left homology" `S.leftHomology` of `S`. For this, we introduce the
-notion of "left homolgy data". Such an `h : S.LeftHomologyData` consists of the
+maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
+here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
+notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
 datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
 `K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
-of the induced map `f' : X₁ ⟶ K`. When such a `S.LeftHomologyData` exists,
-we say that `[S.HasLeftHomlogy]` and we define `S.leftHomology` to be the `H`
-field of a chosen left homology data. Similarly, we define `S.cycles` to be the
-`K` field.
+of the induced map `f' : X₁ ⟶ K`.
+
+TODO: When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
+and we define `S.leftHomology` to be the `H` field of a chosen left homology data.
+Similarly, we shall define `S.cycles` to be the `K` field.
 
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
 the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
-and `S.homology`.
+and `S.homology` (TODO).
 
 -/
 
@@ -146,7 +147,7 @@ and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
-  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ H`-/
+  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K`-/
   H : C
   /-- the inclusion of cycles in `S.X₂` -/
   i : K ⟶ S.X₂
@@ -158,7 +159,7 @@ structure LeftHomologyData where
   hi : IsLimit (KernelFork.ofι i wi)
   /-- the cokernel condition for `π` -/
   wπ : hi.lift (KernelFork.ofι _ S.zero) ≫ π = 0
-  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `f' : S.X₁ ⟶ K` -/
+  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   hπ : IsColimit (CokernelCofork.ofπ π wπ)
 
 initialize_simps_projections LeftHomologyData (-hi, -hπ)
@@ -341,42 +342,6 @@ noncomputable def kernelSequence {X Y : C} (f : X ⟶ Y) [HasKernel f] [HasZeroO
     LeftHomologyData (ShortComplex.mk (kernel.ι f) f (kernel.condition f)) := by
   let h := kernelSequence' f _ (kernelIsKernel f)
   exact h
-
-/-
-section change
-
-variables {S} {K H : C} {f' : S.X₁ ⟶ K} {i : K ⟶ S.X₂}
-  (commf' : f' ≫ i = S.f) (e : K ≅ h.K) (commi : e.hom ≫ h.i = i)
-  (π : K ⟶ H) (hπ₀ : f' ≫ π = 0) (hπ : is_colimit (cokernel_cofork.of_π π hπ₀))
-
-include commf' commi hπ
-
-@[simps]
-def change :
-  LeftHomologyData S :=
-begin
-  have wi : i ≫ S.g = 0 := by rw [← commi, assoc, h.wi, comp_zero],
-  have hi : is_limit (kernel_fork.of_ι i wi) :=
-    is_limit.of_iso_limit h.hi (fork.ext e.symm (by simp [← commi])),
-  let f'' := hi.lift (kernel_fork.of_ι S.f S.zero),
-  have eq : f'' = f',
-  { rw [← cancel_mono e.hom, ← cancel_mono h.i, assoc, commi],
-    dsimp,
-    erw fork.is_limit.lift_ι,
-    simp only [kernel_fork.ι_of_ι, assoc, commi, commf'], },
-  have wπ' : f'' ≫ π = 0 := by rw [eq, hπ₀],
-  have hπ' : is_colimit (cokernel_cofork.of_π π wπ'),
-  { let e : parallel_pair f'' 0 ≅ parallel_pair f' 0 :=
-      parallel_pair.ext (iso.refl _) (iso.refl _) (by simp [eq]) (by simp),
-    equiv_rw (is_colimit.precompose_inv_equiv e _).symm,
-    exact is_colimit.of_iso_colimit hπ (cofork.ext (iso.refl _) (by tidy)), },
-  exact ⟨K, H, i, π, wi, hi, wπ', hπ'⟩,
-end
-
-@[simp] lemma change_f' : (h.change commf' e commi π hπ₀ hπ).f' = f' :=
-by rw [← cancel_mono (h.change commf' e commi π hπ₀ hπ).i, f'_i, change_i, commf']
-
-end change-/
 
 end LeftHomologyData
 

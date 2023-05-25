@@ -442,7 +442,7 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
   map_mul' x y := unop_injective <| Units.ext <| rfl
   left_inv x := Units.ext <| by simp
-  right_inv x := unop_injective <| Units.ext <| rfl
+  right_inv x := unop_injective <| Units.ext <| by rfl
 #align units.op_equiv Units.opEquiv
 #align add_units.op_equiv AddUnits.opEquiv
 
@@ -634,7 +634,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec fun x => (FunLike.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec' fun x => (FunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

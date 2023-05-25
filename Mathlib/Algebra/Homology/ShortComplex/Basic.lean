@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: An homology API for these objects shall be developped
+TODO: A homology API for these objects shall be developed
 in the folder `Algebra.Homology.ShortComplex` and eventually
 the homology of objects in `HomologicalComplex C c` shall be
 redefined using this.
@@ -32,8 +32,12 @@ variable (C D : Type _) [Category C] [Category D]
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
 `f ≫ g = 0`. -/
 structure ShortComplex [HasZeroMorphisms C] where
-  /-- the three objects of a `ShortComplex` -/
-  {X₁ X₂ X₃ : C}
+  /-- the first (left) object of a `ShortComplex` -/
+  {X₁ : C}
+  /-- the second (middle) object of a `ShortComplex` -/
+  {X₂ : C}
+  /-- the third (right) object of a `ShortComplex` -/
+  {X₃ : C}
   /-- the first morphism of a `ShortComplex` -/
   f : X₁ ⟶ X₂
   /-- the second morphism of a `ShortComplex` -/
@@ -43,7 +47,7 @@ structure ShortComplex [HasZeroMorphisms C] where
 
 namespace ShortComplex
 
-attribute [reassoc (attr := simp)] zero
+attribute [reassoc (attr := simp)] ShortComplex.zero
 
 variable {C}
 variable [HasZeroMorphisms C]
@@ -93,7 +97,7 @@ lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ =
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/
 @[simps]
-def Hom.mk' {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ : S₁.X₂ ⟶ S₂.X₂)
+def homMk {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ : S₁.X₂ ⟶ S₂.X₂)
     (τ₃ : S₁.X₃ ⟶ S₂.X₃) (comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂)
     (comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃) : S₁ ⟶ S₂ := ⟨τ₁, τ₂, τ₃, comm₁₂, comm₂₃⟩
 
@@ -139,9 +143,9 @@ def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
 
-instance π₁_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
-instance π₂_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
-instance π₃_preserves_zero_morphisms : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
+instance preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
@@ -170,8 +174,8 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
 @[simps]
-def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms]
-  [G.PreservesZeroMorphisms] (τ : F ⟶ G) : S.map F ⟶ S.map G where
+def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ⟶ G) :
+    S.map F ⟶ S.map G where
   τ₁ := τ.app _
   τ₂ := τ.app _
   τ₃ := τ.app _
@@ -179,8 +183,8 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms]
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
 @[simps]
-def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms]
-  [G.PreservesZeroMorphisms] (τ : F ≅ G) : S.map F ≅ S.map G where
+def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ≅ G) :
+    S.map F ≅ S.map G where
   hom := S.mapNatTrans τ.hom
   inv := S.mapNatTrans τ.inv
 
@@ -207,16 +211,16 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
     (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom) (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) :
     S₁ ≅ S₂ where
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
-  inv := Hom.mk' e₁.inv e₂.inv e₃.inv
+  inv := homMk e₁.inv e₂.inv e₃.inv
     (by rw [← cancel_mono e₂.hom, assoc, assoc, e₂.inv_hom_id, comp_id,
-      ← comm₁₂, e₁.inv_hom_id_assoc])
+          ← comm₁₂, e₁.inv_hom_id_assoc])
     (by rw [← cancel_mono e₃.hom, assoc, assoc, e₃.inv_hom_id, comp_id,
-        ← comm₂₃, e₂.inv_hom_id_assoc])
+          ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃) (by aesop_cat) (by aesop_cat))
 
-/-- The opposite short_complex in `Cᵒᵖ` associated to a short complex in `C`. -/
+/-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
@@ -237,7 +241,7 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
 @[simp]
 lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 
-/-- The short_complex in `C` associated to a short complex in `Cᵒᵖ`. -/
+/-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero] ; rfl)
@@ -282,7 +286,10 @@ def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
 
 variable {C}
 
+/-- the canonical isomorphism `S.unop.op ≅ S` for a short complex `S` in `Cᵒᵖ` -/
 abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
+
+/-- the canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
 abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
 
