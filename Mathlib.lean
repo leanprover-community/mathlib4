@@ -1320,6 +1320,7 @@ import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
+import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.NNReal

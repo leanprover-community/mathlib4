@@ -8,12 +8,12 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Irrational
-import Mathbin.Data.Nat.Fib
-import Mathbin.Data.Nat.PrimeNormNum
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.Tactic.RingExp
-import Mathbin.Algebra.LinearRecurrence
+import Mathlib.Data.Real.Irrational
+import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.PrimeNormNum
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.RingExp
+import Mathlib.Algebra.LinearRecurrence
 
 /-!
 # The golden ratio and its conjugate
@@ -50,16 +50,14 @@ scoped[Real] notation "φ" => goldenRatio
 scoped[Real] notation "ψ" => goldenConj
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
-theorem inv_gold : φ⁻¹ = -ψ :=
-  by
+theorem inv_gold : φ⁻¹ = -ψ := by
   have : 1 + Real.sqrt 5 ≠ 0 := ne_of_gt (add_pos (by norm_num) <| real.sqrt_pos.mpr (by norm_num))
   field_simp [sub_mul, mul_add]
   norm_num
 #align inv_gold inv_gold
 
 /-- The opposite of the golden ratio is the inverse of its conjugate. -/
-theorem inv_gold_conj : ψ⁻¹ = -φ :=
-  by
+theorem inv_gold_conj : ψ⁻¹ = -φ := by
   rw [inv_eq_iff_eq_inv, ← neg_inv, ← neg_eq_iff_eq_neg]
   exact inv_gold.symm
 #align inv_gold_conj inv_gold_conj
@@ -78,8 +76,7 @@ theorem gold_conj_mul_gold : ψ * φ = -1 := by
 #align gold_conj_mul_gold gold_conj_mul_gold
 
 @[simp]
-theorem gold_add_gold_conj : φ + ψ = 1 :=
-  by
+theorem gold_add_gold_conj : φ + ψ = 1 := by
   rw [goldenRatio, goldenConj]
   ring
 #align gold_add_gold_conj gold_add_gold_conj
@@ -91,23 +88,20 @@ theorem one_sub_gold : 1 - ψ = φ := by linarith [gold_add_gold_conj]
 #align one_sub_gold one_sub_gold
 
 @[simp]
-theorem gold_sub_gold_conj : φ - ψ = Real.sqrt 5 :=
-  by
+theorem gold_sub_gold_conj : φ - ψ = Real.sqrt 5 := by
   rw [goldenRatio, goldenConj]
   ring
 #align gold_sub_gold_conj gold_sub_gold_conj
 
 @[simp]
-theorem gold_sq : φ ^ 2 = φ + 1 :=
-  by
+theorem gold_sq : φ ^ 2 = φ + 1 := by
   rw [goldenRatio, ← sub_eq_zero]
   ring
   rw [Real.sq_sqrt] <;> norm_num
 #align gold_sq gold_sq
 
 @[simp]
-theorem gold_conj_sq : ψ ^ 2 = ψ + 1 :=
-  by
+theorem gold_conj_sq : ψ ^ 2 = ψ + 1 := by
   rw [goldenConj, ← sub_eq_zero]
   ring
   rw [Real.sq_sqrt] <;> norm_num
@@ -121,8 +115,7 @@ theorem gold_ne_zero : φ ≠ 0 :=
   ne_of_gt gold_pos
 #align gold_ne_zero gold_ne_zero
 
-theorem one_lt_gold : 1 < φ :=
-  by
+theorem one_lt_gold : 1 < φ := by
   refine' lt_of_mul_lt_mul_left _ (le_of_lt gold_pos)
   simp [← sq, gold_pos, zero_lt_one]
 #align one_lt_gold one_lt_gold
@@ -134,8 +127,7 @@ theorem gold_conj_ne_zero : ψ ≠ 0 :=
   ne_of_lt gold_conj_neg
 #align gold_conj_ne_zero gold_conj_ne_zero
 
-theorem neg_one_lt_gold_conj : -1 < ψ :=
-  by
+theorem neg_one_lt_gold_conj : -1 < ψ := by
   rw [neg_lt, ← inv_gold]
   exact inv_lt_one one_lt_gold
 #align neg_one_lt_gold_conj neg_one_lt_gold_conj
@@ -146,8 +138,7 @@ theorem neg_one_lt_gold_conj : -1 < ψ :=
 
 
 /-- The golden ratio is irrational. -/
-theorem gold_irrational : Irrational φ :=
-  by
+theorem gold_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.rat_add 1
   have := this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
@@ -156,8 +147,7 @@ theorem gold_irrational : Irrational φ :=
 #align gold_irrational gold_irrational
 
 /-- The conjugate of the golden ratio is irrational. -/
-theorem gold_conj_irrational : Irrational ψ :=
-  by
+theorem gold_conj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.rat_sub 1
   have := this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
@@ -194,8 +184,7 @@ theorem fibRec_charPoly_eq {β : Type _} [CommRing β] : fibRec.charPoly = X ^ 2
 end Poly
 
 /-- As expected, the Fibonacci sequence is a solution of `fib_rec`. -/
-theorem fib_is_sol_fibRec : fibRec.IsSolution (fun x => x.fib : ℕ → α) :=
-  by
+theorem fib_is_sol_fibRec : fibRec.IsSolution (fun x => x.fib : ℕ → α) := by
   rw [fibRec]
   intro n
   simp only
@@ -204,15 +193,13 @@ theorem fib_is_sol_fibRec : fibRec.IsSolution (fun x => x.fib : ℕ → α) :=
 #align fib_is_sol_fib_rec fib_is_sol_fibRec
 
 /-- The geometric sequence `λ n, φ^n` is a solution of `fib_rec`. -/
-theorem geom_gold_is_sol_fibRec : fibRec.IsSolution (pow φ) :=
-  by
+theorem geom_gold_is_sol_fibRec : fibRec.IsSolution (pow φ) := by
   rw [fib_rec.geom_sol_iff_root_char_poly, fibRec_charPoly_eq]
   simp [sub_eq_zero]
 #align geom_gold_is_sol_fib_rec geom_gold_is_sol_fibRec
 
 /-- The geometric sequence `λ n, ψ^n` is a solution of `fib_rec`. -/
-theorem geom_gold_conj_is_sol_fibRec : fibRec.IsSolution (pow ψ) :=
-  by
+theorem geom_gold_conj_is_sol_fibRec : fibRec.IsSolution (pow ψ) := by
   rw [fib_rec.geom_sol_iff_root_char_poly, fibRec_charPoly_eq]
   simp [sub_eq_zero]
 #align geom_gold_conj_is_sol_fib_rec geom_gold_conj_is_sol_fibRec
