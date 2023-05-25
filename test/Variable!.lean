@@ -6,6 +6,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 namespace Tests
 
+set_option trace.variable! true
+
 section
 variable! (x : Nat) [DecidableEq α] -- works like `variable`
 
@@ -24,9 +26,8 @@ namespace foo
 class A (α : Type)
 class B (α : Type) [A α]
 class C (α : Type) [A α] [B α]
-variable!? [C α]
-
 -- Try this: variable [A α] [B α] [C α]
+variable! [C α]
 
 end foo
 
@@ -64,7 +65,12 @@ example : Algebra k V := inferInstance
 end
 
 section
-variable!? (k A V : Type _) [Field k] [Ring A] [Algebra k A] [VectorSpace k A]  [VectorSpace k V]
+--variable! (k A V : Type _) [Field k] [Algebra k A] [VectorSpace k A]  [VectorSpace k V]
+--set_option trace.Meta.synthInstance true
+--variable! [Field k] [Algebra k A] [VectorSpace k A]
+--#check Algebra.toModule
+--#synth Module k A
+-- Try this: variable (k A V : Type _) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
 
 -- Try this: variable (k A V : Type _) [Field k] [AddCommGroup A] [Module k A] [Ring A] [Algebra k A] [AddCommGroup V]
 --  [Module k V]
@@ -84,7 +90,7 @@ structure Rep (k A V : Type _)
 end
 
 section
-variable!? [Rep k A V]
+variable! [Rep k A V]
 
 -- Try this: variable [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
 --  [DistribMulAction A V] [SMulCommClass k A V]
@@ -100,7 +106,7 @@ variable! [UniqueFactorizationDomain R]
 end
 
 section -- TODO bug in type inference?
-variable!? [Rep k A V] [VectorSpace k A]
+--variable!? [Rep k A V] [VectorSpace k A]
 
 end
 
