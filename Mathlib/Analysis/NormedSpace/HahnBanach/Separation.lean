@@ -8,10 +8,10 @@ Authors: Bhavik Mehta, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Cone.Basic
-import Mathbin.Analysis.Convex.Gauge
-import Mathbin.Topology.Algebra.Module.FiniteDimension
-import Mathbin.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Separation Hahn-Banach theorem
@@ -49,8 +49,7 @@ a continuous linear functional `f` separating `x₀` and `s`, in the sense that 
 all of `s` to values strictly below `1`. -/
 theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
-    (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 :=
-  by
+    (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
   obtain ⟨φ, hφ₁, hφ₂⟩ :=
     exists_extension_of_le_sublinear f (gauge s) (fun c hc => gauge_smul_of_nonneg hc.le)
@@ -87,8 +86,7 @@ variable [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E] [Module �
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
-    (disj : Disjoint s t) : ∃ (f : E →L[ℝ] ℝ)(u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u ≤ f b :=
-  by
+    (disj : Disjoint s t) : ∃ (f : E →L[ℝ] ℝ)(u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u ≤ f b := by
   obtain rfl | ⟨a₀, ha₀⟩ := s.eq_empty_or_nonempty
   · exact ⟨0, 0, by simp, fun b hb => le_rfl⟩
   obtain rfl | ⟨b₀, hb₀⟩ := t.eq_empty_or_nonempty
@@ -104,8 +102,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     exact disj.zero_not_mem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
   have : f b₀ = f a₀ + 1 := by simp [← hf₁]
-  have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b :=
-    by
+  have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
     intro a ha b hb
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)
     simp only [f.map_add, f.map_sub, hf₁] at this
@@ -134,8 +131,7 @@ theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen 
 
 theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht₁ : Convex ℝ t)
     (ht₃ : IsOpen t) (disj : Disjoint s t) :
-    ∃ (f : E →L[ℝ] ℝ)(u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u < f b :=
-  by
+    ∃ (f : E →L[ℝ] ℝ)(u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u < f b := by
   obtain rfl | ⟨a₀, ha₀⟩ := s.eq_empty_or_nonempty
   · exact ⟨0, -1, by simp, fun b hb => by norm_num⟩
   obtain rfl | ⟨b₀, hb₀⟩ := t.eq_empty_or_nonempty
@@ -158,8 +154,7 @@ variable [LocallyConvexSpace ℝ E]
 compact and `t` is closed, there is a continuous linear functional which strongly separates them. -/
 theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
     (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
-    ∃ (f : E →L[ℝ] ℝ)(u v : ℝ), (∀ a ∈ s, f a < u) ∧ u < v ∧ ∀ b ∈ t, v < f b :=
-  by
+    ∃ (f : E →L[ℝ] ℝ)(u v : ℝ), (∀ a ∈ s, f a < u) ∧ u < v ∧ ∀ b ∈ t, v < f b := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · exact ⟨0, -2, -1, by simp, by norm_num, fun b hb => by norm_num⟩
   obtain rfl | ht := t.eq_empty_or_nonempty
@@ -210,8 +205,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) : ∃ f : 
 
 /-- A closed convex set is the intersection of the halfspaces containing it. -/
 theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
-    (⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y }) = s :=
-  by
+    (⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y }) = s := by
   rw [Set.iInter_setOf]
   refine' Set.Subset.antisymm (fun x hx => _) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra
