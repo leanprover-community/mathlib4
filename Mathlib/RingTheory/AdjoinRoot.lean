@@ -454,7 +454,7 @@ This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_left
 def modByMonicHom (hg : g.Monic) : AdjoinRoot g →ₗ[R] R[X] :=
   (Submodule.liftQ _ (Polynomial.modByMonicHom g)
         fun f (hf : f ∈ (Ideal.span {g}).restrictScalars R) =>
-        (mem_ker_mod_by_monic hg).mpr (Ideal.mem_span_singleton.mp hf)).comp <|
+        (mem_ker_modByMonic hg).mpr (Ideal.mem_span_singleton.mp hf)).comp <|
     (Submodule.Quotient.restrictScalarsEquiv R (Ideal.span {g} : Ideal R[X])).symm.toLinearMap
 #align adjoin_root.mod_by_monic_hom AdjoinRoot.modByMonicHom
 
