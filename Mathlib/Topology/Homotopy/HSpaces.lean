@@ -207,6 +207,7 @@ theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
       (by
         rw [qRight]
         congr
+        norm_num
         apply mul_div_cancel_left
         exact two_ne_zero) <|
     Set.projIcc_val zero_le_one _
