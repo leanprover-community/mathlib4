@@ -2,8 +2,15 @@
 Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
+
+! This file was ported from Lean 3 source module category_theory.monoidal.coherence
+! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+-- Porting note: restore when ported
+-- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
 /-!
 # A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
@@ -362,8 +369,6 @@ elab_rules : tactic
     -- try bicategory.whisker_simps
     )))
   coherence_loop
-
-set_option trace.coherence true
 
 example (f : 𝟙_ C ⟶ _) : f ≫ (λ_ (𝟙_ C)).hom = f ≫ (ρ_ (𝟙_ C)).hom :=
 by coherence
