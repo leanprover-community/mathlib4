@@ -428,11 +428,13 @@ protected def mkHom (n : ℕ) {K : Type u} [Field K] {f : K[X]} : K →+* Splitt
   map_zero' := by
     induction' n with k hk generalizing K
     · simp [SplittingFieldAux.mk]
+    simp only at hk ⊢
     change (SplittingFieldAux.mk k) ((AdjoinRoot.of f.factor) 0) = _
     rw [map_zero, hk]
   map_add' := by
     induction' n with k hk generalizing K
     · simp [SplittingFieldAux.mk]
+    simp only at hk ⊢
     intro x y
     change (SplittingFieldAux.mk k) ((AdjoinRoot.of f.factor) _) = _
     rw [map_add]
