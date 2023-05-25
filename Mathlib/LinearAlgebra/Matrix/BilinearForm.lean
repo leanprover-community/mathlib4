@@ -475,34 +475,27 @@ theorem isAdjointPair_toBilin [DecidableEq n] :
 #align is_adjoint_pair_to_bilin isAdjointPair_toBilin
 
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : IsUnit P) :
-    (Pᵀ ⬝ J ⬝ P).IsAdjointPair (Pᵀ ⬝ J ⬝ P) A A' ↔ J.IsAdjointPair J (P ⬝ A ⬝ P⁻¹) (P ⬝ A' ⬝ P⁻¹) :=
-  by
+    (Pᵀ ⬝ J ⬝ P).IsAdjointPair (Pᵀ ⬝ J ⬝ P) A A' ↔
+      J.IsAdjointPair J (P ⬝ A ⬝ P⁻¹) (P ⬝ A' ⬝ P⁻¹) := by
   have h' : IsUnit P.det := P.isUnit_iff_isUnit_det.mp h
+  -- Porting note: the original proof used a complicated conv and timed out
   let u := P.nonsingInvUnit h'
+  have coe_u : (u : Matrix n n R₃) = P := rfl
+  have coe_u_inv : (↑u⁻¹ : Matrix n n R₃) = P⁻¹ := rfl
   let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
-  let x := Aᵀ * Pᵀ * J
-  let y := J * P * A'
-  suffices x * ↑u = ↑v * y ↔ ↑v⁻¹ * x = y * ↑u⁻¹ by
-    dsimp only [Matrix.IsAdjointPair]
-    repeat' rw [Matrix.transpose_mul]
-    simp only [← Matrix.mul_eq_mul, ← mul_assoc, P.transpose_nonsing_inv]
-    conv_lhs =>
-      rhs
-      rw [mul_assoc, mul_assoc]
-      congr
-      · skip
-      · rw [← mul_assoc]
-    conv_rhs =>
-      rw [mul_assoc, mul_assoc]
-      conv =>
-        lhs
-        congr
-        · skip
-        · rw [← mul_assoc]
-    exact this
-  rw [Units.eq_mul_inv_iff_mul_eq]
-  conv_rhs => rw [mul_assoc]
-  rw [v.inv_mul_eq_iff_eq_mul]
+  have coe_v : (v : Matrix n n R₃) = Pᵀ := rfl
+  have coe_v_inv : (↑v⁻¹ : Matrix n n R₃) = P⁻¹ᵀ := P.transpose_nonsing_inv.symm
+  set x := Aᵀ * Pᵀ * J with x_def
+  set y := J * P * A' with y_def
+  simp only [Matrix.IsAdjointPair, ← Matrix.mul_eq_mul]
+  calc (Aᵀ * (Pᵀ * J * P) = Pᵀ * J * P * A')
+         ↔ (x * ↑u = ↑v * y) := ?_
+       _ ↔ (↑v⁻¹ * x = y * ↑u⁻¹) := ?_
+       _ ↔ ((P * A * P⁻¹)ᵀ * J = J * (P * A' * P⁻¹)) := ?_
+  · simp only [mul_assoc, x_def, y_def, coe_u, coe_v]
+  · rw [Units.eq_mul_inv_iff_mul_eq, mul_assoc ↑v⁻¹ x, Units.inv_mul_eq_iff_eq_mul]
+  · rw [x_def, y_def, coe_u_inv, coe_v_inv]
+    simp only [Matrix.mul_eq_mul, Matrix.mul_assoc, Matrix.transpose_mul]
 #align matrix.is_adjoint_pair_equiv' Matrix.isAdjointPair_equiv'
 
 variable [DecidableEq n]
