@@ -11,11 +11,15 @@ open CategoryTheory Topology TopologicalSpace
 universe u
 variable (X : Type u)
 
--- pt functor on objects
+/- Definition of the functor `pt` --/
+
+/- `points_of_frame L` is the type of points of a frame `L`, where a *point* of a frame is,
+   by definition, a frame homomorphism to the frame `Prop`. -/
 @[reducible]
 def pt_obj (L : Type _) [Order.Frame L] := FrameHom L Prop
 
--- unit
+/- The frame homomorphism `open_of_element_hom` from a frame L to
+   the frame `Set (points_of_frame L)`. -/
 def open_of_element_hom (L : Type _) [Order.Frame L] : FrameHom L (Set (pt_obj L)) where
   toFun u :=  {x | x u}
   map_inf' a b := by simp; rfl
@@ -39,7 +43,7 @@ def open_of_element_hom (L : Type _) [Order.Frame L] : FrameHom L (Set (pt_obj L
       exact ⟨x, hx, hxZ⟩
   }
 
--- pt L is a topological space
+/- The topology on the set of points. -/
 instance ptTop (L : Type _) [Order.Frame L] : TopologicalSpace (pt_obj L) where
   IsOpen := Set.range fun u ↦ { x : pt_obj L | x u }
   isOpen_univ := ⟨⊤, by simp only [map_top]; exact rfl⟩
@@ -73,6 +77,7 @@ def pt_open (L : Type _) [Order.Frame L] (l : L) : Opens (pt_obj L) where
   carrier := open_of_element_hom L l
   is_open' := by use l; rfl
 
+/- The action of the functor `pt` on frame homomorphisms. -/
 @[reducible]
 def pt_map {L L' : Type _} [Order.Frame L] [Order.Frame L']
   (f : FrameHom L' L) : C(pt_obj L, pt_obj L') where
@@ -89,10 +94,29 @@ def pt : FrmCatᵒᵖ ⥤ TopCat where
   obj L    := ⟨FrameHom L.unop Prop, by infer_instance⟩
   map f    := pt_map f.unop
 
+/- Definition of the functor `𝒪`. -/
 def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
   obj X := ⟨Opens X.α, by infer_instance⟩
   map {X Y} f := by apply Opposite.op; exact Opens.comap f
 
+#check OpenNhdsOf
+#check nhds
+
+
+-- TODO: is this in the library?
+lemma elim_exists_prop (A : Prop → Prop) : (∃ p, (A p) ∧ p) ↔ (A True) := by aesop
+
+def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : FrameHom (Opens X) Prop where
+  toFun u := x ∈ u
+  map_inf' a b := by simp; rfl
+  map_top'     := by simp; rfl
+  map_sSup' S  := by simp [elim_exists_prop, iff_true]
+
+
+/- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
+def neighborhoods (X : Type _) [TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
+  toFun := frame_point_of_space_point X
+  continuous_toFun := _
 
 def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := pt_open L
