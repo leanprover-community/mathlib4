@@ -55,7 +55,7 @@ theorem T0_iff_χInjective {τ : TopologicalSpace X } : (T0Space X ↔ Function.
 theorem isIrreducible_iff_sInf_Opens [α: TopologicalSpace X] {s : Set X} :
     IsIrreducible s ↔
       ∀ (U : Finset (Opens X)), (∀ u ∈ U, (s ∩ u).Nonempty) →
-        (s ⊓ (⨅₀ U)).Nonempty := sorry
+        (s ⊓ ((sInf U) : Opens X)).Nonempty := sorry
 
 /- A space is sober if and only if χ is a surjective function. -/
 theorem QuasiSober_iff_χSurjective {τ : TopologicalSpace X} : 
