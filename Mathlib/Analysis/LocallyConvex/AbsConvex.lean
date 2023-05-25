@@ -21,13 +21,13 @@ topological vector space has a basis consisting of absolutely convex sets.
 
 ## Main definitions
 
-* `gauge_seminorm_family`: the seminorm family induced by all open absolutely convex neighborhoods
+* `gaugeSeminormFamily`: the seminorm family induced by all open absolutely convex neighborhoods
 of zero.
 
 ## Main statements
 
-* `with_gauge_seminorm_family`: the topology of a locally convex space is induced by the family
-`gauge_seminorm_family`.
+* `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
+`gaugeSeminormFamily`.
 
 ## Todo
 
@@ -69,8 +69,7 @@ theorem nhds_basis_abs_convex :
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
 theorem nhds_basis_abs_convex_open :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id :=
-  by
+    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine' (nhds_basis_abs_convex 𝕜 E).to_hasBasis _ _
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine' ⟨interior s, _, interior_subset⟩
@@ -96,9 +95,9 @@ def AbsConvexOpenSets :=
   { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s }
 #align abs_convex_open_sets AbsConvexOpenSets
 
-instance AbsConvexOpenSets.hasCoe : Coe (AbsConvexOpenSets 𝕜 E) (Set E) :=
+noncomputable instance AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
   ⟨Subtype.val⟩
-#align abs_convex_open_sets.has_coe AbsConvexOpenSets.hasCoe
+#align abs_convex_open_sets.has_coe AbsConvexOpenSets.instCoeTC
 
 namespace AbsConvexOpenSets
 
@@ -126,7 +125,7 @@ theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
 
 end AbsConvexOpenSets
 
-instance : Nonempty (AbsConvexOpenSets 𝕜 E) := by
+instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) := by
   rw [← exists_true_iff_nonempty]
   dsimp only [AbsConvexOpenSets]
   rw [Subtype.exists]
@@ -155,8 +154,8 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
     (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) := by
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
-  simp_rw [gaugeSeminorm_to_fun]
-  exact gauge_lt_one_eq_self_of_open s.coe_convex s.coe_zero_mem s.coe_is_open
+  simp_rw [gaugeSeminorm_toFun]
+  exact gauge_lt_one_eq_self_of_open s.coe_convex s.coe_zero_mem s.coe_isOpen
 #align gauge_seminorm_family_ball gaugeSeminormFamily_ball
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
@@ -176,14 +175,13 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine'
-    ⟨mem_Inter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
-      isOpen_biInter (to_finite _) fun S _ => _,
+    ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
+      isOpen_biInter (t.finite_toSet) fun S _ => _,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
       convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
   -- The only nontrivial part is to show that the ball is open
   have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
-  exact S.coe_is_open.smul₀ hr''
+  exact S.coe_isOpen.smul₀ hr''
 #align with_gauge_seminorm_family with_gaugeSeminormFamily
-
