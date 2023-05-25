@@ -41,3 +41,91 @@ types. Note that, by design, this may assign metavariables. -/
 def mkAppNUnifyingTypes (f : Expr) (xs : Array Expr) : MetaM Expr := do
   mkAppNUnifyingTypesArgs f (← inferType f) xs
 
+namespace ExprWithLevels
+
+/-- Given a `const : Name`, produce `(f, fType, env)`, where
+
+* `f` is the expression representing `const`
+* `fType` is the type of `f`
+* `env` is the assignment of the level params of `const` to new level metavariables.
+
+The level params in `f` and `fType` are instantiated with these new level metavariables.
+-/
+def mkFunWithLevels (const : Name) : MetaM (Expr × Expr × Environment) := do
+  let cinfo ← getConstInfo const
+  let paramList := cinfo.levelParams
+  let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
+  let f := Expr.const const us
+  let fType ← instantiateTypeLevelParams cinfo us
+  return (f, fType, ⟨paramList.toArray, us.toArray⟩)
+
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Whether it fails if any newly-created metavariables are still unassigned is controlled by `allowNewMVars`. -/
+private def mkAppMFinalAllowingMVars (methodName : Name) (f : Expr) (args : Array Expr)
+    (mvars instMVars : Array MVarId) (allowNewMVars : Bool) : MetaM Expr := do
+  instMVars.forM fun mvarId => do
+    let mvarDecl ← mvarId.getDecl
+    let mvarVal  ← synthInstance mvarDecl.type
+    mvarId.assign mvarVal
+  let result ← instantiateMVars (mkAppN f args)
+  unless allowNewMVars do
+    unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
+      throwAppBuilderException methodName ("result contains metavariables" ++ indentExpr result)
+  return result
+
+/-- Nearly identical to `mkAppMArgs`, but uses `mkAppMFinalAllowingMVars`, and passes it any mvarIds
+it creates. -/
+private partial def mkAppMArgsAllowingMVars (f : Expr) (fType : Expr) (xs : Array Expr)
+    (allowNewMVars : Bool) : MetaM Expr :=
+  let rec loop (type : Expr) (i : Nat) (j : Nat) (args : Array Expr)
+      (mvars instMVars : Array MVarId) : MetaM Expr := do
+    if i >= xs.size then
+      mkAppMFinalAllowingMVars `mkAppM f args mvars instMVars allowNewMVars
+    else match type with
+      | Expr.forallE n d b bi =>
+        let d  := d.instantiateRevRange j args.size args
+        match bi with
+        | BinderInfo.implicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.natural n
+          loop b i j (args.push mvar) (mvars.push mvar.mvarId!) instMVars
+        | BinderInfo.strictImplicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.natural n
+          loop b i j (args.push mvar) (mvars.push mvar.mvarId!) instMVars
+        | BinderInfo.instImplicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.synthetic n
+          loop b i j (args.push mvar) mvars (instMVars.push mvar.mvarId!)
+        | _ =>
+          let x := xs[i]!
+          let xType ← inferType x
+          if (← isDefEq d xType) then
+            loop b (i+1) j (args.push x) mvars instMVars
+          else
+            throwAppTypeMismatch (mkAppN f args) x
+      | type =>
+        let type := type.instantiateRevRange j args.size args
+        let type ← whnfD type
+        if type.isForall then
+          loop type i args.size args mvars instMVars
+        else
+          throwAppBuilderException `mkAppM m!"too many explicit arguments provided to{
+            indentExpr f}\narguments{indentD xs}"
+  loop fType 0 0 #[] #[] #[]
+
+/-- Like `mkAppN (f : ExprWithLevels).expr xs`, but handles level arguments appropriately by
+instantiating them with metavariables and then abstracting any that are not assigned. -/
+def mkAppNWithLevels (f : ExprWithLevels) (xs : Array Expr) : MetaM ExprWithLevels :=
+  withNewMCtxDepth do
+    let (env, f) ← levelMetaTelescope f
+    let e ← mkAppNUnifyingTypes f xs
+    abstract env e
+
+/-- Like `mkAppM'`, but handles "free" universe levels in `f` given by `params`. This converts
+`params` in `f` and its type to level mvars `us`, constructs `f xs₁ xs₂ ... xsₙ`, then reverts any
+`us` that were not assigned to their original universe params and returns the names of those params.
+-/
+def mkAppMWithLevels' (f : ExprWithLevels) (xs : Array Expr) : MetaM ExprWithLevels :=
+  withNewMCtxDepth do
+    let (env, f) ← levelMetaTelescope f
+    let fType ← inferType f
+    let e ← withAppBuilderTrace f xs do mkAppMArgsAllowingMVars f fType xs false
+    abstract env e
+
