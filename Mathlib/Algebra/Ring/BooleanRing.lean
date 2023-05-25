@@ -12,7 +12,6 @@ import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Boolean rings

@@ -216,7 +216,8 @@ instance : AddCommGroup (Completion α) :=
         change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
 
-instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R (Completion α) :=
+instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
+    Module R (Completion α) :=
   { (inferInstance : DistribMulAction R $ Completion α),
     (inferInstance : MulActionWithZero R $ Completion α) with
     smul := (· • ·)
@@ -224,6 +225,7 @@ instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
+#align uniform_space.completion.module UniformSpace.Completion.instModule
 
 end UniformAddCommGroup
 
