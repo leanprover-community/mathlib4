@@ -289,18 +289,32 @@ protected def zpow (n : ℕ) :
 #align polynomial.splitting_field_aux.zpow Polynomial.SplittingFieldAux.zpow
 
 -- I'm not sure why these two lemmas break, but inlining them seems to not work.
+-- Porting note: original proof was `Nat.recOn n (fun K fK f => zero_nsmul) fun n ih K fK f => ih`
 private theorem nsmul_zero (n : ℕ) :
     ∀ {K : Type u} [Field K],
-      ∀ {f : K[X]} (x : SplittingFieldAux n f), (0 : ℕ) • x = SplittingFieldAux.zero n :=
-  Nat.recOn n (fun K fK f => zero_nsmul) fun n ih K fK f => ih
-#align polynomial.splitting_field_aux.nsmul_zero polynomial.splitting_field_aux.nsmul_zero
+      ∀ {f : K[X]} (x : SplittingFieldAux n f), (0 : ℕ) • x = SplittingFieldAux.zero n := by
+  induction' n with _ hn
+  · intro K fK f
+    change ∀ (x : K), (0 : ℕ) • x = SplittingFieldAux.zero 0
+    exact zero_nsmul
+  · intro K fK f
+    apply hn
 
+set_option maxHeartbeats 300000 in
+-- Porting note: original proof was
+-- `Nat.recOn n (fun K fK f n x => succ_nsmul x n) fun n ih K fK f => ih`
 private theorem nsmul_succ (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ {f : K[X]} (k : ℕ) (x : SplittingFieldAux n f),
-        (k + 1) • x = SplittingFieldAux.add n x (k • x) :=
-  Nat.recOn n (fun K fK f n x => succ_nsmul x n) fun n ih K fK f => ih
-#align polynomial.splitting_field_aux.nsmul_succ polynomial.splitting_field_aux.nsmul_succ
+        (k + 1) • x = SplittingFieldAux.add n x (k • x) := by
+  induction' n with _ hn
+  · intro K fK _ k
+    change ∀ (x : K), (k + 1) • x = x + (k • x)
+    intro x
+    exact succ_nsmul x _
+  · intro K fK f
+    apply hn
+
 
 instance field (n : ℕ) {K : Type u} [Field K] {f : K[X]} : Field (SplittingFieldAux n f) := by
   refine'
