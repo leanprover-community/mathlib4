@@ -22,10 +22,10 @@ This file defines the conversion between bilinear forms and matrices.
 
 ## Main definitions
 
- * `matrix.to_bilin` given a basis define a bilinear form
- * `matrix.to_bilin'` define the bilinear form on `n → R`
- * `bilin_form.to_matrix`: calculate the matrix coefficients of a bilinear form
- * `bilin_form.to_matrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
+ * `Matrix.toBilin` given a basis define a bilinear form
+ * `Matrix.toBilin'` define the bilinear form on `n → R`
+ * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
+ * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
 ## Notations
 
@@ -66,7 +66,7 @@ open BilinForm Finset LinearMap Matrix
 open Matrix
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/-- The map from `matrix n n R` to bilinear forms on `n → R`.
+/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
 This is an auxiliary definition for the equivalence `matrix.to_bilin_form'`. -/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) where
@@ -101,7 +101,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
     contradiction
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
-/-- The linear map from bilinear forms to `matrix n n R` given an `n`-indexed basis.
+/-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `matrix.to_bilin_form'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ where
@@ -292,13 +292,13 @@ a module with a fixed basis.
 
 variable [DecidableEq n] (b : Basis n R₂ M₂)
 
-/-- `bilin_form.to_matrix b` is the equivalence between `R`-bilinear forms on `M` and
+/-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix : BilinForm R₂ M₂ ≃ₗ[R₂] Matrix n n R₂ :=
   (BilinForm.congr b.equivFun).trans BilinForm.toMatrix'
 #align bilin_form.to_matrix BilinForm.toMatrix
 
-/-- `bilin_form.to_matrix b` is the equivalence between `R`-bilinear forms on `M` and
+/-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def Matrix.toBilin : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ M₂ :=
   (BilinForm.toMatrix b).symm
@@ -320,7 +320,7 @@ theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Basis.equivFun_apply]
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
--- Not a `simp` lemma since `bilin_form.to_matrix` needs an extra argument
+-- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₂ M₂) :
     BilinForm.toMatrixAux (R₂ := R₂) b B = BilinForm.toMatrix b B :=
   ext fun i j => by rw [BilinForm.toMatrix_apply, BilinForm.toMatrixAux_apply]
@@ -605,7 +605,7 @@ theorem Nondegenerate.toMatrix {B : BilinForm R₃ M₃} (h : B.Nondegenerate) (
   (nondegenerate_toMatrix_iff b).mpr h
 #align bilin_form.nondegenerate.to_matrix BilinForm.Nondegenerate.toMatrix
 
--- Some shorthands for combining the above with `matrix.nondegenerate_of_det_ne_zero`
+-- Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero`
 theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
   rw [Matrix.nondegenerate_toBilin'_iff, Matrix.nondegenerate_iff_det_ne_zero]
