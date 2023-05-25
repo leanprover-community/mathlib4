@@ -515,10 +515,10 @@ def pairSelfAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
       ((n → R₃) →ₗ[R₃] n → R₃) →ₗ[R₃] Matrix n n R₃)
 #align pair_self_adjoint_matrices_submodule' pairSelfAdjointMatricesSubmodule'
 
-theorem mem_pair_self_adjoint_matrices_submodule' :
+theorem mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by
   simp only [mem_pairSelfAdjointMatricesSubmodule]
-#align mem_pair_self_adjoint_matrices_submodule' mem_pair_self_adjoint_matrices_submodule'
+#align mem_pair_self_adjoint_matrices_submodule' mem_pairSelfAdjointMatricesSubmodule'
 
 /-- The submodule of self-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -526,10 +526,10 @@ def selfAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
   pairSelfAdjointMatricesSubmodule J J
 #align self_adjoint_matrices_submodule' selfAdjointMatricesSubmodule'
 
-theorem mem_self_adjoint_matrices_submodule' :
+theorem mem_selfAdjointMatricesSubmodule' :
     A ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A := by
   simp only [mem_selfAdjointMatricesSubmodule]
-#align mem_self_adjoint_matrices_submodule' mem_self_adjoint_matrices_submodule'
+#align mem_self_adjoint_matrices_submodule' mem_selfAdjointMatricesSubmodule'
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -537,10 +537,10 @@ def skewAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
   pairSelfAdjointMatricesSubmodule (-J) J
 #align skew_adjoint_matrices_submodule' skewAdjointMatricesSubmodule'
 
-theorem mem_skew_adjoint_matrices_submodule' :
+theorem mem_skewAdjointMatricesSubmodule' :
     A ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A := by
   simp only [mem_skewAdjointMatricesSubmodule]
-#align mem_skew_adjoint_matrices_submodule' mem_skew_adjoint_matrices_submodule'
+#align mem_skew_adjoint_matrices_submodule' mem_skewAdjointMatricesSubmodule'
 
 end MatrixAdjoints
 
@@ -629,4 +629,3 @@ theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₃) (h : (toMatrix b B₃
 end Det
 
 end BilinForm
-
