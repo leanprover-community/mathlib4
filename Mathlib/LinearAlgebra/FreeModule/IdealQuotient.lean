@@ -34,14 +34,14 @@ variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Fintype ι]
 noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I ≠ ⊥) :
     (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set R) := by
   -- Choose `e : S ≃ₗ I` and a basis `b'` for `S` that turns the map
-  -- `f := ((submodule.subtype I).restrict_scalars R).comp e` into a diagonal matrix:
+  -- `f := ((Submodule.subtype I).restrictScalars R).comp e` into a diagonal matrix:
   -- there is an `a : ι → ℤ` such that `f (b' i) = a i • b' i`.
-  let a := I.smith_coeffs b hI
-  let b' := I.ring_basis b hI
-  let ab := I.self_basis b hI
-  have ab_eq := I.self_basis_def b hI
+  let a := I.smithCoeffs b hI
+  let b' := I.ringBasis b hI
+  let ab := I.selfBasis b hI
+  have ab_eq := I.selfBasis_def b hI
   let e : S ≃ₗ[R] I := b'.equiv ab (Equiv.refl _)
-  let f : S →ₗ[R] S := (I.subtype.restrict_scalars R).comp (e : S →ₗ[R] I)
+  let f : S →ₗ[R] S := (I.subtype.restrictScalars R).comp (e : S →ₗ[R] I)
   let f_apply : ∀ x, f x = b'.equiv ab (Equiv.refl _) x := fun x => rfl
   have ha : ∀ i, f (b' i) = a i • b' i := by
     intro i
@@ -61,7 +61,7 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
   -- which maps `I` to `I' := Π i, a i ℤ`.
   let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => Ideal.span ({a i} : Set R)
-  have : Submodule.map (b'.equiv_fun : S →ₗ[R] ι → R) (I.restrict_scalars R) = I' := by
+  have : Submodule.map (b'.equiv_fun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
     ext x
     simp only [Submodule.mem_map, Submodule.mem_pi, Ideal.mem_span_singleton, Set.mem_univ,
       Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
@@ -75,7 +75,7 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
   refine' ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans _
   any_goals apply RingHom.id
   any_goals infer_instance
-  refine' (Submodule.Quotient.equiv (I.restrict_scalars R) I' b'.equiv_fun this).trans _
+  refine' (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equiv_fun this).trans _
   any_goals apply RingHom.id
   any_goals infer_instance
   classical
@@ -85,7 +85,7 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
 #align ideal.quotient_equiv_pi_span Ideal.quotientEquivPiSpan
 
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
-`zmod`. -/
+`ZMod`. -/
 noncomputable def Ideal.quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I ≠ ⊥) :
     S ⧸ I ≃+ ∀ i, ZMod (I.smithCoeffs b hI i).natAbs :=
   let a := I.smithCoeffs b hI
@@ -98,7 +98,7 @@ noncomputable def Ideal.quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (
 /-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
 
 Can't be an instance because of the side condition `I ≠ ⊥`, and more importantly,
-because the choice of `fintype` instance is non-canonical.
+because the choice of `Fintype` instance is non-canonical.
 -/
 noncomputable def Ideal.fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
     (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) := by
