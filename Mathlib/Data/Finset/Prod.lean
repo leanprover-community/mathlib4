@@ -63,7 +63,7 @@ theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
 
 @[simp, norm_cast]
 theorem coe_product (s : Finset α) (t : Finset β) :
-    ((s ×ˢ t : Finset (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t :=
+    (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 #align finset.coe_product Finset.coe_product
 
@@ -227,7 +227,7 @@ theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod
 #align finset.product_singleton Finset.product_singleton
 
 theorem singleton_product_singleton {a : α} {b : β} :
-    ({a} : Finset α) ×ˢ ({b} : Finset β) = {(a, b)} := by
+    ({a} ×ˢ {b} : Finset _) = {(a, b)} := by
   simp only [product_singleton, Function.Embedding.coeFn_mk, map_singleton]
 #align finset.singleton_product_singleton Finset.singleton_product_singleton
 
