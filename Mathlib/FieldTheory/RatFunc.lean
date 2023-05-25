@@ -729,7 +729,7 @@ theorem liftMonoidWithZeroHom_apply_ofFractionRing_mk (φ : R[X] →*₀ G₀) (
     (n : R[X]) (d : R[X]⁰) :
     liftMonoidWithZeroHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftOn_ofFractionRing_mk _ _ _ _
-#align ratfunc.lift_monoid_with_zero_hom_apply_ofFractionRing_mk RatFunc.liftMonoidWithZeroHom_apply_ofFractionRing_mk
+#align ratfunc.lift_monoid_with_zero_hom_apply_of_fraction_ring_mk RatFunc.liftMonoidWithZeroHom_apply_ofFractionRing_mk
 
 theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ G₀⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
