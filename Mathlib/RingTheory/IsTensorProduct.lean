@@ -261,7 +261,7 @@ theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m 
 
 variable (f)
 
-theorem IsBaseChange.ofLiftUnique
+theorem IsBaseChange.of_lift_unique
     (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
       ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
         ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g) :
@@ -294,7 +294,7 @@ theorem IsBaseChange.ofLiftUnique
     change (g <| (1 : S) • f x).down = _
     rw [one_smul, hg]
     rfl
-#align is_base_change.of_lift_unique IsBaseChange.ofLiftUnique
+#align is_base_change.of_lift_unique IsBaseChange.of_lift_unique
 
 variable {f}
 
@@ -307,11 +307,11 @@ theorem IsBaseChange.iff_lift_unique :
   ⟨fun h => by
     intros Q _ _ _ _ g
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.alg_hom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
-    IsBaseChange.ofLiftUnique f⟩
+    IsBaseChange.of_lift_unique f⟩
 #align is_base_change.iff_lift_unique IsBaseChange.iff_lift_unique
 
 theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
-  apply IsBaseChange.ofLiftUnique
+  apply IsBaseChange.of_lift_unique
   intro Q I₁ I₂ I₃ I₄ g
   have : I₂ = I₃ := by
     ext r q
@@ -337,7 +337,7 @@ variable [IsScalarTower R S O] [IsScalarTower R T O]
 
 theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →ₗ[S] O}
     (hg : IsBaseChange T g) : IsBaseChange T ((g.restrictScalars R).comp f) := by
-  apply IsBaseChange.ofLiftUnique
+  apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ i
   letI := Module.compHom Q (algebraMap S T)
   haveI : IsScalarTower S T Q :=
