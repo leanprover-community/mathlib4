@@ -5,11 +5,12 @@ Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.List.FinRange
 
 /-!
 ## `norm_num` plugin for big operators
 
-This file adds `norm_num` plugins for `finset.prod` and `finset.sum`.
+This file adds `norm_num` plugins for `Finset.prod` and `Finset.sum`.
 -/
 
 namespace Mathlib.Meta
@@ -39,6 +40,120 @@ match ← isDefEqQ n q(0) with
   let (.some (n'_val : Q(ℕ))) ← getExprMVarAssignment? n'.mvarId! |
     throwError "could not figure out value of `?n` from `{n} =?= nat.succ ?n`"
   pure (.succ n'_val ⟨⟩)
+
+/-- This represents the result of trying to determine whether the given expression
+`s : Q(List $α)` is either empty or consists of an element inserted into a strict subset. -/
+inductive List.ProveNilOrConsResult {α : Q(Type u)} (s : Q(List $α))
+/-- The set is Nil. -/
+| nil (pf : Q($s = []))
+/-- The set equals `a` inserted into the strict subset `s'`. -/
+| cons (a : Q($α)) (s' : Q(List $α)) (pf : Q($s = List.cons $a $s'))
+
+/-- If `s` unifies with `t`, convert a result for `s` to a result for `t`.
+
+If `s` does not unify with `t`, this results in a type-incorrect proof.
+-/
+def List.ProveNilOrConsResult.uncheckedCast {α : Q(Type u)} {β : Q(Type v)}
+    (s : Q(List $α)) (t : Q(List $β)) :
+    List.ProveNilOrConsResult s → List.ProveNilOrConsResult t
+| .nil pf => .nil pf
+| .cons a s' pf => .cons a s' pf
+
+/-- If `s = t` and we can get the result for `t`, then we can get the result for `s`.
+-/
+def List.ProveNilOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(List $α)}
+    (eq : Q($s = $t)) :
+    List.ProveNilOrConsResult t → List.ProveNilOrConsResult s
+| .nil pf => .nil q(Eq.trans $eq $pf)
+| .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
+
+#check List.finRange_succ_eq_map
+
+/-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
+
+Fails if neither of the options succeed.
+-/
+partial def List.proveNilOrCons {α : Q(Type u)} :
+  (s : Q(List $α)) → MetaM (List.ProveNilOrConsResult s) :=
+fun s ↦
+match Expr.getAppFnArgs s with
+| (`EmptyCollection.EmptyCollection, _) => pure (.nil (q(rfl) : Q((∅ : List $α) = [])))
+| (`List.nil, _) => pure (.nil (q(rfl) : Q(([] : List $α) = [])))
+| (`List.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
+| (`List.range, #[(n : Q(ℕ))]) => do
+  match ← Nat.unifyZeroOrSucc n with
+  | .zero _pf => do
+    pure (.nil (q(List.range_zero) : Q(List.range 0 = [])))
+  | .succ n' _pf => pure <| (List.ProveNilOrConsResult.cons
+      q(0)
+      (q(List.map Nat.succ (List.range $n')))
+      (q(List.range_succ_eq_map $n'))).uncheckedCast (q(List.range ($n' + 1)) : Q(List ℕ)) s
+| (`List.finRange, #[(n : Q(ℕ))]) => do
+  match ← Nat.unifyZeroOrSucc n with
+  | .zero _pf => do
+    pure (.nil (q(List.finRange_zero) : Q(List.finRange 0 = [])))
+  | .succ n' _pf => pure <| (List.ProveNilOrConsResult.cons
+      q(0 : Fin (Nat.succ $n'))
+      (q(List.map Fin.succ (List.finRange $n')))
+      (q(List.finRange_succ_eq_map $n'))).uncheckedCast (q(List.finRange (Nat.succ $n')) : Q(List (Fin (Nat.succ $n')))) s
+| (fn, args) => throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
+
+/-- This represents the result of trying to determine whether the given expression
+`s : Q(Multiset $α)` is either empty or consists of an element inserted into a strict subset. -/
+inductive Multiset.ProveZeroOrConsResult {α : Q(Type u)} (s : Q(Multiset $α))
+/-- The set is zero. -/
+| zero (pf : Q($s = 0))
+/-- The set equals `a` inserted into the strict subset `s'`. -/
+| cons (a : Q($α)) (s' : Q(Multiset $α)) (pf : Q($s = Multiset.cons $a $s'))
+
+/-- If `s` unifies with `t`, convert a result for `s` to a result for `t`.
+
+If `s` does not unify with `t`, this results in a type-incorrect proof.
+-/
+def Multiset.ProveZeroOrConsResult.uncheckedCast {α : Q(Type u)} {β : Q(Type v)}
+    (s : Q(Multiset $α)) (t : Q(Multiset $β)) :
+    Multiset.ProveZeroOrConsResult s → Multiset.ProveZeroOrConsResult t
+| .zero pf => .zero pf
+| .cons a s' pf => .cons a s' pf
+
+/-- If `s = t` and we can get the result for `t`, then we can get the result for `s`.
+-/
+def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $α)}
+    (eq : Q($s = $t)) :
+    Multiset.ProveZeroOrConsResult t → Multiset.ProveZeroOrConsResult s
+| .zero pf => .zero q(Eq.trans $eq $pf)
+| .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
+
+lemma Multiset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Multiset α) :
+  insert a s = Multiset.cons a s :=
+by ext; simp
+
+/-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
+
+Fails if neither of the options succeed.
+-/
+partial def Multiset.proveZeroOrCons {α : Q(Type u)} :
+  (s : Q(Multiset $α)) → MetaM (Multiset.ProveZeroOrConsResult s) :=
+fun s ↦
+match Expr.getAppFnArgs s with
+| (`EmptyCollection.EmptyCollection, _) => pure (.zero (q(rfl) : Q((∅ : Multiset $α) = 0)))
+| (`Zero.zero, _) => pure (.zero (q(rfl) : Q((0 : Multiset $α) = 0)))
+| (`Multiset.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
+| (`Multiset.ofList, #[_, (val : Q(List $α))]) => do
+  match ← List.proveNilOrCons val with
+  | .nil pf => pure <| .zero (q($pf ▸ Multiset.coe_nil) : Q(($val : Multiset $α) = 0))
+  | .cons a s' pf => do
+    return (.cons a q($s')
+      (q($pf ▸ Multiset.cons_coe $a $s') : Q(↑$val = Multiset.cons $a $s')))
+| (`Multiset.range, #[(n : Q(ℕ))]) => do
+  match ← Nat.unifyZeroOrSucc n with
+  | .zero _pf => do
+    pure (.zero (q(Multiset.range_zero) : Q(Multiset.range 0 = 0)))
+  | .succ n' _pf => pure <| (Multiset.ProveZeroOrConsResult.cons
+      n'
+      (q(Multiset.range $n'))
+      (q(Multiset.range_succ $n'))).uncheckedCast (q(Multiset.range (Nat.succ $n')) : Q(Multiset ℕ)) s
+| (fn, args) => throwError "Multiset.proveZeroOrCons: unsupported Multiset expression {s} ({fn}, {args})"
 
 /-- This represents the result of trying to determine whether the given expression
 `s : Q(Finset $α)` is either empty or consists of an element inserted into a strict subset. -/
@@ -90,6 +205,15 @@ fun s ↦
 match Expr.getAppFnArgs s with
 | (`EmptyCollection.emptyCollection, _) => pure (.empty (q(rfl) : Q($s = $s)))
 | (`Finset.cons, #[_, a, s', h]) => pure (.cons a s' h (q(rfl) : Q($s = $s)))
+| (`Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do
+  match ← Multiset.proveZeroOrCons val with
+  | .zero pf => pure <| .empty (q($pf ▸ Finset.mk_zero) : Q(Finset.mk $val $nd = ∅))
+  | .cons a s' pf => do
+    let h : Q(Multiset.Nodup ($a ::ₘ $s')) := q($pf ▸ $nd)
+    let nd' : Q(Multiset.Nodup $s') := q((Multiset.nodup_cons.mp $h).2)
+    let h' : Q($a ∉ $s') := q((Multiset.nodup_cons.mp $h).1)
+    return (.cons a q(Finset.mk $s' $nd') h'
+      (q($pf ▸ Finset.mk_cons $h) : Q(Finset.mk $val $nd = Finset.cons $a ⟨$s', $nd'⟩ $h')))
 | (`Finset.range, #[(n : Q(ℕ))]) => do
   match ← Nat.unifyZeroOrSucc n with
   | .zero _pf => do
@@ -247,7 +371,8 @@ example (f : ℕ → α) : ∏ i in Finset.range 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∏ i : Fin 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num1
 example (f : ℕ → α) : ∑ i in (∅ : Finset ℕ), f i = 0 := by norm_num1
-example (f : Fin 3 → α) : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
+example : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
+example : ((0 : Fin 3) : ℕ) = 0 := by norm_num1
 /-
 example (f : Fin 3 → α) : ∑ i : Fin 3, f i = f 0 + f 1 + f 2 := by norm_num <;> ring
 example (f : Fin 4 → α) : ∑ i : Fin 4, f i = f 0 + f 1 + f 2 + f 3 := by norm_num <;> ring
