@@ -13,6 +13,33 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `congrm
 
+/--
+Assume that the goal is of the form `lhs = rhs` or `lhs ↔ rhs`.
+`congrm e` takes an expression `e` containing placeholders `_` and scans `e, lhs, rhs` in parallel.
+
+It matches both `lhs` and `rhs` to the pattern `e`, and produces one goal for each placeholder,
+stating that the corresponding subexpressions in `lhs` and `rhs` are equal.
+
+Examples:
+```lean
+example {a b c d : ℕ} :
+  Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
+  congrm Nat.pred (Nat.succ _) * (_ + _)
+/-  Goals left:
+⊢ a = b
+⊢ d = b
+⊢ c + a.pred = c + d.pred
+-/
+  sorry
+  sorry
+  sorry
+
+example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => ∀ z, b + a = z) := by
+  congrm λ x => ∀ w, _ + a = w
+  -- produces one goal for the underscore: ⊢ a = b
+  exact h
+```
+-/
 syntax (name := congrM) "congrm " term : tactic
 
 section util
@@ -50,8 +77,8 @@ open private applyCongrThm? from Lean.Meta.Tactic.Congr in
 partial def congrmLoop (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
   -- Helper function (stolen from somewhere) that creates the correct FVars in `λ` and `∀`
   -- and does the recursion
-  let binders (mvarId : MVarId) (lem : Name) (xs : Array Expr) (k : Expr) : MetaM (List MVarId) := do
-    congrmLoop k (← xs.foldlM (telescopingFn lem) mvarId)
+  let binders (mvarId : MVarId) (n : Name) (xs : Array Expr) (k : Expr) : MetaM (List MVarId) := do
+    congrmLoop k (← xs.foldlM (telescopingFn n) mvarId)
   if pat.isMVar then
     return [goal]
   else if pat.isForall then
@@ -63,7 +90,8 @@ partial def congrmLoop (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
   else if pat.isApp then
     let patternArgs := (← pat.getExplicitArgs).toList
     trace[congrm] s!"Apply pattern, fun: {← ppExpr pat.getAppFn}, args: {← patternArgs.mapM ppExpr}"
-    let some congrThm ← mkCongrSimp? pat.getAppFn' (subsingletonInstImplicitRhs := false) | return []
+    let some congrThm ← mkCongrSimp? pat.getAppFn' (subsingletonInstImplicitRhs := false) |
+      return []
     if pat.getAppFn.isMVar then
       -- If the function is a metavariable, we just return the goal
       return [goal]
@@ -98,32 +126,6 @@ partial def congrmCore (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
   -- Try `refl` on all remaining goals
   mvars.filterMapM tryRefl
 
-/--
-Assume that the goal is of the form `lhs = rhs` or `lhs ↔ rhs`.
-`congrm e` takes an expression `e` containing placeholders `_` and scans `e, lhs, rhs` in parallel.
-
-It matches both `lhs` and `rhs` to the pattern `e`, and produces one goal for each placeholder,
-stating that the corresponding subexpressions in `lhs` and `rhs` are equal.
-
-Examples:
-```lean
-example {a b c d : ℕ} :
-  Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
-  congrm Nat.pred (Nat.succ _) * (_ + _)
-/-  Goals left:
-⊢ a = b
-⊢ d = b
-⊢ c + a.pred = c + d.pred
--/
-  sorry
-  sorry
-  sorry
-
-example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => ∀ z, b + a = z) := by
-  congrm λ x => ∀ w, _ + a = w
-  -- produces one goal for the underscore: ⊢ a = b
-  exact h
-```
--/
+@[inherit_doc congrM]
 elab_rules : tactic | `(tactic| congrm $expr:term) => withMainContext do
   liftMetaTactic <| congrmCore <| ← elabTerm expr none
