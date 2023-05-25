@@ -56,9 +56,7 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
       simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
-      use c i
-      convert this c i
-      sorry
+      exact ⟨c i, this c i⟩
     · rintro ha
       choose c hc using ha
       exact ⟨c, b'.ext_elem fun i => Eq.trans (hc i) (this c i).symm⟩
