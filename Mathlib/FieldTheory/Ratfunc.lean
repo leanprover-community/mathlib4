@@ -742,27 +742,26 @@ by mapping both the numerator and denominator and quotienting them. -/
 def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : Ratfunc R →+* L :=
   { liftMonoidWithZeroHom φ.toMonoidWithZeroHom hφ with
     map_add' := fun x y => by
-      simp? [MonoidHom.toFun_eq_coe]
+      -- porting note: used to invoke `MonoidWithZeroHom.toFun_eq_coe`
+      simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
       cases subsingleton_or_nontrivial R
       · rw [Subsingleton.elim (x + y) y, Subsingleton.elim x 0, map_zero, zero_add]
-      --cases x
-      --cases y
-      induction x using Ratfunc.induction_on' with
-      | _pq p q q0 =>
-        induction y using Ratfunc.induction_on' with
-        | _pq p' q' q0' =>
-          · rw [← of_fraction_ring_add] --, Localization.add_mk]
-            simp
-            simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-              liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
-            rw [div_add_div, div_eq_div_iff]
-            · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
-              simp only [map_add, map_mul, Submonoid.coe_mul]
-            all_goals
-              try simp only [← map_mul, ← Submonoid.coe_mul]
-              exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _))
-          · rfl
-          · rfl }
+      cases' x with x
+      cases' y with y
+      -- Porting note: had to add the recursor explicitly below
+      induction' x using Localization.rec with p q
+      induction' y using Localization.rec with p' q'
+      · rw [← of_fraction_ring_add, Localization.add_mk]
+        simp only [RingHom.toMonoidWithZeroHom_eq_coe,
+          liftMonoidWithZeroHom_apply_of_fraction_ring_mk]
+        rw [div_add_div, div_eq_div_iff]
+        · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
+          simp only [map_add, map_mul, Submonoid.coe_mul]
+        all_goals
+          try simp only [← map_mul, ← Submonoid.coe_mul]
+          exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _))
+      · rfl
+      · rfl }
 #align ratfunc.lift_ring_hom Ratfunc.liftRingHom
 
 theorem liftRingHom_apply_of_fraction_ring_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
