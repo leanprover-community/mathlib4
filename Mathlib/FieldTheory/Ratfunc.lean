@@ -113,15 +113,7 @@ the maps between `ratfunc K` and another field of fractions of `K[X]`,
 especially `fraction_ring K[X]`, are given by `is_localization.algebra_equiv`.
 -/
 structure Ratfunc : Type u where
-  /-- (implementation detail): a rational function is given by an element of the fraction field.
-
-  You should prefer `isLocalization.alg_equiv` over `of_fraction_ring`.
-  -/
   of_fraction_ring ::
-    /-- (implementation detail): a rational function gives an element of the fraction field.
-
-    You should prefer `isLocalization.alg_equiv` over `toFractionRing`.
-    -/
     toFractionRing : FractionRing K[X]
 #align ratfunc Ratfunc
 
@@ -163,7 +155,7 @@ protected irreducible_def liftOn {P : Sort v} (x : Ratfunc K) (f : ∀ _p _q : K
   intros p p' q q' h
   exact H q.2 q'.2 (let ⟨⟨c, hc⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
     mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
--- porting note: the definition above was as follow
+-- porting note: the definition above was as follows
 --    (-- Fix timeout by manipulating elaboration order
 --    fun p q => f p q)
 --    fun p p' q q' h => by
