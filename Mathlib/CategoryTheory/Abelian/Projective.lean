@@ -8,10 +8,10 @@ Authors: Markus Himmel, Scott Morrison, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.QuasiIso
-import Mathbin.CategoryTheory.Preadditive.ProjectiveResolution
-import Mathbin.CategoryTheory.Preadditive.Yoneda.Limits
-import Mathbin.CategoryTheory.Preadditive.Yoneda.Projective
+import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
@@ -47,16 +47,14 @@ theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f 
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
-    PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) :=
-  by
+    PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
   letI := (projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj' P).mp hP
   apply functor.preserves_finite_colimits_of_preserves_epis_and_kernels
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
-    [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P :=
-  by
+    [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
   rw [projective_iff_preserves_epimorphisms_preadditive_coyoneda_obj']
   infer_instance
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
