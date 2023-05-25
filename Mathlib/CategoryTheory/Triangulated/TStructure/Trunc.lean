@@ -223,8 +223,6 @@ lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
     t.isLE_shift _ n 1 (n-1) (by linarith)
   have hδ := t.zero_of_isLE_of_isGE δ (n-1) (n+1) (by linarith)
     (t.isLE_of_iso (asIso δ).symm _) (t.isGE_of_iso (asIso δ) _)
-    --(t.shift_mem_setLE n 1 (n-1) (by linarith) _ (t.mem_of_isLE _ _)))
-    --(Set.mem_of_iso _ (asIso δ) (t.mem_of_isGE _ _))
   rw [IsZero.iff_id_eq_zero]
   apply (shiftFunctor C (1 : ℤ)).map_injective
   rw [Functor.map_id, Functor.map_zero, ← cancel_epi δ, comp_zero, hδ, zero_comp]
@@ -583,15 +581,16 @@ lemma truncLELEIsoTruncLE₁_hom_app (a b : ℤ) (h : a ≤ b) (X : C) :
       (t.truncLE a).map ((t.truncLEι b).app X) := rfl
 
 @[simps!]
-noncomputable def truncLEFiltrationTriangle (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C where
+noncomputable def truncLEFiltrationTriangle (a b : ℤ) (h : a ≤ b) (a' : ℤ) (ha' : a + 1 = a') :
+    C ⥤ Triangle C where
   obj X := Triangle.mk ((t.natTransTruncLEOfLE _ _ h).app X)
-    ((t.truncGEπ (a+1)).app ((t.truncLE b).obj X))
-    ((t.truncδ a (a+1) rfl).app ((t.truncLE b).obj X) ≫
+    ((t.truncGEπ a').app ((t.truncLE b).obj X))
+    ((t.truncδ a a' ha').app ((t.truncLE b).obj X) ≫
       ((t.truncLE a).map ((t.truncLEι b).app X))⟦(1 : ℤ)⟧')
   map φ :=
     { hom₁ := (t.truncLE a).map φ
       hom₂ := (t.truncLE b).map φ
-      hom₃ := (t.truncGE (a+1)).map ((t.truncLE b).map φ)
+      hom₃ := (t.truncGE a').map ((t.truncLE b).map φ)
       comm₁ := by
         dsimp
         rw [NatTrans.naturality]
@@ -604,10 +603,11 @@ noncomputable def truncLEFiltrationTriangle (a b : ℤ) (h : a ≤ b) : C ⥤ Tr
           NatTrans.naturality]
         rfl }
 
-lemma truncLEFiltrationTriangle_obj_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
-    (t.truncLEFiltrationTriangle a b h).obj X ∈ distTriang C := by
+lemma truncLEFiltrationTriangle_obj_distinguished (a b : ℤ) (h : a ≤ b)
+    (a' : ℤ) (ha' : a + 1 = a') (X : C) :
+    (t.truncLEFiltrationTriangle a b h a' ha' ).obj X ∈ distTriang C := by
   refine' isomorphic_distinguished _
-    (t.truncTriangle_obj_distinguished a (a+1) rfl ((t.truncLE b).obj X)) _ (Iso.symm _)
+    (t.truncTriangle_obj_distinguished a a' ha' ((t.truncLE b).obj X)) _ (Iso.symm _)
   refine' Triangle.isoMk _ _ ((t.truncLELEIsoTruncLE₁ _ _ h).app X) (Iso.refl _) (Iso.refl _)
       _ _ _
   . have : t.IsLE ((t.truncLE a).obj X) b := t.isLE_of_LE _ a b h
@@ -631,7 +631,30 @@ lemma truncGELEIsoTruncLEGE_hom_app_pentagon (a b : ℤ) (X : C) :
   simp [truncGELEIsoTruncLEGE_hom_app]
 
 /-instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := by
-  sorry
+  by_cases a - 1 ≤ b
+  . let u₁₂ : (t.truncLE (a-1)).obj X ⟶ (t.truncLE b).obj X :=
+      (t.natTransTruncLEOfLE _ _ h).app X
+    let u₂₃ : (t.truncLE b).obj X ⟶ X := (t.truncLEι _).app X
+    let u₁₃ : (t.truncLE (a-1)).obj X ⟶ X := (t.truncLEι _).app X
+    have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp
+    have h₁₂ := t.truncLEFiltrationTriangle_obj_distinguished (a-1) b h a (by linarith) X
+    have h₂₃ := t.truncTriangle_obj_distinguished b (b+1) rfl X
+    have h₁₃ := t.truncTriangle_obj_distinguished (a-1) a (by linarith) X
+    have H := someOctahedron eq (t.truncLEFiltrationTriangle_obj_distinguished (a-1) b h a
+      (by linarith) X) (t.truncTriangle_obj_distinguished b (b+1) rfl X)
+      (t.truncTriangle_obj_distinguished (a-1) a (by linarith) X)
+    have eq : t.liftTruncLE H.m₁ b = truncGELEIsoTruncLEGE_hom_app t a b X := sorry
+    rw [← eq]
+    have := t.isIso₁_truncLEmap_of_GE _ H.mem b _ rfl (by dsimp ; infer_instance)
+    dsimp at this
+    have fac : (t.truncLEι b).app ((t.truncGE a).obj
+        ((t.truncLE b).obj X)) ≫ t.liftTruncLE H.m₁ b = (t.truncLE b).map H.m₁ :=
+      t.to_truncLE_obj_ext _ _ _ _ (by simp)
+    exact IsIso.of_isIso_fac_left fac
+  . refine' ⟨0, _, _⟩
+    all_goals
+      apply IsZero.eq_of_src
+      exact t.isZero _ b a (by linarith)
 
 noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
     t.truncLE b ⋙ t.truncGE a ≅ t.truncGE a ⋙ t.truncLE b :=

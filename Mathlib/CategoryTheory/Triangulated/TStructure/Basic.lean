@@ -224,6 +224,11 @@ lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ <
     (_ : t.IsLE X n₀) (_ : t.IsGE Y n₁) : f = 0 :=
   t.zero f n₀ n₁ h
 
+lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  exact t.zero _ n₀ n₁ h
+
 def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
 abbrev Heart := FullSubcategory t.heart
