@@ -101,7 +101,7 @@ open Topology Filter
 ### Weak star topology on duals of normed spaces
 
 In this section, we prove properties about the weak-* topology on duals of normed spaces.
-We prove in particular that the canonical mapping `dual 𝕜 E → weak_dual 𝕜 E` is continuous,
+We prove in particular that the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E` is continuous,
 i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
 by the dual-norm (i.e. the operator-norm).
 -/
@@ -115,7 +115,7 @@ namespace NormedSpace
 
 namespace Dual
 
-/-- For normed spaces `E`, there is a canonical map `dual 𝕜 E → weak_dual 𝕜 E` (the "identity"
+/-- For normed spaces `E`, there is a canonical map `Dual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : Dual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
   LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
@@ -135,8 +135,8 @@ theorem toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x'
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
 #align normed_space.dual.to_weak_dual_continuous NormedSpace.Dual.toWeakDual_continuous
 
-/-- For a normed space `E`, according to `to_weak_dual_continuous` the "identity mapping"
-`dual 𝕜 E → weak_dual 𝕜 E` is continuous. This definition implements it as a continuous linear
+/-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
+`Dual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
 map. -/
 def continuousLinearMapToWeakDual : Dual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
   { toWeakDual with cont := toWeakDual_continuous }
@@ -158,9 +158,9 @@ namespace WeakDual
 
 open NormedSpace
 
-/-- For normed spaces `E`, there is a canonical map `weak_dual 𝕜 E → dual 𝕜 E` (the "identity"
+/-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
-equivalence `normed_space.dual.to_weak_dual` in the other direction. -/
+equivalence `NormedSpace.Dual.toWeakDual` in the other direction. -/
 def toNormedDual : WeakDual 𝕜 E ≃ₗ[𝕜] Dual 𝕜 E :=
   NormedSpace.Dual.toWeakDual.symm
 #align weak_dual.to_normed_dual WeakDual.toNormedDual
@@ -191,7 +191,7 @@ theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDua
 variable (𝕜)
 
 /-- The polar set `polar 𝕜 s` of `s : set E` seen as a subset of the dual of `E` with the
-weak-star topology is `weak_dual.polar 𝕜 s`. -/
+weak-star topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
   toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
 #align weak_dual.polar WeakDual.polar
@@ -209,7 +209,7 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
 
 variable {𝕜}
 
-/-- While the coercion `coe_fn : weak_dual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
+/-- While the coercion `coe_fn : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
 closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
     (hb : Bounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
@@ -226,7 +226,7 @@ theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual �
 
 variable (𝕜)
 
-/-- The image under `coe_fn : weak_dual 𝕜 E → (E → 𝕜)` of a polar `weak_dual.polar 𝕜 s` of a
+/-- The image under `coe_fn : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsClosed ((coeFn : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
@@ -243,7 +243,7 @@ theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
 #align normed_space.dual.is_closed_image_polar_of_mem_nhds NormedSpace.Dual.isClosed_image_polar_of_mem_nhds
 
 /-- The **Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in a
-normed space `E` is a compact subset of `weak_dual 𝕜 E`. -/
+normed space `E` is a compact subset of `WeakDual 𝕜 E`. -/
 theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsCompact (polar 𝕜 s) :=
   isCompact_of_bounded_of_closed (bounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
