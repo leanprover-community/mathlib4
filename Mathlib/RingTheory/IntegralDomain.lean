@@ -8,9 +8,9 @@ Authors: Johan Commelin, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.RingDivision
-import Mathbin.GroupTheory.SpecificGroups.Cyclic
-import Mathbin.Algebra.GeomSum
+import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Algebra.GeomSum
 
 /-!
 # Integral domains
@@ -66,8 +66,7 @@ def Fintype.groupWithZeroOfCancel (M : Type _) [CancelMonoidWithZero M] [Decidab
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type _} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
-    ∃ d : R, a = d ^ n :=
-  by
+    ∃ d : R, a = d ^ n := by
   refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _ _) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
@@ -115,8 +114,7 @@ def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype
   { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain
 
-theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R :=
-  by
+theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
   cases nonempty_fintype R
   exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ (Classical.decEq R) _)
 #align finite.is_field_of_domain Finite.isField_of_domain
@@ -127,8 +125,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 
 theorem card_nthRoots_subgroup_units [Fintype G] (f : G →* R) (hf : Injective f) {n : ℕ}
     (hn : 0 < n) (g₀ : G) :
-    ({ g ∈ univ | g ^ n = g₀ } : Finset G).card ≤ (nthRoots n (f g₀)).card :=
-  by
+    ({ g ∈ univ | g ^ n = g₀ } : Finset G).card ≤ (nthRoots n (f g₀)).card := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nth_roots n (f g₀)).toFinset_card_le
   apply card_le_card_of_inj_on f
@@ -161,8 +158,7 @@ section
 variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
-instance subgroup_units_cyclic : IsCyclic S :=
-  by
+instance subgroup_units_cyclic : IsCyclic S := by
   refine' isCyclic_of_subgroup_isDomain ⟨(coe : S → R), _, _⟩ (units.ext.comp Subtype.val_injective)
   · simp
   · intros
@@ -180,8 +176,7 @@ open Polynomial
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
-    ∃ q r : R[X], r.degree < g.degree ∧ (↑f : K) / ↑g = ↑q + ↑r / ↑g :=
-  by
+    ∃ q r : R[X], r.degree < g.degree ∧ (↑f : K) / ↑g = ↑q + ↑r / ↑g := by
   refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
   · exact degree_mod_by_monic_lt _ hg
   · have hg' : (↑g : K) ≠ 0 := by exact_mod_cast monic.ne_zero hg
@@ -198,8 +193,7 @@ variable [Fintype G]
 
 theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
     (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    (univ.filterₓ fun g => f g = x).card = (univ.filterₓ fun g => f g = y).card :=
-  by
+    (univ.filterₓ fun g => f g = x).card = (univ.filterₓ fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
   refine' card_congr (fun g _ => g * x⁻¹ * y) _ _ fun g hg => ⟨g * y⁻¹ * x, _⟩
@@ -283,8 +277,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
 unless the homomorphism is trivial, in which case the sum is equal to the cardinality of the group.
 -/
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
-    (∑ g : G, f g) = if f = 1 then Fintype.card G else 0 :=
-  by
+    (∑ g : G, f g) = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h h
   · simp [h, card_univ]
   · exact sum_hom_units_eq_zero f h
