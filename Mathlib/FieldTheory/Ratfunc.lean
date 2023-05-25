@@ -1682,7 +1682,7 @@ theorem coe_mul : ((f * g : Ratfunc F) : LaurentSeries F) = f * g :=
 #align ratfunc.coe_mul Ratfunc.coe_mul
 
 @[simp, norm_cast]
-theorem coe_pow (n : ℕ) : ((f ^ n : Ratfunc F) : LaurentSeries F) = f ^ n :=
+theorem coe_pow (n : ℕ) : ((f ^ n : Ratfunc F) : LaurentSeries F) = (f : LaurentSeries F) ^ n :=
   (coeAlgHom F).map_pow _ _
 #align ratfunc.coe_pow Ratfunc.coe_pow
 
@@ -1703,8 +1703,8 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO: generalize over other modules
 @[simp, norm_cast]
-theorem coe_smul (r : F) : ((r • f : Ratfunc F) : LaurentSeries F) = r • f := rfl
-  --porting note: was `by rw [smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]`
+theorem coe_smul (r : F) : ((r • f : Ratfunc F) : LaurentSeries F) = r • (f : LaurentSeries F) :=
+  by rw [smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
 #align ratfunc.coe_smul Ratfunc.coe_smul
 
 @[simp, norm_cast]
