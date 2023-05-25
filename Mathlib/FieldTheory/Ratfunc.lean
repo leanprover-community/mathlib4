@@ -1200,19 +1200,19 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
 
 @[simp]
 theorem num_div_denom (x : Ratfunc K) : algebraMap _ _ (num x) / algebraMap _ _ (denom x) = x := by
-  induction x using Ratfunc.induction_on' with
-    | _pq p q hq =>
-    stop
-    have q_div_ne_zero := right_div_gcd_ne_zero hq
-    rw [num_div p q, denom_div p hq, RingHom.map_mul, RingHom.map_mul, mul_div_mul_left,
-      div_eq_div_iff, ← RingHom.map_mul, ← RingHom.map_mul, mul_comm _ q, ←
-      EuclideanDomain.mul_div_assoc, ← EuclideanDomain.mul_div_assoc, mul_comm]
-    · apply gcd_dvd_right
-    · apply gcd_dvd_left
-    · exact algebra_map_ne_zero q_div_ne_zero
-    · exact algebra_map_ne_zero hq
-    · refine' algebra_map_ne_zero (mt polynomial.C_eq_zero.mp _)
-      exact inv_ne_zero (polynomial.leading_coeff_ne_zero.mpr q_div_ne_zero)
+  induction' x using Ratfunc.induction_on with p q hq
+  -- porting note: had to hint the type of this `have`
+  have q_div_ne_zero : q / gcd p q ≠ 0 := right_div_gcd_ne_zero hq
+  dsimp only
+  rw [num_div p q, denom_div p hq, RingHom.map_mul, RingHom.map_mul, mul_div_mul_left,
+    div_eq_div_iff, ← RingHom.map_mul, ← RingHom.map_mul, mul_comm _ q, ←
+    EuclideanDomain.mul_div_assoc, ← EuclideanDomain.mul_div_assoc, mul_comm]
+  · apply gcd_dvd_right
+  · apply gcd_dvd_left
+  · exact algebraMap_ne_zero q_div_ne_zero
+  · exact algebraMap_ne_zero hq
+  · refine' algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp _)
+    exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom Ratfunc.num_div_denom
 
 @[simp]
