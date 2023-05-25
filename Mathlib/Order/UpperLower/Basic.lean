@@ -1532,14 +1532,14 @@ variable (s s₁ s₂ : UpperSet α) (t t₁ t₂ : UpperSet β) {x : α × β}
 
 /-- The product of two upper sets as an upper set. -/
 def prod : UpperSet (α × β) :=
-  ⟨(s : Set α) ×ˢ (t : Set β), s.2.prod t.2⟩
+  ⟨s ×ˢ t, s.2.prod t.2⟩
 #align upper_set.prod UpperSet.prod
 
 instance instSProd : SProd (UpperSet α) (UpperSet β) (UpperSet (α × β)) where
   sprod := UpperSet.prod
 
 @[simp, norm_cast]
-theorem coe_prod : (s ×ˢ t : Set (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+theorem coe_prod : ((s ×ˢ t : UpperSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t :=
   rfl
 #align upper_set.coe_prod UpperSet.coe_prod
 
@@ -1644,13 +1644,14 @@ namespace LowerSet
 variable (s s₁ s₂ : LowerSet α) (t t₁ t₂ : LowerSet β) {x : α × β}
 
 /-- The product of two lower sets as a lower set. -/
-def prod : LowerSet (α × β) := ⟨(s : Set α) ×ˢ (t : Set β), s.2.prod t.2⟩
+def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.2.prod t.2⟩
 #align lower_set.prod LowerSet.prod
 
 instance instSProd : SProd (LowerSet α) (LowerSet β) (LowerSet (α × β)) where
   sprod := LowerSet.prod
 
-@[simp, norm_cast] theorem coe_prod : (s ×ˢ t : Set (α × β)) = (s : Set α) ×ˢ (t : Set β) := rfl
+@[simp, norm_cast]
+theorem coe_prod : ((s ×ˢ t : LowerSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t := rfl
 #align lower_set.coe_prod LowerSet.coe_prod
 
 @[simp]

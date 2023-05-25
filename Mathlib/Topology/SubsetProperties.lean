@@ -858,7 +858,7 @@ theorem isClosedMap_snd_of_compactSpace {X : Type _} [TopologicalSpace X] [Compa
     {Y : Type _} [TopologicalSpace Y] : IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
-  have : univ ×ˢ ({y} : Set Y) ⊆ sᶜ
+  have : univ ×ˢ {y} ⊆ sᶜ
   · exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
   rcases generalized_tube_lemma isCompact_univ isCompact_singleton hs.isOpen_compl this
     with ⟨U, V, -, hVo, hU, hV, hs⟩

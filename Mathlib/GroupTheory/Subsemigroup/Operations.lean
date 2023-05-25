@@ -637,7 +637,7 @@ of `M × N`. -/
       "Given `AddSubsemigroup`s `s`, `t` of `AddSemigroup`s `A`, `B` respectively,
       `s × t` as an `AddSubsemigroup` of `A × B`."]
 def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
-  carrier := (s : Set M) ×ˢ (t : Set N)
+  carrier := s ×ˢ t
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 #align subsemigroup.prod Subsemigroup.prod
 #align add_subsemigroup.prod AddSubsemigroup.prod

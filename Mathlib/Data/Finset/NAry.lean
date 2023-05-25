@@ -60,8 +60,7 @@ theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) 
 #align finset.card_image₂_le Finset.card_image₂_le
 
 theorem card_image₂_iff :
-    (image₂ f s t).card = s.card * t.card ↔
-      ((s : Set α) ×ˢ (t : Set β)).InjOn fun x => f x.1 x.2 := by
+    (image₂ f s t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 := by
   rw [← card_product, ← coe_product]
   exact card_image_iff
 #align finset.card_image₂_iff Finset.card_image₂_iff

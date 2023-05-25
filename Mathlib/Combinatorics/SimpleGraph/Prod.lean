@@ -69,8 +69,7 @@ theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b�
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
 theorem boxProd_neighborSet (x : α × β) :
-    (G □ H).neighborSet x =
-      G.neighborSet x.1 ×ˢ ({x.2} : Set β) ∪ ({x.1} : Set α) ×ˢ H.neighborSet x.2 := by
+    (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
@@ -222,8 +221,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
   Fintype.ofEquiv
-    ((G.neighborFinset x.1 ×ˢ ({x.2} : Finset β)).disjUnion
-      (({x.1} : Finset α) ×ˢ H.neighborFinset x.2) <|
+    ((G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2) <|
         Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
     ((Equiv.refl _).subtypeEquiv fun y => by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,

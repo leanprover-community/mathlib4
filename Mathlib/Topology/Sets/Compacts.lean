@@ -190,7 +190,7 @@ theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
 protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) where
-  carrier := (K : Set α) ×ˢ (L : Set β)
+  carrier := K ×ˢ L
   isCompact' := IsCompact.prod K.2 L.2
 #align topological_space.compacts.prod TopologicalSpace.Compacts.prod
 
