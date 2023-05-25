@@ -206,7 +206,8 @@ theorem Real.summable_one_div_nat_rpow {p : ℝ} : Summable (fun n => 1 / n ^ p 
 
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, (n ^ p)⁻¹` converges
 if and only if `1 < p`. -/
-@[simp]
+-- porting note: temporarily remove `@[simp]` because of a problem with `simp`
+-- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/looping.20in.20.60simp.60.20set/near/361134234
 theorem Real.summable_nat_pow_inv {p : ℕ} : Summable (fun n => (n ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
   simp only [← rpow_nat_cast, Real.summable_nat_rpow_inv, Nat.one_lt_cast]
 #align real.summable_nat_pow_inv Real.summable_nat_pow_inv
