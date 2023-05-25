@@ -32,11 +32,11 @@ The lemma states that a nonempty compact set `s` has an extreme point. The proof
 
 The theorem states that a compact convex set `s` is the closure of the convex hull of its extreme
 points. It is an almost immediate strengthening of the lemma. The proof goes:
-1. By contradiction, `s \ closure (convex_hull ℝ (extreme_points ℝ s))` is nonempty, say with `x`.
+1. By contradiction, `s \ closure (convexHull ℝ (extremePoints ℝ s))` is nonempty, say with `x`.
 2. With the (geometric) Hahn-Banach theorem, find an hyperplane that separates `x` from
-  `closure (convex_hull ℝ (extreme_points ℝ s))`.
+  `closure (convexHull ℝ (extremePoints ℝ s))`.
 3. Look at the extreme (actually exposed) subset of
-  `s \ closure (convex_hull ℝ (extreme_points ℝ s))` obtained by going the furthest away from the
+  `s \ closure (convexHull ℝ (extremePoints ℝ s))` obtained by going the furthest away from the
   separating hyperplane. It is nonempty by assumption of nonemptiness and compactness, so by the
   lemma it has an extreme point.
 4. This point is also an extreme point of `s`. Absurd.
@@ -68,52 +68,43 @@ theorem IsCompact.has_extreme_point (hscomp : IsCompact s) (hsnemp : s.Nonempty)
   let S : Set (Set E) := { t | t.Nonempty ∧ IsClosed t ∧ IsExtreme ℝ s t }
   rsuffices ⟨t, ⟨⟨x, hxt⟩, htclos, hst⟩, hBmin⟩ : ∃ t ∈ S, ∀ u ∈ S, u ⊆ t → u = t
   · refine' ⟨x, mem_extremePoints_iff_extreme_singleton.2 _⟩
-    rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => _⟩]
+    rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => ?_⟩]
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
       (isCompact_of_isClosed_subset hscomp htclos hst.1).exists_forall_ge ⟨x, hxt⟩
-        l.continuous.continuous_on
-    have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun h => ⟨l, rfl⟩
-    rw [←
-      hBmin ({ z ∈ t | ∀ w ∈ t, l w ≤ l z })
-        ⟨⟨z, hzt, hz⟩, h.is_closed htclos, hst.trans h.is_extreme⟩ (t.sep_subset _)] at
-      hyB
+        l.continuous.continuousOn
+    have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
+    rw [← hBmin ({ z ∈ t | ∀ w ∈ t, l w ≤ l z })
+      ⟨⟨z, hzt, hz⟩, h.isClosed htclos, hst.trans h.isExtreme⟩ (t.sep_subset _)] at hyB
     exact hl.not_le (hyB.2 x hxt)
   refine' zorn_superset _ fun F hFS hF => _
   obtain rfl | hFnemp := F.eq_empty_or_nonempty
-  · exact ⟨s, ⟨hsnemp, hscomp.is_closed, IsExtreme.rfl⟩, fun _ => False.elim⟩
-  refine'
-    ⟨⋂₀ F,
-      ⟨_, isClosed_sInter fun t ht => (hFS ht).2.1,
-        isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩,
-      fun t ht => sInter_subset_of_mem ht⟩
-  haveI : Nonempty ↥F := hFnemp.to_subtype
-  rw [sInter_eq_Inter]
-  refine'
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun t u => _)
-      (fun t => (hFS t.Mem).1)
-      (fun t => isCompact_of_isClosed_subset hscomp (hFS t.Mem).2.1 (hFS t.Mem).2.2.1) fun t =>
-      (hFS t.Mem).2.1
+  · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
+  refine' ⟨⋂₀ F, ⟨_, isClosed_sInter fun t ht => (hFS ht).2.1,
+    isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
+  haveI : Nonempty (↥F) := hFnemp.to_subtype
+  rw [sInter_eq_iInter]
+  refine' IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun t u => _)
+    (fun t => (hFS t.mem).1)
+    (fun t => isCompact_of_isClosed_subset hscomp (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
+      (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
-  exacts[⟨t, subset.rfl, htu⟩, ⟨u, hut, subset.rfl⟩]
+  exacts[⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 #align is_compact.has_extreme_point IsCompact.has_extreme_point
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
     of its extreme points. -/
 theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex ℝ s) :
     closure (convexHull ℝ <| s.extremePoints ℝ) = s := by
-  apply (closure_minimal (convexHull_min extremePoints_subset hAconv) hscomp.is_closed).antisymm
+  apply (closure_minimal (convexHull_min extremePoints_subset hAconv) hscomp.isClosed).antisymm
   by_contra hs
   obtain ⟨x, hxA, hxt⟩ := not_subset.1 hs
   obtain ⟨l, r, hlr, hrx⟩ :=
     geometric_hahn_banach_closed_point (convex_convexHull _ _).closure isClosed_closure hxt
   have h : IsExposed ℝ s ({ y ∈ s | ∀ z ∈ s, l z ≤ l y }) := fun _ => ⟨l, rfl⟩
-  obtain ⟨z, hzA, hz⟩ := hscomp.exists_forall_ge ⟨x, hxA⟩ l.continuous.continuous_on
-  obtain ⟨y, hy⟩ := (h.is_compact hscomp).has_extreme_point ⟨z, hzA, hz⟩
-  linarith [hlr _
-      (subset_closure <|
-        subset_convexHull _ _ <| h.is_extreme.extreme_points_subset_extreme_points hy),
-    hy.1.2 x hxA]
+  obtain ⟨z, hzA, hz⟩ := hscomp.exists_forall_ge ⟨x, hxA⟩ l.continuous.continuousOn
+  obtain ⟨y, hy⟩ := (h.isCompact hscomp).has_extreme_point ⟨z, hzA, hz⟩
+  linarith [hlr _ (subset_closure <| subset_convexHull _ _ <|
+    h.isExtreme.extremePoints_subset_extremePoints hy), hy.1.2 x hxA]
 #align closure_convex_hull_extreme_points closure_convexHull_extremePoints
-
