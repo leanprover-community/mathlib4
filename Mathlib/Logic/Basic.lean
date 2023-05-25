@@ -823,8 +823,6 @@ theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
 @[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 #align exists_eq_right' exists_eq_right'
 
-theorem exists_comm {p : α → β → Prop} : (∃ a b, p a b) ↔ ∃ b a, p a b :=
-  ⟨fun ⟨a, b, h⟩ ↦ ⟨b, a, h⟩, fun ⟨b, a, h⟩ ↦ ⟨a, b, h⟩⟩
 #align exists_comm exists_comm
 
 theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
