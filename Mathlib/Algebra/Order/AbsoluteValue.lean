@@ -11,8 +11,6 @@ Authors: Mario Carneiro, Anne Baanen
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Regular
 
 /-!
@@ -309,6 +307,14 @@ variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 #align is_absolute_value.abv_nonneg IsAbsoluteValue.abv_nonneg
+
+open Lean Meta Mathlib Meta Positivity Qq in
+/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+@[positivity (_ : α)]
+def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+  let (.app f a) ← whnfR e | throwError "not abv ·"
+  let pa' ← mkAppM ``abv_nonneg #[f, a]
+  pure (.nonnegative pa')
 
 lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
 #align is_absolute_value.abv_eq_zero IsAbsoluteValue.abv_eq_zero

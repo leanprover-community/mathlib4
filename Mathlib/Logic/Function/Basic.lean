@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module logic.function.basic
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -17,6 +17,7 @@ import Mathlib.Util.WhatsNew
 # Miscellaneous function constructions and lemmas
 -/
 
+open Function
 
 universe u v w
 
@@ -62,6 +63,12 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
 theorem id_def : @id α = fun x ↦ x :=
   rfl
 #align function.id_def Function.id_def
+
+-- porting note: `Function.onFun` is now reducible
+-- @[simp]
+theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
+  rfl
+#align function.on_fun_apply Function.onFun_apply
 
 lemma hfunext {α α': Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
   (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
@@ -345,12 +352,10 @@ theorem RightInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : �
 
 theorem LeftInverse.rightInverse {f : α → β} {g : β → α} (h : LeftInverse g f) : RightInverse f g :=
   h
-
 #align function.left_inverse.right_inverse Function.LeftInverse.rightInverse
 
 theorem RightInverse.leftInverse {f : α → β} {g : β → α} (h : RightInverse g f) : LeftInverse f g :=
   h
-
 #align function.right_inverse.left_inverse Function.RightInverse.leftInverse
 
 theorem LeftInverse.surjective {f : α → β} {g : β → α} (h : LeftInverse f g) : Surjective f :=
@@ -1058,3 +1063,11 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
     (h : Equivalence r) : Equivalence (InvImage r f) :=
   ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
 #align inv_image.equivalence InvImage.equivalence
+
+instance {α β : Type _} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
+  Decidable (uncurry r x) :=
+‹Decidable _›
+
+instance {α β : Type _} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
+  Decidable (curry r a b) :=
+‹Decidable _›

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.monotone.basic
-! leanprover-community/mathlib commit ac5a7cec422c3909db52e13dde2e729657d19b0e
+! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,9 +12,6 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Coe
 
 /-!
 # Monotonicity
@@ -70,7 +67,8 @@ open Function OrderDual
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {r : α → α → Prop}
+variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {π : ι → Type _}
+  {r : α → α → Prop}
 
 section MonotoneDef
 
@@ -1087,7 +1085,6 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)
-
 #align int.exists_strict_mono Int.exists_strictMono
 
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly
@@ -1184,9 +1181,18 @@ theorem StrictAnti.prod_map (hf : StrictAnti f) (hg : StrictAnti g) : StrictAnti
 
 end PartialOrder
 
+/-! ### Pi types -/
+
 namespace Function
 
-variable [Preorder α]
+variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
+
+-- porting note: Dot notation breaks in `f.update i`
+theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
+#align function.update_mono Function.update_mono
+
+theorem update_strictMono : StrictMono (update f i) := fun _ _ => update_lt_update_iff.2
+#align function.update_strict_mono Function.update_strictMono
 
 theorem const_mono : Monotone (const β : α → β → α) := fun _ _ h _ ↦ h
 #align function.const_mono Function.const_mono

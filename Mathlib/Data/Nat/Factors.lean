@@ -11,7 +11,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Prime numbers
@@ -206,7 +205,6 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · intro p hp
     rw [List.mem_append] at hp
     cases' hp with hp' hp' <;> exact prime_of_mem_factors hp'
-
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
@@ -284,8 +282,8 @@ theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
 open List
 
 /-- If `p` is a prime factor of `a` then `p` is also a prime factor of `a * b` for any `b > 0` -/
-theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) : p ∈ (a * b).factors :=
-  by
+theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) :
+    p ∈ (a * b).factors := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp at hpa
   apply (mem_factors_mul ha hb).2 (Or.inl hpa)
@@ -309,5 +307,4 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 end Nat
 
--- Porting note: `assert_not_exists` is not implemented yet.
---assert_not_exists Multiset
+assert_not_exists Multiset

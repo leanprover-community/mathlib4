@@ -82,8 +82,7 @@ theorem sublists'_cons (a : α) (l : List α) :
 #align list.sublists'_cons List.sublists'_cons
 
 @[simp]
-theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t :=
-  by
+theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   induction' t with a t IH generalizing s
   · simp only [sublists'_nil, mem_singleton]
     exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
@@ -182,7 +181,7 @@ theorem sublists_concat (l : List α) (a : α) :
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
-  induction' l with hd tl ih <;> [rfl,
+  induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
       map_eq_map, bind_eq_bind, map_map, cons_bind, append_nil, nil_bind, (· ∘ ·)]]
 #align list.sublists_reverse List.sublists_reverse
@@ -297,8 +296,7 @@ theorem sublistsLen_sublist_sublists' {α : Type _} :
 #align list.sublists_len_sublist_sublists' List.sublistsLen_sublist_sublists'
 
 theorem sublistsLen_sublist_of_sublist {α : Type _} (n) {l₁ l₂ : List α} (h : l₁ <+ l₂) :
-    sublistsLen n l₁ <+ sublistsLen n l₂ :=
-  by
+    sublistsLen n l₁ <+ sublistsLen n l₂ := by
   induction' n with n IHn generalizing l₁ l₂; · simp
   induction' h with l₁ l₂ a _ IH l₁ l₂ a s IH; · rfl
   · refine' IH.trans _
@@ -319,8 +317,7 @@ theorem length_of_sublistsLen {α : Type _} :
 #align list.length_of_sublists_len List.length_of_sublistsLen
 
 theorem mem_sublistsLen_self {α : Type _} {l l' : List α} (h : l' <+ l) :
-    l' ∈ sublistsLen (length l') l :=
-  by
+    l' ∈ sublistsLen (length l') l := by
   induction' h with l₁ l₂ a s IH l₁ l₂ a s IH
   · simp
   · cases' l₁ with b l₁
@@ -367,8 +364,7 @@ theorem Pairwise.sublists' {R} :
 #align list.pairwise.sublists' List.Pairwise.sublists'
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
-    Pairwise (fun l₁ l₂ => Lex R (reverse l₁) (reverse l₂)) (sublists l) :=
-  by
+    Pairwise (fun l₁ l₂ => Lex R (reverse l₁) (reverse l₂)) (sublists l) := by
   have := (pairwise_reverse.2 H).sublists'
   rwa [sublists'_reverse, pairwise_map] at this
 #align list.pairwise_sublists List.pairwise_sublists
@@ -399,7 +395,6 @@ theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n
   have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
     (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
-
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
 --Porting note: new theorem
@@ -439,9 +434,8 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
     simp at h
     simp [h]
   . intro l₁ l₂ h
-    rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at
-        * <;>
-      [skip, · simp]
+    rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
+      zip_map_left] at * <;> [skip; simp]
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]
@@ -457,8 +451,8 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
   induction' l with a l IH <;> intro l₁ l₂ h
   · simp at h
     simp [h]
-  · rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at
-        * <;> [simp at h, simp]
+  · rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
+      <;> [simp at h; simp]
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', h, rfl⟩)
     · exact perm_middle.trans ((IH _ _ h).cons _)
     · exact (IH _ _ h).cons _

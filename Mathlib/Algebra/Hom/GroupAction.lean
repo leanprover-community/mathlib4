@@ -39,8 +39,7 @@ The above types have corresponding classes:
 
 -/
 
---Porting note: assert_not_exists is not yet implemented
---assert_not_exists Submonoid
+assert_not_exists Submonoid
 
 variable (M' : Type _)
 variable (X : Type _) [SMul M' X]
@@ -297,8 +296,7 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
   exact MulActionHom.congr_fun h a
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
-theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
-  by
+theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
   exact FunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
@@ -398,8 +396,7 @@ variable {R M'}
 variable [AddMonoid M'] [DistribMulAction R M']
 
 @[ext]
-theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g :=
-  by
+theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smul, g.map_smul, h]
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring

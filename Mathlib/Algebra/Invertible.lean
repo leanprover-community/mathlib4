@@ -54,6 +54,25 @@ def something_one := something_that_needs_inverses 1
 end
 ```
 
+### Typeclass search vs. unification for `simp` lemmas
+
+Note that since typeclass search searches the local context first, an instance argument like
+`[Invertible a]` might sometimes be filled by a different term than the one we'd find by
+unification (i.e., the one that's used as an implicit argument to `⅟`).
+
+This can cause issues with `simp`. Therefore, some lemmas are duplicated, with the `@[simp]`
+versions using unification and the user-facing ones using typeclass search.
+
+Since unification can make backwards rewriting (e.g. `rw [← mylemma]`) impractical, we still want
+the instance-argument versions; therefore the user-facing versions retain the instance arguments
+and the original lemma name, whereas the `@[simp]`/unification ones acquire a `'` at the end of
+their name.
+
+We modify this file according to the above pattern only as needed; therefore, most `@[simp]` lemmas
+here are not part of such a duplicate pair. This is not (yet) intended as a permanent solution.
+
+See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Invertible.201.20simps/near/320558233]
+
 ## Tags
 
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
@@ -81,31 +100,49 @@ prefix:max
   Invertible.invOf
 
 @[simp]
+theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
+  Invertible.invOf_mul_self
+
 theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 :=
   Invertible.invOf_mul_self
 #align inv_of_mul_self invOf_mul_self
 
 @[simp]
+theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟ a = 1 :=
+  Invertible.mul_invOf_self
+
 theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 :=
   Invertible.mul_invOf_self
 #align mul_inv_of_self mul_invOf_self
 
 @[simp]
+theorem invOf_mul_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
+  rw [← mul_assoc, invOf_mul_self, one_mul]
+
 theorem invOf_mul_self_assoc [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 #align inv_of_mul_self_assoc invOf_mul_self_assoc
 
 @[simp]
+theorem mul_invOf_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
+  rw [← mul_assoc, mul_invOf_self, one_mul]
+
 theorem mul_invOf_self_assoc [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 #align mul_inv_of_self_assoc mul_invOf_self_assoc
 
 @[simp]
+theorem mul_invOf_mul_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
+  simp [mul_assoc]
+
 theorem mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a := by
   simp [mul_assoc]
 #align mul_inv_of_mul_self_cancel mul_invOf_mul_self_cancel
 
 @[simp]
+theorem mul_mul_invOf_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
+  simp [mul_assoc]
+
 theorem mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
   simp [mul_assoc]
 #align mul_mul_inv_of_self_cancel mul_mul_invOf_self_cancel
@@ -124,10 +161,11 @@ theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [I
   rw [h, mul_invOf_self]
 #align invertible_unique invertible_unique
 
-instance [Monoid α] (a : α) : Subsingleton (Invertible a) :=
+instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible a) :=
   ⟨fun ⟨b, hba, hab⟩ ⟨c, _, hac⟩ => by
     congr
     exact left_inv_eq_right_inv hba hac⟩
+#align invertible.subsingleton Invertible.subsingleton
 
 /-- If `r` is invertible and `s = r`, then `s` is invertible. -/
 def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs : s = r) :
@@ -287,7 +325,6 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
     _ = ⅟ b * a := by simp [mul_assoc]
-
 #align commute.inv_of_right Commute.invOf_right
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
@@ -296,14 +333,12 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
     _ = a * ⅟ b := by simp [mul_assoc]
-
 #align commute.inv_of_left Commute.invOf_left
 
 theorem commute_invOf {M : Type _} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
-
 #align commute_inv_of commute_invOf
 
 theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
@@ -312,7 +347,6 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
     calc
       0 = ⅟ a * a := by simp [ha]
       _ = 1 := invOf_mul_self a
-
 #align nonzero_of_invertible nonzero_of_invertible
 
 theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
@@ -408,7 +442,6 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h ; rfl
-
 #align map_inv_of map_invOf
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,

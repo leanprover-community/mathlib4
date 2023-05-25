@@ -9,6 +9,7 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Set
 import Qq
 
 /-!
@@ -135,7 +136,7 @@ elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => do
   let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
-  let loc := expandOptLocation (loc.getD ⟨.missing⟩)
+  let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with
   | none => pure discharge

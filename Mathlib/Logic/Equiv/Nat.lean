@@ -63,7 +63,7 @@ def intEquivNat : ℤ ≃ ℕ :=
 def prodEquivOfEquivNat (e : α ≃ ℕ) : α × α ≃ α :=
   calc
     α × α ≃ ℕ × ℕ := prodCongr e e
-    _ ≃ ℕ := mkpairEquiv
+    _ ≃ ℕ := pairEquiv
     _ ≃ α := e.symm
 #align equiv.prod_equiv_of_equiv_nat Equiv.prodEquivOfEquivNat
 

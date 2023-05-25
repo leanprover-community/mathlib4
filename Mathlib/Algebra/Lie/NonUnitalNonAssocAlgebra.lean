@@ -77,9 +77,9 @@ instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/
-instance sMulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
+instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
   ⟨fun t x y => (lie_smul t x y).symm⟩
-#align lie_algebra.smul_comm_class LieAlgebra.sMulCommClass
+#align lie_algebra.smul_comm_class LieAlgebra.smulCommClass
 
 end LieAlgebra
 

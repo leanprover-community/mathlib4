@@ -14,7 +14,6 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring
@@ -112,10 +111,10 @@ set_option linter.deprecated false in
 #align two_smul' two_smul'
 
 @[simp]
-theorem inv_of_two_smul_add_inv_of_two_smul [Invertible (2 : R)] (x : M) :
+theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
-#align inv_of_two_smul_add_inv_of_two_smul inv_of_two_smul_add_inv_of_two_smul
+#align inv_of_two_smul_add_inv_of_two_smul invOf_two_smul_add_invOf_two_smul
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
@@ -281,7 +280,6 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
-
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
 end AddCommGroup
@@ -769,5 +767,4 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
--- Porting note: `assert_not_exists` not implemented yet
--- assert_not_exists multiset
+assert_not_exists Multiset

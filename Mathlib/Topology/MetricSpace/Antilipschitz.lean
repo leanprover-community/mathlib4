@@ -144,16 +144,16 @@ theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x �
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
 #align antilipschitz_with.cod_restrict AntilipschitzWith.codRestrict
 
-theorem to_right_inv_on' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
+theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) := fun x y => by
   simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_eq, Subtype.coe_mk] using
     hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
-#align antilipschitz_with.to_right_inv_on' AntilipschitzWith.to_right_inv_on'
+#align antilipschitz_with.to_right_inv_on' AntilipschitzWith.to_rightInvOn'
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) :=
-  (hf.restrict univ).to_right_inv_on' (mapsTo_univ g t) h
+  (hf.restrict univ).to_rightInvOn' (mapsTo_univ g t) h
 #align antilipschitz_with.to_right_inv_on AntilipschitzWith.to_rightInvOn
 
 theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :

@@ -219,7 +219,7 @@ def RayVector (R M : Type _) [Zero M] :=
 #align ray_vector RayVector
 
 -- Porting note: Made Coe into CoeOut so it's not dangeorus anymore
-instance RayVector.coe {R M : Type _} {_ : Zero M} : CoeOut (RayVector R M) M where
+instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
 instance {R M : Type _} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
@@ -492,9 +492,6 @@ theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • 
   rwa [Units.val_neg, Right.neg_pos_iff]
 #align module.ray.units_smul_of_neg Module.Ray.units_smul_of_neg
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 @[simp]
 protected theorem map_neg (f : M ≃ₗ[R] N) (v : Module.Ray R M) : map f (-v) = -map f v := by
   induction' v using Module.Ray.ind with g hg
@@ -526,7 +523,6 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
-
 #align units_inv_smul units_inv_smul
 
 section

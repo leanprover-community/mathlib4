@@ -68,6 +68,7 @@ def mathlibDepPath : FilePath :=
 
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("Qq", LAKEPACKAGESDIR / "Qq")
@@ -115,7 +116,7 @@ def validateCurl : IO Bool := do
         IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"`curl` version is required to be ≥7.70. Found {v}. Exiting..."
+        IO.println s!"Warning: recommended `curl` version ≥7.70. Found {v}. Can't use `--parallel`."
         return false
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
@@ -146,19 +147,23 @@ end HashMap
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
-/-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
+/--
+Given a path to a Lean file, concatenates the paths to its build files.
+Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
+-/
+def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return #[
-    packageDir / LIBDIR / path.withExtension "olean",
-    packageDir / LIBDIR / path.withExtension "ilean",
-    packageDir / LIBDIR / path.withExtension "trace",
-    packageDir / IRDIR  / path.withExtension "c",
-    packageDir / IRDIR  / path.withExtension "c.trace"]
+    (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "ilean", true),
+    (packageDir / LIBDIR / path.withExtension "trace", true),
+    (packageDir / IRDIR  / path.withExtension "c", true),
+    (packageDir / LIBDIR / path.withExtension "extra", false)]
 
-def allExist (paths : Array FilePath) : IO Bool := do
-  for path in paths do
-    if !(← path.pathExists) then return false
+/-- Check that all required build files exist. -/
+def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
+  for (path, required) in paths do
+    if required && !(← path.pathExists) then return false
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
@@ -173,14 +178,14 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     if ← allExist buildPaths then
       if (overwrite || !(← zipPath.pathExists)) then
         discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
-          (buildPaths.map toString)
+          ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
   return acc
 
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
-  return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
+  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with

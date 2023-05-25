@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.comm_ring
-! leanprover-community/mathlib commit 972aa4234fa56ce119d19506045158a9d76881fd
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommRing R]` (the coefficients)
++ `R : Type _` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -40,11 +40,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Classical BigOperators
-
 open Set Function Finsupp AddMonoidAlgebra
-
-open BigOperators
 
 universe u v
 
@@ -92,7 +88,8 @@ theorem support_neg : (-p).support = p.support :=
   Finsupp.support_neg p
 #align mv_polynomial.support_neg MvPolynomial.support_neg
 
-theorem support_sub (p q : MvPolynomial σ R) : (p - q).support ⊆ p.support ∪ q.support :=
+theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_sub
 #align mv_polynomial.support_sub MvPolynomial.support_sub
 
@@ -104,7 +101,8 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
-theorem degrees_sub (p q : MvPolynomial σ R) : (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
+theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
 #align mv_polynomial.degrees_sub MvPolynomial.degrees_sub
 
@@ -116,12 +114,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
 
-theorem vars_sub_subset : (p - q).vars ⊆ p.vars ∪ q.vars := by
+theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
 
 @[simp]
-theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars := by
+theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
+    (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_of_disjoint MvPolynomial.vars_sub_of_disjoint
@@ -161,9 +160,9 @@ theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+
     (fun p q hp hq => by
       rw [eval₂_add, hp, hq]
       exact (f.map_add _ _).symm)
-    fun p n hp => by
-    rw [eval₂_mul, eval₂_X, hp]
-    exact (f.map_mul _ _).symm
+    (fun p n hp => by
+      rw [eval₂_mul, eval₂_X, hp]
+      exact (f.map_mul _ _).symm)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂Hom_X
 
@@ -184,10 +183,10 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
+  classical
   rw [degreeOf_lt_iff h]
   intro m hm
-  by_contra hc
-  simp only [not_lt] at hc
+  by_contra' hc
   have h := support_sub σ f g hm
   simp only [mem_support_iff, Ne.def, coeff_sub, sub_eq_zero] at hm
   cases' Finset.mem_union.1 h with cf cg
@@ -210,7 +209,6 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree = (a + -b).totalDegree := by rw [sub_eq_add_neg]
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
-
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
 
 end TotalDegree

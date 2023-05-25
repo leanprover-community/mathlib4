@@ -43,7 +43,7 @@ section theorems
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : (forget (Type u)).map f = f := rfl
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : ConcreteCategory.Forget.obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
 attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
 
@@ -188,7 +188,7 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref `elementwise stx? fun type value levels => do
+    addRelatedDecl src "_apply" ref stx? fun type value levels => do
       let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
       let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w
@@ -226,5 +226,9 @@ elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
   let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
   return pf
+
+-- TODO: elementwise tactic
+syntax "elementwise" (ppSpace (colGt ident))* : tactic
+syntax "elementwise!" (ppSpace (colGt ident))* : tactic
 
 end Tactic.Elementwise

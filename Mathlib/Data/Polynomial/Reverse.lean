@@ -119,7 +119,6 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
     Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
       rw [revAt_invol]
     _ = f (revAt N i) := Finsupp.embDomain_apply _ _ _
-
 #align polynomial.coeff_reflect Polynomial.coeff_reflect
 
 @[simp]
