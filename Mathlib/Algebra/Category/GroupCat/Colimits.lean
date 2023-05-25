@@ -293,7 +293,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v} F) where
 #align AddCommGroup.colimits.colimit_cocone_is_colimit AddCommGroupCat.Colimits.colimitCoconeIsColimit
 
 instance hasColimits_addCommGroupCat : HasColimits AddCommGroupCat
-    where has_colimits_of_shape {J 𝒥} :=
+    where has_colimits_of_shape {_ _} :=
     { has_colimit := fun F =>
         HasColimit.mk
           { cocone := colimitCocone F
