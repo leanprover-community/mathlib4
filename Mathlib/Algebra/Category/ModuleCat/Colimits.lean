@@ -339,10 +339,11 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
     ext ⟨⟨x_j, x_x⟩⟩
     · have w' :=
         congr_fun (congr_arg (fun f : F.obj x_j ⟶ s.pt => (f : F.obj x_j → s.pt)) (w x_j)) x_x
-      -- erw [w']
-      -- rfl
-      sorry
-    · sorry -- simp [*]
+      simp only at w'
+      erw [w']
+      rfl
+    · rw [quot_zero, map_zero] -- porting note: was `simp` but `map_zero` won't fire
+      rfl
     · sorry -- simp [*]
     · sorry -- simp [*]
     · sorry -- simp [*]
