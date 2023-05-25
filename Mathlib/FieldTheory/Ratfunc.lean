@@ -209,7 +209,8 @@ theorem mk_def_of_mem (p : K[X]) {q} (hq : q ∈ K[X]⁰) :
 
 theorem mk_def_of_ne (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     Ratfunc.mk p q =
-      of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) p ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) :=
+      of_fraction_ring (IsLocalization.mk' (FractionRing K[X]) p
+        ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) :=
   mk_def_of_mem p _
 #align ratfunc.mk_def_of_ne Ratfunc.mk_def_of_ne
 
@@ -256,7 +257,6 @@ theorem lift_on_condition_of_lift_on'_condition {P : Sort v} {f : ∀ _p _q : K[
     f p q = f (q' * p) (q' * q) := (H hq hq').symm
     _ = f (q * p') (q * q') := by rw [h, mul_comm q']
     _ = f p' q' := H hq' hq
-
 #align ratfunc.lift_on_condition_of_lift_on'_condition Ratfunc.lift_on_condition_of_lift_on'_condition
 
 -- porting note: removed `include hdomain`
@@ -841,8 +841,8 @@ theorem algebraMap_apply {R : Type _} [CommSemiring R] [Algebra R K[X]] (x : R) 
 
 theorem map_apply_div_ne_zero {R F : Type _} [CommRing R] [IsDomain R] [MonoidHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) (hq : q ≠ 0) :
-    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) = algebraMap _ _ (φ p) / algebraMap _ _ (φ q) :=
-  by
+    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
+      algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   have hq' : φ q ≠ 0 := nonZeroDivisors.ne_zero (hφ (mem_nonZeroDivisors_iff_ne_zero.mpr hq))
   simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_of_fraction_ring_mk,
     mk_eq_localization_mk _ hq']
@@ -851,8 +851,8 @@ set_option maxHeartbeats 0
 @[simp]
 theorem map_apply_div {R F : Type _} [CommRing R] [IsDomain R] [MonoidWithZeroHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) :
-    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) = algebraMap _ _ (φ p) / algebraMap _ _ (φ q) :=
-  by
+    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
+      algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   rcases eq_or_ne q 0 with (rfl | hq)
   · have : (0 : Ratfunc K) = algebraMap K[X] _ 0 / algebraMap K[X] _ 1 := by simp
     rw [map_zero, map_zero, map_zero, div_zero, div_zero, this, map_apply_div_ne_zero, map_one,
@@ -1593,9 +1593,8 @@ theorem intDegree_add {x y : Ratfunc K} (hxy : x + y ≠ 0) :
 theorem natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree {x : Ratfunc K}
     (hx : x ≠ 0) {s : K[X]} (hs : s ≠ 0) :
     ((x.num * s).natDegree : ℤ) - (s * x.denom).natDegree = x.intDegree := by
-  apply
-    natDegree_sub_eq_of_prod_eq (mul_ne_zero (num_ne_zero hx) hs) (mul_ne_zero hs x.denom_ne_zero)
-      (num_ne_zero hx) x.denom_ne_zero
+  apply natDegree_sub_eq_of_prod_eq (mul_ne_zero (num_ne_zero hx) hs)
+    (mul_ne_zero hs x.denom_ne_zero) (num_ne_zero hx) x.denom_ne_zero
   rw [mul_assoc]
 #align ratfunc.nat_degree_num_mul_right_sub_nat_degree_denom_mul_left_eq_int_degree Ratfunc.natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree
 
