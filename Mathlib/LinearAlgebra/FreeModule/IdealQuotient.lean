@@ -40,12 +40,6 @@ noncomputable def Ideal.quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI
   let b' := I.ringBasis b hI
   let ab := I.selfBasis b hI
   have ab_eq := I.selfBasis_def b hI
-  let e : S ≃ₗ[R] I := b'.equiv ab (Equiv.refl _)
-  let f : S →ₗ[R] S := (I.subtype.restrictScalars R).comp (e : S →ₗ[R] I)
-  let f_apply : ∀ x, f x = b'.equiv ab (Equiv.refl _) x := fun x => rfl
-  have ha : ∀ i, f (b' i) = a i • b' i := by
-    intro i
-    rw [f_apply, b'.equiv_apply, Equiv.refl_apply, ab_eq]
   have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
     intro x
     -- Porting note: these lines used to be `simp_rw [ab.mem_ideal_iff', ab_eq]`
@@ -110,7 +104,6 @@ noncomputable def Ideal.fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module
   let a := I.smithCoeffs b hI
   let e := I.quotientEquivPiZMod b hI
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
-        ⟨Int.natAbs_ne_zero_of_ne_zero (Ideal.smithCoeffs_ne_zero b I hI i)⟩
+    ⟨Int.natAbs_ne_zero_of_ne_zero (Ideal.smithCoeffs_ne_zero b I hI i)⟩
   classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
 #align ideal.fintype_quotient_of_free_of_ne_bot Ideal.fintypeQuotientOfFreeOfNeBot
-
