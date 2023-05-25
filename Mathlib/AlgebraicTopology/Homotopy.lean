@@ -93,7 +93,8 @@ structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
   F1 : (leftUnitor X).inv ≫ (prod.map i1 (𝟙 X)) ≫ F = g
 -/
 
-class HomotopyInvariant {X : SSet.{0}} (motive : (pt ⟶ X) → Sort u) where
-  ind : ∀ (a b : pt ⟶ X), Path a b → motive a → motive b
+class HomotopyInvariant {X : SSet.{0}} (motive : ⦃a b : pt ⟶ X⦄ → Path a b → Sort u) where
+  ind : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ⦃x y : pt ⟶ X⦄ → (p : Path x y) → motive p
+  ind_rfl : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ind rfl (Path.rfl x) = rfl x
 
 end SSet
