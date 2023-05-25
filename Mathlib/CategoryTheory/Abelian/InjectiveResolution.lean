@@ -273,7 +273,9 @@ def ofCocomplex (Z : C) : CochainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 
--- Porting note: removed this from `of` due to timeouts
+-- Porting note: the ι field in `of` was very, very slow. To assist,
+-- implicit arguments were filled in and this particular proof was broken
+-- out into a separate result
 theorem ofCocomplex_sq_01_comm (Z : C) :
     Injective.ι Z ≫ HomologicalComplex.d (ofCocomplex Z) 0 1 =
     HomologicalComplex.d ((CochainComplex.single₀ C).obj Z) 0 1 ≫ 0 := by
@@ -281,7 +283,8 @@ theorem ofCocomplex_sq_01_comm (Z : C) :
     dite_eq_ite, if_true, comp_zero]
   exact (exact_f_d (Injective.ι Z)).w
 
--- Porting note: removed this from `of` due to timeouts
+-- Porting note: the `exact` in `of` was very, very slow. To assist,
+-- the whole proof was broken out into a separate result
 theorem exact_ofCocomplex (Z : C) (n : ℕ) :
     Exact (HomologicalComplex.d (ofCocomplex Z) n (n + 1))
     (HomologicalComplex.d (ofCocomplex Z) (n + 1) (n + 2)) :=
@@ -294,7 +297,8 @@ theorem exact_ofCocomplex (Z : C) (n : ℕ) :
       erw [if_pos (c := m + 1 + 1 + 1 = m + 2 + 1) rfl]
       apply exact_f_d
 
--- Porting note: still very slow
+-- Porting note: still very slow but with `ofCocomplex_sq_01_comm` and
+-- `exact_ofCocomplex` as separate results it is more reasonable
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
