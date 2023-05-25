@@ -46,7 +46,7 @@ variable (n : ℕ) {A R : Type _} [AddGroup A] [Ring R]
 namespace Int
 
 /-- `ℤ` modulo multiples of `n : ℕ` is `ZMod n`. -/
-def quotientZmultiplesNatEquivZmod : ℤ ⧸ AddSubgroup.zmultiples (n : ℤ) ≃+ ZMod n :=
+def quotientZmultiplesNatEquivZMod : ℤ ⧸ AddSubgroup.zmultiples (n : ℤ) ≃+ ZMod n :=
   (quotientAddEquivOfEq (ZMod.ker_int_castAddHom _)).symm.trans <|
     quotientKerEquivOfRightInverse (Int.castAddHom (ZMod n)) (↑) int_cast_zmod_cast
 #align int.quotient_zmultiples_nat_equiv_zmod Int.quotientZmultiplesNatEquivZmod
