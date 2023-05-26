@@ -318,7 +318,7 @@ theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
   | _ :: _, _ => List.Chain.cons (Nat.le_add_left _ _) (raise_chain _ _)
 #align denumerable.raise_chain Denumerable.raise_chain
 
-/-- `raise l n` is an non-decreasing sequence. -/
+/-- `raise l n` is a non-decreasing sequence. -/
 theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
   | [], _ => List.sorted_nil
   | _ :: _, _ => List.chain_iff_pairwise.1 (raise_chain _ _)
