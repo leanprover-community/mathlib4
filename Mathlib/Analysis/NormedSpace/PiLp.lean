@@ -743,13 +743,12 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
   LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
-    unfold LinearIsometryEquiv.piLpCongrLeft
-    unfold LinearIsometryEquiv.symm
-    simp
+    simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
+      LinearIsometryEquiv.coe_mk]
     unfold PiLp
     ext
-    simp
-
+    simp only [LinearEquiv.piCongrLeft'_symm_apply, eq_rec_constant,
+      LinearEquiv.piCongrLeft'_apply, Equiv.symm_symm_apply]
 #align linear_isometry_equiv.pi_Lp_congr_left_symm LinearIsometryEquiv.piLpCongrLeft_symm
 
 @[simp]
