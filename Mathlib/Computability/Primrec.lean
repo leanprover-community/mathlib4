@@ -395,14 +395,14 @@ def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
 
 /-- `PrimrecPred p` means `p : α → Prop` is a (decidable)
   primitive recursive predicate, which is to say that
-  `decide ∘ p : α → bool` is primitive recursive. -/
+  `decide ∘ p : α → Bool` is primitive recursive. -/
 def PrimrecPred {α} [Primcodable α] (p : α → Prop) [DecidablePred p] :=
   Primrec fun a => decide (p a)
 #align primrec_pred PrimrecPred
 
 /-- `PrimrecRel p` means `p : α → β → Prop` is a (decidable)
   primitive recursive relation, which is to say that
-  `decide ∘ p : α → β → bool` is primitive recursive. -/
+  `decide ∘ p : α → β → Bool` is primitive recursive. -/
 def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop)
     [∀ a b, Decidable (s a b)] :=
   Primrec₂ fun a b => decide (s a b)

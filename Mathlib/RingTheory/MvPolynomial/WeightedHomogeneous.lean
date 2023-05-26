@@ -25,7 +25,7 @@ occuring in `φ` have the same weighted degree `m`.
 ## Main definitions/lemmas
 
 * `weightedTotalDegree' w φ` : the weighted total degree of a multivariate polynomial with respect
-to the weights `w`, taking values in `with_bot M`.
+to the weights `w`, taking values in `WithBot M`.
 
 * `weightedTotalDegree w φ` : When `M` has a `⊥` element, we can define the weighted total degree
 of a multivariate polynomial as a function taking values in `M`.

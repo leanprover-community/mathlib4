@@ -420,7 +420,7 @@ instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
   (Subtype.relEmbedding (· > ·) p).isWellFounded
 #align subtype.well_founded_gt Subtype.wellFoundedGT
 
-/-- `quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
+/-- `Quotient.mk'` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
 def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=

@@ -43,8 +43,8 @@ For example, in the proof state
 
 ```lean
 n : ℕ,
-e : prime (2 * n + 1)
-⊢ prime (n + n + 1)
+e : Prime (2 * n + 1)
+⊢ Prime (n + n + 1)
 ```
 
 the tactic `convert e using 2` will change the goal to

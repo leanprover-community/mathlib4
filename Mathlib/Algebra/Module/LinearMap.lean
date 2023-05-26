@@ -98,7 +98,7 @@ structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R 
   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
-/-- The `add_hom` underlying a `LinearMap`. -/
+/-- The `AddHom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
 
@@ -141,7 +141,7 @@ attribute [simp] map_smulₛₗ
 
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
-This is an abbreviation for `semilinear_map_class F (RingHom.id R) M M₂`.
+This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearMapClass (F : Type _) (R M M₂ : outParam (Type _)) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
@@ -397,7 +397,7 @@ end Pointwise
 
 variable (M M₂)
 
-/-- A typeclass for `has_smul` structures which can be moved through a `LinearMap`.
+/-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
 This typeclass is generated automatically from a `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
 `R` does not support negation.
@@ -625,7 +625,7 @@ end LinearMap
 
 namespace Module
 
-/-- `g : R →+* S` is `R`-linear when the module structure on `S` is `module.comp_hom S g` . -/
+/-- `g : R →+* S` is `R`-linear when the module structure on `S` is `Module.compHom S g` . -/
 @[simps]
 def compHom.toLinearMap {R S : Type _} [Semiring R] [Semiring S] (g : R →+* S) :
     letI := compHom S g; R →ₗ[R] S :=
@@ -1115,7 +1115,7 @@ end
 /-! ### Action by a module endomorphism. -/
 
 
-/-- The tautological action by `module.End R M` (aka `M →ₗ[R] M`) on `M`.
+/-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M

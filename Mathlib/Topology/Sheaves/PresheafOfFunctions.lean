@@ -21,7 +21,7 @@ We construct some simple examples of presheaves of functions on a topological sp
   is the presheaf of dependently-typed (not-necessarily continuous) functions
 * `presheafToType X T`, where `T : Type`,
   is the presheaf of (not-necessarily-continuous) functions to a fixed target type `T`
-* `presheafToTop X T`, where `T : Top`,
+* `presheafToTop X T`, where `T : TopCat`,
   is the presheaf of continuous functions into a topological space `T`
 * `presheafToTopCommRing X R`, where `R : TopCommRingCat`
   is the presheaf valued in `CommRing` of functions functions into a topological ring `R`
@@ -158,7 +158,8 @@ set_option linter.uppercaseLean3 false in
 end continuousFunctions
 
 /-- An upgraded version of the Yoneda embedding, observing that the continuous maps
-from `X : Top` to `R : TopCommRing` form a commutative ring, functorial in both `X` and `R`. -/
+from `X : TopCat` to `R : TopCommRingCat` form a commutative ring, functorial in both `X` and
+`R`. -/
 def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u} where
   obj R :=
     { obj := fun X => continuousFunctions X R

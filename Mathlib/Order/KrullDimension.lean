@@ -33,7 +33,7 @@ variable (α : Type _) [Preorder α]
 
 /--
 For a preordered set `(α, <)`, a strict series of `α` of length `n` is a strictly monotonic function
-`fin (n + 1) → α`, i.e. `a₀ < a₁ < ... < aₙ` with `aᵢ : α`.
+`Fin (n + 1) → α`, i.e. `a₀ < a₁ < ... < aₙ` with `aᵢ : α`.
 -/
 structure StrictSeries where
   /-- the number of inequalities in the series -/

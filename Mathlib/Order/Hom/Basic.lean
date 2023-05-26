@@ -48,8 +48,8 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
-* `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
-* `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
+* `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
+* `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;

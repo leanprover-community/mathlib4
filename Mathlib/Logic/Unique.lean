@@ -30,7 +30,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
-  codomain is `unique` as well.
+  codomain is `Unique` as well.
 
 * `Function.Injective.subsingleton`: if the codomain of an injective function is `Subsingleton`,
   then its domain is `Subsingleton` as well.

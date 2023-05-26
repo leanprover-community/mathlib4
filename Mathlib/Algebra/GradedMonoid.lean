@@ -175,7 +175,7 @@ macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic | apply GMonoid.gnp
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
 macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_succ)
 
-/-- A graded version of `monoid`
+/-- A graded version of `Monoid`
 
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
 natural powers of a graded monoid. -/
@@ -383,7 +383,7 @@ theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) :
 /-- A dependent product for graded monoids represented by the indexed family of types `A i`.
 This is a dependent version of `(l.map fA).prod`.
 
-For a list `l : list α`, this computes the product of `fA a` over `a`, where each `fA` is of type
+For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
   l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x

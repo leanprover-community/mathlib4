@@ -237,7 +237,7 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
 noncomputable def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank K K) :=
     (FiniteDimensional.finrank_eq_card_basis' b).symm
-  -- porting note: replace `algebra_map.coe_one` with `Nat.cast_one`
+  -- porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
   simp only [Cardinal.eq_one_iff_unique, FiniteDimensional.finrank_self, Nat.cast_one] at A
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
 #align basis.unique Basis.unique

@@ -60,7 +60,7 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
     have q_eq_rn := Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R q (r ^ n)).mp rn_cast_zero) rn_dvd_q
     have n_pos : n ≠ 0 := fun n_zero =>
       absurd (by simpa [n_zero] using q_eq_rn) (CharP.char_ne_one R q)
-    -- Definition of prime power: `∃ r n, prime r ∧ 0 < n ∧ r ^ n = q`.
+    -- Definition of prime power: `∃ r n, Prime r ∧ 0 < n ∧ r ^ n = q`.
     exact ⟨r, ⟨n, ⟨r_prime.prime, ⟨pos_iff_ne_zero.mpr n_pos, q_eq_rn.symm⟩⟩⟩⟩
   · haveI K_char_p_0 := ringChar.of_eq r_zero
     haveI K_char_zero : CharZero K := CharP.charP_to_charZero K
