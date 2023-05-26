@@ -576,7 +576,7 @@ noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
 #align category_theory.is_cofiltered.eq CategoryTheory.IsCofiltered.eq
 
 /-- `eqHom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
-`eqHom f f' : Eq f f' ⟶ j` such that
+`eqHom f f' : eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 Its existence is ensured by `IsCofiltered`.
 -/
