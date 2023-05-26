@@ -46,14 +46,14 @@ However, the topology induced by this construction is not the product topology, 
 have infinite `L^p` norm. These subtleties are not present in the case of finitely many metric
 spaces, hence it is worth devoting a file to this specific case which is particularly well behaved.
 
-Another related construction is `measure_theory.Lp`, the `L^p` norm on the space of functions from
+Another related construction is `MeasureTheory.Lp`, the `L^p` norm on the space of functions from
 a measure space to a normed space, where the norm is
 $$
 \left(\int ‖f (x)‖^p dμ\right)^{1/p}.
 $$
 This has all the same subtleties as `lp`, and the further subtlety that this only
 defines a seminorm (as almost everywhere zero functions have zero `L^p` norm).
-The construction `PiLp` corresponds to the special case of `measure_theory.Lp` in which the basis
+The construction `PiLp` corresponds to the special case of `MeasureTheory.Lp` in which the basis
 is a finite space equipped with the counting measure.
 
 To prove that the topology (and the uniform structure) on a finite product with the `L^p` distance
