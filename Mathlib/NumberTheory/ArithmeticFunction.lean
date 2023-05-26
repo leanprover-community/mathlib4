@@ -214,29 +214,32 @@ theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n
   rfl
 #align nat.arithmetic_function.add_apply Nat.ArithmeticFunction.add_apply
 
-instance addMonoid : AddMonoid (ArithmeticFunction R) :=
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
   { ArithmeticFunction.zero R,
     ArithmeticFunction.add with
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
     zero_add := fun _ => ext fun _ => zero_add _
     add_zero := fun _ => ext fun _ => add_zero _ }
+-- porting note: have I aligned this correctly?
+#align nat.arithmetic_function.add_monoid Nat.ArithmeticFunction.instAddMonoid
 
 end AddMonoid
 
-
-instance [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
-  { ArithmeticFunction.addMonoid,
+instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
+  { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
     natCast_zero := by ext ; simp  ;
     natCast_succ := fun n => by ext x ; by_cases h : x = 1 <;> simp [h] }
+-- porting note: have I aligned this correctly?
+#align nat.arithmetic_function.add_monoid_with_one Nat.ArithmeticFunction.instAddMonoidWithOne
 
-instance aa [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
+instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
+  { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   {
-    ArithmeticFunction.addMonoid with
+    ArithmeticFunction.instAddMonoid with
     neg := fun f => ⟨fun n => -f n, by simp⟩
     add_left_neg := fun _ => ext fun _ => add_left_neg _ }
 
@@ -336,15 +339,20 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
+    stop
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
     simp only [Con, mem_divisorsAntidiagonal, one_mul, Ne.def] at ymem
     simp only [mem_singleton, Prod.ext_iff] at ynmem
+    -- porting note: `tauto` worked from here.
+    cases y
+    subst con
+    simp only [true_and, one_mul, x0, not_false_eq_true, and_true] at ynmem ymem
     tauto
+
   simp [y1ne]
 #align nat.arithmetic_function.one_smul' Nat.ArithmeticFunction.one_smul'
-#exit
 
 end Module
 
@@ -353,30 +361,33 @@ section Semiring
 variable [Semiring R]
 
 instance : Monoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.hasOne,
-    ArithmeticFunction.hasMul with
+  { one := One.one
+    mul := Mul.mul
     one_mul := one_smul'
     mul_one := fun f => by
-      ext
+      ext x
       rw [mul_apply]
       by_cases x0 : x = 0
       · simp [x0]
-      have h : {(x, 1)} ⊆ divisors_antidiagonal x := by simp [x0]
+      have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
+        sorry
       intro y ymem ynmem
       have y2ne : y.snd ≠ 1 := by
         intro con
-        simp only [Con, mem_divisors_antidiagonal, mul_one, Ne.def] at ymem
+        cases y; subst con -- porting note: added
+        simp only [Con, mem_divisorsAntidiagonal, mul_one, Ne.def] at ymem
         simp only [mem_singleton, Prod.ext_iff] at ynmem
         tauto
       simp [y2ne]
     mul_assoc := mul_smul' }
 
-instance : Semiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.hasZero R, ArithmeticFunction.hasMul, ArithmeticFunction.hasAdd,
-    ArithmeticFunction.addCommMonoid, ArithmeticFunction.addMonoidWithOne,
-    ArithmeticFunction.monoid with
+instance instSemiring : Semiring (ArithmeticFunction R) :=
+  -- porting note: I feel that I shouldn't have had to provide `one_mul, mul_one, mul_assoc`
+  { ArithmeticFunction.instAddMonoidWithOne,
+    ArithmeticFunction.instAddCommMonoid,
+    show AddMonoid (ArithmeticFunction R) by infer_instance with
     zero_mul := fun f => by
       ext
       simp only [mul_apply, MulZeroClass.zero_mul, sum_const_zero, zero_apply]
@@ -388,19 +399,26 @@ instance : Semiring (ArithmeticFunction R) :=
       simp only [← sum_add_distrib, mul_add, mul_apply, add_apply]
     right_distrib := fun a b c => by
       ext
-      simp only [← sum_add_distrib, add_mul, mul_apply, add_apply] }
+      simp only [← sum_add_distrib, add_mul, mul_apply, add_apply],
+    one_mul := one_mul,
+    mul_one := mul_one,
+    mul_assoc := mul_assoc }
+-- porting note: have I aligned this correctly?
+#align nat.arithmetic_function.semiring Nat.ArithmeticFunction.instSemiring
 
 end Semiring
 
 instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.semiring with
+  { ArithmeticFunction.instSemiring with
     mul_comm := fun f g => by
       ext
-      rw [mul_apply, ← map_swap_divisors_antidiagonal, sum_map]
+      rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
       simp [mul_comm] }
 
 instance [CommRing R] : CommRing (ArithmeticFunction R) :=
-  { ArithmeticFunction.addCommGroup, ArithmeticFunction.commSemiring with }
+  { ArithmeticFunction.instSemiring with
+    add_left_neg := add_left_neg
+    mul_comm := mul_comm }
 
 instance {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
@@ -443,10 +461,10 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [Module R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i in divisors x, f i := by
   rw [smul_apply]
-  trans ∑ i in divisors_antidiagonal x, f i.snd
+  trans ∑ i in divisorsAntidiagonal x, f i.snd
   · refine' sum_congr rfl fun i hi => _
-    rcases mem_divisors_antidiagonal.1 hi with ⟨rfl, h⟩
-    rw [nat_coe_apply, zeta_apply_ne (left_ne_zero_of_mul h), cast_one, one_smul]
+    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
+    rw [natCoe_apply, zeta_apply_ne (left_ne_zero_of_mul h), cast_one, one_smul]
   · rw [← map_div_left_divisors, sum_map, Function.Embedding.coeFn_mk]
 #align nat.arithmetic_function.coe_zeta_smul_apply Nat.ArithmeticFunction.coe_zeta_smul_apply
 
