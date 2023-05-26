@@ -333,8 +333,8 @@ private theorem newton_seq_dist {n k : ℕ} (hnk : n ≤ k) :
 
 private theorem newton_seq_dist_to_a :
     ∀ n : ℕ, 0 < n → ‖newton_seq n - a‖ = ‖F.eval a‖ / ‖F.derivative.eval a‖
-  | 1, h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]
-  | k + 2, h =>
+  | 1, _h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]
+  | k + 2, _h =>
     have hlt : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ < ‖newton_seq (k + 1) - a‖ := by
       rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak;
         assumption
