@@ -2473,6 +2473,7 @@ import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
 import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 import Mathlib.Topology.Sheaves.SheafCondition.Sites

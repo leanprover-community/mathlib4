@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.Topology.Sheaves.SheafCondition.PairwiseIntersections
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # The sheaf condition in terms of an equalizer of products
@@ -89,8 +89,7 @@ theorem res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U
 #align Top.presheaf.sheaf_condition_equalizer_products.res_π TopCat.Presheaf.SheafConditionEqualizerProducts.res_π
 
 @[elementwise]
-theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U :=
-  by
+theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
   dsimp [res, left_res, right_res]
   ext
   simp only [limit.lift_π, limit.lift_π_assoc, fan.mk_π_app, category.assoc]
@@ -167,8 +166,7 @@ is isomorphic to `fork F G` postcomposed with the corresponding isomorphism betw
 sheaf condition diagrams.
 -/
 def fork.isoOfIso (α : F ≅ G) :
-    fork F U ≅ (Cones.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) :=
-  by
+    fork F U ≅ (Cones.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
   fapply fork.ext
   · apply α.app
   · ext
@@ -201,8 +199,7 @@ open CategoryTheory.Pairwise CategoryTheory.Pairwise.Hom
 /-- Implementation of `sheaf_condition_pairwise_intersections.cone_equiv`. -/
 @[simps]
 def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
-    Cone (SheafConditionEqualizerProducts.diagram F U)
-    where
+    Cone (SheafConditionEqualizerProducts.diagram F U) where
   pt := c.pt
   π :=
     { app := fun Z =>
