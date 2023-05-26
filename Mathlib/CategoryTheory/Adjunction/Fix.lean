@@ -38,9 +38,60 @@ abbrev Adjunction.right_fixed_points := CategoryTheory.FullSubcategory adj.is_ri
 
 noncomputable
 def Adjunction.fixed_points_equiv : adj.left_fixed_points ≌ adj.right_fixed_points :=
+  have h1 : ∀ X, is_left_fixed_point adj X → is_right_fixed_point adj (F.obj X) := by {
+    intro X h
+    dsimp only [is_left_fixed_point, is_right_fixed_point] at h ⊢
+    haveI := h
+    haveI : IsIso (F.map (adj.unit.app X) ≫ adj.counit.app (F.obj X))
+          := by { convert IsIso.id (F.obj X);
+                  exact congr_fun (congr_arg NatTrans.app adj.left_triangle) X }
+    exact IsIso.of_isIso_comp_left (F.map (adj.unit.app X)) (adj.counit.app (F.obj X))
+  }
+  have h2 : ∀ Y, is_right_fixed_point adj Y → is_left_fixed_point adj (G.obj Y) := by {
+    intro Y h
+    dsimp only [is_left_fixed_point, is_right_fixed_point] at h ⊢
+    haveI := h
+    haveI : IsIso (adj.unit.app (G.obj Y) ≫ G.map (adj.counit.app Y)) := by
+      convert IsIso.id (G.obj Y);
+      exact congr_fun (congr_arg NatTrans.app adj.right_triangle) Y
+    exact IsIso.of_isIso_comp_right (adj.unit.app (G.obj Y)) (G.map (adj.counit.app Y))
+  }
+  --this should be cleaned up
   @Adjunction.toEquivalence _ _ _ _ _ _
-    (adj.restrictFullyFaithful' adj.is_left_fixed_point adj.is_right_fixed_point
-                                sorry sorry)
-    sorry sorry
+    (adj.restrictFullyFaithful' adj.is_left_fixed_point adj.is_right_fixed_point (h1 _) (h2 _))
+    (by rintro ⟨X, h⟩
+        dsimp only [is_left_fixed_point, Functor.id_obj, Functor.comp_obj] at h
+        haveI : ReflectsIsomorphisms (fullSubcategoryInclusion adj.is_left_fixed_point) :=
+          reflectsIsomorphisms_of_full_and_faithful
+            (fullSubcategoryInclusion (is_left_fixed_point adj))
+        simp only [Functor.id_obj, fullSubcategoryInclusion, inducedFunctor,
+                   Functor.comp_obj, restrictFullyFaithful', restrictFullyFaithful,
+                   FullSubcategory.lift_obj_obj, equivOfFullyFaithful, Functor.preimage,
+                   FullSubcategory.lift_comp_inclusion, Iso.symm_symm_eq,
+                   NatIso.ofComponents.app, Equiv.instTransSortSortSortEquivEquivEquiv_trans,
+                   mkOfHomEquiv_unit_app, Equiv.trans_apply, Equiv.coe_fn_mk,
+                   Iso.homCongr_apply, Iso.refl_inv, Iso.refl_hom, comp_id, id_comp,
+                   homEquiv_unit, Iso.app_hom, Iso.symm_hom,
+                   NatIso.ofComponents_inv_app, Equiv.coe_fn_symm_mk,
+                   Full.preimage, FullSubcategory.lift]
+        dsimp [is_left_fixed_point] at h; haveI := h
+        exact @isIso_of_reflects_iso (FullSubcategory (is_left_fixed_point adj)) _ C _ _ _ _
+                (fullSubcategoryInclusion (is_left_fixed_point adj)) IsIso.comp_isIso _)
+    (by rintro ⟨Y, h⟩
+        dsimp only [is_left_fixed_point, Functor.id_obj, Functor.comp_obj] at h
+        haveI : ReflectsIsomorphisms (fullSubcategoryInclusion adj.is_right_fixed_point) :=
+          reflectsIsomorphisms_of_full_and_faithful
+            (fullSubcategoryInclusion (is_right_fixed_point adj))
+        simp only [fullSubcategoryInclusion, inducedFunctor, Functor.comp_obj, Functor.id_obj, restrictFullyFaithful',
+                   restrictFullyFaithful, FullSubcategory.lift_obj_obj, equivOfFullyFaithful, Functor.preimage,
+                   FullSubcategory.lift_comp_inclusion, Iso.symm_symm_eq, NatIso.ofComponents.app,
+                   Equiv.instTransSortSortSortEquivEquivEquiv_trans, mkOfHomEquiv_counit_app, Equiv.invFun_as_coe,
+                   Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, Iso.homCongr_symm, Iso.refl_symm,
+                   Iso.homCongr_apply, Iso.refl_inv, Iso.symm_hom, Iso.app_inv, Iso.symm_inv, NatIso.ofComponents_hom_app,
+                   Iso.refl_hom, comp_id, id_comp, homEquiv_counit, Equiv.coe_fn_symm_mk,
+                   Full.preimage, FullSubcategory.lift]
+        dsimp [is_right_fixed_point] at h; haveI := h
+        exact @isIso_of_reflects_iso (FullSubcategory (is_right_fixed_point adj)) _ _ _ _ _ _
+                (fullSubcategoryInclusion (is_right_fixed_point adj)) IsIso.comp_isIso _)
 
 end CategoryTheory
