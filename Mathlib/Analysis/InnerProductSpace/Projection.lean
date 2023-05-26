@@ -647,7 +647,7 @@ def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
     (2 • (K.subtype.comp (orthogonalProjection K).toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul]
-#align reflection_linear_equiv reflectionLinearEquiv
+#align reflection_linear_equiv reflectionLinearEquivₓ
 
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
@@ -677,7 +677,7 @@ variable {K}
 /-- The result of reflecting. -/
 theorem reflection_apply (p : E) : reflection K p = 2 • (orthogonalProjection K p : E) - p :=
   rfl
-#align reflection_apply reflection_apply
+#align reflection_apply reflection_applyₓ
 
 /-- Reflection is its own inverse. -/
 @[simp]
