@@ -127,16 +127,17 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
-theorem card_nthRoots_subgroup_units [Fintype G] (f : G →* R) (hf : Injective f) {n : ℕ}
-    (hn : 0 < n) (g₀ : G) :
-    Finset.card ({ g ∈ univ (α := G) | g ^ n = g₀ } : Finset G) ≤ Multiset.card (nthRoots n (f g₀)) := by
-  stop
+-- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
+-- so we have to use `Finset.filter` instead
+theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
+  {n : ℕ} (hn : 0 < n) (g₀ : G) :
+    Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
   apply card_le_card_of_inj_on f
   · intro g hg
-    rw [sep_def, mem_filter] at hg
-    rw [Multiset.mem_toFinset, mem_nth_roots hn, ← f.map_pow, hg.2]
+    rw [mem_filter] at hg
+    rw [Multiset.mem_toFinset, mem_nthRoots hn, ← f.map_pow, hg.2]
   · intros
     apply hf
     assumption
@@ -148,8 +149,7 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
     cases nonempty_fintype G
     apply isCyclic_of_card_pow_eq_one_le
     intro n hn
-    stop
-    convert le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
+    exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 #align is_cyclic_of_subgroup_is_domain isCyclic_of_subgroup_isDomain
 
 /-- The unit group of a finite integral domain is cyclic.
@@ -242,48 +242,46 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
     exact fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
-      (∑ g : G, f g) = ∑ g : G, f.toHomUnits g := rfl
+      (∑ g : G, f g) = ∑ g : G, (f.toHomUnits g : R) := rfl
       _ =
           ∑ u : Rˣ in univ.image f.toHomUnits,
-            (univ.filter fun g => f.toHomUnits g = u).card • u :=
-        (sum_comp (coe : Rˣ → R) f.toHomUnits)
-      _ = ∑ u : Rˣ in univ.image f.toHomUnits, c • u :=
-        (sum_congr rfl fun u hu => congr_arg₂ _ _ rfl)
+            (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
+        (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
+      _ = ∑ u : Rˣ in univ.image f.toHomUnits, c • (u : R) :=
+        (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
-          _ =
-          ∑ b : MonoidHom.range f.toHomUnits, c • ↑b :=
+      -- Porting note: have to change `(b : R)` into `((b : Rˣ) : R)`
+      _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
         (Finset.sum_subtype _ (by simp) _)
-      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b : R) := smul_sum.symm
-      _ = c • 0 := (congr_arg₂ _ rfl _)
+      _ = c • ∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R) := smul_sum.symm
+      _ = c • (0 : R) := (congr_arg₂ _ rfl ?_)
       -- remaining goal 2, proven below
-          _ =
-          0 :=
-        smul_zero _
+      _ = (0 : R) := smul_zero _
 
     · -- remaining goal 1
-      show (univ.filter fun g : G => f.to_hom_units g = u).card = c
-      apply card_fiber_eq_of_mem_range f.to_hom_units
-      · simpa only [mem_image, mem_univ, exists_prop_of_true, Set.mem_range] using hu
-      · exact ⟨1, f.to_hom_units.map_one⟩
+      show (univ.filter fun g : G => f.toHomUnits g = u).card = c
+      apply card_fiber_eq_of_mem_range f.toHomUnits
+      · simpa only [mem_image, mem_univ, true_and, Set.mem_range] using hu
+      · exact ⟨1, f.toHomUnits.map_one⟩
     -- remaining goal 2
-    show (∑ b : MonoidHom.range f.to_hom_units, (b : R)) = 0
+    show (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R)) = 0
     calc
-      (∑ b : MonoidHom.range f.to_hom_units, (b : R)) = ∑ n in range (orderOf x), x ^ n :=
+      (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R))
+        = ∑ n in range (orderOf x), ((x : Rˣ) : R) ^ n :=
         Eq.symm <|
           sum_bij (fun n _ => x ^ n) (by simp only [mem_univ, forall_true_iff])
-            (by
-              simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow, Units.val_pow_eq_pow_val,
-                coe_coe])
+            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+                Units.val_pow_eq_pow_val])
             (fun m n hm hn =>
               pow_injective_of_lt_orderOf _ (by simpa only [mem_range] using hm)
                 (by simpa only [mem_range] using hn))
-            fun b hb =>
-            let ⟨n, hn⟩ := hx b
-            ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)), by
-              rw [← pow_eq_mod_orderOf, hn]⟩
-      _ = 0 := _
+            (fun b _ => let ⟨n, hn⟩ := hx b
+              ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
+               -- Porting note: have to use `dsimp` to apply the function
+               by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
+      _ = 0 := ?_
 
-    rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul, coe_coe]
+    rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
 #align sum_hom_units_eq_zero sum_hom_units_eq_zero
