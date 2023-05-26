@@ -83,7 +83,7 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
   rw [←Nat.succ_add, add_assoc]
 -- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `by cases m with m m; cases n with n n; unfold has_add.add;`
--- `simp [int.add, -of_nat_eq_coe, Bool.xor_comm]`
+-- `simp [int.add, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_add Int.bodd_add
 
 @[simp]
@@ -94,7 +94,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_mul]
 -- Porting note: Heavily refactored proof, used to be:
 -- `by cases m with m m; cases n with n n;`
--- `simp [← Int.mul_def, int.mul, -of_nat_eq_coe, Bool.xor_comm]`
+-- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_mul Int.bodd_mul
 
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n

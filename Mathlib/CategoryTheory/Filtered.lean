@@ -566,8 +566,8 @@ noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose_spec.choose
 #align category_theory.is_cofiltered.min_to_right CategoryTheory.IsCofiltered.minToRight
 
-/-- `Eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
-which admits a morphism `eqHom f f' : Eq f f' ⟶ j` such that
+/-- `eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
+which admits a morphism `eqHom f f' : eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 Its existence is ensured by `IsCofiltered`.
 -/
