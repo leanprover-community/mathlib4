@@ -164,6 +164,7 @@ def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
   complex := X
   π := f
   projective := H
+  -- porting note: Lean 3 used dot notation `f.to_single₀_exact_d_f_at_zero` etc
   exact₀ := HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero f
   exact := HomologicalComplex.Hom.to_single₀_exact_at_succ f
   epi := HomologicalComplex.Hom.to_single₀_epi_at_zero f
