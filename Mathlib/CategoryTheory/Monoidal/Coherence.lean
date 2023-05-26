@@ -189,6 +189,13 @@ example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) 
 
 open Lean Meta Elab Tactic
 
+/-- Helper function for throwing exceptions. -/
+def exception (g : MVarId) (msg : MessageData) : MetaM α := throwTacticEx `monoidal_coherence g msg
+
+/-- Helper function for throwing exceptions. -/
+def exception' (msg : MessageData) : TacticM Unit :=
+  liftMetaTactic (exception (msg := msg))
+
 /--
 Auxilliary definition of `monoidal_coherence`,
 being careful with namespaces to avoid shadowing.
@@ -205,14 +212,14 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := do
     (max 256 (opts.getNat `synthInstance.maxSize))) do
   -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
-  let some (_, lhs, rhs) := ty.eq? | throwError "Not an equation of morphisms."
+  let some (_, lhs, rhs) := ty.eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
   let g₁ ← g.change (← mkEq projectMap_lhs projectMap_rhs)
-  let [g₂] ← g₁.apply (← mkConstWithFreshMVarLevels `congrArg)
-    | throwError "congrArg failed in coherence"
-  let [] ← g₂.apply (← mkConstWithFreshMVarLevels `Subsingleton.elim)
-    | throwError "This shouldn't happen; Subsingleton.elim does not create goals."
+  let [g₂] ← g₁.applyConst ``congrArg
+    | exception g "congrArg failed in coherence"
+  let [] ← g₂.applyConst ``Subsingleton.elim
+    | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
 /-- Coherence tactic for monoidal categories. -/
 syntax (name := monoidal_coherence_stx) "monoidal_coherence" : tactic
@@ -299,14 +306,18 @@ end coherence
 open coherence
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
-def insertTrailingIds : TacticM Unit := do
-  let some (_, lhs, rhs) := (← getMainTarget).eq? | throwError "Not an equality."
-  match lhs.getAppFnArgs with
-  | (``CategoryStruct.comp, _) => pure ()
-  | _ => evalTactic (← `(tactic| apply insert_id_lhs))
+def insertTrailingIds (g : MVarId) : MetaM MVarId := do
+  let some (_, lhs, rhs) := (← instantiateMVars (← g.getType)).eq? | exception g "Not an equality."
+  let g' ← match lhs.getAppFnArgs with
+  | (``CategoryStruct.comp, _) => pure g
+  | _ => do
+    let [g'] ← g.applyConst ``insert_id_lhs | exception g "failed to apply insert_id_lhs"
+    pure g'
   match rhs.getAppFnArgs with
-  | (``CategoryStruct.comp, _) => pure ()
-  | _ => evalTactic (← `(tactic| apply insert_id_rhs))
+  | (``CategoryStruct.comp, _) => return g'
+  | _ => do
+    let [g''] ← g'.applyConst ``insert_id_rhs | exception g' "failed to apply insert_id_rhs"
+    return g''
 
 /-- The main part of `coherence` tactic. -/
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
@@ -320,24 +331,22 @@ do
   -- Otherwise, rearrange so we have a maximal prefix of each side
   -- that is built out of unitors and associators:
   evalTactic (← `(tactic| liftable_prefixes)) <|>
-    throwError ("Something went wrong in the `coherence` tactic: " ++
+    exception' ("Something went wrong in the `coherence` tactic: " ++
       "is the target an equation in a monoidal category?")
   -- The goal should now look like `f₀ ≫ f₁ = g₀ ≫ g₁`,
-  liftMetaTactic (MVarId.congrN (depth := 1) (closePre := false) (closePost := false))
+  liftMetaTactic MVarId.congrCore
   -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
   -- Discharge the first using `coherence`,
   evalTactic (← `(tactic| { pure_coherence })) <|> (do
-    throwError ("`coherence` tactic failed, " ++
-      s!"subgoal {← ppExpr (← getMainTarget)} not true in the free monoidal_category"))
+    exception' ("`coherence` tactic failed, subgoal not true in the free monoidal_category"))
   -- Then check that either `g₀` is identically `g₁`,
   evalTactic (← `(tactic| rfl)) <|> (do
     -- or that both are compositions,
-    insertTrailingIds
-    liftMetaTactic (MVarId.congrN (depth := 1) (closePre := false) (closePost := false))
+    liftMetaTactic' insertTrailingIds
+    liftMetaTactic MVarId.congrCore
     -- with identical first terms,
     evalTactic (← `(tactic| rfl)) <|>
-      throwError ("`coherence` tactic failed, non-structural morphisms don't match: " ++
-        s!"{← ppExpr (← getMainTarget)}")
+      exception' "`coherence` tactic failed, non-structural morphisms don't match"
     -- and whose second terms can be identified by recursively called `coherence`.
     coherence_loop)
 
