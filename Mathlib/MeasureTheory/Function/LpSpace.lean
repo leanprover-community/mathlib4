@@ -12,7 +12,7 @@ import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.MeasureTheory.Function.EssSup
-import Mathlib.MeasureTheory.Function.AeEqFun
+import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.Topology.ContinuousFunction.Compact
 
