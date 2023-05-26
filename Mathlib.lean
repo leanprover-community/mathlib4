@@ -2474,6 +2474,7 @@ import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.Sheaves.Abelian
+import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.Init
 import Mathlib.Topology.Sheaves.Limits

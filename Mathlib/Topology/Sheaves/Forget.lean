@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathbin.Topology.Sheaves.SheafCondition.EqualizerProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 
 /-!
 # Checking the sheaf condition on the underlying presheaf of types.
@@ -65,8 +65,7 @@ attribute [local reducible] diagram left_res right_res
 /-- When `G` preserves limits, the sheaf condition diagram for `F` composed with `G` is
 naturally isomorphic to the sheaf condition diagram for `F ⋙ G`.
 -/
-def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{v} (F ⋙ G) U :=
-  by
+def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{v} (F ⋙ G) U := by
   fapply nat_iso.of_components
   rintro ⟨j⟩
   exact preserves_product.iso _ _
@@ -148,8 +147,7 @@ Another useful example is the forgetful functor `TopCommRing ⥤ Top`.
 See <https://stacks.math.columbia.edu/tag/0073>.
 In fact we prove a stronger version with arbitrary complete target category.
 -/
-theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) :=
-  by
+theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) := by
   rw [presheaf.is_sheaf_iff_is_sheaf_equalizer_products,
     presheaf.is_sheaf_iff_is_sheaf_equalizer_products]
   constructor
