@@ -35,7 +35,7 @@ variable {α : Type u}
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
-#align list.mem_range' List.mem_range'
+#align list.mem_range' List.mem_range'_1
 #align list.map_add_range' List.map_add_range'
 #align list.map_sub_range' List.map_sub_range'
 #align list.chain_succ_range' List.chain_succ_range'
