@@ -8,10 +8,10 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.ZModuleEquivalence
-import Mathlib.Algebra.Category.Group.Limits
-import Mathlib.Algebra.Category.Group.Colimits
-import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.GroupCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
@@ -34,30 +34,31 @@ section
 variable {X Y : AddCommGroupCat.{u}} (f : X ⟶ Y)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
-def normalMono (hf : Mono f) : NormalMono f :=
+def normalMono (_ : Mono f) : NormalMono f :=
   equivalenceReflectsNormalMono (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
     ModuleCat.normalMono _ inferInstance
+set_option linter.uppercaseLean3 false in
 #align AddCommGroup.normal_mono AddCommGroupCat.normalMono
 
 /-- In the category of abelian groups, every epimorphism is normal. -/
-def normalEpi (hf : Epi f) : NormalEpi f :=
+def normalEpi (_ : Epi f) : NormalEpi f :=
   equivalenceReflectsNormalEpi (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
     ModuleCat.normalEpi _ inferInstance
+set_option linter.uppercaseLean3 false in
 #align AddCommGroup.normal_epi AddCommGroupCat.normalEpi
 
 end
 
 /-- The category of abelian groups is abelian. -/
 instance : Abelian AddCommGroupCat.{u} where
-  HasFiniteProducts := ⟨by infer_instance⟩
-  normalMonoOfMono X Y := normalMono
-  normalEpiOfEpi X Y := normalEpi
+  has_finite_products := ⟨by infer_instance⟩
+  normalMonoOfMono := normalMono
+  normalEpiOfEpi := normalEpi
   add_comp := by
     intros
-    simp only [preadditive.add_comp]
+    simp only [Preadditive.add_comp]
   comp_add := by
     intros
-    simp only [preadditive.comp_add]
+    simp only [Preadditive.comp_add]
 
 end AddCommGroupCat
-
