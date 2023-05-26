@@ -856,8 +856,8 @@ theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
 theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     edist ((PiLp.equiv p β).symm (Pi.single i b₁)) ((PiLp.equiv p β).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
-  simpa only [edist_nndist] using
-    congr_arg ((↑) : ℝ≥0 → ℝ) (nndist_equiv_symm_single_same p β i b₁ b₂)
+  -- Porting note: was `simpa using`
+  simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
 #align pi_Lp.edist_equiv_symm_single_same PiLp.edist_equiv_symm_single_same
 
 end Single
@@ -944,7 +944,7 @@ section Basis
 variable (ι)
 
 /-- A version of `pi.basis_fun` for `pi_Lp`. -/
-def basisFun : Basis ι 𝕜 (PiLp p fun (_ : ι) => 𝕜) :=
+def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
   Basis.ofEquivFun (PiLp.linearEquiv p 𝕜 fun _ : ι => 𝕜)
 #align pi_Lp.basis_fun PiLp.basisFun
 
@@ -955,7 +955,7 @@ theorem basisFun_apply [DecidableEq ι] (i) :
 #align pi_Lp.basis_fun_apply PiLp.basisFun_apply
 
 @[simp]
-theorem basisFun_repr (x : PiLp p fun i : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
+theorem basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
   rfl
 #align pi_Lp.basis_fun_repr PiLp.basisFun_repr
 
@@ -977,7 +977,8 @@ theorem basisFun_map :
 
 open Matrix
 
-theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun i : ι => 𝕜)) (A : Matrix ι ι 𝕜) :
+nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
+    (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) ⬝ A =
       Matrix.of fun i j => b.repr ((PiLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (PiLp.linearEquiv _ 𝕜 _)) A
