@@ -140,7 +140,8 @@ theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallel
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_π_app_walking_parallel_pair_zero TopCat.Presheaf.SheafConditionEqualizerProducts.fork_π_app_walkingParallelPair_zero
 
-@[simp]
+-- Porting note : Shortcut simplifer
+@[simp (high)]
 theorem fork_π_app_walkingParallelPair_one :
     (fork F U).π.app WalkingParallelPair.one = res F U ≫ leftRes F U :=
   rfl
