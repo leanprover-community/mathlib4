@@ -2020,14 +2020,11 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
   right_inv ψ := by
     classical
     ext x
-    apply Dfinsupp.induction x
-    · simp
-    intros i b f _ _ IH
-    simp [IH]
+    simp
   map_add' F G := by
     classical
     ext
-    simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
+    simp
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
 #align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply
