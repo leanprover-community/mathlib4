@@ -278,14 +278,14 @@ theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
 theorem mul_apply_one [Semiring R] {f g : ArithmeticFunction R} : (f * g) 1 = f 1 * g 1 := by simp
 #align nat.arithmetic_function.mul_apply_one Nat.ArithmeticFunction.mul_apply_one
 
-@[simp, norm_cast]
+@[simp]
 theorem natCoe_mul [Semiring R] {f g : ArithmeticFunction ℕ} :
     (↑(f * g) : ArithmeticFunction R) = f * g := by
   ext n
   simp
 #align nat.arithmetic_function.nat_coe_mul Nat.ArithmeticFunction.natCoe_mul
 
-@[simp, norm_cast]
+@[simp]
 theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
     (↑(f * g) : ArithmeticFunction R) = f * g := by
   ext n
