@@ -89,6 +89,26 @@ def ofComplex (Z : C) : ChainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
+/-
+Next declaration was autoported as the below, but it times out.
+
+irreducible_def of (Z : C) : ProjectiveResolution Z :=
+  { complex := ofComplex Z
+    π :=
+      ChainComplex.mkHom _ _ (Projective.π Z) 0
+        (by
+          simp
+          exact (exact_d_f (projective.π Z)).w.symm)
+        fun n _ => ⟨0, by ext⟩
+    projective := by rintro (_ | _ | _ | n) <;> apply projective.projective_over
+    exact₀ := by simpa using exact_d_f (projective.π Z)
+    exact := by
+      rintro (_ | n) <;>
+        · simp
+          apply exact_d_f
+    epi := Projective.π_epi Z }
+-/
+
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
