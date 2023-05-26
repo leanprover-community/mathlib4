@@ -811,20 +811,24 @@ variable (p)
 
 variable [DecidableEq ι]
 
+-- Porting note: added `hp`
 @[simp]
-theorem nnnorm_equiv_symm_single (i : ι) (b : β i) :
+theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
     ‖(PiLp.equiv p β).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
+  clear x y -- Porting note: added
   haveI : Nonempty ι := ⟨i⟩
-  induction p using ENNReal.recTopCoe
-  · simp_rw [nnnorm_eq_ciSup, equiv_symm_apply]
+  induction p using ENNReal.recTopCoe generalizing hp with
+  | top =>
+    simp_rw [nnnorm_eq_ciSup, equiv_symm_apply]
     refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => _) fun n hn => ⟨i, hn.trans_eq _⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [Pi.single_eq_same]
       · rw [Pi.single_eq_of_ne' hij, nnnorm_zero]
         exact zero_le _
     · rw [Pi.single_eq_same]
-  · have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (1 ≤ (p : ℝ≥0∞))).ne'
+  | coe p =>
+    have hp0 : (p : ℝ) ≠ 0 := by
+      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     rw [nnnorm_eq_sum ENNReal.coe_ne_top, ENNReal.coe_toReal, Fintype.sum_eq_single i,
       equiv_symm_apply, Pi.single_eq_same, ← NNReal.rpow_mul, one_div, mul_inv_cancel hp0,
       NNReal.rpow_one]
