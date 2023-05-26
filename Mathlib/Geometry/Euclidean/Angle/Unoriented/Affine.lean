@@ -18,7 +18,7 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 ## Main definitions
 
-* `euclidean_geometry.angle`, with notation `∠`, is the undirected angle determined by three
+* `EuclideanGeometry.angle`, with notation `∠`, is the undirected angle determined by three
   points.
 
 -/
@@ -26,11 +26,7 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open BigOperators
-
-open Real
-
-open RealInnerProductSpace
+open BigOperators Real RealInnerProductSpace
 
 namespace EuclideanGeometry
 
@@ -39,17 +35,14 @@ open InnerProductGeometry
 variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
-include V
-
 /-- The undirected angle at `p2` between the line segments to `p1` and
 `p3`. If either of those points equals `p2`, this is π/2. Use
-`open_locale euclidean_geometry` to access the `∠ p1 p2 p3`
+`open scoped EuclideanGeometry` to access the `∠ p1 p2 p3`
 notation. -/
-def angle (p1 p2 p3 : P) : ℝ :=
+nonrec def angle (p1 p2 p3 : P) : ℝ :=
   angle (p1 -ᵥ p2 : V) (p3 -ᵥ p2)
 #align euclidean_geometry.angle EuclideanGeometry.angle
 
--- mathport name: angle
 scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
@@ -57,21 +50,20 @@ theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [hx12]
   have hf2 : (f x).2 ≠ 0 := by simp [hx32]
-  exact
-    (InnerProductGeometry.continuousAt_angle hf1 hf2).comp
-      ((continuous_fst.vsub continuous_snd.fst).prod_mk
-          (continuous_snd.snd.vsub continuous_snd.fst)).ContinuousAt
+  exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp
+    ((continuous_fst.vsub continuous_snd.fst).prod_mk
+      (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
 #align euclidean_geometry.continuous_at_angle EuclideanGeometry.continuousAt_angle
 
 @[simp]
-theorem AffineIsometry.angle_map {V₂ P₂ : Type _} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
-    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) :
-    ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
+theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type _} [NormedAddCommGroup V₂]
+    [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+    (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) : ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
   simp_rw [angle, ← AffineIsometry.map_vsub, LinearIsometry.angle_map]
 #align affine_isometry.angle_map AffineIsometry.angle_map
 
 @[simp, norm_cast]
-theorem AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p₃ : s) :
+theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p₃ : s) :
     haveI : Nonempty s := ⟨p₁⟩
     ∠ (p₁ : P) (p₂ : P) (p₃ : P) = ∠ p₁ p₂ p₃ :=
   haveI : Nonempty s := ⟨p₁⟩
@@ -123,7 +115,7 @@ theorem angle_sub_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ - v) (v₂ - v)
 /-- Angles in a vector space are invariant to inversion -/
 @[simp]
 theorem angle_const_sub (v : V) (v₁ v₂ v₃ : V) : ∠ (v - v₁) (v - v₂) (v - v₃) = ∠ v₁ v₂ v₃ := by
-  simpa only [vsub_eq_sub] using angle_const_vsub _ _ _ _
+  simpa only [vsub_eq_sub] using angle_const_vsub v v₁ v₂ v₃
 #align euclidean_geometry.angle_const_sub EuclideanGeometry.angle_const_sub
 
 /-- Angles in a vector space are invariant to inversion -/
@@ -134,17 +126,17 @@ theorem angle_neg (v₁ v₂ v₃ : V) : ∠ (-v₁) (-v₂) (-v₃) = ∠ v₁ 
 
 /-- The angle at a point does not depend on the order of the other two
 points. -/
-theorem angle_comm (p1 p2 p3 : P) : ∠ p1 p2 p3 = ∠ p3 p2 p1 :=
+nonrec theorem angle_comm (p1 p2 p3 : P) : ∠ p1 p2 p3 = ∠ p3 p2 p1 :=
   angle_comm _ _
 #align euclidean_geometry.angle_comm EuclideanGeometry.angle_comm
 
 /-- The angle at a point is nonnegative. -/
-theorem angle_nonneg (p1 p2 p3 : P) : 0 ≤ ∠ p1 p2 p3 :=
+nonrec theorem angle_nonneg (p1 p2 p3 : P) : 0 ≤ ∠ p1 p2 p3 :=
   angle_nonneg _ _
 #align euclidean_geometry.angle_nonneg EuclideanGeometry.angle_nonneg
 
 /-- The angle at a point is at most π. -/
-theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
+nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
   angle_le_pi _ _
 #align euclidean_geometry.angle_le_pi EuclideanGeometry.angle_le_pi
 
@@ -188,7 +180,7 @@ theorem angle_eq_zero_of_angle_eq_pi_right {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π
 theorem angle_eq_angle_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
     ∠ p1 p2 p3 = ∠ p1 p2 p4 := by
   unfold angle at *
-  rcases angle_eq_pi_iff.1 h with ⟨hp2p3, ⟨r, ⟨hr, hpr⟩⟩⟩
+  rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, hpr⟩⟩⟩
   rw [eq_comm]
   convert angle_smul_right_of_pos (p1 -ᵥ p2) (p3 -ᵥ p2) (add_pos (neg_pos_of_neg hr) zero_lt_one)
   rw [add_smul, ← neg_vsub_eq_vsub_rev p2 p3, smul_neg, neg_smul, ← hpr]
@@ -196,7 +188,7 @@ theorem angle_eq_angle_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 
 #align euclidean_geometry.angle_eq_angle_of_angle_eq_pi EuclideanGeometry.angle_eq_angle_of_angle_eq_pi
 
 /-- If ∠BCD = π, then ∠ACB + ∠ACD = π. -/
-theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
+nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
     ∠ p1 p3 p2 + ∠ p1 p3 p4 = π := by
   unfold angle at h
   rw [angle_comm p1 p3 p2, angle_comm p1 p3 p4]
@@ -216,7 +208,7 @@ theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc 
 theorem left_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : dist p1 p2 ≠ 0 := by
   by_contra heq
   rw [dist_eq_zero] at heq
-  rw [HEq, angle_eq_left] at h
+  rw [heq, angle_eq_left] at h
   exact Real.pi_ne_zero (by linarith)
 #align euclidean_geometry.left_dist_ne_zero_of_angle_eq_pi EuclideanGeometry.left_dist_ne_zero_of_angle_eq_pi
 
@@ -263,6 +255,9 @@ theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint 
     rw [neg_vsub_eq_vsub_rev]
     simp
   simp [angle, this, hp1p2, -zero_lt_one]
+  rw [← neg_vsub_eq_vsub_rev p1 p2]
+  apply angle_self_neg_of_nonzero
+  simpa only [ne_eq, vsub_eq_zero_iff_eq]
 #align euclidean_geometry.angle_midpoint_eq_pi EuclideanGeometry.angle_midpoint_eq_pi
 
 /-- If M is the midpoint of the segment AB and C is the same distance from A as it is from B
@@ -286,18 +281,18 @@ theorem angle_right_midpoint_eq_pi_div_two_of_dist_eq {p1 p2 p3 : P} (h : dist p
 
 /-- If the second of three points is strictly between the other two, the angle at that point
 is π. -/
-theorem Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₂ p₃ = π := by
+theorem _root_.Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₂ p₃ = π := by
   rw [angle, angle_eq_pi_iff]
   rcases h with ⟨⟨r, ⟨hr0, hr1⟩, hp₂⟩, hp₂p₁, hp₂p₃⟩
   refine' ⟨vsub_ne_zero.2 hp₂p₁.symm, -(1 - r) / r, _⟩
   have hr0' : r ≠ 0 := by
     rintro rfl
     rw [← hp₂] at hp₂p₁
-    simpa using hp₂p₁
+    simp at hp₂p₁
   have hr1' : r ≠ 1 := by
     rintro rfl
     rw [← hp₂] at hp₂p₃
-    simpa using hp₂p₃
+    simp at hp₂p₃
   replace hr0 := hr0.lt_of_ne hr0'.symm
   replace hr1 := hr1.lt_of_ne hr1'
   refine' ⟨div_neg_of_neg_of_pos (Left.neg_neg_iff.2 (sub_pos.2 hr1)) hr0, _⟩
@@ -308,7 +303,7 @@ theorem Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p
 
 /-- If the second of three points is strictly between the other two, the angle at that point
 (reversed) is π. -/
-theorem Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₃ p₂ p₁ = π := by
+theorem _root_.Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₃ p₂ p₁ = π := by
   rw [← h.angle₁₂₃_eq_pi, angle_comm]
 #align sbtw.angle₃₂₁_eq_pi Sbtw.angle₃₂₁_eq_pi
 
@@ -318,31 +313,28 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
   refine' ⟨_, fun h => h.angle₁₂₃_eq_pi⟩
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
-  refine'
-    ⟨⟨1 / (1 - r),
-        ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
-          (div_le_one (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩,
-        _⟩,
-      (vsub_ne_zero.1 hp₁p₂).symm, _⟩
+  refine' ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
+    (div_le_one (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩, _⟩,
+    (vsub_ne_zero.1 hp₁p₂).symm, _⟩
   · rw [← eq_vadd_iff_vsub_eq] at hp₃p₂
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
-    convert(one_smul ℝ (p₂ -ᵥ p₁)).symm
-    field_simp [(sub_pos.2 (hr.trans zero_lt_one)).Ne.symm]
-    abel
+    convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
+    field_simp [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
+    ring
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
 #align euclidean_geometry.angle_eq_pi_iff_sbtw EuclideanGeometry.angle_eq_pi_iff_sbtw
 
 /-- If the second of three points is weakly between the other two, and not equal to the first,
 the angle at the first point is zero. -/
-theorem Wbtw.angle₂₁₃_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₁ : p₂ ≠ p₁) :
+theorem _root_.Wbtw.angle₂₁₃_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₁ : p₂ ≠ p₁) :
     ∠ p₂ p₁ p₃ = 0 := by
   rw [angle, angle_eq_zero_iff]
   rcases h with ⟨r, ⟨hr0, hr1⟩, rfl⟩
   have hr0' : r ≠ 0 := by
     rintro rfl
-    simpa using hp₂p₁
+    simp at hp₂p₁
   replace hr0 := hr0.lt_of_ne hr0'.symm
   refine' ⟨vsub_ne_zero.2 hp₂p₁, r⁻¹, inv_pos.2 hr0, _⟩
   rw [AffineMap.lineMap_apply, vadd_vsub_assoc, vsub_self, add_zero, smul_smul, inv_mul_cancel hr0',
@@ -351,46 +343,46 @@ theorem Wbtw.angle₂₁₃_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p�
 
 /-- If the second of three points is strictly between the other two, the angle at the first point
 is zero. -/
-theorem Sbtw.angle₂₁₃_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₂ p₁ p₃ = 0 :=
-  h.Wbtw.angle₂₁₃_eq_zero_of_ne h.ne_left
+theorem _root_.Sbtw.angle₂₁₃_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₂ p₁ p₃ = 0 :=
+  h.wbtw.angle₂₁₃_eq_zero_of_ne h.ne_left
 #align sbtw.angle₂₁₃_eq_zero Sbtw.angle₂₁₃_eq_zero
 
 /-- If the second of three points is weakly between the other two, and not equal to the first,
 the angle at the first point (reversed) is zero. -/
-theorem Wbtw.angle₃₁₂_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₁ : p₂ ≠ p₁) :
+theorem _root_.Wbtw.angle₃₁₂_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₁ : p₂ ≠ p₁) :
     ∠ p₃ p₁ p₂ = 0 := by rw [← h.angle₂₁₃_eq_zero_of_ne hp₂p₁, angle_comm]
 #align wbtw.angle₃₁₂_eq_zero_of_ne Wbtw.angle₃₁₂_eq_zero_of_ne
 
 /-- If the second of three points is strictly between the other two, the angle at the first point
 (reversed) is zero. -/
-theorem Sbtw.angle₃₁₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₃ p₁ p₂ = 0 :=
-  h.Wbtw.angle₃₁₂_eq_zero_of_ne h.ne_left
+theorem _root_.Sbtw.angle₃₁₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₃ p₁ p₂ = 0 :=
+  h.wbtw.angle₃₁₂_eq_zero_of_ne h.ne_left
 #align sbtw.angle₃₁₂_eq_zero Sbtw.angle₃₁₂_eq_zero
 
 /-- If the second of three points is weakly between the other two, and not equal to the third,
 the angle at the third point is zero. -/
-theorem Wbtw.angle₂₃₁_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₃ : p₂ ≠ p₃) :
+theorem _root_.Wbtw.angle₂₃₁_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     ∠ p₂ p₃ p₁ = 0 :=
   h.symm.angle₂₁₃_eq_zero_of_ne hp₂p₃
 #align wbtw.angle₂₃₁_eq_zero_of_ne Wbtw.angle₂₃₁_eq_zero_of_ne
 
 /-- If the second of three points is strictly between the other two, the angle at the third point
 is zero. -/
-theorem Sbtw.angle₂₃₁_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₂ p₃ p₁ = 0 :=
-  h.Wbtw.angle₂₃₁_eq_zero_of_ne h.ne_right
+theorem _root_.Sbtw.angle₂₃₁_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₂ p₃ p₁ = 0 :=
+  h.wbtw.angle₂₃₁_eq_zero_of_ne h.ne_right
 #align sbtw.angle₂₃₁_eq_zero Sbtw.angle₂₃₁_eq_zero
 
 /-- If the second of three points is weakly between the other two, and not equal to the third,
 the angle at the third point (reversed) is zero. -/
-theorem Wbtw.angle₁₃₂_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₃ : p₂ ≠ p₃) :
+theorem _root_.Wbtw.angle₁₃₂_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     ∠ p₁ p₃ p₂ = 0 :=
   h.symm.angle₃₁₂_eq_zero_of_ne hp₂p₃
 #align wbtw.angle₁₃₂_eq_zero_of_ne Wbtw.angle₁₃₂_eq_zero_of_ne
 
 /-- If the second of three points is strictly between the other two, the angle at the third point
 (reversed) is zero. -/
-theorem Sbtw.angle₁₃₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₃ p₂ = 0 :=
-  h.Wbtw.angle₁₃₂_eq_zero_of_ne h.ne_right
+theorem _root_.Sbtw.angle₁₃₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₃ p₂ = 0 :=
+  h.wbtw.angle₁₃₂_eq_zero_of_ne h.ne_right
 #align sbtw.angle₁₃₂_eq_zero Sbtw.angle₁₃₂_eq_zero
 
 /-- The angle between three points is zero if and only if one of the first and third points is
@@ -489,30 +481,31 @@ theorem angle_lt_pi_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear ℝ (
 #align euclidean_geometry.angle_lt_pi_of_not_collinear EuclideanGeometry.angle_lt_pi_of_not_collinear
 
 /-- The cosine of the angle between three points is 1 if and only if the angle is 0. -/
-theorem cos_eq_one_iff_angle_eq_zero {p₁ p₂ p₃ : P} : Real.cos (∠ p₁ p₂ p₃) = 1 ↔ ∠ p₁ p₂ p₃ = 0 :=
+nonrec theorem cos_eq_one_iff_angle_eq_zero {p₁ p₂ p₃ : P} :
+    Real.cos (∠ p₁ p₂ p₃) = 1 ↔ ∠ p₁ p₂ p₃ = 0 :=
   cos_eq_one_iff_angle_eq_zero
 #align euclidean_geometry.cos_eq_one_iff_angle_eq_zero EuclideanGeometry.cos_eq_one_iff_angle_eq_zero
 
 /-- The cosine of the angle between three points is 0 if and only if the angle is π / 2. -/
-theorem cos_eq_zero_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
+nonrec theorem cos_eq_zero_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = 0 ↔ ∠ p₁ p₂ p₃ = π / 2 :=
   cos_eq_zero_iff_angle_eq_pi_div_two
 #align euclidean_geometry.cos_eq_zero_iff_angle_eq_pi_div_two EuclideanGeometry.cos_eq_zero_iff_angle_eq_pi_div_two
 
 /-- The cosine of the angle between three points is -1 if and only if the angle is π. -/
-theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
+nonrec theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = -1 ↔ ∠ p₁ p₂ p₃ = π :=
   cos_eq_neg_one_iff_angle_eq_pi
 #align euclidean_geometry.cos_eq_neg_one_iff_angle_eq_pi EuclideanGeometry.cos_eq_neg_one_iff_angle_eq_pi
 
 /-- The sine of the angle between three points is 0 if and only if the angle is 0 or π. -/
-theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
+nonrec theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) = 0 ↔ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π :=
   sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi
 #align euclidean_geometry.sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi EuclideanGeometry.sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi
 
 /-- The sine of the angle between three points is 1 if and only if the angle is π / 2. -/
-theorem sin_eq_one_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
+nonrec theorem sin_eq_one_iff_angle_eq_pi_div_two {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) = 1 ↔ ∠ p₁ p₂ p₃ = π / 2 :=
   sin_eq_one_iff_angle_eq_pi_div_two
 #align euclidean_geometry.sin_eq_one_iff_angle_eq_pi_div_two EuclideanGeometry.sin_eq_one_iff_angle_eq_pi_div_two
@@ -539,9 +532,10 @@ theorem sin_ne_zero_of_not_collinear {p₁ p₂ p₃ : P} (h : ¬Collinear ℝ (
 
 /-- If the sine of the angle between three points is 0, they are collinear. -/
 theorem collinear_of_sin_eq_zero {p₁ p₂ p₃ : P} (h : Real.sin (∠ p₁ p₂ p₃) = 0) :
-    Collinear ℝ ({p₁, p₂, p₃} : Set P) :=
-  imp_of_not_imp_not _ _ sin_ne_zero_of_not_collinear h
+    Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
+  revert h
+  contrapose
+  exact sin_ne_zero_of_not_collinear
 #align euclidean_geometry.collinear_of_sin_eq_zero EuclideanGeometry.collinear_of_sin_eq_zero
 
 end EuclideanGeometry
-
