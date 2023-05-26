@@ -27,19 +27,18 @@ namespace MeasureTheory
 namespace StronglyMeasurable
 
 protected theorem inner {𝕜 : Type _} {E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] {m : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
+    [InnerProductSpace 𝕜 E] {_ : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable fun t => @inner 𝕜 _ _ (f t) (g t) :=
   Continuous.comp_stronglyMeasurable continuous_inner (hf.prod_mk hg)
 #align measure_theory.strongly_measurable.inner MeasureTheory.StronglyMeasurable.inner
 
 end StronglyMeasurable
 
-namespace AeStronglyMeasurable
+namespace AEStronglyMeasurable
 
 variable {m : MeasurableSpace α} {μ : Measure α} {𝕜 : Type _} {E : Type _} [IsROrC 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 protected theorem re {f : α → 𝕜} (hf : AEStronglyMeasurable f μ) :
@@ -52,13 +51,12 @@ protected theorem im {f : α → 𝕜} (hf : AEStronglyMeasurable f μ) :
   IsROrC.continuous_im.comp_aestronglyMeasurable hf
 #align measure_theory.ae_strongly_measurable.im MeasureTheory.AEStronglyMeasurable.im
 
-protected theorem inner {m : MeasurableSpace α} {μ : Measure α} {f g : α → E}
+protected theorem inner {_ : MeasurableSpace α} {μ : Measure α} {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => ⟪f x, g x⟫) μ :=
   continuous_inner.comp_aestronglyMeasurable (hf.prod_mk hg)
 #align measure_theory.ae_strongly_measurable.inner MeasureTheory.AEStronglyMeasurable.inner
 
-end AeStronglyMeasurable
+end AEStronglyMeasurable
 
 end MeasureTheory
-
