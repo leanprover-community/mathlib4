@@ -22,7 +22,7 @@ yields the quantifier order `∃ ∀ ∃ ∀`. For instance,
 `∀ᶠ n in at_top.curry at_top, p n ↔ ∃ M, ∀ m ≥ M, ∃ N, ∀ n ≥ N, p (m, n)`.
 
 This is different from a product filter, which instead yields a quantifier order `∃ ∃ ∀ ∀`. For
-instance, `∀ᶠ n in at_top ×ᶠ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
+instance, `∀ᶠ n in at_top ×ˢ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
 clear that if something eventually occurs on the product filter, it eventually occurs on the curried
 filter (see `Filter.curry_le_prod` and `Filter.eventually.curry`), but the converse is not true.
 
