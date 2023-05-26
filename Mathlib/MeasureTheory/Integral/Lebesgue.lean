@@ -1738,7 +1738,7 @@ theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞}
   · exact hf (measurableSet_singleton 0).compl
 #align measure_theory.ae_with_density_iff_ae_restrict MeasureTheory.ae_withDensity_iff_ae_restrict
 
-theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
+theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
   constructor
@@ -1762,7 +1762,7 @@ theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurab
     filter_upwards [hg']
     intro x hx h'x
     rw [← hx, ← mul_assoc, ENNReal.inv_mul_cancel h'x ENNReal.coe_ne_top, one_mul]
-#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aEMeasurable_withDensity_eNNReal_iff
+#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 end Lintegral
 
