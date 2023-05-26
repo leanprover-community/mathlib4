@@ -1480,6 +1480,7 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Geometry.Manifold.ConformalGroupoid
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean

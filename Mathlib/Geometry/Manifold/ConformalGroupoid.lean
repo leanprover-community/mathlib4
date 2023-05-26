@@ -8,8 +8,8 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Conformal.NormedSpace
-import Mathbin.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
 # Conformal Groupoid
@@ -29,8 +29,7 @@ conformal, groupoid
 variable {X : Type _} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 /-- The pregroupoid of conformal maps. -/
-def conformalPregroupoid : Pregroupoid X
-    where
+def conformalPregroupoid : Pregroupoid X where
   property f u := ∀ x, x ∈ u → ConformalAt f x
   comp f g u v hf hg hu hv huv x hx := (hg (f x) hx.2).comp x (hf x hx.1)
   id_mem x hx := conformalAt_id x
