@@ -28,43 +28,9 @@ and `S.homology` (TODO).
 
 -/
 
-open ZeroObject
-
 namespace CategoryTheory
 
 open Category Limits
-
-namespace Limits
-
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
-
--- this part should be moved
-
-/-- `X` identifies to the kernel of a zero map `X ⟶ Y`. -/
-def KernelFork.IsLimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
-    IsLimit (KernelFork.ofι (𝟙 X) (show 𝟙 X ≫ f = 0 by rw [hf, comp_zero])) :=
-  KernelFork.IsLimit.ofι _ _ (fun x _ => x) (fun _ _ => comp_id _)
-    (fun _ _ _ hb => by simp only [← hb, comp_id])
-
-/-- Any zero object identifies to the kernel of a given monomorphisms. -/
-def KernelFork.IsLimit.ofIsZeroOfMono {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
-    (hf : Mono f) (h : IsZero c.pt) : IsLimit c :=
-  isLimitAux _ (fun s => 0) (fun s => by rw [zero_comp, ← cancel_mono f, zero_comp, s.condition])
-    (fun _ _ _ => h.eq_of_tgt _ _)
-
-/-- `Y` identifies to the cokernel of a zero map `X ⟶ Y`. -/
-def CokernelCofork.IsColimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
-    IsColimit (CokernelCofork.ofπ (𝟙 Y) (show f ≫ 𝟙 Y = 0 by rw [hf, zero_comp])) :=
-  CokernelCofork.IsColimit.ofπ  _ _ (fun x _ => x) (fun _ _ => id_comp _)
-    (fun _ _ _ hb => by simp only [← hb, id_comp])
-
-/-- Any zero object identifies to the cokernel of a given epimorphisms. -/
-def CokernelCofork.IsColimit.ofIsZeroOfEpi {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
-    (hf : Epi f) (h : IsZero c.pt) : IsColimit c :=
-  isColimitAux _ (fun s => 0) (fun s => by rw [comp_zero, ← cancel_epi f, comp_zero, s.condition])
-    (fun _ _ _ => h.eq_of_src _ _)
-
-end Limits
 
 namespace ShortComplex
 
@@ -96,18 +62,18 @@ initialize_simps_projections LeftHomologyData (-hi, -hπ)
 
 namespace LeftHomologyData
 
-/-- the chosen kernels and cokernels of the limits API gives a `S.LeftHomologyData` -/
+/-- the chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
 @[simps]
 noncomputable def ofKerOfCoker [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.LeftHomologyData :=
-{ K := kernel S.g,
-  H := cokernel (kernel.lift S.g S.f S.zero),
-  i := kernel.ι _,
-  π := cokernel.π _,
-  wi := kernel.condition _,
-  hi := kernelIsKernel _,
-  wπ := cokernel.condition _,
-  hπ := cokernelIsCokernel _, }
+  S.LeftHomologyData where
+  K := kernel S.g
+  H := cokernel (kernel.lift S.g S.f S.zero)
+  i := kernel.ι _
+  π := cokernel.π _
+  wi := kernel.condition _
+  hi := kernelIsKernel _
+  wπ := cokernel.condition _
+  hπ := cokernelIsCokernel _
 
 attribute [reassoc (attr := simp)] wi wπ
 
@@ -120,27 +86,24 @@ instance : Mono h.i :=
 instance : Epi h.π :=
   ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
 
-/-- any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts to a morphism `A ⟶ K` -/
-def liftK (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.K :=
-h.hi.lift (KernelFork.ofι k hk)
+/-- any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
+to a morphism `A ⟶ K` -/
+def liftK (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.K := h.hi.lift (KernelFork.ofι k hk)
 
 @[reassoc (attr := simp)]
-lemma liftK_i (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) :
-  h.liftK k hk ≫ h.i = k :=
-h.hi.fac _ WalkingParallelPair.zero
+lemma liftK_i (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : h.liftK k hk ≫ h.i = k :=
+  h.hi.fac _ WalkingParallelPair.zero
 
 /-- the (left) homology class `A ⟶ H` attached to a cycle `k : A ⟶ S.X₂` -/
 @[simp]
-def liftH (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.H :=
-  h.liftK k hk ≫ h.π
+def liftH (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.H := h.liftK k hk ≫ h.π
 
-/-- The morphism `S.X₁ ⟶ h.K` induced by `S.f : S.X₁ ⟶ S.X₂` and the fact that
-`h.K` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
+/-- Given `h : LeftHomologyData S`, this is morphism `S.X₁ ⟶ h.K` induced
+by `S.f : S.X₁ ⟶ S.X₂` and the fact that `h.K` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
 def f' : S.X₁ ⟶ h.K := h.liftK S.f S.zero
 
 @[reassoc (attr := simp)]
-lemma f'_i : h.f' ≫ h.i = S.f :=
-liftK_i _ _ _
+lemma f'_i : h.f' ≫ h.i = S.f := liftK_i _ _ _
 
 @[reassoc (attr := simp)]
 lemma f'_π : h.f' ≫ h.π = 0 := h.wπ
@@ -157,14 +120,12 @@ lemma liftK_π_eq_zero_of_boundary (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k
 def hπ' : IsColimit (CokernelCofork.ofπ h.π h.f'_π) := h.hπ
 
 /-- the morphism `H ⟶ A` induced by a morphism `k : K ⟶ A` such that `f' ≫ k = 0` -/
-def descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
-  h.H ⟶ A :=
-h.hπ.desc (CokernelCofork.ofπ k hk)
+def descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.H ⟶ A :=
+  h.hπ.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
-  h.π ≫ h.descH k hk = k :=
-h.hπ.fac (CokernelCofork.ofπ k hk) WalkingParallelPair.one
+lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.π ≫ h.descH k hk = k :=
+  h.hπ.fac (CokernelCofork.ofπ k hk) WalkingParallelPair.one
 
 variable (S)
 
@@ -172,7 +133,7 @@ variable (S)
 by any colimit cokernel cofork of `S.f` -/
 @[simps]
 def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
-  S.LeftHomologyData where
+    S.LeftHomologyData where
   K := S.X₂
   H := c.pt
   i := 𝟙 _
@@ -199,7 +160,7 @@ noncomputable def ofHasCokernel [HasCokernel S.f] (hg : S.g = 0) : S.LeftHomolog
 by any limit kernel fork of `S.g` -/
 @[simps]
 def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
-  S.LeftHomologyData where
+    S.LeftHomologyData where
   K := c.pt
   H := c.pt
   i := c.ι
@@ -213,12 +174,12 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
     dsimp
     simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf]))
 
-@[simp] lemma ofIsLimitKernelFork_f' (hf : S.f = 0) (c : KernelFork S.g)
-  (hc : IsLimit c) : (ofIsLimitKernelFork S hf c hc).f' = 0 :=
-by rw [← cancel_mono (ofIsLimitKernelFork S hf c hc).i, f'_i, hf, zero_comp]
+@[simp] lemma ofIsLimitKernelFork_f' (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
+    (ofIsLimitKernelFork S hf c hc).f' = 0 := by
+  rw [← cancel_mono (ofIsLimitKernelFork S hf c hc).i, f'_i, hf, zero_comp]
 
 /-- When the first map `S.f` is zero, this is the left homology data on `S` given
-by chosen `kernel S.g` -/
+by the chosen `kernel S.g` -/
 @[simp]
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.LeftHomologyData :=
   ofIsLimitKernelFork S hf _ (kernelIsKernel _)
@@ -237,8 +198,7 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     simp only [hf, zero_comp]
   hπ := CokernelCofork.IsColimit.ofId _ hf
 
-@[simp]
-lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
+@[simp] lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
@@ -256,11 +216,9 @@ variable {S}
 
 namespace HasLeftHomology
 
-lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S :=
-⟨Nonempty.intro h⟩
+lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
-instance of_ker_of_coker
-    [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
+instance of_kerKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
   S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofKerOfCoker S)
 
 instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
@@ -281,8 +239,8 @@ section
 
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
 
-/-- given left homology data `h₁` and `h₂` for two short complexes
-`S₁` and `S₂`, a `LeftHomologyMapData` for a morphism `φ : S₁ ⟶ S₂`
+/-- Given left homology data `h₁` and `h₂` for two short complexes `S₁` and `S₂`,
+a `LeftHomologyMapData` for a morphism `φ : S₁ ⟶ S₂`
 consists of a description of the induced morphisms on the `K` (cycles)
 and `H` (left homology) fields of `h₁` and `h₂`. -/
 structure LeftHomologyMapData where
