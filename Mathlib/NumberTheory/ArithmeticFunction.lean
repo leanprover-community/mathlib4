@@ -445,7 +445,8 @@ def zeta : ArithmeticFunction ℕ :=
 #align nat.arithmetic_function.zeta Nat.ArithmeticFunction.zeta
 
 -- mathport name: arithmetic_function.zeta
-scoped[ArithmeticFunction] notation "ζ" => Nat.ArithmeticFunction.zeta
+-- porting note: added `Nat.` to the scoped namespace
+scoped[Nat.ArithmeticFunction] notation "ζ" => Nat.ArithmeticFunction.zeta
 
 @[simp]
 theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
@@ -473,25 +474,27 @@ theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (↑ζ * f) x = ∑ i in divisors x, f i :=
   coe_zeta_smul_apply
 #align nat.arithmetic_function.coe_zeta_mul_apply Nat.ArithmeticFunction.coe_zeta_mul_apply
-#exit
 
 @[simp]
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i in divisors x, f i := by
   rw [mul_apply]
-  trans ∑ i in divisors_antidiagonal x, f i.1
+  trans ∑ i in divisorsAntidiagonal x, f i.1
   · refine' sum_congr rfl fun i hi => _
-    rcases mem_divisors_antidiagonal.1 hi with ⟨rfl, h⟩
-    rw [nat_coe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
+    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
+    rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
   · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
 #align nat.arithmetic_function.coe_mul_zeta_apply Nat.ArithmeticFunction.coe_mul_zeta_apply
 
-theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i in divisors x, f i := by
-  rw [← nat_coe_nat ζ, coe_zeta_mul_apply]
+theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i in divisors x, f i :=
+coe_zeta_mul_apply
+--porting note: was `by rw [← nat_coe_nat ζ, coe_zeta_mul_apply]`.  Is this `theorem` obsolete?
 #align nat.arithmetic_function.zeta_mul_apply Nat.ArithmeticFunction.zeta_mul_apply
 
-theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i in divisors x, f i := by
-  rw [← nat_coe_nat ζ, coe_mul_zeta_apply]
+theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i in divisors x, f i :=
+coe_mul_zeta_apply
+--porting note: was `by rw [← natCoe_nat ζ, coe_mul_zeta_apply]`.  Is this `theorem` obsolete=
+
 #align nat.arithmetic_function.mul_zeta_apply Nat.ArithmeticFunction.mul_zeta_apply
 
 end Zeta
@@ -509,7 +512,6 @@ def pmul [MulZeroClass R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
 theorem pmul_apply [MulZeroClass R] {f g : ArithmeticFunction R} {x : ℕ} : f.pmul g x = f x * g x :=
   rfl
 #align nat.arithmetic_function.pmul_apply Nat.ArithmeticFunction.pmul_apply
-#exit
 
 theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g = g.pmul f := by
   ext
@@ -541,7 +543,7 @@ def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
   if h0 : k = 0 then ζ
   else
     ⟨fun x => f x ^ k, by
-      rw [map_zero]
+      simp_rw [map_zero] -- porting note: was `rw [map_zero]`
       exact zero_pow (Nat.pos_of_ne_zero h0)⟩
 #align nat.arithmetic_function.ppow Nat.ArithmeticFunction.ppow
 
