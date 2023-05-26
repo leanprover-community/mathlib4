@@ -1274,7 +1274,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
     true_and_iff, Submodule.orthogonal_eq_bot_iff]
 #align orthogonal_family.is_internal_iff_of_is_complete OrthogonalFamily.isInternal_iff_of_isComplete
 
-/-- An orthogonal family of subspaces of `E` satisfies `direct_sum.is_internal` (that is,
+/-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
 orthogonal complement. -/
 theorem OrthogonalFamily.isInternal_iff [DecidableEq ι] [FiniteDimensional 𝕜 E]
