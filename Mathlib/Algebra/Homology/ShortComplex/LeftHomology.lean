@@ -62,7 +62,7 @@ initialize_simps_projections LeftHomologyData (-hi, -hπ)
 
 namespace LeftHomologyData
 
-/-- the chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
+/-- The chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
 @[simps]
 noncomputable def ofHasKernelOfHasCokernel
     [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
@@ -85,7 +85,7 @@ instance : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
 
 instance : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
 
-/-- any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
+/-- Any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
 to a morphism `A ⟶ K` -/
 def liftK (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.K := h.hi.lift (KernelFork.ofι k hk)
 
@@ -93,7 +93,7 @@ def liftK (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.K := h.hi.lift (Kern
 lemma liftK_i (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : h.liftK k hk ≫ h.i = k :=
   h.hi.fac _ WalkingParallelPair.zero
 
-/-- the (left) homology class `A ⟶ H` attached to a cycle `k : A ⟶ S.X₂` -/
+/-- The (left) homology class `A ⟶ H` attached to a cycle `k : A ⟶ S.X₂` -/
 @[simp]
 def liftH (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.H := h.liftK k hk ≫ h.π
 
@@ -116,7 +116,7 @@ lemma liftK_π_eq_zero_of_boundary (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k
 `π : h.K ⟶ h.H` is a cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
 def hπ' : IsColimit (CokernelCofork.ofπ h.π h.f'_π) := h.hπ
 
-/-- the morphism `H ⟶ A` induced by a morphism `k : K ⟶ A` such that `f' ≫ k = 0` -/
+/-- The morphism `H ⟶ A` induced by a morphism `k : K ⟶ A` such that `f' ≫ k = 0` -/
 def descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.H ⟶ A :=
   h.hπ.desc (CokernelCofork.ofπ k hk)
 
@@ -201,11 +201,11 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
 
 end LeftHomologyData
 
-/-- a short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
+/-- A short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
 class HasLeftHomology : Prop where
   condition : Nonempty S.LeftHomologyData
 
-/-- a chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
+/-- A chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
 noncomputable def leftHomologyData [S.HasLeftHomology] :
   S.LeftHomologyData := HasLeftHomology.condition.some
 
