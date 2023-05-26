@@ -509,6 +509,7 @@ theorem IsOpen.prod {s : Set α} {t : Set β} (hs : IsOpen s) (ht : IsOpen t) : 
 
 -- porting note: todo: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {a : α} {b : β} : 𝓝 (a, b) = 𝓝 a ×ˢ 𝓝 b := by
+  dsimp only [SProd.sprod]
   rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 #align nhds_prod_eq nhds_prod_eq

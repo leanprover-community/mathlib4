@@ -417,7 +417,8 @@ theorem prod_pure {f : Filter α} {b : β} : f ×ˢ pure b = map (fun a => (a, b
   rw [prod_eq, seq_pure, map_map]; rfl
 #align filter.prod_pure Filter.prod_pure
 
-theorem prod_pure_pure {a : α} {b : β} : pure a ×ˢ pure b = pure (a, b) := by simp
+theorem prod_pure_pure {a : α} {b : β} :
+    (pure a : Filter α) ×ˢ (pure b : Filter β) = pure (a, b) := by simp
 #align filter.prod_pure_pure Filter.prod_pure_pure
 
 theorem prod_eq_bot {f : Filter α} {g : Filter β} : f ×ˢ g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
