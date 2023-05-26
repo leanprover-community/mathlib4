@@ -54,8 +54,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.map_diagram TopCat.Presheaf.SheafConditionPairwiseIntersections.map_diagram
 
 theorem mapCocone :
-    HEq ((Opens.map f).mapCocone (Pairwise.cocone U)) (Pairwise.cocone ((Opens.map f).obj ∘ U)) :=
-  by
+    HEq ((Opens.map f).mapCocone (Pairwise.cocone U)) (Pairwise.cocone ((Opens.map f).obj ∘ U)) := by
   unfold Functor.mapCocone Cocones.functoriality; dsimp; congr
   iterate 2 rw [map_diagram]; rw [Opens.map_iSup]
   apply Subsingleton.helim; rw [map_diagram, Opens.map_iSup]
