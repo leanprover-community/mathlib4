@@ -8,9 +8,9 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Basic
-import Mathbin.Analysis.NormedSpace.Banach
-import Mathbin.LinearAlgebra.SesquilinearForm
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -105,13 +105,11 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
 /-- The **Hellinger--Toeplitz theorem**: if a symmetric operator is defined on a complete space,
   then it is automatically continuous. -/
 theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
-    Continuous T :=
-  by
+    Continuous T := by
   -- We prove it by using the closed graph theorem
   refine' T.continuous_of_seq_closed_graph fun u x y hu hTu => _
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜]
-  have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ :=
-    by
+  have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ := by
     intro k
     rw [← T.map_sub, hT]
   refine' tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) _
@@ -125,8 +123,7 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
 /-- For a symmetric operator `T`, the function `λ x, ⟪T x, x⟫` is real-valued. -/
 @[simp]
 theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
-    (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ :=
-  by
+    (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
   rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
   · simp [hr, T.re_apply_inner_self_apply]
   rw [← conj_eq_iff_real]
@@ -153,8 +150,7 @@ variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v.-/
 theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
-    IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ :=
-  by
+    IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ := by
   constructor
   · intro hT v
     apply is_symmetric.conj_inner_sym hT
@@ -178,13 +174,11 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
     ⟪T x, y⟫ =
       (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - i * ⟪T (x + (i : 𝕜) • y), x + (i : 𝕜) • y⟫ +
           i * ⟪T (x - (i : 𝕜) • y), x - (i : 𝕜) • y⟫) /
-        4 :=
-  by
+        4 := by
   rcases@I_mul_I_ax 𝕜 _ with (h | h)
   · simp_rw [h, MulZeroClass.zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
-    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫
-      by
+    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
       rw [conj_eq_iff_re.mpr this]
       ring
     · rw [← re_add_im ⟪T y, x⟫]
@@ -199,8 +193,7 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
 /-- A symmetric linear map `T` is zero if and only if `⟪T x, x⟫_ℝ = 0` for all `x`.
 See `inner_map_self_eq_zero` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 :=
-  by
+    (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 := by
   simp_rw [LinearMap.ext_iff, zero_apply]
   refine' ⟨fun h x => _, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
