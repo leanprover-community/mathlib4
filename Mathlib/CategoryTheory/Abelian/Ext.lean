@@ -39,15 +39,18 @@ variable (R : Type _) [Ring R] (C : Type _) [Category C] [Abelian C] [Linear R C
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in the first argument of `(X, Y) ↦ Module.of R (unop X ⟶ Y)`
-(which is the second argument of `linear_yoneda`).
+(which is the second argument of `linearYoneda`).
 -/
--- Porting note: the mathlib4 proofs of `map_id` and `map_comp` were timing out,
+-- Porting note: the mathlib3 proofs of `map_id` and `map_comp` were timing out,
 -- but `aesop_cat` is fast if we leave them out.
 @[simps! obj map]
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
-      -- Porting note: dot notation is not working for `NatTrans.leftOp` / `NatTrans.rightOp`
+      -- Porting note: if we use dot notation for any of
+      -- `NatTrans.leftOp` / `NatTrans.rightOp` / `NatTrans.leftDerived`
+      -- then `aesop_cat` can not discharged the `map_id` and `map_comp` goals.
+      -- This should be investigated further.
       map := fun f =>
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
 set_option linter.uppercaseLean3 false in
