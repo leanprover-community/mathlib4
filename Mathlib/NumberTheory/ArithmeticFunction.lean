@@ -26,10 +26,10 @@ functions are endowed with a multiplication, given by Dirichlet convolution, and
 to form the Dirichlet ring.
 
 ## Main Definitions
- * `arithmetic_function R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
- * An arithmetic function `f` `is_multiplicative` when `x.coprime y → f (x * y) = f x * f y`.
+ * `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
+ * An arithmetic function `f` `IsMultiplicative` when `x.coprime y → f (x * y) = f x * f y`.
  * The pointwise operations `pmul` and `ppow` differ from the multiplication
-  and power instances on `arithmetic_function R`, which use Dirichlet multiplication.
+  and power instances on `ArithmeticFunction R`, which use Dirichlet multiplication.
  * `ζ` is the arithmetic function such that `ζ x = 1` for `0 < x`.
  * `σ k` is the arithmetic function such that `σ k x = ∑ y in divisors x, y ^ k` for `0 < x`.
  * `pow k` is the arithmetic function such that `pow k x = x ^ k` for `0 < x`.
@@ -47,7 +47,7 @@ to form the Dirichlet ring.
 
 ## Notation
 The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
-the namespace `arithmetic_function`.
+the namespace `ArithmeticFunction`.
 
 ## Tags
 arithmetic functions, dirichlet convolution, divisors
@@ -65,7 +65,7 @@ namespace Nat
 variable (R : Type _)
 
 /-- An arithmetic function is a function from `ℕ` that maps 0 to 0. In the literature, they are
-  often instead defined as functions from `ℕ+`. Multiplication on `arithmetic_functions` is by
+  often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
   Dirichlet convolution. -/
 def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
@@ -503,7 +503,7 @@ open ArithmeticFunction
 
 section Pmul
 
-/-- This is the pointwise product of `arithmetic_function`s. -/
+/-- This is the pointwise product of `ArithmeticFunction`s. -/
 def pmul [MulZeroClass R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
   ⟨fun x => f x * g x, by simp⟩
 #align nat.arithmetic_function.pmul Nat.ArithmeticFunction.pmul
@@ -538,7 +538,7 @@ end NonAssocSemiring
 
 variable [Semiring R]
 
-/-- This is the pointwise power of `arithmetic_function`s. -/
+/-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
   if h0 : k = 0 then ζ
   else
@@ -742,7 +742,7 @@ end IsMultiplicative
 
 section SpecialFunctions
 
-/-- The identity on `ℕ` as an `arithmetic_function`.  -/
+/-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
 nonrec  -- porting note: added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
@@ -1061,7 +1061,7 @@ instance : Invertible (ζ : ArithmeticFunction R) where
   invOf_mul_self := coe_moebius_mul_coe_zeta
   mul_invOf_self := coe_zeta_mul_coe_moebius
 
-/-- A unit in `arithmetic_function R` that evaluates to `ζ`, with inverse `μ`. -/
+/-- A unit in `ArithmeticFunction R` that evaluates to `ζ`, with inverse `μ`. -/
 def zetaUnit : (ArithmeticFunction R)ˣ :=
   ⟨ζ, μ, coe_zeta_mul_coe_moebius, coe_moebius_mul_coe_zeta⟩
 #align nat.arithmetic_function.zeta_unit Nat.ArithmeticFunction.zetaUnit
