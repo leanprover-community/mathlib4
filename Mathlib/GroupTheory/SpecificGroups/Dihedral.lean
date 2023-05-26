@@ -8,8 +8,8 @@ Authors: Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.GroupTheory.Exponent
+import Mathlib.Data.ZMod.Basic
+import Mathlib.GroupTheory.Exponent
 
 /-!
 # Dihedral Groups
@@ -105,8 +105,7 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 #align dihedral_group.one_def DihedralGroup.one_def
 
-private def fintype_helper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n
-    where
+private def fintype_helper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
   invFun i :=
     match i with
     | r j => Sum.inl j
@@ -134,8 +133,7 @@ theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
 #align dihedral_group.card DihedralGroup.card
 
 @[simp]
-theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k :=
-  by
+theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
   · rw [Nat.cast_zero]
     rfl
@@ -146,8 +144,7 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k :=
 #align dihedral_group.r_one_pow DihedralGroup.r_one_pow
 
 @[simp]
-theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 :=
-  by
+theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
   congr 1
   exact ZMod.nat_cast_self _
@@ -160,8 +157,7 @@ theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self
 /-- If `0 < n`, then `sr i` has order 2.
 -/
 @[simp]
-theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 :=
-  by
+theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   rw [orderOf_eq_prime _ _]
   · exact ⟨Nat.prime_two⟩
   rw [sq, sr_mul_self]
@@ -171,8 +167,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 :=
 /-- If `0 < n`, then `r 1` has order `n`.
 -/
 @[simp]
-theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n :=
-  by
+theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
   rcases eq_zero_or_neZero n with (rfl | hn)
   · rw [orderOf_eq_zero_iff']
     intro n hn
@@ -193,14 +188,12 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n :=
 
 /-- If `0 < n`, then `i : zmod n` has order `n / gcd n i`.
 -/
-theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val :=
-  by
+theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val := by
   conv_lhs => rw [← ZMod.nat_cast_zmod_val i]
   rw [← r_one_pow, orderOf_pow, order_of_r_one]
 #align dihedral_group.order_of_r DihedralGroup.orderOf_r
 
-theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 :=
-  by
+theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
   rcases eq_zero_or_neZero n with (rfl | hn)
   · exact Monoid.exponent_eq_zero_of_order_zero order_of_r_one
   skip
