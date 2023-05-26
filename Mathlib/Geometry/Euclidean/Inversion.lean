@@ -22,7 +22,7 @@ at infinity. In order to stay in the original affine space, we define the map so
 center to itself.
 
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
-`euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist`.
+`EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
 
@@ -34,8 +34,6 @@ namespace EuclideanGeometry
 
 variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] {a b c d x y z : P} {R : ℝ}
-
-include V
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
@@ -96,15 +94,15 @@ theorem inversion_involutive (c : P) {R : ℝ} (hR : R ≠ 0) : Involutive (inve
 #align euclidean_geometry.inversion_involutive EuclideanGeometry.inversion_involutive
 
 theorem inversion_surjective (c : P) {R : ℝ} (hR : R ≠ 0) : Surjective (inversion c R) :=
-  (inversion_involutive c hR).Surjective
+  (inversion_involutive c hR).surjective
 #align euclidean_geometry.inversion_surjective EuclideanGeometry.inversion_surjective
 
 theorem inversion_injective (c : P) {R : ℝ} (hR : R ≠ 0) : Injective (inversion c R) :=
-  (inversion_involutive c hR).Injective
+  (inversion_involutive c hR).injective
 #align euclidean_geometry.inversion_injective EuclideanGeometry.inversion_injective
 
 theorem inversion_bijective (c : P) {R : ℝ} (hR : R ≠ 0) : Bijective (inversion c R) :=
-  (inversion_involutive c hR).Bijective
+  (inversion_involutive c hR).bijective
 #align euclidean_geometry.inversion_bijective EuclideanGeometry.inversion_bijective
 
 /-- Distance between the images of two points under an inversion. -/
@@ -118,7 +116,7 @@ theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
 
 /-- **Ptolemy's inequality**: in a quadrangle `ABCD`, `|AC| * |BD| ≤ |AB| * |CD| + |BC| * |AD|`. If
 `ABCD` is a convex cyclic polygon, then this inequality becomes an equality, see
-`euclidean_geometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical`.  -/
+`EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical`. -/
 theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d := by
   -- If one of the points `b`, `c`, `d` is equal to `a`, then the inequality is trivial.
@@ -129,17 +127,17 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, MulZeroClass.mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
-  /- Otherwise, we apply the triangle inequality to `euclidean_geometry.inversion a 1 b`,
-    `euclidean_geometry.inversion a 1 c`, and `euclidean_geometry.inversion a 1 d`. -/
+  /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
+    `EuclideanGeometry.inversion a 1 c`, and `EuclideanGeometry.inversion a 1 d`. -/
   have H := dist_triangle (inversion a 1 b) (inversion a 1 c) (inversion a 1 d)
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
-  convert H <;>
-    · field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]
-      ring
+  calc
+    _ = _ := by field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring
+    _ ≤ _ := H
+    _ = _ := by field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring
 #align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
 
 end EuclideanGeometry
-
