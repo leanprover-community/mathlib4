@@ -357,6 +357,7 @@ import Mathlib.AlgebraicGeometry.PresheafedSpace.HasColimits
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.AlgebraicTopology.CechNerve
