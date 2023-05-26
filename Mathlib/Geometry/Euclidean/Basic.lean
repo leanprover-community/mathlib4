@@ -534,11 +534,9 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.directio
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
-      have : p = v +ᵥ b := (vsub_vadd p b).symm
       dsimp only
-      rw [reflection_apply, this, AffineMap.map_vadd, orthogonalProjection_linear,
-        vadd_vsub, orthogonalProjection_mem_subspace_eq_self, two_smul]
-      exact key)
+      rwa [reflection_apply, (vsub_vadd p b).symm, AffineMap.map_vadd, orthogonalProjection_linear,
+        vadd_vsub, orthogonalProjection_mem_subspace_eq_self, two_smul])
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
 
 /-- The result of reflecting. -/
