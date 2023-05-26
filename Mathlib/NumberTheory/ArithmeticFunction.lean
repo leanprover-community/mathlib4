@@ -999,9 +999,19 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
+  -- porting note: the rest of this proof was a single `simp only` with all the lemmas thrown in
+  -- followed by the last `rw`.
+  simp only [moebius, ZeroHom.coe_mk]
+  dsimp only [eq_toFun, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
+  simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
+    zero_mul, mul_zero]
+  rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
   simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  stop
-  rw [pow_add, mul_comm, ite_mul_zero_left, ite_mul_zero_right, mul_comm]
+  simp only [Nat.isUnit_iff, eq_toFun, ZeroHom.toFun_eq_coe, IsUnit.mul_iff, mul_ite, ite_mul,
+    zero_mul, mul_zero]
+  rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
+  split_ifs <;>  -- porting note: added
+  simp           -- porting note: added
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
 open UniqueFactorizationMonoid
