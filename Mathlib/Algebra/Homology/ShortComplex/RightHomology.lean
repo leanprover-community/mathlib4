@@ -179,7 +179,7 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
-@[simps]
+/-@[simps]
 noncomputable def cokernelSequence' {X Y : C} (f : X ⟶ Y) (c : CokernelCofork f)
     (hc : IsColimit c) [HasZeroObject C] :
     RightHomologyData (ShortComplex.mk f c.π c.condition) where
@@ -204,7 +204,7 @@ noncomputable def cokernelSequence' {X Y : C} (f : X ⟶ Y) (c : CokernelCofork 
 noncomputable def cokernelSequence {X Y : C} (f : X ⟶ Y) [HasCokernel f] [HasZeroObject C] :
     RightHomologyData (ShortComplex.mk f (cokernel.π f) (cokernel.condition f)) := by
   let h := cokernelSequence' f _ (cokernelIsCokernel f)
-  exact h
+  exact h-/
 
 end RightHomologyData
 
