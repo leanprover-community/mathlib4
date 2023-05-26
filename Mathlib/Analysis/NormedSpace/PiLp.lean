@@ -64,6 +64,8 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 We also set up the theory for `pseudo_emetric_space` and `pseudo_metric_space`.
 -/
 
+set_option linter.uppercaseLean3 false
+
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
@@ -158,7 +160,8 @@ end Edist
 
 section EdistProp
 
-variable {β} [∀ i, PseudoEMetricSpace (β i)]
+variable {β}
+variable [∀ i, PseudoEMetricSpace (β i)]
 
 /-- This holds independent of `p` and does not require `[fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
@@ -868,6 +871,7 @@ for `p ≠ ∞`. -/
 theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖(PiLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
+  clear x y -- Porting note: added to avoid spurious arguments
   rcases em <| p = ∞ with (rfl | hp)
   · simp only [equiv_symm_apply, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, one_mul,
       nnnorm_eq_ciSup, Function.const_apply, ciSup_const]
@@ -915,7 +919,7 @@ protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
 #align pi_Lp.linear_equiv PiLp.linearEquiv
 
 /-- `pi_Lp.equiv` as a continuous linear equivalence. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := PiLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
@@ -934,7 +938,7 @@ def basisFun : Basis ι 𝕜 (PiLp p fun _ => 𝕜) :=
 @[simp]
 theorem basisFun_apply [DecidableEq ι] (i) :
     basisFun p 𝕜 ι i = (PiLp.equiv p _).symm (Pi.single i 1) := by
-  simp_rw [basis_fun, Basis.coe_ofEquivFun, PiLp.linearEquiv_symm_apply, Pi.single]
+  simp_rw [basisFun, Basis.coe_ofEquivFun, PiLp.linearEquiv_symm_apply, Pi.single]
 #align pi_Lp.basis_fun_apply PiLp.basisFun_apply
 
 @[simp]
