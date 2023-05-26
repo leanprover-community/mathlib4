@@ -43,7 +43,7 @@ section Order
 variable [NormedLatticeAddCommGroup E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
-  rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le, Lp.cast, Lp.cast]
+  rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
 #align measure_theory.Lp.coe_fn_le MeasureTheory.Lp.coeFn_le
 
 theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
