@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Lipschitz
-import Mathbin.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Hölder continuous functions
@@ -66,8 +66,7 @@ theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f �
 #align holder_on_with_empty holderOnWith_empty
 
 @[simp]
-theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} :=
-  by
+theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
   rintro a (rfl : a = x) b (rfl : b = a)
   rw [edist_self]
   exact zero_le _
@@ -123,8 +122,7 @@ theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy :
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
-    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
-  by
+    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
   rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc, ←
     ENNReal.coe_rpow_of_nonneg _ rg.coe_nonneg, ← ENNReal.mul_rpow_of_nonneg _ _ rg.coe_nonneg]
@@ -139,8 +137,7 @@ theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : Holder
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
-    UniformContinuousOn f s :=
-  by
+    UniformContinuousOn f s := by
   refine' EMetric.uniformContinuousOn_iff.2 fun ε εpos => _
   have : tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
     ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top h0
@@ -240,8 +237,7 @@ variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → 
 namespace HolderWith
 
 theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
-    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
-  by
+    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul, ←
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le
@@ -254,8 +250,7 @@ theorem nndist_le (hf : HolderWith C r f) (x y : X) :
 #align holder_with.nndist_le HolderWith.nndist_le
 
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
-    dist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
-  by
+    dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
   rw [dist_nndist] at hd⊢
   norm_cast  at hd⊢
