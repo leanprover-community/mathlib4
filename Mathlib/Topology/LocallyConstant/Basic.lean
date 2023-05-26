@@ -493,6 +493,12 @@ theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Contin
   simp only [hf, hg, hg.comp hf, coe_comap]; rfl
 #align locally_constant.comap_comp LocallyConstant.comap_comp
 
+theorem comap_comp_apply [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)
+    (hg : Continuous g) : ∀ x, @comap _ _ α _ _ f (comap g x) = comap (g ∘ f) x := by
+  intro x
+  rw [← comap_comp f g hf hg]
+  rfl
+
 theorem comap_const (f : X → Y) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g =>
       ⟨fun _ => g y, IsLocallyConstant.const _⟩ := by
