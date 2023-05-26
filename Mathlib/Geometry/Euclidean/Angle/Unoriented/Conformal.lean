@@ -8,8 +8,8 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Conformal.NormedSpace
-import Mathbin.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Angles and conformal maps
@@ -28,8 +28,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 theorem IsConformalMap.preserves_angle {f' : E →L[ℝ] F} (h : IsConformalMap f') (u v : E) :
-    angle (f' u) (f' v) = angle u v :=
-  by
+    angle (f' u) (f' v) = angle u v := by
   obtain ⟨c, hc, li, rfl⟩ := h
   exact (angle_smul_smul hc _ _).trans (li.angle_map _ _)
 #align inner_product_geometry.is_conformal_map.preserves_angle InnerProductGeometry.IsConformalMap.preserves_angle
