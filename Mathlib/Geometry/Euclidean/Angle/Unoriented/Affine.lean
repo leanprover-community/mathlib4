@@ -8,8 +8,8 @@ Authors: Joseph Myers, Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Between
-import Mathbin.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.Convex.Between
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Angles between points
@@ -53,8 +53,7 @@ def angle (p1 p2 p3 : P) : ℝ :=
 scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
-    ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x :=
-  by
+    ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [hx12]
   have hf2 : (f x).2 ≠ 0 := by simp [hx32]
@@ -150,8 +149,7 @@ theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
 #align euclidean_geometry.angle_le_pi EuclideanGeometry.angle_le_pi
 
 /-- The angle ∠AAB at a point. -/
-theorem angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 :=
-  by
+theorem angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 := by
   unfold angle
   rw [vsub_self]
   exact angle_zero_left _
@@ -167,8 +165,7 @@ theorem angle_eq_of_ne {p1 p2 : P} (h : p1 ≠ p2) : ∠ p1 p2 p1 = 0 :=
 #align euclidean_geometry.angle_eq_of_ne EuclideanGeometry.angle_eq_of_ne
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
-theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 :=
-  by
+theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 := by
   unfold angle at h
   rw [angle_eq_pi_iff] at h
   rcases h with ⟨hp1p2, ⟨r, ⟨hr, hpr⟩⟩⟩
@@ -216,8 +213,7 @@ theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc 
 #align euclidean_geometry.angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi EuclideanGeometry.angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi
 
 /-- If ∠ABC = π then dist A B ≠ 0. -/
-theorem left_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : dist p1 p2 ≠ 0 :=
-  by
+theorem left_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : dist p1 p2 ≠ 0 := by
   by_contra heq
   rw [dist_eq_zero] at heq
   rw [HEq, angle_eq_left] at h
@@ -231,16 +227,14 @@ theorem right_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π)
 
 /-- If ∠ABC = π, then (dist A C) = (dist A B) + (dist B C). -/
 theorem dist_eq_add_dist_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) :
-    dist p1 p3 = dist p1 p2 + dist p3 p2 :=
-  by
+    dist p1 p3 = dist p1 p2 + dist p3 p2 := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact norm_sub_eq_add_norm_of_angle_eq_pi h
 #align euclidean_geometry.dist_eq_add_dist_of_angle_eq_pi EuclideanGeometry.dist_eq_add_dist_of_angle_eq_pi
 
 /-- If A ≠ B and C ≠ B then ∠ABC = π if and only if (dist A C) = (dist A B) + (dist B C). -/
 theorem dist_eq_add_dist_iff_angle_eq_pi {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2) (hp3p2 : p3 ≠ p2) :
-    dist p1 p3 = dist p1 p2 + dist p3 p2 ↔ ∠ p1 p2 p3 = π :=
-  by
+    dist p1 p3 = dist p1 p2 + dist p3 p2 ↔ ∠ p1 p2 p3 = π := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact
     norm_sub_eq_add_norm_iff_angle_eq_pi (fun he => hp1p2 (vsub_eq_zero_iff_eq.1 he)) fun he =>
@@ -249,16 +243,14 @@ theorem dist_eq_add_dist_iff_angle_eq_pi {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2) (hp3
 
 /-- If ∠ABC = 0, then (dist A C) = abs ((dist A B) - (dist B C)). -/
 theorem dist_eq_abs_sub_dist_of_angle_eq_zero {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = 0) :
-    dist p1 p3 = |dist p1 p2 - dist p3 p2| :=
-  by
+    dist p1 p3 = |dist p1 p2 - dist p3 p2| := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact norm_sub_eq_abs_sub_norm_of_angle_eq_zero h
 #align euclidean_geometry.dist_eq_abs_sub_dist_of_angle_eq_zero EuclideanGeometry.dist_eq_abs_sub_dist_of_angle_eq_zero
 
 /-- If A ≠ B and C ≠ B then ∠ABC = 0 if and only if (dist A C) = abs ((dist A B) - (dist B C)). -/
 theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2) (hp3p2 : p3 ≠ p2) :
-    dist p1 p3 = |dist p1 p2 - dist p3 p2| ↔ ∠ p1 p2 p3 = 0 :=
-  by
+    dist p1 p3 = |dist p1 p2 - dist p3 p2| ↔ ∠ p1 p2 p3 = 0 := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact
     norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he => hp1p2 (vsub_eq_zero_iff_eq.1 he))
@@ -266,10 +258,8 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2
 #align euclidean_geometry.dist_eq_abs_sub_dist_iff_angle_eq_zero EuclideanGeometry.dist_eq_abs_sub_dist_iff_angle_eq_zero
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
-theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π :=
-  by
-  have : p2 -ᵥ midpoint ℝ p1 p2 = -(p1 -ᵥ midpoint ℝ p1 p2) :=
-    by
+theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π := by
+  have : p2 -ᵥ midpoint ℝ p1 p2 = -(p1 -ᵥ midpoint ℝ p1 p2) := by
     rw [neg_vsub_eq_vsub_rev]
     simp
   simp [angle, this, hp1p2, -zero_lt_one]
@@ -278,8 +268,7 @@ theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint 
 /-- If M is the midpoint of the segment AB and C is the same distance from A as it is from B
 then ∠CMA = π / 2. -/
 theorem angle_left_midpoint_eq_pi_div_two_of_dist_eq {p1 p2 p3 : P} (h : dist p3 p1 = dist p3 p2) :
-    ∠ p3 (midpoint ℝ p1 p2) p1 = π / 2 :=
-  by
+    ∠ p3 (midpoint ℝ p1 p2) p1 = π / 2 := by
   let m : P := midpoint ℝ p1 p2
   have h1 : p3 -ᵥ p1 = p3 -ᵥ m - (p1 -ᵥ m) := (vsub_sub_vsub_cancel_right p3 p1 m).symm
   have h2 : p3 -ᵥ p2 = p3 -ᵥ m + (p1 -ᵥ m) := by
@@ -297,8 +286,7 @@ theorem angle_right_midpoint_eq_pi_div_two_of_dist_eq {p1 p2 p3 : P} (h : dist p
 
 /-- If the second of three points is strictly between the other two, the angle at that point
 is π. -/
-theorem Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₂ p₃ = π :=
-  by
+theorem Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₂ p₃ = π := by
   rw [angle, angle_eq_pi_iff]
   rcases h with ⟨⟨r, ⟨hr0, hr1⟩, hp₂⟩, hp₂p₁, hp₂p₃⟩
   refine' ⟨vsub_ne_zero.2 hp₂p₁.symm, -(1 - r) / r, _⟩
@@ -326,8 +314,7 @@ theorem Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p
 
 /-- The angle between three points is π if and only if the second point is strictly between the
 other two. -/
-theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ Sbtw ℝ p₁ p₂ p₃ :=
-  by
+theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ Sbtw ℝ p₁ p₂ p₃ := by
   refine' ⟨_, fun h => h.angle₁₂₃_eq_pi⟩
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
@@ -409,8 +396,7 @@ theorem Sbtw.angle₁₃₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂
 /-- The angle between three points is zero if and only if one of the first and third points is
 weakly between the other two, and not equal to the second. -/
 theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
-    ∠ p₁ p₂ p₃ = 0 ↔ p₁ ≠ p₂ ∧ Wbtw ℝ p₂ p₁ p₃ ∨ p₃ ≠ p₂ ∧ Wbtw ℝ p₂ p₃ p₁ :=
-  by
+    ∠ p₁ p₂ p₃ = 0 ↔ p₁ ≠ p₂ ∧ Wbtw ℝ p₂ p₁ p₃ ∨ p₃ ≠ p₂ ∧ Wbtw ℝ p₂ p₃ p₁ := by
   constructor
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
@@ -430,8 +416,7 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
 /-- The angle between three points is zero if and only if one of the first and third points is
 strictly between the other two, or those two points are equal but not equal to the second. -/
 theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
-    ∠ p₁ p₂ p₃ = 0 ↔ p₁ = p₃ ∧ p₁ ≠ p₂ ∨ Sbtw ℝ p₂ p₁ p₃ ∨ Sbtw ℝ p₂ p₃ p₁ :=
-  by
+    ∠ p₁ p₂ p₃ = 0 ↔ p₁ = p₃ ∧ p₁ ≠ p₂ ∨ Sbtw ℝ p₂ p₁ p₃ ∨ Sbtw ℝ p₂ p₃ p₁ := by
   rw [angle_eq_zero_iff_ne_and_wbtw]
   by_cases hp₁p₂ : p₁ = p₂; · simp [hp₁p₂]
   by_cases hp₁p₃ : p₁ = p₃; · simp [hp₁p₃]
@@ -442,8 +427,7 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
-    Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ p₁ = p₂ ∨ p₃ = p₂ ∨ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π :=
-  by
+    Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ p₁ = p₂ ∨ p₃ = p₂ ∨ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π := by
   refine' ⟨fun h => _, fun h => _⟩
   · replace h := h.wbtw_or_wbtw_or_wbtw
     by_cases h₁₂ : p₁ = p₂
