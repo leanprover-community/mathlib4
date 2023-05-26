@@ -54,15 +54,18 @@ variable (p : ℕ) (G : Type _) [Group G]
 
 /-- A Sylow `p`-subgroup is a maximal `p`-subgroup. -/
 structure Sylow extends Subgroup G where
-  is_p_group' : IsPGroup p to_subgroup
-  is_maximal' : ∀ {Q : Subgroup G}, IsPGroup p Q → to_subgroup ≤ Q → Q = to_subgroup
+  isPGroup' : IsPGroup p toSubgroup
+  is_maximal' : ∀ {Q : Subgroup G}, IsPGroup p Q → toSubgroup ≤ Q → Q = toSubgroup
 #align sylow Sylow
 
 variable {p} {G}
 
 namespace Sylow
 
-instance : Coe (Sylow p G) (Subgroup G) :=
+attribute [coe] Sylow.toSubgroup
+
+--Porting note: Changed to `CoeOut`
+instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨Sylow.toSubgroup⟩
 
 @[simp]
@@ -71,27 +74,27 @@ theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
 #align sylow.to_subgroup_eq_coe Sylow.toSubgroup_eq_coe
 
 @[ext]
-theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P <;> cases Q <;> congr
+theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
 #align sylow.ext Sylow.ext
 
 theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg coe, ext⟩
+  ⟨congr_arg _, ext⟩
 #align sylow.ext_iff Sylow.ext_iff
 
 instance : SetLike (Sylow p G) G where
-  coe := coe
-  coe_injective' P Q h := ext (SetLike.coe_injective h)
+  coe := (↑)
+  coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
 instance : SubgroupClass (Sylow p G) G where
-  mul_mem s _ _ := s.mul_mem'
-  one_mem s := s.one_mem'
-  inv_mem s _ := s.inv_mem'
+  mul_mem := Subgroup.mul_mem _
+  one_mem _ := Subgroup.one_mem _
+  inv_mem := Subgroup.inv_mem _
 
 variable (P : Sylow p G)
 
 /-- The action by a Sylow subgroup is the action by the underlying group. -/
 instance mulActionLeft {α : Type _} [MulAction G α] : MulAction P α :=
-  Subgroup.mulAction ↑P
+  inferInstanceAs (MulAction (P : Subgroup G) α)
 #align sylow.mul_action_left Sylow.mulActionLeft
 
 variable {K : Type _} [Group K] (ϕ : K →* G) {N : Subgroup G}
@@ -99,41 +102,42 @@ variable {K : Type _} [Group K] (ϕ : K →* G) {N : Subgroup G}
 /-- The preimage of a Sylow subgroup under a p-group-kernel homomorphism is a Sylow subgroup. -/
 def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) : Sylow p K :=
   { P.1.comap ϕ with
-    is_p_group' := P.2.comap_of_ker_isPGroup ϕ hϕ
-    is_maximal' := fun Q hQ hle => by
+    isPGroup' := P.2.comap_of_ker_isPGroup ϕ hϕ
+    is_maximal' := fun {Q} hQ hle => by
+      show Q = P.1.comap ϕ
       rw [← P.3 (hQ.map ϕ) (le_trans (ge_of_eq (map_comap_eq_self h)) (map_mono hle))]
       exact (comap_map_eq_self ((P.1.ker_le_comap ϕ).trans hle)).symm }
 #align sylow.comap_of_ker_is_p_group Sylow.comapOfKerIsPGroup
 
 @[simp]
 theorem coe_comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) :
-    ↑(P.comap_of_ker_isPGroup ϕ hϕ h) = Subgroup.comap ϕ ↑P :=
+    (P.comapOfKerIsPGroup ϕ hϕ h : Subgroup K) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_ker_is_p_group Sylow.coe_comapOfKerIsPGroup
 
 /-- The preimage of a Sylow subgroup under an injective homomorphism is a Sylow subgroup. -/
 def comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) : Sylow p K :=
-  P.comap_of_ker_isPGroup ϕ (IsPGroup.ker_isPGroup_of_injective hϕ) h
+  P.comapOfKerIsPGroup ϕ (IsPGroup.ker_isPGroup_of_injective hϕ) h
 #align sylow.comap_of_injective Sylow.comapOfInjective
 
 @[simp]
 theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) :
-    ↑(P.comap_of_injective ϕ hϕ h) = Subgroup.comap ϕ ↑P :=
+    ↑(P.comapOfInjective ϕ hϕ h) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_injective Sylow.coe_comapOfInjective
 
 /-- A sylow subgroup of G is also a sylow subgroup of a subgroup of G. -/
 protected def subtype (h : ↑P ≤ N) : Sylow p N :=
-  P.comap_of_injective N.Subtype Subtype.coe_injective (by rwa [subtype_range])
+  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [subtype_range])
 #align sylow.subtype Sylow.subtype
 
 @[simp]
-theorem coe_subtype (h : ↑P ≤ N) : ↑(P.Subtype h) = subgroupOf (↑P) N :=
+theorem coe_subtype (h : ↑P ≤ N) : ↑(P.subtype h) = subgroupOf (↑P) N :=
   rfl
 #align sylow.coe_subtype Sylow.coe_subtype
 
 theorem subtype_injective {P Q : Sylow p G} {hP : ↑P ≤ N} {hQ : ↑Q ≤ N}
-    (h : P.Subtype hP = Q.Subtype hQ) : P = Q := by
+    (h : P.subtype hP = Q.subtype hQ) : P = Q := by
   rw [SetLike.ext_iff] at h⊢
   exact fun g => ⟨fun hg => (h ⟨g, hP hg⟩).mp hg, fun hg => (h ⟨g, hQ hg⟩).mpr hg⟩
 #align sylow.subtype_injective Sylow.subtype_injective
@@ -148,15 +152,15 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
       (fun c hc1 hc2 Q hQ =>
         ⟨{  carrier := ⋃ R : c, R
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
-            inv_mem' := fun g ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
-            mul_mem' := fun g h ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
-              (hc2.Total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
+            inv_mem' := fun {g} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
+            mul_mem' := fun {g} h ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
+              (hc2.total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine' Exists.imp (fun k hk => _) (hc1 S.2 ⟨g, hg⟩)
           rwa [Subtype.ext_iff, coe_pow] at hk⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
-    fun Q ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3⟩, hQ2⟩
+    fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
 #align is_p_group.exists_le_sylow IsPGroup.exists_le_sylow
 
 instance Sylow.nonempty : Nonempty (Sylow p G) :=
@@ -179,7 +183,7 @@ theorem Sylow.exists_comap_eq_of_injective {H : Type _} [Group H] (P : Sylow p H
 #align sylow.exists_comap_eq_of_injective Sylow.exists_comap_eq_of_injective
 
 theorem Sylow.exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
-    ∃ Q : Sylow p G, (Q : Subgroup G).comap H.Subtype = P :=
+    ∃ Q : Sylow p G, (Q : Subgroup G).comap H.subtype = P :=
   P.exists_comap_eq_of_injective Subtype.coe_injective
 #align sylow.exists_comap_subtype_eq Sylow.exists_comap_subtype_eq
 
@@ -189,8 +193,8 @@ noncomputable def Sylow.fintypeOfKerIsPGroup {H : Type _} [Group H] {f : H →* 
     (hf : IsPGroup p f.ker) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
   let g : Sylow p H → Sylow p G := fun P => Classical.choose (h_exists P)
-  let hg : ∀ P : Sylow p H, (g P).1.comap f = P := fun P => Classical.choose_spec (h_exists P)
-  Fintype.ofInjective g fun P Q h => Sylow.ext (by simp only [← hg, h])
+  have hg : ∀ P : Sylow p H, (g P).1.comap f = P := fun P => Classical.choose_spec (h_exists P)
+  Fintype.ofInjective g fun P Q h => Sylow.ext (by rw [← hg, h]; exact (h_exists Q).choose_spec)
 #align sylow.fintype_of_ker_is_p_group Sylow.fintypeOfKerIsPGroup
 
 /-- If `f : H →* G` is injective, then `fintype (sylow p G)` implies `fintype (sylow p H)`. -/
@@ -214,13 +218,13 @@ open Pointwise
 instance Sylow.pointwiseMulAction {α : Type _} [Group α] [MulDistribMulAction α G] :
     MulAction α (Sylow p G) where
   smul g P :=
-    ⟨g • P, P.2.map _, fun Q hQ hS =>
+    ⟨(g • P.toSubgroup : Subgroup G), P.2.map _, fun {Q} hQ hS =>
       inv_smul_eq_iff.mp
         (P.3 (hQ.map _) fun s hs =>
           (congr_arg (· ∈ g⁻¹ • Q) (inv_smul_smul g s)).mp
             (smul_mem_pointwise_smul (g • s) g⁻¹ Q (hS (smul_mem_pointwise_smul s g P hs))))⟩
-  one_smul P := Sylow.ext (one_smul α P)
-  mul_smul g h P := Sylow.ext (mul_smul g h P)
+  one_smul P := Sylow.ext (one_smul α P.toSubgroup)
+  mul_smul g h P := Sylow.ext (mul_smul g h P.toSubgroup)
 #align sylow.pointwise_mul_action Sylow.pointwiseMulAction
 
 theorem Sylow.pointwise_smul_def {α : Type _} [Group α] [MulDistribMulAction α G] {g : α}
@@ -250,19 +254,18 @@ theorem Sylow.smul_le {P : Sylow p G} {H : Subgroup G} (hP : ↑P ≤ H) (h : H)
 #align sylow.smul_le Sylow.smul_le
 
 theorem Sylow.smul_subtype {P : Sylow p G} {H : Subgroup G} (hP : ↑P ≤ H) (h : H) :
-    h • P.Subtype hP = (h • P).Subtype (Sylow.smul_le hP h) :=
+    h • P.subtype hP = (h • P).subtype (Sylow.smul_le hP h) :=
   Sylow.ext (Subgroup.conj_smul_subgroupOf hP h)
 #align sylow.smul_subtype Sylow.smul_subtype
 
 theorem Sylow.smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
     g • P = P ↔ g ∈ (P : Subgroup G).normalizer := by
-  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff, mem_normalizer_iff, inv_inv]
+  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P.toSubgroup),
+      mem_normalizer_iff, inv_inv]
   exact
     forall_congr' fun h =>
       iff_congr Iff.rfl
-        ⟨fun ⟨a, b, c⟩ =>
-          (congr_arg _ c).mp
-            ((congr_arg (· ∈ P.1) (MulAut.inv_apply_self G (MulAut.conj g) a)).mpr b),
+        ⟨fun ⟨a, b, c⟩ => c ▸ by simpa [mul_assoc] using b,
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 #align sylow.smul_eq_iff_mem_normalizer Sylow.smul_eq_iff_mem_normalizer
 
@@ -272,7 +275,7 @@ theorem Sylow.smul_eq_of_normal {g : G} {P : Sylow p G} [h : (P : Subgroup G).No
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
     P ∈ fixedPoints H (Sylow p G) ↔ H ≤ (P : Subgroup G).normalizer := by
-  simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer] <;> exact Subtype.forall
+  simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 #align subgroup.sylow_mem_fixed_points_iff Subgroup.sylow_mem_fixedPoints_iff
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
@@ -286,7 +289,7 @@ theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : 
 
 theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) {Q : Sylow p G} :
     Q ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := by
-  rw [P.sylow_mem_fixed_points_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]
+  rw [P.sylow_mem_fixedPoints_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]
 #align is_p_group.sylow_mem_fixed_points_iff IsPGroup.sylow_mem_fixedPoints_iff
 
 /-- A generalization of **Sylow's second theorem**.
@@ -297,20 +300,22 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
       cases nonempty_fintype (Sylow p G)
       have H := fun {R : Sylow p G} {S : orbit G P} =>
         calc
-          S ∈ fixed_points R (orbit G P) ↔ S.1 ∈ fixed_points R (Sylow p G) :=
+          S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
             forall_congr' fun a => Subtype.ext_iff
           _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
           _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
-          
-      suffices Set.Nonempty (fixed_points Q (orbit G P)) by
-        exact Exists.elim this fun R hR => (congr_arg _ (Sylow.ext (H.mp hR))).mp R.2
+
+      suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
+        exact Exists.elim this fun R hR => by
+          rw [← Sylow.ext (H.mp hR)]
+          exact R.2
       apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine' fun h => hp.out.not_dvd_one (nat.modeq_zero_iff_dvd.mp _)
+      refine' fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp _)
       calc
-        1 = card (fixed_points P (orbit G P)) := _
+        1 = card (fixedPoints P (orbit G P)) := ?_
         _ ≡ card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
-        _ ≡ 0 [MOD p] := nat.modeq_zero_iff_dvd.mpr h
-        
+        _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
+
       rw [← Set.card_singleton (⟨P, mem_orbit_self P⟩ : orbit G P)]
       refine' card_congr' (congr_arg _ (Eq.symm _))
       rw [Set.eq_singleton_iff_unique_mem]
@@ -322,18 +327,18 @@ variable (p) (G)
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
 theorem card_sylow_modEq_one [Fact p.Prime] [Fintype (Sylow p G)] : card (Sylow p G) ≡ 1 [MOD p] :=
   by
-  refine' sylow.nonempty.elim fun P : Sylow p G => _
-  have : fixed_points P.1 (Sylow p G) = {P} :=
+  refine' Sylow.nonempty.elim fun P : Sylow p G => _
+  have : fixedPoints P.1 (Sylow p G) = {P} :=
     Set.ext fun Q : Sylow p G =>
       calc
-        Q ∈ fixed_points P (Sylow p G) ↔ P.1 ≤ Q := P.2.sylow_mem_fixedPoints_iff
+        Q ∈ fixedPoints P (Sylow p G) ↔ P.1 ≤ Q := P.2.sylow_mem_fixedPoints_iff
         _ ↔ Q.1 = P.1 := ⟨P.3 Q.2, ge_of_eq⟩
-        _ ↔ Q ∈ {P} := sylow.ext_iff.symm.trans set.mem_singleton_iff.symm
-        
-  have : Fintype (fixed_points P.1 (Sylow p G)) := by
+        _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans Set.mem_singleton_iff.symm
+
+  have fin : Fintype (fixedPoints P.1 (Sylow p G)) := by
     rw [this]
     infer_instance
-  have : card (fixed_points P.1 (Sylow p G)) = 1 := by simp [this]
+  have : card (fixedPoints P.1 (Sylow p G)) = 1 := by simp [this]
   exact (P.2.card_modEq_card_fixedPoints (Sylow p G)).trans (by rw [this])
 #align card_sylow_modeq_one card_sylow_modEq_one
 
@@ -348,24 +353,24 @@ theorem not_dvd_card_sylow [hp : Fact p.Prime] [Fintype (Sylow p G)] : ¬p ∣ c
 variable {p} {G}
 
 /-- Sylow subgroups are isomorphic -/
-def Sylow.equivSmul (P : Sylow p G) (g : G) : P ≃* (g • P : Sylow p G) :=
-  equivSMul (MulAut.conj g) ↑P
-#align sylow.equiv_smul Sylow.equivSmul
+nonrec def Sylow.equivSMul (P : Sylow p G) (g : G) : P ≃* (g • P : Sylow p G) :=
+  equivSMul (MulAut.conj g) P.toSubgroup
+#align sylow.equiv_smul Sylow.equivSMul
 
 /-- Sylow subgroups are isomorphic -/
 noncomputable def Sylow.equiv [Fact p.Prime] [Finite (Sylow p G)] (P Q : Sylow p G) : P ≃* Q := by
   rw [← Classical.choose_spec (exists_smul_eq G P Q)]
-  exact P.equiv_smul (Classical.choose (exists_smul_eq G P Q))
+  exact P.equivSMul (Classical.choose (exists_smul_eq G P Q))
 #align sylow.equiv Sylow.equiv
 
 @[simp]
 theorem Sylow.orbit_eq_top [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) : orbit G P = ⊤ :=
-  top_le_iff.mp fun Q hQ => exists_smul_eq G P Q
+  top_le_iff.mp fun Q _ => exists_smul_eq G P Q
 #align sylow.orbit_eq_top Sylow.orbit_eq_top
 
 theorem Sylow.stabilizer_eq_normalizer (P : Sylow p G) :
-    stabilizer G P = (P : Subgroup G).normalizer :=
-  ext fun g => Sylow.smul_eq_iff_mem_normalizer
+    stabilizer G P = (P : Subgroup G).normalizer := by
+  ext; simp [Sylow.smul_eq_iff_mem_normalizer]
 #align sylow.stabilizer_eq_normalizer Sylow.stabilizer_eq_normalizer
 
 theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow p G)]
@@ -379,9 +384,9 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
     specialize hy z hz
     rwa [← mul_assoc, ← eq_mul_inv_iff_mul_eq, mul_assoc, mul_assoc, mul_assoc, ← mul_assoc,
       eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc] at hy
-  obtain ⟨h, hh⟩ := exists_smul_eq (zpowers x).centralizer ((g • P).Subtype h2) (P.subtype h1)
+  obtain ⟨h, hh⟩ := exists_smul_eq (zpowers x).centralizer ((g • P).subtype h2) (P.subtype h1)
   simp_rw [Sylow.smul_subtype, smul_def, smul_smul] at hh
-  refine' ⟨h * g, sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
+  refine' ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
 #align sylow.conj_eq_normalizer_conj_of_mem_centralizer Sylow.conj_eq_normalizer_conj_of_mem_centralizer
 
@@ -399,7 +404,7 @@ noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Fintype (Sylow p
     _ ≃ orbit G P := by rw [P.orbit_eq_top]
     _ ≃ G ⧸ stabilizer G P := (orbitEquivQuotientStabilizer G P)
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
-    
+
 #align sylow.equiv_quotient_normalizer Sylow.equivQuotientNormalizer
 
 noncomputable instance [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G) :
@@ -804,8 +809,7 @@ noncomputable def directProductOfNormal [Fintype G]
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.Prod pow := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
-      
+
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow
-
