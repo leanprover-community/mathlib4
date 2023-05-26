@@ -8,8 +8,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Function.StronglyMeasurable.Basic
-import Mathbin.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Inner products of strongly measurable functions are strongly measurable.
