@@ -213,7 +213,7 @@ variable {𝕜}
 closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
     (hb : Bounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
-    IsClosed ((coeFn : WeakDual 𝕜 E → E → 𝕜) '' s) :=
+    IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
   ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed hb (isClosed_induced_iff'.1 hc)
 #align weak_dual.is_closed_image_coe_of_bounded_of_closed WeakDual.isClosed_image_coe_of_bounded_of_closed
 
@@ -229,7 +229,7 @@ variable (𝕜)
 /-- The image under `coe_fn : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
-    IsClosed ((coeFn : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
+    IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
   isClosed_image_coe_of_bounded_of_closed (bounded_polar_of_mem_nhds_zero 𝕜 s_nhd)
     (isClosed_polar _ _)
 #align weak_dual.is_closed_image_polar_of_mem_nhds WeakDual.isClosed_image_polar_of_mem_nhds
@@ -238,7 +238,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
   (s_nhd : s ∈ 𝓝 (0 : E)) :
-    IsClosed ((coeFn : Dual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
+    IsClosed (((↑) : Dual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
   WeakDual.isClosed_image_polar_of_mem_nhds 𝕜 s_nhd
 #align normed_space.dual.is_closed_image_polar_of_mem_nhds NormedSpace.Dual.isClosed_image_polar_of_mem_nhds
 
