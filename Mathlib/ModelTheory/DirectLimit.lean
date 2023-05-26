@@ -43,13 +43,13 @@ namespace DirectedSystem
 
 /-- A copy of `directed_system.map_self` specialized to `L`-embeddings, as otherwise the
 `λ i j h, f i j h` can confuse the simplifier. -/
-theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
+nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align first_order.language.directed_system.map_self FirstOrder.Language.DirectedSystem.map_self
 
 /-- A copy of `directed_system.map_map` specialized to `L`-embeddings, as otherwise the
 `λ i j h, f i j h` can confuse the simplifier. -/
-theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
+nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
 #align first_order.language.directed_system.map_map FirstOrder.Language.DirectedSystem.map_map
@@ -59,19 +59,19 @@ variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G'
 /-- Given a chain of embeddings of structures indexed by `ℕ`, defines a `directed_system` by
 composing them. -/
 def natLeRec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
-  Nat.leRecOn h (fun k g => (f' k).comp g) (Embedding.refl L _)
+  Nat.leRecOn h (fun g => (f' _).comp g) (Embedding.refl L _)
 #align first_order.language.directed_system.nat_le_rec FirstOrder.Language.DirectedSystem.natLeRec
 
 @[simp]
 theorem coe_natLeRec (m n : ℕ) (h : m ≤ n) :
-    (natLeRec f' m n h : G' m → G' n) = Nat.leRecOn h fun n => f' n := by
+    (natLeRec f' m n h : G' m → G' n) = Nat.leRecOn h (f' _) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
-  · rw [nat_le_rec, Nat.leRecOn_self, embedding.refl_apply, Nat.leRecOn_self]
+  · rw [natLeRec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
   ·
-    rw [Nat.leRecOn_succ le_self_add, nat_le_rec, Nat.leRecOn_succ le_self_add, ← nat_le_rec,
-      embedding.comp_apply, ih]
+    rw [Nat.leRecOn_succ le_self_add, natLeRec, Nat.leRecOn_succ le_self_add, ← natLeRec,
+      Embedding.comp_apply, ih]
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLeRec
 
 instance natLeRec.directedSystem : DirectedSystem G' fun i j h => natLeRec f' i j h :=
@@ -381,4 +381,3 @@ end DirectLimit
 end Language
 
 end FirstOrder
-
