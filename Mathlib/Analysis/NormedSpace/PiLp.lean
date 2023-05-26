@@ -742,7 +742,14 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun x => rfl
+  LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
+    unfold LinearIsometryEquiv.piLpCongrLeft
+    unfold LinearIsometryEquiv.symm
+    simp
+    unfold PiLp
+    ext
+    simp
+
 #align linear_isometry_equiv.pi_Lp_congr_left_symm LinearIsometryEquiv.piLpCongrLeft_symm
 
 @[simp]
