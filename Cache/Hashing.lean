@@ -12,9 +12,10 @@ namespace Cache.Hashing
 open System IO
 
 structure HashMemo where
-  depsMap : Lean.HashMap FilePath (Array FilePath)
-  cache   : Lean.HashMap FilePath (Option UInt64)
-  hashMap : HashMap
+  rootHash : UInt64
+  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
+  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
@@ -66,8 +67,6 @@ def getRootHash : IO UInt64 := do
   hash <$> rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
 
-initialize rootHash : UInt64 ← getRootHash
-
 /--
 Computes the hash of a file, which mixes:
 * The root hash
@@ -94,6 +93,7 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
       | none =>
         set { stt with cache := stt.cache.insert filePath none }
         return none
+    let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
     let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
@@ -107,6 +107,6 @@ def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo : IO HashMemo :=
-  return (← StateT.run (roots.mapM getFileHash) default).2
+  return (← StateT.run (roots.mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing
