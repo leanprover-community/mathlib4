@@ -64,7 +64,8 @@ namespace LeftHomologyData
 
 /-- the chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
 @[simps]
-noncomputable def ofKerOfCoker [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
+noncomputable def ofHasKernelOfHasCokernel
+    [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
   S.LeftHomologyData where
   K := kernel S.g
   H := cokernel (kernel.lift S.g S.f S.zero)
@@ -80,11 +81,9 @@ attribute [reassoc (attr := simp)] wi wπ
 variable {S}
 variable (h : S.LeftHomologyData) {A : C}
 
-instance : Mono h.i :=
-  ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
+instance : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
 
-instance : Epi h.π :=
-  ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
+instance : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
 
 /-- any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
 to a morphism `A ⟶ K` -/
@@ -102,11 +101,9 @@ def liftH (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) : A ⟶ h.H := h.liftK k hk �
 by `S.f : S.X₁ ⟶ S.X₂` and the fact that `h.K` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
 def f' : S.X₁ ⟶ h.K := h.liftK S.f S.zero
 
-@[reassoc (attr := simp)]
-lemma f'_i : h.f' ≫ h.i = S.f := liftK_i _ _ _
+@[reassoc (attr := simp)] lemma f'_i : h.f' ≫ h.i = S.f := liftK_i _ _ _
 
-@[reassoc (attr := simp)]
-lemma f'_π : h.f' ≫ h.π = 0 := h.wπ
+@[reassoc (attr := simp)] lemma f'_π : h.f' ≫ h.π = 0 := h.wπ
 
 @[reassoc]
 lemma liftK_π_eq_zero_of_boundary (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
@@ -219,7 +216,7 @@ namespace HasLeftHomology
 lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
 instance of_kerKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofKerOfCoker S)
+  S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
 
 instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
