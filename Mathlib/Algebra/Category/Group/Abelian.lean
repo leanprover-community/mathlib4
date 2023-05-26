@@ -8,11 +8,11 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.ZModuleEquivalence
-import Mathbin.Algebra.Category.Group.Limits
-import Mathbin.Algebra.Category.Group.Colimits
-import Mathbin.Algebra.Category.Module.Abelian
-import Mathbin.CategoryTheory.Abelian.Basic
+import Mathlib.Algebra.Category.Group.ZModuleEquivalence
+import Mathlib.Algebra.Category.Group.Limits
+import Mathlib.Algebra.Category.Group.Colimits
+import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of abelian groups is abelian
@@ -48,8 +48,7 @@ def normalEpi (hf : Epi f) : NormalEpi f :=
 end
 
 /-- The category of abelian groups is abelian. -/
-instance : Abelian AddCommGroupCat.{u}
-    where
+instance : Abelian AddCommGroupCat.{u} where
   HasFiniteProducts := ⟨by infer_instance⟩
   normalMonoOfMono X Y := normalMono
   normalEpiOfEpi X Y := normalEpi
