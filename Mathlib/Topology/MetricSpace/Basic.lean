@@ -2421,7 +2421,7 @@ theorem bounded_range_iff {f : β → α} : Bounded (range f) ↔ ∃ C, ∀ x y
 #align metric.bounded_range_iff Metric.bounded_range_iff
 
 theorem bounded_range_of_tendsto_cofinite_uniformity {f : β → α}
-    (hf : Tendsto (Prod.map f f) (cofinite ×ˢ cofinite) (𝓤 α)) : Bounded (range f) := by
+    (hf : Tendsto (Prod.map f f) (.cofinite ×ˢ .cofinite) (𝓤 α)) : Bounded (range f) := by
   rcases (hasBasis_cofinite.prod_self.tendsto_iff uniformity_basis_dist).1 hf 1 zero_lt_one with
     ⟨s, hsf, hs1⟩
   rw [← image_univ, ← union_compl_self s, image_union, bounded_union]

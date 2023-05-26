@@ -246,6 +246,7 @@ protected def phi (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × 
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
 -- mathport name: exprlower_adjoint
+set_option quotPrecheck false -- Porting note: error message suggested to do this
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
 (in `UniformFun.mono` and `UniformFun.iInf_eq`) and that
