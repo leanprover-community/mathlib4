@@ -14,7 +14,7 @@ import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 /-!
 # Conformal maps between inner product spaces
 
-A function between inner product spaces is which has a derivative at `x`
+A function between inner product spaces which has a derivative at `x`
 is conformal at `x` iff the derivative preserves inner products up to a scalar multiple.
 -/
 
@@ -61,6 +61,5 @@ theorem conformalFactorAt_inner_eq_mul_inner' {f : E → F} {x : E} (h : Conform
 theorem conformalFactorAt_inner_eq_mul_inner {f : E → F} {x : E} {f' : E →L[ℝ] F}
     (h : HasFDerivAt f f' x) (H : ConformalAt f x) (u v : E) :
     ⟪f' u, f' v⟫ = (conformalFactorAt H : ℝ) * ⟪u, v⟫ :=
-  H.DifferentiableAt.HasFDerivAt.unique h ▸ conformalFactorAt_inner_eq_mul_inner' H u v
+  H.differentiableAt.hasFDerivAt.unique h ▸ conformalFactorAt_inner_eq_mul_inner' H u v
 #align conformal_factor_at_inner_eq_mul_inner conformalFactorAt_inner_eq_mul_inner
-
