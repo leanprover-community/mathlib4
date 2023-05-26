@@ -8,10 +8,10 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Basic
-import Mathbin.LinearAlgebra.TensorProduct
-import Mathbin.CategoryTheory.Linear.Yoneda
-import Mathbin.CategoryTheory.Monoidal.Linear
+import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.CategoryTheory.Linear.Yoneda
+import Mathlib.CategoryTheory.Monoidal.Linear
 
 /-!
 # The monoidal category structure on R-modules
@@ -62,15 +62,13 @@ def tensorHom {M N M' N' : ModuleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
   TensorProduct.map f g
 #align Module.monoidal_category.tensor_hom ModuleCat.MonoidalCategory.tensorHom
 
-theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) :=
-  by
+theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext1
   rfl
 #align Module.monoidal_category.tensor_id ModuleCat.MonoidalCategory.tensor_id
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
-    (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ :=
-  by
+    (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
   ext1
   rfl
 #align Module.monoidal_category.tensor_comp ModuleCat.MonoidalCategory.tensor_comp
@@ -95,8 +93,7 @@ private theorem associator_naturality_aux {X₁ X₂ X₃ : Type _} [AddCommMono
     [AddCommMonoid X₃] [Module R X₁] [Module R X₂] [Module R X₃] {Y₁ Y₂ Y₃ : Type _}
     [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃] [Module R Y₁] [Module R Y₂]
     [Module R Y₃] (f₁ : X₁ →ₗ[R] Y₁) (f₂ : X₂ →ₗ[R] Y₂) (f₃ : X₃ →ₗ[R] Y₃) :
-    ↑(assoc R Y₁ Y₂ Y₃) ∘ₗ map (map f₁ f₂) f₃ = map f₁ (map f₂ f₃) ∘ₗ ↑(assoc R X₁ X₂ X₃) :=
-  by
+    ↑(assoc R Y₁ Y₂ Y₃) ∘ₗ map (map f₁ f₂) f₃ = map f₁ (map f₂ f₃) ∘ₗ ↑(assoc R X₁ X₂ X₃) := by
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -109,8 +106,7 @@ private theorem pentagon_aux (W X Y Z : Type _) [AddCommMonoid W] [AddCommMonoid
     ((map (1 : W →ₗ[R] W) (assoc R X Y Z).toLinearMap).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
         (map ↑(assoc R W X Y) (1 : Z →ₗ[R] Z)) =
-      (assoc R W X (Y ⊗[R] Z)).toLinearMap.comp (assoc R (W ⊗[R] X) Y Z).toLinearMap :=
-  by
+      (assoc R W X (Y ⊗[R] Z)).toLinearMap.comp (assoc R (W ⊗[R] X) Y Z).toLinearMap := by
   apply TensorProduct.ext_fourfold
   intro w x y z
   rfl
@@ -138,8 +134,7 @@ def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
 #align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
-    tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).Hom = (leftUnitor M).Hom ≫ f :=
-  by
+    tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).Hom = (leftUnitor M).Hom ≫ f := by
   ext (x y); dsimp
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
   rw [LinearMap.map_smul]
@@ -152,8 +147,7 @@ def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
 #align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
-    tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).Hom = (rightUnitor M).Hom ≫ f :=
-  by
+    tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).Hom = (rightUnitor M).Hom ≫ f := by
   ext (x y); dsimp
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
   rw [LinearMap.map_smul]
@@ -162,8 +156,7 @@ theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 
 theorem triangle (M N : ModuleCat.{u} R) :
     (associator M (ModuleCat.of R R) N).Hom ≫ tensorHom (𝟙 M) (leftUnitor N).Hom =
-      tensorHom (rightUnitor M).Hom (𝟙 N) :=
-  by
+      tensorHom (rightUnitor M).Hom (𝟙 N) := by
   apply TensorProduct.ext_threefold
   intro x y z
   change R at y
@@ -176,8 +169,7 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R)
-    where
+instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
   -- data
   tensorObj := tensorObj
   tensorHom := @tensorHom _ _
