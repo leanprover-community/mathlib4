@@ -189,15 +189,15 @@ theorem coe_coe [AddGroupWithOne R] {f : ArithmeticFunction ℕ} :
 #align nat.arithmetic_function.coe_coe Nat.ArithmeticFunction.coe_coe
 
 @[simp]
-theorem natCoe_one [AddMonoidWithOne R] : ((1 : ArithmeticFunction ℕ) : ArithmeticFunction R) = 1 :=
-  by
+theorem natCoe_one [AddMonoidWithOne R] : ((1 : ArithmeticFunction ℕ) :
+    ArithmeticFunction R) = 1 := by
   ext n
   simp [one_apply]
 #align nat.arithmetic_function.nat_coe_one Nat.ArithmeticFunction.natCoe_one
 
 @[simp]
-theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) : ArithmeticFunction R) = 1 :=
-  by
+theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) :
+    ArithmeticFunction R) = 1 := by
   ext n
   simp [one_apply]
 #align nat.arithmetic_function.int_coe_one Nat.ArithmeticFunction.intCoe_one
@@ -926,8 +926,8 @@ theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 
 #align nat.arithmetic_function.card_distinct_factors_eq_card_factors_iff_squarefree Nat.ArithmeticFunction.cardDistinctFactors_eq_cardFactors_iff_squarefree
 
 @[simp]
-theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : ω (p ^ k) = 1 :=
-  by
+theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
+    ω (p ^ k) = 1 := by
   rw [cardDistinctFactors_apply, hp.factors_pow, List.replicate_dedup hk, List.length_singleton]
 #align nat.arithmetic_function.card_distinct_factors_apply_prime_pow Nat.ArithmeticFunction.cardDistinctFactors_apply_prime_pow
 
@@ -988,8 +988,8 @@ theorem moebius_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
   exact Or.inr h
 #align nat.arithmetic_function.moebius_apply_prime_pow Nat.ArithmeticFunction.moebius_apply_prime_pow
 
-theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : ¬n.Prime) : μ n = 0 :=
-  by
+theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : ¬n.Prime) :
+    μ n = 0 := by
   obtain ⟨p, k, hp, hk, rfl⟩ := (isPrimePow_nat_iff _).1 hn
   rw [moebius_apply_prime_pow hp hk.ne', if_neg]
   rintro rfl
