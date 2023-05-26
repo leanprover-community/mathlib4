@@ -8,11 +8,11 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Constructions
-import Mathbin.Algebra.Category.Ring.Colimits
-import Mathbin.CategoryTheory.Isomorphism
-import Mathbin.RingTheory.Localization.Away.Basic
-import Mathbin.RingTheory.IsTensorProduct
+import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.Isomorphism
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -69,8 +69,7 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
 theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type _}
     (R' S' : Type _) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
-    P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) :=
-  by
+    P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
   let e₁ : R' ≃+* Localization.Away r :=
     (IsLocalization.algEquiv (Submonoid.powers r) _ _).toRingEquiv
   let e₂ : Localization.Away (f r) ≃+* S' :=
@@ -167,8 +166,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
-    P (pushout.inl : S ⟶ pushout f g) :=
-  by
+    P (pushout.inl : S ⟶ pushout f g) := by
   rw [←
     show _ = pushout.inl from
       colimit.iso_colimit_cocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
