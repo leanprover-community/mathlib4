@@ -8,8 +8,8 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.ConformalLinearMap
-import Mathbin.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Conformal maps between inner product spaces
@@ -32,8 +32,7 @@ open RealInnerProductSpace
 products up to a scalar factor, i.e., there exists a positive `c : ℝ` such that `⟪f u, f v⟫ = c *
 ⟪u, v⟫` for all `u`, `v`. -/
 theorem isConformalMap_iff (f : E →L[ℝ] F) :
-    IsConformalMap f ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪f u, f v⟫ = c * ⟪u, v⟫ :=
-  by
+    IsConformalMap f ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪f u, f v⟫ = c * ⟪u, v⟫ := by
   constructor
   · rintro ⟨c₁, hc₁, li, rfl⟩
     refine' ⟨c₁ * c₁, mul_self_pos.2 hc₁, fun u v => _⟩
