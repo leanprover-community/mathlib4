@@ -456,7 +456,7 @@ def coneEquiv :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.cone_equiv TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquiv
 
--- Porting note : note supported in Lean 4
+-- Porting note: not supported in Lean 4
 -- attribute [local reducible]
 --   SheafConditionEqualizerProducts.res SheafConditionEqualizerProducts.leftRes
 
