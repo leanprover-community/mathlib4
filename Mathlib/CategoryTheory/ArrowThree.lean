@@ -108,6 +108,9 @@ def δ₁Toδ₀ : (δ₁ : Arrow₃ C ⥤ _) ⟶ δ₀ where
       τ₁ := 𝟙 _
       τ₂ := 𝟙 _ }
 
+@[simps!]
+def δ₃Toδ₀ := (δ₃Toδ₂ : (δ₃ : Arrow₃ C ⥤ _) ⟶ _) ≫ δ₂Toδ₁ ≫ δ₁Toδ₀
+
 @[simps]
 def fMor : Arrow₃ C ⥤ Arrow C where
   obj D := Arrow.mk D.f

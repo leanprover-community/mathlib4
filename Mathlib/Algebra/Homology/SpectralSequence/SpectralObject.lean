@@ -33,8 +33,12 @@ variable (X : SpectralObject C ι) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n�
 
 /-def E : Arrow₃ ι ⥤ ShortComplex C where
   obj D := ShortComplex.mk ((X.δ n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D))
-    ((X.δ n₁ n₂ hn₂).app (Arrow₃.δ₃.obj D)) sorry
-  map {D₁ D₂} φ :=
+    ((X.δ n₁ n₂ hn₂).app (Arrow₃.δ₃.obj D)) (by
+      let ψ := Arrow₃.δ₃Toδ₀.app D
+      have := (X.δ n₀ n₁ hn₁).naturality ψ
+      dsimp [Arrow₃.δ₀, Arrow₃.δ₃] at this ⊢
+      sorry)
+  map φ :=
     { τ₁ := (X.H n₀).map (Arrow₃.hMor.map φ)
       τ₂ := (X.H n₁).map (Arrow₃.gMor.map φ)
       τ₃ := (X.H n₂).map (Arrow₃.fMor.map φ)
