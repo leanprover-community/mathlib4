@@ -65,7 +65,6 @@ open BilinForm Finset LinearMap Matrix
 
 open Matrix
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
@@ -168,7 +167,6 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
   rfl
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   rfl
@@ -310,7 +308,6 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
     b.equivFun_symm_stdBasis, b.equivFun_symm_stdBasis]
 #align bilin_form.to_matrix_apply BilinForm.toMatrix_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
