@@ -130,7 +130,7 @@ theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R�
 
 section ToMatrix'
 
-/-! ### `to_matrix'` section
+/-! ### `ToMatrix'` section
 
 This section deals with the conversion between matrices and bilinear forms on `n → R₂`.
 -/
