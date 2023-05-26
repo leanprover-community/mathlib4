@@ -1633,10 +1633,8 @@ end Memℒp
 
 namespace Lp
 
-/-- Coercion from a Lp space to functions. -/
-@[coe] def cast (f : Lp E p μ) : α → E := ((f : α →ₘ[μ] E) : α → E)
-
-instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) := ⟨cast⟩
+instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
+  ⟨fun f => ((f : α →ₘ[μ] E) : α → E)⟩
 #align measure_theory.Lp.has_coe_to_fun MeasureTheory.Lp.instCoeFun
 
 @[ext high]
@@ -2299,7 +2297,7 @@ theorem compLp_zero (hg : LipschitzWith c g) (g0 : g 0 = 0) : hg.compLp g0 (0 : 
   rw [Lp.eq_zero_iff_ae_eq_zero]
   apply (coeFn_compLp _ _ _).trans
   filter_upwards [Lp.coeFn_zero E p μ] with _ ha
-  simp [ha, g0]
+  simp only [ha, g0, Function.comp_apply, Pi.zero_apply]
 #align lipschitz_with.comp_Lp_zero LipschitzWith.compLp_zero
 
 theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E p μ) :
@@ -2307,7 +2305,7 @@ theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E 
   apply Lp.norm_le_mul_norm_of_ae_le_mul
   filter_upwards [hg.coeFn_compLp g0 f, hg.coeFn_compLp g0 f',
     Lp.coeFn_sub (hg.compLp g0 f) (hg.compLp g0 f'), Lp.coeFn_sub f f'] with a ha1 ha2 ha3 ha4
-  simp [ha1, ha2, ha3, ha4, ← dist_eq_norm]
+  simp only [ha1, ha2, ha3, ha4, ← dist_eq_norm, Pi.sub_apply, Function.comp_apply]
   exact hg.dist_le_mul (f a) (f' a)
 #align lipschitz_with.norm_comp_Lp_sub_le LipschitzWith.norm_compLp_sub_le
 
