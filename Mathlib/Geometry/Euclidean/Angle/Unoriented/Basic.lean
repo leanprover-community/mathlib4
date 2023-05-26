@@ -18,7 +18,7 @@ This file defines unoriented angles in real inner product spaces.
 
 ## Main definitions
 
-* `inner_product_geometry.angle` is the undirected angle between two vectors.
+* `InnerProductGeometry.angle` is the undirected angle between two vectors.
 
 -/
 
@@ -42,7 +42,7 @@ namespace InnerProductGeometry
 variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 
 /-- The undirected angle between two vectors. If either vector is 0,
-this is π/2. See `orientation.oangle` for the corresponding oriented angle
+this is π/2. See `Orientation.oangle` for the corresponding oriented angle
 definition. -/
 def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
@@ -50,9 +50,9 @@ def angle (x y : V) : ℝ :=
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => angle y.1 y.2) x :=
-  Real.continuous_arccos.ContinuousAt.comp <|
-    continuous_inner.ContinuousAt.div
-      ((continuous_norm.comp continuous_fst).mul (continuous_norm.comp continuous_snd)).ContinuousAt
+  Real.continuous_arccos.continuousAt.comp <|
+    continuous_inner.continuousAt.div
+      ((continuous_norm.comp continuous_fst).mul (continuous_norm.comp continuous_snd)).continuousAt
       (by simp [hx1, hx2])
 #align inner_product_geometry.continuous_at_angle InnerProductGeometry.continuousAt_angle
 
@@ -63,13 +63,15 @@ theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c 
 #align inner_product_geometry.angle_smul_smul InnerProductGeometry.angle_smul_smul
 
 @[simp]
-theorem LinearIsometry.angle_map {E F : Type _} [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem _root_.LinearIsometry.angle_map {E F : Type _} [NormedAddCommGroup E] [NormedAddCommGroup F]
     [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] (f : E →ₗᵢ[ℝ] F) (u v : E) :
-    angle (f u) (f v) = angle u v := by rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]
+    angle (f u) (f v) = angle u v := by
+  rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]
 #align linear_isometry.angle_map LinearIsometry.angle_map
 
 @[simp, norm_cast]
-theorem Submodule.angle_coe {s : Submodule ℝ V} (x y : s) : angle (x : V) (y : V) = angle x y :=
+theorem _root_.Submodule.angle_coe {s : Submodule ℝ V} (x y : s) :
+    angle (x : V) (y : V) = angle x y :=
   s.subtypeₗᵢ.angle_map x y
 #align submodule.angle_coe Submodule.angle_coe
 
@@ -164,8 +166,8 @@ theorem angle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle (r • x
 
 /-- The angle between a vector and a negative multiple of a vector. -/
 @[simp]
-theorem angle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) : angle x (r • y) = angle x (-y) :=
-  by
+theorem angle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
+    angle x (r • y) = angle x (-y) := by
   rw [← neg_neg r, neg_smul, angle_neg_right, angle_smul_right_of_pos x y (neg_pos_of_neg hr),
     angle_neg_right]
 #align inner_product_geometry.angle_smul_right_of_neg InnerProductGeometry.angle_smul_right_of_neg
@@ -188,8 +190,8 @@ product of their norms. -/
 theorem sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sin (angle x y) * (‖x‖ * ‖y‖) = Real.sqrt (⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
-  rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)), ←
-    Real.sqrt_mul' _ (mul_self_nonneg _), sq,
+  rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
+    ← Real.sqrt_mul' _ (mul_self_nonneg _), sq,
     Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
   by_cases h : ‖x‖ * ‖y‖ = 0
@@ -223,7 +225,7 @@ theorem angle_eq_pi_iff {x y : V} : angle x y = π ↔ x ≠ 0 ∧ ∃ r : ℝ, 
 vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
-  rcases angle_eq_pi_iff.1 h with ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
+  rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
   rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel'_right]
 #align inner_product_geometry.angle_add_angle_eq_pi_of_angle_eq_pi InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
@@ -236,7 +238,8 @@ theorem inner_eq_zero_iff_angle_eq_pi_div_two (x y : V) : ⟪x, y⟫ = 0 ↔ ang
 /-- If the angle between two vectors is π, the inner product equals the negative product
 of the norms. -/
 theorem inner_eq_neg_mul_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
-    ⟪x, y⟫ = -(‖x‖ * ‖y‖) := by simp [← cos_angle_mul_norm_mul_norm, h]
+    ⟪x, y⟫ = -(‖x‖ * ‖y‖) := by
+  simp [← cos_angle_mul_norm_mul_norm, h]
 #align inner_product_geometry.inner_eq_neg_mul_norm_of_angle_eq_pi InnerProductGeometry.inner_eq_neg_mul_norm_of_angle_eq_pi
 
 /-- If the angle between two vectors is 0, the inner product equals the product of the norms. -/
@@ -264,19 +267,19 @@ theorem inner_eq_mul_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠
 
 /-- If the angle between two vectors is π, the norm of their difference equals
 the sum of their norms. -/
-theorem norm_sub_eq_add_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) : ‖x - y‖ = ‖x‖ + ‖y‖ :=
-  by
-  rw [← sq_eq_sq (norm_nonneg (x - y)) (add_nonneg (norm_nonneg x) (norm_nonneg y))]
-  rw [norm_sub_pow_two_real, inner_eq_neg_mul_norm_of_angle_eq_pi h]
+theorem norm_sub_eq_add_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
+    ‖x - y‖ = ‖x‖ + ‖y‖ := by
+  rw [← sq_eq_sq (norm_nonneg (x - y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
+    norm_sub_pow_two_real, inner_eq_neg_mul_norm_of_angle_eq_pi h]
   ring
 #align inner_product_geometry.norm_sub_eq_add_norm_of_angle_eq_pi InnerProductGeometry.norm_sub_eq_add_norm_of_angle_eq_pi
 
 /-- If the angle between two vectors is 0, the norm of their sum equals
 the sum of their norms. -/
-theorem norm_add_eq_add_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
-  by
-  rw [← sq_eq_sq (norm_nonneg (x + y)) (add_nonneg (norm_nonneg x) (norm_nonneg y))]
-  rw [norm_add_pow_two_real, inner_eq_mul_norm_of_angle_eq_zero h]
+theorem norm_add_eq_add_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) :
+    ‖x + y‖ = ‖x‖ + ‖y‖ := by
+  rw [← sq_eq_sq (norm_nonneg (x + y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
+    norm_add_pow_two_real, inner_eq_mul_norm_of_angle_eq_zero h]
   ring
 #align inner_product_geometry.norm_add_eq_add_norm_of_angle_eq_zero InnerProductGeometry.norm_add_eq_add_norm_of_angle_eq_zero
 
@@ -300,7 +303,6 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
   calc
     ⟪x, y⟫ = (‖x‖ ^ 2 + ‖y‖ ^ 2 - (‖x‖ + ‖y‖) ^ 2) / 2 := by linarith
     _ = -(‖x‖ * ‖y‖) := by ring
-    
 #align inner_product_geometry.norm_sub_eq_add_norm_iff_angle_eq_pi InnerProductGeometry.norm_sub_eq_add_norm_iff_angle_eq_pi
 
 /-- The norm of the sum of two non-zero vectors equals the sum of their norms
@@ -314,7 +316,6 @@ theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y 
   calc
     ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
     _ = ‖x‖ * ‖y‖ := by ring
-    
 #align inner_product_geometry.norm_add_eq_add_norm_iff_angle_eq_zero InnerProductGeometry.norm_add_eq_add_norm_iff_angle_eq_zero
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
@@ -330,35 +331,34 @@ theorem norm_sub_eq_abs_sub_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy 
   calc
     ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
     _ = ‖x‖ * ‖y‖ := by ring
-    
 #align inner_product_geometry.norm_sub_eq_abs_sub_norm_iff_angle_eq_zero InnerProductGeometry.norm_sub_eq_abs_sub_norm_iff_angle_eq_zero
 
 /-- The norm of the sum of two vectors equals the norm of their difference if and only if
 the angle between them is π/2. -/
 theorem norm_add_eq_norm_sub_iff_angle_eq_pi_div_two (x y : V) :
     ‖x + y‖ = ‖x - y‖ ↔ angle x y = π / 2 := by
-  rw [← sq_eq_sq (norm_nonneg (x + y)) (norm_nonneg (x - y)), ←
-    inner_eq_zero_iff_angle_eq_pi_div_two x y, norm_add_pow_two_real, norm_sub_pow_two_real]
+  rw [← sq_eq_sq (norm_nonneg (x + y)) (norm_nonneg (x - y)),
+    ← inner_eq_zero_iff_angle_eq_pi_div_two x y, norm_add_pow_two_real, norm_sub_pow_two_real]
   constructor <;> intro h <;> linarith
 #align inner_product_geometry.norm_add_eq_norm_sub_iff_angle_eq_pi_div_two InnerProductGeometry.norm_add_eq_norm_sub_iff_angle_eq_pi_div_two
 
 /-- The cosine of the angle between two vectors is 1 if and only if the angle is 0. -/
 theorem cos_eq_one_iff_angle_eq_zero : cos (angle x y) = 1 ↔ angle x y = 0 := by
   rw [← cos_zero]
-  exact inj_on_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩ (left_mem_Icc.2 pi_pos.le)
+  exact injOn_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩ (left_mem_Icc.2 pi_pos.le)
 #align inner_product_geometry.cos_eq_one_iff_angle_eq_zero InnerProductGeometry.cos_eq_one_iff_angle_eq_zero
 
 /-- The cosine of the angle between two vectors is 0 if and only if the angle is π / 2. -/
 theorem cos_eq_zero_iff_angle_eq_pi_div_two : cos (angle x y) = 0 ↔ angle x y = π / 2 := by
   rw [← cos_pi_div_two]
-  apply inj_on_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩
+  apply injOn_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩
   constructor <;> linarith [pi_pos]
 #align inner_product_geometry.cos_eq_zero_iff_angle_eq_pi_div_two InnerProductGeometry.cos_eq_zero_iff_angle_eq_pi_div_two
 
 /-- The cosine of the angle between two vectors is -1 if and only if the angle is π. -/
 theorem cos_eq_neg_one_iff_angle_eq_pi : cos (angle x y) = -1 ↔ angle x y = π := by
   rw [← cos_pi]
-  exact inj_on_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩ (right_mem_Icc.2 pi_pos.le)
+  exact injOn_cos.eq_iff ⟨angle_nonneg x y, angle_le_pi x y⟩ (right_mem_Icc.2 pi_pos.le)
 #align inner_product_geometry.cos_eq_neg_one_iff_angle_eq_pi InnerProductGeometry.cos_eq_neg_one_iff_angle_eq_pi
 
 /-- The sine of the angle between two vectors is 0 if and only if the angle is 0 or π. -/
@@ -375,4 +375,3 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
 #align inner_product_geometry.sin_eq_one_iff_angle_eq_pi_div_two InnerProductGeometry.sin_eq_one_iff_angle_eq_pi_div_two
 
 end InnerProductGeometry
-
