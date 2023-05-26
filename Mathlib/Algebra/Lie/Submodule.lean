@@ -307,8 +307,8 @@ theorem mem_toLieSubmodule (x : L) : x ∈ K.toLieSubmodule ↔ x ∈ K :=
 
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
-  simp only [← coe_to_submodule_eq_iff, LieIdeal.coe_toLieSubalgebra_toSubmodule,
-    Submodule.exists_lieSubmodule_coe_eq_iff L]
+  simp only [← coe_to_submodule_eq_iff, LieIdeal.coe_toLieSubalgebra_toSubmodule]
+  erw [Submodule.exists_lieSubmodule_coe_eq_iff L]  -- porting note: was part of the `simp` call.
   exact Iff.rfl
 #align lie_subalgebra.exists_lie_ideal_coe_eq_iff LieSubalgebra.exists_lieIdeal_coe_eq_iff
 
@@ -778,7 +778,12 @@ def comap : LieIdeal R L :=
 @[simp]
 theorem map_coeSubmodule (h : ↑(map f I) = f '' I) :
     (map f I : Submodule R L') = (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L') := by
-  rw [SetLike.ext'_iff, LieSubmodule.coe_toSubmodule, h, Submodule.map_coe]; rfl
+  -- porting note: the proof was just a chain of `rw`
+  rw [SetLike.ext'_iff]
+  dsimp only [Submodule.map_coe, LieHom.coe_toLinearMap]
+  erw [LieSubmodule.coe_toSubmodule]
+  erw [h]
+  --  porting note: `rw [Submodule.map_coe], rfl` is no longer needed, now that `dsimp` used it.
 #align lie_ideal.map_coe_submodule LieIdeal.map_coeSubmodule
 
 @[simp]
@@ -852,7 +857,7 @@ In other words, in general, ideals of `I`, regarded as a Lie algebra in its own 
 same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩; rw [LieSubmodule.mem_bot] at hx; subst hx
+  ext ⟨x, hx⟩; erw [LieSubmodule.mem_bot] at hx; subst hx -- porting note: `erw` for the win.
   simp only [Submodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
 #align lie_ideal.subsingleton_of_bot LieIdeal.subsingleton_of_bot
 
@@ -945,8 +950,11 @@ theorem le_ker_iff : I ≤ f.ker ↔ ∀ x, x ∈ I → f x = 0 := by
 #align lie_hom.le_ker_iff LieHom.le_ker_iff
 
 theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, ker_coeSubmodule, LieSubmodule.bot_coeSubmodule,
-    LinearMap.ker_eq_bot, coe_toLinearMap]
+  erw [injective_iff_map_eq_zero' f.toAddMonoidHom, SetLike.ext_iff]
+  simp_rw [mem_ker, LieSubmodule.mem_bot, LinearMap.toAddMonoidHom_coe, coe_toLinearMap]
+  -- porting note: I changed the proof.  It used to be:
+  --rw [← LieSubmodule.coe_toSubmodule_eq_iff, ker_coeSubmodule, LieSubmodule.bot_coeSubmodule,
+  --  LinearMap.ker_eq_bot, coe_toLinearMap]
 #align lie_hom.ker_eq_bot LieHom.ker_eq_bot
 
 @[simp]
