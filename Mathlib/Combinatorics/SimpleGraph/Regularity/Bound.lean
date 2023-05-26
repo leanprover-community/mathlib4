@@ -8,9 +8,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Chebyshev
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
-import Mathbin.Order.Partition.Equipartition
+import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma
@@ -164,8 +164,7 @@ theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ 
       (le_div_self (by norm_num) (by positivity) <| pow_le_one _ (by positivity) hε)
 #align szemeredi_regularity.hundred_le_m SzemerediRegularity.hundred_le_m
 
-theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card :=
-  by
+theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   have h : 1 ≤ 4 ^ P.parts.card := one_le_pow_of_one_le (by norm_num) _
   rw [step_bound, ← Nat.div_div_eq_div_mul, ← Nat.le_sub_iff_right h, tsub_le_iff_left, ←
     Nat.add_sub_assoc h]
@@ -180,10 +179,8 @@ theorem card_aux₁ (hucard : u.card = m * 4 ^ P.parts.card + a) :
 
 theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
     (hucard : ¬u.card = m * 4 ^ P.parts.card + a) :
-    (4 ^ P.parts.card - (a + 1)) * m + (a + 1) * (m + 1) = u.card :=
-  by
-  have : m * 4 ^ P.parts.card ≤ card α / P.parts.card :=
-    by
+    (4 ^ P.parts.card - (a + 1)) * m + (a + 1) * (m + 1) = u.card := by
+  have : m * 4 ^ P.parts.card ≤ card α / P.parts.card := by
     rw [step_bound, ← Nat.div_div_eq_div_mul]
     exact Nat.div_mul_le_self _ _
   rw [Nat.add_sub_of_le this] at hucard
@@ -220,8 +217,7 @@ theorem initialBound_pos : 0 < initialBound ε l :=
 #align szemeredi_regularity.initial_bound_pos SzemerediRegularity.initialBound_pos
 
 theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
-    100 < 4 ^ initialBound ε l * ε ^ 5 :=
-  by
+    100 < 4 ^ initialBound ε l * ε ^ 5 := by
   rw [← rpow_nat_cast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
     div_lt_iff, initial_bound, Nat.cast_max, Nat.cast_max]
   · push_cast
@@ -262,15 +258,13 @@ theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑
 theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
     (hs : x ≤ |(∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card|)
     (ht : d ≤ ((∑ i in t, f i) / t.card) ^ 2) :
-    d + s.card / t.card * x ^ 2 ≤ (∑ i in t, f i ^ 2) / t.card :=
-  by
+    d + s.card / t.card * x ^ 2 ≤ (∑ i in t, f i ^ 2) / t.card := by
   obtain hscard | hscard := (s.card.cast_nonneg : (0 : 𝕜) ≤ s.card).eq_or_lt
   · simpa [← hscard] using ht.trans sum_div_card_sq_le_sum_sq_div_card
   have htcard : (0 : 𝕜) < t.card := hscard.trans_le (Nat.cast_le.2 (card_le_of_subset hst))
   have h₁ : x ^ 2 ≤ ((∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card) ^ 2 :=
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
-  have h₂ : x ^ 2 ≤ ((∑ i in s, f i - (∑ j in t, f j) / t.card) / s.card) ^ 2 :=
-    by
+  have h₂ : x ^ 2 ≤ ((∑ i in s, f i - (∑ j in t, f j) / t.card) / s.card) ^ 2 := by
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left _ hscard.ne']
   apply (add_le_add_right ht _).trans
