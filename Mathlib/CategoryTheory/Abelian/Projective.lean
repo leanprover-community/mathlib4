@@ -78,12 +78,10 @@ and the map to the `n`-th object as `projective.d`.
 
 variable [EnoughProjectives C]
 
-/-
-Porting note:
-compilation of CategoryTheory.ProjectiveResolution.ofComplex took 4.95s
--/
+-- Porting note: compilation of CategoryTheory.ProjectiveResolution.ofComplex took 4.95s
+-- (was much faster in lean 3)
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
---@[simps!]
+@[simps!]
 def ofComplex (Z : C) : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
     (Projective.d (Projective.π Z)) fun ⟨_, _, f⟩ =>
@@ -94,14 +92,26 @@ set_option linter.uppercaseLean3 false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
-irreducible_def of (Z : C) : ProjectiveResolution Z := sorry #exit
+irreducible_def of (Z : C) : ProjectiveResolution Z :=
   { complex := ofComplex Z
-    π := sorry
---      ChainComplex.mkHom _ _ (Projective.π Z) 0
---        (by
---          simp
---          exact (exact_d_f (projective.π Z)).w.symm)
---        fun n _ => ⟨0, by ext⟩
+    π := ChainComplex.mkHom _ _ (Projective.π Z) 0
+             (by
+               -- next line in Lean 3 was `simp` which seems to make
+               -- Lean 4 time out or crash. Even
+               -- `simp? (config := { singlePass := true })`
+               -- doesn't work, and `dsimp` doesn't either.
+               -- Typical `dsimp` error:
+               /-
+  Message: Server process for file:///home/buzzard/lean-projects/mathlib4/Mathlib/CategoryTheory/Abelian/Projective.lean crashed, likely due to a stack overflow or a bug.
+  Code: -32902 -/
+               sorry
+               )
+             (fun n _ ↦ ⟨0, sorry⟩)
+    -- ChainComplex.mkHom _ _ (Projective.π Z) 0
+    --     (by
+    --       simp
+    --       exact (exact_d_f (projective.π Z)).w.symm)
+    --     fun n _ => ⟨0, by ext⟩
     projective := sorry--by rintro (_ | _ | _ | n) <;> apply projective.projective_over
     exact₀ := sorry--by simpa using exact_d_f (projective.π Z)
     exact := sorry
@@ -111,9 +121,9 @@ irreducible_def of (Z : C) : ProjectiveResolution Z := sorry #exit
     --       apply exact_d_f
     epi := sorry }
     --Projective.π_epi Z }
+set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of CategoryTheory.ProjectiveResolution.of
 
-#exit
 instance (priority := 100) (Z : C) : HasProjectiveResolution Z where out := ⟨of Z⟩
 
 instance (priority := 100) : HasProjectiveResolutions C where out Z := by infer_instance
@@ -133,10 +143,10 @@ def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
     ProjectiveResolution Y where
   complex := X
   π := f
-  Projective := H
+  projective := H
   exact₀ := f.to_single₀_exact_d_f_at_zero
   exact := f.to_single₀_exact_at_succ
-  Epi := f.to_single₀_epi_at_zero
+  epi := f.to_single₀_epi_at_zero
 #align homological_complex.hom.to_single₀_ProjectiveResolution HomologicalComplex.Hom.toSingle₀ProjectiveResolution
 
 end HomologicalComplex.Hom
