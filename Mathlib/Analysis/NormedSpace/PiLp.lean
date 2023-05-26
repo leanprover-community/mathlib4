@@ -28,9 +28,9 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`pi_Lp p α`. The assumpion `[fact (1 ≤ p)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumpion `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
 
-We ensure that the topology, bornology and uniform structure on `pi_Lp p α` are (defeq to) the
+We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity
 statements for the coordinate functions, for instance.
 
@@ -53,7 +53,7 @@ $$
 $$
 This has all the same subtleties as `lp`, and the further subtlety that this only
 defines a seminorm (as almost everywhere zero functions have zero `L^p` norm).
-The construction `pi_Lp` corresponds to the special case of `measure_theory.Lp` in which the basis
+The construction `PiLp` corresponds to the special case of `measure_theory.Lp` in which the basis
 is a finite space equipped with the counting measure.
 
 To prove that the topology (and the uniform structure) on a finite product with the `L^p` distance
@@ -61,7 +61,7 @@ are the same as those coming from the `L^∞` distance, we could argue that the 
 are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we give a more explicit
 (easy) proof which provides a comparison between these two norms with explicit constants.
 
-We also set up the theory for `pseudo_emetric_space` and `pseudo_metric_space`.
+We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
 set_option linter.uppercaseLean3 false
@@ -88,7 +88,7 @@ namespace PiLp
 
 variable (p : ℝ≥0∞) (𝕜 𝕜' : Type _) {ι : Type _} (α : ι → Type _) (β : ι → Type _)
 
-/-- Canonical bijection between `pi_Lp p α` and the original Pi type. We introduce it to be able
+/-- Canonical bijection between `PiLp p α` and the original Pi type. We introduce it to be able
 to compare the `L^p` and `L^∞` distances through it. -/
 protected def equiv : PiLp p α ≃ ∀ i : ι, α i :=
   Equiv.refl _
@@ -113,10 +113,10 @@ section DistNorm
 variable [Fintype ι]
 
 /-!
-### Definition of `edist`, `dist` and `norm` on `pi_Lp`
+### Definition of `edist`, `dist` and `norm` on `PiLp`
 
-In this section we define the `edist`, `dist` and `norm` functions on `pi_Lp p α` without assuming
-`[fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
+In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α` without assuming
+`[Fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
 lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
@@ -125,11 +125,11 @@ section Edist
 
 variable [∀ i, EDist (β i)]
 
-/-- Endowing the space `pi_Lp p β` with the `L^p` edistance. We register this instance
+/-- Endowing the space `PiLp p β` with the `L^p` edistance. We register this instance
 separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hypothesis
-`[fact (1 ≤ p)]` in order to prove the triangle inequality.
+`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
-Registering this separately allows for a future emetric-like structure on `pi_Lp p β` for `p < 1`
+Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : EDist (PiLp p β) where
@@ -163,7 +163,7 @@ section EdistProp
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
 
-/-- This holds independent of `p` and does not require `[fact (1 ≤ p)]`. We keep it separate
+/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
@@ -172,7 +172,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 #align pi_Lp.edist_self PiLp.edist_self
 
-/-- This holds independent of `p` and does not require `[fact (1 ≤ p)]`. We keep it separate
+/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
@@ -187,11 +187,11 @@ section Dist
 
 variable [∀ i, Dist (α i)]
 
-/-- Endowing the space `pi_Lp p β` with the `L^p` distance. We register this instance
+/-- Endowing the space `PiLp p β` with the `L^p` distance. We register this instance
 separate from `pi_Lp.pseudo_metric` since the latter requires the type class hypothesis
-`[fact (1 ≤ p)]` in order to prove the triangle inequality.
+`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
-Registering this separately allows for a future metric-like structure on `pi_Lp p β` for `p < 1`
+Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : Dist (PiLp p α) where
@@ -223,11 +223,11 @@ section Norm
 
 variable [∀ i, Norm (β i)] [∀ i, Zero (β i)]
 
-/-- Endowing the space `pi_Lp p β` with the `L^p` norm. We register this instance
-separate from `pi_Lp.seminormed_add_comm_group` since the latter requires the type class hypothesis
-`[fact (1 ≤ p)]` in order to prove the triangle inequality.
+/-- Endowing the space `PiLp p β` with the `L^p` norm. We register this instance
+separate from `PiLp.seminormedAddCommGroup` since the latter requires the type class hypothesis
+`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
-Registering this separately allows for a future norm-like structure on `pi_Lp p β` for `p < 1`
+Registering this separately allows for a future norm-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance hasNorm : Norm (PiLp p β) where
   norm f :=
@@ -261,7 +261,7 @@ section Aux
 /-!
 ### The uniformity on finite `L^p` products is the product uniformity
 
-In this section, we put the `L^p` edistance on `pi_Lp p α`, and we check that the uniformity
+In this section, we put the `L^p` edistance on `PiLp p α`, and we check that the uniformity
 coming from this edistance coincides with the product uniformity, by showing that the canonical
 map to the Pi type (with the `L^∞` distance) is a uniform embedding, as it is both Lipschitz and
 antiLipschitz.
@@ -277,12 +277,12 @@ variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetri
 
 variable [Fintype ι]
 
-/-- Endowing the space `pi_Lp p β` with the `L^p` pseudoemetric structure. This definition is not
+/-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
 satisfactory, as it does not register the fact that the topology and the uniform structure coincide
 with the product one. Therefore, we do not register it as an instance. Using this as a temporary
 pseudoemetric space instance, we will show that the uniform structure is equal (but not defeq) to
 the product one, and then register an instance in which we replace the uniform structure by the
-product one using this pseudoemetric space and `pseudo_emetric_space.replace_uniformity`. -/
+product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
 def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
@@ -311,7 +311,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
 
 attribute [local instance] PiLp.pseudoEmetricAux
 
-/-- An auxiliary lemma used twice in the proof of `pi_Lp.pseudo_metric_aux` below. Not intended for
+/-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type _} [Finite ι] {α : ι → Type _}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
@@ -322,13 +322,13 @@ theorem iSup_edist_ne_top_aux {ι : Type _} [Finite ι] {α : ι → Type _}
   exact_mod_cast hM i
 #align pi_Lp.supr_edist_ne_top_aux PiLp.iSup_edist_ne_top_aux
 
-/-- Endowing the space `pi_Lp p α` with the `L^p` pseudometric structure. This definition is not
+/-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
 satisfactory, as it does not register the fact that the topology, the uniform structure, and the
 bornology coincide with the product ones. Therefore, we do not register it as an instance. Using
 this as a temporary pseudoemetric space instance, we will show that the uniform structure is equal
 (but not defeq) to the product one, and then register an instance in which we replace the uniform
 structure and the bornology by the product ones using this pseudometric space,
-`pseudo_metric_space.replace_uniformity`, and `pseudo_metric_space.replace_bornology`.
+`PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -657,7 +657,7 @@ instance finiteDimensional [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Normed
   FiniteDimensional.finiteDimensional_pi' _ _
 #align pi_Lp.finite_dimensional PiLp.finiteDimensional
 
-/- Register simplification lemmas for the applications of `pi_Lp` elements, as the usual lemmas
+/- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
 variable {𝕜 𝕜' p α}
 variable [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] (c : 𝕜)
@@ -689,7 +689,7 @@ theorem neg_apply : (-x) i = -x i :=
   rfl
 #align pi_Lp.neg_apply PiLp.neg_apply
 
-/-- The canonical map `pi_Lp.equiv` between `pi_Lp ∞ β` and `Π i, β i` as a linear isometric
+/-- The canonical map `PiLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/
 def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
   { PiLp.equiv ∞ β with
@@ -874,10 +874,10 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
 
 end Single
 
-/-- When `p = ∞`, this lemma does not hold without the additional assumption `nonempty ι` because
+/-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`pi_Lp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
-`nonempty ι`. -/
+`PiLp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
+`Nonempty ι`. -/
 theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(PiLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
@@ -889,9 +889,9 @@ theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞
       mul_one_div_cancel ne_zero, NNReal.rpow_one, ENNReal.toReal_div, ENNReal.one_toReal]
 #align pi_Lp.nnnorm_equiv_symm_const PiLp.nnnorm_equiv_symm_const
 
-/-- When `is_empty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
+/-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`pi_Lp.nnnorm_equiv_symm_const` for a version which exchanges the hypothesis `nonempty ι`.
+`PiLp.nnnorm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
 for `p ≠ ∞`. -/
 theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖(PiLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖₊ =
@@ -903,19 +903,19 @@ theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] 
   · exact nnnorm_equiv_symm_const hp b
 #align pi_Lp.nnnorm_equiv_symm_const' PiLp.nnnorm_equiv_symm_const'
 
-/-- When `p = ∞`, this lemma does not hold without the additional assumption `nonempty ι` because
+/-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`pi_Lp.norm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
-`nonempty ι`. -/
+`PiLp.norm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
+`Nonempty ι`. -/
 theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(PiLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const hp b).trans <| by simp
 #align pi_Lp.norm_equiv_symm_const PiLp.norm_equiv_symm_const
 
-/-- When `is_empty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
+/-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`pi_Lp.norm_equiv_symm_const` for a version which exchanges the hypothesis `nonempty ι`.
+`PiLp.norm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
 for `p ≠ ∞`. -/
 theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖(PiLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖ =
@@ -936,7 +936,7 @@ theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [O
 
 variable (𝕜 p)
 
-/-- `pi_Lp.equiv` as a linear equivalence. -/
+/-- `PiLp.equiv` as a linear equivalence. -/
 @[simps (config := { fullyApplied := false })]
 protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
   { LinearEquiv.refl _ _ with
@@ -944,7 +944,7 @@ protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
     invFun := (PiLp.equiv _ _).symm }
 #align pi_Lp.linear_equiv PiLp.linearEquiv
 
-/-- `pi_Lp.equiv` as a continuous linear equivalence. -/
+/-- `PiLp.equiv` as a continuous linear equivalence. -/
 @[simps! (config := { fullyApplied := false }) toFun apply symm_apply]
 protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := PiLp.linearEquiv _ _ _
@@ -962,7 +962,7 @@ section Basis
 
 variable (ι)
 
-/-- A version of `pi.basis_fun` for `pi_Lp`. -/
+/-- A version of `Pi.basisFun` for `PiLp`. -/
 def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
   Basis.ofEquivFun (PiLp.linearEquiv p 𝕜 fun _ : ι => 𝕜)
 #align pi_Lp.basis_fun PiLp.basisFun
