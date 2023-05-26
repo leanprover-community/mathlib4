@@ -8,12 +8,12 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.RingTheory.TensorProduct
-import Mathbin.Algebra.Category.Ring.Limits
-import Mathbin.Algebra.Category.Ring.Instances
-import Mathbin.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathbin.RingTheory.Subring.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.RingTheory.TensorProduct
+import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Category.Ring.Instances
+import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+import Mathlib.RingTheory.Subring.Basic
 
 /-!
 # Constructions of (co)limits in CommRing
@@ -41,8 +41,7 @@ section Pushout
 variable {R A B : CommRingCat.{u}} (f : R ⟶ A) (g : R ⟶ B)
 
 /-- The explicit cocone with tensor products as the fibered product in `CommRing`. -/
-def pushoutCocone : Limits.PushoutCocone f g :=
-  by
+def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   apply limits.pushout_cocone.mk
@@ -84,8 +83,7 @@ theorem pushoutCocone_pt :
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
-  Limits.PushoutCocone.isColimitAux' _ fun s =>
-    by
+  Limits.PushoutCocone.isColimitAux' _ fun s => by
     letI := RingHom.toAlgebra f
     letI := RingHom.toAlgebra g
     letI := RingHom.toAlgebra (f ≫ s.inl)
@@ -118,8 +116,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
           change h (f r ⊗ₜ[R] 1) = s.inl (f r)
           rw [← eq1]
           simp }
-    suffices h' = Algebra.TensorProduct.productMap f' g'
-      by
+    suffices h' = Algebra.TensorProduct.productMap f' g' by
       ext x
       change h' x = Algebra.TensorProduct.productMap f' g' x
       rw [this]
@@ -133,14 +130,12 @@ end Pushout
 section Terminal
 
 /-- The trivial ring is the (strict) terminal object of `CommRing`. -/
-def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) :=
-  by
+def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   apply (config := { instances := false }) is_terminal.of_unique
   tidy
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
-instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} :=
-  by
+instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
   apply has_strict_terminal_objects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
   refine' ⟨⟨by tidy, by ext, _⟩⟩
@@ -159,8 +154,7 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 #align CommRing.subsingleton_of_is_terminal CommRingCat.subsingleton_of_isTerminal
 
 /-- `ℤ` is the initial object of `CommRing`. -/
-def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
-  by
+def zIsInitial : IsInitial (CommRingCat.of ℤ) := by
   apply (config := { instances := false }) is_initial.of_unique
   exact fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩
 #align CommRing.Z_is_initial CommRingCat.zIsInitial
@@ -178,8 +172,7 @@ def prodFan : BinaryFan A B :=
 #align CommRing.prod_fan CommRingCat.prodFan
 
 /-- The product in `CommRing` is the cartesian product. -/
-def prodFanIsLimit : IsLimit (prodFan A B)
-    where
+def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := RingHom.prod (c.π.app ⟨WalkingPair.left⟩) (c.π.app ⟨WalkingPair.right⟩)
   fac c j := by
     ext
@@ -206,8 +199,7 @@ def equalizerFork : Fork f g :=
 #align CommRing.equalizer_fork CommRingCat.equalizerFork
 
 /-- The equalizer in `CommRing` is the equalizer as sets. -/
-def equalizerForkIsLimit : IsLimit (equalizerFork f g) :=
-  by
+def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply fork.is_limit.mk'
   intro s
   use s.ι.cod_restrict _ fun x => (concrete_category.congr_hom s.condition x : _)
@@ -219,12 +211,10 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) :=
     exact concrete_category.congr_hom hm x
 #align CommRing.equalizer_fork_is_limit CommRingCat.equalizerForkIsLimit
 
-instance : IsLocalRingHom (equalizerFork f g).ι :=
-  by
+instance : IsLocalRingHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
-  have : y ∈ RingHom.eqLocus f g :=
-    by
+  have : y ∈ RingHom.eqLocus f g := by
     apply (f.is_unit_map ⟨⟨x, y, h₃, h₄⟩, rfl⟩ : IsUnit (f x)).mul_left_inj.mp
     conv_rhs => rw [h₁]
     rw [← f.map_mul, ← g.map_mul, h₄, f.map_one, g.map_one]
@@ -232,8 +222,7 @@ instance : IsLocalRingHom (equalizerFork f g).ι :=
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
 instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F WalkingParallelPair.zero) :=
-  by
+    IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
   have := lim_map_π (diagram_iso_parallel_pair F).Hom walking_parallel_pair.zero
   rw [← is_iso.comp_inv_eq] at this
   rw [← this]
@@ -252,8 +241,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 open CategoryTheory.Limits.WalkingParallelPairHom
 
 instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) :=
-  by
+    IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
   have : _ = limit.π F (walking_parallel_pair_op_equiv.functor.obj _) :=
     (limit.iso_limit_cone_inv_π
         ⟨_, is_limit.whisker_equivalence (limit.is_limit F) walking_parallel_pair_op_equiv⟩
@@ -285,8 +273,7 @@ def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : Pullbac
 
 /-- The constructed pullback cone is indeed the limit. -/
 def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
-    IsLimit (pullbackCone f g) :=
-  by
+    IsLimit (pullbackCone f g) := by
   fapply pullback_cone.is_limit.mk
   · intro s
     apply (s.fst.prod s.snd).codRestrict
