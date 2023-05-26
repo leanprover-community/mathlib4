@@ -339,7 +339,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
-    stop
+    exact one_smul _ _  -- porting note: added
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
@@ -372,7 +372,7 @@ instance : Monoid (ArithmeticFunction R) :=
       have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
-        sorry
+        exact mul_one _  -- porting note: added
       intro y ymem ynmem
       have y2ne : y.snd ≠ 1 := by
         intro con
