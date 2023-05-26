@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Pi
-import Mathbin.CategoryTheory.Limits.Shapes.Biproducts
-import Mathbin.Algebra.Category.Module.Abelian
-import Mathbin.Algebra.Homology.ShortExact.Abelian
+import Mathlib.Algebra.Group.Pi
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.Algebra.Homology.ShortExact.Abelian
 
 /-!
 # The category of `R`-modules has finite biproducts
@@ -42,8 +42,7 @@ instance : HasFiniteBiproducts (ModuleCat.{v} R) :=
 /-- Construct limit data for a binary product in `Module R`, using `Module.of R (M × N)`.
 -/
 @[simps cone_x isLimit_lift]
-def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
-    where
+def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N) where
   Cone :=
     { pt := ModuleCat.of R (M × N)
       π :=
@@ -104,8 +103,7 @@ variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 to the cartesian product of those groups.
 -/
 @[simps]
-def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j)
-    where
+def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x
   map_add' x y := by
     ext
@@ -118,8 +116,7 @@ def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j)
 /-- Construct limit data for a product in `Module R`, using `Module.of R (Π j, F.obj j)`.
 -/
 @[simps]
-def productLimitCone : Limits.LimitCone (Discrete.functor f)
-    where
+def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   Cone :=
     { pt := ModuleCat.of R (∀ j, f j)
       π := Discrete.natTrans fun j => (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
