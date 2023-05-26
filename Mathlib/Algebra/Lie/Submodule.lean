@@ -240,12 +240,8 @@ instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
 theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I := rfl
 #align lie_ideal.coe_to_subalgebra LieIdeal.coe_toSubalgebra
 
--- porting note: is this theorem needed now?  In mathlib3, there were two coercions on the lhs
--- now the two sides appear completely identical
-@[norm_cast]
-theorem LieIdeal.coe_toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
-    ((I : LieSubalgebra R L) : Submodule R L) = I := rfl
-#align lie_ideal.coe_to_lie_subalgebra_to_submodule LieIdeal.coe_toLieSubalgebra_toSubmodule
+-- porting note: `LieIdeal.coe_toLieSubalgebra_toSubmodule`, corresponding to
+-- `lie_ideal.coe_to_lie_subalgebra_to_submodule` is a syntactic tautology and I erased it.
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
@@ -309,7 +305,7 @@ theorem mem_toLieSubmodule (x : L) : x ∈ K.toLieSubmodule ↔ x ∈ K :=
 
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
-  simp only [← coe_to_submodule_eq_iff, LieIdeal.coe_toLieSubalgebra_toSubmodule]
+  simp only [← coe_to_submodule_eq_iff]
   erw [Submodule.exists_lieSubmodule_coe_eq_iff L]  -- porting note: was part of the `simp` call.
   exact Iff.rfl
 #align lie_subalgebra.exists_lie_ideal_coe_eq_iff LieSubalgebra.exists_lieIdeal_coe_eq_iff
@@ -901,7 +897,7 @@ theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebr
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
     LieSubalgebra.coe_to_submodule_eq_iff, ← f.range.coe_to_submodule,
-    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
+    LieSubmodule.coe_lieSpan_submodule_eq_iff,
     LieSubalgebra.mem_coe_submodule, mem_range, exists_imp,
     Submodule.exists_lieSubmodule_coe_eq_iff]
   constructor
