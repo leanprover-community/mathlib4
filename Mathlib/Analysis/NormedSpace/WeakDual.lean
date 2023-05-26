@@ -179,8 +179,7 @@ theorem toNormedDual_eq_iff (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNorm
   Function.Injective.eq_iff <| LinearEquiv.injective toNormedDual
 #align weak_dual.to_normed_dual_eq_iff WeakDual.toNormedDual_eq_iff
 
-theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) :
-  IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
+theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 #align weak_dual.is_closed_closed_ball WeakDual.isClosed_closedBall
 
