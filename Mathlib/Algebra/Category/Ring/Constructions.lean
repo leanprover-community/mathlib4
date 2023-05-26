@@ -44,41 +44,45 @@ variable {R A B : CommRingCat.{u}} (f : R ⟶ A) (g : R ⟶ B)
 def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
-  apply limits.pushout_cocone.mk
+  fapply Limits.PushoutCocone.mk
   show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact algebra.tensor_product.include_left.to_ring_hom
-  show B ⟶ _; exact algebra.tensor_product.include_right.to_ring_hom
+  show A ⟶ _; exact Algebra.TensorProduct.includeLeft.toRingHom
+  show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
   ext r
   trans algebraMap R (A ⊗[R] B) r
-  · exact algebra.tensor_product.include_left.commutes r
-  · exact (algebra.tensor_product.include_right.commutes r).symm
+  · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+  · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
 @[simp]
 theorem pushoutCocone_inl :
     (pushoutCocone f g).inl = by
-      letI := f.to_algebra
-      letI := g.to_algebra
-      exact algebra.tensor_product.include_left.to_ring_hom :=
+      letI := f.toAlgebra
+      letI := g.toAlgebra
+      exact Algebra.TensorProduct.includeLeft.toRingHom :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
 
 @[simp]
 theorem pushoutCocone_inr :
     (pushoutCocone f g).inr = by
-      letI := f.to_algebra
-      letI := g.to_algebra
-      exact algebra.tensor_product.include_right.to_ring_hom :=
+      letI := f.toAlgebra
+      letI := g.toAlgebra
+      exact Algebra.TensorProduct.includeRight.toRingHom :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inr CommRingCat.pushoutCocone_inr
 
 @[simp]
 theorem pushoutCocone_pt :
     (pushoutCocone f g).pt = by
-      letI := f.to_algebra
-      letI := g.to_algebra
+      letI := f.toAlgebra
+      letI := g.toAlgebra
       exact CommRingCat.of (A ⊗[R] B) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_X CommRingCat.pushoutCocone_pt
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
@@ -87,42 +91,57 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     letI := RingHom.toAlgebra f
     letI := RingHom.toAlgebra g
     letI := RingHom.toAlgebra (f ≫ s.inl)
-    let f' : A →ₐ[R] s.X :=
+    let f' : A →ₐ[R] s.pt :=
       { s.inl with
-        commutes' := fun r => by
-          change s.inl.to_fun (f r) = (f ≫ s.inl) r
-          rfl }
-    let g' : B →ₐ[R] s.X :=
+        commutes' := fun r => rfl }
+    let g' : B →ₐ[R] s.pt :=
       { s.inr with
         commutes' := fun r => by
           change (g ≫ s.inr) r = (f ≫ s.inl) r
           congr 1
           exact
-            (s.ι.naturality limits.walking_span.hom.snd).trans
-              (s.ι.naturality limits.walking_span.hom.fst).symm }
+            (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
+              (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
+    -- Porting note : Lean has forget why `A ⊗[R] B` makes sense
+    letI : Algebra R A := f.toAlgebra
+    letI : Algebra R B := g.toAlgebra
+    letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
     -- The factor map is a ⊗ b ↦ f(a) * g(b).
     use AlgHom.toRingHom (Algebra.TensorProduct.productMap f' g')
-    simp only [pushout_cocone_inl, pushout_cocone_inr]
+    simp only [pushoutCocone_inl, pushoutCocone_inr]
     constructor
     · ext x
+      -- Porting note : Lean can't see through `forget` functor
+      letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
+      letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
       exact Algebra.TensorProduct.productMap_left_apply _ _ x
     constructor
     · ext x
+      -- Porting note : Lean can't see through `forget` functor
+      letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
+      letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
       exact Algebra.TensorProduct.productMap_right_apply _ _ x
     intro h eq1 eq2
-    let h' : A ⊗[R] B →ₐ[R] s.X :=
+    let h' : A ⊗[R] B →ₐ[R] s.pt :=
       { h with
         commutes' := fun r => by
           change h (f r ⊗ₜ[R] 1) = s.inl (f r)
           rw [← eq1]
-          simp }
+          simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]
+          rfl }
     suffices h' = Algebra.TensorProduct.productMap f' g' by
       ext x
       change h' x = Algebra.TensorProduct.productMap f' g' x
       rw [this]
     apply Algebra.TensorProduct.ext
     intro a b
-    simp [← eq1, ← eq2, ← h.map_mul]
+    simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
+      AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
+      PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
+    change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
+    rw [←h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_is_colimit CommRingCat.pushoutCoconeIsColimit
 
 end Pushout
@@ -131,32 +150,37 @@ section Terminal
 
 /-- The trivial ring is the (strict) terminal object of `CommRing`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
-  apply (config := { instances := false }) is_terminal.of_unique
-  tidy
+  refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
+  . dsimp
+  . intros; dsimp
+  . intros f; ext; rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
-  apply has_strict_terminal_objects_of_terminal_is_strict (CommRingCat.of PUnit)
+  apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
-  refine' ⟨⟨by tidy, by ext, _⟩⟩
-  ext
+  refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
+  ext (x : X)
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
     congr
-  replace e : 0 * x = 1 * x := congr_arg (fun a => a * x) e
+  replace e : 0 * x = 1 * x := congr_arg (. * x) e
   rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
   exact e
+set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects
 
 theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsingleton X :=
   (hX.uniqueUpToIso punitIsTerminal).commRingCatIsoToRingEquiv.toEquiv.subsingleton_congr.mpr
     (show Subsingleton PUnit by infer_instance)
+set_option linter.uppercaseLean3 false in
 #align CommRing.subsingleton_of_is_terminal CommRingCat.subsingleton_of_isTerminal
 
 /-- `ℤ` is the initial object of `CommRing`. -/
-def zIsInitial : IsInitial (CommRingCat.of ℤ) := by
-  apply (config := { instances := false }) is_initial.of_unique
-  exact fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩
+def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
+  IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
+set_option linter.uppercaseLean3 false in
 #align CommRing.Z_is_initial CommRingCat.zIsInitial
 
 end Terminal
@@ -166,9 +190,10 @@ section Product
 variable (A B : CommRingCat.{u})
 
 /-- The product in `CommRing` is the cartesian product. This is the binary fan. -/
-@[simps pt]
+@[simps! pt]
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
+set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan CommRingCat.prodFan
 
 /-- The product in `CommRing` is the cartesian product. -/
@@ -177,11 +202,19 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
   fac c j := by
     ext
     rcases j with ⟨⟨⟩⟩ <;>
-      simpa only [binary_fan.π_app_left, binary_fan.π_app_right, comp_apply, RingHom.prod_apply]
+    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right,
+      FunctorToTypes.map_comp_apply, forget_map, coe_of, RingHom.prod_apply] <;>
+    rfl
   uniq s m h := by
-    ext
-    · simpa using congr_hom (h ⟨walking_pair.left⟩) x
-    · simpa using congr_hom (h ⟨walking_pair.right⟩) x
+    dsimp
+    ext (x : s.pt)
+    change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
+    have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
+    have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
+    dsimp at eq1 eq2
+    rw [←eq1, ←eq2]
+    rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit
 
 end Product
@@ -192,30 +225,33 @@ variable {A B : CommRingCat.{u}} (f g : A ⟶ B)
 
 /-- The equalizer in `CommRing` is the equalizer as sets. This is the equalizer fork. -/
 def equalizerFork : Fork f g :=
-  Fork.ofι (CommRingCat.ofHom (RingHom.eqLocus f g).Subtype)
-    (by
+  Fork.ofι (CommRingCat.ofHom (RingHom.eqLocus f g).subtype) <| by
       ext ⟨x, e⟩
-      simpa using e)
+      simpa using e
+set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_fork CommRingCat.equalizerFork
 
 /-- The equalizer in `CommRing` is the equalizer as sets. -/
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
-  fapply fork.is_limit.mk'
+  fapply Fork.IsLimit.mk'
   intro s
-  use s.ι.cod_restrict _ fun x => (concrete_category.congr_hom s.condition x : _)
+  -- Porting note : Lean can't see through `(parallelPair f g).obj zero`
+  haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
+    show SubsemiringClass (Subring A) A by infer_instance
+  use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)
   constructor
   · ext
     rfl
   · intro m hm
-    ext x
-    exact concrete_category.congr_hom hm x
+    exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
+set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_fork_is_limit CommRingCat.equalizerForkIsLimit
 
 instance : IsLocalRingHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by
-    apply (f.is_unit_map ⟨⟨x, y, h₃, h₄⟩, rfl⟩ : IsUnit (f x)).mul_left_inj.mp
+    apply (f.isUnit_map ⟨⟨x, y, h₃, h₄⟩, rfl⟩ : IsUnit (f x)).mul_left_inj.mp
     conv_rhs => rw [h₁]
     rw [← f.map_mul, ← g.map_mul, h₄, f.map_one, g.map_one]
   rw [isUnit_iff_exists_inv]
@@ -223,17 +259,17 @@ instance : IsLocalRingHom (equalizerFork f g).ι := by
 
 instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
-  have := lim_map_π (diagram_iso_parallel_pair F).Hom walking_parallel_pair.zero
-  rw [← is_iso.comp_inv_eq] at this
+  have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
+  rw [← IsIso.comp_inv_eq] at this
   rw [← this]
-  rw [←
-    limit.iso_limit_cone_hom_π
+  rw [← limit.isoLimitCone_hom_π
       ⟨_,
-        equalizer_fork_is_limit (F.map walking_parallel_pair_hom.left)
-          (F.map walking_parallel_pair_hom.right)⟩
-      walking_parallel_pair.zero]
-  change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizer_fork _ _).ι) ≫ _)
+        equalizerForkIsLimit (F.map WalkingParallelPairHom.left)
+          (F.map WalkingParallelPairHom.right)⟩
+      WalkingParallelPair.zero]
+  change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_ι_is_local_ring_hom CommRingCat.equalizer_ι_isLocalRingHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite
@@ -242,13 +278,13 @@ open CategoryTheory.Limits.WalkingParallelPairHom
 
 instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
-  have : _ = limit.π F (walking_parallel_pair_op_equiv.functor.obj _) :=
-    (limit.iso_limit_cone_inv_π
-        ⟨_, is_limit.whisker_equivalence (limit.is_limit F) walking_parallel_pair_op_equiv⟩
-        walking_parallel_pair.zero :
-      _)
+  have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
+    (limit.isoLimitCone_inv_π
+        ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
+        WalkingParallelPair.zero : _)
   erw [← this]
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_ι_is_local_ring_hom' CommRingCat.equalizer_ι_is_local_ring_hom'
 
 end Equalizer
@@ -262,23 +298,24 @@ def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : Pullbac
   PullbackCone.mk
     (CommRingCat.ofHom <|
       (RingHom.fst A B).comp
-        (RingHom.eqLocus (f.comp (RingHom.fst A B)) (g.comp (RingHom.snd A B))).Subtype)
+        (RingHom.eqLocus (f.comp (RingHom.fst A B)) (g.comp (RingHom.snd A B))).subtype)
     (CommRingCat.ofHom <|
       (RingHom.snd A B).comp
-        (RingHom.eqLocus (f.comp (RingHom.fst A B)) (g.comp (RingHom.snd A B))).Subtype)
+        (RingHom.eqLocus (f.comp (RingHom.fst A B)) (g.comp (RingHom.snd A B))).subtype)
     (by
       ext ⟨x, e⟩
       simpa [CommRingCat.ofHom] using e)
+set_option linter.uppercaseLean3 false in
 #align CommRing.pullback_cone CommRingCat.pullbackCone
 
 /-- The constructed pullback cone is indeed the limit. -/
 def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     IsLimit (pullbackCone f g) := by
-  fapply pullback_cone.is_limit.mk
+  fapply PullbackCone.IsLimit.mk
   · intro s
     apply (s.fst.prod s.snd).codRestrict
     intro x
-    exact congr_arg (fun f : s.X →+* C => f x) s.condition
+    exact congr_arg (fun f : s.pt →+* C => f x) s.condition
   · intro s
     ext x
     rfl
@@ -286,12 +323,15 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     ext x
     rfl
   · intro s m e₁ e₂
-    ext
-    · exact (congr_arg (fun f : s.X →+* A => f x) e₁ : _)
-    · exact (congr_arg (fun f : s.X →+* B => f x) e₂ : _)
+    refine RingHom.ext fun (x : s.pt) => Subtype.ext ?_
+    change (m x).1 = (_, _)
+    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) e₁ : _)
+    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) e₂ : _)
+    rw [←eq1, ←eq2]
+    rfl
+set_option linter.uppercaseLean3 false in
 #align CommRing.pullback_cone_is_limit CommRingCat.pullbackConeIsLimit
 
 end Pullback
 
 end CommRingCat
-
