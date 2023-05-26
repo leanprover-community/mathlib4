@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Fintype
-import Mathbin.Order.Category.PartOrd
+import Mathlib.CategoryTheory.Fintype
+import Mathlib.Order.Category.PartOrd
 
 /-!
 # The category of finite partial orders
@@ -83,8 +83,7 @@ instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
