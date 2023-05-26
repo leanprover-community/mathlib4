@@ -127,30 +127,29 @@ theorem sum_bernoulli (n : ℕ) :
     (∑ k in range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
-  simp only [add_tsub_cancel_left, tsub_zero, zero_add, LinearMap.map_add]
+  simp only [add_tsub_cancel_left, tsub_zero, zero_add, map_add]
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
-  conv_lhs =>
-    apply_congr
-    skip
-    conv =>
-      apply_congr
-      skip
-      rw [← Nat.cast_mul,
-        choose_mul ((le_tsub_iff_left <| mem_range_le H).1 <| mem_range_le H_1) (le.intro rfl),
-        Nat.cast_mul, add_comm x x_1, add_tsub_cancel_right, mul_assoc, mul_comm, ← smul_eq_mul, ←
-        smul_monomial]
-    rw [← sum_smul]
+  have : ∑ x in range (n + 1), ∑ x_1 in range (n + 1 - x),
+      (monomial x) (↑(Nat.choose (n + 1) (x + x_1)) * ↑(Nat.choose (x + x_1) x) * _root_.bernoulli x_1) =
+      ∑ x in range (n + 1), (∑ i in range (n + 1 - x), ((n + 1 - x).choose i : ℚ) • bernoulli i) •
+      ((monomial x)) (((n + 1).choose x) : ℚ) := by
+   congr
+   ext x m
+   simp?
+   
+  rw [this]
   rw [sum_range_succ_comm]
   simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
-    LinearMap.map_add, range_one]
+    map_add, range_one, bernoulli_zero, mul_one, one_mul, add_zero, choose_self]
   apply sum_eq_zero fun x hx => _
   have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by
     rintro x H
     rw [mem_range] at H
     rw [eq_comm]
-    exact ne_of_lt (Nat.lt_of_lt_of_le one_lt_two (le_tsub_of_add_le_left (succ_le_succ H)))
-  rw [sum_bernoulli]
+    exact _root_.ne_of_lt (Nat.lt_of_lt_of_le one_lt_two (le_tsub_of_add_le_left (succ_le_succ H)))
+  intro x hx
+  simp only [sum_bernoulli (n - x)]
   have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
     simp only [ite_eq_right_iff, one_ne_zero]
     intro h₁
@@ -186,18 +185,17 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
 #align polynomial.sum_range_pow_eq_bernoulli_sub Polynomial.sum_range_pow_eq_bernoulli_sub
 
 /-- Rearrangement of `polynomial.sum_range_pow_eq_bernoulli_sub`. -/
-theorem bernoulli_succ_eval (n p : ℕ) :
-    (bernoulli p.succ).eval n = bernoulli p.succ + (p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p := by
+theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
+    _root_.bernoulli p.succ + (p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p := by
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 #align polynomial.bernoulli_succ_eval Polynomial.bernoulli_succ_eval
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
-  apply Nat.strong_induction_on n fun d hd => _
+  refine' Nat.strong_induction_on n fun d hd => _
   have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by
     norm_cast
-    exact d.succ_ne_zero
   apply (mul_right_inj' nz).1
   rw [← smul_eq_mul, ← eval_smul, bernoulli_eq_sub_sum, mul_add, ← smul_eq_mul, ← eval_smul,
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
@@ -232,15 +230,15 @@ theorem bernoulli_generating_function (t : A) :
   -- check equality of power series by checking coefficients of X^n
   ext n
   -- n = 0 case solved by `simp`
-  cases n;
+  cases' n with n;
   · simp
   -- n ≥ 1, the coefficients is a sum to n+2, so use `sum_range_succ` to write as
   -- last term plus sum to n+1
   rw [coeff_succ_X_mul, coeff_rescale, coeff_exp, PowerSeries.coeff_mul,
-    nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ]
+    Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ]
   -- last term is zero so kill with `add_zero`
-  simp only [RingHom.map_sub, tsub_self, constant_coeff_one, constant_coeff_exp,
-    coeff_zero_eq_constant_coeff, MulZeroClass.mul_zero, sub_self, add_zero]
+  simp only [RingHom.map_sub, tsub_self, constantCoeff_one, constantCoeff_exp,
+    coeff_zero_eq_constantCoeff, MulZeroClass.mul_zero, sub_self, add_zero]
   -- Let's multiply both sides by (n+1)! (OK because it's a unit)
   have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (by exact_mod_cast factorial_ne_zero (n + 1))
   rw [← (hnp1.map (algebraMap ℚ A)).mul_right_inj]
@@ -264,9 +262,7 @@ theorem bernoulli_generating_function (t : A) :
     RingHom.map_mul, succ_eq_add_one, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
     Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map
-  congr
-  apply congr_arg
-  rw [mul_assoc, div_eq_mul_inv, ← mul_inv]
+  field_simp
 #align polynomial.bernoulli_generating_function Polynomial.bernoulli_generating_function
 
 end Polynomial
