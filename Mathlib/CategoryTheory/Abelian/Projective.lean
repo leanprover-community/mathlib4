@@ -88,58 +88,44 @@ def ofComplex (Z : C) : ChainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
-/-
-Next declaration was autoported as the below, but it times out.
+-- Porting note: the π in `of` was very, very slow. To assist,
+-- implicit arguments were filled in and this particular proof was broken
+-- out into a separate result
+theorem ofComplex_sq_10_comm (Z : C) :
+    0 ≫ HomologicalComplex.d ((ChainComplex.single₀ C).obj Z) 1 0 =
+    HomologicalComplex.d (ofComplex Z) 1 0 ≫ Projective.π Z := by
+  simp only [ofComplex_X, ChainComplex.single₀_obj_X_0, ChainComplex.single₀_obj_X_succ,
+    ComplexShape.down_Rel, not_true, ChainComplex.single₀_obj_X_d, comp_zero, ofComplex_d,
+    eqToHom_refl, Category.id_comp, dite_eq_ite, ite_true]
+  exact (exact_d_f (Projective.π Z)).w.symm
 
-irreducible_def of (Z : C) : ProjectiveResolution Z :=
-  { complex := ofComplex Z
-    π :=
-      ChainComplex.mkHom _ _ (Projective.π Z) 0
-        (by
-          simp
-          exact (exact_d_f (projective.π Z)).w.symm)
-        fun n _ => ⟨0, by ext⟩
-    projective := by rintro (_ | _ | _ | n) <;> apply projective.projective_over
-    exact₀ := by simpa using exact_d_f (projective.π Z)
-    exact := by
-      rintro (_ | n) <;>
-        · simp
-          apply exact_d_f
-    epi := Projective.π_epi Z }
--/
+-- Porting note: the `exact` in `of` was very, very slow. To assist,
+-- the whole proof was broken out into a separate result
+theorem exact_ofComplex (Z : C) (n : ℕ) :
+    Exact (HomologicalComplex.d (ofComplex Z) (n + 2) (n + 1))
+    (HomologicalComplex.d (ofComplex Z) (n + 1) n) :=
+  match n with
+-- Porting note: used to be simp; apply exact_d_f on both branches
+    | 0 => by simp; apply exact_d_f
+    | m+1 => by
+      simp only [ofComplex_X, ComplexShape.down_Rel, ofComplex_d, eqToHom_refl,
+        Category.id_comp, dite_eq_ite, not_true, ite_true]
+      erw [if_pos (c := m + 1 + 1 + 1 = m + 2 + 1) rfl]
+      apply exact_d_f
 
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
 irreducible_def of (Z : C) : ProjectiveResolution Z :=
   { complex := ofComplex Z
-    π := ChainComplex.mkHom _ _ (Projective.π Z) 0
-             (by
-               -- next line in Lean 3 was `simp` which seems to make
-               -- Lean 4 time out or crash. Even
-               -- `simp? (config := { singlePass := true })`
-               -- doesn't work, and `dsimp` doesn't either.
-               -- Typical `dsimp` error:
-               /-
-  Message: Server process for file:///home/buzzard/lean-projects/mathlib4/Mathlib/CategoryTheory/Abelian/Projective.lean crashed, likely due to a stack overflow or a bug.
-  Code: -32902 -/
-               sorry
-               )
-             (fun n _ ↦ ⟨0, sorry⟩)
-    -- ChainComplex.mkHom _ _ (Projective.π Z) 0
-    --     (by
-    --       simp
-    --       exact (exact_d_f (projective.π Z)).w.symm)
-    --     fun n _ => ⟨0, by ext⟩
-    projective := sorry--by rintro (_ | _ | _ | n) <;> apply projective.projective_over
-    exact₀ := sorry--by simpa using exact_d_f (projective.π Z)
-    exact := sorry
-    -- by
-    --   rintro (_ | n) <;>
-    --     · simp
-    --       apply exact_d_f
-    epi := sorry }
-    --Projective.π_epi Z }
+    π := ChainComplex.mkHom (ofComplex Z) ((ChainComplex.single₀ C).obj Z) (Projective.π Z) 0
+           (ofComplex_sq_10_comm Z) (fun n _ ↦ ⟨0, by
+           -- Porting note: broken ext
+            apply HasZeroObject.to_zero_ext ⟩)
+    projective := by rintro (_ | _ | _ | n) <;> apply Projective.projective_over
+    exact₀ := by simpa using exact_d_f (Projective.π Z)
+    exact := exact_ofComplex Z
+    epi := Projective.π_epi Z }
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of CategoryTheory.ProjectiveResolution.of
 
