@@ -265,7 +265,7 @@ partial def _root_.Lean.MVarId.relCongr
   -- to record which arguments to the head function differ between the two sides of the goal.
   let varyingArgs := tplArgs.map (·.2)
   if varyingArgs.all not then
-    throwError "try refl"
+    throwError "try rfl"
   let s ← saveState
   let mut ex? := none
   -- Look up the `@[rel_congr]` lemmas whose conclusion has the same relation and head function as
