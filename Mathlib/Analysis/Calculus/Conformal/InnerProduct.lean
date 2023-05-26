@@ -8,8 +8,8 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Conformal.NormedSpace
-import Mathbin.Analysis.InnerProductSpace.ConformalLinearMap
+import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 
 /-!
 # Conformal maps between inner product spaces
