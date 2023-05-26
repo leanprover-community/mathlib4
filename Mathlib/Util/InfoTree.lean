@@ -34,13 +34,15 @@ def ofName? (i : InfoTree) : Option Name := i.ofExpr?.bind Expr.constName?
 return it along with the declaration name if it is. -/
 def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
   match t.consumeContext with
-  | .node (.ofCommandInfo i) c => if i.elaborator == `Lean.Elab.Command.elabDeclaration then
+  | .node (.ofCommandInfo i) c =>
+    if i.elaborator == `Lean.Elab.Command.elabDeclaration
+    then
       -- this is hacky: we are relying on the ordering of the child nodes.
-      match c.toList.getLast? with
-      | some r => match r.consumeContext.ofName? with
-        | some n => some (n, t)
-        | none => none
-      | none => none
+      c.toList.foldr (fun cc acc => match (cc.consumeContext.ofName?, acc) with
+                       | (_, some r) => some r
+                       | (some n, none) => some (n, t)
+                       | (none, none) => none )
+                     none
     else
       none
   | _ => none
