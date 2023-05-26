@@ -95,7 +95,7 @@ def pt_map {L L' : Type _} [Order.Frame L] [Order.Frame L']
 
 
 def pt : FrmCatᵒᵖ ⥤ TopCat where
-  obj L    := ⟨FrameHom L.unop Prop, by infer_instance⟩
+  obj L    := ⟨pt_obj L.unop, by infer_instance⟩
   map f    := pt_map f.unop
 
 /- Definition of the functor `𝒪`. -/
@@ -133,36 +133,22 @@ def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_o
 
 def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := pt_open L
-  map_inf' := sorry
-  map_top' := sorry
-  map_sSup' := sorry
+  map_inf' a b := by simp [pt_open]
+  map_top' := by simp [pt_open]; rfl
+  map_sSup' S := sorry
 
 def counit_app (L : FrmCatᵒᵖ) : (pt.comp 𝒪).obj L ⟶ L where
   unop := counit_app_cont L.unop
 
 def counit : pt.comp 𝒪 ⟶ 𝟭 FrmCatᵒᵖ where
   app := counit_app
-  naturality := sorry
-
-def unit_frame_hom (X : TopCat) (x : X) : FrameHom (Opens ↑X) Prop where
-  toFun U := x ∈ U
-  map_inf' := sorry
-  map_top' := sorry
-  map_sSup' := sorry
-
-def unit_app (X : TopCat) : X ⟶ (𝒪.comp pt).obj X where
-  toFun x := unit_frame_hom X x
-  continuous_toFun := sorry
 
 def unit : 𝟭 TopCat ⟶ 𝒪.comp pt where
-  app := unit_app --by dsimp; ⟨λ x => $ λ U => x ∈ U, by sorry⟩
-  naturality := sorry
+  app X := neighborhoods X
 
 def unitCounit : Adjunction.CoreUnitCounit 𝒪 pt where
  unit := unit
  counit := counit
- left_triangle := sorry --aesop will automatically solve these
- right_triangle := sorry--if definitions are good enough
 
 -- the final goal
 theorem frame_top_adjunction : 𝒪 ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
