@@ -580,7 +580,7 @@ lemma truncLELEIsoTruncLE₁_hom_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.truncLELEIsoTruncLE₁ a b h).hom.app X =
       (t.truncLE a).map ((t.truncLEι b).app X) := rfl
 
-@[simps!]
+@[simps]
 noncomputable def truncLEFiltrationTriangle (a b : ℤ) (h : a ≤ b) (a' : ℤ) (ha' : a + 1 = a') :
     C ⥤ Triangle C where
   obj X := Triangle.mk ((t.natTransTruncLEOfLE _ _ h).app X)
@@ -630,21 +630,23 @@ lemma truncGELEIsoTruncLEGE_hom_app_pentagon (a b : ℤ) (X : C) :
     (t.truncLEι b).app X ≫ (t.truncGEπ a).app X := by
   simp [truncGELEIsoTruncLEGE_hom_app]
 
-/-instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := by
+instance (a b : ℤ) (X : C) : IsIso (t.truncGELEIsoTruncLEGE_hom_app a b X) := by
   by_cases a - 1 ≤ b
   . let u₁₂ : (t.truncLE (a-1)).obj X ⟶ (t.truncLE b).obj X :=
       (t.natTransTruncLEOfLE _ _ h).app X
     let u₂₃ : (t.truncLE b).obj X ⟶ X := (t.truncLEι _).app X
     let u₁₃ : (t.truncLE (a-1)).obj X ⟶ X := (t.truncLEι _).app X
     have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp
-    have h₁₂ := t.truncLEFiltrationTriangle_obj_distinguished (a-1) b h a (by linarith) X
-    have h₂₃ := t.truncTriangle_obj_distinguished b (b+1) rfl X
-    have h₁₃ := t.truncTriangle_obj_distinguished (a-1) a (by linarith) X
     have H := someOctahedron eq (t.truncLEFiltrationTriangle_obj_distinguished (a-1) b h a
       (by linarith) X) (t.truncTriangle_obj_distinguished b (b+1) rfl X)
       (t.truncTriangle_obj_distinguished (a-1) a (by linarith) X)
-    have eq : t.liftTruncLE H.m₁ b = truncGELEIsoTruncLEGE_hom_app t a b X := sorry
-    rw [← eq]
+    have eq' : t.liftTruncLE H.m₁ b = truncGELEIsoTruncLEGE_hom_app t a b X := by
+      apply t.to_truncLE_obj_ext
+      dsimp
+      apply t.from_truncGE_obj_ext
+      rw [t.liftTruncLE_ι, truncGELEIsoTruncLEGE_hom_app_pentagon]
+      exact H.comm₁
+    rw [← eq']
     have := t.isIso₁_truncLEmap_of_GE _ H.mem b _ rfl (by dsimp ; infer_instance)
     dsimp at this
     have fac : (t.truncLEι b).app ((t.truncGE a).obj
@@ -668,7 +670,7 @@ noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
       ← NatTrans.naturality_assoc,
       truncGELEIsoTruncLEGE_hom_app_pentagon,
       Functor.id_map, ← NatTrans.naturality, Functor.id_map,
-      NatTrans.naturality_assoc, Functor.id_map])-/
+      NatTrans.naturality_assoc, Functor.id_map])
 
 noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
@@ -685,15 +687,44 @@ noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
     (fun _ => (t.mem_heart_iff _).2 ⟨t.isLE_shift _ n n 0 (add_zero n),
       t.isGE_shift _ n n 0 (add_zero n)⟩)
 
-/-instance (n : ℤ) : (t.truncLE n).Additive := sorry
-instance (n : ℤ) : (t.truncGE n).Additive := sorry
+noncomputable def truncLT (b : ℤ) : C ⥤ C := t.truncLE (b-1)
 
-instance (a b : ℤ) : (t.truncGELE a b).Additive := by
-  dsimp only [truncGELE]
-  infer_instance
+noncomputable def truncLTIsoTruncLE (a b : ℤ) (h : a + 1 = b) : t.truncLT b ≅ t.truncLE a :=
+  eqToIso (by dsimp only [truncLT] ; congr 1 ; linarith)
 
-instance (n : ℤ) : (t.homology n).Additive where
-  map_add := fun {_ _ f₁ f₂} => by simp [homology] -/
+noncomputable def truncGT (a : ℤ) : C ⥤ C := t.truncGE (a+1)
+
+noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) : t.truncGT a ≅ t.truncGE b :=
+  eqToIso (by dsimp only [truncGT] ; congr 1)
+
+noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
+
+noncomputable def truncGELTIsoTruncGELE (a b b' : ℤ) (hb' : b + 1 = b') :
+    t.truncGELT a b' ≅ t.truncLE b ⋙ t.truncGE a :=
+  isoWhiskerRight (t.truncLTIsoTruncLE b b' hb') _
+
+noncomputable def natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
+    t.truncLT a ⟶ t.truncLT b :=
+  t.natTransTruncLEOfLE (a-1) (b-1) (by linarith)
+
+noncomputable def truncGELTδ (a b : ℤ) (h : a ≤ b) :
+    t.truncGELT a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) :=
+  (t.truncGELTIsoTruncGELE a (b-1) b (by linarith)).hom ≫
+    whiskerLeft (t.truncLEFiltrationTriangle (a-1) (b-1) (by linarith) a (by linarith))
+      Triangle.π₃Toπ₁ ≫
+    whiskerRight (t.truncLTIsoTruncLE (a-1) a (by linarith)).inv (shiftFunctor C (1 : ℤ))
+
+noncomputable def truncLTFiltrationTriangle (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C where
+  obj X := Triangle.mk ((t.natTransTruncLTOfLE a b h).app X)
+    ((t.truncGEπ a).app ((t.truncLT b).obj X)) ((t.truncGELTδ a b h).app X)
+  map φ :=
+    { hom₁ := (t.truncLT a).map φ
+      hom₂ := (t.truncLT b).map φ
+      hom₃ := (t.truncGELT a b).map φ
+      comm₂ := by
+        dsimp
+        erw [← NatTrans.naturality]
+        rfl }
 
 end TStructure
 
