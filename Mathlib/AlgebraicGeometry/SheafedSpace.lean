@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.PresheafedSpace.HasColimits
-import Mathbin.Topology.Sheaves.Functors
+import Mathlib.AlgebraicGeometry.PresheafedSpace.HasColimits
+import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Sheafed spaces
@@ -120,8 +120,7 @@ theorem id_c_app (X : SheafedSpace C) (U) :
         (by
           induction U using Opposite.rec'
           cases U
-          rfl) :=
-  by
+          rfl) := by
   induction U using Opposite.rec'
   cases U
   simp only [id_c]
@@ -154,8 +153,7 @@ theorem congr_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
 variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
-def forget : SheafedSpace C ⥤ TopCat
-    where
+def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat.{v})
   map X Y f := f.base
 #align algebraic_geometry.SheafedSpace.forget AlgebraicGeometry.SheafedSpace.forget
