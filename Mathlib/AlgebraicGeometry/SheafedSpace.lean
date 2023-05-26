@@ -250,4 +250,3 @@ noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
 end SheafedSpace
 
 end AlgebraicGeometry
-#lint
