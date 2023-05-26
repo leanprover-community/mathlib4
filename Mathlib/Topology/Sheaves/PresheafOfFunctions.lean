@@ -70,11 +70,11 @@ theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U �
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types_map TopCat.presheafToTypes_map
 
--- We don't just define this in terms of `presheaf_to_Types`,
--- as it's helpful later to see (at a syntactic level) that `(presheaf_to_Type X T).obj U`
+-- We don't just define this in terms of `presheafToTypes`,
+-- as it's helpful later to see (at a syntactic level) that `(presheafToType X T).obj U`
 -- is a non-dependent function.
 -- We don't use `@[simps]` to generate the projection lemmas here,
--- as it turns out to be useful to have `presheaf_to_Type_map`
+-- as it turns out to be useful to have `presheafToType_map`
 -- written as an equality of functions (rather than being applied to some argument).
 /-- The presheaf of functions on `X` with values in a type `T`.
 There is no requirement that the functions are continuous, here.
@@ -183,9 +183,9 @@ values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex valued functions of `X` as
 ```
-presheaf_to_TopCommRing X (TopCommRing.of ℂ)
+presheafToTopCommRing X (TopCommRing.of ℂ)
 ```
-(this requires `import topology.instances.complex`).
+(this requires `import Topology.Instances.Complex`).
 -/
 def presheafToTopCommRing (T : TopCommRingCat.{v}) : X.Presheaf CommRingCat.{v} :=
   (Opens.toTopCat X).op ⋙ commRingYoneda.obj T

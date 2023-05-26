@@ -116,8 +116,8 @@ def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     (by aesop_cat)
 #align category_theory.over.construct_products.cones_equiv_counit_iso CategoryTheory.Over.ConstructProducts.conesEquivCounitIso
 
--- TODO: Can we add `. obviously` to the second arguments of `nat_iso.of_components` and
---       `cones.ext`?
+-- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
+--       `Cones.ext`?
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
 @[simps]

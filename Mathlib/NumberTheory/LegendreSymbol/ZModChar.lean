@@ -131,10 +131,6 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
   rfl
 #align zmod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
 
-lemma test : IsUnit (7 : ZMod 8) := by
-  have : (7 : ZMod 8) * 7 = 1 := by decide
-  exact isUnit_of_mul_eq_one (7 : ZMod 8) 7 this
-
 set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
