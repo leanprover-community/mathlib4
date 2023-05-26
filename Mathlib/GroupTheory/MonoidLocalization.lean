@@ -26,13 +26,13 @@ monoid homomorphism `f : M →* N` satisfying 3 properties:
 3. For all `x, y : M`, `f x = f y` iff there exists `c ∈ S` such that `x * c = y * c`.
 
 Given such a localization map `f : M →* N`, we can define the surjection
-`LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
-`LocalizationMap.lift`, the homomorphism from `N` induced by a homomorphism from `M` which maps
-elements of `S` to invertible elements of the codomain. Similarly, given commutative monoids
+`Submonoid.LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
+`Submonoid.LocalizationMap.lift`, the homomorphism from `N` induced by a homomorphism from `M` which
+maps elements of `S` to invertible elements of the codomain. Similarly, given commutative monoids
 `P, Q`, a submonoid `T` of `P` and a localization map for `T` from `P` to `Q`, then a homomorphism
-`g : M →* P` such that `g(S) ⊆ T` induces a homomorphism of localizations,
-`LocalizationMap.map`, from `N` to `Q`.
-We treat the special case of localizing away from an element in the sections `AwayMap` and `Away`.
+`g : M →* P` such that `g(S) ⊆ T` induces a homomorphism of localizations, `LocalizationMap.map`,
+from `N` to `Q`.  We treat the special case of localizing away from an element in the sections
+`AwayMap` and `Away`.
 
 We also define the quotient of `M × S` by the unique congruence relation (equivalence relation
 preserving a binary operation) `r` such that for any other congruence relation `s` on `M × S`
@@ -61,10 +61,10 @@ this structure.
 To reason about the localization as a quotient type, use `mk_eq_monoidOf_mk'` and associated
 lemmas. These show the quotient map `mk : M → S → Localization S` equals the
 surjection `LocalizationMap.mk'` induced by the map
-`monoid_of : localization_map S (Localization S)` (where `of` establishes the
+`Localization.monoidOf : Submonoid.LocalizationMap S (Localization S)` (where `of` establishes the
 localization as a quotient type satisfies the characteristic predicate). The lemma
-`mk_eq_monoidOf_mk'` hence gives you access to the results in the rest of the file, which are
-about the `LocalizationMap.mk'` induced by any localization map.
+`mk_eq_monoidOf_mk'` hence gives you access to the results in the rest of the file, which are about
+the `LocalizationMap.mk'` induced by any localization map.
 
 ## TODO
 
