@@ -49,7 +49,7 @@ def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
       -- Porting note: if we use dot notation for any of
       -- `NatTrans.leftOp` / `NatTrans.rightOp` / `NatTrans.leftDerived`
-      -- then `aesop_cat` can not discharged the `map_id` and `map_comp` goals.
+      -- then `aesop_cat` can not discharge the `map_id` and `map_comp` goals.
       -- This should be investigated further.
       map := fun f =>
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
