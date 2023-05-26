@@ -240,6 +240,8 @@ instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
 theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I := rfl
 #align lie_ideal.coe_to_subalgebra LieIdeal.coe_toSubalgebra
 
+-- porting note: is this theorem needed now?  In mathlib3, there were two coercions on the lhs
+-- now the two sides appear completely identical
 @[norm_cast]
 theorem LieIdeal.coe_toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = I := rfl
@@ -1094,23 +1096,33 @@ theorem incl_coe : (I.incl.toLinearMap : I →ₗ[R] L) = (I : Submodule R L).su
 #align lie_ideal.incl_coe LieIdeal.incl_coe
 
 @[simp]
-theorem comap_incl_self : comap I.incl I = ⊤ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule,
-    LieIdeal.comap_coeSubmodule, LieIdeal.incl_coe, Submodule.comap_subtype_self]
+theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp
+  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
+  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule,
+  --    LieIdeal.comap_coeSubmodule, LieIdeal.incl_coe, Submodule.comap_subtype_self]
 #align lie_ideal.comap_incl_self LieIdeal.comap_incl_self
 
 @[simp]
-theorem ker_incl : I.incl.ker = ⊥ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, I.incl.ker_coeSubmodule,
-    LieSubmodule.bot_coeSubmodule, incl_coe, Submodule.ker_subtype]
+theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
+  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
+  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, I.incl.ker_coeSubmodule,
+  --    LieSubmodule.bot_coeSubmodule, incl_coe, Submodule.ker_subtype]
 #align lie_ideal.ker_incl LieIdeal.ker_incl
-
+set_option maxHeartbeats 0
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
-  rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.coe_to_submodule, ←
-    LieSubmodule.coe_toSubmodule_eq_iff, incl_range, coe_toLieSubalgebra_toSubmodule,
-    LieSubmodule.coe_lieSpan_submodule_eq_iff]
-  use I
+  ext x
+  rw [LieHom.mem_idealRange_iff]
+  simp [incl_apply, Subtype.exists, LieSubmodule.mem_coeSubmodule, exists_prop, exists_eq_right]
+  refine (LieHom.isIdealMorphism_iff (incl I)).mpr ?_
+  simpa only [incl_apply, Subtype.exists, LieSubmodule.mem_coeSubmodule, exists_prop,
+    exists_eq_right', Subtype.forall] using lie_mem_right R L I
+  --  porting note: the proof used to be
+  --  rw [lie_hom.ideal_range_eq_lie_span_range, ← lie_subalgebra.coe_to_submodule,
+  --    ← lie_submodule.coe_to_submodule_eq_iff, incl_range, coe_to_lie_subalgebra_to_submodule,
+  --    lie_submodule.coe_lie_span_submodule_eq_iff],
+  --  use I,
+
 #align lie_ideal.incl_ideal_range LieIdeal.incl_idealRange
 
 theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
