@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module measure_theory.constructions.prod.basic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
+! leanprover-community/mathlib commit 3b88f4005dc2e28d42f974cc1ce838f0dafb39b8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -209,6 +209,35 @@ theorem Measurable.map_prod_mk_right {μ : Measure α} [SigmaFinite μ] :
   simp_rw [map_apply measurable_prod_mk_right hs]
   exact measurable_measure_prod_mk_right hs
 #align measurable.map_prod_mk_right Measurable.map_prod_mk_right
+
+theorem MeasurableEmbedding.prod_mk {α β γ δ : Type _} {mα : MeasurableSpace α}
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
+    {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
+    MeasurableEmbedding fun x : γ × α => (g x.1, f x.2) := by
+  have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
+    intro x y hxy
+    rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
+    simp only [Prod.mk.inj_iff] at hxy⊢
+    exact ⟨hg.injective hxy.1, hf.injective hxy.2⟩
+  refine' ⟨h_inj, _, _⟩
+  · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)
+  · -- Induction using the π-system of rectangles
+    refine' fun s hs =>
+      @MeasurableSpace.induction_on_inter _
+        (fun s => MeasurableSet ((fun x : γ × α => (g x.fst, f x.snd)) '' s)) _ _
+        generateFrom_prod.symm isPiSystem_prod _ _ _ _ _ hs
+    · simp only [Set.image_empty, MeasurableSet.empty]
+    · rintro t ⟨t₁, t₂, ht₁, ht₂, rfl⟩
+      rw [← Set.prod_image_image_eq]
+      exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
+    · intro t _ ht_m
+      rw [← Set.range_diff_image h_inj, ← Set.prod_range_range_eq]
+      exact
+        MeasurableSet.diff (MeasurableSet.prod hg.measurableSet_range hf.measurableSet_range) ht_m
+    · intro g _ _ hg
+      simp_rw [Set.image_iUnion]
+      exact MeasurableSet.iUnion hg
+#align measurable_embedding.prod_mk MeasurableEmbedding.prod_mk
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
