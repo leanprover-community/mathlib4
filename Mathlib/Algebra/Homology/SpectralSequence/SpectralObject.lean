@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.ArrowThree
+import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits
 
@@ -31,21 +32,27 @@ namespace SpectralObject
 variable {C ι}
 variable (X : SpectralObject C ι) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
 
-/-def E : Arrow₃ ι ⥤ ShortComplex C where
+-- the homology of these short complexes gives the terms in all the pages of the spectral sequence
+@[simps]
+def shortComplexE' : Arrow₃ ι ⥤ ShortComplex C where
   obj D := ShortComplex.mk ((X.δ n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D))
     ((X.δ n₁ n₂ hn₂).app (Arrow₃.δ₃.obj D)) (by
-      let ψ := Arrow₃.δ₃Toδ₀.app D
-      have := (X.δ n₀ n₁ hn₁).naturality ψ
-      dsimp [Arrow₃.δ₀, Arrow₃.δ₃] at this ⊢
-      sorry)
+      have eq := (X.δ n₁ n₂ hn₂).naturality (Arrow₃.δ₃Toδ₂.app D)
+      dsimp at eq
+      simp only [Arrow₃.δ₂_map_δ₃Toδ₂_app, Arrow₂.δ₂_obj, Arrow₃.δ₃_obj_f,
+        Functor.map_id, comp_id] at eq
+      rw [← eq, Arrow₃.δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj,
+        reassoc_of% (X.zero₁ n₀ n₁ hn₁ (Arrow₃.δ₀.obj D)), zero_comp])
   map φ :=
     { τ₁ := (X.H n₀).map (Arrow₃.hMor.map φ)
       τ₂ := (X.H n₁).map (Arrow₃.gMor.map φ)
       τ₃ := (X.H n₂).map (Arrow₃.fMor.map φ)
       comm₁₂ := (X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₀.map φ)
       comm₂₃ := (X.δ n₁ n₂ hn₂).naturality (Arrow₃.δ₃.map φ) }
-  map_id := sorry
-  map_comp := sorry-/
+  map_id _ := by ext <;> dsimp <;> simp
+  map_comp _ _ := by ext <;> dsimp <;> simp
+
+noncomputable def E := X.shortComplexE' n₀ n₁ n₂ hn₁ hn₂ ⋙ ShortComplex.homologyFunctor C
 
 end SpectralObject
 

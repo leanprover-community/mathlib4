@@ -132,6 +132,13 @@ def hMor : Arrow₃ C ⥤ Arrow C where
     { left := φ.τ₂
       right := φ.τ₃ }
 
+@[simp]
+lemma δ₂_map_δ₃Toδ₂_app (D : Arrow₃ C) : Arrow₂.δ₂.map (Arrow₃.δ₃Toδ₂.app D) = 𝟙 _ := by aesop_cat
+
+
+lemma δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj (D : Arrow₃ C) :
+    Arrow₂.δ₀.map (Arrow₃.δ₃Toδ₂.app D) = Arrow₂.δ₂Toδ₁.app (Arrow₃.δ₀.obj D) := by aesop_cat
+
 end Arrow₃
 
 end CategoryTheory
