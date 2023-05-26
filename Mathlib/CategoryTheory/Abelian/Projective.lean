@@ -139,14 +139,16 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- If `X` is a chain complex of projective objects and we have a quasi-isomorphism `f : X ⟶ Y[0]`,
 then `X` is a projective resolution of `Y.` -/
 def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
-    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso f] (H : ∀ n, Projective (X.pt n)) :
+    -- porting note: autoporter incorrectly went for `X.pt` at the end there
+    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso f] (H : ∀ n, Projective (X.X n)) :
     ProjectiveResolution Y where
   complex := X
   π := f
   projective := H
-  exact₀ := f.to_single₀_exact_d_f_at_zero
-  exact := f.to_single₀_exact_at_succ
-  epi := f.to_single₀_epi_at_zero
+  exact₀ := HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero f
+  exact := HomologicalComplex.Hom.to_single₀_exact_at_succ f
+  epi := HomologicalComplex.Hom.to_single₀_epi_at_zero f
+set_option linter.uppercaseLean3 false in
 #align homological_complex.hom.to_single₀_ProjectiveResolution HomologicalComplex.Hom.toSingle₀ProjectiveResolution
 
 end HomologicalComplex.Hom
