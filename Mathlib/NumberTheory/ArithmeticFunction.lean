@@ -69,7 +69,8 @@ def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 #align nat.arithmetic_function Nat.ArithmeticFunction
 
-instance [Zero R] : Zero (ArithmeticFunction R) := inferInstanceAs (Zero (ZeroHom ℕ R))
+instance ArithmeticFunction.zero [Zero R] : Zero (ArithmeticFunction R) :=
+  inferInstanceAs (Zero (ZeroHom ℕ R))
 
 instance [Zero R] : Inhabited (ArithmeticFunction R) := inferInstanceAs (Inhabited (ZeroHom ℕ R))
 
@@ -85,9 +86,13 @@ instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
-theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f :=
+theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := by
   rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
+
+@[simp]
+theorem eq_toFun (f : ArithmeticFunction R) : f = f.toFun := by
+  rfl
 
 @[simp]
 theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
@@ -116,7 +121,7 @@ section One
 
 variable [One R]
 
-instance : One (ArithmeticFunction R) :=
+instance one : One (ArithmeticFunction R) :=
   ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
 
 theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
@@ -137,7 +142,7 @@ end One
 
 end Zero
 
-/- Coerc an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
+/-- Coerc an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
 this in `natCoe` because it gets unfolded too much. -/
 def natToArithmeticFunction [AddMonoidWithOne R] :
   (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
@@ -156,7 +161,7 @@ theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ}
   rfl
 #align nat.arithmetic_function.nat_coe_apply Nat.ArithmeticFunction.natCoe_apply
 
-/- Coerc an arithmetic function with values in `ℤ` to one with values in `R`. We cannot inline
+/-- Coerc an arithmetic function with values in `ℤ` to one with values in `R`. We cannot inline
 this in `intCoe` because it gets unfolded too much. -/
 def intToArithmeticFunction [AddGroupWithOne R] :
   (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
@@ -199,7 +204,7 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance : Add (ArithmeticFunction R) :=
+instance add : Add (ArithmeticFunction R) :=
   ⟨fun f g => ⟨fun n => f n + g n, by simp⟩⟩
 
 @[simp]
@@ -207,21 +212,22 @@ theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n
   rfl
 #align nat.arithmetic_function.add_apply Nat.ArithmeticFunction.add_apply
 
-instance : AddMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.hasZero R,
-    ArithmeticFunction.hasAdd with
+instance addMonoid : AddMonoid (ArithmeticFunction R) :=
+  { ArithmeticFunction.zero R,
+    ArithmeticFunction.add with
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
     zero_add := fun _ => ext fun _ => zero_add _
     add_zero := fun _ => ext fun _ => add_zero _ }
 
 end AddMonoid
 
+
 instance [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
   { ArithmeticFunction.addMonoid,
-    ArithmeticFunction.hasOne with
+    ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext <;> simp [Nat.cast]
-    natCast_succ := fun _ => by ext <;> by_cases x = 1 <;> simp [Nat.cast, *] }
+    natCast_zero := by ext ; simp  ;
+    natCast_succ := fun n => by ext x ; by_cases h : x = 1 <;> simp [h] }
 
 instance [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
   { ArithmeticFunction.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
