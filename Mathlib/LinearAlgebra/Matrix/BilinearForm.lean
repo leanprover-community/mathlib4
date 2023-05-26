@@ -38,7 +38,7 @@ In this file we use the following type variables:
 
 ## Tags
 
-bilinear_form, matrix, basis
+bilinear form, bilin form, BilinearForm, matrix, basis
 
 -/
 
@@ -68,7 +68,7 @@ open Matrix
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
-This is an auxiliary definition for the equivalence `matrix.to_bilin_form'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) where
   bilin v w := ∑ i, ∑ j, v i * M i j * w j
   bilin_add_left x y z := by simp only [Pi.add_apply, add_mul, sum_add_distrib]
@@ -103,7 +103,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
-This is an auxiliary definition for the equivalence `matrix.to_bilin_form'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ where
   toFun B := of fun i j => B (b i) (b j)
   map_add' _ _ := rfl
@@ -282,7 +282,7 @@ end ToMatrix'
 
 section ToMatrix
 
-/-! ### `to_matrix` section
+/-! ### `ToMatrix` section
 
 This section deals with the conversion between matrices and bilinear forms on
 a module with a fixed basis.
