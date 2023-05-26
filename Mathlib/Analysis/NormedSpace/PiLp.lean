@@ -291,14 +291,16 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
     · simp only [edist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
-      exact
-        iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add (le_iSup _ i) (le_iSup _ i)
+      -- Porting note: `le_iSup` needed some help
+      refine
+        iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
+            (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
     · simp only [edist_eq_sum (zero_lt_one.trans_le hp)]
       calc
         (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
             (∑ i, (edist (f i) (g i) + edist (g i) (h i)) ^ p.toReal) ^ (1 / p.toReal) := by
           apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans hp)
-          refine' Finset.sum_le_sum fun i hi => _
+          refine' Finset.sum_le_sum fun i _ => _
           exact ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp)
         _ ≤
             (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) +
@@ -349,13 +351,16 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
         · refine' le_antisymm (ciSup_le fun i => _) _
           · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
               PseudoMetricSpace.edist_dist]
-            exact le_iSup _ i
+            -- Porting note: `le_iSup` needed some help
+            exact le_iSup (fun k => edist (f k) (g k)) i
           · refine' ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ _) (iSup_le fun i => _)
             · rintro - ⟨i, rfl⟩
               exact dist_nonneg
-            · unfold edist
+            · change PseudoMetricSpace.edist _ _ ≤ _
               rw [PseudoMetricSpace.edist_dist]
-              exact ENNReal.ofReal_le_ofReal (le_ciSup (Fintype.bddAbove_range _) i)
+              -- Porting note: `le_ciSup` needed some help
+              exact ENNReal.ofReal_le_ofReal
+                (le_ciSup (Fintype.bddAbove_range (fun k => dist (f k) (g k))) i)
     · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
@@ -592,6 +597,7 @@ theorem norm_sq_eq_of_L2 (β : ι → Type _) [∀ i, SeminormedAddCommGroup (β
 theorem dist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
+  rfl -- Porting note: `Pi.sub_apply` doesn't work
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 
 theorem nndist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
@@ -608,10 +614,15 @@ theorem edist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 
+-- Porting note: added
+instance module [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] :
+    Module 𝕜 (PiLp p β) :=
+  { Pi.module ι β 𝕜 with }
+
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] :
     NormedSpace 𝕜 (PiLp p β) :=
-  { Pi.module ι β 𝕜 with
+  { module p 𝕜 β with
     norm_smul_le := fun c f => by
       rcases p.dichotomy with (rfl | hp)
       · letI : Module 𝕜 (PiLp ∞ β) := Pi.module ι β 𝕜
@@ -620,12 +631,13 @@ instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 
         -- Porting note: added
         congr
       · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-        have : ∀ i : ι, ‖(c • f : PiLp p β) i‖ = ‖c • (f i)‖ := fun i => rfl -- Porting note: added to replace Pi.smul_apply
+        -- Porting note: added to replace Pi.smul_apply
+        have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
         simp only [norm_eq_sum (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg, ←
-          Finset.mul_sum, this]
+          Finset.mul_sum, smul_apply]
         rw [mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
-          rpow_one]
-        exact Finset.sum_nonneg fun i hi => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
+          Real.rpow_one]
+        exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
 #align pi_Lp.normed_space PiLp.normedSpace
 
 instance isScalarTower [∀ i, SeminormedAddCommGroup (β i)] [SMul 𝕜 𝕜'] [∀ i, NormedSpace 𝕜 (β i)]
@@ -639,7 +651,7 @@ instance smulCommClass [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpac
 #align pi_Lp.smul_comm_class PiLp.smulCommClass
 
 instance finiteDimensional [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)]
-    [I : ∀ i, FiniteDimensional 𝕜 (β i)] : FiniteDimensional 𝕜 (PiLp p β) :=
+    [∀ i, FiniteDimensional 𝕜 (β i)] : FiniteDimensional 𝕜 (PiLp p β) :=
   FiniteDimensional.finiteDimensional_pi' _ _
 #align pi_Lp.finite_dimensional PiLp.finiteDimensional
 
@@ -688,7 +700,8 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
         antisymm (Finset.sup_le fun i _ => le_ciSup (Fintype.bddAbove_range fun i => ‖f i‖₊) _) _
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, Finset.univ_eq_empty, Finset.sup_empty, le_rfl]
-      · exact ciSup_le fun i => Finset.le_sup (Finset.mem_univ i) }
+      · -- Porting note: `Finset.le_sup` needed some helps
+        exact ciSup_le fun i => Finset.le_sup (f := fun k => ‖f k‖₊) (Finset.mem_univ i) }
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
 variable {ι' : Type _}
@@ -931,7 +944,7 @@ section Basis
 variable (ι)
 
 /-- A version of `pi.basis_fun` for `pi_Lp`. -/
-def basisFun : Basis ι 𝕜 (PiLp p fun _ => 𝕜) :=
+def basisFun : Basis ι 𝕜 (PiLp p fun (_ : ι) => 𝕜) :=
   Basis.ofEquivFun (PiLp.linearEquiv p 𝕜 fun _ : ι => 𝕜)
 #align pi_Lp.basis_fun PiLp.basisFun
 
