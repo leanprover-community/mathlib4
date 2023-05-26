@@ -410,12 +410,13 @@ instance inhabited {n : ℕ} {f : K[X]} : Inhabited (SplittingFieldAux n f) :=
   ⟨37⟩
 #align polynomial.splitting_field_aux.inhabited Polynomial.SplittingFieldAux.inhabited
 
+set_option maxHeartbeats 100000 in
 /-- The injection from the base field as a ring homomorphism. -/
 @[simps]
 protected def mkHom (n : ℕ) {K : Type u} [Field K] {f : K[X]} : K →+* SplittingFieldAux n f where
   toFun := SplittingFieldAux.mk n
   map_one' := by
-    induction' n with k hk generalizing K
+    induction' n with _ hk generalizing K
     · simp [SplittingFieldAux.mk]
     exact hk
   map_mul' := by
