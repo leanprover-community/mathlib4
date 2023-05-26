@@ -254,7 +254,7 @@ in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
 theorem isSheafOpensLeCover_iff_isSheafPairwiseIntersections :
     F.IsSheafOpensLeCover ↔ F.IsSheafPairwiseIntersections :=
-  forall₂_congr fun ι U =>
+  forall₂_congr fun _ U =>
     Equiv.nonempty_congr <|
       calc
         IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃
