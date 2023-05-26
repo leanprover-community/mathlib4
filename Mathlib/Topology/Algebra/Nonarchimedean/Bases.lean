@@ -190,7 +190,6 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   let _ := hB.topology
   { B i with
     isOpen' := by
-      letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.hasBasis_nhds a).mem_iff]
