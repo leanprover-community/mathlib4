@@ -71,6 +71,10 @@ instance ptTop (L : Type _) [Order.Frame L] : TopologicalSpace (pt_obj L) where
       subst h
       exact ⟨u, ht, hp⟩
 
+lemma open_in_pt_space_iff (L : Type _) [Order.Frame L] (U : Set (pt_obj L)) :
+  IsOpen U ↔ ∃ u : L, U = {x : pt_obj L | x u} := by
+  unfold IsOpen TopologicalSpace.IsOpen ptTop Set.range setOf; tauto
+
 --the map from a frame L to the opens of the points of L
 --probably could use a better name
 def pt_open (L : Type _) [Order.Frame L] (l : L) : Opens (pt_obj L) where
@@ -99,10 +103,6 @@ def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
   obj X := ⟨Opens X.α, by infer_instance⟩
   map {X Y} f := by apply Opposite.op; exact Opens.comap f
 
-#check OpenNhdsOf
-#check nhds
-
-
 -- TODO: is this in the library?
 lemma elim_exists_prop (A : Prop → Prop) : (∃ p, (A p) ∧ p) ↔ (A True) := by aesop
 
@@ -112,11 +112,24 @@ def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : Frame
   map_top'     := by simp; rfl
   map_sSup' S  := by simp [elim_exists_prop, iff_true]
 
+-- lemma inv_img_of_open (X : Type _) [τ : TopologicalSpace X] (U : Set (pt_obj (Opens X))) : frame_point_of_space_point X ⁻¹' U = U := sorry
 
 /- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
-def neighborhoods (X : Type _) [TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
+def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
   toFun := frame_point_of_space_point X
-  continuous_toFun := _
+  continuous_toFun := by
+    rw [continuous_def]; intro U; rw[open_in_pt_space_iff]
+    intro h
+    cases' h with u hu
+    rw [hu]
+    have key : frame_point_of_space_point X ⁻¹' { x | x u } = u := by {
+      ext x
+      simp
+      aesop_subst hu
+      tauto
+    }
+    rw [key]
+    exact u.2
 
 def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := pt_open L
