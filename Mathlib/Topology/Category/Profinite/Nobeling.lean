@@ -1,7 +1,7 @@
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Topology.Category.Profinite.InjectiveMap
 
@@ -127,12 +127,114 @@ def P (i : WithTop I) : Prop :=
 def Q (i : WithTop I) : Prop :=
 ∀ C, IsClosed C → Support C ⊆ {j | j < i} → ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
 
+variable (I)
+
+def ord (i : WithTop I) : Ordinal := Ordinal.typein ((·<·) : WithTop I → WithTop I → Prop) i
+
+def P' (o : Ordinal) : Prop :=
+∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+  LinearIndependent ℤ (GoodProducts.eval C)
+
+def Q' (o : Ordinal) : Prop :=
+∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+  ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
+
+lemma PsetEq (i : WithTop I) : {j : WithTop I | ord I j < ord I i} = {j : WithTop I | j < i} := by
+  ext x
+  dsimp [ord]
+  simp only [Ordinal.typein_lt_typein]
+
+lemma PIffP (i : WithTop I) : P i ↔ P' I (ord I i) := by
+  dsimp [P, P']
+  rw [PsetEq]
+
+lemma QIffQ (i : WithTop I) : Q i ↔ Q' I (ord I i) := by
+  dsimp [Q, Q']
+  rw [PsetEq]
+
+variable {I}
+
 instance : IsWellFounded (WithTop I) (·<·) := inferInstance
 
-lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
-  apply IsWellFounded.induction (·<·)
-  intro μ h
+instance : IsEmpty { i // i ∈ (∅ : Set (WithTop I → Bool)) } := by
+  simp only [Set.mem_empty_iff_false, isEmpty_subtype, forall_const]
+
+instance : ¬ Nontrivial (LocallyConstant { i // i ∈ (∅ : Set (WithTop I → Bool)) } ℤ) := by
+  rw [nontrivial_iff]
+  push_neg
+  intros f g
+  ext x
+  exact isEmptyElim x
+
+instance : Subsingleton (LocallyConstant { i // i ∈ (∅ : Set (WithTop I → Bool)) } ℤ) := by
+  rw [subsingleton_iff]
+  intros f g
+  ext x
+  exact isEmptyElim x
+
+instance GoodProducts.emptyEmpty :
+    IsEmpty { l // Products.isGood (∅ : Set (WithTop I → Bool)) l } := by
+  rw [isEmpty_iff]
+  rintro ⟨l, hl⟩
+  dsimp [Products.isGood] at hl
+  apply hl
+  have h : Products.eval ∅ l = 0 := subsingleton_iff.mp inferInstance _ 0
+  rw [h]
+  exact Submodule.zero_mem _
+
+lemma GoodProducts.linearIndependentEmpty :
+    LinearIndependent ℤ (eval (∅ : Set (WithTop I → Bool))) := by
+  exact linearIndependent_empty_type
+
+noncomputable
+def el (o : Ordinal) : WithTop I := if h : o < Ordinal.type ((·<·) : WithTop I → WithTop I → Prop)
+  then Ordinal.enum _ o h else ⊤
+
+lemma zeroLTTop : 0 < Ordinal.type ((·<·) : WithTop I → WithTop I → Prop) := by
+  rw [Ordinal.pos_iff_ne_zero]
+  intro h
+  simp only [Ordinal.type_eq_zero_iff_isEmpty, not_isEmpty_of_nonempty] at h
+
+noncomputable
+instance GoodProducts.singletonUnique :
+  Unique { l // Products.isGood ({fun a ↦ false} : Set (WithTop I → Bool)) l } :=
+{ default := ⟨⟨[el 0], (by simp only [List.chain'_singleton])⟩, sorry⟩
+  uniq := by
+    intro a
+    sorry }
+
+instance (α : Type _) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := sorry
+
+lemma GoodProducts.linearIndependentSingleton :
+    LinearIndependent ℤ (eval ({fun a ↦ false} : Set (WithTop I → Bool))) := by
+  refine' linearIndependent_unique (eval ({fun a ↦ false} : Set (WithTop I → Bool))) _
   sorry
+
+lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
+  rw [PIffP I i]
+  apply Ordinal.limitRecOn
+  · dsimp [P']
+    intro C _ hsC
+    dsimp [Support] at hsC
+    have : C ⊆ {(fun a ↦ false)}
+    · intro c hc
+      simp
+      ext x
+      simp at hsC
+      specialize hsC x c hc
+      rw [Bool.eq_false_iff]
+      intro ht
+      apply Ordinal.not_lt_zero (ord I x)
+      exact hsC ht
+    rw [Set.subset_singleton_iff_eq] at this
+    rcases this
+    · subst C
+      exact linearIndependentEmpty
+    · subst C
+      exact linearIndependentSingleton
+  · sorry
+  · sorry
+
 
 lemma GoodProducts.spanAux (i : WithTop I) : Q i := sorry
 
