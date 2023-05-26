@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.continuous_on
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit d4f691b9e5f94cfc64639973f3544c95f8d5d494
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
