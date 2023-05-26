@@ -536,32 +536,35 @@ more generally to cover operations such as reflection in a point.  The
 definition here, of reflection in an affine subspace, is a more
 general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] : P ≃ᵃⁱ[ℝ] P :=
-  AffineIsometryEquiv.mk' (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ orthogonalProjection s p)
-    (reflection s.direction) (↑(Classical.arbitrary s))
+  AffineIsometryEquiv.mk'
+    (fun p => (orthogonalProjection s p : P) -ᵥ p +ᵥ (orthogonalProjection s p : P))
+    (_root_.reflection s.direction) (Classical.arbitrary s : P)
     (by
       intro p
-      let v := p -ᵥ ↑(Classical.arbitrary s)
+      let v := p -ᵥ (Classical.arbitrary s : P)
       let a : V := _root_.orthogonalProjection s.direction v
-      let b : P := ↑(Classical.arbitrary s)
+      let b : P := (Classical.arbitrary s : P)
       have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = a + a - v +ᵥ (b -ᵥ b +ᵥ b) := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
-      have : p = v +ᵥ ↑(Classical.arbitrary s) := (vsub_vadd p ↑(Classical.arbitrary s)).symm
-      simpa only [coe_vadd, reflection_apply, AffineMap.map_vadd, orthogonal_projection_linear,
+      have : p = v +ᵥ (Classical.arbitrary s : P) := (vsub_vadd p (Classical.arbitrary s : P)).symm
+      simpa only [coe_vadd, reflection_apply, AffineMap.map_vadd, orthogonalProjection_linear,
         orthogonalProjection_mem_subspace_eq_self, vadd_vsub, ContinuousLinearMap.coe_coe,
         ContinuousLinearEquiv.coe_coe, this] using key)
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
 
 /-- The result of reflecting. -/
 theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] (p : P) :
-    reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ orthogonalProjection s p :=
+    reflection s p = (orthogonalProjection s p : P) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
   rfl
 #align euclidean_geometry.reflection_apply EuclideanGeometry.reflection_apply
 
 theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']
     [CompleteSpace s.direction] [CompleteSpace s'.direction] (h : s = s') (p : P) :
-    (reflection s p : P) = (reflection s' p : P) := by subst h
+    (reflection s p : P) = (reflection s' p : P) := by
+  subst h
+  rfl
 #align euclidean_geometry.eq_reflection_of_eq_subspace EuclideanGeometry.eq_reflection_of_eq_subspace
 
 /-- Reflecting twice in the same subspace. -/
@@ -572,12 +575,12 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteS
     ∀ a : s,
       ∀ b : V,
         (_root_.orthogonalProjection s.direction) b = 0 →
-          reflection s (reflection s (b +ᵥ a)) = b +ᵥ a := by
+          reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro a b h
-    have : (a : P) -ᵥ (b +ᵥ a) = -b := by rw [vsub_vadd_eq_vsub_sub, vsub_self, zero_sub]
+    have : (a : P) -ᵥ (b +ᵥ (a : P)) = -b := by rw [vsub_vadd_eq_vsub_sub, vsub_self, zero_sub]
     simp [reflection, h, this]
   rw [← vsub_vadd p (orthogonalProjection s p)]
-  exact this (orthogonalProjection s p) _ (orthogonal_projection_vsub_orthogonal_projection s p)
+  exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 #align euclidean_geometry.reflection_reflection EuclideanGeometry.reflection_reflection
 
 /-- Reflection is its own inverse. -/
