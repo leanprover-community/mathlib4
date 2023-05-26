@@ -18,23 +18,23 @@ This file makes some definitions and proves very basic geometrical
 results about real inner product spaces and Euclidean affine spaces.
 Results about real inner product spaces that involve the norm and
 inner product but not angles generally go in
-`analysis.normed_space.inner_product`.  Results with longer
+`Analysis.NormedSpace.InnerProduct`. Results with longer
 proofs or more geometrical content generally go in separate files.
 
 ## Main definitions
 
-* `euclidean_geometry.orthogonal_projection` is the orthogonal
+* `EuclideanGeometry.orthogonalProjection` is the orthogonal
   projection of a point onto an affine subspace.
 
-* `euclidean_geometry.reflection` is the reflection of a point in an
+* `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
 
 ## Implementation notes
 
 To declare `P` as the type of points in a Euclidean affine space with
 `V` as the type of vectors, use
-`[normed_add_comm_group V] [inner_product_space ℝ V] [metric_space P] [normed_add_torsor V P]`.
-This works better with `out_param` to make
+`[NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]`.
+This works better with `outParam` to make
 `V` implicit in most cases than having a separate type alias for
 Euclidean affine spaces.
 
@@ -76,11 +76,10 @@ variable [NormedAddTorsor V P]
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/
 theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
     dist p1 (midpoint ℝ p1 p2) = dist p2 (midpoint ℝ p1 p2) := by
-  letI : Invertible (2 : ℝ) := invertibleTwo
-  rw [dist_left_midpoint p1 p2, dist_right_midpoint p1 p2]
+  rw [dist_left_midpoint (𝕜 := ℝ) p1 p2, dist_right_midpoint (𝕜 := ℝ) p1 p2]
 #align euclidean_geometry.dist_left_midpoint_eq_dist_right_midpoint EuclideanGeometry.dist_left_midpoint_eq_dist_right_midpoint
 
-/-- The inner product of two vectors given with `weighted_vsub`, in
+/-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
     (h₁ : (∑ i in s₁, w₁ i) = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
@@ -94,18 +93,16 @@ theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ 
   rcongr (i₁ i₂) <;> rw [dist_eq_norm_vsub V (p₁ i₁) (p₂ i₂)]
 #align euclidean_geometry.inner_weighted_vsub EuclideanGeometry.inner_weightedVSub
 
-/-- The distance between two points given with `affine_combination`,
+/-- The distance between two points given with `affineCombination`,
 in terms of the pairwise distances between the points in that
 combination. -/
 theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
-    (h₁ : (∑ i in s, w₁ i) = 1) (h₂ : (∑ i in s, w₂ i) = 1) :
-    haveI a₁ := s.affineCombination ℝ p w₁
-    haveI a₂ := s.affineCombination ℝ p w₂
-    dist a₁ a₂ * dist a₁ a₂ =
-      (-∑ i₁ in s,
-            ∑ i₂ in s,
-              (w₁ - w₂) i₁ * (w₁ - w₂) i₂ * (dist (p i₁) (p i₂) * dist (p i₁) (p i₂))) /
-        2 := by
+    (h₁ : (∑ i in s, w₁ i) = 1) (h₂ : (∑ i in s, w₂ i) = 1) : by
+      have a₁ := s.affineCombination ℝ p w₁
+      have a₂ := s.affineCombination ℝ p w₂
+      exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
+        (w₁ - w₂) i₁ * (w₁ - w₂) i₂ * (dist (p i₁) (p i₂) * dist (p i₁) (p i₂))) / 2 := by
+  dsimp only
   rw [dist_eq_norm_vsub V (s.affineCombination ℝ p w₁) (s.affineCombination ℝ p w₂), ←
     @inner_self_eq_norm_mul_norm ℝ, Finset.affineCombination_vsub]
   have h : (∑ i in s, (w₁ - w₂) i) = 0 := by
@@ -114,24 +111,16 @@ theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι →
 #align euclidean_geometry.dist_affine_combination EuclideanGeometry.dist_affineCombination
 
 /-- Suppose that `c₁` is equidistant from `p₁` and `p₂`, and the same
-applies to `c₂`.  Then the vector between `c₁` and `c₂` is orthogonal
-to that between `p₁` and `p₂`.  (In two dimensions, this says that the
+applies to `c₂`. Then the vector between `c₁` and `c₂` is orthogonal
+to that between `p₁` and `p₂`. (In two dimensions, this says that the
 diagonals of a kite are orthogonal.) -/
 theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ : dist p₁ c₁ = dist p₂ c₁)
     (hc₂ : dist p₁ c₂ = dist p₂ c₂) : ⟪c₂ -ᵥ c₁, p₂ -ᵥ p₁⟫ = 0 := by
   have h : ⟪c₂ -ᵥ c₁ + (c₂ -ᵥ c₁), p₂ -ᵥ p₁⟫ = 0 := by
-    conv_lhs =>
-      congr
-      congr
-      rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₁]
-      skip
-      rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₂]
-    rw [sub_add_sub_comm, inner_sub_left]
-    conv_lhs =>
-      congr
-      rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₂]
-      skip
-      rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₁]
+    conv_lhs => congr; congr; rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₁]
+    rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₂, sub_add_sub_comm, inner_sub_left]
+    conv_lhs => congr; rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₂]
+    rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₁]
     rw [dist_comm p₁, dist_comm p₂, dist_eq_norm_vsub V _ p₁, dist_eq_norm_vsub V _ p₂, ←
       real_inner_add_sub_eq_zero_iff] at hc₁ hc₂
     simp_rw [← neg_vsub_eq_vsub_rev c₁, ← neg_vsub_eq_vsub_rev c₂, sub_neg_eq_add, neg_add_eq_sub,
@@ -205,9 +194,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
       rw [← Fintype.coe_image_univ, hu]
-      simp only [Finset.coe_pair, Finset.image_insert, Finset.image_singleton]
-      -- Porting note: was `rfl`
-      simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Set.mem_singleton_iff]
+      simp
     rw [← hbs, hr, Submodule.mem_span_insert] at hv
     rcases hv with ⟨t₁, v', hv', hv⟩
     rw [Submodule.mem_span_singleton] at hv'
@@ -241,9 +228,9 @@ theorem eq_of_dist_eq_of_dist_eq_of_finrank_eq_two [FiniteDimensional ℝ V] (hd
 #align euclidean_geometry.eq_of_dist_eq_of_dist_eq_of_finrank_eq_two EuclideanGeometry.eq_of_dist_eq_of_dist_eq_of_finrank_eq_two
 
 /-- The orthogonal projection of a point onto a nonempty affine
-subspace, whose direction is complete, as an unbundled function.  This
+subspace, whose direction is complete, as an unbundled function. This
 definition is only intended for use in setting up the bundled version
-`orthogonal_projection` and should not be used once that is
+`orthogonalProjection` and should not be used once that is
 defined. -/
 def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
     (p : P) : P :=
@@ -256,8 +243,8 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpac
 #align euclidean_geometry.orthogonal_projection_fn EuclideanGeometry.orthogonalProjectionFn
 
 /-- The intersection of the subspace and the orthogonal subspace
-through the given point is the `orthogonal_projection_fn` of that
-point onto the subspace.  This lemma is only intended for use in
+through the given point is the `orthogonalProjectionFn` of that
+point onto the subspace. This lemma is only intended for use in
 setting up the bundled version and should not be used once that is
 defined. -/
 theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [Nonempty s]
@@ -271,7 +258,7 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
         exact Submodule.isCompl_orthogonal_of_completeSpace)
 #align euclidean_geometry.inter_eq_singleton_orthogonal_projection_fn EuclideanGeometry.inter_eq_singleton_orthogonalProjectionFn
 
-/-- The `orthogonal_projection_fn` lies in the given subspace.  This
+/-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and
 should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
@@ -280,8 +267,8 @@ theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s] [Comp
   exact Set.inter_subset_left _ _
 #align euclidean_geometry.orthogonal_projection_fn_mem EuclideanGeometry.orthogonalProjectionFn_mem
 
-/-- The `orthogonal_projection_fn` lies in the orthogonal
-subspace.  This lemma is only intended for use in setting up the
+/-- The `orthogonalProjectionFn` lies in the orthogonal
+subspace. This lemma is only intended for use in setting up the
 bundled version and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
     [CompleteSpace s.direction] (p : P) : orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
@@ -289,8 +276,8 @@ theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonemp
   exact Set.inter_subset_right _ _
 #align euclidean_geometry.orthogonal_projection_fn_mem_orthogonal EuclideanGeometry.orthogonalProjectionFn_mem_orthogonal
 
-/-- Subtracting `p` from its `orthogonal_projection_fn` produces a
-result in the orthogonal direction.  This lemma is only intended for
+/-- Subtracting `p` from its `orthogonalProjectionFn` produces a
+result in the orthogonal direction. This lemma is only intended for
 use in setting up the bundled version and should not be used once that
 is defined. -/
 theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
@@ -304,7 +291,7 @@ attribute [local instance] AffineSubspace.toAddTorsor
 /-- The orthogonal projection of a point onto a nonempty affine
 subspace, whose direction is complete. The corresponding linear map
 (mapping a vector to the difference between the projections of two
-points whose difference is that vector) is the `orthogonal_projection`
+points whose difference is that vector) is the `orthogonalProjection`
 for real inner product spaces, onto the direction of the affine
 subspace being projected onto. -/
 nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] :
@@ -340,7 +327,7 @@ theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s] [Compl
   rfl
 #align euclidean_geometry.orthogonal_projection_fn_eq EuclideanGeometry.orthogonalProjectionFn_eq
 
-/-- The linear map corresponding to `orthogonal_projection`. -/
+/-- The linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
     [CompleteSpace s.direction] :
@@ -349,29 +336,29 @@ theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
 #align euclidean_geometry.orthogonal_projection_linear EuclideanGeometry.orthogonalProjection_linear
 
 /-- The intersection of the subspace and the orthogonal subspace
-through the given point is the `orthogonal_projection` of that point
+through the given point is the `orthogonalProjection` of that point
 onto the subspace. -/
 theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace ℝ P} [Nonempty s]
     [CompleteSpace s.direction] (p : P) :
-    (s : Set P) ∩ mk' p s.directionᗮ = {(orthogonalProjection s p : P)} := by
+    (s : Set P) ∩ mk' p s.directionᗮ = {↑(orthogonalProjection s p)} := by
   rw [← orthogonalProjectionFn_eq]
   exact inter_eq_singleton_orthogonalProjectionFn p
 #align euclidean_geometry.inter_eq_singleton_orthogonal_projection EuclideanGeometry.inter_eq_singleton_orthogonalProjection
 
-/-- The `orthogonal_projection` lies in the given subspace. -/
+/-- The `orthogonalProjection` lies in the given subspace. -/
 theorem orthogonalProjection_mem {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
     (p : P) : ↑(orthogonalProjection s p) ∈ s :=
   (orthogonalProjection s p).2
 #align euclidean_geometry.orthogonal_projection_mem EuclideanGeometry.orthogonalProjection_mem
 
-/-- The `orthogonal_projection` lies in the orthogonal subspace. -/
+/-- The `orthogonalProjection` lies in the orthogonal subspace. -/
 theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [CompleteSpace s.direction] (p : P) : ↑(orthogonalProjection s p) ∈ mk' p s.directionᗮ :=
   orthogonalProjectionFn_mem_orthogonal p
 #align euclidean_geometry.orthogonal_projection_mem_orthogonal EuclideanGeometry.orthogonalProjection_mem_orthogonal
 
 /-- Subtracting a point in the given subspace from the
-`orthogonal_projection` produces a result in the direction of the
+`orthogonalProjection` produces a result in the direction of the
 given subspace. -/
 theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
     [CompleteSpace s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
@@ -379,7 +366,7 @@ theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace ℝ P} [None
   (orthogonalProjection s p2 -ᵥ ⟨p1, hp1⟩ : s.direction).2
 #align euclidean_geometry.orthogonal_projection_vsub_mem_direction EuclideanGeometry.orthogonalProjection_vsub_mem_direction
 
-/-- Subtracting the `orthogonal_projection` from a point in the given
+/-- Subtracting the `orthogonalProjection` from a point in the given
 subspace produces a result in the direction of the given subspace. -/
 theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
     [CompleteSpace s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
@@ -409,7 +396,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [CompleteSpace s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
@@ -438,14 +425,14 @@ theorem dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} 
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
 #align euclidean_geometry.dist_orthogonal_projection_ne_zero_of_not_mem EuclideanGeometry.dist_orthogonalProjection_ne_zero_of_not_mem
 
-/-- Subtracting `p` from its `orthogonal_projection` produces a result
+/-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
 theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [CompleteSpace s.direction] (p : P) : (orthogonalProjection s p : P) -ᵥ p ∈ s.directionᗮ :=
   orthogonalProjectionFn_vsub_mem_direction_orthogonal p
 #align euclidean_geometry.orthogonal_projection_vsub_mem_direction_orthogonal EuclideanGeometry.orthogonalProjection_vsub_mem_direction_orthogonal
 
-/-- Subtracting the `orthogonal_projection` from `p` produces a result
+/-- Subtracting the `orthogonalProjection` from `p` produces a result
 in the orthogonal direction. -/
 theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [CompleteSpace s.direction] (p : P) : p -ᵥ orthogonalProjection s p ∈ s.directionᗮ :=
@@ -453,7 +440,7 @@ theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace �
     vsub_mem_direction (self_mem_mk' _ _) (orthogonalProjection_mem_orthogonal s p)
 #align euclidean_geometry.vsub_orthogonal_projection_mem_direction_orthogonal EuclideanGeometry.vsub_orthogonalProjection_mem_direction_orthogonal
 
-/-- Subtracting the `orthogonal_projection` from `p` produces a result in the kernel of the linear
+/-- Subtracting the `orthogonalProjection` from `p` produces a result in the kernel of the linear
 part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [CompleteSpace s.direction] (p : P) :
@@ -491,7 +478,7 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubs
 
 /-- The square of the distance from a point in `s` to `p2` equals the
 sum of the squares of the distances of the two points to the
-`orthogonal_projection`. -/
+`orthogonalProjection`. -/
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction] {p1 : P} (p2 : P)
     (hp1 : p1 ∈ s) :
@@ -501,9 +488,8 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   rw [dist_comm p2 _, dist_eq_norm_vsub V p1 _, dist_eq_norm_vsub V p1 _, dist_eq_norm_vsub V _ p2,
     ← vsub_add_vsub_cancel p1 (orthogonalProjection s p2) p2,
     norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
-  exact
-    Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p2 hp1)
-      (orthogonalProjection_vsub_mem_direction_orthogonal s p2)
+  exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p2 hp1)
+    (orthogonalProjection_vsub_mem_direction_orthogonal s p2)
 #align euclidean_geometry.dist_sq_eq_dist_orthogonal_projection_sq_add_dist_orthogonal_projection_sq EuclideanGeometry.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 
 /-- The square of the distance between two points constructed by
@@ -530,33 +516,34 @@ theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace �
 #align euclidean_geometry.dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd EuclideanGeometry.dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd
 
 /-- Reflection in an affine subspace, which is expected to be nonempty
-and complete.  The word "reflection" is sometimes understood to mean
+and complete. The word "reflection" is sometimes understood to mean
 specifically reflection in a codimension-one subspace, and sometimes
-more generally to cover operations such as reflection in a point.  The
+more generally to cover operations such as reflection in a point. The
 definition here, of reflection in an affine subspace, is a more
 general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] : P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => (orthogonalProjection s p : P) -ᵥ p +ᵥ (orthogonalProjection s p : P))
-    (_root_.reflection s.direction) (Classical.arbitrary s : P)
+    (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
+    (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p
-      let v := p -ᵥ (Classical.arbitrary s : P)
+      let v := p -ᵥ ↑(Classical.arbitrary s)
       let a : V := _root_.orthogonalProjection s.direction v
-      let b : P := (Classical.arbitrary s : P)
+      let b : P := ↑(Classical.arbitrary s)
       have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = a + a - v +ᵥ (b -ᵥ b +ᵥ b) := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
-      have : p = v +ᵥ (Classical.arbitrary s : P) := (vsub_vadd p (Classical.arbitrary s : P)).symm
-      simpa only [coe_vadd, reflection_apply, AffineMap.map_vadd, orthogonalProjection_linear,
-        orthogonalProjection_mem_subspace_eq_self, vadd_vsub, ContinuousLinearMap.coe_coe,
-        ContinuousLinearEquiv.coe_coe, this] using key)
+      have : p = v +ᵥ b := (vsub_vadd p b).symm
+      dsimp only
+      rw [reflection_apply, this, AffineMap.map_vadd, orthogonalProjection_linear,
+        vadd_vsub, orthogonalProjection_mem_subspace_eq_self, two_smul]
+      exact key)
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
 
 /-- The result of reflecting. -/
 theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] (p : P) :
-    reflection s p = (orthogonalProjection s p : P) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
+    reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
   rfl
 #align euclidean_geometry.reflection_apply EuclideanGeometry.reflection_apply
 
@@ -571,14 +558,10 @@ theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] 
 @[simp]
 theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
     (p : P) : reflection s (reflection s p) = p := by
-  have :
-    ∀ a : s,
-      ∀ b : V,
-        (_root_.orthogonalProjection s.direction) b = 0 →
-          reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
-    intro a b h
-    have : (a : P) -ᵥ (b +ᵥ (a : P)) = -b := by rw [vsub_vadd_eq_vsub_sub, vsub_self, zero_sub]
-    simp [reflection, h, this]
+  have : ∀ a : s, ∀ b : V, (_root_.orthogonalProjection s.direction) b = 0 →
+      reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
+    intro _ _ h
+    simp [reflection, h]
   rw [← vsub_vadd p (orthogonalProjection s p)]
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 #align euclidean_geometry.reflection_reflection EuclideanGeometry.reflection_reflection
