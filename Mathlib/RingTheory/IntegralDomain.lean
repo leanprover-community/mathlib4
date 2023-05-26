@@ -77,7 +77,6 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type _} [CommSemiring R] [Is
       (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
 #align exists_eq_pow_of_mul_eq_pow_of_coprime exists_eq_pow_of_mul_eq_pow_of_coprime
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i j «expr ∈ » s) -/
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type _} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
@@ -209,8 +208,9 @@ theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
   refine' card_congr (fun g _ => g * x⁻¹ * y) _ _ fun g hg => ⟨g * y⁻¹ * x, _⟩
-  · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul, mem_univ,
-      mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff, forall_true_iff]
+  · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul,
+      mem_univ, mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff,
+      forall_true_iff]
     -- porting note: added the following `simp`
     simp only [true_and, map_inv, mul_right_inv, one_mul, and_self, implies_true, forall_const]
   · simp only [mul_left_inj, imp_self, forall₂_true_iff]
