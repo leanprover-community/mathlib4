@@ -47,9 +47,8 @@ instance (X : FinPartOrd) : PartialOrder X :=
 
 attribute [instance] FinPartOrd.isFintype
 
-@[simp]
-theorem coe_toPartOrdCat (X : FinPartOrd) : ↥X.toPartOrdCat = ↥X := rfl
-#align FinPartOrd.coe_to_PartOrd FinPartOrd.coe_toPartOrdCat
+-- synTaut
+#noalign FinPartOrd.coe_to_PartOrd
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
 def of (α : Type _) [PartialOrder α] [Fintype α] : FinPartOrd :=
