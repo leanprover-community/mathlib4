@@ -301,8 +301,7 @@ section Field
 
 /-! ### Defining the field structure -/
 
--- porting note: replaced `omit hdomain` by working with a new type variable `R` instead
--- I believe this is because `irreducible_def` includes `hdomain` when it is not needed
+-- porting note: replaced `omit hdomain`
 variable {R : Type _} [CommRing R]
 
 /-- The zero rational function. -/
@@ -433,8 +432,6 @@ section SMul
 
 -- porting note: removed `omit hdomain`
 
-variable {R : Type _}
-
 /-- Scalar multiplication of rational functions. -/
 protected irreducible_def smul [SMul R (FractionRing K[X])] : R → RatFunc K → RatFunc K
   | r, ⟨p⟩ => ⟨r • p⟩
@@ -471,7 +468,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [Monoid R] [DistribMulAction R K[X]]
 
-variable [htower : IsScalarTower R K[X] K[X]]
+variable [IsScalarTower R K[X] K[X]]
 
 -- porting note: removed `include htower`
 
@@ -489,8 +486,8 @@ instance : IsScalarTower R K[X] (RatFunc K) := ⟨by
 
 end SMul
 
--- porting note: replaced `omit hdomain` with using a new type variable
-variable (R : Type _) [CommRing R]
+-- porting note: removed `omit hdomain`
+variable (R)
 
 instance [Subsingleton R] : Subsingleton (RatFunc R) :=
   toFractionRing_injective.subsingleton
