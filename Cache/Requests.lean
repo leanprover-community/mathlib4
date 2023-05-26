@@ -30,6 +30,16 @@ section Get
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
   hashMap.foldM (init := "") fun acc _ hash => do
     let fileName := hash.asTarGz
+    -- Below we use `String.quote`, which is intended for quoting for use in Lean code
+    -- this does not exactly match the requirements for quoting for curl:
+    -- ```
+    -- If the parameter contains whitespace (or starts with : or =),
+    --  the parameter must be enclosed within quotes. 
+    -- Within double quotes, the following escape sequences are available:
+    --  \, ", \t, \n, \r and \v. 
+    -- A backslash preceding any other letter is ignored.
+    -- ```
+    -- If this becomes an issue we can implement the curl spec.
     pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
       (IO.CACHEDIR / fileName).toString.quote}\n"
 
