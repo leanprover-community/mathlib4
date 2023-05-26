@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Basic
-import Mathbin.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Measurability of scalar products
@@ -33,8 +33,7 @@ theorem Measurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMeas
 @[measurability]
 theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [TopologicalSpace.SecondCountableTopology E] {μ : MeasureTheory.Measure α} {f g : α → E}
-    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (fun x => ⟪f x, g x⟫) μ :=
-  by
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (fun x => ⟪f x, g x⟫) μ := by
   refine' ⟨fun x => ⟪hf.mk f x, hg.mk g x⟫, hf.measurable_mk.inner hg.measurable_mk, _⟩
   refine' hf.ae_eq_mk.mp (hg.ae_eq_mk.mono fun x hxg hxf => _)
   dsimp only
