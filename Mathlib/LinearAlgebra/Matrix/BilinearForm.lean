@@ -122,8 +122,7 @@ variable [Fintype n] [Fintype o]
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
-      (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ :=
-  by
+      (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
   refine' ext_basis (Pi.basisFun R₂ n) fun i j => _
   rw [Pi.basisFun_apply, Pi.basisFun_apply, Matrix.toBilin'Aux_stdBasis,
     BilinForm.toMatrixAux_apply]
@@ -341,8 +340,8 @@ theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.t
   simp only [Matrix.toBilin_apply, Matrix.toBilin'_apply, Pi.basisFun_repr]
 #align matrix.to_bilin_basis_fun Matrix.toBilin_basisFun
 
-theorem BilinForm.toMatrix_basisFun : BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' :=
-  by
+theorem BilinForm.toMatrix_basisFun :
+    BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' := by
   ext B
   rw [BilinForm.toMatrix_apply, BilinForm.toMatrix'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
 #align bilin_form.to_matrix_basis_fun BilinForm.toMatrix_basisFun
@@ -564,8 +563,8 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₃} :
   ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
 #align matrix.nondegenerate_to_bilin'_iff Matrix.nondegenerate_toBilin'_iff
 
-theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₃} (h : M.Nondegenerate) (b : Basis ι R₃ M₃) :
-    (toBilin b M).Nondegenerate :=
+theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₃} (h : M.Nondegenerate)
+    (b : Basis ι R₃ M₃) : (toBilin b M).Nondegenerate :=
   (Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin b).mp h.toBilin'
 #align matrix.nondegenerate.to_bilin Matrix.Nondegenerate.toBilin
 
