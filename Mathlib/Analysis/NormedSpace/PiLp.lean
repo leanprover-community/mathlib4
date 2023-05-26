@@ -918,7 +918,8 @@ theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b
 #align pi_Lp.norm_equiv_symm_const' PiLp.norm_equiv_symm_const'
 
 theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
-    ‖(PiLp.equiv p fun _ : ι => β).symm 1‖₊ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
+    ‖(PiLp.equiv p fun _ : ι => β).symm 1‖₊ =
+      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
   (nnnorm_equiv_symm_const hp (1 : β)).trans rfl
 #align pi_Lp.nnnorm_equiv_symm_one PiLp.nnnorm_equiv_symm_one
 
