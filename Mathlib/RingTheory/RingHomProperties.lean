@@ -10,7 +10,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.CategoryTheory.Isomorphism
+import Mathlib.CategoryTheory.Iso
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -37,14 +37,14 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Prop)
 
-include P
+--include P
 
 section RespectsIso
 
 /-- A property `respects_iso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
-      ∀ (f : R →+* S) (e : S ≃+* T) (hf : P f), P (e.to_ring_hom.comp f)) ∧
+      ∀ (f : R →+* S) (e : S ≃+* T) (hf : P f), P (e.toRingHom.comp f)) ∧
     ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : S →+* T) (e : R ≃+* S) (hf : P f), P (f.comp e.toRingHom)
 #align ring_hom.respects_iso RingHom.RespectsIso
@@ -54,8 +54,8 @@ variable {P}
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (f ≫ g) ↔ P g :=
   ⟨fun H => by
-    convert hP.2 (f ≫ g) (as_iso f).symm.commRingCatIsoToRingEquiv H
-    exact (is_iso.inv_hom_id_assoc _ _).symm, hP.2 g (asIso f).commRingCatIsoToRingEquiv⟩
+    convert hP.2 (f ≫ g) (asIso f).symm.commRingCatIsoToRingEquiv H
+    exact (IsIso.inv_hom_id_assoc _ _).symm, hP.2 g (asIso f).commRingCatIsoToRingEquiv⟩
 #align ring_hom.respects_iso.cancel_left_is_iso RingHom.RespectsIso.cancel_left_isIso
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
@@ -182,4 +182,3 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
 end StableUnderBaseChange
 
 end RingHom
-
