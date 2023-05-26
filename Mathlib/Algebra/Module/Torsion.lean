@@ -175,7 +175,7 @@ def torsionBySet (s : Set R) : Submodule R M :=
 
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
-/-- The additive submonoid of all all elements `x` of `M` such that `a • x = 0`
+/-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
 for some `a` in `S`.-/
 @[simps!]
 def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
