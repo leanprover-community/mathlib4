@@ -40,10 +40,10 @@ to form the Dirichlet ring.
 
 ## Main Results
  * Several forms of Möbius inversion:
- * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `comm_ring`
- * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `add_comm_group`
- * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `comm_group`
- * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `comm_group_with_zero`
+ * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
+ * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
 The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
@@ -53,8 +53,6 @@ the namespace `ArithmeticFunction`.
 arithmetic functions, dirichlet convolution, divisors
 
 -/
-set_option autoImplicit false
-
 
 open Finset
 
@@ -439,7 +437,7 @@ instance {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] :
 
 section Zeta
 
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann ζ.  -/
+/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`.  -/
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 #align nat.arithmetic_function.zeta Nat.ArithmeticFunction.zeta
@@ -1117,7 +1115,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       rw [if_neg (ne_of_gt (Nat.pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)))]
 #align nat.arithmetic_function.sum_eq_iff_sum_smul_moebius_eq Nat.ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq
 
-/-- Möbius inversion for functions to a `ring`. -/
+/-- Möbius inversion for functions to a `Ring`. -/
 theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
     (∀ n : ℕ, 0 < n → (∑ i in n.divisors, f i) = g n) ↔
       ∀ n : ℕ, 0 < n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
@@ -1127,14 +1125,14 @@ theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
   rw [zsmul_eq_mul]
 #align nat.arithmetic_function.sum_eq_iff_sum_mul_moebius_eq Nat.ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq
 
-/-- Möbius inversion for functions to a `comm_group`. -/
+/-- Möbius inversion for functions to a `CommGroup`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
     (∀ n : ℕ, 0 < n → (∏ i in n.divisors, f i) = g n) ↔
       ∀ n : ℕ, 0 < n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq
 
-/-- Möbius inversion for functions to a `comm_group_with_zero`. -/
+/-- Möbius inversion for functions to a `CommGroupWithZero`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
     (∀ n : ℕ, 0 < n → (∏ i in n.divisors, f i) = g n) ↔
