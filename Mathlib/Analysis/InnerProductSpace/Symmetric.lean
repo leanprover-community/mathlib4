@@ -18,12 +18,12 @@ import Mathlib.LinearAlgebra.SesquilinearForm
 This file defines and proves basic theorems about symmetric **not necessarily bounded** operators
 on an inner product space, i.e linear maps `T : E → E` such that `∀ x y, ⟪T x, y⟫ = ⟪x, T y⟫`.
 
-In comparison to `is_self_adjoint`, this definition works for non-continuous linear maps, and
+In comparison to `IsSelfAdjoint`, this definition works for non-continuous linear maps, and
 doesn't rely on the definition of the adjoint, which allows it to be stated in non-complete space.
 
 ## Main definitions
 
-* `linear_map.is_symmetric`: a (not necessarily bounded) operator on an inner product space is
+* `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
 symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
@@ -51,7 +51,6 @@ variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 namespace LinearMap
@@ -67,14 +66,12 @@ def IsSymmetric (T : E →ₗ[𝕜] E) : Prop :=
 
 section Real
 
-variable ()
-
 /-- An operator `T` on an inner product space is symmetric if and only if it is
-`linear_map.is_self_adjoint` with respect to the sesquilinear form given by the inner product. -/
-theorem isSymmetric_iff_sesq_form (T : E →ₗ[𝕜] E) :
+`LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
+theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
     T.IsSymmetric ↔ @LinearMap.IsSelfAdjoint 𝕜 E _ _ _ (starRingEnd 𝕜) sesqFormOfInner T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
-#align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesq_form
+#align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesqForm
 
 end Real
 
@@ -92,7 +89,7 @@ theorem isSymmetric_zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 #align linear_map.is_symmetric_zero LinearMap.isSymmetric_zero
 
-theorem isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun x y => rfl
+theorem isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
 #align linear_map.is_symmetric_id LinearMap.isSymmetric_id
 
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
@@ -113,7 +110,7 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
     intro k
     rw [← T.map_sub, hT]
   refine' tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) _
-  simp_rw [hlhs]
+  simp_rw [Function.comp_apply, hlhs]
   rw [← inner_zero_left (T (y - T x))]
   refine' Filter.Tendsto.inner _ tendsto_const_nhds
   rw [← sub_self x]
@@ -125,7 +122,7 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
 theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
     (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
   rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
-  · simp [hr, T.re_apply_inner_self_apply]
+  · simp [hr, T.reApplyInnerSelf_apply]
   rw [← conj_eq_iff_real]
   exact hT.conj_inner_sym x x
 #align linear_map.is_symmetric.coe_re_apply_inner_self_apply LinearMap.IsSymmetric.coe_reApplyInnerSelf_apply
@@ -140,7 +137,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
     @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.isROrCToReal 𝕜 E)
       (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.isROrCToReal 𝕜 E).toModule
         (InnerProductSpace.isROrCToReal 𝕜 E).toModule _ _ _ T) :=
-  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars]
+  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 #align linear_map.is_symmetric.restrict_scalars LinearMap.IsSymmetric.restrictScalars
 
 section Complex
@@ -153,10 +150,10 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
     IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ := by
   constructor
   · intro hT v
-    apply is_symmetric.conj_inner_sym hT
+    apply IsSymmetric.conj_inner_sym hT
   · intro h x y
-    nth_rw 2 [← inner_conj_symm]
-    nth_rw 2 [inner_map_polarization]
+    rw [← inner_conj_symm x (T y)]
+    rw [inner_map_polarization T x y]
     simp only [starRingEnd_apply, star_div', star_sub, star_add, star_mul]
     simp only [← starRingEnd_apply]
     rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
@@ -172,8 +169,8 @@ end Complex
 See `inner_map_polarization` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
     ⟪T x, y⟫ =
-      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - i * ⟪T (x + (i : 𝕜) • y), x + (i : 𝕜) • y⟫ +
-          i * ⟪T (x - (i : 𝕜) • y), x - (i : 𝕜) • y⟫) /
+      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
+          I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
   rcases@I_mul_I_ax 𝕜 _ with (h | h)
   · simp_rw [h, MulZeroClass.zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
@@ -202,4 +199,3 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
 #align linear_map.is_symmetric.inner_map_self_eq_zero LinearMap.IsSymmetric.inner_map_self_eq_zero
 
 end LinearMap
-
