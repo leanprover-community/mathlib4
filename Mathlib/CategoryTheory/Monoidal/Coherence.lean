@@ -38,9 +38,11 @@ universe v u
 open CategoryTheory
 open CategoryTheory.FreeMonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+-- As the lemmas and typeclasses in this file are not intended for use outside of the tactic,
+-- we put everything inside a namespace.
+namespace Mathlib.Tactic.Coherence
 
-namespace CategoryTheory.MonoidalCategory
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- A typeclass carrying a choice of lift of an object from `C` to `FreeMonoidalCategory C`. -/
 class LiftObj (X : C) :=
@@ -185,12 +187,6 @@ example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) 
     f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
   simp [monoidalComp]
 
-end CategoryTheory.MonoidalCategory
-
-open CategoryTheory.MonoidalCategory
-
-namespace Mathlib.Tactic.Coherence
-
 open Lean Meta Elab Tactic
 
 /--
@@ -201,7 +197,7 @@ being careful with namespaces to avoid shadowing.
 -- but it would require preparing many implicit arguments by hand.
 def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
   Term.elabTerm (← `(CategoryTheory.FreeMonoidalCategory.projectMap _root_.id _ _
-    (CategoryTheory.MonoidalCategory.LiftHom.lift $(← Term.exprToSyntax e)))) none
+    (Mathlib.Tactic.Coherence.LiftHom.lift $(← Term.exprToSyntax e)))) none
 
 /-- Coherence tactic for monoidal categories. -/
 def monoidal_coherence (g : MVarId) : TermElabM Unit := do
@@ -215,7 +211,8 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := do
   let g₁ ← g.change (← mkEq projectMap_lhs projectMap_rhs)
   let [g₂] ← g₁.apply (← mkConstWithFreshMVarLevels `congrArg)
     | throwError "congrArg failed in coherence"
-  _ ← g₂.apply (← mkConstWithFreshMVarLevels `Subsingleton.elim)
+  let [] ← g₂.apply (← mkConstWithFreshMVarLevels `Subsingleton.elim)
+    | throwError "This shouldn't happen; Subsingleton.elim does not create goals."
 
 /-- Coherence tactic for monoidal categories. -/
 syntax (name := monoidal_coherence_stx) "monoidal_coherence" : tactic
