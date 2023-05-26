@@ -21,7 +21,8 @@ def open_of_element_hom (L : Type _) [Order.Frame L] : FrameHom L (Set (pt_obj L
   map_inf' a b := by simp; rfl
   map_top'     := by simp; rfl
   map_sSup' S  := by {
-    simp
+    simp only [map_sSup, sSup_Prop_eq, Set.mem_image, eq_iff_iff,
+               Set.sSup_eq_sUnion, Set.sUnion_image]
     ext Z
     constructor
     . rintro ⟨p, ⟨x, hx, hp⟩, h⟩
@@ -83,9 +84,17 @@ def pt : FrmCatᵒᵖ ⥤ TopCat where
   obj L    := ⟨FrameHom L.unop Prop, by infer_instance⟩
   map f    := pt_map f.unop
 
+set_option trace.Meta.synthInstance true in
 def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
   obj X := ⟨Opens X.α, by infer_instance⟩
-  map {X Y} f := by apply Opposite.op; exact Opens.comap f
+  map {X Y} f :=
+  @Opposite.op
+      (Bundled.mk (Opens ↑Y) (@Opens.instFrameOpens (↑Y) _)
+       ⟶ (Bundled.mk (Opens ↑X) (@Opens.instFrameOpens (↑X) _)))
+      (Opens.comap f)
+
+set_option pp.explicit true
+#print 𝒪
 
 -- the final goal
 theorem frame_top_adjunction : pt ⊣ 𝒪 := sorry
