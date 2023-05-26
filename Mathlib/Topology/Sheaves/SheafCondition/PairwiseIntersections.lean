@@ -8,12 +8,12 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.SheafCondition.OpensLeCover
-import Mathbin.CategoryTheory.Limits.Final
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
-import Mathbin.CategoryTheory.Category.Pairwise
-import Mathbin.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathbin.Algebra.Category.Ring.Constructions
+import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Category.Pairwise
+import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+import Mathlib.Algebra.Category.Ring.Constructions
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -110,8 +110,7 @@ def pairwiseToOpensLeCoverMap :
 of open sets below some `U i`.
 -/
 @[simps]
-def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U
-    where
+def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   obj := pairwiseToOpensLeCoverObj U
   map V W i := pairwiseToOpensLeCoverMap U i
 #align Top.presheaf.sheaf_condition.pairwise_to_opens_le_cover TopCat.Presheaf.SheafCondition.pairwiseToOpensLeCover
@@ -126,8 +125,7 @@ of all opens contained in some `U i`.
 -/
 instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
-    isConnected_of_zigzag fun A B =>
-      by
+    isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩ <;>
         dsimp at *
       · refine'
@@ -286,8 +284,7 @@ to the reformulation in terms of the presheaf preserving the limit of the diagra
 consisting of the `U i` and `U i ⊓ U j`.
 -/
 theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
-    F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections :=
-  by
+    F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   rw [is_sheaf_iff_is_sheaf_pairwise_intersections]
   constructor
   · intro h ι U
@@ -340,8 +337,7 @@ variable
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
-def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) :=
-  by
+def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   let ι : ULift.{w} walking_pair → opens X := fun j => walking_pair.cases_on j.down U V
   have hι : U ⊔ V = iSup ι := by
     ext
@@ -379,8 +375,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) :=
 #align Top.sheaf.inter_union_pullback_cone_lift TopCat.Sheaf.interUnionPullbackConeLift
 
 theorem interUnionPullbackConeLift_left :
-    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst :=
-  by
+    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
   erw [category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.is_sheaf_iff_is_sheaf_pairwise_intersections.mp F.2 _).some.fac _
@@ -388,8 +383,7 @@ theorem interUnionPullbackConeLift_left :
 #align Top.sheaf.inter_union_pullback_cone_lift_left TopCat.Sheaf.interUnionPullbackConeLift_left
 
 theorem interUnionPullbackConeLift_right :
-    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd :=
-  by
+    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
   erw [category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.is_sheaf_iff_is_sheaf_pairwise_intersections.mp F.2 _).some.fac _
@@ -397,8 +391,7 @@ theorem interUnionPullbackConeLift_right :
 #align Top.sheaf.inter_union_pullback_cone_lift_right TopCat.Sheaf.interUnionPullbackConeLift_right
 
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
-def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) :=
-  by
+def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   let ι : ULift.{w} walking_pair → opens X := fun ⟨j⟩ => walking_pair.cases_on j U V
   have hι : U ⊔ V = iSup ι := by
     ext
