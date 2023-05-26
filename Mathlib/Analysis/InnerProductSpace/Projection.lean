@@ -18,20 +18,20 @@ import Mathlib.Data.IsROrC.Lemmas
 # The orthogonal projection
 
 Given a nonempty complete subspace `K` of an inner product space `E`, this file constructs
-`orthogonal_projection K : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
-satisfies: for any point `u` in `E`, the point `v = orthogonal_projection K u` in `K` minimizes the
+`orthogonalProjection K : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
+satisfies: for any point `u` in `E`, the point `v = orthogonalProjection K u` in `K` minimizes the
 distance `‖u - v‖` to `u`.
 
 Also a linear isometry equivalence `reflection K : E ≃ₗᵢ[𝕜] E` is constructed, by choosing, for
 each `u : E`, the point `reflection K u` to satisfy
-`u + (reflection K u) = 2 • orthogonal_projection K u`.
+`u + (reflection K u) = 2 • orthogonalProjection K u`.
 
-Basic API for `orthogonal_projection` and `reflection` is developed.
+Basic API for `orthogonalProjection` and `reflection` is developed.
 
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
 the orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
-defined in `analysis.inner_product_space.basic`); the lemma
-`submodule.sup_orthogonal_of_is_complete`, stating that for a complete subspace `K` of `E` we have
+defined in `Analysis.InnerProductSpace.Basic`); the lemma
+`Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 
 ## References
@@ -91,9 +91,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let w : ℕ → K := fun n => Classical.choose (h n)
     exact ⟨w, fun n => Classical.choose_spec (h n)⟩
   rcases exists_seq with ⟨w, hw⟩
-  have norm_tendsto : tendsto (fun n => ‖u - w n‖) at_top (nhds δ) := by
-    have h : tendsto (fun n : ℕ => δ) at_top (nhds δ) := tendsto_const_nhds
-    have h' : tendsto (fun n : ℕ => δ + 1 / (n + 1)) at_top (nhds δ) := by
+  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
+    have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
+    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_0_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
@@ -142,7 +142,6 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           abel
           rw [eq₁, eq₂]
         _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
-        
     have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
       rw [smul_add]
       apply δ_le'
@@ -152,7 +151,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       exact add_halves 1
     have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
       simp_rw [mul_assoc]
-      exact mul_le_mul_of_nonneg_left (mul_self_le_mul_self zero_le_δ Eq) zero_le_four
+      exact mul_le_mul_of_nonneg_left (mul_self_le_mul_self zero_le_δ eq) zero_le_four
     have eq₂ : ‖a‖ * ‖a‖ ≤ (δ + div) * (δ + div) :=
       mul_self_le_mul_self (norm_nonneg _)
         (le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _))
@@ -172,37 +171,37 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ :=
         (sub_le_sub_right (mul_le_mul_of_nonneg_left (add_le_add eq₂ eq₂') (by norm_num)) _)
       _ = 8 * δ * div + 4 * div * div := by ring
-      
     exact
       add_nonneg (mul_nonneg (mul_nonneg (by norm_num) zero_le_δ) (le_of_lt Nat.one_div_pos_of_nat))
-        (mul_nonneg (mul_nonneg (by norm_num) nat.one_div_pos_of_nat.le) nat.one_div_pos_of_nat.le)
-    -- third goal : `tendsto (λ (n : ℕ), sqrt (b n)) at_top (𝓝 0)`
-    apply tendsto.comp
-    · convert continuous_sqrt.continuous_at
+        (mul_nonneg (mul_nonneg (by norm_num) Nat.one_div_pos_of_nat.le) Nat.one_div_pos_of_nat.le)
+    -- third goal : `Tendsto (fun (n : ℕ) => sqrt (b n)) atTop (𝓝 0)`
+    apply Tendsto.comp (f := b) (g := sqrt)
+    · have : Tendsto sqrt (nhds 0) (nhds (sqrt 0)) := continuous_sqrt.continuousAt
+      convert this
       exact sqrt_zero.symm
-    have eq₁ : tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) at_top (nhds (0 : ℝ)) := by
+    have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
       simp only [MulZeroClass.mul_zero]
-    have : tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) at_top (nhds (0 : ℝ)) := by
+    have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
       simp only [MulZeroClass.mul_zero]
     have eq₂ :
-      tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) at_top (nhds (0 : ℝ)) := by
+        Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
       simp only [MulZeroClass.mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
-  rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => _) seq_is_cauchy with ⟨v, hv, w_tendsto⟩
+  rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
+    ⟨v, hv, w_tendsto⟩
   use v
   use hv
   have h_cont : Continuous fun v => ‖u - v‖ :=
     Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
-  have : tendsto (fun n => ‖u - w n‖) at_top (nhds ‖u - v‖)
-  convert tendsto.comp h_cont.continuous_at w_tendsto
+  have : Tendsto (fun n => ‖u - w n‖) atTop (nhds ‖u - v‖)
+  convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
-  exact Subtype.mem _
 #align exists_norm_eq_infi_of_complete_convex exists_norm_eq_iInf_of_complete_convex
 
 /-- Characterization of minimizers for the projection on a convex set in a real inner product
@@ -216,7 +215,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       let p := ⟪u - v, w - v⟫_ℝ
       let q := ‖w - v‖ ^ 2
       letI : Nonempty K := ⟨⟨v, hv⟩⟩
-      have zero_le_δ : 0 ≤ δ
+      have : 0 ≤ δ
       apply le_ciInf
       intro
       exact norm_nonneg _
@@ -233,7 +232,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         calc
           ‖u - v‖ ^ 2 ≤ ‖u - (θ • w + (1 - θ) • v)‖ ^ 2 := by
             simp only [sq]; apply mul_self_le_mul_self (norm_nonneg _)
-            rw [Eq]; apply δ_le'
+            rw [eq]; apply δ_le'
             apply h hw hv
             exacts[le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel'_right _ _]
           _ = ‖u - v - θ • (w - v)‖ ^ 2 := by
@@ -249,7 +248,6 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
                   absR θ * ‖w - v‖ * (absR θ * ‖w - v‖) =
                 ‖u - v‖ * ‖u - v‖ - 2 * θ * inner (u - v) (w - v) + θ * θ * (‖w - v‖ * ‖w - v‖)
             rw [abs_of_pos hθ₁]; ring
-          
       have eq₁ :
         ‖u - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) + θ * θ * ‖w - v‖ ^ 2 =
           ‖u - v‖ ^ 2 + (θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v)) :=
@@ -280,13 +278,13 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           calc
             θ * q ≤ p / q * q := mul_le_mul_of_nonneg_right (min_le_right _ _) (sq_nonneg _)
             _ = p := div_mul_cancel _ hq
-            
+
         have : 2 * p ≤ p :=
           calc
             2 * p ≤ θ * q := by
               refine' this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num)
             _ ≤ p := eq₁
-            
+
         linarith)
     (by
       intro h
@@ -307,7 +305,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
             have : u - v - (w - v) = u - w
             abel
             rw [this, sq]
-          
+
       · show (⨅ w : K, ‖u - w‖) ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
         apply ciInf_le
         use 0
@@ -334,7 +332,7 @@ theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E))
 Let `u` be a point in a real inner product space, and let `K` be a nonempty subspace.
 Then point `v` minimizes the distance `‖u - v‖` over points in `K` if and only if
 for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subspace `K`).
-This is superceded by `norm_eq_infi_iff_inner_eq_zero` that gives the same conclusion over
+This is superceded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
 any `is_R_or_C` field.
 -/
 theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
@@ -344,7 +342,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
       intro h
       have h : ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
         rwa [norm_eq_iInf_iff_real_inner_le_zero] at h
-        exacts[K.convex, hv]
+        exacts [K.convex, hv]
       intro w hw
       have le : ⟪u - v, w⟫_ℝ ≤ 0
       let w' := w + v
@@ -362,7 +360,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
       simp only [neg_inj, add_neg_cancel_right, sub_eq_add_neg]
       rw [h₂, inner_neg_right] at h₁
       linarith
-      exact le_antisymm le GE.ge)
+      exact le_antisymm le ge)
     (by
       intro h
       have : ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0
@@ -384,7 +382,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.isROrCToReal 𝕜 E
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-  let K' : Submodule ℝ E := K.restrict_scalars ℝ
+  let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
   · intro H
     have A : ∀ w ∈ K, re ⟪u - v, w⟫ = 0 := (norm_eq_iInf_iff_real_inner_eq_zero K' hv).1 H
@@ -394,10 +392,9 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     · symm
       calc
         im (0 : 𝕜) = 0 := im.map_zero
-        _ = re ⟪u - v, -I • w⟫ := (A _ (K.smul_mem (-I) hw)).symm
+        _ = re ⟪u - v, (-I : 𝕜) • w⟫ := (A _ (K.smul_mem (-I) hw)).symm
         _ = re (-I * ⟪u - v, w⟫) := by rw [inner_smul_right]
         _ = im ⟪u - v, w⟫ := by simp
-        
   · intro H
     have : ∀ w ∈ K', ⟪u - v, w⟫_ℝ = 0 := by
       intro w hw
@@ -412,10 +409,10 @@ variable [CompleteSpace K]
 
 /-- The orthogonal projection onto a complete subspace, as an
 unbundled function.  This definition is only intended for use in
-setting up the bundled version `orthogonal_projection` and should not
+setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
 def orthogonalProjectionFn (v : E) :=
-  (exists_norm_eq_iInf_of_complete_subspace K (completeSpace_coe_iff_isComplete.mp ‹_›) v).some
+  (exists_norm_eq_iInf_of_complete_subspace K (completeSpace_coe_iff_isComplete.mp ‹_›) v).choose
 #align orthogonal_projection_fn orthogonalProjectionFn
 
 variable {K}
@@ -425,7 +422,7 @@ This lemma is only intended for use in setting up the bundled version
 and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem (v : E) : orthogonalProjectionFn K v ∈ K :=
   (exists_norm_eq_iInf_of_complete_subspace K (completeSpace_coe_iff_isComplete.mp ‹_›)
-        v).choose_spec.some
+        v).choose_spec.left
 #align orthogonal_projection_fn_mem orthogonalProjectionFn_mem
 
 /-- The characterization of the unbundled orthogonal projection.  This
@@ -435,8 +432,8 @@ theorem orthogonalProjectionFn_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - orthogonalProjectionFn K v, w⟫ = 0 := by
   rw [← norm_eq_iInf_iff_inner_eq_zero K (orthogonalProjectionFn_mem v)]
   exact
-    (exists_norm_eq_iInf_of_complete_subspace K (complete_space_coe_iff_is_complete.mp ‹_›)
-          v).choose_spec.choose_spec
+    (exists_norm_eq_iInf_of_complete_subspace K (completeSpace_coe_iff_isComplete.mp ‹_›)
+          v).choose_spec.right
 #align orthogonal_projection_fn_inner_eq_zero orthogonalProjectionFn_inner_eq_zero
 
 /-- The unbundled orthogonal projection is the unique point in `K`
@@ -540,7 +537,6 @@ theorem eq_orthogonalProjection_of_eq_submodule {K' : Submodule 𝕜 E} [Complet
     (u : E) : (orthogonalProjection K u : E) = (orthogonalProjection K' u : E) := by
   change orthogonalProjectionFn K u = orthogonalProjectionFn K' u
   congr
-  exact h
 #align eq_orthogonal_projection_of_eq_submodule eq_orthogonalProjection_of_eq_submodule
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
@@ -578,14 +574,14 @@ theorem LinearIsometry.map_orthogonal_projection' {E E' : Type _} [NormedAddComm
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 #align linear_isometry.map_orthogonal_projection' LinearIsometry.map_orthogonal_projection'
 
-/-- Orthogonal projection onto the `submodule.map` of a subspace. -/
+/-- Orthogonal projection onto the `Submodule.map` of a subspace. -/
 theorem orthogonalProjection_map_apply {E E' : Type _} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [CompleteSpace p] (x : E') :
     (orthogonalProjection (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x : E') =
       f (orthogonalProjection p (f.symm x)) := by
-  simpa only [f.coe_to_linear_isometry, f.apply_symm_apply] using
-    (f.to_linear_isometry.map_orthogonal_projection p (f.symm x)).symm
+  simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
+    (f.toLinearIsometry.map_orthogonalProjection p (f.symm x)).symm
 #align orthogonal_projection_map_apply orthogonalProjection_map_apply
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
@@ -1081,7 +1077,7 @@ theorem inner_orthogonalProjection_eq_of_mem_right [CompleteSpace K] (u : K) (v 
     _ = ⟪(orthogonalProjection K v : E), u⟫ + ⟪v - orthogonalProjection K v, u⟫ := by
       rw [orthogonalProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
     _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel'_right]
-    
+
 #align inner_orthogonal_projection_eq_of_mem_right inner_orthogonalProjection_eq_of_mem_right
 
 @[simp]
@@ -1376,4 +1372,3 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
 #align maximal_orthonormal_iff_basis_of_finite_dimensional maximal_orthonormal_iff_basis_of_finiteDimensional
 
 end OrthonormalBasis
-
