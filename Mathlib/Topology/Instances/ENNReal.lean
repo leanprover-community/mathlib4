@@ -694,7 +694,7 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
     ∃ y' z', y' < y ∧ z' < z ∧ x < y' + z' := by
   have : NeZero y := ⟨hy⟩
   have : NeZero z := ⟨hz⟩
-  have A : Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 + p.2) (𝓝[<] y ×ᶠ 𝓝[<] z) (𝓝 (y + z)) := by
+  have A : Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 + p.2) (𝓝[<] y ×ˢ 𝓝[<] z) (𝓝 (y + z)) := by
     apply Tendsto.mono_left _ (Filter.prod_mono nhdsWithin_le_nhds nhdsWithin_le_nhds)
     rw [← nhds_prod_eq]
     exact tendsto_add

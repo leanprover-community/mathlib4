@@ -43,8 +43,8 @@ variable [EMetricSpace X] {K : ι → Set X} {U : ι → Set X}
 `y ∈ K i`, then `EMetric.closedBall y r ⊆ U i`. -/
 theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
-    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
-  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, closedBall p.2 p.1 ⊆ U i by
+    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
+  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, closedBall p.2 p.1 ⊆ U i by
     apply mp_mem ((eventually_all_finite (hfin.point_finite x)).2 this)
       (mp_mem (@tendsto_snd ℝ≥0∞ _ (𝓝 0) _ _ (hfin.iInter_compl_mem_nhds hK x)) _)
     apply univ_mem'

@@ -25,14 +25,14 @@ variable {α β γ : Type _} [LinearOrder α] [TopologicalSpace γ] {a b c : α}
 
 -- porting note: new lemma
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
-    {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ᶠ la.map (projIcc a b h)) lb) :
-    Tendsto (↿(IccExtend h ∘ f)) (lc ×ᶠ la) lb :=
+    {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
+    Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
 @[deprecated Filter.Tendsto.IccExtend]
 theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filter α} {l' : Filter β}
-    (hf : Tendsto (↿f) (𝓝 z ×ᶠ l.map (projIcc a b h)) l') :
-    Tendsto (↿(IccExtend h ∘ f)) (𝓝 z ×ᶠ l) l' :=
+    (hf : Tendsto (↿f) (𝓝 z ×ˢ l.map (projIcc a b h)) l') :
+    Tendsto (↿(IccExtend h ∘ f)) (𝓝 z ×ˢ l) l' :=
   hf.IccExtend f
 #align filter.tendsto.Icc_extend Filter.Tendsto.IccExtend'
 

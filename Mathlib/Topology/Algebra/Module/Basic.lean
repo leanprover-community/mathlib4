@@ -42,7 +42,7 @@ variable {R : Type _} {M : Type _} [Ring R] [TopologicalSpace R] [TopologicalSpa
   [AddCommGroup M] [Module R M]
 
 theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
-    (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ᶠ 𝓝 0) (𝓝 0))
+    (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by

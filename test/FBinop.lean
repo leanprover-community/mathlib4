@@ -5,6 +5,8 @@ import Mathlib.Data.SetLike.Basic
 
 universe u v w
 
+namespace FBinopTests
+
 /-- Notation type class for the set product `×ˢ`. -/
 class SProd' (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/

@@ -877,7 +877,7 @@ theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
 #align lift_nhds_right lift_nhds_right
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
-    𝓝 a ×ᶠ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
+    𝓝 a ×ˢ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
       (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
   rw [nhds_eq_uniformity', nhds_eq_uniformity, prod_lift'_lift']
   exacts[rfl, monotone_preimage, monotone_preimage]
@@ -1572,12 +1572,14 @@ theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
 #align uniformity_prod uniformity_prod
 
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
-    𝓤 (α × β) = comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ᶠ 𝓤 β) :=
-  by rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
+    𝓤 (α × β) =
+      comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
+  dsimp [SProd.sprod]
+  rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
 #align uniformity_prod_eq_comap_prod uniformity_prod_eq_comap_prod
 
 theorem uniformity_prod_eq_prod [UniformSpace α] [UniformSpace β] :
-    𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ᶠ 𝓤 β) := by
+    𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
   rw [map_swap4_eq_comap, uniformity_prod_eq_comap_prod]
 #align uniformity_prod_eq_prod uniformity_prod_eq_prod
 
