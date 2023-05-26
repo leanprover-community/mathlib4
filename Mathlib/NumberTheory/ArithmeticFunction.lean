@@ -444,6 +444,7 @@ def zeta : ArithmeticFunction ℕ :=
 
 -- mathport name: arithmetic_function.zeta
 -- porting note: added `Nat.` to the scoped namespace
+@[inherit_doc]
 scoped[Nat.ArithmeticFunction] notation "ζ" => Nat.ArithmeticFunction.zeta
 
 @[simp]
@@ -455,7 +456,7 @@ theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 #align nat.arithmetic_function.zeta_apply_ne Nat.ArithmeticFunction.zeta_apply_ne
 
-@[simp]
+-- Porting note: removed `@[simp]` to make the linter happy.
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [Module R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i in divisors x, f i := by
@@ -467,13 +468,13 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [Module R M]
   · rw [← map_div_left_divisors, sum_map, Function.Embedding.coeFn_mk]
 #align nat.arithmetic_function.coe_zeta_smul_apply Nat.ArithmeticFunction.coe_zeta_smul_apply
 
-@[simp]
+-- Porting note: removed `@[simp]` to make the linter happy.
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (↑ζ * f) x = ∑ i in divisors x, f i :=
   coe_zeta_smul_apply
 #align nat.arithmetic_function.coe_zeta_mul_apply Nat.ArithmeticFunction.coe_zeta_mul_apply
 
-@[simp]
+-- Porting note: removed `@[simp]` to make the linter happy.
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i in divisors x, f i := by
   rw [mul_apply]
@@ -776,6 +777,7 @@ def sigma (k : ℕ) : ArithmeticFunction ℕ :=
 
 -- mathport name: arithmetic_function.sigma
 -- porting note: added `Nat.` to the scoped namespace
+@[inherit_doc]
 scoped[Nat.ArithmeticFunction] notation "σ" => Nat.ArithmeticFunction.sigma
 
 theorem sigma_apply {k n : ℕ} : σ k n = ∑ d in divisors n, d ^ k :=
@@ -845,6 +847,7 @@ def cardFactors : ArithmeticFunction ℕ :=
 
 -- mathport name: card_factors
 -- porting note: added `Nat.` to the scoped namespace
+@[inherit_doc]
 scoped[Nat.ArithmeticFunction] notation "Ω" => Nat.ArithmeticFunction.cardFactors
 
 theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
@@ -900,6 +903,7 @@ def cardDistinctFactors : ArithmeticFunction ℕ :=
 
 -- mathport name: card_distinct_factors
 -- porting note: added `Nat.` to the scoped namespace
+@[inherit_doc]
 scoped[Nat.ArithmeticFunction] notation "ω" => Nat.ArithmeticFunction.cardDistinctFactors
 
 theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
@@ -943,6 +947,7 @@ def moebius : ArithmeticFunction ℤ :=
 
 -- mathport name: moebius
 -- porting note: added `Nat.` to the scoped namespace
+@[inherit_doc]
 scoped[Nat.ArithmeticFunction] notation "μ" => Nat.ArithmeticFunction.moebius
 
 @[simp]
