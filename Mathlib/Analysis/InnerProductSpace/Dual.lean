@@ -8,9 +8,9 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Projection
-import Mathbin.Analysis.NormedSpace.Dual
-import Mathbin.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.Star.Basic
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -84,8 +84,7 @@ theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[
 variable {𝕜}
 
 theorem ext_inner_left_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
-    (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y :=
-  by
+    (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (to_dual_map 𝕜 E).map_eq_iff.mp
   refine' (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b _)
   intro i
@@ -96,8 +95,7 @@ theorem ext_inner_left_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
 #align inner_product_space.ext_inner_left_basis InnerProductSpace.ext_inner_left_basis
 
 theorem ext_inner_right_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
-    (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y :=
-  by
+    (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
   refine' ext_inner_left_basis b fun i => _
   rw [← inner_conj_symm]
   nth_rw_rhs 1 [← inner_conj_symm]
@@ -127,16 +125,14 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
         obtain ⟨z : E, hz : z ∈ Yᗮ, z_ne_0 : z ≠ 0⟩ := htriv
         refine' ⟨(ℓ z† / ⟪z, z⟫) • z, _⟩
         ext x
-        have h₁ : ℓ z • x - ℓ x • z ∈ Y :=
-          by
+        have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
           rw [LinearMap.mem_ker, map_sub, ContinuousLinearMap.map_smul,
             ContinuousLinearMap.map_smul, Algebra.id.smul_eq_mul, Algebra.id.smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=
             calc
-              0 = ⟪z, ℓ z • x - ℓ x • z⟫ :=
-                by
+              0 = ⟪z, ℓ z • x - ℓ x • z⟫ := by
                 rw [(Y.mem_orthogonal' z).mp hz]
                 exact h₁
               _ = ⟪z, ℓ z • x⟫ - ⟪z, ℓ x • z⟫ := by rw [inner_sub_right]
@@ -161,8 +157,7 @@ theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
 #align inner_product_space.to_dual_apply InnerProductSpace.toDual_apply
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x :=
-  by
+theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← to_dual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 #align inner_product_space.to_dual_symm_apply InnerProductSpace.toDual_symm_apply
