@@ -8,14 +8,14 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.
 
 Note that we don't need to register any of the constructions here as instances, because we get them
-from the fact that `Module R` is an abelian category.
+from the fact that `ModuleCat R` is an abelian category.
 -/
 
 
@@ -35,8 +35,8 @@ attribute [local ext] Subtype.ext_val
 
 section
 
--- implementation details of `has_image` for Module; use the API, not these
-/-- The image of a morphism in `Module R` is just the bundling of `linear_map.range f` -/
+-- implementation details of `HasImage` for ModuleCat; use the API, not these
+/-- The image of a morphism in `ModuleCat R` is just the bundling of `LinearMap.range f` -/
 def image : ModuleCat R :=
   ModuleCat.of R (LinearMap.range f)
 #align Module.image ModuleCat.image
@@ -97,23 +97,21 @@ theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = ima
 
 end
 
-/-- The factorisation of any morphism in `Module R` through a mono. -/
+/-- The factorisation of any morphism in `ModuleCat R` through a mono. -/
 def monoFactorisation : MonoFactorisation f where
   i := image f
   m := image.ι f
   e := factorThruImage f
 #align Module.mono_factorisation ModuleCat.monoFactorisation
 
-/-- The factorisation of any morphism in `Module R` through a mono has the universal property of
+/-- The factorisation of any morphism in `ModuleCat R` through a mono has the universal property of
 the image. -/
 noncomputable def isImage : IsImage (monoFactorisation f) where
   lift := image.lift
   lift_fac := image.lift_fac
 #align Module.is_image ModuleCat.isImage
 
-/-- The categorical image of a morphism in `Module R`
-agrees with the linear algebraic range.
--/
+/-- The categorical image of a morphism in `ModuleCat R` agrees with the linear algebraic range. -/
 noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     Limits.image f ≅ ModuleCat.of R f.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
@@ -132,4 +130,3 @@ theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 #align Module.image_iso_range_hom_subtype ModuleCat.imageIsoRange_hom_subtype
 
 end ModuleCat
-
