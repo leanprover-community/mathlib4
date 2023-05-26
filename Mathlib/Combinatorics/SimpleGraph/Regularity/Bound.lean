@@ -56,7 +56,7 @@ theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   zero_lt_mul_right <| by positivity
 #align szemeredi_regularity.step_bound_pos_iff SzemerediRegularity.stepBound_pos_iff
 
-alias step_bound_pos_iff ↔ _ step_bound_pos
+alias stepBound_pos_iff ↔ _ stepBound_pos
 #align szemeredi_regularity.step_bound_pos SzemerediRegularity.stepBound_pos
 
 end SzemerediRegularity
@@ -153,8 +153,8 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P
     (by
       norm_cast
       rwa [Nat.le_div_iff_mul_le'
-          (step_bound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos),
-        step_bound, mul_left_comm, ← mul_pow])
+          (stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos),
+        stepBound, mul_left_comm, ← mul_pow])
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
@@ -166,7 +166,7 @@ theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ 
 
 theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   have h : 1 ≤ 4 ^ P.parts.card := one_le_pow_of_one_le (by norm_num) _
-  rw [step_bound, ← Nat.div_div_eq_div_mul, ← Nat.le_sub_iff_right h, tsub_le_iff_left, ←
+  rw [stepBound, ← Nat.div_div_eq_div_mul, ← Nat.le_sub_iff_right h, tsub_le_iff_left, ←
     Nat.add_sub_assoc h]
   exact Nat.le_pred_of_lt (Nat.lt_div_mul_add h)
 #align szemeredi_regularity.a_add_one_le_four_pow_parts_card SzemerediRegularity.a_add_one_le_four_pow_parts_card
@@ -181,7 +181,7 @@ theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
     (hucard : ¬u.card = m * 4 ^ P.parts.card + a) :
     (4 ^ P.parts.card - (a + 1)) * m + (a + 1) * (m + 1) = u.card := by
   have : m * 4 ^ P.parts.card ≤ card α / P.parts.card := by
-    rw [step_bound, ← Nat.div_div_eq_div_mul]
+    rw [stepBound, ← Nat.div_div_eq_div_mul]
     exact Nat.div_mul_le_self _ _
   rw [Nat.add_sub_of_le this] at hucard
   rw [(hP.card_parts_eq_average hu).resolve_left hucard, mul_add, mul_one, ← add_assoc, ← add_mul,
@@ -192,7 +192,7 @@ theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
 theorem pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
     (4 : ℝ) ^ P.parts.card * m ≤ u.card := by
   norm_cast
-  rw [step_bound, ← Nat.div_div_eq_div_mul]
+  rw [stepBound, ← Nat.div_div_eq_div_mul]
   exact (Nat.mul_div_le _ _).trans (hP.average_le_card_part hu)
 #align szemeredi_regularity.pow_mul_m_le_card_part SzemerediRegularity.pow_mul_m_le_card_part
 
