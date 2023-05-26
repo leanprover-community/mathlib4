@@ -137,14 +137,14 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     rw [Nat.one_add]
 #align dihedral_group.r_one_pow DihedralGroup.r_one_pow
 
-@[simp]
+-- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
   congr 1
   exact ZMod.nat_cast_self _
 #align dihedral_group.r_one_pow_n DihedralGroup.r_one_pow_n
 
-@[simp]
+-- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
 #align dihedral_group.sr_mul_self DihedralGroup.sr_mul_self
 
@@ -154,7 +154,9 @@ theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self
 theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   apply orderOf_eq_prime
   · rw [sq, sr_mul_self]
-  · decide
+  · -- Porting note: Previous proof was `decide`
+    revert n
+    simp_rw [one_def, ne_eq, forall_const]
 #align dihedral_group.order_of_sr DihedralGroup.orderOf_sr
 
 /-- If `0 < n`, then `r 1` has order `n`.
