@@ -393,7 +393,8 @@ theorem antilipschitzWith_equiv_aux :
   rcases p.dichotomy with (rfl | h)
   · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
       ENNReal.coe_one, one_mul, iSup_le_iff]
-    exact fun i => Finset.le_sup (Finset.mem_univ i)
+    -- Porting note: `Finset.le_sup` needed some help
+    exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
@@ -401,11 +402,12 @@ theorem antilipschitzWith_equiv_aux :
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
-          (∑ i, edist (PiLp.equiv p β x) (PiLp.equiv p β y) ^ p.toReal) ^ (1 / p.toReal) := by
-        apply ENNReal.rpow_le_rpow _ nonneg
-        apply Finset.sum_le_sum fun i hi => _
-        apply ENNReal.rpow_le_rpow _ (le_of_lt Pos)
-        exact Finset.le_sup (Finset.mem_univ i)
+          (∑ _i, edist (PiLp.equiv p β x) (PiLp.equiv p β y) ^ p.toReal) ^ (1 / p.toReal) := by
+        refine ENNReal.rpow_le_rpow ?_ nonneg
+        swap
+        refine Finset.sum_le_sum fun i _ => ?_
+        apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
+        exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
       _ =
           ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
             edist (PiLp.equiv p β x) (PiLp.equiv p β y) := by
