@@ -8,7 +8,7 @@ Authors: Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.SheafCondition.PairwiseIntersections
+import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # functors between categories of sheaves
@@ -60,8 +60,7 @@ theorem mapCocone :
 #align Top.presheaf.sheaf_condition_pairwise_intersections.map_cocone TopCat.Presheaf.SheafConditionPairwiseIntersections.mapCocone
 
 theorem pushforward_sheaf_of_sheaf {F : Presheaf C X} (h : F.IsSheafPairwiseIntersections) :
-    (f _* F).IsSheafPairwiseIntersections := fun ι U =>
-  by
+    (f _* F).IsSheafPairwiseIntersections := fun ι U => by
   convert h ((opens.map f).obj ∘ U) using 2
   rw [← map_diagram]; rfl
   change HEq (F.map_cone ((opens.map f).mapCocone _).op) _
@@ -83,8 +82,7 @@ theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F)
 
 /-- The pushforward functor.
 -/
-def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C
-    where
+def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C where
   obj ℱ := ⟨f _* ℱ.1, pushforward_sheaf_of_sheaf f ℱ.2⟩
   map _ _ g := ⟨pushforwardMap f g.1⟩
 #align Top.sheaf.pushforward TopCat.Sheaf.pushforward
