@@ -8,8 +8,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.BilinearForm
-import Mathbin.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Orthogonal complements of submodules
@@ -43,8 +43,7 @@ namespace Submodule
 variable (K : Submodule 𝕜 E)
 
 /-- The subspace of vectors orthogonal to a given subspace. -/
-def orthogonal : Submodule 𝕜 E
-    where
+def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
   add_mem' x y hx hy u hu := by rw [inner_add_right, hx u hu, hy u hu, add_zero]
@@ -78,8 +77,7 @@ theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) 
 #align submodule.inner_left_of_mem_orthogonal Submodule.inner_left_of_mem_orthogonal
 
 /-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 :=
-  by
+theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
   refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
@@ -92,8 +90,7 @@ theorem mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 ∙ u)�
   rw [mem_orthogonal_singleton_iff_inner_right, inner_eq_zero_symm]
 #align submodule.mem_orthogonal_singleton_iff_inner_left Submodule.mem_orthogonal_singleton_iff_inner_left
 
-theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ :=
-  by
+theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
   rw [mem_orthogonal']
   intro u hu
   rw [inner_sub_left, sub_eq_zero]
@@ -110,8 +107,7 @@ theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), 
 variable (K)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
-theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ :=
-  by
+theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
   rw [mem_inf]
@@ -124,8 +120,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
-theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) :=
-  by
+theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
   apply le_antisymm
   · rw [le_iInf_iff]
     rintro ⟨v, hv⟩ w hw
@@ -136,8 +131,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 #align submodule.orthogonal_eq_inter Submodule.orthogonal_eq_inter
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
-theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) :=
-  by
+theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   have := fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   convert isClosed_iInter this
@@ -195,27 +189,23 @@ theorem Inf_orthogonal (s : Set <| Submodule 𝕜 E) : (⨅ K ∈ s, Kᗮ) = (sS
 #align submodule.Inf_orthogonal Submodule.Inf_orthogonal
 
 @[simp]
-theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ :=
-  by
+theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
   ext
   rw [mem_bot, mem_orthogonal]
   exact
-    ⟨fun h => inner_self_eq_zero.mp (h x mem_top),
-      by
+    ⟨fun h => inner_self_eq_zero.mp (h x mem_top), by
       rintro rfl
       simp⟩
 #align submodule.top_orthogonal_eq_bot Submodule.top_orthogonal_eq_bot
 
 @[simp]
-theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ :=
-  by
+theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
   rw [← top_orthogonal_eq_bot, eq_top_iff]
   exact le_orthogonal_orthogonal ⊤
 #align submodule.bot_orthogonal_eq_top Submodule.bot_orthogonal_eq_top
 
 @[simp]
-theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ :=
-  by
+theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   refine'
     ⟨_, by
       rintro rfl
@@ -393,8 +383,7 @@ theorem isOrtho_span {s t : Set E} :
     mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton_iff, forall_eq]
 #align submodule.is_ortho_span Submodule.isOrtho_span
 
-theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f :=
-  by
+theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f := by
   rw [is_ortho_iff_inner_eq] at *
   simp_rw [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     LinearIsometry.inner_map_map]
@@ -411,8 +400,7 @@ theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U 
 
 @[simp]
 theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
-  ⟨fun h =>
-    by
+  ⟨fun h => by
     have hf : ∀ p : Submodule 𝕜 E, (p.map f).comap f.to_linear_isometry = p :=
       comap_map_eq_of_injective f.injective
     simpa only [hf] using h.comap f.to_linear_isometry, IsOrtho.map f.toLinearIsometry⟩
@@ -420,8 +408,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.m
 
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
-  ⟨fun h =>
-    by
+  ⟨fun h => by
     have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.to_linear_isometry = p :=
       map_comap_eq_of_surjective f.surjective
     simpa only [hf] using h.map f.to_linear_isometry, IsOrtho.comap f.toLinearIsometry⟩
