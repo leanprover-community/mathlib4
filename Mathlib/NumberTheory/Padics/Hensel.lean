@@ -100,11 +100,10 @@ open Nat
 variable (p : ℕ) [Fact p.Prime] (F : Polynomial ℤ_[p]) (a : ℤ_[p])
   (hnorm : ‖F.eval a‖ < ‖F.derivative.eval a‖ ^ 2) (hnsol : F.eval a ≠ 0)
 
--- Porting note: TODO
+-- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 /-- `T` is an auxiliary value that is used to control the behavior of the polynomial `F`. -/
 private def T_gen : ℝ := ‖F.eval a / ((F.derivative.eval a ^ 2 : ℤ_[p]) : ℚ_[p])‖
 
--- Porting note. Maybe there is a better way to do this
 local notation "T" => @T_gen p _ F a
 
 variable {p F a}
@@ -139,12 +138,11 @@ private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one T_nonne
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
--- Porting note: TODO
+-- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 /-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
 private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.eval z‖ = ‖F.derivative.eval a‖ ∧ ‖F.eval z‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n
 
--- Porting note. Maybe there is a better way to do this
 local notation "ih" => @ih_gen p _ F a
 
 private theorem ih_0 : ih 0 a :=
@@ -241,13 +239,11 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
 -- Porting note: unsupported option eqn_compiler.zeta
 -- set_option eqn_compiler.zeta false
 
--- Porting note: it seems that it does stick now! (removed noncomputable)
--- why doesn't "noncomputable theory" stick here?
 private def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
   | 0 => ⟨a, ih_0 hnorm⟩
   | k + 1 => ih_n hnorm (newton_seq_aux k).2
 
--- Porting note: TODO
+-- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
   (newton_seq_aux hnorm n).1
 
@@ -386,10 +382,9 @@ private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := by
 
 private def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
 
--- Porting note: TODO
+-- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 private def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
 
--- Porting note. Maybe there is a better way to do this
 local notation "soln" => soln_gen hnorm
 
 private theorem soln_spec {ε : ℝ} (hε : ε > 0) :
