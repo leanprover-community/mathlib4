@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.ProbabilityMassFunction.Monad
+import Mathlib.Probability.ProbabilityMassFunction.Monad
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -102,8 +102,7 @@ theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure
 
 @[simp]
 theorem toMeasure_map_apply [MeasurableSpace α] [MeasurableSpace β] (hf : Measurable f)
-    (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) :=
-  by
+    (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) := by
   rw [to_measure_apply_eq_to_outer_measure_apply _ s hs,
     to_measure_apply_eq_to_outer_measure_apply _ (f ⁻¹' s) (measurableSet_preimage hf hs)]
   exact to_outer_measure_map_apply f p s
@@ -127,8 +126,7 @@ theorem monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q
 #align pmf.monad_seq_eq_seq Pmf.monad_seq_eq_seq
 
 @[simp]
-theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 :=
-  by
+theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
   refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
   simpa only [MulZeroClass.mul_zero] using mul_ite (b = f a) (q f) (p a) 0
@@ -326,8 +324,7 @@ theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) :=
 #align pmf.bernoulli_apply Pmf.bernoulli_apply
 
 @[simp]
-theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } :=
-  by
+theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine' Set.ext fun b => _
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne.def, tsub_eq_zero_iff_le, not_le]
