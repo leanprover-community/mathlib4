@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Abelian
-import Mathbin.CategoryTheory.Limits.Shapes.Images
+import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.
@@ -54,8 +54,7 @@ def factorThruImage : G ⟶ image f :=
   f.range_restrict
 #align Module.factor_thru_image ModuleCat.factorThruImage
 
-theorem image.fac : factorThruImage f ≫ image.ι f = f :=
-  by
+theorem image.fac : factorThruImage f ≫ image.ι f = f := by
   ext
   rfl
 #align Module.image.fac ModuleCat.image.fac
@@ -65,8 +64,7 @@ attribute [local simp] image.fac
 variable {f}
 
 /-- The universal property for the image factorisation -/
-noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.i
-    where
+noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.i where
   toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.i)
   map_add' := by
     intro x y
@@ -90,8 +88,7 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.i
     rfl
 #align Module.image.lift ModuleCat.image.lift
 
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f :=
-  by
+theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
@@ -101,8 +98,7 @@ theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = ima
 end
 
 /-- The factorisation of any morphism in `Module R` through a mono. -/
-def monoFactorisation : MonoFactorisation f
-    where
+def monoFactorisation : MonoFactorisation f where
   i := image f
   m := image.ι f
   e := factorThruImage f
@@ -110,8 +106,7 @@ def monoFactorisation : MonoFactorisation f
 
 /-- The factorisation of any morphism in `Module R` through a mono has the universal property of
 the image. -/
-noncomputable def isImage : IsImage (monoFactorisation f)
-    where
+noncomputable def isImage : IsImage (monoFactorisation f) where
   lift := image.lift
   lift_fac := image.lift_fac
 #align Module.is_image ModuleCat.isImage
