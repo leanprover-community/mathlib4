@@ -171,11 +171,22 @@ lemma isHomological_of_localization (L : C ⥤ D)
 
 section
 
-variable [F.IsHomological] [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C)
-  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
+  (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 noncomputable def homology_sequence_δ : (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
+
+variable {T T'}
+
+@[reassoc (attr := simp)]
+noncomputable def homology_sequence_δ_naturality :
+    (F.shift n₀).map φ.hom₃ ≫ F.homology_sequence_δ T' n₀ n₁ h =
+      F.homology_sequence_δ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
+  dsimp only [homology_sequence_δ]
+  rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
+
+variable (T T')
 
 @[simp]
 lemma comp_homology_sequence_δ :
@@ -189,10 +200,12 @@ lemma homology_sequence_δ_comp :
   dsimp only [homology_sequence_δ]
   rw [← F.shiftMap_comp, comp_dist_triangle_mor_zero₃₁ _ hT, shiftMap_zero]
 
+lemma homology_sequence_comp  :
+    (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
+  rw [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero]
+
 lemma homology_sequence_exact₂ :
-  (ShortComplex.mk ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
-    (by simp only [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT,
-      Functor.map_zero])).Exact := by
+  (ShortComplex.mk _ _ (F.homology_sequence_comp T hT n₀)).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (shift_distinguished _ hT n₀))
   refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
     (mulIso ((-1 : Units ℤ)^n₀) ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _

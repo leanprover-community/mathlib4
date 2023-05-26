@@ -220,6 +220,7 @@ import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
+import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
@@ -607,6 +608,8 @@ import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.ArrowThree
+import Mathlib.CategoryTheory.ArrowTwo
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.End

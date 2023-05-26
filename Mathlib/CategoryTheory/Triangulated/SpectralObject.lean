@@ -1,98 +1,23 @@
 import Mathlib.CategoryTheory.Triangulated.Triangulated
-
-open CategoryTheory Category Limits Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C]
-
-structure Arrow₂ :=
-  {X₀ X₁ X₂ : C}
-  f : X₀ ⟶ X₁
-  g : X₁ ⟶ X₂
-
-namespace Arrow₂
-
-variable {C}
-
-@[simps]
-def mk' {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : Arrow₂ C where
-  f := f
-  g := g
-
-@[ext]
-structure Hom (D₁ D₂ : Arrow₂ C) where
-  τ₀ : D₁.X₀ ⟶ D₂.X₀
-  τ₁ : D₁.X₁ ⟶ D₂.X₁
-  τ₂ : D₁.X₂ ⟶ D₂.X₂
-  commf : τ₀ ≫ D₂.f = D₁.f ≫ τ₁ := by aesop_cat
-  commg : τ₁ ≫ D₂.g = D₁.g ≫ τ₂ := by aesop_cat
-
-attribute [reassoc] Hom.commf Hom.commg
-attribute [local simp] Hom.commf Hom.commg Hom.commf_assoc Hom.commg_assoc
-
-@[simps]
-def Hom.id (D : Arrow₂ C) : Hom D D where
-  τ₀ := 𝟙 _
-  τ₁ := 𝟙 _
-  τ₂ := 𝟙 _
-
-/-- The composition of morphisms of short complexes. -/
-@[simps]
-def Hom.comp {D₁ D₂ D₃ : Arrow₂ C}
-    (φ₁₂ : Hom D₁ D₂) (φ₂₃ : Hom D₂ D₃) : Hom D₁ D₃ where
-  τ₀ := φ₁₂.τ₀ ≫ φ₂₃.τ₀
-  τ₁ := φ₁₂.τ₁ ≫ φ₂₃.τ₁
-  τ₂ := φ₁₂.τ₂ ≫ φ₂₃.τ₂
-
-instance : Category (Arrow₂ C) where
-  Hom := Hom
-  id := Hom.id
-  comp := Hom.comp
-
-@[simps]
-def δ₀ : Arrow₂ C ⥤ Arrow C where
-  obj D := Arrow.mk D.g
-  map φ :=
-    { left := φ.τ₁
-      right := φ.τ₂ }
-
-@[simps]
-def δ₁ : Arrow₂ C ⥤ Arrow C where
-  obj D := Arrow.mk (D.f ≫ D.g)
-  map φ :=
-    { left := φ.τ₀
-      right := φ.τ₂ }
-
-@[simps]
-def δ₂ : Arrow₂ C ⥤ Arrow C where
-  obj D := Arrow.mk D.f
-  map φ :=
-    { left := φ.τ₀
-      right := φ.τ₁ }
-
-def δ₂Toδ₁ : (δ₂ : Arrow₂ C ⥤ _) ⟶ δ₁ where
-  app D :=
-    { left := 𝟙 _
-      right := D.g }
-
-def δ₁Toδ₀ : (δ₁ : Arrow₂ C ⥤ _) ⟶ δ₀ where
-  app D :=
-    { left := D.f
-      right := 𝟙 _ }
-
-end Arrow₂
+open Category Limits Pretriangulated
 
 variable (C ι : Type _) [Category C] [Category ι] [HasZeroObject C]
-  [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
-  [Pretriangulated C] [Preorder ι]
+  [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+  {D : Type _} [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  {A : Type _} [Category A] [Abelian A]
 
 namespace Triangulated
 
 structure SpectralObject where
   ω₁ : Arrow ι ⥤ C
   δ : Arrow₂.δ₀ ⋙ ω₁ ⟶ Arrow₂.δ₂ ⋙ ω₁ ⋙ shiftFunctor C (1 : ℤ)
-  distinguished (D : Arrow₂ ι) :
+  distinguished' (D : Arrow₂ ι) :
     Triangle.mk (ω₁.map (Arrow₂.δ₂Toδ₁.app D))
       (ω₁.map (Arrow₂.δ₁Toδ₀.app D)) (δ.app D) ∈ distTriang C
 
@@ -114,6 +39,28 @@ def ω₂ : Arrow₂ ι ⥤ Triangle C where
         dsimp
         simp only [← Functor.map_comp, NatTrans.naturality]
       comm₃ := (X.δ.naturality f).symm }
+
+lemma distinguished (D : Arrow₂ ι) :
+    X.ω₂.obj D ∈ distTriang C := X.distinguished' D
+
+noncomputable def mapHomologicalFunctor (F : C ⥤ A) [F.PreservesZeroMorphisms]
+    [F.IsHomological] [F.ShiftSequence ℤ] : Abelian.SpectralObject A ι where
+  H n := X.ω₁ ⋙ F.shift n
+  δ n₀ n₁ h :=
+    { app := fun D => F.homology_sequence_δ (X.ω₂.obj D) n₀ n₁ h
+      naturality := fun _ _ φ => F.homology_sequence_δ_naturality (X.ω₂.map φ) _ _ h }
+  zero₁ _ _ h D := F.homology_sequence_δ_comp _ (X.distinguished D) _ _ h
+  zero₂ _ D := F.homology_sequence_comp _ (X.distinguished D) _
+  zero₃ _ _ h D := F.comp_homology_sequence_δ _ (X.distinguished D) _ _ h
+  exact₁ _ _ h D := F.homology_sequence_exact₁ _ (X.distinguished D) _ _ h
+  exact₂ _ D := F.homology_sequence_exact₂ _ (X.distinguished D) _
+  exact₃ _ _ h D := F.homology_sequence_exact₃ _ (X.distinguished D) _ _ h
+
+def mapTriangulatedFunctor (F : C ⥤ D) [F.HasCommShift ℤ] [F.IsTriangulated] :
+    SpectralObject D ι where
+  ω₁ := X.ω₁ ⋙ F
+  δ := whiskerRight X.δ F ≫ whiskerLeft (Arrow₂.δ₂ ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
+  distinguished' D := F.map_distinguished _ (X.distinguished D)
 
 end SpectralObject
 
