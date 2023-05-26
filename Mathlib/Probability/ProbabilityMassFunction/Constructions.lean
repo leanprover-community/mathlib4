@@ -222,7 +222,7 @@ section Measure
 
 variable (s : Set α)
 
-@[simp]
+@[simp high]
 theorem toOuterMeasure_ofFintype_apply : (ofFintype f h).toOuterMeasure s = ∑' x, s.indicator f x :=
   toOuterMeasure_apply (ofFintype f h) s
 #align pmf.to_outer_measure_of_fintype_apply Pmf.toOuterMeasure_ofFintype_apply
