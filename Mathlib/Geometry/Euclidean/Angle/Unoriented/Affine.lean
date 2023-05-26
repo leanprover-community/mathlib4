@@ -170,8 +170,8 @@ theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π)
 #align euclidean_geometry.angle_eq_zero_of_angle_eq_pi_left EuclideanGeometry.angle_eq_zero_of_angle_eq_pi_left
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BCA is 0. -/
-theorem angle_eq_zero_of_angle_eq_pi_right {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p3 p1 = 0 :=
-  by
+theorem angle_eq_zero_of_angle_eq_pi_right {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) :
+    ∠ p2 p3 p1 = 0 := by
   rw [angle_comm] at h
   exact angle_eq_zero_of_angle_eq_pi_left h
 #align euclidean_geometry.angle_eq_zero_of_angle_eq_pi_right EuclideanGeometry.angle_eq_zero_of_angle_eq_pi_right
