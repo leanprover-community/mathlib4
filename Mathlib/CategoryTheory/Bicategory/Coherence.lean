@@ -138,7 +138,7 @@ fully-normalized 1-morphism.
 def normalizeIso {a : B} :
     ∀ {b c : B} (p : Path a b) (f : Hom b c),
       (preinclusion B).map ⟨p⟩ ≫ f ≅ (preinclusion B).map ⟨normalizeAux p f⟩
-  | _, _, p, Hom.of f => Iso.refl _
+  | _, _, _, Hom.of _ => Iso.refl _
   | _, _, _, Hom.id b => ρ_ _
   | _, _, p, Hom.comp f g =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫ normalizeIso (normalizeAux p f) g
