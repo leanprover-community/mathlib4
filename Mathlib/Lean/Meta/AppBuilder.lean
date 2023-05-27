@@ -177,12 +177,33 @@ def mkAppNWithLevels (f : ExprWithLevels) (xs : Array Expr) : MetaM ExprWithLeve
 `params` in `f` and its type to level mvars `us`, constructs `f xs₁ xs₂ ... xsₙ`, then reverts any
 `us` that were not assigned to their original universe params and returns the names of those params.
 -/
-def mkAppMWithLevels' (f : ExprWithLevels) (xs : Array Expr) : MetaM ExprWithLevels :=
+def mkAppMWithLevels' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM ExprWithLevels :=
   withNewMCtxDepth do
     let (env, f) ← levelMetaTelescope f
     let fType ← inferType f
-    let e ← withAppBuilderTrace f xs do mkAppMArgsUnifying f fType xs false
+    let e ← withAppBuilderTrace f xs do
+      mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
     abstract env e
+
+/-- Like `mkAppMWithLevels'`, but unifies the types of the arguments, and thus may assign
+metavariables, akin to `mkAppMUnifying'`. -/
+def mkAppMWithLevelsUnifying' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM ExprWithLevels := do
+  let (env, f) ← levelMetaTelescope f
+  let fType ← inferType f
+  let e ← withAppBuilderTrace f xs do
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
+  abstract env e
+
+/-- Like `mkAppMWithLevelsUnifying'`, but returns any new mvars created. -/
+def mkAppMWithLevelsUnifyingWithNewMVars' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM (ExprWithLevels × Array MVarId × Array MVarId) := do
+  let (env, f) ← levelMetaTelescope f
+  let fType ← inferType f
+  let (e, implicitMVars, instMVars) ← do
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
+  return (← abstract env e, implicitMVars, instMVars)
 
 section Combinators
 
