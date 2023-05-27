@@ -94,7 +94,8 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
   left_inv z := by
     ext (j k)
-    simp only [biproduct.matrix_π, biproduct.ι_desc]
+    simp only [eqToHom_refl, Category.id_comp, Category.assoc, eqToHom_trans, Category.comp_id,
+      dite_eq_ite, biproduct.ι_matrix, biproduct.lift_π]
     split_ifs with h
     · simp
       rfl
