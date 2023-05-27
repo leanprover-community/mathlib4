@@ -645,6 +645,13 @@ lemma natTransTruncLTLEOfLE_ι (a b : ℤ) (h : a-1 ≤ b) :
     t.natTransTruncLTLEOfLE a b h ≫ t.truncLEι b = t.truncLTι a :=
   t.natTransTruncLEOfLE_ι _ _ h
 
+@[reassoc (attr := simp)]
+lemma truncLTIsoTruncLE_hom_comp_natTransTruncLEOfLE (a a' b : ℤ) (ha' : a' + 1 = a) (h : a' ≤ b):
+  (t.truncLTIsoTruncLE a' a ha').hom ≫ t.natTransTruncLEOfLE a' b h =
+    t.natTransTruncLTLEOfLE a b (by simpa only [← ha', add_sub_cancel] using h) := by
+  obtain rfl : a' = a - 1 := by linarith
+  apply id_comp
+
 noncomputable def truncGT (a : ℤ) : C ⥤ C := t.truncGE (a+1)
 
 instance (a : ℤ) (X : C) : t.IsGE ((t.truncGT a).obj X) (a+1) := by
@@ -750,7 +757,6 @@ lemma truncTriangleLTSelfGE_distinguished (n : ℤ) (X : C) :
   exact ((evaluation _ _).obj X).mapIso
     (t.truncTriangleLTSelfGEFunctorIsoTruncTriangleLESelfGEFunctor (n-1) n (by linarith))
 
-
 noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
 instance (a b : ℤ) (X : C) : t.IsLE ((t.truncGELE a b).obj X) b := by
@@ -766,7 +772,7 @@ noncomputable def truncLEπGELE (a b : ℤ) : t.truncLE b ⟶ t.truncGELE a b :=
 
 noncomputable def truncGTLE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGT a
 
-noncomputable def truncGTLEIsotruncGELE (a b a' : ℤ) (h : a + 1 = a') :
+noncomputable def truncGTLEIsoTruncGELE (a b a' : ℤ) (h : a + 1 = a') :
     t.truncGTLE a b ≅ t.truncGELE a' b :=
   isoWhiskerLeft (t.truncLE b) (t.truncGTIsoTruncGE a a' h)
 
@@ -776,6 +782,12 @@ instance (a b : ℤ) (X : C) : t.IsLE ((t.truncGTLE a b).obj X) b := by
 
 noncomputable def truncLEπGTLE (a b : ℤ) : t.truncLE b ⟶ t.truncGTLE a b :=
   whiskerLeft (t.truncLE b) (t.truncGTπ a)
+
+@[reassoc (attr := simp)]
+lemma truncLEπGELE_comp_truncGTLEIsoTruncGELE_inv (a b a' : ℤ) (h : a' + 1 = a) :
+    t.truncLEπGELE a b ≫ (t.truncGTLEIsoTruncGELE a' b a h).inv = t.truncLEπGTLE a' b := by
+  subst h
+  apply comp_id
 
 noncomputable def truncGTLEδLE (a b : ℤ) :
     t.truncGTLE a b ⟶ t.truncLE a ⋙ shiftFunctor C (1 : ℤ) :=
@@ -837,8 +849,17 @@ noncomputable def truncTriangleLELEGTLE_distinguished (a b : ℤ) (h : a ≤ b) 
 
 noncomputable def truncGTLEδLT (a b : ℤ) :
     t.truncGELE a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) :=
-  (t.truncGTLEIsotruncGELE (a-1) b a (by linarith)).inv ≫ t.truncGTLEδLE (a-1) b ≫
+  (t.truncGTLEIsoTruncGELE (a-1) b a (by linarith)).inv ≫ t.truncGTLEδLE (a-1) b ≫
     whiskerRight ((t.truncLTIsoTruncLE (a-1) a (by linarith)).inv) _
+
+@[reassoc (attr := simp)]
+lemma truncGTLEδLT_comp_truncLTIsoTruncLE_hom (a a' b : ℤ) (ha' : a' + 1 = a) :
+    t.truncGTLEδLT a b ≫
+      whiskerRight (t.truncLTIsoTruncLE a' a ha').hom (shiftFunctor C (1 : ℤ)) =
+        (t.truncGTLEIsoTruncGELE a' b a ha').inv ≫ t.truncGTLEδLE a' b := by
+  obtain rfl : a' = a - 1 := by linarith
+  dsimp only [truncGTLEδLT]
+  simp only [assoc, ← whiskerRight_comp, Iso.inv_hom_id, whiskerRight_id', comp_id]
 
 noncomputable def truncTriangleLTLEGELEFunctor (a b : ℤ) (h : a-1 ≤ b) : C ⥤ Triangle C :=
   Triangle.functorMk (t.natTransTruncLTLEOfLE a b h) (t.truncLEπGELE a b) (t.truncGTLEδLT a b)
@@ -870,23 +891,13 @@ lemma truncTriangleLTLEGELEFunctor_π₃Toπ₁ (a b : ℤ) (h : a-1 ≤ b) :
     whiskerLeft (t.truncTriangleLTLEGELEFunctor a b h) Triangle.π₃Toπ₁ =
       t.truncGTLEδLT a b := rfl
 
-
-/-noncomputable def truncTriangleLTLEGELEFunctorIsoTruncTriangleLELEGTLEFunctor
+noncomputable def truncTriangleLTLEGELEFunctorIsoTruncTriangleLELEGTLEFunctor
     (a b a' : ℤ) (h : a - 1 ≤ b) (ha' : a' + 1 = a)  : t.truncTriangleLTLEGELEFunctor a b h ≅
     t.truncTriangleLELEGTLEFunctor a' b
       (by simpa only [← ha', add_sub_cancel] using h) := by
-  refine' Triangle.functorIsoMk _ _ _ _ _ _ _ _
-  . exact t.truncLTIsoTruncLE _ _ ha'
-  . exact Iso.refl _
-  . exact (t.truncGTLEIsotruncGELE a' b a ha').symm
-  . dsimp
-    rw [comp_id]
-    sorry
-  . dsimp
-    rw [id_comp]
-    sorry
-  . dsimp
-    sorry
+  refine' Triangle.functorIsoMk _ _ (t.truncLTIsoTruncLE _ _ ha') (Iso.refl _)
+    ((t.truncGTLEIsoTruncGELE a' b a ha').symm) _ _ _
+  all_goals aesop_cat
 
 noncomputable def truncTriangleLTLEGELE_distinguished (a b : ℤ) (h : a - 1 ≤ b) (X : C) :
     (t.truncTriangleLTLEGELEFunctor a b h).obj X ∈ distTriang C := by
@@ -946,7 +957,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELETruncLEGE a b).app X) 
     rw [← eq']
     have fac : (t.truncLEι b).app ((t.truncGE a).obj
         ((t.truncLE b).obj X)) ≫ t.liftTruncLE m₁ b = (t.truncLE b).map H.m₁ :=
-      t.to_truncLE_obj_ext _ _ _ _ (by simp)
+      t.to_truncLE_obj_ext _ _ _ _ (by simp [truncGELE])
     exact IsIso.of_isIso_fac_left fac
   . refine' ⟨0, _, _⟩
     all_goals
@@ -956,59 +967,36 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELETruncLEGE a b).app X) 
 instance (a b : ℤ) : IsIso (t.natTransTruncGELETruncLEGE a b) := NatIso.isIso_of_isIso_app _
 
 noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
-    t.truncGELE a b ≅ t.truncLEGE a b := asIso (t.natTransTruncGELETruncLEGE a b)-/
-
-
-/-
-noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
-    t.truncLE b ⋙ t.truncGE a ≅ t.truncGE a ⋙ t.truncLE b :=
-  NatIso.ofComponents (fun X => asIso (t.truncGELEIsoTruncLEGE_hom_app a b X)) (fun {X Y} f => by
-    dsimp [asIso]
-    apply from_truncGE_obj_ext
-    dsimp
-    apply to_truncLE_obj_ext
-    rw [assoc, assoc, assoc, assoc, NatTrans.naturality,
-      truncGELEIsoTruncLEGE_hom_app_pentagon_assoc, Functor.id_map,
-      ← NatTrans.naturality_assoc,
-      truncGELEIsoTruncLEGE_hom_app_pentagon,
-      Functor.id_map, ← NatTrans.naturality, Functor.id_map,
-      NatTrans.naturality_assoc, Functor.id_map])
-
+    t.truncGELE a b ≅ t.truncLEGE a b := asIso (t.natTransTruncGELETruncLEGE a b)
 
 noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
-  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n)
-    (fun _ => (t.mem_heart_iff _).2 ⟨t.isLE_shift _ n n 0 (add_zero n),
+  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n) (fun X => by
+    exact (t.mem_heart_iff _).2 ⟨t.isLE_shift _ n n 0 (add_zero n),
       t.isGE_shift _ n n 0 (add_zero n)⟩)
-
 
 noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
 
 noncomputable def truncGELTIsoTruncGELE (a b b' : ℤ) (hb' : b + 1 = b') :
     t.truncGELT a b' ≅ t.truncLE b ⋙ t.truncGE a :=
-  isoWhiskerRight (t.truncLTIsoTruncLE b b' hb') _
+  isoWhiskerRight (t.truncLTIsoTruncLE b b' hb') (t.truncGE a)
 
 noncomputable def natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLT a ⟶ t.truncLT b :=
   t.natTransTruncLEOfLE (a-1) (b-1) (by linarith)
 
-noncomputable def truncGELTδ (a b : ℤ) (h : a ≤ b) :
-    t.truncGELT a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) :=
-  (t.truncGELTIsoTruncGELE a (b-1) b (by linarith)).hom ≫
-    whiskerLeft (t.truncLEFiltrationTriangle (a-1) (b-1) (by linarith) a (by linarith))
-      Triangle.π₃Toπ₁ ≫
-    whiskerRight (t.truncLTIsoTruncLE (a-1) a (by linarith)).inv (shiftFunctor C (1 : ℤ))
+-- ]-inf, a[ ⟶ ]-inf, b[ ⟶ [a, b[
 
-noncomputable def truncLTFiltrationTriangle (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C where
-  obj X := Triangle.mk ((t.natTransTruncLTOfLE a b h).app X)
-    ((t.truncGEπ a).app ((t.truncLT b).obj X)) ((t.truncGELTδ a b h).app X)
-  map φ :=
-    { hom₁ := (t.truncLT a).map φ
-      hom₂ := (t.truncLT b).map φ
-      hom₃ := (t.truncGELT a b).map φ
-      comm₂ := by
-        dsimp
-        erw [← NatTrans.naturality]
-        rfl }-/
+noncomputable def truncLTπGELT (a b : ℤ) :
+    t.truncLT b ⟶ t.truncGELT a b :=
+  whiskerLeft (t.truncLT b) (t.truncGEπ a)
+
+/-noncomputable def truncGELTδLT (a b : ℤ) (h : a ≤ b) :
+    t.truncGELT a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) := by
+  sorry
+
+noncomputable def truncTriangleLTLTGELTFunctor (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C :=
+  Triangle.functorMk (t.natTransTruncLTOfLE a b h)
+    (t.truncLTπGELT a b) (t.truncGELTδLT a b h) -/
 
 end TStructure
 
