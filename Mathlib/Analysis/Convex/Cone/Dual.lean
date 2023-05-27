@@ -105,16 +105,16 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
 
 theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
-  refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_Union_of_mem _ hy) _
+  refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy
   rw [ConvexCone.mem_iInf] at hx
-  obtain ⟨j, hj⟩ := mem_Union.mp hy
+  obtain ⟨j, hj⟩ := mem_iUnion.mp hy
   exact hx _ _ hj
 #align inner_dual_cone_Union innerDualCone_iUnion
 
 theorem innerDualCone_sUnion (S : Set (Set H)) :
     (⋃₀ S).innerDualCone = sInf (Set.innerDualCone '' S) := by
-  simp_rw [sInf_image, sUnion_eq_bUnion, innerDualCone_iUnion]
+  simp_rw [sInf_image, sUnion_eq_biUnion, innerDualCone_iUnion]
 #align inner_dual_cone_sUnion innerDualCone_sUnion
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
@@ -133,7 +133,7 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
     rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]
-  exact is_closed_Ici.preimage (by continuity)
+  exact isClosed_Ici.preimage (by continuity)
 #align is_closed_inner_dual_cone isClosed_innerDualCone
 
 theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
@@ -166,7 +166,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
     ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
   -- let `z` be the point in `K` closest to `b`
-  obtain ⟨z, hzK, infi⟩ := exists_norm_eq_iInf_of_complete_convex Ne hc.is_complete K.convex b
+  obtain ⟨z, hzK, infi⟩ := exists_norm_eq_iInf_of_complete_convex ne hc.isComplete K.convex b
   -- for any `w` in `K`, we have `⟪b - z, w - z⟫_ℝ ≤ 0`
   have hinner := (norm_eq_iInf_iff_real_inner_le_zero K.convex hzK).1 iInf
   -- set `y := z - b`
@@ -204,7 +204,7 @@ theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
   constructor
   · rw [mem_innerDualCone, ← SetLike.mem_coe]
     contrapose!
-    exact K.hyperplane_separation_of_nonempty_of_is_closed_of_nmem Ne hc
+    exact K.hyperplane_separation_of_nonempty_of_isClosed_of_nmem ne hc
   · rintro hxK y h
     specialize h x hxK
     rwa [real_inner_comm]
