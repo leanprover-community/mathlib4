@@ -9,9 +9,9 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Algebra.Category.Group.Limits
+import Mathlib.Algebra.Category.GroupCat.Limits
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -151,4 +151,3 @@ theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
 #align AddCommGroup.biproduct_iso_pi_inv_comp_π AddCommGroupCat.biproductIsoPi_inv_comp_π
 
 end AddCommGroupCat
-
