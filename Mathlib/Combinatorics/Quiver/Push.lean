@@ -14,7 +14,7 @@ import Mathlib.Combinatorics.Quiver.Basic
 
 # Pushing a quiver structure along a map
 
-Given a map `σ : V → W` and a `Quiver` instance on `V`, this files defines a `quiver` instance
+Given a map `σ : V → W` and a `Quiver` instance on `V`, this files defines a `Quiver` instance
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
 
 -/
