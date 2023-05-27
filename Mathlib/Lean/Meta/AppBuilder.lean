@@ -12,7 +12,14 @@ import Mathlib.Lean.Meta.ExprWithLevels
 
 # Additions to Lean.Meta.AppBuilder
 
-We provide variants of `mkAppM` and `mkAppN` for customized behavior.
+We provide variants of `mkAppM` and `mkAppN` for customized behavior. Namely:
+
+* `mkApp*Unifying`(`'`): Checks that argument types are defeq to the corresponding input types, and
+does not set a new MCtx depth
+
+* `mkAppMUnifyingWithNewMVars`(`'`): Unifies at the current MCtx depth as above, and does not fail
+if newly-created implicit argument mvars are unassigned, instead returning them along with the
+`Expr`. Useful if we want to delay the assignment of these metavariables.
 
 This includes specialized appbuilder functionality for `ExprWithLevels`.
 
