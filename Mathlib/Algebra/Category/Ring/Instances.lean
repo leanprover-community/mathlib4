@@ -24,11 +24,11 @@ instance localization_unit_isIso (R : CommRingCat) :
   IsIso.of_iso (IsLocalization.atOne R (Localization.Away (1 : R))).toRingEquiv.toCommRingCatIso
 #align localization_unit_is_iso localization_unit_isIso
 
-instance localization_unit_is_iso' (R : CommRingCat) :
+instance localization_unit_isIso' (R : CommRingCat) :
     @IsIso CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) := by
   cases R
   exact localization_unit_isIso _
-#align localization_unit_is_iso' localization_unit_is_iso'
+#align localization_unit_is_iso' localization_unit_isIso'
 
 theorem IsLocalization.epi {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
     [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=

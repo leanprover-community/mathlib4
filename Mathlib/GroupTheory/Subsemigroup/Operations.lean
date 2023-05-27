@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
   `S` and `T`.
 * `Subsemigroup.prodEquiv`: semigroup isomorphism between `s.prod t` and `s × t`;
 
-### Operations on `mul_hom`s
+### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
 * `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;

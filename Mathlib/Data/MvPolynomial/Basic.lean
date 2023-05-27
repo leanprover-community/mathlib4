@@ -92,7 +92,7 @@ def MvPolynomial (σ : Type _) (R : Type _) [CommSemiring R] :=
 
 namespace MvPolynomial
 
--- porting note: because of `mv_polynomial.C` and `mv_polynomial.X` this linter throws
+-- porting note: because of `MvPolynomial.C` and `MvPolynomial.X` this linter throws
 -- tons of warnings in this file, and it's easier to just disable them globally in the file
 set_option linter.uppercaseLean3 false
 

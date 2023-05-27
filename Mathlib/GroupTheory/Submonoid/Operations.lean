@@ -1468,7 +1468,7 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
 
 section Actions
 
-/-! ### Actions by `submonoid`s
+/-! ### Actions by `Submonoid`s
 
 These instances tranfer the action by an element `m : M` of a monoid `M` written as `m • a` onto the
 action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.

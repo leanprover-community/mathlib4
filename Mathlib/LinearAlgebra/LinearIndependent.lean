@@ -44,7 +44,7 @@ vectors.
 
 * `Fintype.linearIndependent_iff`: if `ι` is a finite type, then any function `f : ι → R` has
   finite support, so we can reformulate the statement using `∑ i : ι, f i • v i` instead of a sum
-  over an auxiliary `s : finset ι`;
+  over an auxiliary `s : Finset ι`;
 * `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
 * `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;

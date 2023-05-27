@@ -28,7 +28,7 @@ In the following, `{α : Type _} [Fintype α] [DecidableEq α]`.
 * `Equiv.Perm.isoCycle'`: the same equivalence as `Equiv.Perm.isoCycle`
   but with evaluation via choosing over fintypes
 * The notation `c[1, 2, 3]` to emulate notation of cyclic permutations `(1 2 3)`
-* A `has_repr` instance for any `Perm α`, by representing the `Finset` of
+* A `Repr` instance for any `Perm α`, by representing the `Finset` of
   `Cycle α` that correspond to the cycle factors.
 
 ## Main results
@@ -44,7 +44,7 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-Running `#eval` on even a simple noncyclic permutation `c[(1 : fin 7), 2, 3] * c[0, 5]`
+Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
 to show it takes a long time. TODO: is this because computing the cycle factors is slow?
 
 -/

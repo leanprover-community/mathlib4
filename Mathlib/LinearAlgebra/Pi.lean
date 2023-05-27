@@ -489,7 +489,7 @@ theorem funUnique_apply (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoi
 
 variable (R M)
 
-/-- Linear equivalence between dependent functions `(i : fin 2) → M i` and `M 0 × M 1`. -/
+/-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
 @[simps (config :=
       { simpRhs := true
         fullyApplied := false }) symm_apply]
@@ -508,7 +508,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 #align linear_equiv.pi_fin_two_apply LinearEquiv.piFinTwo_apply
 
-/-- Linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
+/-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! (config := .asFn)]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }

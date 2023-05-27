@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 # Convex sets and functions in vector spaces
 
 In a 𝕜-vector space, we define the following objects and properties.
-* `convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
+* `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
 * `stdSimplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `Fintype ι`). It is the
   intersection of the positive quadrant with the hyperplane `s.sum = 1`.
 
@@ -552,7 +552,7 @@ end LinearOrderedField
 
 /-!
 #### Convex sets in an ordered space
-Relates `convex` and `OrdConnected`.
+Relates `Convex` and `OrdConnected`.
 -/
 
 

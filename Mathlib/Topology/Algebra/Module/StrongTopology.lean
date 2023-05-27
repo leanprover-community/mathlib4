@@ -160,7 +160,7 @@ theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [Topolog
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  -- Porting note: replace `nhds_induced` by `inducing.nhds_eq_comap` (which needs an additional
+  -- Porting note: replace `nhds_induced` by `Inducing.nhds_eq_comap` (which needs an additional
   -- `letI`) so that Lean doesn't try to use the product topology
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
   rw [(strongTopology.embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]

@@ -107,7 +107,7 @@ theorem coe_nil : ↑(@Sym.nil α) = (0 : Multiset α) :=
   rfl
 #align sym.coe_nil Sym.coe_nil
 
-/-- Inserts an element into the term of `sym α n`, increasing the length by one.
+/-- Inserts an element into the term of `Sym α n`, increasing the length by one.
 -/
 @[match_pattern]
 def cons (a : α) (s : Sym α n) : Sym α n.succ :=
@@ -348,7 +348,7 @@ theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
 instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
   (replicate_right_injective n.succ_ne_zero).nontrivial
 
-/-- A function `α → β` induces a function `sym α n → sym β n` by applying it to every element of
+/-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of
 the underlying `n`-tuple. -/
 def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
   ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
@@ -360,7 +360,7 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
   Multiset.mem_map
 #align sym.mem_map Sym.mem_map
 
-/-- Note: `sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `sym.map_congr` -/
+/-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type _} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
   ext; simp [Sym.map]; rfl
@@ -490,7 +490,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_cast Sym.mem_cast
 
-/-- Append a pair of `sym` terms. -/
+/-- Append a pair of `Sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
   ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
 #align sym.append Sym.append

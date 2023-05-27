@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Pairwise.Basic
 /-!
 # Relations holding pairwise
 
-In this file we prove many facts about `pairwise` and the set lattice.
+In this file we prove many facts about `Pairwise` and the set lattice.
 -/
 
 
@@ -72,8 +72,8 @@ section CompleteLattice
 variable [CompleteLattice α]
 
 
-/-- Bind operation for `set.pairwise_disjoint`. If you want to only consider finsets of indices, you
-can use `set.pairwise_disjoint.bUnion_finset`. -/
+/-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
+can use `Set.PairwiseDisjoint.biUnion_finset`. -/
 theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by

@@ -102,7 +102,7 @@ variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 /-- A universal property of the dual numbers, providing a unique `R[ε] →ₐ[R] A` for every element
 of `A` which squares to `0`.
 
-This isomorphism is named to match the very similar `complex.lift`. -/
+This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps!]
 def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
   Equiv.trans

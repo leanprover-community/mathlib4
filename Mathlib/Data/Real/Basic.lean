@@ -232,7 +232,7 @@ instance commRing : CommRing ℝ := by
         | apply mul_assoc
         | apply mul_comm
 
-/-- `real.equiv_Cauchy` as a ring equivalence. -/
+/-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with

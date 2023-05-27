@@ -333,7 +333,7 @@ theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a 
 
 #align option.lift_or_get_some_some Option.liftOrGet_some_some
 
-/-- Given an element of `a : option α`, a default element `b : β` and a function `α → β`, apply this
+/-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
 def casesOn' : Option α → β → (α → β) → β
   | none, n, _ => n

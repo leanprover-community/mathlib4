@@ -101,7 +101,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 
 /-- Product of a list.
 
-     `prod [a, b, c] = ((1 * a) * b) * c` -/
+     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
 def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
@@ -110,7 +110,7 @@ def prod [Mul α] [One α] : List α → α :=
 -- dependencies.
 /-- Sum of a list.
 
-     `sum [a, b, c] = ((0 + a) + b) + c` -/
+     `List.sum [a, b, c] = ((0 + a) + b) + c` -/
 def sum [Add α] [Zero α] : List α → α :=
   foldl (· + ·) 0
 #align list.sum List.sum
@@ -225,7 +225,7 @@ def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
 /-- A variant of `mapIdxM` specialised to applicative actions which
-return `unit`. -/
+return `Unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
 #align list.mmap_with_index' List.mapIdxM'
@@ -245,7 +245,7 @@ end mapIdxM
 #align list.forall₂ List.Forall₂
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+`List.All₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
 def All₂ (p : α → Prop) : List α → Prop
   | [] => True

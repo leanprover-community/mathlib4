@@ -7,7 +7,7 @@ Authors: Alex Keizer
 import Lean
 
 /-!
-  Adds a `typevec` simp attribute.
+  Adds a `TypeVec` simp attribute.
   Has to be in a separate file from `TypeVec.lean`, since simp attributes cannot be used directly in
   the file that declares them.
 -/
