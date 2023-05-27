@@ -170,6 +170,15 @@ theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib 
   ring
 #align nat.fib_two_mul_add_one Nat.fib_two_mul_add_one
 
+theorem fib_two_mul_add_two (n : ℕ) :
+    fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
+  rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
+  -- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
+  have : fib n ≤ 2 * fib (n + 1) :=
+    le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ le_mul_of_pos_right two_pos)
+  zify [this]
+  ring
+
 section deprecated
 
 set_option linter.deprecated false
@@ -186,13 +195,8 @@ theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2
   fib_bit1 n
 #align nat.fib_bit0_succ Nat.fib_bit0_succ
 
--- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
 theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
-  rw [Nat.bit1_eq_succ_bit0, fib_add_two, fib_bit0, fib_bit0_succ]
-  have : fib n ≤ 2 * fib (n + 1) :=
-    le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ le_mul_of_pos_right two_pos)
-  zify [this]
-  ring
+  rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_two]
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
 end deprecated
@@ -302,136 +306,3 @@ theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n,
 #align nat.fib_succ_eq_succ_sum Nat.fib_succ_eq_succ_sum
 
 end Nat
-
-namespace NormNum
-
-open Tactic Nat
-
-/-! ### `norm_num` plugin for `fib`
-
-The `norm_num` plugin uses a strategy parallel to that of `Nat.fastFib`, but it instead
-produces proofs of what `Nat.fib` evaluates to.
--/
-/-
-expected ')'
--/
-
-section deprecated
-
-set_option linter.deprecated false
-
-/-- Auxiliary definition for `prove_fib` plugin. -/
-def IsFibAux (n a b : ℕ) :=
-  fib n = a ∧ fib (n + 1) = b
-#align norm_num.is_fib_aux NormNum.IsFibAux
-
-theorem is_fib_aux_one : IsFibAux 1 1 1 :=
-  ⟨fib_one, fib_two⟩
-#align norm_num.is_fib_aux_one NormNum.is_fib_aux_one
-
-theorem is_fib_aux_bit0 {n a b c a2 b2 a' b' : ℕ} (H : IsFibAux n a b) (h1 : a + c = bit0 b)
-    (h2 : a * c = a') (h3 : a * a = a2) (h4 : b * b = b2) (h5 : a2 + b2 = b') :
-    IsFibAux (bit0 n) a' b' :=
-  ⟨by
-    rw [fib_bit0, H.1, H.2, ← bit0_eq_two_mul,
-      show bit0 b - a = c by rw [← h1, Nat.add_sub_cancel_left], h2],
-    by rw [fib_bit0_succ, H.1, H.2, pow_two, pow_two, h3, h4, add_comm, h5]⟩
-#align norm_num.is_fib_aux_bit0 NormNum.is_fib_aux_bit0
-
-theorem is_fib_aux_bit1 {n a b c a2 b2 a' b' : ℕ} (H : IsFibAux n a b) (h1 : a * a = a2)
-    (h2 : b * b = b2) (h3 : a2 + b2 = a') (h4 : bit0 a + b = c) (h5 : b * c = b') :
-    IsFibAux (bit1 n) a' b' :=
-  ⟨by rw [fib_bit1, H.1, H.2, pow_two, pow_two, h1, h2, add_comm, h3], by
-    rw [fib_bit1_succ, H.1, H.2, ← bit0_eq_two_mul, h4, h5]⟩
-#align norm_num.is_fib_aux_bit1 NormNum.is_fib_aux_bit1
-
-theorem is_fib_aux_bit0_done {n a b c a' : ℕ} (H : IsFibAux n a b) (h1 : a + c = bit0 b)
-    (h2 : a * c = a') : fib (bit0 n) = a' :=
-  (is_fib_aux_bit0 H h1 h2 rfl rfl rfl).1
-#align norm_num.is_fib_aux_bit0_done NormNum.is_fib_aux_bit0_done
-
-theorem is_fib_aux_bit1_done {n a b a2 b2 a' : ℕ} (H : IsFibAux n a b) (h1 : a * a = a2)
-    (h2 : b * b = b2) (h3 : a2 + b2 = a') : fib (bit1 n) = a' :=
-  (is_fib_aux_bit1 H h1 h2 h3 rfl rfl).1
-#align norm_num.is_fib_aux_bit1_done NormNum.is_fib_aux_bit1_done
-
-end deprecated
--- Porting note: This part of the file is tactic related
-/-
-/-- `prove_fib_aux ic n` returns `(ic', a, b, ⊢ is_fib_aux n a b)`, where `n` is a numeral. -/
-unsafe def prove_fib_aux (ic : instance_cache) : expr → tactic (instance_cache × expr × expr × expr)
-  | e =>
-    match match_numeral e with
-    | match_numeral_result.one => pure (ic, q((1 : ℕ)), q((1 : ℕ)), q(is_fib_aux_one))
-    | match_numeral_result.bit0 e => do
-      let (ic, a, b, H) ← prove_fib_aux e
-      let na ← a.toNat
-      let nb ← b.toNat
-      let (ic, c) ← ic.ofNat (2 * nb - na)
-      let (ic, h1) ← prove_add_nat ic a c (q((bit0 : ℕ → ℕ)).mk_app [b])
-      let (ic, a', h2) ← prove_mul_nat ic a c
-      let (ic, a2, h3) ← prove_mul_nat ic a a
-      let (ic, b2, h4) ← prove_mul_nat ic b b
-      let (ic, b', h5) ← prove_add_nat' ic a2 b2
-      pure
-          (ic, a', b',
-            q(@is_fib_aux_bit0).mk_app [e, a, b, c, a2, b2, a', b', H, h1, h2, h3, h4, h5])
-    | match_numeral_result.bit1 e => do
-      let (ic, a, b, H) ← prove_fib_aux e
-      let na ← a.toNat
-      let nb ← b.toNat
-      let (ic, c) ← ic.ofNat (2 * na + nb)
-      let (ic, a2, h1) ← prove_mul_nat ic a a
-      let (ic, b2, h2) ← prove_mul_nat ic b b
-      let (ic, a', h3) ← prove_add_nat' ic a2 b2
-      let (ic, h4) ← prove_add_nat ic (q((bit0 : ℕ → ℕ)).mk_app [a]) b c
-      let (ic, b', h5) ← prove_mul_nat ic b c
-      pure
-          (ic, a', b',
-            q(@is_fib_aux_bit1).mk_app [e, a, b, c, a2, b2, a', b', H, h1, h2, h3, h4, h5])
-    | _ => failed
-#align norm_num.prove_fib_aux NormNum.prove_fib_aux
-
-/-- A `norm_num` plugin for `fib n` when `n` is a numeral.
-Uses the binary representation of `n` like `Nat.fastFib`. -/
-unsafe def prove_fib (ic : instance_cache) (e : expr) : tactic (instance_cache × expr × expr) :=
-  match match_numeral e with
-  | match_numeral_result.zero => pure (ic, q((0 : ℕ)), q(fib_zero))
-  | match_numeral_result.one => pure (ic, q((1 : ℕ)), q(fib_one))
-  | match_numeral_result.bit0 e => do
-    let (ic, a, b, H) ← prove_fib_aux ic e
-    let na ← a.toNat
-    let nb ← b.toNat
-    let (ic, c) ← ic.ofNat (2 * nb - na)
-    let (ic, h1) ← prove_add_nat ic a c (q((bit0 : ℕ → ℕ)).mk_app [b])
-    let (ic, a', h2) ← prove_mul_nat ic a c
-    pure (ic, a', q(@is_fib_aux_bit0_done).mk_app [e, a, b, c, a', H, h1, h2])
-  | match_numeral_result.bit1 e => do
-    let (ic, a, b, H) ← prove_fib_aux ic e
-    let (ic, a2, h1) ← prove_mul_nat ic a a
-    let (ic, b2, h2) ← prove_mul_nat ic b b
-    let (ic, a', h3) ← prove_add_nat' ic a2 b2
-    pure (ic, a', q(@is_fib_aux_bit1_done).mk_app [e, a, b, a2, b2, a', H, h1, h2, h3])
-  | _ => failed
-#align norm_num.prove_fib NormNum.prove_fib
-
-/-- A `norm_num` plugin for `fib n` when `n` is a numeral.
-/-
-unknown identifier ''
--/
-Uses the binary representation of `n` like `Nat.fastFib`. -/
-@[norm_num]
-unsafe def eval_fib : expr → tactic (expr × expr)
-  | (fib $(en)) => do
-    let n ← en.toNat
-    match n with
-      | 0 => pure (q((0 : ℕ)), q(fib_zero))
-      | 1 => pure (q((1 : ℕ)), q(fib_one))
-      | 2 => pure (q((1 : ℕ)), q(fib_two))
-      | _ => do
-        let c ← mk_instance_cache q(ℕ)
-        Prod.snd <$> prove_fib c en
-  | _ => failed
-#align norm_num.eval_fib NormNum.eval_fib
--/
-end NormNum
