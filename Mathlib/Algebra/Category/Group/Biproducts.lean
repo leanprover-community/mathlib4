@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Algebra.Category.Group.Preadditive
-import Mathbin.CategoryTheory.Preadditive.Biproducts
-import Mathbin.Algebra.Category.Group.Limits
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.Algebra.Category.Group.Limits
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -40,8 +40,7 @@ instance : HasFiniteBiproducts AddCommGroupCat :=
 /-- Construct limit data for a binary product in `AddCommGroup`, using `AddCommGroup.of (G × H)`.
 -/
 @[simps cone_x isLimit_lift]
-def binaryProductLimitCone (G H : AddCommGroupCat.{u}) : Limits.LimitCone (pair G H)
-    where
+def binaryProductLimitCone (G H : AddCommGroupCat.{u}) : Limits.LimitCone (pair G H) where
   Cone :=
     { pt := AddCommGroupCat.of (G × H)
       π :=
@@ -100,8 +99,7 @@ variable {J : Type w} (f : J → AddCommGroupCat.{max w u})
 to the cartesian product of those groups.
 -/
 @[simps]
-def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j)
-    where
+def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x
   map_zero' := by
     ext
@@ -114,8 +112,7 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j)
 /-- Construct limit data for a product in `AddCommGroup`, using `AddCommGroup.of (Π j, F.obj j)`.
 -/
 @[simps]
-def productLimitCone : Limits.LimitCone (Discrete.functor f)
-    where
+def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   Cone :=
     { pt := AddCommGroupCat.of (∀ j, f j)
       π := Discrete.natTrans fun j => Pi.evalAddMonoidHom (fun j => f j) j.as }
