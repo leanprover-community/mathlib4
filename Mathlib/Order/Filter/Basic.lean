@@ -235,7 +235,7 @@ end Filter
 
 namespace Lean.Parser.Tactic
 
-open Elab.Tactic
+open Lean Meta Elab Tactic
 
 /--
 `filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
@@ -255,22 +255,24 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
   ("with" (colGt term:max)*)? ("using" term)? : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) =>
-  withMainContext do
-    for e in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
-      let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
-      liftMetaTactic fun goal => do
-        goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
-    liftMetaTactic fun goal => do
-      goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
-    match wth with
-    | some l => evalTactic <|← `(tactic| intro $[$l]*)
-    | none   => evalTactic <|← `(tactic| skip)
-    match usingArg with
-    | some e => evalTactic <|← `(tactic| exact $e)
-    | none   => evalTactic <|← `(tactic| skip)
+| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do
+  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
+  let args := (args.map Syntax.TSepArray.getElems).getD #[]
+  for e in args.reverse do
+    let goal ← getMainGoal
+    replaceMainGoal <| ← goal.withContext <| runTermElab do
+      let m ← mkFreshExprMVar none
+      let lem ← Term.elabTermEnsuringType
+        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
+      goal.assign lem
+      return [m.mvarId!]
+  liftMetaTactic fun goal => do
+    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
+  evalTactic <|← `(tactic| dsimp only [Set.mem_setOf_eq])
+  if let some l := wth then
+    evalTactic <|← `(tactic| intro $[$l]*)
+  if let some e := usingArg then
+    evalTactic <|← `(tactic| exact $e)
 
 end Lean.Parser.Tactic
 
