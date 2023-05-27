@@ -226,7 +226,7 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
     (max 256 (synthInstance.maxSize.get opts))) do
   -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
-  let some (_, lhs, rhs) := (← instantiateMVars ty).eq? | exception g "Not an equation of morphisms."
+  let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
   -- This new equation is defeq to the original by assumption
@@ -300,7 +300,7 @@ by simpa using w
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
 def insertTrailingIds (g : MVarId) : MetaM MVarId := do
-  let some (_, lhs, rhs) := (← instantiateMVars (← g.getType)).eq? | exception g "Not an equality."
+  let some (_, lhs, rhs) := (← withReducible g.getType').eq? | exception g "Not an equality."
   let mut g := g
   if !(lhs.isAppOf ``CategoryStruct.comp) then
     let [g'] ← g.applyConst ``insert_id_lhs | exception g "failed to apply insert_id_lhs"

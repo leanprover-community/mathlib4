@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Monoidal.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory
 
