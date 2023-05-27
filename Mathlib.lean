@@ -32,6 +32,7 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.GroupCat.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Colimits
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
