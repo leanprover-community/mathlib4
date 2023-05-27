@@ -164,16 +164,14 @@ def normalizeIso {a : B} :
 -/
 theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     normalizeAux p f = normalizeAux p g := by
-  rcases η with ⟨η⟩
+  rcases η with ⟨η'⟩
   apply @congr_fun _ _ fun p => normalizeAux p f
-  clear p
-  induction η
+  clear p η
+  induction η'
   case vcomp => apply Eq.trans <;> assumption
   -- p ≠ nil required! See the docstring of `normalize_aux`.
-  case whisker_left _ _ _ _ _ _ _ ih =>
-    funext x
-    apply congr_fun ih
-  case whisker_right _ _ _ _ _ _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih p) rfl
+  case whisker_left _ _ _ _ _ _ _ ih => funext x; apply congr_fun ih
+  case whisker_right _ _ _ _ _ _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   all_goals funext; rfl
 #align category_theory.free_bicategory.normalize_aux_congr CategoryTheory.FreeBicategory.normalizeAux_congr
 
@@ -182,21 +180,19 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
-  rcases η with ⟨η'⟩; induction η'
+
+  rcases η with ⟨η'⟩; clear η; induction η'
   case id => simp
-  case
-    vcomp a b f g h η' θ ihf ihg =>
-    change _ ◁ Hom₂.mk (Hom₂.vcomp η' θ) ≫ _ = _
-    rw [mk_vcomp, Bicategory.whiskerLeft_comp]
-    dsimp [Hom₂.mk]
-    slice_lhs 2 3 =>
-      rw [ihg p (by sorry)]
-    slice_lhs 1 2 => rw [ihf _ (by sorry)]
-  case
-    -- p ≠ nil required! See the docstring of `normalize_aux`.
-    whisker_left _ _ _ _ _ _ _ ih =>
-    dsimp;
-    simp_rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih, assoc]
+  case vcomp _ _ _ _ _ η θ ihf ihg =>
+    simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
+    slice_lhs 2 3 => rw [ihg p]
+    slice_lhs 1 2 => rw [ihf]
+    simp
+  -- p ≠ nil required! See the docstring of `normalize_aux`.
+  case whisker_left _ _ _ _ _ _ η ih =>
+    dsimp
+    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
+    simp
   case whisker_right _ _ _ _ _ h η' ih =>
     dsimp
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih, comp_whiskerRight]
