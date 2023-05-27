@@ -155,7 +155,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   induction η'
   case vcomp => apply Eq.trans <;> assumption
   -- p ≠ nil required! See the docstring of `normalizeAux`.
-  case whisker_left _ _ _ _ _ _ _ ih => funext x; apply congr_fun ih
+  case whisker_left _ _ _ _ _ _ _ ih => funext; apply congr_fun ih
   case whisker_right _ _ _ _ _ _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   all_goals funext; rfl
 #align category_theory.free_bicategory.normalize_aux_congr CategoryTheory.FreeBicategory.normalizeAux_congr
@@ -170,11 +170,11 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
   case id => simp
   case vcomp _ _ _ _ _ η θ ihf ihg =>
     simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
-    slice_lhs 2 3 => rw [ihg p]
+    slice_lhs 2 3 => rw [ihg]
     slice_lhs 1 2 => rw [ihf]
     simp
   -- p ≠ nil required! See the docstring of `normalizeAux`.
-  case whisker_left _ _ _ _ _ _ η ih =>
+  case whisker_left _ _ _ _ _ _ _ ih =>
     dsimp
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
@@ -183,7 +183,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih, comp_whiskerRight]
     have := dcongr_arg (fun x => (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
     dsimp at this; simp [this]
-  all_goals dsimp; dsimp [comp_def]; simp
+  all_goals simp
 #align category_theory.free_bicategory.normalize_naturality CategoryTheory.FreeBicategory.normalize_naturality
 
 -- Porting note: the left-hand side is not in simp-normal form.
@@ -234,8 +234,8 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
 
 /-- The coherence theorem for bicategories. -/
 instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
-  ⟨fun η θ => by
-    exact (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ =>
+    (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
 #align category_theory.free_bicategory.locally_thin CategoryTheory.FreeBicategory.locally_thin
 
 /-- Auxiliary definition for `inclusion`. -/
