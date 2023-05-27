@@ -60,13 +60,13 @@ theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x 
 
 @[simp]
 theorem innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun x hy y => False.elim
+  eq_top_iff.mpr fun _ _ _ => False.elim
 #align inner_dual_cone_empty innerDualCone_empty
 
 /-- Dual cone of the convex cone {0} is the total space. -/
 @[simp]
 theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun x hy y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
+  eq_top_iff.mpr fun _ _ y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
 #align inner_dual_cone_zero innerDualCone_zero
 
 /-- Dual cone of the total space is the convex cone {0}. -/
@@ -74,7 +74,7 @@ theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
 theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
-    exact eq_singleton_iff_unique_mem.mpr ⟨fun x hx => (inner_zero_right _).ge, this⟩
+    exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
 #align inner_dual_cone_univ innerDualCone_univ
 
@@ -82,14 +82,14 @@ theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.inn
   fun y hy x hx => hy x (h hx)
 #align inner_dual_cone_le_inner_dual_cone innerDualCone_le_innerDualCone
 
-theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x hx => by rw [inner_zero_right]
+theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
 #align pointed_inner_dual_cone pointed_innerDualCone
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `λ y, ⟪x, y⟫`. -/
 theorem innerDualCone_singleton (x : H) :
     ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
-  ConvexCone.ext fun i => forall_eq
+  ConvexCone.ext fun _ => forall_eq
 #align inner_dual_cone_singleton innerDualCone_singleton
 
 theorem innerDualCone_union (s t : Set H) :
@@ -193,7 +193,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
       _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := (add_le_add rfl.ge hinner₀)
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
-      
+
 #align convex_cone.hyperplane_separation_of_nonempty_of_is_closed_of_nmem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
 
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself.  -/
@@ -213,4 +213,3 @@ theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
 end CompleteSpace
 
 end Dual
-
