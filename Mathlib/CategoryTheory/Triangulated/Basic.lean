@@ -281,41 +281,123 @@ def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] :
     hom₂ := f
     hom₃ := 0 }
 
+namespace Triangle
+
 variable {C}
 
 @[simps]
-def Triangle.π₁ : Triangle C ⥤ C where
+def π₁ : Triangle C ⥤ C where
   obj T := T.obj₁
   map f := f.hom₁
 
 @[simps]
-def Triangle.π₂ : Triangle C ⥤ C where
+def π₂ : Triangle C ⥤ C where
   obj T := T.obj₂
   map f := f.hom₂
 
 @[simps]
-def Triangle.π₃ : Triangle C ⥤ C where
+def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
 @[simps]
-def Triangle.π₁Toπ₂ : (Triangle.π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
+def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
   app T := T.mor₁
 
 @[simps]
-def Triangle.π₂Toπ₃ : (Triangle.π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
+def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
   app T := T.mor₂
 
 @[simps]
-def Triangle.π₃Toπ₁ : (Triangle.π₃ : Triangle C ⥤ C) ⟶ Triangle.π₁ ⋙ shiftFunctor C (1 : ℤ) where
+def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
   app T := T.mor₃
 
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₁ :=
-  (inferInstance : IsIso (Triangle.π₁.map φ))
+  (inferInstance : IsIso (π₁.map φ))
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₂ :=
-  (inferInstance : IsIso (Triangle.π₂.map φ))
+  (inferInstance : IsIso (π₂.map φ))
 instance {A B : Triangle C} (φ : A ⟶ B) [IsIso φ] : IsIso φ.hom₃ :=
-  (inferInstance : IsIso (Triangle.π₃.map φ))
+  (inferInstance : IsIso (π₃.map φ))
+
+variable {J : Type _} [Category J]
+
+@[simps]
+def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    J ⥤ Triangle C where
+  obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
+  map φ :=
+    { hom₁ := obj₁.map φ
+      hom₂ := obj₂.map φ
+      hom₃ := obj₃.map φ }
+
+@[simps]
+def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
+    (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ hom₃ = hom₂ ≫ whiskerLeft B π₂Toπ₃)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) =
+      hom₃ ≫ whiskerLeft B π₃Toπ₁) : A ⟶ B where
+  app j :=
+    { hom₁ := hom₁.app j
+      hom₂ := hom₂.app j
+      hom₃ := hom₃.app j
+      comm₁ := NatTrans.congr_app comm₁ j
+      comm₂ := NatTrans.congr_app comm₂ j
+      comm₃ := NatTrans.congr_app comm₃ j }
+  naturality _ _ φ := by
+    ext
+    . exact hom₁.naturality φ
+    . exact hom₂.naturality φ
+    . exact hom₃.naturality φ
+
+@[simps!]
+def functorHomMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (hom₁ : obj₁ ⟶ obj₁') (hom₂ : obj₂ ⟶ obj₂') (hom₃ : obj₃ ⟶ obj₃')
+    (comm₁ : mor₁ ≫ hom₂ = hom₁ ≫ mor₁')
+    (comm₂ : mor₂ ≫ hom₃ = hom₂ ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) = hom₃ ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
+  functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
+
+@[simps]
+def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
+    (iso₂ : A ⋙ π₂ ≅ B ⋙ π₂) (iso₃ : A ⋙ π₃ ≅ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ iso₂.hom = iso₁.hom ≫ whiskerLeft B π₁Toπ₂)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ iso₃.hom = iso₂.hom ≫ whiskerLeft B π₂Toπ₃)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) =
+      iso₃.hom ≫ whiskerLeft B π₃Toπ₁) : A ≅ B where
+  hom := functorHomMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
+  inv := functorHomMk _ _ iso₁.inv iso₂.inv iso₃.inv
+    (by simp only [← cancel_epi iso₁.hom, ← reassoc_of% comm₁,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by simp only [← cancel_epi iso₂.hom, ← reassoc_of% comm₂,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by
+      simp only [← cancel_epi iso₃.hom, ← reassoc_of% comm₃, Iso.hom_inv_id_assoc,
+        ← whiskerRight_comp, Iso.hom_inv_id, whiskerRight_id']
+      apply comp_id)
+
+@[simps!]
+def functorIsoMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (iso₁ : obj₁ ≅ obj₁') (iso₂ : obj₂ ≅ obj₂') (iso₃ : obj₃ ≅ obj₃')
+    (comm₁ : mor₁ ≫ iso₂.hom = iso₁.hom ≫ mor₁')
+    (comm₂ : mor₂ ≫ iso₃.hom = iso₂.hom ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) = iso₃.hom ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ≅ functorMk mor₁' mor₂' mor₃' :=
+  functorIsoMk _ _ iso₁ iso₂ iso₃ comm₁ comm₂ comm₃
+
+end Triangle
 
 section Preadditive
 
