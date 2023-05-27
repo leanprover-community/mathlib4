@@ -90,10 +90,6 @@ theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := by
   rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
--- @[simp]
--- theorem eq_toFun (f : ArithmeticFunction R) : f = f.toFun := by
---   rfl
-
 @[simp]
 theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
   (ZeroHom.mk f hf) = f := rfl
