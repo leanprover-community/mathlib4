@@ -68,7 +68,7 @@ def inclusionPathAux {a : B} : ∀ {b : B}, Path a b → Hom a b
 /-- Category structure on `Hom a b`. In this file, we will use `Hom a b` for `a b : B`
 (precisely, `FreeBicategory.Hom a b`) instead of the definitionally equal expression
 `a ⟶ b` for `a b : FreeBicategory B`. The main reason is that we have to annoyingly write
-`@Quiver.Hom B _ a b` to get the latter expression when given `a b : B`. -/
+`@Quiver.Hom (FreeBicategory B) _ a b` to get the latter expression when given `a b : B`. -/
 local instance homCategory' (a b : B) : Category (Hom a b) :=
   homCategory a b
 
