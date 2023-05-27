@@ -94,8 +94,8 @@ theorem innerDualCone_singleton (x : H) :
 
 theorem innerDualCone_union (s t : Set H) :
     (s ∪ t).innerDualCone = s.innerDualCone ⊓ t.innerDualCone :=
-  le_antisymm (le_inf (fun x hx y hy => hx _ <| Or.inl hy) fun x hx y hy => hx _ <| Or.inr hy)
-    fun x hx y => Or.ndrec (hx.1 _) (hx.2 _)
+  le_antisymm (le_inf (fun _ hx _ hy => hx _ <| Or.inl hy) fun _ hx _ hy => hx _ <| Or.inr hy)
+    fun _ hx _ => Or.rec (hx.1 _) (hx.2 _)
 #align inner_dual_cone_union innerDualCone_union
 
 theorem innerDualCone_insert (x : H) (s : Set H) :
