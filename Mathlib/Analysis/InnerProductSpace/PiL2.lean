@@ -56,10 +56,10 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
-open Real Set Filter IsROrC Submodule Function
-
-open BigOperators uniformity Topology NNReal ENNReal ComplexConjugate DirectSum
+open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
+  ComplexConjugate DirectSum
 
 noncomputable section
 
@@ -75,7 +75,6 @@ variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable {F' : Type _} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-
@@ -88,11 +87,11 @@ instance PiLp.innerProductSpace {ι : Type _} [Fintype ι] (f : ι → Type _)
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, inner (x i) (y i)
   norm_sq_eq_inner x := by
-    simp only [PiLp.norm_sq_eq_of_L2, AddMonoidHom.map_sum, ← norm_sq_eq_inner, one_div]
+    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_inner, one_div]
   conj_symm := by
     intro x y
     unfold inner
-    rw [RingHom.map_sum]
+    rw [map_sum]
     apply Finset.sum_congr rfl
     rintro z -
     apply inner_conj_symm
@@ -112,9 +111,9 @@ theorem PiLp.inner_apply {ι : Type _} [Fintype ι] {f : ι → Type _} [∀ i, 
 
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `euclidean_space 𝕜 (fin n)`. -/
-@[reducible, nolint unused_arguments]
+@[reducible, nolint unusedArguments]
 def EuclideanSpace (𝕜 : Type _) [IsROrC 𝕜] (n : Type _) [Fintype n] : Type _ :=
-  PiLp 2 fun i : n => 𝕜
+  PiLp 2 fun _ : n => 𝕜
 #align euclidean_space EuclideanSpace
 
 theorem EuclideanSpace.nnnorm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
@@ -124,7 +123,7 @@ theorem EuclideanSpace.nnnorm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fin
 
 theorem EuclideanSpace.norm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = Real.sqrt (∑ i, ‖x i‖ ^ 2) := by
-  simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg (coe : ℝ≥0 → ℝ) x.nnnorm_eq
+  simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 #align euclidean_space.norm_eq EuclideanSpace.norm_eq
 
 theorem EuclideanSpace.dist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
@@ -133,7 +132,7 @@ theorem EuclideanSpace.dist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Finty
 #align euclidean_space.dist_eq EuclideanSpace.dist_eq
 
 theorem EuclideanSpace.nndist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
-    (x y : EuclideanSpace 𝕜 n) : nndist x y = (∑ i, nndist (x i) (y i) ^ 2).sqrt :=
+    (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   (PiLp.nndist_eq_of_L2 x y : _)
 #align euclidean_space.nndist_eq EuclideanSpace.nndist_eq
 
@@ -146,7 +145,8 @@ variable [Fintype ι]
 
 section
 
-attribute [local reducible] PiLp
+-- Porting note: no longer supported
+-- attribute [local reducible] PiLp
 
 instance : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by infer_instance
 
@@ -154,7 +154,9 @@ instance : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by infer_instance
 
 @[simp]
 theorem finrank_euclideanSpace :
-    FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by simp
+    FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
+  unfold EuclideanSpace PiLp
+  simp
 #align finrank_euclidean_space finrank_euclideanSpace
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -481,7 +483,7 @@ theorem Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal �
     (v.toOrthonormalBasis hv : ι → E) = ((v.toOrthonormalBasis hv).toBasis : ι → E) := by
       classical rw [OrthonormalBasis.coe_toBasis]
     _ = (v : ι → E) := by simp
-    
+
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
 variable {v : ι → E}
@@ -865,7 +867,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
       _ = finrank 𝕜 V - finrank 𝕜 S := by simp only [LinearMap.finrank_range_of_inj L.injective]
       _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-      
+
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
@@ -974,4 +976,3 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
 #align inner_matrix_col_col inner_matrix_col_col
 
 end Matrix
-
