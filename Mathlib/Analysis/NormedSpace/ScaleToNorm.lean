@@ -13,6 +13,11 @@ For a nonnegative real number `r` and a vector `x` in a real (semi)normed space,
 
 If `‖x‖ ≠ 0`, then this vector has norm `r` and belongs to the same ray as `x`.
 If `‖x‖ = 0`, then this is the zero vector.
+
+## Implementation notes
+
+Since most facts are true only for nonnegative `r`, we choose to require this argument to be a
+bundled nonnegative real number `NNReal` a.k.a. `ℝ≥0`.
 -/
 
 open Set Function Metric Topology NNReal Filter
