@@ -79,7 +79,7 @@ theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
 #align inner_dual_cone_univ innerDualCone_univ
 
 theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
-  fun y hy x hx => hy x (h hx)
+  fun _ hy x hx => hy x (h hx)
 #align inner_dual_cone_le_inner_dual_cone innerDualCone_le_innerDualCone
 
 theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
@@ -138,7 +138,7 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
 
 theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
     (hc : IsClosed (K : Set H)) : K.Pointed := by
-  obtain ⟨x, hx⟩ := Ne
+  obtain ⟨x, hx⟩ := ne
   let f : ℝ → H := (· • x)
   -- f (0, ∞) is a subset of K
   have fI : f '' Set.Ioi 0 ⊆ (K : Set H) := by
@@ -168,7 +168,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
   -- let `z` be the point in `K` closest to `b`
   obtain ⟨z, hzK, infi⟩ := exists_norm_eq_iInf_of_complete_convex ne hc.isComplete K.convex b
   -- for any `w` in `K`, we have `⟪b - z, w - z⟫_ℝ ≤ 0`
-  have hinner := (norm_eq_iInf_iff_real_inner_le_zero K.convex hzK).1 iInf
+  have hinner := (norm_eq_iInf_iff_real_inner_le_zero K.convex hzK).1 infi
   -- set `y := z - b`
   use z - b
   constructor
@@ -178,7 +178,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
     rwa [add_sub_cancel, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul, ← real_inner_smul_right,
       neg_smul, one_smul, neg_sub] at hinner
   · -- as `K` is closed and non-empty, it is pointed
-    have hinner₀ := hinner 0 (K.pointed_of_nonempty_of_is_closed Ne hc)
+    have hinner₀ := hinner 0 (K.pointed_of_nonempty_of_isClosed ne hc)
     -- the rest of the proof is a straightforward calculation
     rw [zero_sub, inner_neg_right, Right.neg_nonpos_iff] at hinner₀
     have hbz : b - z ≠ 0 := by
