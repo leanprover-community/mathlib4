@@ -21,8 +21,8 @@ grows at a subexponential rate compared to `Complex.re z`. Then
 - `Complex.is_o_log_abs_re_of_subexponential_im_re`: `Real.log ∘ Complex.abs` is `o`-small of
   `Complex.re` along `l`;
 
-- `Complex.isLittleO_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$ along `l`
-  for any complex `a₁`, `a₂` and real `b₁ < b₂`.
+- `Complex.isLittleO_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$
+  along `l` for any complex `a₁`, `a₂` and real `b₁ < b₂`.
 
 We use these assumptions on `l` for two reasons. First, these are the assumptions that naturally
 appear in the proof. Second, in some applications (e.g., in Ilyashenko's proof of the individual
