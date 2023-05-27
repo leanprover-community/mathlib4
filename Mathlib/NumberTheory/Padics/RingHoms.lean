@@ -409,8 +409,7 @@ def toZmodPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
 #align padic_int.to_zmod_pow PadicInt.toZmodPow
 
 theorem ker_toZmodPow (n : ℕ) :
-  RingHom.ker (toZmodPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} :=
-  by
+  RingHom.ker (toZmodPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} := by
   ext x
   rw [RingHom.mem_ker]
   constructor
@@ -428,7 +427,7 @@ theorem ker_toZmodPow (n : ℕ) :
     apply appr_spec
 #align padic_int.ker_to_zmod_pow PadicInt.ker_toZmodPow
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem zMod_cast_comp_toZmodPow (m n : ℕ) (h : m ≤ n) :
     (ZMod.castHom (pow_dvd_pow p h) (ZMod (p ^ m))).comp (@toZmodPow p _ n) = @toZmodPow p _ m := by
   apply ZMod.ringHom_eq_of_ker_eq
@@ -501,8 +500,7 @@ theorem nthHom_zero : nthHom f 0 = 0 := by simp [nthHom]; rfl
 variable {f}
 
 theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
-    (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i :=
-  by
+    (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i := by
   specialize f_compat i j h
   rw [← Int.coe_nat_pow, ← ZMod.int_cast_zmod_eq_zero_iff_dvd, Int.cast_sub]
   dsimp [nthHom]
@@ -652,8 +650,8 @@ theorem lift_spec (n : ℕ) : (toZmodPow n).comp (lift f_compat) = f n := by
 /-- One part of the universal property of `ℤ_[p]` as a projective limit.
 See also `padic_int.lift_spec`.
 -/
-theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZmodPow n).comp g = f n) : lift f_compat = g :=
-  by
+theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZmodPow n).comp g = f n) :
+    lift f_compat = g := by
   ext1 r
   apply eq_of_forall_dist_le
   intro ε hε
