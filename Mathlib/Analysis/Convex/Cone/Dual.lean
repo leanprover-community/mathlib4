@@ -119,8 +119,8 @@ theorem innerDualCone_sUnion (S : Set (Set H)) :
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
 theorem innerDualCone_eq_iInter_innerDualCone_singleton :
-    (s.innerDualCone : Set H) = ⋂ i : s, (({i} : Set H).innerDualCone : Set H) := by
-  rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, Union_of_singleton_coe]
+    (s.innerDualCone : Set H) = ⋂ i : s, (({↑i} : Set H).innerDualCone : Set H) := by
+  rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, iUnion_of_singleton_coe]
 #align inner_dual_cone_eq_Inter_inner_dual_cone_singleton innerDualCone_eq_iInter_innerDualCone_singleton
 
 theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
@@ -129,7 +129,7 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   apply isClosed_iInter
   intro x
   -- the dual cone of a singleton `{x}` is the preimage of `[0, ∞)` under `inner x`
-  have h : ↑({x} : Set H).innerDualCone = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
+  have h : ({↑x} : Set H).innerDualCone = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
     rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]
