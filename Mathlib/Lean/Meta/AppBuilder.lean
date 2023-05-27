@@ -22,6 +22,19 @@ open Lean Meta
 
 open private mkFun throwAppBuilderException withAppBuilderTrace from Lean.Meta.AppBuilder
 
+/-- Like `withAppBuilderTrace`, but generalized to arbitrary return types. -/
+private def withAppBuilderTrace' [ToMessageData α] [ToMessageData β] [ToMessageData γ]
+    (f : α) (xs : β) (k : MetaM γ) : MetaM γ :=
+  let emoji | .ok .. => checkEmoji | .error .. => crossEmoji
+  withTraceNode `Meta.appBuilder (return m!"{emoji ·} f: {f}, xs: {xs}") do
+    try
+      let res ← k
+      trace[Meta.appBuilder.result] "{res}"
+      pure res
+    catch ex =>
+      trace[Meta.appBuilder.error] ex.toMessageData
+      throw ex
+
 namespace Lean.Meta
 
 /-- Helper function for `mkAppNUnifying`. Separated out for use in case the type is known. -/
@@ -130,6 +143,11 @@ def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true)
   withAppBuilderTrace f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifying
 
+local instance : ToMessageData (Expr × Array MVarId × Array MVarId) where
+  toMessageData := fun (e, m₁, m₂) =>
+    toMessageData e ++
+      "\nimplicit mvars:\n" ++ toMessageData m₁ ++
+      "\ninstance mvars:\n" ++ toMessageData m₂
 
 /-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)` where `implicitMVars` and
 `instMVars` are any newly-created metavariables for the implicit and instance arguments of `const`.
@@ -137,6 +155,7 @@ Useful in case we want to e.g. try assigning the `implicitMVars` with `isDefEq` 
 we want to try synthesizing instance arguments later. -/
 def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
+  withAppBuilderTrace' const xs do
     let (f, fType) ← mkFun const
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
 
@@ -145,6 +164,7 @@ we want to e.g. try assigning the `implicitMVars` with `isDefEq` or if we want t
 instance arguments later. -/
 def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
+  withAppBuilderTrace' f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifyingWithNewMVars
 
 namespace ExprWithLevels
@@ -201,7 +221,7 @@ def mkAppMWithLevelsUnifyingWithNewMVars' (f : ExprWithLevels) (xs : Array Expr)
     : MetaM (ExprWithLevels × Array MVarId × Array MVarId) := do
   let (env, f) ← levelMetaTelescope f
   let fType ← inferType f
-  let (e, implicitMVars, instMVars) ← do
+  let (e, implicitMVars, instMVars) ← withAppBuilderTrace' f xs do
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
   return (← abstract env e, implicitMVars, instMVars)
 
