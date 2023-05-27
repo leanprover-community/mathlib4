@@ -370,10 +370,14 @@ section ExprWithLevels
 open ExprWithLevels
 
 /-- Given `e : Expr` an application `f a₁ ... aₖ`, `e.abstractExplicitArgs n` abstracts the
-outermost `n` arguments present in the application. (Note that `f` must be a constant.)
+outermost `n` arguments present in the application.
 
 It returns the abstracted expression as an `ExprWithLevels` (in case any universe levels were
 abstracted) together with an array of the explicit arguments that have been removed.
+
+Note that if `f` is not a constant, the behavior is guided by `allowNonConstantHead`. If `true`,
+the default, thenuniverse levels are ignored if `f` is not a constant, and the returned
+`ExprWithLevels` have no level parameter arguments. Otherwise, this fails if `f` is not a constant.
 
 To construct an application of the result, use e.g. `mkAppMWithLevels'` or `mkAppNWithLevels`.
 
@@ -381,12 +385,20 @@ To construct an application of the result, use e.g. `mkAppMWithLevels'` or `mkAp
 `let (f', args) ← e.abstractExplicitArgs n; mkAppMWithLevels' f' args` is a trivial
 `ExprWithLevels` (no universe arguments) and is defeq to `e`.
  -/
-partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := false) :
-    MetaM (ExprWithLevels × Array Expr) :=
+partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := false)
+    (allowNonConstantHead := true) : MetaM (ExprWithLevels × Array Expr) :=
   Expr.withApp' e fun f xs => do
-    let some (fName, _) := f.const? | throwError "{f} must be a constant"
+    -- If `f` is a const, abstract the levels. If not, don't handle levels at all, returning the
+    -- trivial `ExprWithLevels`.
+    let withLevels (k) : MetaM (ExprWithLevels × Array Expr) :=
+      if let some (fName, _) := f.const? then
+        withConstLevelsExpr' fName k
+      else if ! allowNonConstantHead then
+        throwError "{f} must be a constant"
+      else
+        do let (e, a) ← k {} f (← inferType f); pure (e.toExprWithLevels, a)
     let backDeps := (← getFunInfo f).paramInfo.map (·.backDeps)
-    let (abstractedExprWithLevels, explicitArgs) ← withConstLevelsExpr' fName fun _ f fType =>
+    let (abstractedExprWithLevels, explicitArgs) ← withLevels fun _ f fType =>
       forallBoundedTelescope fType xs.size fun allFVars _ => do
         unless (allFVars.size == xs.size) do
           throwError "{xs.size} inputs expected in {fType}; only found {allFVars.size}"
