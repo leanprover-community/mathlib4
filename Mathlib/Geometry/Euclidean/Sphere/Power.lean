@@ -8,8 +8,8 @@ Authors: Manuel Candales, Benjamin Davidson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathbin.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -41,12 +41,10 @@ which are used to deduce corresponding results for Euclidean affine spaces.
 
 
 theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
-    (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| :=
-  by
+    (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
   obtain ⟨k, hk_ne_one, hk⟩ := h₁
   let r := (k - 1)⁻¹ * (k + 1)
-  have hxy : x = r • y :=
-    by
+  have hxy : x = r • y := by
     rw [← smul_smul, eq_inv_smul_iff₀ (sub_ne_zero.mpr hk_ne_one), ← sub_eq_zero]
     calc
       (k - 1) • x - (k + 1) • y = k • x - x - (k • y + y) := by
@@ -91,8 +89,7 @@ include V
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/
 theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
-    (hq : dist a q = dist b q) : dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2| :=
-  by
+    (hq : dist a q = dist b q) : dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2| := by
   let m : P := midpoint ℝ a b
   obtain ⟨v, h1, h2, h3⟩ := vsub_sub_vsub_cancel_left, v a p m, v p q m, v a q m
   have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r => by
@@ -109,8 +106,7 @@ theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧
 theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a, b, c, d} : Set P))
     (hapb : ∃ k₁ : ℝ, k₁ ≠ 1 ∧ b -ᵥ p = k₁ • (a -ᵥ p))
     (hcpd : ∃ k₂ : ℝ, k₂ ≠ 1 ∧ d -ᵥ p = k₂ • (c -ᵥ p)) :
-    dist a p * dist b p = dist c p * dist d p :=
-  by
+    dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨q, r, h'⟩ := (cospherical_def {a, b, c, d}).mp h
   obtain ⟨ha, hb, hc, hd⟩ := h' a _, h' b _, h' c _, h' d _
   · rw [← hd] at hc
@@ -122,8 +118,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a
 /-- **Intersecting Chords Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapb : ∠ a p b = π) (hcpd : ∠ c p d = π) :
-    dist a p * dist b p = dist c p * dist d p :=
-  by
+    dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨-, k₁, _, hab⟩ := angle_eq_pi_iff.mp hapb
   obtain ⟨-, k₂, _, hcd⟩ := angle_eq_pi_iff.mp hcpd
   exact mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, by linarith, hab⟩ ⟨k₂, by linarith, hcd⟩
@@ -132,8 +127,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hab : a ≠ b) (hcd : c ≠ d) (hapb : ∠ a p b = 0)
-    (hcpd : ∠ c p d = 0) : dist a p * dist b p = dist c p * dist d p :=
-  by
+    (hcpd : ∠ c p d = 0) : dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨-, k₁, -, hab₁⟩ := angle_eq_zero_iff.mp hapb
   obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
   refine' mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, _, hab₁⟩ ⟨k₂, _, hcd₁⟩ <;> by_contra hnot <;>
