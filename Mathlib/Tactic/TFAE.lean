@@ -69,11 +69,11 @@ Example:
 ```lean
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2
-  { /- proof of P → Q -/ }
+  · /- proof of P → Q -/
   tfae_have 2 → 1
-  { /- proof of Q → P -/ }
+  · /- proof of Q → P -/
   tfae_have 2 ↔ 3
-  { /- proof of Q ↔ R -/ }
+  · /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/
@@ -83,84 +83,64 @@ syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 /-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
 long as `[P₁, P₂, ...]` is an explicit list. -/
-partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
+partial def getTFAEList (t : Expr) : MetaM (Q(List Prop) × List Q(Prop)) := do
   let .app tfae (l : Q(List Prop)) ← whnfR t |
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
-  let rec getExplicitList (l : Expr) : MetaM (List Expr) := do
-    have l : Q(List Prop) := l
+  return (l, ← getExplicitList l)
+where
+  /-- Convert an expression representing an explicit list into a list of expressions. -/
+  getExplicitList (l : Q(List Prop)) : MetaM (List Q(Prop)) := do
     match l with
     | ~q([]) => return ([] : List Expr)
-    | ~q($a :: $l') => return (q($a) :: (← getExplicitList l'))
+    | ~q($a :: $l') => return (a :: (← getExplicitList l'))
     | e => throwError "{e} must be an explicit list of propositions"
-  getExplicitList l
-
-/-- Convert an expression representing an explicit list into a list of expressions. -/
-add_decl_doc getTFAEList.getExplicitList
-
-/-- Extract the expression `[P₁, P₂, ...]` from an expression of the form `TFAE [P₁, P₂, ...]` as
-long as `[P₁, P₂, ...]` is an explicit list. -/
-partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
-  let .app tfae (l : Q(List Prop)) ← whnfR t |
-    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
-  unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
-    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
-  let rec guardExplicitList (l : Q(List Prop)) : MetaM Unit := do
-    match l with
-    | ~q([]) => return ()
-    | ~q(_ :: $l') => guardExplicitList l'
-    | e => throwError "{e} must be an explicit list of propositions"
-  guardExplicitList l
-  return l
-
-/-- Check that an expression representing a list is explicit. -/
-add_decl_doc getTFAEListQ.guardExplicitList
 
 /-! # Proof construction -/
 
 /-- Prove an implication via solve_by_elim. -/
-def proveImpl (P P' : Q(Prop)) : TacticM Q($P → $P') := do
+def proveImpl (maxDepth : Nat) (hyps : List Expr) (P P' : Q(Prop)) : MetaM Q($P → $P') := do
   let t ← mkFreshExprMVar q($P → $P')
   try
-    let [] ← run t.mvarId! <| evalTactic (← `(tactic| intro; solve_by_elim [Iff.mp, Iff.mpr])) |
-      failure
+    let (h, t) ← t.mvarId!.intro (← mkFreshUserName `h)
+    let [] ← SolveByElim.solveByElim { maxDepth } [] (pure (.fvar h :: hyps)) [t] | failure
   catch _ =>
     throwError "couldn't prove {P} → {P'}"
   instantiateMVars t
 
 /-- Generate a proof of `Chain (· → ·) P l`. We assume `P : Prop` and `l : List Prop`, and that `l`
 is an explicit list. -/
-partial def proveChain (P : Q(Prop)) (l : Q(List Prop)) :
-    TacticM Q(Chain (· → ·) $P $l) := do
+partial def proveChain (depth : Nat) (hyps : List Expr) (P : Q(Prop)) (l : Q(List Prop)) :
+    MetaM Q(Chain (· → ·) $P $l) := do
   match l with
   | ~q([]) => return q(Chain.nil)
   | ~q($P' :: $l') =>
-    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain q($P') q($l')
-    let p ← proveImpl P P'
+    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain depth hyps q($P') q($l')
+    let p ← proveImpl depth hyps P P'
     return q(Chain.cons $p $cl')
 
 /-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
-partial def proveILast'Impl (P P' : Q(Prop)) (l : Q(List Prop)) :
-    TacticM Q(ilast' $P' $l → $P) := do
+partial def proveILast'Impl (depth : Nat) (hyps : List Expr) (P P' : Q(Prop)) (l : Q(List Prop)) :
+    MetaM Q(ilast' $P' $l → $P) := do
   match l with
-  | ~q([]) => proveImpl P' P
-  | ~q($P'' :: $l') => proveILast'Impl P P'' l'
+  | ~q([]) => proveImpl depth hyps P' P
+  | ~q($P'' :: $l') => proveILast'Impl depth hyps P P'' l'
 
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
-def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
+def proveTFAE (depth : Nat) (hyps : List Expr) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
   match l with
   | ~q([]) => return q(tfae_nil)
   | ~q([$P]) => return q(tfae_singleton $P)
   | ~q($P :: $P' :: $l') =>
-    let c ← proveChain P q($P' :: $l')
-    let il ← proveILast'Impl P P' l'
+    let c ← proveChain depth hyps P q($P' :: $l')
+    let il ← proveILast'Impl depth hyps P P' l'
     return q(tfae_of_cycle $c $il)
 
 /-! # `tfae_have` components -/
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
-def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : TermElabM Name := do
+def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name := do
   let arr ← match arr with
   | `(impArrow| ← ) => pure "from"
   | `(impArrow| → ) => pure "to"
@@ -194,7 +174,7 @@ def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : TacticM ℕ := do
 /-- Construct an expression for the type `Pj → Pi`, `Pi → Pj`, or `Pi ↔ Pj` given expressions
 `Pi Pj : Q(Prop)` and `impArrow` syntax `arr`, depending on whether `arr` is `←`, `→`, or `↔`
 respectively. -/
-def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : TacticM Q(Prop) := do
+def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM Q(Prop) := do
   match arr with
   | `(impArrow| ← ) => pure q($Pj → $Pi)
   | `(impArrow| → ) => pure q($Pi → $Pj)
@@ -206,7 +186,7 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : Tactic
 elab_rules : tactic
 | `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
   let goal ← getMainGoal
-  let tfaeList ← getTFAEList (← goal.getType)
+  let (_, tfaeList) ← getTFAEList (← goal.getType)
   let l₀ := tfaeList.length
   let i' ← elabIndex i l₀
   let j' ← elabIndex j l₀
@@ -219,6 +199,13 @@ elab_rules : tactic
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
   let goal ← getMainGoal
-  let tfaeListQ ← getTFAEListQ (← goal.getType)
+  let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
   goal.withContext do
-    closeMainGoal (← proveTFAE tfaeListQ)
+    let mut hyps := #[]
+    for hyp in ← getLocalHyps do
+      let ty ← inferType hyp
+      if ty.isAppOfArity ``Iff 2 then
+        hyps := hyps.push (← mkAppM ``Iff.mp #[hyp]) |>.push (← mkAppM ``Iff.mpr #[hyp])
+      else if ty.isArrow then
+        hyps := hyps.push hyp
+    closeMainGoal (← proveTFAE (tfaeList.length + 1) hyps.toList tfaeListQ)
