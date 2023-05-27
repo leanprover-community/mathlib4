@@ -1005,7 +1005,7 @@ Here, we generalize this by replacing:
 * the filtering of $[1, m+n]$ to shuffles with an isomorphic quotient
 * the additions in the subscripts of $\sigma$ with an index of type `Sum`
 
-The specialized version can be obtained by combining this definition with `fin_sum_fin_equiv` and
+The specialized version can be obtained by combining this definition with `finSumFinEquiv` and
 `LinearMap.mul'`.
 -/
 @[simps]

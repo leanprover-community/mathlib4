@@ -74,7 +74,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-/-- This is the corresponding extension of `monoid_hom_class`. -/
+/-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
@@ -275,7 +275,7 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
-/-- If the domain is a ring `R`, then `χ (ring_char R) = 0`. -/
+/-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar

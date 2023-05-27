@@ -22,7 +22,7 @@ potential naming collision or confusion with the general definition of cocontinu
 between categories as functors preserving small colimits.
 
 The definition given here seems stronger than the definition found elsewhere,
-but they are actually equivalent via `category_theory.grothendieck_topology.superset_covering`.
+but they are actually equivalent via `CategoryTheory.GrothendieckTopology.superset_covering`.
 (The precise statement is not formalized, but follows from it quite trivially).
 
 ## Main definitions
@@ -217,7 +217,7 @@ theorem gluedLimitCone_π_app (W) : (gluedLimitCone hu ℱ hS hx).π.app W = get
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_limit_cone_π_app CategoryTheory.RanIsSheafOfCoverLifting.gluedLimitCone_π_app
 
-/-- The section obtained by passing `glued_limit_cone` into `category_theory.limits.limit.lift`. -/
+/-- The section obtained by passing `glued_limit_cone` into `CategoryTheory.Limits.limit.lift`. -/
 def gluedSection : X ⟶ ((ran G.op).obj ℱ.val).obj (op U) :=
   limit.lift _ (gluedLimitCone hu ℱ hS hx)
 set_option linter.uppercaseLean3 false in

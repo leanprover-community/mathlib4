@@ -963,7 +963,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
--- porting note: todo: make `odd` and `even` available here, drop `bit1`
+-- porting note: todo: make `Odd` and `Even` available here, drop `bit1`
 set_option linter.deprecated false in
 theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
     (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=

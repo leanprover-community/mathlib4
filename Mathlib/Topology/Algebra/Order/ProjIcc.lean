@@ -60,7 +60,7 @@ protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → �
   from hf.comp <| continuous_id.prod_mk <| continuous_projIcc.comp hg
 #align continuous.Icc_extend Continuous.IccExtend
 
-/-- A useful special case of `continuous.Icc_extend`. -/
+/-- A useful special case of `Continuous.IccExtend`. -/
 @[continuity]
 protected theorem Continuous.Icc_extend' {f : Icc a b → β} (hf : Continuous f) :
     Continuous (IccExtend h f) :=

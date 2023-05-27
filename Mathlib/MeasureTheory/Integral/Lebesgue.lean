@@ -847,7 +847,7 @@ theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f
 #align measure_theory.mul_meas_ge_le_lintegral₀ MeasureTheory.mul_meas_ge_le_lintegral₀
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
-`ae_measurable`, see `mul_meas_ge_le_lintegral₀`. -/
+`AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
@@ -1016,7 +1016,7 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
 
-/-- Known as Fatou's lemma, version with `ae_measurable` functions -/
+/-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
     (∫⁻ a, liminf (fun n => f n a) atTop ∂μ) ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   calc
@@ -1738,7 +1738,7 @@ theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞}
   · exact hf (measurableSet_singleton 0).compl
 #align measure_theory.ae_with_density_iff_ae_restrict MeasureTheory.ae_withDensity_iff_ae_restrict
 
-theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
+theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
   constructor
@@ -1762,7 +1762,7 @@ theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurab
     filter_upwards [hg']
     intro x hx h'x
     rw [← hx, ← mul_assoc, ENNReal.inv_mul_cancel h'x ENNReal.coe_ne_top, one_mul]
-#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aEMeasurable_withDensity_eNNReal_iff
+#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 end Lintegral
 

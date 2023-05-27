@@ -652,7 +652,7 @@ end Image
 
 section Subtype
 
-/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `subtype p` whose
+/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `Subtype p` whose
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map

@@ -285,7 +285,7 @@ theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) 
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where

@@ -217,7 +217,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 
 /-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
-`valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
+`Valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
 def valuation (f : PadicSeq p) : ℤ :=
   if hf : f ≈ 0 then 0 else padicValRat p (f (stationaryPoint hf))
 #align padic_seq.valuation PadicSeq.valuation
@@ -262,8 +262,8 @@ private unsafe def index_simp_core (hh hf hg : expr)
   hs (tactic.simp_hyp sl [])
 #align index_simp_core index_simp_core
 
-/-- This is a special-purpose tactic that lifts `padic_norm (f (stationary_point f))` to
-`padic_norm (f (max _ _ _))`. -/
+/-- This is a special-purpose tactic that lifts `padicNorm (f (stationary_point f))` to
+`padicNorm (f (max _ _ _))`. -/
 unsafe def tactic.interactive.padic_index_simp (l : interactive.parse interactive.types.pexpr_list)
     (at_ : interactive.parse interactive.types.location) : tactic Unit := do
   let [h, f, g] ← l.mapM tactic.i_to_expr

@@ -16,7 +16,7 @@ import Mathlib.Topology.Sheaves.Limits
 # `PresheafedSpace C` has colimits.
 
 If `C` has limits, then the category `PresheafedSpace C` has colimits,
-and the forgetful functor to `Top` preserves these colimits.
+and the forgetful functor to `TopCat` preserves these colimits.
 
 When restricted to a diagram where the underlying continuous maps are open embeddings,
 this says that we can glue presheaved spaces.

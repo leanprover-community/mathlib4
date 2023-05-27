@@ -26,7 +26,7 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/Even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
 * TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
@@ -521,5 +521,5 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 
 end Powers
 
-/-- Simp attribute for lemmas about `even` -/
+/-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps

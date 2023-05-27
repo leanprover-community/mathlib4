@@ -142,7 +142,7 @@ end Paths
 
 variable (W : Type u₂) [Quiver.{v₂ + 1} W]
 
--- A restatement of `prefunctor.map_path_comp` using `f ≫ g` instead of `f.comp g`.
+-- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
 theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
@@ -204,7 +204,7 @@ def pathComposition : Paths C ⥤ C where
 #align category_theory.path_composition CategoryTheory.pathComposition
 
 -- TODO: This, and what follows, should be generalized to
--- the `hom_rel` for the kernel of any functor.
+-- the `HomRel` for the kernel of any functor.
 -- Indeed, this should be part of an equivalence between congruence relations on a category `C`
 -- and full, essentially surjective functors out of `C`.
 /-- The canonical relation on the path category of a category:
