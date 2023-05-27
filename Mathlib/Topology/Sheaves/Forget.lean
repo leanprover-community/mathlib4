@@ -60,60 +60,67 @@ variable {X : TopCat.{v}} (F : Presheaf C X)
 
 variable {ι : Type v} (U : ι → Opens X)
 
-attribute [local reducible] diagram left_res right_res
+-- Porting note : Lean4 does not support this
+-- attribute [local reducible] diagram left_res right_res
 
 /-- When `G` preserves limits, the sheaf condition diagram for `F` composed with `G` is
 naturally isomorphic to the sheaf condition diagram for `F ⋙ G`.
 -/
 def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{v} (F ⋙ G) U := by
-  fapply nat_iso.of_components
+  fapply NatIso.ofComponents
   rintro ⟨j⟩
-  exact preserves_product.iso _ _
-  exact preserves_product.iso _ _
+  exact PreservesProduct.iso _ _
+  exact PreservesProduct.iso _ _
   rintro ⟨⟩ ⟨⟩ ⟨⟩
-  · ext
+  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+    refine limit.hom_ext (fun j => ?_)
     simp
-    dsimp
-    simp
-  -- non-terminal `simp`, but `squeeze_simp` fails
-  · ext
-    simp only [limit.lift_π, functor.comp_map, map_lift_pi_comparison, fan.mk_π_app,
-      preserves_product.iso_hom, parallel_pair_map_left, functor.map_comp, category.assoc]
-    dsimp
-    simp
-  · ext
-    simp only [limit.lift_π, functor.comp_map, parallel_pair_map_right, fan.mk_π_app,
-      preserves_product.iso_hom, map_lift_pi_comparison, functor.map_comp, category.assoc]
-    dsimp
-    simp
-  · ext
-    simp
-    dsimp
-    simp
+  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+    refine limit.hom_ext (fun j => ?_)
+    -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
+    dsimp [diagram, leftRes, rightRes]
+    simp [limit.lift_π, Functor.comp_map, map_lift_piComparison, Fan.mk_π_app,
+      PreservesProduct.iso_hom, parallelPair_map_left, Functor.map_comp, Category.assoc]
+  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+    refine limit.hom_ext (fun j => ?_)
+    -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
+    dsimp [diagram, leftRes, rightRes]
+    simp [limit.lift_π, Functor.comp_map, map_lift_piComparison, Fan.mk_π_app,
+      PreservesProduct.iso_hom, parallelPair_map_left, Functor.map_comp, Category.assoc]
+  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+    refine limit.hom_ext (fun j => ?_)
+    simp [diagram, leftRes, rightRes]
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition.diagram_comp_preserves_limits TopCat.Presheaf.SheafCondition.diagramCompPreservesLimits
 
-attribute [local reducible] res
+-- attribute [local reducible] res
 
 /-- When `G` preserves limits, the image under `G` of the sheaf condition fork for `F`
 is the sheaf condition fork for `F ⋙ G`,
-postcomposed with the inverse of the natural isomorphism `diagram_comp_preserves_limits`.
+postcomposed with the inverse of the natural isomorphism `diagramCompPreservesLimits`.
 -/
 def mapConeFork :
     G.mapCone (fork.{v} F U) ≅
       (Cones.postcompose (diagramCompPreservesLimits G F U).inv).obj (fork (F ⋙ G) U) :=
   Cones.ext (Iso.refl _) fun j => by
-    dsimp; simp [diagram_comp_preserves_limits]; cases j <;> dsimp
-    · rw [iso.eq_comp_inv]
-      ext
-      simp
-      dsimp
-      simp
-    · rw [iso.eq_comp_inv]
-      ext
-      simp
-      -- non-terminal `simp`, but `squeeze_simp` fails
-      dsimp
-      simp only [limit.lift_π, fan.mk_π_app, ← G.map_comp, limit.lift_π_assoc, fan.mk_π_app]
+    dsimp; simp [diagramCompPreservesLimits]; cases j <;> dsimp
+    · rw [Iso.eq_comp_inv]
+      -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+      refine limit.hom_ext (fun j => ?_)
+      -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
+      simp [diagram, leftRes, rightRes, res]
+    · rw [Iso.eq_comp_inv]
+      -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+      refine limit.hom_ext (fun j => ?_)
+      -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
+      dsimp [diagram, leftRes, rightRes, res]
+      -- Porting note : there used to be a non-terminal `simp` for `squeeze_simp` did not work,
+      -- however, `simp?` works fine now, but in both mathlib3 and mathlib4, two `simp`s are
+      -- required to close goal
+      simp only [Functor.map_comp, Category.assoc, map_lift_piComparison, limit.lift_π, Fan.mk_pt,
+        Fan.mk_π_app, limit.lift_π_assoc, Discrete.functor_obj]
+      simp only [limit.lift_π, Fan.mk_π_app, ← G.map_comp, limit.lift_π_assoc, Fan.mk_π_app]
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition.map_cone_fork TopCat.Presheaf.SheafCondition.mapConeFork
 
 end SheafCondition
@@ -148,20 +155,20 @@ See <https://stacks.math.columbia.edu/tag/0073>.
 In fact we prove a stronger version with arbitrary complete target category.
 -/
 theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) := by
-  rw [presheaf.is_sheaf_iff_is_sheaf_equalizer_products,
-    presheaf.is_sheaf_iff_is_sheaf_equalizer_products]
+  rw [Presheaf.isSheaf_iff_isSheafEqualizerProducts,
+    Presheaf.isSheaf_iff_isSheafEqualizerProducts]
   constructor
   · intro S ι U
     -- We have that the sheaf condition fork for `F` is a limit fork,
     obtain ⟨t₁⟩ := S U
     -- and since `G` preserves limits, the image under `G` of this fork is a limit fork too.
-    letI := preserves_smallest_limits_of_preserves_limits G
-    have t₂ := @preserves_limit.preserves _ _ _ _ _ _ _ G _ _ t₁
+    letI := preservesSmallestLimitsOfPreservesLimits G
+    have t₂ := @PreservesLimit.preserves _ _ _ _ _ _ _ G _ _ t₁
     -- As we established above, that image is just the sheaf condition fork
     -- for `F ⋙ G` postcomposed with some natural isomorphism,
-    have t₃ := is_limit.of_iso_limit t₂ (map_cone_fork G F U)
+    have t₃ := IsLimit.ofIsoLimit t₂ (mapConeFork G F U)
     -- and as postcomposing by a natural isomorphism preserves limit cones,
-    have t₄ := is_limit.postcompose_inv_equiv _ _ t₃
+    have t₄ := IsLimit.postcomposeInvEquiv _ _ t₃
     -- we have our desired conclusion.
     exact ⟨t₄⟩
   · intro S ι U
@@ -171,53 +178,51 @@ theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F �
     -- Our goal is to show that this is an isomorphism.
     let f := equalizer.lift _ (w F U)
     -- If we can do that,
-    suffices is_iso (G.map f) by
+    suffices IsIso (G.map f) by
       skip
       -- we have that `f` itself is an isomorphism, since `G` reflects isomorphisms
-      haveI : is_iso f := is_iso_of_reflects_iso f G
+      haveI : IsIso f := isIso_of_reflects_iso f G
       -- TODO package this up as a result elsewhere:
-      apply is_limit.of_iso_limit (limit.is_limit _)
-      apply iso.symm
-      fapply cones.ext
-      exact as_iso f
+      apply IsLimit.ofIsoLimit (limit.isLimit _)
+      apply Iso.symm
+      fapply Cones.ext
+      exact asIso f
       rintro ⟨_ | _⟩ <;>
-        · dsimp [f]
-          simp
+        · simp
     · -- Returning to the task of shwoing that `G.map f` is an isomorphism,
       -- we note that `G.map f` is almost but not quite (see below) a morphism
       -- from the sheaf condition cone for `F ⋙ G` to the
       -- image under `G` of the equalizer cone for the sheaf condition diagram.
       let c := fork (F ⋙ G) U
       obtain ⟨hc⟩ := S U
-      let d := G.map_cone (equalizer.fork (leftRes.{v} F U) (right_res F U))
-      letI := preserves_smallest_limits_of_preserves_limits G
-      have hd : is_limit d := preserves_limit.preserves (limit.is_limit _)
+      let d := G.mapCone (equalizer.fork (leftRes.{v} F U) (rightRes F U))
+      letI := preservesSmallestLimitsOfPreservesLimits G
+      have hd : IsLimit d := PreservesLimit.preserves (limit.isLimit _)
       -- Since both of these are limit cones
       -- (`c` by our hypothesis `S`, and `d` because `G` preserves limits),
       -- we hope to be able to conclude that `f` is an isomorphism.
       -- We say "not quite" above because `c` and `d` don't quite have the same shape:
-      -- we need to postcompose by the natural isomorphism `diagram_comp_preserves_limits`
+      -- we need to postcompose by the natural isomorphism `diagramCompPreservesLimits`
       -- introduced above.
-      let d' := (cones.postcompose (diagram_comp_preserves_limits G F U).Hom).obj d
-      have hd' : is_limit d' :=
-        (is_limit.postcompose_hom_equiv (diagram_comp_preserves_limits G F U : _) d).symm hd
+      let d' := (Cones.postcompose (diagramCompPreservesLimits G F U).hom).obj d
+      have hd' : IsLimit d' :=
+        (IsLimit.postcomposeHomEquiv (diagramCompPreservesLimits G F U : _) d).symm hd
       -- Now everything works: we verify that `f` really is a morphism between these cones:
-      let f' : c ⟶ d' :=
-        fork.mk_hom (G.map f)
-          (by
-            dsimp only [c, d, d', f, diagram_comp_preserves_limits, res]
-            dsimp only [fork.ι]
-            ext1 j
-            dsimp
-            simp only [category.assoc, ← functor.map_comp_assoc, equalizer.lift_ι,
-              map_lift_pi_comparison_assoc]
-            dsimp [res]; simp)
+      let f' : c ⟶ d' := Fork.mkHom (G.map f) (by
+        dsimp only [diagramCompPreservesLimits, res]
+        dsimp only [Fork.ι]
+        refine limit.hom_ext fun j => ?_
+        dsimp
+        simp only [Category.assoc, ← Functor.map_comp_assoc, equalizer.lift_ι,
+          map_lift_piComparison_assoc]
+        dsimp [res])
       -- conclude that it is an isomorphism,
       -- just because it's a morphism between two limit cones.
-      haveI : is_iso f' := is_limit.hom_is_iso hc hd' f'
+      haveI : IsIso f' := IsLimit.hom_isIso hc hd' f'
       -- A cone morphism is an isomorphism exactly if the morphism between the cone points is,
       -- so we're done!
-      exact is_iso.of_iso ((cones.forget _).mapIso (as_iso f'))
+      exact IsIso.of_iso ((Cones.forget _).mapIso (asIso f'))
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_iff_is_sheaf_comp TopCat.Presheaf.isSheaf_iff_isSheaf_comp
 
 /-!
@@ -236,4 +241,3 @@ example (X : Top) (F : presheaf CommRing X) (h : presheaf.is_sheaf (F ⋙ (forge
 end Presheaf
 
 end TopCat
-
