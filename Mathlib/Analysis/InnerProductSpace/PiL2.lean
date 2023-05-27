@@ -654,7 +654,10 @@ theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) �
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
     Complex.isometryOfOrthonormal v z = z.re • v 0 + z.im • v 1 := by
-  simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
+  -- Porting note: was
+  -- simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
+  rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
+  simp [← v.sum_repr_symm]
 #align complex.isometry_of_orthonormal_apply Complex.isometryOfOrthonormal_apply
 
 open FiniteDimensional
