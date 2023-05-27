@@ -857,7 +857,7 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
   simpa only [DirectSum.IsInternal.subordinateOrthonormalBasis, OrthonormalBasis.coe_reindex,
     DirectSum.IsInternal.subordinateOrthonormalBasisIndex] using
     hV.collectedOrthonormalBasis_mem hV' (fun i => stdOrthonormalBasis 𝕜 (V i))
-      ((hV.sigma_orthonormalBasis_index_equiv hn hV').symm a)
+      ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a)
 #align direct_sum.is_internal.subordinate_orthonormal_basis_subordinate DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate
 
 end SubordinateOrthonormalBasis
