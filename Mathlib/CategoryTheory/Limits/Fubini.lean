@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.Products.Basic
-import Mathbin.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # A Fubini theorem for categorical limits
@@ -72,8 +72,7 @@ variable {F}
 from a `diagram_of_cones`.
 -/
 @[simps]
-def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C
-    where
+def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
   obj j := (D.obj j).pt
   map j j' f := (D.map f).Hom
   map_id' j := D.id j
@@ -85,8 +84,7 @@ we can construct a cone over the diagram consisting of the cone points from `D`.
 -/
 @[simps]
 def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
-    (c : Cone (uncurry.obj F)) : Cone D.conePoints
-    where
+    (c : Cone (uncurry.obj F)) : Cone D.conePoints where
   pt := c.pt
   π :=
     { app := fun j =>
@@ -119,8 +117,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
 /-- `cone_of_cone_uncurry Q c` is a limit cone when `c` is a limit cone.`
 -/
 def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
-    {c : Cone (uncurry.obj F)} (P : IsLimit c) : IsLimit (coneOfConeUncurry Q c)
-    where
+    {c : Cone (uncurry.obj F)} (P : IsLimit c) : IsLimit (coneOfConeUncurry Q c) where
   lift s :=
     P.lift
       { pt := s.pt
@@ -147,8 +144,7 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     apply (Q j).hom_ext
     intro k
     simp
-  uniq s m w :=
-    by
+  uniq s m w := by
     refine'
       P.uniq
         { pt := s.X
@@ -170,8 +166,7 @@ we can construct a diagram consisting of the limit cone over each functor `F.obj
 and the universal cone morphisms between these.
 -/
 @[simps]
-noncomputable def DiagramOfCones.mkOfHasLimits : DiagramOfCones F
-    where
+noncomputable def DiagramOfCones.mkOfHasLimits : DiagramOfCones F where
   obj j := limit.cone (F.obj j)
   map j j' f := { Hom := lim.map (F.map f) }
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits
@@ -195,8 +190,7 @@ variable [HasLimit (F ⋙ lim)]
 showing that the limit of `uncurry.obj F` can be computed as
 the limit of the limits of the functors `F.obj j`.
 -/
-noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit (F ⋙ lim) :=
-  by
+noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit (F ⋙ lim) := by
   let c := limit.cone (uncurry.obj F)
   let P : is_limit c := limit.is_limit _
   let G := diagram_of_cones.mk_of_has_limits F
@@ -208,8 +202,7 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
 
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
-    (limitUncurryIsoLimitCompLim F).Hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) :=
-  by
+    (limitUncurryIsoLimitCompLim F).Hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   dsimp [limit_uncurry_iso_limit_comp_lim, is_limit.cone_point_unique_up_to_iso,
     is_limit.unique_up_to_iso]
   simp
@@ -217,8 +210,7 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
 
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
-    (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) = limit.π _ j ≫ limit.π _ k :=
-  by
+    (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) = limit.π _ j ≫ limit.π _ k := by
   rw [← cancel_epi (limit_uncurry_iso_limit_comp_lim F).Hom]
   simp
 #align category_theory.limits.limit_uncurry_iso_limit_comp_lim_inv_π CategoryTheory.Limits.limitUncurryIsoLimitCompLim_inv_π
@@ -244,8 +236,7 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).Hom ≫ limit.π _ j ≫ limit.π _ k =
-      limit.π _ k ≫ limit.π _ j :=
-  by
+      limit.π _ k ≫ limit.π _ j := by
   dsimp [limit_flip_comp_lim_iso_limit_comp_lim]
   simp
   dsimp
@@ -256,8 +247,7 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
-      limit.π _ j ≫ limit.π _ k :=
-  by
+      limit.π _ j ≫ limit.π _ k := by
   dsimp [limit_flip_comp_lim_iso_limit_comp_lim]
   simp
   dsimp
@@ -284,8 +274,7 @@ variable [HasLimit (curry.obj G ⋙ lim)]
 showing that the limit of `G` can be computed as
 the limit of the limits of the functors `G.obj (j, _)`.
 -/
-noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙ lim) :=
-  by
+noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙ lim) := by
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unit_iso.app G
   haveI : limits.has_limit (uncurry.obj ((@curry J _ K _ C _).obj G)) := has_limit_of_iso i
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
@@ -302,8 +291,7 @@ theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
 
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
-    (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) = limit.π _ j ≫ limit.π _ k :=
-  by
+    (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) = limit.π _ j ≫ limit.π _ k := by
   rw [← cancel_epi (limit_iso_limit_curry_comp_lim G).Hom]
   simp
 #align category_theory.limits.limit_iso_limit_curry_comp_lim_inv_π CategoryTheory.Limits.limitIsoLimitCurryCompLim_inv_π
@@ -333,8 +321,7 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).Hom ≫ limit.π _ j ≫ limit.π _ k =
-      limit.π _ k ≫ limit.π _ j :=
-  by
+      limit.π _ k ≫ limit.π _ j := by
   dsimp [limit_curry_swap_comp_lim_iso_limit_curry_comp_lim]
   simp only [iso.refl_hom, braiding_counit_iso_hom_app, limits.has_limit.iso_of_equivalence_hom_π,
     iso.refl_inv, limit_iso_limit_curry_comp_lim_hom_π_π, eq_to_iso_refl, category.assoc]
@@ -347,8 +334,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
-      limit.π _ j ≫ limit.π _ k :=
-  by
+      limit.π _ j ≫ limit.π _ k := by
   dsimp [limit_curry_swap_comp_lim_iso_limit_curry_comp_lim]
   simp only [iso.refl_hom, braiding_counit_iso_hom_app, limits.has_limit.iso_of_equivalence_inv_π,
     iso.refl_inv, limit_iso_limit_curry_comp_lim_hom_π_π, eq_to_iso_refl, category.assoc]
