@@ -82,7 +82,7 @@ class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Modu
 
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
-(For representations of Lie *algebras* see `lie_module`.) -/
+(For representations of Lie *algebras* see `LieModule`.) -/
 /- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
   /-- A Lie ring module bracket is additive in its first component. -/

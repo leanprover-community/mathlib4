@@ -473,7 +473,7 @@ def FG (I : Ideal R) : Prop :=
 
 /-- The image of a finitely generated ideal is finitely generated.
 
-This is the `ideal` version of `Submodule.FG.map`. -/
+This is the `Ideal` version of `Submodule.FG.map`. -/
 theorem FG.map {R S : Type _} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) (f : R →+* S) :
     (I.map f).FG := by
   classical

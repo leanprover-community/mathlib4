@@ -18,7 +18,7 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
 
-We define `lucasLehmerResidue : Π p : ℕ, zmod (2^p - 1)`, and
+We define `lucasLehmerResidue : Π p : ℕ, ZMod (2^p - 1)`, and
 prove `lucasLehmerResidue p = 0 → Prime (mersenne p)`.
 
 Porting note: the tactics have not been ported yet.
@@ -85,7 +85,7 @@ def s : ℕ → ℤ
   | i + 1 => s i ^ 2 - 2
 #align lucas_lehmer.s LucasLehmer.s
 
-/-- The recurrence `s (i+1) = (s i)^2 - 2` in `zmod (2^p - 1)`. -/
+/-- The recurrence `s (i+1) = (s i)^2 - 2` in `ZMod (2^p - 1)`. -/
 def sZMod (p : ℕ) : ℕ → ZMod (2 ^ p - 1)
   | 0 => 4
   | i + 1 => sZMod p i ^ 2 - 2

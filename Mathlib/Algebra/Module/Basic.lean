@@ -14,7 +14,6 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring
@@ -29,7 +28,7 @@ In this file we define
 ## Implementation notes
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
-word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
+word "module" is reserved for `Module R M` where `R` is a `Ring` and `M` an `AddCommGroup`.
 If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
@@ -768,5 +767,4 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
--- Porting note: `assert_not_exists` not implemented yet
--- assert_not_exists multiset
+assert_not_exists Multiset

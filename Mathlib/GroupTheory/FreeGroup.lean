@@ -486,7 +486,7 @@ namespace FreeGroup
 
 variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
 
-/-- The canonical map from `list (α × bool)` to the free group on `α`. -/
+/-- The canonical map from `List (α × Bool)` to the free group on `α`. -/
 @[to_additive "The canonical map from `list (α × bool)` to the free additive group on `α`."]
 def mk (L : List (α × Bool)) : FreeGroup α :=
   Quot.mk Red.Step L
@@ -681,7 +681,7 @@ section lift
 
 variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
-/-- Given `f : α → β` with `β` a group, the canonical map `list (α × bool) → β` -/
+/-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive "Given `f : α → β` with `β` an additive group, the canonical map
   `list (α × bool) → β`"]
 def Lift.aux : List (α × Bool) → β := fun L =>

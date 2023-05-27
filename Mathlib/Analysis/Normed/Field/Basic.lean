@@ -677,7 +677,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
-normed; in particular, the `padic`s exhibit this fact. -/
+normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
@@ -1030,8 +1030,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- porting note: add this back in once `assert_not_exists` is ported
-/-
 -- Guard again import creep.
 assert_not_exists RestrictScalars
--/

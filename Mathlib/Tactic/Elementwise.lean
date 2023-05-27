@@ -208,7 +208,7 @@ right associated and identities removed.
 
 A typical example is using `elementwise_of%` to dynamically generate rewrite lemmas:
 ```lean
-example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
+example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by rw [elementwise_of% w]
 ```
 In this case, `elementwise_of% w` generates the lemma `∀ (x : M), f (g x) = h x`.
@@ -226,5 +226,9 @@ elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
   let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
   return pf
+
+-- TODO: elementwise tactic
+syntax "elementwise" (ppSpace (colGt ident))* : tactic
+syntax "elementwise!" (ppSpace (colGt ident))* : tactic
 
 end Tactic.Elementwise

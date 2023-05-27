@@ -12,6 +12,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -790,7 +791,7 @@ Those two pairs of made-up classes fulfill slightly different roles.
 `ℤ` action (`zpow` or `zsmul`). Further, it provides a `div` field, matching the forgetful
 inheritance pattern. This is useful to shorten extension clauses of stronger structures (`Group`,
 `GroupWithZero`, `DivisionRing`, `Field`) and for a few structures with a rather weak
-pseudo-inverse (`matrix`).
+pseudo-inverse (`Matrix`).
 
 `DivisionMonoid`/`SubtractionMonoid` is targeted at structures with stronger pseudo-inverses. It
 is an ad hoc collection of axioms that are mainly respected by three things:
@@ -803,7 +804,7 @@ multiplication, except for the fact that it might not be a true inverse (`a / a 
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `WithTop unit` with `a⁻¹ = ⊤` for all `a`.
+* Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
   where `α` non commutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all

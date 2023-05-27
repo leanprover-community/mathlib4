@@ -13,7 +13,6 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Star monoids, rings, and modules
@@ -44,9 +43,8 @@ positive cone which is the closure of the sums of elements `star r * r`. A weake
 advantage of not requiring a topology.
 -/
 
--- Porting note: `assert_not_exists` not implemented yet
---assert_not_exists finset
---assert_not_exists subgroup
+assert_not_exists Finset
+assert_not_exists Subgroup
 
 universe u v
 

@@ -14,7 +14,6 @@ import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Intervals.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
-import Mathlib.Tactic.WLOG
 
 /-!
 # Order of an element

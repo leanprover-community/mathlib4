@@ -25,7 +25,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 ## Main declarations
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
-* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `monotone`
+* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
 
 -/
 

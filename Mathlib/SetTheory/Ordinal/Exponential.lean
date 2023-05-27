@@ -449,7 +449,7 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
   simp only [log_of_not_one_lt_left hb, zero_add, le_refl]
 #align ordinal.add_log_le_log_mul Ordinal.add_log_le_log_mul
 
-/-! ### Interaction with `nat.cast` -/
+/-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
 theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ((m ^ n : ℕ) : Ordinal) = (m^n)
@@ -484,7 +484,7 @@ end Ordinal
 --     match strictness_a with
 --       | positive p => positive <$> mk_app `` opow_pos [b, p]
 --       | _ => failed
---   |-- We already know that `0 ≤ x` for all `x : ordinal`
+--   |-- We already know that `0 ≤ x` for all `x : Ordinal`
 --     _ =>
 --     failed
 -- #align tactic.positivity_opow Tactic.positivity_opow

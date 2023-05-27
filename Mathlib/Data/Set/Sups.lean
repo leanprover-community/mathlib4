@@ -14,7 +14,7 @@ import Mathlib.Order.UpperLower.Basic
 /-!
 # Set family operations
 
-This file defines a few binary operations on `set α` for use in set family combinatorics.
+This file defines a few binary operations on `Set α` for use in set family combinatorics.
 
 ## Main declarations
 

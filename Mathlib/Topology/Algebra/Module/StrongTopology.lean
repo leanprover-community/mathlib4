@@ -160,7 +160,7 @@ theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [Topolog
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  -- Porting note: replace `nhds_induced` by `inducing.nhds_eq_comap` (which needs an additional
+  -- Porting note: replace `nhds_induced` by `Inducing.nhds_eq_comap` (which needs an additional
   -- `letI`) so that Lean doesn't try to use the product topology
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
   rw [(strongTopology.embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]
@@ -199,10 +199,10 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
     ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
     (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) fun _ hs => hs
 
-instance [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
+instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
-instance [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
+instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
   strongUniformity.uniformAddGroup σ F _
 
 instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :

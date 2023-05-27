@@ -33,8 +33,8 @@ in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
 ```
-polynomial α := add_monoid_algebra ℕ α
-mv_polynomial σ α := add_monoid_algebra (σ →₀ ℕ) α
+Polynomial α := AddMonoidAlgebra ℕ α
+MvPolynomial σ α := AddMonoidAlgebra (σ →₀ ℕ) α
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.

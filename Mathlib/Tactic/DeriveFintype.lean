@@ -59,7 +59,7 @@ involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (�
 right associativity.
 
 Note that an alternative design could be that instead of using `Sum` we could create a
-function `C : Fin n → Type _` with `C i = ulift Cᵢ` and then use `(i : Fin n) × C i` for
+function `C : Fin n → Type _` with `C i = ULift Cᵢ` and then use `(i : Fin n) × C i` for
 the proxy type, which would save us from the nested `Sum` constructors.
 
 This implementation takes some inspiration from the one by Mario Carneiro for Mathlib 3.

@@ -211,7 +211,7 @@ instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
 #align subgroup_class.has_div SubgroupClass.div
 #align add_subgroup_class.has_sub AddSubgroupClass.sub
 
-/-- An additive subgroup of an `add_group` inherits an integer scaling. -/
+/-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
 instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
     [AddSubgroupClass S M] {H : S} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
@@ -3686,4 +3686,4 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
 
 end IsConj
 
--- assert_not_exists Multiset
+assert_not_exists Multiset

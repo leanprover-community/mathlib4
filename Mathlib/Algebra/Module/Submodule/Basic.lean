@@ -386,9 +386,9 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in
 
 section AddAction
 
-/-! ### Additive actions by `submodule`s
+/-! ### Additive actions by `Submodule`s
 These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
-onto the action by an element `s : S` of a submodule `S : submodule R M` such that
+onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
 These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.

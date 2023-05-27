@@ -170,7 +170,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `metric_space
+is not an instance because it depends on `V` to define a `MetricSpace
 P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
@@ -186,7 +186,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 #align pseudo_metric_space_of_normed_add_comm_group_of_add_torsor pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor
 
 /-- The distance defines a metric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `metric_space
+is not an instance because it depends on `V` to define a `MetricSpace
 P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where

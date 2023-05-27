@@ -324,7 +324,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   -- have := c.monotone h _ ha; apply mem_unique this hb
 #align part.eq_of_chain Part.eq_of_chain
 
-/-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `part α`. -/
+/-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
 protected noncomputable def ωSup (c : Chain (Part α)) : Part α :=
   if h : ∃ a, some a ∈ c then some (Classical.choose h) else none
 #align part.ωSup Part.ωSup
@@ -811,7 +811,7 @@ def apply : (α →𝒄 β) × α →𝒄 β where
   toFun f := f.1 f.2
   monotone' x y h := by
     dsimp
-    trans y.fst x.snd <;> [apply h.1, apply y.1.monotone h.2]
+    trans y.fst x.snd <;> [apply h.1; apply y.1.monotone h.2]
   cont := by
     intro _ c
     apply le_antisymm

@@ -16,7 +16,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Natural numbers with infinity
 
-The natural numbers and an extra `top` element `⊤`. This implementation uses `part ℕ` as an
+The natural numbers and an extra `top` element `⊤`. This implementation uses `Part ℕ` as an
 implementation. Use `ℕ∞` instead unless you care about computability.
 
 ## Main definitions

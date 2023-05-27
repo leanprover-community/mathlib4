@@ -21,7 +21,7 @@ and strictly less than `n`.
 - Define `Ioo` and `Icc`, state basic lemmas about them.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
-  `Set.Ico a b` is `[finite]`, and 'locally finite total orders', for which there is a list model.
+  `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
 - Once the above is done, get rid of `Data.Int.range` (and maybe `List.range'`?).
 -/
 

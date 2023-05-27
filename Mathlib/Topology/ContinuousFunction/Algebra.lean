@@ -12,7 +12,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
