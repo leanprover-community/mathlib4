@@ -357,6 +357,7 @@ instance instCoeFun : CoeFun (OrthonormalBasis ι 𝕜 E) fun _ => ι → E wher
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
     ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
   -- Porting note: simplified with `congr!`
+  unfold OrthonormalBasis.cast
   funext
   congr!
 #align orthonormal_basis.coe_of_repr OrthonormalBasis.coe_ofRepr
@@ -364,6 +365,7 @@ theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 �
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
+  unfold OrthonormalBasis.cast
   congr!
 #align orthonormal_basis.repr_symm_single OrthonormalBasis.repr_symm_single
 
