@@ -163,7 +163,7 @@ end lift
 
 variable {β : Type v} (f : α → β)
 
-/-- A map `f : α → β` produces a ring homomorphism `free_comm_ring α →+* free_comm_ring β`. -/
+/-- A map `f : α → β` produces a ring homomorphism `FreeCommRing α →+* FreeCommRing β`. -/
 def map : FreeCommRing α →+* FreeCommRing β :=
   lift <| of ∘ f
 #align free_comm_ring.map FreeCommRing.map

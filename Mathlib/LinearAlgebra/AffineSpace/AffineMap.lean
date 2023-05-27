@@ -32,7 +32,7 @@ This file defines affine maps.
 
 ## Implementation notes
 
-`out_param` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
+`outParam` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
 (deduced from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by
 `P` or `V`.
 

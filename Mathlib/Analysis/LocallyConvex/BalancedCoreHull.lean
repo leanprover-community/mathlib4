@@ -253,7 +253,7 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
   rcases NormedField.exists_norm_lt 𝕜 hr with ⟨y, hy₀, hyr⟩
   rw [norm_pos_iff] at hy₀
   have : y • V ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hy₀).mpr hV
-  -- It remains to show that `y • V ⊆ balanced_core 𝕜 U`
+  -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
   refine' Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => _)
   rw [smul_smul]
   rintro _ ⟨z, hz, rfl⟩

@@ -93,7 +93,7 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 
 
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
-action on `Mˣ`. Notably, this provides `mul_action Mˣ Nˣ` under suitable
+action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable
 conditions.
 -/
 instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]

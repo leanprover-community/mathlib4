@@ -187,7 +187,7 @@ theorem kstar_def_nonempty (l : Language α) :
     -- exact ⟨h y hy.1, hy.2⟩
     --
     -- The goal `y ≠ []` for the second argument cannot be resolved
-    -- by `hy.2 : isEmpty y = false`.
+    -- by `hy.2 : isEmpty y = False`.
     let ⟨hyl, hyr⟩ := hy
     apply And.intro (h y hyl)
     cases y <;> simp only [ne_eq, not_true, not_false_iff]

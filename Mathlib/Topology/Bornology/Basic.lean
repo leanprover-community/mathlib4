@@ -31,7 +31,7 @@ cobounded filter is generally referred to as the *filter at infinity*.
 - `Bornology α`: a class consisting of `cobounded : Filter α` and a proof that this filter
   contains the `cofinite` filter.
 - `Bornology.IsCobounded`: the predicate that a set is a member of the `cobounded α` filter. For
-  `s : set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
+  `s : Set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
 - `bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
   cobounded set). One should prefer `Bornology.IsBounded s` over `sᶜ ∈ cobounded α`.
 - `BoundedSpace α`: a class extending `Bornology α` with the condition

@@ -21,7 +21,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `floor_semiring` if `α` is.
+* `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
 
 namespace Nonneg

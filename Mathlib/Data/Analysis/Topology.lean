@@ -240,7 +240,7 @@ theorem tendsto_nhds_iff {m : β → α} {f : Filter β} (F : f.Realizer) (R : R
 
 end Ctop.Realizer
 
-/-- A `locally_finite.realizer F f` is a realization that `f` is locally finite, namely it is a
+/-- A `LocallyFinite.Realizer F f` is a realization that `f` is locally finite, namely it is a
 choice of open sets from the basis of `F` such that they intersect only finitely many of the values
 of `f`.  -/
 structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f : β → Set α) where

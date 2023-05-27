@@ -292,12 +292,12 @@ theorem imClm_apply (z : ℂ) : (imClm : ℂ → ℝ) z = z.im :=
   rfl
 #align complex.im_clm_apply Complex.imClm_apply
 
-theorem restrictScalars_one_smul_right' (x : E) :
+theorem restrictScalars_one_smulRight' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
       reClm.smulRight x + I • imClm.smulRight x := by
   ext ⟨a, b⟩
   simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
-#align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smul_right'
+#align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smulRight'
 
 theorem restrictScalars_one_smulRight (x : ℂ) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =

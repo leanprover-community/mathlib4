@@ -29,7 +29,7 @@ class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <|
 instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
-/-- Enable automatic handling of pi types in `can_lift`. -/
+/-- Enable automatic handling of pi types in `CanLift`. -/
 instance Pi.canLift (ι : Sort _) (α β : ι → Sort _) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
     [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where

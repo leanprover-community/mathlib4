@@ -15,9 +15,9 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
 
 /-!
-# Extra facts about `prod`
+# Extra facts about `Prod`
 
-This file defines `prod.swap : α × β → β × α` and proves various simple lemmas about `prod`.
+This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
 -/
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}

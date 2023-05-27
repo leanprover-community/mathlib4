@@ -85,7 +85,7 @@ is manipulated.
 
 Example:
 ```lean
-example {G : Type} [group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a :=
+example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a :=
 begin
   group at h, -- normalizes `h` which becomes `h : c = d`
   rw h,       -- the goal is now `a*d*d⁻¹ = a`
