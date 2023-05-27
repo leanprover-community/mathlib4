@@ -864,13 +864,13 @@ end SubordinateOrthonormalBasis
 
 end FiniteDimensional
 
-attribute [local instance] fact_finiteDimensional_of_finrank_eq_succ
-
 /-- Given a natural number `n` one less than the `finrank` of a finite-dimensional inner product
 space, there exists an isometry from the orthogonal complement of a nonzero singleton to
 `euclidean_space 𝕜 (fin n)`. -/
 def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : OrthonormalBasis (Fin n) 𝕜 (𝕜 ∙ v)ᗮ :=
+  -- Poritng note: was `attribute [local instance] fact_finiteDimensional_of_finrank_eq_succ`
+  haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ (K := 𝕜) (V := E) n
   (stdOrthonormalBasis _ _).reindex <| finCongr <| finrank_orthogonal_span_singleton hv
 #align orthonormal_basis.from_orthogonal_span_singleton OrthonormalBasis.fromOrthogonalSpanSingleton
 
