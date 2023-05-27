@@ -15,13 +15,13 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`
 
-Let `l` be a filter on `ℂ` such that `complex.re` tends to infinity along `l` and `complex.im z`
-grows at a subexponential rate compared to `complex.re z`. Then
+Let `l` be a filter on `ℂ` such that `Complex.re` tends to infinity along `l` and `Complex.im z`
+grows at a subexponential rate compared to `Complex.re z`. Then
 
-- `complex.is_o_log_abs_re_of_subexponential_im_re`: `real.log ∘ complex.abs` is `o`-small of
-  `complex.re` along `l`;
+- `Complex.is_o_log_abs_re_of_subexponential_im_re`: `Real.log ∘ Complex.abs` is `o`-small of
+  `Complex.re` along `l`;
 
-- `complex.is_o_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$ along `l`
+- `Complex.isLittleO_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$ along `l`
   for any complex `a₁`, `a₂` and real `b₁ < b₂`.
 
 We use these assumptions on `l` for two reasons. First, these are the assumptions that naturally
@@ -141,7 +141,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
         (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz => by
           have h2 : 0 < Real.sqrt 2 := by simp
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
-          have hz₀ : 0 < abs z := one_pos.trans_le hz'
+          have _ : 0 < abs z := one_pos.trans_le hz'
           have hm₀ : 0 < max z.re (|z.im|) := lt_max_iff.2 (Or.inl <| one_pos.trans_le hz)
           rw [one_mul, Real.norm_eq_abs, _root_.abs_of_nonneg (Real.log_nonneg hz')]
           refine' le_trans _ (le_abs_self _)
