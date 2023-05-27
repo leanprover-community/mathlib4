@@ -12,11 +12,9 @@ This `norm_num` extension uses a strategy parallel to that of `Nat.fastFib`, but
 produces proofs of what `Nat.fib` evaluates to.
 -/
 
-namespace Tactic
+namespace Mathlib.Meta.NormNum
 
-namespace NormNum
-
-open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
+open Qq Lean Elab.Tactic
 open Nat
 
 /-- Auxiliary definition for `proveFib` extension. -/
@@ -40,17 +38,6 @@ theorem isFibAux_two_mul_add_one {n a b n' a' b' : ℕ} (H : IsFibAux n a b)
     IsFibAux n' a' b' :=
   ⟨by rw [← hn, fib_two_mul_add_one, H.1, H.2, pow_two, pow_two, add_comm, h1],
    by rw [← hn, fib_two_mul_add_two, H.1, H.2, h2]⟩
-
-theorem isFibAux_two_mul_done {n a b n' a' : ℕ} (H : IsFibAux n a b)
-    (hn : 2 * n = n') (h : a * (2 * b - a) = a') : fib n' = a' :=
-  (isFibAux_two_mul H hn h rfl).1
-
-theorem isFibAux_two_mul_add_one_done {n a b n' a' : ℕ} (H : IsFibAux n a b)
-    (hn : 2 * n + 1 = n') (h : a * a + b * b = a') : fib n' = a' :=
-  (isFibAux_two_mul_add_one H hn h rfl).1
-
-theorem isNat_fib : {x nx z : ℕ} → IsNat x nx → Nat.fib nx = z → IsNat (Nat.fib x) z
-  | _, _, _, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en' $ea' $eb') :=
   match en'.natLit! with
@@ -80,6 +67,14 @@ partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en
       have h2 : Q($eb * (2 * $ea + $eb) = $eb') := (q(Eq.refl $eb') : Expr)
       ⟨ea', eb', q(isFibAux_two_mul_add_one $H $hn $h1 $h2)⟩
 
+theorem isFibAux_two_mul_done {n a b n' a' : ℕ} (H : IsFibAux n a b)
+    (hn : 2 * n = n') (h : a * (2 * b - a) = a') : fib n' = a' :=
+  (isFibAux_two_mul H hn h rfl).1
+
+theorem isFibAux_two_mul_add_one_done {n a b n' a' : ℕ} (H : IsFibAux n a b)
+    (hn : 2 * n + 1 = n') (h : a * a + b * b = a') : fib n' = a' :=
+  (isFibAux_two_mul_add_one H hn h rfl).1
+
 /-- Given the natural number literal `ex`, returns `Nat.fib ex` as a natural number literal
 and an equality proof. Panics if `ex` isn't a natural number literal. -/
 def proveNatFib (en' : Q(ℕ)) : (em : Q(ℕ)) × Q(Nat.fib $en' = $em) :=
@@ -102,6 +97,9 @@ def proveNatFib (en' : Q(ℕ)) : (em : Q(ℕ)) × Q(Nat.fib $en' = $em) :=
       have ea' : Q(ℕ) := mkRawNatLit <| a * a + b * b
       have h1 : Q($ea * $ea + $eb * $eb = $ea') := (q(Eq.refl $ea') : Expr)
       ⟨ea', q(isFibAux_two_mul_add_one_done $H $hn $h1)⟩
+
+theorem isNat_fib : {x nx z : ℕ} → IsNat x nx → Nat.fib nx = z → IsNat (Nat.fib x) z
+  | _, _, _, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 /-- Evaluates the `Nat.fib` function. -/
 @[norm_num Nat.fib _]
