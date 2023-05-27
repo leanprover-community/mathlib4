@@ -378,8 +378,8 @@ abstracted) together with an array of the explicit arguments that have been remo
 To construct an application of the result, use e.g. `mkAppMWithLevels'` or `mkAppNWithLevels`.
 
 `ensureReconstructable := true` checks that
-`let (f', args) ← e.abstractExplicitArgs n; mkAppMWithLevels' f' args` is an `ExprWithLevels` that
-has no universe parameters and is defeq to `e`.
+`let (f', args) ← e.abstractExplicitArgs n; mkAppMWithLevels' f' args` is a trivial
+`ExprWithLevels` (no universe arguments) and is defeq to `e`.
  -/
 partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := false) :
     MetaM (ExprWithLevels × Array Expr) :=
@@ -407,7 +407,7 @@ partial def abstractExplicitArgs (e : Expr) (n : Nat) (ensureReconstructable := 
             if bi.isExplicit then
               n - explicitArgs.size > 0
             else
-              -- Is it an exclusive dependency (`some true`)?
+              -- Is argument `i` an exclusive dependency (`some true`)?
               exclusiveDeps[i]!.any id
           if isAbstracted then
             exclusiveDeps := updateExclusiveDeps exclusiveDeps backDeps[i]! true
