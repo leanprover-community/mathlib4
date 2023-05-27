@@ -1,5 +1,4 @@
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.HasCommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 open CategoryTheory Category ZeroObject Limits

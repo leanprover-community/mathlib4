@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.HasCommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 namespace CategoryTheory
