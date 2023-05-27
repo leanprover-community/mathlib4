@@ -46,18 +46,17 @@ MCtxDepth. -/
 def mkAppNUnifying (f : Expr) (xs : Array Expr) : MetaM Expr := do
   mkAppNUnifyingArgs f (← inferType f) xs
 
-/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Whether it fails
-if any newly-created metavariables are still unassigned is controlled by `allowNewMVars`. -/
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. However, it does
+fail if any *new* metavariables are present. -/
 private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Expr)
-    (mvars instMVars : Array MVarId) (allowNewMVars : Bool) : MetaM Expr := do
+    (mvars instMVars : Array MVarId) : MetaM Expr := do
   instMVars.forM fun mvarId => do
     let mvarDecl ← mvarId.getDecl
     let mvarVal  ← synthInstance mvarDecl.type
     mvarId.assign mvarVal
   let result ← instantiateMVars (mkAppN f args)
-  unless allowNewMVars do
-    unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
-      throwAppBuilderException methodName ("result contains metavariables" ++ indentExpr result)
+  unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
+    throwAppBuilderException methodName ("result contains new metavariables" ++ indentExpr result)
   return result
 
 /-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Returns new
@@ -71,14 +70,15 @@ private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array 
   let result ← instantiateMVars (mkAppN f args)
   return (result, ← mvars.filterM (notM ·.isAssigned), ← instMVars.filterM (notM ·.isAssigned))
 
-/-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal`. -/
+/-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal` and keeps track
+of any created implicit mvars. -/
 private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) (xs : Array Expr)
-    (allowNewMVars reducing : Bool)
-    (k : Name → Expr → Array Expr → Array MVarId → Array MVarId → Bool → MetaM α) : MetaM α :=
+    (reducing : Bool) (k : Name → Expr → Array Expr → Array MVarId → Array MVarId → MetaM α)
+    : MetaM α :=
   let rec loop (type : Expr) (i : Nat) (j : Nat) (args : Array Expr)
       (mvars instMVars : Array MVarId) : MetaM α := do
     if i >= xs.size then
-      k n f args mvars instMVars allowNewMVars
+      k n f args mvars instMVars
     else match type with
       | Expr.forallE n d b bi =>
         let d  := d.instantiateRevRange j args.size args
@@ -114,45 +114,38 @@ private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) 
   loop fType 0 0 #[] #[] #[]
 
 /-- Like `mkAppM`, but allows metavariables to be unified during the construction of the
-application.
-
-If `allowNewMVars` is `false` (the default), the function will fail if any newly-introduced
-metavariables (namely, those introduced for implicit arguments) are not assigned. -/
-def mkAppMUnifying (const : Name) (xs : Array Expr) (allowNewMVars := false) (reducing := true)
+application. Fails if any metavariables for implicit arguments created during the course of
+`mkAppMUnifying` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars`. -/
+def mkAppMUnifying (const : Name) (xs : Array Expr) (reducing := true)
     : MetaM Expr :=
   withAppBuilderTrace const xs do
     let (f, fType) ← mkFun const
-    mkAppMArgsUnifyingCont decl_name% f fType xs allowNewMVars reducing mkAppMFinalUnifying
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
 
 /-- Like `mkAppM'`, but allows metavariables to be unified during the construction of the
-application.
-
-If `allowNewMVars` is `false` (the default), the function will fail if any newly-introduced
-metavariables (namely, those introduced for implicit arguments) are not assigned. -/
-def mkAppMUnifying' (f : Expr) (xs : Array Expr) (allowNewMVars := false) (reducing := true)
+application. Fails if any metavariables for implicit arguments created during the course of
+`mkAppMUnifying'` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars'`. -/
+def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true)
     : MetaM Expr :=
   withAppBuilderTrace f xs do
-    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs allowNewMVars reducing
-      mkAppMFinalUnifying
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifying
 
-/-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)`. Useful in case we want to
-e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing instance
-arguments later. -/
-def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (allowNewMVars := false)
-    (reducing := true) : MetaM (Expr × Array MVarId × Array MVarId) :=
-  do
+
+/-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)` where `implicitMVars` and
+`instMVars` are any newly-created metavariables for the implicit and instance arguments of `const`.
+Useful in case we want to e.g. try assigning the `implicitMVars` with `isDefEq` afterwards, or if
+we want to try synthesizing instance arguments later. -/
+def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (reducing := true)
+    : MetaM (Expr × Array MVarId × Array MVarId) :=
     let (f, fType) ← mkFun const
-    mkAppMArgsUnifyingCont decl_name% f fType xs allowNewMVars reducing
-      mkAppMFinalUnifyingWithNewMVars
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
 
 /-- Like `mkAppNUnifyingWithNewMVars'`, but returns `(e, implicitMVars, instMVars)`. Useful in case
 we want to e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing
 instance arguments later. -/
 def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
-  do
-    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs true reducing
-      mkAppMFinalUnifyingWithNewMVars
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifyingWithNewMVars
 
 namespace ExprWithLevels
 
