@@ -26,13 +26,13 @@ and a cone `c` over `G`, we construct a cone over the cone points of `D`.
 We then show that if `c` is a limit cone, the constructed cone is also a limit cone.
 
 In the second part, we state the Fubini theorem in the setting where limits are
-provided by suitable `has_limit` classes.
+provided by suitable `HasLimit` classes.
 
 We construct
-`limit_uncurry_iso_limit_comp_lim F : limit (uncurry.obj F) ≅ limit (F ⋙ lim)`
+`limitUncurryIsoLimitCompLim F : limit (uncurry.obj F) ≅ limit (F ⋙ lim)`
 and give simp lemmas characterising it.
 For convenience, we also provide
-`limit_iso_limit_curry_comp_lim G : limit G ≅ limit ((curry.obj G) ⋙ lim)`
+`limitIsoLimitCurryCompLim G : limit G ≅ limit ((curry.obj G) ⋙ lim)`
 in terms of the uncurried functor.
 
 ## Future work
@@ -67,7 +67,7 @@ structure DiagramOfCones where
 variable {F}
 
 /-- Extract the functor `J ⥤ C` consisting of the cone points and the maps between them,
-from a `diagram_of_cones`.
+from a `DiagramOfCones`.
 -/
 @[simps]
 def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
@@ -112,7 +112,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             exact this) }
 #align category_theory.limits.cone_of_cone_uncurry CategoryTheory.Limits.coneOfConeUncurry
 
-/-- `cone_of_cone_uncurry Q c` is a limit cone when `c` is a limit cone.`
+/-- `coneOfConeUncurry Q c` is a limit cone when `c` is a limit cone.
 -/
 def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
     {c : Cone (uncurry.obj F)} (P : IsLimit c) : IsLimit (coneOfConeUncurry Q c) where
@@ -281,7 +281,7 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
-  simp [limitIsoLimitCurryCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
+  simp [limitIsoLimitCurryCompLim, Trans.simple, HasLimit.isoOfNatIso, limitUncurryIsoLimitCompLim]
 #align category_theory.limits.limit_iso_limit_curry_comp_lim_hom_π_π CategoryTheory.Limits.limitIsoLimitCurryCompLim_hom_π_π
 
 @[simp, reassoc]
