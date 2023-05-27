@@ -360,7 +360,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance : Monoid (ArithmeticFunction R) :=
+instance instMonoid : Monoid (ArithmeticFunction R) :=
   { one := One.one
     mul := Mul.mul
     one_mul := one_smul'
@@ -382,12 +382,13 @@ instance : Monoid (ArithmeticFunction R) :=
         tauto
       simp [y2ne]
     mul_assoc := mul_smul' }
+#align nat.arithmetic_function.monoid Nat.ArithmeticFunction.instMonoid
 
 instance instSemiring : Semiring (ArithmeticFunction R) :=
-  -- porting note: I feel that I shouldn't have had to provide `one_mul, mul_one, mul_assoc`
+  -- porting note: I reorganized this instance
   { ArithmeticFunction.instAddMonoidWithOne,
-    ArithmeticFunction.instAddCommMonoid,
-    show AddMonoid (ArithmeticFunction R) by infer_instance with
+    ArithmeticFunction.instMonoid,
+    ArithmeticFunction.instAddCommMonoid with
     zero_mul := fun f => by
       ext
       simp only [mul_apply, MulZeroClass.zero_mul, sum_const_zero, zero_apply]
@@ -399,10 +400,7 @@ instance instSemiring : Semiring (ArithmeticFunction R) :=
       simp only [← sum_add_distrib, mul_add, mul_apply, add_apply]
     right_distrib := fun a b c => by
       ext
-      simp only [← sum_add_distrib, add_mul, mul_apply, add_apply],
-    one_mul := one_mul,
-    mul_one := mul_one,
-    mul_assoc := mul_assoc }
+      simp only [← sum_add_distrib, add_mul, mul_apply, add_apply] }
 -- porting note: have I aligned this correctly?
 #align nat.arithmetic_function.semiring Nat.ArithmeticFunction.instSemiring
 
