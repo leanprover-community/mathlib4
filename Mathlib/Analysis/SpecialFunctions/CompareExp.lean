@@ -131,7 +131,7 @@ theorem abs_im_pow_eventuallyLE_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
 #align complex.is_exp_cmp_filter.abs_im_pow_eventually_le_exp_re Complex.IsExpCmpFilter.abs_im_pow_eventuallyLE_exp_re
 
 /-- If `l : filter ℂ` is an "exponential comparison filter", then $\log |z| =o(ℜ z)$ along `l`.
-This is the main lemma in the proof of `complex.is_exp_cmp_filter.is_o_cpow_exp` below.
+This is the main lemma in the proof of `Complex.IsExpCmpFilter.isLittleO_cpow_exp` below.
 -/
 theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z)) =o[l] re :=
   calc
