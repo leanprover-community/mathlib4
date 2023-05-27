@@ -8,8 +8,8 @@ Authors: Scott Morrison, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Data.MvPolynomial.CommRing
 
 /-!
 Multivariable polynomials on a type is the left adjoint of the
@@ -32,8 +32,7 @@ open Classical
 /-- The free functor `Type u ⥤ CommRing` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.
 -/
-def free : Type u ⥤ CommRingCat.{u}
-    where
+def free : Type u ⥤ CommRingCat.{u} where
   obj α := of (MvPolynomial α ℤ)
   map X Y f := (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
   -- TODO these next two fields can be done by `tidy`, but the calls in `dsimp` and `simp` it
