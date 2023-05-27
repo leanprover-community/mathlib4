@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Cone.Basic
-import Mathbin.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.InnerProductSpace.Projection
 
 /-!
 # Convex cones in inner product spaces
@@ -43,8 +43,7 @@ open RealInnerProductSpace
 
 /-- The dual cone is the cone consisting of all points `y` such that for
 all points `x` in a given set `0 ≤ ⟪ x, y ⟫`. -/
-def Set.innerDualCone (s : Set H) : ConvexCone ℝ H
-    where
+def Set.innerDualCone (s : Set H) : ConvexCone ℝ H where
   carrier := { y | ∀ x ∈ s, 0 ≤ ⟪x, y⟫ }
   smul_mem' c hc y hy x hx := by
     rw [real_inner_smul_right]
@@ -72,10 +71,8 @@ theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
 
 /-- Dual cone of the total space is the convex cone {0}. -/
 @[simp]
-theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 :=
-  by
-  suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0
-    by
+theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
+  suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x hx => (inner_zero_right _).ge, this⟩
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
@@ -107,8 +104,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
 #align inner_dual_cone_insert innerDualCone_insert
 
 theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
-    (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone :=
-  by
+    (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_Union_of_mem _ hy) _
   intro x hx y hy
   rw [ConvexCone.mem_iInf] at hx
@@ -127,8 +123,7 @@ theorem innerDualCone_eq_iInter_innerDualCone_singleton :
   rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, Union_of_singleton_coe]
 #align inner_dual_cone_eq_Inter_inner_dual_cone_singleton innerDualCone_eq_iInter_innerDualCone_singleton
 
-theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) :=
-  by
+theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   -- reduce the problem to showing that dual cone of a singleton `{x}` is closed
   rw [innerDualCone_eq_iInter_innerDualCone_singleton]
   apply isClosed_iInter
@@ -142,13 +137,11 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) :=
 #align is_closed_inner_dual_cone isClosed_innerDualCone
 
 theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
-    (hc : IsClosed (K : Set H)) : K.Pointed :=
-  by
+    (hc : IsClosed (K : Set H)) : K.Pointed := by
   obtain ⟨x, hx⟩ := Ne
   let f : ℝ → H := (· • x)
   -- f (0, ∞) is a subset of K
-  have fI : f '' Set.Ioi 0 ⊆ (K : Set H) :=
-    by
+  have fI : f '' Set.Ioi 0 ⊆ (K : Set H) := by
     rintro _ ⟨_, h, rfl⟩
     exact K.smul_mem (Set.mem_Ioi.1 h) hx
   -- closure of f (0, ∞) is a subset of K
@@ -171,8 +164,7 @@ variable [CompleteSpace H]
 is also the geometric interpretation of Farkas' lemma. -/
 theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
-    ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 :=
-  by
+    ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
   -- let `z` be the point in `K` closest to `b`
   obtain ⟨z, hzK, infi⟩ := exists_norm_eq_iInf_of_complete_convex Ne hc.is_complete K.convex b
   -- for any `w` in `K`, we have `⟪b - z, w - z⟫_ℝ ≤ 0`
@@ -207,8 +199,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself.  -/
 theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
-    ((K : Set H).innerDualCone : Set H).innerDualCone = K :=
-  by
+    ((K : Set H).innerDualCone : Set H).innerDualCone = K := by
   ext x
   constructor
   · rw [mem_innerDualCone, ← SetLike.mem_coe]
