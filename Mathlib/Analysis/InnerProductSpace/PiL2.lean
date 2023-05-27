@@ -130,17 +130,17 @@ theorem EuclideanSpace.norm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Finty
 
 theorem EuclideanSpace.dist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt :=
-  (PiLp.dist_eq_of_L2 x y : _)
+  PiLp.dist_eq_of_L2 x y
 #align euclidean_space.dist_eq EuclideanSpace.dist_eq
 
 theorem EuclideanSpace.nndist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
-  (PiLp.nndist_eq_of_L2 x y : _)
+  PiLp.nndist_eq_of_L2 x y
 #align euclidean_space.nndist_eq EuclideanSpace.nndist_eq
 
 theorem EuclideanSpace.edist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
-  (PiLp.edist_eq_of_L2 x y : _)
+  PiLp.edist_eq_of_L2 x y
 #align euclidean_space.edist_eq EuclideanSpace.edist_eq
 
 variable [Fintype ι]
@@ -150,15 +150,18 @@ section
 -- Porting note: no longer supported
 -- attribute [local reducible] PiLp
 
-instance : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by infer_instance
+instance EuclideanSpace.instFiniteDimensional : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by
+  infer_instance
+#align euclidean_space.finite_dimensional EuclideanSpace.instFiniteDimensional
 
-instance : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by infer_instance
+instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by
+  infer_instance
+#align euclidean_space.inner_product_space EuclideanSpace.instInnerProductSpace
 
 @[simp]
 theorem finrank_euclideanSpace :
     FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  unfold EuclideanSpace PiLp
-  simp
+  simp [EuclideanSpace, PiLp]
 #align finrank_euclidean_space finrank_euclideanSpace
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -184,7 +187,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
   let e₁ := DirectSum.linearEquivFunOnFintype 𝕜 ι fun i => V i
   let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
   refine' LinearEquiv.isometryOfInner (e₂.symm.trans e₁) _
-  suffices ∀ (v w : PiLp 2 (fun i : ι => V i)), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
+  suffices ∀ (v w : PiLp 2 fun i => V i), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
     intro v₀ w₀
     convert this (e₁ (e₂.symm v₀)) (e₁ (e₂.symm w₀)) <;>
       simp only [LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
@@ -204,10 +207,8 @@ theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableE
     let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
     suffices ∀ v : ⨁ i, V i, e₂ v = ∑ i, e₁ v i by exact this (e₁.symm w)
     intro v
-    -- Porting note: added the next two lines
-    simp only [coeLinearMap, toModule, LinearEquiv.ofBijective_apply, linearEquivFunOnFintype_apply]
-    erw [Dfinsupp.lsum_apply_apply ℕ (fun i ↦ Submodule.subtype (V i)) v]
-    simp [DirectSum.coeLinearMap, DirectSum.toModule, Dfinsupp.sumAddHom_apply]
+    -- Porting note: added `Dfinsupp.lsum`
+    simp [DirectSum.coeLinearMap, DirectSum.toModule, Dfinsupp.lsum, Dfinsupp.sumAddHom_apply]
 #align direct_sum.is_internal.isometry_L2_of_orthogonal_family_symm_apply DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply
 
 end
@@ -217,10 +218,14 @@ variable (ι 𝕜)
 -- TODO : This should be generalized to `pi_Lp` with finite dimensional factors.
 /-- `pi_Lp.linear_equiv` upgraded to a continuous linear map between `euclidean_space 𝕜 ι`
 and `ι → 𝕜`. -/
-@[simps!]
+@[simps! toLinearEquiv_apply apply toLinearEquiv_symm_apply symm_apply]
 def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
   (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜).toContinuousLinearEquiv
 #align euclidean_space.equiv EuclideanSpace.equiv
+#align euclidean_space.equiv_to_linear_equiv_apply EuclideanSpace.equiv_toLinearEquiv_apply
+#align euclidean_space.equiv_apply EuclideanSpace.equiv_apply
+#align euclidean_space.equiv_to_linear_equiv_symm_apply EuclideanSpace.equiv_toLinearEquiv_symm_apply
+#align euclidean_space.equiv_symm_apply EuclideanSpace.equiv_symm_apply
 
 variable {ι 𝕜}
 
@@ -230,14 +235,17 @@ variable {ι 𝕜}
 def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
   (LinearMap.proj i).comp (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜 : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
 #align euclidean_space.projₗ EuclideanSpace.projₗ
+#align euclidean_space.projₗ_apply EuclideanSpace.projₗ_apply
 
 -- TODO : This should be generalized to `pi_Lp`.
 /-- The projection on the `i`-th coordinate of `euclidean_space 𝕜 ι`,
 as a continuous linear map. -/
-@[simps!]
+@[simps! apply coe]
 def EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 :=
   ⟨EuclideanSpace.projₗ i, continuous_apply i⟩
 #align euclidean_space.proj EuclideanSpace.proj
+#align euclidean_space.proj_coe EuclideanSpace.proj_coe
+#align euclidean_space.proj_apply EuclideanSpace.proj_apply
 
 -- TODO : This should be generalized to `pi_Lp`.
 /-- The vector given in euclidean space by being `1 : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
@@ -275,31 +283,31 @@ theorem EuclideanSpace.inner_single_right [DecidableEq ι] (i : ι) (a : 𝕜) (
 @[simp]
 theorem EuclideanSpace.norm_single [DecidableEq ι] (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖ = ‖a‖ :=
-  (PiLp.norm_equiv_symm_single 2 (fun _ => 𝕜) i a : _)
+  PiLp.norm_equiv_symm_single 2 (fun _ => 𝕜) i a
 #align euclidean_space.norm_single EuclideanSpace.norm_single
 
 @[simp]
 theorem EuclideanSpace.nnnorm_single [DecidableEq ι] (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖₊ = ‖a‖₊ :=
-  (PiLp.nnnorm_equiv_symm_single 2 (fun _ => 𝕜) i a : _)
+  PiLp.nnnorm_equiv_symm_single 2 (fun _ => 𝕜) i a
 #align euclidean_space.nnnorm_single EuclideanSpace.nnnorm_single
 
 @[simp]
 theorem EuclideanSpace.dist_single_same [DecidableEq ι] (i : ι) (a b : 𝕜) :
     dist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = dist a b :=
-  (PiLp.dist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b : _)
+  PiLp.dist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b
 #align euclidean_space.dist_single_same EuclideanSpace.dist_single_same
 
 @[simp]
 theorem EuclideanSpace.nndist_single_same [DecidableEq ι] (i : ι) (a b : 𝕜) :
     nndist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = nndist a b :=
-  (PiLp.nndist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b : _)
+  PiLp.nndist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b
 #align euclidean_space.nndist_single_same EuclideanSpace.nndist_single_same
 
 @[simp]
 theorem EuclideanSpace.edist_single_same [DecidableEq ι] (i : ι) (a b : 𝕜) :
     edist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = edist a b :=
-  (PiLp.edist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b : _)
+  PiLp.edist_equiv_symm_single_same 2 (fun _ => 𝕜) i a b
 #align euclidean_space.edist_single_same EuclideanSpace.edist_single_same
 
 /-- `euclidean_space.single` forms an orthonormal family. -/
@@ -325,17 +333,24 @@ variable (ι 𝕜 E)
 structure OrthonormalBasis where ofRepr ::
   repr : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι
 #align orthonormal_basis OrthonormalBasis
+#align orthonormal_basis.of_repr OrthonormalBasis.ofRepr
+#align orthonormal_basis.repr OrthonormalBasis.repr
 
 variable {ι 𝕜 E}
 
 namespace OrthonormalBasis
 
-instance : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
+instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 (EuclideanSpace 𝕜 ι))⟩
+#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
+
+@[coe, inherit_doc OrthonormalBasis]
+protected def cast (b : OrthonormalBasis ι 𝕜 E) (i : ι) : E := by
+  classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
 
 /-- `b i` is the `i`th basis vector. -/
 instance instCoeFun : CoeFun (OrthonormalBasis ι 𝕜 E) fun _ => ι → E where
-  coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
+  coe := OrthonormalBasis.cast
 #align orthonormal_basis.has_coe_to_fun OrthonormalBasis.instCoeFun
 
 @[simp]
@@ -428,8 +443,8 @@ protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSp
 
 /-- Mapping an orthonormal basis along a `linear_isometry_equiv`. -/
 protected def map {G : Type _} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-    (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : OrthonormalBasis ι 𝕜 G
-    where repr := L.symm.trans b.repr
+    (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : OrthonormalBasis ι 𝕜 G where
+  repr := L.symm.trans b.repr
 #align orthonormal_basis.map OrthonormalBasis.map
 
 @[simp]
@@ -446,7 +461,8 @@ protected theorem toBasis_map {G : Type _} [NormedAddCommGroup G] [InnerProductS
 #align orthonormal_basis.to_basis_map OrthonormalBasis.toBasis_map
 
 /-- A basis that is orthonormal is an orthonormal basis. -/
-def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) : OrthonormalBasis ι 𝕜 E :=
+def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+    OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.ofRepr <|
     LinearEquiv.isometryOfInner v.equivFun
       (by
