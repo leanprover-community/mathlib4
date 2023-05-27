@@ -24,7 +24,7 @@ import Mathlib.Data.List.Basic
   defined inductively, with traversable instance and decidable equality.
 * `MagmaAssocQuotient α`: quotient of a magma `α` by the associativity equivalence relation.
 * `FreeSemigroup α`: free semigroup over alphabet `α`, defined as a structure with two fields
-  `head : α` and `tail : list α` (i.e. nonempty lists), with traversable instance and decidable
+  `head : α` and `tail : List α` (i.e. nonempty lists), with traversable instance and decidable
   equality.
 * `FreeMagmaAssocQuotientEquiv α`: isomorphism between `MagmaAssocQuotient (FreeMagma α)` and
   `FreeSemigroup α`.

@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Prod
 # N-ary images of sets
 
 This file defines `Set.image2`, the binary image of finsets. This is the finset version of
-`set.image2`. This is mostly useful to define pointwise operations.
+`Set.image2`. This is mostly useful to define pointwise operations.
 
 ## Notes
 

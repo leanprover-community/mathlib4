@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -296,22 +297,23 @@ begin
 end
 -/
 
-/-
-example : Nat.fib 0 = 0 := by norm_num
-example : Nat.fib 1 = 1 := by norm_num
-example : Nat.fib 2 = 1 := by norm_num
-example : Nat.fib 3 = 2 := by norm_num
-example : Nat.fib 4 = 3 := by norm_num
-example : Nat.fib 5 = 5 := by norm_num
-example : Nat.fib 6 = 8 := by norm_num
-example : Nat.fib 7 = 13 := by norm_num
-example : Nat.fib 8 = 21 := by norm_num
-example : Nat.fib 9 = 34 := by norm_num
-example : Nat.fib 10 = 55 := by norm_num
-example : Nat.fib 37 = 24157817 := by norm_num
-example : Nat.fib 64 = 10610209857723 := by norm_num
-example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num
--/
+example : Nat.fib 0 = 0 := by norm_num1
+example : Nat.fib 1 = 1 := by norm_num1
+example : Nat.fib 2 = 1 := by norm_num1
+example : Nat.fib 3 = 2 := by norm_num1
+example : Nat.fib 4 = 3 := by norm_num1
+example : Nat.fib 5 = 5 := by norm_num1
+example : Nat.fib 6 = 8 := by norm_num1
+example : Nat.fib 7 = 13 := by norm_num1
+example : Nat.fib 8 = 21 := by norm_num1
+example : Nat.fib 9 = 34 := by norm_num1
+example : Nat.fib 10 = 55 := by norm_num1
+example : Nat.fib 37 = 24157817 := by norm_num1
+example : Nat.fib 63 = 6557470319842 := by norm_num1
+example : Nat.fib 64 = 10610209857723 := by norm_num1
+example : Nat.fib 65 = 17167680177565 := by norm_num1
+example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num1
+example : Nat.fib 1000 + Nat.fib 1001 = Nat.fib 1002 := by norm_num1
 
 /-
 example : (2 : ℝ) ^ (3 : ℝ) = 8 := by norm_num

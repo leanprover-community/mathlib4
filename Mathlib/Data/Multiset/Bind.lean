@@ -303,7 +303,7 @@ section Sigma
 
 variable {σ : α → Type _} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
-/-- `sigma s t` is the dependent version of `product`. It is the sum of
+/-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
 protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a

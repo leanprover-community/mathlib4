@@ -22,12 +22,12 @@ an element of `B` belongs to `B`.
 A filter basis `B` can be used to construct `B.filter : Filter α` such that a set belongs
 to `B.filter` if and only if it contains an element of `B`.
 
-Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → set α`,
+Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → Set α`,
 the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
-(ie. `s '' set_of p`) defines a filter basis `h.filter_basis`.
+(ie. `s '' setOf p`) defines a filter basis `h.filter_basis`.
 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
-and `s : ι → set α` as above) means that a set belongs to `l` if and
+and `s : ι → Set α` as above) means that a set belongs to `l` if and
 only if it contains some `s i` with `p i`. It implies `h : Filter.IsBasis p s`, and
 `l = h.filterBasis.filter`. The point of this definition is that checking statements
 involving elements of `l` often reduces to checking them on the basis elements.
@@ -68,16 +68,16 @@ and consequences are derived.
 
 As with `Set.iUnion`/`biUnion`/`Set.sUnion`, there are three different approaches to filter bases:
 
-* `Filter.HasBasis l s`, `s : set (set α)`;
-* `Filter.HasBasis l s`, `s : ι → set α`;
-* `Filter.HasBasis l p s`, `p : ι → Prop`, `s : ι → set α`.
+* `Filter.HasBasis l s`, `s : Set (Set α)`;
+* `Filter.HasBasis l s`, `s : ι → Set α`;
+* `Filter.HasBasis l p s`, `p : ι → Prop`, `s : ι → Set α`.
 
-We use the latter one because, e.g., `𝓝 x` in an `emetric_space` or in a `metric_space` has a basis
-of this form. The other two can be emulated using `s = id` or `p = λ _, true`.
+We use the latter one because, e.g., `𝓝 x` in an `EMetricSpace` or in a `MetricSpace` has a basis
+of this form. The other two can be emulated using `s = id` or `p = λ _, True`.
 
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
 machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
-`p = λ _, true`.
+`p = λ _, True`.
 -/
 
 
@@ -228,7 +228,7 @@ theorem filter_eq_generate (h : IsBasis p s) : h.filter = generate { U | ∃ i, 
 end IsBasis
 
 -- porting note: was `protected` in Lean 3 but `protected` didn't work; removed
-/-- We say that a filter `l` has a basis `s : ι → set α` bounded by `p : ι → Prop`,
+/-- We say that a filter `l` has a basis `s : ι → Set α` bounded by `p : ι → Prop`,
 if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`. -/
 structure HasBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α) : Prop where
   /-- A set `t` belongs to a filter `l` iff it includes an element of the basis. -/
@@ -296,7 +296,7 @@ theorem HasBasis.mem_of_mem (hl : l.HasBasis p s) (hi : p i) : s i ∈ l :=
   hl.mem_of_superset hi Subset.rfl
 #align filter.has_basis.mem_of_mem Filter.HasBasis.mem_of_mem
 
-/-- Index of a basis set such that `s i ⊆ t` as an element of `subtype p`. -/
+/-- Index of a basis set such that `s i ⊆ t` as an element of `Subtype p`. -/
 noncomputable def HasBasis.index (h : l.HasBasis p s) (t : Set α) (ht : t ∈ l) : { i : ι // p i } :=
   ⟨(h.mem_iff.1 ht).choose, (h.mem_iff.1 ht).choose_spec.1⟩
 #align filter.has_basis.index Filter.HasBasis.index
@@ -986,7 +986,7 @@ structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) extends IsBasis
   countable : (setOf p).Countable
 #align filter.is_countable_basis Filter.IsCountableBasis
 
-/-- We say that a filter `l` has a countable basis `s : ι → set α` bounded by `p : ι → Prop`,
+/-- We say that a filter `l` has a countable basis `s : ι → Set α` bounded by `p : ι → Prop`,
 if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`, and the set
 defined by `p` is countable. -/
 structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α)

@@ -273,7 +273,7 @@ section Rows
 
 This section defines `μ.row` and `μ.rowLen`, with the following API:
       1.  `(i, j) ∈ μ ↔ j < μ.rowLen i`
-      2.  `μ.row i = {i} ×ᶠ (finset.range (μ.rowLen i))`
+      2.  `μ.row i = {i} ×ᶠ (Finset.range (μ.rowLen i))`
       3.  `μ.rowLen i = (μ.row i).card`
       4.  `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
 
@@ -403,7 +403,7 @@ section RowLens
 
 /-! ### The list of row lengths of a Young diagram
 
-This section defines `μ.rowLens : list ℕ`, the list of row lengths of a Young diagram `μ`.
+This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
   1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.Sorted (· ≥ ·)`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
 
