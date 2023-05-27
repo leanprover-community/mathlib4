@@ -8,8 +8,8 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.StrictConvexBetween
-import Mathbin.Geometry.Euclidean.Basic
+import Mathlib.Analysis.Convex.StrictConvexBetween
+import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Spheres
@@ -118,8 +118,7 @@ theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
 #align euclidean_geometry.sphere.ne_iff EuclideanGeometry.Sphere.ne_iff
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
-    s₁.center = s₂.center ↔ s₁ = s₂ :=
-  by
+    s₁.center = s₂.center ↔ s₁ = s₂ := by
   refine' ⟨fun h => sphere.ext _ _ h _, fun h => h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
@@ -155,8 +154,7 @@ theorem cospherical_def (ps : Set P) :
 
 /-- A set of points is cospherical if and only if they lie in some sphere. -/
 theorem cospherical_iff_exists_sphere {ps : Set P} :
-    Cospherical ps ↔ ∃ s : Sphere P, ps ⊆ (s : Set P) :=
-  by
+    Cospherical ps ↔ ∃ s : Sphere P, ps ⊆ (s : Set P) := by
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨c, r, h⟩
     exact ⟨⟨c, r⟩, h⟩
@@ -183,8 +181,7 @@ theorem cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
 #align euclidean_geometry.cospherical_empty EuclideanGeometry.cospherical_empty
 
 /-- A single point is cospherical. -/
-theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) :=
-  by
+theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
 #align euclidean_geometry.cospherical_singleton EuclideanGeometry.cospherical_singleton
@@ -199,8 +196,7 @@ include V
 
 /-- Two points are cospherical. -/
 theorem cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
-  ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂,
-    by
+  ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂, by
     rintro p (rfl | rfl | _)
     · rw [dist_comm, dist_midpoint_left]
     · rw [dist_comm, dist_midpoint_right]⟩
@@ -243,8 +239,7 @@ include V
 
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 3 → P}
-    (hps : Set.range p ⊆ s) (hpi : Function.Injective p) : AffineIndependent ℝ p :=
-  by
+    (hps : Set.range p ⊆ s) (hpi : Function.Injective p) : AffineIndependent ℝ p := by
   rw [affineIndependent_iff_not_collinear]
   intro hc
   rw [collinear_iff_of_mem (Set.mem_range_self (0 : Fin 3))] at hc
@@ -257,8 +252,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
   rcases hs with ⟨c, r, hs⟩
   have hs' := fun i => hs (p i) (Set.mem_of_mem_of_subset (Set.mem_range_self _) hps)
   choose f hf using hv
-  have hsd : ∀ i, dist (f i • v +ᵥ p 0) c = r :=
-    by
+  have hsd : ∀ i, dist (f i • v +ᵥ p 0) c = r := by
     intro i
     rw [← hf]
     exact hs' i
@@ -273,8 +267,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     exact hpi hi
   simp_rw [← hsd 0, hf0, zero_smul, zero_vadd, dist_smul_vadd_eq_dist (p 0) c hv0] at hsd
   have hfn0 : ∀ i, i ≠ 0 → f i ≠ 0 := fun i => (hfi.ne_iff' hf0).2
-  have hfn0' : ∀ i, i ≠ 0 → f i = -2 * ⟪v, p 0 -ᵥ c⟫ / ⟪v, v⟫ :=
-    by
+  have hfn0' : ∀ i, i ≠ 0 → f i = -2 * ⟪v, p 0 -ᵥ c⟫ / ⟪v, v⟫ := by
     intro i hi
     have hsdi := hsd i
     simpa [hfn0, hi] using hsdi
@@ -285,8 +278,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical s) {p₁ p₂ p₃ : P}
     (h₁ : p₁ ∈ s) (h₂ : p₂ ∈ s) (h₃ : p₃ ∈ s) (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) :
-    AffineIndependent ℝ ![p₁, p₂, p₃] :=
-  by
+    AffineIndependent ℝ ![p₁, p₂, p₃] := by
   refine' hs.affine_independent _ _
   · simp [h₁, h₂, h₃, Set.insert_subset]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
@@ -337,8 +329,7 @@ theorem eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two [FiniteDimensional ℝ 
 /-- Given a point on a sphere and a point not outside it, the inner product between the
 difference of those points and the radius vector is positive unless the points are equal. -/
 theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
-    (hp₂ : dist p₂ s.center ≤ s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ ∨ p₁ = p₂ :=
-  by
+    (hp₂ : dist p₂ s.center ≤ s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ ∨ p₁ = p₂ := by
   by_cases h : p₁ = p₂; · exact Or.inr h
   refine' Or.inl _
   rw [mem_sphere] at hp₁
@@ -369,8 +360,7 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
 /-- Given a point on a sphere and a point not outside it, the inner product between the
 difference of those points and the radius vector is nonnegative. -/
 theorem inner_nonneg_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
-    (hp₂ : dist p₂ s.center ≤ s.radius) : 0 ≤ ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ :=
-  by
+    (hp₂ : dist p₂ s.center ≤ s.radius) : 0 ≤ ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ := by
   rcases inner_pos_or_eq_of_dist_le_radius hp₁ hp₂ with (h | rfl)
   · exact h.le
   · simp
@@ -379,8 +369,7 @@ theorem inner_nonneg_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p
 /-- Given a point on a sphere and a point inside it, the inner product between the difference of
 those points and the radius vector is positive. -/
 theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
-    (hp₂ : dist p₂ s.center < s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ :=
-  by
+    (hp₂ : dist p₂ s.center < s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ := by
   by_cases h : p₁ = p₂
   · rw [h, mem_sphere] at hp₁
     exact False.elim (hp₂.ne hp₁)
