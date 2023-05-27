@@ -144,6 +144,7 @@ end Zero
 
 /-- Coerc an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
 this in `natCoe` because it gets unfolded too much. -/
+@[coe]  -- porting note: added `coe` tag.
 def natToArithmeticFunction [AddMonoidWithOne R] :
   (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
@@ -278,14 +279,15 @@ theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
 theorem mul_apply_one [Semiring R] {f g : ArithmeticFunction R} : (f * g) 1 = f 1 * g 1 := by simp
 #align nat.arithmetic_function.mul_apply_one Nat.ArithmeticFunction.mul_apply_one
 
-@[simp]
+@[simp, norm_cast]
 theorem natCoe_mul [Semiring R] {f g : ArithmeticFunction ℕ} :
     (↑(f * g) : ArithmeticFunction R) = f * g := by
   ext n
   simp
 #align nat.arithmetic_function.nat_coe_mul Nat.ArithmeticFunction.natCoe_mul
 
-@[simp]
+@[simp] -- porting note: the tag `norm_cast`, present in mathlib3, causes the linter to complain:
+        -- `badly shaped lemma, lhs must contain at least one coe`
 theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
     (↑(f * g) : ArithmeticFunction R) = f * g := by
   ext n
