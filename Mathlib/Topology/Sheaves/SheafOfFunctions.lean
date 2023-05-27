@@ -8,8 +8,8 @@ Authors: Johan Commelin, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.PresheafOfFunctions
-import Mathbin.Topology.Sheaves.SheafCondition.UniqueGluing
+import Mathlib.Topology.Sheaves.PresheafOfFunctions
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.
