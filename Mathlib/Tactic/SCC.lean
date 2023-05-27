@@ -293,7 +293,8 @@ def proveEqvTarget : ClosureM Unit := do
 ```lean
 example (p q r : Prop) (hpq : p → q) (hqr : q ↔ r) (hrp : r → p) : p ↔ r := by
   scc
-``` -/
+```
+-/
 elab "scc" : tactic =>
   ClosureM.run do
     discard mkSCC
