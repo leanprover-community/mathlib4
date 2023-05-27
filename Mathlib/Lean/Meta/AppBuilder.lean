@@ -5,11 +5,14 @@ Authors: Leonardo de Moura, Thomas Murrills
 -/
 import Lean
 import Std.Tactic.OpenPrivate
+import Mathlib.Control.Basic
 import Mathlib.Lean.Meta.ExprWithLevels
 
 /-!
 
 # Additions to Lean.Meta.AppBuilder
+
+We provide variants of `mkAppM` and `mkAppN` for customized behavior.
 
 This includes specialized appbuilder functionality for `ExprWithLevels`.
 
@@ -17,7 +20,7 @@ This includes specialized appbuilder functionality for `ExprWithLevels`.
 
 open Lean Meta
 
-open private throwAppBuilderException withAppBuilderTrace from Lean.Meta.AppBuilder
+open private mkFun throwAppBuilderException withAppBuilderTrace from Lean.Meta.AppBuilder
 
 namespace Lean.Meta
 
@@ -32,7 +35,7 @@ private def mkAppNUnifyingArgs (f fType : Expr) (xs : Array Expr) : MetaM Expr :
           pure (args.push x, b)
         else
           throwAppTypeMismatch (mkAppN f args) x
-      | _ => throwAppBuilderException `mkAppNUnifying' m!"too many arguments provided to{
+      | _ => throwAppBuilderException `mkAppNUnifying m!"too many arguments provided to{
         indentExpr f}\narguments{indentD xs}"
     instantiateMVars (mkAppN f args)
 
@@ -57,14 +60,25 @@ private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Exp
       throwAppBuilderException methodName ("result contains metavariables" ++ indentExpr result)
   return result
 
-/-- Nearly identical to `mkAppMArgs`, but uses `mkAppMFinalUnifying`, and passes it any mvarIds
-it creates. -/
-private partial def mkAppMArgsUnifying (f : Expr) (fType : Expr) (xs : Array Expr)
-    (allowNewMVars : Bool) : MetaM Expr :=
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Returns new
+implicit mvars and new instMVars -/
+private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array Expr)
+    (mvars instMVars : Array MVarId) (_ : Bool) : MetaM (Expr × Array MVarId × Array MVarId) := do
+  instMVars.forM fun mvarId => tryM do
+    unless ← mvarId.isAssigned do
+      let mvarVal  ← synthInstance (← mvarId.getType)
+      mvarId.assign mvarVal
+  let result ← instantiateMVars (mkAppN f args)
+  return (result, ← mvars.filterM (notM ·.isAssigned), ← instMVars.filterM (notM ·.isAssigned))
+
+/-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal`. -/
+private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) (xs : Array Expr)
+    (allowNewMVars reducing : Bool)
+    (k : Name → Expr → Array Expr → Array MVarId → Array MVarId → Bool → MetaM α) : MetaM α :=
   let rec loop (type : Expr) (i : Nat) (j : Nat) (args : Array Expr)
-      (mvars instMVars : Array MVarId) : MetaM Expr := do
+      (mvars instMVars : Array MVarId) : MetaM α := do
     if i >= xs.size then
-      mkAppMFinalUnifying `mkAppM f args mvars instMVars allowNewMVars
+      k n f args mvars instMVars allowNewMVars
     else match type with
       | Expr.forallE n d b bi =>
         let d  := d.instantiateRevRange j args.size args
@@ -87,33 +101,58 @@ private partial def mkAppMArgsUnifying (f : Expr) (fType : Expr) (xs : Array Exp
             throwAppTypeMismatch (mkAppN f args) x
       | type =>
         let type := type.instantiateRevRange j args.size args
-        let type ← whnfD type
-        if type.isForall then
-          loop type i args.size args mvars instMVars
+        if reducing then
+          let type ← whnfD type
+          if type.isForall then
+            loop type i args.size args mvars instMVars
+          else
+            throwAppBuilderException n m!"too many explicit arguments provided to{
+              indentExpr f}\narguments{indentD xs}"
         else
-          throwAppBuilderException `mkAppM m!"too many explicit arguments provided to{
+          throwAppBuilderException n m!"too many explicit arguments provided to{
             indentExpr f}\narguments{indentD xs}"
   loop fType 0 0 #[] #[] #[]
 
-open private mkFun in mkAppM in
 /-- Like `mkAppM`, but allows metavariables to be unified during the construction of the
 application.
 
 If `allowNewMVars` is `false` (the default), the function will fail if any newly-introduced
 metavariables (namely, those introduced for implicit arguments) are not assigned. -/
-def mkAppMUnifying (const : Name) (xs : Array Expr) (allowNewMVars := false) : MetaM Expr :=
+def mkAppMUnifying (const : Name) (xs : Array Expr) (allowNewMVars := false) (reducing := true)
+    : MetaM Expr :=
   withAppBuilderTrace const xs do
     let (f, fType) ← mkFun const
-    mkAppMArgsUnifying f fType xs allowNewMVars
+    mkAppMArgsUnifyingCont decl_name% f fType xs allowNewMVars reducing mkAppMFinalUnifying
 
 /-- Like `mkAppM'`, but allows metavariables to be unified during the construction of the
 application.
 
 If `allowNewMVars` is `false` (the default), the function will fail if any newly-introduced
 metavariables (namely, those introduced for implicit arguments) are not assigned. -/
-def mkAppMUnifying' (f : Expr) (xs : Array Expr) (allowNewMVars := false) : MetaM Expr :=
+def mkAppMUnifying' (f : Expr) (xs : Array Expr) (allowNewMVars := false) (reducing := true)
+    : MetaM Expr :=
   withAppBuilderTrace f xs do
-    mkAppMArgsUnifying f (← inferType f) xs allowNewMVars
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs allowNewMVars reducing
+      mkAppMFinalUnifying
+
+/-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)`. Useful in case we want to
+e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing instance
+arguments later. -/
+def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (allowNewMVars := false)
+    (reducing := true) : MetaM (Expr × Array MVarId × Array MVarId) :=
+  do
+    let (f, fType) ← mkFun const
+    mkAppMArgsUnifyingCont decl_name% f fType xs allowNewMVars reducing
+      mkAppMFinalUnifyingWithNewMVars
+
+/-- Like `mkAppNUnifyingWithNewMVars'`, but returns `(e, implicitMVars, instMVars)`. Useful in case
+we want to e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing
+instance arguments later. -/
+def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
+    : MetaM (Expr × Array MVarId × Array MVarId) :=
+  do
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs true reducing
+      mkAppMFinalUnifyingWithNewMVars
 
 namespace ExprWithLevels
 
