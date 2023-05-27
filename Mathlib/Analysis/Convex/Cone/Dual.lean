@@ -14,14 +14,14 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 /-!
 # Convex cones in inner product spaces
 
-We define `set.inner_dual_cone` to be the cone consisting of all points `y` such that for
+We define `Set.innerDualCone` to be the cone consisting of all points `y` such that for
 all points `x` in a given set `0 ≤ ⟪ x, y ⟫`.
 
 ## Main statements
 
 We prove the following theorems:
-* `convex_cone.inner_dual_cone_of_inner_dual_cone_eq_self`:
-  The `inner_dual_cone` of the `inner_dual_cone` of a nonempty, closed, convex cone is itself.
+* `ConvexCone.innerDualCone_of_innerDualCone_eq_self`:
+  The `innerDualCone` of the `innerDualCone` of a nonempty, closed, convex cone is itself.
 
 -/
 
