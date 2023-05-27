@@ -121,8 +121,8 @@ set_option linter.uppercaseLean3 false in
 as being equalized by the arrows `left_res` and `right_res` of the equalizer diagram.
 -/
 theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
-    IsCompatible F U ((piOpensIsoSectionsFamily F U).hom sf) ↔ leftRes F U sf = rightRes F U sf :=
-  by
+    IsCompatible F U ((piOpensIsoSectionsFamily F U).hom sf) ↔
+    leftRes F U sf = rightRes F U sf := by
   constructor <;> intro h
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
     refine Types.limit_ext' _ _ _ fun ⟨i, j⟩ => ?_
