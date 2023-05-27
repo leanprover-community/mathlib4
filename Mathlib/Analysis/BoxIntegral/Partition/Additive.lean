@@ -34,9 +34,7 @@ rectangular box, additive function
 
 noncomputable section
 
-open Classical BigOperators
-
-open Function Set
+open Classical BigOperators Function Set
 
 namespace BoxIntegral
 
@@ -175,21 +173,21 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
     (WithTop.coe_le_coe.2 <| π₂.le_of_mem hJ).trans hI]
 #align box_integral.box_additive_map.sum_boxes_congr BoxIntegral.BoxAdditiveMap.sum_boxes_congr
 
-section ToSmul
+section ToSMul
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/
-def toSmul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
+def toSMul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
   f.map (ContinuousLinearMap.lsmul ℝ ℝ).toLinearMap.toAddMonoidHom
-#align box_integral.box_additive_map.to_smul BoxIntegral.BoxAdditiveMap.toSmul
+#align box_integral.box_additive_map.to_smul BoxIntegral.BoxAdditiveMap.toSMul
 
 @[simp]
-theorem toSmul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSmul I x = f I • x := rfl
-#align box_integral.box_additive_map.to_smul_apply BoxIntegral.BoxAdditiveMap.toSmul_apply
+theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMul I x = f I • x := rfl
+#align box_integral.box_additive_map.to_smul_apply BoxIntegral.BoxAdditiveMap.toSMul_apply
 
-end ToSmul
+end ToSMul
 
 /-- Given a box `I₀` in `ℝⁿ⁺¹`, `f x : Box (Fin n) → G` is a family of functions indexed by a real
 `x` and for `x ∈ [I₀.lower i, I₀.upper i]`, `f x` is box-additive on subboxes of the `i`-th face of
