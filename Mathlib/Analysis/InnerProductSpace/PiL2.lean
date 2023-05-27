@@ -58,6 +58,8 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
+set_option linter.uppercaseLean3 false
+
 open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum
 
@@ -215,7 +217,7 @@ variable (ι 𝕜)
 -- TODO : This should be generalized to `pi_Lp` with finite dimensional factors.
 /-- `pi_Lp.linear_equiv` upgraded to a continuous linear map between `euclidean_space 𝕜 ι`
 and `ι → 𝕜`. -/
-@[simps]
+@[simps!]
 def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
   (PiLp.linearEquiv 2 𝕜 fun i : ι => 𝕜).toContinuousLinearEquiv
 #align euclidean_space.equiv EuclideanSpace.equiv
@@ -224,7 +226,7 @@ variable {ι 𝕜}
 
 -- TODO : This should be generalized to `pi_Lp`.
 /-- The projection on the `i`-th coordinate of `euclidean_space 𝕜 ι`, as a linear map. -/
-@[simps]
+@[simps!]
 def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
   (LinearMap.proj i).comp (PiLp.linearEquiv 2 𝕜 fun i : ι => 𝕜 : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
 #align euclidean_space.projₗ EuclideanSpace.projₗ
@@ -232,7 +234,7 @@ def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :
 -- TODO : This should be generalized to `pi_Lp`.
 /-- The projection on the `i`-th coordinate of `euclidean_space 𝕜 ι`,
 as a continuous linear map. -/
-@[simps]
+@[simps!]
 def EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 :=
   ⟨EuclideanSpace.projₗ i, continuous_apply i⟩
 #align euclidean_space.proj EuclideanSpace.proj
@@ -829,7 +831,7 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
   simpa only [DirectSum.IsInternal.subordinateOrthonormalBasis, OrthonormalBasis.coe_reindex,
     DirectSum.IsInternal.subordinateOrthonormalBasisIndex] using
     hV.collectedOrthonormalBasis_mem hV' (fun i => stdOrthonormalBasis 𝕜 (V i))
-      ((hV.sigma_orthonormal_basis_index_equiv hn hV').symm a)
+      ((hV.sigma_orthonormalBasis_index_equiv hn hV').symm a)
 #align direct_sum.is_internal.subordinate_orthonormal_basis_subordinate DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate
 
 end SubordinateOrthonormalBasis
@@ -861,8 +863,7 @@ TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensi
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
   -- Build an isometry from Sᗮ to L(S)ᗮ through euclidean_space
   let d := finrank 𝕜 Sᗮ
-  have dim_S_perp : finrank 𝕜 Sᗮ = d := rfl
-  let LS := L.to_linear_map.range
+  let LS := LinearMap.range L.toLinearMap
   have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by
     have dim_LS_perp : finrank 𝕜 LSᗮ = d
     calc
@@ -874,14 +875,14 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
-  let L3 := LSᗮ.subtypeₗᵢ.comp E.to_linear_isometry
+  let L3 := LSᗮ.subtypeₗᵢ.comp E.toLinearIsometry
   -- Project onto S and Sᗮ
   haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
   haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
   let p1 := (orthogonalProjection S).toLinearMap
   let p2 := (orthogonalProjection Sᗮ).toLinearMap
   -- Build a linear map from the isometries on S and Sᗮ
-  let M := L.to_linear_map.comp p1 + L3.to_linear_map.comp p2
+  let M := L.toLinearMap.comp p1 + L3.toLinearMap.comp p2
   -- Prove that M is an isometry
   have M_norm_map : ∀ x : V, ‖M x‖ = ‖x‖ := by
     intro x
@@ -891,10 +892,10 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         LinearIsometry.coe_toLinearMap]
     -- Mx_decomp is the orthogonal decomposition of M x
     have Mx_orth : ⟪L (p1 x), L3 (p2 x)⟫ = 0 := by
-      have Lp1x : L (p1 x) ∈ L.to_linear_map.range :=
-        LinearMap.mem_range_self L.to_linear_map (p1 x)
-      have Lp2x : L3 (p2 x) ∈ L.to_linear_map.rangeᗮ := by
-        simp only [L3, LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ, ←
+      have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
+        LinearMap.mem_range_self L.toLinearMap (p1 x)
+      have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
+        simp only [LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ, ←
           Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
@@ -902,7 +903,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     rw [← sq_eq_sq (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [LinearIsometry.norm_map, p1, p2, [anonymous], add_left_inj, mul_eq_mul_left_iff,
+    simp only [LinearIsometry.norm_map, _root_.add_left_inj, mul_eq_mul_left_iff,
       norm_eq_zero, true_or_iff, eq_self_iff_true, ContinuousLinearMap.coe_coe, Submodule.coe_norm,
       Submodule.coe_eq_zero]
   exact
@@ -912,7 +913,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
 
 theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
   haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  simp only [LinearIsometry.extend, [anonymous], ← LinearIsometry.coe_toLinearMap]
+  simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
   simp only [add_right_eq_self, LinearIsometry.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
     orthogonalProjection_mem_subspace_eq_self, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
@@ -943,13 +944,14 @@ def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[�
 
 @[simp]
 theorem toEuclideanLin_piLp_equiv_symm (A : Matrix m n 𝕜) (x : n → 𝕜) :
-    A.toEuclideanLin ((PiLp.equiv _ _).symm x) = (PiLp.equiv _ _).symm (A.toLin' x) :=
+    Matrix.toEuclideanLin A ((PiLp.equiv _ _).symm x) =
+      (PiLp.equiv _ _).symm (Matrix.toLin' A x) :=
   rfl
 #align matrix.to_euclidean_lin_pi_Lp_equiv_symm Matrix.toEuclideanLin_piLp_equiv_symm
 
 @[simp]
 theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    PiLp.equiv _ _ (A.toEuclideanLin x) = A.toLin' (PiLp.equiv _ _ x) :=
+    PiLp.equiv _ _ (Matrix.toEuclideanLin A x) = Matrix.toLin' A (PiLp.equiv _ _ x) :=
   rfl
 #align matrix.pi_Lp_equiv_to_euclidean_lin Matrix.piLp_equiv_toEuclideanLin
 
@@ -962,8 +964,8 @@ theorem toEuclideanLin_eq_toLin :
 
 end Matrix
 
--- mathport name: «expr⟪ , ⟫ₑ»
-local notation "⟪" x ", " y "⟫ₑ" => @inner 𝕜 _ _ ((PiLp.equiv 2 _).symm x) ((PiLp.equiv 2 _).symm y)
+local notation "⟪" x ", " y "⟫ₑ" =>
+  @inner 𝕜 _ _ (Equiv.symm (PiLp.equiv 2 _) x) (Equiv.symm (PiLp.equiv 2 _) y)
 
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B ⬝ Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
