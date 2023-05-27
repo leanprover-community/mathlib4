@@ -59,10 +59,10 @@ private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Exp
     throwAppBuilderException methodName ("result contains new metavariables" ++ indentExpr result)
   return result
 
-/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Returns new
-implicit mvars and new instMVars -/
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Returns any
+unassigned new implicit mvars and instance MVars. -/
 private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array Expr)
-    (mvars instMVars : Array MVarId) (_ : Bool) : MetaM (Expr × Array MVarId × Array MVarId) := do
+    (mvars instMVars : Array MVarId) : MetaM (Expr × Array MVarId × Array MVarId) := do
   instMVars.forM fun mvarId => tryM do
     unless ← mvarId.isAssigned do
       let mvarVal  ← synthInstance (← mvarId.getType)
