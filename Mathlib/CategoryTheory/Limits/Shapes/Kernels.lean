@@ -200,7 +200,7 @@ def KernelFork.IsLimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
     (fun _ _ _ hb => by simp only [← hb, Category.comp_id])
 
 /-- Any zero object identifies to the kernel of a given monomorphisms. -/
-def KernelFork.IsLimit.ofIsZeroOfMono {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
+def KernelFork.IsLimit.ofMonoOfIsZero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     (hf : Mono f) (h : IsZero c.pt) : IsLimit c :=
   isLimitAux _ (fun s => 0) (fun s => by rw [zero_comp, ← cancel_mono f, zero_comp, s.condition])
     (fun _ _ _ => h.eq_of_tgt _ _)
@@ -645,7 +645,7 @@ def CokernelCofork.IsColimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
     (fun _ _ _ hb => by simp only [← hb, Category.id_comp])
 
 /-- Any zero object identifies to the cokernel of a given epimorphisms. -/
-def CokernelCofork.IsColimit.ofIsZeroOfEpi {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
+def CokernelCofork.IsColimit.ofEpiOfIsZero {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
     (hf : Epi f) (h : IsZero c.pt) : IsColimit c :=
   isColimitAux _ (fun s => 0) (fun s => by rw [comp_zero, ← cancel_epi f, comp_zero, s.condition])
     (fun _ _ _ => h.eq_of_src _ _)
