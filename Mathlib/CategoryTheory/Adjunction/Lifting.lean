@@ -22,7 +22,7 @@ The adjoint triangle theorem says that given a functor `U : B ⥤ C` with a left
 that `ε_X : FUX ⟶ X` is a regular epi. Then for any category `A` with coequalizers of reflexive
 pairs, a functor `R : A ⥤ B` has a left adjoint if (and only if) the composite `R ⋙ U` does.
 Note that the condition on `U` regarding `ε_X` is automatically satisfied in the case when `U` is
-a monadic functor, giving the corollary: `monadic_adjoint_triangle_lift`, i.e. if `U` is monadic,
+a monadic functor, giving the corollary: `monadicAdjointTriangleLift`, i.e. if `U` is monadic,
 `A` has reflexive coequalizers then `R : A ⥤ B` has a left adjoint provided `R ⋙ U` does.
 
 The adjoint lifting theorem says that given a commutative square of functors (up to isomorphism):
@@ -104,8 +104,7 @@ def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 #align category_theory.lift_adjoint.other_map CategoryTheory.LiftAdjoint.otherMap
 
-/--
-`(F'Uε_X, other_map X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
+/-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 it has a coequalizer.
 -/
 instance (X : B) :
@@ -122,7 +121,7 @@ instance (X : B) :
 variable [HasReflexiveCoequalizers A]
 
 /-- Construct the object part of the desired left adjoint as the coequalizer of `F'Uε_Y` with
-`other_map`.
+`otherMap`.
 -/
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
@@ -137,8 +136,7 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
         { f : F'.obj (U.obj X) ⟶ Y //
           F'.map (U.map (adj₁.counit.app X)) ≫ f = otherMap _ _ adj₁ adj₂ _ ≫ f } :=
       Cofork.IsColimit.homIso (colimit.isColimit _) _
-    _ ≃
-        { g : U.obj X ⟶ U.obj (R.obj Y) //
+    _ ≃ { g : U.obj X ⟶ U.obj (R.obj Y) //
           U.map (F.map g ≫ adj₁.counit.app _) = U.map (adj₁.counit.app _) ≫ g } := by
       apply (adj₂.homEquiv _ _).subtypeEquiv _
       intro f
@@ -158,17 +156,16 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
     _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalises adj₁ X) _).symm
 #align category_theory.lift_adjoint.construct_left_adjoint_equiv CategoryTheory.LiftAdjoint.constructLeftAdjointEquiv
 
-/-- Construct the left adjoint to `R`, with object map `construct_left_adjoint_obj`. -/
+/-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by
-  refine'
-    Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) _
+  refine' Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) _
   intro X Y Y' g h
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply, Function.comp_apply,
     Function.comp_apply, Equiv.trans_apply, Equiv.trans_apply, Equiv.trans_apply, Equiv.trans_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff, Cofork.IsColimit.homIso_natural, Equiv.apply_symm_apply,
     Equiv.subtypeEquiv_apply, Equiv.subtypeEquiv_apply, Equiv.subtypeEquiv_apply,
-    Equiv.subtypeEquiv_apply, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk, ←
-    adj₁.homEquiv_naturality_right_symm, Cofork.IsColimit.homIso_natural,
+    Equiv.subtypeEquiv_apply, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk,
+    ← adj₁.homEquiv_naturality_right_symm, Cofork.IsColimit.homIso_natural,
     adj₂.homEquiv_naturality_right, Functor.comp_map]
 #align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
@@ -178,7 +175,7 @@ end LiftAdjoint
 `ε_X : FUX ⟶ X` is a regular epimorphism. Then if a category `A` has coequalizers of reflexive
 pairs, then a functor `R : A ⥤ B` has a left adjoint if the composite `R ⋙ U` does.
 
-Note the converse is true (with weaker assumptions), by `adjunction.comp`.
+Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 noncomputable def adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
@@ -190,7 +187,7 @@ noncomputable def adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) 
 
 /-- If `R ⋙ U` has a left adjoint, the domain of `R` has reflexive coequalizers and `U` is a monadic
 functor, then `R` has a left adjoint.
-This is a special case of `adjoint_triangle_lift` which is often more useful in practice.
+This is a special case of `adjointTriangleLift` which is often more useful in practice.
 -/
 noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
     [HasReflexiveCoequalizers A] [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R := by
@@ -232,9 +229,9 @@ See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 noncomputable def adjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
     (comm : U ⋙ R ≅ Q ⋙ V) [IsRightAdjoint U] [IsRightAdjoint V] [IsRightAdjoint R]
     [∀ X, RegularEpi ((Adjunction.ofRightAdjoint V).counit.app X)] [HasReflexiveCoequalizers A] :
-    IsRightAdjoint Q := by
-  let this := Adjunction.rightAdjointOfNatIso comm
-  exact adjointTriangleLift Q (Adjunction.ofRightAdjoint V)
+    IsRightAdjoint Q :=
+  letI := Adjunction.rightAdjointOfNatIso comm
+  adjointTriangleLift Q (Adjunction.ofRightAdjoint V)
 #align category_theory.adjoint_square_lift CategoryTheory.adjointSquareLift
 
 /-- Suppose we have a commutative square of functors
@@ -252,9 +249,9 @@ See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
 noncomputable def monadicAdjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
     (comm : U ⋙ R ≅ Q ⋙ V) [IsRightAdjoint U] [MonadicRightAdjoint V] [IsRightAdjoint R]
-    [HasReflexiveCoequalizers A] : IsRightAdjoint Q := by
-  let this := Adjunction.rightAdjointOfNatIso comm
-  exact monadicAdjointTriangleLift V
+    [HasReflexiveCoequalizers A] : IsRightAdjoint Q :=
+  letI := Adjunction.rightAdjointOfNatIso comm
+  monadicAdjointTriangleLift V
 #align category_theory.monadic_adjoint_square_lift CategoryTheory.monadicAdjointSquareLift
 
 end CategoryTheory
