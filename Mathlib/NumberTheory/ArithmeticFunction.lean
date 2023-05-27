@@ -90,9 +90,13 @@ theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := by
   rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
+-- @[simp]
+-- theorem eq_toFun (f : ArithmeticFunction R) : f = f.toFun := by
+--   rfl
+
 @[simp]
-theorem eq_toFun (f : ArithmeticFunction R) : f = f.toFun := by
-  rfl
+theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
+  (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
 theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
@@ -339,7 +343,6 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
-    exact one_smul _ _  -- porting note: added
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
@@ -372,7 +375,6 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
-        exact mul_one _  -- porting note: added
       intro y ymem ynmem
       have y2ne : y.snd ≠ 1 := by
         intro con
@@ -625,7 +627,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) :=
   ⟨by -- porting note was `simp [hf, hg]`.
       have f1 := hf.left ; have g1 := hg.left
-      simp only [mul_apply, divisorsAntidiagonal_one, eq_toFun, ZeroHom.toFun_eq_coe, sum_singleton]
+      simp only [mul_apply, divisorsAntidiagonal_one, ZeroHom.toFun_eq_coe, sum_singleton]
       rw [f1, g1, mul_one], by
     simp only [mul_apply]
     intro m n cop
@@ -1005,12 +1007,12 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
   -- porting note: the rest of this proof was a single `simp only` with all the lemmas thrown in
   -- followed by the last `rw`.
   simp only [moebius, ZeroHom.coe_mk]
-  dsimp only [eq_toFun, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
+  dsimp only [coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
   simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
     zero_mul, mul_zero]
   rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
   simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  simp only [Nat.isUnit_iff, eq_toFun, ZeroHom.toFun_eq_coe, IsUnit.mul_iff, mul_ite, ite_mul,
+  simp only [Nat.isUnit_iff, ZeroHom.toFun_eq_coe, IsUnit.mul_iff, mul_ite, ite_mul,
     zero_mul, mul_zero]
   rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
   split_ifs <;>  -- porting note: added
@@ -1096,7 +1098,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       rw [coe_zeta_smul_apply]
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', if_false, ZeroHom.coe_mk]
-      simp only [eq_toFun, succ_ne_zero, ite_false]
+      simp only [coe_mk, succ_ne_zero, ite_false]
       rw [sum_congr rfl]  -- porting note: was `rw [sum_congr rfl fun x hx => _]`
       intros x hx         -- porting note: added
       rw [if_neg (ne_of_gt (Nat.pos_of_mem_divisors ?_))]
@@ -1114,7 +1116,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', smul_apply, if_false,
         ZeroHom.coe_mk]
       -- porting note: added following `simp only`
-      simp only [Nat.isUnit_iff, eq_toFun, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
+      simp only [Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
       rw [sum_congr rfl]  -- porting note: was `rw [sum_congr rfl fun x hx => _]`
       intros x hx         -- porting note: added
       rw [if_neg (ne_of_gt (Nat.pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)))]
