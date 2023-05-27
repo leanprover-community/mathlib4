@@ -1,13 +1,10 @@
 /-
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills
+Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
-import Lean
-import Mathlib.Tactic.Have
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
-import Qq
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -84,8 +81,8 @@ syntax (name := tfaeFinish) "tfae_finish" : tactic
 /-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
 long as `[P₁, P₂, ...]` is an explicit list. -/
 partial def getTFAEList (t : Expr) : MetaM (Q(List Prop) × List Q(Prop)) := do
-  let .app tfae (l : Q(List Prop)) ← whnfR t |
-    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
+  let .app tfae (l : Q(List Prop)) ← whnfR t
+    | throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   return (l, ← getExplicitList l)
@@ -99,42 +96,59 @@ where
 
 /-! # Proof construction -/
 
-/-- Prove an implication via solve_by_elim. -/
-def proveImpl (maxDepth : Nat) (hyps : List Expr) (P P' : Q(Prop)) : MetaM Q($P → $P') := do
-  let t ← mkFreshExprMVar q($P → $P')
+variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
+
+/-- Uses depth-first search to find a path from `P` to `P'`. -/
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+  if i == j then
+    return hP
+  modify (·.insert i)
+  for (a, b, h) in hyps do
+    if i == a then
+      if !(← get).contains b then
+        have Q := atoms[b]!
+        have h : Q($P → $Q) := h
+        try return ← dfs b j Q P' q($h $hP) catch _ => pure ()
+  failure
+
+/-- Prove an implication via depth-first traversal. -/
+def proveImpl (i j : ℕ) (P P' : Q(Prop)) : MetaM Q($P → $P') := do
   try
-    let (h, t) ← t.mvarId!.intro (← mkFreshUserName `h)
-    let [] ← SolveByElim.solveByElim { maxDepth } [] (pure (.fvar h :: hyps)) [t] | failure
+    withLocalDeclD (← mkFreshUserName `h) P fun (h : Q($P)) => do
+      mkLambdaFVars #[h] <|← dfs hyps atoms i j P P' h |>.run' {}
   catch _ =>
     throwError "couldn't prove {P} → {P'}"
-  instantiateMVars t
 
 /-- Generate a proof of `Chain (· → ·) P l`. We assume `P : Prop` and `l : List Prop`, and that `l`
 is an explicit list. -/
-partial def proveChain (depth : Nat) (hyps : List Expr) (P : Q(Prop)) (l : Q(List Prop)) :
+partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)) :
     MetaM Q(Chain (· → ·) $P $l) := do
   match l with
   | ~q([]) => return q(Chain.nil)
   | ~q($P' :: $l') =>
-    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain depth hyps q($P') q($l')
-    let p ← proveImpl depth hyps P P'
+    let i' :: is' := is | unreachable!
+    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain i' is' q($P') q($l')
+    let p ← proveImpl hyps atoms i i' P P'
     return q(Chain.cons $p $cl')
 
 /-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
-partial def proveILast'Impl (depth : Nat) (hyps : List Expr) (P P' : Q(Prop)) (l : Q(List Prop)) :
+partial def proveILast'Impl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
     MetaM Q(ilast' $P' $l → $P) := do
   match l with
-  | ~q([]) => proveImpl depth hyps P' P
-  | ~q($P'' :: $l') => proveILast'Impl depth hyps P P'' l'
+  | ~q([]) => proveImpl hyps atoms i' i P' P
+  | ~q($P'' :: $l') =>
+    let i'' :: is' := is | unreachable!
+    proveILast'Impl i i'' is' P P'' l'
 
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
-def proveTFAE (depth : Nat) (hyps : List Expr) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
+def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
   match l with
   | ~q([]) => return q(tfae_nil)
   | ~q([$P]) => return q(tfae_singleton $P)
   | ~q($P :: $P' :: $l') =>
-    let c ← proveChain depth hyps P q($P' :: $l')
-    let il ← proveILast'Impl depth hyps P P' l'
+    let i :: i' :: is' := is | unreachable!
+    let c ← proveChain hyps atoms i (i'::is') P q($P' :: $l')
+    let il ← proveILast'Impl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
 /-! # `tfae_have` components -/
@@ -201,11 +215,18 @@ elab_rules : tactic
   let goal ← getMainGoal
   let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
   goal.withContext do
-    let mut hyps := #[]
-    for hyp in ← getLocalHyps do
-      let ty ← inferType hyp
-      if ty.isAppOfArity ``Iff 2 then
-        hyps := hyps.push (← mkAppM ``Iff.mp #[hyp]) |>.push (← mkAppM ``Iff.mpr #[hyp])
-      else if ty.isArrow then
-        hyps := hyps.push hyp
-    closeMainGoal (← proveTFAE (tfaeList.length + 1) hyps.toList tfaeListQ)
+    closeMainGoal <|← AtomM.run .reducible do
+      let is ← tfaeList.mapM AtomM.addAtom
+      let mut hyps := #[]
+      for hyp in ← getLocalHyps do
+        let ty ← inferType hyp
+        if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
+          let q1 ← AtomM.addAtom p1
+          let q2 ← AtomM.addAtom p2
+          hyps := hyps.push (q1, q2, ← mkAppM ``Iff.mp #[hyp])
+          hyps := hyps.push (q2, q1, ← mkAppM ``Iff.mpr #[hyp])
+        else if ty.isArrow then
+          let q1 ← AtomM.addAtom ty.bindingDomain!
+          let q2 ← AtomM.addAtom ty.bindingBody!
+          hyps := hyps.push (q1, q2, hyp)
+      proveTFAE hyps (← get).atoms is tfaeListQ
