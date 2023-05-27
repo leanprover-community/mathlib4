@@ -573,30 +573,25 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
 theorem quotient_mk_comp_C_isIntegral_of_jacobson :
     ((Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   let P' : Ideal R := P.comap C
-  sorry
-  -- haveI : P'.IsPrime := comap_isPrime C P
-  -- let f : R[X] →+* Polynomial (R ⧸ P') := Polynomial.mapRingHom (Quotient.mk P')
-  -- have hf : Function.Surjective f := map_surjective (Quotient.mk P') Quotient.mk_surjective
-  -- have hPJ : P = (P.map f).comap f := by
-  --   rw [comap_map_of_surjective _ hf]
-  --   refine' le_antisymm (le_sup_of_le_left le_rfl) (sup_le le_rfl _)
-  --   refine' fun p hp =>
-  --     polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp _
-  --   simpa only [coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
-  -- refine' RingHom.isIntegral_tower_bot_of_isIntegral _ _ (injective_quotient_le_comap_map P) _
-  -- rw [← quotient_mk_maps_eq]
-  -- refine'
-  --   RingHom.isIntegral_trans _ _ ((Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective)
-  --     _
-  -- apply quotient_mk_comp_C_isIntegral_of_jacobson' ?_ ?_ fun x hx => ?_
-  -- any_goals exact Ideal.isJacobson_quotient
-  -- ·
-  --   exact
-  --     Or.recOn (map_eq_top_or_isMaximal_of_surjective f hf hP)
-  --       (fun h => absurd (trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
-  -- · infer_instance
-  -- · obtain ⟨z, rfl⟩ := quotient.mk_surjective x
-  --   rwa [quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_map_ring_hom, map_C]
+  haveI : P'.IsPrime := comap_isPrime C P
+  let f : R[X] →+* Polynomial (R ⧸ P') := Polynomial.mapRingHom (Quotient.mk P')
+  have hf : Function.Surjective f := map_surjective (Quotient.mk P') Quotient.mk_surjective
+  have hPJ : P = (P.map f).comap f := by
+    rw [comap_map_of_surjective _ hf]
+    refine' le_antisymm (le_sup_of_le_left le_rfl) (sup_le le_rfl _)
+    refine' fun p hp =>
+      polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp _
+    simpa only [coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
+  refine' RingHom.isIntegral_tower_bot_of_isIntegral _ _ (injective_quotient_le_comap_map P) _
+  rw [← quotient_mk_maps_eq]
+  refine RingHom.isIntegral_trans _ _ ((Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective) ?_
+  have : IsMaximal (map (mapRingHom (Quotient.mk (comap C P))) P)
+  · exact Or.recOn (map_eq_top_or_isMaximal_of_surjective f hf hP)
+      (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
+  apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
+  any_goals exact Ideal.isJacobson_quotient
+  · obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
+    rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.quotient_mk_comp_C_is_integral_of_jacobson Ideal.Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
 
@@ -605,6 +600,7 @@ theorem isMaximal_comap_c_of_isJacobson : (P.comap (C : R →+* R[X])).IsMaximal
   exact
     isMaximal_comap_of_isIntegral_of_isMaximal' _ (quotient_mk_comp_C_isIntegral_of_jacobson P)
       ⊥ ((bot_quotient_isMaximal_iff _).mpr hP)
+set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.is_maximal_comap_C_of_is_jacobson Ideal.Polynomial.isMaximal_comap_c_of_isJacobson
 
 theorem comp_C_integral_of_surjective_of_jacobson {S : Type _} [Field S] (f : R[X] →+* S)
