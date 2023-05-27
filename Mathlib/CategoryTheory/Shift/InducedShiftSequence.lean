@@ -63,7 +63,7 @@ noncomputable def induced : F.ShiftSequence M where
     dsimp
     simp only [induced_shiftIso_hom_app_obj', comp_obj, shiftIso_zero_hom_app, id_obj,
       NatTrans.naturality, comp_map, Iso.hom_inv_id_app_assoc,
-      comp_id, ← Functor.map_comp, L.commShiftIso_zero, CommShift.iso_zero_inv_app, assoc,
+      comp_id, ← Functor.map_comp, L.commShiftIso_zero, HasCommShift.iso_zero_inv_app, assoc,
       Iso.inv_hom_id_app, Functor.map_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     have := hL.2
@@ -73,7 +73,7 @@ noncomputable def induced : F.ShiftSequence M where
     dsimp
     simp only [id_comp, induced_shiftIso_hom_app_obj',
       G.shiftIso_add_hom_app n m a a' a'' ha' ha'', L.commShiftIso_add,
-      comp_obj, CommShift.iso_add_inv_app, (F' a).map_comp, assoc,
+      comp_obj, HasCommShift.iso_add_inv_app, (F' a).map_comp, assoc,
       ← (e' a).hom.naturality_assoc, comp_map]
     simp only [← NatTrans.naturality_assoc, induced_shiftIso_hom_app_obj',
       ← Functor.map_comp_assoc, ← Functor.map_comp, Iso.inv_hom_id_app, comp_obj,

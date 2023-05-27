@@ -249,12 +249,12 @@ def leftComp [π.HasCommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
     ext K
     dsimp
     simp only [shiftIso_zero_hom_app, id_obj, id_comp, comp_id, ← Functor.map_comp,
-      commShiftIso_zero, CommShift.iso_zero_hom_app, assoc, Iso.inv_hom_id_app]
+      commShiftIso_zero, HasCommShift.iso_zero_hom_app, assoc, Iso.inv_hom_id_app]
   shiftIso_add n m a a' a'' ha' ha'':= by
     ext K
     dsimp
     simp only [H.shiftIso_add_hom_app n m a a' a'' ha' ha'', assoc,
-      commShiftIso_add, CommShift.iso_add_hom_app, ← Functor.map_comp_assoc,
+      commShiftIso_add, HasCommShift.iso_add_hom_app, ← Functor.map_comp_assoc,
       id_comp, Iso.inv_hom_id_app, comp_obj, comp_id]
     simp only [map_comp, assoc, shiftIso_hom_naturality_assoc]
 

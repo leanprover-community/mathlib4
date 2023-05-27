@@ -240,23 +240,23 @@ lemma mapCochainComplexShiftIso_inv_app_f (K : CochainComplex C ℤ) (i : ℤ) :
     ((F.mapCochainComplexShiftIso n).inv.app K).f i = 𝟙 _ := rfl
 
 instance hasCommShiftMapCochainComplex :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).HasCommShift ℤ :=
-  ⟨{  iso := F.mapCochainComplexShiftIso
-      zero := by
-        ext
-        rw [CommShift.iso_zero_hom_app]
-        dsimp
-        simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
-           CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-           eqToHom_map, eqToHom_trans, eqToHom_refl]
-      add := fun a b => by
-        ext
-        rw [CommShift.iso_add_hom_app]
-        dsimp
-        erw [id_comp, id_comp]
-        simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
-          CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-          eqToHom_map, eqToHom_trans, eqToHom_refl] }⟩
+    (F.mapHomologicalComplex (ComplexShape.up ℤ)).HasCommShift ℤ where
+  iso := F.mapCochainComplexShiftIso
+  zero := by
+    ext
+    rw [HasCommShift.iso_zero_hom_app]
+    dsimp
+    simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
+       CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
+       eqToHom_map, eqToHom_trans, eqToHom_refl]
+  add := fun a b => by
+    ext
+    rw [HasCommShift.iso_add_hom_app]
+    dsimp
+    erw [id_comp, id_comp]
+    simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
+      CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
+      eqToHom_map, eqToHom_trans, eqToHom_refl]
 
 lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =

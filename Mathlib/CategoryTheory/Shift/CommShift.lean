@@ -2,13 +2,15 @@ import Mathlib.CategoryTheory.Shift.Basic
 
 namespace CategoryTheory
 
+open Category
+
 namespace Functor
 
 variable {C D E : Type _} [Category C] [Category D] [Category E]
   (F : C ⥤ D) (G : D ⥤ E) (A : Type _) [AddMonoid A]
   [HasShift C A] [HasShift D A] [HasShift E A]
 
-namespace CommShift
+namespace HasCommShift
 
 @[simps!]
 noncomputable def iso_zero :
@@ -31,13 +33,13 @@ noncomputable def iso_add {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) :
     shiftFunctor C (a + b) ⋙ F ≅ F ⋙ shiftFunctor D (a + b) :=
-  CommShift.iso_add' rfl e₁ e₂
+  HasCommShift.iso_add' rfl e₁ e₂
 
 @[simp]
 lemma iso_add_hom_app  {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
-      (CommShift.iso_add e₁ e₂).hom.app X =
+      (HasCommShift.iso_add e₁ e₂).hom.app X =
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫ e₂.hom.app ((shiftFunctor C a).obj X) ≫
           (shiftFunctor D b).map (e₁.hom.app X) ≫ (shiftFunctorAdd D a b).inv.app (F.obj X) := by
   simp only [iso_add, iso_add'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
@@ -46,108 +48,92 @@ lemma iso_add_hom_app  {a b : A}
 lemma iso_add_inv_app  {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
-      (CommShift.iso_add e₁ e₂).inv.app X = (shiftFunctorAdd D a b).hom.app (F.obj X) ≫
+      (HasCommShift.iso_add e₁ e₂).inv.app X = (shiftFunctorAdd D a b).hom.app (F.obj X) ≫
         (shiftFunctor D b).map (e₁.inv.app X) ≫ e₂.inv.app ((shiftFunctor C a).obj X) ≫
         F.map ((shiftFunctorAdd C a b).inv.app X) := by
   simp only [iso_add, iso_add'_inv_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
-end CommShift
-
-structure CommShift where
-  iso : ∀ (a : A), shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
-  zero : iso 0 = CommShift.iso_zero F A := by aesop_cat
-  add : ∀ (a b : A), iso (a + b) = CommShift.iso_add (iso a) (iso b) := by aesop_cat
-
-namespace CommShift
-
-variable (C)
-
-def id : CommShift (𝟭 C) A where
-  iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
-
-variable {C F G A}
-
-variable (hF : F.CommShift A) (hG : G.CommShift A)
-
-@[simps!]
-def comp_iso (a : A) :
-    shiftFunctor C a ⋙ (F ⋙ G) ≅ (F ⋙ G) ⋙ shiftFunctor E a := by
-  refine' (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (hF.iso a) _ ≪≫
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (hG.iso a) ≪≫
-    (Functor.associator _ _ _).symm
-
-def comp :
-    (F ⋙ G).CommShift A where
-  iso := comp_iso hF hG
-  zero := by
-    ext X
-    simp only [comp_obj, comp_iso_hom_app, iso_zero_hom_app, comp_map,
-      CommShift.zero, Category.assoc, ← G.map_comp_assoc, Iso.inv_hom_id_app]
-    dsimp
-    rw [Category.comp_id]
-  add := fun a b => by
-    ext X
-    simp only [comp_obj, comp_iso_hom_app, iso_add_hom_app, comp_map, Category.assoc,
-      CommShift.add, ← G.map_comp_assoc, Iso.inv_hom_id_app, Category.comp_id]
-    simp only [map_comp, Category.assoc]
-    erw [← NatTrans.naturality_assoc]
-    rfl
-
-end CommShift
+end HasCommShift
 
 class HasCommShift where
-  commShift : CommShift F A
+  iso : ∀ (a : A), shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
+  zero : iso 0 = HasCommShift.iso_zero F A := by aesop_cat
+  add : ∀ (a b : A), iso (a + b) = HasCommShift.iso_add (iso a) (iso b) := by aesop_cat
 
 variable {A}
 
 def commShiftIso [F.HasCommShift A] (a : A) :
     shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
-  (HasCommShift.commShift : CommShift F A).iso a
+  HasCommShift.iso a
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality [F.HasCommShift A] {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y = (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
+    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+      (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality [F.HasCommShift A] {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y = (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
+    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+      (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 
 variable (A)
 
 lemma commShiftIso_zero [F.HasCommShift A] :
-  F.commShiftIso (0 : A) = CommShift.iso_zero F A :=
-  (HasCommShift.commShift : CommShift F A).zero
+  F.commShiftIso (0 : A) = HasCommShift.iso_zero F A :=
+  HasCommShift.zero
 
 variable {A}
 
 lemma commShiftIso_add [F.HasCommShift A] (a b : A):
-  F.commShiftIso (a + b) = CommShift.iso_add (F.commShiftIso a) (F.commShiftIso b) :=
-  (HasCommShift.commShift : CommShift F A).add a b
+  F.commShiftIso (a + b) = HasCommShift.iso_add (F.commShiftIso a) (F.commShiftIso b) :=
+  HasCommShift.add a b
 
 lemma commShiftIso_add' [F.HasCommShift A] {a b c : A} (h : a + b = c) :
-  F.commShiftIso c = CommShift.iso_add' h (F.commShiftIso a) (F.commShiftIso b) := by
+  F.commShiftIso c = HasCommShift.iso_add' h (F.commShiftIso a) (F.commShiftIso b) := by
   subst h
-  simp only [commShiftIso_add, CommShift.iso_add]
+  simp only [commShiftIso_add, HasCommShift.iso_add]
 
-variable (A)
+namespace HasCommShift
 
-instance HasCommShift.comp [F.HasCommShift A] [G.HasCommShift A] :
-    (F ⋙ G).HasCommShift A :=
-  ⟨(HasCommShift.commShift : CommShift F A).comp (HasCommShift.commShift : CommShift G A)⟩
+variable (C)
 
-variable {A}
+instance id : HasCommShift (𝟭 C) A where
+  iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
+
+variable {C F G}
+
+variable [F.HasCommShift A] [G.HasCommShift A]
+
+instance comp : (F ⋙ G).HasCommShift A where
+  iso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫
+    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (G.commShiftIso a) ≪≫
+    (Functor.associator _ _ _).symm
+  zero := by
+    ext X
+    dsimp
+    simp only [id_comp, comp_id, commShiftIso_zero, iso_zero_hom_app, ← Functor.map_comp_assoc,
+      assoc, Iso.inv_hom_id_app, id_obj, comp_map, comp_obj]
+  add := fun a b => by
+    ext X
+    dsimp
+    simp only [commShiftIso_add, iso_add_hom_app]
+    dsimp
+    simp only [comp_id, id_comp, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, comp_obj]
+    simp only [map_comp, assoc, commShiftIso_hom_naturality_assoc]
+
+end HasCommShift
 
 lemma commShiftIso_comp_hom_app [F.HasCommShift A] [G.HasCommShift A] (a : A) (X : C) :
     (commShiftIso (F ⋙ G) a).hom.app X =
       G.map ((commShiftIso F a).hom.app X) ≫ (commShiftIso G a).hom.app (F.obj X) := by
-  apply CommShift.comp_iso_hom_app
+  simp [commShiftIso, HasCommShift.iso]
 
 lemma commShiftIso_comp_inv_app [F.HasCommShift A] [G.HasCommShift A] (a : A) (X : C) :
     (commShiftIso (F ⋙ G) a).inv.app X =
       (commShiftIso G a).inv.app (F.obj X) ≫ G.map ((commShiftIso F a).inv.app X) := by
-  apply CommShift.comp_iso_inv_app
+  simp [commShiftIso, HasCommShift.iso]
 
 end Functor
 
@@ -251,10 +237,10 @@ variable {C D : Type _} [Category C] [Category D] [AddMonoid A] [HasShift D A]
   (F : C ⥤ D) [Full F] [Faithful F]
   (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 
-namespace CommShift
+namespace HasCommShift
 
 def of_hasShiftOfFullyFaithful :
-    letI := hasShiftOfFullyFaithful F s i; F.CommShift A := by
+    letI := hasShiftOfFullyFaithful F s i; F.HasCommShift A := by
   letI := hasShiftOfFullyFaithful F s i
   exact
   { iso := i
@@ -269,16 +255,6 @@ def of_hasShiftOfFullyFaithful :
         map_hasShiftOfFullyFaithful_add_hom_app, Category.assoc, ShiftMkCore.shiftFunctor_eq,
         Iso.inv_hom_id_app_assoc, ← (shiftFunctor D b).map_comp_assoc, Iso.inv_hom_id_app,
         Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, Category.comp_id] }
-
-end CommShift
-
-namespace HasCommShift
-
-def of_hasShiftOfFullyFaithful :
-    letI := hasShiftOfFullyFaithful F s i;
-    F.HasCommShift A := by
-  letI := hasShiftOfFullyFaithful F s i
-  exact ⟨CommShift.of_hasShiftOfFullyFaithful F s i⟩
 
 end HasCommShift
 
@@ -296,7 +272,7 @@ lemma map_shiftFunctorComm {C D : Type _} [Category C] [Category D] {A : Type _}
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
   have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
-  simp only [comp_obj, CommShift.iso_add_hom_app,
+  simp only [comp_obj, HasCommShift.iso_add_hom_app,
     ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)), Category.assoc,
     ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp, F.map_comp] at eq
   simp only [shiftFunctorComm_eq D a b _ rfl]
@@ -308,7 +284,7 @@ lemma map_shiftFunctorComm {C D : Type _} [Category C] [Category D] {A : Type _}
   rw [Functor.map_comp]
   congr 1
   simp only [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
-    CommShift.iso_add'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
+    HasCommShift.iso_add'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
   dsimp
   simp only [Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, comp_obj, Category.comp_id]
@@ -322,8 +298,8 @@ lemma map_shiftFunctorCompIsoId_hom_app
         (shiftFunctorCompIsoId D a b h).hom.app (F.obj X) := by
   dsimp [shiftFunctorCompIsoId]
   have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' h)) X
-  simp only [commShiftIso_zero, comp_obj, CommShift.iso_zero_hom_app,
-    CommShift.iso_add'_hom_app] at eq
+  simp only [commShiftIso_zero, comp_obj, HasCommShift.iso_zero_hom_app,
+    HasCommShift.iso_add'_hom_app] at eq
   rw [← cancel_epi (F.map ((shiftFunctorAdd' C a b 0 h).hom.app X)), ← reassoc_of% eq, F.map_comp]
   simp only [Iso.inv_hom_id_app, id_obj, Category.comp_id, ← F.map_comp_assoc, Iso.hom_inv_id_app,
     F.map_id, Category.id_comp]

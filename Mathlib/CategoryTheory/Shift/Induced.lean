@@ -191,26 +191,25 @@ lemma induced_add_inv_app_obj (a b : A) (X : C) :
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.induced_add_inv_app_obj]
 
 variable (A)
-
 def Functor.HasCommShift.of_induced :
     letI := HasShift.induced F A s i hF
     F.HasCommShift A := by
   letI := HasShift.induced F A s i hF
-  exact ⟨
+  exact
   { iso := fun a => (i a).symm
     zero := by
       ext X
       dsimp
-      simp only [CommShift.iso_zero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
+      simp only [iso_zero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
         ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, Category.id_comp]
     add := fun a b => by
       ext X
       dsimp
-      simp only [CommShift.iso_add_hom_app, Iso.symm_hom, induced_add_inv_app_obj,
+      simp only [iso_add_hom_app, Iso.symm_hom, induced_add_inv_app_obj,
         shiftFunctor_of_induced]
       erw [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
         Category.id_comp, Iso.inv_hom_id_app_assoc, ←F.map_comp_assoc, Iso.hom_inv_id_app,
-        F.map_id, Category.id_comp] }⟩
+        F.map_id, Category.id_comp] }
 
 lemma Functor.commShiftIso_eq_of_induced (a : A) :
     letI := HasShift.induced F A s i hF
