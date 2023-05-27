@@ -19,12 +19,12 @@ Euclidean affine spaces.
 
 ## Main definitions
 
-* `euclidean_geometry.sphere` bundles a `center` and a `radius`.
+* `EuclideanGeometry.Sphere` bundles a `center` and a `radius`.
 
-* `euclidean_geometry.cospherical` is the property of a set of points being equidistant from some
+* `EuclideanGeometry.Cospherical` is the property of a set of points being equidistant from some
   point.
 
-* `euclidean_geometry.concyclic` is the property of a set of points being cospherical and
+* `EuclideanGeometry.Concyclic` is the property of a set of points being cospherical and
   coplanar.
 
 -/
@@ -40,7 +40,7 @@ variable {V : Type _} (P : Type _)
 
 open FiniteDimensional
 
-/-- A `sphere P` bundles a `center` and `radius`. This definition does not require the radius to
+/-- A `Sphere P` bundles a `center` and `radius`. This definition does not require the radius to
 be positive; that should be given as a hypothesis to lemmas that require it. -/
 @[ext]
 structure Sphere [MetricSpace P] where
@@ -76,19 +76,24 @@ theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sph
   ext <;> rfl
 #align euclidean_geometry.sphere.mk_center_radius EuclideanGeometry.Sphere.mk_center_radius
 
+/- Porting note: is a syntactic tautology
 theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
   rfl
-#align euclidean_geometry.sphere.coe_def EuclideanGeometry.Sphere.coe_def
+#align euclidean_geometry.sphere.coe_def EuclideanGeometry.Sphere.coe_def -/
 
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 #align euclidean_geometry.sphere.coe_mk EuclideanGeometry.Sphere.coe_mk
 
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
 theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 #align euclidean_geometry.sphere.mem_coe EuclideanGeometry.Sphere.mem_coe
+
+@[simp]
+theorem Sphere.mem_coe' {p : P} {s : Sphere P} : dist p s.center = s.radius ↔ p ∈ s :=
+  Iff.rfl
 
 theorem mem_sphere {p : P} {s : Sphere P} : p ∈ s ↔ dist p s.center = s.radius :=
   Iff.rfl
@@ -114,19 +119,19 @@ theorem dist_of_mem_subset_mk_sphere {p c : P} {ps : Set P} {r : ℝ} (hp : p �
 
 theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
     s₁ ≠ s₂ ↔ s₁.center ≠ s₂.center ∨ s₁.radius ≠ s₂.radius := by
-  rw [← not_and_or, ← sphere.ext_iff]
+  rw [← not_and_or, ← Sphere.ext_iff]
 #align euclidean_geometry.sphere.ne_iff EuclideanGeometry.Sphere.ne_iff
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
-  refine' ⟨fun h => sphere.ext _ _ h _, fun h => h ▸ rfl⟩
+  refine' ⟨fun h => Sphere.ext _ _ h _, fun h => h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
 #align euclidean_geometry.sphere.center_eq_iff_eq_of_mem EuclideanGeometry.Sphere.center_eq_iff_eq_of_mem
 
 theorem Sphere.center_ne_iff_ne_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center ≠ s₂.center ↔ s₁ ≠ s₂ :=
-  (Sphere.center_eq_iff_eq_of_mem hs₁ hs₂).Not
+  (Sphere.center_eq_iff_eq_of_mem hs₁ hs₂).not
 #align euclidean_geometry.sphere.center_ne_iff_ne_of_mem EuclideanGeometry.Sphere.center_ne_iff_ne_of_mem
 
 theorem dist_center_eq_dist_center_of_mem_sphere {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
@@ -140,13 +145,13 @@ theorem dist_center_eq_dist_center_of_mem_sphere' {p₁ p₂ : P} {s : Sphere P}
 #align euclidean_geometry.dist_center_eq_dist_center_of_mem_sphere' EuclideanGeometry.dist_center_eq_dist_center_of_mem_sphere'
 
 /-- A set of points is cospherical if they are equidistant from some
-point.  In two dimensions, this is the same thing as being
+point. In two dimensions, this is the same thing as being
 concyclic. -/
 def Cospherical (ps : Set P) : Prop :=
-  ∃ (center : P)(radius : ℝ), ∀ p ∈ ps, dist p center = radius
+  ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius
 #align euclidean_geometry.cospherical EuclideanGeometry.Cospherical
 
-/-- The definition of `cospherical`. -/
+/-- The definition of `Cospherical`. -/
 theorem cospherical_def (ps : Set P) :
     Cospherical ps ↔ ∃ (center : P)(radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
   Iff.rfl
@@ -192,18 +197,16 @@ section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-include V
-
 /-- Two points are cospherical. -/
 theorem cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
   ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂, by
     rintro p (rfl | rfl | _)
-    · rw [dist_comm, dist_midpoint_left]
-    · rw [dist_comm, dist_midpoint_right]⟩
+    · rw [dist_comm, dist_midpoint_left (𝕜 := ℝ)]
+    · rw [dist_comm, dist_midpoint_right (𝕜 := ℝ)]⟩
 #align euclidean_geometry.cospherical_pair EuclideanGeometry.cospherical_pair
 
 /-- A set of points is concyclic if it is cospherical and coplanar. (Most results are stated
-directly in terms of `cospherical` instead of using `concyclic`.) -/
+directly in terms of `Cospherical` instead of using `Concyclic`.) -/
 structure Concyclic (ps : Set P) : Prop where
   Cospherical : Cospherical ps
   Coplanar : Coplanar ℝ ps
@@ -211,7 +214,7 @@ structure Concyclic (ps : Set P) : Prop where
 
 /-- A subset of a concyclic set is concyclic. -/
 theorem Concyclic.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (h : Concyclic ps₂) : Concyclic ps₁ :=
-  ⟨h.1.Subset hs, h.2.Subset hs⟩
+  ⟨h.1.subset hs, h.2.subset hs⟩
 #align euclidean_geometry.concyclic.subset EuclideanGeometry.Concyclic.subset
 
 /-- The empty set is concyclic. -/
@@ -234,8 +237,6 @@ end NormedSpace
 section EuclideanSpace
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
-
-include V
 
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 3 → P}
@@ -279,7 +280,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
 theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical s) {p₁ p₂ p₃ : P}
     (h₁ : p₁ ∈ s) (h₂ : p₂ ∈ s) (h₃ : p₃ ∈ s) (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) :
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
-  refine' hs.affine_independent _ _
+  refine' hs.affineIndependent _ _
   · simp [h₁, h₂, h₃, Set.insert_subset]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective]
@@ -293,9 +294,9 @@ theorem Cospherical.affineIndependent_of_ne {p₁ p₂ p₃ : P} (hs : Cospheric
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) h₁₂ h₁₃ h₂₃
 #align euclidean_geometry.cospherical.affine_independent_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_ne
 
-/-- Suppose that `p₁` and `p₂` lie in spheres `s₁` and `s₂`.  Then the vector between the centers
+/-- Suppose that `p₁` and `p₂` lie in spheres `s₁` and `s₂`. Then the vector between the centers
 of those spheres is orthogonal to that between `p₁` and `p₂`; this is a version of
-`inner_vsub_vsub_of_dist_eq_of_dist_eq` for bundled spheres.  (In two dimensions, this says that
+`inner_vsub_vsub_of_dist_eq_of_dist_eq` for bundled spheres. (In two dimensions, this says that
 the diagonals of a kite are orthogonal.) -/
 theorem inner_vsub_vsub_of_mem_sphere_of_mem_sphere {p₁ p₂ : P} {s₁ s₂ : Sphere P} (hp₁s₁ : p₁ ∈ s₁)
     (hp₂s₁ : p₂ ∈ s₁) (hp₁s₂ : p₁ ∈ s₂) (hp₂s₂ : p₂ ∈ s₂) :
@@ -334,13 +335,12 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
   refine' Or.inl _
   rw [mem_sphere] at hp₁
   rw [← vsub_sub_vsub_cancel_right p₁ p₂ s.center, inner_sub_left,
-    real_inner_self_eq_norm_mul_norm,--, ←dist_eq_norm_vsub, hp₁
-    sub_pos]
+    real_inner_self_eq_norm_mul_norm, sub_pos]
   refine'
     lt_of_le_of_ne ((real_inner_le_norm _ _).trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))) _
   · rwa [← dist_eq_norm_vsub, ← dist_eq_norm_vsub, hp₁]
   · rcases hp₂.lt_or_eq with (hp₂' | hp₂')
-    · refine' ((real_inner_le_norm _ _).trans_lt (mul_lt_mul_of_pos_right _ _)).Ne
+    · refine' ((real_inner_le_norm _ _).trans_lt (mul_lt_mul_of_pos_right _ _)).ne
       · rwa [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       · rw [norm_pos_iff, vsub_ne_zero]
         rintro rfl
@@ -395,4 +395,3 @@ theorem sbtw_of_collinear_of_dist_center_lt_radius {s : Sphere P} {p₁ p₂ p�
 end EuclideanSpace
 
 end EuclideanGeometry
-
