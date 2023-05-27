@@ -542,7 +542,8 @@ protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s
 protected theorem span_apply [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι')
     (i : s) : (OrthonormalBasis.span h s i : E) = v' i := by
   simp only [OrthonormalBasis.span, Basis.span_apply, LinearIsometryEquiv.ofEq_symm,
-    OrthonormalBasis.map_apply, OrthonormalBasis.coe_mk, LinearIsometryEquiv.coe_ofEq_apply]
+    OrthonormalBasis.map_apply, OrthonormalBasis.coe_mk, LinearIsometryEquiv.coe_ofEq_apply,
+    comp_apply]
 #align orthonormal_basis.span_apply OrthonormalBasis.span_apply
 
 open Submodule
@@ -592,7 +593,9 @@ protected theorem coe_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') 
 @[simp]
 protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') (x : E) (i' : ι') :
     (b.reindex e).repr x i' = b.repr x (e.symm i') := by
-  classical rw [OrthonormalBasis.repr_apply_apply, b.repr_apply_apply, OrthonormalBasis.coe_reindex]
+  classical
+  rw [OrthonormalBasis.repr_apply_apply, b.repr_apply_apply, OrthonormalBasis.coe_reindex,
+    comp_apply]
 #align orthonormal_basis.repr_reindex OrthonormalBasis.repr_reindex
 
 end OrthonormalBasis
@@ -638,6 +641,7 @@ def Complex.isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) : ℂ ≃
 theorem Complex.map_isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) (f : F ≃ₗᵢ[ℝ] F') :
     Complex.isometryOfOrthonormal (v.map f) = (Complex.isometryOfOrthonormal v).trans f := by
   simp [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_assoc, OrthonormalBasis.map]
+  rfl
 #align complex.map_isometry_of_orthonormal Complex.map_isometryOfOrthonormal
 
 theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) ℝ F) (f : F) :
@@ -803,7 +807,7 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
   rw [eq_const_of_unique b]
-  refine' this.imp _ _ <;> simp
+  refine' this.imp _ _ <;> (intro; ext; simp [*])
 #align orthonormal_basis_one_dim orthonormalBasis_one_dim
 
 variable {𝕜 E}
