@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathbin.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathbin.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`
@@ -135,8 +135,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
     (fun z => Real.log (abs z)) =O[l] fun z =>
         Real.log (Real.sqrt 2) + Real.log (max z.re (|z.im|)) :=
       IsBigO.of_bound 1 <|
-        (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz =>
-          by
+        (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz => by
           have h2 : 0 < Real.sqrt 2 := by simp
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
           have hz₀ : 0 < abs z := one_pos.trans_le hz'
@@ -147,8 +146,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
           exacts[abs_le_sqrt_two_mul_max z, one_pos.trans_le hz', mul_pos h2 hm₀, h2.ne', hm₀.ne']
     _ =o[l] re :=
       IsLittleO.add (isLittleO_const_left.2 <| Or.inr <| hl.tendsto_abs_re) <|
-        isLittleO_iff_nat_mul_le.2 fun n =>
-          by
+        isLittleO_iff_nat_mul_le.2 fun n => by
           filter_upwards [is_o_iff_nat_mul_le.1 hl.is_o_log_re_re n,
             hl.abs_im_pow_eventually_le_exp_re n,
             hl.tendsto_re.eventually_gt_at_top 1]with z hre him h₁
@@ -176,8 +174,7 @@ theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 <
     _ =ᶠ[l] fun z => Real.exp (re a * Real.log (abs z)) :=
       (hl.eventually_ne.mono fun z hz => by simp only [Real.rpow_def_of_pos, abs.pos hz, mul_comm])
     _ =o[l] fun z => exp (b * z) :=
-      IsLittleO.of_norm_right <|
-        by
+      IsLittleO.of_norm_right <| by
         simp only [norm_eq_abs, abs_exp, of_real_mul_re, Real.isLittleO_exp_comp_exp_comp]
         refine'
           (is_equivalent.refl.sub_is_o _).symm.tendsto_atTop (hl.tendsto_re.const_mul_at_top hb)
