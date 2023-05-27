@@ -10,7 +10,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Direct sum
@@ -182,7 +181,7 @@ theorem addHom_ext {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ�
 then they are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => FunLike.congr_fun <| H i
@@ -389,12 +388,10 @@ def IsInternal {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 #align direct_sum.is_internal DirectSum.IsInternal
 
--- Porting note: This times out; lean4#2003 may fix this?
-set_option maxHeartbeats 0
-theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
-    (A : ι → AddSubmonoid M) (h : IsInternal A) : supᵢ A = ⊤ := by
-  rw [AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
+    (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
-#align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
+#align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_iSup_eq_top
 
 end DirectSum

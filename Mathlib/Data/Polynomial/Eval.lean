@@ -755,7 +755,7 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
 #align polynomial.coe_map_ring_hom Polynomial.coe_mapRingHom
 
--- This is protected to not clash with the global `map_nat_cast`.
+-- This is protected to not clash with the global `map_natCast`.
 @[simp]
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
@@ -980,7 +980,6 @@ theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 #align polynomial.eval_nat_cast_map Polynomial.eval_nat_cast_map
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem eval_int_cast_map {R S : Type _} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by

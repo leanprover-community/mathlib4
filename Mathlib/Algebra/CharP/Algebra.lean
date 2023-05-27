@@ -65,7 +65,7 @@ As an application, a `ℚ`-algebra has characteristic zero.
 
 
 -- `CharP.charP_to_charZero A _ (charP_of_injective_algebraMap h 0)` does not work
--- here as it would require `ring A`.
+-- here as it would require `Ring A`.
 section QAlgebra
 
 variable (R : Type _) [Nontrivial R]

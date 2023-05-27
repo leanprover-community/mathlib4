@@ -102,7 +102,7 @@ RBMap.empty.insert m 1
 /-- The unit monomial `one` is represented by the empty RBMap. -/
 def one : Monom := RBMap.empty
 
-/-- A scalar `z` is represented by a `sum` with coefficient `z` and monomial `one` -/
+/-- A scalar `z` is represented by a `Sum` with coefficient `z` and monomial `one` -/
 def scalar (z : ℤ) : Sum :=
 RBMap.empty.insert one z
 

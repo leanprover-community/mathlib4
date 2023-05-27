@@ -74,7 +74,7 @@ theorem Real.isTopologicalBasis_Ioo_rat :
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
     let ⟨p, hap, hpu⟩ := exists_rat_btwn hu
     ⟨Ioo q p, by
-      simp only [mem_unionᵢ]
+      simp only [mem_iUnion]
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun a' ⟨hqa', ha'p⟩ =>
       h ⟨hlq.trans hqa', ha'p.trans hpu⟩⟩
 #align real.is_topological_basis_Ioo_rat Real.isTopologicalBasis_Ioo_rat
@@ -188,11 +188,11 @@ theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelo
     fun h => bounded_of_bddAbove_of_bddBelow h.2 h.1⟩
 #align real.bounded_iff_bdd_below_bdd_above Real.bounded_iff_bddBelow_bddAbove
 
-theorem Real.subset_Icc_infₛ_supₛ_of_bounded {s : Set ℝ} (h : Bounded s) :
-    s ⊆ Icc (infₛ s) (supₛ s) :=
-  subset_Icc_cinfₛ_csupₛ (Real.bounded_iff_bddBelow_bddAbove.1 h).1
+theorem Real.subset_Icc_sInf_sSup_of_bounded {s : Set ℝ} (h : Bounded s) :
+    s ⊆ Icc (sInf s) (sSup s) :=
+  subset_Icc_csInf_csSup (Real.bounded_iff_bddBelow_bddAbove.1 h).1
     (Real.bounded_iff_bddBelow_bddAbove.1 h).2
-#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_infₛ_supₛ_of_bounded
+#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_sInf_sSup_of_bounded
 
 end
 
@@ -237,7 +237,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
   simp [Real.ball_eq_Ioo, Set.finite_Ioo]
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
-/-- For nonzero `a`, the "multiples of `a`" map `zmultiples_hom` from `ℤ` to `ℝ` is discrete, i.e.
+/-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
@@ -266,4 +266,3 @@ theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
 end AddSubgroup
 
 end Subgroups
-

@@ -12,7 +12,7 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Common
 
 /-!
 # Option of a type
@@ -333,7 +333,7 @@ theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a 
 
 #align option.lift_or_get_some_some Option.liftOrGet_some_some
 
-/-- Given an element of `a : option α`, a default element `b : β` and a function `α → β`, apply this
+/-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
 def casesOn' : Option α → β → (α → β) → β
   | none, n, _ => n

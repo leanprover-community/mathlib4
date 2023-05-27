@@ -57,8 +57,8 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 section Inducing
 
 /-- A function `f : α → β` between topological spaces is inducing if the topology on `α` is induced
-by the topology on `β` through `f`, meaning that a set `s : set α` is open iff it is the preimage
-under `f` of some open set `t : set β`. -/
+by the topology on `β` through `f`, meaning that a set `s : Set α` is open iff it is the preimage
+under `f` of some open set `t : Set β`. -/
 @[mk_iff inducing_iff]
 structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : α → β) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
@@ -98,7 +98,7 @@ theorem Inducing.nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, �
 
 theorem Inducing.nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
-  simp only [nhdsSet, supₛ_image, comap_supᵢ, hf.nhds_eq_comap, supᵢ_image]
+  simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
 theorem Inducing.map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
@@ -185,7 +185,7 @@ end Inducing
 section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : set α`, `s` is open iff it is the preimage of an open set. -/
+  and for all `s : Set α`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff embedding_iff]
 structure Embedding [TopologicalSpace α] [TopologicalSpace β] (f : α → β) extends
   Inducing f : Prop where
@@ -267,7 +267,7 @@ theorem Embedding.discreteTopology {X Y : Type _} [TopologicalSpace X] [tY : Top
 end Embedding
 
 /-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : set β`, `s` is open iff its preimage is an open set. -/
+  and for all `s : Set β`, `s` is open iff its preimage is an open set. -/
 def QuotientMap {α : Type _} {β : Type _} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
     (f : α → β) : Prop :=
   Surjective f ∧ tβ = tα.coinduced f
@@ -327,7 +327,7 @@ protected theorem isClosed_preimage (hf : QuotientMap f) {s : Set β} :
 
 end QuotientMap
 
-/-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : set α`
+/-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : Set α`
 is open in `β`. -/
 def IsOpenMap [TopologicalSpace α] [TopologicalSpace β] (f : α → β) :=
   ∀ U : Set α, IsOpen U → IsOpen (f '' U)
@@ -460,7 +460,7 @@ section IsClosedMap
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-/-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : set α`
+/-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : Set α`
 is closed in `β`. -/
 def IsClosedMap (f : α → β) :=
   ∀ U : Set α, IsClosed U → IsClosed (f '' U)

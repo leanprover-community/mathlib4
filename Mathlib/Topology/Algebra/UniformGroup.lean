@@ -203,10 +203,12 @@ end MulOpposite
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup α) : UniformGroup S :=
+instance uniformGroup (S : Subgroup α) : UniformGroup S :=
   ⟨uniformContinuous_comap'
       (uniformContinuous_div.comp <|
         uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 
 end Subgroup
 
@@ -215,28 +217,28 @@ section LatticeOps
 variable [Group β]
 
 @[to_additive]
-theorem uniformGroup_infₛ {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
-    @UniformGroup β (infₛ us) _ :=
-  -- Porting note: {_} does not find `infₛ us` instance, see `continuousSMul_infₛ`
+theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
+    @UniformGroup β (sInf us) _ :=
+  -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _  <|
-    uniformContinuous_infₛ_rng fun u hu =>
-      uniformContinuous_infₛ_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
-#align uniform_group_Inf uniformGroup_infₛ
-#align uniform_add_group_Inf uniformAddGroup_infₛ
+    uniformContinuous_sInf_rng fun u hu =>
+      uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
+#align uniform_group_Inf uniformGroup_sInf
+#align uniform_add_group_Inf uniformAddGroup_sInf
 
 @[to_additive]
-theorem uniformGroup_infᵢ {ι : Sort _} {us' : ι → UniformSpace β}
+theorem uniformGroup_iInf {ι : Sort _} {us' : ι → UniformSpace β}
     (h' : ∀ i, @UniformGroup β (us' i) _) : @UniformGroup β (⨅ i, us' i) _ := by
-  rw [← infₛ_range]
-  exact uniformGroup_infₛ (Set.forall_range_iff.mpr h')
-#align uniform_group_infi uniformGroup_infᵢ
-#align uniform_add_group_infi uniformAddGroup_infᵢ
+  rw [← sInf_range]
+  exact uniformGroup_sInf (Set.forall_range_iff.mpr h')
+#align uniform_group_infi uniformGroup_iInf
+#align uniform_add_group_infi uniformAddGroup_iInf
 
 @[to_additive]
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
-  rw [inf_eq_infᵢ]
-  refine' uniformGroup_infᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' uniformGroup_iInf fun b => _
   cases b <;> assumption
 #align uniform_group_inf uniformGroup_inf
 #align uniform_add_group_inf uniformAddGroup_inf
@@ -244,7 +246,7 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 @[to_additive]
 theorem uniformGroup_comap {γ : Type _} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type _}
     [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_infₛ`
+  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _ <| by
     letI : UniformSpace β := u.comap f
     refine' uniformContinuous_comap' _
@@ -373,7 +375,7 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
 theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
   have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
   show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
-    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, interₛ_comap_sets]
+    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, sInter_comap_sets]
     simp [mem_closure_iff_nhds, inter_singleton_nonempty, sub_eq_add_neg, add_assoc]
 #align group_separation_rel group_separationRel
 #align add_group_separation_rel addGroup_separationRel
@@ -463,12 +465,12 @@ theorem CauchySeq.inv {ι : Type _} [SemilatticeSup ι] {u : ι → α} (h : Cau
 #align cauchy_seq.neg CauchySeq.neg
 
 @[to_additive]
-theorem totallyBounded_iff_subset_finite_unionᵢ_nhds_one {s : Set α} :
+theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     TotallyBounded s ↔ ∀ U ∈ 𝓝 (1 : α), ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, y • U :=
   (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
-#align totally_bounded_iff_subset_finite_Union_nhds_one totallyBounded_iff_subset_finite_unionᵢ_nhds_one
-#align totally_bounded_iff_subset_finite_Union_nhds_zero totallyBounded_iff_subset_finite_unionᵢ_nhds_zero
+#align totally_bounded_iff_subset_finite_Union_nhds_one totallyBounded_iff_subset_finite_iUnion_nhds_one
+#align totally_bounded_iff_subset_finite_Union_nhds_zero totallyBounded_iff_subset_finite_iUnion_nhds_zero
 
 section UniformConvergence
 

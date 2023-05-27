@@ -308,8 +308,8 @@ lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_su
 
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t :=
   ext fun x =>
-    ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left, right] <;> exact ⟨_, h, rfl⟩, by
-      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left, right] <;> exact h⟩
+    ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left; right] <;> exact ⟨_, h, rfl⟩, by
+      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left; right] <;> exact h⟩
 #align set.image_union Set.image_union
 
 @[simp]
@@ -891,7 +891,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
       exact Sum.noConfusion h)
-    (by rintro (x | y) - <;> [left, right] <;> exact mem_range_self _)
+    (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 #align set.is_compl_range_inl_range_inr Set.isCompl_range_inl_range_inr
 
 @[simp]
@@ -1102,7 +1102,7 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
   eq_univ_of_forall mem_range_self
 #align set.preimage_range Set.preimage_range
 
-/-- The range of a function from a `unique` type contains just the
+/-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
 theorem range_unique [h : Unique ι] : range f = {f default} := by
   ext x

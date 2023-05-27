@@ -14,7 +14,6 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Periodic points
@@ -250,13 +249,13 @@ theorem bUnion_ptsOfPeriod : (⋃ n > 0, ptsOfPeriod f n) = periodicPts f :=
   Set.ext fun x => by simp [mem_periodicPts]
 #align function.bUnion_pts_of_period Function.bUnion_ptsOfPeriod
 
-theorem unionᵢ_pNat_ptsOfPeriod : (⋃ n : ℕ+, ptsOfPeriod f n) = periodicPts f :=
-  supᵢ_subtype.trans <| bUnion_ptsOfPeriod f
-#align function.Union_pnat_pts_of_period Function.unionᵢ_pNat_ptsOfPeriod
+theorem iUnion_pNat_ptsOfPeriod : (⋃ n : ℕ+, ptsOfPeriod f n) = periodicPts f :=
+  iSup_subtype.trans <| bUnion_ptsOfPeriod f
+#align function.Union_pnat_pts_of_period Function.iUnion_pNat_ptsOfPeriod
 
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
-  unionᵢ_pNat_ptsOfPeriod f ▸
-    bijOn_unionᵢ_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
+  iUnion_pNat_ptsOfPeriod f ▸
+    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
 #align function.bij_on_periodic_pts Function.bijOn_periodicPts
 
 variable {f}

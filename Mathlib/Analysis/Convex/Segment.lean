@@ -24,7 +24,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
 
 ## TODO
 
@@ -113,7 +113,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [MulActionWithZero 𝕜 E]
 
-set_option synthInstance.etaExperiment true
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
@@ -415,7 +414,7 @@ end LinearOrderedField
 /-!
 #### Segments in an ordered space
 
-Relates `segment`, `openSegment` and `set.Icc`, `set.Ico`, `set.Ioc`, `set.Ioo`
+Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
 
 

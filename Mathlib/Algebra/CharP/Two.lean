@@ -16,7 +16,7 @@ import Mathlib.Algebra.CharP.Basic
 This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
-elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (prime 2)]` argument.
+elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
 
 
@@ -63,7 +63,6 @@ section Ring
 
 variable [Ring R] [CharP R 2]
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]

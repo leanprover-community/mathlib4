@@ -112,12 +112,12 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   | .inr h => ⟨_, h⟩ ⟩
 #align bool.exists_bool Bool.exists_bool
 
-/-- If `p b` is decidable for all `b : bool`, then `∀ b, p b` is decidable -/
+/-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
 instance decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
   decidable_of_decidable_of_iff forall_bool.symm
 #align bool.decidable_forall_bool Bool.decidableForallBool
 
-/-- If `p b` is decidable for all `b : bool`, then `∃ b, p b` is decidable -/
+/-- If `p b` is decidable for all `b : Bool`, then `∃ b, p b` is decidable -/
 instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∃ b, p b) :=
   decidable_of_decidable_of_iff exists_bool.symm
 #align bool.decidable_exists_bool Bool.decidableExistsBool
@@ -323,8 +323,8 @@ instance linearOrder : LinearOrder Bool where
   le_trans := by unfold LE.le; decide
   le_antisymm := by unfold LE.le Preorder.toLE; decide
   le_total := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; decide
-  decidable_le := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
-  decidable_eq := inferInstance
+  decidableLE := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
+  decidableEq := inferInstance
   max := or
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
@@ -370,12 +370,12 @@ theorem right_le_or : ∀ x y : Bool, y ≤ (x || y) := by decide
 theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 #align bool.bor_le Bool.or_le
 
-/-- convert a `bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
+/-- convert a `Bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
 def toNat (b : Bool) : Nat :=
   cond b 1 0
 #align bool.to_nat Bool.toNat
 
-/-- convert a `ℕ` to a `bool`, `0 -> false`, everything else -> `true` -/
+/-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat

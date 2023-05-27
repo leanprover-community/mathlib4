@@ -168,7 +168,7 @@ open CategoryTheory
 namespace MonoidHom
 
 /-- Reinterpret a monoid homomorphism `f : α → β` as a functor `(single_obj α) ⥤ (single_obj β)`.
-See also `category_theory.single_obj.map_hom` for an equivalence between these types. -/
+See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
 @[reducible]
 def toFunctor {α : Type u} {β : Type v} [Monoid α] [Monoid β] (f : α →* β) :
     SingleObj α ⥤ SingleObj β :=

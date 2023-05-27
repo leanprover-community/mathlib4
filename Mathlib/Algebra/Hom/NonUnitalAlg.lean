@@ -409,7 +409,7 @@ end Prod
 
 end NonUnitalAlgHom
 
-/-! ### Interaction with `alg_hom` -/
+/-! ### Interaction with `AlgHom` -/
 
 
 namespace AlgHom

@@ -12,8 +12,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Lift
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -134,7 +132,7 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 #align add_units.coe_mk AddUnits.val_mk
 
 @[to_additive (attr := ext)]
-theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
+theorem ext : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
