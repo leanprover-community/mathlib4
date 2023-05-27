@@ -224,7 +224,7 @@ theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
   Finset.sort_toFinset _ _
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
 
-/-- An encodable `Fintype` is equivalent to the same size `fin`. -/
+/-- An encodable `Fintype` is equivalent to the same size `Fin`. -/
 def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) :=
   haveI : DecidableEq α := Encodable.decidableEqOfEncodable _
   -- Porting note: used the `trans` tactic

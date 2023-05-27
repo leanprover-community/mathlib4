@@ -939,12 +939,12 @@ theorem tensorTensorTensorComm_symm :
 
 variable (M N P Q)
 
-/-- This special case is useful for describing the interplay between `dual_tensor_hom_equiv` and
+/-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and
 composition of linear maps.
 
 E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M → P)`, and applying
 `dual_tensor_hom_equiv.symm` to the three hom-modules gives a map
-`(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contract_right`
+`(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
 on `N ⊗ N.dual` after the suitable rebracketting.
 -/
 def tensorTensorTensorAssoc : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] N ⊗[R] P) ⊗[R] Q :=
