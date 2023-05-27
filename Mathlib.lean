@@ -1506,6 +1506,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Conformal
 import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Inversion
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.ConformalGroupoid
