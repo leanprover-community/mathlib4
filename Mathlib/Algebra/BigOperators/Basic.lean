@@ -18,7 +18,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Big operators
@@ -281,7 +280,7 @@ theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → �
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
--- See also `finset.prod_apply`, with the same conclusion
+-- See also `Finset.prod_apply`, with the same conclusion
 -- but with the weaker hypothesis `f : α → β → γ`.
 @[to_additive (attr := simp)]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
@@ -762,8 +761,8 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
 #align finset.prod_filter_of_ne Finset.prod_filter_of_ne
 #align finset.sum_filter_of_ne Finset.sum_filter_of_ne
 
--- If we use `[decidable_eq β]` here, some rewrites fail because they find a wrong `decidable`
--- instance first; `{∀ x, decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
+-- If we use `[DecidableEq β]` here, some rewrites fail because they find a wrong `Decidable`
+-- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
 @[to_additive]
 theorem prod_filter_ne_one [∀ x, Decidable (f x ≠ 1)] :
     (∏ x in s.filter fun x => f x ≠ 1, f x) = ∏ x in s, f x :=
@@ -1090,7 +1089,7 @@ theorem prod_ite_eq [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 /-- A product taken over a conditional whose condition is an equality test on the index and whose
 alternative is `1` has value either the term at that index or `1`.
 
-The difference with `Finset.prod_ite_eq` is that the arguments to `eq` are swapped. -/
+The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped. -/
 @[to_additive (attr := simp) "A sum taken over a conditional whose condition is an equality
 test on the index and whose alternative is `0` has value either the term at that index or `0`.
 
@@ -1247,7 +1246,7 @@ theorem prod_range_add (f : ℕ → β) (n m : ℕ) :
     (∏ x in range (n + m), f x) = (∏ x in range n, f x) * ∏ x in range m, f (n + x) := by
   induction' m with m hm
   · simp
-  · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]; rfl
+  · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
 #align finset.prod_range_add Finset.prod_range_add
 #align finset.sum_range_add Finset.sum_range_add
 
@@ -2280,7 +2279,7 @@ theorem nat_abs_sum_le {ι : Type _} (s : Finset ι) (f : ι → ℤ) :
       exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
 #align nat_abs_sum_le nat_abs_sum_le
 
-/-! ### `additive`, `multiplicative` -/
+/-! ### `Additive`, `Multiplicative` -/
 
 
 open Additive Multiplicative

@@ -398,7 +398,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩ -- porting note: was `positivity`
+    positivity⟩
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -608,8 +608,7 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
-    -- porting note: was `positivity`
+    positivity⟩
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup

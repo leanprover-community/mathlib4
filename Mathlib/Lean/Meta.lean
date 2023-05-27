@@ -150,14 +150,13 @@ and then builds the lambda telescope term for the new term.
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
 
+
+/-- Get the type the given metavariable after instantiating metavariables and cleaning up
+annotations. -/
+def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
+  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
+
 end Lean.Meta
-
-section SynthInstance
-
-/-- Elaborate the following term with `set_option synthInstance.etaExperiment true`. -/
-macro "eta_experiment% " a:term : term => `(term|set_option synthInstance.etaExperiment true in $a)
-
-end SynthInstance
 
 namespace Lean.Elab.Tactic
 

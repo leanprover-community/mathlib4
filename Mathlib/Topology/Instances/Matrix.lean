@@ -216,7 +216,6 @@ theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m 
   hA.update i hB
 #align continuous.matrix_update_row Continuous.matrix_updateRow
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 @[continuity]
 theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :

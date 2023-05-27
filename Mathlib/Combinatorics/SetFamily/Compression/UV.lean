@@ -9,7 +9,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic.ScopedNS -- Porting note: scoped
 
 /-!
 # UV-compressions
@@ -82,7 +81,7 @@ section GeneralizedBooleanAlgebra
 variable [GeneralizedBooleanAlgebra α] [DecidableRel (@Disjoint α _ _)]
   [DecidableRel ((· ≤ ·) : α → α → Prop)] {s : Finset α} {u v a b : α}
 
-attribute [local instance] decidableEq_of_decidableLE
+attribute [local instance] decidableEqOfDecidableLE
 
 /-- To UV-compress `a`, if it doesn't touch `U` and does contain `V`, we remove `V` and
 put `U` in. We'll only really use this when `|U| = |V|` and `U ∩ V = ∅`. -/

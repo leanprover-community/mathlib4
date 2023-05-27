@@ -313,7 +313,7 @@ theorem disjoin_manyOneReducible {α β γ} [Primcodable α] [Primcodable β] [P
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨Sum.elim f g,
       Computable.id.sum_casesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
-      fun x => by cases x <;> [apply h₁, apply h₂]⟩
+      fun x => by cases x <;> [apply h₁; apply h₂]⟩
 #align disjoin_many_one_reducible disjoin_manyOneReducible
 
 theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {p : α → Prop}

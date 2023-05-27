@@ -46,14 +46,14 @@ open Set Function
 
 variable {α : Type _}
 
-/-- The left coset `a * s` for an element `a : α` and a subset `s : set α` -/
+/-- The left coset `a * s` for an element `a : α` and a subset `s : Set α` -/
 @[to_additive leftAddCoset "The left coset `a+s` for an element `a : α` and a subset `s : set α`"]
 def leftCoset [Mul α] (a : α) (s : Set α) : Set α :=
   (fun x => a * x) '' s
 #align left_coset leftCoset
 #align left_add_coset leftAddCoset
 
-/-- The right coset `s * a` for an element `a : α` and a subset `s : set α` -/
+/-- The right coset `s * a` for an element `a : α` and a subset `s : Set α` -/
 @[to_additive rightAddCoset
       "The right coset `s+a` for an element `a : α` and a subset `s : set α`"]
 def rightCoset [Mul α] (s : Set α) (a : α) : Set α :=

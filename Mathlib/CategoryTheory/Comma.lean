@@ -51,7 +51,7 @@ comma, slice, coslice, over, under, arrow
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see `category_theory.category` for an explanation
+-- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {A : Type u₁} [Category.{v₁} A]

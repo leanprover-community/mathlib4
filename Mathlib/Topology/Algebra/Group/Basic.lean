@@ -178,6 +178,8 @@ over `M`, for example, is obtained by requiring the instances `AddGroup M` and
 class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
   continuous_neg : Continuous fun a : G => -a
 #align has_continuous_neg ContinuousNeg
+-- Porting note: added
+attribute [continuity] ContinuousNeg.continuous_neg
 
 /-- Basic hypothesis to talk about a topological group. A topological group over `M`, for example,
 is obtained by requiring the instances `Group M` and `ContinuousMul M` and
@@ -187,6 +189,8 @@ class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
 #align has_continuous_inv ContinuousInv
 --#align has_continuous_neg ContinuousNeg
+-- Porting note: added
+attribute [continuity] ContinuousInv.continuous_inv
 
 export ContinuousInv (continuous_inv)
 

@@ -196,12 +196,12 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
   /-- A `ConditionallyCompleteLinearOrder` is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidable_le : DecidableRel (. ≤ . : α → α → Prop)
+  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidable_eq : DecidableEq α := @decidableEq_of_decidableLE _ _ decidable_le
+  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidable_lt : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLT_of_decidableLE _ _ decidable_le
+  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+    @decidableLTOfDecidableLE _ _ decidableLE
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
@@ -1549,5 +1549,4 @@ theorem WithTop.iSup_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyComple
 end WithTopBot
 
 -- Guard against import creep
--- Porting note: `assert_not_exists` has not been ported yet.
---assert_not_exists multiset
+assert_not_exists Multiset

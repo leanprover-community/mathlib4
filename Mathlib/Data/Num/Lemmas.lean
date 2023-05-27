@@ -466,9 +466,9 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       intro a b c
       transfer_rw
       apply mul_lt_mul_of_pos_right
-    decidable_lt := Num.decidableLT
-    decidable_le := Num.decidableLE
-    decidable_eq := instDecidableEqNum
+    decidableLT := Num.decidableLT
+    decidableLE := Num.decidableLE
+    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -646,9 +646,9 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_lt := by infer_instance
-  decidable_le := by infer_instance
-  decidable_eq := by infer_instance
+  decidableLT := by infer_instance
+  decidableLE := by infer_instance
+  decidableEq := by infer_instance
 #align pos_num.linear_order PosNum.linearOrder
 
 @[simp]
@@ -1376,13 +1376,11 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
   | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b <;>
-        dsimp <;>
-      [simp, exact congr_arg pos, simp [GT.gt]]
+    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
+    cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
-    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]; cases PosNum.cmp b a <;>
-        dsimp <;>
-      [simp, simp (config := { contextual := true }), simp [GT.gt]]
+    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
+    cases PosNum.cmp b a <;> dsimp <;> [simp; simp (config := { contextual := true }); simp [GT.gt]]
   | pos a, 0 => PosNum.cast_pos _
   | pos a, neg b => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg b => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -1462,9 +1460,9 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_eq := instDecidableEqZNum
-  decidable_le := ZNum.decidableLE
-  decidable_lt := ZNum.decidableLT
+  decidableEq := instDecidableEqZNum
+  decidableLE := ZNum.decidableLE
+  decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
 instance addCommGroup : AddCommGroup ZNum where

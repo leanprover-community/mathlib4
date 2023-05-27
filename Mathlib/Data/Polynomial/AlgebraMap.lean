@@ -510,10 +510,6 @@ set_option linter.uppercaseLean3 false in
 
 end Ring
 
--- porting note: workaround lean4#2074, this declaration works with
--- `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]

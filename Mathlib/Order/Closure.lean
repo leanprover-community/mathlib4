@@ -472,7 +472,7 @@ theorem closure_iSup₂_closure (f : ∀ i, κ i → α) :
 
 end CompleteLattice
 
--- Lemmas for `LowerAdjoint ((↑) : α → set β)`, where `SetLike α β`
+-- Lemmas for `LowerAdjoint ((↑) : α → Set β)`, where `SetLike α β`
 section CoeToSet
 
 variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))

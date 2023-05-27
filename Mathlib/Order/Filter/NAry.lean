@@ -295,7 +295,7 @@ A collection of lemmas to transfer associativity, commutativity, distributivity,
 to the associativity, commutativity, distributivity, ... of `Filter.map₂` of those operations.
 
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
-`map₂ (*) f g = map₂ (*) g f` in a `comm_semigroup`.
+`map₂ (*) f g = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
 

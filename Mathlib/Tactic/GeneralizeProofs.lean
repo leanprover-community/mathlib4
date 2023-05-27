@@ -15,11 +15,11 @@ Commonly useful when dealing with functions like `Classical.choose` that produce
 
 For example:
 ```lean
-example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
-  -- ⊢ [1, 2].nth_le 1 _ = 2
+example : List.nthLe [1, 2] 1 dec_trivial = 2 := by
+  -- ⊢ [1, 2].nthLe 1 _ = 2
   generalize_proofs h,
   -- h : 1 < [1, 2].length
-  -- ⊢ [1, 2].nth_le 1 h = 2
+  -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
 
@@ -92,11 +92,11 @@ Generalize proofs in the goal, naming them with the provided list.
 
 For example:
 ```lean
-example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
-  -- ⊢ [1, 2].nth_le 1 _ = 2
+example : List.nthLe [1, 2] 1 dec_trivial = 2 := by
+  -- ⊢ [1, 2].nthLe 1 _ = 2
   generalize_proofs h,
   -- h : 1 < [1, 2].length
-  -- ⊢ [1, 2].nth_le 1 h = 2
+  -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
 elab (name := generalizeProofs) "generalize_proofs"

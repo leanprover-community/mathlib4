@@ -27,8 +27,6 @@ theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
   repeat (split; decide)
   decide
 
-theorem String.csize_pos : (c : Char) → 0 < String.csize c := Char.utf8Size_pos
-
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
 -/
@@ -41,7 +39,7 @@ instance : LinearOrder Char where
   le_total := fun _ _ => @le_total ℕ _ _ _
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
-  decidable_le := inferInstance
+  decidableLE := inferInstance
 
 theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
