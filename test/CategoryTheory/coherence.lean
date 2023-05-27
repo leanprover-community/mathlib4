@@ -49,6 +49,47 @@ universe w v u
 section monoidal
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
+-- Internal testing
+
+example (X₁ X₂ : C) :
+    ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
+      (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) =
+    𝟙 (𝟙_ C) ⊗ ((λ_ X₁).inv ⊗ 𝟙 X₂) := by
+  pure_coherence
+  -- This is just running:
+  -- change projectMap id _ _ (LiftHom.lift (((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
+  --     (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv))) =
+  --   projectMap id _ _ (LiftHom.lift (𝟙 (𝟙_ C) ⊗ ((λ_ X₁).inv ⊗ 𝟙 X₂)))
+  -- exact congrArg _ (Subsingleton.elim _ _)
+
+example {Y Z : C} (f : Y ⟶ Z) (g) (w : false) : (λ_ _).hom ≫ f = g := by
+  liftable_prefixes
+  guard_target = (𝟙 _ ≫ (λ_ _).hom) ≫ f = (𝟙 _) ≫ g
+  cases w
+
+-- `coherence`
+
+
+example (f : 𝟙_ C ⟶ _) : f ≫ (λ_ (𝟙_ C)).hom = f ≫ (ρ_ (𝟙_ C)).hom := by
+  coherence
+
+example (f) : (λ_ (𝟙_ C)).hom ≫ f ≫ (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom ≫ f ≫ (ρ_ (𝟙_ C)).hom := by
+  coherence
+
+example {U : C} (f : U ⟶ 𝟙_ C) : f ≫ (ρ_ (𝟙_ C)).inv ≫ (λ_ (𝟙_ C)).hom = f := by
+  coherence
+
+example (W X Y Z : C) (f) :
+    ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) ≫ f ≫
+      (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom =
+    (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom ≫ f ≫
+      ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) := by
+  coherence
+
+example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
+    f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
+  coherence
+
 example : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by coherence
 example : (λ_ (𝟙_ C)).inv = (ρ_ (𝟙_ C)).inv := by coherence
 example (X Y Z : C) : (α_ X Y Z).inv ≫ (α_ X Y Z).hom = 𝟙 (X ⊗ Y ⊗ Z) := by coherence
