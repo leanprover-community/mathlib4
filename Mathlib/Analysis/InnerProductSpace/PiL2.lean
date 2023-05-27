@@ -219,7 +219,7 @@ variable (ι 𝕜)
 and `ι → 𝕜`. -/
 @[simps!]
 def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
-  (PiLp.linearEquiv 2 𝕜 fun i : ι => 𝕜).toContinuousLinearEquiv
+  (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜).toContinuousLinearEquiv
 #align euclidean_space.equiv EuclideanSpace.equiv
 
 variable {ι 𝕜}
@@ -228,7 +228,7 @@ variable {ι 𝕜}
 /-- The projection on the `i`-th coordinate of `euclidean_space 𝕜 ι`, as a linear map. -/
 @[simps!]
 def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
-  (LinearMap.proj i).comp (PiLp.linearEquiv 2 𝕜 fun i : ι => 𝕜 : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
+  (LinearMap.proj i).comp (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜 : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
 #align euclidean_space.projₗ EuclideanSpace.projₗ
 
 -- TODO : This should be generalized to `pi_Lp`.
@@ -608,8 +608,9 @@ theorem Complex.toBasis_orthonormalBasisOneI :
 #align complex.to_basis_orthonormal_basis_one_I Complex.toBasis_orthonormalBasisOneI
 
 @[simp]
-theorem Complex.coe_orthonormalBasisOneI : (Complex.orthonormalBasisOneI : Fin 2 → ℂ) = ![1, I] :=
-  by simp [Complex.orthonormalBasisOneI]
+theorem Complex.coe_orthonormalBasisOneI :
+    (Complex.orthonormalBasisOneI : Fin 2 → ℂ) = ![1, I] := by
+  simp [Complex.orthonormalBasisOneI]
 #align complex.coe_orthonormal_basis_one_I Complex.coe_orthonormalBasisOneI
 
 /-- The isometry between `ℂ` and a two-dimensional real inner product space given by a basis. -/
