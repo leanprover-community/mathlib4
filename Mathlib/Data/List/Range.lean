@@ -170,11 +170,7 @@ theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
 #align list.prod_range_succ' List.prod_range_succ'
 #align list.sum_range_succ' List.sum_range_succ'
 
-@[simp]
-theorem enum_from_map_fst : ∀ (n) (l : List α), map Prod.fst (enumFrom n l) = range' n l.length
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg (cons _) (enum_from_map_fst _ _)
-#align list.enum_from_map_fst List.enum_from_map_fst
+#align list.enum_from_map_fst List.enumFrom_map_fst
 #align list.enum_map_fst List.enum_map_fst
 
 theorem enum_eq_zip_range (l : List α) : l.enum = (range l.length).zip l :=
@@ -186,15 +182,15 @@ theorem unzip_enum_eq_prod (l : List α) : l.enum.unzip = (range l.length, l) :=
   simp only [enum_eq_zip_range, unzip_zip, length_range]
 #align list.unzip_enum_eq_prod List.unzip_enum_eq_prod
 
-theorem enum_from_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
-  zip_of_prod (enum_from_map_fst _ _) (enumFrom_map_snd _ _)
-#align list.enum_from_eq_zip_range' List.enum_from_eq_zip_range'
+theorem enumFrom_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
+  zip_of_prod (enumFrom_map_fst _ _) (enumFrom_map_snd _ _)
+#align list.enum_from_eq_zip_range' List.enumFrom_eq_zip_range'
 
 @[simp]
-theorem unzip_enum_from_eq_prod (l : List α) {n : ℕ} :
+theorem unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
     (l.enumFrom n).unzip = (range' n l.length, l) := by
-  simp only [enum_from_eq_zip_range', unzip_zip, length_range']
-#align list.unzip_enum_from_eq_prod List.unzip_enum_from_eq_prod
+  simp only [enumFrom_eq_zip_range', unzip_zip, length_range']
+#align list.unzip_enum_from_eq_prod List.unzip_enumFrom_eq_prod
 
 set_option linter.deprecated false in
 @[simp]
