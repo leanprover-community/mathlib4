@@ -63,9 +63,12 @@ def inclusionPathAux {a : B} : ∀ {b : B}, Path a b → Hom a b
   | _, cons p f => (inclusionPathAux p).comp (Hom.of f)
 #align category_theory.free_bicategory.inclusion_path_aux CategoryTheory.FreeBicategory.inclusionPathAux
 
-/- Porting note: Since the following instance is removed when porting
+/- Porting note: Since the following instance was removed when porting
 `CategoryTheory.Bicategory.Free`, we add it locally here. -/
-/-- Category structure on `Hom a b`. -/
+/-- Category structure on `Hom a b`. In this file, we will use `Hom a b` for `a b : B`
+(precisely, `FreeBicategory.Hom a b`) instead of the definitionally equal expression
+`a ⟶ b` for `a b : FreeBicategory B`. The main reason is that we have to annoyingly write
+`@Quiver.Hom B _ a b` to get the latter expression when given `a b : B`. -/
 local instance homCategory' (a b : B) : Category (Hom a b) :=
   homCategory a b
 
@@ -165,7 +168,6 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
-
   rcases η with ⟨η'⟩; clear η; induction η'
   case id => simp
   case vcomp _ _ _ _ _ η θ ihf ihg =>
