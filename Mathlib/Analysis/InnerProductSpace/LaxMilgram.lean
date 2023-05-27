@@ -8,11 +8,11 @@ Authors: Daniel Roca González
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Projection
-import Mathbin.Analysis.InnerProductSpace.Dual
-import Mathbin.Analysis.NormedSpace.Banach
-import Mathbin.Analysis.NormedSpace.OperatorNorm
-import Mathbin.Topology.MetricSpace.Antilipschitz
+import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # The Lax-Milgram Theorem
@@ -58,8 +58,7 @@ variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 -- mathport name: «expr ♯»
 local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
 
-theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ :=
-  by
+theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
   refine' ⟨C, C_ge_0, _⟩
   intro v
@@ -74,8 +73,7 @@ theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * �
     simp [this]
 #align is_coercive.bounded_below IsCoercive.bounded_below
 
-theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ AntilipschitzWith C B♯ :=
-  by
+theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ AntilipschitzWith C B♯ := by
   rcases coercive.bounded_below with ⟨C, C_pos, below_bound⟩
   refine' ⟨C⁻¹.toNNReal, real.to_nnreal_pos.mpr (inv_pos.mpr C_pos), _⟩
   refine' ContinuousLinearMap.antilipschitz_of_bound B♯ _
@@ -84,28 +82,24 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
   simpa using below_bound
 #align is_coercive.antilipschitz IsCoercive.antilipschitz
 
-theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ :=
-  by
+theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
   rw [LinearMapClass.ker_eq_bot]
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.injective
 #align is_coercive.ker_eq_bot IsCoercive.ker_eq_bot
 
-theorem closed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) :=
-  by
+theorem closed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.is_closed_range B♯.UniformContinuous
 #align is_coercive.closed_range IsCoercive.closed_range
 
-theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ :=
-  by
+theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.closed_range.complete_space_coe
   rw [← (range B♯).orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
   intro v w mem_w_orthogonal
   rcases coercive with ⟨C, C_pos, coercivity⟩
-  obtain rfl : w = 0 :=
-    by
+  obtain rfl : w = 0 := by
     rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', MulZeroClass.mul_zero, ←
       mul_assoc]
     apply le_antisymm
