@@ -439,6 +439,7 @@ import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
