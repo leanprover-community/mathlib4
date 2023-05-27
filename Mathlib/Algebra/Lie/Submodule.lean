@@ -242,6 +242,8 @@ theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) 
 
 -- porting note: `LieIdeal.coe_toLieSubalgebra_toSubmodule`, corresponding to
 -- `lie_ideal.coe_to_lie_subalgebra_to_submodule` is a syntactic tautology and I erased it.
+-- I also added by hand the `#noalign` below
+#noalign lie_ideal.coe_to_lie_subalgebra_to_submodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
