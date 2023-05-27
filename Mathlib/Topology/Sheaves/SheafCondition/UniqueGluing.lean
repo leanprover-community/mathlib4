@@ -8,10 +8,10 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.Forget
-import Mathbin.CategoryTheory.Limits.Shapes.Types
-import Mathbin.Topology.Sheaves.Sheaf
-import Mathbin.CategoryTheory.Types
+import Mathlib.Topology.Sheaves.Forget
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.CategoryTheory.Types
 
 /-!
 # The sheaf condition in terms of unique gluings
@@ -138,8 +138,7 @@ equalizer diagram).
 -/
 @[simp]
 theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
-    IsGluing F U ((piOpensIsoSectionsFamily F U).Hom sf) s ↔ res F U s = sf :=
-  by
+    IsGluing F U ((piOpensIsoSectionsFamily F U).Hom sf) s ↔ res F U s = sf := by
   constructor <;> intro h
   · ext ⟨i⟩
     rw [res, types.limit.lift_π_apply', fan.mk_π_app]
@@ -153,15 +152,13 @@ theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
 /-- The "equalizer" sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
 -/
-theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf :=
-  by
+theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf := by
   rw [is_sheaf_iff_is_sheaf_equalizer_products]
   intro ι U
   refine' ⟨fork.is_limit.mk' _ _⟩
   intro s
   have h_compatible :
-    ∀ x : s.X, F.is_compatible U ((F.pi_opens_iso_sections_family U).Hom (s.ι x)) :=
-    by
+    ∀ x : s.X, F.is_compatible U ((F.pi_opens_iso_sections_family U).Hom (s.ι x)) := by
     intro x
     rw [compatible_iff_left_res_eq_right_res]
     convert congr_fun s.condition x
@@ -181,8 +178,7 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
 /-- The sheaf condition in terms of unique gluings can be obtained from the usual
 "equalizer" sheaf condition.
 -/
-theorem isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing :=
-  by
+theorem isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing := by
   rw [is_sheaf_iff_is_sheaf_equalizer_products] at Fsh
   intro ι U sf hsf
   let sf' := (pi_opens_iso_sections_family F U).inv sf
@@ -259,8 +255,7 @@ which can be more convenient in practice.
 -/
 theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
     (sf : ∀ i : ι, F.1.obj (op (U i))) (h : IsCompatible F.1 U sf) :
-    ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i :=
-  by
+    ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.exists_unique_gluing U sf h
   refine' ⟨F.1.map (eq_to_hom V_eq_supr_U).op gl, _, _⟩
@@ -276,11 +271,9 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
 
 @[ext]
 theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
-    (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t :=
-  by
+    (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t := by
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (opens.le_supr U i).op s
-  have sf_compatible : is_compatible _ U sf :=
-    by
+  have sf_compatible : is_compatible _ U sf := by
     intro i j
     simp_rw [← comp_apply, ← F.1.map_comp]
     rfl
@@ -299,8 +292,7 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
 which can be more convenient in practice.
 -/
 theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
-    (s t : F.1.obj (op V)) (h : ∀ i, F.1.map (iUV i).op s = F.1.map (iUV i).op t) : s = t :=
-  by
+    (s t : F.1.obj (op V)) (h : ∀ i, F.1.map (iUV i).op s = F.1.map (iUV i).op t) : s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eq_to_hom V_eq_supr_U.symm).op s = F.1.map (eq_to_hom V_eq_supr_U.symm).op t by
     convert congr_arg (F.1.map (eq_to_hom V_eq_supr_U).op) this <;>
