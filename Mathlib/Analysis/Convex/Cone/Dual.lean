@@ -133,7 +133,8 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
     rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]
-  exact isClosed_Ici.preimage (by continuity)
+  exact isClosed_Ici.preimage (continuous_const.inner continuous_id')
+
 #align is_closed_inner_dual_cone isClosed_innerDualCone
 
 theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
