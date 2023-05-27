@@ -138,10 +138,26 @@ recognizes `q`, returning the cast of `q`. -/
 
 /-! # Arithmetic -/
 
+library_note "norm_num lemma function equality"/--
+Note: Many of the the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
+below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
+`+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
+by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
+will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
+ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
+this could cause a `(kernel) deep recursion detected` error (see lean4#2171, mathlib4#4048).
+
+By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
+opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
+easy).
+-/
+
+-- see note [norm_num lemma function equality]
 theorem isNat_add {α} [AddMonoidWithOne α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
     f = HAdd.hAdd → IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
+-- see note [norm_num lemma function equality]
 theorem isInt_add {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HAdd.hAdd → IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
@@ -159,6 +175,7 @@ def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
+-- see note [norm_num lemma function equality]
 theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsRat a na da → IsRat b nb db →
     Int.add (Int.mul na db) (Int.mul nb da) = Int.mul k nc →
@@ -231,10 +248,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isNat sα c q(isNat_add $pf $pa $pb $r) : Result q($f $a $b))
   core
 
+-- see note [norm_num lemma function equality]
 theorem isInt_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {a' b : ℤ},
     f = Neg.neg → IsInt a a' → Int.neg a' = b → IsInt (-a) b
   | _, _, _, _, rfl, ⟨rfl⟩, rfl => ⟨(Int.cast_neg ..).symm⟩
 
+-- see note [norm_num lemma function equality]
 theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d : ℕ},
     f = Neg.neg → IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
@@ -272,10 +291,12 @@ such that `norm_num` successfully recognises `a`. -/
     | .isRat dα .. => ratArm dα
   core
 
+-- see note [norm_num lemma function equality]
 theorem isInt_sub {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HSub.hSub → IsInt a a' → IsInt b b' → Int.sub a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_sub ..).symm⟩
 
+-- see note [norm_num lemma function equality]
 theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ}
     (hf : f = HSub.hSub) (ra : IsRat a na da) (rb : IsRat b nb db)
     (h₁ : Int.sub (Int.mul na db) (Int.mul nb da) = Int.mul k nc)
@@ -326,10 +347,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     | .isNat _ .., .isNat _ .. => intArm rα
   core
 
+-- see note [norm_num lemma function equality]
 theorem isNat_mul {α} [Semiring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
     f = HMul.hMul → IsNat a a' → IsNat b b' → Nat.mul a' b' = c → IsNat (a * b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_mul ..).symm⟩
 
+-- see note [norm_num lemma function equality]
 theorem isInt_mul {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HMul.hMul → IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_mul ..).symm⟩
@@ -398,14 +421,17 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isNat mα c (q(isNat_mul (α := $α) $pf $pa $pb $r) : Expr) : Result q($f $a $b))
   core
 
+-- see note [norm_num lemma function equality]
 theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
     f = HPow.hPow → IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
+-- see note [norm_num lemma function equality]
 theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ} {a' : ℤ} {b' : ℕ} {c : ℤ},
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
+-- see note [norm_num lemma function equality]
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
@@ -562,17 +588,14 @@ such that `norm_num` successfully recognises both `a` and `b`, and returns `a / 
   let p : Q(IsRat ($na / $nb : ℚ) $n $d) := p
   return (.isRat' (inst := dℚ) q n d q(isRat_mkRat $pa $pb $p) : Result q(mkRat $a $b))
 
-/- Note: the following lemmas take an explicit `OfScientific α` argument to prevent a
-`(kernel) deep recursion detected` error arising from `Nat.gcd` (see lean4#2171). When we use these
-lemmas in `evalOfScientific`, we always take `σα` to be the `OfScientific α` instance obtained from
-the `DivisionRing` structure even though this isn't enforced by the type. -/
-
+-- see note [norm_num lemma function equality]
 theorem isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (@OfScientific.ofScientific α σα m true e) n d
   | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by simp only [σh, Rat.ofScientific_true_def]; exact eq⟩
 
+-- see note [norm_num lemma function equality]
 theorem isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) : {m e nm ne n : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
