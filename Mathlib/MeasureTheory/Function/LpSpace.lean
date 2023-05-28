@@ -32,7 +32,7 @@ that it is continuous. In particular,
 
 When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
 from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`.  We construct this
-as `boundedContinuousFunction.toLp`.
+as `BoundedContinuousFunction.toLp`.
 
 ## Notations
 
