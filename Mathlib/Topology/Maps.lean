@@ -273,7 +273,7 @@ def QuotientMap {α : Type _} {β : Type _} [tα : TopologicalSpace α] [tβ : T
   Surjective f ∧ tβ = tα.coinduced f
 #align quotient_map QuotientMap
 
-theorem quotientMap_iff {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+theorem quotientMap_iff [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   and_congr Iff.rfl topologicalSpace_eq_iff
 #align quotient_map_iff quotientMap_iff

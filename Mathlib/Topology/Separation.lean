@@ -1330,7 +1330,7 @@ theorem Continuous.closedEmbedding [CompactSpace α] [T2Space β] {f : α → β
   closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
 #align continuous.closed_embedding Continuous.closedEmbedding
 
-/-- A surjective continuous map from a compact space to a Hausdorff space is a quotient map. -/
+/-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
 theorem QuotientMap.of_surjective_continuous [CompactSpace α] [T2Space β] {f : α → β}
     (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
   hcont.isClosedMap.to_quotientMap hcont hsurj
