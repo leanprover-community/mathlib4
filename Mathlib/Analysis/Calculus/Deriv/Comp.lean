@@ -17,9 +17,9 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 In this file we prove the chain rule for the following cases:
 
-* `has_deriv_at.comp` etc: `f : 𝕜' → 𝕜'` composed with `g : 𝕜 → 𝕜'`;
-* `has_deriv_at.scomp` etc: `f : 𝕜' → E` composed with `g : 𝕜 → 𝕜'`;
-* `has_fderiv_at.comp_has_deriv_at` etc: `f : E → F` composed with `g : 𝕜 → E`;
+* `HasDerivAt.comp` etc: `f : 𝕜' → 𝕜'` composed with `g : 𝕜 → 𝕜'`;
+* `HasDerivAt.scomp` etc: `f : 𝕜' → E` composed with `g : 𝕜 → 𝕜'`;
+* `HasFDerivAt.comp_hasDerivAt` etc: `f : E → F` composed with `g : 𝕜 → E`;
 
 Here `𝕜` is the base normed field, `E` and `F` are normed spaces over `𝕜` and `𝕜'` is an algebra
 over `𝕜` (e.g., `𝕜'=𝕜` or `𝕜=ℝ`, `𝕜'=ℂ`).
