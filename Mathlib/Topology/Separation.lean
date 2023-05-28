@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
+! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1320,8 +1320,8 @@ theorem IsCompact.binary_compact_cover [T2Space α] {K U V : Set α} (hK : IsCom
 #align is_compact.binary_compact_cover IsCompact.binary_compact_cover
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
-theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β} (h : Continuous f) :
-    IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
+protected theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β}
+    (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
 #align continuous.is_closed_map Continuous.isClosedMap
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
@@ -1329,6 +1329,12 @@ theorem Continuous.closedEmbedding [CompactSpace α] [T2Space β] {f : α → β
     (hf : Function.Injective f) : ClosedEmbedding f :=
   closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
 #align continuous.closed_embedding Continuous.closedEmbedding
+
+/-- A surjective continuous map from a compact space to a Hausdorff space is a quotient map. -/
+theorem QuotientMap.of_surjective_continuous [CompactSpace α] [T2Space β] {f : α → β}
+    (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
+  hcont.isClosedMap.to_quotientMap hcont hsurj
+#align quotient_map.of_surjective_continuous QuotientMap.of_surjective_continuous
 
 section
 
