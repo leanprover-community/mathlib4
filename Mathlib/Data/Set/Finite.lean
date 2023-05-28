@@ -486,7 +486,7 @@ def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
 
 instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
-  Fintype.ofFinset (s.toFinset ×ᶠ t.toFinset) <| by simp
+  Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 #align set.fintype_prod Set.fintypeProd
 
 instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
@@ -1052,7 +1052,7 @@ theorem Finite.toFinset_insert' [DecidableEq α] {a : α} {s : Set α} (hs : s.F
 #align set.finite.to_finset_insert' Set.Finite.toFinset_insert'
 
 theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
-    hs.toFinset ×ᶠ ht.toFinset = (hs.prod ht).toFinset :=
+    hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 #align set.finite.to_finset_prod Set.Finite.toFinset_prod
 

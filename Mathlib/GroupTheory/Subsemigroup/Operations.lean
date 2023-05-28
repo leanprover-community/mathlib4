@@ -643,7 +643,8 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
 #align add_subsemigroup.prod AddSubsemigroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align subsemigroup.coe_prod Subsemigroup.coe_prod
 #align add_subsemigroup.coe_prod AddSubsemigroup.coe_prod

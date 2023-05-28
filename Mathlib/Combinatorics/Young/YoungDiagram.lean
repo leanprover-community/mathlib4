@@ -273,7 +273,7 @@ section Rows
 
 This section defines `μ.row` and `μ.rowLen`, with the following API:
       1.  `(i, j) ∈ μ ↔ j < μ.rowLen i`
-      2.  `μ.row i = {i} ×ᶠ (Finset.range (μ.rowLen i))`
+      2.  `μ.row i = {i} ×ˢ (Finset.range (μ.rowLen i))`
       3.  `μ.rowLen i = (μ.row i).card`
       4.  `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
 
@@ -314,7 +314,7 @@ theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j 
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 #align young_diagram.mem_iff_lt_row_len YoungDiagram.mem_iff_lt_rowLen
 
-theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ᶠ Finset.range (μ.rowLen i) := by
+theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_row_iff,
     mem_iff_lt_rowLen, and_comm, and_congr_right_iff]
@@ -380,7 +380,7 @@ theorem mem_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ i 
   simp
 #align young_diagram.mem_iff_lt_col_len YoungDiagram.mem_iff_lt_colLen
 
-theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ᶠ {j} := by
+theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ˢ {j} := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_col_iff,
     mem_iff_lt_colLen, and_comm, and_congr_right_iff]
@@ -456,7 +456,7 @@ The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.
 protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
   | [] => ∅
   | w::ws =>
-    ({0} : Finset ℕ) ×ᶠ Finset.range w ∪
+    ({0} : Finset ℕ) ×ˢ Finset.range w ∪
       (YoungDiagram.cellsOfRowLens ws).map
         (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens

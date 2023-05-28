@@ -1111,7 +1111,7 @@ def prod : Subalgebra R (A × B) :=
 #align subalgebra.prod Subalgebra.prod
 
 @[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = S ×ˢ S₁ :=
+theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
   rfl
 #align subalgebra.coe_prod Subalgebra.coe_prod
 

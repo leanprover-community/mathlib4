@@ -1275,7 +1275,7 @@ instance zpowinst : Pow c.Quotient ℤ :=
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
-an `add_group`."]
+an `AddGroup`."]
 instance group : Group c.Quotient :=
   Function.Surjective.group Quotient.mk''
     Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)

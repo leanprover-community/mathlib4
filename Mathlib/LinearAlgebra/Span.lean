@@ -760,18 +760,15 @@ end
 
 variable {M' : Type _} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product of two submodules is a submodule. -/
 def prod : Submodule R (M × M') :=
-  {
-    p.toAddSubmonoid.prod q₁.toAddSubmonoid with
+  { p.toAddSubmonoid.prod q₁.toAddSubmonoid with
     carrier := p ×ˢ q₁
     smul_mem' := by rintro a ⟨x, y⟩ ⟨hx, hy⟩; exact ⟨smul_mem _ a hx, smul_mem _ a hy⟩ }
 #align submodule.prod Submodule.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem prod_coe : (prod p q₁ : Set (M × M')) = p ×ˢ q₁ :=
+theorem prod_coe : (prod p q₁ : Set (M × M')) = (p : Set M) ×ˢ (q₁ : Set M') :=
   rfl
 #align submodule.prod_coe Submodule.prod_coe
 
@@ -781,7 +778,6 @@ theorem mem_prod {p : Submodule R M} {q : Submodule R M'} {x : M × M'} :
   Set.mem_prod
 #align submodule.mem_prod Submodule.mem_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem span_prod_le (s : Set M) (t : Set M') : span R (s ×ˢ t) ≤ prod (span R s) (span R t) :=
   span_le.2 <| Set.prod_mono subset_span subset_span
 #align submodule.span_prod_le Submodule.span_prod_le
