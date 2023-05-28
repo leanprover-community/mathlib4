@@ -53,7 +53,7 @@ Is `GaloisConnection pred succ` always true? If not, we should introduce
 class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
 (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
-`covby` should help here.
+`Covby` should help here.
 -/
 
 

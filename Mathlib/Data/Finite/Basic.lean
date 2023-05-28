@@ -33,7 +33,7 @@ defined.
 There is an apparent duplication of many `Fintype` instances in this module,
 however they follow a pattern: if a `Fintype` instance depends on `Decidable`
 instances or other `Fintype` instances, then we need to "lower" the instance
-to be a `Finite` instance by removing the `decidable` instances and switching
+to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
 `open Classical` or the `classical` tactic the instances relying only

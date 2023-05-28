@@ -18,7 +18,7 @@ This defines `Pointed`, the category of pointed types.
 ## TODO
 
 * Monoidal structure
-* Upgrade `Type_to_Pointed` to an equivalence
+* Upgrade `typeToPointed` to an equivalence
 -/
 
 
@@ -134,7 +134,7 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 set_option linter.uppercaseLean3 false in
 #align Type_to_Pointed typeToPointed
 
-/-- `Type_to_Pointed` is the free functor. -/
+/-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>

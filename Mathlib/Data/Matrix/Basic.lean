@@ -26,7 +26,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
