@@ -790,7 +790,8 @@ theorem orthonormal_subtype_iff_ite {s : Set E} :
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
     ⟪v i, Finsupp.total ι E 𝕜 v l⟫ = l i := by
-  classical!; simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
+  classical!
+  simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
 #align orthonormal.inner_right_finsupp Orthonormal.inner_right_finsupp
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
