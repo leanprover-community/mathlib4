@@ -57,6 +57,7 @@ inductive Lists'.{u} (α : Type u) : Bool → Type u
   | cons' {b} : Lists' α b → Lists' α true → Lists' α true
   deriving DecidableEq
 #align lists' Lists'
+compile_inductive% Lists'
 
 /-- Hereditarily finite list, aka ZFA list. A ZFA list is either an "atom" (`b = false`),
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
@@ -259,14 +260,10 @@ instance : Inhabited (Lists α) :=
 
 instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: 'Lists'._sizeOf_inst' does not have executable code.
--- So noncomputable is added.
-noncomputable instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: Made noncomputable because code generator does not support recursor
--- Lists'.rec yet
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
-noncomputable def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
+def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
@@ -361,10 +358,9 @@ instance : Setoid (Lists α) :=
 
 section Decidable
 
--- porting note: Noncomputable because Lists.instSizeOfLists is
 /-- Auxillary function to prove termination of decidability checking -/
 @[simp]
-noncomputable def Equiv.decidableMeas :
+def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
       ℕ

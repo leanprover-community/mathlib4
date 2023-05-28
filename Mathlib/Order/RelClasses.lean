@@ -312,10 +312,8 @@ theorem apply : ∀ a, Acc r a :=
   wf.apply
 #align is_well_founded.apply IsWellFounded.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
   wf.fix
 #align is_well_founded.fix IsWellFounded.fix
@@ -415,10 +413,8 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
   IsWellFounded.apply _
 #align well_founded_lt.apply WellFoundedLT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 #align well_founded_lt.fix WellFoundedLT.fix
@@ -449,10 +445,8 @@ theorem apply : ∀ a : α, Acc (· > ·) a :=
   IsWellFounded.apply _
 #align well_founded_gt.apply WellFoundedGT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as greater. See also
 `WellFoundedGT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· > ·)
 #align well_founded_gt.fix WellFoundedGT.fix
