@@ -445,27 +445,27 @@ open MulAction MemLeftTransversals
 variable {F : Type _} [Group F] [MulAction F G] [QuotientAction F H]
 
 @[to_additive]
-instance : MulAction F (leftTransversals (H : Set G)) where
+noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
   smul f T :=
-    ⟨f • T, by
+    ⟨f • (T : Set G), by
       refine' mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => _
       obtain ⟨t, ht1, ht2⟩ := mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp T.2 (f⁻¹ • g)
-      refine' ⟨⟨f • t, Set.smul_mem_smul_set t.2⟩, _, _⟩
-      · exact (congr_arg _ (smul_inv_smul f g)).mp (QuotientAction.inv_mul_mem f ht1)
+      refine' ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, _, _⟩
+      · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
         simp only [Subtype.ext_iff, Subtype.coe_mk, smul_left_cancel_iff, inv_smul_smul] at h⊢
-        exact subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
-  one_smul T := Subtype.ext (one_smul F T)
-  mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ T)
+        exact Subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
+  one_smul T := Subtype.ext (one_smul F (T : Set G))
+  mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ (T : Set G))
 
 @[to_additive]
 theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
-    (f • toFun T.2 g : G) = toFun (f • T).2 (f • g) :=
+    (f • (toFun T.2 g : G)) = toFun (f • T).2 (f • g) :=
   Subtype.ext_iff.mp <|
-    @ExistsUnique.unique (↥(f • T)) (fun s => (↑s)⁻¹ * f • g ∈ H)
+    @ExistsUnique.unique (↥(f • (T : Set G))) (fun s => (↑s)⁻¹ * f • g ∈ H)
       (mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp (f • T).2 (f • g))
-      ⟨f • toFun T.2 g, Set.smul_mem_smul_set (Subtype.coe_prop _)⟩ (toFun (f • T).2 (f • g))
+      ⟨f • (toFun T.2 g : G), Set.smul_mem_smul_set (Subtype.coe_prop _)⟩ (toFun (f • T).2 (f • g))
       (QuotientAction.inv_mul_mem f (inv_toFun_mul_mem T.2 g)) (inv_toFun_mul_mem (f • T).2 (f • g))
 #align subgroup.smul_to_fun Subgroup.smul_toFun
 #align add_subgroup.vadd_to_fun AddSubgroup.vadd_toFun
