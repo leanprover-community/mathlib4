@@ -25,6 +25,9 @@ variable {S}
 lemma Exact.hasHomology (h : S.Exact) : S.HasHomology :=
   HasHomology.mk' h.condition.choose
 
+lemma Exact.hasZeroObject (h : S.Exact) : HasZeroObject C :=
+  ⟨h.condition.choose.left.H, h.condition.choose_spec⟩
+
 variable (S)
 
 lemma exact_iff_isZero_homology [S.HasHomology] :
@@ -291,6 +294,33 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
   . intro
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
+
+@[simps]
+noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
+    (hS : S.Exact) [HasZeroObject C] (kf : KernelFork S.g) (hkf : IsLimit kf) :
+    S.LeftHomologyData where
+  K := kf.pt
+  H := 0
+  i := kf.ι
+  π := 0
+  wi := kf.condition
+  hi := IsLimit.ofIsoLimit hkf (Fork.ext (Iso.refl _) (by simp))
+  wπ := comp_zero
+  hπ := CokernelCofork.IsColimit.ofIsZeroOfEpi _ (by
+    have := hS.hasHomology
+    have := hS.epi_toCycles
+    dsimp
+    rw [comp_id]
+    have fac : hkf.lift (KernelFork.ofι _ S.zero) = S.toCycles ≫
+        (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf).hom := by
+      apply Fork.IsLimit.hom_ext hkf
+      simp only [Fork.ofι_pt, parallelPair_obj_zero, Fork.IsLimit.lift_ι, Fork.ι_ofι, assoc,
+        ← toCycles_i]
+      congr 1
+      exact (IsLimit.conePointUniqueUpToIso_hom_comp S.cyclesIsKernel hkf
+        WalkingParallelPair.zero).symm
+    rw [fac]
+    apply epi_comp) (isZero_zero C)
 
 variable (S)
 
