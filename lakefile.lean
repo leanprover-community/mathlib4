@@ -40,3 +40,6 @@ lean_exe cache where
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
+
+lean_exe load where
+  root := `test.Sagredo.MiniF2F.LoadMiniF2F
