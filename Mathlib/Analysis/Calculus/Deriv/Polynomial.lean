@@ -8,10 +8,10 @@ Authors: Sébastien Gouëzel, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Pow
-import Mathbin.Analysis.Calculus.Deriv.Add
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.Polynomial.Derivative
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Derivative
 
 /-!
 # Derivatives of polynomials
@@ -68,8 +68,7 @@ variable (p : 𝕜[X]) (q : R[X])
 
 /-- The derivative (in the analysis sense) of a polynomial `p` is given by `p.derivative`. -/
 protected theorem hasStrictDerivAt (x : 𝕜) :
-    HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x :=
-  by
+    HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on'
   case h_add p q hp hq => simpa using hp.add hq
   case h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
@@ -144,8 +143,7 @@ protected theorem deriv_aeval : deriv (fun x => aeval x q) x = aeval x q.derivat
 #align polynomial.deriv_aeval Polynomial.deriv_aeval
 
 protected theorem derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => p.eval x) s x = p.derivative.eval x :=
-  by
+    derivWithin (fun x => p.eval x) s x = p.derivative.eval x := by
   rw [DifferentiableAt.derivWithin p.differentiable_at hxs]
   exact p.deriv
 #align polynomial.deriv_within Polynomial.derivWithin
