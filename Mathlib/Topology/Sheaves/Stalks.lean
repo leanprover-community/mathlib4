@@ -405,7 +405,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
     (ih : F.map iWU.op sU = F.map iWV.op sV) :
-      (F.germ ⟨x, hxU⟩ sU : (F.stalk (⟨x, hxU⟩ : U))) = F.germ ⟨x, hxV⟩ sV := by
+      F.germ ⟨x, hxU⟩ sU = F.germ ⟨x, hxV⟩ sV := by
   erw [← F.germ_res iWU ⟨x, hxW⟩, ← F.germ_res iWV ⟨x, hxW⟩, comp_apply, comp_apply, ih]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_ext TopCat.Presheaf.germ_ext
