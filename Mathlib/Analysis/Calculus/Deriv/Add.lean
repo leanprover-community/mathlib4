@@ -8,8 +8,8 @@ Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Basic
-import Mathbin.Analysis.Calculus.Fderiv.Add
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Add
 
 /-!
 # One-dimensional derivatives of sums etc
