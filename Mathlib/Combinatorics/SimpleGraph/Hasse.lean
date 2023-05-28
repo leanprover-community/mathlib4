@@ -25,7 +25,7 @@ path graph on `n` vertices.
 -/
 
 
-open Order OrderDual Relation
+open Order OrderDual Relation Graph
 
 namespace SimpleGraph
 
@@ -45,7 +45,7 @@ def hasse : SimpleGraph α where
 variable {α β} {a b : α}
 
 @[simp]
-theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
+theorem hasse_adj : Adj (hasse α) a b ↔ a ⋖ b ∨ b ⋖ a :=
   Iff.rfl
 #align simple_graph.hasse_adj SimpleGraph.hasse_adj
 
@@ -54,13 +54,15 @@ def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
   { ofDual with map_rel_iff' := by simp [or_comm] }
 #align simple_graph.hasse_dual_iso SimpleGraph.hasseDualIso
 
+-- Porting note: needed to add type ascription
 @[simp]
-theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
+theorem hasseDualIso_apply (a : αᵒᵈ) : (hasseDualIso : hasse αᵒᵈ ≃g hasse α) a = ofDual a :=
   rfl
 #align simple_graph.hasse_dual_iso_apply SimpleGraph.hasseDualIso_apply
 
+-- Porting note: needed to add type ascription
 @[simp]
-theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
+theorem hasseDualIso_symm_apply (a : α) : (hasseDualIso : hasse αᵒᵈ ≃g hasse α).symm a = toDual a :=
   rfl
 #align simple_graph.hasse_dual_iso_symm_apply SimpleGraph.hasseDualIso_symm_apply
 

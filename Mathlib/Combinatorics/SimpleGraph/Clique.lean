@@ -31,7 +31,7 @@ adjacent.
 -/
 
 
-open Finset Fintype
+open Finset Fintype Graph
 
 namespace SimpleGraph
 
@@ -45,11 +45,10 @@ section Clique
 variable {s t : Set α}
 
 /-- A clique in a graph is a set of vertices that are pairwise adjacent. -/
-abbrev IsClique (s : Set α) : Prop :=
-  s.Pairwise G.Adj
+abbrev IsClique (s : Set α) : Prop := s.Pairwise (Adj G)
 #align simple_graph.is_clique SimpleGraph.IsClique
 
-theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
+theorem isClique_iff : G.IsClique s ↔ s.Pairwise (Adj G) :=
   Iff.rfl
 #align simple_graph.is_clique_iff SimpleGraph.isClique_iff
 
@@ -60,15 +59,15 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
     simp only [comap_Adj, Subtype.coe_mk, top_adj, Ne.def, Subtype.mk_eq_mk]
-    exact ⟨Adj.ne, h hv hw⟩
+    exact ⟨ne_of_adj _, h hv hw⟩
   · intro h v hv w hw hne
-    have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
+    have h2 : Adj (G.induce s) ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
     conv_lhs at h2 => rw [h]
     simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
     exact h2.1 hne
 #align simple_graph.is_clique_iff_induce_eq SimpleGraph.isClique_iff_induce_eq
 
-instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
+instance [DecidableEq α] [DecidableRel (Adj G)] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
 variable {G H}
@@ -110,7 +109,7 @@ theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ s.card = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 #align simple_graph.is_n_clique_iff SimpleGraph.isNClique_iff
 
-instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
+instance [DecidableEq α] [DecidableRel (Adj G)] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNClique n s) :=
   decidable_of_iff' _ G.isNClique_iff
 
@@ -131,14 +130,15 @@ theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧
 
 variable [DecidableEq α] {a b c : α}
 
-theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
-  simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
+theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ Adj G a b ∧ Adj G a c ∧ Adj G b c := by
+  simp only [isNClique_iff, isClique_iff, coe_insert,
+    Set.pairwise_insert_of_symmetric (adj_symmetric G)]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
     simp [G.ne_of_adj, and_rotate, *]
 #align simple_graph.is_3_clique_triple_iff SimpleGraph.is3Clique_triple_iff
 
 theorem is3Clique_iff :
-    G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
+    G.IsNClique 3 s ↔ ∃ a b c, Adj G a b ∧ Adj G a c ∧ Adj G b c ∧ s = {a, b, c} := by
   refine' ⟨fun h ↦ _, _⟩
   · obtain ⟨a, b, c, -, -, -, hs⟩ := card_eq_three.1 h.card_eq
     refine' ⟨a, b, c, _⟩
@@ -177,7 +177,10 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_Adj, Function.Embedding.coe_subtype,
-    f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
+    top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
+  -- Porting note: was able to use this as simp lemma, but change in `Adj` prevents it
+  exact Embedding.map_adj_iff f
+
 #align simple_graph.not_clique_free_of_top_embedding SimpleGraph.not_cliqueFree_of_top_embedding
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
@@ -190,7 +193,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
-  exact hb.symm
+   <;> try exact hb.symm -- Porting note: only needed a single `exact hb.symm`
 #align simple_graph.top_embedding_of_not_clique_free SimpleGraph.topEmbeddingOfNotCliqueFree
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
@@ -277,7 +280,7 @@ end CliqueSet
 
 section CliqueFinset
 
-variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel (Adj G)] {n : ℕ} {a b c : α} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) :=
@@ -303,7 +306,7 @@ alias cliqueFinset_eq_empty_iff ↔ _ CliqueFree.cliqueFinset
 
 --attribute [protected] CliqueFree.cliqueFinset -- porting note: removed
 
-variable {G} [DecidableRel H.Adj]
+variable {G} [DecidableRel (Adj H)]
 
 @[mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=

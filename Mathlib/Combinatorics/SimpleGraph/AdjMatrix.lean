@@ -41,7 +41,7 @@ properties to computational properties of the matrix.
 -/
 
 
-open BigOperators Matrix
+open BigOperators Matrix Graph
 
 open Finset Matrix SimpleGraph
 
@@ -88,7 +88,7 @@ def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGra
 #align matrix.is_adj_matrix.to_graph Matrix.IsAdjMatrix.toGraph
 
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
-    DecidableRel h.toGraph.Adj := by
+    DecidableRel (Adj h.toGraph) := by
   simp only [toGraph]
   infer_instance
 
@@ -150,14 +150,14 @@ open Matrix
 
 namespace SimpleGraph
 
-variable (G : SimpleGraph V) [DecidableRel G.Adj]
+variable (G : SimpleGraph V) [DecidableRel (Adj G)]
 
 variable (α)
 
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
   adjacent in the simple graph `G`, and otherwise `A i j = 0`. -/
 def adjMatrix [Zero α] [One α] : Matrix V V α :=
-  of fun i j => if G.Adj i j then (1 : α) else 0
+  of fun i j => if Adj G i j then (1 : α) else 0
 #align simple_graph.adj_matrix SimpleGraph.adjMatrix
 
 variable {α}
@@ -165,7 +165,7 @@ variable {α}
 -- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
 @[simp]
 theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
-    G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
+    G.adjMatrix α v w = if Adj G v w then 1 else 0 :=
   rfl
 #align simple_graph.adj_matrix_apply SimpleGraph.adjMatrix_apply
 
@@ -185,7 +185,8 @@ variable (α)
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix :=
-  { zero_or_one := fun i j => by by_cases G.Adj i j <;> simp [h] }
+  -- Porting note: `by_cases` is unfolding `Adj`, so needed `dsimp`
+  { zero_or_one := fun i j => by by_cases Adj G i j <;> dsimp at h <;> simp [h] }
 #align simple_graph.is_adj_matrix_adj_matrix SimpleGraph.isAdjMatrix_adjMatrix
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/

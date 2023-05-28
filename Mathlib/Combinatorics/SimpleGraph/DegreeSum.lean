@@ -41,9 +41,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
 
-open Finset
-
-open BigOperators
+open Finset BigOperators Graph
 
 namespace SimpleGraph
 
@@ -53,13 +51,13 @@ variable {V : Type u} (G : SimpleGraph V)
 
 section DegreeSum
 
-variable [Fintype V] [DecidableRel G.Adj]
+variable [Fintype V] [DecidableRel (Adj G)]
 
 -- Porting note: Changed to `Fintype (Sym2 V)` to match Combinatorics.SimpleGraph.Basic
 variable [Fintype (Sym2 V)]
 
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
-    (univ.filter fun d : G.Dart => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
+    (univ.filter fun d : Dart G => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
   ext d
   simp only [mem_image, true_and_iff, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
   constructor
@@ -70,12 +68,12 @@ theorem dart_fst_fiber [DecidableEq V] (v : V) :
 #align simple_graph.dart_fst_fiber SimpleGraph.dart_fst_fiber
 
 theorem dart_fst_fiber_card_eq_degree [DecidableEq V] (v : V) :
-    (univ.filter fun d : G.Dart => d.fst = v).card = G.degree v := by
+    (univ.filter fun d : Dart G => d.fst = v).card = G.degree v := by
   simpa only [dart_fst_fiber, Finset.card_univ, card_neighborSet_eq_degree] using
     card_image_of_injective univ (G.dartOfNeighborSet_injective v)
 #align simple_graph.dart_fst_fiber_card_eq_degree SimpleGraph.dart_fst_fiber_card_eq_degree
 
-theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
+theorem dart_card_eq_sum_degrees : Fintype.card (Dart G) = ∑ v, G.degree v := by
   haveI := Classical.decEq V
   simp only [← card_univ, ← dart_fst_fiber_card_eq_degree]
   exact card_eq_sum_card_fiberwise (by simp)
@@ -83,24 +81,24 @@ theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
 
 variable {G} [DecidableEq V]
 
-theorem Dart.edge_fiber (d : G.Dart) :
-    (univ.filter fun d' : G.Dart => d'.edge = d.edge) = {d, d.symm} :=
+theorem _root_.Graph.Dart.edge_fiber (d : Dart G) :
+    (univ.filter fun d' : Dart G => d'.edge = d.edge) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
-#align simple_graph.dart.edge_fiber SimpleGraph.Dart.edge_fiber
+#align simple_graph.dart.edge_fiber Graph.Dart.edge_fiber
 
 variable (G)
 
 theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
-    (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
+    (univ.filter fun d : Dart G => d.edge = e).card = 2 := by
   refine' Sym2.ind (fun v w h => _) e h
-  let d : G.Dart := ⟨(v, w), h⟩
+  let d : Dart G := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
   rw [card_insert_of_not_mem, card_singleton]
   rw [mem_singleton]
-  exact d.symm_ne.symm
+  exact (Dart.symm_ne d).symm
 #align simple_graph.dart_edge_fiber_card SimpleGraph.dart_edge_fiber_card
 
-theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * G.edgeFinset.card := by
+theorem dart_card_eq_twice_card_edges : Fintype.card (Dart G) = 2 * G.edgeFinset.card := by
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
       by rw [mem_edgeFinset]; apply Dart.edge_mem]
@@ -119,7 +117,7 @@ theorem sum_degrees_eq_twice_card_edges : (∑ v, G.degree v) = 2 * G.edgeFinset
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
-theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
+theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel (Adj G)] :
     Even (univ.filter fun v => Odd (G.degree v)).card := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
@@ -136,7 +134,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
       trivial
 #align simple_graph.even_card_odd_degree_vertices SimpleGraph.even_card_odd_degree_vertices
 
-theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
+theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel (Adj G)] (v : V)
     (h : Odd (G.degree v)) : Odd (univ.filter fun w => w ≠ v ∧ Odd (G.degree w)).card := by
   rcases G.even_card_odd_degree_vertices with ⟨k, hg⟩
   have hk : 0 < k := by
@@ -158,7 +156,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   · simpa only [true_and_iff, mem_filter, mem_univ]
 #align simple_graph.odd_card_odd_degree_vertices_ne SimpleGraph.odd_card_odd_degree_vertices_ne
 
-theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)
+theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel (Adj G)] (v : V)
     (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
   haveI := Classical.decEq V
   rcases G.odd_card_odd_degree_vertices_ne v h with ⟨k, hg⟩

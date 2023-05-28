@@ -31,6 +31,7 @@ two edges is a square.
 Define all other graph products!
 -/
 
+open Graph
 
 variable {α β γ : Type _}
 
@@ -43,7 +44,7 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
-  Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
+  Adj x y := Adj G x.1 y.1 ∧ x.2 = y.2 ∨ Adj H x.2 y.2 ∧ x.1 = y.1
   symm x y := by simp [and_comm, or_comm, eq_comm, adj_comm]
   loopless x := by simp
 #align simple_graph.box_prod SimpleGraph.boxProd
@@ -54,18 +55,18 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd
 
 @[simp]
-theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
+theorem boxProd_adj : Adj (G □ H) x y ↔ Adj G x.1 y.1 ∧ x.2 = y.2 ∨ Adj H x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
 --@[simp] porting note: `simp` can prove
-theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
-  simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
+theorem boxProd_adj_left : Adj (G □ H) (a₁, b) (a₂, b) ↔ Adj G a₁ a₂ := by
+  simp only [boxProd_adj, and_true, adj_irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
 --@[simp] porting note: `simp` can prove
-theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
-  simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
+theorem boxProd_adj_right : Adj (G □ H) (a, b₁) (a, b₂) ↔ Adj H b₁ b₂ := by
+  simp only [boxProd_adj, adj_irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
 theorem boxProd_neighborSet (x : α × β) :
@@ -86,7 +87,7 @@ def boxProdComm : G □ H ≃g H □ G := ⟨Equiv.prodComm _ _, or_comm⟩
 @[simps!]
 def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
-    simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
+    simp only [adj_eq_adj, boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
       and_assoc, @and_comm (x.fst.fst = _)]; tauto⟩
 #align simple_graph.box_prod_assoc SimpleGraph.boxProdAssoc
 
@@ -125,7 +126,7 @@ protected def boxProdRight (a : α) : H.Walk b₁ b₂ → (G □ H).Walk (a, b�
 variable {G}
 
 /-- Project a walk on `G □ H` to a walk on `G` by discarding the moves in the direction of `H`. -/
-def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
+def ofBoxProdLeft [DecidableEq β] [DecidableRel (Adj G)] {x y : α × β} :
     (G □ H).Walk x y → G.Walk x.1 y.1
   | nil => nil
   | cons h w =>
@@ -135,7 +136,7 @@ def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
 #align simple_graph.walk.of_box_prod_left SimpleGraph.Walk.ofBoxProdLeft
 
 /-- Project a walk on `G □ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
-def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
+def ofBoxProdRight [DecidableEq α] [DecidableRel (Adj H)] {x y : α × β} :
     (G □ H).Walk x y → H.Walk x.2 y.2
   | nil => nil
   | cons h w =>
@@ -145,7 +146,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
 #align simple_graph.walk.of_box_prod_right SimpleGraph.Walk.ofBoxProdRight
 
 @[simp]
-theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
+theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel (Adj G)] {a₁ a₂ : α} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
@@ -155,7 +156,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
 #align simple_graph.walk.of_box_prod_left_box_prod_left SimpleGraph.Walk.ofBoxProdLeft_boxProdLeft
 
 @[simp]
-theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
+theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel (Adj G)] {b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by

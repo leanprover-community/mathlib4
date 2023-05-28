@@ -25,6 +25,7 @@ universe u
 variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
 
 namespace SimpleGraph
+open Graph
 
 /-- The components outside a given set of vertices `K` -/
 @[reducible]
@@ -74,9 +75,9 @@ theorem componentComplMk_mem (G : SimpleGraph V) {v : V} (vK : v ∉ K) : v ∈ 
 #align simple_graph.component_compl_mk_mem SimpleGraph.componentComplMk_mem
 
 theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) (wK : w ∉ K)
-    (a : G.Adj v w) : G.componentComplMk vK = G.componentComplMk wK := by
+    (a : Adj G v w) : G.componentComplMk vK = G.componentComplMk wK := by
   rw [ConnectedComponent.eq]
-  apply Adj.reachable
+  apply HasAdj.Adj.reachable
   exact a
 #align simple_graph.component_compl_mk_eq_of_adj SimpleGraph.componentComplMk_eq_of_adj
 
@@ -86,7 +87,7 @@ namespace ComponentCompl
 for adjacent vertices.
 -/
 protected def lift {β : Sort _} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
-    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : G.Adj v w), f hv = f hw) : G.ComponentCompl K → β :=
+    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : Adj G v w), f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
     induction' p with _ u v w a q ih
     · rintro _
@@ -140,11 +141,11 @@ protected theorem pairwise_disjoint :
 
 /-- Any vertex adjacent to a vertex of `C` and not lying in `K` must lie in `C`.
 -/
-theorem mem_of_adj : ∀ {C : G.ComponentCompl K} (c d : V), c ∈ C → d ∉ K → G.Adj c d → d ∈ C :=
+theorem mem_of_adj : ∀ {C : G.ComponentCompl K} (c d : V), c ∈ C → d ∉ K → Adj G c d → d ∈ C :=
   fun {C} c d ⟨cnK, h⟩ dnK cd =>
   ⟨dnK, by
     rw [← h, ConnectedComponent.eq]
-    exact Adj.reachable cd.symm⟩
+    exact HasAdj.Adj.reachable cd.symm⟩
 #align simple_graph.component_compl.mem_of_adj SimpleGraph.ComponentCompl.mem_of_adj
 
 /--
@@ -152,7 +153,7 @@ Assuming `G` is preconnected and `K` not empty, given any connected component `C
 there exists a vertex `k ∈ K` adjacent to a vertex `v ∈ C`.
 -/
 theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
-    ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ G.Adj ck.1 ck.2 := by
+    ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ Adj G ck.1 ck.2 := by
   refine' ComponentCompl.ind fun v vnK => _
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right

@@ -880,7 +880,11 @@ import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Finite
+import Mathlib.Combinatorics.Digraph.Basic
 import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Graph.Classes
+import Mathlib.Combinatorics.Graph.Dart
+import Mathlib.Combinatorics.Graph.Hom
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite

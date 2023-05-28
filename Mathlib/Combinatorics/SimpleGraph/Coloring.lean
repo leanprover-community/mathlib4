@@ -426,7 +426,7 @@ theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype 
   rw [isClique_iff_induce_eq] at h
   have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
   rw [h] at f
-  convert Fintype.card_le_of_injective _ (C.comp f.toHom).injective_of_top_hom using 1
+  convert Fintype.card_le_of_injective _ (Hom.injective_of_top_hom (C.comp f.toHom)) using 1
   simp
 #align simple_graph.is_clique.card_le_of_coloring SimpleGraph.IsClique.card_le_of_coloring
 
