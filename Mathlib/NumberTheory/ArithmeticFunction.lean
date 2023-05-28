@@ -82,12 +82,12 @@ section Zero
 
 variable [Zero R]
 
+--  porting note: used to be `CoeFun`
 instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
-theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := by
-  rfl
+theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
 @[simp]
