@@ -609,8 +609,8 @@ theorem transferFunction_apply (q : G ⧸ H) :
 #align subgroup.transfer_function_apply Subgroup.transferFunction_apply
 
 theorem coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
-  rw [transferFunction_apply, ← smul_eq_mul, coe_smul_out', ← quotientEquivSigmaZmod_symm_apply,
-    Sigma.eta, symm_apply_apply]
+  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out',
+    ← quotientEquivSigmaZmod_symm_apply, Sigma.eta, symm_apply_apply]
 #align subgroup.coe_transfer_function Subgroup.coe_transferFunction
 
 /-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
