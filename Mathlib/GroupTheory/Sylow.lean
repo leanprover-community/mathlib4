@@ -67,11 +67,11 @@ attribute [coe] Sylow.toSubgroup
 --Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨Sylow.toSubgroup⟩
-
-@[simp]
-theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
-  rfl
-#align sylow.to_subgroup_eq_coe Sylow.toSubgroup_eq_coe
+-- Porting note: syntactic tautology
+-- @[simp]
+-- theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
+--   rfl
+#noalign sylow.to_subgroup_eq_coe
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
@@ -810,3 +810,4 @@ noncomputable def directProductOfNormal [Fintype G]
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow
+#lint
