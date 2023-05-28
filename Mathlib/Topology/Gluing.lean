@@ -410,24 +410,28 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     exact h.cocycle i j k ⟨x, hx⟩ hx'
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk' TopCat.GlueData.mk'
-#exit
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
-include U
+-- porting note: removed `include U`
 
 /-- We may construct a glue data from a family of open sets. -/
-@[simps to_glue_data_J to_glue_data_U to_glue_data_V to_glue_data_t to_glue_data_f]
+@[simps! toGlueData_J toGlueData_U toGlueData_V toGlueData_t toGlueData_f]
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by continuity⟩
-      v_id := fun i => by ext; cases U i; simp
+                                                       -- porting note: `sorry` was `continuity`.
+      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by sorry⟩
+      V_id := fun i => by
+        ext
+        -- porting note: no longer needed `cases U i`!
+        simp
       t_id := fun i => by ext; rfl
       t_inter := fun i j k x hx => hx
       cocycle := fun i j k x h => rfl }
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.of_open_subsets TopCat.GlueData.ofOpenSubsets
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
@@ -436,62 +440,72 @@ and its range is `⋃ i, (U i : set α)` (`range_from_open_subsets_glue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun x => Opens.inclusion _) (by rintro ⟨i, j⟩; ext x; rfl)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue TopCat.GlueData.fromOpenSubsetsGlue
 
-@[simp, elementwise]
+@[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion _ :=
   Multicoequalizer.π_desc _ _ _ _ _
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_from_open_subsets_glue TopCat.GlueData.ι_fromOpenSubsetsGlue
 
 theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue U) := by
   intro x y e
-  obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (of_open_subsets U).ι_jointly_surjective x
-  obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (of_open_subsets U).ι_jointly_surjective y
-  rw [ι_from_open_subsets_glue_apply, ι_from_open_subsets_glue_apply] at e
+  obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+  obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
+  -- porting note: now it is `erw`, it was `rw`
+  erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
   change x = y at e
   subst e
-  rw [(of_open_subsets U).ι_eq_iff_rel]
+  rw [(ofOpenSubsets U).ι_eq_iff_rel]
   right
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue_injective TopCat.GlueData.fromOpenSubsetsGlue_injective
 
 theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
-  rw [(of_open_subsets U).isOpen_iff] at hs
+  rw [(ofOpenSubsets U).isOpen_iff] at hs
   rw [isOpen_iff_forall_mem_open]
   rintro _ ⟨x, hx, rfl⟩
-  obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (of_open_subsets U).ι_jointly_surjective x
-  use from_open_subsets_glue U '' s ∩ Set.range (@opens.inclusion (TopCat.of α) (U i))
+  obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
   use Set.inter_subset_left _ _
   constructor
   · erw [← Set.image_preimage_eq_inter_range]
-    apply (@opens.open_embedding (TopCat.of α) (U i)).IsOpenMap
+    apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
-    rw [← ι_from_open_subsets_glue, coe_comp, Set.preimage_comp]
-    congr 1
-    refine' Set.preimage_image_eq _ (from_open_subsets_glue_injective U)
+    rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
+    --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
+    apply congr_arg
+    refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
-    rw [ι_from_open_subsets_glue_apply]
+    -- porting note: another `rw ↦ erw`
+    erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue_is_open_map TopCat.GlueData.fromOpenSubsetsGlue_isOpenMap
-#exit
 
 theorem fromOpenSubsetsGlue_openEmbedding : OpenEmbedding (fromOpenSubsetsGlue U) :=
   openEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue_open_embedding TopCat.GlueData.fromOpenSubsetsGlue_openEmbedding
 
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext
   constructor
   · rintro ⟨x, rfl⟩
-    obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (of_open_subsets U).ι_jointly_surjective x
-    rw [ι_from_open_subsets_glue_apply]
+    obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+    -- porting note: another `rw ↦ erw`
+    erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
-    refine' ⟨(of_open_subsets U).toGlueData.ι i ⟨x, hx⟩, ι_from_open_subsets_glue_apply _ _ _⟩
-#align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
+    rename_i x
+    refine' ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
+set_option linter.uppercaseLean3 false in
+#align Top.glue_data.range_fromOpenSubsetsGlue TopCat.GlueData.range_fromOpenSubsetsGlue
 
 /-- The gluing of an open cover is homeomomorphic to the original space. -/
 def openCoverGlueHomeo (h : (⋃ i, (U i : Set α)) = Set.univ) :
@@ -501,6 +515,7 @@ def openCoverGlueHomeo (h : (⋃ i, (U i : Set α)) = Set.univ) :
       ⟨fromOpenSubsetsGlue_injective U,
         Set.range_iff_surjective.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
     (fromOpenSubsetsGlue U).2 (fromOpenSubsetsGlue_isOpenMap U)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_cover_glue_homeo TopCat.GlueData.openCoverGlueHomeo
 
 end GlueData
