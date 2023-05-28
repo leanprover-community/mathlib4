@@ -348,19 +348,25 @@ theorem repr_injective :
     Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
   cases f; cases g; congr
 
+-- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
-    LinearEquiv.symm_bijective.injective <| by
-      simp only [LinearIsometryEquiv.toLinearEquiv_symm, LinearIsometryEquiv.toLinearEquiv_inj]
-      ext x
-      rw [← Finsupp.sum_single x, map_finsupp_sum, map_finsupp_sum]
-      congr with (i r)
-      have := congr_fun h i
-      dsimp at this
-      rw [← mul_one r, ← Finsupp.smul_single', LinearEquiv.map_smul, LinearEquiv.map_smul, this]
-#align orthonormal_basis.has_coe_to_fun OrthonormalBasis.instFunLike
+    LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
+      classical
+        rw [← LinearMap.cancel_right (PiLp.linearEquiv 2 𝕜 (fun _ => 𝕜)).symm.surjective]
+        simp only [LinearIsometryEquiv.toLinearEquiv_symm]
+        refine LinearMap.pi_ext fun i k => ?_
+        have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
+        rw [this, Pi.single_smul]
+        replace h := congr_fun h i
+        simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
+          LinearEquiv.trans_apply, PiLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
+          LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
+        rw [h]
+
+#noalign orthonormal_basis.has_coe_to_fun
 
 @[simp]
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
