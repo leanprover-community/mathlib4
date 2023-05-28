@@ -8,16 +8,16 @@ Authors: Scott Morrison, Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.OpenNhds
-import Mathbin.Topology.Sheaves.Presheaf
-import Mathbin.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathbin.CategoryTheory.Adjunction.Evaluation
-import Mathbin.CategoryTheory.Limits.Types
-import Mathbin.CategoryTheory.Limits.Preserves.Filtered
-import Mathbin.CategoryTheory.Limits.Final
-import Mathbin.Tactic.Elementwise
-import Mathbin.Algebra.Category.Ring.Colimits
-import Mathbin.CategoryTheory.Sites.Pushforward
+import Mathlib.Topology.Category.Top.OpenNhds
+import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+import Mathlib.CategoryTheory.Adjunction.Evaluation
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.Tactic.Elementwise
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.Sites.Pushforward
 
 /-!
 # Stalks
@@ -128,8 +128,7 @@ variable (C)
 /-- For a presheaf `F` on a space `X`, a continuous map `f : X ⟶ Y` induces a morphisms between the
 stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 -/
-def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x :=
-  by
+def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   trans
   swap
@@ -139,8 +138,7 @@ def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (
 
 @[simp, elementwise, reassoc]
 theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
-    (x : (Opens.map f).obj U) : (f _* F).germ ⟨f x, x.2⟩ ≫ F.stalkPushforward C f x = F.germ x :=
-  by
+    (x : (Opens.map f).obj U) : (f _* F).germ ⟨f x, x.2⟩ ≫ F.stalkPushforward C f x = F.germ x := by
   rw [stalk_pushforward, germ, colimit.ι_map_assoc, colimit.ι_pre, whisker_right_app]
   erw [CategoryTheory.Functor.map_id, category.id_comp]
   rfl
@@ -166,8 +164,7 @@ attribute [local tidy] tactic.op_induction'
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.op_induction' -/
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
-    ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).Hom :=
-  by
+    ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).Hom := by
   dsimp [stalk_pushforward, stalk_functor]
   ext1
   run_tac
@@ -185,8 +182,7 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
-      (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x :=
-  by
+      (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
   dsimp [stalk_pushforward, stalk_functor]
   ext U
   induction U using Opposite.rec'
@@ -200,8 +196,7 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
-    (x : X) : IsIso (F.stalkPushforward _ f x) :=
-  by
+    (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := functor.initial_of_adjunction (hf.is_open_map.adjunction_nhds x)
   convert is_iso.of_iso
       ((functor.final.colimit_iso (hf.is_open_map.functor_nhds x).op
@@ -259,12 +254,10 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
 
 /-- The isomorphism `ℱ_{f(x)} ≅ (f⁻¹ℱ)ₓ`. -/
 def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
-    F.stalk (f x) ≅ (pullbackObj f F).stalk x
-    where
+    F.stalk (f x) ≅ (pullbackObj f F).stalk x where
   Hom := stalkPullbackHom _ _ _ _
   inv := stalkPullbackInv _ _ _ _
-  hom_inv_id' :=
-    by
+  hom_inv_id' := by
     delta
       stalk_pullback_hom stalk_pullback_inv stalk_functor presheaf.pullback stalk_pushforward germ_to_pullback_stalk germ
     ext j
@@ -275,8 +268,7 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
       pushforward_pullback_adjunction_unit_app_app, category.assoc, colimit.ι_pre_assoc]
     erw [colimit.ι_desc, colimit.pre_desc, colimit.ι_desc, category.comp_id]
     simpa
-  inv_hom_id' :=
-    by
+  inv_hom_id' := by
     delta stalk_pullback_hom stalk_pullback_inv stalk_functor presheaf.pullback stalk_pushforward
     ext (U j)
     induction U using Opposite.rec'
@@ -391,8 +383,7 @@ For presheaves valued in a concrete category whose forgetful functor preserves f
 every element of the stalk is the germ of a section.
 -/
 theorem germ_exist (F : X.Presheaf C) (x : X) (t : stalk F x) :
-    ∃ (U : Opens X)(m : x ∈ U)(s : F.obj (op U)), F.germ ⟨x, m⟩ s = t :=
-  by
+    ∃ (U : Opens X)(m : x ∈ U)(s : F.obj (op U)), F.germ ⟨x, m⟩ s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (is_colimit_of_preserves (forget C) (colimit.is_colimit _)) t
   revert s e
@@ -405,8 +396,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : stalk F x) :
 
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : F.obj (op U)) (t : F.obj (op V)) (h : germ F ⟨x, mU⟩ s = germ F ⟨x, mV⟩ t) :
-    ∃ (W : Opens X)(m : x ∈ W)(iU : W ⟶ U)(iV : W ⟶ V), F.map iU.op s = F.map iV.op t :=
-  by
+    ∃ (W : Opens X)(m : x ∈ W)(iU : W ⟶ U)(iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
   obtain ⟨W, iU, iV, e⟩ :=
     (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
           (is_colimit_of_preserves _ (colimit.is_colimit ((open_nhds.inclusion x).op ⋙ F)))).mp
@@ -416,8 +406,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F ⟶ G)
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
-    Function.Injective ((stalkFunctor C x).map f) := fun s t hst =>
-  by
+    Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
   rcases germ_exist F x s with ⟨U₁, hxU₁, s, rfl⟩
   rcases germ_exist F x t with ⟨U₂, hxU₂, t, rfl⟩
   simp only [stalk_functor_map_germ_apply _ ⟨x, _⟩] at hst
@@ -434,8 +423,7 @@ variable [HasLimits C] [PreservesLimits (forget C)] [ReflectsIsomorphisms (forge
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
 -/
 theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
-    (h : ∀ x : U, F.Presheaf.germ x s = F.Presheaf.germ x t) : s = t :=
-  by
+    (h : ∀ x : U, F.Presheaf.germ x s = F.Presheaf.germ x t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
   choose V m i₁ i₂ heq using fun x : U => F.presheaf.germ_eq x.1 x.2 x.2 s t (h x)
@@ -542,8 +530,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
 
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
-    Function.Surjective (f.1.app (op U)) :=
-  by
+    Function.Surjective (f.1.app (op U)) := by
   refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
@@ -568,8 +555,7 @@ theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶
 #align Top.presheaf.app_bijective_of_stalk_functor_map_bijective TopCat.Presheaf.app_bijective_of_stalkFunctor_map_bijective
 
 theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
-    [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) :=
-  by
+    [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.
   suffices is_iso ((forget C).map (f.1.app (op U))) by
@@ -587,8 +573,7 @@ isomorphisms, preserves limits and filtered colimits. Then if the stalk maps of 
 `f : F ⟶ G` are all isomorphisms, `f` must be an isomorphism.
 -/
 theorem isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G)
-    [∀ x : X, IsIso ((stalkFunctor C x).map f.1)] : IsIso f :=
-  by
+    [∀ x : X, IsIso ((stalkFunctor C x).map f.1)] : IsIso f := by
   -- Since the inclusion functor from sheaves to presheaves is fully faithful, it suffices to
   -- show that `f`, as a morphism between _presheaves_, is an isomorphism.
   suffices is_iso ((sheaf.forget C X).map f) by exact is_iso_of_fully_faithful (sheaf.forget C X) f
@@ -604,8 +589,7 @@ isomorphisms, preserves limits and filtered colimits. Then a morphism `f : F ⟶
 isomorphism if and only if all of its stalk maps are isomorphisms.
 -/
 theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
-    IsIso f ↔ ∀ x : X, IsIso ((stalkFunctor C x).map f.1) :=
-  by
+    IsIso f ↔ ∀ x : X, IsIso ((stalkFunctor C x).map f.1) := by
   constructor
   · intro h x; skip
     exact @functor.map_is_iso _ _ _ _ _ _ (stalk_functor C x) f.1 ((sheaf.forget C X).map_isIso f)
