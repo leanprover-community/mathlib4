@@ -9,7 +9,7 @@ Authors: Gabriel Ebner, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.Fderiv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Derivatives of functions taking values in product types
@@ -24,7 +24,6 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative
 -/
-
 
 universe u v w
 
@@ -57,24 +56,24 @@ variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
-theorem HasDerivAtFilter.prod (hf₁ : HasDerivAtFilter f₁ f₁' x L)
+nonrec theorem HasDerivAtFilter.prod (hf₁ : HasDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasDerivAtFilter f₂ f₂' x L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') x L :=
-  hf₁.Prod hf₂
+  hf₁.prod hf₂
 #align has_deriv_at_filter.prod HasDerivAtFilter.prod
 
-theorem HasDerivWithinAt.prod (hf₁ : HasDerivWithinAt f₁ f₁' s x)
+nonrec theorem HasDerivWithinAt.prod (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
-  hf₁.Prod hf₂
+  hf₁.prod hf₂
 #align has_deriv_within_at.prod HasDerivWithinAt.prod
 
-theorem HasDerivAt.prod (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
+nonrec theorem HasDerivAt.prod (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.Prod hf₂
+  hf₁.prod hf₂
 #align has_deriv_at.prod HasDerivAt.prod
 
-theorem HasStrictDerivAt.prod (hf₁ : HasStrictDerivAt f₁ f₁' x) (hf₂ : HasStrictDerivAt f₂ f₂' x) :
-    HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.Prod hf₂
+nonrec theorem HasStrictDerivAt.prod (hf₁ : HasStrictDerivAt f₁ f₁' x)
+    (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
+  hf₁.prod hf₂
 #align has_strict_deriv_at.prod HasStrictDerivAt.prod
 
 end CartesianProduct
@@ -82,7 +81,6 @@ end CartesianProduct
 section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
-
 
 variable {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
@@ -111,12 +109,12 @@ theorem hasDerivWithinAt_pi :
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x :=
-  (hasDerivWithinAt_pi.2 fun i => (h i).HasDerivWithinAt).derivWithin hs
+  (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hs
 #align deriv_within_pi derivWithin_pi
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
     deriv φ x = fun i => deriv (fun x => φ x i) x :=
-  (hasDerivAt_pi.2 fun i => (h i).HasDerivAt).deriv
+  (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
 #align deriv_pi deriv_pi
 
 end Pi
