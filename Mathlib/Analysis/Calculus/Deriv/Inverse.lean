@@ -9,7 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Fderiv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!
 # Inverse function theorem - the easy half
@@ -82,7 +82,7 @@ an inverse function. -/
 theorem LocalHomeomorph.hasStrictDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜}
     (ha : a ∈ f.target) (hf' : f' ≠ 0) (htff' : HasStrictDerivAt f f' (f.symm a)) :
     HasStrictDerivAt f.symm f'⁻¹ a :=
-  htff'.of_local_left_inverse (f.symm.ContinuousAt ha) hf' (f.eventually_right_inverse ha)
+  htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 #align local_homeomorph.has_strict_deriv_at_symm LocalHomeomorph.hasStrictDerivAt_symm
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
@@ -103,7 +103,7 @@ This is one of the easy parts of the inverse function theorem: it assumes that w
 an inverse function. -/
 theorem LocalHomeomorph.hasDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
     (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) : HasDerivAt f.symm f'⁻¹ a :=
-  htff'.of_local_left_inverse (f.symm.ContinuousAt ha) hf' (f.eventually_right_inverse ha)
+  htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 #align local_homeomorph.has_deriv_at_symm LocalHomeomorph.hasDerivAt_symm
 
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
@@ -114,7 +114,7 @@ theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
 
 theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
-  tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.ContinuousAt.ContinuousWithinAt
+  tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')
 #align has_deriv_at.tendsto_punctured_nhds HasDerivAt.tendsto_punctured_nhds
 
@@ -122,14 +122,14 @@ theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {
     {s t : Set 𝕜} (ha : a ∈ s) (hsu : UniqueDiffWithinAt 𝕜 s a) (hf : HasDerivWithinAt f 0 t (g a))
     (hst : MapsTo g s t) (hfg : f ∘ g =ᶠ[𝓝[s] a] id) : ¬DifferentiableWithinAt 𝕜 g s a := by
   intro hg
-  have := (hf.comp a hg.has_deriv_within_at hst).congr_of_eventuallyEq_of_mem hfg.symm ha
+  have := (hf.comp a hg.hasDerivWithinAt hst).congr_of_eventuallyEq_of_mem hfg.symm ha
   simpa using hsu.eq_deriv _ this (hasDerivWithinAt_id _ _)
 #align not_differentiable_within_at_of_local_left_inverse_has_deriv_within_at_zero not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero
 
 theorem not_differentiableAt_of_local_left_inverse_hasDerivAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}
     (hf : HasDerivAt f 0 (g a)) (hfg : f ∘ g =ᶠ[𝓝 a] id) : ¬DifferentiableAt 𝕜 g a := by
   intro hg
-  have := (hf.comp a hg.has_deriv_at).congr_of_eventuallyEq hfg.symm
+  have := (hf.comp a hg.hasDerivAt).congr_of_eventuallyEq hfg.symm
   simpa using this.unique (hasDerivAt_id a)
 #align not_differentiable_at_of_local_left_inverse_has_deriv_at_zero not_differentiableAt_of_local_left_inverse_hasDerivAt_zero
 
