@@ -310,11 +310,11 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   exact U.isOpen
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_image_open TopCat.GlueData.open_image_open
-#exit
 
 theorem ι_openEmbedding (i : D.J) : OpenEmbedding (𝖣.ι i) :=
   openEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_open_embedding TopCat.GlueData.ι_openEmbedding
 
 /-- A family of gluing data consists of
@@ -330,26 +330,33 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
-@[nolint has_nonempty_instance]
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}
   V : ∀ i, J → Opens (U i)
   t : ∀ i j, (Opens.toTopCat _).obj (V i j) ⟶ (Opens.toTopCat _).obj (V j i)
-  v_id : ∀ i, V i i = ⊤
+  V_id : ∀ i, V i i = ⊤
   t_id : ∀ i, ⇑(t i i) = id
-  t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → @coe (V j i) (U j) _ (t i j x) ∈ V j k
+                              -- porting note: was vv `@coe (V j i) (U j) _ (t i j x) ∈ V j k`
+  t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      @coe (V k j) (U k) _ (t j k ⟨↑(t i j x), t_inter k x h⟩) = @coe (V k i) (U k) _ (t i k ⟨x, h⟩)
+                 -- porting note: this v underscore was `↑(t i j x)`, but Lean type-mismatched
+      (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
-  have := h.cocycle j i j x _
+  have := h.cocycle j i j x ?_
   rw [h.t_id] at this
-  convert Subtype.eq this
-  · ext; rfl
-  all_goals rw [h.V_id]; trivial
+  --  porting note: I think that this went smoother than in Lean 3:
+  --  * `exact` was `convert` followed by `ext; simp`
+  --  * the two remaining goals merged, as they were all the same.
+  exact Subtype.eq this
+  rw [h.V_id]
+  trivial
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
 instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by use h.t j i; constructor <;> ext1;
@@ -359,12 +366,13 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by use h.t j i; const
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
-  refine' (pullback_iso_prod_subtype _ _).Hom ≫ ⟨_, _⟩ ≫ (pullback_iso_prod_subtype _ _).inv
+  refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
     refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  continuity
+  sorry  -- porting note: `continuity` does not close this.
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
 
 /-- This is a constructor of `Top.glue_data` whose arguments are in terms of elements and
@@ -375,30 +383,32 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   U := h.U
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion
-  f_id i := (h.v_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
-  f_open := fun i j : h.J => (h.V i j).OpenEmbedding
+  f_id i := by sorry --(h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
+  f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl
   t' := h.t'
   t_fac i j k := by
-    delta mk_core.t'
-    rw [category.assoc, category.assoc, pullback_iso_prod_subtype_inv_snd, ← iso.eq_inv_comp,
-      pullback_iso_prod_subtype_inv_fst_assoc]
+    delta MkCore.t'
+    rw [Category.assoc, Category.assoc, pullbackIsoProdSubtype_inv_snd, ← Iso.eq_inv_comp,
+      pullbackIsoProdSubtype_inv_fst_assoc]
     ext ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     rfl
   cocycle i j k := by
-    delta mk_core.t'
-    simp_rw [← category.assoc]
-    rw [iso.comp_inv_eq]
-    simp only [iso.inv_hom_id_assoc, category.assoc, category.id_comp]
-    rw [← iso.eq_inv_comp, iso.inv_hom_id]
+    delta MkCore.t'
+    simp_rw [← Category.assoc]
+    rw [Iso.comp_inv_eq]
+    simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
+    rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     simp only [TopCat.comp_app, ContinuousMap.coe_mk, Prod.mk.inj_iff, TopCat.id_app,
       Subtype.mk_eq_mk, Subtype.coe_mk]
-    rw [← subtype.coe_injective.eq_iff, Subtype.val_eq_coe, Subtype.coe_mk, and_self_iff]
+    stop
+    rw [← Subtype.coe_injective.eq_iff, Subtype.val_eq_coe, Subtype.coe_mk, and_self_iff]
     convert congr_arg coe (h.t_inv k i ⟨x, hx'⟩) using 3
     ext
     exact h.cocycle i j k ⟨x, hx⟩ hx'
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk' TopCat.GlueData.mk'
 #exit
 
