@@ -304,7 +304,6 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
             forall_congr' fun a => Subtype.ext_iff
           _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
           _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
-
       suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
         exact Exists.elim this fun R hR => by
           rw [← Sylow.ext (H.mp hR)]
@@ -315,7 +314,6 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
         1 = card (fixedPoints P (orbit G P)) := ?_
         _ ≡ card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
         _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
-
       rw [← Set.card_singleton (⟨P, mem_orbit_self P⟩ : orbit G P)]
       refine' card_congr' (congr_arg _ (Eq.symm _))
       rw [Set.eq_singleton_iff_unique_mem]
@@ -799,8 +797,7 @@ noncomputable def directProductOfNormal [Fintype G]
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   show card (∀ p : ps, P p) = card G
-  ·
-    calc
+  · calc
       card (∀ p : ps, P p) = ∏ p : ps, card (P p) := Fintype.card_pi
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩
