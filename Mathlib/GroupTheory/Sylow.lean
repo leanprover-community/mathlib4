@@ -510,9 +510,9 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
     {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
     have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := (mem_fixedPoints' _).1 hx _
-    inv_mem_iff.1
+    (inv_mem_iff (G := G)).1
       (mem_normalizer_fintype fun n (hn : n ∈ H) =>
-        have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha (mem_orbit _ ⟨n⁻¹, H.inv_mem hn⟩))
+        have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha ⟨⟨n⁻¹, inv_mem hn⟩, rfl⟩)
         show _ ∈ H by
           rw [mul_inv_rev, inv_inv] at this
           convert this
@@ -523,7 +523,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
         QuotientGroup.eq.2
           (let ⟨⟨b, hb₁⟩, hb₂⟩ := hy
           have hb₂ : (b * x)⁻¹ * y ∈ H := QuotientGroup.eq.1 hb₂
-          inv_mem_iff.1 <|
+          (inv_mem_iff (G := G)).1 <|
             (hx _).2 <|
               (mul_mem_cancel_left (inv_mem hb₁)).1 <| by
                 rw [hx] at hb₂ <;> simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
