@@ -188,14 +188,19 @@ theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X
 
 end FunctorToTypes
 
-/-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
+/-- The isomorphism between a `Type` which has been `ulift`ed to a smaller universe,
 and the original type.
 -/
-def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
+def uliftSmaller (V : Type (max u₁ w)) : ULift.{u₁, max u₁ w} V ≅ V where
   hom a := a.1
   inv a := .up a
   hom_inv_id := by aesop_cat
   inv_hom_id := by aesop_cat
+
+/-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
+and the original type.
+-/
+def uliftTrivial (V : Type u) : ULift.{u} V ≅ V := uliftSmaller.{u} V
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.

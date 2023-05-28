@@ -117,6 +117,14 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
     (funext fun X => (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X))
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
+noncomputable
+instance full_whiskeringRight_obj
+    (F : D ⥤ E) [Full F] [Faithful F] : Full ((whiskeringRight C D E).obj F) :=
+    ⟨(@NatTrans.equivOfCompFullyFaithful C _ D _ E _ _ _ F _ _).invFun,
+     by intros X Y f
+        convert (@NatTrans.equivOfCompFullyFaithful C _ D _ E _ _ _ F _ _).right_inv f
+        ext; exact Eq.symm (Category.id_comp _)⟩
+
 @[simp]
 theorem whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
     whiskerLeft F (NatTrans.id G) = NatTrans.id (F.comp G) :=

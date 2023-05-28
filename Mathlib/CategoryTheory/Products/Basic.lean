@@ -370,4 +370,24 @@ def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=
   }
 #align category_theory.functor_prod_functor_equiv CategoryTheory.functorProdFunctorEquiv
 
+/-- If `C` is equivalent to `C'` and `D` is equivalent to `D'` then `C × D` is equivalent to `C' × D'`. -/
+def Equivalence.prodCongr {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+    {C' : Type u₃} [Category.{v₃} C'] {D' : Type u₄} [Category.{v₄} D']
+    (e1 : C ≌ C') (e2 : D ≌ D') : C × D ≌ C' × D' where
+  functor := e1.functor.prod e2.functor
+  inverse := e1.inverse.prod e2.inverse
+  unitIso := {
+    hom := NatTrans.prod e1.unitIso.hom e2.unitIso.hom,
+    inv := NatTrans.prod e1.unitIso.inv e2.unitIso.inv
+    hom_inv_id := by ext x; cases x; aesop
+    inv_hom_id := by ext x; cases x; aesop
+  }
+  counitIso := {
+    hom := NatTrans.prod e1.counitIso.hom e2.counitIso.hom,
+    inv := NatTrans.prod e1.counitIso.inv e2.counitIso.inv
+    hom_inv_id := by ext x; cases x; aesop
+    inv_hom_id := by ext x; cases x; aesop
+  }
+  functor_unitIso_comp := by rintro ⟨X, Y⟩; simp
+
 end CategoryTheory
