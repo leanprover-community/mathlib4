@@ -9,7 +9,7 @@ Authors: Eric Wieser
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.Fderiv.Star
+import Mathlib.Analysis.Calculus.FDeriv.Star
 
 /-!
 # Star operations on derivatives
@@ -24,27 +24,11 @@ universe u v w
 
 noncomputable section
 
-open Classical Topology BigOperators Filter ENNReal
-
-open Filter Asymptotics Set
-
-open ContinuousLinearMap (smul_right smulRight_one_eq_iff)
-
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-variable {f f₀ f₁ g : 𝕜 → F}
-
-variable {f' f₀' f₁' g' : F}
-
-variable {x : 𝕜}
-
-variable {s t : Set 𝕜}
-
-variable {L L₁ L₂ : Filter 𝕜}
+variable {f : 𝕜 → F}
 
 section Star
 
@@ -55,23 +39,23 @@ variable [StarRing 𝕜] [TrivialStar 𝕜] [StarAddMonoid F] [ContinuousStar F]
 
 variable [StarModule 𝕜 F]
 
-protected theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
+protected nonrec theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') x L := by
-  simpa using h.star.has_deriv_at_filter
+  simpa using h.star.hasDerivAtFilter
 #align has_deriv_at_filter.star HasDerivAtFilter.star
 
-protected theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
+protected nonrec theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => star (f x)) (star f') s x :=
-  h.unit
+  h.star
 #align has_deriv_within_at.star HasDerivWithinAt.star
 
-protected theorem HasDerivAt.star (h : HasDerivAt f f' x) :
+protected nonrec theorem HasDerivAt.star (h : HasDerivAt f f' x) :
     HasDerivAt (fun x => star (f x)) (star f') x :=
-  h.unit
+  h.star
 #align has_deriv_at.star HasDerivAt.star
 
-protected theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun x => star (f x)) (star f') x := by simpa using h.star.has_strict_deriv_at
+protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
+    HasStrictDerivAt (fun x => star (f x)) (star f') x := by simpa using h.star.hasStrictDerivAt
 #align has_strict_deriv_at.star HasStrictDerivAt.star
 
 protected theorem derivWithin.star (hxs : UniqueDiffWithinAt 𝕜 s x) :
@@ -85,8 +69,7 @@ protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) 
 
 @[simp]
 protected theorem deriv.star' : (deriv fun y => star (f y)) = fun x => star (deriv f x) :=
-  funext fun x => deriv.star
+  funext fun _ => deriv.star
 #align deriv.star' deriv.star'
 
 end Star
-
