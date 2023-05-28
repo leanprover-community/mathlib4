@@ -18,43 +18,43 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 This file defines quadratic forms over a `R`-module `M`.
 A quadratic form on a ring `R` is a map `Q : M → R` such that:
-* `quadratic_form.map_smul`: `Q (a • x) = a * a * Q x`
-* `quadratic_form.polar_add_left`, `quadratic_form.polar_add_right`,
-  `quadratic_form.polar_smul_left`, `quadratic_form.polar_smul_right`:
-  the map `quadratic_form.polar Q := λ x y, Q (x + y) - Q x - Q y` is bilinear.
+* `QuadraticForm.map_smul`: `Q (a • x) = a * a * Q x`
+* `QuadraticForm.polar_add_left`, `QuadraticForm.polar_add_right`,
+  `QuadraticForm.polar_smul_left`, `QuadraticForm.polar_smul_right`:
+  the map `QuadraticForm.polar Q := λ x y, Q (x + y) - Q x - Q y` is bilinear.
 
 This notion generalizes to semirings using the approach in [izhakian2016][] which requires that
 there be a (possibly non-unique) companion bilinear form `B` such that
-`∀ x y, Q (x + y) = Q x + Q y + B x y`. Over a ring, this `B` is precisely `quadratic_form.polar Q`.
+`∀ x y, Q (x + y) = Q x + Q y + B x y`. Over a ring, this `B` is precisely `QuadraticForm.polar Q`.
 
-To build a `quadratic_form` from the `polar` axioms, use `quadratic_form.of_polar`.
+To build a `QuadraticForm` from the `polar` axioms, use `QuadraticForm.ofPolar`.
 
 Quadratic forms come with a scalar multiplication, `(a • Q) x = Q (a • x) = a * a * Q x`,
 and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Main definitions
 
- * `quadratic_form.of_polar`: a more familiar constructor that works on rings
- * `quadratic_form.associated`: associated bilinear form
- * `quadratic_form.pos_def`: positive definite quadratic forms
- * `quadratic_form.anisotropic`: anisotropic quadratic forms
- * `quadratic_form.discr`: discriminant of a quadratic form
+ * `QuadraticForm.ofPolar`: a more familiar constructor that works on rings
+ * `QuadraticForm.associated`: associated bilinear form
+ * `QuadraticForm.PosDef`: positive definite quadratic forms
+ * `QuadraticForm.Anisotropic`: anisotropic quadratic forms
+ * `QuadraticForm.discr`: discriminant of a quadratic form
 
 ## Main statements
 
- * `quadratic_form.associated_left_inverse`,
- * `quadratic_form.associated_right_inverse`: in a commutative ring where 2 has
+ * `QuadraticForm.associated_left_inverse`,
+ * `QuadraticForm.associated_rightInverse`: in a commutative ring where 2 has
   an inverse, there is a correspondence between quadratic forms and symmetric
   bilinear forms
- * `bilin_form.exists_orthogonal_basis`: There exists an orthogonal basis with
+ * `BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
   respect to any nondegenerate, symmetric bilinear form `B`.
 
 ## Notation
 
-In this file, the variable `R` is used when a `ring` structure is sufficient and
-`R₁` is used when specifically a `comm_ring` is required. This allows us to keep
-`[module R M]` and `[module R₁ M]` assumptions in the variables without
-confusion between `*` from `ring` and `*` from `comm_ring`.
+In this file, the variable `R` is used when a `Ring` structure is sufficient and
+`R₁` is used when specifically a `CommRing` is required. This allows us to keep
+`[Module R M]` and `[Module R₁ M]` assumptions in the variables without
+confusion between `*` from `Ring` and `*` from `CommRing`.
 
 The variable `S` is used when `R` itself has a `•` action.
 
@@ -108,7 +108,7 @@ theorem polar_comm (f : M → R) (x y : M) : polar f x y = polar f y x := by
   rw [polar, polar, add_comm, sub_sub, sub_sub, add_comm (f x) (f y)]
 #align quadratic_form.polar_comm QuadraticForm.polar_comm
 
-/-- Auxiliary lemma to express bilinearity of `quadratic_form.polar` without subtraction. -/
+/-- Auxiliary lemma to express bilinearity of `QuadraticForm.polar` without subtraction. -/
 theorem polar_add_left_iff {f : M → R} {x x' y : M} :
     polar f (x + x') y = polar f x y + polar f x' y ↔
       f (x + x' + y) + (f x + f x' + f y) = f (x + x') + f (x' + y) + f (y + x) := by
@@ -130,7 +130,7 @@ end Polar
 
 /-- A quadratic form over a module.
 
-For a more familiar constructor when `R` is a ring, see `quadratic_form.of_polar`. -/
+For a more familiar constructor when `R` is a ring, see `QuadraticForm.ofPolar`. -/
 structure QuadraticForm (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] where
   toFun : M → R
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x
@@ -181,7 +181,7 @@ theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
   FunLike.ext_iff
 #align quadratic_form.ext_iff QuadraticForm.ext_iff
 
-/-- Copy of a `quadratic_form` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `QuadraticForm` with a new `to_fun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (Q : QuadraticForm R M) (Q' : M → R) (h : Q' = ⇑Q) : QuadraticForm R M where
   toFun := Q'
@@ -314,7 +314,7 @@ theorem polar_self (x : M) : polar Q x x = 2 * Q x := by
   norm_num
 #align quadratic_form.polar_self QuadraticForm.polar_self
 
-/-- `quadratic_form.polar` as a bilinear form -/
+/-- `QuadraticForm.polar` as a bilinear form -/
 @[simps]
 def polarBilin : BilinForm R M where
   bilin := polar Q
@@ -354,7 +354,7 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
         fun x y => by rw [BilinForm.coeFn_mk, polar, sub_sub, add_sub_cancel'_right]⟩ }
 #align quadratic_form.of_polar QuadraticForm.ofPolar
 
-/-- In a ring the companion bilinear form is unique and equal to `quadratic_form.polar`. -/
+/-- In a ring the companion bilinear form is unique and equal to `QuadraticForm.polar`. -/
 theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
   BilinForm.ext fun x y => by
     rw [polarBilin_apply, polar, Q.exists_companion.choose_spec, sub_sub, add_sub_cancel']
@@ -370,9 +370,9 @@ section SMul
 
 variable [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
 
-/-- `quadratic_form R M` inherits the scalar action from any algebra over `R`.
+/-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
-When `R` is commutative, this provides an `R`-action via `algebra.id`. -/
+When `R` is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance : SMul S (QuadraticForm R M) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
@@ -434,9 +434,9 @@ theorem add_apply (Q Q' : QuadraticForm R M) (x : M) : (Q + Q') x = Q x + Q' x :
 instance : AddCommMonoid (QuadraticForm R M) :=
   FunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
-/-- `@coe_fn (quadratic_form R M)` as an `add_monoid_hom`.
+/-- `@coe_fn (QuadraticForm R M)` as an `AddMonoidHom`.
 
-This API mirrors `add_monoid_hom.coe_fn`. -/
+This API mirrors `AddMonoidHom.coeFn`. -/
 @[simps apply]
 def coeFnAddMonoidHom : QuadraticForm R M →+ M → R where
   toFun := FunLike.coe
@@ -627,7 +627,7 @@ end QuadraticForm
 
 Over a commutative ring with an inverse of 2, the theory of quadratic forms is
 basically identical to that of symmetric bilinear forms. The map from quadratic
-forms to bilinear forms giving this identification is called the `associated`
+forms to bilinear forms giving this identification is called the `Associated`
 quadratic form.
 -/
 
@@ -680,7 +680,7 @@ section
 
 variable (R M)
 
-/-- `bilin_form.to_quadratic_form` as an additive homomorphism -/
+/-- `BilinForm.toQuadraticForm` as an additive homomorphism -/
 @[simps]
 def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
   toFun := toQuadraticForm
@@ -757,8 +757,8 @@ variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 associated symmetric bilinear form.  As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative subring of `R`.
 
-Over a commutative ring, use `associated`, which gives an `R`-linear map.  Over a general ring with
-no nontrivial distinguished commutative subring, use `associated'`, which gives an additive
+Over a commutative ring, use `Associated`, which gives an `R`-linear map.  Over a general ring with
+no nontrivial distinguished commutative subring, use `Associated'`, which gives an additive
 homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M where
   toFun Q :=
@@ -829,7 +829,7 @@ theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   simp only [← mul_assoc, one_mul, invOf_mul_self]
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
 
-/-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
+/-- `Associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
 abbrev associated' : QuadraticForm R M →ₗ[ℤ] BilinForm R M :=
   associatedHom ℤ
@@ -858,9 +858,9 @@ variable [CommRing R₁] [AddCommGroup M] [Module R₁ M]
 
 variable [Invertible (2 : R₁)]
 
--- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
+-- Note:  When possible, rather than writing lemmas about `Associated`, write a lemma applying to
 -- the more general `associated_hom` and place it in the previous section.
-/-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
+/-- `Associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=
   associatedHom R₁
@@ -1164,7 +1164,7 @@ variable (R₁)
 /-- The weighted sum of squares with respect to some weight as a quadratic form.
 
 The weights are applied using `•`; typically this definition is used either with `S = R₁` or
-`[algebra S R₁]`, although this is stated more generally. -/
+`[Algebra S R₁]`, although this is stated more generally. -/
 def weightedSumSquares [Monoid S] [DistribMulAction S R₁] [SMulCommClass S R₁ R₁] (w : ι → S) :
     QuadraticForm R₁ (ι → R₁) :=
   ∑ i : ι, w i • proj i i
