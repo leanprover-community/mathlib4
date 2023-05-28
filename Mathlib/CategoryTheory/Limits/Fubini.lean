@@ -322,8 +322,12 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
   -- Why can't `simp` do this`?
-  dsimp;
+  dsimp
+  -- porting note: the original proof only had `simp`.
+  -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`
+  rw [CategoryTheory.Bifunctor.map_id]
   simp
+
 #align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim_hom_π_π CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
