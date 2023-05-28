@@ -655,7 +655,7 @@ theorem exists_subgroup_card_pow_prime_le [Fintype G] (p : ℕ) :
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Fintype G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ card G) : ∃ K : Subgroup G, Fintype.card K = p ^ n :=
-  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥ (by simp) n.zero_le
+  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥ (card_bot.trans (by simp)) n.zero_le
   ⟨K, hK.1⟩
 #align sylow.exists_subgroup_card_pow_prime Sylow.exists_subgroup_card_pow_prime
 
@@ -691,9 +691,9 @@ theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
  where `n` is the multiplicity of `p` in the group order. -/
 theorem card_eq_multiplicity [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     card P = p ^ Nat.factorization (card G) p := by
-  obtain ⟨n, heq : card P = _⟩ := is_p_group.iff_card.mp P.is_p_group'
+  obtain ⟨n, heq : card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'
   refine' Nat.dvd_antisymm _ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
-  rw [HEq, ← hp.out.pow_dvd_iff_dvd_ord_proj (show card G ≠ 0 from card_ne_zero), ← HEq]
+  rw [heq, ← hp.out.pow_dvd_iff_dvd_ord_proj (show card G ≠ 0 from card_ne_zero), ← heq]
   exact P.1.card_subgroup_dvd_card
 #align sylow.card_eq_multiplicity Sylow.card_eq_multiplicity
 
@@ -716,8 +716,9 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   haveI := Sylow.subsingleton_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
-  show (Φ • P).toSubgroup = P.to_subgroup
+  show (Φ • P).toSubgroup = P.toSubgroup
   congr
+  simp
 #align sylow.characteristic_of_normal Sylow.characteristic_of_normal
 
 end Pointwise
@@ -731,9 +732,10 @@ theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     (↑P : Subgroup G).normalizer.normalizer = (↑P : Subgroup G).normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top, coeSubtype, ← subgroupOf_normalizer_eq le_normalizer, ←
+  simp_rw [← normalizer_eq_top, Sylow.coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
     subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← subtype_range (P : Subgroup G).normalizer.normalizer, MonoidHom.range_eq_map, ← this rfl]
+  rw [← subtype_range (P : Subgroup G).normalizer.normalizer, MonoidHom.range_eq_map,
+    ← this trivial]
   exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (subtype_range _)))
 #align sylow.normalizer_normalizer Sylow.normalizer_normalizer
 
@@ -767,14 +769,14 @@ noncomputable def directProductOfNormal [Fintype G]
   set ps := (Fintype.card G).factorization.support
   -- “The” sylow group for p
   let P : ∀ p, Sylow p G := default
-  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
+  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → _root_.Commute x y := by
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
-    apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).is_p_group' (P p₂).is_p_group'
-  refine' MulEquiv.trans _ _
+    apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+  refine' MulEquiv.trans (N := ∀ p : ps, P p) _ _
   -- There is only one sylow group for each p, so the inner product is trivial
   show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
   · -- here we need to help the elaborator with an explicit instantiation
@@ -788,24 +790,24 @@ noncomputable def directProductOfNormal [Fintype G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr
   constructor
-  show injective _
+  show Injective _
   · apply Subgroup.injective_noncommPiCoprod_of_independent
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
-    apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).is_p_group' (P p₂).is_p_group'
+    apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   show card (∀ p : ps, P p) = card G
   ·
     calc
-      card (∀ p : ps, P p) = ∏ p : ps, card ↥(P p) := Fintype.card_pi
+      card (∀ p : ps, P p) = ∏ p : ps, card (P p) := Fintype.card_pi
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_factorization hp⟩ (P p)
       _ = ∏ p in ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
-      _ = (card G).factorization.Prod pow := rfl
+      _ = (card G).factorization.prod (. ^ .) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
 
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
