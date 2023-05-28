@@ -243,7 +243,6 @@ instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_mono TopCat.GlueData.ι_mono
-#exit
 
 theorem image_inter (i j : D.J) :
     Set.range (𝖣.ι i) ∩ Set.range (𝖣.ι j) = Set.range (D.f i j ≫ 𝖣.ι _) := by
@@ -251,16 +250,21 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, e₂⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · exact ⟨inv (D.f i i) x₁, by simp [eq₁]⟩
-    · dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
+    · exact ⟨inv (D.f i i) x₁, by simp [eq₁] ; sorry⟩
+    · dsimp only at *
+      -- porting note: another `substs e₁ eq₁`
+      rw [← e₁, ← eq₁] at *
+      exact ⟨y, by simp ; sorry⟩
   · rintro ⟨x, hx⟩
     exact ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), by simp [← hx]⟩⟩
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.image_inter TopCat.GlueData.image_inter
 
 theorem preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Set.range (D.f j i) := by
   rw [← Set.preimage_image_eq (Set.range (D.f j i)) (D.ι_injective j), ← Set.image_univ, ←
     Set.image_univ, ← Set.image_comp, ← coe_comp, Set.image_univ, Set.image_univ, ← image_inter,
     Set.preimage_range_inter]
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_range TopCat.GlueData.preimage_range
 
 theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
@@ -275,27 +279,34 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   apply Set.inter_eq_self_of_subset_left
   rw [← D.preimage_range i j]
   exact Set.preimage_mono (Set.image_subset_range _ _)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image TopCat.GlueData.preimage_image_eq_image
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
   convert D.preimage_image_eq_image i j U using 1
-  rw [coe_comp, coe_comp, ← Set.image_image]
-  congr 1
+  rw [coe_comp, coe_comp]
+  -- porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
+  show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
+  rw [← Set.image_image]
+  -- porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
+  refine congr_arg ?_ ?_
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
   rw [𝖣.t_inv_assoc]
-  rw [← is_iso_iff_bijective]
+  rw [← isIso_iff_bijective]
   apply (forget TopCat).map_isIso
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image' TopCat.GlueData.preimage_image_eq_image'
 
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
   rw [isOpen_iff]
   intro j
   rw [preimage_image_eq_image]
-  apply (D.f_open _ _).IsOpenMap
+  apply (D.f_open _ _).isOpenMap
   apply (D.t j i ≫ D.f i j).continuous_toFun.isOpen_preimage
-  exact U.is_open
+  exact U.isOpen
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_image_open TopCat.GlueData.open_image_open
 #exit
 
