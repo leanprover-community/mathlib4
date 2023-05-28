@@ -8,7 +8,7 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Support of the derivative of a function
@@ -38,8 +38,7 @@ section Support
 
 open Function
 
-theorem support_deriv_subset : support (deriv f) ⊆ tsupport f :=
-  by
+theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
   rw [← not_imp_not]
   intro h2x
