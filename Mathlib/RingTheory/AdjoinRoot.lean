@@ -396,8 +396,7 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
   { AdjoinRoot.instCommRing f,
-    Ideal.Quotient.field
-      (span {f} : Ideal K[X]) with
+    Quotient.groupWithZero (span {f} : Ideal K[X]) with
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
