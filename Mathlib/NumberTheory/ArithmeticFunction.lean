@@ -15,7 +15,6 @@ import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -100,7 +99,7 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 #align nat.arithmetic_function.map_zero Nat.ArithmeticFunction.map_zero
 
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
-  ⟨fun h => FunLike.coe_injective h, fun h => h ▸ rfl⟩
+  FunLike.coe_fn_eq
 #align nat.arithmetic_function.coe_inj Nat.ArithmeticFunction.coe_inj
 
 @[simp]
@@ -190,8 +189,8 @@ theorem coe_coe [AddGroupWithOne R] {f : ArithmeticFunction ℕ} :
 #align nat.arithmetic_function.coe_coe Nat.ArithmeticFunction.coe_coe
 
 @[simp]
-theorem natCoe_one [AddMonoidWithOne R] : ((1 : ArithmeticFunction ℕ) :
-    ArithmeticFunction R) = 1 := by
+theorem natCoe_one [AddMonoidWithOne R] :
+    ((1 : ArithmeticFunction ℕ) : ArithmeticFunction R) = 1 := by
   ext n
   simp [one_apply]
 #align nat.arithmetic_function.nat_coe_one Nat.ArithmeticFunction.natCoe_one
