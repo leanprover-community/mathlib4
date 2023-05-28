@@ -34,11 +34,8 @@ universe u v w
 
 noncomputable section
 
-open Classical Topology BigOperators Filter ENNReal
-
-open Filter Asymptotics Set
-
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
+open Topology Filter
+open Filter Set
 
 section NormedField
 
