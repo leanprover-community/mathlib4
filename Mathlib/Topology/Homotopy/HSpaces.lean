@@ -98,18 +98,19 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    use ⟨G, hG⟩
+    -- porting note: was `use ⟨G, hG⟩`
+    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
       exacts[Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
-      exact prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
+      exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
     · rintro t ⟨x, y⟩ h
-      replace h := prod.mk.inj_iff.mp (set.mem_singleton_iff.mp h)
+      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
       exact
-        ⟨prod.mk.inj_iff.mpr
-            ⟨homotopy_rel.eq_fst HSpace.eHmul t (set.mem_singleton_iff.mpr h.1),
-              homotopy_rel.eq_fst HSpace.eHmul t (set.mem_singleton_iff.mpr h.2)⟩,
-          prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
+        ⟨Prod.mk.inj_iff.mpr
+            ⟨HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.1),
+              HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.2)⟩,
+          Prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G :=
@@ -117,18 +118,19 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.hmulE.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    use ⟨G, hG⟩
+    -- porting note: was `use ⟨G, hG⟩`
+    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
       exacts[Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩
-      exact prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
+      exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
     · rintro t ⟨x, y⟩ h
-      replace h := prod.mk.inj_iff.mp (set.mem_singleton_iff.mp h)
+      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
       exact
-        ⟨prod.mk.inj_iff.mpr
-            ⟨homotopy_rel.eq_fst HSpace.hmulE t (set.mem_singleton_iff.mpr h.1),
-              homotopy_rel.eq_fst HSpace.hmulE t (set.mem_singleton_iff.mpr h.2)⟩,
-          prod.mk.inj_iff.mpr ⟨(HSpace.hmulE.2 t x h.1).2, (HSpace.hmulE.2 t y h.2).2⟩⟩
+        ⟨Prod.mk.inj_iff.mpr
+            ⟨HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.1),
+              HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.2)⟩,
+          Prod.mk.inj_iff.mpr ⟨(HSpace.hmulE.2 t x h.1).2, (HSpace.hmulE.2 t y h.2).2⟩⟩
 #align H_space.prod HSpace.prod
 
 
@@ -164,7 +166,8 @@ theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [Topological
 /- In the following example we see that the `H-space` structure on the product of two topological
 groups is definitionally equally to the product `H-space`-structure of the two groups.-/
 example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
-    [Group G'] [TopologicalGroup G'] : toHSpace (G × G') = HSpace.prod G G' :=
+    [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
+  simp only [HSpace.prod]
   rfl
 
 
