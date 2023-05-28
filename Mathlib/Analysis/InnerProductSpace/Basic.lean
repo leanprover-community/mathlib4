@@ -798,7 +798,8 @@ theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v)
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪v i, ∑ i in s, l i • v i⟫ = l i := by
-  classical!; simp [inner_sum, inner_smul_right, orthonormal_iff_ite.mp hv, hi]
+  classical!
+  simp [inner_sum, inner_smul_right, orthonormal_iff_ite.mp hv, hi]
 #align orthonormal.inner_right_sum Orthonormal.inner_right_sum
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
@@ -818,8 +819,9 @@ theorem Orthonormal.inner_left_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) 
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_left_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪∑ i in s, l i • v i, v i⟫ = conj (l i) := by
-  classical!; simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
-      Finset.sum_ite_eq', if_true]
+  classical!
+  simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
+    Finset.sum_ite_eq', if_true]
 #align orthonormal.inner_left_sum Orthonormal.inner_left_sum
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
@@ -858,7 +860,8 @@ sum of the weights.
 -/
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i in s, ∑ j in s, a i j • ⟪v j, v i⟫) = ∑ k in s, a k k := by
-  classical!; simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
+  classical!
+  simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
 #align orthonormal.inner_left_right_finset Orthonormal.inner_left_right_finset
 
 /-- An orthonormal set is linearly independent. -/
@@ -927,7 +930,8 @@ adapted from the corresponding development of the theory of linearly independent
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
-  classical!; simp [orthonormal_subtype_iff_ite]
+  classical!
+  simp [orthonormal_subtype_iff_ite]
 #align orthonormal_empty orthonormal_empty
 
 variable {𝕜 E}

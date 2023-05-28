@@ -346,7 +346,9 @@ instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace �
 
 theorem repr_injective :
     Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
-  cases f; cases g; congr
+  cases f
+  cases g
+  congr
 
 -- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
@@ -449,7 +451,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_sum] at this
   convert this
   rw [SMulHomClass.map_smul, b.repr_apply_apply, mul_comm]
-  rfl
+  simp only [innerSL_apply, smul_eq_mul] -- Porting note: was `rfl`
 #align orthonormal_basis.sum_inner_mul_inner OrthonormalBasis.sum_inner_mul_inner
 
 protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
@@ -657,13 +659,14 @@ def Complex.isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) : ℂ ≃
 theorem Complex.map_isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) (f : F ≃ₗᵢ[ℝ] F') :
     Complex.isometryOfOrthonormal (v.map f) = (Complex.isometryOfOrthonormal v).trans f := by
   simp [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_assoc, OrthonormalBasis.map]
-  rfl
+  -- Porting note: `LinearIsometryEquiv.trans_assoc` doesn't trigger in the `simp` above
+  rw [LinearIsometryEquiv.trans_assoc]
 #align complex.map_isometry_of_orthonormal Complex.map_isometryOfOrthonormal
 
 theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) ℝ F) (f : F) :
     (Complex.isometryOfOrthonormal v).symm f =
-      (v.toBasis.coord 0 f : ℂ) + (v.toBasis.coord 1 f : ℂ) * I :=
-  by simp [Complex.isometryOfOrthonormal]
+      (v.toBasis.coord 0 f : ℂ) + (v.toBasis.coord 1 f : ℂ) * I := by
+  simp [Complex.isometryOfOrthonormal]
 #align complex.isometry_of_orthonormal_symm_apply Complex.isometryOfOrthonormal_symm_apply
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
@@ -766,7 +769,6 @@ variable [FiniteDimensional 𝕜 E]
 orthonormal basis. -/
 theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     ∃ (u : Finset E)(b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
-  classical
   obtain ⟨u₀, hu₀s, hu₀, hu₀_max⟩ := exists_maximal_orthonormal hv
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
   have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
@@ -783,7 +785,6 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
 theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type _} [Fintype ι]
     (card_ι : finrank 𝕜 E = Fintype.card ι) {v : ι → E} {s : Set ι}
     (hv : Orthonormal 𝕜 (s.restrict v)) : ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
-  classical
   have hsv : Injective (s.restrict v) := hv.linearIndependent.injective
   have hX : Orthonormal 𝕜 ((↑) : Set.range (s.restrict v) → E) := by
     rwa [orthonormal_subtype_range hsv]
@@ -805,10 +806,9 @@ variable (𝕜 E)
 
 /-- A finite-dimensional inner product space admits an orthonormal basis. -/
 theorem _root_.exists_orthonormalBasis :
-    ∃ (w : Finset E)(b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) := by
-  classical
+    ∃ (w : Finset E)(b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_orthonormalBasis_extension
-  exact ⟨w, hw, hw''⟩
+  ⟨w, hw, hw''⟩
 #align exists_orthonormal_basis exists_orthonormalBasis
 
 /-- A finite-dimensional `InnerProductSpace` has an orthonormal basis. -/
