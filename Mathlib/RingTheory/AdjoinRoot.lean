@@ -17,7 +17,6 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Adjoining roots of polynomials
