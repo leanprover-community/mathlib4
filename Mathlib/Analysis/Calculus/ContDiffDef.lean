@@ -740,10 +740,8 @@ theorem contDiffOn_of_locally_contDiffOn
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
-      ∀ x ∈ s,
-        ∃ u ∈ 𝓝[insert x s] x,
-          ∃ f' : E → E →L[𝕜] F, (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOn 𝕜 n f' u :=
-  by
+      ∀ x ∈ s, ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
+        (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOn 𝕜 n f' u := by
   constructor
   · intro h x hx
     rcases(h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
