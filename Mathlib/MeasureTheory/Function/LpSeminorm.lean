@@ -46,6 +46,8 @@ open TopologicalSpace MeasureTheory Filter
 
 open NNReal ENNReal BigOperators Topology MeasureTheory
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 variable {α E F G : Type _} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -689,7 +691,11 @@ theorem Memℒp.norm {f : α → E} (h : Memℒp f p μ) : Memℒp (fun x => ‖
 
 theorem memℒp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     Memℒp (fun x => ‖f x‖) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => ⟨hf, by rw [← snorm_norm]; exact h.2⟩, fun h => h.norm⟩
+  ⟨fun h =>
+    ⟨hf, by
+      rw [← snorm_norm]
+      exact h.2⟩,
+    fun h => h.norm⟩
 #align measure_theory.mem_ℒp_norm_iff MeasureTheory.memℒp_norm_iff
 
 theorem snorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
@@ -1552,7 +1558,8 @@ variable {𝕜 : Type _} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [M
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
 theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
-    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ := by
+    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ :=
+  by
   obtain rfl | hc := eq_or_ne c 0
   · simp [snorm', hq_pos]
   refine' le_antisymm (snorm'_const_smul_le _ _ hq_pos) _
