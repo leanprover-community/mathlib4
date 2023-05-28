@@ -391,7 +391,7 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
 #align sylow.conj_eq_normalizer_conj_of_mem_centralizer Sylow.conj_eq_normalizer_conj_of_mem_centralizer
 
 theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    [hP : (P : Subgroup G).IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
+    [_hP : (P : Subgroup G).IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
     ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n :=
   P.conj_eq_normalizer_conj_of_mem_centralizer x g (le_centralizer P hx) (le_centralizer P hy)
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
@@ -583,7 +583,7 @@ theorem prime_dvd_card_quotient_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp :
 
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup of cardinality `p ^ n`,
   then `p ^ (n + 1)` divides the cardinality of the normalizer of `H`. -/
-theorem prime_pow_dvd_card_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
+theorem prime_pow_dvd_card_normalizer [Fintype G] {p : ℕ} {n : ℕ} [_hp : Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ card G) {H : Subgroup G} (hH : Fintype.card H = p ^ n) :
     p ^ (n + 1) ∣ card (normalizer H) :=
   Nat.modEq_zero_iff_dvd.1 ((card_normalizer_modEq_card hH).trans hdvd.modEq_zero_nat)
@@ -634,13 +634,13 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
   then `H` is contained in a subgroup of cardinality `p ^ m`
   if `n ≤ m` and `p ^ m` divides the cardinality of `G` -/
 theorem exists_subgroup_card_pow_prime_le [Fintype G] (p : ℕ) :
-    ∀ {n m : ℕ} [hp : Fact p.Prime] (hdvd : p ^ m ∣ card G) (H : Subgroup G) (hH : card H = p ^ n)
-      (hnm : n ≤ m), ∃ K : Subgroup G, card K = p ^ m ∧ H ≤ K
+    ∀ {n m : ℕ} [_hp : Fact p.Prime] (_hdvd : p ^ m ∣ card G) (H : Subgroup G) (_hH : card H = p ^ n)
+      (_hnm : n ≤ m), ∃ K : Subgroup G, card K = p ^ m ∧ H ≤ K
   | n, m => fun {hdvd H hH hnm} =>
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
-        have wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
+        have _wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
@@ -676,7 +676,7 @@ theorem dvd_card_of_dvd_card [Fintype G] {p : ℕ} [Fact p.Prime] (P : Sylow p G
 /-- Sylow subgroups are Hall subgroups. -/
 theorem card_coprime_index [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     (card P).coprime (index (P : Subgroup G)) :=
-  let ⟨n, hn⟩ := IsPGroup.iff_card.mp P.2
+  let ⟨_n, hn⟩ := IsPGroup.iff_card.mp P.2
   hn.symm ▸ (hp.1.coprime_pow_of_not_dvd (not_dvd_index_sylow P index_ne_zero_of_finite)).symm
 #align sylow.card_coprime_index Sylow.card_coprime_index
 
