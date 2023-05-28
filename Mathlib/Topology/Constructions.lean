@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit 76f9c990d4b7c3dd26b87c4c4b51759e249d9e66
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1577,6 +1577,11 @@ theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α �
 theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULift.{v, u} α → α) :=
   ⟨⟨rfl⟩, ULift.down_injective⟩
 #align embedding_ulift_down embedding_uLift_down
+
+theorem ULift.closedEmbedding_down [TopologicalSpace α] :
+    ClosedEmbedding (ULift.down : ULift.{v, u} α → α) :=
+  ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+#align ulift.closed_embedding_down ULift.closedEmbedding_down
 
 instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift α) :=
   embedding_uLift_down.discreteTopology
