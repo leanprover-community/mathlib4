@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 
 ! This file was ported from Lean 3 source module data.set.intervals.proj_Icc
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 42e9a1fd3a99e10f82830349ba7f4f10e8961c2a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
