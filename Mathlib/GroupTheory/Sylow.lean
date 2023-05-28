@@ -28,20 +28,20 @@ The Sylow theorems are the following results for every finite group `G` and ever
 
 ## Main definitions
 
-* `sylow p G` : The type of Sylow `p`-subgroups of `G`.
+* `Sylow p G` : The type of Sylow `p`-subgroups of `G`.
 
 ## Main statements
 
 * `exists_subgroup_card_pow_prime`: A generalization of Sylow's first theorem:
   For every prime power `pⁿ` dividing the cardinality of `G`,
   there exists a subgroup of `G` of order `pⁿ`.
-* `is_p_group.exists_le_sylow`: A generalization of Sylow's first theorem:
+* `IsPGroup.exists_le_sylow`: A generalization of Sylow's first theorem:
   Every `p`-subgroup is contained in a Sylow `p`-subgroup.
-* `sylow.card_eq_multiplicity`: The cardinality of a Sylow group is `p ^ n`
+* `Sylow.card_eq_multiplicity`: The cardinality of a Sylow group is `p ^ n`
  where `n` is the multiplicity of `p` in the group order.
 * `sylow_conjugate`: A generalization of Sylow's second theorem:
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate.
-* `card_sylow_modeq_one`: A generalization of Sylow's third theorem:
+* `card_sylow_modEq_one`: A generalization of Sylow's third theorem:
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
 
@@ -188,7 +188,7 @@ theorem Sylow.exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
 #align sylow.exists_comap_subtype_eq Sylow.exists_comap_subtype_eq
 
 /-- If the kernel of `f : H →* G` is a `p`-group,
-  then `fintype (sylow p G)` implies `fintype (sylow p H)`. -/
+  then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
 noncomputable def Sylow.fintypeOfKerIsPGroup {H : Type _} [Group H] {f : H →* G}
     (hf : IsPGroup p f.ker) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
@@ -197,24 +197,24 @@ noncomputable def Sylow.fintypeOfKerIsPGroup {H : Type _} [Group H] {f : H →* 
   Fintype.ofInjective g fun P Q h => Sylow.ext (by rw [← hg, h]; exact (h_exists Q).choose_spec)
 #align sylow.fintype_of_ker_is_p_group Sylow.fintypeOfKerIsPGroup
 
-/-- If `f : H →* G` is injective, then `fintype (sylow p G)` implies `fintype (sylow p H)`. -/
+/-- If `f : H →* G` is injective, then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
 noncomputable def Sylow.fintypeOfInjective {H : Type _} [Group H] {f : H →* G}
     (hf : Function.Injective f) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   Sylow.fintypeOfKerIsPGroup (IsPGroup.ker_isPGroup_of_injective hf)
 #align sylow.fintype_of_injective Sylow.fintypeOfInjective
 
-/-- If `H` is a subgroup of `G`, then `fintype (sylow p G)` implies `fintype (sylow p H)`. -/
+/-- If `H` is a subgroup of `G`, then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
 noncomputable instance (H : Subgroup G) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   Sylow.fintypeOfInjective H.subtype_injective
 
-/-- If `H` is a subgroup of `G`, then `finite (sylow p G)` implies `finite (sylow p H)`. -/
+/-- If `H` is a subgroup of `G`, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) := by
   cases nonempty_fintype (Sylow p G)
   infer_instance
 
 open Pointwise
 
-/-- `subgroup.pointwise_mul_action` preserves Sylow subgroups. -/
+/-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
 instance Sylow.pointwiseMulAction {α : Type _} [Group α] [MulDistribMulAction α G] :
     MulAction α (Sylow p G) where
   smul g P :=
