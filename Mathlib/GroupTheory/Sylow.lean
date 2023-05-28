@@ -526,19 +526,20 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
           (inv_mem_iff (G := G)).1 <|
             (hx _).2 <|
               (mul_mem_cancel_left (inv_mem hb₁)).1 <| by
-                rw [hx] at hb₂ <;> simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
+                rw [hx] at hb₂; simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
 #align sylow.mem_fixed_points_mul_left_cosets_iff_mem_normalizer Sylow.mem_fixedPoints_mul_left_cosets_iff_mem_normalizer
 
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
-  @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (id _) (id _) (fixedPoints _ _)
+  @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
+    (MulAction.fixedPoints H (G ⧸ H))
     (fun a => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
-      rw [setoidHasEquiv]
-      simp only [left_rel_apply]
+      dsimp only [instHasEquiv]
+      rw [leftRel_apply (α := normalizer H), leftRel_apply]
       rfl)
 #align sylow.fixed_points_mul_left_cosets_equiv_quotient Sylow.fixedPointsMulLeftCosetsEquivQuotient
 
@@ -546,9 +547,9 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
   mod `p` to the index of `H`.  -/
 theorem card_quotient_normalizer_modEq_card_quotient [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     {H : Subgroup G} (hH : Fintype.card H = p ^ n) :
-    card (normalizer H ⧸ Subgroup.comap ((normalizer H).Subtype : normalizer H →* G) H) ≡
+    Fintype.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) ≡
       card (G ⧸ H) [MOD p] := by
-  rw [← Fintype.card_congr (fixed_points_mul_left_cosets_equiv_quotient H)]
+  rw [← Fintype.card_congr (fixedPointsMulLeftCosetsEquivQuotient H)]
   exact ((IsPGroup.of_card hH).card_modEq_card_fixedPoints _).symm
 #align sylow.card_quotient_normalizer_modeq_card_quotient Sylow.card_quotient_normalizer_modEq_card_quotient
 
@@ -598,25 +599,23 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
   have hcard : card (G ⧸ H) = s * p :=
     (mul_left_inj' (show card H ≠ 0 from Fintype.card_ne_zero)).1
       (by
-        rwa [← card_eq_card_quotient_mul_card_subgroup H, hH, hs, pow_succ', mul_assoc, mul_comm p])
+        rw [← card_eq_card_quotient_mul_card_subgroup H, hH, hs, pow_succ', mul_assoc, mul_comm p])
   have hm : s * p % p = card (normalizer H ⧸ H.subgroupOf H.normalizer) % p :=
-    card_congr (fixedPointsMulLeftCosetsEquivQuotient H) ▸
+    Fintype.card_congr (fixedPointsMulLeftCosetsEquivQuotient H) ▸
       hcard ▸ (IsPGroup.of_card hH).card_modEq_card_fixedPoints _
   have hm' : p ∣ card (normalizer H ⧸ H.subgroupOf H.normalizer) :=
     Nat.dvd_of_mod_eq_zero (by rwa [Nat.mod_eq_zero_of_dvd (dvd_mul_left _ _), eq_comm] at hm)
   let ⟨x, hx⟩ := @exists_prime_orderOf_dvd_card _ (QuotientGroup.Quotient.group _) _ _ hp hm'
   have hequiv : H ≃ H.subgroupOf H.normalizer := (subgroupOfEquivOfLe le_normalizer).symm.toEquiv
-  ⟨Subgroup.map (normalizer H).Subtype
+  ⟨Subgroup.map (normalizer H).subtype
       (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x)), by
     show
-      card
-          ↥(map H.normalizer.subtype
-              (comap (mk' (H.subgroup_of H.normalizer)) (Subgroup.zpowers x))) =
+      Fintype.card (Subgroup.map H.normalizer.subtype
+              (comap (mk' (H.subgroupOf H.normalizer)) (Subgroup.zpowers x))) =
         p ^ (n + 1)
     suffices
-      card
-          ↥(Subtype.val ''
-              (Subgroup.comap (mk' (H.subgroup_of H.normalizer)) (zpowers x) : Set ↥H.normalizer)) =
+      Fintype.card (Subtype.val ''
+              (Subgroup.comap (mk' (H.subgroup_of H.normalizer)) (zpowers x) : Set H.normalizer)) =
         p ^ (n + 1)
       by convert this using 2
     rw [Set.card_image_of_injective
