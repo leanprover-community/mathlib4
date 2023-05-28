@@ -16,7 +16,7 @@ type class is `[F.CommShift A]`. The data consists of commutation isomorphisms
 which satisfy a compatibility with the addition and the zero. After this was formalised in Lean,
 it was found that this definition is exactly the definition which appears in Jean-Louis
 Verdier's thesis (I 1.2.3/1.2.4), allthough the language is different. (In Verdier's thesis,
-the shift is not given by a monoidal functor `Discrete A ⥤ C ⥤ C`, but by a fibered
+the shift is not given by a monoidal functor `Discrete A ⥤ C ⥤ C`, but by a fibred
 category `C ⥤ BA`, where `BA` is the category with one object, the endomorphisms of which
 identify to `A`. The choice of a cleavage for this fibered category gives the individual
 shift functors.)
@@ -42,8 +42,7 @@ namespace CommShift
 `shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor D (0 : A)` deduced from the
 isomorphisms `shiftFunctorZero` on both categories `C` and `D`. -/
 @[simps!]
-noncomputable def isoZero :
-  shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor D (0 : A) :=
+noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor D (0 : A) :=
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
@@ -93,17 +92,22 @@ end CommShift
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
 class CommShift where
-  iso : ∀ (a : A), shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
+  iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   zero : iso 0 = CommShift.isoZero F A := by aesop_cat
-  add : ∀ (a b : A), iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by aesop_cat
+  add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by aesop_cat
 
 variable {A}
 
 /-- If a functor `F` commutes with the shift by `A` (i.e. `[F.CommShift A]`), then
-`F.commShiftIso a` is the given isomorphisms `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a`. -/
+`F.commShiftIso a` is the given isomorphism `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a`. -/
 def commShiftIso [F.CommShift A] (a : A) :
     shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
   CommShift.iso a
+
+-- Note: The following two lemmas are introduced in order to have more proofs work `by simp`.
+-- Indeed, `simp only [(F.commShiftIso a).hom.naturality f]` would almost never work because
+-- of the compositions of functors which appear in both the source and target of
+-- `F.commShiftIso a`. Otherwise, we would be forced to use `erw [NatTrans.naturality]`.
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality [F.CommShift A] {X Y : C} (f : X ⟶ Y) (a : A) :
