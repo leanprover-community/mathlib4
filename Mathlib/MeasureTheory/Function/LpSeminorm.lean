@@ -1558,8 +1558,7 @@ variable {𝕜 : Type _} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [M
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
 theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
-    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ :=
-  by
+    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp [snorm', hq_pos]
   refine' le_antisymm (snorm'_const_smul_le _ _ hq_pos) _
