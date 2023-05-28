@@ -132,9 +132,7 @@ def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=
           ⟨Finsupp.single (Multiplicative.toAdd m) 1, single_mem_gradeBy _ _ _⟩
       map_one' :=
         DirectSum.of_eq_of_gradedMonoid_eq
-          (by
-            congr 2 <;> try ext <;>
-              simp only [Submodule.mem_toAddSubmonoid, toAdd_one, AddMonoidHom.map_zero])
+          (by congr 2 <;> simp)
       map_mul' := fun i j => by
         symm
         convert DirectSum.of_mul_of _ _
