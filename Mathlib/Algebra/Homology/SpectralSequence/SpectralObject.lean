@@ -10,6 +10,36 @@ import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits
 
+namespace CategoryTheory
+
+namespace Limits
+
+variable {C ι ι' : Type _} [Category C] [Category ι] [Category ι']
+  (F : ι' ⥤ ι)
+
+-- this should be moved to `Limits.FunctorCategory`
+noncomputable instance [HasFiniteLimits C] (i : ι) :
+  PreservesFiniteLimits ((evaluation ι C).obj i) := ⟨fun _ => inferInstance⟩
+
+noncomputable instance [HasFiniteColimits C] (i : ι) :
+  PreservesFiniteColimits ((evaluation ι C).obj i) := ⟨fun _ => inferInstance⟩
+
+instance [HasZeroMorphisms C] :
+    ((whiskeringLeft ι' ι C).obj F).PreservesZeroMorphisms where
+
+/-instance [HasFiniteLimits C] : PreservesFiniteLimits ((whiskeringLeft ι' ι C).obj F) := sorry
+
+instance [HasFiniteColimits C] : PreservesFiniteColimits ((whiskeringLeft ι' ι C).obj F) := sorry
+
+instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] : Epi (whiskerLeft F τ) := sorry
+
+instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] : Mono (whiskerLeft F τ) := sorry-/
+
+end Limits
+
+end CategoryTheory
+
+
 variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 
 namespace CategoryTheory
@@ -18,17 +48,6 @@ namespace Abelian
 
 lemma exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
     S.Exact ↔ ∀ (i : ι), (S.map ((evaluation ι C).obj i)).Exact := by
-  have : ∀ i, PreservesFiniteLimits ((evaluation ι C).obj i) := by
-    -- this should be moved to `Limits.FunctorCategory`
-    intro i
-    constructor
-    intros J _ _
-    infer_instance
-  have : ∀ i, PreservesFiniteColimits ((evaluation ι C).obj i) := by
-    intro i
-    constructor
-    intros J _ _
-    infer_instance
   simp only [ShortComplex.exact_iff_isZero_homology,
     fun i => Iso.isZero_iff (S.mapHomologyIso ((evaluation ι C).obj i)),
     evaluation_obj_obj, Functor.isZero_iff]
@@ -127,7 +146,15 @@ noncomputable def cyclesCo : Arrow₂ ι ⥤ C := cokernel (X.δ n₀ n₁ hn₁
 noncomputable def iCycles : X.cycles n₀ n₁ hn₁ ⟶ Arrow₂.δ₀ ⋙ X.H n₀ := kernel.ι _
 noncomputable def pCyclesCo : Arrow₂.δ₂ ⋙ X.H n₁ ⟶ X.cyclesCo n₀ n₁ hn₁ := cokernel.π _
 
-lemma iCycles_δ_app : (X.iCycles n₀ n₁ hn₁).app D ≫ (X.δ n₀ n₁ hn₁).app D = 0 := by
+instance : Mono (X.iCycles n₀ n₁ hn₁) := by
+  dsimp only [iCycles]
+  infer_instance
+
+instance : Epi (X.pCyclesCo n₀ n₁ hn₁) := by
+  dsimp only [pCyclesCo]
+  infer_instance
+
+/-lemma iCycles_δ_app : (X.iCycles n₀ n₁ hn₁).app D ≫ (X.δ n₀ n₁ hn₁).app D = 0 := by
   simp only [← NatTrans.comp_app, iCycles, kernel.condition, zero_app]
 
 lemma δ_pCyclesCo_app : (X.δ n₀ n₁ hn₁).app D ≫ (X.pCyclesCo n₀ n₁ hn₁).app D  = 0 := by
@@ -139,11 +166,61 @@ noncomputable def isLimitCycles (D : Arrow₂ ι) :
 
 noncomputable def isColimitCyclesCo (D : Arrow₂ ι) :
     IsColimit (CokernelCofork.ofπ _ (X.δ_pCyclesCo_app n₀ n₁ hn₁ D)) :=
-  CokernelCofork.mapIsColimit _ (cokernelIsCokernel (X.δ n₀ n₁ hn₁)) ((evaluation _ _).obj D)
+  CokernelCofork.mapIsColimit _ (cokernelIsCokernel (X.δ n₀ n₁ hn₁)) ((evaluation _ _).obj D)-/
 
 noncomputable def cokernelIsoCycles :
     cokernel (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀)) ≅ X.cycles n₀ n₁ hn₁ :=
   (X.shortComplex₄_exact n₀ n₁ hn₁).cokerIsoKer
+
+noncomputable def Hδ₁ToCycles : Arrow₂.δ₁ ⋙ X.H n₀ ⟶ X.cycles n₀ n₁ hn₁ :=
+  cokernel.π _ ≫ (X.cokernelIsoCycles n₀ n₁ hn₁).hom
+
+instance : Epi (X.Hδ₁ToCycles n₀ n₁ hn₁) := by
+  dsimp [Hδ₁ToCycles]
+  apply epi_comp
+
+@[reassoc (attr := simp)]
+lemma Hδ₁ToCycles_iCycles :
+    X.Hδ₁ToCycles n₀ n₁ hn₁ ≫ X.iCycles n₀ n₁ hn₁ = whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀) := by
+  dsimp only [Hδ₁ToCycles]
+  rw [assoc]
+  exact (X.shortComplex₄ n₀ n₁ hn₁).cokerToKer_fac
+
+@[reassoc (attr := simp)]
+lemma Hδ₂Toδ₁_Hδ₁ToCycles :
+    whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀) ≫ X.Hδ₁ToCycles n₀ n₁ hn₁ = 0 := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁), assoc, Hδ₁ToCycles_iCycles, zero_comp]
+  exact (X.shortComplex₂ n₀).zero
+
+@[simps]
+noncomputable def cokernelSequenceCycles : ShortComplex (Arrow₂ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.Hδ₂Toδ₁_Hδ₁ToCycles n₀ n₁ hn₁)
+
+instance : Epi (X.cokernelSequenceCycles n₀ n₁ hn₁).g := by
+  dsimp only [cokernelSequenceCycles]
+  infer_instance
+
+lemma cokernelSequenceCycles_exact : (X.cokernelSequenceCycles n₀ n₁ hn₁).Exact := by
+  apply ShortComplex.exact_of_g_is_cokernel
+  exact IsColimit.ofIsoColimit (cokernelIsCokernel _)
+    (Cofork.ext (X.cokernelIsoCycles n₀ n₁ hn₁) (by simp [Hδ₁ToCycles]))
+
+@[simps!]
+noncomputable def δ₀PullbackCokernelSequenceCycles :
+    ShortComplex (Arrow₃ ι ⥤ C) :=
+  (X.cokernelSequenceCycles n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
+
+/-instance : Epi (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g := by
+  dsimp [δ₀PullbackCokernelSequenceCycles]
+  infer_instance
+
+lemma δ₀PullbackCokernelSequenceCycles_exact :
+    (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).Exact :=
+  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
+
+def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.δ₃ ⋙ X.cyclesCo n₁ n₂ hn₂ := by
+  apply (X.δ₀PullbackCokernelSequenceCycles_exact n₀ n₁ hn₁).desc
+  all_goals sorry-/
 
 end SpectralObject
 
