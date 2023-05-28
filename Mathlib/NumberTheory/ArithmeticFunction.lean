@@ -152,9 +152,10 @@ instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticF
   ⟨natToArithmeticFunction⟩
 #align nat.arithmetic_function.nat_coe Nat.ArithmeticFunction.natCoe
 
--- Porting note : there was a theorem `(↑f : ArithmeticFunction ℕ) = f` that is now a syntactic
--- equality.
-#noalign nat.arithmetic_function.nat_coe_nat
+@[simp]
+theorem natCoe_nat (f : ArithmeticFunction ℕ) : natToArithmeticFunction f = f :=
+  ext fun _ => cast_id _
+#align nat.arithmetic_function.nat_coe_nat Nat.ArithmeticFunction.natCoe_nat
 
 @[simp]
 theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ} :
@@ -172,9 +173,10 @@ instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFu
   ⟨intToArithmeticFunction⟩
 #align nat.arithmetic_function.int_coe Nat.ArithmeticFunction.intCoe
 
--- Porting note : there was a theorem `(↑f : ArithmeticFunction ℤ) = f` that is now a syntactic
--- equality.
-#noalign nat.arithmetic_function.int_coe_int
+@[simp]
+theorem intCoe_int (f : ArithmeticFunction ℤ) : intToArithmeticFunction f = f :=
+  ext fun _ => Int.cast_id
+#align nat.arithmetic_function.int_coe_int Nat.ArithmeticFunction.intCoe_int
 
 @[simp]
 theorem intCoe_apply [AddGroupWithOne R] {f : ArithmeticFunction ℤ} {x : ℕ} :
