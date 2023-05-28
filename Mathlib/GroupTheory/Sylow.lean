@@ -426,20 +426,20 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G
   ((congr_arg _ (card_sylow_eq_index_normalizer P)).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
 #align card_sylow_dvd_index card_sylow_dvd_index
-
+set_option pp.all true
 theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup G).Normal]
-    [FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
+    [fP : FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
   intro h
-  let _ := (P : Subgroup G).fintypeQuotientOfFiniteIndex
-  rw [index_eq_card] at h
+  letI : Fintype (G ⧸ (P : Subgroup G)) := (P : Subgroup G).fintypeQuotientOfFiniteIndex
+  rw [index_eq_card (P : Subgroup G)] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card (G := G ⧸ (P : Subgroup G)) p h
-  have h := IsPGroup.of_card ((order_eq_card_zpowers.symm.trans hx).trans (pow_one p).symm)
+  have h := IsPGroup.of_card ((orderOf_eq_card_zpowers.symm.trans hx).trans (pow_one p).symm)
   let Q := (zpowers x).comap (QuotientGroup.mk' (P : Subgroup G))
   have hQ : IsPGroup p Q := by
-    apply h.comap_of_ker_is_p_group
+    apply h.comap_of_ker_isPGroup
     rw [QuotientGroup.ker_mk']
     exact P.2
-  replace hp := mt order_of_eq_one_iff.mpr (ne_of_eq_of_ne hx hp.1.ne_one)
+  replace hp := mt orderOf_eq_one_iff.mpr (ne_of_eq_of_ne hx hp.1.ne_one)
   rw [← zpowers_eq_bot, ← Ne, ← bot_lt_iff_ne_bot, ←
     comap_lt_comap_of_surjective (QuotientGroup.mk'_surjective _), MonoidHom.comap_bot,
     QuotientGroup.ker_mk'] at hp
