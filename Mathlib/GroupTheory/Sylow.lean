@@ -385,7 +385,7 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
     rwa [← mul_assoc, ← eq_mul_inv_iff_mul_eq, mul_assoc, mul_assoc, mul_assoc, ← mul_assoc,
       eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc] at hy
   obtain ⟨h, hh⟩ := exists_smul_eq (zpowers x).centralizer ((g • P).subtype h2) (P.subtype h1)
-  simp_rw [Sylow.smul_subtype, smul_def, smul_smul] at hh
+  simp_rw [Sylow.smul_subtype, Subgroup.smul_def, smul_smul] at hh
   refine' ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
 #align sylow.conj_eq_normalizer_conj_of_mem_centralizer Sylow.conj_eq_normalizer_conj_of_mem_centralizer
