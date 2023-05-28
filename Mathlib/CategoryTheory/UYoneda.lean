@@ -2,7 +2,6 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Products
 import Mathlib.Data.ULift
 
 universe v₃ v₂ v₁ u₃ u₂ u₁ w
@@ -242,7 +241,7 @@ theorem uyonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type (max v₁ w)}
 
 def uyonedaSectionsSmall {C : Type u₁} [SmallCategory C] (X : C) (F : Cᵒᵖ ⥤ Type (max u₁ w)) :
     (uyoneda.{u₁, u₁, w}.obj X ⟶ F) ≅ F.obj (op X) :=
-  uyonedaSections.{u₁, u₁, w} X F ≪≫ uliftSmaller.{u₁, w} (F.obj (op X))
+  uyonedaSections.{u₁, u₁, w} X F ≪≫ uliftSmaller.{w, u₁} (F.obj (op X))
 
 @[simp]
 theorem uyonedaSectionsSmall_hom {C : Type u₁} [SmallCategory C] (X : C) (F : Cᵒᵖ ⥤ Type (max u₁ w))

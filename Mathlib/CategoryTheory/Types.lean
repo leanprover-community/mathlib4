@@ -200,7 +200,11 @@ def uliftSmaller (V : Type (max u₁ w)) : ULift.{u₁, max u₁ w} V ≅ V wher
 /-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
 and the original type.
 -/
-def uliftTrivial (V : Type u) : ULift.{u} V ≅ V := uliftSmaller.{u} V
+def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
+  hom a := a.1
+  inv a := .up a
+  hom_inv_id := by aesop_cat
+  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.

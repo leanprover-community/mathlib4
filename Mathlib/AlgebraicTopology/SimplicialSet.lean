@@ -12,7 +12,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.UYoneda
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
