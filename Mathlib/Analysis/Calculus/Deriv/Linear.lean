@@ -8,8 +8,8 @@ Authors: Gabriel Ebner, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Basic
-import Mathbin.Analysis.Calculus.Fderiv.Linear
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Linear
 
 /-!
 # Derivatives of continuous linear maps from the base field
