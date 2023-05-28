@@ -18,7 +18,7 @@ import Mathlib.Tactic.DeriveFintype
 
 This file defines a simplified basis for partial recursive functions, and a `Turing.TM2` model
 Turing machine for evaluating these functions. This amounts to a constructive proof that every
-`partrec` function can be evaluated by a Turing machine.
+`Partrec` function can be evaluated by a Turing machine.
 
 ## Main definitions
 
@@ -752,7 +752,7 @@ end ToPartrec
 ## Simulating sequentialized partial recursive functions in TM2
 
 At this point we have a sequential model of partial recursive functions: the `Cfg` type and
-`step : Cfg → option Cfg` function from the previous section. The key feature of this model is that
+`step : Cfg → Option Cfg` function from the previous section. The key feature of this model is that
 it does a finite amount of computation (in fact, an amount which is statically bounded by the size
 of the program) between each step, and no individual step can diverge (unlike the compositional
 semantics, where every sub-part of the computation is potentially divergent). So we can utilize the
@@ -811,7 +811,7 @@ prove that only finitely many labels are accessible.) The labels are:
   duplicate of the `push` instruction that is part of the TM2 model, but by having a subroutine
   just for this purpose we can build up programs to execute inside a `goto` statement, where we
   have the flexibility to be general recursive.
-* `read (f : option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
+* `read (f : Option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
   here for convenience.
 * `succ q`: perform a successor operation. Assuming `[n]` is encoded on `main` before,
   `[n+1]` will be on main after. This implements successor for binary natural numbers.

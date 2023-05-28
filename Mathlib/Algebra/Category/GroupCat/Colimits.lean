@@ -16,12 +16,12 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/colimits.lean`.
+This file uses a "pre-automated" approach, just as for `Mon/Colimits.lean`.
 It is a very uniform approach, that conceivably could be synthesised directly
-by a tactic that analyses the shape of `add_comm_group` and `monoid_hom`.
+by a tactic that analyses the shape of `AddCommGroup` and `MonoidHom`.
 
 TODO:
-In fact, in `AddCommGroup` there is a much nicer model of colimits as quotients
+In fact, in `AddCommGroupCat` there is a much nicer model of colimits as quotients
 of finitely supported functions, and we really should implement this as well (or instead).
 -/
 
@@ -40,7 +40,7 @@ open CategoryTheory.Limits
 namespace AddCommGroupCat.Colimits
 
 /-!
-We build the colimit of a diagram in `AddCommGroup` by constructing the
+We build the colimit of a diagram in `AddCommGroupCat` by constructing the
 free group on the disjoint union of all the abelian groups in the diagram,
 then taking the quotient by the abelian group laws within each abelian group,
 and the identifications given by the morphisms in the diagram.
@@ -105,7 +105,7 @@ def colimitSetoid : Setoid (Prequotient F) where
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `AddCommGroup`.
+/-- The underlying type of the colimit of a diagram in `AddCommGroupCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
@@ -306,7 +306,7 @@ namespace AddCommGroupCat
 
 open QuotientAddGroup
 
-/-- The categorical cokernel of a morphism in `AddCommGroup`
+/-- The categorical cokernel of a morphism in `AddCommGroupCat`
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :

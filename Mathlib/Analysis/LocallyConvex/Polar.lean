@@ -55,7 +55,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- The (absolute) polar of `s : set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
+/-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
 for all `x ∈ s`.-/
 def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
@@ -79,8 +79,8 @@ theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x 
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
 #align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
 
-/-- The map `B.polar : set E → set F` forms an order-reversing Galois connection with
-`B.flip.polar : set F → set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
+/-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
+`B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
 theorem polar_gc :
     GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>

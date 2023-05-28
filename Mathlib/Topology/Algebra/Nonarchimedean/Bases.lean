@@ -190,7 +190,6 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   let _ := hB.topology
   { B i with
     isOpen' := by
-      letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.hasBasis_nhds a).mem_iff]
@@ -356,8 +355,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `measure_theory.ae_eq_fun.add_monoid ` or `topological_add_group.to_has_continuous_add`)
-cause the search for `@topological_add_group β ?m1 ?m2`, i.e. a search for a topological group where
+(such as `MeasureTheory.AEEqFun.instAddMonoid ` or `topological_add_group.to_has_continuous_add`)
+cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
 

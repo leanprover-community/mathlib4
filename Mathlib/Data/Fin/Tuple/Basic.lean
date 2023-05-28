@@ -607,7 +607,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     simp
 #align fin.comp_snoc Fin.comp_snoc
 
-/-- Appending a one-tuple to the right is the same as `fin.snoc`. -/
+/-- Appending a one-tuple to the right is the same as `Fin.snoc`. -/
 theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i

@@ -16,7 +16,7 @@ import Mathlib.Algebra.CharP.Basic
 This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
-elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (prime 2)]` argument.
+elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
 
 

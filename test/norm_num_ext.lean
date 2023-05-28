@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -19,18 +21,21 @@ Some tests of unported extensions are still commented out.
 
 -- coverage tests
 
-/-
-example : Nat.sqrt 0 = 0 := by norm_num
-example : Nat.sqrt 1 = 1 := by norm_num
-example : Nat.sqrt 2 = 1 := by norm_num
-example : Nat.sqrt 3 = 1 := by norm_num
-example : Nat.sqrt 4 = 2 := by norm_num
-example : Nat.sqrt 9 = 3 := by norm_num
-example : Nat.sqrt 10 = 3 := by norm_num
-example : Nat.sqrt 100 = 10 := by norm_num
-example : Nat.sqrt 120 = 10 := by norm_num
-example : Nat.sqrt 121 = 11 := by norm_num
--/
+example : Nat.sqrt 0 = 0 := by norm_num1
+example : Nat.sqrt 1 = 1 := by norm_num1
+example : Nat.sqrt 2 = 1 := by norm_num1
+example : Nat.sqrt 3 = 1 := by norm_num1
+example : Nat.sqrt 4 = 2 := by norm_num1
+example : Nat.sqrt 8 = 2 := by norm_num1
+example : Nat.sqrt 9 = 3 := by norm_num1
+example : Nat.sqrt 10 = 3 := by norm_num1
+example : Nat.sqrt 99 = 9 := by norm_num1
+example : Nat.sqrt 100 = 10 := by norm_num1
+example : Nat.sqrt 120 = 10 := by norm_num1
+example : Nat.sqrt 121 = 11 := by norm_num1
+example : Nat.sqrt 122 = 11 := by norm_num1
+example : Nat.sqrt (123456^2) = 123456 := by norm_num1
+example : Nat.sqrt (123456^2 + 123456) = 123456 := by norm_num1
 
 theorem ex11 : Nat.coprime 1 2 := by norm_num1
 theorem ex12 : Nat.coprime 2 1 := by norm_num1
@@ -296,22 +301,23 @@ begin
 end
 -/
 
-/-
-example : Nat.fib 0 = 0 := by norm_num
-example : Nat.fib 1 = 1 := by norm_num
-example : Nat.fib 2 = 1 := by norm_num
-example : Nat.fib 3 = 2 := by norm_num
-example : Nat.fib 4 = 3 := by norm_num
-example : Nat.fib 5 = 5 := by norm_num
-example : Nat.fib 6 = 8 := by norm_num
-example : Nat.fib 7 = 13 := by norm_num
-example : Nat.fib 8 = 21 := by norm_num
-example : Nat.fib 9 = 34 := by norm_num
-example : Nat.fib 10 = 55 := by norm_num
-example : Nat.fib 37 = 24157817 := by norm_num
-example : Nat.fib 64 = 10610209857723 := by norm_num
-example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num
--/
+example : Nat.fib 0 = 0 := by norm_num1
+example : Nat.fib 1 = 1 := by norm_num1
+example : Nat.fib 2 = 1 := by norm_num1
+example : Nat.fib 3 = 2 := by norm_num1
+example : Nat.fib 4 = 3 := by norm_num1
+example : Nat.fib 5 = 5 := by norm_num1
+example : Nat.fib 6 = 8 := by norm_num1
+example : Nat.fib 7 = 13 := by norm_num1
+example : Nat.fib 8 = 21 := by norm_num1
+example : Nat.fib 9 = 34 := by norm_num1
+example : Nat.fib 10 = 55 := by norm_num1
+example : Nat.fib 37 = 24157817 := by norm_num1
+example : Nat.fib 63 = 6557470319842 := by norm_num1
+example : Nat.fib 64 = 10610209857723 := by norm_num1
+example : Nat.fib 65 = 17167680177565 := by norm_num1
+example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num1
+example : Nat.fib 1000 + Nat.fib 1001 = Nat.fib 1002 := by norm_num1
 
 /-
 example : (2 : ℝ) ^ (3 : ℝ) = 8 := by norm_num
