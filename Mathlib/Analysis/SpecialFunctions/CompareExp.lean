@@ -111,19 +111,19 @@ theorem tendsto_abs (hl : IsExpCmpFilter l) : Tendsto abs l atTop :=
 theorem isLittleO_log_re_re (hl : IsExpCmpFilter l) : (fun z => Real.log z.re) =o[l] re :=
   Real.isLittleO_log_id_atTop.comp_tendsto hl.tendsto_re
 #align complex.is_exp_cmp_filter.is_o_log_re_re Complex.IsExpCmpFilter.isLittleO_log_re_re
-
+set_option maxHeartbeats 0
 theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
     calc
-      ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := sorry
-      _ = fun z => (Complex.im z) ^ (2 * n) := sorry -- by simp only [pow_mul']
+      ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := funext <| by simp
+      _ = fun z => (Complex.im z) ^ (2 * n) := funext <| fun _ => by norm_cast ; rw [pow_mul']
       _ =O[l] fun z => Real.exp z.re := sorry --(hl.isBigO_im_pow_re _)
       _ = fun z => Real.exp z.re ^ 1 := sorry -- by simp only [pow_one]
       _ =o[l] fun z => Real.exp z.re ^ 2 := sorry
-      _ = (fun z => Real.exp z.re) ^ 2 := sorry
         -- (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
         --   Real.tendsto_exp_atTop.comp hl.tendsto_re
+      _ = (fun z => Real.exp z.re) ^ 2 := funext <| by simp
 
 #align complex.is_exp_cmp_filter.is_o_im_pow_exp_re Complex.IsExpCmpFilter.isLittleO_im_pow_exp_re
 
