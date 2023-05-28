@@ -344,20 +344,29 @@ instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace �
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 (EuclideanSpace 𝕜 ι))⟩
 #align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 
-@[coe, inherit_doc OrthonormalBasis]
-protected def cast (b : OrthonormalBasis ι 𝕜 E) (i : ι) : E := by
-  classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
+theorem repr_injective :
+    Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
+  cases f; cases g; congr
 
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (OrthonormalBasis ι 𝕜 E) fun _ => ι → E where
-  coe := OrthonormalBasis.cast
-#align orthonormal_basis.has_coe_to_fun OrthonormalBasis.instCoeFun
+instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
+  coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
+  coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
+    LinearEquiv.symm_bijective.injective <| by
+      simp only [LinearIsometryEquiv.toLinearEquiv_symm, LinearIsometryEquiv.toLinearEquiv_inj]
+      ext x
+      rw [← Finsupp.sum_single x, map_finsupp_sum, map_finsupp_sum]
+      congr with (i r)
+      have := congr_fun h i
+      dsimp at this
+      rw [← mul_one r, ← Finsupp.smul_single', LinearEquiv.map_smul, LinearEquiv.map_smul, this]
+#align orthonormal_basis.has_coe_to_fun OrthonormalBasis.instFunLike
 
 @[simp]
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
     ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
-  -- Porting note: simplified with `congr!`, added `OrthonormalBasis.cast`
-  unfold OrthonormalBasis.cast
+  -- Porting note: simplified with `congr!`
+  dsimp only [FunLike.coe]
   funext
   congr!
 #align orthonormal_basis.coe_of_repr OrthonormalBasis.coe_ofRepr
@@ -365,8 +374,8 @@ theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 �
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
-  -- Porting note: simplified with `congr!`, added `OrthonormalBasis.cast`
-  unfold OrthonormalBasis.cast
+  -- Porting note: simplified with `congr!`
+  dsimp only [FunLike.coe]
   congr!
 #align orthonormal_basis.repr_symm_single OrthonormalBasis.repr_symm_single
 
@@ -578,7 +587,7 @@ def reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') : OrthonormalBasis
 protected theorem reindex_apply (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
     (b.reindex e) i' = b (e.symm i') := by
   classical
-    dsimp [reindex, OrthonormalBasis.instCoeFun]
+    dsimp [reindex]
     rw [coe_ofRepr]
     dsimp
     rw [← b.repr_symm_single, LinearIsometryEquiv.piLpCongrLeft_symm,
