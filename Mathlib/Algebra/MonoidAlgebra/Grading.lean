@@ -123,6 +123,7 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
+set_option maxHeartbeats 250000 in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
 `DirectSum.decompose`. -/
 def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=
@@ -135,13 +136,12 @@ def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=
           (by congr 2 <;> simp)
       map_mul' := fun i j => by
         symm
-        convert DirectSum.of_mul_of _ _
-        apply DirectSum.of_eq_of_gradedMonoid_eq
-        congr 2
-        · rw [toAdd_mul, AddMonoidHom.map_add]
-        · ext
-          simp only [Submodule.mem_toAddSubmonoid, AddMonoidHom.map_add, toAdd_mul]
-        · exact Eq.trans (by rw [one_mul, toAdd_mul]) single_mul_single.symm }
+        dsimp only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
+          OneHom.coe_mk, toAdd_mul]
+        convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
+        repeat { rw [ AddMonoidHom.map_add] }
+        simp only [SetLike.coe_gMul]
+        refine Eq.trans (by rw [one_mul]) single_mul_single.symm }
 #align add_monoid_algebra.decompose_aux AddMonoidAlgebra.decomposeAux
 
 theorem decomposeAux_single (m : M) (r : R) :
