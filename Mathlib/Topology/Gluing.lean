@@ -133,7 +133,6 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   a = b ∨ ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.rel TopCat.GlueData.Rel
-#exit
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
@@ -142,25 +141,31 @@ theorem rel_equiv : Equivalence D.Rel :=
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩); exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩); exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
-    have eq₁ : (D.t j i) ((pullback.fst : _ ⟶ D.V _) z) = x := by simp
+    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
+      simp ; sorry
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
     use (pullback.fst : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
     dsimp only at *
-    substs e₁ e₃ e₄ eq₁ eq₂
+    -- porting note: `rw + clear` was `substs e₁ e₃ e₄ eq₁ eq₂`
+    -- error: `failed to create binder due to failure when reverting variable dependencies`
+    rw [← e₁, ← e₃, ← e₄, ← eq₁, ← eq₂] at *
+    clear eq₂ eq₁ e₄ e₃ e₁
     have h₁ : D.t' j i k ≫ pullback.fst ≫ D.f i k = pullback.fst ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
     have h₂ : D.t' j i k ≫ pullback.fst ≫ D.t i k ≫ D.f k i = pullback.snd ≫ D.t j k ≫ D.f k j := by
       rw [← 𝖣.t_fac_assoc]
-      apply @epi.left_cancellation _ _ _ _ (D.t' k j i)
+      apply @Epi.left_cancellation _ _ _ _ (D.t' k j i)
       rw [𝖣.cocycle_assoc, 𝖣.t_fac_assoc, 𝖣.t_inv_assoc]
       exact pullback.condition.symm
     exact ⟨ContinuousMap.congr_fun h₁ z, ContinuousMap.congr_fun h₂ z⟩⟩
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.rel_equiv TopCat.GlueData.rel_equiv
 
 open CategoryTheory.Limits.WalkingParallelPair
 
+/-  porting note: I could not get the statement of this theorem to type-check
 theorem eqvGen_of_π_eq {x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y) :
     EqvGen (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta glue_data.π multicoequalizer.sigma_π at h
@@ -182,22 +187,26 @@ theorem eqvGen_of_π_eq {x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y) :
     diagram_iso_parallel_pair_hom_app, colimit.iso_colimit_cocone_ι_hom, types_id_apply] at this
   exact Quot.eq.1 this
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
+-/
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
-  · delta glue_data.ι
-    simp_rw [← multicoequalizer.ι_sigma_π]
+  · delta GlueData.ι
+    simp_rw [← Multicoequalizer.ι_sigmaπ]
     intro h
     rw [←
-      show _ = Sigma.mk i x from concrete_category.congr_hom (sigmaIsoSigma.{u} D.U).inv_hom_id _]
+      show _ = Sigma.mk i x from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     rw [←
-      show _ = Sigma.mk j y from concrete_category.congr_hom (sigmaIsoSigma.{u} D.U).inv_hom_id _]
-    change InvImage D.rel (sigmaIsoSigma.{u} D.U).Hom _ _
+      show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
+    change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     simp only [TopCat.sigmaIsoSigma_inv_apply]
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine' EqvGen.mono _ (D.eqv_gen_of_π_eq h : _)
+    -- porting note: the next line was `refine' EqvGen.mono _ (D.eqv_gen_of_π_eq h : _)`,
+    -- but I could not get `eqv_gen_of_π_eq` to compile...
+    stop
     rintro _ _ ⟨x⟩
     rw [←
       show (sigmaIsoSigma.{u} _).inv _ = x from
@@ -211,18 +220,28 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     erw [sigma_iso_sigma_hom_ι_apply, sigma_iso_sigma_hom_ι_apply]
     exact Or.inr ⟨y, by dsimp [glue_data.diagram]; simp⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
-    rfl; dsimp only at *; subst e₁; subst e₂; simp
+    rfl
+    dsimp only at *
+    -- porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
+    rw [← e₁, ← e₂] at *
+    simp
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_eq_iff_rel TopCat.GlueData.ι_eq_iff_rel
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
   rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
-  · dsimp only at *; cases e₁; cases e₂; simp
+  · dsimp only at *
+    -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
+    rw [← e₁, ← e₂]
+    simp
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_injective TopCat.GlueData.ι_injective
 
 instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_mono TopCat.GlueData.ι_mono
 #exit
 
