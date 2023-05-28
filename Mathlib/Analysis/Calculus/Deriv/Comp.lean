@@ -8,9 +8,9 @@ Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Basic
-import Mathbin.Analysis.Calculus.Fderiv.Comp
-import Mathbin.Analysis.Calculus.Fderiv.RestrictScalars
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Fderiv.Comp
+import Mathlib.Analysis.Calculus.Fderiv.RestrictScalars
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -125,8 +125,7 @@ theorem deriv.scomp (hg : DifferentiableAt 𝕜' g₁ (h x)) (hh : Differentiabl
 
 theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L'' : Filter E}
     (hh₂ : HasDerivAtFilter h₂ h₂' (f x) L') (hf : HasFDerivAtFilter f f' x L'')
-    (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' :=
-  by
+    (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
   convert(hh₂.restrict_scalars 𝕜).comp x hf hL
   ext x
   simp [mul_comm]
@@ -134,8 +133,7 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x :=
-  by
+    HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x := by
   rw [HasStrictDerivAt] at hh
   convert(hh.restrict_scalars 𝕜).comp x hf
   ext x
@@ -164,16 +162,14 @@ theorem HasDerivWithinAt.comp_hasFDerivWithinAt {f : E → 𝕜'} {f' : E →L[�
 
 theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
-    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L :=
-  by
+    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
   rw [mul_comm]
   exact hh₂.scomp x hh hL
 #align has_deriv_at_filter.comp HasDerivAtFilter.comp
 
 theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') :
-    HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x :=
-  by
+    HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [mul_comm]
   exact hh₂.scomp x hh hst
 #align has_deriv_within_at.comp HasDerivWithinAt.comp
@@ -185,8 +181,7 @@ theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h
 #align has_deriv_at.comp HasDerivAt.comp
 
 theorem HasStrictDerivAt.comp (hh₂ : HasStrictDerivAt h₂ h₂' (h x)) (hh : HasStrictDerivAt h h' x) :
-    HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x :=
-  by
+    HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [mul_comm]
   exact hh₂.scomp x hh
 #align has_strict_deriv_at.comp HasStrictDerivAt.comp
@@ -208,29 +203,25 @@ theorem deriv.comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : Differentia
 #align deriv.comp deriv.comp
 
 protected theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAtFilter f f' x L)
-    (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) : HasDerivAtFilter (f^[n]) (f' ^ n) x L :=
-  by
+    (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) : HasDerivAtFilter (f^[n]) (f' ^ n) x L := by
   have := hf.iterate hL hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_at_filter.iterate HasDerivAtFilter.iterate
 
 protected theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x) (hx : f x = x)
-    (n : ℕ) : HasDerivAt (f^[n]) (f' ^ n) x :=
-  by
+    (n : ℕ) : HasDerivAt (f^[n]) (f' ^ n) x := by
   have := HasFDerivAt.iterate hf hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_at.iterate HasDerivAt.iterate
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
-    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt (f^[n]) (f' ^ n) s x :=
-  by
+    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt (f^[n]) (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_within_at.iterate HasDerivWithinAt.iterate
 
 protected theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasStrictDerivAt f f' x)
-    (hx : f x = x) (n : ℕ) : HasStrictDerivAt (f^[n]) (f' ^ n) x :=
-  by
+    (hx : f x = x) (n : ℕ) : HasStrictDerivAt (f^[n]) (f' ^ n) x := by
   have := hf.iterate hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_strict_deriv_at.iterate HasStrictDerivAt.iterate
