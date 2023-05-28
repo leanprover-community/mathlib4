@@ -810,4 +810,3 @@ noncomputable def directProductOfNormal [Fintype G]
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow
-#lint
