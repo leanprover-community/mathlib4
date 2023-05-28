@@ -119,10 +119,11 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
       ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := funext <| by simp
       _ = fun z => (Complex.im z) ^ (2 * n) := funext <| fun _ => by norm_cast ; rw [pow_mul']
       _ =O[l] fun z => Real.exp z.re := sorry --(hl.isBigO_im_pow_re _)
-      _ = fun z => Real.exp z.re ^ 1 := sorry -- by simp only [pow_one]
-      _ =o[l] fun z => Real.exp z.re ^ 2 := sorry
-        -- (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
-        --   Real.tendsto_exp_atTop.comp hl.tendsto_re
+      _ = fun z => Real.exp z.re ^ 1 := funext <| fun _ => by norm_cast ; rw [pow_one]
+      _ =o[l] fun z => Real.exp z.re ^ 2 := by
+        have := (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
+          Real.tendsto_exp_atTop.comp hl.tendsto_re
+        simpa only [pow_one, Real.rpow_one, Real.rpow_two]
       _ = (fun z => Real.exp z.re) ^ 2 := funext <| by simp
 
 #align complex.is_exp_cmp_filter.is_o_im_pow_exp_re Complex.IsExpCmpFilter.isLittleO_im_pow_exp_re
