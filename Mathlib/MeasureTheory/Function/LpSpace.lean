@@ -35,7 +35,7 @@ The space `Lp E p μ` is the subtype of elements of `α →ₘ[μ] E` (see ae_eq
 * `snorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal to `0` for `p=0`, to `snorm' f p μ`
   for `0 < p < ∞` and to `snormEssSup f μ` for `p = ∞`.
 
-* `memℒp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
+* `Memℒp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite `p`-seminorm for the measure `μ` (`snorm f p μ < ∞`)
 * `Lp E p μ` : elements of `α →ₘ[μ] E` (see ae_eq_fun) such that `snorm f p μ` is finite. Defined
   as an `AddSubgroup` of `α →ₘ[μ] E`.
