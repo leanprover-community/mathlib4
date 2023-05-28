@@ -11,7 +11,6 @@ Authors: Johan Commelin, Chris Hughes
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Integral domains
@@ -20,8 +19,8 @@ Assorted theorems about integral domains.
 
 ## Main theorems
 
-* `is_cyclic_of_subgroup_is_domain`: A finite subgroup of the units of an integral domain is cyclic.
-* `fintype.field_of_domain`: A finite integral domain is a field.
+* `isCyclic_of_subgroup_isDomain`: A finite subgroup of the units of an integral domain is cyclic.
+* `Fintype.fieldOfDomain`: A finite integral domain is a field.
 
 ## TODO
 
@@ -31,14 +30,10 @@ Prove Wedderburn's little theorem, which shows that all finite division rings ar
 
 integral domain, finite integral domain, finite field
 -/
-set_option autoImplicit false
-
 
 section
 
-open Finset Polynomial Function
-
-open BigOperators Nat
+open Finset Polynomial Function BigOperators Nat
 
 section CancelMonoidWithZero
 
@@ -57,8 +52,7 @@ theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b
 def Fintype.groupWithZeroOfCancel (M : Type _) [CancelMonoidWithZero M] [DecidableEq M] [Fintype M]
     [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
-    ‹CancelMonoidWithZero
-        M› with
+    ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
       simp [Inv.inv, dif_neg ha]
@@ -154,7 +148,7 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
 /-- The unit group of a finite integral domain is cyclic.
 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
-`finite Rˣ` rather than deducing it from `finite R`. -/
+`Finite Rˣ` rather than deducing it from `Finite R`. -/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
   isCyclic_of_subgroup_isDomain (Units.coeHom R) <| Units.ext
 
@@ -179,7 +173,7 @@ namespace Polynomial
 open Polynomial
 
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
-set_option maxHeartbeats 0
+
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
       (algebraMap R[X] K f) / (algebraMap R[X] K g) =
@@ -243,8 +237,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
       (∑ g : G, f g) = ∑ g : G, (f.toHomUnits g : R) := rfl
-      _ =
-          ∑ u : Rˣ in univ.image f.toHomUnits,
+      _ = ∑ u : Rˣ in univ.image f.toHomUnits,
             (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
         (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
       _ = ∑ u : Rˣ in univ.image f.toHomUnits, c • (u : R) :=
@@ -257,7 +250,6 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
       _ = c • (0 : R) := (congr_arg₂ _ rfl ?_)
       -- remaining goal 2, proven below
       _ = (0 : R) := smul_zero _
-
     · -- remaining goal 1
       show (univ.filter fun g : G => f.toHomUnits g = u).card = c
       apply card_fiber_eq_of_mem_range f.toHomUnits

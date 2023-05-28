@@ -30,9 +30,9 @@ import Mathlib.RingTheory.Finiteness
 * `Submodule.torsion R M` : the torsion submoule, containing all elements `x` of `M` such that
   `a • x = 0` for some non-zero-divisor `a` in `R`.
 * `Module.IsTorsionBy R M a` : the property that defines a `a`-torsion module. Similarly,
-  `is_torsion_by_set`, `is_torsion'` and `is_torsion`.
+  `IsTorsionBySet`, `IsTorsion'` and `IsTorsion`.
 * `Module.IsTorsionBySet.module` : Creates a `R ⧸ I`-module from a `R`-module that
-  `is_torsion_by_set R _ I`.
+  `IsTorsionBySet R _ I`.
 
 ## Main statements
 
@@ -46,7 +46,7 @@ import Mathlib.RingTheory.Finiteness
   `p i`-torsion submodules when the `p i` are pairwise coprime. A more general version with coprime
   ideals is `Submodule.torsionBySet_is_internal`.
 * `Submodule.noZeroSMulDivisors_iff_torsion_bot` : a module over a domain has
-  `no_zero_smul_divisors` (that is, there is no non-zero `a`, `x` such that `a • x = 0`)
+  `NoZeroSMulDivisors` (that is, there is no non-zero `a`, `x` such that `a • x = 0`)
   iff its torsion submodule is trivial.
 * `Submodule.QuotientTorsion.torsion_eq_bot` : quotienting by the torsion submodule makes the
   torsion submodule of the new module trivial. If `R` is a domain, we can derive an instance
@@ -54,7 +54,7 @@ import Mathlib.RingTheory.Finiteness
 
 ## Notation
 
-* The notions are defined for a `comm_semiring R` and a `module R M`. Some additional hypotheses on
+* The notions are defined for a `CommSemiring R` and a `Module R M`. Some additional hypotheses on
   `R` and `M` are required by some lemmas.
 * The letters `a`, `b`, ... are used for scalars (in `R`), while `x`, `y`, ... are used for vectors
   (in `M`).
@@ -851,4 +851,3 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
 #align add_monoid.is_torsion_iff_is_torsion_int AddMonoid.isTorsion_iff_isTorsion_int
 
 end AddMonoid
-
