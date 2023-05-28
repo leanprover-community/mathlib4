@@ -23,16 +23,16 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 ## Main definitions
 
-* `polynomial.splitting_field f`: A fixed splitting field of the polynomial `f`.
-* `polynomial.is_splitting_field`: A predicate on a field to be a splitting field of a polynomial
+* `polynomial.SplittingField f`: A fixed splitting field of the polynomial `f`.
+* `polynomial.IsSplittingField`: A predicate on a field to be a splitting field of a polynomial
   `f`.
 
 ## Main statements
 
-* `polynomial.is_splitting_field.lift`: An embedding of a splitting field of the polynomial `f` into
+* `polynomial.IsSplittingField.lift`: An embedding of a splitting field of the polynomial `f` into
   another field such that `f` splits.
-* `polynomial.is_splitting_field.alg_equiv`: Every splitting field of a polynomial `f` is isomorphic
-  to `splitting_field f` and thus, being a splitting field is unique up to isomorphism.
+* `polynomial.IsSplittingField.alg_equiv`: Every splitting field of a polynomial `f` is isomorphic
+  to `SplittingField f` and thus, being a splitting field is unique up to isomorphism.
 
 -/
 
@@ -117,7 +117,7 @@ theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1)
 `n` (arbitrarily-chosen) factors.
 
 Uses recursion on the degree. For better definitional behaviour, structures
-including `splitting_field_aux` (such as instances) should be defined using
+including `SplittingFieldAux` (such as instances) should be defined using
 this recursion in each field, rather than defining the whole tuple through
 recursion.
 -/
@@ -136,10 +136,10 @@ theorem succ (n : ℕ) (f : K[X]) :
 
 section LiftInstances
 
-/-! ### Instances on `splitting_field_aux`
+/-! ### Instances on `SplittingFieldAux`
 
 In order to avoid diamond issues, we have to be careful to define each data field of algebraic
-instances on `splitting_field_aux` by recursion, rather than defining the whole structure by
+instances on `SplittingFieldAux` by recursion, rather than defining the whole structure by
 recursion at once.
 
 The important detail is that the `smul` instances can be lifted _before_ we create the algebraic
@@ -454,8 +454,8 @@ instance algebra (n : ℕ) (R : Type _) {K : Type u} [CommSemiring R] [Field K] 
     commutes' := fun a b => mul_comm _ _ }
 #align polynomial.splitting_field_aux.algebra Polynomial.SplittingFieldAux.algebra
 
-/-- Because `splitting_field_aux` is defined by recursion, we have to make sure all instances
-on `splitting_field_aux` are defined by recursion within the fields. Otherwise, there will be
+/-- Because `SplittingFieldAux` is defined by recursion, we have to make sure all instances
+on `SplittingFieldAux` are defined by recursion within the fields. Otherwise, there will be
 instance diamonds such as the following: -/
 example (n : ℕ) {K : Type u} [Field K] {f : K[X]} :
     (AddCommMonoid.natModule : Module ℕ (SplittingFieldAux n f)) =
@@ -481,7 +481,7 @@ instance scalar_tower' {n : ℕ} {f : K[X]} :
     IsScalarTower K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor) :=
   haveI-- finding this instance ourselves makes things faster
    : IsScalarTower K (AdjoinRoot f.factor) (AdjoinRoot f.factor) := IsScalarTower.right
-  splitting_field_aux.is_scalar_tower n K (AdjoinRoot f.factor)
+  SplittingFieldAux.is_scalar_tower n K (AdjoinRoot f.factor)
 #align polynomial.splitting_field_aux.scalar_tower' Polynomial.SplittingFieldAux.scalar_tower'
 
 instance scalar_tower {n : ℕ} {f : K[X]} :
@@ -601,7 +601,7 @@ instance [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
--- deriving from the field structure on `splitting_field f`.
+-- deriving from the field structure on `SplittingField f`.
 example :
     (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
@@ -768,7 +768,7 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-/-- Any splitting field is isomorphic to `splitting_field f`. -/
+/-- Any splitting field is isomorphic to `SplittingField f`. -/
 def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
   refine'
     AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
