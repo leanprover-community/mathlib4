@@ -5,6 +5,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.ArrowThree
 import Mathlib.Tactic.Linarith
 
@@ -14,7 +15,7 @@ namespace CategoryTheory
 
 namespace Limits
 
-variable {C ι ι' : Type _} [Category C] [Category ι] [Category ι']
+variable {C ι ι' J : Type _} [Category C] [Category ι] [Category ι'] [Category J]
   (F : ι' ⥤ ι)
 
 -- this should be moved to `Limits.FunctorCategory`
@@ -27,13 +28,29 @@ noncomputable instance [HasFiniteColimits C] (i : ι) :
 instance [HasZeroMorphisms C] :
     ((whiskeringLeft ι' ι C).obj F).PreservesZeroMorphisms where
 
-/-instance [HasFiniteLimits C] : PreservesFiniteLimits ((whiskeringLeft ι' ι C).obj F) := sorry
+noncomputable instance [HasLimitsOfShape J C] :
+    PreservesLimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
+    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsLimits _
+      (fun i => isLimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
 
-instance [HasFiniteColimits C] : PreservesFiniteColimits ((whiskeringLeft ι' ι C).obj F) := sorry
+noncomputable instance [HasColimitsOfShape J C] :
+    PreservesColimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
+    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsColimits _
+      (fun i => isColimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
 
-instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] : Epi (whiskerLeft F τ) := sorry
+noncomputable instance [HasFiniteLimits C] :
+    PreservesFiniteLimits ((whiskeringLeft ι' ι C).obj F) :=
+  ⟨fun _ => by infer_instance⟩
 
-instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] : Mono (whiskerLeft F τ) := sorry-/
+noncomputable instance [HasFiniteColimits C] :
+    PreservesFiniteColimits ((whiskeringLeft ι' ι C).obj F) :=
+  ⟨fun _ => by infer_instance⟩
+
+instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] :
+    Epi (whiskerLeft F τ) := ((whiskeringLeft ι' ι C).obj F).map_epi τ
+
+instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] :
+  Mono (whiskerLeft F τ) := ((whiskeringLeft ι' ι C).obj F).map_mono τ
 
 end Limits
 
@@ -210,7 +227,7 @@ noncomputable def δ₀PullbackCokernelSequenceCycles :
     ShortComplex (Arrow₃ ι ⥤ C) :=
   (X.cokernelSequenceCycles n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
 
-/-instance : Epi (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g := by
+instance : Epi (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g := by
   dsimp [δ₀PullbackCokernelSequenceCycles]
   infer_instance
 
@@ -218,7 +235,7 @@ lemma δ₀PullbackCokernelSequenceCycles_exact :
     (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).Exact :=
   (X.cokernelSequenceCycles_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
 
-def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.δ₃ ⋙ X.cyclesCo n₁ n₂ hn₂ := by
+/-def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.δ₃ ⋙ X.cyclesCo n₁ n₂ hn₂ := by
   apply (X.δ₀PullbackCokernelSequenceCycles_exact n₀ n₁ hn₁).desc
   all_goals sorry-/
 
