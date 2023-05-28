@@ -690,7 +690,7 @@ theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable 
   change MeasurableSet { x | _ ∧ _ }
   have :
     ∀ x,
-      (map (fun i => f i x) l ×ᶠ map (fun i => f i x) l).HasAntitoneBasis fun n =>
+      (map (fun i => f i x) l ×ˢ map (fun i => f i x) l).HasAntitoneBasis fun n =>
         ((fun i => f i x) '' u n) ×ˢ ((fun i => f i x) '' u n) :=
     fun x => hu.map.prod hu.map
   simp_rw [and_iff_right (hl.map _),

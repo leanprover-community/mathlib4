@@ -144,7 +144,7 @@ theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x
 #align filter.tendsto_zero Filter.tendsto_zero
 
 @[to_additive (attr := simp)]
-theorem one_prod_one [One β] : (1 : Filter α) ×ᶠ (1 : Filter β) = 1 :=
+theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 #align filter.one_prod_one Filter.one_prod_one
 #align filter.zero_sum_zero Filter.zero_sum_zero

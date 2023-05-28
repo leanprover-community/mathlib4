@@ -12,6 +12,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
@@ -325,10 +326,13 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 
 #align list.revzip List.revzip
 #align list.product List.product
+
 /-- Notation for calculating the product of a `List`
 -/
--- This notation binds more strongly than (pre)images, unions and intersections.
-infixr:82 " ×ˢ " => List.product
+
+instance instSProd : SProd (List α) (List β) (List (α × β)) where
+  sprod := List.product
+
 #align list.sigma List.sigma
 #align list.of_fn List.ofFn
 #align list.of_fn_nth_val List.ofFnNthVal
