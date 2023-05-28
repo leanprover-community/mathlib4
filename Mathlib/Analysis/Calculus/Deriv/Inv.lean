@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Mul
-import Mathbin.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Comp
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -55,12 +55,10 @@ section Inverse
 /-! ### Derivative of `x ↦ x⁻¹` -/
 
 
-theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)⁻¹) x :=
-  by
+theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)⁻¹) x := by
   suffices
     (fun p : 𝕜 × 𝕜 => (p.1 - p.2) * ((x * x)⁻¹ - (p.1 * p.2)⁻¹)) =o[𝓝 (x, x)] fun p =>
-      (p.1 - p.2) * 1
-    by
+      (p.1 - p.2) * 1 by
     refine' this.congr' _ (eventually_of_forall fun _ => mul_one _)
     refine' eventually.mono ((is_open_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) _
     rintro ⟨y, z⟩ ⟨hy, hz⟩
@@ -96,8 +94,7 @@ theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : 𝕜 => x⁻¹) { 
   differentiableWithinAt_inv hx
 #align differentiable_on_inv differentiableOn_inv
 
-theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ :=
-  by
+theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
   · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv.1 (Classical.not_not.2 rfl))]
   · exact (hasDerivAt_inv hne).deriv
@@ -109,8 +106,7 @@ theorem deriv_inv' : (deriv fun x : 𝕜 => x⁻¹) = fun x => -(x ^ 2)⁻¹ :=
 #align deriv_inv' deriv_inv'
 
 theorem derivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => x⁻¹) s x = -(x ^ 2)⁻¹ :=
-  by
+    derivWithin (fun x => x⁻¹) s x = -(x ^ 2)⁻¹ := by
   rw [DifferentiableAt.derivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
   exact deriv_inv
 #align deriv_within_inv derivWithin_inv
@@ -130,8 +126,7 @@ theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[
 #align fderiv_inv fderiv_inv
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) :=
-  by
+    fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
   exact fderiv_inv
 #align fderiv_within_inv fderivWithin_inv
@@ -139,15 +134,13 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
 variable {c : 𝕜 → 𝕜} {h : E → 𝕜} {c' : 𝕜} {z : E} {S : Set E}
 
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x :=
-  by
+    HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
   convert(hasDerivAt_inv hx).comp_hasDerivWithinAt x hc
   field_simp
 #align has_deriv_within_at.inv HasDerivWithinAt.inv
 
 theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x :=
-  by
+    HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
 #align has_deriv_at.inv HasDerivAt.inv
@@ -203,8 +196,7 @@ theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWith
 #align has_deriv_within_at.div HasDerivWithinAt.div
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
-    (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x :=
-  by
+    (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.mul ((hasStrictDerivAt_inv hx).comp x hd)
   · simp only [div_eq_mul_inv]
   · field_simp
@@ -212,8 +204,7 @@ theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDeriv
 #align has_strict_deriv_at.div HasStrictDerivAt.div
 
 theorem HasDerivAt.div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
-    HasDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x :=
-  by
+    HasDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.div hd hx
 #align has_deriv_at.div HasDerivAt.div
