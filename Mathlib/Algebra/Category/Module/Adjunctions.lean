@@ -8,11 +8,11 @@ Authors: Scott Morrison, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Monoidal.Basic
-import Mathbin.CategoryTheory.Monoidal.Functorial
-import Mathbin.CategoryTheory.Monoidal.Types.Basic
-import Mathbin.LinearAlgebra.DirectSum.Finsupp
-import Mathbin.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Algebra.Category.Module.Monoidal.Basic
+import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[ring R]`
@@ -41,8 +41,7 @@ variable [Ring R]
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 @[simps]
-def free : Type u ⥤ ModuleCat R
-    where
+def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map X Y f := Finsupp.lmapDomain _ _ f
   map_id' := by intros ; exact Finsupp.lmapDomain_id _ _
@@ -91,8 +90,7 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').Hom = (μ R X X').Hom ≫ (free R).map (f ⊗ g) :=
-  by
+    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').Hom = (μ R X X').Hom ≫ (free R).map (f ⊗ g) := by
   intros
   ext (x x'⟨y, y'⟩)
   dsimp [μ]
@@ -103,8 +101,7 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).Hom =
-      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).Hom ≫ map (free R).obj (λ_ X).Hom :=
-  by
+      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).Hom ≫ map (free R).obj (λ_ X).Hom := by
   intros
   ext
   dsimp [ε, μ]
@@ -116,8 +113,7 @@ theorem left_unitality (X : Type u) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).Hom =
-      (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).Hom ≫ map (free R).obj (ρ_ X).Hom :=
-  by
+      (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).Hom ≫ map (free R).obj (ρ_ X).Hom := by
   intros
   ext
   dsimp [ε, μ]
@@ -133,8 +129,7 @@ theorem right_unitality (X : Type u) :
 theorem associativity (X Y Z : Type u) :
     ((μ R X Y).Hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).Hom ≫ map (free R).obj (α_ X Y Z).Hom =
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).Hom ≫
-        (𝟙 ((free R).obj X) ⊗ (μ R Y Z).Hom) ≫ (μ R X (Y ⊗ Z)).Hom :=
-  by
+        (𝟙 ((free R).obj X) ⊗ (μ R Y Z).Hom) ≫ (μ R X (Y ⊗ Z)).Hom := by
   intros
   ext
   dsimp [μ]
@@ -145,8 +140,7 @@ theorem associativity (X Y Z : Type u) :
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
 /-- The free R-module functor is lax monoidal. -/
 @[simps]
-instance : LaxMonoidal.{u} (free R).obj
-    where
+instance : LaxMonoidal.{u} (free R).obj where
   -- Send `R` to `punit →₀ R`
   ε := ε R
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
@@ -207,8 +201,7 @@ open Finsupp
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
 -- using the fact that `Module.free R : Type ⥤ Module R` and `Module.forget` are both lax monoidal.
 -- This still seems difficult, so we just do it by hand.
-instance categoryFree : Category (Free R C)
-    where
+instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
   comp (X Y Z : C) f g := f.Sum fun f' s => g.Sum fun g' t => Finsupp.single (f' ≫ g') (s * t)
@@ -226,8 +219,7 @@ section
 
 attribute [local reducible] CategoryTheory.categoryFree
 
-instance : Preadditive (Free R C)
-    where
+instance : Preadditive (Free R C) where
   homGroup X Y := Finsupp.addCommGroup
   add_comp X Y Z f f' g := by
     dsimp
@@ -238,8 +230,7 @@ instance : Preadditive (Free R C)
     congr ; ext (r h)
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
-instance : Linear R (Free R C)
-    where
+instance : Linear R (Free R C) where
   homModule X Y := Finsupp.module (X ⟶ Y) R
   smul_comp' X Y Z r f g := by
     dsimp
