@@ -190,7 +190,7 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
     rw [Nat.one_add]
 #align quaternion_group.a_one_pow QuaternionGroup.a_one_pow
 
-@[simp]
+-- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
 theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
   rw [a_one_pow, one_def]
   congr 1
