@@ -71,6 +71,33 @@ def equivLinear (e : X ≃ₜ Y) : LocallyConstant X Z ≃ₗ[R] LocallyConstant
 
 end LocallyConstant
 
+namespace List
+namespace Lex
+
+variable {α : Type u} {r : α → α → Prop}
+
+lemma singleton_iff (a b : α) : r a b ↔ List.Lex r [a] [b] := by
+  refine' ⟨List.Lex.rel,_⟩
+  intro h
+  by_contra h'
+  cases h
+  · apply not_nil_right r []
+    assumption
+  · apply h'
+    assumption
+
+lemma nil_le (l : List α) : List.Lex r [] l ∨ [] = l := by
+  induction l with
+  | nil =>
+    right
+    rfl
+  | cons a as _ =>
+    left
+    apply nil
+
+end Lex
+end List
+
 namespace NobelingProof
 
 variable {I : Type _} [LinearOrder I] [IsWellOrder I (·<·)] (C : Set ((WithTop I) → Bool))
@@ -108,6 +135,17 @@ def Products (I : Type _) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 noncomputable
 instance : LinearOrder (Products (WithTop I)) :=
   inferInstanceAs (LinearOrder {l : List (WithTop I) // l.Chain' (·>·)})
+
+lemma ltIffLex (l m : Products (WithTop I)) : l < m ↔ List.Lex (·<·) l.val m.val := by
+  cases l
+  cases m
+  rw [Subtype.mk_lt_mk]
+  simp
+  exact Iff.rfl
+
+lemma transLex (l m k : List (WithTop I)) (hlm : List.Lex (·<·) l m) (hmk : List.Lex (·<·) m k) :
+    List.Lex (·<·) l k :=
+  (inferInstance : IsTrans (List (WithTop I)) (List.Lex (·<·))).trans _ _ _ hlm hmk
 
 def Products.eval (l : Products (WithTop I)) := (l.1.map (e C)).prod
 
@@ -196,19 +234,148 @@ lemma zeroLTTop : 0 < Ordinal.type ((·<·) : WithTop I → WithTop I → Prop) 
   simp only [Ordinal.type_eq_zero_iff_isEmpty, not_isEmpty_of_nonempty] at h
 
 noncomputable
-instance GoodProducts.singletonUnique :
-  Unique { l // Products.isGood ({fun a ↦ false} : Set (WithTop I → Bool)) l } :=
-{ default := ⟨⟨[el 0], (by simp only [List.chain'_singleton])⟩, sorry⟩
-  uniq := by
-    intro a
-    sorry }
+def ezero: Products (WithTop I) := ⟨[el 0], by simp only [List.chain'_singleton]⟩
 
-instance (α : Type _) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := sorry
+def enil : Products (WithTop I) := ⟨[], by simp only [List.chain'_nil]⟩
+
+lemma elZeroIsBot (i : WithTop I) : el 0 ≤ i := by
+  have h₁ : 0 < Ordinal.type ((·<·) : WithTop I → WithTop I → Prop)
+  · rw [Ordinal.pos_iff_ne_zero]
+    intro h
+    rw [Ordinal.type_eq_zero_iff_isEmpty] at h
+    simp only [not_isEmpty_of_nonempty] at h
+  have : el 0 = Ordinal.enum ((·<·) : WithTop I → WithTop I → Prop) 0 h₁
+  · dsimp [el]
+    rw [dite_eq_iff]
+    left
+    use h₁
+  · rw [this]
+    have h := Ordinal.enum_zero_le h₁ i
+    simp only [not_lt] at h
+    assumption
+
+lemma leEzeroSingleton : { m : Products (WithTop I) | m < ezero} = {⟨[], List.chain'_nil⟩ } := by
+  ext ⟨m, hm⟩
+  refine' ⟨_,_⟩
+  · simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
+    rw [ltIffLex]
+    dsimp [ezero]
+    intro h
+    apply Subtype.eq
+    dsimp
+    induction m with
+    | nil => rfl
+    | cons i m _ =>
+      simp
+      by_cases hi : el 0 = i
+      · rw [hi, List.Lex.cons_iff] at h
+        exact List.Lex.not_nil_right _ _ h
+      · have : List.Lex (·<·) [el 0] [i]
+        · rw [← List.Lex.singleton_iff]
+          rw [lt_iff_le_and_ne]
+          exact ⟨elZeroIsBot i, hi⟩
+        · have ht : List.Lex (·<·) (i :: m) [i] := transLex _ _ _ h this
+          rw [List.Lex.cons_iff] at ht
+          exact List.Lex.not_nil_right _ _ ht
+  · simp only [Set.mem_singleton_iff, Set.mem_setOf_eq]
+    rw [ltIffLex]
+    dsimp [ezero]
+    intro h
+    cases h
+    exact List.nil_lt_cons _ _
+
+lemma leEnilEmpty : { m : Products (WithTop I) | m < enil } = ∅ := by
+  ext ⟨m, hm⟩
+  refine' ⟨_,(by tauto)⟩
+  rintro h
+  · simp at h
+    rw [ltIffLex] at h
+    dsimp [enil] at h
+    simp only [Set.mem_empty_iff_false]
+    apply List.Lex.not_nil_right _ _ h
+
+instance {α : Type _} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
+  use 0
+  use 1
+  intro h
+  rw [LocallyConstant.ext_iff] at h
+  apply @zero_ne_one ℤ
+  exact h default
+
+lemma evalEnilNeZero : Products.eval ({fun _ ↦ false} : Set (WithTop I → Bool)) enil ≠ 0 := by
+  dsimp [Products.eval]
+  exact one_ne_zero
+
+lemma nilIsGood : Products.isGood ({fun _ ↦ false} : Set (WithTop I → Bool)) enil:= by
+  intro h
+  rw [leEnilEmpty] at h
+  simp at h
+  apply evalEnilNeZero h
+
+lemma nilSpanTop :
+    Submodule.span ℤ (Products.eval ({fun _ ↦ false} : Set (WithTop I → Bool)) '' {enil}) = ⊤ := by
+  simp only [Set.image_singleton]
+  dsimp [enil, Products.eval]
+  rw [eq_top_iff]
+  rintro f _
+  rw [Submodule.mem_span]
+  intro p h₁
+  simp at h₁
+  have : f = (f default) • (1 : LocallyConstant _ ℤ)
+  · ext x
+    have hd : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
+    rw [hd]
+    simp
+    rfl
+  rw [this]
+  apply Submodule.smul_mem
+  exact h₁
+
+noncomputable
+instance GoodProducts.singletonUnique :
+  Unique { l // Products.isGood ({fun _ ↦ false} : Set (WithTop I → Bool)) l } :=
+{ default := ⟨enil, nilIsGood⟩
+  uniq := by
+    rintro ⟨⟨l, hl⟩, hll⟩
+    dsimp [default]
+    ext
+    dsimp [enil]
+    apply Subtype.eq
+    dsimp
+    have : [] < l ∨ [] = l  := List.Lex.nil_le l
+    cases this
+    · exfalso
+      apply hll
+      have he : {enil} ⊆ {m | m < ⟨l,hl⟩ }
+      · simp
+        dsimp [enil]
+        rw [Subtype.mk_lt_mk]
+        assumption
+      have hpe : Products.eval ({fun _ ↦ false} : Set (WithTop I → Bool)) '' {enil} ⊆
+        Products.eval _ '' {m | m < ⟨l,hl⟩ } := Set.image_subset _ he
+      apply Submodule.span_mono hpe
+      rw [nilSpanTop]
+      exact Submodule.mem_top
+    · exact Eq.symm (by assumption) }
+
+instance (α : Type _) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
+  constructor
+  intro c f h
+  by_cases hc : c = 0
+  · left
+    assumption
+  · right
+    ext x
+    rw [LocallyConstant.ext_iff] at h
+    apply_fun fun (y : ℤ) ↦ c * y
+    · simp at h
+      simp
+      exact h x
+    · exact mul_right_injective₀ hc
 
 lemma GoodProducts.linearIndependentSingleton :
-    LinearIndependent ℤ (eval ({fun a ↦ false} : Set (WithTop I → Bool))) := by
-  refine' linearIndependent_unique (eval ({fun a ↦ false} : Set (WithTop I → Bool))) _
-  sorry
+    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (WithTop I → Bool))) :=
+  linearIndependent_unique (eval ({fun _ ↦ false} : Set (WithTop I → Bool))) evalEnilNeZero
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
   rw [PIffP I i]
