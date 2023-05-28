@@ -16,23 +16,21 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.Subring.Basic
 
 /-!
-# Constructions of (co)limits in CommRing
+# Constructions of (co)limits in `CommRingCat`
 
-In this file we provide the explicit (co)cones for various (co)limits in `CommRing`, including
+In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
 * tensor product is the pushout
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
-* `ring_hom.eq_locus` is the equalizer
+* `RingHom.eqLocus` is the equalizer
 
 -/
 
 
 universe u u'
 
-open CategoryTheory CategoryTheory.Limits
-
-open TensorProduct
+open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace CommRingCat
 
@@ -40,7 +38,7 @@ section Pushout
 
 variable {R A B : CommRingCat.{u}} (f : R ⟶ A) (g : R ⟶ B)
 
-/-- The explicit cocone with tensor products as the fibered product in `CommRing`. -/
+/-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
 def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
@@ -148,12 +146,12 @@ end Pushout
 
 section Terminal
 
-/-- The trivial ring is the (strict) terminal object of `CommRing`. -/
+/-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
-  . dsimp
-  . intros; dsimp
-  . intros f; ext; rfl
+  · dsimp
+  · intros; dsimp
+  · intros f; ext; rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
@@ -177,7 +175,7 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 set_option linter.uppercaseLean3 false in
 #align CommRing.subsingleton_of_is_terminal CommRingCat.subsingleton_of_isTerminal
 
-/-- `ℤ` is the initial object of `CommRing`. -/
+/-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
   IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
 set_option linter.uppercaseLean3 false in
@@ -189,14 +187,14 @@ section Product
 
 variable (A B : CommRingCat.{u})
 
-/-- The product in `CommRing` is the cartesian product. This is the binary fan. -/
+/-- The product in `CommRingCat` is the cartesian product. This is the binary fan. -/
 @[simps! pt]
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan CommRingCat.prodFan
 
-/-- The product in `CommRing` is the cartesian product. -/
+/-- The product in `CommRingCat` is the cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := RingHom.prod (c.π.app ⟨WalkingPair.left⟩) (c.π.app ⟨WalkingPair.right⟩)
   fac c j := by
@@ -223,7 +221,7 @@ section Equalizer
 
 variable {A B : CommRingCat.{u}} (f g : A ⟶ B)
 
-/-- The equalizer in `CommRing` is the equalizer as sets. This is the equalizer fork. -/
+/-- The equalizer in `CommRingCat` is the equalizer as sets. This is the equalizer fork. -/
 def equalizerFork : Fork f g :=
   Fork.ofι (CommRingCat.ofHom (RingHom.eqLocus f g).subtype) <| by
       ext ⟨x, e⟩
@@ -231,7 +229,7 @@ def equalizerFork : Fork f g :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_fork CommRingCat.equalizerFork
 
-/-- The equalizer in `CommRing` is the equalizer as sets. -/
+/-- The equalizer in `CommRingCat` is the equalizer as sets. -/
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
@@ -291,8 +289,8 @@ end Equalizer
 
 section Pullback
 
-/-- In the category of `CommRing`, the pullback of `f : A ⟶ C` and `g : B ⟶ C` is the `eq_locus` of
-the two maps `A × B ⟶ C`. This is the constructed pullback cone.
+/-- In the category of `CommRingCat`, the pullback of `f : A ⟶ C` and `g : B ⟶ C` is the `eqLocus`
+of the two maps `A × B ⟶ C`. This is the constructed pullback cone.
 -/
 def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : PullbackCone f g :=
   PullbackCone.mk

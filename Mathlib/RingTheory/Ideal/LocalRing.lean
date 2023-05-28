@@ -22,15 +22,15 @@ Define local rings as commutative rings having a unique maximal ideal.
 
 ## Main definitions
 
-* `local_ring`: A predicate on commutative semirings, stating that for any pair of elements that
+* `LocalRing`: A predicate on commutative semirings, stating that for any pair of elements that
   adds up to `1`, one of them is a unit. This is shown to be equivalent to the condition that there
   exists a unique maximal ideal.
-* `local_ring.maximal_ideal`: The unique maximal ideal for a local rings. Its carrier set is the
+* `LocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
   set of non units.
-* `is_local_ring_hom`: A predicate on semiring homomorphisms, requiring that it maps nonunits
+* `IsLocalRingHom`: A predicate on semiring homomorphisms, requiring that it maps nonunits
   to nonunits. For local rings, this means that the image of the unique maximal ideal is again
   contained in the unique maximal ideal.
-* `local_ring.residue_field`: The quotient of a local ring by its maximal ideal.
+* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
 
 -/
 
@@ -40,7 +40,7 @@ universe u v w u'
 variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
 
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
-Note that `local_ring` is a predicate. -/
+Note that `LocalRing` is a predicate. -/
 class LocalRing (R : Type u) [Semiring R] extends Nontrivial R : Prop where
   of_is_unit_or_is_unit_of_add_one ::
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another
@@ -203,7 +203,7 @@ end LocalRing
 end CommRing
 
 /-- A local ring homomorphism is a homomorphism `f` between local rings such that `a` in the domain
-  is a unit if `f a` is a unit for any `a`. See `local_ring.local_hom_tfae` for other equivalent
+  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
   definitions. -/
 class IsLocalRingHom [Semiring R] [Semiring S] (f : R →+* S) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
@@ -472,7 +472,7 @@ theorem mapEquiv_refl : mapEquiv (RingEquiv.refl R) = RingEquiv.refl _ :=
   RingEquiv.toRingHom_injective map_id
 #align local_ring.residue_field.map_equiv_refl LocalRing.ResidueField.mapEquiv_refl
 
-/-- The group homomorphism from `ring_aut R` to `ring_aut k` where `k`
+/-- The group homomorphism from `RingAut R` to `RingAut k` where `k`
 is the residue field of `R`. -/
 @[simps]
 def mapAut : RingAut R →* RingAut (LocalRing.ResidueField R) where
@@ -485,7 +485,7 @@ section MulSemiringAction
 
 variable (G : Type _) [Group G] [MulSemiringAction G R]
 
-/-- If `G` acts on `R` as a `mul_semiring_action`, then it also acts on `residue_field R`. -/
+/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `residue_field R`. -/
 instance : MulSemiringAction G (LocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 

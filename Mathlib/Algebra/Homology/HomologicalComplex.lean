@@ -812,13 +812,33 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 set_option linter.uppercaseLean3 false in
 #align chain_complex.mk'_X_1 ChainComplex.mk'_X_1
 
+
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk'_d_1_0 ChainComplex.mk'_d_1_0
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+/- Porting note:
+Downstream constructions using `mk'` (e.g. in `CategoryTheory.Abelian.Projective`)
+have very slow proofs, because of bad simp lemmas.
+It would be better to write good lemmas here if possible, such as
+
+```
+theorem mk'_X_succ (j : ℕ) :
+    (mk' X₀ X₁ d₀ succ').X (j + 2) = (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).1 := by
+  sorry
+
+theorem mk'_d_succ {i j : ℕ} :
+    (mk' X₀ X₁ d₀ succ').d (j + 2) (j + 1) =
+      eqToHom (mk'_X_succ X₀ X₁ d₀ succ' j) ≫
+      (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).2.1 :=
+  sorry
+```
+
+These are already tricky, and it may be better to write analogous lemmas for `mk` first.
+-/
+
 end Mk
 
 section MkHom

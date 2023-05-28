@@ -447,15 +447,15 @@ section ModByMonic
 
 variable {q : R[X]}
 
-theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
-#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
+#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
 @[simp]
 theorem ker_modByMonicHom (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_mod_by_monic hq).trans Ideal.mem_span_singleton.symm
+  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 #align polynomial.ker_mod_by_monic_hom Polynomial.ker_modByMonicHom
 
 end ModByMonic

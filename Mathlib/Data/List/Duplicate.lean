@@ -28,7 +28,7 @@ variable {α : Type _}
 
 namespace List
 
-/-- Property that an element `x : α` of `l : list α` can be found in the list more than once. -/
+/-- Property that an element `x : α` of `l : List α` can be found in the list more than once. -/
 inductive Duplicate (x : α) : List α → Prop
   | cons_mem {l : List α} : x ∈ l → Duplicate x (x :: l)
   | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)

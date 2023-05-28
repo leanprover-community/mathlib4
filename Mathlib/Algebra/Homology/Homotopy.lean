@@ -445,7 +445,7 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
 so that as we construct each component, we have available the previous two components,
 and the fact that they satisfy the homotopy condition.
 
-To simplify the situation, we only construct homotopies of the form `homotopy e 0`.
+To simplify the situation, we only construct homotopies of the form `Homotopy e 0`.
 `Homotopy.equivSubZero` can provide the general case.
 
 Notice however, that this construction does not have particularly good definitional properties:

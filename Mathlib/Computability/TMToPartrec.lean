@@ -18,7 +18,7 @@ import Mathlib.Tactic.DeriveFintype
 
 This file defines a simplified basis for partial recursive functions, and a `Turing.TM2` model
 Turing machine for evaluating these functions. This amounts to a constructive proof that every
-`partrec` function can be evaluated by a Turing machine.
+`Partrec` function can be evaluated by a Turing machine.
 
 ## Main definitions
 
@@ -752,7 +752,7 @@ end ToPartrec
 ## Simulating sequentialized partial recursive functions in TM2
 
 At this point we have a sequential model of partial recursive functions: the `Cfg` type and
-`step : Cfg → option Cfg` function from the previous section. The key feature of this model is that
+`step : Cfg → Option Cfg` function from the previous section. The key feature of this model is that
 it does a finite amount of computation (in fact, an amount which is statically bounded by the size
 of the program) between each step, and no individual step can diverge (unlike the compositional
 semantics, where every sub-part of the computation is potentially divergent). So we can utilize the
@@ -811,7 +811,7 @@ prove that only finitely many labels are accessible.) The labels are:
   duplicate of the `push` instruction that is part of the TM2 model, but by having a subroutine
   just for this purpose we can build up programs to execute inside a `goto` statement, where we
   have the flexibility to be general recursive.
-* `read (f : option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
+* `read (f : Option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
   here for convenience.
 * `succ q`: perform a successor operation. Assuming `[n]` is encoded on `main` before,
   `[n+1]` will be on main after. This implements successor for binary natural numbers.
@@ -940,34 +940,10 @@ inductive Λ'
 #align turing.partrec_to_TM2.Λ'.ret Turing.PartrecToTM2.Λ'.ret
 
 -- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
-
-/-- A computable version of `Turing.PartrecToTM2.Λ'.rec`.
-Workaround until Lean has native support for this. The compiler fails to check the termination,
-so this should be `unsafe`. -/
-@[elab_as_elim] private unsafe abbrev Λ'.recU.{u} {motive : Λ' → Sort u}
-    (move : (p : Γ' → Bool) → (k₁ k₂ : K') → (q : Λ') → motive q → motive (Λ'.move p k₁ k₂ q))
-    (clear : (p : Γ' → Bool) → (k : K') → (q : Λ') → motive q → motive (Λ'.clear p k q))
-    (copy : (q : Λ') → motive q → motive (Λ'.copy q))
-    (push : (k : K') → (s : Option Γ' → Option Γ') → (q : Λ') → motive q → motive (Λ'.push k s q))
-    (read : (f : Option Γ' → Λ') → ((a : Option Γ') → motive (f a)) → motive (Λ'.read f))
-    (succ : (q : Λ') → motive q → motive (Λ'.succ q))
-    (pred : (q₁ q₂ : Λ') → motive q₁ → motive q₂ → motive (Λ'.pred q₁ q₂))
-    (ret : (k : Cont') → motive (Λ'.ret k)) :
-    (t : Λ') → motive t
-  | Λ'.move p k₁ k₂ q => move p k₁ k₂ q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.clear p k q => clear p k q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.copy q => copy q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.push k s q => push k s q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.read f => read f (fun a => Λ'.recU move clear copy push read succ pred ret (f a))
-  | Λ'.succ q => succ q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.pred q₁ q₂ => pred q₁ q₂
-      (Λ'.recU move clear copy push read succ pred ret q₁)
-      (Λ'.recU move clear copy push read succ pred ret q₂)
-  | Λ'.ret k => ret k
-
-@[elab_as_elim, implemented_by Λ'.recU] private abbrev Λ'.recC.{u} := @Λ'.rec.{u}
-
-@[csimp] private theorem Λ'.rec_eq_recC : @Λ'.rec = @Λ'.recC := rfl
+compile_inductive% Code
+compile_inductive% Cont'
+compile_inductive% K'
+compile_inductive% Λ'
 
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩

@@ -848,7 +848,8 @@ def prod (s : Submonoid M) (t : Submonoid N) :
 #align add_submonoid.prod AddSubmonoid.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Submonoid M) (t : Submonoid N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align submonoid.coe_prod Submonoid.coe_prod
 #align add_submonoid.coe_prod AddSubmonoid.coe_prod
@@ -1468,7 +1469,7 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
 
 section Actions
 
-/-! ### Actions by `submonoid`s
+/-! ### Actions by `Submonoid`s
 
 These instances tranfer the action by an element `m : M` of a monoid `M` written as `m • a` onto the
 action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.

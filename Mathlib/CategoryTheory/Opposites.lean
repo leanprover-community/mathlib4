@@ -575,13 +575,13 @@ end Equivalence
 adjunctions.
 Note that this (definitionally) gives variants
 ```
-def opEquiv' (A : C) (B : Cᵒᵖ) : (opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
+def opEquiv' (A : C) (B : Cᵒᵖ) : (Opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
 opEquiv _ _
 
-def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ opposite.op B) ≃ (B ⟶ A.unop) :=
+def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ Opposite.op B) ≃ (B ⟶ A.unop) :=
 opEquiv _ _
 
-def opEquiv''' (A B : C) : (opposite.op A ⟶ opposite.op B) ≃ (B ⟶ A) :=
+def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
 opEquiv _ _
 ```
 -/
@@ -605,9 +605,9 @@ instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : D
 /-- The equivalence between isomorphisms of the form `A ≅ B` and `B.unop ≅ A.unop`.
 
 Note this is definitionally the same as the other three variants:
-* `(opposite.op A ≅ B) ≃ (B.unop ≅ A)`
-* `(A ≅ opposite.op B) ≃ (B ≅ A.unop)`
-* `(opposite.op A ≅ opposite.op B) ≃ (B ≅ A)`
+* `(Opposite.op A ≅ B) ≃ (B.unop ≅ A)`
+* `(A ≅ Opposite.op B) ≃ (B ≅ A.unop)`
+* `(Opposite.op A ≅ Opposite.op B) ≃ (B ≅ A)`
 -/
 @[simps]
 def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop)
