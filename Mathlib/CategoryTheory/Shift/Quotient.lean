@@ -27,10 +27,10 @@ noncomputable def HasShift.quotient' :
     HasShift (Quotient r) A :=
   HasShift.induced (Quotient.functor r) A s i (HasShift.quotient'_aux r)
 
-noncomputable def Functor.HasCommShift.quotient' :
+noncomputable def Functor.CommShift.quotient' :
     letI : HasShift (Quotient r) A := HasShift.quotient' r A s i
-    (Quotient.functor r).HasCommShift A :=
-  Functor.HasCommShift.of_induced _ _ _ _ _
+    (Quotient.functor r).CommShift A :=
+  Functor.CommShift.of_induced _ _ _ _ _
 
 variable {A}
 
@@ -49,17 +49,17 @@ noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
     HasShift (Quotient r) A :=
   HasShift.quotient' r A (Quotient.shiftFunctor' r) (Quotient.shiftFunctor'Factors r)
 
-noncomputable instance Quotient.functor_hasCommShift [r.IsCompatibleWithShift A] :
-    (Quotient.functor r).HasCommShift A :=
-  Functor.HasCommShift.quotient' _ _ _ _
+noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
+    (Quotient.functor r).CommShift A :=
+  Functor.CommShift.quotient' _ _ _ _
 
 -- the construction is made irreducible in order to prevent timeouts
-attribute [irreducible] HasShift.quotient Quotient.functor_hasCommShift
+attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 
 noncomputable example [r.IsCompatibleWithShift A] :
     HasShift (Quotient r) A := inferInstance
 
 noncomputable example [r.IsCompatibleWithShift A] :
-    Functor.HasCommShift (Quotient.functor r) A := inferInstance
+    Functor.CommShift (Quotient.functor r) A := inferInstance
 
 end CategoryTheory

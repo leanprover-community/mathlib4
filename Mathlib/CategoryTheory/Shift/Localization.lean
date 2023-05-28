@@ -40,10 +40,10 @@ noncomputable def HasShift.localized' :
     HasShift D A :=
   HasShift.induced L A s i (HasShift.localized'_aux L W)
 
-noncomputable def Functor.HasCommShift.localized' :
+noncomputable def Functor.CommShift.localized' :
     letI : HasShift D A := HasShift.localized' L W A s i
-    L.HasCommShift A :=
-  Functor.HasCommShift.of_induced _ _ _ _ _
+    L.CommShift A :=
+  Functor.CommShift.of_induced _ _ _ _ _
 
 noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
     HasShift D A :=
@@ -51,22 +51,22 @@ noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
     Localization.lift (shiftFunctor C a ⋙ L) (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
 
-noncomputable def Functor.HasCommShift.localized [W.IsCompatibleWithShift A] :
-    @Functor.HasCommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
-  Functor.HasCommShift.localized' _ _ _ _ _
+noncomputable def Functor.CommShift.localized [W.IsCompatibleWithShift A] :
+    @Functor.CommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
+  Functor.CommShift.localized' _ _ _ _ _
 
-attribute [irreducible] HasShift.localized Functor.HasCommShift.localized
+attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
 noncomputable instance HasShift.localization [W.IsCompatibleWithShift A] :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
 
-noncomputable instance MorphismProperty.hasCommShift_Q
+noncomputable instance MorphismProperty.commShift_Q
     [W.IsCompatibleWithShift A] :
-    W.Q.HasCommShift A :=
-  Functor.HasCommShift.localized W.Q W A
+    W.Q.CommShift A :=
+  Functor.CommShift.localized W.Q W A
 
-attribute [irreducible] HasShift.localization MorphismProperty.hasCommShift_Q
+attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
@@ -74,11 +74,11 @@ noncomputable instance HasShift.localization' [W.IsCompatibleWithShift A] :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
 
-noncomputable instance MorphismProperty.hasCommShift_Q'
+noncomputable instance MorphismProperty.commShift_Q'
     [W.IsCompatibleWithShift A] :
-    W.Q'.HasCommShift A :=
-  Functor.HasCommShift.localized W.Q' W A
+    W.Q'.CommShift A :=
+  Functor.CommShift.localized W.Q' W A
 
-attribute [irreducible] HasShift.localization MorphismProperty.hasCommShift_Q'
+attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q'
 
 end CategoryTheory

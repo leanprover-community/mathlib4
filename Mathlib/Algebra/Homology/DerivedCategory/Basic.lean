@@ -92,7 +92,7 @@ instance : (HomotopyCategory.qis C).HasRightCalculusOfFractions := by
   dsimp only [HomotopyCategory.qis]
   infer_instance
 
-noncomputable instance : (Qh : _ ⥤ DerivedCategory C).HasCommShift ℤ := by
+noncomputable instance : (Qh : _ ⥤ DerivedCategory C).CommShift ℤ := by
   dsimp only [Qh, DerivedCategory]
   infer_instance
 
@@ -121,7 +121,7 @@ instance : (Q : CochainComplex C ℤ ⥤ _).Additive := by
   dsimp only [Q]
   infer_instance
 
-noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).HasCommShift ℤ := by
+noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).CommShift ℤ := by
   dsimp only [Q]
   infer_instance
 

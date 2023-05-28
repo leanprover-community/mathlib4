@@ -28,7 +28,7 @@ namespace Functor
 variable {C D : Type _} [Category C] [Category D]
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
     [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [HasShift D ℤ]
-  (L : C ⥤ D) [HasCommShift L ℤ]
+  (L : C ⥤ D) [CommShift L ℤ]
 
 def essImageDistTriang : Set (Triangle D) :=
   fun T => ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
@@ -70,7 +70,7 @@ variable {C D : Type _} [Category C] [Category D]
     (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
     [W.IsCompatibleWithShift ℤ] [W.IsCompatibleWithTriangulation]
     [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
-    [HasShift D ℤ] [L.HasCommShift ℤ]
+    [HasShift D ℤ] [L.CommShift ℤ]
 
 section
 
@@ -301,7 +301,7 @@ is_triangulated.mk'
 end)-/
 
 noncomputable example : HasShift W.Localization ℤ := inferInstance
-noncomputable example : W.Q.HasCommShift ℤ := inferInstance
+noncomputable example : W.Q.CommShift ℤ := inferInstance
 
 variable
   [HasFiniteProducts C]
@@ -356,7 +356,7 @@ variable {C D : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObje
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [EssSurj L.mapArrow]
-  [L.HasCommShift ℤ] [L.IsTriangulated]
+  [L.CommShift ℤ] [L.IsTriangulated]
 
 lemma distTriang_iff (T : Triangle D) :
     (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by

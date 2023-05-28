@@ -154,13 +154,13 @@ noncomputable instance [F.IsHomological] : PreservesLimitsOfShape (Discrete Walk
 
 instance [F.IsHomological] : F.Additive := F.additive_of_preserves_binary_products
 
-instance (L : C ⥤ D) [HasCommShift L ℤ] [IsTriangulated L]
+instance (L : C ⥤ D) [CommShift L ℤ] [IsTriangulated L]
   (F : D ⥤ A) [F.PreservesZeroMorphisms] [F.IsHomological] :
     (L ⋙ F).IsHomological :=
   ⟨fun T hT => F.map_distinguished_exact _ (L.map_distinguished T hT)⟩
 
 lemma isHomological_of_localization (L : C ⥤ D)
-    [L.HasCommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
+    [L.CommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
     (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.PreservesZeroMorphisms] [G.IsHomological]
     [F.PreservesZeroMorphisms] : F.IsHomological := by
   have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm

@@ -315,11 +315,11 @@ noncomputable instance hasShift : HasShift S.category ℤ :=
   hasShiftOfFullyFaithful S.ι (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
     (fun X => S.shift _ _ X.2)) (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
 
-instance hasCommShiftι : S.ι.HasCommShift ℤ :=
-  Functor.HasCommShift.of_hasShiftOfFullyFaithful _ _ _
+instance commShiftι : S.ι.CommShift ℤ :=
+  Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
 
 -- these definitions are made irreducible to prevent (at least temporarily) any abuse of defeq
-attribute [irreducible] hasShift hasCommShiftι
+attribute [irreducible] hasShift commShiftι
 
 instance (n : ℤ) : (shiftFunctor S.category n).Additive := by
   have := Functor.additive_of_iso (S.ι.commShiftIso n).symm

@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Shift.HasCommShift
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 namespace CategoryTheory
@@ -12,7 +12,7 @@ namespace Functor
 variable {C D E : Type _} [Category C] [Category D] [Category E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
   [Preadditive C] [Preadditive D] [Preadditive E]
-  (F : C ⥤ D) [F.HasCommShift ℤ] (G : D ⥤ E) [G.HasCommShift ℤ]
+  (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
 @[simps]
 def mapTriangle : Pretriangulated.Triangle C ⥤ Pretriangulated.Triangle D where
@@ -31,7 +31,7 @@ def mapTriangle : Pretriangulated.Triangle C ⥤ Pretriangulated.Triangle D wher
 
 attribute [local simp] map_zsmul comp_zsmul zsmul_comp
 
--- TODO : extend this to [(F.mapTriangle).HasCommShift ℤ]
+-- TODO : extend this to [(F.mapTriangle).CommShift ℤ]
 
 noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=

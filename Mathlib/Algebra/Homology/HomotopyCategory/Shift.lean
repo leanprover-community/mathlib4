@@ -239,19 +239,19 @@ lemma mapCochainComplexShiftIso_hom_app_f (K : CochainComplex C ℤ) (i : ℤ) :
 lemma mapCochainComplexShiftIso_inv_app_f (K : CochainComplex C ℤ) (i : ℤ) :
     ((F.mapCochainComplexShiftIso n).inv.app K).f i = 𝟙 _ := rfl
 
-instance hasCommShiftMapCochainComplex :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).HasCommShift ℤ where
+instance commShiftMapCochainComplex :
+    (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
   iso := F.mapCochainComplexShiftIso
   zero := by
     ext
-    rw [HasCommShift.iso_zero_hom_app]
+    rw [CommShift.isoZero_hom_app]
     dsimp
     simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
        CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
        eqToHom_map, eqToHom_trans, eqToHom_refl]
   add := fun a b => by
     ext
-    rw [HasCommShift.iso_add_hom_app]
+    rw [CommShift.isoAdd_hom_app]
     dsimp
     erw [id_comp, id_comp]
     simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
@@ -310,9 +310,9 @@ noncomputable instance hasShift :
   dsimp only [HomotopyCategory]
   infer_instance
 
-noncomputable instance hasCommShiftQuotient :
-    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).HasCommShift ℤ :=
-  Quotient.functor_hasCommShift (homotopic C (ComplexShape.up ℤ)) ℤ
+noncomputable instance commShiftQuotient :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=
+  Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
 
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive := by

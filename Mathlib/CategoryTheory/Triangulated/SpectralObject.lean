@@ -56,7 +56,7 @@ noncomputable def mapHomologicalFunctor (F : C ⥤ A) [F.PreservesZeroMorphisms]
   exact₂ _ D := F.homology_sequence_exact₂ _ (X.distinguished D) _
   exact₃ _ _ h D := F.homology_sequence_exact₃ _ (X.distinguished D) _ _ h
 
-def mapTriangulatedFunctor (F : C ⥤ D) [F.HasCommShift ℤ] [F.IsTriangulated] :
+def mapTriangulatedFunctor (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] :
     SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
   δ := whiskerRight X.δ F ≫ whiskerLeft (Arrow₂.δ₂ ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
