@@ -494,14 +494,14 @@ theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
 #align strongly_measurable_const_smul_iff stronglyMeasurable_const_smul_iff
 
-nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} {c : M}
+nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
     (hc : IsUnit c) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   let ⟨u, hu⟩ := hc
   hu ▸ stronglyMeasurable_const_smul_iff u
 #align is_unit.strongly_measurable_const_smul_iff IsUnit.stronglyMeasurable_const_smul_iff
 
-theorem _root_.stronglyMeasurable_const_smul_iff₀ {m : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
+theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   (IsUnit.mk0 _ hc).stronglyMeasurable_const_smul_iff
 #align strongly_measurable_const_smul_iff₀ stronglyMeasurable_const_smul_iff₀
@@ -2051,4 +2051,4 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
 end MeasureTheory
 
 -- Guard against import creep
--- assert_not_exists inner_product_space
+assert_not_exists InnerProductSpace
