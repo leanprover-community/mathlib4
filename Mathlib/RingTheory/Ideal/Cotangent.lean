@@ -8,11 +8,11 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Operations
-import Mathbin.Algebra.Module.Torsion
-import Mathbin.Algebra.Ring.Idempotents
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Ideal.LocalRing
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -46,8 +46,7 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance : IsScalarTower S S' I.Cotangent :=
-  by
+instance : IsScalarTower S S' I.Cotangent := by
   delta cotangent
   constructor
   intro s s' x
@@ -67,14 +66,12 @@ theorem map_toCotangent_ker : I.toCotangent.ker.map I.Subtype = I ^ 2 := by
   simp [Ideal.toCotangent, Submodule.map_smul'', pow_two]
 #align ideal.map_to_cotangent_ker Ideal.map_toCotangent_ker
 
-theorem mem_toCotangent_ker {x : I} : x ∈ I.toCotangent.ker ↔ (x : R) ∈ I ^ 2 :=
-  by
+theorem mem_toCotangent_ker {x : I} : x ∈ I.toCotangent.ker ↔ (x : R) ∈ I ^ 2 := by
   rw [← I.map_to_cotangent_ker]
   simp
 #align ideal.mem_to_cotangent_ker Ideal.mem_toCotangent_ker
 
-theorem toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y : R) ∈ I ^ 2 :=
-  by
+theorem toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y : R) ∈ I ^ 2 := by
   rw [← sub_eq_zero, ← map_sub]
   exact I.mem_to_cotangent_ker
 #align ideal.to_cotangent_eq Ideal.toCotangent_eq
@@ -91,8 +88,7 @@ theorem toCotangent_range : I.toCotangent.range = ⊤ :=
   Submodule.range_mkQ _
 #align ideal.to_cotangent_range Ideal.toCotangent_range
 
-theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I :=
-  by
+theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
     refine' (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
@@ -125,15 +121,13 @@ theorem toCotangent_to_quotient_square (x : I) :
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
-def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
-  by
+def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) := by
   haveI : @RingHomSurjective R (R ⧸ I ^ 2) _ _ _ := ⟨Ideal.Quotient.mk_surjective⟩
   let rq := (I ^ 2).Quotient.mk
   exact Submodule.map rq.to_semilinear_map I
 #align ideal.cotangent_ideal Ideal.cotangentIdeal
 
-theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ :=
-  by
+theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangent_ideal, ← smul_eq_mul]
   intro x hx
   apply Submodule.smul_induction_on hx
@@ -143,8 +137,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ :=
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
 theorem to_quotient_square_range :
-    I.cotangentToQuotientSquare.range = I.cotangentIdeal.restrictScalars R :=
-  by
+    I.cotangentToQuotientSquare.range = I.cotangentIdeal.restrictScalars R := by
   trans (I.cotangent_to_quotient_square.comp I.to_cotangent).range
   · rw [LinearMap.range_comp, I.to_cotangent_range, Submodule.map_top]
   · rw [to_quotient_square_comp_to_cotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
@@ -152,8 +145,7 @@ theorem to_quotient_square_range :
 
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
-noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :=
-  by
+noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
   refine'
     {
       I.cotangent_to_quotient_square.cod_restrict (I.cotangent_ideal.restrict_scalars R) fun x => by
@@ -178,8 +170,7 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
     I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
-      I.toCotangent ⟨x, hx⟩ :=
-  by
+      I.toCotangent ⟨x, hx⟩ := by
   apply I.cotangent_equiv_ideal.injective
   rw [I.cotangent_equiv_ideal.apply_symm_apply]
   ext
@@ -189,8 +180,7 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
 variable {A B : Type _} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
-def AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ f.toRingHom.ker ^ 2 →ₐ[R] B :=
-  by
+def AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ f.toRingHom.ker ^ 2 →ₐ[R] B := by
   refine' { Ideal.Quotient.lift (f.to_ring_hom.ker ^ 2) f.to_ring_hom _ with commutes' := _ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
   · intro r;
@@ -200,16 +190,14 @@ def AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ f.toRingHom.ker ^ 2 →ₐ[
 #align alg_hom.ker_square_lift AlgHom.kerSquareLift
 
 theorem AlgHom.ker_ker_sqare_lift (f : A →ₐ[R] B) :
-    f.kerSquareLift.toRingHom.ker = f.toRingHom.ker.cotangentIdeal :=
-  by
+    f.kerSquareLift.toRingHom.ker = f.toRingHom.ker.cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
 #align alg_hom.ker_ker_sqare_lift AlgHom.ker_ker_sqare_lift
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
-def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I :=
-  by
+def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine' (Ideal.quotEquivOfEq (Ideal.map_eq_submodule_map _ _).symm).trans _
   refine' (DoubleQuot.quotQuotEquivQuotSup _ _).trans _
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
