@@ -14,24 +14,24 @@ import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
-# Internal grading of an `add_monoid_algebra`
+# Internal grading of an `AddMonoidAlgebra`
 
-In this file, we show that an `add_monoid_algebra` has an internal direct sum structure.
+In this file, we show that an `AddMonoidAlgebra` has an internal direct sum structure.
 
 ## Main results
 
-* `add_monoid_algebra.grade_by R f i`: the `i`th grade of an `add_monoid_algebra R M` given by the
+* `AddMonoidAlgebra.gradeBy R f i`: the `i`th grade of an `AddMonoidAlgebra R M` given by the
   degree function `f`.
-* `add_monoid_algebra.grade R i`: the `i`th grade of an `add_monoid_algebra R M` when the degree
+* `AddMonoidAlgebra.grade R i`: the `i`th grade of an `AddMonoidAlgebra R M` when the degree
   function is the identity.
-* `add_monoid_algebra.grade_by.graded_algebra`: `add_monoid_algebra` is an algebra graded by
-  `add_monoid_algebra.grade_by`.
-* `add_monoid_algebra.grade.graded_algebra`: `add_monoid_algebra` is an algebra graded by
-  `add_monoid_algebra.grade`.
-* `add_monoid_algebra.grade_by.is_internal`: propositionally, the statement that
-  `add_monoid_algebra.grade_by` defines an internal graded structure.
-* `add_monoid_algebra.grade.is_internal`: propositionally, the statement that
-  `add_monoid_algebra.grade` defines an internal graded structure when the degree function
+* `AddMonoidAlgebra.gradeBy.gradedAlgebra`: `AddMonoidAlgebra` is an algebra graded by
+  `AddMonoidAlgebra.gradeBy`.
+* `AddMonoidAlgebra.grade.gradedAlgebra`: `AddMonoidAlgebra` is an algebra graded by
+  `AddMonoidAlgebra.grade`.
+* `AddMonoidAlgebra.gradeBy.isInternal`: propositionally, the statement that
+  `AddMonoidAlgebra.gradeBy` defines an internal graded structure.
+* `AddMonoidAlgebra.grade.isInternal`: propositionally, the statement that
+  `AddMonoidAlgebra.grade` defines an internal graded structure when the degree function
   is the identity.
 -/
 
@@ -124,7 +124,7 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
-`direct_sum.decompose`. -/
+`DirectSum.decompose`. -/
 def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=
   AddMonoidAlgebra.lift R M _
     { toFun := fun m =>
@@ -230,12 +230,12 @@ theorem grade.decompose_single (i : ι) (r : R) :
   decomposeAux_single _ _ _
 #align add_monoid_algebra.grade.decompose_single AddMonoidAlgebra.grade.decompose_single
 
-/-- `add_monoid_algebra.gradesby` describe an internally graded algebra -/
+/-- `AddMonoidAlgebra.gradeBy` describe an internally graded algebra. -/
 theorem gradeBy.isInternal : DirectSum.IsInternal (gradeBy R f) :=
   DirectSum.Decomposition.isInternal _
 #align add_monoid_algebra.grade_by.is_internal AddMonoidAlgebra.gradeBy.isInternal
 
-/-- `add_monoid_algebra.grades` describe an internally graded algebra -/
+/-- `AddMonoidAlgebra.grade` describe an internally graded algebra. -/
 theorem grade.isInternal : DirectSum.IsInternal (grade R : ι → Submodule R _) :=
   DirectSum.Decomposition.isInternal _
 #align add_monoid_algebra.grade.is_internal AddMonoidAlgebra.grade.isInternal
