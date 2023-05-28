@@ -171,8 +171,17 @@ lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
       Category.assoc, cokerToKer'_fac, shortComplex₂_f]
   exact epi_of_epi_fac fac
 
-/-lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
-    Mono (S.cokerToKer' cc kf hcc hkf) := sorry
+lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
+    Mono (S.cokerToKer' cc kf hcc hkf) := by
+  have := hS.hasZeroObject
+  have := hS.hasHomology
+  have : Mono kf.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext hkf⟩
+  let h := (hS.rightHomologyDataOfIsColimitCokernelCofork cc hcc)
+  have := h.exact_iff_mono_g'.1 hS
+  have fac : S.cokerToKer' cc kf hcc hkf ≫ kf.ι = h.g' := by
+    rw [← cancel_epi h.p, h.p_g', ShortComplex.Exact.rightHomologyDataOfIsColimitCokernelCofork_p,
+      cokerToKer'_fac, shortComplex₁_g]
+  exact mono_of_mono_fac fac
 
 variable {S}
 variable [Balanced C]
@@ -184,7 +193,12 @@ lemma Exact.isIso_cokerToKer' : IsIso (S.cokerToKer' cc kf hcc hkf) := by
 
 lemma Exact.isIso_cokerToKer [HasCokernel S.f] [HasKernel S.h] :
     IsIso S.cokerToKer :=
-  hS.isIso_cokerToKer' _ _ _ _ -/
+  hS.isIso_cokerToKer' _ _ _ _
+
+lemma Exact.isIso_cyclesCoToCycles
+    [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
+    IsIso S.cyclesCoToCycles :=
+  hS.isIso_cokerToKer' _ _ _ _
 
 end Preadditive
 

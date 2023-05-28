@@ -309,8 +309,6 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   hπ := CokernelCofork.IsColimit.ofIsZeroOfEpi _ (by
     have := hS.hasHomology
     have := hS.epi_toCycles
-    dsimp
-    rw [comp_id]
     have fac : hkf.lift (KernelFork.ofι _ S.zero) = S.toCycles ≫
         (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf).hom := by
       apply Fork.IsLimit.hom_ext hkf
@@ -319,8 +317,34 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
       congr 1
       exact (IsLimit.conePointUniqueUpToIso_hom_comp S.cyclesIsKernel hkf
         WalkingParallelPair.zero).symm
-    rw [fac]
+    dsimp
+    rw [comp_id, fac]
     apply epi_comp) (isZero_zero C)
+
+@[simps]
+noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
+    (hS : S.Exact) [HasZeroObject C] (cc : CokernelCofork S.f) (hcc : IsColimit cc) :
+    S.RightHomologyData where
+  Q := cc.pt
+  H := 0
+  p := cc.π
+  ι := 0
+  wp := cc.condition
+  hp := IsColimit.ofIsoColimit hcc (Cofork.ext (Iso.refl _) (by simp))
+  wι := zero_comp
+  hι := KernelFork.IsLimit.ofIsZeroOfMono _ (by
+    have := hS.hasHomology
+    have := hS.mono_fromCyclesCo
+    have fac : hcc.desc (CokernelCofork.ofπ _ S.zero) =
+      (IsColimit.coconePointUniqueUpToIso hcc S.cyclesCoIsCokernel ).hom ≫ S.fromCyclesCo := by
+      apply Cofork.IsColimit.hom_ext hcc
+      simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, ← p_fromCyclesCo, ← assoc]
+      congr 1
+      exact (IsColimit.comp_coconePointUniqueUpToIso_hom hcc S.cyclesCoIsCokernel
+        WalkingParallelPair.one).symm
+    dsimp
+    rw [id_comp, fac]
+    apply mono_comp) (isZero_zero C)
 
 variable (S)
 

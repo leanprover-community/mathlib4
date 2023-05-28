@@ -2,16 +2,37 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.ArrowThree
 import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits
 
-variable (C ι : Type _) [Category C] [Abelian C] [Category ι]
+variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 
 namespace CategoryTheory
 
 namespace Abelian
+
+lemma exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
+    S.Exact ↔ ∀ (i : ι), (S.map ((evaluation ι C).obj i)).Exact := by
+  have : ∀ i, PreservesFiniteLimits ((evaluation ι C).obj i) := by
+    -- this should be moved to `Limits.FunctorCategory`
+    intro i
+    constructor
+    intros J _ _
+    infer_instance
+  have : ∀ i, PreservesFiniteColimits ((evaluation ι C).obj i) := by
+    intro i
+    constructor
+    intros J _ _
+    infer_instance
+  simp only [ShortComplex.exact_iff_isZero_homology,
+    fun i => Iso.isZero_iff (S.mapHomologyIso ((evaluation ι C).obj i)),
+    evaluation_obj_obj, Functor.isZero_iff]
+
+variable (C ι)
 
 structure SpectralObject where
   H (n : ℤ) : Arrow ι ⥤ C
@@ -33,6 +54,39 @@ namespace SpectralObject
 
 variable {C ι}
 variable (X : SpectralObject C ι) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+
+def shortComplex₁ : ShortComplex (Arrow₂ ι ⥤ C):=
+  ShortComplex.mk (X.δ n₀ n₁ hn₁) (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁))
+     (by
+      ext D
+      exact X.zero₁ n₀ n₁ hn₁ D)
+
+def shortComplex₂ : ShortComplex (Arrow₂ ι ⥤ C):=
+  ShortComplex.mk (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀))
+    (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (by
+      ext D
+      exact X.zero₂ n₀ D)
+
+def shortComplex₃ : ShortComplex (Arrow₂ ι ⥤ C):=
+  ShortComplex.mk  (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (X.δ n₀ n₁ hn₁)
+     (by
+      ext D
+      exact X.zero₃ n₀ n₁ hn₁ D)
+
+lemma shortComplex₁_exact : (X.shortComplex₁ n₀ n₁ hn₁).Exact := by
+  rw [exact_iff_exact_evaluation]
+  intro i
+  apply X.exact₁
+
+lemma shortComplex₂_exact : (X.shortComplex₂ n₀).Exact := by
+  rw [exact_iff_exact_evaluation]
+  intro i
+  apply X.exact₂
+
+lemma shortComplex₃_exact : (X.shortComplex₃ n₀ n₁ hn₁).Exact := by
+  rw [exact_iff_exact_evaluation]
+  intro i
+  apply X.exact₃
 
 -- the homology of this short complex gives the terms in all the pages of the spectral sequence
 def shortComplexE' : ShortComplex (Arrow₃ ι ⥤ C) where
