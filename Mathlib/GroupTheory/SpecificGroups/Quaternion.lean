@@ -17,25 +17,25 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 /-!
 # Quaternion Groups
 
-We define the (generalised) quaternion groups `quaternion_group n` of order `4n`, also known as
-dicyclic groups, with elements `a i` and `xa i` for `i : zmod n`. The (generalised) quaternion
+We define the (generalised) quaternion groups `QuaternionGroup n` of order `4n`, also known as
+dicyclic groups, with elements `a i` and `xa i` for `i : ZMod n`. The (generalised) quaternion
 groups can be defined by the presentation
 $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
-$a^i$ and `xa i` for $x * a^i$. For `n=2` the quaternion group `quaternion_group 2` is isomorphic to
-the unit integral quaternions `(quaternion ℤ)ˣ`.
+$a^i$ and `xa i` for $x * a^i$. For `n=2` the quaternion group `QuaternionGroup 2` is isomorphic to
+the unit integral quaternions `(Quaternion ℤ)ˣ`.
 
 ## Main definition
 
-`quaternion_group n`: The (generalised) quaternion group of order `4n`.
+`QuaternionGroup n`: The (generalised) quaternion group of order `4n`.
 
 ## Implementation notes
 
-This file is heavily based on `dihedral_group` by Shing Tak Lam.
+This file is heavily based on `DihedralGroup` by Shing Tak Lam.
 
 In mathematics, the name "quaternion group" is reserved for the cases `n ≥ 2`. Since it would be
-inconvenient to carry around this condition we define `quaternion_group` also for `n = 0` and
-`n = 1`. `quaternion_group 0` is isomorphic to the infinite dihedral group, while
-`quaternion_group 1` is isomorphic to a cyclic group of order `4`.
+inconvenient to carry around this condition we define `QuaternionGroup` also for `n = 0` and
+`n = 1`. `QuaternionGroup 0` is isomorphic to the infinite dihedral group, while
+`QuaternionGroup 1` is isomorphic to a cyclic group of order `4`.
 
 ## References
 
@@ -44,12 +44,12 @@ inconvenient to carry around this condition we define `quaternion_group` also fo
 
 ## TODO
 
-Show that `quaternion_group 2 ≃* (quaternion ℤ)ˣ`.
+Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 -/
 
 
-/-- The (generalised) quaternion group `quaternion_group n` of order `4n`. It can be defined by the
+/-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
 presentation $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
 $a^i$ and `xa i` for $x * a^i$.
 -/
@@ -85,7 +85,7 @@ private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
-/-- The group structure on `quaternion_group n`.
+/-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
   mul := mul
@@ -147,20 +147,24 @@ private def fintypeHelper : Sum (ZMod (2 * n)) (ZMod (2 * n)) ≃ QuaternionGrou
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-/-- The special case that more or less by definition `quaternion_group 0` is isomorphic to the
+/-- The special case that more or less by definition `QuaternionGroup 0` is isomorphic to the
 infinite dihedral group. -/
 def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralGroup 0 where
-  toFun i := QuaternionGroup.recOn i DihedralGroup.r DihedralGroup.sr
+  toFun i :=
+    -- Porting note: Originally `QuaternionGroup.recOn i DihedralGroup.r DihedralGroup.sr`
+    match i with
+    | a j => DihedralGroup.r j
+    | xa j => DihedralGroup.sr j
   invFun i :=
     match i with
     | DihedralGroup.r j => a j
     | DihedralGroup.sr j => xa j
   left_inv := by rintro (k | k) <;> rfl
   right_inv := by rintro (k | k) <;> rfl
-  map_mul' := by rintro (k | k) (l | l) <;> dsimp <;> simp
+  map_mul' := by rintro (k | k) (l | l) <;> simp
 #align quaternion_group.quaternion_group_zero_equiv_dihedral_group_zero QuaternionGroup.quaternionGroupZeroEquivDihedralGroupZero
 
-/-- If `0 < n`, then `quaternion_group n` is a finite group.
+/-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
@@ -169,7 +173,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
 instance : Nontrivial (QuaternionGroup n) :=
   ⟨⟨a 0, xa 0, by revert n; simp⟩⟩
 
-/-- If `0 < n`, then `quaternion_group n` has `4n` elements.
+/-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
@@ -223,7 +227,7 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
   · norm_num
 #align quaternion_group.order_of_xa QuaternionGroup.orderOf_xa
 
-/-- In the special case `n = 1`, `quaternion 1` is a cyclic group (of order `4`). -/
+/-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
   apply isCyclic_of_orderOf_eq_card
   rw [card, mul_one]
@@ -242,9 +246,8 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
     apply mt a.inj
     haveI : CharZero (ZMod (2 * 0)) := ZMod.charZero
     simpa using h.ne'
-  apply
-    (Nat.le_of_dvd (NeZero.pos _)
-          (orderOf_dvd_of_pow_eq_one (@a_one_pow_n n))).lt_or_eq.resolve_left
+  apply (Nat.le_of_dvd
+    (NeZero.pos _) (orderOf_dvd_of_pow_eq_one (@a_one_pow_n n))).lt_or_eq.resolve_left
   intro h
   have h1 : (a 1 : QuaternionGroup n) ^ orderOf (a 1) = 1 := pow_orderOf_eq_one _
   rw [a_one_pow] at h1
@@ -255,8 +258,8 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
 
 /-- If `0 < n`, then `a i` has order `(2 * n) / gcd (2 * n) i`.
 -/
-theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) : orderOf (a i) = 2 * n / Nat.gcd (2 * n) i.val :=
-  by
+theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
+    orderOf (a i) = 2 * n / Nat.gcd (2 * n) i.val := by
   conv_lhs => rw [← ZMod.nat_cast_zmod_val i]
   rw [← a_one_pow, orderOf_pow, orderOf_a_one]
 #align quaternion_group.order_of_a QuaternionGroup.orderOf_a
