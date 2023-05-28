@@ -135,9 +135,22 @@ theorem IccExtend_of_mem (f : Icc a b → β) (hx : x ∈ Icc a b) : IccExtend h
 #align set.Icc_extend_of_mem Set.IccExtend_of_mem
 
 @[simp]
-theorem Icc_extend_coe (f : Icc a b → β) (x : Icc a b) : IccExtend h f x = f x :=
+theorem IccExtend_val (f : Icc a b → β) (x : Icc a b) : IccExtend h f x = f x :=
   congr_arg f <| projIcc_val h x
-#align set.Icc_extend_coe Set.Icc_extend_coe
+#align set.Icc_extend_coe Set.IccExtend_val
+
+/-- If `f : α → β` is a constant both on $(-∞, a]$ and on $[b, +∞)$, then the extension of this
+function from $[a, b]$ to the whole line is equal to the original function. -/
+theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
+    IccExtend h (f ∘ (↑)) = f := by
+  ext x
+  cases' lt_or_le x a with hxa hax
+  · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
+  · cases' le_or_lt x b with hxb hbx
+    · lift x to Icc a b using ⟨hax, hxb⟩
+      rw [IccExtend_val, comp_apply]
+    · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]
+#align set.Icc_extend_eq_self Set.IccExtend_eq_self
 
 end Set
 
