@@ -434,7 +434,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_sum] at this
   convert this
   rw [SMulHomClass.map_smul, b.repr_apply_apply, mul_comm]
-  simp only [innerSL_apply, smul_eq_mul] -- Porting note: was `rfl`
+  rfl
 #align orthonormal_basis.sum_inner_mul_inner OrthonormalBasis.sum_inner_mul_inner
 
 protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
@@ -469,7 +469,6 @@ def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜
   OrthonormalBasis.ofRepr <|
     LinearEquiv.isometryOfInner v.equivFun
       (by
-      classical -- Porting note: added
         intro x y
         let p : EuclideanSpace 𝕜 ι := v.equivFun x
         let q : EuclideanSpace 𝕜 ι := v.equivFun y
@@ -508,7 +507,6 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
 variable {v : ι → E}
-variable [DecidableEq ι] [DecidableEq ι'] -- Porting note: added
 
 /-- A finite orthonormal set that spans is an orthonormal basis -/
 protected def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
