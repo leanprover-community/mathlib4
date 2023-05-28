@@ -38,7 +38,7 @@ open Classical Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smul_right smulRight_one_eq_iff)
+open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 section NormedField
 
@@ -81,8 +81,7 @@ theorem hasDerivWithinAt_iff_tendsto_slope :
 
 theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s] x) (𝓝 f') := by
-  convert← hasDerivWithinAt_iff_tendsto_slope
-  exact diff_singleton_eq_self hs
+  rw [hasDerivWithinAt_iff_tendsto_slope, diff_singleton_eq_self hs]
 #align has_deriv_within_at_iff_tendsto_slope' hasDerivWithinAt_iff_tendsto_slope'
 
 theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
@@ -92,7 +91,6 @@ theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x)
 end NormedField
 
 /-! ### Upper estimates on liminf and limsup -/
-
 
 section Real
 
@@ -110,7 +108,7 @@ theorem HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs :
 
 theorem HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : f' < r) : ∃ᶠ z in 𝓝[>] x, slope f x z < r :=
-  (hf.Ioi_of_Ici.limsup_slope_le' (lt_irrefl x) hr).Frequently
+  (hf.Ioi_of_Ici.limsup_slope_le' (lt_irrefl x) hr).frequently
 #align has_deriv_within_at.liminf_right_slope_le HasDerivWithinAt.liminf_right_slope_le
 
 end Real
@@ -145,7 +143,7 @@ theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (
 In other words, the limit superior of this ratio as `z` tends to `x` along `s`
 is less than or equal to `‖f'‖`.
 
-This lemma is a weaker version of `has_deriv_within_at.limsup_norm_slope_le`
+This lemma is a weaker version of `HasDerivWithinAt.limsup_norm_slope_le`
 where `‖f z‖ - ‖f x‖` is replaced by `‖f z - f x‖`. -/
 theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
@@ -158,11 +156,11 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
 /-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
 `‖f z - f x‖ / ‖z - x‖` is frequently less than `r` as `z → x+0`.
 In other words, the limit inferior of this ratio as `z` tends to `x+0`
-is less than or equal to `‖f'‖`. See also `has_deriv_within_at.limsup_norm_slope_le`
+is less than or equal to `‖f'‖`. See also `HasDerivWithinAt.limsup_norm_slope_le`
 for a stronger version using limit superior and any set `s`. -/
 theorem HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r :=
-  (hf.Ioi_of_Ici.limsup_norm_slope_le hr).Frequently
+  (hf.Ioi_of_Ici.limsup_norm_slope_le hr).frequently
 #align has_deriv_within_at.liminf_right_norm_slope_le HasDerivWithinAt.liminf_right_norm_slope_le
 
 /-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
@@ -172,17 +170,15 @@ is less than or equal to `‖f'‖`.
 
 See also
 
-* `has_deriv_within_at.limsup_norm_slope_le` for a stronger version using
+* `HasDerivWithinAt.limsup_norm_slope_le` for a stronger version using
   limit superior and any set `s`;
-* `has_deriv_within_at.liminf_right_norm_slope_le` for a stronger version using
-  `‖f z - f x‖` instead of `‖f z‖ - ‖f x‖`. -/
+* `HasDerivWithinAt.liminf_right_norm_slope_le` for a stronger version using
+  `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`. -/
 theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, (z - x)⁻¹ * (‖f z‖ - ‖f x‖) < r := by
-  have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).Frequently
-  refine' this.mp (eventually.mono self_mem_nhdsWithin _)
-  intro z hxz hz
+  have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).frequently
+  refine this.mp (Eventually.mono self_mem_nhdsWithin fun z hxz hz ↦ ?_)
   rwa [Real.norm_eq_abs, abs_of_pos (sub_pos_of_lt hxz)] at hz
 #align has_deriv_within_at.liminf_right_slope_norm_le HasDerivWithinAt.liminf_right_slope_norm_le
 
 end RealSpace
-
