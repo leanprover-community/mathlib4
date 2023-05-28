@@ -632,8 +632,8 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
   then `H` is contained in a subgroup of cardinality `p ^ m`
   if `n ≤ m` and `p ^ m` divides the cardinality of `G` -/
 theorem exists_subgroup_card_pow_prime_le [Fintype G] (p : ℕ) :
-    ∀ {n m : ℕ} [_hp : Fact p.Prime] (_hdvd : p ^ m ∣ card G) (H : Subgroup G) (_hH : card H = p ^ n)
-      (_hnm : n ≤ m), ∃ K : Subgroup G, card K = p ^ m ∧ H ≤ K
+    ∀ {n m : ℕ} [_hp : Fact p.Prime] (_hdvd : p ^ m ∣ card G) (H : Subgroup G)
+      (_hH : card H = p ^ n) (_hnm : n ≤ m), ∃ K : Subgroup G, card K = p ^ m ∧ H ≤ K
   | n, m => fun {hdvd H hH hnm} =>
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
