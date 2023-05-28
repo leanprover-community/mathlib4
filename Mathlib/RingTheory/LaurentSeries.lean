@@ -25,9 +25,7 @@ import Mathlib.RingTheory.Localization.FractionRing
 -/
 
 
-open HahnSeries
-
-open BigOperators Classical Polynomial
+open HahnSeries BigOperators Classical Polynomial
 
 noncomputable section
 
@@ -49,11 +47,11 @@ variable [Semiring R]
 instance : Coe (PowerSeries R) (LaurentSeries R) :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
-/-- Porting note: now a syntactic tautology and not needed elsewhere
+/- Porting note: now a syntactic tautology and not needed elsewhere
 theorem coe_powerSeries (x : PowerSeries R) :
     (x : LaurentSeries R) = HahnSeries.ofPowerSeries ℤ R x :=
-  rfl
-#align laurent_series.coe_power_series LaurentSeries.coe_powerSeries -/
+  rfl -/
+#noalign laurent_series.coe_power_series
 
 @[simp]
 theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
@@ -220,8 +218,8 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries,
-      if_neg (Int.coe_nat_nonneg _).not_lt, Int.natAbs_ofNat]
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
+      Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
@@ -247,16 +245,9 @@ theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries
   simp [coeff_coe, coeff_smul, smul_ite]
 #align power_series.coe_smul PowerSeries.coe_smul
 
-/-- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
-@[simp, norm_cast]
-theorem coe_bit0 : ((bit0 f : PowerSeries R) : LaurentSeries R) = bit0 f :=
-  (ofPowerSeries ℤ R).map_bit0 _
-#align power_series.coe_bit0 PowerSeries.coe_bit0
-
-@[simp, norm_cast]
-theorem coe_bit1 : ((bit1 f : PowerSeries R) : LaurentSeries R) = bit1 f :=
-  (ofPowerSeries ℤ R).map_bit1 _
-#align power_series.coe_bit1 PowerSeries.coe_bit1 -/
+-- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
+#noalign power_series.coe_bit0
+#noalign power_series.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=

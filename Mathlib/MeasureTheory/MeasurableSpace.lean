@@ -1790,8 +1790,7 @@ theorem coe_empty : ↑(∅ : Subtype (MeasurableSet : Set α → Prop)) = (∅ 
   rfl
 #align measurable_set.coe_empty MeasurableSet.coe_empty
 
--- porting note: why do these instances have to be noncomputable?
-noncomputable instance Subtype.instInsert [MeasurableSingletonClass α] :
+instance Subtype.instInsert [MeasurableSingletonClass α] :
     Insert α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun a s => ⟨insert a (s : Set α), s.prop.insert a⟩⟩
 #align measurable_set.subtype.has_insert MeasurableSet.Subtype.instInsert
@@ -1803,7 +1802,7 @@ theorem coe_insert [MeasurableSingletonClass α] (a : α)
   rfl
 #align measurable_set.coe_insert MeasurableSet.coe_insert
 
-noncomputable instance Subtype.instSingleton [MeasurableSingletonClass α] :
+instance Subtype.instSingleton [MeasurableSingletonClass α] :
     Singleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun a => ⟨{a}, .singleton _⟩⟩
 
@@ -1815,7 +1814,7 @@ instance Subtype.instIsLawfulSingleton [MeasurableSingletonClass α] :
     IsLawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
 
-noncomputable instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
 #align measurable_set.subtype.has_compl MeasurableSet.Subtype.instHasCompl
 
@@ -1824,7 +1823,7 @@ theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑(sᶜ) = 
   rfl
 #align measurable_set.coe_compl MeasurableSet.coe_compl
 
-noncomputable instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨(x : Set α) ∪ y, x.prop.union y.prop⟩⟩
 #align measurable_set.subtype.has_union MeasurableSet.Subtype.instUnion
 
@@ -1833,14 +1832,14 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
 @[simp]
 protected theorem sup_eq_union (s t : {s : Set α // MeasurableSet s}) : s ⊔ t = s ∪ t := rfl
 
-noncomputable instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x ∩ y, x.prop.inter y.prop⟩⟩
 #align measurable_set.subtype.has_inter MeasurableSet.Subtype.instInter
 
@@ -1849,14 +1848,14 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma
 @[simp]
 protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t = s ∩ t := rfl
 
-noncomputable instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
 #align measurable_set.subtype.has_sdiff MeasurableSet.Subtype.instSDiff
 
@@ -1882,7 +1881,7 @@ theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : 
   rfl
 #align measurable_set.coe_top MeasurableSet.coe_top
 
-noncomputable instance Subtype.instBooleanAlgebra :
+instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
   Subtype.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl

@@ -12,6 +12,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
 
@@ -31,32 +32,6 @@ proofs about these definitions, those are contained in other files in `Data.List
 namespace List
 
 open Function Nat
-
-section recursor_workarounds
-/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
-def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
-  (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
-    (l : List α) → motive l
-| [] => nil
-| (x :: xs) => cons x xs (List.recC nil cons xs)
-
-@[csimp]
-lemma rec_eq_recC : @List.rec = @List.recC := by
-  ext α motive nil cons l
-  induction l with
-  | nil => rfl
-  | cons x xs ih =>
-    rw [List.recC, ←ih]
-
-/-- A computable version of `List._sizeOf_inst`. -/
-def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
-  sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
-
-@[csimp]
-lemma _sizeOfinst_eq_sizeOfinstC : @List._sizeOf_inst = @List._sizeOf_instC := by
-  simp [List._sizeOf_1, List._sizeOf_instC, _sizeOf_inst]
-
-end recursor_workarounds
 
 universe u v w x
 
