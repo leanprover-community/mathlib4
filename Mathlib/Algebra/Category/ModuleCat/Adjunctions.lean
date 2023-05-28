@@ -15,11 +15,12 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
-The functor of forming finitely supported functions on a type with values in a `[ring R]`
+The functor of forming finitely supported functions on a type with values in a `[Ring R]`
 is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
 
+set_option linter.uppercaseLean3 false -- `Module`
 
 noncomputable section
 
@@ -37,15 +38,15 @@ section
 
 variable [Ring R]
 
-/-- The free functor `Type u ⥤ Module R` sending a type `X` to the
+/-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 @[simps]
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map X Y f := Finsupp.lmapDomain _ _ f
-  map_id' := by intros ; exact Finsupp.lmapDomain_id _ _
-  map_comp' := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
+  map {X} {Y} f := Finsupp.lmapDomain _ _ f
+  map_id := by intros ; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
 #align Module.free ModuleCat.free
 
 /-- The free-forgetful adjunction for R-modules.
@@ -53,7 +54,7 @@ def free : Type u ⥤ ModuleCat R where
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X M => (Finsupp.lift M R X).toEquiv.symm
-      homEquiv_naturality_left_symm := fun _ _ M f g =>
+      homEquiv_naturality_left_symm := fun {_} {_} M f g =>
         Finsupp.lhom_ext' fun x =>
           LinearMap.ext_ring
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
@@ -73,19 +74,19 @@ attribute [local ext] TensorProduct.ext
 /-- (Implementation detail) The unitor for `free R`. -/
 def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
   Finsupp.lsingle PUnit.unit
-#align Module.free.ε ModuleCat.free.ε
+#align Module.free.ε ModuleCat.Free.ε
 
 @[simp]
 theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
   rfl
-#align Module.free.ε_apply ModuleCat.free.ε_apply
+#align Module.free.ε_apply ModuleCat.Free.ε_apply
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- (Implementation detail) The tensorator for `free R`. -/
 def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (α ⊗ β) :=
   (finsuppTensorFinsupp' R α β).toModuleIso
-#align Module.free.μ ModuleCat.free.μ
+#align Module.free.μ ModuleCat.Free.μ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -355,4 +356,3 @@ def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
 end Free
 
 end CategoryTheory
-
