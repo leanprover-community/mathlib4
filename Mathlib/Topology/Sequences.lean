@@ -364,7 +364,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       ∃ t : ℕ → Set X, Antitone t ∧ (∀ n, t n ∈ l) ∧ (∀ n, t n ×ˢ t n ⊆ W n) ∧ ∀ n, t n ⊆ s := by
     have : ∀ n, ∃ t ∈ l, t ×ˢ t ⊆ W n ∧ t ⊆ s := by
       rw [le_principal_iff] at hls
-      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ᶠ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
+      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this

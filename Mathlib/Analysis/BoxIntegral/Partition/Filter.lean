@@ -303,13 +303,12 @@ Sacks-Henstock inequality to compare two prepartitions covering the same part of
 
 It is also automatically satisfied for any `c > 1`, see TODO section of the module docstring for
 details. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
-  IsSubordinate : π.IsSubordinate r
-  IsHenstock : l.bHenstock → π.IsHenstock
-  distortion_le : l.bDistortion → π.distortion ≤ c
-  exists_compl : l.bDistortion → ∃ π' : Prepartition I,
+  protected IsSubordinate : π.IsSubordinate r
+  protected IsHenstock : l.bHenstock → π.IsHenstock
+  protected distortion_le : l.bDistortion → π.distortion ≤ c
+  protected exists_compl : l.bDistortion → ∃ π' : Prepartition I,
     π'.iUnion = ↑I \ π.iUnion ∧ π'.distortion ≤ c
 #align box_integral.integration_params.mem_base_set BoxIntegral.IntegrationParams.MemBaseSet
 

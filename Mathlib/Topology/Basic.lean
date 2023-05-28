@@ -25,7 +25,7 @@ the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 
 For topological spaces `α` and `β`, a function `f : α → β` and a point `a : α`,
 `ContinuousAt f a` means `f` is continuous at `a`, and global continuity is
-`Continuous f`. There is also a version of continuity `Pcontinuous` for
+`Continuous f`. There is also a version of continuity `PContinuous` for
 partially defined functions.
 
 ## Notation

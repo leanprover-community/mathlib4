@@ -664,30 +664,30 @@ theorem prod_mul_distrib : (∏ x in s, f x * g x) = (∏ x in s, f x) * ∏ x i
 
 @[to_additive]
 theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
-    (∏ x in s ×ᶠ t, f x) = ∏ x in s, ∏ y in t, f (x, y) :=
-  prod_finset_product (s ×ᶠ t) s (fun _a => t) fun _p => mem_product
+    (∏ x in s ×ˢ t, f x) = ∏ x in s, ∏ y in t, f (x, y) :=
+  prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 #align finset.prod_product Finset.prod_product
 #align finset.sum_product Finset.sum_product
 
 /-- An uncurried version of `Finset.prod_product`. -/
 @[to_additive "An uncurried version of `Finset.sum_product`"]
 theorem prod_product' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
-    (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ x in s, ∏ y in t, f x y :=
+    (∏ x in s ×ˢ t, f x.1 x.2) = ∏ x in s, ∏ y in t, f x y :=
   prod_product
 #align finset.prod_product' Finset.prod_product'
 #align finset.sum_product' Finset.sum_product'
 
 @[to_additive]
 theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β} :
-    (∏ x in s ×ᶠ t, f x) = ∏ y in t, ∏ x in s, f (x, y) :=
-  prod_finset_product_right (s ×ᶠ t) t (fun _a => s) fun _p => mem_product.trans and_comm
+    (∏ x in s ×ˢ t, f x) = ∏ y in t, ∏ x in s, f (x, y) :=
+  prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
 #align finset.prod_product_right Finset.prod_product_right
 #align finset.sum_product_right Finset.sum_product_right
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
 @[to_additive "An uncurried version of `Finset.prod_product_right`"]
 theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
-    (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ y in t, ∏ x in s, f x y :=
+    (∏ x in s ×ˢ t, f x.1 x.2) = ∏ y in t, ∏ x in s, f x y :=
   prod_product_right
 #align finset.prod_product_right' Finset.prod_product_right'
 #align finset.sum_product_right' Finset.sum_product_right'
