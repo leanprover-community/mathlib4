@@ -38,7 +38,7 @@ open Topology
 
 namespace Complex
 
-/-- We say that `l : filter ℂ` is an *exponential comparison filter* if the real part tends to
+/-- We say that `l : Filter ℂ` is an *exponential comparison filter* if the real part tends to
 infinity along `l` and the imaginary part grows subexponentially compared to the real part. These
 properties guarantee that `(λ z, z ^ a₁ * exp (b₁ * z)) =o[l] (λ z, z ^ a₂ * exp (b₂ * z))` for any
 complex `a₁`, `a₂` and real `b₁ < b₂`.
