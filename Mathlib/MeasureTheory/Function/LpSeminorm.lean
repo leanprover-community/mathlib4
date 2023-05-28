@@ -1557,8 +1557,7 @@ variable {𝕜 : Type _} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [M
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
 theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
-    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ :=
-  by
+    snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp [snorm', hq_pos]
   refine' le_antisymm (snorm'_const_smul_le _ _ hq_pos) _
@@ -1571,8 +1570,8 @@ theorem snormEssSup_const_smul (c : 𝕜) (f : α → F) :
   simp_rw [snormEssSup, Pi.smul_apply, nnnorm_smul, ENNReal.coe_mul, ENNReal.essSup_const_mul]
 #align measure_theory.snorm_ess_sup_const_smul MeasureTheory.snormEssSup_const_smul
 
-theorem snorm_const_smul (c : 𝕜) (f : α → F) : snorm (c • f) p μ = (‖c‖₊ : ℝ≥0∞) * snorm f p μ :=
-  by
+theorem snorm_const_smul (c : 𝕜) (f : α → F) :
+    snorm (c • f) p μ = (‖c‖₊ : ℝ≥0∞) * snorm f p μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
   refine' le_antisymm (snorm_const_smul_le _ _) _
