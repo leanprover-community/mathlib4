@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Gluing Topological spaces
@@ -51,6 +52,7 @@ provided.
 * `Top.glue_data.ι_open_embedding`: Each of the `ι i`s are open embeddings.
 
 -/
+set_option autoImplicit false
 
 
 noncomputable section
@@ -89,6 +91,7 @@ are stated in a less categorical way.
 structure GlueData extends GlueData TopCat where
   f_open : ∀ i j, OpenEmbedding (f i j)
   f_mono := fun i j => (TopCat.mono_iff_injective _).mpr (f_open i j).toEmbedding.inj
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data TopCat.GlueData
 
 namespace GlueData
@@ -100,20 +103,27 @@ local notation "𝖣" => D.toGlueData
 
 theorem π_surjective : Function.Surjective 𝖣.π :=
   (TopCat.epi_iff_surjective 𝖣.π).mp inferInstance
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.π_surjective TopCat.GlueData.π_surjective
 
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
-  rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
+  rw [coequalizer_isOpen_iff]
+  dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
+    parallelPair_obj_one]
+  rw [colimit_isOpen_iff.{_,u}]  -- porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
+                                 -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; exact h j
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.is_open_iff TopCat.GlueData.isOpen_iff
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
   𝖣.ι_jointly_surjective (forget TopCat) x
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_jointly_surjective TopCat.GlueData.ι_jointly_surjective
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
@@ -121,7 +131,9 @@ See `Top.glue_data.ι_eq_iff_rel`.
 -/
 def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   a = b ∨ ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
+set_option linter.uppercaseLean3 false in
 #align Top.glue_data.rel TopCat.GlueData.Rel
+#exit
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
@@ -212,6 +224,7 @@ theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
 instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
 #align Top.glue_data.ι_mono TopCat.GlueData.ι_mono
+#exit
 
 theorem image_inter (i j : D.J) :
     Set.range (𝖣.ι i) ∩ Set.range (𝖣.ι j) = Set.range (D.f i j ≫ 𝖣.ι _) := by
@@ -265,6 +278,7 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   apply (D.t j i ≫ D.f i j).continuous_toFun.isOpen_preimage
   exact U.is_open
 #align Top.glue_data.open_image_open TopCat.GlueData.open_image_open
+#exit
 
 theorem ι_openEmbedding (i : D.J) : OpenEmbedding (𝖣.ι i) :=
   openEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
@@ -354,6 +368,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     ext
     exact h.cocycle i j k ⟨x, hx⟩ hx'
 #align Top.glue_data.mk' TopCat.GlueData.mk'
+#exit
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
@@ -418,6 +433,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     rw [ι_from_open_subsets_glue_apply]
     exact Set.mem_range_self _
 #align Top.glue_data.from_open_subsets_glue_is_open_map TopCat.GlueData.fromOpenSubsetsGlue_isOpenMap
+#exit
 
 theorem fromOpenSubsetsGlue_openEmbedding : OpenEmbedding (fromOpenSubsetsGlue U) :=
   openEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
