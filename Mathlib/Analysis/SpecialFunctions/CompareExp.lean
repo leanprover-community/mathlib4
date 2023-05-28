@@ -116,12 +116,14 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
     calc
-      (fun z : ℂ => (z.im ^ n) ^ 2) = fun z => z.im ^ (2 * n) := by simp only [pow_mul']
-      _ =O[l] fun z => Real.exp z.re := (hl.isBigO_im_pow_re _)
-      _ = fun z => Real.exp z.re ^ 1 := by simp only [pow_one]
-      _ =o[l] fun z => Real.exp z.re ^ 2 :=
-        (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
-          Real.tendsto_exp_atTop.comp hl.tendsto_re
+      ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := sorry
+      _ = fun z => (Complex.im z) ^ (2 * n) := sorry -- by simp only [pow_mul']
+      _ =O[l] fun z => Real.exp z.re := sorry --(hl.isBigO_im_pow_re _)
+      _ = fun z => Real.exp z.re ^ 1 := sorry -- by simp only [pow_one]
+      _ =o[l] fun z => Real.exp z.re ^ 2 := sorry
+      _ = (fun z => Real.exp z.re) ^ 2 := sorry
+        -- (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
+        --   Real.tendsto_exp_atTop.comp hl.tendsto_re
 
 #align complex.is_exp_cmp_filter.is_o_im_pow_exp_re Complex.IsExpCmpFilter.isLittleO_im_pow_exp_re
 
