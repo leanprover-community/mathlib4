@@ -17,13 +17,12 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 In this file we prove that `(x ^ n)' = n * x ^ (n - 1)`, where `n` is a natural number.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Analysis/Calculus/Deriv/Basic`.
 
 ## Keywords
 
 derivative, power
 -/
-
 
 universe u v w
 
@@ -49,13 +48,12 @@ variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
 
-
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
 variable (n : ℕ)
 
 theorem hasStrictDerivAt_pow :
-    ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
+    ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
   | 0, x => by simp [hasStrictDerivAt_const]
   | 1, x => by simpa using hasStrictDerivAt_id x
   | n + 1 + 1, x => by
