@@ -165,7 +165,7 @@ set_option linter.uppercaseLean3 false in
 
 open CategoryTheory.Limits.WalkingParallelPair
 
-/-  porting note: I could not get the statement of this theorem to type-check
+--  porting note: I could not get the statement of this theorem to type-check
 theorem eqvGen_of_π_eq {x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y) :
     EqvGen (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta glue_data.π multicoequalizer.sigma_π at h
@@ -189,7 +189,6 @@ theorem eqvGen_of_π_eq {x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y) :
   infer_instance
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
--/
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
