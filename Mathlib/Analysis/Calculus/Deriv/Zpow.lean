@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Pow
-import Mathbin.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Inv
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -45,10 +45,8 @@ variable {m : ℤ}
 
 
 theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
-    HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x :=
-  by
-  have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x :=
-    by
+    HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x := by
+  have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x := by
     intro m hm
     lift m to ℕ using le_of_lt hm
     simp only [zpow_ofNat, Int.cast_ofNat]
@@ -94,8 +92,7 @@ theorem differentiableOn_zpow (m : ℤ) (s : Set 𝕜) (h : (0 : 𝕜) ∉ s ∨
   differentiableWithinAt_zpow m x <| h.imp_left <| ne_of_mem_of_not_mem hxs
 #align differentiable_on_zpow differentiableOn_zpow
 
-theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m - 1) :=
-  by
+theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m - 1) := by
   by_cases H : x ≠ 0 ∨ 0 ≤ m
   · exact (hasDerivAt_zpow m x H).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
@@ -115,8 +112,7 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
 
 @[simp]
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
-    ((deriv^[k]) fun x : 𝕜 => x ^ m) = fun x => (∏ i in Finset.range k, m - i) * x ^ (m - k) :=
-  by
+    ((deriv^[k]) fun x : 𝕜 => x ^ m) = fun x => (∏ i in Finset.range k, m - i) * x ^ (m - k) := by
   induction' k with k ihk
   · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
   ·
@@ -130,8 +126,7 @@ theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
 #align iter_deriv_zpow iter_deriv_zpow
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
-    (deriv^[k]) (fun x : 𝕜 => x ^ n) x = (∏ i in Finset.range k, n - i) * x ^ (n - k) :=
-  by
+    (deriv^[k]) (fun x : 𝕜 => x ^ n) x = (∏ i in Finset.range k, n - i) * x ^ (n - k) := by
   simp only [← zpow_ofNat, iter_deriv_zpow, Int.cast_ofNat]
   cases' le_or_lt k n with hkn hnk
   · rw [Int.ofNat_sub hkn]

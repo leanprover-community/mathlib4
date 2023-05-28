@@ -430,6 +430,7 @@ import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Calculus.Deriv.Support
+import Mathlib.Analysis.Calculus.Deriv.Zpow
 import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Add
