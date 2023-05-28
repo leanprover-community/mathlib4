@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Finsupp
-import Mathbin.Algebra.MonoidAlgebra.Support
-import Mathbin.Algebra.DirectSum.Internal
-import Mathbin.RingTheory.GradedAlgebra.Basic
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.DirectSum.Internal
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Internal grading of an `add_monoid_algebra`
@@ -67,16 +67,14 @@ theorem mem_gradeBy_iff (f : M → ι) (i : ι) (a : AddMonoidAlgebra R M) :
     a ∈ gradeBy R f i ↔ (a.support : Set M) ⊆ f ⁻¹' {i} := by rfl
 #align add_monoid_algebra.mem_grade_by_iff AddMonoidAlgebra.mem_gradeBy_iff
 
-theorem mem_grade_iff (m : M) (a : AddMonoidAlgebra R M) : a ∈ grade R m ↔ a.support ⊆ {m} :=
-  by
+theorem mem_grade_iff (m : M) (a : AddMonoidAlgebra R M) : a ∈ grade R m ↔ a.support ⊆ {m} := by
   rw [← Finset.coe_subset, Finset.coe_singleton]
   rfl
 #align add_monoid_algebra.mem_grade_iff AddMonoidAlgebra.mem_grade_iff
 
 theorem mem_grade_iff' (m : M) (a : AddMonoidAlgebra R M) :
     a ∈ grade R m ↔
-      a ∈ ((Finsupp.lsingle m : R →ₗ[R] M →₀ R).range : Submodule R (AddMonoidAlgebra R M)) :=
-  by
+      a ∈ ((Finsupp.lsingle m : R →ₗ[R] M →₀ R).range : Submodule R (AddMonoidAlgebra R M)) := by
   rw [mem_grade_iff, Finsupp.support_subset_singleton']
   apply exists_congr
   intro r
@@ -88,8 +86,7 @@ theorem grade_eq_lsingle_range (m : M) : grade R m = (Finsupp.lsingle m : R →�
 #align add_monoid_algebra.grade_eq_lsingle_range AddMonoidAlgebra.grade_eq_lsingle_range
 
 theorem single_mem_gradeBy {R} [CommSemiring R] (f : M → ι) (m : M) (r : R) :
-    Finsupp.single m r ∈ gradeBy R f (f m) :=
-  by
+    Finsupp.single m r ∈ gradeBy R f (f m) := by
   intro x hx
   rw [finset.mem_singleton.mp (Finsupp.support_single_subset hx)]
 #align add_monoid_algebra.single_mem_grade_by AddMonoidAlgebra.single_mem_gradeBy
@@ -103,8 +100,7 @@ end
 open DirectSum
 
 instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f : M →+ ι) :
-    SetLike.GradedMonoid (gradeBy R f : ι → Submodule R (AddMonoidAlgebra R M))
-    where
+    SetLike.GradedMonoid (gradeBy R f : ι → Submodule R (AddMonoidAlgebra R M)) where
   one_mem m h := by
     rw [one_def] at h
     by_cases H : (1 : R) = (0 : R)
@@ -154,8 +150,7 @@ def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=
 theorem decomposeAux_single (m : M) (r : R) :
     decomposeAux f (Finsupp.single m r) =
       DirectSum.of (fun i : ι => gradeBy R f i) (f m)
-        ⟨Finsupp.single m r, single_mem_gradeBy _ _ _⟩ :=
-  by
+        ⟨Finsupp.single m r, single_mem_gradeBy _ _ _⟩ := by
   refine' (lift_single _ _ _).trans _
   refine' (DirectSum.of_smul _ _ _ _).symm.trans _
   apply DirectSum.of_eq_of_gradedMonoid_eq
@@ -166,8 +161,7 @@ theorem decomposeAux_single (m : M) (r : R) :
 #align add_monoid_algebra.decompose_aux_single AddMonoidAlgebra.decomposeAux_single
 
 theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
-    decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x :=
-  by
+    decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x := by
   obtain ⟨x, hx⟩ := x
   revert hx
   refine' Finsupp.induction x _ _
