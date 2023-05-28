@@ -14,7 +14,7 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!

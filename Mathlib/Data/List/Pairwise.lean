@@ -104,7 +104,7 @@ theorem Pairwise.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l 
 #align list.pairwise.iff List.Pairwise.iff
 
 theorem pairwise_of_forall {l : List α} (H : ∀ x y, R x y) : Pairwise R l := by
-  induction l <;> [exact Pairwise.nil, simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
+  induction l <;> [exact Pairwise.nil; simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
 #align list.pairwise_of_forall List.pairwise_of_forall
 
 theorem Pairwise.and_mem {l : List α} :
@@ -373,13 +373,11 @@ theorem pwFilter_map (f : β → α) :
     ∀ l : List β, pwFilter R (map f l) = map f (pwFilter (fun x y => R (f x) (f y)) l)
   | [] => rfl
   | x :: xs =>
-    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then
-      by
+    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then by
       have h' : ∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun b hb => h _ (by rw [pwFilter_map f xs]; apply mem_map_of_mem _ hb)
       rw [map, pwFilter_cons_of_pos h, pwFilter_cons_of_pos h', pwFilter_map f xs, map]
-    else
-      by
+    else by
       have h' : ¬∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun hh =>
         h fun a ha => by
@@ -415,8 +413,7 @@ theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
 #align list.pairwise_pw_filter List.pairwise_pwFilter
 
 theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
-  ⟨fun e => e ▸ pairwise_pwFilter l, fun p =>
-    by
+  ⟨fun e => e ▸ pairwise_pwFilter l, fun p => by
     induction' l with x l IH; · rfl
     cases' pairwise_cons.1 p with al p
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩

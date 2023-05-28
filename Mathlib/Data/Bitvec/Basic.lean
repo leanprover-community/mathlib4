@@ -23,7 +23,7 @@ namespace Bitvec
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat
 
-/-- convert `fin` to `bitvec` -/
+/-- convert `fin` to `Bitvec` -/
 def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
   Bitvec.ofNat _ i.val
 #align bitvec.of_fin Bitvec.ofFin
@@ -33,7 +33,7 @@ theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
   apply i.is_lt
 #align bitvec.of_fin_val Bitvec.ofFin_val
 
-/-- convert `bitvec` to `fin` -/
+/-- convert `Bitvec` to `fin` -/
 def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
   i.toNat
 #align bitvec.to_fin Bitvec.toFin
@@ -115,8 +115,7 @@ theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v�
 #align bitvec.to_fin_le_to_fin_of_le Bitvec.toFin_le_toFin_of_le
 
 theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j :=
-  show (Bitvec.ofNat n i).toNat ≤ (Bitvec.ofNat n j).toNat
-    by
+  show (Bitvec.ofNat n i).toNat ≤ (Bitvec.ofNat n j).toNat by
     simp only [toNat_ofNat, Nat.mod_eq_of_lt, Fin.is_lt]
     exact h
 #align bitvec.of_fin_le_of_fin_of_le Bitvec.ofFin_le_ofFin_of_le

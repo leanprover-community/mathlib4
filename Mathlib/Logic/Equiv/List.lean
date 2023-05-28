@@ -149,7 +149,7 @@ noncomputable def _root_.Fintype.toEncodable (α : Type _) [Fintype α] : Encoda
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
 instance _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
-  Encodable.Subtype.encodable
+  Subtype.encodable
 #align vector.encodable Vector.encodable
 
 /-- If `α` is countable, then so is `Vector α n`. -/
@@ -192,9 +192,9 @@ encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
 def fintypePi (α : Type _) (π : α → Type _) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
     Trunc (Encodable (∀ a, π a)) :=
   (Fintype.truncEncodable α).bind fun a =>
-    (@fintypeArrow α (Σa, π a) _ _ (@Encodable.Sigma.encodable _ _ a _)).bind fun f =>
+    (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
       Trunc.mk <|
-        @Encodable.ofEquiv _ _ (@Encodable.Subtype.encodable _ _ f _)
+        @Encodable.ofEquiv _ _ (@Subtype.encodable _ _ f _)
           (Equiv.piEquivSubtypeSigma α π)
 #align encodable.fintype_pi Encodable.fintypePi
 
@@ -224,7 +224,7 @@ theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
   Finset.sort_toFinset _ _
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
 
-/-- An encodable `Fintype` is equivalent to the same size `fin`. -/
+/-- An encodable `Fintype` is equivalent to the same size `Fin`. -/
 def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) :=
   haveI : DecidableEq α := Encodable.decidableEqOfEncodable _
   -- Porting note: used the `trans` tactic
@@ -308,8 +308,7 @@ theorem lower_raise : ∀ l n, lower (raise l n) n = l
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
-  | m :: l, n, h =>
-    by
+  | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower
@@ -428,7 +427,6 @@ def listEquivSelfOfEquivNat {α : Type _} (e : α ≃ ℕ) : List α ≃ α :=
     List α ≃ List ℕ := listEquivOfEquiv e
     _ ≃ ℕ := listNatEquivNat
     _ ≃ α := e.symm
-
 #align equiv.list_equiv_self_of_equiv_nat Equiv.listEquivSelfOfEquivNat
 
 end Equiv

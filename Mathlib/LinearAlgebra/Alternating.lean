@@ -627,16 +627,16 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
     (by rw [Function.update_same, Function.update_noteq hij, Function.update_same]) hij
 #align alternating_map.map_update_update AlternatingMap.map_update_update
 
-theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) : f (v ∘ Equiv.swap i j) + f v = 0 :=
-  by
+theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+    f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
   convert f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 #align alternating_map.map_swap_add AlternatingMap.map_swap_add
 
-theorem map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : f v + f (v ∘ Equiv.swap i j) = 0 :=
-  by
+theorem map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+    f v + f (v ∘ Equiv.swap i j) = 0 := by
   rw [add_comm]
   exact f.map_swap_add v hij
 #align alternating_map.map_add_swap AlternatingMap.map_add_swap
@@ -840,8 +840,7 @@ namespace AlternatingMap
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : AlternatingMap R M N' ι) :
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
-      = Nat.factorial (Fintype.card ι) • a :=
-  by
+    = Nat.factorial (Fintype.card ι) • a := by
   apply AlternatingMap.coe_injective
   simp_rw [MultilinearMap.alternatization_def, ← coe_domDomCongr, domDomCongr_perm, coe_smul,
     smul_smul, Int.units_mul_self, one_smul, Finset.sum_const, Finset.card_univ, Fintype.card_perm,
@@ -1006,7 +1005,7 @@ Here, we generalize this by replacing:
 * the filtering of $[1, m+n]$ to shuffles with an isomorphic quotient
 * the additions in the subscripts of $\sigma$ with an index of type `Sum`
 
-The specialized version can be obtained by combining this definition with `fin_sum_fin_equiv` and
+The specialized version can be obtained by combining this definition with `finSumFinEquiv` and
 `LinearMap.mul'`.
 -/
 @[simps]
@@ -1075,7 +1074,7 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
           MultilinearMap.domCoprod (a.domDomCongr σa) (b.domDomCongr σb) := by
   simp_rw [← MultilinearMap.domCoprod'_apply, MultilinearMap.alternatization_coe]
   simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, LinearMap.map_sum, ←
-    TensorProduct.smul_tmul', TensorProduct.tmul_smul, LinearMap.map_smul_of_tower]
+    TensorProduct.smul_tmul', TensorProduct.tmul_smul]
   rfl
 #align multilinear_map.dom_coprod_alternization_coe MultilinearMap.domCoprod_alternization_coe
 
@@ -1153,8 +1152,8 @@ variable [Module R' N₁] [Module R' N₂]
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : AlternatingMap R' N₁ N₂ ι} (e : Basis ι₁ R' N₁)
-    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) : f = g :=
-  by
+    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
+    f = g := by
   classical
     refine' AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => _)
     by_cases hi : Function.Injective v

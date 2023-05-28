@@ -60,10 +60,6 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
--- porting note: work around lean4#2074
--- the following instance works with `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
-
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
@@ -391,8 +387,7 @@ containing both `S` and `star S`. -/
 @[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
   { S ⊔ star S with
-    star_mem' := fun {a} ha =>
-      by
+    star_mem' := fun {a} ha => by
       simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
       rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
       simpa using ha }
@@ -536,8 +531,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
     (Hstar : ∀ x, p x → p (star x)) : p a :=
-  Subtype.recOn a fun b hb =>
-    by
+  Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
     apply adjoin_induction hb
     exacts[fun x hx => ⟨subset_adjoin R s hx, Hs x hx⟩, fun r =>
@@ -573,10 +567,6 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
             · simpa only [star_mul, star_star] using congr_arg star (hcomm _ hb _ ha))
       exact congr_arg Subtype.val (mul_comm (⟨x, hx⟩ : Algebra.adjoin R (s ∪ star s)) ⟨y, hy⟩) }
 #align star_subalgebra.adjoin_comm_semiring_of_comm StarSubalgebra.adjoinCommSemiringOfComm
-
--- porting note: work around lean4#2074
--- the following instance works with `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
@@ -677,34 +667,34 @@ theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
 #align star_subalgebra.inf_to_subalgebra StarSubalgebra.inf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_infₛ (S : Set (StarSubalgebra R A)) : (↑(infₛ S) : Set A) = ⋂ s ∈ S, ↑s :=
-  infₛ_image
-#align star_subalgebra.coe_Inf StarSubalgebra.coe_infₛ
+theorem coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
+  sInf_image
+#align star_subalgebra.coe_Inf StarSubalgebra.coe_sInf
 
-theorem mem_infₛ {S : Set (StarSubalgebra R A)} {x : A} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p := by
-  simp only [← SetLike.mem_coe, coe_infₛ, Set.mem_interᵢ₂]
-#align star_subalgebra.mem_Inf StarSubalgebra.mem_infₛ
+theorem mem_sInf {S : Set (StarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
+#align star_subalgebra.mem_Inf StarSubalgebra.mem_sInf
 
 @[simp]
-theorem infₛ_toSubalgebra (S : Set (StarSubalgebra R A)) :
-    (infₛ S).toSubalgebra = infₛ (StarSubalgebra.toSubalgebra '' S) :=
+theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
+    (sInf S).toSubalgebra = sInf (StarSubalgebra.toSubalgebra '' S) :=
   SetLike.coe_injective <| by simp
-#align star_subalgebra.Inf_to_subalgebra StarSubalgebra.infₛ_toSubalgebra
+#align star_subalgebra.Inf_to_subalgebra StarSubalgebra.sInf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_infᵢ {ι : Sort _} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
-  simp [infᵢ]
-#align star_subalgebra.coe_infi StarSubalgebra.coe_infᵢ
+theorem coe_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
+  simp [iInf]
+#align star_subalgebra.coe_infi StarSubalgebra.coe_iInf
 
-theorem mem_infᵢ {ι : Sort _} {S : ι → StarSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [infᵢ, mem_infₛ, Set.forall_range_iff]
-#align star_subalgebra.mem_infi StarSubalgebra.mem_infᵢ
+theorem mem_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} {x : A} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+#align star_subalgebra.mem_infi StarSubalgebra.mem_iInf
 
 @[simp]
-theorem infᵢ_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
+theorem iInf_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
     (⨅ i, S i).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
   SetLike.coe_injective <| by simp
-#align star_subalgebra.infi_to_subalgebra StarSubalgebra.infᵢ_toSubalgebra
+#align star_subalgebra.infi_to_subalgebra StarSubalgebra.iInf_toSubalgebra
 
 theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := by
   change Algebra.adjoin R (∅ ∪ star ∅) = Algebra.adjoin R ∅

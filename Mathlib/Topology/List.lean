@@ -56,8 +56,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
     · intro u hu
       have hu := (List.mem_traverse _ _).1 hu
-      have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v :=
-        by
+      have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
         refine' List.Forall₂.flip _
         replace hv := hv.flip
         simp only [List.forall₂_and_left, flip] at hv⊢
@@ -90,8 +89,7 @@ namespace List
 
 theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
     Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ᶠ 𝓝 l) b := by
-  have : 𝓝 (a::l) = (𝓝 a ×ᶠ 𝓝 l).map fun p : α × List α => p.1::p.2 :=
-    by
+  have : 𝓝 (a::l) = (𝓝 a ×ᶠ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
     simp [-Filter.map_def, (· ∘ ·), functor_norm]
@@ -112,7 +110,6 @@ theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter 
   | [] => by rwa [nhds_nil]
   | a::l => by
     rw [tendsto_cons_iff];  exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
-
 #align list.tendsto_nhds List.tendsto_nhds
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
@@ -130,11 +127,9 @@ theorem tendsto_insertNth' {a : α} :
       Tendsto (fun p : α × List α => insertNth n p.1 p.2) (𝓝 a ×ᶠ 𝓝 l) (𝓝 (insertNth n a l))
   | 0, l => tendsto_cons
   | n + 1, [] => by simp
-  | n + 1, a'::l =>
-    by
-    have :
-      𝓝 a ×ᶠ 𝓝 (a'::l) = (𝓝 a ×ᶠ (𝓝 a' ×ᶠ 𝓝 l)).map fun p : α × α × List α => (p.1, p.2.1::p.2.2) :=
-      by
+  | n + 1, a'::l => by
+    have : 𝓝 a ×ᶠ 𝓝 (a'::l) =
+        (𝓝 a ×ᶠ (𝓝 a' ×ᶠ 𝓝 l)).map fun p : α × α × List α => (p.1, p.2.1::p.2.2) := by
       simp only [nhds_cons, Filter.prod_eq, ← Filter.map_def, ← Filter.seq_eq_filter_seq]
       simp [-Filter.map_def, (· ∘ ·), functor_norm]
     rw [this, tendsto_map'_iff]

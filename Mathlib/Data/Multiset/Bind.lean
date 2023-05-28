@@ -192,8 +192,8 @@ theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
 #align multiset.sum_bind Multiset.sum_bind
 
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
-    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) : Rel p (s.bind f) (t.bind g) :=
-  by
+    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
+    Rel p (s.bind f) (t.bind g) := by
   apply rel_join
   rw [rel_map]
   exact hst.mono fun a _ b _ hr => h hr
@@ -303,7 +303,7 @@ section Sigma
 
 variable {σ : α → Type _} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
-/-- `sigma s t` is the dependent version of `product`. It is the sum of
+/-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
 protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a

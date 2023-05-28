@@ -105,7 +105,6 @@ theorem map_zero (hf : IsRingHom f) : f 0 = 0 :=
   calc
     f 0 = f (0 + 0) - f 0 := by rw [hf.map_add]; simp
     _ = 0 := by simp
-
 #align is_ring_hom.map_zero IsRingHom.map_zero
 
 /-- Ring homomorphisms preserve additive inverses. -/
@@ -113,7 +112,6 @@ theorem map_neg (hf : IsRingHom f) : f (-x) = -f x :=
   calc
     f (-x) = f (-x + x) - f x := by rw [hf.map_add]; simp
     _ = -f x := by simp [hf.map_zero]
-
 #align is_ring_hom.map_neg IsRingHom.map_neg
 
 /-- Ring homomorphisms preserve subtraction. -/

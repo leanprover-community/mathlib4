@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
-import Qq
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` basic plugins
@@ -629,10 +629,13 @@ theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
 
+theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
+  rw [← Nat.not_le, ← Bool.not_eq_true, Nat.ble_eq]
+
 theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble b' a' = false → a < b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
-    Nat.cast_lt.2 <| Nat.not_le.1 <| Nat.not_le_of_not_ble_eq_true <| ne_true_of_eq_false h
+    Nat.cast_lt.2 <| ble_eq_false.1 h
 
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
@@ -723,7 +726,7 @@ theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _, Eq _ _] def evalEq : NormNumExt where eval {u α} e := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
   let ra ← derive a; let rb ← derive b
@@ -778,7 +781,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval (e : Q(Prop)) := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
     let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
@@ -834,7 +837,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval (e : Q(Prop)) := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
@@ -890,6 +893,23 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 /-! # Nat operations -/
 
+theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
+    IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
+  |  _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
+such that `norm_num` successfully recognises `a`. -/
+@[norm_num Nat.succ _] def evalNatSucc :
+    NormNumExt where eval {u α} e := do
+  let .app f (a : Q(ℕ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(Nat.succ)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ
+  have pa : Q(IsNat $a $na) := pa
+  have nc : Q(ℕ) := mkRawNatLit (na.natLit!.succ)
+  let r : Q(Nat.succ $na = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_natSucc $pa $r) : Result q(Nat.succ $a))
+
 theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
@@ -927,3 +947,22 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! % nb.natLit!)
   let r : Q(Nat.mod $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
   return (.isNat sℕ nc q(isNat_natMod $pa $pb $r) : Result q($a % $b))
+
+theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.div a' b' = c → IsNat (a / b) c
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by aesop⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _] def evalNatDiv :
+    NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  -- We trust that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
+  guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℕ))
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
+  have pa : Q(IsNat $a $na) := pa
+  have pb : Q(IsNat $b $nb) := pb
+  have nc : Q(ℕ) := mkRawNatLit (na.natLit! / nb.natLit!)
+  let r : Q(Nat.div $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_natDiv $pa $pb $r) : Result q($a / $b))

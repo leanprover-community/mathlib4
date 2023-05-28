@@ -170,7 +170,6 @@ theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
       a ≤ a - b + b := le_tsub_add
       _ ≤ a - b + (c + (b - c)) := add_le_add_left le_add_tsub _
       _ = a - b + c + (b - c) := (add_assoc _ _ _).symm
-
 #align tsub_tsub_le_tsub_add tsub_tsub_le_tsub_add
 
 /-- See `tsub_add_tsub_comm` for the equality. -/
@@ -264,9 +263,7 @@ variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c
 theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
   apply le_antisymm
   · rw [tsub_le_iff_left, tsub_le_iff_left, ← add_assoc, ← tsub_le_iff_left]
-
   · rw [tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
-
 #align tsub_tsub tsub_tsub
 
 theorem tsub_add_eq_tsub_tsub (a b c : α) : a - (b + c) = a - b - c :=
@@ -280,7 +277,6 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
 
 theorem tsub_right_comm : a - b - c = a - c - b := by
   rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
-
 #align tsub_right_comm tsub_right_comm
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/

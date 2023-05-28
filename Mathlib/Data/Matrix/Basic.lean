@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 
 ! This file was ported from Lean 3 source module data.matrix.basic
-! leanprover-community/mathlib commit 0e2aab2b0d521f060f62a14d2cf2e2c54e8491d6
+! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -26,7 +26,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
@@ -382,7 +382,7 @@ theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n 
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  Pi.IsSMulRegular.pi fun _ => Pi.IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
 #align is_smul_regular.matrix IsSMulRegular.matrix
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
@@ -729,6 +729,18 @@ theorem dotProduct_pUnit [AddCommMonoid α] [Mul α] (v w : PUnit → α) : v �
   simp [dotProduct]
 #align matrix.dot_product_punit Matrix.dotProduct_pUnit
 
+section MulOneClass
+
+variable [MulOneClass α] [AddCommMonoid α]
+
+theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.dot_product_one Matrix.dotProduct_one
+
+theorem one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.one_dot_product Matrix.one_dotProduct
+
+end MulOneClass
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] (u v w : m → α) (x y : n → α)
@@ -830,6 +842,17 @@ theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x :=
 #align matrix.dot_product_single Matrix.dotProduct_single
 
 end NonUnitalNonAssocSemiringDecidable
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring α]
+
+@[simp]
+theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
+  simp [dotProduct, Fintype.card]
+#align matrix.one_dot_product_one Matrix.one_dotProduct_one
+
+end NonAssocSemiring
 
 section NonUnitalNonAssocRing
 
@@ -1840,7 +1863,17 @@ end NonUnitalSemiring
 
 section NonAssocSemiring
 
-variable [Fintype m] [DecidableEq m] [NonAssocSemiring α]
+variable [NonAssocSemiring α]
+
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : mulVec A 1 = fun i => ∑ j, A i j := by
+  ext; simp [mulVec, dotProduct]
+#align matrix.mul_vec_one Matrix.mulVec_one
+
+theorem vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i, A i j := by
+  ext; simp [vecMul, dotProduct]
+#align matrix.vec_one_mul Matrix.vec_one_mul
+
+variable [Fintype m] [Fintype n] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : mulVec 1 v = v := by
@@ -2482,9 +2515,10 @@ theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemirin
   funext fun _ => Eq.symm (comp_equiv_symm_dotProduct _ _ _)
 #align matrix.submatrix_vec_mul_equiv Matrix.submatrix_vecMul_equiv
 
-theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
+theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
     (e₂ : l → o) (M : Matrix m n α) :
     M ⬝ (1 : Matrix o o α).submatrix e₁ e₂ = submatrix M id (e₁.symm ∘ e₂) := by
+  cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
@@ -2493,9 +2527,10 @@ theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [Decidab
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
-theorem one_submatrix_mul [Fintype m] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
+theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
     (e₂ : m ≃ o) (M : Matrix m n α) :
     ((1 : Matrix o o α).submatrix e₁ e₂).mul M = submatrix M (e₂.symm ∘ e₁) id := by
+  cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]

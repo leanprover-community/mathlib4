@@ -59,11 +59,9 @@ instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunctio
             aesop_cat },
           ⟨by
             ext x
-            funext f
             apply L.map_injective
             aesop_cat, by
             ext x
-            funext f
             dsimp
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
             rw [← h.unit_naturality]
@@ -85,11 +83,9 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
               aesop_cat },
             ⟨by
               ext x
-              funext f
               apply R.map_injective
               simp, by
               ext x
-              funext f
               dsimp
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
               rw [← h.counit_naturality]
@@ -149,10 +145,9 @@ set_option linter.uppercaseLean3 false in
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
 theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
-  ⟨fun {X Y f g} H =>
-      by
-      rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
-      simpa using inv (h.counit.app X) ≫= H⟩
+  ⟨fun {X Y f g} H => by
+    rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
+    simpa using inv (h.counit.app X) ≫= H⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 

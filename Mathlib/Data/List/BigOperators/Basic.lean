@@ -46,7 +46,6 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
     (a :: l).prod = foldl (· * ·) (a * 1) l :=
       by simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
-
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
 
@@ -55,7 +54,6 @@ theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
     (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]
     _ = l₁.prod * l₂.prod := foldl_assoc
-
 #align list.prod_append List.prod_append
 #align list.sum_append List.sum_append
 
@@ -67,7 +65,7 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 
 @[to_additive (attr := simp)]
 theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl, simp only [*, List.join, map, prod_append, prod_cons]]
+  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons]]
 #align list.prod_join List.prod_join
 #align list.sum_join List.sum_join
 
@@ -183,7 +181,6 @@ theorem prod_take_succ :
     rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc,
       nthLe_cons, dif_neg (Nat.add_one_ne_zero _)]
     simp
-
 #align list.prod_take_succ List.prod_take_succ
 #align list.sum_take_succ List.sum_take_succ
 
@@ -241,7 +238,7 @@ theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod =
 @[to_additive "Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
   by requiring the list to be nonempty."]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
-    l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction, simp]
+    l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
 #align list.head_mul_tail_prod_of_ne_nil List.headI_mul_tail_prod_of_ne_nil
 #align list.head_add_tail_sum_of_ne_nil List.headI_add_tail_sum_of_ne_nil
 
@@ -495,8 +492,7 @@ theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
     ∀ (l : List M) (_ : ∀ x ∈ l, (1 : M) < x) (_ : l ≠ []), 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
-  | a :: b :: l, hl₁, _ =>
-    by
+  | a :: b :: l, hl₁, _ => by
     simp only [forall_eq_or_imp, List.mem_cons] at hl₁
     rw [List.prod_cons]
     apply one_lt_mul_of_lt_of_le' hl₁.1

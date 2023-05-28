@@ -67,9 +67,7 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Classical Topology Filter unitInterval
-
-open Filter Set Function unitInterval
+open Classical Topology Filter unitInterval Set Function
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type _}
 
@@ -326,11 +324,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
     refine'
       (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
-    -- TODO: the following are provable by `continuity` but it is too slow
-    -- porting note: the new `continuity` succeeds and it isn't too slow!
     continuity
-    --exacts[γ.continuous_extend.comp (continuous_const.mul continuous_id),
-     -- γ'.continuous_extend.comp ((continuous_const.mul continuous_id).sub continuous_const)]
   source' := by norm_num
   target' := by norm_num
 #align path.trans Path.trans
@@ -354,6 +348,8 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
       exact h
     -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
     -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
+    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
+    -- find `LinearOrder X`.
     simp_rw [unitInterval.symm, ht]
     norm_num
   · refine' congr_arg _ (Subtype.ext _)
@@ -362,12 +358,14 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
     ring
-  · exfalso
+  · -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
+    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
+    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
+    -- find `LinearOrder X`.
+    exfalso
     rw [sub_le_comm] at h
     norm_num at h h₂
     exact (h.trans h₂).ne rfl
-    -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
 #align path.trans_symm Path.trans_symm
 
 @[simp]
@@ -385,48 +383,31 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
   · rintro x ⟨⟨t, ht0, ht1⟩, hxt⟩
     by_cases h : t ≤ 1 / 2
     · left
-      refine' ⟨⟨2 * t, ⟨by positivity, (le_div_iff' <| by norm_num).mp h⟩⟩, _⟩
-      -- porting note: was `use 2 * t, ⟨by linarith, by linarith⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
+      use ⟨2 * t, ⟨by linarith, by linarith⟩⟩
       rw [← γ₁.extend_extends]
       rwa [coe_mk_mk, Function.comp_apply, if_pos h] at hxt
     · right
-      refine' ⟨⟨2 * t - 1, ⟨_, by norm_num; exact ht1⟩⟩, _⟩
-      -- porting note: was `use 2 * t - 1, ⟨by linarith, by linarith⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
-      · rw [not_le, div_lt_iff (zero_lt_two : (0 : ℝ) < 2)] at h
-        norm_num
-        exact mul_comm t 2 ▸ h.le
+      use ⟨2 * t - 1, ⟨by linarith, by linarith⟩⟩
       rw [← γ₂.extend_extends]
       rwa [coe_mk_mk, Function.comp_apply, if_neg h] at hxt
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
-    · refine' ⟨⟨t / 2, ⟨by positivity,
-        (div_le_iff <| by norm_num).mpr <| ht1.trans (by norm_num)⟩⟩, _⟩
-      -- porting note: was `use ⟨t / 2, ⟨by linarith, by linarith⟩⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
+    · use ⟨t / 2, ⟨by linarith, by linarith⟩⟩
       have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
       rw [coe_mk_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]
     · by_cases h : t = 0
-      · refine' ⟨⟨1 / 2, ⟨by positivity, by norm_num⟩⟩, _⟩
-        -- porting note: was `use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩`
-        -- https://github.com/leanprover-community/mathlib4/issues/2714
+      · use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩
         rw [coe_mk_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
           mul_one_div_cancel (two_ne_zero' ℝ)]
         rw [γ₁.extend_one]
         rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
-      · refine' ⟨⟨(t + 1) / 2, ⟨by positivity, _⟩⟩, _⟩
-        -- porting note: was `use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩`
-        -- https://github.com/leanprover-community/mathlib4/issues/2714
-        · exact (div_le_iff <| by norm_num).mpr <| (add_le_add_right ht1 1).trans (by norm_num)
+      · use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩
         replace h : t ≠ 0 := h
         have ht0 := lt_of_le_of_ne ht0 h.symm
         have : ¬(t + 1) / 2 ≤ 1 / 2 := by
           rw [not_le]
-          exact (div_lt_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr (by norm_num; exact ht0)
-          -- porting note: was `linarith`
-          -- https://github.com/leanprover-community/mathlib4/issues/2714
+          linarith
         rw [coe_mk_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
         ring_nf
         rwa [γ₂.extend_extends]
@@ -520,7 +501,6 @@ theorem continuous_uncurry_extend_of_continuous_family {X ι : Type _} [Topologi
     Continuous ↿fun t => (γ t).extend := by
   refine' h.comp (continuous_id.prod_map continuous_projIcc)
   exact zero_le_one
-
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
 @[continuity]
@@ -698,7 +678,6 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
   have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
-    --continuous_const.prod_mk continuous_id
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 

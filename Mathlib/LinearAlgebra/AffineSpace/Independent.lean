@@ -50,7 +50,6 @@ variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Modul
 
 variable [AffineSpace V P] {ι : Type _}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- An indexed family is said to be affinely independent if no
 nontrivial weighted subtractions (where the sum of weights is 0) are
 0. -/
@@ -59,7 +58,6 @@ def AffineIndependent (p : ι → P) : Prop :=
     (∑ i in s, w i) = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0
 #align affine_independent AffineIndependent
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The definition of `AffineIndependent`. -/
 theorem affineIndependent_def (p : ι → P) :
     AffineIndependent k p ↔
@@ -73,7 +71,6 @@ theorem affineIndependent_of_subsingleton [Subsingleton ι] (p : ι → P) : Aff
   fun _ _ h _ i hi => Fintype.eq_of_subsingleton_of_sum_eq h i hi
 #align affine_independent_of_subsingleton affineIndependent_of_subsingleton
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A family indexed by a `Fintype` is affinely independent if and
 only if no nontrivial weighted subtractions over `Finset.univ` (where
 the sum of the weights is 0) are 0. -/
@@ -89,7 +86,6 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
     simpa [hi] using h
 #align affine_independent_iff_of_fintype affineIndependent_iff_of_fintype
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
@@ -289,7 +285,6 @@ protected theorem AffineIndependent.injective [Nontrivial k] {p : ι → P}
   simp_all only [ne_eq]
 #align affine_independent.injective AffineIndependent.injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If a family is affinely independent, so is any subfamily given by
 composition of an embedding into index type with the original
 family. -/
@@ -498,7 +493,6 @@ theorem affineIndependent_iff {ι} {p : ι → V} :
   forall₃_congr fun s w hw => by simp [s.weightedVSub_eq_linear_combination hw]
 #align affine_independent_iff affineIndependent_iff
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given an affinely independent family of points, a weighted subtraction lies in the
 `vectorSpan` of two points given as affine combinations if and only if it is a weighted
 subtraction with weights a multiple of the difference between the weights of the two points. -/
@@ -634,7 +628,6 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
 
 variable {k}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If all but one point of a family are affinely independent, and that point does not lie in
 the affine span of that family, the family is affinely independent. -/
 theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : ι}
@@ -730,7 +723,7 @@ variable {k : Type _} {V : Type _} {P : Type _} [LinearOrderedRing k] [AddCommGr
 
 variable [Module k V] [AffineSpace V P] {ι : Type _}
 
-attribute [local instance] LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLT
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of two points given as affine combinations, and suppose that, for two indices, the

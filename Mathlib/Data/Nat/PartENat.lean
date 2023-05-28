@@ -16,7 +16,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Natural numbers with infinity
 
-The natural numbers and an extra `top` element `⊤`. This implementation uses `part ℕ` as an
+The natural numbers and an extra `top` element `⊤`. This implementation uses `Part ℕ` as an
 implementation. Use `ℕ∞` instead unless you care about computability.
 
 ## Main definitions
@@ -397,10 +397,9 @@ theorem eq_top_iff_forall_le (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
 theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
   PartENat.casesOn x
     (by simp only [iff_true_iff, le_top, natCast_lt_top, ← @Nat.cast_zero PartENat])
-    fun n =>
-    by
-    rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
-    rfl
+    fun n => by
+      rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
+      rfl
 #align part_enat.pos_iff_one_le PartENat.pos_iff_one_le
 
 instance isTotal: IsTotal PartENat (· ≤ ·) where
@@ -409,10 +408,10 @@ instance isTotal: IsTotal PartENat (· ≤ ·) where
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 
-noncomputable instance linearOrder: LinearOrder PartENat :=
+noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
     le_total := IsTotal.total
-    decidable_le := Classical.decRel _
+    decidableLE := Classical.decRel _
     max := (· ⊔ ·)
     -- Porting note: was `max_def := @sup_eq_maxDefault _ _ (id _) _ }`
     max_def := fun a b => by

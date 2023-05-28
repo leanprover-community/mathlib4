@@ -9,7 +9,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic.ScopedNS -- Porting note: scoped
 
 /-!
 # UV-compressions
@@ -62,11 +61,9 @@ variable {α : Type _}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
-    { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v :=
-  by
+    { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v := by
   rintro a ha b hb hab
-  have h : ((a ⊔ u) \ v) \ u ⊔ v = ((b ⊔ u) \ v) \ u ⊔ v :=
-    by
+  have h : ((a ⊔ u) \ v) \ u ⊔ v = ((b ⊔ u) \ v) \ u ⊔ v := by
     dsimp at hab
     rw [hab]
   rwa [sdiff_sdiff_comm, ha.1.symm.sup_sdiff_cancel_right, sdiff_sdiff_comm,
@@ -84,7 +81,7 @@ section GeneralizedBooleanAlgebra
 variable [GeneralizedBooleanAlgebra α] [DecidableRel (@Disjoint α _ _)]
   [DecidableRel ((· ≤ ·) : α → α → Prop)] {s : Finset α} {u v a b : α}
 
-attribute [local instance] decidableEq_of_decidableLE
+attribute [local instance] decidableEqOfDecidableLE
 
 /-- To UV-compress `a`, if it doesn't touch `U` and does contain `V`, we remove `V` and
 put `U` in. We'll only really use this when `|U| = |V|` and `U ∩ V = ∅`. -/
@@ -153,8 +150,7 @@ theorem compress_disjoint (u v : α) :
 
 /-- Compressing an element is idempotent. -/
 @[simp]
-theorem compress_idem (u v a : α) : compress u v (compress u v a) = compress u v a :=
-  by
+theorem compress_idem (u v a : α) : compress u v (compress u v a) = compress u v a := by
   unfold compress
   split_ifs with h h' <;> try rfl
   rw [le_sdiff_iff.1 h'.2, sdiff_bot, sdiff_bot, sup_assoc, sup_idem]
@@ -176,9 +172,7 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact Or.inl ⟨ha, ha⟩
   · exact Or.inr ⟨by rwa [compress_idem], b, hb, (compress_idem _ _ _).symm⟩
-#align
-  uv.compress_mem_compression_of_mem_compression
-  UV.compress_mem_compression_of_mem_compression
+#align uv.compress_mem_compression_of_mem_compression UV.compress_mem_compression_of_mem_compression
 
 /-- Compressing a family is idempotent. -/
 @[simp]
@@ -220,8 +214,7 @@ theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s)
   rw [mem_compression, compress_of_disjoint_of_le hua hva] at ha
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact ha
-  have hu : u = ⊥ :=
-    by
+  have hu : u = ⊥ := by
     suffices Disjoint u (u \ v) by rwa [(hua.mono_right hva).sdiff_eq_left, disjoint_self] at this
     refine' hua.mono_right _
     rw [← compress_idem, compress_of_disjoint_of_le hua hva]

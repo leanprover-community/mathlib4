@@ -49,9 +49,9 @@ theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = (#ι) * Modu
   simp [rank_finsupp]
 #align rank_finsupp' rank_finsupp'
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The rank of `(ι →₀ R)` is `(# ι).lift`. -/
-@[simp]
+-- Porting note, this should not be `@[simp]`, as simp can prove it.
+-- @[simp]
 theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal.lift.{u} (#ι) := by
   simp [rank_finsupp]
 #align rank_finsupp_self rank_finsupp_self

@@ -81,7 +81,6 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
     k * x * (k * x) + k * y * (k * y) = k ^ 2 * (x * x + y * y) := by ring
     _ = k ^ 2 * (z * z) := by rw [h.eq]
     _ = k * z * (k * z) := by ring
-
 #align pythagorean_triple.mul PythagoreanTriple.mul
 
 /-- `(k*x, k*y, k*z)` is a Pythagorean triple if and only if

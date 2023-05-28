@@ -123,7 +123,6 @@ theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div
     simp
   case mk.true =>
     simp
-
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -156,7 +155,6 @@ theorem bit0_val (n : Nat) : bit0 n = 2 * n :=
     n + n = 0 + n + n := by rw [Nat.zero_add]
     _ = n * 2 := rfl
     _ = 2 * n := Nat.mul_comm _ _
-
 #align nat.bit0_val Nat.bit0_val
 
 theorem bit1_val (n : Nat) : bit1 n = 2 * n + 1 :=
@@ -242,10 +240,9 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
-    if n0 : n = 0 then
-      by
-        simp [n0]
-        exact z
+    if n0 : n = 0 then by
+      simp [n0]
+      exact z
     else by
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by
@@ -253,7 +250,6 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       rw [←_x]
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
-
 #align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
@@ -412,7 +408,6 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
 theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
     bitwise' f 0 n = cond (f false true) n 0 := by
   unfold bitwise'; rw [binaryRec_zero]
-
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
 @[simp]
@@ -420,7 +415,6 @@ theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = fa
     bitwise' f m 0 = cond (f true false) m 0 := by
   unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
     exact bitwise'_bit_aux h
-
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
 @[simp]

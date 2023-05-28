@@ -9,7 +9,6 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Convert
 
 /-!
 # Functions functorial with respect to equivalences

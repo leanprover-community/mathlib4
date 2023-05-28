@@ -156,33 +156,28 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 #align nat.card_fintype_Iio Nat.card_fintypeIio
 
--- TODO@Yaël: Generalize all the following lemmas to `succ_order`
-theorem Icc_succ_left : Icc a.succ b = Ioc a b :=
-  by
+-- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
+theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
   rw [mem_Icc, mem_Ioc, succ_le_iff]
 #align nat.Icc_succ_left Nat.Icc_succ_left
 
-theorem Ico_succ_right : Ico a b.succ = Icc a b :=
-  by
+theorem Ico_succ_right : Ico a b.succ = Icc a b := by
   ext x
   rw [mem_Ico, mem_Icc, lt_succ_iff]
 #align nat.Ico_succ_right Nat.Ico_succ_right
 
-theorem Ico_succ_left : Ico a.succ b = Ioo a b :=
-  by
+theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
   ext x
   rw [mem_Ico, mem_Ioo, succ_le_iff]
 #align nat.Ico_succ_left Nat.Ico_succ_left
 
-theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b :=
-  by
+theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
   ext x
   rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
 #align nat.Icc_pred_right Nat.Icc_pred_right
 
-theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b :=
-  by
+theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
   rw [mem_Ico, mem_Ioc, succ_le_iff, lt_succ_iff]
 #align nat.Ico_succ_succ Nat.Ico_succ_succ
@@ -210,8 +205,8 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
   rw [Ico_succ_left, ← Ioo_insert_left h]
 #align nat.Ico_insert_succ_left Nat.Ico_insert_succ_left
 
-theorem image_sub_const_Ico (h : c ≤ a) : ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) :=
-  by
+theorem image_sub_const_Ico (h : c ≤ a) :
+    ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
   rw [mem_image]
   constructor
@@ -225,8 +220,7 @@ theorem image_sub_const_Ico (h : c ≤ a) : ((Ico a b).image fun x => x - c) = I
 #align nat.image_sub_const_Ico Nat.image_sub_const_Ico
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
-    ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) :=
-  by
+    ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   rw [mem_image, mem_Ico]
   constructor
@@ -253,15 +247,13 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
           (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
 #align nat.Ico_image_const_sub_eq_Ico Nat.Ico_image_const_sub_eq_Ico
 
-theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a :=
-  by
+theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
   rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm, @and_comm (a ≠ x),
     lt_iff_le_and_ne]
 #align nat.Ico_succ_left_eq_erase_Ico Nat.Ico_succ_left_eq_erase_Ico
 
-theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
-  by
+theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction' n with n ih
   · simp only [zero_add, Nat.zero_eq, Ico_zero_eq_range]
     rintro k hk l hl (hkl : k % a = l % a)
@@ -288,9 +280,8 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
-well. See `int.image_Ico_mod` for the ℤ version. -/
-theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a :=
-  by
+well. See `Int.image_Ico_emod` for the ℤ version. -/
+theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := by
   obtain rfl | ha := eq_or_ne a 0
   · rw [range_zero, add_zero, Ico_self, image_empty]
   ext i

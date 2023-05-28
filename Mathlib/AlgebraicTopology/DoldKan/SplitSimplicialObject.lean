@@ -11,7 +11,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 

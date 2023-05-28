@@ -58,7 +58,7 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
     where dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
 
--- Because of the add_torsor.nonempty instance.
+-- Because of the AddTorsor.nonempty instance.
 /-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
 instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
@@ -170,34 +170,32 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `metric_space
+is not an instance because it depends on `V` to define a `MetricSpace
 P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist := fun p p' => by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
-  dist_triangle := by
-    intro x y z
+  dist_triangle x y z := by
     change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
 #align pseudo_metric_space_of_normed_add_comm_group_of_add_torsor pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor
 
 /-- The distance defines a metric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `metric_space
+is not an instance because it depends on `V` to define a `MetricSpace
 P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  edist_dist := fun p p' => by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
-  dist_triangle := by
-    intro x y z
+  dist_triangle x y z := by
     change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
@@ -231,8 +229,8 @@ theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vsub uniformContinuous_vsub
 
-instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V P
-    where continuous_vadd := uniformContinuous_vadd.continuous
+instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V P where
+  continuous_vadd := uniformContinuous_vadd.continuous
 #align normed_add_torsor.to_has_continuous_vadd NormedAddTorsor.to_continuousVAdd
 
 theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=

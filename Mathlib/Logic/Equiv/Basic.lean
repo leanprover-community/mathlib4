@@ -17,10 +17,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Lift
 
 /-!
 # Equivalence between types
@@ -417,7 +413,7 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
   rfl
 #align equiv.empty_sum_apply_inr Equiv.emptySum_apply_inr
 
-/-- `Option α` is equivalent to `α ⊕ punit` -/
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
@@ -475,7 +471,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
 `β` to be types from the same universe, so it cannot by used directly to transfer theorems about
-sigma types to theorems about sum types. In many cases one can use `ulift` to work around this
+sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
   ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
@@ -598,10 +594,8 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   by_cases h:p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
 #align equiv.perm.subtype_congr.symm Equiv.Perm.subtypeCongr.symm
 
 @[simp]
@@ -612,10 +606,8 @@ theorem Perm.subtypeCongr.trans :
   by_cases h:p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, this]
-
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
 #align equiv.perm.subtype_congr.trans Equiv.Perm.subtypeCongr.trans
 
 end sumCompl
@@ -1673,9 +1665,7 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
       swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
-
   · simp [Sum.map, swap_apply_of_ne_of_ne]
-
 #align equiv.perm.sum_congr_swap_refl Equiv.Perm.sumCongr_swap_refl
 
 @[simp]
@@ -1688,7 +1678,6 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
-
 #align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
 
 end Perm
@@ -1740,11 +1729,8 @@ theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α �
   conv_rhs => rw [Equiv.swap_apply_def]
   split_ifs with h₁ h₂
   · rw [hf h₁, Equiv.swap_apply_left]
-
   · rw [hf h₂, Equiv.swap_apply_right]
-
   · rw [Equiv.swap_apply_of_ne_of_ne (mt (congr_arg f) h₁) (mt (congr_arg f) h₂)]
-
 #align function.injective.map_swap Function.Injective.map_swap
 
 namespace Equiv
@@ -1955,7 +1941,6 @@ theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort _
       in the `simp` should too:
     have := (EmbeddingLike.apply_eq_iff_eq e).mp h' -/
     cases e.symm.injective h' |> h
-
 #align function.Pi_congr_left'_update Function.piCongrLeft'_update
 
 theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → Sort _) (e : α ≃ β)

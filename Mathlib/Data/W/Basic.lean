@@ -95,8 +95,7 @@ def elim (γ : Type _) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
 
 theorem elim_injective (γ : Type _) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
-  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h =>
-    by
+  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)

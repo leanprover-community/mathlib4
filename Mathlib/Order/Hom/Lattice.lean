@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.hom.lattice
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
 
@@ -17,7 +16,7 @@ import Mathlib.Order.SymmDiff
 
 This file defines (bounded) lattice homomorphisms.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -218,8 +217,7 @@ instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattic
     [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     BoundedOrderHomClass F α β :=
 { show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
-#align
-  bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
+#align bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
@@ -263,20 +261,6 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
-@[simp]
-theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
-    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
-  Finset.cons_induction_on s (map_bot f) fun i s _ h => by
-    rw [Finset.sup_cons, Finset.sup_cons, map_sup, h, Function.comp_apply]
-#align map_finset_sup map_finset_sup
-
-@[simp]
-theorem map_finset_inf [SemilatticeInf α] [OrderTop α] [SemilatticeInf β] [OrderTop β]
-    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
-  Finset.cons_induction_on s (map_top f) fun i s _ h => by
-    rw [Finset.inf_cons, Finset.inf_cons, map_inf, h, Function.comp_apply]
-#align map_finset_inf map_finset_inf
-
 section BoundedLattice
 
 variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [BoundedLatticeHomClass F α β]
@@ -310,7 +294,7 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 #align map_sdiff' map_sdiff'
 
-/-- Special case of `map_symm_diff` for boolean algebras. -/
+/-- Special case of `map_symmDiff` for boolean algebras. -/
 theorem map_symm_diff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
 #align map_symm_diff' map_symm_diff'

@@ -59,7 +59,7 @@ instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
 #align commutator_characteristic commutator_characteristic
 
-instance [Finite (commutatorSet G)] : Group.Fg (commutator G) := by
+instance [Finite (commutatorSet G)] : Group.FG (commutator G) := by
   rw [commutator_eq_closure]
   apply Group.closure_finite_fg
 
@@ -72,8 +72,7 @@ theorem rank_commutator_le_card [Finite (commutatorSet G)] :
 theorem commutator_centralizer_commutator_le_center :
     ⁅(commutator G).centralizer, (commutator G).centralizer⁆ ≤ Subgroup.center G := by
   rw [← Subgroup.centralizer_top, ← Subgroup.commutator_eq_bot_iff_le_centralizer]
-  suffices ⁅⁅⊤, (commutator G).centralizer⁆, (commutator G).centralizer⁆ = ⊥
-    by
+  suffices ⁅⁅⊤, (commutator G).centralizer⁆, (commutator G).centralizer⁆ = ⊥ by
     refine' Subgroup.commutator_commutator_eq_bot_of_rotate _ this
     rwa [Subgroup.commutator_comm (commutator G).centralizer]
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
@@ -277,7 +276,7 @@ def closureCommutatorRepresentatives : Subgroup G :=
 #align closure_commutator_representatives closureCommutatorRepresentatives
 
 instance closureCommutatorRepresentatives_fg [Finite (commutatorSet G)] :
-    Group.Fg (closureCommutatorRepresentatives G) :=
+    Group.FG (closureCommutatorRepresentatives G) :=
   Group.closure_finite_fg _
 #align closure_commutator_representatives_fg closureCommutatorRepresentatives_fg
 

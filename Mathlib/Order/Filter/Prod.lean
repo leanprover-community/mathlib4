@@ -35,7 +35,7 @@ As product filter we want to have `F` as result.
 
 ## Notations
 
-* `f ×ᶠ g` : `filter.prod f g`, localized in `filter`.
+* `f ×ᶠ g` : `Filter.prod f g`, localized in `Filter`.
 
 -/
 
@@ -210,17 +210,17 @@ theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ᶠ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
 #align filter.tendsto_diag Filter.tendsto_diag
 
-theorem prod_infᵢ_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
+theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
     (⨅ i, f i) ×ᶠ g = ⨅ i, f i ×ᶠ g := by
-  rw [Filter.prod, comap_infᵢ, infᵢ_inf]
+  rw [Filter.prod, comap_iInf, iInf_inf]
   simp only [Filter.prod, eq_self_iff_true]
-#align filter.prod_infi_left Filter.prod_infᵢ_left
+#align filter.prod_infi_left Filter.prod_iInf_left
 
-theorem prod_infᵢ_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
+theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
     (f ×ᶠ ⨅ i, g i) = ⨅ i, f ×ᶠ g i := by
-  rw [Filter.prod, comap_infᵢ, inf_infᵢ]
+  rw [Filter.prod, comap_iInf, inf_iInf]
   simp only [Filter.prod, eq_self_iff_true]
-#align filter.prod_infi_right Filter.prod_infᵢ_right
+#align filter.prod_infi_right Filter.prod_iInf_right
 
 @[mono]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
@@ -293,7 +293,6 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ᶠ g, p x) ↔ ∀ᶠ y : β × α in g ×ᶠ f, p y.swap := by
   rw [prod_comm]; rfl
-
 #align filter.eventually_swap_iff Filter.eventually_swap_iff
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
@@ -507,8 +506,8 @@ theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 #align filter.coprod_ne_bot_right Filter.coprod_neBot_right
 
-theorem principal_coprod_principal (s : Set α) (t : Set β) : (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) :=
-  by
+theorem principal_coprod_principal (s : Set α) (t : Set β) :
+    (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 #align filter.principal_coprod_principal Filter.principal_coprod_principal
@@ -524,7 +523,7 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
   refine' ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ _⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ _⟩⟩ <;> convert hx
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
-/-- Characterization of the coproduct of the `filter.map`s of two principal filters `𝓟 {a}` and
+/-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `λ a, b` and the second under the identity function.
 Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this provides an
 example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict. -/
@@ -536,7 +535,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
 #align filter.map_const_principal_coprod_map_id_principal Filter.map_const_principal_coprod_map_id_principal
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Characterization of the `filter.map` of the coproduct of two principal filters `𝓟 {a}` and
+/-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, under the `prod.map` of two functions, respectively the constant function `λ a, b` and the
 identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
