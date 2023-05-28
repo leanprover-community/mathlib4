@@ -323,8 +323,8 @@ variable (p) (G)
 
 /-- A generalization of **Sylow's third theorem**.
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
-theorem card_sylow_modEq_one [Fact p.Prime] [Fintype (Sylow p G)] : card (Sylow p G) ≡ 1 [MOD p] :=
-  by
+theorem card_sylow_modEq_one [Fact p.Prime] [Fintype (Sylow p G)] :
+    card (Sylow p G) ≡ 1 [MOD p] := by
   refine' Sylow.nonempty.elim fun P : Sylow p G => _
   have : fixedPoints P.1 (Sylow p G) = {P} :=
     Set.ext fun Q : Sylow p G =>
@@ -458,8 +458,8 @@ theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
-    [Finite (Sylow p N)] (P : Sylow p N) : ((↑P : Subgroup N).map N.subtype).normalizer ⊔ N = ⊤ :=
-  by
+    [Finite (Sylow p N)] (P : Sylow p N) :
+    ((↑P : Subgroup N).map N.subtype).normalizer ⊔ N = ⊤ := by
   refine' top_le_iff.mp fun g _ => _
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
