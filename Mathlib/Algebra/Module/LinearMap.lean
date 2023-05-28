@@ -209,12 +209,10 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
-#noalign LinearMap.has_coe_to_fun
-
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
-  { AddHomClass.toFunLike with }
+instance instCoeFun {σ : R →+* S} : CoeFun (M →ₛₗ[σ] M₃) (λ _ ↦ M → M₃) :=
+  ⟨FunLike.coe⟩
+#align linear_map.has_coe_to_fun LinearMap.instCoeFun
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
