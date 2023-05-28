@@ -609,24 +609,23 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
   have hequiv : H ≃ H.subgroupOf H.normalizer := (subgroupOfEquivOfLe le_normalizer).symm.toEquiv
   ⟨Subgroup.map (normalizer H).subtype
       (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x)), by
-    show
-      Fintype.card (Subgroup.map H.normalizer.subtype
-              (comap (mk' (H.subgroupOf H.normalizer)) (Subgroup.zpowers x))) =
-        p ^ (n + 1)
-    suffices
-      Fintype.card (Subtype.val ''
-              (Subgroup.comap (mk' (H.subgroup_of H.normalizer)) (zpowers x) : Set H.normalizer)) =
+    show Fintype.card (Subgroup.map H.normalizer.subtype
+              (comap (mk' (H.subgroupOf H.normalizer)) (Subgroup.zpowers x))) = p ^ (n + 1)
+    suffices Fintype.card (Subtype.val ''
+              (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)) =
         p ^ (n + 1)
       by convert this using 2
     rw [Set.card_image_of_injective
-        (Subgroup.comap (mk' (H.subgroup_of H.normalizer)) (zpowers x) : Set H.normalizer)
+        (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)
         Subtype.val_injective,
       pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, orderOf_eq_card_zpowers, ←
       Fintype.card_prod]
-    exact @Fintype.card_congr _ _ (id _) (id _) (preimage_mk_equiv_subgroup_times_set _ _), by
+    exact @Fintype.card_congr _ _ (_) (_)
+      (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
     simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine' ⟨⟨y, le_normalizer hy⟩, ⟨0, _⟩, rfl⟩
+    dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
     simpa using hy⟩
 #align sylow.exists_subgroup_card_pow_succ Sylow.exists_subgroup_card_pow_succ
