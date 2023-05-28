@@ -430,9 +430,9 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G
 theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup G).Normal]
     [FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
   intro h
-  haveI := (P : Subgroup G).fintypeQuotientOfFiniteIndex
+  let _ := (P : Subgroup G).fintypeQuotientOfFiniteIndex
   rw [index_eq_card] at h
-  obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p h
+  obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card (G := G ⧸ (P : Subgroup G)) p h
   have h := IsPGroup.of_card ((order_eq_card_zpowers.symm.trans hx).trans (pow_one p).symm)
   let Q := (zpowers x).comap (QuotientGroup.mk' (P : Subgroup G))
   have hQ : IsPGroup p Q := by
@@ -452,7 +452,7 @@ theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow 
   rw [← relindex_mul_index le_normalizer, ← card_sylow_eq_index_normalizer]
   haveI : (P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer).Normal :=
     Subgroup.normal_in_normalizer
-  haveI : finite_index ↑(P.subtype le_normalizer) := ⟨hP⟩
+  haveI : FiniteIndex ↑(P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer) := ⟨hP⟩
   replace hP := not_dvd_index_sylow' (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 #align not_dvd_index_sylow not_dvd_index_sylow
@@ -460,18 +460,18 @@ theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
-    [Finite (Sylow p N)] (P : Sylow p N) : ((↑P : Subgroup N).map N.Subtype).normalizer ⊔ N = ⊤ :=
+    [Finite (Sylow p N)] (P : Sylow p N) : ((↑P : Subgroup N).map N.subtype).normalizer ⊔ N = ⊤ :=
   by
-  refine' top_le_iff.mp fun g hg => _
+  refine' top_le_iff.mp fun g _ => _
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
   apply mul_mem_sup (N.inv_mem n.2)
-  rw [Sylow.smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← mul_aut.conj_normal.map_mul,
-    Sylow.ext_iff, Sylow.pointwise_smul_def, pointwise_smul_def] at hn
+  rw [Sylow.smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← MulAut.conjNormal.map_mul,
+    Sylow.ext_iff, Sylow.pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
   refine' fun x =>
     (mem_map_iff_mem
             (show Function.Injective (MulAut.conj (↑n * g)).toMonoidHom from
-              (MulAut.conj (↑n * g)).Injective)).symm.trans
+              (MulAut.conj (↑n * g)).injective)).symm.trans
       _
   rw [map_map, ← congr_arg (map N.subtype) hn, map_map]
   rfl
@@ -481,7 +481,7 @@ theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem Sylow.normalizer_sup_eq_top' {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p G) (hP : ↑P ≤ N) : (P : Subgroup G).normalizer ⊔ N = ⊤ := by
-  rw [← Sylow.normalizer_sup_eq_top (P.subtype hP), P.coe_subtype, subgroup_of_map_subtype,
+  rw [← Sylow.normalizer_sup_eq_top (P.subtype hP), P.coe_subtype, subgroupOf_map_subtype,
     inf_of_le_left hP]
 #align sylow.normalizer_sup_eq_top' Sylow.normalizer_sup_eq_top'
 
@@ -499,17 +499,17 @@ attribute [local instance 10] Subtype.fintype setFintype Classical.propDecidable
 
 theorem QuotientGroup.card_preimage_mk [Fintype G] (s : Subgroup G) (t : Set (G ⧸ s)) :
     Fintype.card (QuotientGroup.mk ⁻¹' t) = Fintype.card s * Fintype.card t := by
-  rw [← Fintype.card_prod, Fintype.card_congr (preimage_mk_equiv_subgroup_times_set _ _)]
+  rw [← Fintype.card_prod, Fintype.card_congr (preimageMkEquivSubgroupProdSet _ _)]
 #align quotient_group.card_preimage_mk QuotientGroup.card_preimage_mk
 
 namespace Sylow
 
 open Subgroup Submonoid MulAction
 
-theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite ↥(H : Set G)]
-    {x : G} : (x : G ⧸ H) ∈ fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
+theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
+    {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
-    have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := fun _ => (mem_fixedPoints' _).1 hx _
+    have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := (mem_fixedPoints' _).1 hx _
     inv_mem_iff.1
       (mem_normalizer_fintype fun n (hn : n ∈ H) =>
         have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha (mem_orbit _ ⟨n⁻¹, H.inv_mem hn⟩))
@@ -532,7 +532,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
-      normalizer H ⧸ Subgroup.comap ((normalizer H).Subtype : normalizer H →* G) H :=
+      normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
   @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (id _) (id _) (fixedPoints _ _)
     (fun a => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
@@ -558,24 +558,24 @@ theorem card_normalizer_modEq_card [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.
     (hH : Fintype.card H = p ^ n) : card (normalizer H) ≡ card G [MOD p ^ (n + 1)] := by
   have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
   rw [card_eq_card_quotient_mul_card_subgroup H,
-    card_eq_card_quotient_mul_card_subgroup (H.subgroup_of (normalizer H)), Fintype.card_congr this,
+    card_eq_card_quotient_mul_card_subgroup (H.subgroupOf (normalizer H)), Fintype.card_congr this,
     hH, pow_succ]
-  exact (card_quotient_normalizer_modeq_card_quotient hH).mul_right' _
+  exact (card_quotient_normalizer_modEq_card_quotient hH).mul_right' _
 #align sylow.card_normalizer_modeq_card Sylow.card_normalizer_modEq_card
 
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
   index of `H` inside its normalizer. -/
 theorem prime_dvd_card_quotient_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ card G) {H : Subgroup G} (hH : Fintype.card H = p ^ n) :
-    p ∣ card (normalizer H ⧸ Subgroup.comap ((normalizer H).Subtype : normalizer H →* G) H) :=
+    p ∣ card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) :=
   let ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
   have hcard : card (G ⧸ H) = s * p :=
     (mul_left_inj' (show card H ≠ 0 from Fintype.card_ne_zero)).1
       (by
-        rwa [← card_eq_card_quotient_mul_card_subgroup H, hH, hs, pow_succ', mul_assoc, mul_comm p])
+        rw [← card_eq_card_quotient_mul_card_subgroup H, hH, hs, pow_succ', mul_assoc, mul_comm p])
   have hm :
     s * p % p =
-      card (normalizer H ⧸ Subgroup.comap ((normalizer H).Subtype : normalizer H →* G) H) % p :=
+      card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) % p :=
     hcard ▸ (card_quotient_normalizer_modEq_card_quotient hH).symm
   Nat.dvd_of_mod_eq_zero (by rwa [Nat.mod_eq_zero_of_dvd (dvd_mul_left _ _), eq_comm] at hm)
 #align sylow.prime_dvd_card_quotient_normalizer Sylow.prime_dvd_card_quotient_normalizer
@@ -638,17 +638,17 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
 theorem exists_subgroup_card_pow_prime_le [Fintype G] (p : ℕ) :
     ∀ {n m : ℕ} [hp : Fact p.Prime] (hdvd : p ^ m ∣ card G) (H : Subgroup G) (hH : card H = p ^ n)
       (hnm : n ≤ m), ∃ K : Subgroup G, card K = p ^ m ∧ H ≤ K
-  | n, m => fun hp hdvd H hH hnm =>
+  | n, m => fun {hdvd H hH hnm} =>
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
         have wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
-          @exists_subgroup_card_pow_prime_le n (m - 1) hp
+          @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
             (Nat.pow_dvd_of_le_of_pow_dvd tsub_le_self hdvd) H hH hnm1
         have hdvd' : p ^ (m - 1 + 1) ∣ card G := by rwa [tsub_add_cancel_of_le h0m.nat_succ_le]
-        let ⟨K', hK'⟩ := @exists_subgroup_card_pow_succ _ _ _ _ _ hp hdvd' K hK.1
+        let ⟨K', hK'⟩ := @exists_subgroup_card_pow_succ _ _ _ _ _ _ hdvd' K hK.1
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 #align sylow.exists_subgroup_card_pow_prime_le Sylow.exists_subgroup_card_pow_prime_le
@@ -733,8 +733,8 @@ theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     (↑P : Subgroup G).normalizer.normalizer = (↑P : Subgroup G).normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top, coeSubtype, ← subgroup_of_normalizer_eq le_normalizer, ←
-    subgroup_of_normalizer_eq le_rfl, subgroup_of_self] at this
+  simp_rw [← normalizer_eq_top, coeSubtype, ← subgroupOf_normalizer_eq le_normalizer, ←
+    subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
   rw [← subtype_range (P : Subgroup G).normalizer.normalizer, MonoidHom.range_eq_map, ← this rfl]
   exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (subtype_range _)))
 #align sylow.normalizer_normalizer Sylow.normalizer_normalizer
@@ -745,7 +745,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
   normalizer_eq_top.mp
     (by
       rcases eq_top_or_exists_le_coatom (↑P : Subgroup G).normalizer with (heq | ⟨K, hK, hNK⟩)
-      · exact HEq
+      · exact heq
       · haveI := hnc _ hK
         have hPK : ↑P ≤ K := le_trans le_normalizer hNK
         refine' (hK.1 _).elim
