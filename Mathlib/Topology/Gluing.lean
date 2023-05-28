@@ -299,7 +299,9 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image' TopCat.GlueData.preimage_image_eq_image'
 
-theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
+-- porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
+-- I had to manually add the explicit type ascription.
+theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
   rw [isOpen_iff]
   intro j
   rw [preimage_image_eq_image]
