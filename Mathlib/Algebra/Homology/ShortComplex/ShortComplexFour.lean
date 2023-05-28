@@ -200,6 +200,24 @@ lemma Exact.isIso_cyclesCoToCycles
     IsIso S.cyclesCoToCycles :=
   hS.isIso_cokerToKer' _ _ _ _
 
+@[simps! hom]
+noncomputable def Exact.cokerIsoKer' : cc.pt ≅ kf.pt :=
+  have := hS.isIso_cokerToKer' cc kf hcc hkf
+  asIso (S.cokerToKer' cc kf hcc hkf)
+
+@[simps! hom]
+noncomputable def Exact.cokerIsoKer [HasCokernel S.f] [HasKernel S.h] :
+    cokernel S.f ≅ kernel S.h :=
+  have := hS.isIso_cokerToKer
+  asIso S.cokerToKer
+
+@[simps! hom]
+lemma Exact.cyclesCoIsoCycles
+    [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
+    S.shortComplex₁.cyclesCo ≅ S.shortComplex₂.cycles :=
+  have := hS.isIso_cyclesCoToCycles
+  asIso S.cyclesCoToCycles
+
 end Preadditive
 
 end ShortComplex₄
