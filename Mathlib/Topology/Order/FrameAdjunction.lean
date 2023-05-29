@@ -140,7 +140,7 @@ def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := pt_open L
   map_inf' a b := by simp [pt_open]
   map_top' := by simp [pt_open]; rfl
-  map_sSup' S := sorry
+  map_sSup' S := by simp [pt_open]; ext x; simp
 
 def counit_app (L : FrmCatᵒᵖ) : (pt.comp 𝒪).obj L ⟶ L where
   unop := counit_app_cont L.unop
