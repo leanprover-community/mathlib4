@@ -357,7 +357,6 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         simp [mul_comm r s, mul_smul]
 #align category_theory.Free.lift CategoryTheory.Free.lift
 
-@[simp]
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 #align category_theory.Free.lift_map_single CategoryTheory.Free.lift_map_single
