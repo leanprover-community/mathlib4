@@ -22,15 +22,11 @@ star operation; which as should be expected rules out `𝕜 = ℂ`.
 
 universe u v w
 
-noncomputable section
-
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : 𝕜 → F}
-
-section Star
 
 /-! ### Derivative of `x ↦ star x` -/
 
@@ -71,5 +67,3 @@ protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) 
 protected theorem deriv.star' : (deriv fun y => star (f y)) = fun x => star (deriv f x) :=
   funext fun _ => deriv.star
 #align deriv.star' deriv.star'
-
-end Star
