@@ -28,13 +28,14 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 namespace Ideal
 
-universe u v w -- Porting note: TODO
+-- Porting note: universes need to be explicit to avoid a bad universe levels in `quotCotangent`
+universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: TODO
+-- Porting note: instances that were derived automically needs to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 #align ideal.cotangent Ideal.Cotangent
@@ -60,7 +61,7 @@ instance : IsScalarTower S S' I.Cotangent := by
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps!] --  (config := lemmasOnly) apply] -- Porting note: TODO
+@[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 #align ideal.to_cotangent Ideal.toCotangent
 
@@ -160,7 +161,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
     exact ⟨I.toCotangent ⟨x, hx⟩, Subtype.ext rfl⟩
 #align ideal.cotangent_equiv_ideal Ideal.cotangentEquivIdeal
 
-@[simp] --  [nolint simp_nf] -- Porting note: TODO
+@[simp]
 theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
     ↑(I.cotangentEquivIdeal x) = I.cotangentToQuotientSquare x := rfl
 #align ideal.cotangent_equiv_ideal_apply Ideal.cotangentEquivIdeal_apply
