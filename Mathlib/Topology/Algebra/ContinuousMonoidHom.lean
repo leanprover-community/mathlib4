@@ -10,8 +10,8 @@ Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
--- porting note: Wasn't needed before
-import Mathlib.Algebra.Group.Prod
+-- -- porting note: Wasn't needed before
+-- import Mathlib.Algebra.Group.Prod
 
 /-!
 
@@ -160,17 +160,17 @@ def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : Continuou
 @[to_additive "Product of two continuous homomorphisms on the same space.", simps]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
     ContinuousMonoidHom A (B × C) :=
-  mk' (f.toMonoidHom.Prod g.toMonoidHom) (f.continuous_toFun.prod_mk g.continuous_toFun)
+  mk' (f.toMonoidHom.prod g.toMonoidHom) (f.continuous_toFun.prod_mk g.continuous_toFun)
 #align continuous_monoid_hom.prod ContinuousMonoidHom.prod
 #align continuous_add_monoid_hom.sum ContinuousAddMonoidHom.sum
 
 /-- Product of two continuous homomorphisms on different spaces. -/
 @[to_additive "Product of two continuous homomorphisms on different spaces.", simps]
-def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
+def prod_map (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
-  mk' (f.toMonoidHom.Prod_map g.toMonoidHom) (f.continuous_toFun.Prod_map g.continuous_toFun)
-#align continuous_monoid_hom.prod_map ContinuousMonoidHom.prodMap
-#align continuous_add_monoid_hom.sum_map ContinuousAddMonoidHom.sumMap
+  mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prod_map g.continuous_toFun)
+#align continuous_monoid_hom.prod_map ContinuousMonoidHom.prod_map
+#align continuous_add_monoid_hom.sum_map ContinuousAddMonoidHom.sum_map
 
 variable (A B C D E)
 
@@ -254,13 +254,13 @@ variable {A B C D E}
 @[to_additive "Coproduct of two continuous homomorphisms to the same space.", simps]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (A × B) E :=
-  (mul E).comp (f.Prod_map g)
+  (mul E).comp (f.prod_map g)
 #align continuous_monoid_hom.coprod ContinuousMonoidHom.coprod
 #align continuous_add_monoid_hom.coprod ContinuousAddMonoidHom.coprod
 
 @[to_additive]
 instance : CommGroup (ContinuousMonoidHom A E) where
-  mul f g := (mul E).comp (f.Prod g)
+  mul f g := (mul E).comp (f.prod g)
   mul_comm f g := ext fun x => mul_comm (f x) (g x)
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
   one := one A E
