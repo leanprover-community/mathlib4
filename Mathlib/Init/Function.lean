@@ -30,6 +30,8 @@ from `β` to `α`. -/
 produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
 `op` to the results.
 -/
+-- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
+-- have been an oversight.
 @[reducible] def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ)
   : α → β → ζ :=
 λ x y => op (f x y) (g x y)
