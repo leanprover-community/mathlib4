@@ -13,6 +13,27 @@ open CategoryTheory Category Limits
 
 namespace CategoryTheory
 
+namespace Arrow
+
+lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
+    IsIso f ↔ IsIso f.left ∧ IsIso f.right := by
+  constructor
+  . intro hf
+    constructor
+    . change IsIso ((Comma.fst _ _).map f)
+      infer_instance
+    . change IsIso ((Comma.snd _ _).map f)
+      infer_instance
+  . rintro ⟨hf₁, hf₂⟩
+    refine' ⟨CommaMorphism.mk (inv f.left) (inv f.right) _, _, _⟩
+    . dsimp
+      simp only [← cancel_epi f.left, Arrow.w_assoc f,
+        IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
+    . aesop_cat
+    . aesop_cat
+
+end Arrow
+
 namespace Limits
 
 variable {C ι ι' J : Type _} [Category C] [Category ι] [Category ι'] [Category J]
@@ -107,6 +128,22 @@ variable (X : SpectralObject C ι)
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
 
+lemma δ_app_eq_zero (D : Arrow₂ ι) (h : IsIso D.f) :
+    (X.δ n₀ n₁ hn₁).app D = 0 := by
+  have : IsIso (Arrow₂.δ₁Toδ₀.app D) := by
+    rw [Arrow.isIso_iff]
+    dsimp [Arrow₂.δ₁Toδ₀]
+    constructor <;> infer_instance
+  simpa only [Preadditive.IsIso.comp_left_eq_zero] using X.zero₃ n₀ n₁ hn₁ D
+
+lemma δ_app_eq_zero' (D : Arrow₂ ι) (h : IsIso D.g) :
+    (X.δ n₀ n₁ hn₁).app D = 0 := by
+  have : IsIso (Arrow₂.δ₂Toδ₁.app D) := by
+    rw [Arrow.isIso_iff]
+    dsimp [Arrow₂.δ₂Toδ₁]
+    constructor <;> infer_instance
+  simpa only [Preadditive.IsIso.comp_right_eq_zero] using X.zero₁ n₀ n₁ hn₁ D
+
 @[reassoc]
 lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
     (hfg : f ≫ g = fg) (φ : Arrow.mk fg ⟶ Arrow.mk g) (hφ₁ : φ.left = f) (hφ₂ : φ.right = 𝟙 k) :
@@ -171,8 +208,7 @@ lemma shortComplex₄_exact : (X.shortComplex₄ n₀ n₁ hn₁).Exact where
   exact₁ := X.shortComplex₂_exact n₀
   exact₂ := X.shortComplex₃_exact n₀ n₁ hn₁
 
--- the homology of this short complex gives the terms in all the pages of the spectral sequence
-def shortComplexE' : ShortComplex (Arrow₃ ι ⥤ C) where
+def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
   X₁ := Arrow₃.hMor ⋙ X.H n₀
   X₂ := Arrow₃.gMor ⋙ X.H n₁
   X₃ := Arrow₃.fMor ⋙ X.H n₂
@@ -187,7 +223,32 @@ def shortComplexE' : ShortComplex (Arrow₃ ι ⥤ C) where
     rw [← eq, Arrow₃.δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj,
       reassoc_of% (X.zero₁ n₀ n₁ hn₁ (Arrow₃.δ₀.obj D)), zero_comp]
 
-pp_extended_field_notation shortComplexE'
+-- the homology of this short complex gives the terms in all the pages of the spectral sequence
+def shortComplexEObj (D : Arrow₃ ι) : ShortComplex C :=
+  ShortComplex.mk ((X.δ n₀ n₁ hn₁).app (Arrow₂.mk D.g D.h))
+    ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk D.f D.g))
+    (congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero D)
+
+pp_extended_field_notation shortComplexE
+
+noncomputable def E : Arrow₃ ι ⥤ C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homology
+
+pp_extended_field_notation E
+
+noncomputable def EObjIso (D : Arrow₃ ι) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.shortComplexEObj n₀ n₁ n₂ hn₁ hn₂ D).homology :=
+  ((X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).mapHomologyIso ((evaluation (Arrow₃ ι) C).obj D)).symm
+
+pp_extended_field_notation EObjIso
+
+-- this is helpful in order to compute the initial page of the spectral sequence
+noncomputable def EObjIsoH (D : Arrow₃ ι) (h₁ : IsIso D.f) (h₂ : IsIso D.h) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.H n₁).obj (Arrow.mk D.g) :=
+  X.EObjIso n₀ n₁ n₂ hn₁ hn₂ D ≪≫
+    (ShortComplex.HomologyData.ofZeros (X.shortComplexEObj n₀ n₁ n₂ hn₁ hn₂ D)
+      (X.δ_app_eq_zero' n₀ n₁ hn₁ _ h₂) ((X.δ_app_eq_zero n₁ n₂ hn₂ _ h₁))).left.homologyIso
+
+pp_extended_field_notation EObjIsoH
 
 noncomputable def cycles : Arrow₂ ι ⥤ C := kernel (X.δ n₀ n₁ hn₁)
 noncomputable def cyclesCo : Arrow₂ ι ⥤ C := cokernel (X.δ n₀ n₁ hn₁)
