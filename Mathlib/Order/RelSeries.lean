@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.ofFn
+import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 
 /-!
