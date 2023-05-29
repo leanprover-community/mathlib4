@@ -44,7 +44,7 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 @[simps]
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {X} {Y} f := Finsupp.lmapDomain _ _ f
+  map {X Y} f := Finsupp.lmapDomain _ _ f
   map_id := by intros ; exact Finsupp.lmapDomain_id _ _
   map_comp := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
 #align Module.free ModuleCat.free
@@ -54,7 +54,7 @@ def free : Type u ⥤ ModuleCat R where
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X M => (Finsupp.lift M R X).toEquiv.symm
-      homEquiv_naturality_left_symm := fun {_} {_} M f g =>
+      homEquiv_naturality_left_symm := fun {_ _} M f g =>
         Finsupp.lhom_ext' fun x =>
           LinearMap.ext_ring
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
@@ -195,16 +195,19 @@ instance : LaxMonoidal.{u} (free R).obj where
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
-  -- Porting note: broken ext
-  · apply LinearMap.ext_ring
+  · -- Porting note: broken ext
+    apply LinearMap.ext_ring
+    -- Porting note: simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
-  · apply Finsupp.lhom_ext'
+  · -- Porting note: broken ext
+    apply Finsupp.lhom_ext'
     intro ⟨⟩
     apply LinearMap.ext_ring
     apply Finsupp.ext
     intro ⟨⟩
+    -- Porting note: simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same]
@@ -234,6 +237,7 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
+-- Porting note: Removed has_nonempty_instance nolint
 @[nolint unusedArguments]
 def Free (_ : Type _) (C : Type u) :=
   C
@@ -253,7 +257,7 @@ variable (R : Type _) [CommRing R] (C : Type u) [Category.{v} C]
 open Finsupp
 
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
--- using the fact that `ModuleCat.free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
+-- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
 instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
@@ -271,6 +275,9 @@ instance categoryFree : Category (Free R C) where
 namespace Free
 
 section
+
+-- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
+-- accordingly
 
 instance : Preadditive (Free R C) where
   homGroup X Y := Finsupp.addCommGroup
@@ -311,6 +318,7 @@ def embedding : C ⥤ Free R C where
   map {X Y} f := Finsupp.single f 1
   map_id X := rfl
   map_comp {X Y Z} f g := by
+    -- Porting note: simp used to be able to close this goal
     dsimp only []
     rw [single_comp_single, one_mul]
 #align category_theory.Free.embedding CategoryTheory.Free.embedding
@@ -328,7 +336,8 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
-    · dsimp
+    · -- Porting note: simp used to be able to close this goal
+      dsimp
       rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
     · intro f₁ f₂ w₁ w₂
       rw [add_comp]
@@ -341,7 +350,8 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros ; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
-      · dsimp
+      · -- Porting note: simp used to be able to close this goal
+        dsimp
         rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
         rw [comp_add]
@@ -390,8 +400,10 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
     (by
       intro X Y f
       apply Finsupp.induction_linear f
-      · rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
+      · -- Porting note: simp used to be able to close this goal
+        rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
+        -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]
       · intro f' r
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,
