@@ -15,14 +15,17 @@ variable {C : Type _} [Category C]
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
   Nonempty (IsColimit (S : Presieve X).cocone)
 
+abbrev Presieve.EffectiveEpimorphic {X : C} (S : Presieve X) : Prop :=
+  (Sieve.generate S).EffectiveEpimorphic
+
 variable (C)
 
 class Precoherent : Prop where
   cond {B₁ B₂ : C} (f : B₂ ⟶ B₁) :
     ∀ (α : Type) [Fintype α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)),
-      (Sieve.generate (Presieve.ofArrows X₁ π₁)).EffectiveEpimorphic →
+      (Presieve.ofArrows X₁ π₁).EffectiveEpimorphic →
     ∃ (β : Type) (_ : Fintype β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
-      (Sieve.generate (Presieve.ofArrows X₂ π₂)).EffectiveEpimorphic ∧
+      (Presieve.ofArrows X₂ π₂).EffectiveEpimorphic ∧
       ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))),
       ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
 
@@ -42,7 +45,7 @@ def CoherentTopology [Precoherent C] : GrothendieckTopology C :=
 lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (CoherentTopology C) P ↔
     (∀ (B : C) (α : Type) [Fintype α] (X : α → C) (π : (a : α) → (X a ⟶ B)),
-      (Sieve.generate (Presieve.ofArrows X π)).EffectiveEpimorphic →
+      (Presieve.ofArrows X π).EffectiveEpimorphic →
       (Presieve.ofArrows X π).IsSheafFor P) := by
   constructor
   · intro hP B α _ X π h
