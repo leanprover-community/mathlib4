@@ -28,7 +28,9 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 namespace Ideal
 
-variable {R S S' : Type _} [CommRing R] [CommSemiring S] [Algebra S R]
+universe u v w -- Porting note: TODO
+
+variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
@@ -111,10 +113,9 @@ theorem to_quotient_square_comp_toCotangent :
   LinearMap.ext fun _ => rfl
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem toCotangent_to_quotient_square (x : I) :
-    I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x :=
-  rfl
+    I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
@@ -192,12 +193,11 @@ theorem _root_.AlgHom.ker_ker_sqare_lift (f : A →ₐ[R] B) :
   · rintro _ ⟨x, hx, rfl⟩; exact hx
 #align alg_hom.ker_ker_sqare_lift AlgHom.ker_ker_sqare_lift
 
+set_option pp.universes true in
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
-  -- let a := Quotient.mk (I ^ 2)
   refine (Ideal.quotEquivOfEq (Ideal.map_eq_submodule_map _ _).symm).trans ?_
-  let f := DoubleQuot.quotQuotEquivQuotSup (I ^ 2) I
-  refine f.trans ?_ -- Porting note: TODO
+  refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 #align ideal.quot_cotangent Ideal.quotCotangent
 
