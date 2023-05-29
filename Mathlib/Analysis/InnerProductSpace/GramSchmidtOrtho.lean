@@ -54,17 +54,16 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def gramSchmidt (f : ι → E) : ι → E
-  | n => f n - ∑ i : Iio n,
-    have : i < n := by exact mem_Iio.1 i.2
-    orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
-  termination_by gramSchmidt f n => n
+noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
+  f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
+termination_by _ n => n
+decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`.-/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
-  rw [← sum_attach, attach_eq_univ, gramSchmidt]; rfl
+  rw [← sum_attach, attach_eq_univ, gramSchmidt]
 #align gram_schmidt_def gramSchmidt_def
 
 theorem gramSchmidt_def' (f : ι → E) (n : ι) :
@@ -73,10 +72,9 @@ theorem gramSchmidt_def' (f : ι → E) (n : ι) :
 #align gram_schmidt_def' gramSchmidt_def'
 
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
-    f n =
-      gramSchmidt 𝕜 f n +
-        ∑ i in Iio n, (⟪gramSchmidt 𝕜 f i, f n⟫ / ‖gramSchmidt 𝕜 f i‖ ^ 2) • gramSchmidt 𝕜 f i := by
-  convert gramSchmidt_def' 𝕜 f n
+    f n = gramSchmidt 𝕜 f n + ∑ i in Iio n,
+      (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
+  convert gramSchmidt_def' 𝕜 f n using 2
   ext i
   rw [orthogonalProjection_singleton]
 #align gram_schmidt_def'' gramSchmidt_def''
@@ -214,7 +212,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt 𝕜 f n ≠ 0 := by
   by_contra h
   have h₁ : f n ∈ span 𝕜 (f '' Set.Iio n) := by
-    rw [← span_gramSchmidt_Iio 𝕜 f n, gramSchmidt_def' _ f, h, zero_add]
+    rw [← span_gramSchmidt_Iio 𝕜 f n, gramSchmidt_def' 𝕜 f, h, zero_add]
     apply Submodule.sum_mem _ _
     simp_intro a ha only [Finset.mem_Ico]
     simp only [Set.mem_image, Set.mem_Iio, orthogonalProjection_singleton]
@@ -253,7 +251,7 @@ theorem gramSchmidt_triangular {i j : ι} (hij : i < j) (b : Basis ι 𝕜 E) :
 /-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
 theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     LinearIndependent 𝕜 (gramSchmidt 𝕜 f) :=
-  linearIndependent_of_ne_zero_of_inner_eq_zero (fun i => gramSchmidt_ne_zero _ h₀) fun i j =>
+  linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ => gramSchmidt_ne_zero _ h₀) fun _ _ =>
     gramSchmidt_orthogonal 𝕜 f
 #align gram_schmidt_linear_independent gramSchmidt_linearIndependent
 
