@@ -28,14 +28,14 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid a bad universe levels in `quotCotangent`
+-- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: instances that were derived automically needs to be proved by hand (see below)
+-- Porting note: instances that were derived automically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 #align ideal.cotangent Ideal.Cotangent
