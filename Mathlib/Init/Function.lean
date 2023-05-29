@@ -12,7 +12,7 @@ import Mathlib.Mathport.Rename
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₁}
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 @[reducible] def comp_right (f : β → β → β) (g : α → β) : β → α → β :=
 λ b a => f b (g a)
