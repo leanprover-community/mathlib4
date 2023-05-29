@@ -8,10 +8,10 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Group.MeasurableEquiv
-import Mathbin.MeasureTheory.Measure.Regular
-import Mathbin.Dynamics.Ergodic.MeasurePreserving
-import Mathbin.Dynamics.Minimal
+import Mathlib.MeasureTheory.Group.MeasurableEquiv
+import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.Dynamics.Minimal
 
 /-!
 # Measures invariant under group actions
@@ -131,8 +131,7 @@ theorem smulInvariantMeasure_tFAE :
       [SmulInvariantMeasure G α μ, ∀ (c : G) (s), MeasurableSet s → μ ((· • ·) c ⁻¹' s) = μ s,
         ∀ (c : G) (s), MeasurableSet s → μ (c • s) = μ s, ∀ (c : G) (s), μ ((· • ·) c ⁻¹' s) = μ s,
         ∀ (c : G) (s), μ (c • s) = μ s, ∀ c : G, Measure.map ((· • ·) c) μ = μ,
-        ∀ c : G, MeasurePreserving ((· • ·) c) μ μ] :=
-  by
+        ∀ c : G, MeasurePreserving ((· • ·) c) μ μ] := by
   tfae_have 1 ↔ 2; exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
   tfae_have 1 → 6; · intro h c; exact (measure_preserving_smul c μ).map_eq
   tfae_have 6 → 7; exact fun H c => ⟨measurable_const_smul c, H c⟩
@@ -252,8 +251,7 @@ theorem measure_eq_zero_iff_eq_empty_of_smul_invariant (hμ : μ ≠ 0) (hU : Is
 end IsMinimal
 
 theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
-    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s :=
-  by
+    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
   obtain ⟨k, rfl⟩ := subgroup.mem_zpowers_iff.mp hy
   let e : α ≃ α := MulAction.toPermHom G α x
   have he : quasi_measure_preserving e μ μ := (measure_preserving_smul x μ).QuasiMeasurePreserving
@@ -266,8 +264,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
 theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type _} [MeasurableSpace G] [AddGroup G]
     [AddAction G α] [VaddInvariantMeasure G α μ] [MeasurableVAdd G α] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
-    (y +ᵥ s : Set α) =ᵐ[μ] s :=
-  by
+    (y +ᵥ s : Set α) =ᵐ[μ] s := by
   letI : MeasurableSpace (Multiplicative G) := (by infer_instance : MeasurableSpace G)
   letI : smul_invariant_measure (Multiplicative G) α μ :=
     ⟨fun g => vadd_invariant_measure.measure_preimage_vadd μ (Multiplicative.toAdd g)⟩
