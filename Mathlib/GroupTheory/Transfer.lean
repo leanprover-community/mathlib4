@@ -36,7 +36,7 @@ variable {G : Type _} [Group G] {H : Subgroup G} {A : Type _} [CommGroup A] (ϕ 
 
 namespace Subgroup
 
-namespace LeftTransversals
+namespace leftTransversals
 
 open Finset MulAction
 
@@ -49,9 +49,9 @@ variable (R S T : leftTransversals (H : Set G)) [FiniteIndex H]
 noncomputable def diff : A :=
   let α := MemLeftTransversals.toEquiv S.2
   let β := MemLeftTransversals.toEquiv T.2
-  (@Finset.univ (G ⧸ H) H.fintypeQuotientOfFiniteIndex).Prod fun q =>
+  (@Finset.univ (G ⧸ H) H.fintypeQuotientOfFiniteIndex).prod fun q =>
     ϕ
-      ⟨(α q)⁻¹ * β q,
+      ⟨(α q : G)⁻¹ * β q,
         QuotientGroup.leftRel_apply.mp <|
           Quotient.exact' ((α.symm_apply_apply q).trans (β.symm_apply_apply q).symm)⟩
 #align subgroup.left_transversals.diff Subgroup.leftTransversals.diff
@@ -60,7 +60,7 @@ noncomputable def diff : A :=
 @[to_additive]
 theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
   prod_mul_distrib.symm.trans
-    (prod_congr rfl fun q hq =>
+    (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
           (by simp_rw [Subtype.ext_iff, coe_mul, coe_mk, mul_assoc, mul_inv_cancel_left])))
@@ -81,7 +81,7 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
-  let h := H.fintypeQuotientOfFiniteIndex
+  let _ := H.fintypeQuotientOfFiniteIndex
   prod_bij' (fun q _ => g⁻¹ • q) (fun _ _ => mem_univ _)
     (fun _ _ =>
       congr_arg ϕ
@@ -93,7 +93,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 #align subgroup.left_transversals.smul_diff_smul Subgroup.leftTransversals.smul_diff_smul
 #align add_subgroup.left_transversals.vadd_diff_vadd AddSubgroup.leftTransversals.vadd_diff_vadd
 
-end LeftTransversals
+end leftTransversals
 
 end Subgroup
 
@@ -108,8 +108,8 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by rw [one_smul, diff_self]
-    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by simp only; rw [one_smul, diff_self] -- porting note: added `simp only`
+    map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 #align monoid_hom.transfer MonoidHom.transfer
 #align add_monoid_hom.transfer AddMonoidHom.transfer
 
@@ -130,19 +130,20 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
           ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod ((· • ·) g) q.out' * q.out'.out',
             QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
   classical
-    letI := H.fintype_quotient_of_finite_index
+    letI := H.fintypeQuotientOfFiniteIndex
     calc
-      transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transfer_transversal H g) g
-      _ = _ := ((quotient_equiv_sigma_zmod H g).symm.prod_comp _).symm
+      transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
+      _ = _ := ((quotientEquivSigmaZmod H g).symm.prod_comp _).symm
       _ = _ := (Finset.prod_sigma _ _ _)
-      _ = _ := Fintype.prod_congr _ _ fun q => _
-      
-    simp only [quotient_equiv_sigma_zmod_symm_apply, transfer_transversal_apply',
-      transfer_transversal_apply'']
-    rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod ((· • ·) g) q.out')) fun k hk => _]
-    · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
-    · simp only [if_neg hk, inv_mul_self]
-      exact map_one ϕ
+      _ = _ := by
+        refine' Fintype.prod_congr _ _ (fun q => _)
+        simp only [quotientEquivSigmaZmod_symm_apply, transferTransversal_apply',
+          transferTransversal_apply'']
+        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod ((· • ·) g) q.out')) _]
+        · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
+        · intro k hk
+          simp only [if_neg hk, inv_mul_self]
+          exact map_one ϕ
 #align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
 /-- Auxillary lemma in order to state `transfer_eq_pow`. -/
@@ -152,35 +153,37 @@ theorem transfer_eq_pow_aux (g : G)
   by_cases hH : H.index = 0
   · rw [hH, pow_zero]
     exact H.one_mem
-  letI := fintype_of_index_ne_zero hH
+  letI := fintypeOfIndexNeZero hH
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
       (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod ((· • ·) g) q ∈ H := fun q =>
       key (Function.minimalPeriod ((· • ·) g) q) q.out'
         (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)
-    let f : Quotient (orbit_rel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
+    let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
       (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod ((· • ·) g) q.out'
-    have hf : ∀ q, f q ∈ H.subgroup_of (zpowers g) := fun q => key q.out'
+    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
     replace key :=
-      Subgroup.prod_mem (H.subgroup_of (zpowers g)) fun q (hq : q ∈ Finset.univ) => hf q
-    simpa only [minimal_period_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
-      Fintype.card_congr (self_equiv_sigma_orbits (zpowers g) (G ⧸ H)), index_eq_card] using key
+      Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
+    simpa only [minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
+      Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card] using key
 #align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     transfer ϕ g = ϕ ⟨g ^ H.index, transfer_eq_pow_aux g key⟩ := by
   classical
-    letI := H.fintype_quotient_of_finite_index
+    letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
-    rw [transfer_eq_prod_quotient_orbit_rel_zpowers_quot, ← Finset.prod_to_list, List.prod_map_hom]
-    refine' congr_arg ϕ (Subtype.coe_injective _)
+    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
+    refine' (List.prod_map_hom _ _ _).trans _ -- porting note: this used to be in the `rw`
+    refine' congrArg ϕ (Subtype.coe_injective _)
+    simp only -- porting note: added `simp only`
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, (zpowers g).coe_mk,
-      index_eq_card, Fintype.card_congr (self_equiv_sigma_orbits (zpowers g) (G ⧸ H)),
+      index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
-    simp only [coe_list_prod, List.map_map, ← minimal_period_eq_card]
-    congr 2
+    simp only [Finset.coe_list_prod, List.map_map, ← minimalPeriod_eq_card]
+    congr
     funext
     apply key
 #align monoid_hom.transfer_eq_pow MonoidHom.transfer_eq_pow
@@ -196,7 +199,7 @@ variable (G)
 noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
-  map_mul' a b := by simp_rw [← show ∀ g, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
+  map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
 #align monoid_hom.transfer_center_pow MonoidHom.transferCenterPow
 
 variable {G}
@@ -210,8 +213,6 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 section BurnsideTransfer
 
 variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ (P : Subgroup G).centralizer)
-
-include hP
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
@@ -242,17 +243,17 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow :
-    ⇑((transferSylow P hP).restrict (P : Subgroup G)) = (· ^ (P : Subgroup G).index) :=
+    ⇑((transferSylow P hP).restrict (P : Subgroup G)) = (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 
 /-- Burnside's normal p-complement theorem: If `N(P) ≤ C(P)`, then `P` has a normal complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
-  have hf : Function.Bijective ((transfer_sylow P hP).restrict (P : Subgroup G)) :=
-    (transfer_sylow_restrict_eq_pow P hP).symm ▸
+  have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
+    (transferSylow_restrict_eq_pow P hP).symm ▸
       (P.2.powEquiv'
           (not_dvd_index_sylow P
-            (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).Bijective
+            (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).bijective
   rw [Function.Bijective, ← range_top_iff_surjective, restrict_range] at hf
   have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans (map_le_range _ P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
@@ -277,4 +278,3 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
 end BurnsideTransfer
 
 end MonoidHom
-
