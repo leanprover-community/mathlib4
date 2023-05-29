@@ -44,9 +44,7 @@ which removes some boilerplate code.
 
 noncomputable section
 
-open Classical
-
-open Nat LocalRing Padic
+open Classical Nat LocalRing Padic
 
 namespace PadicInt
 
@@ -59,8 +57,8 @@ section RingHoms
 
 variable (p) (r : ℚ)
 
-/-- `mod_part p r` is an integer that satisfies
-`‖(r - mod_part p r : ℚ_[p])‖ < 1` when `‖(r : ℚ_[p])‖ ≤ 1`,
+/-- `modPart p r` is an integer that satisfies
+`‖(r - modPart p r : ℚ_[p])‖ < 1` when `‖(r : ℚ_[p])‖ ≤ 1`,
 see `PadicInt.norm_sub_modPart`.
 It is the unique non-negative integer that is `< p` with this property.
 
@@ -105,7 +103,7 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
   rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.coe_nat_dvd_left, ← Int.coe_nat_dvd]
 #align padic_int.is_unit_denom PadicInt.isUnit_den
 
-theorem norm_sub_mod_part_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
+theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd]
   simp only [Int.cast_ofNat, ZMod.nat_cast_mod, Int.cast_mul, Int.cast_sub]
@@ -123,7 +121,7 @@ theorem norm_sub_mod_part_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
   apply ge_of_eq
   rw [← isUnit_iff]
   exact isUnit_den r h
-#align padic_int.norm_sub_mod_part_aux PadicInt.norm_sub_mod_part_aux
+#align padic_int.norm_sub_mod_part_aux PadicInt.norm_sub_modPart_aux
 
 theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modPart p r : ℤ_[p])‖ < 1 := by
   let n := modPart p r
@@ -135,7 +133,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
     simp only [coe_mul, Subtype.coe_mk, coe_nat_cast]
     rw_mod_cast [@Rat.mul_den_eq_num r]
     rfl
-  exact norm_sub_mod_part_aux r h
+  exact norm_sub_modPart_aux r h
 #align padic_int.norm_sub_mod_part PadicInt.norm_sub_modPart
 
 theorem exists_mem_range_of_norm_rat_le_one (h : ‖(r : ℚ_[p])‖ ≤ 1) :
@@ -180,7 +178,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
     rw [norm_sub_rev] at hr
     calc
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
-      _ ≤ _ := (padicNormE.nonarchimedean _ _)
+      _ ≤ _ := padicNormE.nonarchimedean _ _
       _ ≤ _ := max_le (le_of_lt hr) x.2
 
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
@@ -214,7 +212,7 @@ theorem sub_zmodRepr_mem : x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   (zmodRepr_spec _).2
 #align padic_int.sub_zmod_repr_mem PadicInt.sub_zmodRepr_mem
 
-/-- `to_zmod_hom` is an auxiliary constructor for creating ring homs from `ℤ_[p]` to `ZMod v`.
+/-- `toZModHom` is an auxiliary constructor for creating ring homs from `ℤ_[p]` to `ZMod v`.
 -/
 def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Ideal.span {↑v} : Ideal ℤ_[p]))
     (f_congr :
@@ -252,8 +250,8 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
       ring
 #align padic_int.to_zmod_hom PadicInt.toZModHom
 
-/-- `to_zmod` is a ring hom from `ℤ_[p]` to `ZMod p`,
-with the equality `to_zmod x = (zmod_repr x : ZMod p)`.
+/-- `toZMod` is a ring hom from `ℤ_[p]` to `ZMod p`,
+with the equality `toZMod x = (zmodRepr x : ZMod p)`.
 -/
 def toZMod : ℤ_[p] →+* ZMod p :=
   toZModHom p zmodRepr
@@ -265,9 +263,9 @@ def toZMod : ℤ_[p] →+* ZMod p :=
       exact zmod_congr_of_sub_mem_max_ideal)
 #align padic_int.to_zmod PadicInt.toZMod
 
-/-- `z - (to_zmod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
+/-- `z - (toZMod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
 
-The coercion from `ZMod p` to `ℤ_[p]` is `zmod.has_coe_t`,
+The coercion from `ZMod p` to `ℤ_[p]` is `ZMod.cast`,
 which coerces `ZMod p` into artibrary rings.
 This is unfortunate, but a consequence of the fact that we allow `ZMod p`
 to coerce to rings of arbitrary characteristic, instead of only rings of characteristic `p`.
@@ -383,7 +381,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       rw [← this, ← Ideal.mem_span_singleton, ← maximalIdeal_eq_span_p]
       apply toZMod_spec
     obtain ⟨c, rfl⟩ : IsUnit c := by
-      -- TODO: write a can_lift instance for units
+      -- TODO: write a `CanLift` instance for units
       rw [Int.natAbs_eq_zero] at hc0
       rw [isUnit_iff, norm_eq_pow_val hc', hc0, neg_zero, zpow_zero]
     rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
@@ -486,7 +484,7 @@ variable {R : Type _} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k
   (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
-`nth_hom f r` is an integer-valued sequence
+`nthHom f r` is an integer-valued sequence
 whose `n`th value is the unique integer `k` such that `0 ≤ k < p ^ n`
 and `f n r = (k : ZMod (p ^ n))`.
 -/
@@ -519,7 +517,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   exact_mod_cast pow_dvd_nthHom_sub f_compat r k j hj
 #align padic_int.is_cau_seq_nth_hom PadicInt.isCauSeq_nthHom
 
-/-- `nth_hom_seq f_compat r` bundles `PadicInt.nthHom f r`
+/-- `nthHomSeq f_compat r` bundles `PadicInt.nthHom f r`
 as a Cauchy sequence of rationals with respect to the `p`-adic norm.
 The `n`th value of the sequence is `((f n r).val : ℚ)`.
 -/
@@ -570,7 +568,7 @@ theorem nthHomSeq_mul (r s : R) :
 #align padic_int.nth_hom_seq_mul PadicInt.nthHomSeq_mul
 
 /--
-`lim_nth_hom f_compat r` is the limit of a sequence `f` of compatible ring homs `R →+* ZMod (p^k)`.
+`limNthHom f_compat r` is the limit of a sequence `f` of compatible ring homs `R →+* ZMod (p^k)`.
 This is itself a ring hom: see `PadicInt.lift`.
 -/
 def limNthHom (r : R) : ℤ_[p] :=

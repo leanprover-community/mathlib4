@@ -1087,8 +1087,6 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
       Set.Subset.trans h <| Set.subset_union_right (J : Set R) K ⟩
 #align ideal.subset_union Ideal.subset_union
 
-
--- Porting note: Replaced `specialize` calls with `have ih := ih ...`
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
     (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
@@ -1137,7 +1135,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         rw [← Set.union_assoc (f i : Set R)] at h
         erw [Set.union_eq_self_of_subset_right hfji] at h
         exact h
-      have ih := ih hp' hn' h'
+      specialize ih hp' hn' h'
       refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
       simp only [exists_prop]
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
@@ -1147,7 +1145,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
           Set.union_right_comm (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Ha] at h
         exact h
-      have ih := ih hp.2 hn h'
+      specialize ih hp.2 hn h'
       right
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
       · exact Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩
@@ -1159,7 +1157,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
           Set.union_assoc (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Hb] at h
         exact h
-      have ih := ih hp.2 hn h'
+      specialize ih hp.2 hn h'
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
       · exact Or.inl ih
       · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩)
