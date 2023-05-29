@@ -8,7 +8,7 @@ Authors: Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.ProbabilityMassFunction.Constructions
+import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform Probability Mass Functions
@@ -98,12 +98,10 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     _ = ∑ x in s.filterₓ (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun x hx => if_neg fun h => hx (Finset.mem_filter.2 h))
     _ = ∑ x in s.filterₓ (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
-      (Finset.sum_congr rfl fun x hx =>
-        by
+      (Finset.sum_congr rfl fun x hx => by
         let this : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true])
-    _ = (s.filterₓ (· ∈ t)).card / s.card :=
-      by
+    _ = (s.filterₓ (· ∈ t)).card / s.card := by
       have : (s.card : ℝ≥0∞) ≠ 0 :=
         Nat.cast_ne_zero.2 (hs.recOn fun _ => Finset.card_ne_zero_of_mem)
       simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
@@ -209,8 +207,7 @@ variable (t : Set α)
 
 @[simp]
 theorem toOuterMeasure_ofMultiset_apply :
-    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filterₓ (· ∈ t)).count x) / s.card :=
-  by
+    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filterₓ (· ∈ t)).count x) / s.card := by
   rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, to_outer_measure_apply]
   refine' tsum_congr fun x => _
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
