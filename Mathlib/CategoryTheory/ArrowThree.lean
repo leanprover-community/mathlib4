@@ -1,6 +1,9 @@
 import Mathlib.CategoryTheory.ArrowTwo
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 namespace CategoryTheory
+
+open Limits
 
 variable (C : Type _) [Category C]
 
@@ -54,6 +57,11 @@ instance : Category (Arrow₃ C) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
+
+@[ext] lemma hom_ext {D₁ D₂ : Arrow₃ C} (f₁ f₂ : D₁ ⟶ D₂)
+    (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) (h₃ : f₁.τ₃ = f₂.τ₃) :
+    f₁ = f₂ :=
+  Hom.ext _ _ h₀ h₁ h₂ h₃
 
 @[simps]
 def δ₀ : Arrow₃ C ⥤ Arrow₂ C where
@@ -138,6 +146,16 @@ lemma δ₂_map_δ₃Toδ₂_app (D : Arrow₃ C) : Arrow₂.δ₂.map (Arrow₃
 
 lemma δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj (D : Arrow₃ C) :
     Arrow₂.δ₀.map (Arrow₃.δ₃Toδ₂.app D) = Arrow₂.δ₂Toδ₁.app (Arrow₃.δ₀.obj D) := by aesop_cat
+
+variable (C)
+
+noncomputable def ιArrow [HasInitial C] [HasTerminal C] : Arrow C ⥤ Arrow₃ C where
+  obj D := Arrow₃.mk (initial.to _) D.hom (terminal.from _)
+  map {D₁ D₂} φ :=
+    { τ₀ := 𝟙 _
+      τ₁ := φ.left
+      τ₂ := φ.right
+      τ₃ := 𝟙 _ }
 
 end Arrow₃
 

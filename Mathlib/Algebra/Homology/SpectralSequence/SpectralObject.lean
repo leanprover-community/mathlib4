@@ -7,11 +7,24 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.ArrowThree
-import Mathlib.Tactic.Linarith
+import Mathlib.CategoryTheory.Subobject.Basic
 
 open CategoryTheory Category Limits
 
 namespace CategoryTheory
+
+section
+
+variable {C : Type _} [Category C] [Abelian C]
+
+/-noncomputable def Over.abelianImageFunctor (X : C) : Over X ⥤ MonoOver X where
+  obj f := MonoOver.mk' (Abelian.image.ι f.hom)
+  map φ := by
+    sorry
+  map_id := sorry
+  map_comp := sorry-/
+
+end
 
 namespace Arrow
 
@@ -31,6 +44,12 @@ lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
         IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
     . aesop_cat
     . aesop_cat
+
+noncomputable def ιOfHasInitial (C : Type _) [Category C] [HasInitial C] : C ⥤ Arrow C where
+  obj i := Arrow.mk (initial.to i)
+  map {i j} φ :=
+    { left := 𝟙 _
+      right := φ }
 
 end Arrow
 
@@ -410,6 +429,29 @@ noncomputable def Φ : cokernel (whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n�
   (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
 
 pp_extended_field_notation Φ-/
+
+section Convergence
+
+variable [HasInitial ι] [HasTerminal ι]
+
+noncomputable def EInfty : (Arrow ι ⥤ C) := Arrow₃.ιArrow ι ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
+
+noncomputable def abutment (n : ℤ) : C := (X.H n).obj (Arrow.mk (initial.to (⊤_ ι)))
+
+noncomputable def toAbutment (n : ℤ) : ι ⥤ Over (X.abutment n) where
+  obj i := Over.mk ((X.H n).map ((Arrow.ιOfHasInitial ι).map (terminal.from i)))
+  map {i j} φ := Over.homMk ((X.H n).map ((Arrow.ιOfHasInitial ι).map φ)) (by
+    dsimp
+    simp only [← Functor.map_comp]
+    congr
+    simp)
+  map_id _ := by ext ; dsimp ; simp
+  map_comp _ _ := by ext ; dsimp ; simp
+
+--noncomputable def filtration (n : ℤ) : ι ⥤ C :=
+--  X.toAbutment n ⋙ Over.abelianImageFunctor _ ⋙ MonoOver.forget _ ⋙ Over.forget _
+
+end Convergence
 
 end SpectralObject
 
