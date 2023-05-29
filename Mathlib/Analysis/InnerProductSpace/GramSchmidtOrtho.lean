@@ -8,8 +8,8 @@ Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.PiL2
-import Mathbin.LinearAlgebra.Matrix.Block
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization
@@ -74,8 +74,7 @@ theorem gramSchmidt_def' (f : ι → E) (n : ι) :
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n =
       gramSchmidt 𝕜 f n +
-        ∑ i in Iio n, (⟪gramSchmidt 𝕜 f i, f n⟫ / ‖gramSchmidt 𝕜 f i‖ ^ 2) • gramSchmidt 𝕜 f i :=
-  by
+        ∑ i in Iio n, (⟪gramSchmidt 𝕜 f i, f n⟫ / ‖gramSchmidt 𝕜 f i‖ ^ 2) • gramSchmidt 𝕜 f i := by
   convert gramSchmidt_def' 𝕜 f n
   ext i
   rw [orthogonalProjection_singleton]
@@ -90,10 +89,8 @@ theorem gramSchmidt_zero {ι : Type _} [LinearOrder ι] [LocallyFiniteOrder ι] 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gram_schmidt` produces an orthogonal system of vectors. -/
 theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
-    ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 :=
-  by
-  suffices ∀ a b : ι, a < b → ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0
-    by
+    ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := by
+  suffices ∀ a b : ι, a < b → ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 by
     cases' h₀.lt_or_lt with ha hb
     · exact this _ _ ha
     · rw [inner_eq_zero_symm]
@@ -142,8 +139,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
 open Submodule Set Order
 
 theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
-    f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Iic j) :=
-  by
+    f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Iic j) := by
   rw [gramSchmidt_def' 𝕜 f i]
   simp_rw [orthogonalProjection_singleton]
   exact
@@ -198,8 +194,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
     apply Finset.sum_eq_zero
     intro j hj
     rw [coe_eq_zero]
-    suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i
-      by
+    suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left]
       rw [← mem_orthogonal_singleton_iff_inner_right]
@@ -214,11 +209,9 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
 variable {𝕜}
 
 theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
-    (h₀ : LinearIndependent 𝕜 (f ∘ (coe : Set.Iic n → ι))) : gramSchmidt 𝕜 f n ≠ 0 :=
-  by
+    (h₀ : LinearIndependent 𝕜 (f ∘ (coe : Set.Iic n → ι))) : gramSchmidt 𝕜 f n ≠ 0 := by
   by_contra h
-  have h₁ : f n ∈ span 𝕜 (f '' Iio n) :=
-    by
+  have h₁ : f n ∈ span 𝕜 (f '' Iio n) := by
     rw [← span_gramSchmidt_Iio 𝕜 f n, gramSchmidt_def' _ f, h, zero_add]
     apply Submodule.sum_mem _ _
     simp_intro a ha only [Finset.mem_Ico]
@@ -228,8 +221,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     refine' subset_span ⟨a, ha, by rfl⟩
   have h₂ :
     (f ∘ (coe : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
-      span 𝕜 (f ∘ (coe : Set.Iic n → ι) '' Iio ⟨n, le_refl n⟩) :=
-    by
+      span 𝕜 (f ∘ (coe : Set.Iic n → ι) '' Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]
     convert h₁ using 3
     ext i
@@ -247,8 +239,7 @@ theorem gramSchmidt_ne_zero {f : ι → E} (n : ι) (h₀ : LinearIndependent �
 
 /-- `gram_schmidt` produces a triangular matrix of vectors when given a basis. -/
 theorem gramSchmidt_triangular {i j : ι} (hij : i < j) (b : Basis ι 𝕜 E) :
-    b.repr (gramSchmidt 𝕜 b i) j = 0 :=
-  by
+    b.repr (gramSchmidt 𝕜 b i) j = 0 := by
   have : gramSchmidt 𝕜 b i ∈ span 𝕜 (gramSchmidt 𝕜 b '' Set.Iio j) :=
     subset_span ((Set.mem_image _ _ _).2 ⟨i, hij, rfl⟩)
   have : gramSchmidt 𝕜 b i ∈ span 𝕜 (b '' Set.Iio j) := by rwa [← span_gramSchmidt_Iio 𝕜 b j]
@@ -296,8 +287,7 @@ theorem gramSchmidtNormed_unit_length {f : ι → E} (n : ι) (h₀ : LinearInde
 #align gram_schmidt_normed_unit_length gramSchmidtNormed_unit_length
 
 theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidtNormed 𝕜 f n ≠ 0) :
-    ‖gramSchmidtNormed 𝕜 f n‖ = 1 :=
-  by
+    ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
   rw [gramSchmidtNormed] at *
   rw [norm_smul_inv_norm]
   simpa using hn
@@ -307,8 +297,7 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
 `gram_schmidt_normed` applied to a linearly independent set of vectors produces an orthornormal
 system of vectors. -/
 theorem gram_schmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
-    Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) :=
-  by
+    Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
   unfold Orthonormal
   constructor
   · simp only [gramSchmidtNormed_unit_length, h₀, eq_self_iff_true, imp_true_iff]
@@ -323,8 +312,7 @@ theorem gram_schmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f
 `gram_schmidt_normed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
 theorem gram_schmidt_orthonormal' (f : ι → E) :
-    Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i :=
-  by
+    Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
   refine' ⟨fun i => gramSchmidtNormed_unit_length' i.Prop, _⟩
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
@@ -332,8 +320,7 @@ theorem gram_schmidt_orthonormal' (f : ι → E) :
 #align gram_schmidt_orthonormal' gram_schmidt_orthonormal'
 
 theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
-    span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) :=
-  by
+    span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
   refine'
     span_eq_span
       (Set.image_subset_iff.2 fun i hi => smul_mem _ _ <| subset_span <| mem_image_of_mem _ hi)
@@ -372,8 +359,7 @@ theorem gramSchmidtOrthonormalBasis_apply {f : ι → E} {i : ι} (hi : gramSchm
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
     (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) {i : ι} (hi : f i ≠ 0) :
-    gramSchmidtOrthonormalBasis h f i = (‖f i‖⁻¹ : 𝕜) • f i :=
-  by
+    gramSchmidtOrthonormalBasis h f i = (‖f i‖⁻¹ : 𝕜) • f i := by
   have H : gramSchmidtNormed 𝕜 f i = (‖f i‖⁻¹ : 𝕜) • f i := by
     rw [gramSchmidtNormed, gramSchmidt_of_orthogonal 𝕜 hf]
   rw [gramSchmidtOrthonormalBasis_apply h, H]
@@ -381,11 +367,9 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
 #align gram_schmidt_orthonormal_basis_apply_of_orthogonal gramSchmidtOrthonormalBasis_apply_of_orthogonal
 
 theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
-    (hi : gramSchmidtNormed 𝕜 f i = 0) (j : ι) : ⟪gramSchmidtOrthonormalBasis h f i, f j⟫ = 0 :=
-  by
+    (hi : gramSchmidtNormed 𝕜 f i = 0) (j : ι) : ⟪gramSchmidtOrthonormalBasis h f i, f j⟫ = 0 := by
   rw [← mem_orthogonal_singleton_iff_inner_right]
-  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Iic j) ⟂ 𝕜 ∙ gramSchmidtOrthonormalBasis h f i
-    by
+  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Iic j) ⟂ 𝕜 ∙ gramSchmidtOrthonormalBasis h f i by
     apply this
     rw [span_gramSchmidtNormed]
     exact mem_span_gramSchmidt 𝕜 f le_rfl
@@ -401,8 +385,7 @@ theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
 #align inner_gram_schmidt_orthonormal_basis_eq_zero inner_gramSchmidtOrthonormalBasis_eq_zero
 
 theorem gramSchmidtOrthonormalBasis_inv_triangular {i j : ι} (hij : i < j) :
-    ⟪gramSchmidtOrthonormalBasis h f j, f i⟫ = 0 :=
-  by
+    ⟪gramSchmidtOrthonormalBasis h f j, f i⟫ = 0 := by
   by_cases hi : gramSchmidtNormed 𝕜 f j = 0
   · rw [inner_gramSchmidtOrthonormalBasis_eq_zero h hi]
   ·
@@ -425,8 +408,7 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
 
 theorem gramSchmidtOrthonormalBasis_det :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
-      ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ :=
-  by
+      ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
   convert Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
   ext i
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f i) i).symm
