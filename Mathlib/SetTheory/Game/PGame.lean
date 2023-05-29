@@ -45,7 +45,7 @@ obligations in inductive proofs relying on this relation.
 
 ## Order properties
 
-Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `preorder`. The
+Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `Preorder`. The
 relation `0 < x` means that `x` can always be won by Left, while `0 ≤ x` means that `x` can be won
 by Left as the second player.
 
@@ -60,7 +60,7 @@ Statements like `zero_le_lf`, `zero_lf_le`, etc. unfold these definitions. The t
 The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no moves.
 
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
-`antisymmetrization` of `PGame`.
+`Antisymmetrization` of `PGame`.
 
 ## Algebraic structures
 
@@ -113,9 +113,7 @@ open Function Relation
 inductive PGame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → PGame) → (β → PGame) → PGame
 #align pgame PGame
-
--- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
-noncomputable section
+compile_inductive% PGame
 
 namespace PGame
 
@@ -422,7 +420,7 @@ theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
 
 /-- Definition of `x ≤ y` on pre-games, in terms of `⧏`.
 
-The ordering here is chosen so that `and.left` refer to moves by Left, and `and.right` refer to
+The ordering here is chosen so that `And.left` refer to moves by Left, and `And.right` refer to
 moves by Right. -/
 theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
@@ -612,7 +610,7 @@ theorem mk_lf {xl xr} (xL : xl → PGame) (xR : xr → PGame) (j) : mk xl xr xL 
   @lf_moveRight (mk _ _ _ _) j
 #align pgame.mk_lf PGame.mk_lf
 
-/-- This special case of `pgame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
+/-- This special case of `PGame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
 preferred over `⧏`. -/
 theorem le_of_forall_lt {x y : PGame} (h₁ : ∀ i, x.moveLeft i < y) (h₂ : ∀ j, x < y.moveRight j) :
     x ≤ y :=

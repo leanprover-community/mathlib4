@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module order.filter.basic
-! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
+! leanprover-community/mathlib commit d4f691b9e5f94cfc64639973f3544c95f8d5d494
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -49,7 +49,7 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
 * `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `measure_theory.measure_space`)
+  `MeasureTheory.MeasureSpace`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
@@ -2775,7 +2775,7 @@ end Bind
 
 section ListTraverse
 
-/- This is a separate section in order to open `list`, but mostly because of universe
+/- This is a separate section in order to open `List`, but mostly because of universe
    equality requirements in `traverse` -/
 open List
 

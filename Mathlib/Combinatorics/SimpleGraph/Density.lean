@@ -46,7 +46,7 @@ variable [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePre
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
 def interedges (s : Finset α) (t : Finset β) : Finset (α × β) :=
-  (s ×ᶠ t).filter fun e ↦ r e.1 e.2
+  (s ×ˢ t).filter fun e ↦ r e.1 e.2
 #align rel.interedges Rel.interedges
 
 /-- Edge density of a relation between two finsets of vertices. -/
@@ -120,7 +120,7 @@ theorem interedges_biUnion_right (s : Finset α) (t : Finset ι) (f : ι → Fin
 
 theorem interedges_biUnion (s : Finset ι) (t : Finset κ) (f : ι → Finset α) (g : κ → Finset β) :
     interedges r (s.biUnion f) (t.biUnion g) =
-      (s ×ᶠ t).biUnion fun ab ↦ interedges r (f ab.1) (g ab.2) := by
+      (s ×ˢ t).biUnion fun ab ↦ interedges r (f ab.1) (g ab.2) := by
   simp_rw [product_biUnion, interedges_biUnion_left, interedges_biUnion_right]
 #align rel.interedges_bUnion Rel.interedges_biUnion
 
@@ -176,7 +176,7 @@ theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P :
 
 theorem card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
     (Q : Finpartition t) :
-    (interedges r s t).card = ∑ ab in P.parts ×ᶠ Q.parts, (interedges r ab.1 ab.2).card := by
+    (interedges r s t).card = ∑ ab in P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
   rw [card_interedges_finpartition_left _ P, sum_product]
   congr; ext
   rw [card_interedges_finpartition_right]
@@ -309,7 +309,7 @@ def edgeDensity : Finset α → Finset α → ℚ :=
 #align simple_graph.edge_density SimpleGraph.edgeDensity
 
 theorem interedges_def (s t : Finset α) :
-    G.interedges s t = (s ×ᶠ t).filter fun e ↦ G.Adj e.1 e.2 :=
+    G.interedges s t = (s ×ˢ t).filter fun e ↦ G.Adj e.1 e.2 :=
   rfl
 #align simple_graph.interedges_def SimpleGraph.interedges_def
 
@@ -367,14 +367,14 @@ theorem interedges_biUnion_right (s : Finset α) (t : Finset ι) (f : ι → Fin
 
 theorem interedges_biUnion (s : Finset ι) (t : Finset κ) (f : ι → Finset α) (g : κ → Finset α) :
     G.interedges (s.biUnion f) (t.biUnion g) =
-      (s ×ᶠ t).biUnion fun ab ↦ G.interedges (f ab.1) (g ab.2) :=
+      (s ×ˢ t).biUnion fun ab ↦ G.interedges (f ab.1) (g ab.2) :=
   Rel.interedges_biUnion _ _ _ _ _
 #align simple_graph.interedges_bUnion SimpleGraph.interedges_biUnion
 
 theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
-  have : ((s ×ᶠ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ᶠ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
+  have : ((s ×ˢ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
     refine' filter_congr fun x hx ↦ _
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
