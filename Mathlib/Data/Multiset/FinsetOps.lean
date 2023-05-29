@@ -284,7 +284,6 @@ theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ D
 
 end Multiset
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- -- Assert that we define `finset` without the material on the set lattice.
--- -- Note that we cannot put this in `data.finset.basic` because we proved relevant lemmas there.
--- assert_not_exists set.sInter
+-- Assert that we define `Finset` without the material on the set lattice.
+-- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+assert_not_exists Set.sInter

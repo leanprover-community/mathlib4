@@ -156,7 +156,7 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 #align nat.card_fintype_Iio Nat.card_fintypeIio
 
--- TODO@Yaël: Generalize all the following lemmas to `succ_order`
+-- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
   rw [mem_Icc, mem_Ioc, succ_le_iff]
@@ -280,7 +280,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
-well. See `int.image_Ico_mod` for the ℤ version. -/
+well. See `Int.image_Ico_emod` for the ℤ version. -/
 theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := by
   obtain rfl | ha := eq_or_ne a 0
   · rw [range_zero, add_zero, Ico_self, image_empty]

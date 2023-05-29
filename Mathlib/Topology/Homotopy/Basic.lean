@@ -185,7 +185,7 @@ theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t)
 
 @[simp]
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
-  ContinuousMap.congr_fun (Set.Icc_extend_coe (zero_le_one' ℝ) F.curry t) x
+  ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 #align continuous_map.homotopy.extend_apply_coe ContinuousMap.Homotopy.extend_apply_coe
 
 @[simp]

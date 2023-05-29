@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 
 /-!
-# Subsemigroups: definition and `complete_lattice` structure
+# Subsemigroups: definition and `CompleteLattice` structure
 
 This file defines bundled multiplicative and additive subsemigroups. We also define
 a `CompleteLattice` structure on `Subsemigroup`s,
