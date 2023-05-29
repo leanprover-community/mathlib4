@@ -33,6 +33,7 @@ open ModuleCat
 universe v u
 
 namespace ModuleCat
+set_option linter.uppercaseLean3 false -- `Module`
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
@@ -42,22 +43,18 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow
       toFun := fun N => Subobject.mk (↾N.subtype)
-      right_inv := fun S =>
-        Eq.symm
-          (by
-            fapply eq_mk_of_comm
-            · apply LinearEquiv.toModuleIso'Left
-              apply LinearEquiv.ofBijective
-                (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
-              constructor
-              · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-                rw [ker_eq_bot_of_mono]
-              · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
-                  Submodule.comap_subtype_self]
-                exact LinearMap.mem_range_self _
-            · apply LinearMap.ext
-              intro x
-              rfl)
+      right_inv := fun S => Eq.symm (by
+        fapply eq_mk_of_comm
+        · apply LinearEquiv.toModuleIso'Left
+          apply LinearEquiv.ofBijective (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
+          constructor
+          · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
+            rw [ker_eq_bot_of_mono]
+          · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict, Submodule.comap_subtype_self]
+            exact LinearMap.mem_range_self _
+        · apply LinearMap.ext
+          intro x
+          rfl)
       left_inv := fun N => by
         --porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
         --choice here
@@ -73,48 +70,33 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           rw [this, comp_def, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
-        refine'
-          ⟨fun h => _, fun h =>
-            mk_le_mk_of_comm (↟(Submodule.ofLe h))
-              (by
-                ext
-                rfl)⟩
+        refine' ⟨fun h => _, fun h => mk_le_mk_of_comm (↟(Submodule.ofLe h)) rfl⟩
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
         · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
-set_option linter.uppercaseLean3 false in
 #align Module.subobject_Module ModuleCat.subobjectModule
 
 instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
-set_option linter.uppercaseLean3 false in
 #align Module.well_powered_Module ModuleCat.wellPowered_moduleCat
 
 attribute [local instance] hasKernels_moduleCat
 
-/-- Bundle an element `m : M` such that `f m = 0` as a term of `kernel_subobject f`. -/
+/-- Bundle an element `m : M` such that `f m = 0` as a term of `kernelSubobject f`. -/
 noncomputable def toKernelSubobject {M N : ModuleCat R} {f : M ⟶ N} :
     LinearMap.ker f →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
-set_option linter.uppercaseLean3 false in
 #align Module.to_kernel_subobject ModuleCat.toKernelSubobject
-
-lemma test {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
-    ((kernelIsoKer f).inv ≫ (kernelSubobjectIso f).inv) ≫ arrow (kernelSubobject f) =
-    (kernelIsoKer f).inv ≫ ((kernelSubobjectIso f).inv ≫ arrow (kernelSubobject f)) := by
-  simp?
 
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
 --porting note: used to be `simp [toKernelSubobject]`, doesn't suffice anymore
-  suffices
-      (((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x) by
+  suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
   aesop_cat
-set_option linter.uppercaseLean3 false in
 #align Module.to_kernel_subobject_arrow ModuleCat.toKernelSubobject_arrow
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
@@ -135,7 +117,6 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
   rw [ ← coe_comp, ← coe_comp, Category.assoc]
   simp only [cokernel.condition, comp_zero]
   rfl
-set_option linter.uppercaseLean3 false in
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat
