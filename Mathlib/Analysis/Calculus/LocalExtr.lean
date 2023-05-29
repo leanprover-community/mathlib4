@@ -29,18 +29,18 @@ For each theorem name listed below,
 we also prove similar theorems for `min`, `extr` (if applicable)`,
 and `(f)deriv` instead of `has_fderiv`.
 
-* `is_local_max_on.has_fderiv_within_at_nonpos` : `f' y ≤ 0` whenever `a` is a local maximum
+* `IsLocalMaxOn.hasFDerivWithinAt_nonpos` : `f' y ≤ 0` whenever `a` is a local maximum
   of `f` on `s`, `f` has derivative `f'` at `a` within `s`, and `y` belongs to the positive tangent
   cone of `s` at `a`.
 
-* `is_local_max_on.has_fderiv_within_at_eq_zero` : In the settings of the previous theorem, if both
+* `IsLocalMaxOn.hasFDerivWithinAt_eq_zero` : In the settings of the previous theorem, if both
   `y` and `-y` belong to the positive tangent cone, then `f' y = 0`.
 
-* `is_local_max.has_fderiv_at_eq_zero` :
+* `IsLocalMax.hasFDerivAt_eq_zero` :
   [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)),
   the derivative of a differentiable function at a local extremum point equals zero.
 
-* `exists_has_deriv_at_eq_zero` :
+* `exists_hasDerivAt_eq_zero` :
   [Rolle's Theorem](https://en.wikipedia.org/wiki/Rolle's_theorem): given a function `f` continuous
   on `[a, b]` and differentiable on `(a, b)`, there exists `c ∈ (a, b)` such that `f' c = 0`.
 
@@ -49,7 +49,7 @@ and `(f)deriv` instead of `has_fderiv`.
 For each mathematical fact we prove several versions of its formalization:
 
 * for maxima and minima;
-* using `has_fderiv*`/`has_deriv*` or `fderiv*`/`deriv*`.
+* using `hasFDeriv*`/`hasDeriv*` or `fderiv*`/`deriv*`.
 
 For the `fderiv*`/`deriv*` versions we omit the differentiability condition whenever it is possible
 due to the fact that `fderiv` and `deriv` are defined to be zero for non-differentiable functions.
