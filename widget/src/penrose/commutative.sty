@@ -39,6 +39,10 @@ forall Targettable x {
         -- Default size, will be overwritten dynamically.
         width: 50
         height: 30
+        fillColor: theme.tooltipBackground
+        -- Draw a border.
+        strokeWidth: 1
+        strokeColor: theme.tooltipBorder
     }
 
     -- NOTE: Not used anymore, we use the optimization engine instead.
@@ -124,7 +128,7 @@ where f := MakeCell(A, B) {
         start: f.start
         end: f.end
         endArrowhead: "line"
-        strokeColor: rgba(0,0,0,100)
+        strokeColor: theme.foreground
         ensureOnCanvas: false
     }
 
