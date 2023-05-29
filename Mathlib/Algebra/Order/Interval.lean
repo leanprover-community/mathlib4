@@ -69,6 +69,7 @@ theorem snd_one : (1 : NonemptyInterval α).snd = 1 :=
 #align nonempty_interval.snd_one NonemptyInterval.snd_one
 #align nonempty_interval.snd_zero NonemptyInterval.snd_zero
 
+-- Porting note: Originally `@[simp, norm_cast, to_additive]`
 @[to_additive (attr := push_cast, simp)]
 theorem coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
   rfl
