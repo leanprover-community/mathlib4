@@ -1,7 +1,7 @@
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Refinements
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -52,6 +52,14 @@ instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] :
 instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] :
   Mono (whiskerLeft F τ) := ((whiskeringLeft ι' ι C).obj F).map_mono τ
 
+instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] (i : ι) :
+    Epi (τ.app i) :=
+  ((evaluation ι C).obj i).map_epi τ
+
+instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] (i : ι) :
+    Mono (τ.app i) :=
+  ((evaluation ι C).obj i).map_mono τ
+
 end Limits
 
 end CategoryTheory
@@ -98,6 +106,17 @@ variable {C ι}
 variable (X : SpectralObject C ι)
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+
+@[reassoc]
+lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
+    (hfg : f ≫ g = fg) (φ : Arrow.mk fg ⟶ Arrow.mk g) (hφ₁ : φ.left = f) (hφ₂ : φ.right = 𝟙 k) :
+      (X.H n₀).map φ ≫ (X.δ n₀ n₁ h).app (Arrow₂.mk f g) = 0 := by
+  subst hfg
+  obtain rfl : φ = (Arrow₂.δ₁Toδ₀.app (Arrow₂.mk f g)) := by
+    ext
+    . exact hφ₁
+    . exact hφ₂
+  refine' X.zero₃ n₀ n₁ hn₁ _
 
 def shortComplex₁ : ShortComplex (Arrow₂ ι ⥤ C):=
   ShortComplex.mk (X.δ n₀ n₁ hn₁) (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁))
@@ -170,8 +189,6 @@ def shortComplexE' : ShortComplex (Arrow₃ ι ⥤ C) where
 
 pp_extended_field_notation shortComplexE'
 
-variable (D : Arrow₂ ι)
-
 noncomputable def cycles : Arrow₂ ι ⥤ C := kernel (X.δ n₀ n₁ hn₁)
 noncomputable def cyclesCo : Arrow₂ ι ⥤ C := cokernel (X.δ n₀ n₁ hn₁)
 
@@ -182,8 +199,22 @@ noncomputable def iCycles : X.cycles n₀ n₁ hn₁ ⟶ Arrow₂.δ₀ ⋙ X.H 
 noncomputable def pCyclesCo : Arrow₂.δ₂ ⋙ X.H n₁ ⟶ X.cyclesCo n₀ n₁ hn₁ := cokernel.π _
 
 @[reassoc (attr := simp)]
+lemma iCycles_comp_δ : X.iCycles n₀ n₁ hn₁ ≫ X.δ n₀ n₁ hn₁ = 0 :=
+  kernel.condition _
+
+@[reassoc (attr := simp)]
+lemma iCycles_comp_δ_app (D : Arrow₂ ι) :
+    (X.iCycles n₀ n₁ hn₁).app D ≫ (X.δ n₀ n₁ hn₁).app D = 0 :=
+  congr_app (X.iCycles_comp_δ n₀ n₁ hn₁) D
+
+@[reassoc (attr := simp)]
 lemma δ_comp_pCyclesCo : X.δ n₀ n₁ hn₁ ≫ X.pCyclesCo n₀ n₁ hn₁ = 0 :=
   cokernel.condition _
+
+@[reassoc (attr := simp)]
+lemma δ_comp_pCyclesCo_app (D : Arrow₂ ι) :
+    (X.δ n₀ n₁ hn₁).app D ≫ (X.pCyclesCo n₀ n₁ hn₁).app D = 0 :=
+  congr_app (X.δ_comp_pCyclesCo n₀ n₁ hn₁) D
 
 pp_extended_field_notation iCycles
 pp_extended_field_notation pCyclesCo
@@ -195,20 +226,6 @@ instance : Mono (X.iCycles n₀ n₁ hn₁) := by
 instance : Epi (X.pCyclesCo n₀ n₁ hn₁) := by
   dsimp only [pCyclesCo]
   infer_instance
-
-/-lemma iCycles_δ_app : (X.iCycles n₀ n₁ hn₁).app D ≫ (X.δ n₀ n₁ hn₁).app D = 0 := by
-  simp only [← NatTrans.comp_app, iCycles, kernel.condition, zero_app]
-
-lemma δ_pCyclesCo_app : (X.δ n₀ n₁ hn₁).app D ≫ (X.pCyclesCo n₀ n₁ hn₁).app D  = 0 := by
-  simp only [← NatTrans.comp_app, pCyclesCo, cokernel.condition, zero_app]
-
-noncomputable def isLimitCycles (D : Arrow₂ ι) :
-    IsLimit (KernelFork.ofι _ (X.iCycles_δ_app n₀ n₁ hn₁ D)) :=
-  KernelFork.mapIsLimit _ (kernelIsKernel (X.δ n₀ n₁ hn₁)) ((evaluation _ _).obj D)
-
-noncomputable def isColimitCyclesCo (D : Arrow₂ ι) :
-    IsColimit (CokernelCofork.ofπ _ (X.δ_pCyclesCo_app n₀ n₁ hn₁ D)) :=
-  CokernelCofork.mapIsColimit _ (cokernelIsCokernel (X.δ n₀ n₁ hn₁)) ((evaluation _ _).obj D)-/
 
 noncomputable def cokernelIsoCycles :
     cokernel (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀)) ≅ X.cycles n₀ n₁ hn₁ :=
@@ -277,6 +294,61 @@ noncomputable def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.
       rw [id_comp, ← NatTrans.comp_app, δ_comp_pCyclesCo, zero_app])
 
 pp_extended_field_notation Ψ
+
+lemma comp_Ψ : (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g ≫ X.Ψ n₀ n₁ hn₁ =
+    (whiskerLeft Arrow₃.δ₂ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.pCyclesCo n₀ n₁ hn₁)) :=
+  (X.δ₀PullbackCokernelSequenceCycles_exact n₀ n₁ hn₁).g_desc _ _
+
+@[reassoc (attr := simp)]
+lemma comp_ψ_app (D : Arrow₃ ι) :
+  (X.Hδ₁ToCycles n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D) ≫ (X.Ψ n₀ n₁ hn₁).app D =
+    (X.δ n₀ n₁ hn₁).app (Arrow₃.δ₂.obj D) ≫ (X.pCyclesCo n₀ n₁ hn₁).app (Arrow₃.δ₃.obj D) :=
+  congr_app (X.comp_Ψ n₀ n₁ hn₁) D
+
+@[simps]
+noncomputable def shortComplex₄Ψ : ShortComplex₄ (Arrow₃ ι ⥤ C) where
+  X₁ := Arrow₃.δ₁ ⋙ X.cycles n₀ n₁ hn₁
+  X₂ := Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁
+  X₃ := Arrow₃.δ₃ ⋙ X.cyclesCo n₀ n₁ hn₁
+  X₄ := Arrow₃.δ₂ ⋙ X.cyclesCo n₀ n₁ hn₁
+  f := whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n₀ n₁ hn₁)
+  g := X.Ψ n₀ n₁ hn₁
+  h := whiskerRight Arrow₃.δ₃Toδ₂ (X.cyclesCo n₀ n₁ hn₁)
+  zero₁ := by
+    ext D
+    simp only [Functor.comp_obj, NatTrans.comp_app, whiskerRight_app, zero_app,
+      ← cancel_epi ((X.Hδ₁ToCycles n₀ n₁ hn₁).app _), comp_zero, ← NatTrans.naturality_assoc,
+      comp_ψ_app, Functor.comp_map]
+    erw [X.zero₃'_assoc n₀ n₁ hn₁ _ _ _ _ _ rfl (by rfl), zero_comp]
+    dsimp
+    rw [assoc]
+  zero₂ := by
+    ext D
+    rw [← cancel_epi ((X.Hδ₁ToCycles n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D))]
+    simp only [zero_app, comp_zero, NatTrans.comp_app, comp_ψ_app_assoc, whiskerRight_app,
+      ← NatTrans.naturality, Functor.comp_map, Arrow₃.δ₂_map_δ₃Toδ₂_app, Functor.map_id,
+      Functor.comp_obj, id_comp, δ_comp_pCyclesCo_app]
+
+pp_extended_field_notation shortComplex₄Ψ
+
+/-lemma shortComplex₄Ψ_exact : (X.shortComplex₄Ψ n₀ n₁ hn₁).Exact where
+  exact₁ := by
+    rw [exact_iff_exact_evaluation]
+    rintro ⟨f₁, f₂, f₃⟩
+    rw [ShortComplex.exact_iff_exact_up_to_refinements]
+    dsimp
+    intro A₀ x₀ hx₀
+    dsimp [Arrow₃.δ₀] at x₀ hx₀
+    obtain ⟨A₁, π₁, hπ₁, x₁, fac⟩ := surjective_up_to_refinements_of_epi
+      ((X.Hδ₁ToCycles n₀ n₁ hn₁).app (Arrow₂.mk f₂ f₃)) x₀
+    sorry
+  exact₂ := sorry
+
+noncomputable def Φ : cokernel (whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n₀ n₁ hn₁)) ≅
+    kernel (whiskerRight Arrow₃.δ₃Toδ₂ (X.cyclesCo n₀ n₁ hn₁)) :=
+  (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
+
+pp_extended_field_notation Φ-/
 
 end SpectralObject
 
