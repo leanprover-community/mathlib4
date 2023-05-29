@@ -110,7 +110,7 @@ variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F} (K : Set (E →L[𝕜] F))
 
-namespace FderivMeasurableAux
+namespace FDerivMeasurableAux
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » ball[metric.ball] x r') -/
 /-- The set `A f L r ε` is the set of points `x` around which the function `f` is well approximated
@@ -120,21 +120,21 @@ def a (f : E → F) (L : E →L[𝕜] F) (r ε : ℝ) : Set E :=
   { x |
     ∃ r' ∈ Ioc (r / 2) r,
       ∀ (y) (_ : y ∈ ball x r') (z) (_ : z ∈ ball x r'), ‖f z - f y - L (z - y)‖ ≤ ε * r }
-#align fderiv_measurable_aux.A FderivMeasurableAux.a
+#align fderiv_measurable_aux.A FDerivMeasurableAux.a
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a continuous linear map
 `L` belonging to `K` (a given set of continuous linear maps) that approximates well the
 function `f` (up to an error `ε`), simultaneously at scales `r` and `s`. -/
 def b (f : E → F) (K : Set (E →L[𝕜] F)) (r s ε : ℝ) : Set E :=
   ⋃ L ∈ K, a f L r ε ∩ a f L s ε
-#align fderiv_measurable_aux.B FderivMeasurableAux.b
+#align fderiv_measurable_aux.B FDerivMeasurableAux.b
 
 /-- The set `D f K` is a complicated set constructed using countable intersections and unions. Its
 main use is that, when `K` is complete, it is exactly the set of points where `f` is differentiable,
 with a derivative in `K`. -/
 def d (f : E → F) (K : Set (E →L[𝕜] F)) : Set E :=
   ⋂ e : ℕ, ⋃ n : ℕ, ⋂ (p ≥ n) (q ≥ n), b f K ((1 / 2) ^ p) ((1 / 2) ^ q) ((1 / 2) ^ e)
-#align fderiv_measurable_aux.D FderivMeasurableAux.d
+#align fderiv_measurable_aux.D FDerivMeasurableAux.d
 
 theorem isOpen_a (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (a f L r ε) := by
   rw [Metric.isOpen_iff]
@@ -145,24 +145,24 @@ theorem isOpen_a (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (a f L r ε) := by
   have B : ball x' s ⊆ ball x r' := ball_subset (le_of_lt hx')
   intro y hy z hz
   exact hr' y (B hy) z (B hz)
-#align fderiv_measurable_aux.is_open_A FderivMeasurableAux.isOpen_a
+#align fderiv_measurable_aux.is_open_A FDerivMeasurableAux.isOpen_a
 
 theorem isOpen_b {K : Set (E →L[𝕜] F)} {r s ε : ℝ} : IsOpen (b f K r s ε) := by
   simp [B, isOpen_iUnion, IsOpen.inter, is_open_A]
-#align fderiv_measurable_aux.is_open_B FderivMeasurableAux.isOpen_b
+#align fderiv_measurable_aux.is_open_B FDerivMeasurableAux.isOpen_b
 
 theorem a_mono (L : E →L[𝕜] F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : a f L r ε ⊆ a f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
   refine' ⟨r', r'r, fun y hy z hz => (hr' y hy z hz).trans (mul_le_mul_of_nonneg_right h _)⟩
   linarith [mem_ball.1 hy, r'r.2, @dist_nonneg _ _ y x]
-#align fderiv_measurable_aux.A_mono FderivMeasurableAux.a_mono
+#align fderiv_measurable_aux.A_mono FDerivMeasurableAux.a_mono
 
 theorem le_of_mem_a {r ε : ℝ} {L : E →L[𝕜] F} {x : E} (hx : x ∈ a f L r ε) {y z : E}
     (hy : y ∈ closedBall x (r / 2)) (hz : z ∈ closedBall x (r / 2)) :
     ‖f z - f y - L (z - y)‖ ≤ ε * r := by
   rcases hx with ⟨r', r'mem, hr'⟩
   exact hr' _ ((mem_closed_ball.1 hy).trans_lt r'mem.1) _ ((mem_closed_ball.1 hz).trans_lt r'mem.1)
-#align fderiv_measurable_aux.le_of_mem_A FderivMeasurableAux.le_of_mem_a
+#align fderiv_measurable_aux.le_of_mem_A FDerivMeasurableAux.le_of_mem_a
 
 theorem mem_a_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : DifferentiableAt 𝕜 f x) :
     ∃ R > 0, ∀ r ∈ Ioo (0 : ℝ) R, x ∈ a f (fderiv 𝕜 f x) r ε := by
@@ -186,7 +186,7 @@ theorem mem_a_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
         (mul_le_mul_of_nonneg_left (le_of_lt (mem_ball_iff_norm.1 hy)) (le_of_lt (half_pos hε))))
     _ = ε * r := by ring
 
-#align fderiv_measurable_aux.mem_A_of_differentiable FderivMeasurableAux.mem_a_of_differentiable
+#align fderiv_measurable_aux.mem_A_of_differentiable FDerivMeasurableAux.mem_a_of_differentiable
 
 theorem norm_sub_le_of_mem_a {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0 < ε) (hr : 0 < r) {x : E}
     {L₁ L₂ : E →L[𝕜] F} (h₁ : x ∈ a f L₁ r ε) (h₂ : x ∈ a f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ‖c‖ * ε := by
@@ -211,7 +211,7 @@ theorem norm_sub_le_of_mem_a {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
     _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := (mul_le_mul_of_nonneg_left ley (mul_nonneg (by norm_num) hε.le))
     _ = 4 * ‖c‖ * ε * ‖y‖ := by ring
 
-#align fderiv_measurable_aux.norm_sub_le_of_mem_A FderivMeasurableAux.norm_sub_le_of_mem_a
+#align fderiv_measurable_aux.norm_sub_le_of_mem_A FDerivMeasurableAux.norm_sub_le_of_mem_a
 
 /-- Easy inclusion: a differentiability point with derivative in `K` belongs to `D f K`. -/
 theorem differentiable_set_subset_d : { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } ⊆ d f K :=
@@ -227,7 +227,7 @@ theorem differentiable_set_subset_d : { x | DifferentiableAt 𝕜 f x ∧ fderiv
   refine' ⟨n, fun p hp q hq => ⟨fderiv 𝕜 f x, hx.2, ⟨_, _⟩⟩⟩ <;>
     · refine' hR _ ⟨pow_pos (by norm_num) _, lt_of_le_of_lt _ hn⟩
       exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
-#align fderiv_measurable_aux.differentiable_set_subset_D FderivMeasurableAux.differentiable_set_subset_d
+#align fderiv_measurable_aux.differentiable_set_subset_D FDerivMeasurableAux.differentiable_set_subset_d
 
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
@@ -384,16 +384,16 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
 
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiable_at, f'K⟩
-#align fderiv_measurable_aux.D_subset_differentiable_set FderivMeasurableAux.d_subset_differentiable_set
+#align fderiv_measurable_aux.D_subset_differentiable_set FDerivMeasurableAux.d_subset_differentiable_set
 
 theorem differentiable_set_eq_d (hK : IsComplete K) :
     { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } = d f K :=
   Subset.antisymm (differentiable_set_subset_d _) (d_subset_differentiable_set hK)
-#align fderiv_measurable_aux.differentiable_set_eq_D FderivMeasurableAux.differentiable_set_eq_d
+#align fderiv_measurable_aux.differentiable_set_eq_D FDerivMeasurableAux.differentiable_set_eq_d
 
-end FderivMeasurableAux
+end FDerivMeasurableAux
 
-open FderivMeasurableAux
+open FDerivMeasurableAux
 
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
 
