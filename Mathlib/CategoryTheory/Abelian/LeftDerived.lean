@@ -125,6 +125,8 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   simp only [Category.comp_id]
 #align category_theory.abelian.functor.left_derived_zero_to_self_app_comp_inv CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfApp_comp_inv
 
+-- Linter thinks the `have` below is unused, but removing it makes a typeclass problem fail
+@[nolint unusedHavesSuffices]
 theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteColimits F] {X : C}
     (P : ProjectiveResolution X) :
     leftDerivedZeroToSelfAppInv F P ≫ leftDerivedZeroToSelfApp F P = 𝟙 _ := by
@@ -135,7 +137,7 @@ theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteC
   rw [← Category.assoc (F.leftDerivedObjIso 0 P).inv, Iso.inv_hom_id]
   -- Porting note: working around 'motive is not type correct'
   simp only [Category.id_comp]
-  -- Porting note: instance not found even though it is present in goal
+  -- Porting note: instance not found even though it is present in the goal
   have : IsIso (cokernel.desc (F.map
     (HomologicalComplex.d P.complex (ComplexShape.prev (ComplexShape.down ℕ) 0) 0))
       (F.map (HomologicalComplex.Hom.f P.π 0)) (exact_of_map_ProjectiveResolution F P).w) :=
