@@ -20,7 +20,7 @@ import Mathlib.Tactic.Positivity
 
 This file defines arithmetic operations on intervals and prove their correctness. Note that this is
 full precision operations. The essentials of float operations can be found
-in `data.fp.basic`. We have not yet integrated these with the rest of the library.
+in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
 -/
 
 
@@ -226,7 +226,7 @@ end Mul
 /-! ### Powers -/
 
 
--- TODO: if `to_additive` gets improved sufficiently, derive this from `has_pow`
+-- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
 instance NonemptyInterval.hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : SMul ℕ (NonemptyInterval α) :=
   ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_of_le_right s.fst_le_snd _⟩⟩
@@ -326,7 +326,7 @@ end Interval
 /-!
 ### Subtraction
 
-Subtraction is defined more generally than division so that it applies to `ℕ` (and `has_ordered_div`
+Subtraction is defined more generally than division so that it applies to `ℕ` (and `OrderedDiv`
 is not a thing and probably should not become one).
 -/
 
@@ -526,8 +526,9 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   refine' ⟨fun h => _, _⟩
   · rw [ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
-    refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> try rfl
-    exacts[this.1.symm, this.2.symm]
+    refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
+    · nth_rw 2 [this.1]
+    · nth_rw 2 [this.2]
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [pure_mul_pure, h, pure_one]
 #align nonempty_interval.mul_eq_one_iff NonemptyInterval.mul_eq_one_iff
@@ -569,7 +570,9 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   · simp [WithBot.none_eq_bot]
   cases t
   · simp [WithBot.none_eq_bot]
-  · simp [WithBot.some_eq_coe, ← NonemptyInterval.coe_mul_interval, NonemptyInterval.mul_eq_one_iff]
+  · simp_rw [WithBot.some_eq_coe, ← NonemptyInterval.coe_mul_interval,
+      ← NonemptyInterval.coe_one_interval, WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
+    exact NonemptyInterval.mul_eq_one_iff
 #align interval.mul_eq_one_iff Interval.mul_eq_one_iff
 #align interval.add_eq_zero_iff Interval.add_eq_zero_iff
 
@@ -698,8 +701,11 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 #align interval.length_sub_le Interval.length_sub_le
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
-    (∑ i in s, f i).length ≤ ∑ i in s, (f i).length :=
-  Finset.le_sum_of_subadditive _ length_zero length_add_le _ _
+    (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
+  -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
+  apply Finset.le_sum_of_subadditive
+  exact length_zero
+  exact length_add_le
 #align interval.length_sum_le Interval.length_sum_le
 
 end Interval
