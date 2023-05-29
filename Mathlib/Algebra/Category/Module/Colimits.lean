@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Basic
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of R-modules has all colimits.
@@ -113,8 +113,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to module expressions modulo module relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F)
-    where
+def colimitSetoid : Setoid (Prequotient F) where
   R := Relation F
   iseqv := ⟨Relation.refl, Relation.symm, Relation.trans⟩
 #align Module.colimits.colimit_setoid ModuleCat.Colimits.colimitSetoid
@@ -127,8 +126,7 @@ def ColimitType : Type max u v w :=
   Quotient (colimitSetoid F)deriving Inhabited
 #align Module.colimits.colimit_type ModuleCat.Colimits.ColimitType
 
-instance : AddCommGroup (ColimitType F)
-    where
+instance : AddCommGroup (ColimitType F) where
   zero := Quot.mk _ zero
   neg := by
     fapply @Quot.lift
@@ -190,8 +188,7 @@ instance : AddCommGroup (ColimitType F)
     rfl
     rfl
 
-instance : Module R (ColimitType F)
-    where
+instance : Module R (ColimitType F) where
   smul s := by
     fapply @Quot.lift
     · intro x
@@ -265,8 +262,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 #align Module.colimits.cocone_fun ModuleCat.Colimits.coconeFun
 
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F
-    where
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_smul' := by intros ; apply Quot.sound; apply relation.smul
   map_add' := by intros <;> apply Quot.sound <;> apply relation.add
@@ -274,8 +270,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ coconeMorphism F j' = coconeMorphism F j :=
-  by
+    F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
   apply Relation.Map
@@ -304,8 +299,7 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
 #align Module.colimits.desc_fun_lift ModuleCat.Colimits.descFunLift
 
 /-- The function from the colimit module to the cone point of any other cocone. -/
-def descFun (s : Cocone F) : ColimitType F → s.pt :=
-  by
+def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact desc_fun_lift F s
   · intro x y r
@@ -359,16 +353,14 @@ def descFun (s : Cocone F) : ColimitType F → s.pt :=
 #align Module.colimits.desc_fun ModuleCat.Colimits.descFun
 
 /-- The group homomorphism from the colimit module to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt
-    where
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
   map_smul' s x := by induction x <;> rfl
   map_add' x y := by induction x <;> induction y <;> rfl
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
-def colimitCoconeIsColimit : IsColimit (colimitCocone F)
-    where
+def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext
