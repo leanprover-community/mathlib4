@@ -25,7 +25,7 @@ projectives, we provide the natural isomorphism `F.leftDerived 0 ≅ F`.
   `(F.leftDerived 0) ≅ F`.
 
 ## Main results
-* `preserves_exact_of_preserves_finite_colimits_of_epi`: if `PreservesFiniteColimits F` and
+* `preserves_exact_of_PreservesFiniteColimits_of_epi`: if `PreservesFiniteColimits F` and
   `Epi g`, then `Exact (F.map f) (F.map g)` if `exact f g`.
 
 -/
@@ -125,7 +125,8 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   simp only [Category.comp_id]
 #align category_theory.abelian.functor.left_derived_zero_to_self_app_comp_inv CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfApp_comp_inv
 
--- Linter thinks the `have` below is unused, but removing it makes a typeclass problem fail
+-- Porting note: linter thinks the `have` below is unused, but removing it makes a typeclass
+-- search fail
 @[nolint unusedHavesSuffices]
 theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteColimits F] {X : C}
     (P : ProjectiveResolution X) :
