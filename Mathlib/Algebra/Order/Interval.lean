@@ -8,12 +8,12 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Data.Option.NAry
-import Mathbin.Data.Set.Pointwise.Basic
-import Mathbin.Order.Interval
-import Mathbin.Tactic.Positivity
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Option.NAry
+import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Order.Interval
+import Mathlib.Tactic.Positivity
 
 /-!
 # Interval arithmetic
@@ -284,8 +284,7 @@ instance [OrderedCommMonoid α] : CommMonoid (NonemptyInterval α) :=
 end NonemptyInterval
 
 @[to_additive]
-instance [OrderedCommMonoid α] : MulOneClass (Interval α)
-    where
+instance [OrderedCommMonoid α] : MulOneClass (Interval α) where
   mul := (· * ·)
   one := 1
   one_mul s :=
@@ -532,8 +531,7 @@ namespace NonemptyInterval
 variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 :=
-  by
+protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
   · rw [ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
@@ -551,8 +549,7 @@ instance {α : Type u} [OrderedAddCommGroup α] : SubtractionCommMonoid (Nonempt
     sub_eq_add_neg := fun s t => by ext <;> exact sub_eq_add_neg _ _
     neg_neg := fun s => by ext <;> exact neg_neg _
     neg_add_rev := fun s t => by ext <;> exact neg_add_rev _ _
-    neg_eq_of_add := fun s t h =>
-      by
+    neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
       rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
 
@@ -564,8 +561,7 @@ instance : DivisionCommMonoid (NonemptyInterval α) :=
     div_eq_mul_inv := fun s t => by ext <;> exact div_eq_mul_inv _ _
     inv_inv := fun s => by ext <;> exact inv_inv _
     mul_inv_rev := fun s t => by ext <;> exact mul_inv_rev _ _
-    inv_eq_of_mul := fun s t h =>
-      by
+    inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab] }
 
@@ -576,8 +572,7 @@ namespace Interval
 variable [OrderedCommGroup α] {s t : Interval α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 :=
-  by
+protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   cases s
   · simp [WithBot.none_eq_bot]
   cases t
