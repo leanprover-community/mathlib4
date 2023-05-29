@@ -10,8 +10,6 @@ Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
--- -- porting note: Wasn't needed before
--- import Mathlib.Algebra.Group.Prod
 
 /-!
 
@@ -104,7 +102,7 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance ContinuousMonoidHom.ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -288,19 +286,17 @@ theorem embedding_toContinuousMap :
 #align continuous_monoid_hom.embedding_to_continuous_map ContinuousMonoidHom.embedding_toContinuousMap
 #align continuous_add_monoid_hom.embedding_to_continuous_map ContinuousAddMonoidHom.embedding_toContinuousMap
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (U V W) -/
 @[to_additive]
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨embedding_toContinuousMap A B,
     ⟨by
       suffices
-        Set.range (to_continuous_map : ContinuousMonoidHom A B → C(A, B)) =
+        Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
               ⋃ (x) (y) (U) (V) (W) (hU : IsOpen U) (hV : IsOpen V) (hW : IsOpen W) (h :
                 Disjoint (U * V) W),
-                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W })ᶜ by
+                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } : Set C(A , B))ᶜ by
         rw [this, compl_compl]
         refine' (ContinuousMap.isOpen_gen isCompact_singleton isOpen_compl_singleton).union _
         repeat' apply isOpen_iUnion; intro
@@ -326,7 +322,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
         obtain ⟨UV, W, hUV, hW, hfUV, hfW, h⟩ := t2_separation hf2.symm
         have hB := @continuous_mul B _ _ _
         obtain ⟨U, V, hU, hV, hfU, hfV, h'⟩ :=
-          is_open_prod_iff.mp (hUV.preimage hB) (f x) (f y) hfUV
+          isOpen_prod_iff.mp (hUV.preimage hB) (f x) (f y) hfUV
         refine' ⟨x, y, U, V, W, hU, hV, hW, h.mono_left _, ⟨hfU, hfV⟩, hfW⟩
         rintro _ ⟨x, y, hx : (x, y).1 ∈ U, hy : (x, y).2 ∈ V, rfl⟩
         exact h' ⟨hx, hy⟩⟩⟩
@@ -337,12 +333,12 @@ variable {A B C D E}
 
 @[to_additive]
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
-  (embedding_toContinuousMap A B).T2Space
+  (embedding_toContinuousMap A B).t2Space
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
   let hi := inducing_toContinuousMap A E
-  let hc := hi.Continuous
+  let hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prod_map hc hc))
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
@@ -360,7 +356,7 @@ theorem continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
-      ((inducing_toContinuousMap A B).prod_mk (inducing_toContinuousMap B C)).Continuous
+      ((inducing_toContinuousMap A B).prod_map (inducing_toContinuousMap B C)).continuous
 #align continuous_monoid_hom.continuous_comp ContinuousMonoidHom.continuous_comp
 #align continuous_add_monoid_hom.continuous_comp ContinuousAddMonoidHom.continuous_comp
 
@@ -368,7 +364,7 @@ theorem continuous_comp [LocallyCompactSpace B] :
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).Continuous
+    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
 #align continuous_monoid_hom.continuous_comp_left ContinuousMonoidHom.continuous_comp_left
 #align continuous_add_monoid_hom.continuous_comp_left ContinuousAddMonoidHom.continuous_comp_left
 
@@ -376,7 +372,7 @@ theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).Continuous
+    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
 #align continuous_monoid_hom.continuous_comp_right ContinuousMonoidHom.continuous_comp_right
 #align continuous_add_monoid_hom.continuous_comp_right ContinuousAddMonoidHom.continuous_comp_right
 
@@ -409,11 +405,31 @@ def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup 
 
 end ContinuousMonoidHom
 
+
+
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → circle`. -/
 def PontryaginDual :=
-  ContinuousMonoidHom A circle deriving TopologicalSpace, T2Space, CommGroup, TopologicalGroup,
-  Inhabited
+  ContinuousMonoidHom A circle
 #align pontryagin_dual PontryaginDual
+
+-- porting note: `deriving` doesn't derive these instances
+instance : TopologicalSpace (PontryaginDual A) :=
+  (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
+
+instance : T2Space (PontryaginDual A) :=
+  (inferInstance : T2Space (ContinuousMonoidHom A circle))
+
+-- porting note: instance is now noncomputable
+noncomputable instance : CommGroup (PontryaginDual A) :=
+  (inferInstance : CommGroup (ContinuousMonoidHom A circle))
+
+instance : TopologicalGroup (PontryaginDual A) :=
+  (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
+
+-- porting note: instance is now noncomputable
+noncomputable instance : Inhabited (PontryaginDual A) :=
+  (inferInstance : Inhabited (ContinuousMonoidHom A circle))
+
 
 variable {A B C D E}
 
@@ -422,7 +438,7 @@ namespace PontryaginDual
 open ContinuousMonoidHom
 
 noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.continuousMonoidHomClass
+  ContinuousMonoidHom.ContinuousMonoidHomClass
 
 /-- `pontryagin_dual` is a functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :
@@ -438,19 +454,21 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext fun y => map_one x
+  ext fun x => ext (fun y => OneHomClass.map_one x)
 #align pontryagin_dual.map_one PontryaginDual.map_one
 
 @[simp]
 theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
-    map (comp g f) = comp (map f) (map g) :=
+    map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
   ext fun x => ext fun y => rfl
 #align pontryagin_dual.map_comp PontryaginDual.map_comp
 
+
 @[simp]
-theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+-- porting note: Renamed to map_mul', since it shadows the underlying lemma used.
+theorem map_mul' (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
-#align pontryagin_dual.map_mul PontryaginDual.map_mul
+#align pontryagin_dual.map_mul PontryaginDual.map_mul'
 
 variable (A B C D E)
 
@@ -460,7 +478,7 @@ noncomputable def mapHom [LocallyCompactSpace E] :
       (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
-  map_mul' := map_mul
+  map_mul' := map_mul'
   continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
 #align pontryagin_dual.map_hom PontryaginDual.mapHom
 
