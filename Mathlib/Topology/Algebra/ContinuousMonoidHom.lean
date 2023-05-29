@@ -294,7 +294,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       suffices
         Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
-              ⋃ (x) (y) (U) (V) (W) (_hU : IsOpen U) (_hV : IsOpen V) (_hW : IsOpen W) (_h :
+              ⋃ (x) (y) (U) (V) (W) (hU : IsOpen U) (hV : IsOpen V) (hW : IsOpen W) (h :
                 Disjoint (U * V) W),
                 { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } : Set C(A , B))ᶜ by
         rw [this, compl_compl]
@@ -307,7 +307,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       refine' fun f => ⟨_, _⟩
       · rintro ⟨f, rfl⟩
         exact
-          ⟨fun h => h (map_one f), fun x y U V W _hU _hV _hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
+          ⟨fun h => h (map_one f), fun x y U V W hU hV hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
             h.le_bot ⟨Set.mul_mem_mul hfU hfV, (congr_arg (· ∈ W) (map_mul f x y)).mp hfW⟩⟩
       · rintro ⟨hf1, hf2⟩
         suffices ∀ x y, f (x * y) = f x * f y by
@@ -384,7 +384,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
   map_one' := rfl
-  map_mul' _g _h := rfl
+  map_mul' g h := rfl
   continuous_toFun := f.continuous_comp_left
 #align continuous_monoid_hom.comp_left ContinuousMonoidHom.compLeft
 #align continuous_add_monoid_hom.comp_left ContinuousAddMonoidHom.compLeft
@@ -397,7 +397,7 @@ def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup 
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
-  map_one' := ext fun _a => map_one f
+  map_one' := ext fun a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 #align continuous_monoid_hom.comp_right ContinuousMonoidHom.compRight
@@ -454,13 +454,13 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
+  ext fun x => ext (fun y => OneHomClass.map_one x)
 #align pontryagin_dual.map_one PontryaginDual.map_one
 
 @[simp]
 theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
+  ext fun x => ext fun y => rfl
 #align pontryagin_dual.map_comp PontryaginDual.map_comp
 
 
