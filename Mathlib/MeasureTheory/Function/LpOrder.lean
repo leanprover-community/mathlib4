@@ -8,8 +8,8 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Order.Lattice
-import Mathbin.MeasureTheory.Function.LpSpace
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.MeasureTheory.Function.LpSpace
 
 /-!
 # Order related properties of Lp spaces
@@ -44,8 +44,7 @@ theorem coeFn_le (f g : lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← ae_eq_fun.coe_fn_le, ← coeFn_coeBase, ← coeFn_coeBase]
 #align measure_theory.Lp.coe_fn_le MeasureTheory.lp.coeFn_le
 
-theorem coeFn_nonneg (f : lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f :=
-  by
+theorem coeFn_nonneg (f : lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coe_fn_le]
   have h0 := Lp.coe_fn_zero E p μ
   constructor <;> intro h <;> filter_upwards [h, h0]with _ _ h2
@@ -53,8 +52,7 @@ theorem coeFn_nonneg (f : lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f :=
   · rwa [← h2]
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.lp.coeFn_nonneg
 
-instance : CovariantClass (lp E p μ) (lp E p μ) (· + ·) (· ≤ ·) :=
-  by
+instance : CovariantClass (lp E p μ) (lp E p μ) (· + ·) (· ≤ ·) := by
   refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
   rw [← coe_fn_le] at hg₁₂⊢
   filter_upwards [coe_fn_add f g₁, coe_fn_add f g₂, hg₁₂]with _ h1 h2 h3

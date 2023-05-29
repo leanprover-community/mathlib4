@@ -1837,6 +1837,7 @@ import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.Floor
+import Mathlib.MeasureTheory.Function.LpOrder
 import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Function.SimpleFunc
