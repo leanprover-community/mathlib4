@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 
 ! This file was ported from Lean 3 source module measure_theory.function.l1_space
-! leanprover-community/mathlib commit 9b33e5f30c5f161e1d1b16b6b9b922bf49943377
+! leanprover-community/mathlib commit 13b0d72fd8533ba459ac66e9a885e35ffabb32b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
