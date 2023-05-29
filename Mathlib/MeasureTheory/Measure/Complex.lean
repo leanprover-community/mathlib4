@@ -8,7 +8,7 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.Measure.VectorMeasure
 
 /-!
 # Complex measure
@@ -64,8 +64,7 @@ def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure-/
 @[simps]
-def MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α) : ComplexMeasure α
-    where
+def MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α) : ComplexMeasure α where
   measureOf' i := ⟨s i, t i⟩
   empty' := by rw [s.empty, t.empty] <;> rfl
   not_measurable' i hi := by rw [s.not_measurable hi, t.not_measurable hi] <;> rfl
@@ -91,8 +90,7 @@ theorem MeasureTheory.SignedMeasure.im_toComplexMeasure (s t : SignedMeasure α)
 
 /-- The complex measures form an equivalence to the type of pairs of signed measures. -/
 @[simps]
-def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure α
-    where
+def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure α where
   toFun c := ⟨c.re, c.im⟩
   invFun := fun ⟨s, t⟩ => s.toComplexMeasure t
   left_inv c := c.toComplexMeasure_to_signedMeasure
