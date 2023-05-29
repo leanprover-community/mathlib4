@@ -82,8 +82,8 @@ theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
 #align continuous_linear_map.adjoint_aux_apply ContinuousLinearMap.adjointAux_apply
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
-  simp only [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp',
-    innerSL_apply_coe]
+  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', innerSL_apply_coe,
+    Function.comp_apply]
 #align continuous_linear_map.adjoint_aux_inner_left ContinuousLinearMap.adjointAux_inner_left
 
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
