@@ -21,11 +21,7 @@ or if they can be replaced by use of the `coherence` tactic.
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Category
-
-open CategoryTheory.Iso
+open CategoryTheory Category Iso
 
 namespace CategoryTheory.MonoidalCategory
 
