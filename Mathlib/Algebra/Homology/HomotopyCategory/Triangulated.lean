@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.ArrowTwo
 
 open CategoryTheory Category Limits Pretriangulated
 
@@ -17,6 +18,13 @@ noncomputable def mappingConeCompTriangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk (map' f (f ≫ g) (𝟙 X₁) g (by rw [id_comp]))
     (map' (f ≫ g) g f (𝟙 X₃) (by rw [comp_id]))
     (triangleδ g ≫ (inr f)⟦1⟧')
+
+lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex C ℤ} (f' : Y₁ ⟶ Y₂)
+    (g' : Y₂ ⟶ Y₃) (φ : Arrow₂.mk f g ⟶ Arrow₂.mk f' g') :
+    map' g g' φ.τ₁ φ.τ₂ φ.commg.symm ≫ (mappingConeCompTriangle f' g').mor₃ =
+      (mappingConeCompTriangle f g).mor₃ ≫ (map' f f' φ.τ₀ φ.τ₁ φ.commf.symm)⟦(1 : ℤ)⟧' := by
+  ext n
+  simp [from_ext_iff _ _ _ (n+1) rfl, map']
 
 namespace MappingConeCompHomotopyEquiv
 

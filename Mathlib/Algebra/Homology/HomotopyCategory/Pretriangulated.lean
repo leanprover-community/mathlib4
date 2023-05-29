@@ -116,12 +116,17 @@ lemma map'_comp : map' φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% com
   ext n
   simp [from_ext_iff _ _ _ (n+1) rfl, map']
 
+variable (C)
+
+@[simps]
 noncomputable def arrowFunctor : Arrow (CochainComplex C ℤ) ⥤ CochainComplex C ℤ where
   obj f := mappingCone f.hom
   map {f₁ f₂} φ := map' f₁.hom f₂.hom φ.left φ.right φ.w.symm
   map_id f := map'_id f.hom
   map_comp {f₁ f₂ f₃}  φ₁ φ₂ := map'_comp f₁.hom f₂.hom f₃.hom φ₁.left φ₁.right
     φ₂.left φ₂.right φ₁.w.symm φ₂.w.symm
+
+variable {C}
 
 @[simps]
 noncomputable def triangleMap' :

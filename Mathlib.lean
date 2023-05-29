@@ -183,6 +183,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+import Mathlib.Algebra.Homology.DerivedCategory.SpectralObject
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
@@ -203,6 +204,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
+import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.NewHomology
