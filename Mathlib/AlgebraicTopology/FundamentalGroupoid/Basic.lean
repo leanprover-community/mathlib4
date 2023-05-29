@@ -176,7 +176,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   · simp
 #align path.homotopy.trans_refl_reparam Path.Homotopy.trans_refl_reparam
 
-/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (path.refl x₁)` to `p`. -/
+/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by continuity) (Subtype.ext transReflReparamAux_zero)

@@ -44,7 +44,7 @@ users can choose which instances to use at the point of use.
 
 For example, here's how you can use an `Invertible 1` instance:
 ```lean
-variables {α : Type _} [monoid α]
+variables {α : Type _} [Monoid α]
 
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
@@ -180,7 +180,7 @@ def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs :
 theorem Invertible.congr [Ring α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
   ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
 
-/-- An `invertible` element is a unit. -/
+/-- An `Invertible` element is a unit. -/
 @[simps]
 def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
     αˣ where
@@ -435,7 +435,7 @@ def Invertible.map {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [MulOn
   mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
 #align invertible.map Invertible.map
 
-/-- Note that the `invertible (f r)` argument can be satisfied by using `letI := invertible.map f r`
+/-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
 theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid S]
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :

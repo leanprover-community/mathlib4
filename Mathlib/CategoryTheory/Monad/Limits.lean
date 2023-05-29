@@ -271,7 +271,7 @@ noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T 
     CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape := by infer_instance
 #align category_theory.monad.forget_creates_colimits CategoryTheory.Monad.forgetCreatesColimits
 
-/-- For `D : J ⥤ algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
+/-- For `D : J ⥤ Algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
 of shape `J` are preserved by `T`.
 -/
 theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (T : C ⥤ C)]

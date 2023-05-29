@@ -35,7 +35,7 @@ As product filter we want to have `F` as result.
 
 ## Notations
 
-* `f ×ᶠ g` : `filter.prod f g`, localized in `filter`.
+* `f ×ᶠ g` : `Filter.prod f g`, localized in `Filter`.
 
 -/
 
@@ -523,7 +523,7 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
   refine' ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ _⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ _⟩⟩ <;> convert hx
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
-/-- Characterization of the coproduct of the `filter.map`s of two principal filters `𝓟 {a}` and
+/-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `λ a, b` and the second under the identity function.
 Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this provides an
 example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict. -/
@@ -535,7 +535,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
 #align filter.map_const_principal_coprod_map_id_principal Filter.map_const_principal_coprod_map_id_principal
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Characterization of the `filter.map` of the coproduct of two principal filters `𝓟 {a}` and
+/-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, under the `prod.map` of two functions, respectively the constant function `λ a, b` and the
 identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality

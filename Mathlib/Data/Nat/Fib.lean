@@ -41,10 +41,10 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 - `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
 - `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
 - `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
-- `Nat.fib_two_mul` and `nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
+- `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
   compute `fib` (see `Nat.fastFib`). There are `bit0`/`bit1` variants of these can be used to
-  simplify `fib` expressions: `simp only [nat.fib_bit0, nat.fib_bit1, nat.fib_bit0_succ,
-  nat.fib_bit1_succ, nat.fib_one, nat.fib_two]`.
+  simplify `fib` expressions: `simp only [Nat.fib_bit0, Nat.fib_bit1, Nat.fib_bit0_succ,
+  Nat.fib_bit1_succ, Nat.fib_one, Nat.fib_two]`.
 
 ## Implementation Notes
 
@@ -197,16 +197,16 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
 
 end deprecated
 
-/-- Computes `(nat.fib n, nat.fib (n + 1))` using the binary representation of `n`.
-Supports `nat.fast_fib`. -/
+/-- Computes `(Nat.fib n, Nat.fib (n + 1))` using the binary representation of `n`.
+Supports `Nat.fastFib`. -/
 def fastFibAux : ℕ → ℕ × ℕ :=
   Nat.binaryRec (fib 0, fib 1) fun b _ p =>
     if b then (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2))
     else (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2)
 #align nat.fast_fib_aux Nat.fastFibAux
 
-/-- Computes `nat.fib n` using the binary representation of `n`.
-Proved to be equal to `nat.fib` in `nat.fast_fib_eq`. -/
+/-- Computes `Nat.fib n` using the binary representation of `n`.
+Proved to be equal to `Nat.fib` in `Nat.fast_fib_eq`. -/
 def fastFib (n : ℕ) : ℕ :=
   (fastFibAux n).1
 #align nat.fast_fib Nat.fastFib
@@ -309,8 +309,8 @@ open Tactic Nat
 
 /-! ### `norm_num` plugin for `fib`
 
-The `norm_num` plugin uses a strategy parallel to that of `nat.fast_fib`, but it instead
-produces proofs of what `nat.fib` evaluates to.
+The `norm_num` plugin uses a strategy parallel to that of `Nat.fastFib`, but it instead
+produces proofs of what `Nat.fib` evaluates to.
 -/
 /-
 expected ')'
@@ -393,7 +393,7 @@ unsafe def prove_fib_aux (ic : instance_cache) : expr → tactic (instance_cache
 #align norm_num.prove_fib_aux NormNum.prove_fib_aux
 
 /-- A `norm_num` plugin for `fib n` when `n` is a numeral.
-Uses the binary representation of `n` like `nat.fast_fib`. -/
+Uses the binary representation of `n` like `Nat.fastFib`. -/
 unsafe def prove_fib (ic : instance_cache) (e : expr) : tactic (instance_cache × expr × expr) :=
   match match_numeral e with
   | match_numeral_result.zero => pure (ic, q((0 : ℕ)), q(fib_zero))
