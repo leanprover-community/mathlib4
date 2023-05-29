@@ -333,7 +333,7 @@ theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a 
 
 #align option.lift_or_get_some_some Option.liftOrGet_some_some
 
-/-- Given an element of `a : option α`, a default element `b : β` and a function `α → β`, apply this
+/-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
 def casesOn' : Option α → β → (α → β) → β
   | none, n, _ => n
@@ -362,34 +362,7 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
 -- porting note: workaround for leanprover/lean4#2049
-section recursor_workarounds
-
-/-- A computable version of `Option.rec`. Workaround until Lean has native support for this. -/
-def recC.{u_1, u} {α : Type u} {motive : Option α → Sort u_1} (none : motive none)
-  (some : (val : α) →  motive (some val)) :
-    (t : Option α) → motive t
-| Option.none => none
-| Option.some a => some a
-
-@[csimp]
-lemma rec_eq_recC : @Option.rec = @Option.recC := by
-  ext α motive none some o
-  induction o with
-  | none => rfl
-  | some a =>
-    rw [Option.recC]
-
-/-- A computable version of `Option.recOn`. Workaround until Lean has native support for this. -/
-def recOnC.{u_1, u} {α : Type u} {motive : Option α → Sort u_1}
-    (t : Option α) (none : motive none) (some : (val : α) →  motive (some val)) : motive t :=
-  Option.recC none some t
-
-@[csimp]
-lemma recOn_eq_recOnC : @Option.recOn = @Option.recOnC := by
-  ext α motive o none some
-  rw [Option.recOn, rec_eq_recC, Option.recOnC]
-
-end recursor_workarounds
+compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by

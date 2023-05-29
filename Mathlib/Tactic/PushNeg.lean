@@ -31,11 +31,11 @@ theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-/-- Make `push_neg` use `not_and_distrib` rather than the default `not_and`. -/
+/-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     group := ""
-    descr := "Make `push_neg` use `not_and_distrib` rather than the default `not_and`." }
+    descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
 /-- Push negations at the top level of the current expression. -/
 def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do

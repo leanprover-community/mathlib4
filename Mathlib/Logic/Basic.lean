@@ -279,7 +279,7 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_left Iff.not_left
 #align iff.not Iff.not
 
-/-! ### Declarations about `xor` -/
+/-! ### Declarations about `Xor'` -/
 
 @[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
 #align xor_true xor_true
@@ -905,7 +905,7 @@ theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (exists_prop_congr hq hp)
 #align exists_prop_congr' exists_prop_congr'
 
-/-- See `IsEmpty.exists_iff` for the `false` version. -/
+/-- See `IsEmpty.exists_iff` for the `False` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
   exists_prop_of_true _
 #align exists_true_left exists_true_left
@@ -924,7 +924,7 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (forall_prop_congr hq hp)
 #align forall_prop_congr' forall_prop_congr'
 
-/-- See `IsEmpty.forall_iff` for the `false` version. -/
+/-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 #align forall_true_left forall_true_left

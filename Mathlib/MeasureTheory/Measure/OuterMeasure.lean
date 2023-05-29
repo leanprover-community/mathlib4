@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
+! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -875,12 +875,26 @@ theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty]
 #align measure_theory.outer_measure.le_bounded_by MeasureTheory.OuterMeasure.le_boundedBy
 
-theorem le_bounded_by' {μ : OuterMeasure α} :
+theorem le_boundedBy' {μ : OuterMeasure α} :
     μ ≤ boundedBy m ↔ ∀ s : Set α, s.Nonempty → μ s ≤ m s := by
   rw [le_boundedBy, forall_congr']
   intro s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h]
-#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
+#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_boundedBy'
+
+@[simp]
+theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
+  rw [eq_top_iff, le_boundedBy']
+  intro s hs
+  rw [top_apply hs]
+  exact le_rfl
+#align measure_theory.outer_measure.bounded_by_top MeasureTheory.OuterMeasure.boundedBy_top
+
+@[simp]
+theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 := by
+  rw [← coe_bot, eq_bot_iff]
+  apply boundedBy_le
+#align measure_theory.outer_measure.bounded_by_zero MeasureTheory.OuterMeasure.boundedBy_zero
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
   simp only [boundedBy , smul_ofFunction hc]
@@ -1334,6 +1348,11 @@ theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s →
   iInf_congr_Prop hP fun _h => hm _ _
 #align measure_theory.extend_congr MeasureTheory.extend_congr
 
+@[simp]
+theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+  funext fun _ => iInf_eq_top.mpr fun _ => rfl
+#align measure_theory.extend_top MeasureTheory.extend_top
+
 end Extend
 
 section ExtendSet
@@ -1647,6 +1666,11 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 #align measure_theory.outer_measure.trim_trim MeasureTheory.OuterMeasure.trim_trim
+
+@[simp]
+theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
+  eq_top_iff.2 <| le_trim _
+#align measure_theory.outer_measure.trim_top MeasureTheory.OuterMeasure.trim_top
 
 @[simp]
 theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=

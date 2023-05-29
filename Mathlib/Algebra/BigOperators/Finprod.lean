@@ -940,7 +940,7 @@ theorem finprod_mem_image {s : Set β} {g : β → α} (hg : s.InjOn g) :
 #align finprod_mem_image finprod_mem_image
 #align finsum_mem_image finsum_mem_image
 
-/-- The product of `f y` over `y ∈ set.range g` equals the product of `f (g i)` over all `i`
+/-- The product of `f y` over `y ∈ Set.range g` equals the product of `f (g i)` over all `i`
 provided that `g` is injective on `mulSupport (f ∘ g)`. -/
 @[to_additive
       "The sum of `f y` over `y ∈ Set.range g` equals the sum of `f (g i)` over all `i`
