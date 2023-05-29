@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Complement
-import Mathbin.GroupTheory.Sylow
+import Mathlib.GroupTheory.Complement
+import Mathlib.GroupTheory.Sylow
 
 /-!
 # The Transfer Homomorphism
@@ -128,8 +128,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       ∏ q : Quotient (orbitRel (zpowers g) (G ⧸ H)),
         ϕ
           ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod ((· • ·) g) q.out' * q.out'.out',
-            QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ :=
-  by
+            QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
   classical
     letI := H.fintype_quotient_of_finite_index
     calc
@@ -194,8 +193,7 @@ theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
 variable (G)
 
 /-- The transfer homomorphism `G →* center G`. -/
-noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G
-    where
+noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ g, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
@@ -227,8 +225,7 @@ variable [Fact p.Prime] [Finite (Sylow p G)]
 
 /-- Auxillary lemma in order to state `transfer_sylow_eq_pow`. -/
 theorem transfer_sylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
-    (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k :=
-  by
+    (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : (P : Subgroup G).IsCommutative :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
@@ -250,8 +247,7 @@ theorem transferSylow_restrict_eq_pow :
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 
 /-- Burnside's normal p-complement theorem: If `N(P) ≤ C(P)`, then `P` has a normal complement. -/
-theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P :=
-  by
+theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transfer_sylow P hP).restrict (P : Subgroup G)) :=
     (transfer_sylow_restrict_eq_pow P hP).symm ▸
       (P.2.powEquiv'
