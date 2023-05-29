@@ -49,7 +49,7 @@ and `(f)deriv` instead of `has_fderiv`.
 For each mathematical fact we prove several versions of its formalization:
 
 * for maxima and minima;
-* using `hasFDeriv*`/`hasDeriv*` or `fderiv*`/`deriv*`.
+* using `HasFDeriv*`/`HasDeriv*` or `fderiv*`/`deriv*`.
 
 For the `fderiv*`/`deriv*` versions we omit the differentiability condition whenever it is possible
 due to the fact that `fderiv` and `deriv` are defined to be zero for non-differentiable functions.
