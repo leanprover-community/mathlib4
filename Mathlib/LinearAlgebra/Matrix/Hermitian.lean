@@ -8,7 +8,7 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-! # Hermitian matrices
 
@@ -114,8 +114,7 @@ theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔
     if `A` and `D` are hermitian and `Bᴴ = C`. -/
 theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsHermitian) (hBC : Bᴴ = C) (hD : D.IsHermitian) :
-    (A.fromBlocks B C D).IsHermitian :=
-  by
+    (A.fromBlocks B C D).IsHermitian := by
   have hCB : Cᴴ = B := by rw [← hBC, conj_transpose_conj_transpose]
   unfold Matrix.IsHermitian
   rw [from_blocks_conj_transpose]
@@ -281,8 +280,7 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
-    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric :=
-  by
+    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (PiLp.equiv 2 fun _ : n => α).symm.Surjective.Forall₂]
   simp only [to_euclidean_lin_pi_Lp_equiv_symm, EuclideanSpace.inner_piLp_equiv_symm, to_lin'_apply,
     star_mul_vec, dot_product_mul_vec]
