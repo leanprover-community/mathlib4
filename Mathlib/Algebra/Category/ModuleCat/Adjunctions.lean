@@ -71,7 +71,7 @@ variable [CommRing R]
 
 attribute [local ext] TensorProduct.ext
 
-/-- (Implementation detail) The unitor for `free R`. -/
+/-- (Implementation detail) The unitor for `Free R`. -/
 def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
   Finsupp.lsingle PUnit.unit
 #align Module.free.ε ModuleCat.Free.ε
@@ -81,35 +81,53 @@ theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
   rfl
 #align Module.free.ε_apply ModuleCat.Free.ε_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- (Implementation detail) The tensorator for `free R`. -/
+/-- (Implementation detail) The tensorator for `Free R`. -/
 def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (α ⊗ β) :=
   (finsuppTensorFinsupp' R α β).toModuleIso
 #align Module.free.μ ModuleCat.Free.μ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').Hom = (μ R X X').Hom ≫ (free R).map (f ⊗ g) := by
+    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
-  ext (x x'⟨y, y'⟩)
-  dsimp [μ]
+  -- Porting note: broken ext
+  apply TensorProduct.ext
+  apply Finsupp.lhom_ext'
+  intro x
+  apply LinearMap.ext_ring
+  apply Finsupp.lhom_ext'
+  intro x'
+  apply LinearMap.ext_ring
+  apply Finsupp.ext
+  intro ⟨y, y'⟩
+  -- Porting note: used to be dsimp [μ]
+  change (finsuppTensorFinsupp' R Y Y')
+    (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
+    = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
+    (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single x' 1))) _
   simp_rw [Finsupp.mapDomain_single, finsuppTensorFinsupp'_single_tmul_single, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.tensor_apply]
-#align Module.free.μ_natural ModuleCat.free.μ_natural
+#align Module.free.μ_natural ModuleCat.Free.μ_natural
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem left_unitality (X : Type u) :
-    (λ_ ((free R).obj X)).Hom =
-      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).Hom ≫ map (free R).obj (λ_ X).Hom := by
+    (λ_ ((free R).obj X)).hom =
+      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   intros
-  ext
-  dsimp [ε, μ]
+  -- Porting note: broken ext
+  apply TensorProduct.ext
+  apply LinearMap.ext_ring
+  apply Finsupp.lhom_ext'
+  intro x
+  apply LinearMap.ext_ring
+  apply Finsupp.ext
+  intro x'
+  -- Porting note: used to be dsimp [ε, μ]
+  let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
+  change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
+    (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
     ModuleCat.MonoidalCategory.leftUnitor_hom_apply, Finsupp.smul_single', mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply]
-#align Module.free.left_unitality ModuleCat.free.left_unitality
+    Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
+#align Module.free.left_unitality ModuleCat.Free.left_unitality
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem right_unitality (X : Type u) :
