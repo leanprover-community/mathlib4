@@ -8,10 +8,10 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.GiryMonad
-import Mathbin.Dynamics.Ergodic.MeasurePreserving
-import Mathbin.MeasureTheory.Integral.Lebesgue
-import Mathbin.MeasureTheory.Measure.OpenPos
+import Mathlib.MeasureTheory.Measure.GiryMonad
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
 # The product measure
@@ -74,8 +74,7 @@ variable {α α' β β' γ E : Type _}
 /- ./././Mathport/Syntax/Translate/Expr.lean:228:8: unsupported: ambiguous notation -/
 /-- Rectangles formed by π-systems form a π-system. -/
 theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C)
-    (hD : IsPiSystem D) : IsPiSystem (image2 (· ×ˢ ·) C D) :=
-  by
+    (hD : IsPiSystem D) : IsPiSystem (image2 (· ×ˢ ·) C D) := by
   rintro _ ⟨s₁, t₁, hs₁, ht₁, rfl⟩ _ ⟨s₂, t₂, hs₂, ht₂, rfl⟩ hst
   rw [prod_inter_prod] at hst⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
@@ -85,8 +84,7 @@ theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C
 /- ./././Mathport/Syntax/Translate/Expr.lean:228:8: unsupported: ambiguous notation -/
 /-- Rectangles of countably spanning sets are countably spanning. -/
 theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
-    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) :=
-  by
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
   rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
   refine' ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), _⟩
   rw [Union_unpair_prod, h2s, h2t, univ_prod_univ]
@@ -114,8 +112,7 @@ along one of the variables (using either the Lebesgue or Bochner integral) is me
 theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
     (hD : IsCountablySpanning D) :
     @Prod.instMeasurableSpace _ _ (generateFrom C) (generateFrom D) =
-      generateFrom (image2 (· ×ˢ ·) C D) :=
-  by
+      generateFrom (image2 (· ×ˢ ·) C D) := by
   apply le_antisymm
   · refine' sup_le _ _ <;> rw [comap_generate_from] <;> apply generate_from_le <;>
       rintro _ ⟨s, hs, rfl⟩
@@ -164,8 +161,7 @@ theorem isPiSystem_prod :
 /-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [FiniteMeasure ν] {s : Set (α × β)}
-    (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) :=
-  by
+    (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   refine' induction_on_inter generate_from_prod.symm isPiSystem_prod _ _ _ _ hs
   · simp [measurable_zero, const_def]
   · rintro _ ⟨s, t, hs, ht, rfl⟩; simp only [mk_preimage_prod_right_eq_if, measure_if]
@@ -183,8 +179,7 @@ theorem measurable_measure_prod_mk_left_finite [FiniteMeasure ν] {s : Set (α �
 /-- If `ν` is a σ-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
   a measurable function. -/
 theorem measurable_measure_prod_mk_left [SigmaFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
-    Measurable fun x => ν (Prod.mk x ⁻¹' s) :=
-  by
+    Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   have : ∀ x, MeasurableSet (Prod.mk x ⁻¹' s) := fun x => measurable_prod_mk_left hs
   simp only [← @supr_restrict_spanning_sets _ _ ν, this]
   apply measurable_iSup; intro i
@@ -207,8 +202,7 @@ theorem Measurable.map_prod_mk_left [SigmaFinite ν] : Measurable fun x : α => 
 #align measurable.map_prod_mk_left Measurable.map_prod_mk_left
 
 theorem Measurable.map_prod_mk_right {μ : Measure α} [SigmaFinite μ] :
-    Measurable fun y : β => map (fun x : α => (x, y)) μ :=
-  by
+    Measurable fun y : β => map (fun x : α => (x, y)) μ := by
   apply measurable_of_measurable_coe; intro s hs
   simp_rw [map_apply measurable_prod_mk_right hs]
   exact measurable_measure_prod_mk_right hs
@@ -217,10 +211,8 @@ theorem Measurable.map_prod_mk_right {μ : Measure α} [SigmaFinite μ] :
 theorem MeasurableEmbedding.prod_mk {α β γ δ : Type _} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
-    MeasurableEmbedding fun x : γ × α => (g x.1, f x.2) :=
-  by
-  have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) :=
-    by
+    MeasurableEmbedding fun x : γ × α => (g x.1, f x.2) := by
+  have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
     intro x y hxy
     rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
     simp only [Prod.mk.inj_iff] at hxy⊢
@@ -248,8 +240,7 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type _} {mα : MeasurableSpac
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
 theorem Measurable.lintegral_prod_right' [SigmaFinite ν] :
-    ∀ {f : α × β → ℝ≥0∞} (hf : Measurable f), Measurable fun x => ∫⁻ y, f (x, y) ∂ν :=
-  by
+    ∀ {f : α × β → ℝ≥0∞} (hf : Measurable f), Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prod_mk_left
   refine' Measurable.ennreal_induction _ _ _
   · intro c s hs; simp only [← indicator_comp_right]
@@ -325,8 +316,7 @@ theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 /-- The product measure of the product of two sets is the product of their measures. Note that we
 do not need the sets to be measurable. -/
 @[simp]
-theorem prod_prod (s : Set α) (t : Set β) : μ.Prod ν (s ×ˢ t) = μ s * ν t :=
-  by
+theorem prod_prod (s : Set α) (t : Set β) : μ.Prod ν (s ×ˢ t) = μ s * ν t := by
   apply le_antisymm
   · set ST := to_measurable μ s ×ˢ to_measurable ν t
     have hSTm : MeasurableSet ST :=
@@ -360,8 +350,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.Prod ν (s ×ˢ t) = μ s * ν 
 
 instance {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {m : MeasurableSpace X}
     {μ : Measure X} [OpenPosMeasure μ] {m' : MeasurableSpace Y} {ν : Measure Y} [OpenPosMeasure ν]
-    [SigmaFinite ν] : OpenPosMeasure (μ.Prod ν) :=
-  by
+    [SigmaFinite ν] : OpenPosMeasure (μ.Prod ν) := by
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
@@ -372,8 +361,7 @@ instance {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {m : Measurabl
   · exact v_open.measure_pos ν ⟨y, yv⟩
 
 instance {α β : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (μ : Measure α)
-    (ν : Measure β) [FiniteMeasure μ] [FiniteMeasure ν] : FiniteMeasure (μ.Prod ν) :=
-  by
+    (ν : Measure β) [FiniteMeasure μ] [FiniteMeasure ν] : FiniteMeasure (μ.Prod ν) := by
   constructor
   rw [← univ_prod_univ, prod_prod]
   exact mul_lt_top (measure_lt_top _ _).Ne (measure_lt_top _ _).Ne
@@ -385,8 +373,7 @@ instance {α β : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β) [FiniteMeasureOnCompacts μ]
-    [FiniteMeasureOnCompacts ν] [SigmaFinite ν] : FiniteMeasureOnCompacts (μ.Prod ν) :=
-  by
+    [FiniteMeasureOnCompacts ν] [SigmaFinite ν] : FiniteMeasureOnCompacts (μ.Prod ν) := by
   refine' ⟨fun K hK => _⟩
   set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
@@ -414,8 +401,7 @@ theorem measure_prod_null {s : Set (α × β)} (hs : MeasurableSet s) :
 /-- Note: the converse is not true without assuming that `s` is measurable. For a counterexample,
   see Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
 theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.Prod ν s = 0) :
-    (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 :=
-  by
+    (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
   simp_rw [measure_prod_null mt] at ht
   rw [eventually_le_antisymm_iff]
@@ -426,8 +412,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.Prod ν s = 0)
 #align measure_theory.measure.measure_ae_null_of_prod_null MeasureTheory.Measure.measure_ae_null_of_prod_null
 
 theorem AbsolutelyContinuous.prod [SigmaFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
-    μ.Prod ν ≪ μ'.Prod ν' :=
-  by
+    μ.Prod ν ≪ μ'.Prod ν' := by
   refine' absolutely_continuous.mk fun s hs h2s => _
   simp_rw [measure_prod_null hs] at h2s⊢
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
@@ -445,8 +430,7 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.Prod ν, p 
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
-    (μ.Prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) :=
-  by
+    (μ.Prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigma_finite
   refine'
     ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
@@ -456,14 +440,12 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
   · simp_rw [Union_unpair_prod, hμ.spanning, hν.spanning, univ_prod_univ]
 #align measure_theory.measure.finite_spanning_sets_in.prod MeasureTheory.Measure.FiniteSpanningSetsIn.prod
 
-theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.Prod ν) μ :=
-  by
+theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.Prod ν) μ := by
   refine' ⟨measurable_fst, absolutely_continuous.mk fun s hs h2s => _⟩
   rw [map_apply measurable_fst hs, ← prod_univ, prod_prod, h2s, MulZeroClass.zero_mul]
 #align measure_theory.measure.quasi_measure_preserving_fst MeasureTheory.Measure.quasiMeasurePreserving_fst
 
-theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.Prod ν) ν :=
-  by
+theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.Prod ν) ν := by
   refine' ⟨measurable_snd, absolutely_continuous.mk fun s hs h2s => _⟩
   rw [map_apply measurable_snd hs, ← univ_prod, prod_prod, h2s, MulZeroClass.mul_zero]
 #align measure_theory.measure.quasi_measure_preserving_snd MeasureTheory.Measure.quasiMeasurePreserving_snd
@@ -480,8 +462,7 @@ instance prod.sigmaFinite : SigmaFinite (μ.Prod ν) :=
 theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hC : generateFrom C = ‹_›) (hD : generateFrom D = ‹_›) (h2C : IsPiSystem C)
     (h2D : IsPiSystem D) (h3C : μ.FiniteSpanningSetsIn C) (h3D : ν.FiniteSpanningSetsIn D)
-    {μν : Measure (α × β)} (h₁ : ∀ s ∈ C, ∀ t ∈ D, μν (s ×ˢ t) = μ s * ν t) : μ.Prod ν = μν :=
-  by
+    {μν : Measure (α × β)} (h₁ : ∀ s ∈ C, ∀ t ∈ D, μν (s ×ˢ t) = μ s * ν t) : μ.Prod ν = μν := by
   refine'
     (h3C.prod h3D).ext
       (generateFrom_eq_prod hC hD h3C.is_countably_spanning h3D.is_countably_spanning).symm
@@ -499,8 +480,7 @@ theorem prod_eq {μν : Measure (α × β)}
     ν.toFiniteSpanningSetsIn fun s hs t ht => h s t hs ht
 #align measure_theory.measure.prod_eq MeasureTheory.Measure.prod_eq
 
-theorem prod_swap : map Prod.swap (μ.Prod ν) = ν.Prod μ :=
-  by
+theorem prod_swap : map Prod.swap (μ.Prod ν) = ν.Prod μ := by
   refine' (prod_eq _).symm
   intro s t hs ht
   simp_rw [map_apply measurable_swap (hs.prod ht), preimage_swap_prod, prod_prod, mul_comm]
@@ -511,15 +491,13 @@ theorem measurePreserving_swap : MeasurePreserving Prod.swap (μ.Prod ν) (ν.Pr
 #align measure_theory.measure.measure_preserving_swap MeasureTheory.Measure.measurePreserving_swap
 
 theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
-    μ.Prod ν s = ∫⁻ y, μ ((fun x => (x, y)) ⁻¹' s) ∂ν :=
-  by
+    μ.Prod ν s = ∫⁻ y, μ ((fun x => (x, y)) ⁻¹' s) ∂ν := by
   rw [← prod_swap, map_apply measurable_swap hs]
   simp only [prod_apply (measurable_swap hs)]; rfl
 #align measure_theory.measure.prod_apply_symm MeasureTheory.Measure.prod_apply_symm
 
 theorem prodAssoc_prod [SigmaFinite τ] :
-    map MeasurableEquiv.prodAssoc ((μ.Prod ν).Prod τ) = μ.Prod (ν.Prod τ) :=
-  by
+    map MeasurableEquiv.prodAssoc ((μ.Prod ν).Prod τ) = μ.Prod (ν.Prod τ) := by
   refine'
     (prod_eq_generateFrom generate_from_measurable_set generateFrom_prod is_pi_system_measurable_set
         isPiSystem_prod μ.to_finite_spanning_sets_in
@@ -535,8 +513,7 @@ theorem prodAssoc_prod [SigmaFinite τ] :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_restrict (s : Set α) (t : Set β) :
-    (μ.restrict s).Prod (ν.restrict t) = (μ.Prod ν).restrict (s ×ˢ t) :=
-  by
+    (μ.restrict s).Prod (ν.restrict t) = (μ.Prod ν).restrict (s ×ˢ t) := by
   refine' prod_eq fun s' t' hs' ht' => _
   rw [restrict_apply (hs'.prod ht'), prod_inter_prod, prod_prod, restrict_apply hs',
     restrict_apply ht']
@@ -544,21 +521,18 @@ theorem prod_restrict (s : Set α) (t : Set β) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem restrict_prod_eq_prod_univ (s : Set α) :
-    (μ.restrict s).Prod ν = (μ.Prod ν).restrict (s ×ˢ (univ : Set β)) :=
-  by
+    (μ.restrict s).Prod ν = (μ.Prod ν).restrict (s ×ˢ (univ : Set β)) := by
   have : ν = ν.restrict Set.univ := measure.restrict_univ.symm
   rwa [this, measure.prod_restrict, ← this]
 #align measure_theory.measure.restrict_prod_eq_prod_univ MeasureTheory.Measure.restrict_prod_eq_prod_univ
 
-theorem prod_dirac (y : β) : μ.Prod (dirac y) = map (fun x => (x, y)) μ :=
-  by
+theorem prod_dirac (y : β) : μ.Prod (dirac y) = map (fun x => (x, y)) μ := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_right (hs.prod ht), mk_preimage_prod_left_eq_if, measure_if,
     dirac_apply' _ ht, ← indicator_mul_right _ fun x => μ s, Pi.one_apply, mul_one]
 #align measure_theory.measure.prod_dirac MeasureTheory.Measure.prod_dirac
 
-theorem dirac_prod (x : α) : (dirac x).Prod ν = map (Prod.mk x) ν :=
-  by
+theorem dirac_prod (x : α) : (dirac x).Prod ν = map (Prod.mk x) ν := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_left (hs.prod ht), mk_preimage_prod_right_eq_if, measure_if,
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun x => ν t, Pi.one_apply, one_mul]
@@ -569,15 +543,13 @@ theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).Prod (dirac y) = dirac (x
 #align measure_theory.measure.dirac_prod_dirac MeasureTheory.Measure.dirac_prod_dirac
 
 theorem prod_sum {ι : Type _} [Finite ι] (ν : ι → Measure β) [∀ i, SigmaFinite (ν i)] :
-    μ.Prod (sum ν) = sum fun i => μ.Prod (ν i) :=
-  by
+    μ.Prod (sum ν) = sum fun i => μ.Prod (ν i) := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [sum_apply _ (hs.prod ht), sum_apply _ ht, prod_prod, ENNReal.tsum_mul_left]
 #align measure_theory.measure.prod_sum MeasureTheory.Measure.prod_sum
 
 theorem sum_prod {ι : Type _} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
-    (sum μ).Prod ν = sum fun i => (μ i).Prod ν :=
-  by
+    (sum μ).Prod ν = sum fun i => (μ i).Prod ν := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [sum_apply _ (hs.prod ht), sum_apply _ hs, prod_prod, ENNReal.tsum_mul_right]
 #align measure_theory.measure.sum_prod MeasureTheory.Measure.sum_prod
@@ -602,8 +574,7 @@ theorem prod_zero (μ : Measure α) : μ.Prod (0 : Measure β) = 0 := by simp [m
 theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} {μa : Measure α}
     {μc : Measure γ} (hfa : SigmaFinite (map f μa)) (hgc : SigmaFinite (map g μc))
     (hf : Measurable f) (hg : Measurable g) :
-    (map f μa).Prod (map g μc) = map (Prod.map f g) (μa.Prod μc) :=
-  by
+    (map f μa).Prod (map g μc) = map (Prod.map f g) (μa.Prod μc) := by
   haveI := hgc.of_map μc hg.ae_measurable
   refine' prod_eq fun s t hs ht => _
   rw [map_apply (hf.prod_map hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
@@ -630,8 +601,7 @@ theorem skew_product [SigmaFinite μb] [SigmaFinite μd] {f : α → β} (hf : M
     rcases eq_or_ne μa 0 with (rfl | ha)
     · rw [← hf.map_eq, zero_prod, measure.map_zero, zero_prod]
       exact ⟨this, by simp only [measure.map_zero]⟩
-    have : sigma_finite μc :=
-      by
+    have : sigma_finite μc := by
       rcases(ae_ne_bot.2 ha).nonempty_of_mem hg with ⟨x, hx : map (g x) μc = μd⟩
       exact sigma_finite.of_map _ hgm.of_uncurry_left.ae_measurable (by rwa [hx])
     -- Thus we can apply `measure.prod_eq` to prove equality of measures.
@@ -666,8 +636,7 @@ namespace QuasiMeasurePreserving
 theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ}
     (hf : Measurable f) [SigmaFinite ν]
     (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y => f (x, y)) ν τ) :
-    QuasiMeasurePreserving f (μ.Prod ν) τ :=
-  by
+    QuasiMeasurePreserving f (μ.Prod ν) τ := by
   refine' ⟨hf, _⟩
   refine' absolutely_continuous.mk fun s hs h2s => _
   simp_rw [map_apply hf hs, prod_apply (hf hs), preimage_preimage,
@@ -678,8 +647,7 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
     {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ} (hf : Measurable f)
     [SigmaFinite μ] [SigmaFinite ν]
     (h2f : ∀ᵐ y ∂ν, QuasiMeasurePreserving (fun x => f (x, y)) μ τ) :
-    QuasiMeasurePreserving f (μ.Prod ν) τ :=
-  by
+    QuasiMeasurePreserving f (μ.Prod ν) τ := by
   rw [← prod_swap]
   convert(quasi_measure_preserving.prod_of_right (hf.comp measurable_swap) h2f).comp
       ((measurable_swap.measure_preserving (ν.prod μ)).symm
@@ -748,11 +716,9 @@ theorem lintegral_prod_of_measurable :
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.Prod ν)) :
-    (∫⁻ z, f z ∂μ.Prod ν) = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
-  by
+    (∫⁻ z, f z ∂μ.Prod ν) = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   have A : (∫⁻ z, f z ∂μ.prod ν) = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
-  have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ :=
-    by
+  have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by
     apply lintegral_congr_ae
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk]with _ ha using lintegral_congr_ae ha
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
