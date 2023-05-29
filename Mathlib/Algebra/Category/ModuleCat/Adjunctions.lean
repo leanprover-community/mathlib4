@@ -184,7 +184,7 @@ theorem associativity (X Y Z : Type u) :
 /-- The free R-module functor is lax monoidal. -/
 @[simps]
 instance : LaxMonoidal.{u} (free R).obj where
-  -- Send `R` to `punit →₀ R`
+  -- Send `R` to `PUnit →₀ R`
   ε := ε R
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
   μ X Y := (μ R X Y).hom
@@ -213,7 +213,7 @@ end Free
 
 variable [CommRing R]
 
-/-- The free functor `Type u ⥤ Module R`, as a monoidal functor. -/
+/-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
     -- Porting note: used to be dsimp
@@ -221,7 +221,6 @@ def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
     μ_isIso := fun X Y => by dsimp; infer_instance }
 #align Module.monoidal_free ModuleCat.monoidalFree
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 example (X Y : Type u) : (free R).obj (X × Y) ≅ (free R).obj X ⊗ (free R).obj Y :=
   ((monoidalFree R).μIso X Y).symm
 
@@ -231,7 +230,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-- `Free R C` is a type synonym for `C`, which, given `[comm_ring R]` and `[category C]`,
+/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category C]`,
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
@@ -263,7 +262,7 @@ instance categoryFree : Category (Free R C) where
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     dsimp
-    -- This imitates the proof of associativity for `monoid_algebra`.
+    -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
       MulZeroClass.zero_mul, MulZeroClass.mul_zero, sum_zero, sum_add]
@@ -354,7 +353,6 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         · intros ; rw [zero_smul]
         · intros ; simp only [add_smul]
       · intro g' s
-        dsimp
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
 #align category_theory.Free.lift CategoryTheory.Free.lift
@@ -404,7 +402,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
 #align category_theory.Free.ext CategoryTheory.Free.ext
 
 /-- `Free.lift` is unique amongst `R`-linear functors `Free R C ⥤ D`
-which compose with `embedding ℤ C` to give the original functor.
+which compose with `Embedding ℤ C` to give the original functor.
 -/
 def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
     (α : embedding R C ⋙ L ≅ F) : L ≅ lift R F :=
