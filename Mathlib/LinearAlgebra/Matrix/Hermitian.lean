@@ -14,11 +14,11 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 This file defines hermitian matrices and some basic results about them.
 
-See also `is_self_adjoint`, which generalizes this definition to other star rings.
+See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 
 ## Main definition
 
- * `matrix.is_hermitian` : a matrix `A : matrix n n α` is hermitian if `Aᴴ = A`.
+ * `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
 
 ## Tags
 
@@ -117,14 +117,14 @@ theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matr
   rw [fromBlocks_conjTranspose, hBC, hCB, hA, hD]
 #align matrix.is_hermitian.from_blocks Matrix.IsHermitian.fromBlocks
 
-/-- This is the `iff` version of `matrix.is_hermitian.from_blocks`. -/
+/-- This is the `iff` version of `Matrix.IsHermitian.fromBlocks`. -/
 theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} :
     (A.fromBlocks B C D).IsHermitian ↔ A.IsHermitian ∧ Bᴴ = C ∧ Cᴴ = B ∧ D.IsHermitian :=
   ⟨fun h =>
     ⟨congr_arg toBlocks₁₁ h, congr_arg toBlocks₂₁ h, congr_arg toBlocks₁₂ h,
       congr_arg toBlocks₂₂ h⟩,
-    fun ⟨hA, hBC, hCB, hD⟩ => IsHermitian.fromBlocks hA hBC hD⟩
+    fun ⟨hA, hBC, _hCB, hD⟩ => IsHermitian.fromBlocks hA hBC hD⟩
 #align matrix.is_hermitian_from_blocks_iff Matrix.isHermitian_fromBlocks_iff
 
 end InvolutiveStar
@@ -196,23 +196,23 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
 
-/-- Note this is more general than `is_self_adjoint.mul_star_self` as `B` can be rectangular. -/
+/-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
 theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) : (A ⬝ Aᴴ).IsHermitian :=
   by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_mul_conj_transpose_self Matrix.isHermitian_mul_conjTranspose_self
 
-/-- Note this is more general than `is_self_adjoint.star_mul_self` as `B` can be rectangular. -/
+/-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
 theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ ⬝ A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_transpose_mul_self Matrix.isHermitian_transpose_mul_self
 
-/-- Note this is more general than `is_self_adjoint.conjugate'` as `B` can be rectangular. -/
+/-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
     (hA : A.IsHermitian) : (Bᴴ ⬝ A ⬝ B).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 #align matrix.is_hermitian_conj_transpose_mul_mul Matrix.isHermitian_conjTranspose_mul_mul
 
-/-- Note this is more general than `is_self_adjoint.conjugate` as `B` can be rectangular. -/
+/-- Note this is more general than `IsSelfAdjoint.conjugate` as `B` can be rectangular. -/
 theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : Matrix n m α)
     (hA : A.IsHermitian) : (B ⬝ A ⬝ Bᴴ).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
@@ -224,8 +224,8 @@ section Semiring
 
 variable [Semiring α] [StarRing α] [Semiring β] [StarRing β]
 
-/-- Note this is more general for matrices than `is_self_adjoint_one` as it does not
-require `fintype n`, which is necessary for `monoid (matrix n n R)`. -/
+/-- Note this is more general for matrices than `isSelfAdjoint_one` as it does not
+require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
 @[simp]
 theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
   conjTranspose_one
