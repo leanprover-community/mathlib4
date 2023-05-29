@@ -63,8 +63,8 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
-class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
-  [TopologicalSpace B] extends AddMonoidHomClass F A B where
+class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMonoid B]
+  [TopologicalSpace A] [TopologicalSpace B] extends AddMonoidHomClass F A B where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
@@ -102,7 +102,8 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance ContinuousMonoidHom.ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance ContinuousMonoidHom.ContinuousMonoidHomClass :
+  ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -116,7 +117,7 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass : ContinuousMonoidHomClass
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`FunLike.hasCoeToFun` directly."]
+      "Helper instance for when there's too many metavariables to apply\n`FunLike.hasCoeToFun`."]
 instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
   FunLike.hasCoeToFun
 
@@ -191,28 +192,32 @@ def id : ContinuousMonoidHom A A :=
 #align continuous_add_monoid_hom.id ContinuousAddMonoidHom.id
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
-@[to_additive (attr := simps!) "The continuous homomorphism given by projection onto the first factor."]
+@[to_additive (attr := simps!)
+  "The continuous homomorphism given by projection onto the first factor."]
 def fst : ContinuousMonoidHom (A × B) A :=
   mk' (MonoidHom.fst A B) continuous_fst
 #align continuous_monoid_hom.fst ContinuousMonoidHom.fst
 #align continuous_add_monoid_hom.fst ContinuousAddMonoidHom.fst
 
 /-- The continuous homomorphism given by projection onto the second factor. -/
-@[to_additive (attr := simps!) "The continuous homomorphism given by projection onto the second factor."]
+@[to_additive (attr := simps!)
+  "The continuous homomorphism given by projection onto the second factor."]
 def snd : ContinuousMonoidHom (A × B) B :=
   mk' (MonoidHom.snd A B) continuous_snd
 #align continuous_monoid_hom.snd ContinuousMonoidHom.snd
 #align continuous_add_monoid_hom.snd ContinuousAddMonoidHom.snd
 
 /-- The continuous homomorphism given by inclusion of the first factor. -/
-@[to_additive (attr := simps!) "The continuous homomorphism given by inclusion of the first factor."]
+@[to_additive (attr := simps!)
+  "The continuous homomorphism given by inclusion of the first factor."]
 def inl : ContinuousMonoidHom A (A × B) :=
   prod (id A) (one A B)
 #align continuous_monoid_hom.inl ContinuousMonoidHom.inl
 #align continuous_add_monoid_hom.inl ContinuousAddMonoidHom.inl
 
 /-- The continuous homomorphism given by inclusion of the second factor. -/
-@[to_additive (attr := simps!) "The continuous homomorphism given by inclusion of the second factor."]
+@[to_additive (attr := simps!)
+  "The continuous homomorphism given by inclusion of the second factor."]
 def inr : ContinuousMonoidHom B (A × B) :=
   prod (one B A) (id B)
 #align continuous_monoid_hom.inr ContinuousMonoidHom.inr
@@ -296,7 +301,8 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
               ⋃ (x) (y) (U) (V) (W) (_hU : IsOpen U) (_hV : IsOpen V) (_hW : IsOpen W) (_h :
                 Disjoint (U * V) W),
-                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } : Set C(A , B))ᶜ by
+                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } :
+                  Set C(A , B))ᶜ by
         rw [this, compl_compl]
         refine' (ContinuousMap.isOpen_gen isCompact_singleton isOpen_compl_singleton).union _
         repeat' apply isOpen_iUnion; intro
