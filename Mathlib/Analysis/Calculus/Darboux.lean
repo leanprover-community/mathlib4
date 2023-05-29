@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.LocalExtr
 
 /-!
 # Darboux's theorem
@@ -29,15 +29,13 @@ variable {a b : ℝ} {f f' : ℝ → ℝ}
 `c ∈ [a, b]`. -/
 theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : f' a < m)
-    (hmb : m < f' b) : m ∈ f' '' Icc a b :=
-  by
+    (hmb : m < f' b) : m ∈ f' '' Icc a b := by
   have hab' : a < b := by
     refine' lt_of_le_of_ne hab fun hab' => _
     subst b
     exact lt_asymm hma hmb
   set g : ℝ → ℝ := fun x => f x - m * x
-  have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x :=
-    by
+  have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c
@@ -83,8 +81,7 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set. -/
 theorem convex_image_hasDerivAt {s : Set ℝ} (hs : Convex ℝ s)
-    (hf : ∀ x ∈ s, HasDerivAt f (f' x) x) : Convex ℝ (f' '' s) :=
-  by
+    (hf : ∀ x ∈ s, HasDerivAt f (f' x) x) : Convex ℝ (f' '' s) := by
   refine' ord_connected.convex ⟨_⟩
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ m ⟨hma, hmb⟩
   cases' eq_or_lt_of_le hma with hma hma
@@ -108,8 +105,7 @@ theorem convex_image_hasDerivAt {s : Set ℝ} (hs : Convex ℝ s)
 it is always greater than `m`, or it is always less than `m`. -/
 theorem deriv_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs : Convex ℝ s)
     (hf : ∀ x ∈ s, HasDerivAt f (f' x) x) {m : ℝ} (hf' : ∀ x ∈ s, f' x ≠ m) :
-    (∀ x ∈ s, f' x < m) ∨ ∀ x ∈ s, m < f' x :=
-  by
+    (∀ x ∈ s, f' x < m) ∨ ∀ x ∈ s, m < f' x := by
   contrapose! hf'
   rcases hf' with ⟨⟨b, hb, hmb⟩, ⟨a, ha, hma⟩⟩
   exact

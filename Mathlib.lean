@@ -415,6 +415,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Comp
