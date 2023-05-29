@@ -157,6 +157,8 @@ def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
     . rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
       congr
 
+-- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
+
 end RelSeries
 
 section LTSeries
