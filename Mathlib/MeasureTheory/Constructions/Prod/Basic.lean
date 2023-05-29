@@ -71,11 +71,9 @@ open Filter hiding prod_eq map
 
 variable {α α' β β' γ E : Type _}
 
--- Porting note: TODO Replace `Set.prod` with `(· ×ˢ ·)`.
-
 /-- Rectangles formed by π-systems form a π-system. -/
 theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C)
-    (hD : IsPiSystem D) : IsPiSystem (image2 Set.prod C D) := by
+    (hD : IsPiSystem D) : IsPiSystem (image2 (· ×ˢ ·) C D) := by
   rintro _ ⟨s₁, t₁, hs₁, ht₁, rfl⟩ _ ⟨s₂, t₂, hs₂, ht₂, rfl⟩ hst
   rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
@@ -83,7 +81,7 @@ theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C
 
 /-- Rectangles of countably spanning sets are countably spanning. -/
 theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
-    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 Set.prod C D) := by
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
   rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
   refine' ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), _⟩
   rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
@@ -110,7 +108,7 @@ along one of the variables (using either the Lebesgue or Bochner integral) is me
 theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
     (hD : IsCountablySpanning D) :
     @Prod.instMeasurableSpace _ _ (generateFrom C) (generateFrom D) =
-      generateFrom (image2 Set.prod C D) := by
+      generateFrom (image2 (· ×ˢ ·) C D) := by
   apply le_antisymm
   · refine' sup_le _ _ <;> rw [comap_generateFrom] <;> apply generateFrom_le <;>
       rintro _ ⟨s, hs, rfl⟩
@@ -139,14 +137,14 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
   generate the σ-algebra on `α × β`. -/
 theorem generateFrom_eq_prod {C : Set (Set α)} {D : Set (Set β)} (hC : generateFrom C = ‹_›)
     (hD : generateFrom D = ‹_›) (h2C : IsCountablySpanning C) (h2D : IsCountablySpanning D) :
-    generateFrom (image2 Set.prod C D) = Prod.instMeasurableSpace := by
+    generateFrom (image2 (· ×ˢ ·) C D) = Prod.instMeasurableSpace := by
   rw [← hC, ← hD, generateFrom_prod_eq h2C h2D]
 #align generate_from_eq_prod generateFrom_eq_prod
 
 /-- The product σ-algebra is generated from boxes, i.e. `s ×ˢ t` for sets `s : Set α` and
   `t : Set β`. -/
 theorem generateFrom_prod :
-    generateFrom (image2 Set.prod { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) =
+    generateFrom (image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) =
       Prod.instMeasurableSpace :=
   generateFrom_eq_prod generateFrom_measurableSet generateFrom_measurableSet
     isCountablySpanning_measurableSet isCountablySpanning_measurableSet
@@ -154,7 +152,7 @@ theorem generateFrom_prod :
 
 /-- Rectangles form a π-system. -/
 theorem isPiSystem_prod :
-    IsPiSystem (image2 Set.prod { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) :=
+    IsPiSystem (image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) :=
   isPiSystem_measurableSet.prod isPiSystem_measurableSet
 #align is_pi_system_prod isPiSystem_prod
 
@@ -321,7 +319,7 @@ do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
   apply le_antisymm
-  · set ST := Set.prod (toMeasurable μ s) (toMeasurable ν t)
+  · set ST := toMeasurable μ s ×ˢ toMeasurable ν t
     have hSTm : MeasurableSet ST :=
       (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
     calc
@@ -334,7 +332,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
   · -- Formalization is based on https://mathoverflow.net/a/254134/136589
-    set ST := toMeasurable (μ.prod ν) (Set.prod s t)
+    set ST := toMeasurable (μ.prod ν) (s ×ˢ t)
     have hSTm : MeasurableSet ST := measurableSet_toMeasurable _ _
     have hST : s ×ˢ t ⊆ ST := subset_toMeasurable _ _
     set f : α → ℝ≥0∞ := fun x => ν (Prod.mk x ⁻¹' ST)
@@ -382,7 +380,7 @@ instance prod.instFiniteMeasureOnCompacts {α β : Type _} [TopologicalSpace α]
     [FiniteMeasureOnCompacts μ] [FiniteMeasureOnCompacts ν] [SigmaFinite ν] :
     FiniteMeasureOnCompacts (μ.prod ν) := by
   refine' ⟨fun K hK => _⟩
-  set L := Set.prod (Prod.fst '' K) (Prod.snd '' K) with hL
+  set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
     rintro ⟨x, y⟩ hxy
     simp only [prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right, exists_eq_right]
@@ -436,7 +434,7 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
-    (μ.prod ν).FiniteSpanningSetsIn (image2 Set.prod C D) := by
+    (μ.prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigmaFinite
   refine'
     ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
@@ -524,7 +522,7 @@ theorem prod_restrict (s : Set α) (t : Set β) :
 #align measure_theory.measure.prod_restrict MeasureTheory.Measure.prod_restrict
 
 theorem restrict_prod_eq_prod_univ (s : Set α) :
-    (μ.restrict s).prod ν = (μ.prod ν).restrict (s ×ˢ (univ : Set β)) := by
+    (μ.restrict s).prod ν = (μ.prod ν).restrict (s ×ˢ univ) := by
   have : ν = ν.restrict Set.univ := Measure.restrict_univ.symm
   rw [this, Measure.prod_restrict, ← this]
 #align measure_theory.measure.restrict_prod_eq_prod_univ MeasureTheory.Measure.restrict_prod_eq_prod_univ
