@@ -8,7 +8,7 @@ Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Monoidal.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 # Lemmas which are consequences of monoidal coherence
