@@ -64,6 +64,10 @@ structure VectorMeasure (α : Type _) [MeasurableSpace α] (M : Type _) [AddComm
   m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 #align measure_theory.vector_measure MeasureTheory.VectorMeasure
+#align measure_theory.vector_measure.measure_of' MeasureTheory.VectorMeasure.measureOf'
+#align measure_theory.vector_measure.empty' MeasureTheory.VectorMeasure.empty'
+#align measure_theory.vector_measure.not_measurable' MeasureTheory.VectorMeasure.not_measurable'
+#align measure_theory.vector_measure.m_Union' MeasureTheory.VectorMeasure.m_iUnion'
 
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type _) [MeasurableSpace α] :=
@@ -83,14 +87,15 @@ section
 
 variable {M : Type _} [AddCommMonoid M] [TopologicalSpace M]
 
-instance : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
+attribute [coe] VectorMeasure.measureOf'
+
+instance instCoeFun : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
   ⟨VectorMeasure.measureOf'⟩
+#align measure_theory.vector_measure.has_coe_to_fun MeasureTheory.VectorMeasure.instCoeFun
 
 initialize_simps_projections VectorMeasure (measureOf' → apply)
 
-@[simp]
-theorem measureOf_eq_coe (v : VectorMeasure α M) : v.measureOf' = v := rfl
-#align measure_theory.vector_measure.measure_of_eq_coe MeasureTheory.VectorMeasure.measureOf_eq_coe
+#noalign measure_theory.vector_measure.measure_of_eq_coe
 
 @[simp]
 theorem empty (v : VectorMeasure α M) : v ∅ = 0 :=
@@ -259,8 +264,9 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.smul MeasureTheory.VectorMeasure.smul
 
-instance : SMul R (VectorMeasure α M) :=
+instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
+#align measure_theory.vector_measure.has_smul MeasureTheory.VectorMeasure.instSMul
 
 @[simp]
 theorem coe_smul (r : R) (v : VectorMeasure α M) : ⇑(r • v) = r • ⇑v := rfl
@@ -275,11 +281,13 @@ section AddCommMonoid
 
 variable {M : Type _} [AddCommMonoid M] [TopologicalSpace M]
 
-instance : Zero (VectorMeasure α M) :=
+instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
+#align measure_theory.vector_measure.has_zero MeasureTheory.VectorMeasure.instZero
 
-instance : Inhabited (VectorMeasure α M) :=
+instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
+#align measure_theory.vector_measure.inhabited MeasureTheory.VectorMeasure.instInhabited
 
 @[simp]
 theorem coe_zero : ⇑(0 : VectorMeasure α M) = 0 := rfl
@@ -298,8 +306,9 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.add MeasureTheory.VectorMeasure.add
 
-instance : Add (VectorMeasure α M) :=
+instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
+#align measure_theory.vector_measure.has_add MeasureTheory.VectorMeasure.instAdd
 
 @[simp]
 theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
@@ -308,8 +317,9 @@ theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
 theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w i := rfl
 #align measure_theory.vector_measure.add_apply MeasureTheory.VectorMeasure.add_apply
 
-instance : AddCommMonoid (VectorMeasure α M) :=
+instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
+#align measure_theory.vector_measure.add_comm_monoid MeasureTheory.VectorMeasure.instAddCommMonoid
 
 /-- `(⇑)` is an `AddMonoidHom`. -/
 @[simps]
@@ -333,8 +343,9 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
 #align measure_theory.vector_measure.neg MeasureTheory.VectorMeasure.neg
 
-instance : Neg (VectorMeasure α M) :=
+instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
+#align measure_theory.vector_measure.has_neg MeasureTheory.VectorMeasure.instNeg
 
 @[simp]
 theorem coe_neg (v : VectorMeasure α M) : ⇑(-v) = -v := rfl
@@ -351,8 +362,9 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.sub MeasureTheory.VectorMeasure.sub
 
-instance : Sub (VectorMeasure α M) :=
+instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
+#align measure_theory.vector_measure.has_sub MeasureTheory.VectorMeasure.instSub
 
 @[simp]
 theorem coe_sub (v w : VectorMeasure α M) : ⇑(v - w) = v - w := rfl
@@ -361,9 +373,10 @@ theorem coe_sub (v w : VectorMeasure α M) : ⇑(v - w) = v - w := rfl
 theorem sub_apply (v w : VectorMeasure α M) (i : Set α) : (v - w) i = v i - w i := rfl
 #align measure_theory.vector_measure.sub_apply MeasureTheory.VectorMeasure.sub_apply
 
-instance : AddCommGroup (VectorMeasure α M) :=
+instance instAddCommGroup : AddCommGroup (VectorMeasure α M) :=
   Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+#align measure_theory.vector_measure.add_comm_group MeasureTheory.VectorMeasure.instAddCommGroup
 
 end AddCommGroup
 
@@ -373,8 +386,9 @@ variable {M : Type _} [AddCommMonoid M] [TopologicalSpace M]
 
 variable {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
-instance [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
+instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+#align measure_theory.vector_measure.distrib_mul_action MeasureTheory.VectorMeasure.instDistribMulAction
 
 end DistribMulAction
 
@@ -384,8 +398,9 @@ variable {M : Type _} [AddCommMonoid M] [TopologicalSpace M]
 
 variable {R : Type _} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
-instance [ContinuousAdd M] : Module R (VectorMeasure α M) :=
+instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
+#align measure_theory.vector_measure.module MeasureTheory.VectorMeasure.instModule
 
 end Module
 
@@ -842,9 +857,8 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
-set_option quotPrecheck false -- Porting note: Added this. TODO: remove this.
-
 -- mathport name: vector_measure.restrict
+set_option quotPrecheck false in -- Porting note: error message suggested to do this
 scoped[MeasureTheory]
   notation:50 v " ≤[" i:50 "] " w:50 =>
     MeasureTheory.VectorMeasure.restrict v i ≤ MeasureTheory.VectorMeasure.restrict w i
@@ -1062,6 +1076,7 @@ def AbsolutelyContinuous (v : VectorMeasure α M) (w : VectorMeasure α N) :=
 #align measure_theory.vector_measure.absolutely_continuous MeasureTheory.VectorMeasure.AbsolutelyContinuous
 
 -- mathport name: vector_measure.absolutely_continuous
+@[inherit_doc VectorMeasure.AbsolutelyContinuous]
 scoped[MeasureTheory] infixl:50 " ≪ᵥ " => MeasureTheory.VectorMeasure.AbsolutelyContinuous
 
 open MeasureTheory
@@ -1163,6 +1178,7 @@ def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
 
 -- mathport name: vector_measure.mutually_singular
+@[inherit_doc VectorMeasure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ᵥ " => MeasureTheory.VectorMeasure.MutuallySingular
 
 namespace MutuallySingular
@@ -1259,16 +1275,18 @@ section Trim
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
-    @VectorMeasure α m M _ _ where
-  measureOf' i := if MeasurableSet[m] i then v i else 0
-  empty' := by rw [if_pos MeasurableSet.empty, v.empty]
-  not_measurable' i hi := by rw [if_neg hi]
-  m_iUnion' f hf₁ hf₂ := by
-    have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
-    convert v.m_Union hf₁' hf₂
-    · ext n
-      rw [if_pos (hf₁ n)]
-    · rw [if_pos (@MeasurableSet.iUnion _ _ m _ _ hf₁)]
+    @VectorMeasure α m M _ _ :=
+  @VectorMeasure.mk α m M _ _
+    (fun i => if MeasurableSet[m] i then v i else 0)
+    (by dsimp only; rw [if_pos (@MeasurableSet.empty _ m), v.empty])
+    (fun i hi => by dsimp only; rw [if_neg hi])
+    (fun f hf₁ hf₂ => by
+      dsimp only
+      have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
+      convert v.m_iUnion hf₁' hf₂ using 1
+      · ext n
+        rw [if_pos (hf₁ n)]
+      · rw [if_pos (@MeasurableSet.iUnion _ _ m _ _ hf₁)])
 #align measure_theory.vector_measure.trim MeasureTheory.VectorMeasure.trim
 
 variable {n : MeasurableSpace α} {v : VectorMeasure α M}
@@ -1293,7 +1311,7 @@ theorem restrict_trim (hle : m ≤ n) {i : Set α} (hi : MeasurableSet[m] i) :
     @VectorMeasure.restrict α m M _ _ (v.trim hle) i = (v.restrict i).trim hle := by
   ext j
   intro hj
-  rw [restrict_apply, trim_measurableSet_eq hle hj, restrict_apply, trim_measurableSet_eq]
+  rw [@restrict_apply _ m, trim_measurableSet_eq hle hj, restrict_apply, trim_measurableSet_eq]
   all_goals measurability
 #align measure_theory.vector_measure.restrict_trim MeasureTheory.VectorMeasure.restrict_trim
 
