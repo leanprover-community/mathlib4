@@ -141,12 +141,13 @@ variable (s : Set α)
 
 theorem toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
-  simpa [uniform_of_fintype]
+  simpa [uniformOfFintype]
 #align pmf.to_outer_measure_uniform_of_fintype_apply Pmf.toOuterMeasure_uniformOfFintype_apply
 
 theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
-  simpa [uniform_of_fintype, hs]
+  simp [uniformOfFintype, hs]
+  rfl
 #align pmf.to_measure_uniform_of_fintype_apply Pmf.toMeasure_uniformOfFintype_apply
 
 end Measure
