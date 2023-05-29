@@ -378,8 +378,8 @@ instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag �
     LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
-    decidable_le := Subtype.decidableLE
-    decidable_lt := Subtype.decidableLT }
+    decidableLE := Subtype.decidableLE
+    decidableLT := Subtype.decidableLT }
 
 end PartialOrder
 

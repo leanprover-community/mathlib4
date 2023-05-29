@@ -23,7 +23,7 @@ interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions
 
 * `Finsupp.lsingle a : M →ₗ[R] ι →₀ M`: `Finsupp.single a` as a linear map;
 * `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `λ f, f a` as a linear map;
-* `Finsupp.lsubtypeDomain (s : set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
+* `Finsupp.lsubtypeDomain (s : Set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
   linear map;
 * `Finsupp.restrictDom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
 * `Finsupp.lsum`: `Finsupp.sum` or `Finsupp.liftAddHom` as a `LinearMap`;
@@ -724,7 +724,7 @@ variable (α) (M) (v)
 /-- `Finsupp.totalOn M v s` interprets `p : α →₀ R` as a linear combination of a
 subset of the vectors in `v`, mapping it to the span of those vectors.
 
-The subset is indicated by a set `s : set α` of indices.
+The subset is indicated by a set `s : Set α` of indices.
 -/
 protected def totalOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
   LinearMap.codRestrict _ ((Finsupp.total _ _ _ v).comp (Submodule.subtype (supported R R s)))

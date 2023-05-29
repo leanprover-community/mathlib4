@@ -13,6 +13,7 @@ import Mathlib.Combinatorics.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types
@@ -613,31 +614,9 @@ theorem orderOf {g : Perm α} (ht : IsThreeCycle g) : orderOf g = 3 := by
   rw [← lcm_cycleType, ht.cycleType, Multiset.lcm_singleton, normalize_eq]
 #align equiv.perm.is_three_cycle.order_of Equiv.Perm.IsThreeCycle.orderOf
 
--- Copied the following lemmas from Data/Int/GCD.lean; see #3246
-private theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
-    (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine' Nat.dvd_antisymm _ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
-  rw [← Int.coe_nat_dvd, ← h₃]
-  apply dvd_add
-  · exact (Int.gcd_dvd_left _ _).mul_right _
-  · exact (Int.gcd_dvd_right _ _).mul_right _
-private theorem nat_gcd_helper_2 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
-  rw [← Int.coe_nat_gcd];
-  apply
-    @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
-     ⟨_, hv.symm⟩)
-  rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
-  norm_cast; rw [hx, hy, h]
-private theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : tx + d = ty) : Nat.gcd x y = d :=
-  (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
-
 theorem isThreeCycle_sq {g : Perm α} (ht : IsThreeCycle g) : IsThreeCycle (g * g) := by
   rw [← pow_two, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
-  rw [ht.orderOf, Nat.coprime_iff_gcd_eq_one]
-  -- Porting note: was `norm_num`
-  apply nat_gcd_helper_1 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) (mul_one _) (mul_one _)
+  rw [ht.orderOf]
   norm_num
 #align equiv.perm.is_three_cycle.is_three_cycle_sq Equiv.Perm.IsThreeCycle.isThreeCycle_sq
 

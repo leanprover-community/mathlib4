@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.monad
-! leanprover-community/mathlib commit 5120cf49cb659e2499edd7e4d336a04efd598f2f
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -357,9 +357,7 @@ theorem bind₂_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ)
 
 section
 
-open Classical
-
-theorem vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
+theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc
     (bind₁ f φ).vars = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars :=

@@ -16,8 +16,6 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.WLOG
-import Mathlib.Tactic.RSuffices
 
 /-!
 # Turing machines
@@ -196,7 +194,7 @@ precondition `BlankExtends` instead of `BlankRel`. -/
 @[reducible]  -- Porting note: Removed `@[elab_as_elim]`
 protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
-  l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h, exact (H _ _ h).symm]
+  l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h; exact (H _ _ h).symm]
 #align turing.list_blank.lift_on Turing.ListBlank.liftOn
 
 /-- The quotient map turning a `List` into a `ListBlank`. -/
@@ -231,7 +229,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine' Quotient.sound' (Or.inl _)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩, exact ⟨i, rfl⟩]
+  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 #align turing.list_blank.tail Turing.ListBlank.tail
 
@@ -318,7 +316,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     (∀ i, L₁.nth i = L₂.nth i) → L₁ = L₂ := by
   refine' ListBlank.induction_on L₁ fun l₁ ↦ ListBlank.induction_on L₂ fun l₂ H ↦ _
   wlog h : l₁.length ≤ l₂.length
-  · cases le_total l₁.length l₂.length <;> [skip, symm] <;> apply this <;> try assumption
+  · cases le_total l₁.length l₂.length <;> [skip; symm] <;> apply this <;> try assumption
     intro
     rw [H]
   refine' Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, _⟩)
@@ -378,7 +376,7 @@ theorem PointedMap.map_pt {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
 @[simp]
 theorem PointedMap.headI_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : List Γ) : (l.map f).headI = f l.headI := by
-  cases l <;> [exact (PointedMap.map_pt f).symm, rfl]
+  cases l <;> [exact (PointedMap.map_pt f).symm; rfl]
 #align turing.pointed_map.head_map Turing.PointedMap.headI_map
 
 /-- The `map` function on lists is well defined on `ListBlank`s provided that the map is
@@ -1348,7 +1346,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   induction' q₂ with _ q IH _ q IH _ q IH <;>
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
-  iterate 3 rcases h with (rfl | h) <;> [exact hs, exact IH h hs]
+  iterate 3 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
   case branch p q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
@@ -1884,7 +1882,7 @@ theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ 
       apply IH
     case branch p q₁ q₂ IH₁ IH₂ =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
-      cases p R.head v <;> [apply IH₂, apply IH₁]
+      cases p R.head v <;> [apply IH₂; apply IH₁]
     case goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
@@ -2219,7 +2217,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₂} (h : q�
   induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;>
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
-  iterate 4 rcases h with (rfl | h) <;> [exact hs, exact IH h hs]
+  iterate 4 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
   case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
@@ -2721,7 +2719,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₃ p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
     simp only []
-    cases p v <;> [exact IH₂ _ hT, exact IH₁ _ hT]
+    cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 #align turing.TM2to1.tr_respects Turing.TM2to1.tr_respects
@@ -2780,7 +2778,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       rcases Finset.mem_biUnion.1 h with ⟨l, lS, h⟩
       have :=
         this _ (ss.2 l lS) fun x hx ↦ Finset.mem_biUnion.2 ⟨_, lS, Finset.mem_insert_of_mem hx⟩
-      rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1, exact this.2 _ h]
+      rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1; exact this.2 _ h]
     clear h l'
     refine' stmtStRec _ _ _ _ _
     · intro _ s _ IH ss' sub -- stack op
@@ -2811,7 +2809,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
       refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ _⟩
       rw [trStmts₁] at h
-      rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h, exact IH₂₂ _ h]
+      rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]
     · intro _ ss' _ -- goto
       simp only [trStmts₁, Finset.not_mem_empty]; refine' ⟨_, fun _ ↦ False.elim⟩
       exact fun _ v ↦ Finset.mem_biUnion.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩

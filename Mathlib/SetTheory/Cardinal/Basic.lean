@@ -263,7 +263,7 @@ instance linearOrder : LinearOrder Cardinal.{u} :=
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
       apply Embedding.total
-    decidable_le := Classical.decRel _ }
+    decidableLE := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : (#α) ≤ (#β) ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -1715,6 +1715,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   rw [toNat_apply_of_lt_aleph0 (nat_lt_aleph0 n), ← natCast_inj]
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
+
+@[simp]
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+  toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/
 theorem toNat_rightInverse : Function.RightInverse ((↑) : ℕ → Cardinal) toNat :=

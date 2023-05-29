@@ -139,7 +139,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
   simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
 #align locally_finite.is_closed_Union LocallyFinite.isClosed_iUnion
 
-/-- If `f : β → set α` is a locally finite family of closed sets, then for any `x : α`, the
+/-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_hi : x ∉ f i), f iᶜ) ∈ 𝓝 x := by

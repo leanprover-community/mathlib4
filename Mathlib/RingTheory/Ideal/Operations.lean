@@ -20,10 +20,6 @@ import Mathlib.RingTheory.NonZeroDivisors
 # More operations on modules and ideals
 -/
 
-
--- Porting note: TODO Erase this line, lean#2074
-attribute [-instance] Ring.toNonAssocRing
-
 universe u v w x
 
 open BigOperators Pointwise
@@ -402,7 +398,6 @@ theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
     _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
 #align submodule.mem_colon_singleton Submodule.mem_colon_singleton
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem _root_.Ideal.mem_colon_singleton {I : Ideal R} {x r : R} :
     r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
@@ -1652,7 +1647,6 @@ section Surjective
 
 variable (hf : Function.Surjective f)
 
-set_option synthInstance.etaExperiment true in
 theorem comap_map_of_surjective (I : Ideal R) : comap f (map f I) = I ⊔ comap f ⊥ :=
   le_antisymm
     (fun r h =>
@@ -1897,7 +1891,6 @@ variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 open BigOperators
 
-set_option synthInstance.etaExperiment true in
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
   (Finsupp.total ι M R v).comp (Finsupp.mapRange.linearMap I.subtype)
@@ -1905,7 +1898,6 @@ noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
 
 variable {ι M v}
 
-set_option synthInstance.etaExperiment true in
 theorem finsuppTotal_apply (f : ι →₀ I) :
     finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i := by
   dsimp [finsuppTotal]
@@ -1940,7 +1932,6 @@ section Basis
 
 variable {ι R S : Type _} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]
 
-set_option synthInstance.etaExperiment true in
 /-- A basis on `S` gives a basis on `Ideal.span {x}`, by multiplying everything by `x`. -/
 noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     Basis ι R (span ({x} : Set S)) :=
@@ -1953,7 +1944,6 @@ noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
       (Submodule.restrictScalarsEquiv R S S (Ideal.span ({x} : Set S))).restrictScalars R
 #align ideal.basis_span_singleton Ideal.basisSpanSingleton
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : ι) :
     (basisSpanSingleton b hx i : S) = x * b i := by
@@ -1962,7 +1952,6 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem constr_basisSpanSingleton {N : Type _} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
@@ -1991,7 +1980,7 @@ theorem Basis.mem_ideal_iff {ι R S : Type _} [CommRing R] [CommRing S] [Algebra
 /-- If `I : Ideal S` has a finite basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff' {ι R S : Type _} [Fintype ι] [CommRing R] [CommRing S] [Algebra R S]
-    {I : Ideal S} (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι → R, x = ∑ i, c i • b i :=
+    {I : Ideal S} (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : S) :=
   (b.map ((I.restrictScalarsEquiv R _ _).restrictScalars R).symm).mem_submodule_iff'
 #align basis.mem_ideal_iff' Basis.mem_ideal_iff'
 

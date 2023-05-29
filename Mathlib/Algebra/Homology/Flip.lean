@@ -114,7 +114,6 @@ def flipEquivalenceCounitIso :
       simp only [Category.id_comp, Category.comp_id]
 #align homological_complex.flip_equivalence_counit_iso HomologicalComplex.flipEquivalenceCounitIso
 
-set_option maxHeartbeats 1000000 in -- Porting note: needed to avoid timeout
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
 def flipEquivalence :

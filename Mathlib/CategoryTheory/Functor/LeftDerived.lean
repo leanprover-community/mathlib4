@@ -171,7 +171,6 @@ theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : 
   refine' (Functor.mapHomotopy _ (HomotopyEquiv.homotopyHomInvId _) ).trans _
   apply Homotopy.ofEq
   simp only [Functor.map_id]
-  rfl
 #align category_theory.nat_trans.left_derived_eq CategoryTheory.NatTrans.leftDerived_eq
 
 -- TODO:

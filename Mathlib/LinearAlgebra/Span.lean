@@ -17,7 +17,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The span of a set of vectors, as a submodule
 
-* `submodule.span s` is defined to be the smallest submodule containing the set `s`.
+* `Submodule.span s` is defined to be the smallest submodule containing the set `s`.
 
 ## Notations
 
@@ -88,7 +88,7 @@ theorem span_eq_span (hs : s ⊆ span R t) (ht : t ⊆ span R s) : span R s = sp
   le_antisymm (span_le.2 hs) (span_le.2 ht)
 #align submodule.span_eq_span Submodule.span_eq_span
 
-/-- A version of `submodule.span_eq` for when the span is by a smaller ring. -/
+/-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     span S (p : Set M) = p.restrictScalars S :=
@@ -283,7 +283,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
 /-- See `submodule.span_smul_eq` (in `ring_theory.ideal.operations`) for
-`span R (r • s) = r • span R s` that holds for arbitrary `r` in a `comm_semiring`. -/
+`span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
@@ -507,7 +507,7 @@ theorem span_le_restrictScalars [Semiring S] [SMul R S] [Module S M] [IsScalarTo
   Submodule.span_le.2 Submodule.subset_span
 #align submodule.span_le_restrict_scalars Submodule.span_le_restrictScalars
 
-/-- A version of `submodule.span_le_restrict_scalars` with coercions. -/
+/-- A version of `Submodule.span_le_restrictScalars` with coercions. -/
 @[simp]
 theorem span_subset_span [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     ↑(span R s) ⊆ (span S s : Set M) :=
@@ -947,17 +947,17 @@ variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
 variable {σ₁₂ : R →+* R₂}
 
-/-- If two linear maps are equal on a set `s`, then they are equal on `submodule.span s`.
+/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
 
-See also `linear_map.eq_on_span'` for a version using `set.eq_on`. -/
+See also `LinearMap.eqOn_span'` for a version using `Set.EqOn`. -/
 theorem eqOn_span {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
     f x = g x := by refine' span_induction h H _ _ _ <;> simp (config := { contextual := true })
 #align linear_map.eq_on_span LinearMap.eqOn_span
 
-/-- If two linear maps are equal on a set `s`, then they are equal on `submodule.span s`.
+/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
 
-This version uses `set.eq_on`, and the hidden argument will expand to `h : x ∈ (span R s : set M)`.
-See `linear_map.eq_on_span` for a version that takes `h : x ∈ span R s` as an argument. -/
+This version uses `Set.EqOn`, and the hidden argument will expand to `h : x ∈ (span R s : Set M)`.
+See `LinearMap.eqOn_span` for a version that takes `h : x ∈ span R s` as an argument. -/
 theorem eqOn_span' {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) :
     Set.EqOn f g (span R s : Set M) :=
   eqOn_span H
@@ -984,7 +984,6 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 open Classical
 
-set_option synthInstance.etaExperiment true in
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     (K ∙ x) ⊔ ker f = ⊤ :=
   eq_top_iff.2 fun y _ =>
@@ -1028,7 +1027,6 @@ section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
 
-set_option synthInstance.etaExperiment true in
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
     isomorphism.-/
@@ -1040,7 +1038,6 @@ def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
     (LinearEquiv.ofEq (range $ toSpanSingleton K V x) (K ∙ x) (span_singleton_eq_range K V x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
-set_option synthInstance.etaExperiment true in
 theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
     LinearEquiv.toSpanNonzeroSingleton K V x h 1 =
       (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) := by
@@ -1049,7 +1046,6 @@ theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
   rw [this, toSpanSingleton_one, Submodule.coe_mk]
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
-set_option synthInstance.etaExperiment true in
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural map
     from the span of `x` to `K`.-/
 noncomputable
@@ -1057,7 +1053,6 @@ abbrev coord (x : V) (h : x ≠ 0) : (K ∙ x) ≃ₗ[K] K :=
   (toSpanNonzeroSingleton K V x h).symm
 #align linear_equiv.coord LinearEquiv.coord
 
-set_option synthInstance.etaExperiment true in
 theorem coord_self (x : V) (h : x ≠ 0) :
     (coord K V x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) = 1 := by
   rw [← toSpanNonzeroSingleton_one K V x h, LinearEquiv.symm_apply_apply]

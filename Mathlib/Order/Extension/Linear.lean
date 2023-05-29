@@ -9,7 +9,6 @@ Authors: Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Zorn
-import Mathlib.Tactic.ByContra
 
 /-!
 # Extend a partial order to a linear order
@@ -88,7 +87,7 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.2.1
   le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.2.1
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.2.1
-  decidable_le := Classical.decRel _
+  decidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as a relation homomorphism. -/
 def toLinearExtension {α : Type u} [PartialOrder α] :

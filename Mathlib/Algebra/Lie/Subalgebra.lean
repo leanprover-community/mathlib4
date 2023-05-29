@@ -257,9 +257,6 @@ instance : LieModule R L' M
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
 `L' ⊆ L`. -/
 def _root_.LieModuleHom.restrictLie (f : M →ₗ⁅R,L⁆ N) (L' : LieSubalgebra R L) : M →ₗ⁅R,L'⁆ N :=
@@ -302,9 +299,6 @@ variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 variable (f : L →ₗ⁅R⁆ L₂)
 
 namespace LieHom
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The range of a morphism of Lie algebras is a Lie subalgebra. -/
 def range : LieSubalgebra R L₂ :=
@@ -382,9 +376,6 @@ theorem incl_range : K.incl.range = K := by
   rw [← coe_to_submodule_eq_iff]
   exact (K : Submodule R L).range_subtype
 #align lie_subalgebra.incl_range LieSubalgebra.incl_range
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
 codomain. -/
@@ -770,9 +761,6 @@ namespace LieEquiv
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
 
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=

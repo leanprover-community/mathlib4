@@ -30,8 +30,8 @@ The difference with `Denumerable` is that finite types are encodable. For infini
   partial inverse `decode : ℕ → Option α`.
 * `decode₂`: Version of `decode` that is equal to `none` outside of the range of `encode`. Useful as
   we do not require this in the definition of `decode`.
-* `ulower α`: Any encodable type has an equivalent type living in the lowest universe, namely a
-  subtype of `ℕ`. `ulower α` finds it.
+* `Ulower α`: Any encodable type has an equivalent type living in the lowest universe, namely a
+  subtype of `ℕ`. `Ulower α` finds it.
 
 ## Implementation notes
 
@@ -676,7 +676,7 @@ open Encodable Quotient
 
 variable {α : Type _} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
 
-/-- Representative of an equivalence class. This is a computable version of `quot.out` for a setoid
+/-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/
 def Quotient.rep (q : Quotient s) : α :=
   choose (exists_rep q)

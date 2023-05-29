@@ -33,18 +33,17 @@ section
 
 open Classical
 
-theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n :=
-  ⟨fun ⟨a, b, H⟩ ↦
-    Nat.eq_one_of_dvd_one <|
-      Int.coe_nat_dvd.1 <| by
-        rw [Int.ofNat_one, ← H]
-        exact
-          dvd_add (dvd_mul_of_dvd_right (Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left m n) _)
-            (dvd_mul_of_dvd_right (Int.coe_nat_dvd.2 <| Nat.gcd_dvd_right m n) _),
-    fun H ↦
-    ⟨Nat.gcdA m n, Nat.gcdB m n, by
-      rw [mul_comm _ (m : ℤ), mul_comm _ (n : ℤ), ← Nat.gcd_eq_gcd_ab, show _ = _ from H,
-        Int.ofNat_one]⟩⟩
+theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
+  constructor
+  · rintro ⟨a, b, h⟩
+    have : 1 = m * a + n * b := by rwa [mul_comm m, mul_comm n, eq_comm]
+    exact Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, this⟩)
+  · rw [← Int.ofNat_inj, IsCoprime, Int.gcd_eq_gcd_ab, mul_comm m, mul_comm n, Nat.cast_one]
+    intro h
+    exact ⟨_, _, h⟩
+
+theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n := by
+  rw [Int.isCoprime_iff_gcd_eq_one, Int.coe_nat_gcd]
 #align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
 alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime

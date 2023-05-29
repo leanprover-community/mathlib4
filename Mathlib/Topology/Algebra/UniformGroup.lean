@@ -203,10 +203,12 @@ end MulOpposite
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup α) : UniformGroup S :=
+instance uniformGroup (S : Subgroup α) : UniformGroup S :=
   ⟨uniformContinuous_comap'
       (uniformContinuous_div.comp <|
         uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 
 end Subgroup
 

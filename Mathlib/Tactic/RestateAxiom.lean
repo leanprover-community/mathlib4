@@ -18,7 +18,7 @@ It is still present for backwards compatibility but will probably be removed in 
 # Original Docstring
 
 `restate_axiom` makes a new copy of a structure field, first definitionally simplifying the type.
-This is useful to remove `auto_param` or `opt_param` from the statement.
+This is useful to remove `autoParam` or `optParam` from the statement.
 
 As an example, we have:
 ```lean

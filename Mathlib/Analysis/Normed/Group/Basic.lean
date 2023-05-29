@@ -490,21 +490,26 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
-/- porting note: meta code, do not port
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
+open Lean Meta Qq Function
 
-/-- Extension for the `positivity` tactic: norms are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_norm : expr → tactic strictness
-  | q(‖$(a)‖) =>
-    nonnegative <$> mk_app `` norm_nonneg [a] <|> nonnegative <$> mk_app `` norm_nonneg' [a]
-  | _ => failed
-#align tactic.positivity_norm tactic.positivity_norm
+/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
+`norm_nonneg'`. -/
+@[positivity Norm.norm _]
+def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg' #[a]
+  pure (.nonnegative p)
 
-end
--/
+/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
+@[positivity Norm.norm _]
+def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg #[a]
+  pure (.nonnegative p)
+
+end Mathlib.Meta.Positivity
 
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
@@ -1930,10 +1935,10 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.to_topologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
   inferInstance
-#align seminormed_comm_group.to_topological_group SeminormedCommGroup.to_topologicalGroup
-#align seminormed_add_comm_group.to_topological_add_group SeminormedAddCommGroup.to_topologicalAddGroup
+#align seminormed_comm_group.to_topological_group SeminormedCommGroup.toTopologicalGroup
+#align seminormed_add_comm_group.to_topological_add_group SeminormedAddCommGroup.toTopologicalAddGroup
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)

@@ -11,7 +11,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # (Semi-)lattices
@@ -923,9 +922,9 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
   { ‹Lattice α› with
-    decidable_le := ‹_›,
-    decidable_eq := ‹_›,
-    decidable_lt := ‹_›,
+    decidableLE := ‹_›,
+    decidableEq := ‹_›,
+    decidableLT := ‹_›,
     le_total := total_of (· ≤ ·),
     max := (· ⊔ ·),
     max_def := by exact congr_fun₂ sup_eq_maxDefault,
