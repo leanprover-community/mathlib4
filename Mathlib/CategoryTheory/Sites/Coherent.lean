@@ -5,20 +5,13 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Coverage
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type _} [Category C]
-
-def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
-  Nonempty (IsColimit (S : Presieve X).cocone)
-
-abbrev Presieve.EffectiveEpimorphic {X : C} (S : Presieve X) : Prop :=
-  (Sieve.generate S).EffectiveEpimorphic
-
-variable (C)
+variable (C : Type _) [Category C]
 
 class Precoherent : Prop where
   cond {B₁ B₂ : C} (f : B₂ ⟶ B₁) :
