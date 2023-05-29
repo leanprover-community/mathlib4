@@ -13,17 +13,17 @@ import Mathlib.Probability.ProbabilityMassFunction.Constructions
 /-!
 # Uniform Probability Mass Functions
 
-This file defines a number of uniform `pmf` distributions from various inputs,
+This file defines a number of uniform `Pmf` distributions from various inputs,
   uniformly drawing from the corresponding object.
 
-`pmf.uniform_of_finset` gives each element in the set equal probability,
+`Pmf.uniformOfFinset` gives each element in the set equal probability,
   with `0` probability for elements not in the set.
 
-`pmf.uniform_of_fintype` gives all elements equal probability,
-  equal to the inverse of the size of the `fintype`.
+`Pmf.uniformOfFintype` gives all elements equal probability,
+  equal to the inverse of the size of the `Fintype`.
 
-`pmf.of_multiset` draws randomly from the given `multiset`, treating duplicate values as distinct.
-  Each probability is given by the count of the element divided by the size of the `multiset`
+`Pmf.ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
+  Each probability is given by the count of the element divided by the size of the `Multiset`
 
 -/
 
@@ -155,7 +155,7 @@ end UniformOfFintype
 
 section OfMultiset
 
-/-- Given a non-empty multiset `s` we construct the `pmf` which sends `a` to the fraction of
+/-- Given a non-empty multiset `s` we construct the `Pmf` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : Pmf α :=
   ⟨fun a => s.count a / (Multiset.card s),
