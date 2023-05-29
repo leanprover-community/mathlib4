@@ -27,10 +27,9 @@ This file defines a number of uniform `pmf` distributions from various inputs,
 
 -/
 
+noncomputable section
 
 namespace Pmf
-
-noncomputable section
 
 variable {α β γ : Type _}
 
@@ -86,11 +85,10 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_congr fun x => by
-        simp only [uniformOfFinset_apply, and_comm (x ∈ s), ite_and, ENNReal.coe_nat])
+      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, and_comm, ← ite_and, and_comm])
     _ = ∑ x in s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun x hx => if_neg fun h => hx (Finset.mem_filter.2 h))
-    _ = ∑ x in s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
+    _ = ∑ _x in s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
       (Finset.sum_congr rfl fun x hx => by
         let this : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true])
@@ -141,7 +139,8 @@ variable (s : Set α)
 
 theorem toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
-  simpa [uniformOfFintype]
+  simp [uniformOfFintype]
+
 #align pmf.to_outer_measure_uniform_of_fintype_apply Pmf.toOuterMeasure_uniformOfFintype_apply
 
 theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
@@ -159,15 +158,17 @@ section OfMultiset
 /-- Given a non-empty multiset `s` we construct the `pmf` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : Pmf α :=
-  ⟨fun a => s.count a / s.card,
+  ⟨fun a => s.count a / (Multiset.card s),
     ENNReal.summable.hasSum_iff.2
       (calc
-        (∑' b : α, (s.count b : ℝ≥0∞) / s.card) = s.card⁻¹ * ∑' b, s.count b := by
-          simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
-        _ = s.card⁻¹ * ∑ b in s.toFinset, (s.count b : ℝ≥0∞) :=
-          (congr_arg (fun x => s.card⁻¹ * x)
-            (tsum_eq_sum fun a ha =>
-              Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))
+        (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
+          = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, s.count b := by sorry
+          -- simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
+        _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b in s.toFinset, (s.count b : ℝ≥0∞) :=
+          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x) sorry
+            -- (tsum_eq_sum fun a ha => by sorry
+              -- Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset])
+            )
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
             ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
@@ -178,7 +179,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : Pmf α :=
 variable {s : Multiset α} (hs : s ≠ 0)
 
 @[simp]
-theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / s.card :=
+theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 #align pmf.of_multiset_apply Pmf.ofMultiset_apply
 
@@ -192,7 +193,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 #align pmf.mem_support_of_multiset_iff Pmf.mem_support_ofMultiset_iff
 
 theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
-  simpa only [of_multiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
+  simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.nat_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem Pmf.ofMultiset_apply_of_not_mem
 
@@ -202,15 +203,16 @@ variable (t : Set α)
 
 @[simp]
 theorem toOuterMeasure_ofMultiset_apply :
-    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / s.card := by
-  rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, to_outer_measure_apply]
-  refine' tsum_congr fun x => _
-  by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
+    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / (Multiset.card s) := by
+  simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
+  sorry
+  -- refine' tsum_congr fun x => _
+  -- by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 #align pmf.to_outer_measure_of_multiset_apply Pmf.toOuterMeasure_ofMultiset_apply
 
 @[simp]
 theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / s.card :=
+    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / (Multiset.card s) :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 #align pmf.to_measure_of_multiset_apply Pmf.toMeasure_ofMultiset_apply
 
