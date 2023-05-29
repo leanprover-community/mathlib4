@@ -41,9 +41,7 @@ namespace Language
 
 set_option linter.uppercaseLean3 false
 
-open FirstOrder
-
-open Structure
+open FirstOrder Structure
 
 variable {L : Language.{u, v}} {α : Type w} {M : Type w'} {n : ℕ}
 
@@ -176,10 +174,10 @@ theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
   Iff.rfl
 #align first_order.language.ordered_structure_iff FirstOrder.Language.orderedStructure_iff
 
-instance orderedStructure_lE [LE M] : OrderedStructure Language.order M := by
+instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := by
   rw [orderedStructure_iff, orderLHom_order]
   exact LHom.id_isExpansionOn M
-#align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_lE
+#align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_LE
 
 instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,

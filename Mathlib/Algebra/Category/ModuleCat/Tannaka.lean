@@ -23,7 +23,6 @@ universe u
 
 open CategoryTheory
 
-set_option synthInstance.etaExperiment true in
 /-- An ingredient of Tannaka duality for rings:
 A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.

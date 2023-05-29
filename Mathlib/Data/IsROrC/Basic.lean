@@ -14,9 +14,9 @@ import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 /-!
-# `is_R_or_C`: a typeclass for ℝ or ℂ
+# `IsROrC`: a typeclass for ℝ or ℂ
 
-This file defines the typeclass `is_R_or_C` intended to have only two instances:
+This file defines the typeclass `IsROrC` intended to have only two instances:
 ℝ and ℂ. It is meant for definitions and theorems which hold for both the real and the complex case,
 and in particular when the real case follows directly from the complex case by setting `re` to `id`,
 `im` to zero and so on. Its API follows closely that of ℂ.
@@ -31,11 +31,11 @@ The instance for `ℂ` is declared in `analysis.complex.basic`.
 
 ## Implementation notes
 
-The coercion from reals into an `is_R_or_C` field is done by registering `algebra_map ℝ K` as
-a `has_coe_t`. For this to work, we must proceed carefully to avoid problems involving circular
-coercions in the case `K=ℝ`; in particular, we cannot use the plain `has_coe` and must set
+The coercion from reals into an `IsROrC` field is done by registering `algebraMap ℝ K` as
+a `CoeTCₓ`. For this to work, we must proceed carefully to avoid problems involving circular
+coercions in the case `K=ℝ`; in particular, we cannot use the plain `Coe` and must set
 priorities carefully. This problem was already solved for `ℕ`, and we copy the solution detailed
-in `data/nat/cast`. See also Note [coercion into rings] for more details.
+in `data/Nat/cast`. See also Note [coercion into rings] for more details.
 
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
 their counterparts in `complex.lean` (which causes linter errors).
@@ -55,8 +55,8 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class IsROrC (K : Type _) extends DenselyNormedField K, StarRing K, NormedAlgebra ℝ K,
-    CompleteSpace K where
+class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K,
+    NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
@@ -253,14 +253,12 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_pow (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_pow IsROrC.ofReal_pow
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_prod {α : Type _} (s : Finset α) (f : α → ℝ) :
     ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod IsROrC.ofReal_prod
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_finsupp_prod {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
@@ -435,16 +433,13 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
   (is_real_TFAE z).out 0 3
 #align is_R_or_C.conj_eq_iff_im IsROrC.conj_eq_iff_im
 
-set_option synthInstance.etaExperiment true in
--- porting note: @[simp] commented out because simpNF linter times out regardless of etaExperiment
--- @[simp]
+@[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 #align is_R_or_C.star_def IsROrC.star_def
 
 variable (K)
 
-set_option synthInstance.etaExperiment true in
 /-- Conjugation as a ring equivalence. This is used to convert the inner product into a
 sesquilinear product. -/
 abbrev conjToRingEquiv : K ≃+* Kᵐᵒᵖ :=
@@ -623,11 +618,10 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align is_R_or_C.norm_sq_div IsROrC.normSq_div
 
-@[simp, isROrC_simps]
+@[isROrC_simps] -- porting note: was `simp`
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 
-set_option synthInstance.etaExperiment true in
 instance (priority := 100) : CstarRing K where
   norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
 
@@ -666,7 +660,6 @@ theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
     im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
   rw [← ofReal_ofNat, ofReal_mul_im]
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
@@ -875,7 +868,7 @@ end CleanupLemmas
 
 section LinearMaps
 
-/-- The real part in a `is_R_or_C` field, as a linear map. -/
+/-- The real part in a `IsROrC` field, as a linear map. -/
 def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 #align is_R_or_C.re_lm IsROrC.reLm
@@ -885,7 +878,7 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_lm_coe IsROrC.reLm_coe
 
-/-- The real part in a `is_R_or_C` field, as a continuous linear map. -/
+/-- The real part in a `IsROrC` field, as a continuous linear map. -/
 noncomputable def reClm : K →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by
     rw [one_mul]
@@ -907,7 +900,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reClm.continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
-/-- The imaginary part in a `is_R_or_C` field, as a linear map. -/
+/-- The imaginary part in a `IsROrC` field, as a linear map. -/
 def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 #align is_R_or_C.im_lm IsROrC.imLm
@@ -917,7 +910,7 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_lm_coe IsROrC.imLm_coe
 
-/-- The imaginary part in a `is_R_or_C` field, as a continuous linear map. -/
+/-- The imaginary part in a `IsROrC` field, as a continuous linear map. -/
 noncomputable def imClm : K →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by
     rw [one_mul]
@@ -978,11 +971,9 @@ theorem conjCle_apply : (conjCle : K → K) = conj :=
   rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
 
-set_option synthInstance.etaExperiment true in
 instance (priority := 100) : ContinuousStar K :=
   ⟨conjLie.continuous⟩
 
-set_option synthInstance.etaExperiment true in
 @[continuity]
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star

@@ -113,7 +113,7 @@ section
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
-For typical usage, see the construction of `CommMon` from `Mon`.
+For typical usage, see the construction of `CommMonCat` from `MonCat`.
 -/
 @[reducible]
 def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
@@ -123,7 +123,7 @@ def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (
 end
 
 /-- Construct the `CategoryTheory.BundledHom` induced by a map between type classes.
-This is useful for building categories such as `CommMon` from `Mon`.
+This is useful for building categories such as `CommMonCat` from `MonCat`.
 -/
 def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
     where
@@ -141,8 +141,8 @@ section
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.
 
-Once we've set up `Mon` as the category of bundled monoids,
-this allows us to set up `CommMon` by defining an instance
+Once we've set up `MonCat` as the category of bundled monoids,
+this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
 class ParentProjection (F : ∀ {α}, d α → c α)

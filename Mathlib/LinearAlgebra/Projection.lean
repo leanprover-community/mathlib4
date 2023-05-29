@@ -28,9 +28,6 @@ We also provide some lemmas justifying correctness of our definitions.
 projection, complement subspace
 -/
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 noncomputable section Ring
 
 variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E]

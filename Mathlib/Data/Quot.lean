@@ -216,6 +216,11 @@ variable [sa : Setoid α] [sb : Setoid β]
 
 variable {φ : Quotient sa → Quotient sb → Sort _}
 
+-- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
+-- now it's explicit but left as a metavariable.
+-- We have not yet decided which one works best, since the setoid instance can't always be
+-- reliably found but it can't always be inferred from the expected type either.
+-- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 @[inherit_doc]
 notation:arg "⟦" a "⟧" => Quotient.mk _ a
 
@@ -826,6 +831,6 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, @Setoid.r α s₁ a₁ a₂ → @Setoid.r β s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=
-  Quotient.lift₂.decidablePred _ _ _ _
+  Quotient.lift₂.decidablePred _ h _ _
 
 end Quotient

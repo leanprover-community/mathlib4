@@ -39,9 +39,7 @@ namespace Set
 
 variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure M]
 
-open FirstOrder
-
-open FirstOrder.Language FirstOrder.Language.Structure
+open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 variable {α : Type u₁} {β : Type _}
 
@@ -143,8 +141,8 @@ theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
-  rw [hφ]
-  rfl
+  ext v
+  rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
 #align set.definable.compl Set.Definable.compl
 
 @[simp]
@@ -173,7 +171,7 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     simp
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
-/-- This lemma is only intended as a helper for `definable.image_comp. -/
+/-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
@@ -287,23 +285,19 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 #align first_order.language.definable_set.has_bot FirstOrder.Language.DefinableSet.instBot
 
--- Porting note: added `noncomputable`
-noncomputable instance instSup : Sup (L.DefinableSet A α) :=
+instance instSup : Sup (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
 #align first_order.language.definable_set.has_sup FirstOrder.Language.DefinableSet.instSup
 
--- Porting note: added `noncomputable`
-noncomputable instance instInf : Inf (L.DefinableSet A α) :=
+instance instInf : Inf (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 #align first_order.language.definable_set.has_inf FirstOrder.Language.DefinableSet.instInf
 
--- Porting note: added `noncomputable`
-noncomputable instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance instHasCompl : HasCompl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 #align first_order.language.definable_set.has_compl FirstOrder.Language.DefinableSet.instHasCompl
 
--- Porting note: added `noncomputable`
-noncomputable instance instSDiff : SDiff (L.DefinableSet A α) :=
+instance instSDiff : SDiff (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
 #align first_order.language.definable_set.has_sdiff FirstOrder.Language.DefinableSet.instSDiff
 
@@ -379,8 +373,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
   rfl
 #align first_order.language.definable_set.coe_sdiff FirstOrder.Language.DefinableSet.coe_sdiff
 
--- Porting note: added `noncomputable`
-noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
+instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
   Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
 #align first_order.language.definable_set.boolean_algebra FirstOrder.Language.DefinableSet.instBooleanAlgebra
