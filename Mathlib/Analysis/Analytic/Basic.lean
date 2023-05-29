@@ -355,8 +355,7 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 
 @[simp]
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
-  simp only [radius, Pi.neg_apply, norm_neg]
-  sorry
+  simp only [radius, FormalMultilinearSeries.neg_apply, norm_neg]
 #align formal_multilinear_series.radius_neg FormalMultilinearSeries.radius_neg
 
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
@@ -434,8 +433,7 @@ theorem HasFpowerSeriesOnBall.congr (hf : HasFpowerSeriesOnBall f p x r)
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {y} hy => by
-      convert hf.hasSum hy
-      stop
+      convert hf.hasSum hy using 1
       apply hg.symm
       simpa [edist_eq_coe_nnnorm_sub] using hy }
 #align has_fpower_series_on_ball.congr HasFpowerSeriesOnBall.congr

@@ -63,6 +63,9 @@ instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
 @[simp] -- porting note: new; was not needed in Lean 3
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
+
 section Module
 
 /- `derive` is not able to find the module structure, probably because Lean is confused by the
