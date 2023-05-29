@@ -17,17 +17,17 @@ This file proves some elementary results about complex measures. In particular, 
 a complex measure is always in the form `s + it` where `s` and `t` are signed measures.
 
 The complex measure is defined to be vector measure over `ℂ`, this definition can be found
-in `measure_theory.measure.vector_measure` and is known as `measure_theory.complex_measure`.
+in `measure_theory.measure.vector_measure` and is known as `MeasureTheory.ComplexMeasure`.
 
 ## Main definitions
 
-* `measure_theory.complex_measure.re`: obtains a signed measure `s` from a complex measure `c`
+* `MeasureTheory.ComplexMeasure.re`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).re` for all measurable sets `i`.
-* `measure_theory.complex_measure.im`: obtains a signed measure `s` from a complex measure `c`
+* `MeasureTheory.ComplexMeasure.im`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).im` for all measurable sets `i`.
-* `measure_theory.signed_measure.to_complex_measure`: given two signed measures `s` and `t`,
+* `MeasureTheory.SignedMeasure.toComplexMeasure`: given two signed measures `s` and `t`,
   `s.to_complex_measure t` provides a complex measure of the form `s + it`.
-* `measure_theory.complex_measure.equiv_signed_measure`: is the equivalence between the complex
+* `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
 # Tags
