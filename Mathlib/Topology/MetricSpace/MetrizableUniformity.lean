@@ -81,7 +81,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
         ciInf_le (OrderBot.bddBelow _) (lxy ++ y::lyz)
       _ = (zipWith d (x::lxy) (lxy ++ [y])).sum + (zipWith d (y::lyz) (lyz ++ [z])).sum := by
         rw [← sum_append, ← zipWith_append, cons_append, ← @singleton_append _ y, append_assoc,
-        append_assoc, append_assoc]
+          append_assoc, append_assoc]
         rw [length_cons, length_append, length_singleton]
   -- Porting note: `edist_dist` is no longer inferred
   edist_dist x y := rfl
@@ -111,11 +111,8 @@ inequality: `d x₁ x₄ ≤ 2 * max (d x₁ x₂, d x₂ x₃, d x₃ x₄)`. T
 theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x)
     (hd : ∀ x₁ x₂ x₃ x₄, d x₁ x₄ ≤ 2 * max (d x₁ x₂) (max (d x₂ x₃) (d x₃ x₄))) (x y : X) :
-    ↑(d x y) ≤
-      2 *
-        @dist X
-          (@PseudoMetricSpace.toDist X (PseudoMetricSpace.ofPreNNDist d dist_self dist_comm)) x
-          y := by
+    ↑(d x y) ≤ 2 * @dist X
+      (@PseudoMetricSpace.toDist X (PseudoMetricSpace.ofPreNNDist d dist_self dist_comm)) x y := by
   /- We need to show that `d x y` is at most twice the sum `L` of `d xᵢ xᵢ₊₁` over a path
     `x₀=x, ..., xₙ=y`. We prove it by induction on the length `n` of the sequence. Find an edge that
     splits the path into two parts of almost equal length: both `d x₀ x₁ + ... + d xₖ₋₁ xₖ` and
@@ -148,35 +145,34 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← all₂_iff_forall, all₂_zipWith, ← chain_append_singleton_iff_forall₂]
           at hm <;>
-        [skip, · simp]
+        [skip; simp]
       exact hd₀ (hm.rel (mem_append.2 <| Or.inr <| mem_singleton_self _))
     have hs_bdd : BddAbove s := ⟨length l, hs_ub⟩
     exact ⟨sSup s, csSup_le hsne hs_ub, ⟨Nat.sSup_mem hsne hs_bdd, fun k => le_csSup hs_bdd⟩⟩
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
-  refine' ⟨(x::l).nthLe M hM_ltx, (l ++ [y]).nthLe M hM_lty, _, _, _⟩
+  refine' ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, _, _, _⟩
   · cases M with
     | zero =>
-      simp [dist_self, nthLe]
+      simp [dist_self, List.get]
     | succ M =>
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
-      simp only [nthLe]
+      simp only [List.get]
       refine' (ihn _ hMl _ _ _ hMl').trans _
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, get?_append hMl, nthLe_get? hMl, ← Option.coe_def,
+      rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
         Option.to_list_some, take_append_of_le_length hMl.le]
-      rfl
-  · refine' single_le_sum (fun x hx => zero_le x) _ (mem_iff_nthLe.2 ⟨M, hM_lt, _⟩)
+  · refine' single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, _⟩)
     apply nthLe_zipWith
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [nthLe_append_right le_rfl, sub_self, nthLe_singleton, dist_self, zero_le]
-    rw [nthLe_append _ hMl]
+    · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
+    rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le _ _ M.succ_pos hMl
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
-    rw [cons_nthLe_drop_succ]
+    rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
       not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
