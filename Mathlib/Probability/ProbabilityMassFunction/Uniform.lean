@@ -39,31 +39,24 @@ open scoped Classical BigOperators NNReal ENNReal
 section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
-def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : Pmf α :=
-  ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s
-    (Exists.rec_on hs fun x hx =>
-      calc
-        (∑ a : α in s, ite (a ∈ s) (s.card : ℝ≥0∞)⁻¹ 0) = ∑ a : α in s, (s.card : ℝ≥0∞)⁻¹ :=
-          Finset.sum_congr rfl fun x hx => by simp [hx]
-        _ = (s.card : ℝ≥0∞) * (s.card : ℝ≥0∞)⁻¹ := by rw [Finset.sum_const, nsmul_eq_mul]
-        _ = 1 :=
-          ENNReal.mul_inv_cancel
-            (by
-              simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
-                Finset.nonempty_iff_ne_empty.1 hs)
-            (ENNReal.nat_ne_top s.card)
-        )
-    fun x hx => by simp only [hx, if_false]
+def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : Pmf α := by
+  refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
+  . simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
+    have : (s.card : ℝ≥0∞) ≠ 0 := by
+            simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+              Finset.nonempty_iff_ne_empty.1 hs
+    refine' ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
+  . exact fun x hx => by simp only [hx, if_false]
 #align pmf.uniform_of_finset Pmf.uniformOfFinset
 
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
 @[simp]
-theorem uniformOfFinset_apply (a : α) : uniformOfFinset s hs a = if a ∈ s then s.card⁻¹ else 0 :=
+theorem uniformOfFinset_apply (a : α) : uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
   rfl
 #align pmf.uniform_of_finset_apply Pmf.uniformOfFinset_apply
 
-theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = s.card⁻¹ := by
+theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
 #align pmf.uniform_of_finset_apply_of_mem Pmf.uniformOfFinset_apply_of_mem
 
@@ -88,29 +81,29 @@ variable (t : Set α)
 
 @[simp]
 theorem toOuterMeasure_uniformOfFinset_apply :
-    (uniformOfFinset s hs).toOuterMeasure t = (s.filterₓ (· ∈ t)).card / s.card :=
+    (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
   calc
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_congr fun x => by
-        simp only [uniform_of_finset_apply, and_comm' (x ∈ s), ite_and, ENNReal.coe_nat])
-    _ = ∑ x in s.filterₓ (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
+        simp only [uniformOfFinset_apply, and_comm (x ∈ s), ite_and, ENNReal.coe_nat])
+    _ = ∑ x in s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun x hx => if_neg fun h => hx (Finset.mem_filter.2 h))
-    _ = ∑ x in s.filterₓ (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
+    _ = ∑ x in s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
       (Finset.sum_congr rfl fun x hx => by
         let this : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true])
-    _ = (s.filterₓ (· ∈ t)).card / s.card := by
+    _ = (s.filter (· ∈ t)).card / s.card := by
       have : (s.card : ℝ≥0∞) ≠ 0 :=
         Nat.cast_ne_zero.2 (hs.recOn fun _ => Finset.card_ne_zero_of_mem)
       simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
-    
+
 #align pmf.to_outer_measure_uniform_of_finset_apply Pmf.toOuterMeasure_uniformOfFinset_apply
 
 @[simp]
 theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (uniformOfFinset s hs).toMeasure t = (s.filterₓ (· ∈ t)).card / s.card :=
+    (uniformOfFinset s hs).toMeasure t = (s.filter (· ∈ t)).card / s.card :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
 #align pmf.to_measure_uniform_of_finset_apply Pmf.toMeasure_uniformOfFinset_apply
 
@@ -224,4 +217,3 @@ end Measure
 end OfMultiset
 
 end Pmf
-
