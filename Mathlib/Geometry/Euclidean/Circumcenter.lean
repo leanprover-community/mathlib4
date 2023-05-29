@@ -46,8 +46,6 @@ namespace EuclideanGeometry
 variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
--- include V
-
 open AffineSubspace
 
 /-- `p` is equidistant from two points in `s` if and only if its
@@ -259,8 +257,6 @@ open Finset AffineSubspace EuclideanGeometry
 
 variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
-
---include V
 
 /-- The circumsphere of a simplex. -/
 def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
@@ -533,8 +529,6 @@ theorem circumcenter_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
   exact s₂.eq_circumcenter_of_dist_eq hs hr
 #align affine.simplex.circumcenter_eq_of_range_eq Affine.Simplex.circumcenter_eq_of_range_eq
 
---omit V
-
 /-- An index type for the vertices of a simplex plus its circumcenter.
 This is for use in calculations where it is convenient to work with
 affine combinations of vertices together with the circumcenter.  (An
@@ -576,8 +570,6 @@ theorem sum_pointsWithCircumcenter {α : Type _} [AddCommMonoid α] {n : ℕ}
   injection h
 #align affine.simplex.sum_points_with_circumcenter Affine.Simplex.sum_pointsWithCircumcenter
 
---include V
-
 /-- The vertices of a simplex plus its circumcenter. -/
 def pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) : PointsWithCircumcenterIndex n → P
   | point_index i => s.points i
@@ -602,8 +594,6 @@ theorem pointsWithCircumcenter_eq_circumcenter {n : ℕ} (s : Simplex ℝ P n) :
   affine.simplex.points_with_circumcenter_eq_circumcenter
   Affine.Simplex.pointsWithCircumcenter_eq_circumcenter
 
---omit V
-
 /-- The weights for a single vertex of a simplex, in terms of
 `pointsWithCircumcenter`. -/
 def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumcenterIndex n → ℝ
@@ -622,8 +612,6 @@ theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
 #align
   affine.simplex.sum_point_weights_with_circumcenter
   Affine.Simplex.sum_pointWeightsWithCircumcenter
-
---include V
 
 /-- A single vertex, in terms of `pointsWithCircumcenter`. -/
 theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n)
@@ -644,8 +632,6 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
 #align
   affine.simplex.point_eq_affine_combination_of_points_with_circumcenter
   Affine.Simplex.point_eq_affineCombination_of_pointsWithCircumcenter
-
---omit V
 
 /-- The weights for the centroid of some vertices of a simplex, in
 terms of `pointsWithCircumcenter`. -/
@@ -669,8 +655,6 @@ theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))
   affine.simplex.sum_centroid_weights_with_circumcenter
   Affine.Simplex.sum_centroidWeightsWithCircumcenter
 
---include V
-
 /-- The centroid of some vertices of a simplex, in terms of
 `pointsWithCircumcenter`. -/
 theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n)
@@ -690,8 +674,6 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   affine.simplex.centroid_eq_affine_combination_of_points_with_circumcenter
   Affine.Simplex.centroid_eq_affineCombination_of_pointsWithCircumcenter
 
---omit V
-
 /-- The weights for the circumcenter of a simplex, in terms of
 `pointsWithCircumcenter`. -/
 def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex n → ℝ
@@ -701,7 +683,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
   affine.simplex.circumcenter_weights_with_circumcenter
   Affine.Simplex.circumcenterWeightsWithCircumcenter
 
-/-- `circumcenter_weights_with_circumcenter` sums to 1. -/
+/-- `circumcenterWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     (∑ i, circumcenterWeightsWithCircumcenter n i) = 1 := by
@@ -711,8 +693,6 @@ theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
 #align
   affine.simplex.sum_circumcenter_weights_with_circumcenter
   Affine.Simplex.sum_circumcenterWeightsWithCircumcenter
-
---include V
 
 /-- The circumcenter of a simplex, in terms of
 `pointsWithCircumcenter`. -/
@@ -727,8 +707,6 @@ theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s
 #align
   affine.simplex.circumcenter_eq_affine_combination_of_points_with_circumcenter
   Affine.Simplex.circumcenter_eq_affineCombination_of_pointsWithCircumcenter
-
---omit V
 
 /-- The weights for the reflection of the circumcenter in an edge of a
 simplex.  This definition is only valid with `i₁ ≠ i₂`. -/
@@ -752,8 +730,6 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
 #align
   affine.simplex.sum_reflection_circumcenter_weights_with_circumcenter
   Affine.Simplex.sum_reflectionCircumcenterWeightsWithCircumcenter
-
---include V
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
 terms of `pointsWithCircumcenter`. -/
@@ -796,8 +772,6 @@ open Affine AffineSubspace FiniteDimensional
 
 variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
-
---include V
 
 /-- Given a nonempty affine subspace, whose direction is complete,
 that contains a set of points, those points are cospherical if and
