@@ -413,7 +413,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
 #align category_theory.Free.ext CategoryTheory.Free.ext
 
 /-- `Free.lift` is unique amongst `R`-linear functors `Free R C ⥤ D`
-which compose with `Embedding ℤ C` to give the original functor.
+which compose with `embedding ℤ C` to give the original functor.
 -/
 def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
     (α : embedding R C ⋙ L ≅ F) : L ≅ lift R F :=
