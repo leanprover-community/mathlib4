@@ -19,8 +19,8 @@ This file defines the space of continuous homomorphisms between two topological 
 
 ## Main definitions
 
-* `continuous_monoid_hom A B`: The continuous homomorphisms `A →* B`.
-* `continuous_add_monoid_hom A B`: The continuous additive homomorphisms `A →+ B`.
+* `ContinuousMonoidHom A B`: The continuous homomorphisms `A →* B`.
+* `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
 
 
@@ -34,59 +34,59 @@ variable (F A B C D E : Type _) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [Com
 
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 
-When possible, instead of parametrizing results over `(f : continuous_add_monoid_hom A B)`,
-you should parametrize over `(F : Type*) [continuous_add_monoid_hom_class F A B] (f : F)`.
+When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
+you should parametrize over `(F : Type*) [ContinuousAddMonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
+When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
 structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B where
+  /-- Proof of continuity of the Hom. -/
   continuous_toFun : @Continuous A B _ _ toFun
 #align continuous_add_monoid_hom ContinuousAddMonoidHom
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
 
-When possible, instead of parametrizing results over `(f : continuous_monoid_hom A B)`,
-you should parametrize over `(F : Type*) [continuous_monoid_hom_class F A B] (f : F)`.
+When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
+you should parametrize over `(F : Type*) [ContinuousMonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
-@[to_additive]
+When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
+@[to_additive "The type of continuous additive monoid homomorphisms from `A` to `B`."]
 structure ContinuousMonoidHom extends A →* B where
+  /-- Proof of continuity of the Hom. -/
   continuous_toFun : @Continuous A B _ _ toFun
 #align continuous_monoid_hom ContinuousMonoidHom
 
 section
 
-/-- `continuous_add_monoid_hom_class F A B` states that `F` is a type of continuous additive monoid
+/-- `ContinuousAddMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
 
-You should also extend this typeclass when you extend `continuous_add_monoid_hom`. -/
+You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends AddMonoidHomClass F A B where
+  /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
 
-/-- `continuous_monoid_hom_class F A B` states that `F` is a type of continuous additive monoid
+/-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
 
-You should also extend this typeclass when you extend `continuous_monoid_hom`. -/
+You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
 class ContinuousMonoidHomClass (A B : outParam (Type _)) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
+  /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
 
--- porting note : moved to class?
--- attribute [to_additive ContinuousAddMonoidHomClass.toAddMonoidHomClass]
---   ContinuousMonoidHomClass.toMonoidHomClass
-
 end
 
-/-- Reinterpret a `continuous_monoid_hom` as a `monoid_hom`. -/
+/-- Reinterpret a `ContinuousMonoidHom` as a `MonoidHom`. -/
 add_decl_doc ContinuousMonoidHom.toMonoidHom
 
-/-- Reinterpret a `continuous_add_monoid_hom` as an `add_monoid_hom`. -/
+/-- Reinterpret a `ContinuousAddMonoidHom` as an `AddMonoidHom`. -/
 add_decl_doc ContinuousAddMonoidHom.toAddMonoidHom
 
 -- See note [lower instance priority]
@@ -113,21 +113,21 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass : ContinuousMonoidHomClass
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_to_fun` directly."]
+      "Helper instance for when there's too many metavariables to apply\n`FunLike.hasCoeToFun` directly."]
 instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
   FunLike.hasCoeToFun
 
-@[to_additive, ext]
+@[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
 
-/-- Reinterpret a `continuous_monoid_hom` as a `continuous_map`. -/
-@[to_additive "Reinterpret a `continuous_add_monoid_hom` as a `continuous_map`."]
+/-- Reinterpret a `ContinuousMonoidHom` as a `ContinuousMap`. -/
+@[to_additive "Reinterpret a `ContinuousAddMonoidHom` as a `ContinuousMap`."]
 def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
   { f with }
 #align continuous_monoid_hom.to_continuous_map ContinuousMonoidHom.toContinuousMap
@@ -139,9 +139,9 @@ theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) 
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
--- porting note: TODO "Removed simps, is that ok?
-/-- Construct a `continuous_monoid_hom` from a `continuous` `monoid_hom`. -/
-@[to_additive "Construct a `continuous_add_monoid_hom` from a `continuous` `add_monoid_hom`."]
+-- porting note: Removed simps because given definition is not a constructor application
+/-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
+@[to_additive "Construct a `ContinuousAddMonoidHom` from a `continuous` `AddMonoidHom`."]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
   { f with continuous_toFun := (hf : Continuous f.toFun)}
 #align continuous_monoid_hom.mk' ContinuousMonoidHom.mk'
@@ -155,7 +155,7 @@ def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : Continuou
 #align continuous_add_monoid_hom.comp ContinuousAddMonoidHom.comp
 
 /-- Product of two continuous homomorphisms on the same space. -/
-@[to_additive "Product of two continuous homomorphisms on the same space.", simps]
+@[to_additive (attr := simps!) "Product of two continuous homomorphisms on the same space."]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
     ContinuousMonoidHom A (B × C) :=
   mk' (f.toMonoidHom.prod g.toMonoidHom) (f.continuous_toFun.prod_mk g.continuous_toFun)
@@ -163,7 +163,7 @@ def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
 #align continuous_add_monoid_hom.sum ContinuousAddMonoidHom.sum
 
 /-- Product of two continuous homomorphisms on different spaces. -/
-@[to_additive "Product of two continuous homomorphisms on different spaces.", simps]
+@[to_additive (attr := simps!) "Product of two continuous homomorphisms on different spaces."]
 def prod_map (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
   mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prod_map g.continuous_toFun)
@@ -173,7 +173,7 @@ def prod_map (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
 variable (A B C D E)
 
 /-- The trivial continuous homomorphism. -/
-@[to_additive "The trivial continuous homomorphism.", simps]
+@[to_additive (attr := simps!) "The trivial continuous homomorphism."]
 def one : ContinuousMonoidHom A B :=
   mk' 1 continuous_const
 #align continuous_monoid_hom.one ContinuousMonoidHom.one
@@ -184,63 +184,63 @@ instance : Inhabited (ContinuousMonoidHom A B) :=
   ⟨one A B⟩
 
 /-- The identity continuous homomorphism. -/
-@[to_additive "The identity continuous homomorphism.", simps]
+@[to_additive (attr := simps!) "The identity continuous homomorphism."]
 def id : ContinuousMonoidHom A A :=
   mk' (MonoidHom.id A) continuous_id
 #align continuous_monoid_hom.id ContinuousMonoidHom.id
 #align continuous_add_monoid_hom.id ContinuousAddMonoidHom.id
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
-@[to_additive "The continuous homomorphism given by projection onto the first factor.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by projection onto the first factor."]
 def fst : ContinuousMonoidHom (A × B) A :=
   mk' (MonoidHom.fst A B) continuous_fst
 #align continuous_monoid_hom.fst ContinuousMonoidHom.fst
 #align continuous_add_monoid_hom.fst ContinuousAddMonoidHom.fst
 
 /-- The continuous homomorphism given by projection onto the second factor. -/
-@[to_additive "The continuous homomorphism given by projection onto the second factor.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by projection onto the second factor."]
 def snd : ContinuousMonoidHom (A × B) B :=
   mk' (MonoidHom.snd A B) continuous_snd
 #align continuous_monoid_hom.snd ContinuousMonoidHom.snd
 #align continuous_add_monoid_hom.snd ContinuousAddMonoidHom.snd
 
 /-- The continuous homomorphism given by inclusion of the first factor. -/
-@[to_additive "The continuous homomorphism given by inclusion of the first factor.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by inclusion of the first factor."]
 def inl : ContinuousMonoidHom A (A × B) :=
   prod (id A) (one A B)
 #align continuous_monoid_hom.inl ContinuousMonoidHom.inl
 #align continuous_add_monoid_hom.inl ContinuousAddMonoidHom.inl
 
 /-- The continuous homomorphism given by inclusion of the second factor. -/
-@[to_additive "The continuous homomorphism given by inclusion of the second factor.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by inclusion of the second factor."]
 def inr : ContinuousMonoidHom B (A × B) :=
   prod (one B A) (id B)
 #align continuous_monoid_hom.inr ContinuousMonoidHom.inr
 #align continuous_add_monoid_hom.inr ContinuousAddMonoidHom.inr
 
 /-- The continuous homomorphism given by the diagonal embedding. -/
-@[to_additive "The continuous homomorphism given by the diagonal embedding.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by the diagonal embedding."]
 def diag : ContinuousMonoidHom A (A × A) :=
   prod (id A) (id A)
 #align continuous_monoid_hom.diag ContinuousMonoidHom.diag
 #align continuous_add_monoid_hom.diag ContinuousAddMonoidHom.diag
 
 /-- The continuous homomorphism given by swapping components. -/
-@[to_additive "The continuous homomorphism given by swapping components.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by swapping components."]
 def swap : ContinuousMonoidHom (A × B) (B × A) :=
   prod (snd A B) (fst A B)
 #align continuous_monoid_hom.swap ContinuousMonoidHom.swap
 #align continuous_add_monoid_hom.swap ContinuousAddMonoidHom.swap
 
 /-- The continuous homomorphism given by multiplication. -/
-@[to_additive "The continuous homomorphism given by addition.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by addition."]
 def mul : ContinuousMonoidHom (E × E) E :=
   mk' mulMonoidHom continuous_mul
 #align continuous_monoid_hom.mul ContinuousMonoidHom.mul
 #align continuous_add_monoid_hom.add ContinuousAddMonoidHom.add
 
 /-- The continuous homomorphism given by inversion. -/
-@[to_additive "The continuous homomorphism given by negation.", simps]
+@[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
 def inv : ContinuousMonoidHom E E :=
   mk' invMonoidHom continuous_inv
 #align continuous_monoid_hom.inv ContinuousMonoidHom.inv
@@ -249,7 +249,7 @@ def inv : ContinuousMonoidHom E E :=
 variable {A B C D E}
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
-@[to_additive "Coproduct of two continuous homomorphisms to the same space.", simps]
+@[to_additive (attr := simps!) "Coproduct of two continuous homomorphisms to the same space."]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (A × B) E :=
   (mul E).comp (f.prod_map g)
@@ -294,7 +294,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       suffices
         Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
-              ⋃ (x) (y) (U) (V) (W) (hU : IsOpen U) (hV : IsOpen V) (hW : IsOpen W) (h :
+              ⋃ (x) (y) (U) (V) (W) (_hU : IsOpen U) (_hV : IsOpen V) (_hW : IsOpen W) (_h :
                 Disjoint (U * V) W),
                 { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } : Set C(A , B))ᶜ by
         rw [this, compl_compl]
@@ -307,7 +307,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       refine' fun f => ⟨_, _⟩
       · rintro ⟨f, rfl⟩
         exact
-          ⟨fun h => h (map_one f), fun x y U V W hU hV hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
+          ⟨fun h => h (map_one f), fun x y U V W _hU _hV _hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
             h.le_bot ⟨Set.mul_mem_mul hfU hfV, (congr_arg (· ∈ W) (map_mul f x y)).mp hfW⟩⟩
       · rintro ⟨hf1, hf2⟩
         suffices ∀ x y, f (x * y) = f x * f y by
@@ -378,26 +378,26 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
 
 variable (E)
 
-/-- `continuous_monoid_hom _ f` is a functor. -/
+/-- `ContinuousMonoidHom _ f` is a functor. -/
 @[to_additive "`continuous_add_monoid_hom _ f` is a functor."]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
   map_one' := rfl
-  map_mul' g h := rfl
+  map_mul' _g _h := rfl
   continuous_toFun := f.continuous_comp_left
 #align continuous_monoid_hom.comp_left ContinuousMonoidHom.compLeft
 #align continuous_add_monoid_hom.comp_left ContinuousAddMonoidHom.compLeft
 
 variable (A) {E}
 
-/-- `continuous_monoid_hom f _` is a functor. -/
+/-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive "`continuous_add_monoid_hom f _` is a functor."]
 def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
-  map_one' := ext fun a => map_one f
+  map_one' := ext fun _a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 #align continuous_monoid_hom.comp_right ContinuousMonoidHom.compRight
@@ -440,7 +440,7 @@ open ContinuousMonoidHom
 noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
   ContinuousMonoidHom.ContinuousMonoidHomClass
 
-/-- `pontryagin_dual` is a functor. -/
+/-- `PontryaginDual` is a functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
   f.compLeft circle
@@ -454,13 +454,13 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun y => OneHomClass.map_one x)
+  ext fun x => ext (fun _y => OneHomClass.map_one x)
 #align pontryagin_dual.map_one PontryaginDual.map_one
 
 @[simp]
 theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun x => ext fun y => rfl
+  ext fun _x => ext fun _y => rfl
 #align pontryagin_dual.map_comp PontryaginDual.map_comp
 
 
@@ -472,7 +472,7 @@ theorem map_mul' (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :
 
 variable (A B C D E)
 
-/-- `continuous_monoid_hom.dual` as a `continuous_monoid_hom`. -/
+/-- `continuous_monoid_hom.dual` as a `ContinuousMonoidHom`. -/
 noncomputable def mapHom [LocallyCompactSpace E] :
     ContinuousMonoidHom (ContinuousMonoidHom A E)
       (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
