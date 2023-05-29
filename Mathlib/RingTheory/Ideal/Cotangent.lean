@@ -19,7 +19,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 In this file, we provide special API support for the module `I ⧸ I ^ 2`. The official
 definition is a quotient module of `I`, but the alternative definition as an ideal of `R ⧸ I ^ 2` is
-also given, and the two are `R`-equivalent as in `ideal.cotangent_equiv_ideal`.
+also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
 
