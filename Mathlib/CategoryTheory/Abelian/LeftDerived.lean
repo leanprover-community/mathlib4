@@ -115,9 +115,9 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
     Category.assoc (F.map _), Abelian.cokernel.desc.inv _ _ (exact_of_map_ProjectiveResolution F P),
     cokernel.π_desc, homology.π', Category.comp_id, Category.assoc (cokernel.π _), Iso.inv_hom_id,
     Category.comp_id, ← Category.assoc]
+  -- Porting note: restructured proof to avoid `convert`
   conv_rhs => rw [← Category.id_comp (cokernel.π _)]
   congr
-  --convert Category.id_comp (cokernel.π _) using 2
   apply equalizer.hom_ext
   -- Porting note: working around 'motive is not type correct'
   simp only [Category.id_comp]
