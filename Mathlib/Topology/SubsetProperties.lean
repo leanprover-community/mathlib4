@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit 76f9c990d4b7c3dd26b87c4c4b51759e249d9e66
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1318,6 +1318,56 @@ variable {α}
 theorem exists_mem_compactCovering (x : α) : ∃ n, x ∈ compactCovering α n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering α) x
 #align exists_mem_compact_covering exists_mem_compactCovering
+
+instance [SigmaCompactSpace β] : SigmaCompactSpace (α × β) :=
+  ⟨⟨fun n => compactCovering α n ×ˢ compactCovering β n, fun _ =>
+      (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
+      simp only [iUnion_prod_of_monotone (compactCovering_subset α) (compactCovering_subset β),
+        iUnion_compactCovering, univ_prod_univ]⟩⟩
+
+instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace (π i)] :
+    SigmaCompactSpace (∀ i, π i) := by
+  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (π i) n,
+    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (π i) _, _⟩⟩
+  rw [iUnion_univ_pi_of_monotone]
+  · simp only [iUnion_compactCovering, pi_univ]
+  · exact fun i => compactCovering_subset (π i)
+
+instance [SigmaCompactSpace β] : SigmaCompactSpace (Sum α β) :=
+  ⟨⟨fun n => Sum.inl '' compactCovering α n ∪ Sum.inr '' compactCovering β n, fun n =>
+      ((isCompact_compactCovering α n).image continuous_inl).union
+        ((isCompact_compactCovering β n).image continuous_inr),
+      by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
+        range_inl_union_range_inr]⟩⟩
+
+instance [Countable ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace (π i)] :
+    SigmaCompactSpace (Σi, π i) := by
+  cases isEmpty_or_nonempty ι
+  · infer_instance
+  · rcases exists_surjective_nat ι with ⟨f, hf⟩
+    refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (π (f k)) n, fun n => _, _⟩⟩
+    · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
+      exact (isCompact_compactCovering _ _).image continuous_sigmaMk
+    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
+      rw [hf.forall] -- porting note: `simp only` failed to use `hf.forall`
+      intro k y
+      rcases exists_mem_compactCovering y with ⟨n, hn⟩
+      refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
+      exact compactCovering_subset _ (le_max_right _ _) hn
+
+protected theorem ClosedEmbedding.sigmaCompactSpace {e : β → α} (he : ClosedEmbedding e) :
+    SigmaCompactSpace β :=
+  ⟨⟨fun n => e ⁻¹' compactCovering α n, fun n =>
+      he.isCompact_preimage (isCompact_compactCovering _ _), by
+      rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
+#align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
+
+-- porting note: new lemma
+theorem IsClosed.sigmaCompactSpace {s : Set α} (hs : IsClosed s) : SigmaCompactSpace s :=
+  (closedEmbedding_subtype_val hs).sigmaCompactSpace
+
+instance [SigmaCompactSpace β] : SigmaCompactSpace (ULift.{u} β) :=
+  ULift.closedEmbedding_down.sigmaCompactSpace
 
 /-- If `α` is a `σ`-compact space, then a locally finite family of nonempty sets of `α` can have
 only countably many elements, `Set.Countable` version. -/

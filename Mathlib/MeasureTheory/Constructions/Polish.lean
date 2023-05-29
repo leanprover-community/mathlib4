@@ -59,9 +59,7 @@ We use this to prove several versions of the Borel isomorphism theorem.
 -/
 
 
-open Set Function PolishSpace PiNat TopologicalSpace Metric Filter
-
-open Topology MeasureTheory Filter
+open Set Function PolishSpace PiNat TopologicalSpace Metric Filter Topology MeasureTheory
 
 variable {α : Type _} [TopologicalSpace α] {ι : Type _}
 
@@ -692,7 +690,7 @@ theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable 
   change MeasurableSet { x | _ ∧ _ }
   have :
     ∀ x,
-      (map (fun i => f i x) l ×ᶠ map (fun i => f i x) l).HasAntitoneBasis fun n =>
+      (map (fun i => f i x) l ×ˢ map (fun i => f i x) l).HasAntitoneBasis fun n =>
         ((fun i => f i x) '' u n) ×ˢ ((fun i => f i x) '' u n) :=
     fun x => hu.map.prod hu.map
   simp_rw [and_iff_right (hl.map _),
@@ -713,7 +711,7 @@ end MeasureTheory
 /-! ### The Borel Isomorphism Theorem -/
 
 
---Note: Move to topology/metric_space/polish when porting.
+-- Porting note: Move to topology/metric_space/polish when porting.
 instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopology α] :
     PolishSpace α := by
   obtain ⟨f, hf⟩ := h.exists_injective_nat
@@ -725,7 +723,7 @@ instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopolo
 
 namespace PolishSpace
 
-/-Note: This is to avoid a loop in TC inference. When ported to Lean 4, this will not
+/- Porting note: This is to avoid a loop in TC inference. When ported to Lean 4, this will not
 be necessary, and `secondCountable_of_polish` should probably
 just be added as an instance soon after the definition of `PolishSpace`.-/
 private theorem secondCountable_of_polish [h : PolishSpace α] : SecondCountableTopology α :=
@@ -765,8 +763,7 @@ noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬
 they are Borel isomorphic.-/
 noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
-  · letI := h
-    letI := Countable.of_equiv α e
+  · letI := Countable.of_equiv α e
     refine ⟨e, ?_, ?_⟩ <;> apply measurable_of_countable
   refine' measurableEquivOfNotCountable h _
   rwa [e.countable_iff] at h
@@ -776,7 +773,7 @@ end PolishSpace
 
 namespace MeasureTheory
 
--- todo after the port: move to topology/metric_space/polish
+-- Porting note: todo after the port: move to topology/metric_space/polish
 instance instPolishSpaceUniv [PolishSpace α] : PolishSpace (univ : Set α) :=
   isClosed_univ.polishSpace
 #align measure_theory.set.univ.polish_space MeasureTheory.instPolishSpaceUniv

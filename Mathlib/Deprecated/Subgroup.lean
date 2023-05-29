@@ -327,7 +327,7 @@ namespace IsGroupHom
 
 open IsSubmonoid IsSubgroup
 
-/-- `ker f : set G` is the underlying subset of the kernel of a map `G → H`. -/
+/-- `ker f : Set G` is the underlying subset of the kernel of a map `G → H`. -/
 @[to_additive "`ker f : set A` is the underlying subset of the kernel of a map `A → B`"]
 def ker [Group H] (f : G → H) : Set G :=
   preimage f (trivial H)

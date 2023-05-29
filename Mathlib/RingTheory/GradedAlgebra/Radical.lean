@@ -94,7 +94,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
       replace hxy : proj 𝒜 (max₁ + max₂) (x * y) ∈ I := hI _ hxy
       have mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∈ I := by
         set antidiag :=
-          ((decompose 𝒜 x).support ×ᶠ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
+          ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
             z.1 + z.2 = max₁ + max₂) with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
           simp only [add_sum_erase, mem_filter, mem_product]
@@ -107,7 +107,6 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
                 proj 𝒜 max₁ x * proj 𝒜 max₂ y +
                   ∑ ij in antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
               (add_sum_erase _ _ mem_antidiag).symm
-
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
         rcases z with ⟨i, j⟩

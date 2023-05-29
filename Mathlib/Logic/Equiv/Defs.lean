@@ -41,7 +41,7 @@ Then we define
   instances from right to left.
 
   - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
-  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
+  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `Unique α`;
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
@@ -262,7 +262,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 #align equiv.coe_refl Equiv.coe_refl
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
-`synonym α` is semireducible. This makes a mess of `multiplicative.of_add` etc. -/
+`synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
 theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
@@ -297,7 +297,7 @@ theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
--- `simp` will always rewrite with `equiv.symm_symm` before this has a chance to fire.
+-- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
 @[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 #align equiv.symm_symm_apply Equiv.symm_symm_apply
 
