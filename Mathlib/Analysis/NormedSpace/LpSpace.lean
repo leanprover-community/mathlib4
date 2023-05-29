@@ -16,39 +16,38 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 /-!
 # ℓp space
 
-This file describes properties of elements `f` of a pi-type `Π i, E i` with finite "norm",
+This file describes properties of elements `f` of a pi-type `∀ i, E i` with finite "norm",
 defined for `p:ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
 `0 < p < ∞` and `⨆ a, ‖f a‖` for `p=∞`.
 
-The Prop-valued `mem_ℓp f p` states that a function `f : Π i, E i` has finite norm according
-to the above definition; that is, `f` has finite support if `p = 0`, `summable (λ a, ‖f a‖^p)` if
-`0 < p < ∞`, and `bdd_above (norm '' (set.range f))` if `p = ∞`.
+The Prop-valued `Memℓp f p` states that a function `f : ∀ i, E i` has finite norm according
+to the above definition; that is, `f` has finite support if `p = 0`, `Summable (fun a ↦ ‖f a‖^p)` if
+`0 < p < ∞`, and `BddAbove (norm '' (Set.range f))` if `p = ∞`.
 
-The space `lp E p` is the subtype of elements of `Π i : α, E i` which satisfy `mem_ℓp f p`. For
+The space `lp E p` is the subtype of elements of `∀ i : α, E i` which satisfy `Memℓp f p`. For
 `1 ≤ p`, the "norm" is genuinely a norm and `lp` is a complete metric space.
 
 ## Main definitions
 
-* `mem_ℓp f p` : property that the function `f` satisfies, as appropriate, `f` finitely supported
-  if `p = 0`, `summable (λ a, ‖f a‖^p)` if `0 < p < ∞`, and `bdd_above (norm '' (set.range f))` if
+* `Memℓp f p` : property that the function `f` satisfies, as appropriate, `f` finitely supported
+  if `p = 0`, `Summable (fun a ↦ ‖f a‖^p)` if `0 < p < ∞`, and `BddAbove (norm '' (Set.range f))` if
   `p = ∞`.
-* `lp E p` : elements of `Π i : α, E i` such that `mem_ℓp f p`. Defined as an `add_subgroup` of
-  a type synonym `pre_lp` for `Π i : α, E i`, and equipped with a `normed_add_comm_group` structure.
-  Under appropriate conditions, this is also equipped with the instances `lp.normed_space`,
-  `lp.complete_space`. For `p=∞`, there is also `lp.infty_normed_ring`,
-  `lp.infty_normed_algebra`, `lp.infty_star_ring` and `lp.infty_cstar_ring`.
+* `lp E p` : elements of `∀ i : α, E i` such that `Memℓp f p`. Defined as an `AddSubgroup` of
+  a type synonym `PreLp` for `∀ i : α, E i`, and equipped with a `NormedAddCommGroup` structure.
+  Under appropriate conditions, this is also equipped with the instances `lp.normedSpace`,
+  `lp.completeSpace`. For `p=∞`, there is also `lp.inftyNormedRing`,
+  `lp.inftyNormedAlgebra`, `lp.inftyStarRing` and `lp.inftyCstarRing`.
 
 ## Main results
 
-* `mem_ℓp.of_exponent_ge`: For `q ≤ p`, a function which is `mem_ℓp` for `q` is also `mem_ℓp` for
-  `p`
-* `lp.mem_ℓp_of_tendsto`, `lp.norm_le_of_tendsto`: A pointwise limit of functions in `lp`, all with
+* `Memℓp.of_exponent_ge`: For `q ≤ p`, a function which is `Memℓp` for `q` is also `Memℓp` for `p`.
+* `lp.memℓp_of_tendsto`, `lp.norm_le_of_tendsto`: A pointwise limit of functions in `lp`, all with
   `lp` norm `≤ C`, is itself in `lp` and has `lp` norm `≤ C`.
 * `lp.tsum_mul_le_mul_norm`: basic form of Hölder's inequality
 
 ## Implementation
 
-Since `lp` is defined as an `add_subgroup`, dot notation does not work. Use `lp.norm_neg f` to
+Since `lp` is defined as an `AddSubgroup`, dot notation does not work. Use `lp.norm_neg f` to
 say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 ## TODO
@@ -67,14 +66,14 @@ open scoped NNReal ENNReal BigOperators
 variable {α : Type _} {E : α → Type _} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
-### `mem_ℓp` predicate
+### `Memℓp` predicate
 
 -/
 
 
-/-- The property that `f : Π i : α, E i`
+/-- The property that `f : ∀ i : α, E i`
 * is finitely supported, if `p = 0`, or
-* admits an upper bound for `set.range (λ i, ‖f i‖)`, if `p = ∞`, or
+* admits an upper bound for `Set.range (fun i ↦ ‖f i‖)`, if `p = ∞`, or
 * has the series `∑' i, ‖f i‖ ^ p` be summable, if `0 < p < ∞`. -/
 def Memℓp (f : ∀ i, E i) (p : ℝ≥0∞) : Prop :=
   if p = 0 then Set.Finite { i | f i ≠ 0 }
@@ -295,15 +294,15 @@ end Memℓp
 /-!
 ### lp space
 
-The space of elements of `Π i, E i` satisfying the predicate `mem_ℓp`.
+The space of elements of `∀ i, E i` satisfying the predicate `Memℓp`.
 -/
 
 
-/-- We define `pre_lp E` to be a type synonym for `Π i, E i` which, importantly, does not inherit
-the `pi` topology on `Π i, E i` (otherwise this topology would descend to `lp E p` and conflict
+/-- We define `PreLp E` to be a type synonym for `∀ i, E i` which, importantly, does not inherit
+the `pi` topology on `∀ i, E i` (otherwise this topology would descend to `lp E p` and conflict
 with the normed group topology we will later equip it with.)
 
-We choose to deal with this issue by making a type synonym for `Π i, E i` rather than for the `lp`
+We choose to deal with this issue by making a type synonym for `∀ i, E i` rather than for the `lp`
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
@@ -527,7 +526,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           exact Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp''.le
       eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
 
--- TODO: define an `ennreal` version of `is_conjugate_exponent`, and then express this inequality
+-- TODO: define an `ENNReal` version of `IsConjugateExponent`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
 /-- Hölder inequality -/
 protected theorem tsum_mul_le_mul_norm {p q : ℝ≥0∞} (hpq : p.toReal.IsConjugateExponent q.toReal)
@@ -628,7 +627,7 @@ theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E
 
 variable (E p 𝕜)
 
-/-- The `𝕜`-submodule of elements of `Π i : α, E i` whose `lp` norm is finite.  This is `lp E p`,
+/-- The `𝕜`-submodule of elements of `∀ i : α, E i` whose `lp` norm is finite. This is `lp E p`,
 with extra structure. -/
 def _root_.lpSubmodule : Submodule 𝕜 (PreLp E) :=
   { lp E p with smul_mem' := fun c f hf => by simpa using mem_lp_const_smul c ⟨f, hf⟩ }
@@ -665,7 +664,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     have hcf := lp.isLUB_norm (c • f)
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
     simp_rw [← Set.range_comp, Function.comp] at hfc
-    -- TODO: some `is_lub` API should make it a one-liner from here.
+    -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine' hcf.right _
     have := hfc.left
     simp_rw [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] at this⊢
@@ -837,7 +836,7 @@ instance inftyStarRing : StarRing (lp B ∞) :=
     star_mul := fun f g => ext <| star_mul (_ : ∀ i, B i) _ }
 #align lp.infty_star_ring lp.inftyStarRing
 
-instance infty_cstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
+instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
   norm_star_mul_self f := by
     apply le_antisymm
     · rw [← sq]
@@ -849,7 +848,7 @@ instance infty_cstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
       refine' lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => _
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
       exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
-#align lp.infty_cstar_ring lp.infty_cstarRing
+#align lp.infty_cstar_ring lp.inftyCstarRing
 
 end StarRing
 
@@ -871,7 +870,7 @@ theorem _root_.one_memℓp_infty : Memℓp (1 : ∀ i, B i) ∞ :=
 
 variable (B)
 
-/-- The `𝕜`-subring of elements of `Π i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
+/-- The `𝕜`-subring of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubring : Subring (PreLp B) :=
   { lp B ∞ with
@@ -948,7 +947,7 @@ variable {I : Type _} {𝕜 : Type _} {B : I → Type _}
 
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
-/-- A variant of `pi.algebra` that lean can't find otherwise. -/
+/-- A variant of `Pi.algebra` that lean can't find otherwise. -/
 instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
   @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
 #align pi.algebra_of_normed_algebra Pi.algebraOfNormedAlgebra
@@ -966,7 +965,7 @@ theorem _root_.algebraMap_memℓp_infty (k : 𝕜) : Memℓp (algebraMap 𝕜 (�
 
 variable (𝕜 B)
 
-/-- The `𝕜`-subalgebra of elements of `Π i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
+/-- The `𝕜`-subalgebra of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
   { lpInftySubring B with
@@ -1112,7 +1111,7 @@ open Filter
 
 open scoped Topology uniformity
 
-/-- The coercion from `lp E p` to `Π i, E i` is uniformly continuous. -/
+/-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous ((↑) : lp E p → ∀ i, E i) := by
   have hp : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
@@ -1205,7 +1204,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
 
 variable [∀ a, CompleteSpace (E a)]
 
-instance : CompleteSpace (lp E p) :=
+instance completeSpace : CompleteSpace (lp E p) :=
   Metric.complete_of_cauchySeq_tendsto (by
     intro F hF
     -- A Cauchy sequence in `lp E p` is pointwise convergent; let `f` be the pointwise limit.
