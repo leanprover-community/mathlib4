@@ -10,6 +10,8 @@ Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
+-- porting note: Wasn't needed before
+import Mathlib.Algebra.Group.Prod
 
 /-!
 
@@ -40,7 +42,7 @@ you should parametrize over `(F : Type*) [continuous_add_monoid_hom_class F A B]
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B where
-  continuous_toFun : @Continuous A B _ _ to_fun
+  continuous_toFun : @Continuous A B _ _ toFun
 #align continuous_add_monoid_hom ContinuousAddMonoidHom
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
@@ -51,7 +53,7 @@ you should parametrize over `(F : Type*) [continuous_monoid_hom_class F A B] (f 
 When you extend this structure, make sure to extend `continuous_add_monoid_hom_class`. -/
 @[to_additive]
 structure ContinuousMonoidHom extends A →* B where
-  continuous_toFun : @Continuous A B _ _ to_fun
+  continuous_toFun : @Continuous A B _ _ toFun
 #align continuous_monoid_hom ContinuousMonoidHom
 
 section
@@ -139,19 +141,16 @@ theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) 
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
+-- porting note: TODO "Removed simps, is that ok?
 /-- Construct a `continuous_monoid_hom` from a `continuous` `monoid_hom`. -/
-@[to_additive "Construct a `continuous_add_monoid_hom` from a `continuous` `add_monoid_hom`.",
-  simps]
+@[to_additive "Construct a `continuous_add_monoid_hom` from a `continuous` `add_monoid_hom`."]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
-  { f with continuous_toFun := Continuous.congr hf (by
-   intros x
-
-   ) }
+  { f with continuous_toFun := (hf : Continuous f.toFun)}
 #align continuous_monoid_hom.mk' ContinuousMonoidHom.mk'
 #align continuous_add_monoid_hom.mk' ContinuousAddMonoidHom.mk'
 
 /-- Composition of two continuous homomorphisms. -/
-@[to_additive "Composition of two continuous homomorphisms.", simps]
+@[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
 def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : ContinuousMonoidHom A C :=
   mk' (g.toMonoidHom.comp f.toMonoidHom) (g.continuous_toFun.comp f.continuous_toFun)
 #align continuous_monoid_hom.comp ContinuousMonoidHom.comp
