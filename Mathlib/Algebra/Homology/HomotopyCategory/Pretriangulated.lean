@@ -49,8 +49,9 @@ variable {K}
 
 section map
 
-variable {K₁ L₁ K₂ L₂ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂}
+variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂} (φ₃ : K₃ ⟶ L₃)
   {a : K₁ ⟶ K₂} {b : L₁ ⟶ L₂} (H : Homotopy (φ₁ ≫ b) (a ≫ φ₂))
+  (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
 
 noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _) +
@@ -96,7 +97,7 @@ noncomputable def triangleMap :
     rfl
 
 variable (φ₁ φ₂ a b)
-variable (comm : φ₁ ≫ b = a ≫ φ₂)
+variable (comm : φ₁ ≫ b = a ≫ φ₂) (comm' : φ₂ ≫ b' = a' ≫ φ₃)
 
 noncomputable def map' : mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
@@ -105,6 +106,22 @@ noncomputable def map' : mappingCone φ₁ ⟶ mappingCone φ₂ :=
 lemma map'_eq_map : map' φ₁ φ₂ a b comm = map (Homotopy.ofEq comm) := by
   dsimp only [map, map']
   simp
+
+lemma map'_id : map' φ φ (𝟙 _) (𝟙 _) (by rw [id_comp, comp_id]) = 𝟙 _ := by
+  ext n
+  simp [from_ext_iff _ _ _ (n+1) rfl, map']
+
+lemma map'_comp : map' φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
+    map' φ₁ φ₂ a b comm ≫ map' φ₂ φ₃ a' b' comm' := by
+  ext n
+  simp [from_ext_iff _ _ _ (n+1) rfl, map']
+
+noncomputable def arrowFunctor : Arrow (CochainComplex C ℤ) ⥤ CochainComplex C ℤ where
+  obj f := mappingCone f.hom
+  map {f₁ f₂} φ := map' f₁.hom f₂.hom φ.left φ.right φ.w.symm
+  map_id f := map'_id f.hom
+  map_comp {f₁ f₂ f₃}  φ₁ φ₂ := map'_comp f₁.hom f₂.hom f₃.hom φ₁.left φ₁.right
+    φ₂.left φ₂.right φ₁.w.symm φ₂.w.symm
 
 @[simps]
 noncomputable def triangleMap' :
