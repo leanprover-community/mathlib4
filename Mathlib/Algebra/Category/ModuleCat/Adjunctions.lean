@@ -253,8 +253,8 @@ variable (R : Type _) [CommRing R] (C : Type u) [Category.{v} C]
 open Finsupp
 
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
--- using the fact that `ModuleCat.free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax monoidal.
--- This still seems difficult, so we just do it by hand.
+-- using the fact that `ModuleCat.free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
+-- monoidal. This still seems difficult, so we just do it by hand.
 instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
