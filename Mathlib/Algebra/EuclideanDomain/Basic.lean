@@ -143,7 +143,7 @@ theorem gcd_zero_right (a : R) : gcd a 0 = a := by
 
 theorem gcd_val (a b : R) : gcd a b = gcd (b % a) a := by
   rw [gcd]
-  split_ifs with h <;> [simp only [h, mod_zero, gcd_zero_right], rfl]
+  split_ifs with h <;> [simp only [h, mod_zero, gcd_zero_right]; rfl]
 #align euclidean_domain.gcd_val EuclideanDomain.gcd_val
 
 theorem gcd_dvd (a b : R) : gcd a b ∣ a ∧ gcd a b ∣ b :=

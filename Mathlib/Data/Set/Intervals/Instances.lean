@@ -245,7 +245,7 @@ end OrderedSemiring
 
 variable [StrictOrderedSemiring α]
 
-/-! ### Instances for `↥(set.Ioc 0 1)` -/
+/-! ### Instances for `↥(Set.Ioc 0 1)` -/
 
 
 namespace Set.Ioc
