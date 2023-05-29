@@ -60,7 +60,8 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set Classical Topology
+open Bundle Set Classical
+open scoped Topology
 
 variable (R : Type _) {B : Type _} (F : Type _) (E : B → Type _)
 
