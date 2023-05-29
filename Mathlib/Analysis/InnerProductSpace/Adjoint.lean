@@ -26,15 +26,15 @@ finite dimensional spaces.
 
 ## Main definitions
 
-* `continuous_linear_map.adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] (F →L[𝕜] E)`: the adjoint of a continuous
+* `ContinuousLinearMap.adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] (F →L[𝕜] E)`: the adjoint of a continuous
   linear map, bundled as a conjugate-linear isometric equivalence.
-* `linear_map.adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] (F →ₗ[𝕜] E)`: the adjoint of a linear map between
+* `LinearMap.adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] (F →ₗ[𝕜] E)`: the adjoint of a linear map between
   finite-dimensional spaces, this time only as a conjugate-linear equivalence, since there is no
   norm defined on these maps.
 
 ## Implementation notes
 
-* The continuous conjugate-linear version `adjoint_aux` is only an intermediate
+* The continuous conjugate-linear version `adjointAux` is only an intermediate
   definition and is not meant to be used outside this file.
 
 ## Tags
@@ -56,7 +56,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-! ### Adjoint operator -/
@@ -111,13 +110,12 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     exact to_sesq_form_apply_norm_le
 #align continuous_linear_map.adjoint_aux_norm ContinuousLinearMap.adjointAux_norm
 
-/-- The adjoint of a bounded operator from Hilbert space E to Hilbert space F. -/
+/-- The adjoint of a bounded operator from Hilbert space `E` to Hilbert space `F`. -/
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 #align continuous_linear_map.adjoint ContinuousLinearMap.adjoint
 
--- mathport name: adjoint
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
 
 /-- The fundamental property of the adjoint. -/
@@ -130,7 +128,7 @@ theorem adjoint_inner_right (A : E →L[𝕜] F) (x : E) (y : F) : ⟪x, (A†) 
   adjointAux_inner_right A x y
 #align continuous_linear_map.adjoint_inner_right ContinuousLinearMap.adjoint_inner_right
 
-/-- The adjoint is involutive -/
+/-- The adjoint is involutive. -/
 @[simp]
 theorem adjoint_adjoint (A : E →L[𝕜] F) : A†† = A :=
   adjointAux_adjointAux A
@@ -231,14 +229,14 @@ instance : CstarRing (E →L[𝕜] E) :=
       calc
         ‖A† * A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
         _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
-        
+
     · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
       refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
       have :=
         calc
           re ⟪(A† * A) x, x⟫ ≤ ‖(A† * A) x‖ * ‖x‖ := re_inner_le_norm _ _
           _ ≤ ‖A† * A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
-          
+
       calc
         ‖A x‖ = Real.sqrt (re ⟪(A† * A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
         _ ≤ Real.sqrt (‖A† * A‖ * ‖x‖ * ‖x‖) := (Real.sqrt_le_sqrt this)
@@ -256,7 +254,7 @@ variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
 
 variable [CompleteSpace E'] [CompleteSpace F']
 
--- Todo: Generalize this to `is_R_or_C`.
+-- Todo: Generalize this to `IsROrC`.
 theorem isAdjointPair_inner (A : E' →L[ℝ] F') :
     LinearMap.IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ)
       (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A (A†) :=
@@ -286,7 +284,7 @@ theorem isSymmetric {A : E →L[𝕜] E} (hA : IsSelfAdjoint A) : (A : E →ₗ[
   fun x y => by rw_mod_cast [← A.adjoint_inner_right, hA.adjoint_eq]
 #align is_self_adjoint.is_symmetric IsSelfAdjoint.isSymmetric
 
-/-- Conjugating preserves self-adjointness -/
+/-- Conjugating preserves self-adjointness. -/
 theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[𝕜] F) :
     IsSelfAdjoint (S ∘L T ∘L S.adjoint) := by
   rw [is_self_adjoint_iff'] at hT⊢
@@ -294,7 +292,7 @@ theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[�
   exact ContinuousLinearMap.comp_assoc _ _ _
 #align is_self_adjoint.conj_adjoint IsSelfAdjoint.conj_adjoint
 
-/-- Conjugating preserves self-adjointness -/
+/-- Conjugating preserves self-adjointness. -/
 theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[𝕜] E) :
     IsSelfAdjoint (S.adjoint ∘L T ∘L S) := by
   rw [is_self_adjoint_iff'] at hT⊢
@@ -336,7 +334,7 @@ variable [CompleteSpace E]
 variable {T : E →ₗ[𝕜] E}
 
 /-- The **Hellinger--Toeplitz theorem**: Construct a self-adjoint operator from an everywhere
-  defined symmetric operator.-/
+  defined symmetric operator. -/
 def IsSymmetric.toSelfAdjoint (hT : IsSymmetric T) : selfAdjoint (E →L[𝕜] E) :=
   ⟨⟨T, hT.Continuous⟩, ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric.mpr hT⟩
 #align linear_map.is_symmetric.to_self_adjoint LinearMap.IsSymmetric.toSelfAdjoint
@@ -357,8 +355,8 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensiona
 
 attribute [local instance 20] FiniteDimensional.complete
 
-/-- The adjoint of an operator from the finite-dimensional inner product space E to the finite-
-dimensional inner product space F. -/
+/-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
+finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
   ((LinearMap.toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).trans
         ContinuousLinearMap.adjoint.toLinearEquiv).trans
@@ -370,23 +368,23 @@ theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
   rfl
 #align linear_map.adjoint_to_continuous_linear_map LinearMap.adjoint_toContinuousLinearMap
 
-theorem adjoint_eq_to_clm_adjoint (A : E →ₗ[𝕜] F) : A.adjoint = A.toContinuousLinearMap.adjoint :=
+theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) : A.adjoint = A.toContinuousLinearMap.adjoint :=
   rfl
-#align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_to_clm_adjoint
+#align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toClm_adjoint
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
-  rw [← coe_to_continuous_linear_map A, adjoint_eq_to_clm_adjoint]
+  rw [← coe_to_continuous_linear_map A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
-  rw [← coe_to_continuous_linear_map A, adjoint_eq_to_clm_adjoint]
+  rw [← coe_to_continuous_linear_map A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
 
-/-- The adjoint is involutive -/
+/-- The adjoint is involutive. -/
 @[simp]
 theorem adjoint_adjoint (A : E →ₗ[𝕜] F) : A.adjoint.adjoint = A := by
   ext v
@@ -475,7 +473,7 @@ variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
 
 variable [FiniteDimensional ℝ E'] [FiniteDimensional ℝ F']
 
--- Todo: Generalize this to `is_R_or_C`.
+-- Todo: Generalize this to `IsROrC`.
 theorem isAdjointPair_inner (A : E' →ₗ[ℝ] F') :
     IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ) (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A
       A.adjoint :=
@@ -522,4 +520,3 @@ theorem toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
 #align matrix.to_euclidean_lin_conj_transpose_eq_adjoint Matrix.toEuclideanLin_conjTranspose_eq_adjoint
 
 end Matrix
-
