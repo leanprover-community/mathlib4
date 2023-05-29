@@ -421,8 +421,11 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.Deriv.Linear
 import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Basic
@@ -484,6 +487,7 @@ import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.LocallyConvex.AbsConvex
@@ -1531,6 +1535,7 @@ import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
+import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
@@ -1823,6 +1828,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Constructions.Polish
+import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
@@ -1833,6 +1839,7 @@ import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.Floor
 import Mathlib.MeasureTheory.Function.LpSeminorm
+import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
@@ -1864,6 +1871,7 @@ import Mathlib.MeasureTheory.Measure.OuterMeasure
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
