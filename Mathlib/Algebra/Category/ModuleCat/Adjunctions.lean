@@ -355,9 +355,8 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         · intros ; simp only [add_smul]
       · intro g' s
         dsimp
-    --     erw [single_comp_single]
-    --     simp [mul_comm r s, mul_smul]
-        sorry
+        rw [single_comp_single _ _ f' g' r s]
+        simp [mul_comm r s, mul_smul]
 #align category_theory.Free.lift CategoryTheory.Free.lift
 
 @[simp]
