@@ -23,7 +23,7 @@ require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 
-require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.7"
+require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.8"
 
 lean_lib Cache where
   roots := #[`Cache]
