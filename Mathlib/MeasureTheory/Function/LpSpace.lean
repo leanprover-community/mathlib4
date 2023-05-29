@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.Topology.ContinuousFunction.Compact
 
 /-!
-# ℒp space and Lp space
+# Lp space
 
 This file provides the space `Lp E p μ` as the subtype of elements of `α →ₘ[μ] E` (see ae_eq_fun)
 such that `snorm f p μ` is finite. For `1 ≤ p`, `snorm` defines a norm and `Lp` is a complete metric
@@ -641,9 +641,7 @@ theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : Measu
   by_cases hs_null : μ s = 0
   · rw [Measure.restrict_zero_set hs_null]
     simp only [essSup_measure_zero, ENNReal.essSup_eq_zero_iff, ENNReal.bot_eq_zero]
-    have hs_empty : s =ᵐ[μ] (∅ : Set α) := by
-      rw [ae_eq_set]
-      simpa using hs_null
+    have hs_empty : s =ᵐ[μ] (∅ : Set α) := by rw [ae_eq_set]; simpa using hs_null
     refine' (indicator_ae_eq_of_ae_eq_set hs_empty).trans _
     rw [Set.indicator_empty]
     rfl
@@ -667,6 +665,8 @@ theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) 
   simp_rw [nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
   have h_zero : (fun x => x ^ p.toReal) (0 : ℝ≥0∞) = 0 := by
     simp [ENNReal.toReal_pos hp_zero hp_top]
+  -- Porting note: The implicit argument should be specified because the elaborator can't deal with
+  --               `∘` well.
   exact (Set.indicator_comp_of_zero (g := fun x : ℝ≥0∞ => x ^ p.toReal) h_zero).symm
 #align measure_theory.snorm_indicator_eq_snorm_restrict MeasureTheory.snorm_indicator_eq_snorm_restrict
 
@@ -783,10 +783,8 @@ theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (supp
     Memℒp (f + g) p μ ↔ Memℒp f p μ ∧ Memℒp g p μ := by
   borelize E
   refine' ⟨fun hfg => ⟨_, _⟩, fun h => h.1.add h.2⟩
-  · rw [← Set.indicator_add_eq_left h]
-    exact hfg.indicator (measurableSet_support hf.measurable)
-  · rw [← Set.indicator_add_eq_right h]
-    exact hfg.indicator (measurableSet_support hg.measurable)
+  · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
+  · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
 #align measure_theory.mem_ℒp_add_of_disjoint MeasureTheory.memℒp_add_of_disjoint
 
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
@@ -1052,16 +1050,13 @@ theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →L[𝕜] F) (f : Lp E p μ) :
 #align continuous_linear_map.coe_fn_comp_LpL ContinuousLinearMap.coeFn_compLpL
 
 theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →L[𝕜] F) :
-    (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by
-  ext1 f
-  exact add_compLp L L' f
+    (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 #align continuous_linear_map.add_comp_LpL ContinuousLinearMap.add_compLpL
 
 set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_compLpL [Fact (1 ≤ p)] {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [BoundedSMul 𝕜' F]
     [SMulCommClass 𝕜 𝕜' F] (c : 𝕜') (L : E →L[𝕜] F) : (c • L).compLpL p μ = c • L.compLpL p μ := by
-  ext1 f
-  exact smul_compLp c L f
+  ext1 f; exact smul_compLp c L f
 #align continuous_linear_map.smul_comp_LpL ContinuousLinearMap.smul_compLpL
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →L[𝕜] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
@@ -1570,7 +1565,7 @@ end CompleteSpace
 /-! ### Continuous functions in `Lp` -/
 
 
-open BoundedContinuousFunction
+open scoped BoundedContinuousFunction
 
 open BoundedContinuousFunction
 
@@ -1644,9 +1639,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
   symm
   convert AddMonoidHom.addSubgroupOf_range_eq_of_le
       ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
-      (by
-        rintro - ⟨f, rfl⟩
-        exact mem_Lp f : _ ≤ Lp E p μ)
+      (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 #align bounded_continuous_function.range_to_Lp_hom BoundedContinuousFunction.range_toLpHom
 
 variable (𝕜 : Type _) [Fact (1 ≤ p)]
