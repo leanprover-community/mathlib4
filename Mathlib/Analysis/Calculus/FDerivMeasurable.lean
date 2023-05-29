@@ -109,7 +109,6 @@ variable {f : E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » ball[metric.ball] x r') -/
 /-- The set `A f L r ε` is the set of points `x` around which the function `f` is well approximated
 at scale `r` by the linear map `L`, up to an error `ε`. We tweak the definition to make sure that
 this is an open set.-/
@@ -214,8 +213,8 @@ theorem norm_sub_le_of_mem_a {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
 #align fderiv_measurable_aux.norm_sub_le_of_mem_A FDerivMeasurableAux.norm_sub_le_of_mem_a
 
 /-- Easy inclusion: a differentiability point with derivative in `K` belongs to `D f K`. -/
-theorem differentiable_set_subset_d : { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } ⊆ D f K :=
-  by
+theorem differentiable_set_subset_d :
+    { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } ⊆ D f K := by
   intro x hx
   rw [D, mem_iInter]
   intro e
@@ -284,8 +283,9 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         by congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
-      _ ≤ 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e := by
-        apply_rules [add_le_add]
+      _ ≤ 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e :=
+        add_le_add (add_le_add J1 J2) J3
+        -- Porting note: proof was `by apply_rules [add_le_add]`
       _ = 12 * ‖c‖ * (1 / 2) ^ e := by ring
 
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
@@ -316,9 +316,9 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
   have : HasFDerivAt f f' x := by
     simp only [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
     /- to get an approximation with a precision `ε`, we will replace `f` with `L e (n e) m` for
-        some large enough `e` (yielding a small error by uniform approximation). As one can vary `m`,
-        this makes it possible to cover all scales, and thus to obtain a good linear approximation in
-        the whole ball of radius `(1/2)^(n e)`. -/
+      some large enough `e` (yielding a small error by uniform approximation). As one can vary `m`,
+      this makes it possible to cover all scales, and thus to obtain a good linear approximation in
+      the whole ball of radius `(1/2)^(n e)`. -/
     intro ε εpos
     have pos : 0 < 4 + 12 * ‖c‖ :=
       add_pos_of_pos_of_nonneg (by norm_num) (mul_nonneg (by norm_num) (norm_nonneg _))
@@ -342,7 +342,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_trans hk y_lt
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
-    set m := k - 1 with hl
+    set m := k - 1
     have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
@@ -474,7 +474,6 @@ variable {f : ℝ → F} (K : Set F)
 
 namespace RightDerivMeasurableAux
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » Icc[set.Icc] x «expr + »(x, r')) -/
 /-- The set `A f L r ε` is the set of points `x` around which the function `f` is well approximated
 at scale `r` by the linear map `h ↦ h • L`, up to an error `ε`. We tweak the definition to
 make sure that this is open on the right. -/
@@ -532,8 +531,8 @@ theorem a_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ 
 #align right_deriv_measurable_aux.A_mono RightDerivMeasurableAux.a_mono
 
 theorem le_of_mem_a {r ε : ℝ} {L : F} {x : ℝ} (hx : x ∈ A f L r ε) {y z : ℝ}
-    (hy : y ∈ Icc x (x + r / 2)) (hz : z ∈ Icc x (x + r / 2)) : ‖f z - f y - (z - y) • L‖ ≤ ε * r :=
-  by
+    (hy : y ∈ Icc x (x + r / 2)) (hz : z ∈ Icc x (x + r / 2)) :
+  ‖f z - f y - (z - y) • L‖ ≤ ε * r := by
   rcases hx with ⟨r', r'mem, hr'⟩
   have A : x + r / 2 ≤ x + r' := by linarith [r'mem.1]
   exact hr' _ ((Icc_subset_Icc le_rfl A) hy) _ ((Icc_subset_Icc le_rfl A) hz)
@@ -659,7 +658,8 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
         by congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
-      _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by apply_rules [add_le_add]
+      _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := add_le_add (add_le_add J1 J2) J3
+        -- Porting note: proof was `by apply_rules [add_le_add]`
       _ = 12 * (1 / 2) ^ e := by ring
 
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
@@ -689,9 +689,9 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
   have : HasDerivWithinAt f f' (Ici x) x := by
     simp only [hasDerivWithinAt_iff_isLittleO, isLittleO_iff]
     /- to get an approximation with a precision `ε`, we will replace `f` with `L e (n e) m` for
-        some large enough `e` (yielding a small error by uniform approximation). As one can vary `m`,
-        this makes it possible to cover all scales, and thus to obtain a good linear approximation in
-        the whole interval of length `(1/2)^(n e)`. -/
+      some large enough `e` (yielding a small error by uniform approximation). As one can vary `m`,
+      this makes it possible to cover all scales, and thus to obtain a good linear approximation in
+      the whole interval of length `(1/2)^(n e)`. -/
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 16 :=
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
@@ -715,7 +715,7 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_of_lt_of_le hk y_le
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
-    set m := k - 1 with hl
+    set m := k - 1
     have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
