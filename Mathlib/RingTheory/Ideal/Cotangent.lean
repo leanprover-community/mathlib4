@@ -193,7 +193,6 @@ theorem _root_.AlgHom.ker_ker_sqare_lift (f : A →ₐ[R] B) :
   · rintro _ ⟨x, hx, rfl⟩; exact hx
 #align alg_hom.ker_ker_sqare_lift AlgHom.ker_ker_sqare_lift
 
-set_option pp.universes true in
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine (Ideal.quotEquivOfEq (Ideal.map_eq_submodule_map _ _).symm).trans ?_
