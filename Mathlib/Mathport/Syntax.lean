@@ -333,8 +333,6 @@ namespace Command
 
 /- S -/ syntax (name := printSorryIn) "#print_sorry_in " ident : command
 
-/- E -/ syntax (name := assertExists) "assert_exists " ident : command
-/- E -/ syntax (name := assertNotExists) "assert_not_exists " ident : command
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 

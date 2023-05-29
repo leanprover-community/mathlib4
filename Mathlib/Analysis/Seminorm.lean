@@ -460,8 +460,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    -- Porting note: the following was previously `dsimp; positivity`
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
+    dsimp ; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
@@ -1226,5 +1225,4 @@ theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
 
 end normSeminorm
 
--- Porting note: no guards here
--- assert_not_exists balancedCore
+assert_not_exists balancedCore

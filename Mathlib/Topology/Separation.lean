@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
+! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -343,9 +343,11 @@ theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
 instance [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
-instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [∀ i, T0Space (π i)] :
+instance Pi.instT0Space {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T0Space (π i)] :
     T0Space (∀ i, π i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
+#align pi.t0_space Pi.instT0Space
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space α := by
@@ -1318,8 +1320,8 @@ theorem IsCompact.binary_compact_cover [T2Space α] {K U V : Set α} (hK : IsCom
 #align is_compact.binary_compact_cover IsCompact.binary_compact_cover
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
-theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β} (h : Continuous f) :
-    IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
+protected theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β}
+    (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
 #align continuous.is_closed_map Continuous.isClosedMap
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
@@ -1327,6 +1329,12 @@ theorem Continuous.closedEmbedding [CompactSpace α] [T2Space β] {f : α → β
     (hf : Function.Injective f) : ClosedEmbedding f :=
   closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
 #align continuous.closed_embedding Continuous.closedEmbedding
+
+/-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
+theorem QuotientMap.of_surjective_continuous [CompactSpace α] [T2Space β] {f : α → β}
+    (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
+  hcont.isClosedMap.to_quotientMap hcont hsurj
+#align quotient_map.of_surjective_continuous QuotientMap.of_surjective_continuous
 
 section
 
@@ -1883,7 +1891,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
   · have H1 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hu hv huv
     rw [union_comm] at H
     have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
-    by_cases hxu : x ∈ u <;> [left, right]
+    by_cases hxu : x ∈ u <;> [left; right]
     -- The x ∈ u case.
     · suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)

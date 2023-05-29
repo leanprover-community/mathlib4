@@ -12,7 +12,7 @@ import Mathlib.Logic.Equiv.Defs
 # Functors can be applied to `Equiv`s.
 
 ```
-def functor.map_equiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
+def Functor.mapEquiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
   α ≃ β → f α ≃ f β
 ```
 
