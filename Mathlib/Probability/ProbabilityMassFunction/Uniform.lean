@@ -121,8 +121,9 @@ def uniformOfFintype (α : Type _) [Fintype α] [Nonempty α] : Pmf α :=
 variable [Fintype α] [Nonempty α]
 
 @[simp]
-theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α)⁻¹ := by
-  simpa only [uniform_of_fintype, Finset.mem_univ, if_true, uniform_of_finset_apply]
+theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
+  simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
+  rfl
 #align pmf.uniform_of_fintype_apply Pmf.uniformOfFintype_apply
 
 @[simp]
@@ -200,7 +201,7 @@ variable (t : Set α)
 
 @[simp]
 theorem toOuterMeasure_ofMultiset_apply :
-    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filterₓ (· ∈ t)).count x) / s.card := by
+    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / s.card := by
   rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, to_outer_measure_apply]
   refine' tsum_congr fun x => _
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
@@ -208,7 +209,7 @@ theorem toOuterMeasure_ofMultiset_apply :
 
 @[simp]
 theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (ofMultiset s hs).toMeasure t = (∑' x, (s.filterₓ (· ∈ t)).count x) / s.card :=
+    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / s.card :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 #align pmf.to_measure_of_multiset_apply Pmf.toMeasure_ofMultiset_apply
 
