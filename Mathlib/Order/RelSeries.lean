@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Data.Rel
+import Mathlib.Data.List.ofFn
 import Mathlib.Logic.Equiv.Fin
 
 /-!
@@ -61,6 +62,17 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
+@[ext]
+lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
+    (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
+  rcases x with ⟨nx, fx⟩
+  rcases y with ⟨ny, fy⟩
+  dsimp at length_eq toFun_eq
+  subst length_eq
+  rw [Fin.cast_refl, OrderIso.coe_refl, Function.comp.right_id] at toFun_eq
+  subst toFun_eq
+  rfl
+
 lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     r (x i) (x j) := by
   induction i using Fin.inductionOn generalizing j with
@@ -107,6 +119,43 @@ lemma ofLE_length (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
   (x.OfLE h : _ → _) = x := rfl
+
+/-- Every relation series gives a list -/
+abbrev toList (x : RelSeries r) : List α := List.ofFn x
+
+lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
+  rw [List.chain'_iff_get]
+  intros i h
+  have h' : i < x.length := by simpa [List.length_ofFn] using h
+  convert x.step ⟨i, h'⟩ <;>
+  . rw [List.get_ofFn]
+    congr 1
+
+lemma toList_not_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
+  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
+
+/-- Every nonempty list satisfying the chain condition gives a relation series-/
+@[simps]
+def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : RelSeries r where
+  length := x.length.pred
+  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
+  step := fun i => List.chain'_iff_get.mp hx i i.2
+
+/-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
+corresponds to each other.-/
+def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
+  toFun := fun x => ⟨_, x.toList_not_empty, x.toList_chain'⟩
+  invFun := fun x => fromListChain' _ x.2.1 x.2.2
+  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by ext f; simp
+  right_inv := by
+    intro x
+    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
+    . dsimp
+      rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
+      rw [List.length_pos]
+      exact x.2.1
+    . rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
+      congr
 
 end RelSeries
 
