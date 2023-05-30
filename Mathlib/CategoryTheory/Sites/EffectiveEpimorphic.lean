@@ -132,4 +132,11 @@ lemma Presieve.effectiveEpimorphic_iff_kernel_pair {X Y R : C}
   · rintro ⟨h⟩
     exact ⟨isColimitPresieveCoconeOfIsColimitKernelPair _ _ _ k h⟩
 
+lemma Presieve.effectiveEpimorphic_iff_pullback {X Y : C}
+    (f : Y ⟶ X) [HasPullback f f] :
+    (Presieve.singleton f).EffectiveEpimorphic ↔
+    Nonempty (IsColimit <| Cofork.ofπ f pullback.condition) := by
+  apply Presieve.effectiveEpimorphic_iff_kernel_pair
+  apply IsPullback.of_hasPullback
+
 end CategoryTheory
