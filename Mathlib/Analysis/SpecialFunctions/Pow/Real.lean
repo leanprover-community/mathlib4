@@ -10,6 +10,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Qq
 
 
 /-! # Power function on `ℝ`
@@ -98,6 +99,8 @@ theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
 @[simp]
 theorem rpow_zero (x : ℝ) : x ^ (0 : ℝ) = 1 := by simp [rpow_def]
 #align real.rpow_zero Real.rpow_zero
+
+theorem rpow_zero_pos (x : ℝ) : 0 < x ^ (0 : ℝ) := by simp
 
 @[simp]
 theorem zero_rpow {x : ℝ} (h : x ≠ 0) : (0 : ℝ) ^ x = 0 := by simp [rpow_def, *]
@@ -700,7 +703,7 @@ theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean �
 end Real
 
 -- Porting note: tactics removed
--- section Tactics
+section Tactics
 
 -- /-!
 -- ## Tactic extensions for real powers
@@ -756,32 +759,36 @@ end Real
 
 -- end NormNum
 
--- namespace Tactic
+namespace Mathlib.Meta.Positivity
 
--- namespace Positivity
+open Lean Meta Qq
 
--- /-- Auxiliary definition for the `positivity` tactic to handle real powers of reals. -/
--- unsafe def prove_rpow (a b : expr) : tactic strictness := do
---   let strictness_a ← core a
---   match strictness_a with
---     | nonnegative p => nonnegative <$> mk_app `` Real.rpow_nonneg_of_nonneg [p, b]
---     | positive p => positive <$> mk_app `` Real.rpow_pos_of_pos [p, b]
---     | _ => failed
--- #align tactic.positivity.prove_rpow tactic.positivity.prove_rpow
+/-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
+when the exponent is zero. The other cases are done in `evalRpow`. -/
+@[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
+def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
+    | throwError "not Real.rpow"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
+  pure (.positive (q(Real.rpow_zero_pos $a) : Expr))
 
--- end Positivity
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive. -/
+@[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
+def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} zα pα e := do
+  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
+    | throwError "not Real.rpow"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa =>
+      have pa' : Q(0 < $a) := pa
+      pure (.positive (q(Real.rpow_pos_of_pos $pa' $b) : Expr))
+  | .nonnegative pa =>
+      have pa' : Q(0 ≤ $a) := pa
+      pure (.nonnegative (q(Real.rpow_nonneg_of_nonneg $pa' $b) : Expr))
+  | _ => pure .none
 
--- open Positivity
+end Mathlib.Meta.Positivity
 
--- /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
--- the base is nonnegative and positive when the base is positive. -/
--- @[positivity]
--- unsafe def positivity_rpow : expr → tactic strictness
---   | q(@Pow.pow _ _ Real.hasPow $(a) $(b)) => prove_rpow a b
---   | q(Real.rpow $(a) $(b)) => prove_rpow a b
---   | _ => failed
--- #align tactic.positivity_rpow tactic.positivity_rpow
-
--- end Tactic
-
--- end Tactics
+end Tactics
