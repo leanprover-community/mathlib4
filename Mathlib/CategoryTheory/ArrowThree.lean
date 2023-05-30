@@ -181,6 +181,12 @@ def δ₃δ₁Toδ₀δ₂ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ
     { left := D.f
       right := 𝟙 _ }
 
+@[simps]
+def δ₃δ₀Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₀ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
+  app D :=
+    { left := 𝟙 _
+      right := D.h }
+
 variable (C)
 
 noncomputable def ιArrow [HasInitial C] [HasTerminal C] : Arrow C ⥤ Arrow₃ C where
