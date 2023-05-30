@@ -163,18 +163,19 @@ theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ}
   rfl
 #align nat.arithmetic_function.nat_coe_apply Nat.ArithmeticFunction.natCoe_apply
 
-/-- Coerc an arithmetic function with values in `ℤ` to one with values in `R`. We cannot inline
+/-- Coerce an arithmetic function with values in `ℤ` to one with values in `R`. We cannot inline
 this in `intCoe` because it gets unfolded too much. -/
-def intToArithmeticFunction [AddGroupWithOne R] :
+@[coe]
+def ofInt [AddGroupWithOne R] :
   (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
 
 instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFunction R) :=
-  ⟨intToArithmeticFunction⟩
+  ⟨ofInt⟩
 #align nat.arithmetic_function.int_coe Nat.ArithmeticFunction.intCoe
 
 @[simp]
-theorem intCoe_int (f : ArithmeticFunction ℤ) : intToArithmeticFunction f = f :=
+theorem intCoe_int (f : ArithmeticFunction ℤ) : ofInt f = f :=
   ext fun _ => Int.cast_id
 #align nat.arithmetic_function.int_coe_int Nat.ArithmeticFunction.intCoe_int
 
@@ -287,10 +288,9 @@ theorem natCoe_mul [Semiring R] {f g : ArithmeticFunction ℕ} :
   simp
 #align nat.arithmetic_function.nat_coe_mul Nat.ArithmeticFunction.natCoe_mul
 
-@[simp] -- porting note: the tag `norm_cast`, present in mathlib3, causes the linter to complain:
-        -- `badly shaped lemma, lhs must contain at least one coe`
+@[simp, norm_cast]
 theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
-    (↑(f * g) : ArithmeticFunction R) = f * g := by
+    (↑(f * g) : ArithmeticFunction R) = ↑f * g := by
   ext n
   simp
 #align nat.arithmetic_function.int_coe_mul Nat.ArithmeticFunction.intCoe_mul
