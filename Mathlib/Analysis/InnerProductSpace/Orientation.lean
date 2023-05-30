@@ -225,24 +225,25 @@ theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.o
 
 /-- The volume form on an oriented real inner product space can be evaluated as the determinant with
 respect to any orthonormal basis of the space compatible with the orientation. -/
-theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.Orientation ≠ o) :
+theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.orientation ≠ o) :
     o.volumeForm = -b.toBasis.det := by
   cases' n with n
   · classical
-      have : positiveOrientation ≠ o := by rwa [b.toBasis.orientation_isEmpty] at hb
-      simp [volumeForm, Or.by_cases, dif_neg this.symm]
-  let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos (Fact.out _)
-  dsimp [volumeForm]
+    have : positiveOrientation ≠ o := by rwa [b.toBasis.orientation_isEmpty] at hb
+    simp [volumeForm, Or.by_cases, dif_neg this.symm]
+    tauto
+  let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
+  simp [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
   convert hb.symm
-  exact o.fin_orthonormal_basis_orientation _ _
+  exact o.finOrthonormalBasis_orientation _ _
 #align orientation.volume_form_robust_neg Orientation.volumeForm_robust_neg
 
 @[simp]
 theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   cases' n with n
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _ <;> rintro rfl <;> simp [volumeForm_zero_neg]
-  let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos (Fact.out _)
+  let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by
     symm
