@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 
 ! This file was ported from Lean 3 source module linear_algebra.alternating
-! leanprover-community/mathlib commit 78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea
+! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -447,6 +447,8 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : AlternatingMap R M M ι :=
     map_eq_zero_of_eq' := fun _ _ _ _ hij => (hij <| Subsingleton.elim _ _).elim }
 #align alternating_map.of_subsingleton AlternatingMap.ofSubsingleton
 #align alternating_map.of_subsingleton_apply AlternatingMap.ofSubsingleton_apply
+
+variable (ι)
 
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps (config := { fullyApplied := false })]
@@ -1311,7 +1313,7 @@ theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
 to an empty family. -/
 @[simps]
 def constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] AlternatingMap R' M'' N'' ι where
-  toFun := AlternatingMap.constOfIsEmpty R' M''
+  toFun := AlternatingMap.constOfIsEmpty R' M'' ι
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
