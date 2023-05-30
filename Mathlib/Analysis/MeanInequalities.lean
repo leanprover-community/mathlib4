@@ -95,9 +95,7 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
-open Finset
-
-open Classical BigOperators NNReal ENNReal
+open Finset Classical BigOperators NNReal ENNReal
 
 set_option linter.uppercaseLean3 false
 
@@ -107,7 +105,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 variable {ι : Type u} (s : Finset ι)
 
-section GeomMeanLeArithMean
+section GeomMeanLEArithMean
 
 /-! ### AM-GM inequality -/
 
@@ -244,7 +242,7 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
 
 end Real
 
-end GeomMeanLeArithMean
+end GeomMeanLEArithMean
 
 section Young
 
@@ -642,7 +640,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjugateExponent q) {A B
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  norm_cast  at hf_sum hg_sum
+  norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine' ⟨C, C.prop, hC, _⟩
   norm_cast
