@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.Images
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.ArrowThree
@@ -11,16 +11,6 @@ namespace CategoryTheory
 section
 
 variable {C : Type _} [Category C] [Abelian C]
-
-noncomputable def Abelian.image.lift {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
-    (hg : g ≫ cokernel.π f = 0) : A ⟶ Abelian.image f :=
-  kernel.lift _ g hg
-
-@[reassoc (attr := simp)]
-lemma Abelian.image.lift_ι {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
-    (hg : g ≫ cokernel.π f = 0 ) :
-    Abelian.image.lift f g hg ≫ Abelian.image.ι f = g :=
-  kernel.lift_ι _ _ _
 
 noncomputable def Over.abelianImageFunctor (X : C) : Over X ⥤ MonoOver X where
   obj f := MonoOver.mk' (Abelian.image.ι f.hom)
