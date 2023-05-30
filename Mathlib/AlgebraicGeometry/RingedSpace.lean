@@ -222,7 +222,8 @@ theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.
   apply le_antisymm
   · rw [X.basicOpen_res i f]; exact inf_le_right
   · -- Porting note : now need explicitly typing the rewrites
-    have : X.basicOpen ((X.presheaf.map _ ≫ X.presheaf.map _) f) = _ := X.basicOpen_res (inv i) (X.presheaf.map i f)
+    have : X.basicOpen ((X.presheaf.map _ ≫ X.presheaf.map _) f) = _ :=
+      X.basicOpen_res (inv i) (X.presheaf.map i f)
     rw [← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id] at this
     erw [this]
     exact inf_le_right
