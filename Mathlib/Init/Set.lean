@@ -78,7 +78,7 @@ macro_rules
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 open Std.ExtendedBinder in

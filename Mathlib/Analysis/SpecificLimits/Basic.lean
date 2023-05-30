@@ -56,7 +56,6 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
-set_option synthInstance.etaExperiment true in -- porting note: gets around lean4#2074
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
@@ -75,7 +74,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
     have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
-    rw [map_zero, tendsto_atTop'] at this
+    rw [map_zero, Filter.tendsto_atTop'] at this
     refine' Iff.mpr tendsto_atTop' _
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]

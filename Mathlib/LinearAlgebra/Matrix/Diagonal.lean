@@ -83,7 +83,6 @@ section Field
 
 variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
   have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]

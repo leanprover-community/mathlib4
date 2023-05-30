@@ -75,11 +75,12 @@ def Bornology.ofDist {α : Type _} (dist : α → α → ℝ) (dist_comm : ∀ x
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
     ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
     (fun s hs t ht => by
-      rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · rwa [empty_union]
-      rcases t.eq_empty_or_nonempty with rfl | ⟨y, hy⟩; · rwa [union_empty]
-      suffices : ∃ C, ∀ z ∈ s ∪ t, dist x z ≤ C
-      · rcases this with ⟨C, hC⟩
-        refine ⟨C + C, fun a ha b hb => (dist_triangle a x b).trans ?_⟩
+      rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
+      · rwa [empty_union]
+      rcases t.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
+      · rwa [union_empty]
+      rsuffices ⟨C, hC⟩ : ∃ C, ∀ z ∈ s ∪ t, dist x z ≤ C
+      · refine ⟨C + C, fun a ha b hb => (dist_triangle a x b).trans ?_⟩
         simpa only [dist_comm] using add_le_add (hC _ ha) (hC _ hb)
       rcases hs with ⟨Cs, hs⟩; rcases ht with ⟨Ct, ht⟩
       refine ⟨max Cs (dist x y + Ct), fun z hz => hz.elim
@@ -100,7 +101,7 @@ export Dist (dist)
 
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
-/-- This is an internal lemma used inside the default of `pseudo_metric_space.edist`. -/
+/-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : 0 ≤ dist x y :=
@@ -228,9 +229,9 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
     dist (f m) (f n) ≤ ∑ i in Finset.Ico m n, dist (f i) (f (i + 1)) := by
-  induction n, h using Nat.le_induction
-  case base => rw [Finset.Ico_self, Finset.sum_empty, dist_self]
-  case succ n hle ihn =>
+  induction n, h using Nat.le_induction with
+  | base => rw [Finset.Ico_self, Finset.sum_empty, dist_self]
+  | succ n hle ihn =>
     calc
       dist (f m) (f (n + 1)) ≤ dist (f m) (f n) + dist (f n) (f (n + 1)) := dist_triangle _ _ _
       _ ≤ (∑ i in Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
@@ -273,21 +274,20 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 #align dist_nonneg dist_nonneg
 
-/-
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
--- porting note: todo: restore `positivity` plugin
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_dist : expr → tactic strictness
-  | q(dist $(a) $(b)) => nonnegative <$> mk_app `` dist_nonneg [a, b]
-  | _ => failed
-#align tactic.positivity_dist tactic.positivity_dist
+@[positivity Dist.dist _ _]
+def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (.app _ a) b ← whnfR e | throwError "not dist"
+  let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
+  pure (.nonnegative p)
 
-end
--/
+end Mathlib.Meta.Positivity
+
+example {x y : α} : 0 ≤ dist x y := by positivity
 
 @[simp] theorem abs_dist {a b : α} : |dist a b| = dist a b := abs_of_nonneg dist_nonneg
 #align abs_dist abs_dist
@@ -473,7 +473,7 @@ theorem iUnion_ball_nat_succ (x : α) : (⋃ n : ℕ, ball x (n + 1)) = univ :=
   iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 #align metric.Union_ball_nat_succ Metric.iUnion_ball_nat_succ
 
-/-- `closed_ball x ε` is the set of all points `y` with `dist y x ≤ ε` -/
+/-- `closedBall x ε` is the set of all points `y` with `dist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ) :=
   { y | dist y x ≤ ε }
 #align metric.closed_ball Metric.closedBall
@@ -838,7 +838,7 @@ nonrec theorem uniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   uniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
-      simp only [subset_def, Prod.forall]; rfl
+      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod_map, mem_setOf]
 
 nonrec theorem uniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     UniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
@@ -891,7 +891,7 @@ theorem finite_approx_of_totallyBounded {s : Set α} (hs : TotallyBounded s) :
 theorem tendstoUniformlyOnFilter_iff {ι : Type _} {F : ι → β → α} {f : β → α} {p : Filter ι}
     {p' : Filter β} :
     TendstoUniformlyOnFilter F f p p' ↔
-      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ᶠ p', dist (f n.snd) (F n.fst n.snd) < ε := by
+      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
   refine' ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
   refine' (H ε εpos).mono fun n hn => hε hn
@@ -959,7 +959,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 in a pseudo-metric space.-/
 theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} {x₀ : α}
     {p : α × ι → Prop} :
-    (∀ᶠ x in 𝓝 x₀ ×ᶠ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
   simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left, and_imp]
@@ -969,7 +969,7 @@ theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space.-/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
-    (∀ᶠ x in f ×ᶠ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
   rw [eventually_swap_iff, Metric.eventually_nhds_prod_iff]
   constructor <;>
@@ -1101,14 +1101,14 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
     simp only [true_and]; rfl
 #align metric.tendsto_at_top Metric.tendsto_atTop
 
-/-- A variant of `tendsto_at_top` that
+/-- A variant of `tendsto_atTop` that
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
-theorem tendsto_at_top' [Nonempty β] [SemilatticeSup β] [NoMaxOrder β] {u : β → α} {a : α} :
+theorem tendsto_atTop' [Nonempty β] [SemilatticeSup β] [NoMaxOrder β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n > N, dist (u n) a < ε :=
   (atTop_basis_Ioi.tendsto_iff nhds_basis_ball).trans <| by
-    simp only [true_and]; rfl
-#align metric.tendsto_at_top' Metric.tendsto_at_top'
+    simp only [true_and, gt_iff_lt, mem_Ioi, mem_ball]
+#align metric.tendsto_at_top' Metric.tendsto_atTop'
 
 theorem isOpen_singleton_iff {α : Type _} [PseudoMetricSpace α] {x : α} :
     IsOpen ({x} : Set α) ↔ ∃ ε > 0, ∀ y, dist y x < ε → y = x := by
@@ -1596,8 +1596,8 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
     refine' lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ _) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
-    exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')), fun ⟨b, _, b_bound, b_lim⟩ =>
-    cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
+    exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
+   fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
 #align cauchy_seq_iff_le_tendsto_0 cauchySeq_iff_le_tendsto_0
 
 end CauchySeq
@@ -1700,8 +1700,10 @@ theorem NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by
 #align nnreal.nndist_zero_eq_val' NNReal.nndist_zero_eq_val'
 
 theorem NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
-  suffices (a : ℝ) ≤ (b : ℝ) + dist a b by exact NNReal.coe_le_coe.mp this
-  linarith [le_of_abs_le (by rfl : abs (a - b : ℝ) ≤ dist a b)]
+  suffices (a : ℝ) ≤ (b : ℝ) + dist a b by
+    rwa [← NNReal.coe_le_coe, NNReal.coe_add, coe_nndist]
+  rw [← sub_le_iff_le_add']
+  exact le_of_abs_le (dist_eq a b).ge
 #align nnreal.le_add_nndist NNReal.le_add_nndist
 
 end NNReal
@@ -2042,7 +2044,7 @@ theorem dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist
   simp only [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
 #align dist_le_pi_dist dist_le_pi_dist
 
-/-- An open ball in a product space is a product of open balls. See also `metric.ball_pi'`
+/-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
 theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
     ball x r = Set.pi univ fun b => ball (x b) r := by
@@ -2050,14 +2052,14 @@ theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
   simp [dist_pi_lt_iff hr]
 #align ball_pi ball_pi
 
-/-- An open ball in a product space is a product of open balls. See also `metric.ball_pi`
+/-- An open ball in a product space is a product of open balls. See also `ball_pi`
 for a version assuming `0 < r` instead of `Nonempty β`. -/
 theorem ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     ball x r = Set.pi univ fun b => ball (x b) r :=
   (lt_or_le 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
 #align ball_pi' ball_pi'
 
-/-- A closed ball in a product space is a product of closed balls. See also `metric.closed_ball_pi'`
+/-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi'`
 for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
 theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r := by
@@ -2065,7 +2067,7 @@ theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
   simp [dist_pi_le_iff hr]
 #align closed_ball_pi closedBall_pi
 
-/-- A closed ball in a product space is a product of closed balls. See also `metric.closed_ball_pi`
+/-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi`
 for a version assuming `0 ≤ r` instead of `Nonempty β`. -/
 theorem closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
@@ -2129,8 +2131,8 @@ theorem isCompact_sphere {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
-instance {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
-    CompactSpace (sphere x r) :=
+instance Metric.sphere.compactSpace {α : Type _} [PseudoMetricSpace α] [ProperSpace α]
+    (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
   isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
 
 -- see Note [lower instance priority]
@@ -2419,7 +2421,7 @@ theorem bounded_range_iff {f : β → α} : Bounded (range f) ↔ ∃ C, ∀ x y
 #align metric.bounded_range_iff Metric.bounded_range_iff
 
 theorem bounded_range_of_tendsto_cofinite_uniformity {f : β → α}
-    (hf : Tendsto (Prod.map f f) (cofinite ×ᶠ cofinite) (𝓤 α)) : Bounded (range f) := by
+    (hf : Tendsto (Prod.map f f) (.cofinite ×ˢ .cofinite) (𝓤 α)) : Bounded (range f) := by
   rcases (hasBasis_cofinite.prod_self.tendsto_iff uniformity_basis_dist).1 hf 1 zero_lt_one with
     ⟨s, hsf, hs1⟩
   rw [← image_univ, ← union_compl_self s, image_union, bounded_union]
@@ -2774,21 +2776,18 @@ theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
 
 end Metric
 
-/-
-Porting note: restore positivity extension
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
-@[positivity]
-unsafe def positivity_diam : expr → tactic strictness
-  | q(Metric.diam $(s)) => nonnegative <$> mk_app `` Metric.diam_nonneg [s]
-  | e => pp e >>= fail ∘ format.bracket "The expression " " is not of the form `metric.diam s`"
-#align tactic.positivity_diam tactic.positivity_diam
+@[positivity Metric.diam _]
+def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ s ← whnfR e | throwError "not Metric.diam"
+  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
+  pure (.nonnegative p)
 
-end Tactic
--/
+end Mathlib.Meta.Positivity
 
 theorem comap_dist_right_atTop_le_cocompact (x : α) :
     comap (fun y => dist y x) atTop ≤ cocompact α := by
@@ -2933,7 +2932,7 @@ theorem uniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
 def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type _) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
-  eq_of_dist_eq_zero := fun hdist => (Metric.inseparable_iff.2 hdist).eq
+  eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
 #align metric_space.of_t0_pseudo_metric_space MetricSpace.ofT0PseudoMetricSpace
 
 -- see Note [lower instance priority]

@@ -37,7 +37,6 @@ variable {R : Type _} {M : Type _} {ι : Type _}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-set_option maxHeartbeats 300000 in
 theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by

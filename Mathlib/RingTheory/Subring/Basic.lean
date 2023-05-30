@@ -169,7 +169,6 @@ theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
   map_natCast (subtype s) n
 #align subring_class.coe_nat_cast SubringClass.coe_natCast
 
-set_option synthInstance.etaExperiment true in
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
   map_intCast (subtype s) n
@@ -507,7 +506,6 @@ theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 #align subring.coe_nat_cast Subring.coe_natCast
 
-set_option synthInstance.etaExperiment true in
 @[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
 theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
@@ -1050,7 +1048,8 @@ def prod (s : Subring R) (t : Subring S) : Subring (R × S) :=
 #align subring.prod Subring.prod
 
 @[norm_cast]
-theorem coe_prod (s : Subring R) (t : Subring S) : (s.prod t : Set (R × S)) = s ×ˢ t :=
+theorem coe_prod (s : Subring R) (t : Subring S) :
+    (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
   rfl
 #align subring.coe_prod Subring.coe_prod
 

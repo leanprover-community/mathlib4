@@ -55,6 +55,7 @@ structure LHom where
 #align first_order.language.Lhom FirstOrder.Language.LHom
 
 -- mathport name: «expr →ᴸ »
+@[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
 
 -- \^L
@@ -453,6 +454,7 @@ def withConstants : Language.{max u w', v} :=
 #align first_order.language.with_constants FirstOrder.Language.withConstants
 
 -- mathport name: language.with_constants
+@[inherit_doc FirstOrder.Language.withConstants]
 scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
 
 @[simp]

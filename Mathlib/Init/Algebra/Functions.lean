@@ -38,7 +38,7 @@ lemma le_max_left (a b : α) : a ≤ max a b := by
 
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
-  then simp [max_def, if_pos h]
+  then simp [max_def, if_pos h, le_refl]
   else simp [max_def, if_neg h]; exact le_of_not_le h
 
 lemma max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by

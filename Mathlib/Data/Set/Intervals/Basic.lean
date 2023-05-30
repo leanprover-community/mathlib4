@@ -1157,10 +1157,10 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp [le_antisymm_iff]
       cases' h with h h <;>
       simp [Ico_subset_Ico_iff h] at e <;>
-      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩, rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
+      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩, exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
+      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
 

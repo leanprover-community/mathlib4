@@ -21,7 +21,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## Main Definitions
 * A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-* A `FirstOrder.Language.Formula` is defined so that `L.formula α` is the type of `L`-formulas with
+* A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
 * A `FirstOrder.Language.Sentence` is a formula with no free variables.
 * A `FirstOrder.Language.Theory` is a set of sentences.
@@ -41,10 +41,10 @@ variables with given terms.
 constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.boundedFormula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.boundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.boundedFormula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -792,7 +792,7 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.to_prenex_imp_right ψ`
+  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
@@ -822,7 +822,7 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` and `ψ` are in prenex normal form, then `φ.to_prenex_imp ψ`
+  If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, BoundedFormula.ex φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).all
@@ -1099,7 +1099,7 @@ variable (L)
 
 /-- A sentence indicating that a structure has `n` distinct elements. -/
 protected def Sentence.cardGe (n : ℕ) : L.Sentence :=
-  (((((List.finRange n).product (List.finRange n)).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
+  ((((List.finRange n ×ˢ List.finRange n).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
           fun ij : _ × _ => ∼((&ij.1).bdEqual &ij.2)).foldr
       (· ⊓ ·) ⊤).exs
 #align first_order.language.sentence.card_ge FirstOrder.Language.Sentence.cardGe
