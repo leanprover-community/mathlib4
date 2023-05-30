@@ -22,6 +22,8 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
   to `1/j^2`, up to a multiplicative constant.
 -/
 
+-- porting note: elaboration of some occurrences of `^` were incorrect.
+-- see: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234085
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 open Filter Finset
@@ -32,12 +34,8 @@ open Topology BigOperators
 exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -/
 theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (l : ℝ)
     (hmono : Monotone u)
-    (hlim :
-      ∀ a : ℝ,
-        1 < a →
-          ∃ c : ℕ → ℕ,
-            (∀ᶠ n in atTop, (c (n + 1) : ℝ) ≤ a * c n) ∧
-              Tendsto c atTop atTop ∧ Tendsto (fun n => u (c n) / c n) atTop (𝓝 l)) :
+    (hlim : ∀ a : ℝ, 1 < a → ∃ c : ℕ → ℕ, (∀ᶠ n in atTop, (c (n + 1) : ℝ) ≤ a * c n) ∧
+      Tendsto c atTop atTop ∧ Tendsto (fun n => u (c n) / c n) atTop (𝓝 l)) :
     Tendsto (fun n => u n / n) atTop (𝓝 l) := by
   /- To check the result up to some `ε > 0`, we use a sequence `c` for which the ratio
     `c (N+1) / c N` is bounded by `1 + ε`. Sandwiching a given `n` between two consecutive values of
@@ -68,7 +66,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
           refine' mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg _)
           simp only [mul_one, Real.norm_eq_abs, abs_one] at hn
           exact le_trans (le_abs_self _) hn
-
     obtain ⟨a, ha⟩ :
       ∃ a : ℕ, ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ u (c b) - c b * l ≤ ε * c b :=
       eventually_atTop.1 (cgrowth.and L)
@@ -116,7 +113,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         refine' mul_le_mul_of_nonneg_left (Nat.cast_le.2 cNn) _
         apply mul_nonneg εpos.le
         linarith only [εpos, lnonneg]
-
   have B : ∀ ε : ℝ, 0 < ε → ∀ᶠ n : ℕ in atTop, (n : ℝ) * l - u n ≤ ε * (1 + l) * n := by
     intro ε εpos
     rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
@@ -132,7 +128,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
           refine' mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg _)
           simp only [mul_one, Real.norm_eq_abs, abs_one] at hn
           exact le_trans (neg_le_abs_self _) hn
-
     obtain ⟨a, ha⟩ :
       ∃ a : ℕ,
         ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ (c b : ℝ) * l - u (c b) ≤ ε * c b :=
@@ -174,7 +169,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       _ ≤ ε * (1 + l) * n := by
         refine' mul_le_mul_of_nonneg_left (Nat.cast_le.2 cNn) _
         exact mul_nonneg εpos.le (add_nonneg zero_le_one lnonneg)
-
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
@@ -193,7 +187,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       _ ≤ (n : ℝ)⁻¹ * u n := by
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (Nat.cast_nonneg _))
         linarith only [hn]
-
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, l + ε * (1 + ε + l) < d ∧ 0 < ε := by
       have L : Tendsto (fun ε => l + ε * (1 + ε + l)) (𝓝[>] 0) (𝓝 (l + 0 * (1 + 0 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -215,7 +208,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
 
 #align tendsto_div_of_monotone_of_exists_subseq_tendsto_div tendsto_div_of_monotone_of_exists_subseq_tendsto_div
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.field_simp.ne_zero -/
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
 `c > 1`, then `u n / n` tends to `l`. It is even enough to have the assumption for a sequence of
 `c`s converging to `1`. -/
