@@ -8,10 +8,10 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.GiryMonad
-import Mathbin.CategoryTheory.ConcreteCategory.UnbundledHom
-import Mathbin.CategoryTheory.Monad.Algebra
-import Mathbin.Topology.Category.Top.Basic
+import Mathlib.MeasureTheory.Measure.GiryMonad
+import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
+import Mathlib.CategoryTheory.Monad.Algebra
+import Mathlib.Topology.Category.Top.Basic
 
 /-!
 # The category of measurable spaces
@@ -90,8 +90,7 @@ def measure : Meas ⥤ Meas where
 #align Meas.Measure Meas.measure
 
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
-def giry : CategoryTheory.Monad Meas
-    where
+def giry : CategoryTheory.Monad Meas where
   toFunctor := measure
   η' :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
