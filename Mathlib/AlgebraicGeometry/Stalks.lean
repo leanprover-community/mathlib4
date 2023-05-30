@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.PresheafedSpace
-import Mathbin.CategoryTheory.Limits.Final
-import Mathbin.Topology.Sheaves.Stalks
+import Mathlib.AlgebraicGeometry.PresheafedSpace
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Stalks for presheaved spaces
@@ -97,8 +97,7 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{v} C)
 
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
-    (X.restrictStalkIso h x).inv = stalkMap (X.of_restrict h) x :=
-  by
+    (X.restrictStalkIso h x).inv = stalkMap (X.of_restrict h) x := by
   ext V
   induction V using Opposite.rec'
   let i : (h.is_open_map.functor_nhds x).obj ((open_nhds.map f x).obj V) ⟶ V :=
@@ -122,8 +121,7 @@ end Restrict
 namespace StalkMap
 
 @[simp]
-theorem id (X : PresheafedSpace.{v} C) (x : X) : stalkMap (𝟙 X) x = 𝟙 (X.stalk x) :=
-  by
+theorem id (X : PresheafedSpace.{v} C) (x : X) : stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
   dsimp [stalk_map]
   simp only [stalk_pushforward.id]
   rw [← map_comp]
@@ -136,8 +134,7 @@ theorem id (X : PresheafedSpace.{v} C) (x : X) : stalkMap (𝟙 X) x = 𝟙 (X.s
 theorem comp {X Y Z : PresheafedSpace.{v} C} (α : X ⟶ Y) (β : Y ⟶ Z) (x : X) :
     stalkMap (α ≫ β) x =
       (stalkMap β (α.base x) : Z.stalk (β.base (α.base x)) ⟶ Y.stalk (α.base x)) ≫
-        (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) :=
-  by
+        (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalk_map, stalk_functor, stalk_pushforward]
   ext U
   induction U using Opposite.rec'
