@@ -239,9 +239,9 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   refine colimit.hom_ext fun j => ?_
   induction j using Opposite.rec' with | h j => ?_
   dsimp
-  simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, OpenNhds.inclusion_obj,
-    pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre,
-    id_comp, assoc, colimit.pre_desc, colimit.map_desc]
+  simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, colimit.map_desc,
+    OpenNhds.inclusion_obj, pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app,
+    NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc, colimit.pre_desc]
   erw [colimit.ι_desc]
   dsimp
   erw [X.presheaf.map_id, id_comp]
