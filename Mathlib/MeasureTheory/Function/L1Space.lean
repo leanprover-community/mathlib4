@@ -52,8 +52,6 @@ integrable, function space, l1
 
 noncomputable section
 
-set_option linter.uppercaseLean3 false
-
 open Classical Topology BigOperators ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
@@ -288,6 +286,7 @@ variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
 theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
     ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a‖ ≤ ENNReal.ofReal (bound a) := fun n =>
   (h n).mono fun _ h => ENNReal.ofReal_le_ofReal h
+set_option linter.uppercaseLean3 false in
 #align measure_theory.all_ae_of_real_F_le_bound MeasureTheory.all_ae_ofReal_F_le_bound
 
 theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
@@ -922,6 +921,7 @@ theorem memℒ1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable
     (u : Lp E 1 (μ.withDensity fun x => f x)) : Memℒp (fun x => f x • u x) 1 μ :=
   memℒp_one_iff_integrable.2 <|
     (integrable_withDensity_iff_integrable_smul f_meas).1 <| memℒp_one_iff_integrable.1 (Lp.memℒp u)
+set_option linter.uppercaseLean3 false in
 #align measure_theory.mem_ℒ1_smul_of_L1_with_density MeasureTheory.memℒ1_smul_of_L1_withDensity
 
 variable (μ)
@@ -1238,6 +1238,7 @@ section
 
 theorem integrable_iff_mem_L1 {f : α →ₘ[μ] β} : Integrable f ↔ f ∈ (α →₁[μ] β) := by
   rw [← integrable_coeFn, ← memℒp_one_iff_integrable, Lp.mem_Lp_iff_memℒp]
+set_option linter.uppercaseLean3 false in
 #align measure_theory.ae_eq_fun.integrable_iff_mem_L1 MeasureTheory.AEEqFun.integrable_iff_mem_L1
 
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
@@ -1268,6 +1269,8 @@ end
 end AEEqFun
 
 namespace L1
+
+set_option linter.uppercaseLean3 false
 
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memℒp_one_iff_integrable]
@@ -1340,6 +1343,8 @@ theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
 end L1
 
 namespace Integrable
+
+set_option linter.uppercaseLean3 false
 
 /-- Construct the equivalence class `[f]` of an integrable function `f`, as a member of the
 space `L1 β 1 μ`. -/
