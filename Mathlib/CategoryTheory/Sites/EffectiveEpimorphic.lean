@@ -64,6 +64,11 @@ structure EffectiveEpiStruct {X Y : C} (f : Y ⟶ X) where
     (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e)
     (m : X ⟶ W), f ≫ m = e → m = desc e h
 
+attribute [nolint docBlame]
+  EffectiveEpiStruct.desc
+  EffectiveEpiStruct.fac
+  EffectiveEpiStruct.uniq
+
 /--
 A morphism `f : Y ⟶ X` is an effective epimorphism provided that `f` exhibits `X` as a colimit
 of the diagram of all "relations" `R ⇉ Y`.
@@ -72,6 +77,8 @@ a colimit.
 -/
 class EffectiveEpi {X Y : C} (f : Y ⟶ X) : Prop where
   effectiveEpi : Nonempty (EffectiveEpiStruct f)
+
+attribute [nolint docBlame] EffectiveEpi.effectiveEpi
 
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -186,7 +193,7 @@ This structure encodes the data required for a family of morphisms to be effecti
 structure EffectiveEpiFamilyStruct {B : C} {α : Type _}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) where
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
-    (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+          (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) → (B ⟶ W)
   fac : ∀ {W} (e : (a : α) → (X a ⟶ W))
           (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
@@ -197,6 +204,11 @@ structure EffectiveEpiFamilyStruct {B : C} {α : Type _}
             g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _)
           (m : B ⟶ W), (∀ (a : α), π a ≫ m = e a) → m = desc e h
 
+attribute [nolint docBlame]
+  EffectiveEpiFamilyStruct.desc
+  EffectiveEpiFamilyStruct.fac
+  EffectiveEpiFamilyStruct.uniq
+
 /--
 A family of morphisms `f a : X a ⟶ B` indexed by `a : α` is effective epimorphic
 provided that the `f a` exhibit `B` as a colimit of the diagram of all "relations"
@@ -204,6 +216,8 @@ provided that the `f a` exhibit `B` as a colimit of the diagram of all "relation
 -/
 class EffectiveEpiFamily {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) : Prop where
   effectiveEpiFamily : Nonempty (EffectiveEpiFamilyStruct X π)
+
+attribute [nolint docBlame] EffectiveEpiFamily.effectiveEpiFamily
 
 /--
 Implementation: This is a construction which will be used in the proof that
