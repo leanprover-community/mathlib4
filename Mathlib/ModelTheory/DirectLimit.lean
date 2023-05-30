@@ -69,8 +69,7 @@ theorem coe_natLeRec (m n : ℕ) (h : m ≤ n) :
   ext x
   induction' k with k ih
   · rw [natLeRec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  ·
-    rw [Nat.leRecOn_succ le_self_add, natLeRec, Nat.leRecOn_succ le_self_add, ← natLeRec,
+  · rw [Nat.leRecOn_succ le_self_add, natLeRec, Nat.leRecOn_succ le_self_add, ← natLeRec,
       Embedding.comp_apply, ih]
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLeRec
 
@@ -96,7 +95,7 @@ variable [DirectedSystem G fun i j h => f i j h]
 @[simp]
 theorem unify_sigma_mk_self {α : Type _} {i : ι} {x : α → G i} :
     (unify f (Sigma.mk i ∘ x) i fun j ⟨a, hj⟩ => _root_.trans (le_of_eq hj.symm) (refl _)) = x := by
-  ext a; show f i i le_rfl (x a) = x a
+  ext a; change f i i le_rfl (x a) = x a
   simp only [unify, DirectedSystem.map_self]
 #align first_order.language.direct_limit.unify_sigma_mk_self FirstOrder.Language.DirectLimit.unify_sigma_mk_self
 
@@ -201,13 +200,13 @@ theorem exists_unify_eq {α : Type _} [Fintype α] {x y : α → Σi, G i} (xy :
 
 theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → Σi, G i) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    @funMap _ _ (sigmaStructure G f) _ F x ≈ ⟨_, funMap F (unify f x i hi)⟩ :=
+    funMap (self := sigmaStructure G f) F x ≈ ⟨_, funMap F (unify f x i hi)⟩ :=
   funMap_unify_equiv G f F x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
 #align first_order.language.direct_limit.fun_map_equiv_unify FirstOrder.Language.DirectLimit.funMap_equiv_unify
 
 theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σi, G i) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    @RelMap _ _ (sigmaStructure G f) _ R x = RelMap R (unify f x i hi) :=
+    RelMap (self := sigmaStructure G f) R x = RelMap R (unify f x i hi) :=
   relMap_unify_equiv G f R x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
 #align first_order.language.direct_limit.rel_map_equiv_unify FirstOrder.Language.DirectLimit.relMap_equiv_unify
 
@@ -252,7 +251,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
   obtain ⟨k, _, _⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun _ : Fin n => i))
   rw [relMap_equiv_unify G f R (fun a => ⟨i, x a⟩) i ?_]
-  show RelMap R (unify f (Sigma.mk i ∘ x) i _) = RelMap R x
+  change RelMap R (unify _ (Sigma.mk i ∘ x) _ _) = _
   rw [unify_sigma_mk_self]
   intro _
   simp
@@ -265,11 +264,11 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type _} [Fintype α] (x : α → 
   obtain ⟨i, hi⟩ := Fintype.bddAbove_range fun a => (x a).out.1
   refine' ⟨i, unify f (Quotient.out ∘ x) i hi, _⟩
   ext a
-  show x a = Quotient.mk _ ((Sigma.mk i ∘ unify f (Quotient.out ∘ x) i hi) a)
+  change _ = Quotient.mk _ _
   rw [Quotient.eq_mk_iff_out, Function.comp_apply, unify]
   let r := unify.proof_1 (Quotient.out ∘ x) i hi a
-  show Quotient.out (x a) ≈ ⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩
-  have hi' : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : (i : ι) × G i).fst ≤ i := le_rfl
+  change _ ≈ ⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩
+  have hi' : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : Σi, G i).fst ≤ i := le_rfl
   rw [equiv_iff G f (i := i) (hi _) hi']
   · simp only [DirectedSystem.map_self]
   exact ⟨a, rfl⟩
@@ -288,13 +287,13 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     exact (f i j h1).injective h3
   map_fun' F x := by
     simp
-    show Quotient.mk .. = funMap F ((Quotient.mk' ∘ Sigma.mk i) ∘ x)
+    change Quotient.mk .. = _
     rw [←funMap_quotient_mk'_sigma_mk']
-    trivial
+    rfl
   map_rel' := by
     simp
     intro n R x
-    show RelMap R (fun a =>  (⟦⟨i, x a⟩⟧ : DirectLimit G f)) ↔ RelMap R x
+    change RelMap R (fun a =>  (⟦⟨i, x a⟩⟧ : DirectLimit G f)) ↔ _
     simp only [relMap_quotient_mk'_sigma_mk']
 
 
@@ -310,7 +309,7 @@ theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦⟨i, x⟩⟧ :=
 @[simp]
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   simp only [of_apply]
-  show Quotient.mk' (Sigma.mk j ((f i j hij) x)) = Quotient.mk' ⟨i, x⟩
+  change Quotient.mk' _ = Quotient.mk' _
   simp only [Quotient.eq']
   refine' Setoid.symm ⟨j, hij, refl j, _⟩
   simp only [DirectedSystem.map_self]
@@ -352,22 +351,23 @@ def lift : DirectLimit G f ↪[L] P where
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
     rw [← Quotient.out_eq x, ← Quotient.out_eq y]
-    show Quotient.mk' (Quotient.out x) = Quotient.mk' (Quotient.out y)
+    change Quotient.mk' _ = Quotient.mk' _
     rw [Quotient.eq']
-    show Quotient.out _ ≈ _
+    change Quotient.out _ ≈ _
     rw [equiv_iff G f hx hy]
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     simp
-    show Quotient.lift _ _ (funMap F fun a => Quotient.mk _ (Sigma.mk i (y a))) = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y)
+    change Quotient.lift _ _ (funMap F fun a => Quotient.mk _ (Sigma.mk i (y a))) =
+      funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y)
     rw [funMap_quotient_mk'_sigma_mk', ← Function.comp.assoc, Quotient.lift_comp_mk]
     simp only [Quotient.lift_mk, Embedding.map_fun]
     rfl
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     simp
-    show RelMap R (Quotient.lift (fun x ↦ (g x.fst) x.snd) _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y) ↔ RelMap R (fun a => (Quotient.mk _ (Sigma.mk i (y a))))
+    change RelMap R (Quotient.lift (fun x ↦ (g x.fst) x.snd) _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y) ↔ RelMap R (fun a => (Quotient.mk _ (Sigma.mk i (y a))))
     rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp.assoc,
       Quotient.lift_comp_mk]
     rfl
@@ -405,10 +405,9 @@ theorem cG {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _
-    let out := @Quotient.out _ (DirectLimit.setoid G f)
+    let out := Quotient.out (s := DirectLimit.setoid G f)
     refine' hS (out x).1 ⟨(out x).2, _, _⟩
     · rw [(Classical.choose_spec (h (out x).1).out).2]
-      simp only [Substructure.coe_top]
       trivial
     · simp only [Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 #align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cG
