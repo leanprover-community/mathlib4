@@ -151,13 +151,13 @@ instance funLike : FunLike (QuadraticForm R M) M fun _ => R where
 #align quadratic_form.fun_like QuadraticForm.funLike
 
 /-- Helper instance for when there's too many metavariables to apply
-`fun_like.has_coe_to_fun` directly. -/
+`FunLike.hasCoeToFun` directly. -/
 instance : CoeFun (QuadraticForm R M) fun _ => M → R :=
   ⟨FunLike.coe⟩
 
 variable (Q)
 
-/-- The `simp` normal form for a quadratic form is `coe_fn`, not `to_fun`. -/
+/-- The `simp` normal form for a quadratic form is `coeFn`, not `toFun`. -/
 @[simp]
 theorem toFun_eq_coe : Q.toFun = ⇑Q :=
   rfl
@@ -181,7 +181,7 @@ theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
   FunLike.ext_iff
 #align quadratic_form.ext_iff QuadraticForm.ext_iff
 
-/-- Copy of a `QuadraticForm` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `QuadraticForm` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (Q : QuadraticForm R M) (Q' : M → R) (h : Q' = ⇑Q) : QuadraticForm R M where
   toFun := Q'
@@ -336,7 +336,7 @@ theorem polar_smul_right_of_tower (a : S) (x y : M) : polar Q x (a • y) = a �
   rw [← IsScalarTower.algebraMap_smul R a y, polar_smul_right, Algebra.smul_def]
 #align quadratic_form.polar_smul_right_of_tower QuadraticForm.polar_smul_right_of_tower
 
-/-- An alternative constructor to `quadratic_form.mk`, for rings where `polar` can be used. -/
+/-- An alternative constructor to `QuadraticForm.mk`, for rings where `polar` can be used. -/
 @[simps]
 def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x)
     (polar_add_left : ∀ x x' y : M, polar toFun (x + x') y = polar toFun x y + polar toFun x' y)
@@ -434,7 +434,7 @@ theorem add_apply (Q Q' : QuadraticForm R M) (x : M) : (Q + Q') x = Q x + Q' x :
 instance : AddCommMonoid (QuadraticForm R M) :=
   FunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
-/-- `@coe_fn (QuadraticForm R M)` as an `AddMonoidHom`.
+/-- `@CoeFn (QuadraticForm R M)` as an `AddMonoidHom`.
 
 This API mirrors `AddMonoidHom.coeFn`. -/
 @[simps apply]
@@ -753,7 +753,7 @@ variable (S) [CommSemiring S] [Algebra S R]
 
 variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 
-/-- `associated_hom` is the map that sends a quadratic form on a module `M` over `R` to its
+/-- `associatedHom` is the map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form.  As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative subring of `R`.
 
@@ -814,7 +814,7 @@ theorem toQuadraticForm_associated : (associatedHom S Q).toQuadraticForm = Q :=
   QuadraticForm.ext <| associated_eq_self_apply S Q
 #align quadratic_form.to_quadratic_form_associated QuadraticForm.toQuadraticForm_associated
 
--- note: usually `right_inverse` lemmas are named the other way around, but this is consistent
+-- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
 -- with historical naming in this file.
 theorem associated_rightInverse :
     Function.RightInverse (associatedHom S) (BilinForm.toQuadraticForm : _ → QuadraticForm R M) :=
@@ -852,9 +852,9 @@ variable [CommRing R₁] [AddCommGroup M] [Module R₁ M]
 
 variable [Invertible (2 : R₁)]
 
--- Note:  When possible, rather than writing lemmas about `Associated`, write a lemma applying to
+-- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
 -- the more general `AssociatedHom` and place it in the previous section.
-/-- `Associated` is the linear map that sends a quadratic form over a commutative ring to its
+/-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=
   associatedHom R₁
@@ -978,7 +978,7 @@ variable {n : Type w} [Fintype n] [DecidableEq n]
 
 variable [CommRing R₁] [AddCommMonoid M] [Module R₁ M]
 
-/-- `M.to_quadratic_form` is the map `λ x, col x ⬝ M ⬝ row x` as a quadratic form. -/
+/-- `M.toQuadraticForm'` is the map `λ x, col x ⬝ M ⬝ row x` as a quadratic form. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R₁) : QuadraticForm R₁ (n → R₁) :=
   M.toBilin'.toQuadraticForm
 #align matrix.to_quadratic_form' Matrix.toQuadraticForm'
@@ -1139,7 +1139,7 @@ variable [Module R M] [Module R M₁]
 
 variable {ι : Type _} [Fintype ι] {v : Basis ι R M}
 
-/-- Given a quadratic form `Q` and a basis, `basis_repr` is the basis representation of `Q`. -/
+/-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
 noncomputable def basisRepr (Q : QuadraticForm R M) (v : Basis ι R M) : QuadraticForm R (ι → R) :=
   Q.comp v.equivFun.symm
 #align quadratic_form.basis_repr QuadraticForm.basisRepr
