@@ -117,6 +117,10 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     let t' ← instantiateMVars (← g'.getType)
     pure <| !(← exprDependsOn' t' (.mvar g))
 
+/-- Returns `some g` if `g` is unassigned, and otherwise returns `none`. -/
+def unassigned? (g : MVarId) : MetaM (Option MVarId) := do
+  if ← g.isAssigned then pure none else pure g
+
 end Lean.MVarId
 
 namespace Lean.Meta
