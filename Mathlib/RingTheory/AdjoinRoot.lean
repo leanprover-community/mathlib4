@@ -394,8 +394,8 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { AdjoinRoot.instCommRing f,
-    Quotient.groupWithZero (span {f} : Ideal K[X]) with
+  { Ideal.Quotient.field (span {f} : Ideal K[X]) with
+    toCommRing := AdjoinRoot.instCommRing f
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
@@ -424,8 +424,7 @@ theorem coe_injective' [Fact (Irreducible f)] : Function.Injective ((â†‘) : K â†
 variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
-    -- porting note: I do not know how to get this to typecheck without using the ugly `Div.div`
-    (X - C (root f)) * (Div.div (f.map (of f)) (X - C (root f))) = f.map (of f) :=
+    (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
   mul_div_eq_iff_isRoot.2 <| isRoot_root _
 #align adjoin_root.mul_div_root_cancel AdjoinRoot.mul_div_root_cancel
 
@@ -937,3 +936,5 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
+
+attribute [irreducible] AdjoinRoot
