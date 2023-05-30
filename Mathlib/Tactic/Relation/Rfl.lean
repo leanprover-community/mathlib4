@@ -34,8 +34,8 @@ initialize registerBuiltinAttribute {
     let (_, _, targetTy) ← forallMetaTelescope declTy
     let fail := throwError
       "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy} with target {targetTy}"
-    let (_, args) ← targetTy.abstractExplicitArgs 2 true
-    unless ← withNewMCtxDepth <| isDefEq args[0]! args[1]! do fail
+    let xx ← targetTy.getNumExplicitArgs 2
+    unless ← withNewMCtxDepth <| isDefEq xx[0]! xx[1]! do fail
     let key ← DiscrTree.mkPath (← whnfR targetTy)
     reflExt.add (decl, key) kind
 }
