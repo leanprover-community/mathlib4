@@ -388,8 +388,8 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
 central series reaches `G` in its `n`'th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
-    Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) = Group.nilpotencyClass G :=
-  by
+    Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
+    Group.nilpotencyClass G := by
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · intro n hn
     exact ⟨upperCentralSeries G, upperCentralSeries_isAscendingCentralSeries G, hn⟩
@@ -401,8 +401,8 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
 central series reaches `⊥` in its `n`'th term. -/
 theorem least_descending_central_series_length_eq_nilpotencyClass :
-    Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) = Group.nilpotencyClass G :=
-  by
+    Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) =
+    Group.nilpotencyClass G := by
   rw [← least_ascending_central_series_length_eq_nilpotencyClass]
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · rintro n ⟨H, ⟨hH, hn⟩⟩
@@ -430,8 +430,8 @@ theorem lowerCentralSeries_length_eq_nilpotencyClass :
 #align lower_central_series_length_eq_nilpotency_class lowerCentralSeries_length_eq_nilpotencyClass
 
 @[simp]
-theorem lowerCentralSeries_nilpotencyClass : lowerCentralSeries G (Group.nilpotencyClass G) = ⊥ :=
-  by
+theorem lowerCentralSeries_nilpotencyClass :
+    lowerCentralSeries G (Group.nilpotencyClass G) = ⊥ := by
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   exact Nat.find_spec (nilpotent_iff_lowerCentralSeries.mp hG)
 #align lower_central_series_nilpotency_class lowerCentralSeries_nilpotencyClass
@@ -737,8 +737,8 @@ instance isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G
 
 /-- The nilpotency class of a product is the max of the nilpotency classes of the factors -/
 theorem nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
-    Group.nilpotencyClass (G₁ × G₂) = max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) :=
-  by
+    Group.nilpotencyClass (G₁ × G₂) =
+    max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
   refine' eq_of_forall_ge_iff fun k => _
   simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     lowerCentralSeries_prod, prod_eq_bot_iff]
@@ -752,8 +752,8 @@ section BoundedPi
 variable {η : Type _} {Gs : η → Type _} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_le (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ fun i => lowerCentralSeries (Gs i) n :=
-  by
+    lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ
+      fun i => lowerCentralSeries (Gs i) n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
@@ -787,8 +787,8 @@ section FinitePi
 variable {η : Type _} {Gs : η → Type _} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi Set.univ fun i => lowerCentralSeries (Gs i) n :=
-  by
+    lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi Set.univ
+      fun i => lowerCentralSeries (Gs i) n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
