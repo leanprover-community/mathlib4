@@ -16,7 +16,7 @@ import Mathlib.Order.SymmDiff
 
 This file defines (bounded) lattice homomorphisms.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -294,7 +294,7 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 #align map_sdiff' map_sdiff'
 
-/-- Special case of `map_symm_diff` for boolean algebras. -/
+/-- Special case of `map_symmDiff` for boolean algebras. -/
 theorem map_symm_diff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
 #align map_symm_diff' map_symm_diff'

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 
 ! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
+! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -17,7 +17,6 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Adjoining roots of polynomials
@@ -396,8 +395,7 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
   { AdjoinRoot.instCommRing f,
-    Ideal.Quotient.field
-      (span {f} : Ideal K[X]) with
+    Quotient.groupWithZero (span {f} : Ideal K[X]) with
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
@@ -454,7 +452,7 @@ This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_left
 def modByMonicHom (hg : g.Monic) : AdjoinRoot g →ₗ[R] R[X] :=
   (Submodule.liftQ _ (Polynomial.modByMonicHom g)
         fun f (hf : f ∈ (Ideal.span {g}).restrictScalars R) =>
-        (mem_ker_mod_by_monic hg).mpr (Ideal.mem_span_singleton.mp hf)).comp <|
+        (mem_ker_modByMonic hg).mpr (Ideal.mem_span_singleton.mp hf)).comp <|
     (Submodule.Quotient.restrictScalarsEquiv R (Ideal.span {g} : Ideal R[X])).symm.toLinearMap
 #align adjoin_root.mod_by_monic_hom AdjoinRoot.modByMonicHom
 

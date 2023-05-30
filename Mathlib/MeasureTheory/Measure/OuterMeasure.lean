@@ -875,16 +875,16 @@ theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty]
 #align measure_theory.outer_measure.le_bounded_by MeasureTheory.OuterMeasure.le_boundedBy
 
-theorem le_bounded_by' {μ : OuterMeasure α} :
+theorem le_boundedBy' {μ : OuterMeasure α} :
     μ ≤ boundedBy m ↔ ∀ s : Set α, s.Nonempty → μ s ≤ m s := by
   rw [le_boundedBy, forall_congr']
   intro s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h]
-#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
+#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_boundedBy'
 
 @[simp]
 theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
-  rw [eq_top_iff, le_bounded_by']
+  rw [eq_top_iff, le_boundedBy']
   intro s hs
   rw [top_apply hs]
   exact le_rfl

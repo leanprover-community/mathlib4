@@ -344,8 +344,6 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
   rw [← isOpen_compl_iff, hp.isOpen_iff_mem_balls]
   rintro x (hx : x ≠ 0)
   cases' h x hx with i pi_nonzero
-  -- Porting note: the following line shouldn't be needed, but otherwise `positivity` fails later
-  have : p i x ≥ 0 := map_nonneg _ _
   refine' ⟨{i}, p i x, by positivity, subset_compl_singleton_iff.mpr _⟩
   rw [Finset.sup_singleton, mem_ball, zero_sub, map_neg_eq_map, not_lt]
 #align with_seminorms.t1_of_separating WithSeminorms.T1_of_separating
@@ -382,7 +380,7 @@ variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
 
-Variant with `finset.sup`. -/
+Variant with `Finset.sup`. -/
 theorem WithSeminorms.tendsto_nhds' (hp : WithSeminorms p) (u : F → E) {f : Filter F} (y₀ : E) :
     Filter.Tendsto u f (𝓝 y₀) ↔ ∀ (s : Finset ι) (ε), 0 < ε → ∀ᶠ x in f, s.sup p (u x - y₀) < ε :=
   by simp [hp.hasBasis_ball.tendsto_right_iff]

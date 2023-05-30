@@ -232,7 +232,7 @@ instance commRing : CommRing ℝ := by
         | apply mul_assoc
         | apply mul_comm
 
-/-- `real.equiv_Cauchy` as a ring equivalence. -/
+/-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with
@@ -643,11 +643,12 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
-instance : Archimedean ℝ :=
+instance instArchimedean : Archimedean ℝ :=
   archimedean_iff_rat_le.2 fun x =>
     Real.ind_mk x fun f =>
       let ⟨M, _, H⟩ := f.bounded' 0
       ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
+#align real.archimedean Real.instArchimedean
 
 noncomputable instance : FloorRing ℝ :=
   Archimedean.floorRing _

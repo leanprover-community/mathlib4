@@ -60,7 +60,7 @@ as it is easier to use.
 -/
 
 
--- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
+-- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?
 -- TODO: relationship with `Con/AddCon`
 -- TODO: include equivalence of `LeftCancelSemigroup` with
 -- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
@@ -263,7 +263,7 @@ theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Mo
 #align monotone.covariant_of_const Monotone.covariant_of_const
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
-the operator.  E.g., `∀ (m : ℕ), monotone f → monotone (λ n, f (n + m))`. -/
+the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (λ n, f (n + m))`. -/
 theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
     (hf : Monotone f) (m : N) : Monotone fun n ↦ f (μ n m) :=
   fun _ _ x ↦ hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)

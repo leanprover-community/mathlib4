@@ -490,21 +490,26 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
-/- porting note: meta code, do not port
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
+open Lean Meta Qq Function
 
-/-- Extension for the `positivity` tactic: norms are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_norm : expr → tactic strictness
-  | q(‖$(a)‖) =>
-    nonnegative <$> mk_app `` norm_nonneg [a] <|> nonnegative <$> mk_app `` norm_nonneg' [a]
-  | _ => failed
-#align tactic.positivity_norm tactic.positivity_norm
+/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
+`norm_nonneg'`. -/
+@[positivity Norm.norm _]
+def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg' #[a]
+  pure (.nonnegative p)
 
-end
--/
+/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
+@[positivity Norm.norm _]
+def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg #[a]
+  pure (.nonnegative p)
+
+end Mathlib.Meta.Positivity
 
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
@@ -1295,7 +1300,7 @@ theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
     {l : Filter ι} {l' : Filter κ} :
     UniformCauchySeqOnFilter f l l' ↔
-      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) l' := by
+      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
   refine' ⟨fun hf u hu => _, fun hf u hu => _⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine'
@@ -1314,7 +1319,7 @@ theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_on
 theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ}
     {l : Filter ι} :
     UniformCauchySeqOn f l s ↔
-      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) s := by
+      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter,
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]

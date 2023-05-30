@@ -29,12 +29,11 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
---@[protect_proj] -- Porting note: missing attribute?
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
   /-- The function `α → β` -/
-  toFun : α → β
+  protected toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun := by continuity
+  protected continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
