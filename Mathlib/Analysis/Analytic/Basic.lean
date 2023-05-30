@@ -709,7 +709,6 @@ theorem HasFpowerSeriesAt.isBigO_sub_partialSum_pow (hf : HasFpowerSeriesAt f p 
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_at.is_O_sub_partial_sum_pow HasFpowerSeriesAt.isBigO_sub_partialSum_pow
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
 ball, the norm of the difference `f y - f z - p 1 (λ _, y - z)` is bounded above by
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `is_O` and
@@ -776,9 +775,8 @@ theorem HasFpowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
   simp_rw [mul_right_comm _ (_ * _)]  -- porting note: there was an `L` inside the `simp_rw`.
   exact (isBigO_refl _ _).const_mul_left _
 set_option linter.uppercaseLean3 false in
-#align has_fpower_series_on_ball.isBigO_image_sub_image_sub_deriv_principal HasFpowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
+#align has_fpower_series_on_ball.is_O_image_sub_image_sub_deriv_principal HasFpowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » emetric.ball[emetric.ball] x r') -/
 /-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
 ball, the norm of the difference `f y - f z - p 1 (λ _, y - z)` is bounded above by
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
@@ -1296,7 +1294,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine' HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => _) hsf
-    · dsimp only --[f]
+    · dsimp only
       refine' ContinuousMultilinearMap.hasSum_eval _ _
       have := (p.hasFpowerSeriesOnBallChangeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this
@@ -1313,14 +1311,14 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   erw [(p n).map_add_univ (fun _ => x) fun _ => y]
   -- porting note: added explicit function
   convert hasSum_fintype (fun c : Finset (Fin n) => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
-  rename_i s _ --ext1 s
+  rename_i s _
   dsimp only [changeOriginSeriesTerm, (· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
     changeOriginIndexEquiv_symm_apply_snd_fst, changeOriginIndexEquiv_symm_apply_snd_snd_coe]
   rw [ContinuousMultilinearMap.curryFinFinset_apply_const]
   have : ∀ (m) (hm : n = m), p n (s.piecewise (fun _ => x) fun _ => y) =
       p m ((s.map (Fin.cast hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
     rintro m rfl
-    simp
+    simp [Finset.piecewise]
   apply this
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
@@ -1387,9 +1385,8 @@ variable {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {z₀ : 𝕜
 `has_fpower_series_at` depends on `p.radius`. -/
 theorem hasFpowerSeriesAt_iff :
     HasFpowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 0, HasSum (fun n => z ^ n • p.coeff n) (f (z₀ + z)) := by
-  refine'
-    ⟨fun ⟨r, r_le, r_pos, h⟩ =>
-      eventually_of_mem (EMetric.ball_mem_nhds 0 r_pos) fun _ => by simpa using h, _⟩
+  refine' ⟨fun ⟨r, _, r_pos, h⟩ =>
+    eventually_of_mem (EMetric.ball_mem_nhds 0 r_pos) fun _ => by simpa using h, _⟩
   simp only [Metric.eventually_nhds_iff]
   rintro ⟨r, r_pos, h⟩
   refine' ⟨p.radius ⊓ r.toNNReal, by simp, _, _⟩
@@ -1399,23 +1396,21 @@ theorem hasFpowerSeriesAt_iff :
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
-      funext <;> simp [norm_smul, mul_comm]
+      funext
+      simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
     simp only [ENNReal.coe_pos]
     exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
   · simp only [EMetric.mem_ball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h⊢
-    refine' fun y hyp hyr => h _
+    refine' fun {y} _ hyr => h _
     simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 #align has_fpower_series_at_iff hasFpowerSeriesAt_iff
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr∀ᶠ in , »((z), (nhds() 0 : filter 𝕜), has_sum (λ n, _) (f «expr + »(z₀, z)))]] -/
 theorem hasFpowerSeriesAt_iff' :
     HasFpowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFpowerSeriesAt_iff]
-  trace
-    "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr∀ᶠ in , »((z), (nhds() 0 : filter 𝕜), has_sum (λ n, _) (f «expr + »(z₀, z)))]]"
-  rw [add_sub_cancel']
+  simp_rw [add_sub_cancel']
 #align has_fpower_series_at_iff' hasFpowerSeriesAt_iff'
 
 end
