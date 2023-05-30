@@ -834,7 +834,9 @@ instance canLift : CanLift (BilinForm R M) (QuadraticForm R M) (associatedHom �
 
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
-theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M} (hB₁ : associated' Q ≠ 0) :
+theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
+    -- Porting note: added type ascription
+    (hB₁ : associated' (R := R) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
   intro h
@@ -884,7 +886,7 @@ def Anisotropic (Q : QuadraticForm R M) : Prop :=
 
 theorem not_anisotropic_iff_exists (Q : QuadraticForm R M) :
     ¬Anisotropic Q ↔ ∃ x, x ≠ 0 ∧ Q x = 0 := by
-  simp only [anisotropic, not_forall, exists_prop, and_comm]
+  simp only [Anisotropic, not_forall, exists_prop, and_comm]
 #align quadratic_form.not_anisotropic_iff_exists QuadraticForm.not_anisotropic_iff_exists
 
 theorem Anisotropic.eq_zero_iff {Q : QuadraticForm R M} (h : Anisotropic Q) {x : M} :
@@ -900,7 +902,9 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
 theorem nondegenerate_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M)
-    (hB : Q.Anisotropic) : Q.associated'.nondegenerate := fun x hx ↦ hB _ <| by
+    (hB : Q.Anisotropic) :
+    -- Porting note: added type ascription
+    (QuadraticForm.associated' (R := R) Q).Nondegenerate := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
 #align quadratic_form.nondegenerate_of_anisotropic QuadraticForm.nondegenerate_of_anisotropic
@@ -983,7 +987,7 @@ variable [Invertible (2 : R₁)]
 
 /-- A matrix representation of the quadratic form. -/
 def QuadraticForm.toMatrix' (Q : QuadraticForm R₁ (n → R₁)) : Matrix n n R₁ :=
-  (associated Q).toMatrix'
+  BilinForm.toMatrix' (associated Q)
 #align quadratic_form.to_matrix' QuadraticForm.toMatrix'
 
 open QuadraticForm
@@ -995,7 +999,8 @@ theorem QuadraticForm.toMatrix'_smul (a : R₁) (Q : QuadraticForm R₁ (n → R
 
 theorem QuadraticForm.isSymm_toMatrix' (Q : QuadraticForm R₁ (n → R₁)) : Q.toMatrix'.IsSymm := by
   ext (i j)
-  rw [toMatrix', BilinForm.toMatrix'_apply, BilinForm.toMatrix'_apply, associated_is_symm]
+  rw [toMatrix', Matrix.transpose_apply, BilinForm.toMatrix'_apply, BilinForm.toMatrix'_apply,
+    associated_isSymm]
 #align quadratic_form.is_symm_to_matrix' QuadraticForm.isSymm_toMatrix'
 
 end
@@ -1012,9 +1017,9 @@ open Matrix
 
 @[simp]
 theorem toMatrix'_comp (Q : QuadraticForm R₁ (m → R₁)) (f : (n → R₁) →ₗ[R₁] m → R₁) :
-    (Q.comp f).toMatrix' = f.toMatrix'ᵀ ⬝ Q.toMatrix' ⬝ f.toMatrix' := by
+    (Q.comp f).toMatrix' = (LinearMap.toMatrix' f)ᵀ ⬝ Q.toMatrix' ⬝ (LinearMap.toMatrix' f) := by
   ext
-  simp only [QuadraticForm.associated_comp, BilinForm.toMatrix'_comp, to_matrix']
+  simp only [QuadraticForm.associated_comp, BilinForm.toMatrix'_comp, toMatrix']
 #align quadratic_form.to_matrix'_comp QuadraticForm.toMatrix'_comp
 
 section Discriminant
@@ -1078,20 +1083,21 @@ variable [FiniteDimensional K V]
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (hB₂ : B.IsSymm) :
-    ∃ v : Basis (Fin (finrank K V)) K V, B.IsOrthoᵢ v := by
+    ∃ v : Basis (Fin (finrank K V)) K V, B.iIsOrtho v := by
   induction' hd : finrank K V with d ih generalizing V
-  · exact ⟨basisOfFinrankZero hd, fun _ _ _ => zero_left _⟩
+  · simp_rw [Nat.zero_eq]
+    exact ⟨basisOfFinrankZero hd, fun _ _ _ => zero_left _⟩
   haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := FiniteDimensional.finBasis K V
     rw [hd] at b
-    refine' ⟨b, fun i j hij => rfl⟩
-  obtain ⟨x, hx⟩ := exists_bilin_form_self_ne_zero hB₁ hB₂
-  rw [← Submodule.finrank_add_eq_of_isCompl (is_compl_span_singleton_orthogonal hx).symm,
-    finrank_span_singleton (ne_zero_of_not_is_ortho_self x hx)] at hd
+    refine' ⟨b, fun i j _ => rfl⟩
+  obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
+  rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
+    finrank_span_singleton (ne_zero_of_not_isOrtho_self x hx)] at hd
   let B' := B.restrict (B.orthogonal <| K ∙ x)
-  obtain ⟨v', hv₁⟩ := ih (B.restrict_symm hB₂ _ : B'.is_symm) (Nat.succ.inj hd)
+  obtain ⟨v', hv₁⟩ := ih (B.restrictSymm hB₂ _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=
     Basis.mkFinCons x v'
@@ -1099,7 +1105,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc
         rw [← hc, Submodule.neg_mem_iff] at hy
-        have := (is_compl_span_singleton_orthogonal hx).Disjoint
+        have := (isCompl_span_singleton_orthogonal hx).disjoint
         rw [Submodule.disjoint_def] at this
         have := this (c • x) (Submodule.smul_mem _ _ <| Submodule.mem_span_singleton_self _) hy
         exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ zero_left _)
@@ -1107,7 +1113,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
         intro y
         refine' ⟨-B x y / B x x, fun z hz => _⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [is_ortho, smul_left, add_right, smul_right, div_mul_cancel _ hx, add_neg_self,
+        rw [IsOrtho, smul_left, add_right, smul_right, div_mul_cancel _ hx, add_neg_self,
           mul_zero])
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
@@ -1115,9 +1121,9 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
-    · rw [is_ortho, hB₂]
-      exact (v' j).Prop _ (Submodule.mem_span_singleton_self x)
-    · exact (v' i).Prop _ (Submodule.mem_span_singleton_self x)
+    · rw [IsOrtho, hB₂]
+      exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
+    · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
     · exact hv₁ (ne_of_apply_ne _ hij)
 #align bilin_form.exists_orthogonal_basis BilinForm.exists_orthogonal_basis
 
@@ -1169,7 +1175,7 @@ theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R₁] [SMulCommC
 /-- On an orthogonal basis, the basis representation of `Q` is just a sum of squares. -/
 theorem basisRepr_eq_of_iIsOrtho {R₁ M} [CommRing R₁] [AddCommGroup M] [Module R₁ M]
     [Invertible (2 : R₁)] (Q : QuadraticForm R₁ M) (v : Basis ι R₁ M)
-    (hv₂ : (associated Q).IsOrthoᵢ v) : Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
+    (hv₂ : (associated Q).iIsOrtho v) : Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
   ext w
   rw [basisRepr_apply, ← @associated_eq_self_apply R₁, sum_left, weightedSumSquares_apply]
   refine' sum_congr rfl fun j hj => _
@@ -1179,7 +1185,7 @@ theorem basisRepr_eq_of_iIsOrtho {R₁ M} [CommRing R₁] [AddCommGroup M] [Modu
   · intro i _ hij
     rw [smul_left, smul_right, show associatedHom R₁ Q (v j) (v i) = 0 from hv₂ hij.symm,
       mul_zero, mul_zero]
+set_option linter.uppercaseLean3 false in
 #align quadratic_form.basis_repr_eq_of_is_Ortho QuadraticForm.basisRepr_eq_of_iIsOrtho
 
 end QuadraticForm
-
