@@ -183,7 +183,8 @@ theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
 #align measure_theory.pi_premeasure_pi_mono MeasureTheory.piPremeasure_pi_mono
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
-    piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by simp [piPremeasure_pi']
+    piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
+  simp [piPremeasure_pi']; rfl
 #align measure_theory.pi_premeasure_pi_eval MeasureTheory.piPremeasure_pi_eval
 
 namespace OuterMeasure
@@ -226,7 +227,10 @@ variable {δ : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
 -- for some reason the equation compiler doesn't like this definition
 /-- A product of measures in `tprod α l`. -/
 protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd π l) := by
-  induction' l with i l ih; exact dirac PUnit.unit; exact (μ i).prod ih
+  induction' l with i l ih
+  · exact dirac PUnit.unit
+  · have := (μ i).prod (α := π i) ih
+    exact this
 #align measure_theory.measure.tprod MeasureTheory.Measure.tprod
 
 @[simp]
@@ -244,7 +248,7 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
     SigmaFinite (Measure.tprod l μ) := by
   induction' l with i l ih
   · rw [tprod_nil]; infer_instance
-  · rw [tprod_cons]; skip; infer_instance
+  · rw [tprod_cons]; infer_instance
 #align measure_theory.measure.sigma_finite_tprod MeasureTheory.Measure.sigmaFinite_tprod
 
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
@@ -271,10 +275,12 @@ def pi' : Measure (∀ i, α i) :=
 
 theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
-  rw [pi', ← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
-      MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
-      List.prod_toFinset, sorted_univ_to_finset] <;>
-    exact sorted_univ_nodup ι
+  rw [pi']
+  simp only [TProd.elim'] -- Porting note: new step
+  rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
+    MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
+    List.prod_toFinset, sortedUniv_toFinset] <;>
+  exact sortedUniv_nodup ι
 #align measure_theory.measure.pi'_pi MeasureTheory.Measure.pi'_pi
 
 end Encodable
