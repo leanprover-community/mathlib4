@@ -16,20 +16,20 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 We define the `n`th homotopy group at `x`, `π n x`, as the equivalence classes
 of functions from the nth dimensional cube to the topological space `X`
 that send the boundary to the base point `x`, up to homotopic equivalence.
-Note that such functions are generalized loops `gen_loop n x`, in particular
-`gen_loop 1 x ≃ path x x`
+Note that such functions are generalized loops `GenLoop n x`, in particular
+`GenLoop 1 x ≃ Path x x`
 
 We show that `π 0 x` is equivalent to the path-conected components, and
 that `π 1 x` is equivalent to the fundamental group at `x`.
 
 ## definitions
 
-* `gen_loop n x` is the type of continous fuctions `I^n → X` that send the boundary to `x`
-* `homotopy_group n x` denoted `π n x` is the quotient of `gen_loop n x` by homotopy relative
+* `GenLoop n x` is the type of continous fuctions `I^n → X` that send the boundary to `x`
+* `HomotopyGroup n x` denoted `π n x` is the quotient of `GenLoop n x` by homotopy relative
   to the boundary
 
 TODO: show that `π n x` is a group when `n > 0` and abelian when `n > 1`. Show that
-`pi1_equiv_fundamental_group` is an isomorphism of groups.
+`pi1EquivFundamentalGroup` is an isomorphism of groups.
 
 -/
 
@@ -143,7 +143,7 @@ theorem toContinuousMap_apply (f : GenLoop n x) (y) : f.toContinuousMap y = f y 
 
 initialize_simps_projections GenLoop (toFun → apply)
 
-/-- The constant `gen_loop` at `x`.
+/-- The constant `GenLoop` at `x`.
 -/
 @[simps!] -- porting note: new attr
 def const : GenLoop n x :=
@@ -160,7 +160,7 @@ def diagonal [NeZero n] (f : GenLoop n x) : Path x x where
   source' := f.boundary _ Cube.zero_mem_boundary
   target' := f.boundary _ Cube.one_mem_boundary
 
-/-- The "homotopy relative to boundary" relation between `gen_loop`s.
+/-- The "homotopy relative to boundary" relation between `GenLoop`s.
 -/
 def Homotopic (f g : GenLoop n x) : Prop :=
   f.toContinuousMap.HomotopicRel g.toContinuousMap (Cube.boundary n)
@@ -205,7 +205,7 @@ end Homotopic
 
 end GenLoop
 
-/-- The `n`th homotopy group at `x` defined as the quotient of `gen_loop n x` by the
+/-- The `n`th homotopy group at `x` defined as the quotient of `GenLoop n x` by the
 `homotopic` relation.
 -/
 def HomotopyGroup (n : ℕ) (x : X) : Type _ :=
@@ -239,7 +239,7 @@ theorem joined_genLoopZeroEquiv_iff {f g : GenLoop 0 x} :
     Joined (genLoopZeroEquiv f) (genLoopZeroEquiv g) ↔ f.Homotopic g := by
   rw [← homotopic_genLoopZeroEquiv_symm_iff, Equiv.symm_apply_apply, Equiv.symm_apply_apply]
 
-/-- The 0th homotopy "group" is equivalent to the path components of `X`, aka the `zeroth_homotopy`.
+/-- The 0th homotopy "group" is equivalent to the path components of `X`, aka the `ZerothHomotopy`.
 -/
 def pi0EquivPathComponents : π 0 x ≃ ZerothHomotopy X :=
   Quotient.congr (genLoopZeroEquiv (x := x)) <| fun _ _ ↦ joined_genLoopZeroEquiv_iff.symm
