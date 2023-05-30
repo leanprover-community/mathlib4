@@ -21,6 +21,7 @@ with the forgetful functors to `Ring` and `Module`. We furthermore show that the
 to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
 
+set_option linter.uppercaseLean3 false
 
 open CategoryTheory
 
@@ -42,17 +43,17 @@ attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 namespace AlgebraCat
 
 instance : CoeSort (AlgebraCat R) (Type v) :=
-  ⟨AlgebraCat.Carrier⟩
+  ⟨AlgebraCat.carrier⟩
 
 instance : Category (AlgebraCat.{v} R) where
-  hom A B := A →ₐ[R] B
+  Hom A B := A →ₐ[R] B
   id A := AlgHom.id R A
-  comp A B C f g := g.comp f
+  comp f g := g.comp f
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun R S f => (f : R → S) }
+      map := fun {R S} f => (f : R → S) }
   forget_faithful := { }
 
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v}
@@ -103,7 +104,7 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
   inv := 𝟙 M
 #align Algebra.of_self_iso AlgebraCat.ofSelfIso
 
-variable {R} {M N U : ModuleCat.{v} R}
+variable {M N U : ModuleCat.{v} R}
 
 @[simp]
 theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
@@ -123,10 +124,10 @@ def free : Type u ⥤ AlgebraCat.{u} R where
   obj S :=
     { carrier := FreeAlgebra R S
       isRing := Algebra.semiringToRing R }
-  map S T f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
+  map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
   -- obviously can fill the next two goals, but it is slow
-  map_id' := by intro X; ext1; simp only [FreeAlgebra.ι_comp_lift]; rfl
-  map_comp' := by
+  map_id := by intro X; ext1; simp only [FreeAlgebra.ι_comp_lift]; rfl
+  map_comp := by
     intros; ext1; simp only [FreeAlgebra.ι_comp_lift]; ext1
     simp only [FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp, Function.comp_apply,
       types_comp_apply]
@@ -143,7 +144,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
           Function.comp_apply, types_comp_apply]
       homEquiv_naturality_right := by
         intros; ext
-        simp only [forget_map_eq_coe, CategoryTheory.coe_comp, Function.comp_apply,
+        simp only [CategoryTheory.coe_comp, Function.comp_apply,
           FreeAlgebra.lift_symm_apply, types_comp_apply] }
 #align Algebra.adj AlgebraCat.adj
 
@@ -162,8 +163,8 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := (e : X₁ →ₐ[R] X₂)
   inv := (e.symm : X₂ →ₐ[R] X₁)
-  hom_inv_id' := by ext; exact e.left_inv x
-  inv_hom_id' := by ext; exact e.right_inv x
+  hom_inv_id := by ext x; exact e.left_inv x
+  inv_hom_id := by ext x; exact e.right_inv x
 #align alg_equiv.to_Algebra_iso AlgEquiv.toAlgebraIso
 
 namespace CategoryTheory.Iso
@@ -201,4 +202,3 @@ instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (Algebra
     let e : X ≃ₐ[R] Y := { f, i.to_equiv with }
     exact ⟨(is_iso.of_iso e.to_Algebra_iso).1⟩
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
-
