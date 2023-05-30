@@ -34,36 +34,36 @@ Let `p` be a formal multilinear series from `E` to `F`, i.e., `p n` is a multili
 for `n : ℕ`.
 
 * `p.radius`: the largest `r : ℝ≥0∞` such that `‖p n‖ * r^n` grows subexponentially.
-* `p.le_radius_of_bound`, `p.le_radius_of_bound_nnreal`, `p.le_radius_of_is_O`: if `‖p n‖ * r ^ n`
+* `p.le_radius_of_bound`, `p.le_radius_of_bound_nnreal`, `p.le_radius_of_isBigO`: if `‖p n‖ * r ^ n`
   is bounded above, then `r ≤ p.radius`;
-* `p.is_o_of_lt_radius`, `p.norm_mul_pow_le_mul_pow_of_lt_radius`, `p.is_o_one_of_lt_radius`,
+* `p.isLittleO_of_lt_radius`, `p.norm_mul_pow_le_mul_pow_of_lt_radius`,
+  `p.isLittleO_one_of_lt_radius`,
   `p.norm_mul_pow_le_of_lt_radius`, `p.nnnorm_mul_pow_le_of_lt_radius`: if `r < p.radius`, then
   `‖p n‖ * r ^ n` tends to zero exponentially;
-* `p.lt_radius_of_is_O`: if `r ≠ 0` and `‖p n‖ * r ^ n = O(a ^ n)` for some `-1 < a < 1`, then
+* `p.lt_radius_of_isBigO`: if `r ≠ 0` and `‖p n‖ * r ^ n = O(a ^ n)` for some `-1 < a < 1`, then
   `r < p.radius`;
-* `p.partial_sum n x`: the sum `∑_{i = 0}^{n-1} pᵢ xⁱ`.
+* `p.partialSum n x`: the sum `∑_{i = 0}^{n-1} pᵢ xⁱ`.
 * `p.sum x`: the sum `∑'_{i = 0}^{∞} pᵢ xⁱ`.
 
 Additionally, let `f` be a function from `E` to `F`.
 
-* `has_fpower_series_on_ball f p x r`: on the ball of center `x` with radius `r`,
+* `HasFpowerSeriesOnBall f p x r`: on the ball of center `x` with radius `r`,
   `f (x + y) = ∑'_n pₙ yⁿ`.
-* `has_fpower_series_at f p x`: on some ball of center `x` with positive radius, holds
-  `has_fpower_series_on_ball f p x r`.
-* `analytic_at 𝕜 f x`: there exists a power series `p` such that holds
-  `has_fpower_series_at f p x`.
-* `analytic_on 𝕜 f s`: the function `f` is analytic at every point of `s`.
+* `HasFpowerSeriesAt f p x`: on some ball of center `x` with positive radius, holds
+  `HasFpowerSeriesOnBall f p x r`.
+* `AnalyticAt 𝕜 f x`: there exists a power series `p` such that holds `HasFpowerSeriesAt f p x`.
+* `AnalyticOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 We develop the basic properties of these notions, notably:
 * If a function admits a power series, it is continuous (see
-  `has_fpower_series_on_ball.continuous_on` and `has_fpower_series_at.continuous_at` and
-  `analytic_at.continuous_at`).
+  `HasFpowerSeriesOnBall.continuousOn` and `HasFpowerSeriesAt.continuousAt` and
+  `AnalyticAt.continuousAt`).
 * In a complete space, the sum of a formal power series with positive radius is well defined on the
-  disk of convergence, see `formal_multilinear_series.has_fpower_series_on_ball`.
+  disk of convergence, see `FormalMultilinearSeries.hasFpowerSeriesOnBall`.
 * If a function admits a power series in a ball, then it is analytic at any point `y` of this ball,
   and the power series there can be expressed in terms of the initial power series `p` as
-  `p.change_origin y`. See `has_fpower_series_on_ball.change_origin`. It follows in particular that
-  the set of points at which a given function is analytic is open, see `is_open_analytic_at`.
+  `p.changeOrigin y`. See `HasFpowerSeriesOnBall.changeOrigin`. It follows in particular that
+  the set of points at which a given function is analytic is open, see `isOpen_analyticAt`.
 
 ## Implementation details
 
@@ -98,7 +98,7 @@ protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
 #align formal_multilinear_series.sum FormalMultilinearSeries.sum
 
-/-- Given a formal multilinear series `p` and a vector `x`, then `p.partial_sum n x` is the sum
+/-- Given a formal multilinear series `p` and a vector `x`, then `p.partialSum n x` is the sum
 `Σ pₖ xᵏ` for `k ∈ {0,..., n-1}`. -/
 def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
   ∑ k in Finset.range n, p k fun _ : Fin k => x
@@ -137,10 +137,10 @@ theorem le_radius_of_bound (C : ℝ) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖ *
 #align formal_multilinear_series.le_radius_of_bound FormalMultilinearSeries.le_radius_of_bound
 
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/
-theorem le_radius_of_bound_nNReal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
+theorem le_radius_of_bound_nnreal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
     (r : ℝ≥0∞) ≤ p.radius :=
   p.le_radius_of_bound C fun n => by exact_mod_cast h n
-#align formal_multilinear_series.le_radius_of_bound_nnreal FormalMultilinearSeries.le_radius_of_bound_nNReal
+#align formal_multilinear_series.le_radius_of_bound_nnreal FormalMultilinearSeries.le_radius_of_bound_nnreal
 
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
 theorem le_radius_of_isBigO (h : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) :
@@ -156,7 +156,7 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
 #align formal_multilinear_series.le_radius_of_eventually_le FormalMultilinearSeries.le_radius_of_eventually_le
 
 theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
-  p.le_radius_of_bound_nNReal (∑' n, ‖p n‖₊ * r ^ n) fun _ => le_tsum' h _
+  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => le_tsum' h _
 #align formal_multilinear_series.le_radius_of_summable_nnnorm FormalMultilinearSeries.le_radius_of_summable_nnnorm
 
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
@@ -645,7 +645,7 @@ theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h 
 sums of this power series on strict subdisks of the disk of convergence.
 
 This version provides an upper estimate that decreases both in `‖y‖` and `n`. See also
-`has_fpower_series_on_ball.uniform_geometric_approx` for a weaker version. -/
+`HasFpowerSeriesOnBall.uniform_geometric_approx` for a weaker version. -/
 theorem HasFpowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFpowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
@@ -694,7 +694,7 @@ theorem HasFpowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
     mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)]
 #align has_fpower_series_on_ball.uniform_geometric_approx HasFpowerSeriesOnBall.uniform_geometric_approx
 
-/-- Taylor formula for an analytic function, `is_O` version. -/
+/-- Taylor formula for an analytic function, `IsBigO` version. -/
 theorem HasFpowerSeriesAt.isBigO_sub_partialSum_pow (hf : HasFpowerSeriesAt f p x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
@@ -710,9 +710,9 @@ set_option linter.uppercaseLean3 false in
 #align has_fpower_series_at.is_O_sub_partial_sum_pow HasFpowerSeriesAt.isBigO_sub_partialSum_pow
 
 /-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
-ball, the norm of the difference `f y - f z - p 1 (λ _, y - z)` is bounded above by
-`C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `is_O` and
-`filter.principal` on `E × E`. -/
+ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
+`C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `IsBigO` and
+`Filter.principal` on `E × E`. -/
 theorem HasFpowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFpowerSeriesOnBall f p x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓟 (EMetric.ball (x, x) r')]
@@ -778,7 +778,7 @@ set_option linter.uppercaseLean3 false in
 #align has_fpower_series_on_ball.is_O_image_sub_image_sub_deriv_principal HasFpowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
 
 /-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
-ball, the norm of the difference `f y - f z - p 1 (λ _, y - z)` is bounded above by
+ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFpowerSeriesOnBall.image_sub_sub_deriv_le (hf : HasFpowerSeriesOnBall f p x r)
     (hr : r' < r) :
@@ -790,7 +790,7 @@ theorem HasFpowerSeriesOnBall.image_sub_sub_deriv_le (hf : HasFpowerSeriesOnBall
 #align has_fpower_series_on_ball.image_sub_sub_deriv_le HasFpowerSeriesOnBall.image_sub_sub_deriv_le
 
 /-- If `f` has formal power series `∑ n, pₙ` at `x`, then
-`f y - f z - p 1 (λ _, y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`.
+`f y - f z - p 1 (fun _ ↦ y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`.
 In particular, `f` is strictly differentiable at `x`. -/
 theorem HasFpowerSeriesAt.isBigO_image_sub_norm_mul_norm_sub (hf : HasFpowerSeriesAt f p x) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓝 (x, x)] fun y =>
@@ -804,7 +804,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If a function admits a power series expansion at `x`, then it is the uniform limit of the
 partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f (x + y)`
-is the uniform limit of `p.partial_sum n y` there. -/
+is the uniform limit of `p.partialSum n y` there. -/
 theorem HasFpowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFpowerSeriesOnBall f p x r)
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
@@ -823,7 +823,7 @@ theorem HasFpowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFpowerS
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
-is the locally uniform limit of `p.partial_sum n y` there. -/
+is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFpowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFpowerSeriesOnBall f p x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
@@ -836,7 +836,7 @@ theorem HasFpowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFpowerSeriesOnB
 
 /-- If a function admits a power series expansion at `x`, then it is the uniform limit of the
 partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f y`
-is the uniform limit of `p.partial_sum n (y - x)` there. -/
+is the uniform limit of `p.partialSum n (y - x)` there. -/
 theorem HasFpowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFpowerSeriesOnBall f p x r)
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop (Metric.ball (x : E) r') := by
@@ -848,7 +848,7 @@ theorem HasFpowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFpower
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f y`
-is the locally uniform limit of `p.partial_sum n (y - x)` there. -/
+is the locally uniform limit of `p.partialSum n (y - x)` there. -/
 theorem HasFpowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFpowerSeriesOnBall f p x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (EMetric.ball (x : E) r) := by
@@ -915,10 +915,10 @@ end
 ### Uniqueness of power series
 If a function `f : E → F` has two representations as power series at a point `x : E`, corresponding
 to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
-for any `n : ℕ` and `y : E`, `p₁ n (λ i, y) = p₂ n (λ i, y)`. In the one-dimensional case, when
-`f : 𝕜 → E`, the continuous multilinear maps `p₁ n` and `p₂ n` are given by
+for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,
+when `f : 𝕜 → E`, the continuous multilinear maps `p₁ n` and `p₂ n` are given by
 `formal_multilinear_series.mk_pi_field`, and hence are determined completely by the value of
-`p₁ n (λ i, 1)`, so `p₁ = p₂`. Consequently, the radius of convergence for one series can be
+`p₁ n (fun i ↦ 1)`, so `p₁ = p₂`. Consequently, the radius of convergence for one series can be
 transferred to the other.
 -/
 
@@ -982,7 +982,7 @@ set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.continuous_multilinear_map_apply_eq_zero Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
-terms `p n (λ i, y)` appearing the in sum are zero for any `n : ℕ`, `y : E`. -/
+terms `p n (fun i ↦ y)` appearing the in sum are zero for any `n : ℕ`, `y : E`. -/
 theorem HasFpowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (h : HasFpowerSeriesAt 0 p x) (n : ℕ) : ∀ y : E, (p n fun _ => y) = 0 := by
   refine' Nat.strong_induction_on n fun k hk => _
@@ -1068,10 +1068,10 @@ $$
 The corresponding power series has thus a `k`-th coefficient equal to
 $\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
 to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
+possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
 `y` to the indices outside of `s`.
 
-In this paragraph, we implement this. The new power series is called `p.change_origin y`. Then, we
+In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we
 check its convergence and the fact that its sum coincides with the original sum. The outcome of this
 discussion is that the set of points where a function is analytic is open.
 -/
@@ -1084,15 +1084,15 @@ section
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 set_option synthInstance.maxHeartbeats 100000 in
-/-- A term of `formal_multilinear_series.change_origin_series`.
+/-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
 Given a formal multilinear series `p` and a point `x` in its ball of convergence,
-`p.change_origin x` is a formal multilinear series such that
-`p.sum (x+y) = (p.change_origin x).sum y` when this makes sense. Each term of `p.change_origin x`
-is itself an analytic function of `x` given by the series `p.change_origin_series`. Each term in
-`change_origin_series` is the sum of `change_origin_series_term`'s over all `s` of cardinality `l`.
-The definition is such that
-`p.changeOriginSeriesTerm k l s hs (λ _, x) (λ _, y) = p (k + l) (s.piecewise (λ _, x) (λ _, y))`
+`p.changeOrigin x` is a formal multilinear series such that
+`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Each term of `p.changeOrigin x`
+is itself an analytic function of `x` given by the series `p.changeOriginSeries`. Each term in
+`changeOriginSeries` is the sum of `changeOriginSeriesTerm`'s over all `s` of cardinality `l`.
+The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fun _ ↦ y) =
+p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E[×l]→L[𝕜] E[×k]→L[𝕜] F := by
@@ -1129,12 +1129,12 @@ theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k +
   apply ContinuousMultilinearMap.le_op_nnnorm
 #align formal_multilinear_series.nnnorm_change_origin_series_term_apply_le FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm_apply_le
 
-/-- The power series for `f.change_origin k`.
+/-- The power series for `f.changeOrigin k`.
 
 Given a formal multilinear series `p` and a point `x` in its ball of convergence,
-`p.change_origin x` is a formal multilinear series such that
-`p.sum (x+y) = (p.change_origin x).sum y` when this makes sense. Its `k`-th term is the sum of
-the series `p.change_origin_series k`. -/
+`p.changeOrigin x` is a formal multilinear series such that
+`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
+the series `p.changeOriginSeries k`. -/
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[𝕜] F) := fun l =>
   ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
 #align formal_multilinear_series.change_origin_series FormalMultilinearSeries.changeOriginSeries
@@ -1152,19 +1152,19 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
 #align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum
 
 /-- Changing the origin of a formal multilinear series `p`, so that
-`p.sum (x+y) = (p.change_origin x).sum y` when this makes sense.
+`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
 -/
 def changeOrigin (x : E) : FormalMultilinearSeries 𝕜 E F :=
   fun k => (p.changeOriginSeries k).sum x
 #align formal_multilinear_series.change_origin FormalMultilinearSeries.changeOrigin
 
 /-- An auxiliary equivalence useful in the proofs about
-`formal_multilinear_series.change_origin_series`: the set of triples `(k, l, s)`, where `s` is a
-`finset (fin (k + l))` of cardinality `l` is equivalent to the set of pairs `(n, s)`, where `s` is a
-`finset (fin n)`.
+`FormalMultilinearSeries.changeOriginSeries`: the set of triples `(k, l, s)`, where `s` is a
+`Finset (Fin (k + l))` of cardinality `l` is equivalent to the set of pairs `(n, s)`, where `s` is a
+`Finset (Fin n)`.
 
 The forward map sends `(k, l, s)` to `(k + l, s)` and the inverse map sends `(n, s)` to
-`(n - finset.card s, finset.card s, s)`. The actual definition is less readable because of problems
+`(n - Finset.card s, Finset.card s, s)`. The actual definition is less readable because of problems
 with non-definitional equalities. -/
 @[simps]
 def changeOriginIndexEquiv :
@@ -1243,9 +1243,9 @@ theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radi
   exact ((NNReal.summable_sigma.1 this).1 l).hasSum
 #align formal_multilinear_series.nnnorm_change_origin_le FormalMultilinearSeries.nnnorm_changeOrigin_le
 
-/-- The radius of convergence of `p.change_origin x` is at least `p.radius - ‖x‖`. In other words,
-`p.change_origin x` is well defined on the largest ball contained in the original ball of
-convergence.-/
+/-- The radius of convergence of `p.changeOrigin x` is at least `p.radius - ‖x‖`. In other words,
+`p.changeOrigin x` is well defined on the largest ball contained in the original ball of
+convergence. -/
 theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radius := by
   refine' ENNReal.le_of_forall_pos_nnreal_lt fun r _h0 hr => _
   rw [lt_tsub_iff_right, add_comm] at hr
@@ -1273,7 +1273,7 @@ theorem hasFpowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
   ((p.changeOriginSeries k).hasFpowerSeriesOnBall (hr.trans_le this)).mono hr this
 #align formal_multilinear_series.has_fpower_series_on_ball_change_origin FormalMultilinearSeries.hasFpowerSeriesOnBall_changeOrigin
 
-/-- Summing the series `p.change_origin x` at a point `y` gives back `p (x + y)`-/
+/-- Summing the series `p.changeOrigin x` at a point `y` gives back `p (x + y)`. -/
 theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
   have radius_pos : 0 < p.radius := lt_of_le_of_lt (zero_le _) h
@@ -1329,7 +1329,7 @@ section
 variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x y : E} {r : ℝ≥0∞}
 
 /-- If a function admits a power series expansion `p` on a ball `B (x, r)`, then it also admits a
-power series on any subball of this ball (even with a different center), given by `p.change_origin`.
+power series on any subball of this ball (even with a different center), given by `p.changeOrigin`.
 -/
 theorem HasFpowerSeriesOnBall.changeOrigin (hf : HasFpowerSeriesOnBall f p x r)
     (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFpowerSeriesOnBall f (p.changeOrigin y) (x + y) (r - ‖y‖₊) :=
@@ -1385,7 +1385,7 @@ variable {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {z₀ : 𝕜
 
 /-- A function `f : 𝕜 → E` has `p` as power series expansion at a point `z₀` iff it is the sum of
 `p` in a neighborhood of `z₀`. This makes some proofs easier by hiding the fact that
-`has_fpower_series_at` depends on `p.radius`. -/
+`HasFpowerSeriesAt` depends on `p.radius`. -/
 theorem hasFpowerSeriesAt_iff :
     HasFpowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 0, HasSum (fun n => z ^ n • p.coeff n) (f (z₀ + z)) := by
   refine' ⟨fun ⟨r, _, r_pos, h⟩ =>
