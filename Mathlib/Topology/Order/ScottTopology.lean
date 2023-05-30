@@ -368,6 +368,16 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
   . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
+lemma isClosed_iff_lower_and_closed_under_Directed_Sup (s : Set α) : IsClosed s
+  ↔ (IsLowerSet s ∧
+  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s ) := by
+  rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
+  apply and_congr_right'
+  constructor
+  . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
+  . exact fun h d a h₁ h₂ h₃ ha => (Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h d h₁ h₂ ha))
+
+
 end complete_lattice
 
 lemma UpperSet_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :

@@ -58,7 +58,7 @@ Monad operations:
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
-  `α` to `β`. It is defined as `α → part β`. -/
+  `α` to `β`. It is defined as `α → Part β`. -/
 def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
@@ -123,7 +123,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 #align pfun.as_subtype PFun.asSubtype
 
 /-- The type of partial functions `α →. β` is equivalent to
-the type of pairs `(p : α → Prop, f : subtype p → β)`. -/
+the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
     funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
@@ -457,7 +457,7 @@ theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext ; simp [mem_preima
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext ; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
-/-- Core of a set `s : set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
+/-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
 such that `f a ∈ s`, if `f a` is defined. -/
 def core (s : Set β) : Set α :=
   f.graph'.core s

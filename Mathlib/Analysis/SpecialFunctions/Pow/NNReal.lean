@@ -799,12 +799,12 @@ end ENNReal
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
 -- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
--- /-- Evaluate `nnreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
 -- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
--- /-- Evaluate `ennreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
 -- #align norm_num.prove_ennrpow norm_num.prove_ennrpow

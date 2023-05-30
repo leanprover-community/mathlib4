@@ -37,7 +37,7 @@ open OmegaCompletePartialOrder
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
-halting problem. Instead, this requirement is limited to only functions that are `continuous` in the
+halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where

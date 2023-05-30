@@ -82,7 +82,7 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 
-/-- The element of `mul_opposite α` that represents `x : α`. -/
+/-- The element of `MulOpposite α` that represents `x : α`. -/
 @[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
 def op : α → αᵐᵒᵖ :=
   PreOpposite.op'
