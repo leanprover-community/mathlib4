@@ -215,9 +215,10 @@ theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.o
     o.volumeForm = b.toBasis.det := by
   cases n
   · classical
-      have : o = positiveOrientation := hb.symm.trans b.toBasis.orientation_isEmpty
-      simp [volumeForm, Or.by_cases, dif_pos this]
-  · dsimp [volumeForm]
+    have : o = positiveOrientation := hb.symm.trans b.toBasis.orientation_isEmpty
+    simp [volumeForm, Or.by_cases, dif_pos this]
+    tauto
+  · simp [volumeForm]
     rw [same_orientation_iff_det_eq_det, hb]
     exact o.finOrthonormalBasis_orientation _ _
 #align orientation.volume_form_robust Orientation.volumeForm_robust
