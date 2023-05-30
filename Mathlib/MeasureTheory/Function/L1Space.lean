@@ -110,9 +110,7 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
--- Porting note: When it is used in `rw`, the equation lemma is re-elaborated so the `μ` argument
---               is filled by `volume_tac`, and the error occurs because there are no
---               `MeasureSpace` instance. So we need this new equation lemma without `autoParam`.
+-- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
@@ -437,9 +435,7 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
 
--- Porting note: When it is used in `rw`, the equation lemma is re-elaborated so the `μ` argument
---               is filled by `volume_tac`, and the error occurs because there are no
---               `MeasureSpace` instance. So we need this new equation lemma without `autoParam`.
+-- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
   Iff.rfl

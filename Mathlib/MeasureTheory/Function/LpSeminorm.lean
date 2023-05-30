@@ -113,9 +113,7 @@ def Memℒp {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞)
   AEStronglyMeasurable f μ ∧ snorm f p μ < ∞
 #align measure_theory.mem_ℒp MeasureTheory.Memℒp
 
--- Porting note: When it is used in `rw`, the equation lemma is re-elaborated so the `μ` argument
---               is filled by `volume_tac`, and the error occurs because there are no
---               `MeasureSpace` instance. So we need this new equation lemma without `autoParam`.
+-- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem memℒp_def {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞) (μ : Measure α) :
     Memℒp f p μ ↔ (AEStronglyMeasurable f μ ∧ snorm f p μ < ∞) :=
   Iff.rfl
