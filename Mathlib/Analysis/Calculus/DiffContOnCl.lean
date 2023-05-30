@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Inv
 
 /-!
 # Functions differentiable on a domain and continuous on its closure
@@ -65,8 +65,7 @@ theorem comp {g : G → E} {t : Set G} (hf : DiffContOnCl 𝕜 f s) (hg : DiffCo
 #align diff_cont_on_cl.comp DiffContOnCl.comp
 
 theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnCl 𝕜 f (ball x r)) :
-    ContinuousOn f (closedBall x r) :=
-  by
+    ContinuousOn f (closedBall x r) := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closed_ball_zero]
     exact continuousOn_singleton f x
