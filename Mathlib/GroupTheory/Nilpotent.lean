@@ -531,7 +531,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type _} [Group H] (f : G →* H
     (hf1 : f.ker ≤ center G) (hH : IsNilpotent H) :
     @Group.nilpotencyClass G _ (isNilpotent_of_ker_le_center f hf1 hH) ≤
       Group.nilpotencyClass H + 1 := by
-  have : IsNilpotent G := isNilpotent_of_ker_le_center f hf1 hH
+  haveI : IsNilpotent G := isNilpotent_of_ker_le_center f hf1 hH
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   -- Porting note: TODO
   refine @Nat.find_min' _ (Classical.decPred _) _ _ ?_
