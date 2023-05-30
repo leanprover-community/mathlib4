@@ -10,7 +10,6 @@ Ported by: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Tactic.ProjectionNotation
 
 /-!
 # Quivers

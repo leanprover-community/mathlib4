@@ -10,7 +10,6 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
-import Mathlib.Tactic.CasesM
 
 /-!
 # Discrete categories

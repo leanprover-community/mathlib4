@@ -71,7 +71,7 @@ theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join 
 
 @[simp]
 theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
-  induction L <;> [rfl, simp only [*, join, map, sum_cons, length_append]]
+  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
 #align list.length_join List.length_join
 
 @[simp]

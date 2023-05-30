@@ -9,15 +9,15 @@ Authors: Johan Commelin, Adam Topaz
 ! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Instances.NNReal
 
 /-!
 # Topological simplices
 
-We define the natural functor from `SimplexCategory` to `Top` sending `[n]` to the
+We define the natural functor from `SimplexCategory` to `TopCat` sending `[n]` to the
 topological `n`-simplex.
-This is used to define `Top.to_sSet` in `AlgebraicTopology.SimplicialSset`.
+This is used to define `TopCat.toSSet` in `AlgebraicTopology.SimplicialSset`.
 -/
 
 

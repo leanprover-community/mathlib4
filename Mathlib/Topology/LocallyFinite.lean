@@ -139,7 +139,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
   simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
 #align locally_finite.is_closed_Union LocallyFinite.isClosed_iUnion
 
-/-- If `f : β → set α` is a locally finite family of closed sets, then for any `x : α`, the
+/-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_hi : x ∉ f i), f iᶜ) ∈ 𝓝 x := by
@@ -157,7 +157,7 @@ interval `[N, +∞)` and a neighbourhood of `x`.
 We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
 theorem exists_forall_eventually_eq_prod {π : X → Sort _} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
-    ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ᶠ 𝓝 x, f p.1 p.2 = F p.2 := by
+    ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
   choose N hN using fun x => (hU x).bddAbove
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y

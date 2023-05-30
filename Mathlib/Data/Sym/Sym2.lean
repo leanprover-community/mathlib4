@@ -729,9 +729,8 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
+    ((s ×ˢ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
   ext z
   induction' z using Sym2.inductionOn
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
@@ -744,9 +743,8 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 #align sym2.filter_image_quotient_mk_is_diag Sym2.filter_image_quotient_mk''_isDiag
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ᶠ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
+    (((s ×ˢ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Quotient.mk'' := by
   ext z
   induction z using Sym2.inductionOn

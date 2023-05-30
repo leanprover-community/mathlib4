@@ -48,7 +48,7 @@ For modules over rings satisfying the strong rank condition
 
 * `linearIndependent_le_span`:
   For any linearly independent family `v : ι → M`
-  and any finite spanning set `w : set M`,
+  and any finite spanning set `w : Set M`,
   the cardinality of `ι` is bounded by the cardinality of `w`.
 * `linearIndependent_le_basis`:
   If `b` is a basis for a module `M`,

@@ -10,7 +10,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Direct sum
@@ -329,10 +328,9 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
   @Dfinsupp.sigmaCurry_apply _ _ δ _ _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
--- Porting note: marked noncomputable
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
     where
   toFun := Dfinsupp.sigmaUncurry
