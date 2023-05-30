@@ -273,8 +273,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   by_cases hn : ∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0
   swap; · exact exists_subset_restrict_nonpos' hi₁ hi hn
   set A := i \ ⋃ l, restrictNonposSeq s i l with hA
-  set bdd : ℕ → ℕ := fun n => findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k) with
-    hbdd
+  set bdd : ℕ → ℕ := fun n => findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k)
   have hn' : ∀ n : ℕ, ¬s ≤[i \ ⋃ l ≤ n, restrictNonposSeq s i l] 0 := by
     intro n
     convert hn (n + 1) using 5 <;>
@@ -317,7 +316,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     · have hle := le_of_max_le_right (hk k le_rfl)
       norm_cast at hle
     · have : 1 / s E < bdd k := by
-        linarith (config := { restrictType := ℝ }) [le_of_max_le_left (hk k le_rfl)]
+        linarith only [le_of_max_le_left (hk k le_rfl)]
       rw [one_div] at this ⊢
       rwa [inv_lt (lt_trans (inv_pos.2 hE₃) this) hE₃]
   obtain ⟨k, hk₁, hk₂⟩ := this
@@ -327,7 +326,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     rintro ⟨n, _, hn₂⟩
     exact ⟨n, hn₂⟩
   refine'
-    findExistsOneDivLT_min (hn' k) (Buffer.lt_aux_2 hk₁) ⟨E, Set.Subset.trans hE₂ hA', hE₁, _⟩
+    findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
+      ⟨E, Set.Subset.trans hE₂ hA', hE₁, _⟩
   convert hk₂; norm_cast
   exact tsub_add_cancel_of_le hk₁
 #align measure_theory.signed_measure.exists_subset_restrict_nonpos MeasureTheory.SignedMeasure.exists_subset_restrict_nonpos
