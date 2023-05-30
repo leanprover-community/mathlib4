@@ -63,7 +63,21 @@ def isColimitPresieveCoconeOfIsColimitKernelPair {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b)
     (h : IsColimit (Cofork.ofπ f k.w)) :
     IsColimit (Sieve.generate_singleton f : Presieve X).cocone where
-  desc := fun S => Cofork.IsColimit.desc h (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) sorry
+  desc := fun S => Cofork.IsColimit.desc h (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) <| by
+    dsimp
+    let D := FullSubcategory fun (T : Over X) => (Sieve.generate_singleton f) T.hom
+    let F : D ⥤ C := Presieve.diagram (Sieve.generate_singleton f).arrows
+    let a' : D := ⟨Over.mk (a ≫ f), ⟨a, rfl⟩⟩
+    let b' : D := ⟨Over.mk (b ≫ f), ⟨b, rfl⟩⟩
+    let t : D := ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩
+    let i : a' ⟶ t := Over.homMk a rfl
+    let j : b' ⟶ t := Over.homMk b rfl
+    have ha : F.map i = a := rfl
+    have hb : F.map j = b := rfl
+    rw [← ha, ← hb, S.w, S.w]
+    dsimp
+    congr 3
+    exact k.w
   fac := sorry
   uniq := sorry
 
