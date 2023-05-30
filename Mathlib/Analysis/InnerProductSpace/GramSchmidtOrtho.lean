@@ -343,12 +343,14 @@ size of the index set is the dimension of `E`, produce an orthonormal basis for 
 with the orthonormal set produced by the Gram-Schmidt orthonormalization process on the elements of
 `ι` for which this process gives a nonzero number. -/
 noncomputable def gramSchmidtOrthonormalBasis : OrthonormalBasis ι 𝕜 E :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq h).some
+  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+    (v := gramSchmidtNormed 𝕜 f) h).choose
 #align gram_schmidt_orthonormal_basis gramSchmidtOrthonormalBasis
 
 theorem gramSchmidtOrthonormalBasis_apply {f : ι → E} {i : ι} (hi : gramSchmidtNormed 𝕜 f i ≠ 0) :
     gramSchmidtOrthonormalBasis h f i = gramSchmidtNormed 𝕜 f i :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq h).choose_spec i hi
+  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+    (v := gramSchmidtNormed 𝕜 f) h).choose_spec i hi
 #align gram_schmidt_orthonormal_basis_apply gramSchmidtOrthonormalBasis_apply
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
@@ -363,19 +365,19 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
 theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
     (hi : gramSchmidtNormed 𝕜 f i = 0) (j : ι) : ⟪gramSchmidtOrthonormalBasis h f i, f j⟫ = 0 := by
   rw [← mem_orthogonal_singleton_iff_inner_right]
-  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Iic j) ⟂ 𝕜 ∙ gramSchmidtOrthonormalBasis h f i by
+  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Set.Iic j) ⟂ 𝕜 ∙ gramSchmidtOrthonormalBasis h f i by
     apply this
     rw [span_gramSchmidtNormed]
     exact mem_span_gramSchmidt 𝕜 f le_rfl
-  rw [is_ortho_span]
-  rintro u ⟨k, hk, rfl⟩ v (rfl : v = _)
+  rw [isOrtho_span]
+  rintro u ⟨k, _, rfl⟩ v (rfl : v = _)
   by_cases hk : gramSchmidtNormed 𝕜 f k = 0
   · rw [hk, inner_zero_left]
   rw [← gramSchmidtOrthonormalBasis_apply h hk]
   have : k ≠ i := by
     rintro rfl
     exact hk hi
-  exact (gramSchmidtOrthonormalBasis h f).Orthonormal.2 this
+  exact (gramSchmidtOrthonormalBasis h f).orthonormal.2 this
 #align inner_gram_schmidt_orthonormal_basis_eq_zero inner_gramSchmidtOrthonormalBasis_eq_zero
 
 theorem gramSchmidtOrthonormalBasis_inv_triangular {i j : ι} (hij : i < j) :
@@ -395,15 +397,14 @@ theorem gramSchmidtOrthonormalBasis_inv_triangular' {i j : ι} (hij : i < j) :
 size of the index set is the dimension of `E`, the matrix of coefficients of `f` with respect to the
 orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-triangular. -/
 theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
-    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun i j =>
+    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 #align gram_schmidt_orthonormal_basis_inv_block_triangular gramSchmidtOrthonormalBasis_inv_blockTriangular
 
 theorem gramSchmidtOrthonormalBasis_det : (gramSchmidtOrthonormalBasis h f).toBasis.det f =
     ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
   convert Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
-  ext i
-  exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f i) i).symm
+  exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 #align gram_schmidt_orthonormal_basis_det gramSchmidtOrthonormalBasis_det
 
 end OrthonormalBasis
