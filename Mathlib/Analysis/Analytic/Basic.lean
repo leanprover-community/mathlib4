@@ -1337,14 +1337,17 @@ theorem HasFpowerSeriesOnBall.changeOrigin (hf : HasFpowerSeriesOnBall f p x r)
       apply le_trans _ p.changeOrigin_radius
       exact tsub_le_tsub hf.r_le le_rfl
     r_pos := by simp [h]
-    hasSum := fun z hz => by
-      convert (p.changeOrigin y).hasSum _
-      · rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
-        rw [p.change_origin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
+    hasSum := fun {z} hz => by
+      have : f (x + y + z) =
+          FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
+        rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
+        rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
         refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ hz)
         exact_mod_cast nnnorm_add_le y z
-      · refine' EMetric.ball_subset_ball (le_trans _ p.changeOrigin_radius) hz
-        exact tsub_le_tsub hf.r_le le_rfl }
+      rw [this]
+      apply (p.changeOrigin y).hasSum
+      refine' EMetric.ball_subset_ball (le_trans _ p.changeOrigin_radius) hz
+      exact tsub_le_tsub hf.r_le le_rfl }
 #align has_fpower_series_on_ball.change_origin HasFpowerSeriesOnBall.changeOrigin
 
 /-- If a function admits a power series expansion `p` on an open ball `B (x, r)`, then
