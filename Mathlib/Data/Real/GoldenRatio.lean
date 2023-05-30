@@ -42,8 +42,8 @@ def goldenConj :=
   (1 - Real.sqrt 5) / 2
 #align golden_conj goldenConj
 
-scoped[Real] notation "φ" => goldenRatio
-scoped[Real] notation "ψ" => goldenConj
+@[inherit_doc goldenRatio] scoped[Real] notation "φ" => goldenRatio
+@[inherit_doc goldenConj] scoped[Real] notation "ψ" => goldenConj
 open Real
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
@@ -92,14 +92,14 @@ theorem gold_sub_goldConj : φ - ψ = Real.sqrt 5 := by
   ring
 #align gold_sub_gold_conj gold_sub_goldConj
 
-@[simp]
+@[simp 1200]
 theorem gold_sq : φ ^ 2 = φ + 1 := by
   rw [goldenRatio, ← sub_eq_zero]
   ring_nf
   rw [Real.sq_sqrt] <;> norm_num
 #align gold_sq gold_sq
 
-@[simp]
+@[simp 1200]
 theorem goldConj_sq : ψ ^ 2 = ψ + 1 := by
   rw [goldenConj, ← sub_eq_zero]
   ring_nf
@@ -218,7 +218,7 @@ theorem Real.coe_fib_eq' :
     · simp
     · simp only [goldenRatio, goldenConj]
       ring_nf
-      rw [mul_inv_cancel] <;> norm_num
+      rw [mul_inv_cancel]; norm_num
   · exact fib_isSol_fibRec
   · -- Porting note: Rewrote this proof
     suffices LinearRecurrence.IsSolution fibRec
