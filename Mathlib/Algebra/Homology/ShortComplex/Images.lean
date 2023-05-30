@@ -1,5 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Refinements
 
 -- Verdier, Des catégories dérivées des catégories abéliennes, II 4.2.7
 
@@ -63,6 +62,21 @@ lemma shortComplex_g_fac :
     kernel.lift_ι_assoc, kernel.lift_ι, I.fac₂]
 
 instance : Epi I.shortComplex.g := epi_of_epi_fac I.shortComplex_g_fac
+
+lemma shortComplex_exact : I.shortComplex.Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A₀ x₂ hx₂
+  dsimp
+  obtain ⟨A₁, π₁, hπ₁, y, hy⟩ := surjective_up_to_refinements_of_epi (Abelian.factorThruImage I.f₂) x₂
+  replace hy := hy =≫ (Abelian.image.ι I.f₂)
+  have hx₂' := hx₂ =≫ (Abelian.image.ι I.f₃)
+  rw [assoc, assoc, kernel.lift_ι] at hy
+  rw [zero_comp, assoc, shortComplex_g, image.lift_ι] at hx₂'
+  obtain ⟨A₂, π₂, hπ₂, x₁, hx₁⟩ := I.hS.exact_up_to_refinements (y ≫ I.f₂)
+    (by rw [← hy, assoc, assoc, hx₂', comp_zero])
+  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, x₁ ≫ Abelian.factorThruImage I.S.f, _⟩
+  simp only [← cancel_mono (Abelian.image.ι I.f₂), assoc, hy,
+    image.lift_ι, kernel.lift_ι, hx₁]
 
 end ImagesLemmaInput
 
