@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Bicategory.End
-import Mathbin.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Bicategory.End
+import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Promoting a monoidal category to a single object bicategory.
@@ -50,8 +50,7 @@ open MonoidalCategory
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance : Bicategory (MonoidalSingleObj C)
-    where
+instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp _ _ _ X Y := X ⊗ Y
@@ -82,8 +81,7 @@ to the original monoidal category.
 We subsequently show this is an equivalence.
 -/
 @[simps]
-def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C
-    where
+def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C where
   obj X := X
   map X Y f := f
   ε := 𝟙 _
@@ -101,8 +99,7 @@ noncomputable section
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
-def endMonoidalStarFunctorIsEquivalence : IsEquivalence (endMonoidalStarFunctor C).toFunctor
-    where
+def endMonoidalStarFunctorIsEquivalence : IsEquivalence (endMonoidalStarFunctor C).toFunctor where
   inverse :=
     { obj := fun X => X
       map := fun X Y f => f }
