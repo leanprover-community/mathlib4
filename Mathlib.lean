@@ -2074,6 +2074,7 @@ import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
