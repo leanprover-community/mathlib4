@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh -
+for log in `ls test/Sagredo/MiniF2F/*.log`; do
+  echo -n "$log    ";
+  head -n 1 $log;
+done | grep Success

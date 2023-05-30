@@ -1,0 +1,8 @@
+for file in `ls test/Sagredo/MiniF2F/mathd*.lean`; do
+  echo $file;
+  if [ -f "$file.v0.100000.gpt.log" ]; then
+    echo "Log file already exists, skipping"
+  else
+    lake env lean $file;
+  fi
+done
