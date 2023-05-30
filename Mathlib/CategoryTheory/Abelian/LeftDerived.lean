@@ -69,7 +69,6 @@ theorem exact_of_map_ProjectiveResolution (P : ProjectiveResolution X)
 #align category_theory.abelian.functor.exact_of_map_projective_resolution CategoryTheory.Abelian.Functor.exact_of_map_ProjectiveResolution
 
 /-- Given `P : ProjectiveResolution X`, a morphism `(F.leftDerived 0).obj X ⟶ F.obj X`. -/
-@[nolint unusedArguments]
 def leftDerivedZeroToSelfApp [EnoughProjectives C] {X : C} (P : ProjectiveResolution X) :
     (F.leftDerived 0).obj X ⟶ F.obj X :=
   (leftDerivedObjIso F 0 P).hom ≫
