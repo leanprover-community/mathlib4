@@ -436,14 +436,14 @@ theorem HasFpowerSeriesOnBall.congr (hf : HasFpowerSeriesOnBall f p x r)
 
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
 same power series around `x + y`. -/
-theorem HasFpowerSeriesOnBall.compSub (hf : HasFpowerSeriesOnBall f p x r) (y : E) :
+theorem HasFpowerSeriesOnBall.comp_sub (hf : HasFpowerSeriesOnBall f p x r) (y : E) :
     HasFpowerSeriesOnBall (fun z => f (z - y)) p (x + y) r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
       convert hf.hasSum hz using 2
       abel }
-#align has_fpower_series_on_ball.comp_sub HasFpowerSeriesOnBall.compSub
+#align has_fpower_series_on_ball.comp_sub HasFpowerSeriesOnBall.comp_sub
 
 theorem HasFpowerSeriesOnBall.hasSum_sub (hf : HasFpowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
@@ -515,19 +515,19 @@ theorem HasFpowerSeriesAt.eventually_eq_zero
   hr.eventually_eq_zero
 #align has_fpower_series_at.eventually_eq_zero HasFpowerSeriesAt.eventually_eq_zero
 
-theorem hasFpowerSeriesOnBallConst {c : F} {e : E} :
+theorem hasFpowerSeriesOnBall_const {c : F} {e : E} :
     HasFpowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine' ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => _⟩
   simp [constFormalMultilinearSeries_apply hn]
-#align has_fpower_series_on_ball_const hasFpowerSeriesOnBallConst
+#align has_fpower_series_on_ball_const hasFpowerSeriesOnBall_const
 
-theorem hasFpowerSeriesAtConst {c : F} {e : E} :
+theorem hasFpowerSeriesAt_const {c : F} {e : E} :
     HasFpowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
-  ⟨⊤, hasFpowerSeriesOnBallConst⟩
-#align has_fpower_series_at_const hasFpowerSeriesAtConst
+  ⟨⊤, hasFpowerSeriesOnBall_const⟩
+#align has_fpower_series_at_const hasFpowerSeriesAt_const
 
 theorem analyticAt_const {v : F} : AnalyticAt 𝕜 (fun _ => v) x :=
-  ⟨constFormalMultilinearSeries 𝕜 E v, hasFpowerSeriesAtConst⟩
+  ⟨constFormalMultilinearSeries 𝕜 E v, hasFpowerSeriesAt_const⟩
 #align analytic_at_const analyticAt_const
 
 theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
@@ -621,7 +621,7 @@ theorem HasFpowerSeriesAt.coeff_zero (hf : HasFpowerSeriesAt f pf x) (v : Fin 0 
 
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
-theorem ContinuousLinearMap.compHasFpowerSeriesOnBall (g : F →L[𝕜] G)
+theorem ContinuousLinearMap.comp_hasFpowerSeriesOnBall (g : F →L[𝕜] G)
     (h : HasFpowerSeriesOnBall f p x r) :
     HasFpowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r :=
   { r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
@@ -630,7 +630,7 @@ theorem ContinuousLinearMap.compHasFpowerSeriesOnBall (g : F →L[𝕜] G)
       simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
         ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
         g.hasSum (h.hasSum hy) }
-#align continuous_linear_map.comp_has_fpower_series_on_ball ContinuousLinearMap.compHasFpowerSeriesOnBall
+#align continuous_linear_map.comp_has_fpower_series_on_ball ContinuousLinearMap.comp_hasFpowerSeriesOnBall
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
@@ -638,7 +638,7 @@ theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h 
     AnalyticOn 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
-  exact ⟨g.compFormalMultilinearSeries p, r, g.compHasFpowerSeriesOnBall hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFpowerSeriesOnBall hp⟩
 #align continuous_linear_map.comp_analytic_on ContinuousLinearMap.comp_analyticOn
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
@@ -1030,29 +1030,29 @@ theorem HasFpowerSeriesAt.eq_zero_of_eventually {p : FormalMultilinearSeries �
 /-- If a function `f : 𝕜 → E` has two power series representations at `x`, then the given radii in
 which convergence is guaranteed may be interchanged. This can be useful when the formal multilinear
 series in one representation has a particularly nice form, but the other has a larger radius. -/
-theorem HasFpowerSeriesOnBall.exchangeRadius {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E}
+theorem HasFpowerSeriesOnBall.exchange_radius {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E}
     {r₁ r₂ : ℝ≥0∞} {x : 𝕜} (h₁ : HasFpowerSeriesOnBall f p₁ x r₁)
     (h₂ : HasFpowerSeriesOnBall f p₂ x r₂) : HasFpowerSeriesOnBall f p₁ x r₂ :=
   h₂.hasFpowerSeriesAt.eq_formalMultilinearSeries h₁.hasFpowerSeriesAt ▸ h₂
-#align has_fpower_series_on_ball.exchange_radius HasFpowerSeriesOnBall.exchangeRadius
+#align has_fpower_series_on_ball.exchange_radius HasFpowerSeriesOnBall.exchange_radius
 
 /-- If a function `f : 𝕜 → E` has power series representation `p` on a ball of some radius and for
 each positive radius it has some power series representation, then `p` converges to `f` on the whole
 `𝕜`. -/
-theorem HasFpowerSeriesOnBall.rEqTopOfExists {f : 𝕜 → E} {r : ℝ≥0∞} {x : 𝕜}
+theorem HasFpowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0∞} {x : 𝕜}
     {p : FormalMultilinearSeries 𝕜 𝕜 E} (h : HasFpowerSeriesOnBall f p x r)
     (h' : ∀ (r' : ℝ≥0) (_ : 0 < r'), ∃ p' : FormalMultilinearSeries 𝕜 𝕜 E,
       HasFpowerSeriesOnBall f p' x r') :
     HasFpowerSeriesOnBall f p x ∞ :=
   { r_le := ENNReal.le_of_forall_pos_nnreal_lt fun r hr _ =>
       let ⟨_, hp'⟩ := h' r hr
-      (h.exchangeRadius hp').r_le
+      (h.exchange_radius hp').r_le
     r_pos := ENNReal.coe_lt_top
     hasSum := fun {y} _ =>
       let ⟨r', hr'⟩ := exists_gt ‖y‖₊
       let ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
-      (h.exchangeRadius hp').hasSum <| mem_emetric_ball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
-#align has_fpower_series_on_ball.r_eq_top_of_exists HasFpowerSeriesOnBall.rEqTopOfExists
+      (h.exchange_radius hp').hasSum <| mem_emetric_ball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
+#align has_fpower_series_on_ball.r_eq_top_of_exists HasFpowerSeriesOnBall.r_eq_top_of_exists
 
 end Uniqueness
 
@@ -1267,11 +1267,11 @@ end
 -- in norm also converge in `F`.
 variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
-theorem hasFpowerSeriesOnBallChangeOrigin (k : ℕ) (hr : 0 < p.radius) :
+theorem hasFpowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
     HasFpowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 p.radius :=
   have := p.le_changeOriginSeries_radius k
   ((p.changeOriginSeries k).hasFpowerSeriesOnBall (hr.trans_le this)).mono hr this
-#align formal_multilinear_series.has_fpower_series_on_ball_change_origin FormalMultilinearSeries.hasFpowerSeriesOnBallChangeOrigin
+#align formal_multilinear_series.has_fpower_series_on_ball_change_origin FormalMultilinearSeries.hasFpowerSeriesOnBall_changeOrigin
 
 /-- Summing the series `p.change_origin x` at a point `y` gives back `p (x + y)`-/
 theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius) :
@@ -1296,7 +1296,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     refine' HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => _) hsf
     · dsimp only
       refine' ContinuousMultilinearMap.hasSum_eval _ _
-      have := (p.hasFpowerSeriesOnBallChangeOrigin k radius_pos).hasSum x_mem_ball
+      have := (p.hasFpowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this
       refine' HasSum.sigma_of_hasSum this (fun l => _) _
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
