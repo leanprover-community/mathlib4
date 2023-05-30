@@ -288,7 +288,7 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     exact (f i j h1).injective h3
   map_fun' F x := by
     simp
-    show Quotient.mk _ _ = funMap F ((Quotient.mk' ∘ Sigma.mk i) ∘ x)
+    show Quotient.mk .. = funMap F ((Quotient.mk' ∘ Sigma.mk i) ∘ x)
     rw [←funMap_quotient_mk'_sigma_mk']
     trivial
   map_rel' := by
@@ -346,7 +346,7 @@ def lift : DirectLimit G f ↪[L] P where
       simp only
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
-      exact congr_arg _ ((equiv_iff _ _ _ _).1 xy)
+      exact congr_arg _ ((equiv_iff ..).1 xy)
   inj' x y xy := by
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
@@ -359,12 +359,18 @@ def lift : DirectLimit G f ↪[L] P where
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
+    simp
+    show Quotient.lift _ _ (funMap F fun a => Quotient.mk _ (Sigma.mk i (y a))) = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y)
     rw [funMap_quotient_mk'_sigma_mk', ← Function.comp.assoc, Quotient.lift_comp_mk]
-    simp only [Quotient.lift_mk, embedding.map_fun]
+    simp only [Quotient.lift_mk, Embedding.map_fun]
+    rfl
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
+    simp
+    show RelMap R (Quotient.lift (fun x ↦ (g x.fst) x.snd) _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y) ↔ RelMap R (fun a => (Quotient.mk _ (Sigma.mk i (y a))))
     rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp.assoc,
       Quotient.lift_comp_mk]
+    rfl
 #align first_order.language.direct_limit.lift FirstOrder.Language.DirectLimit.lift
 
 variable {L ι G f}
