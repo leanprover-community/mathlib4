@@ -10,7 +10,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Rat
-import Mathlib.Topology.Alexandroff
+import Mathlib.Topology.Compactification.OnePoint
 
 /-!
 # Additional lemmas about the topology on rational numbers
@@ -23,20 +23,20 @@ compactification.
 
 - `Rat.TotallyDisconnectedSpace`: `ℚ` is a totally disconnected space;
 
-- `Rat.not_countably_generated_nhds_infty_alexandroff`: the filter of neighbourhoods of infinity in
-  `Alexandroff ℚ` is not countably generated.
+- `Rat.not_countably_generated_nhds_infty_opc`: the filter of neighbourhoods of infinity in
+  `OnePoint ℚ` is not countably generated.
 
 ## Notation
 
-- `ℚ∞` is used as a local notation for `Alexandroff ℚ`
+- `ℚ∞` is used as a local notation for `OnePoint ℚ`
 -/
 
 
 open Set Metric Filter TopologicalSpace
 
-open Topology Alexandroff
+open Topology OnePoint
 
-local notation "ℚ∞" => Alexandroff ℚ
+local notation "ℚ∞" => OnePoint ℚ
 
 namespace Rat
 
@@ -65,22 +65,22 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 
-theorem not_countably_generated_nhds_infty_alexandroff : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
+theorem not_countably_generated_nhds_infty_opc : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
   intro
-  have : IsCountablyGenerated (comap (Alexandroff.some : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
-  rw [Alexandroff.comap_coe_nhds_infty, coclosedCompact_eq_cocompact] at this
+  have : IsCountablyGenerated (comap (OnePoint.some : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
+  rw [OnePoint.comap_coe_nhds_infty, coclosedCompact_eq_cocompact] at this
   exact not_countably_generated_cocompact this
-#align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_alexandroff
+#align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_opc
 
-theorem not_firstCountableTopology_alexandroff : ¬FirstCountableTopology ℚ∞ := by
+theorem not_firstCountableTopology_opc : ¬FirstCountableTopology ℚ∞ := by
   intro
-  exact not_countably_generated_nhds_infty_alexandroff inferInstance
-#align rat.not_first_countable_topology_alexandroff Rat.not_firstCountableTopology_alexandroff
+  exact not_countably_generated_nhds_infty_opc inferInstance
+#align rat.not_first_countable_topology_alexandroff Rat.not_firstCountableTopology_opc
 
-theorem not_secondCountableTopology_alexandroff : ¬SecondCountableTopology ℚ∞ := by
+theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   intro
-  exact not_firstCountableTopology_alexandroff inferInstance
-#align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_alexandroff
+  exact not_firstCountableTopology_opc inferInstance
+#align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_opc
 
 instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
