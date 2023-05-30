@@ -945,18 +945,12 @@ protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
 #align pi_Lp.linear_equiv PiLp.linearEquiv
 
 /-- `PiLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := { fullyApplied := false }) toFun apply symm_apply]
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
 protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := PiLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
   continuous_invFun := continuous_equiv_symm _ _
 #align pi_Lp.continuous_linear_equiv PiLp.continuousLinearEquiv
-
--- Porting note: defined separately to appease simpNF linter
-@[simp high]
-theorem continuousLinearEquiv_invFun :
-    (PiLp.continuousLinearEquiv p 𝕜 β).toLinearEquiv.invFun = ↑(PiLp.equiv p fun i ↦ β i).symm  :=
-  rfl
 
 section Basis
 
