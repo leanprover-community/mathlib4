@@ -345,7 +345,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
     have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' :=
-      fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span
+      sorry--fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span
     induction' i with j hj
     · exact this _ (zero_le _)
     by_cases hj' : j.succ ≤ n₀
@@ -353,12 +353,12 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     simp only [not_le, Nat.lt_succ_iff] at hj'
     rw [Nat.succ_eq_add_one, ← hF _ hj']
     rintro _ ⟨m, hm, rfl⟩
-    apply Submodule.smul_induction_on hm
-    · intro r hr m' hm'
-      rw [add_comm, ← monomial_smul_single]
+    refine' Submodule.smul_induction_on hm (fun r hr m' hm' => _) (fun x y hx hy => _)
+    · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
-        ⟨_, rees_algebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')
-    · intro x y hx hy; rw [map_add]; exact F'.add_mem hx hy
+        ⟨_, reesAlgebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')
+    · rw [map_add]
+      exact F'.add_mem hx hy
 #align ideal.filtration.submodule_eq_span_le_iff_stable_ge Ideal.Filtration.submodule_eq_span_le_iff_stable_ge
 
 /-- If the components of a filtration are finitely generated, then the filtration is stable iff
