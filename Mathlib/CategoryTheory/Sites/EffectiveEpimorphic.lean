@@ -23,30 +23,49 @@ inductive Sieve.generate_singleton_aux {X Y : C} (f : Y ⟶ X) : (Z : C) → (Z 
   | mk (Z : C) (g : Z ⟶ Y) : Sieve.generate_singleton_aux _ _ (g ≫ f)
 
 def Sieve.generate_singleton {X Y : C} (f : Y ⟶ X) : Sieve X where
-  arrows := Sieve.generate_singleton_aux f
+  arrows Z g := ∃ (e : Z ⟶ Y), e ≫ f = g
   downward_closed := by
-    rintro W Z e ⟨a⟩ g
-    rw [← Category.assoc]
-    apply Sieve.generate_singleton_aux.mk
+    rintro W Z g ⟨e,rfl⟩ q
+    refine ⟨q ≫ e, by simp⟩
 
 lemma Sieve.generate_singleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generate_singleton f := by
   ext Z ; intro g
   constructor
   · rintro ⟨W,i,p,⟨⟩,rfl⟩
-    apply Sieve.generate_singleton_aux.mk
-  · rintro ⟨g⟩
-    refine ⟨Y,g,f,⟨⟩,rfl⟩
+    exact ⟨i,rfl⟩
+  · rintro ⟨g,h⟩
+    exact ⟨Y,g,f,⟨⟩,h⟩
 
+noncomputable
 def isColimitKernelPairOfIsColimitPresieveCocone {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b)
     (h : IsColimit ((Sieve.generate_singleton f) : Presieve X).cocone) :
-    IsColimit (Cofork.ofπ f k.w) := sorry
+    IsColimit (Cofork.ofπ f k.w) where
+  desc := fun (S : Cofork _ _) => h.desc ⟨_,
+    { app := fun ⟨T,hT⟩ => hT.choose ≫ S.π
+      naturality := by
+        rintro ⟨x,hx⟩ ⟨y,hy⟩ (g : x ⟶ y)
+        dsimp ; simp only [Category.comp_id]
+        let x' : x.left ⟶ Y := hx.choose
+        let y' : y.left ⟶ Y := hy.choose
+        change g.left ≫ y' ≫ _ = x' ≫ _
+        have hh : (g.left ≫ y') ≫ f = x' ≫ f := by
+          simp [hx.choose_spec, Category.assoc, hy.choose_spec]
+        let e := k.lift (g.left ≫ y') x' hh
+        have hea : g.left ≫ y' = e ≫ a := by rw [k.lift_fst]
+        have heb : x' = e ≫ b := by rw [k.lift_snd]
+        rw [reassoc_of% hea, heb, Category.assoc, S.condition] }⟩
+  fac := sorry
+  uniq := sorry
 
 def isColimitPresieveCoconeOfIsColimitKernelPair {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b)
     (h : IsColimit (Cofork.ofπ f k.w)) :
-    IsColimit (Sieve.generate_singleton f : Presieve X).cocone := sorry
+    IsColimit (Sieve.generate_singleton f : Presieve X).cocone where
+  desc := fun S => Cofork.IsColimit.desc h (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) sorry
+  fac := sorry
+  uniq := sorry
 
 lemma Presieve.effectiveEpimorphic_iff_kernel_pair {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b) :
