@@ -60,13 +60,13 @@ structure JordanDecomposition (α : Type _) [MeasurableSpace α] where
   (posPart negPart : Measure α)
   [posPart_finite : FiniteMeasure posPart]
   [negPart_finite : FiniteMeasure negPart]
-  mutually_singular : posPart ⟂ₘ negPart
+  mutuallySingular : posPart ⟂ₘ negPart
 #align measure_theory.jordan_decomposition MeasureTheory.JordanDecomposition
 #align measure_theory.jordan_decomposition.pos_part MeasureTheory.JordanDecomposition.posPart
 #align measure_theory.jordan_decomposition.neg_part MeasureTheory.JordanDecomposition.negPart
 #align measure_theory.jordan_decomposition.pos_part_finite MeasureTheory.JordanDecomposition.posPart_finite
 #align measure_theory.jordan_decomposition.neg_part_finite MeasureTheory.JordanDecomposition.negPart_finite
-#align measure_theory.jordan_decomposition.mutually_singular MeasureTheory.JordanDecomposition.mutually_singular
+#align measure_theory.jordan_decomposition.mutually_singular MeasureTheory.JordanDecomposition.mutuallySingular
 
 attribute [instance] JordanDecomposition.posPart_finite
 
@@ -85,14 +85,14 @@ instance instInhabited : Inhabited (JordanDecomposition α) where default := 0
 #align measure_theory.jordan_decomposition.inhabited MeasureTheory.JordanDecomposition.instInhabited
 
 instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
-  neg j := ⟨j.negPart, j.posPart, j.mutually_singular.symm⟩
+  neg j := ⟨j.negPart, j.posPart, j.mutuallySingular.symm⟩
   neg_neg _ := JordanDecomposition.ext _ _ rfl rfl
 #align measure_theory.jordan_decomposition.has_involutive_neg MeasureTheory.JordanDecomposition.instInvolutiveNeg
 
 instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
   smul r j :=
     ⟨r • j.posPart, r • j.negPart,
-      MutuallySingular.smul _ (MutuallySingular.smul _ j.mutually_singular.symm).symm⟩
+      MutuallySingular.smul _ (MutuallySingular.smul _ j.mutuallySingular.symm).symm⟩
 #align measure_theory.jordan_decomposition.has_smul MeasureTheory.JordanDecomposition.instSMul
 
 instance instSMulReal : SMul ℝ (JordanDecomposition α) where
@@ -202,7 +202,7 @@ theorem exists_compl_positive_negative :
       MeasurableSet S ∧
         j.toSignedMeasure ≤[S] 0 ∧
           0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart (Sᶜ) = 0 := by
-  obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutually_singular
+  obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
   refine' ⟨S, hS₁, _, _, hS₂, hS₃⟩
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
@@ -235,7 +235,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
     negPart := s.toMeasureOfLEZero (iᶜ) hi.1.compl hi.2.2
     posPart_finite := inferInstance
     negPart_finite := inferInstance
-    mutually_singular := by
+    mutuallySingular := by
       refine' ⟨iᶜ, hi.1.compl, _, _⟩
       -- Porting note: added `← NNReal.eq_iff`
       · rw [toMeasureOfZeroLE_apply _ _ hi.1 hi.1.compl]; simp [← NNReal.eq_iff]
