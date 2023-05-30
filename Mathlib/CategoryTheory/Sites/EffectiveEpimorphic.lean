@@ -41,8 +41,9 @@ noncomputable
 def isColimitKernelPairOfIsColimitPresieveCocone {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b)
     (h : IsColimit ((Sieve.generate_singleton f) : Presieve X).cocone) :
-    IsColimit (Cofork.ofπ f k.w) where
-  desc := fun (S : Cofork _ _) => h.desc ⟨_,
+    IsColimit (Cofork.ofπ f k.w) :=
+  letI aux : Cofork a b → Cocone (Sieve.generate_singleton f).arrows.diagram :=
+    fun S => ⟨S.pt,
     { app := fun ⟨T,hT⟩ => hT.choose ≫ S.π
       naturality := by
         rintro ⟨x,hx⟩ ⟨y,hy⟩ (g : x ⟶ y)
@@ -56,8 +57,30 @@ def isColimitKernelPairOfIsColimitPresieveCocone {X Y R : C}
         have hea : g.left ≫ y' = e ≫ a := by rw [k.lift_fst]
         have heb : x' = e ≫ b := by rw [k.lift_snd]
         rw [reassoc_of% hea, heb, Category.assoc, S.condition] }⟩
-  fac := sorry
-  uniq := sorry
+  Cofork.IsColimit.mk _
+    (fun S => h.desc <| aux S)
+    (by
+      intro S
+      let H : ∃ e : Y ⟶ Y, e ≫ f = f := ⟨𝟙 _, by simp⟩
+      let D := FullSubcategory fun (T : Over X) =>
+        (Sieve.generate_singleton f).arrows T.hom
+      let T : D := ⟨Over.mk f, H⟩
+      have := h.fac (aux S) T
+      dsimp at this ⊢
+      rw [this] ; clear this
+      let e : Y ⟶ R := k.lift H.choose (𝟙 _) (by simp [H.choose_spec])
+      have hH : H.choose = e ≫ a := by rw [k.lift_fst]
+      rw [hH, Category.assoc, Cofork.condition, ← Category.assoc,
+        k.lift_snd, Category.id_comp])
+    (by
+      intro S m hm
+      apply h.hom_ext
+      rintro ⟨T,⟨(g : T.left ⟶ Y),hg⟩⟩
+      have := h.fac (aux S) ⟨T,g,hg⟩
+      dsimp at this hm ⊢
+      rw [this, ← hm, ← Category.assoc] ; congr 1
+      generalize_proofs hh
+      exact hh.choose_spec.symm )
 
 def isColimitPresieveCoconeOfIsColimitKernelPair {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b)
