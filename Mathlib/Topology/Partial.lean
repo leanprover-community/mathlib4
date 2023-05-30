@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.Partial
 # Partial functions and topological spaces
 
 In this file we prove properties of `Filter.Ptendsto` etc in topological spaces. We also introduce
-`Pcontinuous`, a version of `Continuous` for partially defined functions.
+`PContinuous`, a version of `Continuous` for partially defined functions.
 -/
 
 
@@ -53,16 +53,16 @@ theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
 variable [TopologicalSpace β]
 
 /-- Continuity of a partial function -/
-def Pcontinuous (f : α →. β) :=
+def PContinuous (f : α →. β) :=
   ∀ s, IsOpen s → IsOpen (f.preimage s)
-#align pcontinuous Pcontinuous
+#align pcontinuous PContinuous
 
-theorem open_dom_of_pcontinuous {f : α →. β} (h : Pcontinuous f) : IsOpen f.Dom := by
+theorem open_dom_of_pcontinuous {f : α →. β} (h : PContinuous f) : IsOpen f.Dom := by
   rw [← PFun.preimage_univ]; exact h _ isOpen_univ
 #align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
 theorem pcontinuous_iff' {f : α →. β} :
-    Pcontinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) := by
+    PContinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
     simp only [ptendsto'_def, mem_nhds_iff]

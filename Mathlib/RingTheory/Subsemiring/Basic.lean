@@ -1032,7 +1032,8 @@ def prod (s : Subsemiring R) (t : Subsemiring S) : Subsemiring (R × S) :=
 #align subsemiring.prod Subsemiring.prod
 
 @[norm_cast]
-theorem coe_prod (s : Subsemiring R) (t : Subsemiring S) : (s.prod t : Set (R × S)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemiring R) (t : Subsemiring S) :
+    (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
   rfl
 #align subsemiring.coe_prod Subsemiring.coe_prod
 
@@ -1304,7 +1305,7 @@ end RingEquiv
 These are just copies of the definitions about `Submonoid` starting from `submonoid.mul_action`.
 The only new result is `subsemiring.module`.
 
-When `R` is commutative, `algebra.of_subsemiring` provides a stronger result than those found in
+When `R` is commutative, `Algebra.ofSubsemiring` provides a stronger result than those found in
 this file, which uses the same scalar action.
 -/
 

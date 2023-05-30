@@ -266,7 +266,8 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
       rw [← hy]
       exact subset_span hp
   -- Now `S` is a subalgebra so the product of two elements of `y` is also in `S`.
-  have : ∀ jk : (y ×ᶠ y : Set (A × A)), jk.1.1 * jk.1.2 ∈ (Subalgebra.toSubmodule S) := fun jk =>
+  have : ∀ jk : (y ×ˢ y : Finset (A × A)),
+      jk.1.1 * jk.1.2 ∈ (Subalgebra.toSubmodule S) := fun jk =>
     S.mul_mem (hyS (Finset.mem_product.1 jk.2).1) (hyS (Finset.mem_product.1 jk.2).2)
   rw [← hy, ← Set.image_id (y : Set A)] at this
   simp only [Finsupp.mem_span_image_iff_total] at this
