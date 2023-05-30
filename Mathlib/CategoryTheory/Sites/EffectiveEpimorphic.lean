@@ -101,8 +101,24 @@ def isColimitPresieveCoconeOfIsColimitKernelPair {X Y R : C}
     dsimp
     congr 3
     exact k.w
-  fac := sorry
-  uniq := sorry
+  fac := by
+    rintro S ⟨T,g,hT⟩
+    dsimp
+    nth_rewrite 1 [← hT]
+    rw [Category.assoc]
+    change g ≫ (Cofork.ofπ f k.w).π ≫ _ = _
+    rw [Cofork.IsColimit.π_desc' h]
+    let D := FullSubcategory fun (T : Over X) => Sieve.generate_singleton f T.hom
+    let A : D := ⟨Over.mk T.hom, ⟨g,hT⟩⟩
+    let B : D := ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩
+    let t : A ⟶ B := Over.homMk g
+    exact S.w t
+  uniq := by
+    intro S m hm
+    dsimp
+    apply Cofork.IsColimit.hom_ext h
+    rw [Cofork.IsColimit.π_desc']
+    exact hm ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩
 
 lemma Presieve.effectiveEpimorphic_iff_kernel_pair {X Y R : C}
     (f : Y ⟶ X) (a b : R ⟶ Y) (k : IsKernelPair f a b) :
