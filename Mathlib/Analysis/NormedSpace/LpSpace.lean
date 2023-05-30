@@ -59,6 +59,8 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 -/
 
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 noncomputable section
 
 open scoped NNReal ENNReal BigOperators
@@ -230,7 +232,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
     rintro a ⟨i, rfl⟩
     exact le_trans (norm_add_le _ _) (add_le_add (hA ⟨i, rfl⟩) (hB ⟨i, rfl⟩))
   apply memℓp_gen
-  let C : ℝ := if p.toReal < 1 then 1 else 2 ^ (p.toReal - 1)
+  let C : ℝ := if p.toReal < 1 then 1 else (2 : ℝ) ^ (p.toReal - 1)
   refine'
     summable_of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
   · exact fun b => Real.rpow_nonneg_of_nonneg (norm_nonneg (f b + g b)) p.toReal
@@ -326,11 +328,20 @@ def lp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : 
 
 namespace lp
 
-instance : Coe (lp E p) (∀ i, E i) :=
+-- Porting note: was `Coe`
+instance : CoeOut (lp E p) (∀ i, E i) :=
   ⟨Subtype.val⟩ -- Porting note: Originally `coeSubtype`
 
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
   ⟨fun f => (f : ∀ i, E i)⟩
+
+-- Porting note: new
+@[simp]
+theorem zero_apply : (0 : lp E p) x = 0 := rfl
+
+-- Porting note: new
+@[simp]
+theorem neg_apply : (-f : lp E p) x = -f x := rfl
 
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
@@ -422,7 +433,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   apply tsum_nonneg
   intro i
   calc
-    (0 : ℝ) = 0 ^ p.toReal := by rw [Real.zero_rpow hp.ne']
+    (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
     _ ≤ _ := Real.rpow_le_rpow rfl.le (norm_nonneg (f i)) hp.le
 #align lp.norm_rpow_eq_tsum lp.norm_rpow_eq_tsum
 
@@ -505,7 +516,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · simp [lp.eq_zero' f]
+          · -- Porting note: was `simp [lp.eq_zero' f]`
+            rw [lp.eq_zero' f]
+            simp
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -643,7 +656,7 @@ instance : Module 𝕜 (lp E p) :=
   { (lpSubmodule E p 𝕜).module with }
 
 @[simp]
-theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • f :=
+theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align lp.coe_fn_smul lp.coeFn_smul
 
@@ -683,6 +696,8 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     refine' hasSum_mono hLHS hRHS fun i => _
     dsimp only
     rw [← NNReal.mul_rpow]
+    -- Porting note: added
+    rw [lp.coeFn_smul, Pi.smul_apply]
     exact NNReal.rpow_le_rpow (nnnorm_smul_le _ _) ENNReal.toReal_nonneg
 #align lp.norm_const_smul_le lp.norm_const_smul_le
 
@@ -712,7 +727,7 @@ section NormedSpace
 variable {𝕜 : Type _} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
-  norm_smul_le c f := norm_smul_le _ _
+  norm_smul_le c f := norm_smul_le c f
 
 end NormedSpace
 
