@@ -41,7 +41,6 @@ abbrev E₁HomologicalSpectralSequence :=
 abbrev E₂HomologicalSpectralSequence :=
   HomologicalSpectralSequence C 2
 
-
 namespace SpectralSequence
 
 variable {C r₀ degrees}

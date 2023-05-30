@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.ArrowTwo
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Tactic.Linarith
 
 namespace CategoryTheory
 
@@ -62,6 +63,21 @@ instance : Category (Arrow₃ C) where
     (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) (h₃ : f₁.τ₃ = f₂.τ₃) :
     f₁ = f₂ :=
   Hom.ext _ _ h₀ h₁ h₂ h₃
+
+@[simp] lemma id_τ₀ (D : Arrow₃ C) : Arrow₃.Hom.τ₀ (𝟙 D) = 𝟙 _ := rfl
+@[simp] lemma id_τ₁ (D : Arrow₃ C) : Arrow₃.Hom.τ₁ (𝟙 D) = 𝟙 _ := rfl
+@[simp] lemma id_τ₂ (D : Arrow₃ C) : Arrow₃.Hom.τ₂ (𝟙 D) = 𝟙 _ := rfl
+@[simp] lemma id_τ₃ (D : Arrow₃ C) : Arrow₃.Hom.τ₃ (𝟙 D) = 𝟙 _ := rfl
+
+@[reassoc] lemma comp_τ₀ {D₁ D₂ D₃ : Arrow₃ C} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) :
+    (f ≫ g).τ₀ = f.τ₀ ≫ g.τ₀ := rfl
+@[reassoc] lemma comp_τ₁ {D₁ D₂ D₃ : Arrow₃ C} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) :
+    (f ≫ g).τ₁ = f.τ₁ ≫ g.τ₁ := rfl
+@[reassoc] lemma comp_τ₂ {D₁ D₂ D₃ : Arrow₃ C} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) :
+    (f ≫ g).τ₂ = f.τ₂ ≫ g.τ₂ := rfl
+@[reassoc] lemma comp_τ₃ {D₁ D₂ D₃ : Arrow₃ C} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) :
+    (f ≫ g).τ₃ = f.τ₃ ≫ g.τ₃ := rfl
+attribute [simp] comp_τ₀ comp_τ₁ comp_τ₂ comp_τ₃
 
 @[simps]
 def δ₀ : Arrow₃ C ⥤ Arrow₂ C where
@@ -196,6 +212,30 @@ noncomputable def ιArrow [HasInitial C] [HasTerminal C] : Arrow C ⥤ Arrow₃ 
       τ₁ := φ.left
       τ₂ := φ.right
       τ₃ := 𝟙 _ }
+
+@[simps]
+def mkOfLE {ι : Type _} [Preorder ι] (a b c d : ι)
+    (hab : a ≤ b := by linarith) (hbc : b ≤ c := by linarith) (hcd : c ≤ d := by linarith) :
+  Arrow₃ ι := Arrow₃.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd)
+
+@[simps]
+def _root_.CategoryTheory.Functor.mapArrow₃ {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :
+    Arrow₃ ι ⥤ Arrow₃ ι' where
+  obj D := Arrow₃.mk (F.map D.f) (F.map D.g) (F.map D.h)
+  map φ :=
+    { τ₀ := F.map φ.τ₀
+      τ₁ := F.map φ.τ₁
+      τ₂ := F.map φ.τ₂
+      τ₃ := F.map φ.τ₃
+      commf := by
+        dsimp
+        simp only [← F.map_comp, Arrow₃.Hom.commf]
+      commg := by
+        dsimp
+        simp only [← F.map_comp, Arrow₃.Hom.commg]
+      commh := by
+        dsimp
+        simp only [← F.map_comp, Arrow₃.Hom.commh] }
 
 end Arrow₃
 
