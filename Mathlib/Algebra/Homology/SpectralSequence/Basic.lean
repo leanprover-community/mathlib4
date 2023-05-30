@@ -3,7 +3,7 @@ import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits ZeroObject
 
-variable (C : Type _) [Category C] [Abelian C] (r₀ : ℤ) (degrees : ℤ → ℤ × ℤ)
+variable (C : Type _) [Category C] [Abelian C] (degrees : ℤ → ℤ × ℤ) (r₀ : ℤ)
 
 structure SpectralSequence where
   page (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) : C
@@ -17,10 +17,35 @@ structure SpectralSequence where
       (ShortComplex.mk _ _ (d_comp_d r hr pq₁ pq₂ pq₃ h₁₂ h₂₃)).homology ≅
         page r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right])) pq₂
 
+abbrev CohomologicalSpectralSequence :=
+  SpectralSequence C (fun r => ⟨r, 1-r⟩)
+
+abbrev E₀CohomologicalSpectralSequence :=
+  CohomologicalSpectralSequence C 0
+
+abbrev E₁CohomologicalSpectralSequence :=
+  CohomologicalSpectralSequence C 1
+
+abbrev E₂CohomologicalSpectralSequence :=
+  CohomologicalSpectralSequence C 2
+
+abbrev HomologicalSpectralSequence :=
+  SpectralSequence C (fun r => ⟨-r, r-1⟩)
+
+abbrev E₀HomologicalSpectralSequence :=
+  HomologicalSpectralSequence C 0
+
+abbrev E₁HomologicalSpectralSequence :=
+  HomologicalSpectralSequence C 1
+
+abbrev E₂HomologicalSpectralSequence :=
+  HomologicalSpectralSequence C 2
+
+
 namespace SpectralSequence
 
 variable {C r₀ degrees}
-variable (E : SpectralSequence C r₀ degrees)
+variable (E : SpectralSequence C degrees r₀)
 
 def pageIsoOfEq (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r = r') (pq : ℤ × ℤ) :
     E.page r hr pq ≅ E.page r' (hr.trans (by rw [hr'])) pq :=
