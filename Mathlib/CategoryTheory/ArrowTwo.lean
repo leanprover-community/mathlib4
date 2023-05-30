@@ -91,11 +91,13 @@ def δ₂ : Arrow₂ C ⥤ Arrow C where
     { left := φ.τ₀
       right := φ.τ₁ }
 
+@[simps]
 def δ₂Toδ₁ : (δ₂ : Arrow₂ C ⥤ _) ⟶ δ₁ where
   app D :=
     { left := 𝟙 _
       right := D.g }
 
+@[simps]
 def δ₁Toδ₀ : (δ₁ : Arrow₂ C ⥤ _) ⟶ δ₀ where
   app D :=
     { left := D.f

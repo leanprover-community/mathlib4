@@ -147,6 +147,40 @@ lemma δ₂_map_δ₃Toδ₂_app (D : Arrow₃ C) : Arrow₂.δ₂.map (Arrow₃
 lemma δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj (D : Arrow₃ C) :
     Arrow₂.δ₀.map (Arrow₃.δ₃Toδ₂.app D) = Arrow₂.δ₂Toδ₁.app (Arrow₃.δ₀.obj D) := by aesop_cat
 
+@[simp]
+lemma δ₀_map_δ₁Toδ₀_app (D : Arrow₃ C) :
+  Arrow₂.δ₀.map (Arrow₃.δ₁Toδ₀.app D) = 𝟙 _ := by aesop_cat
+
+@[simps]
+def δ₂δ₂Toδ₃δ₁ : (Arrow₃.δ₂ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₂ ⟶ Arrow₃.δ₃ ⋙ Arrow₂.δ₁ where
+  app D :=
+    { left := 𝟙 _
+      right := D.g }
+
+@[simps]
+def δ₃δ₁Toδ₂δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₁ where
+  app D :=
+    { left := 𝟙 _
+      right := D.h }
+
+@[simps]
+def δ₃δ₁Toδ₂δ₀ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₀ where
+  app D :=
+    { left := D.f
+      right := D.h }
+
+@[simps]
+def δ₃δ₁Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
+  app D :=
+    { left := D.f
+      right := D.h }
+
+@[simps]
+def δ₃δ₁Toδ₀δ₂ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₂ where
+  app D :=
+    { left := D.f
+      right := 𝟙 _ }
+
 variable (C)
 
 noncomputable def ιArrow [HasInitial C] [HasTerminal C] : Arrow C ⥤ Arrow₃ C where

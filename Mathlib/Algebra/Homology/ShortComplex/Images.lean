@@ -29,8 +29,8 @@ structure ImagesLemmaInput where
   f₁ : S.X₁ ⟶ Y
   f₂ : Y ⟶ S.X₂
   f₃ : Y ⟶ S.X₃
-  fac₁ : f₁ ≫ f₂ = S.f
-  fac₂ : f₂ ≫ S.g = f₃
+  fac₁ : f₁ ≫ f₂ = S.f := by aesop_cat
+  fac₂ : f₂ ≫ S.g = f₃ := by aesop_cat
 
 variable {C}
 
@@ -67,7 +67,8 @@ lemma shortComplex_exact : I.shortComplex.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A₀ x₂ hx₂
   dsimp
-  obtain ⟨A₁, π₁, hπ₁, y, hy⟩ := surjective_up_to_refinements_of_epi (Abelian.factorThruImage I.f₂) x₂
+  obtain ⟨A₁, π₁, hπ₁, y, hy⟩ := surjective_up_to_refinements_of_epi
+    (Abelian.factorThruImage I.f₂) x₂
   replace hy := hy =≫ (Abelian.image.ι I.f₂)
   have hx₂' := hx₂ =≫ (Abelian.image.ι I.f₃)
   rw [assoc, assoc, kernel.lift_ι] at hy

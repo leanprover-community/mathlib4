@@ -195,6 +195,7 @@ lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
     . exact hφ₂
   refine' X.zero₃ n₀ n₁ hn₁ _
 
+@[simps]
 def shortComplex₁ : ShortComplex (Arrow₂ ι ⥤ C):=
   ShortComplex.mk (X.δ n₀ n₁ hn₁) (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁))
      (by
@@ -203,6 +204,7 @@ def shortComplex₁ : ShortComplex (Arrow₂ ι ⥤ C):=
 
 pp_extended_field_notation shortComplex₁
 
+@[simps]
 def shortComplex₂ : ShortComplex (Arrow₂ ι ⥤ C):=
   ShortComplex.mk (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀))
     (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (by
@@ -211,6 +213,7 @@ def shortComplex₂ : ShortComplex (Arrow₂ ι ⥤ C):=
 
 pp_extended_field_notation shortComplex₂
 
+@[simps]
 def shortComplex₃ : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk  (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (X.δ n₀ n₁ hn₁)
      (by
@@ -450,6 +453,56 @@ noncomputable def Φ : cokernel (whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n�
   (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
 
 pp_extended_field_notation Φ-/
+
+def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
+  Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
+  S := (X.shortComplex₁ n₀ n₁ hn₁).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₀)
+  hS := (X.shortComplex₁_exact n₀ n₁ hn₁).map _
+  f₁ := whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁)
+  f₂ := whiskerRight Arrow₃.δ₃δ₁Toδ₀δ₂ (X.H n₁)
+  f₃ := whiskerRight Arrow₃.δ₃δ₁Toδ₀δ₁ (X.H n₁)
+  fac₁ := by
+    ext D
+    refine' ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₁Toδ₀.app D)).symm.trans _
+    dsimp
+    simp
+  fac₂ := by
+    ext D
+    dsimp
+    simp only [← Functor.map_comp]
+    congr 1
+    ext <;> dsimp <;> simp
+
+lemma images_exact₁ : (X.imagesLemmaInput₁ n₀ n₁ hn₁).shortComplex.Exact :=
+  (X.imagesLemmaInput₁ n₀ n₁ hn₁).shortComplex_exact
+
+def imagesLemmaInput₂ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
+  Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₀
+  S := (X.shortComplex₂ n₀).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₂)
+  hS := (X.shortComplex₂_exact n₀).map _
+  f₁ := whiskerRight Arrow₃.δ₂δ₂Toδ₃δ₁ (X.H n₀)
+  f₂ := whiskerRight Arrow₃.δ₃δ₁Toδ₂δ₁ (X.H n₀)
+  f₃ := whiskerRight Arrow₃.δ₃δ₁Toδ₂δ₀ (X.H n₀)
+  fac₁ := by
+    ext D
+    dsimp
+    simp only [← Functor.map_comp]
+    congr 1
+    ext
+    . dsimp
+      simp
+    . rfl
+  fac₂ := by
+    ext D
+    dsimp
+    simp only [← Functor.map_comp]
+    congr 1
+    ext <;> dsimp <;> simp
+
+pp_extended_field_notation imagesLemmaInput₂
+
+lemma images_exact₂ : (X.imagesLemmaInput₂ n₀).shortComplex.Exact :=
+  (X.imagesLemmaInput₂ n₀).shortComplex_exact
 
 section Convergence
 
