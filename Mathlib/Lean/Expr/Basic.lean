@@ -291,6 +291,23 @@ def getRevArg? : Expr → Nat → Option Expr
 def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=
   getRevArg? e (n - i - 1)
 
+/-- Given `f a₀ a₁ ... aₙ`, return the last `n` arguments which are explicit arguments (i.e. not
+implicit). -/
+def getNumExplicitArgs (e : Expr) (n : Nat) : MetaM (Array Expr) :=
+  go n e #[]
+where
+  go : Nat → Expr → Array Expr → MetaM (Array Expr)
+  | 0, _, acc => pure acc.reverse
+  | n+1, .app f x, acc => do
+    match (← inferType f) with
+    | .forallE _ _ _ bi => match bi with
+      | .default => go n f (acc.push x)
+      | _ => go (n+1) f acc
+    | t => panic! s!"{f} : {t} was expected to be a function type"
+  | n+1, .mdata _ e, acc => go (n+1) e acc
+  | n+1, e, acc => throwError "not enough explicit arguments; expected {n+1+acc.size}, got {
+    acc.reverse} before reaching {e}"
+
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
 def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
