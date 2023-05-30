@@ -262,7 +262,8 @@ def genLoopOneEquivPathSelf : GenLoop 1 x ≃ Path x x where
 
 -- porting note: new theorem
 theorem genLoopOneEquivPathSelf_symm_homotopic_iff {f g : Path x x} :
-    (genLoopOneEquivPathSelf.symm f).Homotopic (genLoopOneEquivPathSelf.symm g) ↔ f.Homotopic g := by
+    (genLoopOneEquivPathSelf.symm f).Homotopic (genLoopOneEquivPathSelf.symm g) ↔
+      f.Homotopic g := by
   refine ⟨GenLoop.Homotopic.diagonal, ?_⟩
   rintro ⟨H⟩
   refine ⟨H.1.compContinuousMap _, ?_⟩
