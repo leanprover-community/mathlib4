@@ -8,10 +8,10 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.FiniteDimension
-import Mathbin.Analysis.PSeries
-import Mathbin.NumberTheory.ArithmeticFunction
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # L-series
@@ -62,8 +62,7 @@ theorem lSeriesSummable_zero {z : ℂ} : LSeriesSummable 0 z := by
 #align nat.arithmetic_function.l_series_summable_zero Nat.ArithmeticFunction.lSeriesSummable_zero
 
 theorem lSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {m : ℝ}
-    (h : ∀ n : ℕ, Complex.abs (f n) ≤ m) {z : ℝ} (hz : 1 < z) : f.LSeriesSummable z :=
-  by
+    (h : ∀ n : ℕ, Complex.abs (f n) ≤ m) {z : ℝ} (hz : 1 < z) : f.LSeriesSummable z := by
   by_cases h0 : m = 0
   · subst h0
     have hf : f = 0 :=
@@ -83,8 +82,7 @@ theorem lSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
 #align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real Nat.ArithmeticFunction.lSeriesSummable_of_bounded_of_one_lt_real
 
 theorem lSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ} (h : w.re = z.re) :
-    f.LSeriesSummable w ↔ f.LSeriesSummable z :=
-  by
+    f.LSeriesSummable w ↔ f.LSeriesSummable z := by
   suffices h :
     ∀ n : ℕ, Complex.abs (f n) / Complex.abs (↑n ^ w) = Complex.abs (f n) / Complex.abs (↑n ^ z)
   · simp [l_series_summable, ← summable_norm_iff, h, Complex.norm_eq_abs]
@@ -102,8 +100,7 @@ theorem lSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ}
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re Nat.ArithmeticFunction.lSeriesSummable_iff_of_re_eq_re
 
 theorem lSeriesSummable_of_bounded_of_one_lt_re {f : ArithmeticFunction ℂ} {m : ℝ}
-    (h : ∀ n : ℕ, Complex.abs (f n) ≤ m) {z : ℂ} (hz : 1 < z.re) : f.LSeriesSummable z :=
-  by
+    (h : ∀ n : ℕ, Complex.abs (f n) ≤ m) {z : ℂ} (hz : 1 < z.re) : f.LSeriesSummable z := by
   rw [← l_series_summable_iff_of_re_eq_re (Complex.ofReal_re z.re)]
   apply l_series_summable_of_bounded_of_one_lt_real h
   exact hz
@@ -111,8 +108,7 @@ theorem lSeriesSummable_of_bounded_of_one_lt_re {f : ArithmeticFunction ℂ} {m 
 
 open scoped ArithmeticFunction
 
-theorem zeta_lSeriesSummable_iff_one_lt_re {z : ℂ} : LSeriesSummable ζ z ↔ 1 < z.re :=
-  by
+theorem zeta_lSeriesSummable_iff_one_lt_re {z : ℂ} : LSeriesSummable ζ z ↔ 1 < z.re := by
   rw [← l_series_summable_iff_of_re_eq_re (Complex.ofReal_re z.re), l_series_summable, ←
     summable_norm_iff, ← Real.summable_one_div_nat_rpow, iff_iff_eq]
   by_cases h0 : z.re = 0
@@ -131,8 +127,7 @@ theorem zeta_lSeriesSummable_iff_one_lt_re {z : ℂ} : LSeriesSummable ζ z ↔ 
 
 @[simp]
 theorem lSeries_add {f g : ArithmeticFunction ℂ} {z : ℂ} (hf : f.LSeriesSummable z)
-    (hg : g.LSeriesSummable z) : (f + g).lSeries z = f.lSeries z + g.lSeries z :=
-  by
+    (hg : g.LSeriesSummable z) : (f + g).lSeries z = f.lSeries z + g.lSeries z := by
   simp only [l_series, add_apply]
   rw [← tsum_add hf hg]
   apply congr rfl (funext fun n => _)
