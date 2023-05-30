@@ -50,8 +50,7 @@ theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   · continuity
   · continuity
   · continuity
-  · -- Porting note: was `continuity`
-    refine Continuous.mul ?_ (Continuous.sub ?_ ?_) <;> continuity
+  · continuity
   intro x hx
   -- Porting note: norm_num ignores arguments.
   rw [hx, mul_assoc]
@@ -365,13 +364,8 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
--- mathport name: fundamental_groupoid_functor
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
-
--- mathport name: fundamental_groupoid_functor.obj
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
-
--- mathport name: fundamental_groupoid_functor.map
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
