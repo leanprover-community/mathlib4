@@ -702,7 +702,6 @@ theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean �
 
 end Real
 
--- Porting note: tactics removed
 section Tactics
 
 -- /-!
