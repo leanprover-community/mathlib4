@@ -623,18 +623,18 @@ theorem measure_univ_of_mulLeftInvariant [LocallyCompactSpace G] [NoncompactSpac
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
-  set L : ℕ → Set G := fun n => ((fun T => T ∪ g T • K)^[n]) K with hL
+  set L : ℕ → Set G := fun n => ((fun T => T ∪ g T • K)^[n]) K
   have Lcompact : ∀ n, IsCompact (L n) := by
     intro n
     induction' n with n IH
     · exact hK
-    · simp_rw [hL, iterate_succ']
+    · simp_rw [iterate_succ']
       apply IsCompact.union IH (hK.smul (g (L n)))
   have Lclosed : ∀ n, IsClosed (L n) := by
     intro n
     induction' n with n IH
     · exact Kclosed
-    · simp_rw [hL, iterate_succ']
+    · simp_rw [iterate_succ']
       apply IsClosed.union IH (Kclosed.smul (g (L n)))
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
@@ -642,7 +642,7 @@ theorem measure_univ_of_mulLeftInvariant [LocallyCompactSpace G] [NoncompactSpac
     · simp only [one_mul, Nat.cast_one, iterate_zero, id.def, Nat.zero_eq, Nat.zero_add]
     · calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
-          simp_rw [hL, iterate_succ']
+          simp_rw [iterate_succ']
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet
         _ = (n + 1 + 1 : ℕ) * μ K := by
           simp only [IH, measure_smul, add_mul, Nat.cast_add, Nat.cast_one, one_mul]
