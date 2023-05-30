@@ -121,6 +121,19 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
 def unassigned? (g : MVarId) : MetaM (Option MVarId) := do
   if ← g.isAssigned then pure none else pure g
 
+/-- Optionally rename an mvar with `name` if it has an internal username.
+
+If `removeAssigned` is true (the default), `none` will be returned if the goal has already been
+assigned.
+
+If `setSyntheticOpaque` is true (the default), the goal will also be set to `.syntheticOpaque`. -/
+def mkUserFacingMVar? (goal : MVarId) (name : Name) (removeAssigned := true)
+    (setSyntheticOpaque := true) : MetaM (Option MVarId) := do
+  if ← pure removeAssigned <&&> goal.isAssigned then pure none else
+    if setSyntheticOpaque then goal.setKind .syntheticOpaque
+    if (← goal.getTag).isInternal then goal.setUserName name
+    pure (some goal)
+
 end Lean.MVarId
 
 namespace Lean.Meta
