@@ -43,9 +43,8 @@ positive cone which is the closure of the sums of elements `star r * r`. A weake
 advantage of not requiring a topology.
 -/
 
--- Porting note: `assert_not_exists` not implemented yet
---assert_not_exists finset
---assert_not_exists subgroup
+assert_not_exists Finset
+assert_not_exists Subgroup
 
 universe u v
 
@@ -56,6 +55,9 @@ open MulOpposite
 class Star (R : Type u) where
   star : R → R
 #align has_star Star
+
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Star.star
 
 variable {R : Type u}
 

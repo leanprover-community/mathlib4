@@ -433,7 +433,7 @@ theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := 
     using addVal_def ϖ 1 hϖ 1
 #align discrete_valuation_ring.add_val_uniformizer DiscreteValuationRing.addVal_uniformizer
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem addVal_mul {a b : R} :
     addVal R (a * b) = addVal R a + addVal R b :=
   (addVal R).map_mul _ _

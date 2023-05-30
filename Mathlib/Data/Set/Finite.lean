@@ -21,8 +21,8 @@ about finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 ## Main definitions
 
-* `Set.Finite : set α → Prop`
-* `Set.Infinite : set α → Prop`
+* `Set.Finite : Set α → Prop`
+* `Set.Infinite : Set α → Prop`
 * `Set.to_finite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
 * `Set.Finite.toFinset` to noncomputably produce a `Finset` from a `Set.Finite` proof.
   (See `Set.toFinset` for a computable version.)
@@ -143,7 +143,7 @@ alias not_infinite ↔ _ Finite.not_infinite
 
 attribute [simp] Finite.not_infinite
 
-/-- See also `finite_or_infinite`, `fintype_or_infinite`. -/
+/-- See also `finite_or_infinite`, `fintypeOrInfinite`. -/
 protected theorem finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
   em _
 #align set.finite_or_infinite Set.finite_or_infinite
@@ -486,7 +486,7 @@ def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
 
 instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
-  Fintype.ofFinset (s.toFinset ×ᶠ t.toFinset) <| by simp
+  Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 #align set.fintype_prod Set.fintypeProd
 
 instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
@@ -641,7 +641,7 @@ instance finite_biUnion' {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set �
   finite_biUnion s t fun _ _ => inferInstance
 #align finite.set.finite_bUnion' Finite.Set.finite_biUnion'
 
-/-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → set α` and `[∀ i, Finite (f i)]`
+/-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
 (when given instances from `Data.Nat.Interval`).
 -/
 instance finite_biUnion'' {ι : Type _} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
@@ -688,7 +688,7 @@ end Finite.Set
 
 namespace Set
 
-/-! ### Constructors for `set.finite`
+/-! ### Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).
@@ -1052,7 +1052,7 @@ theorem Finite.toFinset_insert' [DecidableEq α] {a : α} {s : Set α} (hs : s.F
 #align set.finite.to_finset_insert' Set.Finite.toFinset_insert'
 
 theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
-    hs.toFinset ×ᶠ ht.toFinset = (hs.prod ht).toFinset :=
+    hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 #align set.finite.to_finset_prod Set.Finite.toFinset_prod
 
@@ -1151,7 +1151,7 @@ section
 attribute [local instance] Nat.fintypeIio
 
 /-- If `P` is some relation between terms of `γ` and sets in `γ`, such that every finite set
-`t : set γ` has some `c : γ` related to it, then there is a recursively defined sequence `u` in `γ`
+`t : Set γ` has some `c : γ` related to it, then there is a recursively defined sequence `u` in `γ`
 so `u n` is related to the image of `{0, 1, ..., n-1}` under `u`.
 
 (We use this later to show sequentially compact sets are totally bounded.)

@@ -1309,14 +1309,14 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
       · rwa [Finset.mem_coe]
     convert h_add _ Pg (h_ind x mx)
     · ext1 y
-      by_cases hy : y ∈ f ⁻¹' {x} <;>
-        [simpa [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator],
-          simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]]
+      by_cases hy : y ∈ f ⁻¹' {x}
+      · simpa [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
     rw [disjoint_iff_inf_le]
     rintro y
-    by_cases hy : y ∈ f ⁻¹' {x} <;>
-      [simp [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator],
-          simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]]
+    by_cases hy : y ∈ f ⁻¹' {x}
+    · simp [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+    · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
 #align measure_theory.simple_func.induction MeasureTheory.SimpleFunc.induction
 
 end SimpleFunc

@@ -311,15 +311,13 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
 
 end Rat
 
--- Porting note: `assert_not_exists` not yet implemented.
-
 -- We make some assertions here about declarations that do not need to be in the import dependencies
 -- for this file, but have been in the past.
--- assert_not_exists fintype
+assert_not_exists Fintype
 
--- assert_not_exists set.Icc
+assert_not_exists Set.Icc
 
--- assert_not_exists galois_connection
+assert_not_exists GaloisConnection
 
 -- These are less significant, but should not be relaxed until at least after port to Lean 4.
--- assert_not_exists LinearOrderedCommGroupWithZero
+assert_not_exists LinearOrderedCommGroupWithZero
