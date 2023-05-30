@@ -2466,6 +2466,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.Equiv
+import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
