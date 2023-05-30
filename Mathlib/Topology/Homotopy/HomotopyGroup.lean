@@ -8,7 +8,7 @@ Authors: Roberto Alvarez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 
 /-!
 # `n`th homotopy group
@@ -101,8 +101,7 @@ structure GenLoop (n : ℕ) (x : X) extends C(I^ n, X) where
 
 namespace GenLoop
 
-instance funLike : FunLike (GenLoop n x) (I^ n) fun _ => X
-    where
+instance funLike : FunLike (GenLoop n x) (I^ n) fun _ => X where
   coe f := f.1
   coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ h => by congr ; exact h
 #align gen_loop.fun_like GenLoop.funLike
@@ -206,15 +205,13 @@ def pi0EquivPathComponents : π 0 x ≃ ZerothHomotopy X :=
 /-- The 1-dimensional generalized loops based at `x` are in 1-1 correspondence with
   paths from `x` to itself. -/
 @[simps]
-def genLoopOneEquivPathSelf : GenLoop 1 x ≃ Path x x
-    where
+def genLoopOneEquivPathSelf : GenLoop 1 x ≃ Path x x where
   toFun p :=
     Path.mk ⟨fun t => p fun _ => t, by continuity; exact p.1.2⟩
       (p.boundary (fun _ => 0) ⟨0, Or.inl rfl⟩) (p.boundary (fun _ => 1) ⟨1, Or.inr rfl⟩)
   invFun p :=
     { toFun := fun c => p c.headI
-      boundary :=
-        by
+      boundary := by
         rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
         exacts[p.source, p.target] }
   left_inv p := by ext1; exact congr_arg p y.one_char.symm
@@ -224,8 +221,7 @@ def genLoopOneEquivPathSelf : GenLoop 1 x ≃ Path x x
 /-- The first homotopy group at `x` is equivalent to the fundamental group,
 i.e. the loops based at `x` up to homotopy.
 -/
-def pi1EquivFundamentalGroup : π 1 x ≃ FundamentalGroup X x :=
-  by
+def pi1EquivFundamentalGroup : π 1 x ≃ FundamentalGroup X x := by
   refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
   refine' Quotient.congr genLoopOneEquivPathSelf _
   -- homotopic iff homotopic
