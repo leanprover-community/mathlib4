@@ -1,0 +1,424 @@
+Failure: 21 messages
+=====
+assistant:
+I apologize for the mistake. It seems that the `rw` tactic with `mul_add` is not working as expected. We can use the `ring` tactic directly to simplify the expression. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); simp only [h₁]
+  have h₃ : x^3 + y^3 + z^3 = (x + y + z + 6) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) - 3 * x * y * z + 6 * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  sorry
+```
+
+In this step, we have removed the `rw` tactic and used the `ring` tactic directly to simplify the expression.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 10, located on the tokens `mul_add`:
+
+```
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ?a * (?b + ?c)
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+h₂ : x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + 3 * x * y * z
+⊢ (x + y) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + z * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) +
+      3 * x * y * z =
+    (x + y + z + 6) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) - 3 * x * y * z +
+      6 * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+I apologize for the mistake. It seems that the `rw` tactic with `one_mul` is not working as expected. We can remove the `one_mul` lemma from the tactic step, as it is not necessary for the simplification. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); simp only [h₁]
+  have h₃ : x^3 + y^3 + z^3 = (x + y + z + 6) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) - 3 * x * y * z + 6 * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    rw [h₂, add_mul, mul_add, mul_sub, mul_sub, mul_sub]
+  sorry
+```
+
+In this step, we have removed the `one_mul` lemma from the `rw` tactic step.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 10, located on the tokens `one_mul`:
+
+```
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  1 * ?a
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+h₂ : x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + 3 * x * y * z
+⊢ (x + y) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + z * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) +
+      3 * x * y * z =
+    (x + y + z + 6) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) - 3 * x * y * z +
+      6 * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+1. Plan for proceeding:
+
+We have the identity $x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z$ from `h₂`. We want to show that $(x + y + z + 6) \mid (x^3 + y^3 + z^3)$. We can rewrite the left-hand side as $(x + y + z) + 6$. We will use the given hypothesis `h₀` to relate the terms in this identity to our goal.
+
+2. Next tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); simp only [h₁]
+  have h₃ : x^3 + y^3 + z^3 = (x + y + z + 6) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) - 3 * x * y * z + 6 * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    rw [h₂, add_mul, one_mul, mul_add, mul_sub, mul_sub, mul_sub]
+  sorry
+```
+
+In this step, we have introduced a new hypothesis `h₃` which states the relationship between the left-hand side of our goal and the identity from `h₂`. We have used the `rw` tactic to rewrite the expression and simplify it.
+=====
+user:
+The goal state for the sorry on line 9 is:
+```
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+h₂ : x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + 3 * x * y * z
+⊢ x + y + z + 6 ∣ x ^ 3 + y ^ 3 + z ^ 3
+```
+1. Please write out a plan for proceeding, in English (with LaTeX).
+2. Please add the next tactic step to the proof.
+   Include the new version of your (possibly incomplete) proof in a code block.
+   Make sure the code block is self-contained and runs.
+=====
+assistant:
+I apologize for the mistake. It seems that the `rw` tactic with `h₁` is still not working as expected. We can use the `simp only` tactic instead to apply the identity from `h₁` to our goal. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); simp only [h₁]
+  sorry
+```
+
+In this step, we have replaced the `rw` tactic with the `simp only` tactic to apply the identity from `h₁` to our goal.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 8, located on the tokens `h₁`:
+
+```
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+⊢ x ^ 3 + y ^ 3 + z ^ 3 + 3 * x * y * z - 3 * x * y * z =
+    (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + 3 * x * y * z
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+I apologize for the mistake. It seems that I forgot to enclose `h₁` in square brackets when using the `rw` tactic. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); rw [h₁]
+  sorry
+```
+
+In this step, we have enclosed `h₁` in square brackets when using the `rw` tactic.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 8, located on the tokens `h₁`:
+
+```
+error: expected '['
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+I apologize for the mistake. It seems that the `rw` tactic with `h₁` is not working as expected. Instead, we can use the `apply` tactic to apply the identity from `h₁` to our goal. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    apply Eq.trans (Eq.symm (add_sub_cancel (x^3 + y^3 + z^3) (3 * x * y * z))); rw h₁
+  sorry
+```
+
+In this step, we have replaced the `rw` tactic with the `apply` tactic to apply the identity from `h₁` to our goal. We have used the `Eq.trans` and `Eq.symm` functions to manipulate the equality.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 8, located on the tokens `h₁`:
+
+```
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+⊢ x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + 3 * x * y * z
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+1. Plan for proceeding:
+
+We have the identity $x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z)$ from `h₁`. We want to show that $(x + y + z + 6) \mid (x^3 + y^3 + z^3)$. We can rewrite the left-hand side as $(x + y + z) + 6$. We will use the given hypothesis `h₀` to relate the terms in this identity to our goal.
+
+2. Next tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  have h₂ : x^3 + y^3 + z^3 = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) + 3 * x * y * z := by
+    rw [h₁, add_comm, sub_eq_add_neg, add_assoc, add_neg_cancel_right]
+  sorry
+```
+
+In this step, we have introduced a new hypothesis `h₂` which states the relationship between the left-hand side of our goal and the identity from `h₁`. We have used the `rw` tactic to rewrite the expression and simplify it.
+=====
+user:
+The goal state for the sorry on line 7 is:
+```
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+h₁ : x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z = (x + y + z) * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+⊢ x + y + z + 6 ∣ x ^ 3 + y ^ 3 + z ^ 3
+```
+1. Please write out a plan for proceeding, in English (with LaTeX).
+2. Please add the next tactic step to the proof.
+   Include the new version of your (possibly incomplete) proof in a code block.
+   Make sure the code block is self-contained and runs.
+=====
+assistant:
+I apologize for the mistake. It seems that the `calc` tactic is not working as expected in this case. We can use the `ring` tactic directly to simplify the expression. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    ring
+  sorry
+```
+
+In this step, we have removed the `calc` tactic and used the `ring` tactic directly to simplify the expression.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 6, located on the tokens `calc x^3 + y^3 + z^3 - 3 * x * y * z`:
+
+```
+error: invalid 'calc' step, failed to synthesize `Trans` instance
+  Trans Eq Eq ?m.4917
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+I apologize for the mistake. It seems that the `rw` tactic with `add_mul` is not working as expected. Instead, we can use the `calc` tactic to rewrite and simplify the expression step by step. Here's the corrected proof with the updated tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    calc x^3 + y^3 + z^3 - 3 * x * y * z
+        = x^3 + y^3 + z^3 - x * y * z - x * y * z - x * y * z : by ring
+    ... = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) : by ring
+  sorry
+```
+
+In this step, we have replaced the `rw` tactic with the `calc` tactic to rewrite and simplify the expression step by step. The `ring` tactic is used to simplify the expressions in each step.
+=====
+user:
+When I try to run this code, I get the following error:
+
+There was an error on line 6, located on the tokens `add_mul`:
+
+```
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  (?a + ?b) * ?c
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+⊢ x ^ 3 + y ^ 3 + z ^ 3 - 3 * x * y * z =
+    x * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) + y * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z) +
+      z * (x ^ 2 + y ^ 2 + z ^ 2 - x * y - x * z - y * z)
+```
+
+
+Please describe how you are going to fix this error and try again.
+Change the tactic step where there is an error, but do not add any additional tactic steps.
+=====
+assistant:
+1. Plan for proceeding:
+
+We want to show that $(x + y + z + 6) \mid (x^3 + y^3 + z^3)$. We can rewrite the left-hand side as $(x + y + z + 6) = (x + y + z) + 6$. We can also rewrite the right-hand side using the factorization identity $a^3 + b^3 + c^3 - 3abc = (a + b + c)(a^2 + b^2 + c^2 - ab - ac - bc)$. We will use the given hypothesis $h₀$ to relate the terms in this identity to our goal.
+
+2. Next tactic step:
+
+```lean
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by
+  have h₁ : x^3 + y^3 + z^3 - 3 * x * y * z = (x + y + z) * (x^2 + y^2 + z^2 - x * y - x * z - y * z) := by
+    rw [add_mul, add_mul, add_mul, mul_sub, mul_sub, mul_sub, mul_sub, mul_sub, mul_sub]
+    ring
+  sorry
+```
+
+In this step, we have introduced a new hypothesis `h₁` which states the factorization identity for the right-hand side of our goal. We have used the `rw` tactic to rewrite the expression and the `ring` tactic to simplify it.
+=====
+user:
+I am going to show you an incomplete proof and the accompanying goal state.
+I will ask you to complete the proof step by step, adding one tactic step in each response.
+
+Here is the proof thus far:
+```
+theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+  (x y z : ℤ)
+  (h₀ : (x - y)^2 + (y - z)^2 + (z - x)^2 = x * y * z) :
+  (x + y + z + 6) ∣ (x^3 + y^3 + z^3) := by sorry
+```
+
+The goal state is currently:
+```
+x y z : ℤ
+h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z
+⊢ x + y + z + 6 ∣ x ^ 3 + y ^ 3 + z ^ 3
+```
+1. Please write out a plan for proceeding, in English (with LaTeX).
+2. Please add the next tactic step to the proof.
+   Include the new version of your (possibly incomplete) proof in a code block.
+   Make sure the code block is self-contained and runs.
+=====
+system:
+You are a pure mathematician who is an expert in the Lean 4 theorem prover.
+Your job is help your user write Lean proofs.
+
+I want to remind you that we're using Lean 4, not the older Lean 3,
+and there have been some syntax changes. In particular:
+- Type constants are now UpperCamelCase, eg `Nat`, `List`.
+- Term constants and variables are now `lowerCamelCase` rather than `snake_case`.
+  For example, we now have `NumberTheory.Divisors.properDivisors instead of
+  `number_theory.divisors.proper_divisors`.
+- Pure functions are now written with the syntax `fun x => f x`.
+  The old `λ x, f x` syntax will not work.
+- Instead of being separated by a comma, tactics can be separated by a newline or by a semicolon.
+  For example, we could write
+```lean
+theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
+  apply And.intro hp
+  exact And.intro hq hp
+```
+or
+```lean
+theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
+  apply And.intro hp; exact And.intro hq hp
+```
+- Indentation is significant.
+- In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one.
+  For example `rw h1` is now `rw [h1]`.
+- The `induction` tactic now uses a structured format, like pattern matching.
+  For example, in Lean 4 we can write
+```lean
+theorem zero_add (n : Nat) : 0 + n = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [Nat.add_succ, ih]
+```
+  Alternatively you can still use `induction' with x y ih`, like in Lean 3.
+- The `cases` tactic now uses a structured format, like pattern matching.
+  For example, in Lean 4 we can write
+```lean
+example (p q : Prop) : p ∨ q → q ∨ p := by
+  intro h
+  cases h with
+  | inl hp => apply Or.inr; exact hp
+  | inr hq => apply Or.inl; exact hq
+```
+
+It is extremely important that you do not change the name of the theorem you are trying to prove.
+Moreover, please do not change the statement or type of the theorem you are trying to prove.
+(In Lean 4 we can leave out many implicit arguments,
+so don't put this back in if they look like they are missing.)
+
+If there is a doc-string on the code the user provides,
+please include it unchanged in your suggestion.
+
+If you conclude that a proof is impossible, explain why.
+If the current goal state is impossible to achieve
+that does not mean that the proof is impossible.
+Your approach so far might be wrong, but the theorem itself is true.
+Do not change the statement or type of a theorem in order to accomodate an unprovable goal:
+simply explain why the proof is impossible.
