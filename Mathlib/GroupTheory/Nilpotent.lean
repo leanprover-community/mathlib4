@@ -143,7 +143,6 @@ def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 #align upper_central_series upperCentralSeries
 
--- Porting note: TODO
 instance upperCentralSeries_normal (n : ℕ) : Normal (upperCentralSeries G n) :=
   (upperCentralSeriesAux G n).2
 
@@ -173,7 +172,7 @@ class Group.IsNilpotent (G : Type _) [Group G] : Prop where
   nilpotent' : ∃ n : ℕ, upperCentralSeries G n = ⊤
 #align group.is_nilpotent Group.IsNilpotent
 
--- Porting note: infer kinds are unsupported in Lean 4: #[`nilpotent] []
+-- Porting note: add lemma since infer kinds are unsupported in the definition of `IsNilpotent`
 lemma Group.IsNilpotent.nilpotent (G : Type _) [Group G] [IsNilpotent G] :
     ∃ n : ℕ, upperCentralSeries G n = ⊤ := Group.IsNilpotent.nilpotent'
 
@@ -308,7 +307,6 @@ theorem lowerCentralSeries_succ (n : ℕ) :
   rfl
 #align lower_central_series_succ lowerCentralSeries_succ
 
--- Porting note: TODO
 instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := by
   induction' n with d hd
   · exact (⊤ : Subgroup G).normal_of_characteristic
@@ -474,7 +472,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
-  --- Porting note : TODO
+  --- Porting note : Lean needs to be told that predicates are decidable
   refine @Nat.find_mono _ _ (Classical.decPred _) (Classical.decPred _) ?_ _ _
   intro n hG
   have := lowerCentralSeries_map_subtype_le H n
@@ -533,7 +531,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type _} [Group H] (f : G →* H
       Group.nilpotencyClass H + 1 := by
   haveI : IsNilpotent G := isNilpotent_of_ker_le_center f hf1 hH
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
-  -- Porting note: TODO
+  -- Porting note: Lean needs to be told that predicates are decidable
   refine @Nat.find_min' _ (Classical.decPred _) _ _ ?_
   refine lowerCentralSeries_succ_eq_bot (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
   apply eq_bot_iff.mpr
@@ -560,7 +558,7 @@ nilpotent group is less or equal the nilpotency class of the domain -/
 theorem nilpotencyClass_le_of_surjective {G' : Type _} [Group G'] (f : G →* G')
     (hf : Function.Surjective f) [h : IsNilpotent G] :
     @Group.nilpotencyClass G' _ (nilpotent_of_surjective _ hf) ≤ Group.nilpotencyClass G := by
-  -- Porting note: TODO
+  -- Porting note: Lean needs to be told that predicates are decidable
   refine @Nat.find_mono _ _ (Classical.decPred _) (Classical.decPred _) ?_ _ _
   intro n hn
   apply eq_top_iff.mpr
@@ -615,7 +613,7 @@ theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
 
 theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
     Group.nilpotencyClass G = 0 ↔ Subsingleton G := by
-  -- Porting note: TODO
+  -- Porting note: Lean needs to be told that predicates are decidable
   rw [Group.nilpotencyClass, @Nat.find_eq_zero _ (Classical.decPred _), upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 #align nilpotency_class_zero_iff_subsingleton nilpotencyClass_zero_iff_subsingleton
