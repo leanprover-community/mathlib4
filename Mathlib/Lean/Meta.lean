@@ -125,6 +125,50 @@ end Lean.MVarId
 
 namespace Lean.Meta
 
+/-- Auxiliary def for both `mkUserFacingMVars` variants. -/
+private def mkUserFacingMVarsAux (name : Name) (removeAssigned setSyntheticOpaque : Bool)
+    : Nat × Option MVarId × Array MVarId → MVarId → MetaM (Nat × Option MVarId × Array MVarId)
+| (n, firstInternalGoal?, goals), g => do
+  if ← pure removeAssigned <&&> g.isAssigned then
+    pure (n, firstInternalGoal?, goals)
+  else
+    if setSyntheticOpaque then g.setKind .syntheticOpaque
+    if (← g.getTag).isInternal then
+      g.setUserName <| name.appendIndexAfter n
+      pure (n+1, if n = 1 then some g else none, goals.push g)
+    else
+      pure (n, firstInternalGoal?, goals.push g)
+
+/-- Rename all mvars in an array with internal usernames by appending indices sequentially after a
+given `name`. Does not append any indices if there's only one internally-named goal; otherwise
+starts from 1. Does not avoid name clashes.
+
+If `removeAssigned` is true (the default), assigned goals will be removed from the returned array.
+
+If `setSyntheticOpaque` is `true` (the default), each goal in `goals` will be set to
+`.syntheticOpaque`. -/
+def mkUserFacingMVars (goals : List MVarId) (name : Name) (removeAssigned := true)
+    (setSyntheticOpaque := true) : MetaM (Array MVarId) := do
+  let (_, firstInternalGoal?, goals) ← goals.foldlM (init := (1, none, #[]))
+    (mkUserFacingMVarsAux name removeAssigned setSyntheticOpaque)
+  if let some firstInternalGoal := firstInternalGoal? then firstInternalGoal.setUserName name
+  return goals
+
+/-- Rename all mvars in an array with internal usernames by appending indices sequentially after a
+given `name`. Does not append any indices if there's only one internally-named goal; otherwise
+starts from 1. Does not avoid name clashes.
+
+If `removeAssigned` is true (the default), assigned goals will be removed from the returned array.
+
+If `setSyntheticOpaque` is `true` (the default), each goal in `goals` will be set to
+`.syntheticOpaque`. -/
+def mkUserFacingMVarsArray (goals : Array MVarId) (name : Name) (removeAssigned := true)
+    (setSyntheticOpaque := true) : MetaM (Array MVarId) := do
+  let (_, firstInternalGoal?, goals) ← goals.foldlM (init := (1, none, #[]))
+    (mkUserFacingMVarsAux name removeAssigned setSyntheticOpaque)
+  if let some firstInternalGoal := firstInternalGoal? then firstInternalGoal.setUserName name
+  return goals
+
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
 def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
   let mut hs := #[]
