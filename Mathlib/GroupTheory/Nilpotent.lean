@@ -24,21 +24,21 @@ reaches `⊤`.
 
 ## Main definitions
 
-Recall that if `H K : subgroup G` then `⁅H, K⁆ : subgroup G` is the subgroup of `G` generated
+Recall that if `H K : Subgroup G` then `⁅H, K⁆ : Subgroup G` is the subgroup of `G` generated
 by the commutators `hkh⁻¹k⁻¹`. Recall also Lean's conventions that `⊤` denotes the
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
-* `upper_central_series G : ℕ → subgroup G` : the upper central series of a group `G`.
+* `upperCentralSeries G : ℕ → Subgroup G` : the upper central series of a group `G`.
      This is an increasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊥` and
      `H (n + 1) / H n` is the centre of `G / H n`.
-* `lower_central_series G : ℕ → subgroup G` : the lower central series of a group `G`.
+* `lowerCentralSeries G : ℕ → Subgroup G` : the lower central series of a group `G`.
      This is a decreasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊤` and
      `H (n + 1) = ⁅H n, G⁆`.
-* `is_nilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
+* `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
     equivalently if its lower central series reaches `⊥`.
 * `nilpotency_class` : the length of the upper central series of a nilpotent group.
-* `is_ascending_central_series (H : ℕ → subgroup G) : Prop` and
-* `is_descending_central_series (H : ℕ → subgroup G) : Prop` : Note that in the literature
+* `IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop` and
+* `IsDescendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
     a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
     `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
     central in `G / H (n + 1)`. In this formalisation it is convenient to have two weaker predicates
@@ -57,16 +57,16 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
     series reaches `⊥`.
 * `nilpotent_iff_lower` : `G` is nilpotent iff the lower central series reaches `⊥`.
 * The `nilpotency_class` can likeways be obtained from these equivalent
-  definitions, see `least_ascending_central_series_length_eq_nilpotency_class`,
-  `least_descending_central_series_length_eq_nilpotency_class` and
-  `lower_central_series_length_eq_nilpotency_class`.
+  definitions, see `least_ascending_central_series_length_eq_nilpotencyClass`,
+  `least_descending_central_series_length_eq_nilpotencyClass` and
+  `lowerCentralSeries_length_eq_nilpotencyClass`.
 * If `G` is nilpotent, then so are its subgroups, images, quotients and preimages.
   Binary and finite products of nilpotent groups are nilpotent.
   Infinite products are nilpotent if their nilpotent class is bounded.
   Corresponding lemmas about the `nilpotency_class` are provided.
 * The `nilpotency_class` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
-* `is_nilpotent.to_is_solvable`: If `G` is nilpotent, it is solvable.
+* `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
 
 
 ## Warning
@@ -74,8 +74,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 A "central series" is usually defined to be a finite sequence of normal subgroups going
 from `⊥` to `⊤` with the property that each subquotient is contained within the centre of
 the associated quotient of `G`. This means that if `G` is not nilpotent, then
-none of what we have called `upper_central_series G`, `lower_central_series G` or
-the sequences satisfying `is_ascending_central_series` or `is_descending_central_series`
+none of what we have called `upperCentralSeries G`, `lowerCentralSeries G` or
+the sequences satisfying `IsAscendingCentralSeries` or `IsDescendingCentralSeries`
 are actually central series. Note that the fact that the upper and lower central series
 are not central series if `G` is not nilpotent is a standard abuse of notation.
 
@@ -110,7 +110,7 @@ theorem mem_upperCentralSeriesStep (x : G) :
 
 open QuotientGroup
 
-/-- The proof that `upper_central_series_step H` is the preimage of the centre of `G/H` under
+/-- The proof that `upperCentralSeriesStep H` is the preimage of the centre of `G/H` under
 the canonical surjection. -/
 theorem upperCentralSeriesStep_eq_comap_center :
     upperCentralSeriesStep H = Subgroup.comap (mk' H) (center (G ⧸ H)) := by
@@ -134,11 +134,11 @@ def upperCentralSeriesAux : ℕ → Σ'H : Subgroup G, Normal H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
     let un := upperCentralSeriesAux n
-    let un_normal := un.2
+    let _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 #align upper_central_series_aux upperCentralSeriesAux
 
-/-- `upper_central_series G n` is the `n`th term in the upper central series of `G`. -/
+/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 #align upper_central_series upperCentralSeries
@@ -208,7 +208,7 @@ variable (G)
 /-- The upper central series of a group is an ascending central series. -/
 theorem upperCentralSeries_isAscendingCentralSeries :
     IsAscendingCentralSeries (upperCentralSeries G) :=
-  ⟨rfl, fun x n h => h⟩
+  ⟨rfl, fun _x _n h => h⟩
 #align upper_central_series_is_ascending_central_series upperCentralSeries_isAscendingCentralSeries
 
 theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
@@ -456,7 +456,7 @@ theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
   · simp
   · rw [lowerCentralSeries_succ, lowerCentralSeries_succ, MonoidHom.map_closure]
     apply Subgroup.closure_mono
-    rintro x1 ⟨x2, ⟨x3, hx3, x4, hx4, rfl⟩, rfl⟩
+    rintro x1 ⟨x2, ⟨x3, hx3, x4, _hx4, rfl⟩, rfl⟩
     exact ⟨x3, hd (mem_map.mpr ⟨x3, hx3, rfl⟩), x4, by simp⟩
 #align lower_central_series_map_subtype_le lowerCentralSeries_map_subtype_le
 
@@ -573,19 +573,19 @@ theorem nilpotencyClass_le_of_surjective {G' : Type _} [Group G'] (f : G →* G'
 #align nilpotency_class_le_of_surjective nilpotencyClass_le_of_surjective
 
 /-- Nilpotency respects isomorphisms -/
-theorem nilpotent_of_mulEquiv {G' : Type _} [Group G'] [h : IsNilpotent G] (f : G ≃* G') :
+theorem nilpotent_of_mulEquiv {G' : Type _} [Group G'] [_h : IsNilpotent G] (f : G ≃* G') :
     IsNilpotent G' :=
   nilpotent_of_surjective f.toMonoidHom (MulEquiv.surjective f)
 #align nilpotent_of_mul_equiv nilpotent_of_mulEquiv
 
 /-- A quotient of a nilpotent group is nilpotent -/
-instance nilpotent_quotient_of_nilpotent (H : Subgroup G) [H.Normal] [h : IsNilpotent G] :
+instance nilpotent_quotient_of_nilpotent (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
     IsNilpotent (G ⧸ H) :=
   nilpotent_of_surjective (QuotientGroup.mk' H) QuotientGroup.mk_surjective
 #align nilpotent_quotient_of_nilpotent nilpotent_quotient_of_nilpotent
 
 /-- The nilpotency class of a quotient of `G` is less or equal the nilpotency class of `G` -/
-theorem nilpotencyClass_quotient_le (H : Subgroup G) [H.Normal] [h : IsNilpotent G] :
+theorem nilpotencyClass_quotient_le (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ H) ≤ Group.nilpotencyClass G :=
   nilpotencyClass_le_of_surjective (QuotientGroup.mk' H) QuotientGroup.mk_surjective
 #align nilpotency_class_quotient_le nilpotencyClass_quotient_le
@@ -667,7 +667,7 @@ the group quotiented by its center. -/
 theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Prop}
     (G : Type _) [Group G] [IsNilpotent G]
     (hbase : ∀ (G) [Group G] [Subsingleton G], P G)
-    (hstep : ∀ (G) [Group G] [IsNilpotent G], ∀ ih : P (G ⧸ center G), P G) : P G := by
+    (hstep : ∀ (G) [Group G] [IsNilpotent G], ∀ _ih : P (G ⧸ center G), P G) : P G := by
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction' n with n ih generalizing G
   · haveI := nilpotencyClass_zero_iff_subsingleton.mp h
@@ -900,7 +900,7 @@ groups. -/
 theorem isNilpotent_of_finite_tFAE :
     List.TFAE
       [IsNilpotent G, NormalizerCondition G, ∀ H : Subgroup G, IsCoatom H → H.Normal,
-        ∀ (p : ℕ) (hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
+        ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
         Nonempty
           ((∀ p : (card G).factorization.support, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
   tfae_have 1 → 2
