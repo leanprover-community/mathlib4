@@ -1967,8 +1967,7 @@ def Simps.symm_apply (h : M₁ ≃SL[σ₁₂] M₂) : M₂ → M₁ :=
   h.symm
 #align continuous_linear_equiv.simps.symm_apply ContinuousLinearEquiv.Simps.symm_apply
 
-initialize_simps_projections ContinuousLinearEquiv
-  (toLinearEquiv_toFun → apply, toLinearEquiv_invFun → symm_apply)
+initialize_simps_projections ContinuousLinearEquiv (toFun → apply, invFun → symm_apply)
 
 theorem symm_map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e.symm (𝓝 (e x)) = 𝓝 x :=
   e.toHomeomorph.symm_map_nhds_eq x

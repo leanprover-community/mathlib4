@@ -77,6 +77,7 @@ theorem ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num1
 theorem ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := by norm_num1
 theorem ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num1
 theorem ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num1
+theorem ex64' : Int.gcd (1 - 2^500) (2^510 - 1) + 1 = 2^10 := by norm_num1
 
 example : IsCoprime (1 : ℤ) 2 := by norm_num1
 example : IsCoprime (2 : ℤ) 1 := by norm_num1

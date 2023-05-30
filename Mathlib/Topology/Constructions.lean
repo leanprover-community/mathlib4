@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -807,6 +807,18 @@ theorem Inducing.prod_map {f : α → β} {g : γ → δ} (hf : Inducing f) (hg 
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
+@[simp]
+theorem inducing_const_prod {a : α} {f : β → γ} : (Inducing fun x => (a, f x)) ↔ Inducing f := by
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+    induced_const, top_inf_eq]
+#align inducing_const_prod inducing_const_prod
+
+@[simp]
+theorem inducing_prod_const {b : β} {f : α → γ} : (Inducing fun x => (f x, b)) ↔ Inducing f := by
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+    induced_const, inf_top_eq]
+#align inducing_prod_const inducing_prod_const
+
 theorem Embedding.prod_map {f : α → β} {g : γ → δ} (hf : Embedding f) (hg : Embedding g) :
     Embedding (Prod.map f g) :=
   { hf.toInducing.prod_map hg.toInducing with
@@ -1577,6 +1589,11 @@ theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α �
 theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULift.{v, u} α → α) :=
   ⟨⟨rfl⟩, ULift.down_injective⟩
 #align embedding_ulift_down embedding_uLift_down
+
+theorem ULift.closedEmbedding_down [TopologicalSpace α] :
+    ClosedEmbedding (ULift.down : ULift.{v, u} α → α) :=
+  ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+#align ulift.closed_embedding_down ULift.closedEmbedding_down
 
 instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift α) :=
   embedding_uLift_down.discreteTopology
