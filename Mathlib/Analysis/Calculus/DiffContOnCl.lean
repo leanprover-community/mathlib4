@@ -14,7 +14,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 # Functions differentiable on a domain and continuous on its closure
 
 Many theorems in complex analysis assume that a function is complex differentiable on a domain and
-is continuous on its closure. In this file we define a predicate `diff_cont_on_cl` that expresses
+is continuous on its closure. In this file we define a predicate `DiffContOnCl` that expresses
 this property and prove basic facts about this predicate.
 -/
 
@@ -29,31 +29,30 @@ variable (𝕜 : Type _) {E F G : Type _} [NontriviallyNormedField 𝕜] [Normed
 
 /-- A predicate saying that a function is differentiable on a set and is continuous on its
 closure. This is a common assumption in complex analysis. -/
-@[protect_proj]
 structure DiffContOnCl (f : E → F) (s : Set E) : Prop where
-  DifferentiableOn : DifferentiableOn 𝕜 f s
-  ContinuousOn : ContinuousOn f (closure s)
+  protected DifferentiableOn : DifferentiableOn 𝕜 f s
+  protected ContinuousOn : ContinuousOn f (closure s)
 #align diff_cont_on_cl DiffContOnCl
 
 variable {𝕜}
 
 theorem DifferentiableOn.diffContOnCl (h : DifferentiableOn 𝕜 f (closure s)) : DiffContOnCl 𝕜 f s :=
-  ⟨h.mono subset_closure, h.ContinuousOn⟩
+  ⟨h.mono subset_closure, h.continuousOn⟩
 #align differentiable_on.diff_cont_on_cl DifferentiableOn.diffContOnCl
 
 theorem Differentiable.diffContOnCl (h : Differentiable 𝕜 f) : DiffContOnCl 𝕜 f s :=
-  ⟨h.DifferentiableOn, h.Continuous.ContinuousOn⟩
+  ⟨h.differentiableOn, h.continuous.continuousOn⟩
 #align differentiable.diff_cont_on_cl Differentiable.diffContOnCl
 
 theorem IsClosed.diffContOnCl_iff (hs : IsClosed s) : DiffContOnCl 𝕜 f s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => h.DifferentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.ContinuousOn⟩⟩
+  ⟨fun h => h.DifferentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
 #align is_closed.diff_cont_on_cl_iff IsClosed.diffContOnCl_iff
 
 theorem diffContOnCl_univ : DiffContOnCl 𝕜 f univ ↔ Differentiable 𝕜 f :=
   isClosed_univ.diffContOnCl_iff.trans differentiableOn_univ
 #align diff_cont_on_cl_univ diffContOnCl_univ
 
-theorem diffContOnCl_const {c : F} : DiffContOnCl 𝕜 (fun x : E => c) s :=
+theorem diffContOnCl_const {c : F} : DiffContOnCl 𝕜 (fun _ : E => c) s :=
   ⟨differentiableOn_const c, continuousOn_const⟩
 #align diff_cont_on_cl_const diffContOnCl_const
 
@@ -67,10 +66,10 @@ theorem comp {g : G → E} {t : Set G} (hf : DiffContOnCl 𝕜 f s) (hg : DiffCo
 theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnCl 𝕜 f (ball x r)) :
     ContinuousOn f (closedBall x r) := by
   rcases eq_or_ne r 0 with (rfl | hr)
-  · rw [closed_ball_zero]
+  · rw [closedBall_zero]
     exact continuousOn_singleton f x
   · rw [← closure_ball x hr]
-    exact h.continuous_on
+    exact h.ContinuousOn
 #align diff_cont_on_cl.continuous_on_ball DiffContOnCl.continuousOn_ball
 
 theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
@@ -80,11 +79,11 @@ theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
 
 protected theorem differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (hx : x ∈ s) :
     DifferentiableAt 𝕜 f x :=
-  h.DifferentiableOn.DifferentiableAt <| hs.mem_nhds hx
+  h.DifferentiableOn.differentiableAt <| hs.mem_nhds hx
 #align diff_cont_on_cl.differentiable_at DiffContOnCl.differentiableAt
 
 theorem differentiable_at' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
-  h.DifferentiableOn.DifferentiableAt hx
+  h.DifferentiableOn.differentiableAt hx
 #align diff_cont_on_cl.differentiable_at' DiffContOnCl.differentiable_at'
 
 protected theorem mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl 𝕜 f t :=
@@ -138,18 +137,17 @@ theorem smul_const {𝕜' : Type _} [NontriviallyNormedField 𝕜'] [NormedAlgeb
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨differentiableOn_inv.comp hf.1 fun x hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
+  ⟨differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
 #align diff_cont_on_cl.inv DiffContOnCl.inv
 
 end DiffContOnCl
 
 theorem Differentiable.comp_diffContOnCl {g : G → E} {t : Set G} (hf : Differentiable 𝕜 f)
     (hg : DiffContOnCl 𝕜 g t) : DiffContOnCl 𝕜 (f ∘ g) t :=
-  hf.DiffContOnCl.comp hg (mapsTo_image _ _)
+  hf.diffContOnCl.comp hg (mapsTo_image _ _)
 #align differentiable.comp_diff_cont_on_cl Differentiable.comp_diffContOnCl
 
 theorem DifferentiableOn.diffContOnCl_ball {U : Set E} {c : E} {R : ℝ} (hf : DifferentiableOn 𝕜 f U)
     (hc : closedBall c R ⊆ U) : DiffContOnCl 𝕜 f (ball c R) :=
-  DiffContOnCl.mk_ball (hf.mono (ball_subset_closedBall.trans hc)) (hf.ContinuousOn.mono hc)
+  DiffContOnCl.mk_ball (hf.mono (ball_subset_closedBall.trans hc)) (hf.continuousOn.mono hc)
 #align differentiable_on.diff_cont_on_cl_ball DifferentiableOn.diffContOnCl_ball
-
