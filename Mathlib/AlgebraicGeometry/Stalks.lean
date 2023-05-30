@@ -55,7 +55,8 @@ set_option linter.uppercaseLean3 false in
 /-- A morphism of presheafed spaces induces a morphism of stalks.
 -/
 -- Porting note : Lean cannot find `CoeSort X (Type _)`
-def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X.carrier) : Y.stalk (α.base x) ⟶ X.stalk x :=
+def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X.carrier) :
+    Y.stalk (α.base x) ⟶ X.stalk x :=
   (stalkFunctor C (α.base x)).map α.c ≫ X.presheaf.stalkPushforward C α.base x
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap
@@ -132,7 +133,8 @@ end Restrict
 namespace stalkMap
 
 @[simp]
-theorem id (X : PresheafedSpace.{_, _, v} C) (x : X.carrier) : stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
+theorem id (X : PresheafedSpace.{_, _, v} C) (x : X.carrier) :
+    stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
   dsimp [stalkMap]
   simp only [stalkPushforward.id]
   erw [← map_comp]
@@ -183,7 +185,8 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_hom AlgebraicGeometry.PresheafedSpace.stalkMap.congr_hom
 
 -- Porting note : Lean cannot find `CoeSort X (Type _)`
-theorem congr_point {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x x' : X.carrier) (h : x = x') :
+theorem congr_point {X Y : PresheafedSpace.{_, _, v} C}
+    (α : X ⟶ Y) (x x' : X.carrier) (h : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h]) =
       eqToHom (show Y.stalk (α.base x) = Y.stalk (α.base x') by rw [h]) ≫ stalkMap α x' :=
   by rw [stalkMap.congr α α rfl x x' h]
@@ -191,7 +194,8 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_point AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
 
 -- Porting note : Lean cannot find `CoeSort X (Type _)`
-instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X.carrier) : IsIso (stalkMap α x) where
+instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X.carrier) :
+    IsIso (stalkMap α x) where
   out := by
     let β : Y ⟶ X := CategoryTheory.inv α
     have h_eq : (α ≫ β).base x = x := by rw [IsIso.hom_inv_id α, id_base, TopCat.id_app]
@@ -225,10 +229,23 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.stalk_iso AlgebraicGeometry.PresheafedSpace.stalkMap.stalkIso
 
 @[simp, reassoc, elementwise]
-theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C} (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.Presheaf.stalkSpecializes (f.base.map_specializes h) ≫ stalkMap f x =
-      stalkMap f y ≫ X.Presheaf.stalkSpecializes h :=
-  by delta PresheafedSpace.stalk_map; simp [stalk_map]
+theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
+    (f : X ⟶ Y) {x y : X.carrier} (h : x ⤳ y) :
+    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ stalkMap f x =
+      stalkMap f y ≫ X.presheaf.stalkSpecializes h := by
+  -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
+  -- I had to uglify this
+  dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
+  refine colimit.hom_ext fun j => ?_
+  induction j using Opposite.rec' with | h j => ?_
+  dsimp
+  simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, OpenNhds.inclusion_obj,
+    pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre,
+    id_comp, assoc, colimit.pre_desc, colimit.map_desc]
+  erw [colimit.ι_desc]
+  dsimp
+  erw [X.presheaf.map_id, id_comp]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.stalk_specializes_stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap.stalkSpecializes_stalkMap
 
