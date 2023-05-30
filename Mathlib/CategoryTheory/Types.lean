@@ -231,6 +231,11 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
 
+/-- The functor lifting down to (max with) a smaller universe is isomorphic to the identity
+-/
+def uliftFunctorSmaller : uliftFunctor.{u, max u v} ≅ 𝟭 _ :=
+  NatIso.ofComponents uliftSmaller.{v, u} (by intros X Y f; exact rfl)
+
 /-- The functor embedding `Type u` into `Type u` via `ulift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=

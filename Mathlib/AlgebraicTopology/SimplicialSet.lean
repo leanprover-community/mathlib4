@@ -13,7 +13,7 @@ import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.UYoneda
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
 A simplicial set is just a simplicial object in `Type`,
@@ -66,8 +66,8 @@ instance hasColimits : HasColimits SSet := by
 
 /-- The `n`-th standard simplex `Δ[n]` associated with a nonempty finite linear order `n`
 is the Yoneda embedding of `n`. -/
-def standardSimplex : SimplexCategory ⥤ SSet :=
-  yoneda
+def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
+  uyoneda
 set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
@@ -82,7 +82,7 @@ section
 /-- The `m`-simplices of the `n`-th standard simplex are
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
-  α.toOrderHom
+  α.down.toOrderHom
 set_option linter.uppercaseLean3 false in
 #align sSet.as_order_hom SSet.asOrderHom
 
@@ -91,10 +91,10 @@ end
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex consists of
 all `m`-simplices of `standardSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
-def boundary (n : ℕ) : SSet where
+def boundary (n : ℕ) : SSet.{u} where
   obj m := { α : Δ[n].obj m // ¬Function.Surjective (asOrderHom α) }
   map {m₁ m₂} f α :=
-    ⟨f.unop ≫ (α : Δ[n].obj m₁), by
+    ⟨ULift.up (f.unop ≫ (α : Δ[n].obj m₁).down), by
       intro h
       apply α.property
       exact Function.Surjective.of_comp h⟩
@@ -116,7 +116,7 @@ for which the union of `{i}` and the range of `α` is not all of `n`
 def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   obj m := { α : Δ[n].obj m // Set.range (asOrderHom α) ∪ {i} ≠ Set.univ }
   map {m₁ m₂} f α :=
-    ⟨f.unop ≫ (α : Δ[n].obj m₁), by
+    ⟨ULift.up (f.unop ≫ (α : Δ[n].obj m₁).down), by
       intro h; apply α.property
       rw [Set.eq_univ_iff_forall] at h⊢; intro j
       apply Or.imp _ id (h j)
@@ -138,6 +138,15 @@ section Examples
 
 open Simplicial
 
+/-
+  Something strange: from the perspective of SSet.{u} as (Type u)-valued presheaves on Δ
+  we certainly want the representable functors to live in all SSet.{u}.
+  (Type u)-Presheaves are freely generated under (u-small) colimits by the representables.
+  But under the analogy of topological spaces with simplicial sets, we might think
+  S1 should have the same universe level as Mathlib.Analysis.Complex.Circle.circle.
+  So Δ[1] wants to live in universe u, but a topological interval wants to live in universe 0.
+  Which way is better?
+-/
 /-- The simplicial circle. -/
 noncomputable def S1 : SSet :=
   Limits.colimit <|
@@ -201,6 +210,16 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented where
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
+  map_comp {X Y Z} f g := by
+    ext
+    simp [Prefunctor.map]
+    . exact rfl
+    . simp [Functor.map]
+  map_id X := by
+    ext <;> simp [Prefunctor.map]
+    simp [uyoneda]
+    apply ULift.up_down
+
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
@@ -209,10 +228,15 @@ end Augmented
 end SSet
 
 /-- The functor associating the singular simplicial set to a topological space. -/
-noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
-  ColimitAdj.restrictedYoneda SimplexCategory.toTop
+noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
+  ColimitAdj.restrictedYoneda.{0, u} (SimplexCategory.toTop ⋙ uliftFunctor.{0, u})
+
+
 set_option linter.uppercaseLean3 false in
 #align Top.to_sSet TopCat.toSSet
+
+set_option pp.universes true
+#check TopCat.toSSet
 
 /-- The geometric realization functor. -/
 noncomputable def SSet.toTop : SSet ⥤ TopCat :=
