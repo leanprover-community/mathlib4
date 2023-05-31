@@ -316,8 +316,8 @@ theorem submodule_closure_single :
 
 theorem submodule_span_single :
     Submodule.span (reesAlgebra I) (⋃ i, single R i '' (F.N i : Set M)) = F.submodule := by
-  rw [← Submodule.span_closure, submodule_closure_single]
-  simp
+  rw [← Submodule.span_closure, submodule_closure_single, Submodule.coe_toAddSubmonoid]
+  exact Submodule.span_eq (Filtration.submodule F)
 #align ideal.filtration.submodule_span_single Ideal.Filtration.submodule_span_single
 
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
