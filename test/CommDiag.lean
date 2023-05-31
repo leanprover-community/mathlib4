@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Widget.CommDiag
-import ProofWidgets.Component.SelectionPanel
+import ProofWidgets.Component.GoalTypePanel
 
 /-! ## Example use of commutative diagram widgets -/
 
@@ -16,13 +16,13 @@ local instance : Category (Type u) where
   assoc _ _ _ := rfl
 
 example {f g : Nat ⟶ Bool}: f = g → (f ≫ 𝟙 Bool) = (g ≫ 𝟙 Bool) := by
-  withPanelWidgets [SelectionPanel]
+  with_panel_widgets [GoalTypePanel]
     intro h
     exact h
 
 example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameIsReallyLong = g →
     fButActuallyTheNameIsReallyLong = (g ≫ 𝟙 Bool) := by
-  withPanelWidgets [SelectionPanel]
+  with_panel_widgets [GoalTypePanel]
     intro h
     conv =>
       rhs
@@ -33,7 +33,7 @@ example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameI
 example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z}
     (h': g ≫ f' = i) :
     (f ≫ k) = g → ((f ≫ k) ≫ f') = (g ≫ 𝟙 Y ≫ f') := by
-  withPanelWidgets [SelectionPanel]
+  with_panel_widgets [GoalTypePanel]
     intro h
     rw [
       h,
@@ -47,6 +47,6 @@ example {X Y Z : Type} {f i : X ⟶ Y}
     h = f ≫ g →
     i ≫ j = h →
     f ≫ g = i ≫ j := by
-  withPanelWidgets [SelectionPanel]
+  with_panel_widgets [SelectionPanel]
     intro h₁ h₂
     rw [← h₁, h₂]
