@@ -75,11 +75,12 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
   { uniformInducing_equivBoundedOfCompact α β with inj := (equivBoundedOfCompact α β).injective }
 #align continuous_map.uniform_embedding_equiv_bounded_of_compact ContinuousMap.uniformEmbedding_equivBoundedOfCompact
 
+set_option trace.simps.debug true
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
 -- porting note: the following `simps` received a "maximum recursion depth" error
--- @[simps! (config := { fullyApplied := false }) apply symm_apply]
+@[simps?! (config := { fullyApplied := false }) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact

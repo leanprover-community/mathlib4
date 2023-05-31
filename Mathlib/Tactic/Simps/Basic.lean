@@ -917,6 +917,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let lvl ← getLevel type
   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
   if cfg.simpRhs then
+    trace[simps.debug] "About to simplify the right-hand side of the lemma."
     let ctx ← mkSimpContext
     let (rhs2, _) ← dsimp rhs ctx
     if rhs != rhs2 then
