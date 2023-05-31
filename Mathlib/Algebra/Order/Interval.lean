@@ -535,26 +535,34 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 #align nonempty_interval.mul_eq_one_iff NonemptyInterval.mul_eq_one_iff
 #align nonempty_interval.add_eq_zero_iff NonemptyInterval.add_eq_zero_iff
 
-instance NonemptyInterval.subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
+instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
     neg := Neg.neg
     sub := Sub.sub
-    sub_eq_add_neg := fun s t => by apply NonemptyInterval.ext <;> exact sub_eq_add_neg _ _
-    neg_neg := fun s => by apply NonemptyInterval.ext <;> exact neg_neg _
-    neg_add_rev := fun s t => by apply NonemptyInterval.ext <;> exact neg_add_rev _ _
+    sub_eq_add_neg := fun s t => by
+      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      exact sub_eq_add_neg _ _
+    neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
+    neg_add_rev := fun s t => by
+      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
       rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
-instance NonemptyInterval.divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
+instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
     inv := Inv.inv
     div := (· / ·)
-    div_eq_mul_inv := fun s t => by apply NonemptyInterval.ext <;> exact div_eq_mul_inv _ _
-    inv_inv := fun s => by apply NonemptyInterval.ext <;> exact inv_inv _
-    mul_inv_rev := fun s t => by apply NonemptyInterval.ext <;> exact mul_inv_rev _ _
+    div_eq_mul_inv := fun s t => by
+      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      exact div_eq_mul_inv _ _
+    inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
+    mul_inv_rev := fun s t => by
+      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      exact mul_inv_rev _ _
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab] }
@@ -577,7 +585,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 #align interval.mul_eq_one_iff Interval.mul_eq_one_iff
 #align interval.add_eq_zero_iff Interval.add_eq_zero_iff
 
-instance Interval.subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
+instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
     neg := Neg.neg
@@ -592,7 +600,7 @@ instance Interval.subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
           |cases h|exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
 
 @[to_additive existing Interval.subtractionCommMonoid]
-instance Interval.divisionCommMonoid : DivisionCommMonoid (Interval α) :=
+instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
     inv := Inv.inv
     div := (· / ·)
@@ -713,22 +721,21 @@ end Interval
 
 end Length
 
-/-- Porting note: Commented out tactic
-namespace Tactic
+-- Porting note: Commented out tactic
+-- namespace Tactic
 
-open Positivity
+-- open Positivity
 
-/-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
-@[positivity]
-unsafe def positivity_interval_length : expr → tactic strictness
-  | q(NonemptyInterval.length $(s)) => nonnegative <$> mk_app `nonempty_interval.length_nonneg [s]
-  | q(Interval.length $(s)) => nonnegative <$> mk_app `interval.length_nonneg [s]
-  | e =>
-    pp e >>=
-      fail ∘
-        format.bracket "The expression `"
-          "` isn't of the form `nonempty_interval.length s` or `interval.length s`"
-#align tactic.positivity_interval_length tactic.positivity_interval_length
+-- /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
+-- @[positivity]
+-- unsafe def positivity_interval_length : expr → tactic strictness
+--   | q(NonemptyInterval.length $(s)) => nonnegative <$> mk_app `nonempty_interval.length_nonneg [s]
+--   | q(Interval.length $(s)) => nonnegative <$> mk_app `interval.length_nonneg [s]
+--   | e =>
+--     pp e >>=
+--       fail ∘
+--         format.bracket "The expression `"
+--           "` isn't of the form `nonempty_interval.length s` or `interval.length s`"
+-- #align tactic.positivity_interval_length tactic.positivity_interval_length
 
-end Tactic
--/
+-- end Tactic
