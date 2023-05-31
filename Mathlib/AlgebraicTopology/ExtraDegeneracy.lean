@@ -195,28 +195,31 @@ set_option linter.uppercaseLean3 false in
 /-- The obvious extra degeneracy on the standard simplex. -/
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
-  s' _ := SimplexCategory.Hom.mk (OrderHom.const _ 0)
-  s n f := shift f
+  s' _ := ULift.up (SimplexCategory.Hom.mk (OrderHom.const _ 0))
+  s n f := ULift.up (shift (ULift.down f))
   s'_comp_ε := by
     dsimp
     apply Subsingleton.elim
   s₀_comp_δ₁ := by
     ext1 x
+    apply ULift.ext
     apply SimplexCategory.Hom.ext
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
+    apply ULift.ext
     apply SimplexCategory.Hom.ext
     ext i : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex, uyoneda]
     simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
+    apply ULift.ext
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex, uyoneda]
     by_cases j = 0
     . subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
@@ -224,13 +227,14 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply]
   s_comp_σ n i := by
     ext1 φ
+    apply ULift.ext
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex]
+    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex, uyoneda]
     by_cases j = 0
     · subst h
       simp only [shiftFun_0]
-      exact shiftFun_0 φ.toOrderHom
+      exact shiftFun_0 φ.down.toOrderHom
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
       simp only [Fin.succ_predAbove_succ, shiftFun_succ, Function.comp_apply]
 set_option linter.uppercaseLean3 false in

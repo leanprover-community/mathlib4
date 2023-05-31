@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Types
-import Mathlib.Topology.Category.TopCat.Limits.basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Constructions
 
 universe u v
