@@ -1143,7 +1143,8 @@ def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[�
 #align formal_multilinear_series.change_origin_series FormalMultilinearSeries.changeOriginSeries
 
 theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
-    ‖p.changeOriginSeries k l‖₊ ≤ ∑' _x : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
+    ‖p.changeOriginSeries k l‖₊ ≤
+      ∑' _x : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
   (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
     simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
 #align formal_multilinear_series.nnnorm_change_origin_series_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_le_tsum
