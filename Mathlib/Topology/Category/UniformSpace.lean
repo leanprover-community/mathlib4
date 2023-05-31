@@ -8,11 +8,11 @@ Authors: Reid Barton, Patrick Massot, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Reflective
-import Mathbin.CategoryTheory.ConcreteCategory.UnbundledHom
-import Mathbin.CategoryTheory.Monad.Limits
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.Topology.UniformSpace.Completion
+import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
+import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The category of uniform spaces
@@ -160,8 +160,7 @@ open UniformSpace
 open CpltSepUniformSpace
 
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
-noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace
-    where
+noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := CpltSepUniformSpace.of (Completion X)
   map X Y f := ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
   map_id' X := Subtype.eq Completion.map_id
@@ -170,8 +169,7 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace
 
 /-- The inclusion of a uniform space into its completion. -/
 def completionHom (X : UniformSpaceCat) :
-    X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X)
-    where
+    X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
   val := (coe : X → Completion X)
   property := Completion.uniformContinuous_coe X
 #align UniformSpace.completion_hom UniformSpaceCat.completionHom
@@ -214,8 +212,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
             exact
               @completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.separatedSpace _) f_property
                 _ }
-      homEquiv_naturality_left_symm := fun X X' Y f g =>
-        by
+      homEquiv_naturality_left_symm := fun X X' Y f g => by
         apply hom_ext; funext x; dsimp
         erw [coe_comp, ← completion.extension_map]
         rfl; exact g.property; exact f.property }
