@@ -780,7 +780,7 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,-1]
 
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
+protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
 -- porting note: added shortcut
