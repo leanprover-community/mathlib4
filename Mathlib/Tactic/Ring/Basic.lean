@@ -291,7 +291,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← NormNum.evalAdd.core q($a + $b) _ _ ra rb
+    let res ← NormNum.evalAdd.core q($a + $b) q(Add.add) _ _ ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
     | rc =>
@@ -384,7 +384,8 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
       ⟨a, .const za ha, (q(mul_one $a) : Expr)⟩
     else
       let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-      let rc := (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!
+      let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
+        q(CommSemiring.toSemiring) ra rb).get!
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ :=  rc.toRawEq
       ⟨c, .const zc hc, pc⟩
@@ -540,7 +541,8 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let ⟨m1, _⟩ := ExProd.mkNegNat sα rα 1
     let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
     let ra := Result.ofRawRat za a ha
-    let rb := (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!
+    let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
+      q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
     let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=  rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
@@ -711,7 +713,7 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       let ra := Result.ofRawRat za a ha
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
-      let rc ← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra
+      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) _ b lit rb q(CommSemiring.toSemiring) ra
       let ⟨zc, hc⟩ ← rc.toRatNZ
       let ⟨c, pc⟩ := rc.toRawEq
       some ⟨c, .const zc hc, pc⟩

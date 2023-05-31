@@ -132,7 +132,7 @@ def Simps.apply (F : Homotopy f₀ f₁) : I × X → Y :=
   F
 #align continuous_map.homotopy.simps.apply ContinuousMap.Homotopy.Simps.apply
 
-initialize_simps_projections Homotopy (toContinuousMap_toFun → apply, -toContinuousMap)
+initialize_simps_projections Homotopy (toFun → apply, -toContinuousMap)
 
 /-- Deprecated. Use `map_continuous` instead. -/
 protected theorem continuous (F : Homotopy f₀ f₁) : Continuous F :=
@@ -185,7 +185,7 @@ theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t)
 
 @[simp]
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
-  ContinuousMap.congr_fun (Set.Icc_extend_coe (zero_le_one' ℝ) F.curry t) x
+  ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 #align continuous_map.homotopy.extend_apply_coe ContinuousMap.Homotopy.extend_apply_coe
 
 @[simp]
@@ -292,6 +292,15 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ =
   map_zero_left := by simp [← h₀]
   map_one_left := by simp [← h₁]
 #align continuous_map.homotopy.cast ContinuousMap.Homotopy.cast
+
+/-- Composition of a `Homotopy g₀ g₁` and `f : C(X, Y)` as a homotopy between `g₀.comp f` and
+`g₁.comp f`. -/
+@[simps!]
+def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y)) :
+    Homotopy (g₀.comp f) (g₁.comp f) where
+  toContinuousMap := G.comp (.prodMap (.id _) f)
+  map_zero_left _ := G.map_zero_left _
+  map_one_left _ := G.map_one_left _
 
 /-- If we have a `Homotopy f₀ f₁` and a `Homotopy g₀ g₁`, then we can compose them and get a
 `Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
@@ -668,6 +677,10 @@ namespace HomotopicRel
 
 variable {S : Set X}
 
+/-- If two maps are homotopic relative to a set, then they are homotopic. -/
+protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
+  h.map fun F ↦ F.1
+
 -- porting note: removed @[refl]
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
@@ -689,5 +702,8 @@ theorem equivalence : Equivalence fun f g : C(X, Y) => HomotopicRel f g S :=
 #align continuous_map.homotopic_rel.equivalence ContinuousMap.HomotopicRel.equivalence
 
 end HomotopicRel
+
+@[simp] theorem homotopicRel_empty {f₀ f₁ : C(X, Y)} : HomotopicRel f₀ f₁ ∅ ↔ Homotopic f₀ f₁ :=
+  ⟨fun h ↦ h.homotopic, fun ⟨F⟩ ↦ ⟨⟨F, fun _ _ ↦ False.elim⟩⟩⟩
 
 end ContinuousMap

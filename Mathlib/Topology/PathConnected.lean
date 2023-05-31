@@ -277,7 +277,7 @@ theorem extend_one : γ.extend 1 = y := by simp
 @[simp]
 theorem extend_extends' {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
-  Icc_extend_coe _ γ t
+  IccExtend_val _ γ t
 #align path.extend_extends' Path.extend_extends'
 
 @[simp]
