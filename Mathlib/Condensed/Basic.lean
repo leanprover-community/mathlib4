@@ -14,7 +14,7 @@ variable {α : Type} [Fintype α] {B : CompHaus.{u}}
   {X : α → CompHaus.{u}} (π : (a : α) → (X a ⟶ B))
   (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
 
-def Relation : Setoid (FiniteCoproduct X) where
+def relation : Setoid (FiniteCoproduct X) where
   r a b := ∃ (Z : CompHaus.{u}) (z : Z)
     (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst),
     fst ≫ π _ = snd ≫ π _ ∧ fst z = a.snd ∧ snd z = b.snd
@@ -34,7 +34,7 @@ def Relation : Setoid (FiniteCoproduct X) where
       change π b (sndZ u) = π b (fstW v)
       rw [h]
 
-def ι_fun : Quotient (Relation π) → B :=
+def ι_fun : Quotient (relation π) → B :=
   Quotient.lift (fun ⟨a,x⟩ => π a x) <| by
     rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,h,hx,hy⟩
     dsimp at *
@@ -55,9 +55,9 @@ lemma ι_fun_injective : (ι_fun π).Injective := by
   ext ⟨_, h⟩ ; exact h
 
 def QB : CompHaus.{u} :=
-  haveI : T2Space (Quotient <| Relation π) :=
+  haveI : T2Space (Quotient <| relation π) :=
     ⟨fun _ _ h => separated_by_continuous (ι_fun_continuous π) <| (ι_fun_injective π).ne h ⟩
-  CompHaus.of (Quotient <| Relation π)
+  CompHaus.of (Quotient <| relation π)
 
 def ι_hom : (QB π) ⟶ B := ⟨ι_fun π, ι_fun_continuous π⟩
 
