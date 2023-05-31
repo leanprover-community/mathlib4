@@ -64,8 +64,6 @@ attribute [coe] PresheafedSpace.carrier
 
 instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
 
-@[simp] lemma coe_coe (X : PresheafedSpace C) : ((X : TopCat) : Type _) = (X : Type _) := rfl
-
 -- porting note: the following lemma is removed because it is a syntatic tauto
 /-@[simp]
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
