@@ -1040,11 +1040,15 @@ protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.s
 @[simp]
 protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
     lp.single p i (c • a) = c • lp.single p i a := by
-  ext j
+  refine' ext (funext (fun (j : α) => _))
   by_cases hi : j = i
   · subst hi
+    dsimp
+    rw [Pi.smul_apply]
     simp [lp.single_apply_self]
-  · simp [lp.single_apply_ne p i _ hi]
+  · dsimp
+    rw [Pi.smul_apply]
+    simp [lp.single_apply_ne p i _ hi]
 #align lp.single_smul lp.single_smul
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i «expr ∉ » s) -/
