@@ -383,8 +383,11 @@ a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' p�
 -/
 structure HasFpowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (r : ℝ≥0∞) :
     Prop where
+  /-- The provided radius is at mots the `FormalMultilinearSeries.radius`. -/
   r_le : r ≤ p.radius
+  /-- The provided radius is positive. -/
   r_pos : 0 < r
+  /-- For every `y` in the ball of radius `r` centered at `0`, `f (x + y) = ∑' pₙ yⁿ`. -/
   hasSum :
     ∀ {y}, y ∈ EMetric.ball (0 : E) r → HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
 #align has_fpower_series_on_ball HasFpowerSeriesOnBall
@@ -1140,8 +1143,9 @@ def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[�
 #align formal_multilinear_series.change_origin_series FormalMultilinearSeries.changeOriginSeries
 
 theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
-    ‖p.changeOriginSeries k l‖₊ ≤ ∑' x : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
-  sorry--(nnnorm_sum_le _ _).trans_eq <| by simp only [tsum_fintype, nnnorm_changeOriginSeriesTerm]
+    ‖p.changeOriginSeries k l‖₊ ≤ ∑' _x : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
+  (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
+    simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
 #align formal_multilinear_series.nnnorm_change_origin_series_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_le_tsum
 
 theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
