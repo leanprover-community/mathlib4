@@ -1031,7 +1031,7 @@ theorem IsAdjointPair.eq (h : IsAdjointPair B B' f g) : ∀ {x y}, B' (f x) y = 
 theorem isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
     IsAdjointPair B F f g ↔ F.compLeft f = B.compRight g := by
   constructor <;> intro h
-  · ext (x y)
+  · ext x
     simp only [compLeft_apply, compRight_apply]
     apply h
   · intro x y
