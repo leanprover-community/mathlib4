@@ -1030,7 +1030,7 @@ protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i
 
 @[simp]
 protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
-  ext j
+  refine' ext (funext (fun (j : α) => _))
   by_cases hi : j = i
   · subst hi
     simp [lp.single_apply_self]
