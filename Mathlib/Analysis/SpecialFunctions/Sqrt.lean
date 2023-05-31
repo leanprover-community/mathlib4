@@ -52,14 +52,12 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     have : sqrt =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
       ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
-        cont_diff_at_const.congr_of_eventually_eq this⟩
+        contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * sqrt x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
     · simpa using sq_local_homeomorph.has_strict_deriv_at_symm hx this (hasStrictDerivAt_pow 2 _)
-    ·
-      exact fun n =>
-        sq_local_homeomorph.cont_diff_at_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
-          (cont_diff_at_id.pow 2)
+    · exact fun n => sqLocalHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
+        (cont_diff_at_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
 
 theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x :=
