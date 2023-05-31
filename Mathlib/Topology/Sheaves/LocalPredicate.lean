@@ -68,7 +68,9 @@ a `P : prelocal_predicate T` consists of:
   the restriction of `f` to any open subset `U` also satisfies the predicate.
 -/
 structure PrelocalPredicate where
+  /-- The underlying predicate of a prelocal predicate -/
   pred : ∀ {U : Opens X}, (∀ x : U, T x) → Prop
+  /-- The underlying predicate should be invariant under restriction -/
   res : ∀ {U V : Opens X} (i : U ⟶ V) (f : ∀ x : V, T x) (_ : pred f), pred fun x : U => f (i x)
 set_option linter.uppercaseLean3 false in
 #align Top.prelocal_predicate TopCat.PrelocalPredicate
@@ -104,6 +106,8 @@ a `P : local_predicate T` consists of:
   then `f` itself satisfies the predicate.
 -/
 structure LocalPredicate extends PrelocalPredicate T where
+  /-- A local predicate must be local --- provided that it is locally satisfied, it is also globally
+    satisfied -/
   locality :
     ∀ {U : Opens X} (f : ∀ x : U, T x)
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
@@ -244,7 +248,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
-@[simp]
+-- Porting note : removed `simp` attribute, due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]
