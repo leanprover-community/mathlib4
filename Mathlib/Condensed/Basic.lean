@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Category.CompHaus.ExplicitLimits
 
 open CategoryTheory Limits
 
@@ -14,68 +14,9 @@ variable {α : Type} [Fintype α] {B : CompHaus.{u}}
   (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
   (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
 
-def Pullback {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) : CompHaus.{u} :=
-  letI set := { xy : X × Y | f xy.1 = g xy.2 }
-  haveI : CompactSpace set := by
-    rw [← isCompact_iff_compactSpace]
-    apply IsClosed.isCompact
-    apply isClosed_eq
-    apply Continuous.comp
-    exact f.continuous
-    exact continuous_fst
-    apply Continuous.comp
-    exact g.continuous
-    exact continuous_snd
-  CompHaus.of set
-
-def Pullback.fst {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) :
-    Pullback f g ⟶ X where
-  toFun := fun ⟨⟨x,_⟩,_⟩ => x
-  continuous_toFun := by
-    apply Continuous.comp
-    exact continuous_fst
-    exact continuous_subtype_val
-
-def Pullback.snd {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) :
-    Pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_,y⟩,_⟩ => y
-  continuous_toFun := by
-    apply Continuous.comp
-    exact continuous_snd
-    exact continuous_subtype_val
-
-def DisjointUnion : CompHaus.{u} := CompHaus.of <| Σ (a : α), X a
-
 variable {X}
 
-def DisjointUnion.desc : DisjointUnion X ⟶ B where
-  toFun := fun ⟨a,x⟩ => π a x
-  continuous_toFun := by
-    apply continuous_sigma
-    intro i
-    exact (π i).continuous
-
-def DisjointUnion.incl (a : α) : X a ⟶ DisjointUnion X where
-  toFun := fun x => ⟨a,x⟩
-  continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
-
-variable (X) in
-def DisjointUnion.cocone : Cocone (Discrete.functor X) where
-  pt := DisjointUnion X
-  ι := Discrete.natTrans <| fun ⟨a⟩ => DisjointUnion.incl a
-
-variable (X) in
-def DisjointUnion.isColimit : IsColimit (DisjointUnion.cocone X) where
-  desc := fun S => DisjointUnion.desc <| fun a => S.ι.app ⟨a⟩
-  fac := fun S ⟨a⟩ => by ext ; rfl
-  uniq := by
-    intro S m hm
-    ext ⟨a,t⟩
-    specialize hm ⟨a⟩
-    apply_fun (fun q => q t) at hm
-    exact hm
-
-def Relation : Setoid (DisjointUnion X) where
+def Relation : Setoid (FiniteCoproduct X) where
   r a b := ∃ (Z : CompHaus.{u}) (z : Z)
     (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst),
     fst ≫ π _ = snd ≫ π _ ∧ fst z = a.snd ∧ snd z = b.snd
@@ -212,8 +153,8 @@ theorem effectiveEpiFamily_tfae
   · intro ; infer_instance
   tfae_have 2 → 3
   · intro e ; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ DisjointUnion X :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (DisjointUnion.isColimit _)
+    let i : ∐ X ≅ FiniteCoproduct X :=
+      (colimit.isColimit _).coconePointUniqueUpToIso (FiniteCoproduct.isColimit _)
     intro b
     obtain ⟨t,rfl⟩ := e b
     let q := i.hom t
@@ -221,7 +162,7 @@ theorem effectiveEpiFamily_tfae
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id] ; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = DisjointUnion.desc π by
+    suffices i.inv ≫ Sigma.desc π = FiniteCoproduct.desc X π by
       rw [this] ; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
