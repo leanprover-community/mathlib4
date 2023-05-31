@@ -1,7 +1,25 @@
 import Mathlib.Algebra.Homology.ShortComplex.Refinements
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LibrarySearch
 
 open CategoryTheory Category Limits ZeroObject
+
+lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
+    (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
+    ∃ (m : ℤ) (_ : m ∈ S), ∀ (x : ℤ) (_ : x ∈ S), m ≤ x := by
+  let T : Set ℕ := fun i => m₀ + i ∈ S
+  obtain ⟨x, hx⟩ := hS
+  have hx' : 0 ≤ x - m₀ := by linarith [hm₀ x hx]
+  obtain ⟨t₀, ht₀⟩ := Int.eq_ofNat_of_zero_le hx'
+  obtain rfl : x = m₀ + t₀ := by linarith
+  have hT : T.Nonempty := ⟨t₀, hx⟩
+  let μ := (Nat.lt_wfRel.wf).min T hT
+  refine' ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy => _⟩
+  have hy' : 0 ≤ y - m₀ := by linarith [hm₀ y hy]
+  obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
+  obtain rfl : y = m₀ + t := by linarith
+  simp only [ge_iff_le, add_le_add_iff_left, Nat.cast_le]
+  exact (Nat.lt_wfRel.wf).min_le hy _
 
 variable (C : Type _) [Category C] [Abelian C] (degrees : ℤ → ℤ × ℤ) (r₀ : ℤ)
 
@@ -50,64 +68,99 @@ def pageIsoOfEq (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r = r') (pq : ℤ × ℤ) 
     E.page r hr pq ≅ E.page r' (hr.trans (by rw [hr'])) pq :=
   eqToIso (by congr)
 
+def toSet (pq : ℤ × ℤ) : Set ℤ := fun r => ∃ (hr : r₀ ≤ r), ∀ (r' : ℤ) (hr' : r ≤ r'),
+  (∀ (pq' : ℤ × ℤ) (hpq' : pq' + degrees r' = pq), E.d r' (hr.trans hr') pq' pq hpq' = 0)
+
+def fromSet (pq : ℤ × ℤ) : Set ℤ := fun r => ∃ (hr : r₀ ≤ r), ∀ (r' : ℤ) (hr' : r ≤ r'),
+  (∀ (pq' : ℤ × ℤ) (hpq' : pq + degrees r' = pq'), E.d r' (hr.trans hr') pq pq' hpq' = 0)
+
 class HasInfinityPageAt (pq : ℤ × ℤ) : Prop where
-  d_to : ∃ (r' : ℤ) (hr' : r₀ ≤ r'),
-    ∀ (r : ℤ) (hr : r' ≤ r) (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq),
-      E.d r (hr'.trans hr) pq' pq hpq' = 0
-  d_from : ∃ (r' : ℤ) (hr' : r₀ ≤ r'),
-    ∀ (r : ℤ) (hr : r' ≤ r) (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq'),
-      E.d r (hr'.trans hr) pq pq' hpq' = 0
+  nonemptyToSet' : (E.toSet pq).Nonempty
+  nonemptyFromSet' : (E.fromSet pq).Nonempty
 
-noncomputable def rmin (pq : ℤ × ℤ) [h : E.HasInfinityPageAt pq] : ℤ :=
-  max h.d_to.choose h.d_from.choose
+section
 
-lemma LErmin (pq : ℤ × ℤ) [h : E.HasInfinityPageAt pq] :
-    r₀ ≤ E.rmin pq :=
-  h.d_to.choose_spec.choose.trans (le_max_left _ _)
+variable (pq : ℤ × ℤ) [h : E.HasInfinityPageAt pq]
 
-lemma d_to_eq_zero (pq : ℤ × ℤ) (r r' : ℤ) [h : E.HasInfinityPageAt pq]
-    (hr : E.rmin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
+lemma nonemptyToSet : (E.toSet pq).Nonempty := HasInfinityPageAt.nonemptyToSet'
+lemma nonemptyFromSet : (E.fromSet pq).Nonempty := HasInfinityPageAt.nonemptyFromSet'
+
+noncomputable def rToMin : ℤ :=
+  (Set.has_min_of_ℤ _ (E.nonemptyToSet pq) r₀ (fun _ hx => hx.1)).choose
+
+lemma rToMin_mem : E.rToMin pq ∈ E.toSet pq :=
+  (Set.has_min_of_ℤ _ (E.nonemptyToSet pq) r₀ (fun _ hx => hx.1)).choose_spec.choose
+
+lemma rToMin_le (r : ℤ) (hr : r ∈ E.toSet pq) :
+    E.rToMin pq ≤ r :=
+  (Set.has_min_of_ℤ _ (E.nonemptyToSet pq) r₀ (fun _ hx => hx.1)).choose_spec.choose_spec r hr
+
+lemma le_rToMin :
+    r₀ ≤ E.rToMin pq := (E.rToMin_mem pq).1
+
+lemma d_to_eq_zero (r r' : ℤ) (hr : E.rToMin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
     (hpq' : pq' + degrees r = pq) :
-      E.d r ((E.LErmin pq).trans hr) pq' pq hpq' = 0 :=
-  h.d_to.choose_spec.choose_spec r ((le_max_left _ _).trans hr) _ _
+      E.d r ((E.le_rToMin pq).trans hr) pq' pq hpq' = 0 :=
+  (E.rToMin_mem pq).2 r hr pq' hpq'
 
-lemma d_from_eq_zero (pq : ℤ × ℤ) (r r' : ℤ) [h : E.HasInfinityPageAt pq]
-    (hr : E.rmin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
+noncomputable def rFromMin : ℤ :=
+  (Set.has_min_of_ℤ _ (E.nonemptyFromSet pq) r₀ (fun _ hx => hx.1)).choose
+
+lemma rFromMin_mem : E.rFromMin pq ∈ E.fromSet pq :=
+  (Set.has_min_of_ℤ _ (E.nonemptyFromSet pq) r₀ (fun _ hx => hx.1)).choose_spec.choose
+
+lemma rFromMin_le (r : ℤ) (hr : r ∈ E.fromSet pq) :
+    E.rFromMin pq ≤ r :=
+  (Set.has_min_of_ℤ _ (E.nonemptyFromSet pq) r₀ (fun _ hx => hx.1)).choose_spec.choose_spec r hr
+
+lemma le_rFromMin :
+    r₀ ≤ E.rFromMin pq := (E.rFromMin_mem pq).1
+
+lemma d_from_eq_zero (r r' : ℤ) (hr : E.rFromMin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
     (hpq' : pq + degrees r = pq') :
-      E.d r ((E.LErmin pq).trans hr) pq pq' hpq' = 0 :=
-  h.d_from.choose_spec.choose_spec r ((le_max_right _ _).trans hr) _ _
+      E.d r ((E.le_rFromMin pq).trans hr) pq pq' hpq' = 0 :=
+  (E.rFromMin_mem pq).2 r hr pq' hpq'
 
-noncomputable def isoPageSucc (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] (r r' : ℤ)
-  (hr : E.rmin pq ≤ r) (hr' : r + 1 = r') :
-    E.page r ((E.LErmin pq).trans hr) pq ≅
-      E.page r' (((E.LErmin pq).trans hr).trans
+noncomputable def rMin : ℤ := max (E.rToMin pq) (E.rFromMin pq)
+
+lemma rFromMin_le_rMin : E.rFromMin pq ≤ E.rMin pq := le_max_right _ _
+
+lemma rToMin_le_rMin : E.rToMin pq ≤ E.rMin pq := le_max_left _ _
+
+lemma le_rMin :
+    r₀ ≤ E.rMin pq :=
+  (E.le_rFromMin pq).trans (E.rFromMin_le_rMin pq)
+
+noncomputable def isoPageSucc (r r' : ℤ)
+  (hr : E.rMin pq ≤ r) (hr' : r + 1 = r') :
+    E.page r ((E.le_rMin pq).trans hr) pq ≅
+      E.page r' (((E.le_rMin pq).trans hr).trans
         (by simp only [← hr', le_add_iff_nonneg_right])) pq := by
-    refine' Iso.symm _ ≪≫ E.iso r r' ((E.LErmin pq).trans hr) hr'
+    refine' Iso.symm _ ≪≫ E.iso r r' ((E.le_rMin pq).trans hr) hr'
       (pq - degrees r) pq (pq + degrees r) (by simp) rfl
     refine' (ShortComplex.HomologyData.ofZeros _ _ _).left.homologyIso
-    . exact E.d_to_eq_zero pq r r' hr hr' _ _
-    . exact E.d_from_eq_zero pq r r' hr hr' _ _
+    . exact E.d_to_eq_zero pq r r' ((E.rToMin_le_rMin pq).trans hr) hr' _ _
+    . exact E.d_from_eq_zero pq r r' ((E.rFromMin_le_rMin pq).trans hr) hr' _ _
 
-noncomputable def isoPageOfAddNat
-  (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] (r : ℤ) (hr : E.rmin pq ≤ r) (k : ℕ) :
-    E.page r ((E.LErmin pq).trans hr) pq ≅
-      E.page (r+k) (((E.LErmin pq).trans hr).trans (by simp)) pq := by
+noncomputable def isoPageOfAddNat (r : ℤ) (hr : E.rMin pq ≤ r) (k : ℕ) :
+    E.page r ((E.le_rMin pq).trans hr) pq ≅
+      E.page (r+k) (((E.le_rMin pq).trans hr).trans (by simp)) pq := by
   induction' k with _ e
   . exact E.pageIsoOfEq _ _ _ (by simp) _
   . exact e ≪≫ E.isoPageSucc _ _ _ (hr.trans (by simp))
       (by simp only [Nat.cast_succ, add_assoc])
 
-noncomputable def isoPageOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
-    (r r' : ℤ) (hr : E.rmin pq ≤ r) (hr' : r ≤ r') :
-    E.page r ((E.LErmin pq).trans hr) pq ≅
-      E.page r' (((E.LErmin pq).trans hr).trans hr') pq :=
+noncomputable def isoPageOfLE
+    (r r' : ℤ) (hr : E.rMin pq ≤ r) (hr' : r ≤ r') :
+    E.page r ((E.le_rMin pq).trans hr) pq ≅
+      E.page r' (((E.le_rMin pq).trans hr).trans hr') pq :=
   E.isoPageOfAddNat pq r hr
     (Int.eq_ofNat_of_zero_le (show 0 ≤ r' - r by linarith)).choose ≪≫
       E.pageIsoOfEq _ _ _
         (by linarith [(Int.eq_ofNat_of_zero_le (show 0 ≤ r' - r by linarith)).choose_spec]) _
 
-lemma isoPageOfLE_eq (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
-    (r r' : ℤ) (hr : E.rmin pq ≤ r) (k : ℕ) (hr' : r + k = r') :
+lemma isoPageOfLE_eq
+    (r r' : ℤ) (hr : E.rMin pq ≤ r) (k : ℕ) (hr' : r + k = r') :
     E.isoPageOfLE pq r r' hr
       (by simp only [← hr', le_add_iff_nonneg_right, Nat.cast_nonneg]) =
       E.isoPageOfAddNat pq r hr k ≪≫ E.pageIsoOfEq _ _ _ hr' _ := by
@@ -116,18 +169,13 @@ lemma isoPageOfLE_eq (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
     linarith [(Int.eq_ofNat_of_zero_le this).choose_spec]
   rfl
 
-noncomputable def pageInfinity (pq : ℤ × ℤ) : C := by
-  by_cases E.HasInfinityPageAt pq
-  . exact E.page (E.rmin pq) (E.LErmin pq) pq
-  . exact 0
-
-noncomputable def pageInfinityIso (pq : ℤ × ℤ) [h : E.HasInfinityPageAt pq] :
-    E.pageInfinity pq ≅ E.page (E.rmin pq) (E.LErmin pq) pq :=
-  eqToIso (by dsimp [pageInfinity] ; rw [dif_pos h])
+noncomputable def pageInfinity : C := E.page (E.rMin pq) (E.le_rMin pq) pq
 
 noncomputable def isoPageInfinityOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
-    (r : ℤ) (hr : E.rmin pq ≤ r) :
-    E.page r ((E.LErmin pq).trans hr) pq ≅ E.pageInfinity pq :=
-  Iso.symm (E.pageInfinityIso pq ≪≫ E.isoPageOfLE pq _ _ (by rfl) hr)
+    (r : ℤ) (hr : E.rMin pq ≤ r) :
+    E.page r ((E.le_rMin pq).trans hr) pq ≅ E.pageInfinity pq :=
+  Iso.symm (E.isoPageOfLE pq _ _ (by rfl) hr)
+
+end
 
 end SpectralSequence
