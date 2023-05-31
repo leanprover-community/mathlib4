@@ -313,7 +313,7 @@ variable {R₂}
 
 theorem flip_flip_aux [Algebra R₂ R] (A : BilinForm R M) :
     (flipHomAux R₂) (flipHomAux R₂ A) = A := by
-  ext (A x y)
+  ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux BilinForm.flip_flip_aux
 
@@ -338,7 +338,7 @@ theorem flip_apply [Algebra R₂ R] (A : BilinForm R M) (x y : M) : flipHom R₂
 
 theorem flip_flip [Algebra R₂ R] :
     (flipHom R₂).trans (flipHom R₂) = LinearEquiv.refl R₂ (BilinForm R M) := by
-  ext (A x y)
+  ext A
   simp
 #align bilin_form.flip_flip BilinForm.flip_flip
 
