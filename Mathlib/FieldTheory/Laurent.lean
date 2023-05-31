@@ -8,8 +8,8 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Taylor
-import Mathbin.FieldTheory.Ratfunc
+import Mathlib.Data.Polynomial.Taylor
+import Mathlib.FieldTheory.Ratfunc
 
 /-!
 # Laurent expansions of rational functions
@@ -39,8 +39,7 @@ open scoped Classical nonZeroDivisors Polynomial
 
 variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
-theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ :=
-  by
+theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff]
   intro x hx
   have : x = taylor (r - r) x := by simp
@@ -111,8 +110,7 @@ theorem laurent_c (x : R) : laurent r (C x) = C x := by
 theorem laurent_at_zero : laurent 0 f = f := by induction f using RatFunc.induction_on; simp
 #align ratfunc.laurent_at_zero RatFunc.laurent_at_zero
 
-theorem laurent_laurent : laurent r (laurent s f) = laurent (r + s) f :=
-  by
+theorem laurent_laurent : laurent r (laurent s f) = laurent (r + s) f := by
   induction f using RatFunc.induction_on
   simp_rw [laurent_div, taylor_taylor]
 #align ratfunc.laurent_laurent RatFunc.laurent_laurent
