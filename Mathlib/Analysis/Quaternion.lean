@@ -26,7 +26,7 @@ We show that the norm on `ℍ[ℝ]` agrees with the euclidean norm of its compon
 
 ## Notation
 
-The following notation is available with `open_locale Quaternion`:
+The following notation is available with `open Quaternion` or `open scoped Quaternion`:
 
 * `ℍ` : quaternions
 
