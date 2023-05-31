@@ -335,10 +335,29 @@ partial def _root_.Lean.MVarId.relCongr
 
 open Elab Tactic
 
-def _root_.Lean.MVarId.exact (g : MVarId) (e : Expr) : MetaM Unit := do
+def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   let .true ← isDefEq (← g.getType) (← inferType e) | failure
   g.checkNotAssigned `myExact
   g.assign e
+
+/-- Try a list of finishing tactics and fail if all of them fail. -/
+def firstFunM (goal : MVarId) (tacs : List (MVarId → MetaM Unit)) : MetaM Unit :=
+  match tacs with
+  | [] => failure
+  | f :: fs => f goal <|> (firstFunM goal fs)
+
+/-- The term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+def symmExact (h : Expr) (goal : MVarId) : MetaM Unit := goal.symm >>= fun g ↦ g.exact h
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+def exactLeOfLt (h : Expr) (goal : MVarId) : MetaM Unit := do
+  goal.exact (← mkAppM ``le_of_lt #[h])
+
+/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
+def exactRefl (h : Expr) (goal : MVarId) : MetaM Unit := do
+  let m ← mkFreshExprMVar none
+  goal.exact (← mkAppOptM ``Eq.subst #[h, m])
+  goal.rfl
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -350,16 +369,7 @@ def _root_.Lean.MVarId.relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit
     -- Iterate over a list of terms
     for h in hs do
       try
-        -- See if the term is exactly the goal
-        try g.exact h catch _ =>
-          -- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`
-          try g.symm >>= fun g ↦ g.exact h catch _ =>
-            -- See if the term is `a < b` and the goal is `a ≤ b`
-            try g.exact (← mkAppM ``le_of_lt #[h]) catch _ =>
-              -- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive
-              let m ← mkFreshExprMVar none
-              g.exact (← mkAppOptM ``Eq.subst #[h, m])
-              g.rfl
+        firstFunM g (List.map (fun f ↦ f h) [MVarId.exact, symmExact, exactLeOfLt, exactRefl])
         return
       catch _ => s.restore
     throwError "rel_assumption failed"
