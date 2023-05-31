@@ -406,10 +406,6 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : 
       (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
 #align is_noetherian_of_range_eq_ker isNoetherian_of_range_eq_ker
 
-/- Porting note (lean4#2074): this seems to cause a diamond with Ring.toSemiring when going to
-NonAssocSemiring -/
-attribute [-instance] Ring.toNonAssocRing
-
 /-- For any endomorphism of a Noetherian module, there is some nontrivial iterate
 with disjoint kernel and range.
 -/

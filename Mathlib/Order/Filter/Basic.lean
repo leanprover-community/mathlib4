@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module order.filter.basic
-! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
+! leanprover-community/mathlib commit d4f691b9e5f94cfc64639973f3544c95f8d5d494
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -49,7 +49,7 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
 * `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `measure_theory.measure_space`)
+  `MeasureTheory.MeasureSpace`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
@@ -235,7 +235,7 @@ end Filter
 
 namespace Lean.Parser.Tactic
 
-open Elab.Tactic
+open Lean Meta Elab Tactic
 
 /--
 `filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
@@ -255,22 +255,24 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
   ("with" (colGt term:max)*)? ("using" term)? : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) =>
-  withMainContext do
-    for e in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
-      let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
-      liftMetaTactic fun goal => do
-        goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
-    liftMetaTactic fun goal => do
-      goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
-    match wth with
-    | some l => evalTactic <|← `(tactic| intro $[$l]*)
-    | none   => evalTactic <|← `(tactic| skip)
-    match usingArg with
-    | some e => evalTactic <|← `(tactic| exact $e)
-    | none   => evalTactic <|← `(tactic| skip)
+| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do
+  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
+  let args := (args.map Syntax.TSepArray.getElems).getD #[]
+  for e in args.reverse do
+    let goal ← getMainGoal
+    replaceMainGoal <| ← goal.withContext <| runTermElab do
+      let m ← mkFreshExprMVar none
+      let lem ← Term.elabTermEnsuringType
+        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
+      goal.assign lem
+      return [m.mvarId!]
+  liftMetaTactic fun goal => do
+    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
+  evalTactic <|← `(tactic| dsimp only [Set.mem_setOf_eq])
+  if let some l := wth then
+    evalTactic <|← `(tactic| intro $[$l]*)
+  if let some e := usingArg then
+    evalTactic <|← `(tactic| exact $e)
 
 end Lean.Parser.Tactic
 
@@ -1758,6 +1760,22 @@ theorem EventuallyLE.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] 
   h.inter h'.compl
 #align filter.eventually_le.diff Filter.EventuallyLE.diff
 
+theorem set_eventuallyLE_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
+    s ≤ᶠ[l] t ↔ t ∈ l ⊓ 𝓟 s :=
+  eventually_inf_principal.symm
+#align filter.set_eventually_le_iff_mem_inf_principal Filter.set_eventuallyLE_iff_mem_inf_principal
+
+theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
+    s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
+  set_eventuallyLE_iff_mem_inf_principal.trans <| by
+    simp only [le_inf_iff, inf_le_left, true_and_iff, le_principal_iff]
+#align filter.set_eventually_le_iff_inf_principal_le Filter.set_eventuallyLE_iff_inf_principal_le
+
+theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
+    s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
+  simp only [eventuallyLE_antisymm_iff, le_antisymm_iff, set_eventuallyLE_iff_inf_principal_le]
+#align filter.set_eventually_eq_iff_inf_principal Filter.set_eventuallyEq_iff_inf_principal
+
 theorem EventuallyLE.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
     {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) (hg₀ : 0 ≤ᶠ[l] g₁)
     (hf₀ : 0 ≤ᶠ[l] f₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
@@ -2785,7 +2803,7 @@ end Bind
 
 section ListTraverse
 
-/- This is a separate section in order to open `list`, but mostly because of universe
+/- This is a separate section in order to open `List`, but mostly because of universe
    equality requirements in `traverse` -/
 open List
 

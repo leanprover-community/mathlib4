@@ -15,20 +15,20 @@ This file provides the tactic `interval_cases`. `interval_cases n` will:
    (in `ℕ`, `ℤ`, `ℕ+`, bounds of the form `a < n` and `n ≤ b` are also allowed),
    and also makes use of lower and upper bounds found via `le_top` and `bot_le`
    (so for example if `n : ℕ`, then the bound `0 ≤ n` is automatically found).
-2. call `fin_cases` on the synthesised hypothesis `n ∈ set.Ico a b`,
-   assuming an appropriate `fintype` instance can be found for the type of `n`.
+2. call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
+   assuming an appropriate `Fintype` instance can be found for the type of `n`.
 
 The variable `n` can belong to any type `α`, with the following restrictions:
 * only bounds on which `expr.to_rat` succeeds will be considered "explicit" (TODO: generalise this?)
-* an instance of `decidable_eq α` is available,
+* an instance of `DecidableEq α` is available,
 * an explicit lower bound can be found among the hypotheses, or from `bot_le n`,
 * an explicit upper bound can be found among the hypotheses, or from `le_top n`,
-* if multiple bounds are located, an instance of `linear_order α` is available, and
-* an instance of `fintype set.Ico l u` is available for the relevant bounds.
+* if multiple bounds are located, an instance of `LinearOrder α` is available, and
+* an instance of `Fintype Set.Ico l u` is available for the relevant bounds.
 
 You can also explicitly specify a lower and upper bound to use, as `interval_cases using hl hu`,
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
-`interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ set.Ico a b`.
+`interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
 
 set_option linter.unusedVariables false
@@ -342,7 +342,7 @@ after `interval_cases n`, the goals are `3 = 3 ∨ 3 = 4` and `4 = 3 ∨ 4 = 4`.
 You can also explicitly specify a lower and upper bound to use,
 as `interval_cases using hl, hu`.
 The hypotheses should be in the form `hl : a ≤ n` and `hu : n < b`,
-in which case `interval_cases` calls `fin_cases` on the resulting fact `n ∈ set.Ico a b`.
+in which case `interval_cases` calls `fin_cases` on the resulting fact `n ∈ Set.Ico a b`.
 
 You can specify a name `h` for the new hypothesis,
 as `interval_cases h : n` or `interval_cases h : n using hl, hu`.

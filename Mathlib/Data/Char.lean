@@ -27,8 +27,6 @@ theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
   repeat (split; decide)
   decide
 
-theorem String.csize_pos : (c : Char) → 0 < String.csize c := Char.utf8Size_pos
-
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
 -/

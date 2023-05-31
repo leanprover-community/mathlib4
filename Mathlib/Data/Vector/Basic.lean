@@ -396,7 +396,7 @@ theorem scanl_get (i : Fin n) :
 end Scan
 
 /-- Monadic analog of `Vector.ofFn`.
-Given a monadic function on `fin n`, return a `Vector α n` inside the monad. -/
+Given a monadic function on `Fin n`, return a `Vector α n` inside the monad. -/
 def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector α n)
   | 0, _ => pure nil
   | _ + 1, f => do

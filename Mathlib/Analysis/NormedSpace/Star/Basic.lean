@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module analysis.normed_space.star.basic
-! leanprover-community/mathlib commit e65771194f9e923a70dfb49b6ca7be6e400d8b6f
+! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,6 +14,7 @@ import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Normed star rings and algebras
@@ -306,6 +307,12 @@ theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=
 theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 #align starₗᵢ_apply starₗᵢ_apply
+
+@[simp]
+theorem starₗᵢ_toContinuousLinearEquiv :
+    (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
+  ContinuousLinearEquiv.ext rfl
+#align starₗᵢ_to_continuous_linear_equiv starₗᵢ_toContinuousLinearEquiv
 
 end starₗᵢ
 

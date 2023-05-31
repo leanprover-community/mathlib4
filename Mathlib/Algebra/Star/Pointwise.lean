@@ -97,10 +97,8 @@ theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)�
 theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
--- Porting note: add noncomputable to instance
 @[simp]
-noncomputable instance [InvolutiveStar α] : InvolutiveStar (Set α)
-    where
+instance [InvolutiveStar α] : InvolutiveStar (Set α) where
   star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 

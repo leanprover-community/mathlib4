@@ -11,7 +11,6 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about units in `ℤ`.

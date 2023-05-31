@@ -204,7 +204,7 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
 /-- Initial segment embedding of an order `r` into the disjoint union of `r` and `s`. -/
 def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s :=
   ⟨⟨⟨Sum.inl, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩, fun a b => by
-    cases b <;> [exact fun _ => ⟨_, rfl⟩, exact False.elim ∘ Sum.lex_inr_inl]⟩
+    cases b <;> [exact fun _ => ⟨_, rfl⟩; exact False.elim ∘ Sum.lex_inr_inl]⟩
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
@@ -422,7 +422,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
-/-- Principal segment from the empty relation on `pempty` to the empty relation on `punit`. -/
+/-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
 @[reducible]
 def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false

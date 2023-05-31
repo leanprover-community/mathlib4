@@ -548,8 +548,8 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
 theorem LiftRelO.swap (R : α → β → Prop) (C) :
     swap (LiftRelO R C) = LiftRelO (swap R) (swap C) := by
   funext x y
-  cases' x with x <;> [skip, cases x] <;>
-    · cases' y with y <;> [skip, cases y] <;> rfl
+  cases' x with x <;> [skip; cases x] <;>
+    (cases' y with y <;> [skip; cases y] <;> rfl)
 #align stream.wseq.lift_rel_o.swap Stream'.WSeq.LiftRelO.swap
 
 theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
@@ -855,7 +855,7 @@ theorem head_some_of_head_tail_some {s : WSeq α} {a} (h : some a ∈ head (tail
     ∃ a', some a' ∈ head s := by
   unfold head at h
   rcases Computation.exists_of_mem_map h with ⟨o, md, e⟩; clear h
-  cases' o with o <;> [injection e, injection e with h']; clear h'
+  cases' o with o <;> [injection e; injection e with h']; clear h'
   cases' destruct_some_of_destruct_tail_some md with a am
   exact ⟨_, Computation.mem_map (@Prod.fst α (WSeq α) <$> ·) am⟩
 #align stream.wseq.head_some_of_head_tail_some Stream'.WSeq.head_some_of_head_tail_some
@@ -893,7 +893,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
 
 theorem get?_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (get? s n) → Terminates (get? s m) := by
-  induction' h with m' _ IH <;> [exact id,
+  induction' h with m' _ IH <;> [exact id;
     exact fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
 #align stream.wseq.nth_terminates_le Stream'.WSeq.get?_terminates_le
 
@@ -936,7 +936,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
   generalize e : destruct s = c; intro h
   revert s
-  apply Computation.memRecOn h <;> [skip, intro c IH] <;> intro s <;>
+  apply Computation.memRecOn h <;> [skip; intro c IH] <;> intro s <;>
     induction' s using WSeq.recOn with x s s <;>
     intro m <;>
     have := congr_arg Computation.destruct m <;>
@@ -1439,9 +1439,9 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     ∀ ss : WSeq α,
       a ∈ ss → ∀ s S, append s (join S) = ss → a ∈ append s (join S) → a ∈ s ∨ ∃ s, s ∈ S ∧ a ∈ s
     from fun S h => (this _ h nil S (by simp) (by simp [h])).resolve_left (not_mem_nil _)
-  intro ss h; apply mem_rec_on h <;> [intro b ss o, intro ss IH] <;> intro s S
+  intro ss h; apply mem_rec_on h <;> [intro b ss o; intro ss IH] <;> intro s S
   · induction' s using WSeq.recOn with b' s s <;>
-      [induction' S using WSeq.recOn with s S S, skip, skip] <;>
+      [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this;
       try cases this; try contradiction
     substs b' ss
@@ -1452,19 +1452,19 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     · simp [e]
     exact Or.imp_left Or.inr (IH _ _ rfl m)
   · induction' s using WSeq.recOn with b' s s <;>
-      [induction' S using WSeq.recOn with s S S, skip, skip] <;>
+      [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this <;>
       try { try { have := this.1 }; contradiction } <;> subst ss
     · apply Or.inr
       -- Porting note: `exists_eq_or_imp` should be excluded.
-      simp [-exists_eq_or_imp] at m⊢
+      simp [-exists_eq_or_imp] at m ⊢
       cases' IH s S rfl m with as ex
       · exact ⟨s, Or.inl rfl, as⟩
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
     · apply Or.inr
       simp at m
-      rcases(IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
+      rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
     · simp at m IH⊢
       apply IH _ _ rfl m

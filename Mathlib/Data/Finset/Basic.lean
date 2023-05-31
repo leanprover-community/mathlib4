@@ -1481,7 +1481,8 @@ theorem right_eq_union_iff_subset {s t : Finset α} : s = t ∪ s ↔ t ⊆ s :=
   rw [← union_eq_right_iff_subset, eq_comm]
 #align finset.right_eq_union_iff_subset Finset.right_eq_union_iff_subset
 
-theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ⊔ u :=
+-- Porting note: replaced `⊔` in RHS
+theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 #align finset.union_congr_left Finset.union_congr_left
 
@@ -2637,7 +2638,7 @@ section Filter
 
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q]
 
-/-- `filter p s` is the set of elements of `s` that satisfy `p`. -/
+/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`. -/
 def filter (s : Finset α) : Finset α :=
   ⟨_, s.2.filter p⟩
 #align finset.filter Finset.filter
@@ -3805,8 +3806,7 @@ theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset 
 
 end List
 
--- Porting note: `assert_not_exists` not yet available
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
--- assert_not_exists list.sublists_len
--- assert_not_exists multiset.powerset
+assert_not_exists List.sublistsLen
+assert_not_exists Multiset.powerset

@@ -8,7 +8,6 @@ Authors: Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.ByContra
 import Mathlib.Data.Set.Image
 
 /-!

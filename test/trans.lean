@@ -69,3 +69,14 @@ example (a : α)(c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
     trans b
     assumption
     assumption
+
+def MyLE (n m : Nat) := ∃ k, n + k = m
+
+@[trans] theorem MyLE.trans {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
+  cases h1
+  cases h2
+  subst_vars
+  exact ⟨_, Eq.symm <| Nat.add_assoc _ _ _⟩
+
+example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
+  trans <;> assumption

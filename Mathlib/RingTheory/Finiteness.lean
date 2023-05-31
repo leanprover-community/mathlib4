@@ -221,15 +221,11 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
       rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
 #align submodule.fg_of_fg_map_injective Submodule.fg_of_fg_map_injective
-/- Porting note: Lean not finding this instance is source of the majority of troubles here.
-Perhaps it should get its own name -/
-alias LinearMap.instSemilinearMapClassLinearMap ← instSLMC
 
--- Porting note: With etaExperiment, we don't need the @s in the following statement.
 theorem fg_of_fg_map {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
     [Module R P] (f : M →ₗ[R] P)
-    (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f = ⊥) {N : Submodule R M}
-    (hfn : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f N).FG) : N.FG :=
+    (hf : LinearMap.ker f = ⊥) {N : Submodule R M}
+    (hfn : (N.map f).FG) : N.FG :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 #align submodule.fg_of_fg_map Submodule.fg_of_fg_map
 
@@ -263,38 +259,25 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     simp_rw [span_iUnion, span_image, hts, Submodule.iSup_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
-/-- Porting note: helping Lean find the coercion to functions below -/
-abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
-  f
-
--- Porting note: We've since turned on etaExperiment here,
--- but there remain lots of notes below about clean up that is possible with etaExperiment,
--- and we should follow these!
--- These should all be done as part of cleanup after lean4#2210.
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M}
-    -- Porting note: Lean having trouble both unifying for SLMC and then synthesizing once unified
-    -- With etaExperiment, we don't need the @s in the following statement.
-    (hs1 : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s).FG)
-    (hs2 : (s ⊓ @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).FG) : s.FG := by
+    (hs1 : (s.map f).FG)
+    (hs2 : (s ⊓ LinearMap.ker f).FG) : s.FG := by
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
   cases' hs1 with t1 ht1
   cases' hs2 with t2 ht2
-  -- Porting note: With etaExperiment, we don't need the asFun in the following statement.
-  have : ∀ y ∈ t1, ∃ x ∈ s, asFun f x = y := by
+  have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by
     intro y hy
-    -- Porting note: With etaExperiment, we don't need the @ in the following statement.
-    have : y ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
+    have : y ∈ s.map f := by
       rw [← ht1]
       exact subset_span hy
     rcases mem_map.1 this with ⟨x, hx1, hx2⟩
     exact ⟨x, hx1, hx2⟩
-  -- Porting note: With etaExperiment, we don't need the asFun in the following statement.
-  have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ asFun f (g y) = y := by
+  have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ f (g y) = y := by
     choose g hg1 hg2 using this
     exists fun y => if H : y ∈ t1 then g y H else 0
     intro y H
@@ -316,8 +299,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       rw [ht2] at this
       exact this.1
   intro x hx
-  -- Porting note: With etaExperiment, we don't need the asFun and @ in the following statement.
-  have : asFun f x ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
+  have : f x ∈ s.map f := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
   rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
@@ -342,14 +324,12 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
-  · dsimp [asFun] at hl2
-    rw [LinearMap.mem_ker, f.map_sub, ← hl2]
+  · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, f.map_sum]
     rw [sub_eq_zero]
     refine' Finset.sum_congr rfl fun y hy => _
     unfold id
-    dsimp [asFun] at hg
     rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
@@ -371,20 +351,13 @@ theorem fg_induction (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
 the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
     [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-    -- Porting note: more help both unifying and finding instSLMC
-    -- With etaExperiment, we don't need the @s in the following statement.
-    (hf1 : (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).FG)
-    (hf2 : (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g).FG)
-    (hsur : Function.Surjective <| asFun f) :
-    (@LinearMap.comp R R R M N P _ _ _ _ _ _ _ _ _
-      (RingHom.id _) (RingHom.id _) (RingHom.id _) _ g f).ker.FG := by
+    (hf1 : (LinearMap.ker f).FG) (hf2 : (LinearMap.ker g).FG)
+    (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
-  -- Porting note With etaExperiment, we don't need the @s in the following `show`.
-  · rwa [inf_of_le_right (show (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f) ≤
-      @comap R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f
-      (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g) from comap_mono bot_le)]
+  · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
+      (LinearMap.ker g).comap f from comap_mono bot_le)]
 #align submodule.fg_ker_comp Submodule.fg_ker_comp
 
 theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algebra R S]
@@ -500,7 +473,7 @@ def FG (I : Ideal R) : Prop :=
 
 /-- The image of a finitely generated ideal is finitely generated.
 
-This is the `ideal` version of `Submodule.FG.map`. -/
+This is the `Ideal` version of `Submodule.FG.map`. -/
 theorem FG.map {R S : Type _} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) (f : R →+* S) :
     (I.map f).FG := by
   classical

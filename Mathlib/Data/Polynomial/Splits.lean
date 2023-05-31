@@ -91,7 +91,6 @@ theorem splits_of_map_degree_eq_one {f : K[X]} (hf : degree (f.map i) = 1) : Spl
     tauto
 #align polynomial.splits_of_map_degree_eq_one Polynomial.splits_of_map_degree_eq_one
 
-attribute [-instance] Ring.toNonAssocRing in -- Porting note: gets around lean4#2074
 theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
   if hif : degree (f.map i) ≤ 0 then splits_of_map_eq_C i (degree_le_zero_iff.mp hif)
   else by

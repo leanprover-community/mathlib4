@@ -19,35 +19,35 @@ import Mathlib.Topology.Instances.Real
 /-!
 # The additive circle
 
-We define the additive circle `add_circle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
+We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
 
-See also `circle` and `real.angle`.  For the normed group structure on `add_circle`, see
-`add_circle.normed_add_comm_group` in a later file.
+See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircle`, see
+`AddCircle.NormedAddCommGroup` in a later file.
 
 ## Main definitions and results:
 
- * `add_circle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
- * `unit_add_circle`: the special case `ℝ ⧸ ℤ`
- * `add_circle.equiv_add_circle`: the rescaling equivalence `add_circle p ≃+ add_circle q`
- * `add_circle.equiv_Ico`: the natural equivalence `add_circle p ≃ Ico a (a + p)`
- * `add_circle.add_order_of_div_of_gcd_eq_one`: rational points have finite order
- * `add_circle.exists_gcd_eq_one_of_is_of_fin_add_order`: finite-order points are rational
- * `add_circle.homeo_Icc_quot`: the natural topological equivalence between `add_circle p` and
+ * `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
+ * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
+ * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
+ * `AddCircle.equivIco`: the natural equivalence `AddCircle p ≃ Ico a (a + p)`
+ * `AddCircle.addOrderOf_div_of_gcd_eq_one`: rational points have finite order
+ * `AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder`: finite-order points are rational
+ * `AddCircle.homeoIccQuot`: the natural topological equivalence between `AddCircle p` and
    `Icc a (a + p)` with its endpoints identified.
- * `add_circle.lift_Ico_continuous`: if `f : ℝ → B` is continuous, and `f a = f (a + p)` for
-   some `a`, then there is a continuous function `add_circle p → B` which agrees with `f` on
+ * `AddCircle.liftIco_continuous`: if `f : ℝ → B` is continuous, and `f a = f (a + p)` for
+   some `a`, then there is a continuous function `AddCircle p → B` which agrees with `f` on
    `Icc a (a + p)`.
 
 ## Implementation notes:
 
 Although the most important case is `𝕜 = ℝ` we wish to support other types of scalars, such as
-the rational circle `add_circle (1 : ℚ)`, and so we set things up more generally.
+the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generally.
 
 ## TODO
 
  * Link with periodicity
  * Lie group structure
- * Exponential equivalence to `circle`
+ * Exponential equivalence to `Circle`
 
 -/
 
@@ -121,7 +121,7 @@ theorem continuousAt_toIocMod : ContinuousAt (toIocMod hp a) x :=
 
 end Continuity
 
-/-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `circle` and `real.angle`. -/
+/-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
 @[nolint unusedArguments]
 def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
@@ -209,25 +209,25 @@ variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 instance : CircularOrder (AddCircle p) :=
   QuotientAddGroup.circularOrder
 
-/-- The equivalence between `add_circle p` and the half-open interval `[a, a + p)`, whose inverse
+/-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
 is the natural quotient map. -/
 def equivIco : AddCircle p ≃ Ico a (a + p) :=
   QuotientAddGroup.equivIcoMod hp.out a
 #align add_circle.equiv_Ico AddCircle.equivIco
 
-/-- The equivalence between `add_circle p` and the half-open interval `(a, a + p]`, whose inverse
+/-- The equivalence between `AddCircle p` and the half-open interval `(a, a + p]`, whose inverse
 is the natural quotient map. -/
 def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
   QuotientAddGroup.equivIocMod hp.out a
 #align add_circle.equiv_Ioc AddCircle.equivIoc
 
-/-- Given a function on `𝕜`, return the unique function on `add_circle p` agreeing with `f` on
+/-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `[a, a + p)`. -/
 def liftIco (f : 𝕜 → B) : AddCircle p → B :=
   restrict _ f ∘ AddCircle.equivIco p a
 #align add_circle.lift_Ico AddCircle.liftIco
 
-/-- Given a function on `𝕜`, return the unique function on `add_circle p` agreeing with `f` on
+/-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `(a, a + p]`. -/
 def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
   restrict _ f ∘ AddCircle.equivIoc p a
@@ -292,7 +292,7 @@ theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
 
 end Continuity
 
-/-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → add_circle p` is
+/-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → AddCircle p` is
 the entire space. -/
 @[simp]
 theorem coe_image_Ico_eq : ((↑) : 𝕜 → AddCircle p) '' Ico a (a + p) = univ := by
@@ -300,7 +300,7 @@ theorem coe_image_Ico_eq : ((↑) : 𝕜 → AddCircle p) '' Ico a (a + p) = uni
   exact (equivIco p a).symm.range_eq_univ
 #align add_circle.coe_image_Ico_eq AddCircle.coe_image_Ico_eq
 
-/-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → add_circle p` is
+/-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → AddCircle p` is
 the entire space. -/
 @[simp]
 theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = univ := by
@@ -308,7 +308,7 @@ theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = uni
   exact (equivIoc p a).symm.range_eq_univ
 #align add_circle.coe_image_Ioc_eq AddCircle.coe_image_Ioc_eq
 
-/-- The image of the closed interval `[0, p]` under the quotient map `𝕜 → add_circle p` is the
+/-- The image of the closed interval `[0, p]` under the quotient map `𝕜 → AddCircle p` is the
 entire space. -/
 @[simp]
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
@@ -453,7 +453,7 @@ theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOr
 variable (p)
 
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
-`n`. The inverse of the map sends `m ↦ (m/n * p : add_circle p)` where `m` is coprime to `n` and
+`n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/
 def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n } ≃ { m | m < n ∧ m.gcd n = 1 } :=
@@ -544,8 +544,8 @@ abbrev UnitAddCircle :=
 
 section IdentifyIccEnds
 
-/-! This section proves that for any `a`, the natural map from `[a, a + p] ⊂ 𝕜` to `add_circle p`
-gives an identification of `add_circle p`, as a topological space, with the quotient of `[a, a + p]`
+/-! This section proves that for any `a`, the natural map from `[a, a + p] ⊂ 𝕜` to `AddCircle p`
+gives an identification of `AddCircle p`, as a topological space, with the quotient of `[a, a + p]`
 by the equivalence relation identifying the endpoints. -/
 
 
@@ -565,7 +565,7 @@ inductive EndpointIdent : Icc a (a + p) → Icc a (a + p) → Prop
 
 variable [Archimedean 𝕜]
 
-/-- The equivalence between `add_circle p` and the quotient of `[a, a + p]` by the relation
+/-- The equivalence between `AddCircle p` and the quotient of `[a, a + p]` by the relation
 identifying the endpoints. -/
 def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
   toFun x := Quot.mk _ <| inclusion Ico_subset_Icc_self (equivIco _ _ x)
@@ -631,7 +631,7 @@ def homeoIccQuot : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
 #align add_circle.homeo_Icc_quot AddCircle.homeoIccQuot
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
-pullback of a continuous function on `add_circle p`. -/
+pullback of a continuous function on `AddCircle p`. -/
 
 
 variable {p a}

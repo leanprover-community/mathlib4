@@ -42,7 +42,7 @@ variable {R : Type _} {M : Type _} [Ring R] [TopologicalSpace R] [TopologicalSpa
   [AddCommGroup M] [Module R M]
 
 theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
-    (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ᶠ 𝓝 0) (𝓝 0))
+    (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by
@@ -568,7 +568,7 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
   exact hf'.dense_image f.continuous hs
 #align dense_range.topological_closure_map_submodule DenseRange.topologicalClosure_map_submodule
 
-section SmulMonoid
+section SMulMonoid
 
 variable {S₂ T₂ : Type _} [Monoid S₂] [Monoid T₂]
 
@@ -607,7 +607,7 @@ instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ 
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
 #align continuous_linear_map.smul_comm_class ContinuousLinearMap.smulCommClass
 
-end SmulMonoid
+end SMulMonoid
 
 /-- The continuous map that is constantly zero. -/
 instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
@@ -745,11 +745,7 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
     simp
   nsmul_succ n f := by
     ext
-    -- Porting note: `simp [Nat.add_comm n 1, add_smul]` timeouts.
-    -- Check this again during lean4#2210 cleanup
-    dsimp only []
-    rw [Nat.add_comm n 1, coe_smul', Pi.smul_apply, add_smul, one_smul, add_apply,
-      coe_smul', Pi.smul_apply]
+    simp [Nat.add_comm n 1, add_smul]
 #align continuous_linear_map.add_comm_monoid ContinuousLinearMap.addCommMonoid
 
 @[simp, norm_cast]
@@ -839,9 +835,9 @@ theorem comp_assoc {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₁₄ 
   rfl
 #align continuous_linear_map.comp_assoc ContinuousLinearMap.comp_assoc
 
-instance mul : Mul (M₁ →L[R₁] M₁) :=
+instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
-#align continuous_linear_map.has_mul ContinuousLinearMap.mul
+#align continuous_linear_map.has_mul ContinuousLinearMap.instMul
 
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
@@ -908,12 +904,12 @@ instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨fun {_ _} => ContinuousLinearMap.ext⟩
 #align continuous_linear_map.apply_has_faithful_smul ContinuousLinearMap.applyFaithfulSMul
 
-instance applySMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁
-    where smul_comm r e m := (e.map_smul r m).symm
+instance applySMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁ where
+  smul_comm r e m := (e.map_smul r m).symm
 #align continuous_linear_map.apply_smul_comm_class ContinuousLinearMap.applySMulCommClass
 
-instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁
-    where smul_comm := ContinuousLinearMap.map_smul
+instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁ where
+  smul_comm := ContinuousLinearMap.map_smul
 #align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.applySMulCommClass'
 
 instance continuousConstSMul : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
@@ -1283,7 +1279,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
           Continuous (⇑(if h : i ∈ I then LinearMap.proj (R := R) (ι := ↥I)
             (φ := fun i : ↥I => φ i) ⟨i, h⟩ else
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
-        split_ifs <;> [apply continuous_apply, exact continuous_zero])
+        split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
 #align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.iInfKerProjEquiv
 
@@ -1341,11 +1337,7 @@ section
 variable [TopologicalAddGroup M₂]
 
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
-  -- Porting note: The explicit instance should be specified, or it timeouts.
-  --               We hope these problem will be resolved by
-  --               https://github.com/leanprover/lean4/issues/2055.
-  ⟨fun f => ⟨-(f : M →ₛₗ[σ₁₂] M₂),
-    @Continuous.neg _ _ _ _ (TopologicalAddGroup.toContinuousNeg) _ _ f.2⟩⟩
+  ⟨fun f => ⟨-f, f.2.neg⟩⟩
 #align continuous_linear_map.has_neg ContinuousLinearMap.neg
 
 @[simp]
@@ -1378,9 +1370,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
       sub := (· - ·)
       sub_eq_add_neg := _
       nsmul := (· • ·)
-      -- Porting note: Instances should be specified, or it timeouts.
-      zsmul := @HSMul.hSMul _ _ _ (@instHSMul _ _
-        (@MulAction.toSMul _ _ _ ContinuousLinearMap.mulAction))
+      zsmul := (· • ·)
       zsmul_zero' := fun f => by
         ext
         dsimp only []
@@ -1494,12 +1484,8 @@ theorem coe_projKerOfRightInverse_apply [TopologicalAddGroup M] (f₁ : M →SL[
 theorem projKerOfRightInverse_apply_idem [TopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : LinearMap.ker f₁) :
     f₁.projKerOfRightInverse f₂ h x = x := by
-  -- porting note: should be `ext1; simp` but TC search fails
-  -- check this during post lean4#2210 cleanup
   ext1
-  refine sub_eq_self.2 ?_
-  calc f₂ (f₁ x) = f₂ 0 := by rw [x.2.out]
-    _ = 0 := f₂.map_zero
+  simp
 #align continuous_linear_map.proj_ker_of_right_inverse_apply_idem ContinuousLinearMap.projKerOfRightInverse_apply_idem
 
 @[simp]
@@ -1529,12 +1515,7 @@ protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [Co
 
 end DivisionMonoid
 
-section SmulMonoid
-
--- Porting note: This is required to prevent timeouts.
--- Check this again during lean4#2210 cleanup.
-local infixr:73 " •SL " => @HSMul.hSMul _ _ _ (@instHSMul _ _ (@MulAction.toSMul _ _ _
-  (@ContinuousLinearMap.mulAction _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _)))
+section SMulMonoid
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
 variable {R R₂ R₃ S S₃ : Type _} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
@@ -1548,7 +1529,7 @@ variable {R R₂ R₃ S S₃ : Type _} [Semiring R] [Semiring R₂] [Semiring R�
 
 @[simp]
 theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :
-    (c •SL h).comp f = c •SL h.comp f :=
+    (c • h).comp f = c • h.comp f :=
   rfl
 #align continuous_linear_map.smul_comp ContinuousLinearMap.smul_comp
 
@@ -1558,7 +1539,7 @@ variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R
 
 @[simp]
 theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] N₃) (c : S)
-    (fₗ : M →L[R] N₂) : hₗ.comp (c •SL fₗ) = c •SL hₗ.comp fₗ := by
+    (fₗ : M →L[R] N₂) : hₗ.comp (c • fₗ) = c • hₗ.comp fₗ := by
   ext x
   exact hₗ.map_smul_of_tower c (fₗ x)
 #align continuous_linear_map.comp_smul ContinuousLinearMap.comp_smul
@@ -1566,7 +1547,7 @@ theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] 
 @[simp]
 theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ M₃] [ContinuousConstSMul R₂ M₂]
     [ContinuousConstSMul R₃ M₃] (h : M₂ →SL[σ₂₃] M₃) (c : R₂) (f : M →SL[σ₁₂] M₂) :
-    h.comp (c •SL f) = σ₂₃ c •SL h.comp f := by
+    h.comp (c • f) = σ₂₃ c • h.comp f := by
   ext x
   simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply,
     ContinuousLinearMap.map_smulₛₗ]
@@ -1577,9 +1558,9 @@ instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[
   smul_zero _a := ext fun _x => smul_zero _
 #align continuous_linear_map.distrib_mul_action ContinuousLinearMap.distribMulAction
 
-end SmulMonoid
+end SMulMonoid
 
-section Smul
+section SMul
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
 variable {R R₂ R₃ S S₃ : Type _} [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S] [Semiring S₃]
@@ -1621,26 +1602,9 @@ instance module : Module S₃ (M →SL[σ₁₃] M₃) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
 #align continuous_linear_map.module ContinuousLinearMap.module
 
--- Porting note: Instances should be specified, or timeouts.
--- Check this again during lean4#2210 cleanup.
 instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] :
-  @IsCentralScalar S₃ (M →SL[σ₁₃] M₃)
-    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
-      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
-        ContinuousLinearMap.module))))
-    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
-      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
-        (@ContinuousLinearMap.module _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          (@SMulCommClass.op_right _ _ _ _ _ _ _ _) _ _ _))))) :=
-  @IsCentralScalar.mk S₃ (M →SL[σ₁₃] M₃)
-    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
-      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
-        ContinuousLinearMap.module))))
-    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
-      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
-        (@ContinuousLinearMap.module _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          (@SMulCommClass.op_right _ _ _ _ _ _ _ _) _ _ _)))))
-    fun _ _ => ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar S₃ (M →SL[σ₁₃] M₃) where
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align continuous_linear_map.is_central_scalar ContinuousLinearMap.isCentralScalar
 
 variable (S) [ContinuousAdd N₃]
@@ -1674,11 +1638,9 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
 #align continuous_linear_map.coe_lmₛₗ ContinuousLinearMap.coeLMₛₗ
 #align continuous_linear_map.coe_lmₛₗ_apply ContinuousLinearMap.coeLMₛₗ_apply
 
-variable {σ₁₃}
+end SMul
 
-end Smul
-
-section SmulRightₗ
+section SMulRightₗ
 
 variable {R S T M M₂ : Type _} [Semiring R] [Semiring S] [Semiring T] [Module R S]
   [AddCommMonoid M₂] [Module R M₂] [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S]
@@ -1704,7 +1666,7 @@ theorem coe_smulRightₗ (c : M →L[R] S) : ⇑(smulRightₗ c : M₂ →ₗ[T]
   rfl
 #align continuous_linear_map.coe_smul_rightₗ ContinuousLinearMap.coe_smulRightₗ
 
-end SmulRightₗ
+end SMulRightₗ
 
 section CommRing
 
@@ -1723,9 +1685,6 @@ instance algebra : Algebra R (M₂ →L[R] M₂) :=
 end CommRing
 
 section RestrictScalars
-
-local infixr:73 " •SL " => @HSMul.hSMul _ _ _ (@instHSMul _ _ (@MulAction.toSMul _ _ _
-  (@ContinuousLinearMap.mulAction _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _)))
 
 variable {A M M₂ : Type _} [Ring A] [AddCommGroup M] [AddCommGroup M₂] [Module A M] [Module A M₂]
   [TopologicalSpace M] [TopologicalSpace M₂] (R : Type _) [Ring R] [Module R M] [Module R M₂]
@@ -1779,7 +1738,7 @@ variable [Ring S] [Module S M₂] [ContinuousConstSMul S M₂] [SMulCommClass A 
 
 @[simp]
 theorem restrictScalars_smul (c : S) (f : M →L[A] M₂) :
-    (c •SL f).restrictScalars R = c •SL f.restrictScalars R :=
+    (c • f).restrictScalars R = c • f.restrictScalars R :=
   rfl
 #align continuous_linear_map.restrict_scalars_smul ContinuousLinearMap.restrictScalars_smul
 
@@ -2033,8 +1992,7 @@ def Simps.symm_apply (h : M₁ ≃SL[σ₁₂] M₂) : M₂ → M₁ :=
   h.symm
 #align continuous_linear_equiv.simps.symm_apply ContinuousLinearEquiv.Simps.symm_apply
 
-initialize_simps_projections ContinuousLinearEquiv
-  (toLinearEquiv_toFun → apply, toLinearEquiv_invFun → symm_apply)
+initialize_simps_projections ContinuousLinearEquiv (toFun → apply, invFun → symm_apply)
 
 theorem symm_map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e.symm (𝓝 (e x)) = 𝓝 x :=
   e.toHomeomorph.symm_map_nhds_eq x
@@ -2055,7 +2013,7 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
   rfl
 #align continuous_linear_equiv.trans_to_linear_equiv ContinuousLinearEquiv.trans_toLinearEquiv
 
-/-- Product of two continuous linear equivalences. The map comes from `equiv.prod_congr`. -/
+/-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
   { e.toLinearEquiv.prod e'.toLinearEquiv with

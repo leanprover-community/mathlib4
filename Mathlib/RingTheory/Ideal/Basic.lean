@@ -668,11 +668,8 @@ protected theorem sub_mem : a ∈ I → b ∈ I → a - b ∈ I :=
   Submodule.sub_mem I
 #align ideal.sub_mem Ideal.sub_mem
 
-example : Module α α := Semiring.toModule
-
 theorem mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
-  @Submodule.mem_span_insert' α α _ _ Semiring.toModule _ _ _
--- porting note: Lean 4 issue #2074: Lean can't infer `Module R R` from `Ring R` on its own.
+  Submodule.mem_span_insert'
 #align ideal.mem_span_insert' Ideal.mem_span_insert'
 
 @[simp]

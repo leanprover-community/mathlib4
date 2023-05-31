@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.fiber_bundle.basic
-! leanprover-community/mathlib commit 0187644979f2d3e10a06e916a869c994facd9a87
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -779,6 +779,7 @@ end FiberBundleCore
 /-! ### Prebundle construction for constructing fiber bundles -/
 
 variable (F) (E : B → Type _) [TopologicalSpace B] [TopologicalSpace F]
+  [∀ x, TopologicalSpace (E x)]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space. The total space is hence given a
@@ -792,6 +793,7 @@ structure FiberPrebundle where
   pretrivialization_mem_atlas : ∀ x : B, pretrivializationAt x ∈ pretrivializationAtlas
   continuous_trivChange : ∀ e, e ∈ pretrivializationAtlas → ∀ e', e' ∈ pretrivializationAtlas →
     ContinuousOn (e ∘ e'.toLocalEquiv.symm) (e'.target ∩ e'.toLocalEquiv.symm ⁻¹' e.source)
+  totalSpaceMk_inducing : ∀ b : B, Inducing (pretrivializationAt b ∘ totalSpaceMk b)
 #align fiber_prebundle FiberPrebundle
 
 namespace FiberPrebundle
@@ -862,25 +864,27 @@ theorem totalSpaceMk_preimage_source (b : B) :
   eq_univ_of_forall (a.mem_pretrivializationAt_source b)
 #align fiber_prebundle.total_space_mk_preimage_source FiberPrebundle.totalSpaceMk_preimage_source
 
-/-- Topology on the fibers `E b` induced by the map `E b → E.TotalSpace`. -/
-def fiberTopology (b : B) : TopologicalSpace (E b) :=
-  TopologicalSpace.induced (totalSpaceMk b) a.totalSpaceTopology
-#align fiber_prebundle.fiber_topology FiberPrebundle.fiberTopology
-
-@[continuity]
-theorem inducing_totalSpaceMk (b : B) :
-    @Inducing _ _ (a.fiberTopology b) a.totalSpaceTopology (totalSpaceMk b) := by
-  letI := a.totalSpaceTopology
-  letI := a.fiberTopology b
-  exact ⟨rfl⟩
-#align fiber_prebundle.inducing_total_space_mk FiberPrebundle.inducing_totalSpaceMk
-
 @[continuity]
 theorem continuous_totalSpaceMk (b : B) :
-    Continuous[a.fiberTopology b, a.totalSpaceTopology] (totalSpaceMk b) := by
-  letI := a.totalSpaceTopology; letI := a.fiberTopology b
-  exact (a.inducing_totalSpaceMk b).continuous
+  Continuous[_, a.totalSpaceTopology] (totalSpaceMk b) := by
+  letI := a.totalSpaceTopology
+  let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
+  rw [e.toLocalHomeomorph.continuous_iff_continuous_comp_left
+      (a.totalSpaceMk_preimage_source b)]
+  exact continuous_iff_le_induced.mpr (le_antisymm_iff.mp (a.totalSpaceMk_inducing b).induced).1
 #align fiber_prebundle.continuous_total_space_mk FiberPrebundle.continuous_totalSpaceMk
+
+theorem inducing_totalSpaceMk_of_inducing_comp (b : B)
+    (h : Inducing (a.pretrivializationAt b ∘ totalSpaceMk b)) :
+    @Inducing _ _ _ a.totalSpaceTopology (totalSpaceMk b) := by
+  letI := a.totalSpaceTopology
+  rw [← restrict_comp_codRestrict (a.mem_pretrivializationAt_source b)] at h
+  apply Inducing.of_codRestrict (a.mem_pretrivializationAt_source b)
+  refine inducing_of_inducing_compose ?_ (continuousOn_iff_continuous_restrict.mp
+    (a.trivializationOfMemPretrivializationAtlas
+      (a.pretrivialization_mem_atlas b)).continuous_toFun) h
+  exact (a.continuous_totalSpaceMk b).codRestrict (a.mem_pretrivializationAt_source b)
+#align fiber_prebundle.inducing_total_space_mk_of_inducing_comp FiberPrebundle.inducing_totalSpaceMk_of_inducing_comp
 
 /-- Make a `FiberBundle` from a `FiberPrebundle`.  Concretely this means
 that, given a `FiberPrebundle` structure for a sigma-type `E` -- which consists of a
@@ -888,9 +892,10 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology a.fiberTopology :=
-  let _ := a.totalSpaceTopology; let _ := a.fiberTopology
-  { totalSpaceMk_inducing' := a.inducing_totalSpaceMk,
+def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
+  let _ := a.totalSpaceTopology
+  { totalSpaceMk_inducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
+      (a.totalSpaceMk_inducing b)
     trivializationAtlas' :=
       { e | ∃ (e₀ : _) (he₀ : e₀ ∈ a.pretrivializationAtlas),
         e = a.trivializationOfMemPretrivializationAtlas he₀ },
@@ -902,7 +907,6 @@ def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology a.fiberTopology 
 
 theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π E) := by
   letI := a.totalSpaceTopology
-  letI := a.fiberTopology
   letI := a.toFiberBundle
   exact FiberBundle.continuous_proj F E
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj

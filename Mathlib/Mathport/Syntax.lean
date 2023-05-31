@@ -7,15 +7,21 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
+import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Order.Filter.Basic
+import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
@@ -39,8 +45,10 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
@@ -69,7 +77,6 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
@@ -158,7 +165,6 @@ namespace Tactic
 /- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
-/- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
 
@@ -196,9 +202,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
 /- B -/ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
 
-/- B -/ syntax (name := lift) "lift " term " to " term
-  (" using " term)? (" with " binderIdent+)? : tactic
-
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
@@ -233,8 +236,6 @@ syntax termList := " [" term,* "]"
 
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
-/- M -/ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
-
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
@@ -255,8 +256,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := tidy) "tidy" (config)? : tactic
 /- B -/ syntax (name := tidy?) "tidy?" (config)? : tactic
 
-/- M -/ syntax (name := elementwise) "elementwise" (ppSpace (colGt ident))* : tactic
-/- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
@@ -272,10 +271,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
 
-/- N -/ syntax (name := measurability) "measurability" (config)? : tactic
-/- N -/ syntax (name := measurability!) "measurability!" (config)? : tactic
-/- N -/ syntax (name := measurability?) "measurability?" (config)? : tactic
-/- N -/ syntax (name := measurability!?) "measurability!?" (config)? : tactic
 /- M -/ syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (ppSpace location)? :
   tactic
 
@@ -292,20 +287,12 @@ syntax termList := " [" term,* "]"
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
 /- M -/ syntax (name := coherence) "coherence" : tactic
 
-/- E -/ syntax (name := pgameWFTac) "pgame_wf_tac" : tactic
-
 /- M -/ syntax (name := moveOp) "move_op " term:max rwRule,+ (location)? : tactic
 macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>
   `(tactic| move_op (·*·) $pats,* $(loc)?)
 macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
   `(tactic| move_op (·+·) $pats,* $(loc)?)
 
-namespace Conv
-
--- https://github.com/leanprover-community/mathlib/issues/2882
-/- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
-
-end Conv
 end Tactic
 
 namespace Attr
@@ -321,8 +308,6 @@ namespace Attr
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
-
-/- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
 /- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
@@ -348,18 +333,7 @@ namespace Command
 
 /- S -/ syntax (name := printSorryIn) "#print_sorry_in " ident : command
 
-/- E -/ syntax (name := assertExists) "assert_exists " ident : command
-/- E -/ syntax (name := assertNotExists) "assert_not_exists " ident : command
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 
 end Command
-
-namespace Term
-
-/- M -/ syntax (name := matrixNotation)
-  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
-/- M -/ syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
-/- M -/ syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
-
-end Term

@@ -676,7 +676,7 @@ notation3"∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 
-/-- The tactic `exact volume`, to be used in optional (`auto_param`) arguments. -/
+/-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
 macro "volume_tac": tactic =>
   `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
 
