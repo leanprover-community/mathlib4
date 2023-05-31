@@ -166,7 +166,6 @@ theorem close_eq_top_iff_mem {X : C} (S : Sieve X) : J₁.close S = ⊤ ↔ S �
 #align category_theory.grothendieck_topology.close_eq_top_iff_mem CategoryTheory.GrothendieckTopology.close_eq_top_iff_mem
 
 /-- A Grothendieck topology induces a natural family of closure operators on sieves. -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
 @[simps!]
 def closureOperator (X : C) : ClosureOperator (Sieve X) :=
   ClosureOperator.mk' J₁.close
