@@ -8,10 +8,10 @@ Authors: Yury Kudryashov, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Quaternion
-import Mathbin.Analysis.InnerProductSpace.Basic
-import Mathbin.Analysis.InnerProductSpace.PiL2
-import Mathbin.Topology.Algebra.Algebra
+import Mathlib.Algebra.Quaternion
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra
@@ -93,11 +93,9 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
 
-noncomputable instance : NormedDivisionRing ℍ
-    where
+noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul' a b :=
-    by
+  norm_mul' a b := by
     simp only [norm_eq_sqrt_real_inner, inner_self, norm_sq.map_mul]
     exact Real.sqrt_mul norm_sq_nonneg _
 
@@ -175,8 +173,7 @@ theorem coe_ofComplex : ⇑ofComplex = coe :=
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
 theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(PiLp.equiv 2 fun _ : Fin 4 => _).symm (equivTuple ℝ x)‖ = ‖x‖ :=
-  by
+    ‖(PiLp.equiv 2 fun _ : Fin 4 => _).symm (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, norm_sq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
   simp_rw [IsROrC.inner_apply, starRingEnd_apply, star_trivial, ← sq]
@@ -254,8 +251,7 @@ theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summ
 #align quaternion.summable_coe Quaternion.summable_coe
 
 @[norm_cast]
-theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) :=
-  by
+theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
   by_cases hf : Summable f
   · exact (has_sum_coe.mpr hf.has_sum).tsum_eq
   · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
