@@ -81,7 +81,7 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redunant binder update annotation
+-- porting note: removed `variable` because of redundant binder update annotation
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
