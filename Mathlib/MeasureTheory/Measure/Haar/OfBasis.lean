@@ -206,10 +206,11 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
     rwa [← Homeomorph.image_interior, nonempty_image_iff]
 #align basis.parallelepiped Basis.parallelepiped
 
-@[simp]
-theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
-    (b.parallelepiped : Set E) = parallelepiped b := rfl
-#align basis.coe_parallelepiped Basis.coe_parallelepiped
+-- Porting note: lint complains that this result is a tautology and thus unnecessary
+-- @[simp]
+-- theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+--    (b.parallelepiped : Set E) = parallelepiped b := rfl
+-- #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
 theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
