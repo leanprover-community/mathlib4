@@ -11,9 +11,9 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.Calculus.ContDiff
 
 /-!
-# Smoothness of `real.sqrt`
+# Smoothness of `Real.sqrt`
 
-In this file we prove that `real.sqrt` is infinitely smooth at all points `x ≠ 0` and provide some
+In this file we prove that `Real.sqrt` is infinitely smooth at all points `x ≠ 0` and provide some
 dot-notation lemmas.
 
 ## Tags
