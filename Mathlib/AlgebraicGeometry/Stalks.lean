@@ -46,16 +46,14 @@ namespace AlgebraicGeometry.PresheafedSpace
 
 /-- The stalk at `x` of a `PresheafedSpace`.
 -/
--- Porting note : Lean cannot find `CoeSort X (Type _)`
-abbrev stalk (X : PresheafedSpace C) (x : X.carrier) : C :=
+abbrev stalk (X : PresheafedSpace C) (x : X) : C :=
   X.presheaf.stalk x
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk AlgebraicGeometry.PresheafedSpace.stalk
 
 /-- A morphism of presheafed spaces induces a morphism of stalks.
 -/
--- Porting note : Lean cannot find `CoeSort X (Type _)`
-def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X.carrier) :
+def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X) :
     Y.stalk (α.base x) ⟶ X.stalk x :=
   (stalkFunctor C (α.base x)).map α.c ≫ X.presheaf.stalkPushforward C α.base x
 set_option linter.uppercaseLean3 false in
@@ -145,9 +143,8 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X.carrier) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.id AlgebraicGeometry.PresheafedSpace.stalkMap.id
 
--- Porting note : Lean cannot find `CoeSort X (Type _)`
 @[simp]
-theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z) (x : X.carrier) :
+theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z) (x : X) :
     stalkMap (α ≫ β) x =
       (stalkMap β (α.base x) : Z.stalk (β.base (α.base x)) ⟶ Y.stalk (α.base x)) ≫
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
@@ -167,34 +164,30 @@ Unfortunately, this equality is not well-formed, as their types are not _definit
 To get a proper congruence lemma, we therefore have to introduce these `eq_to_hom` arrows on
 either side of the equality.
 -/
--- Porting note : Lean cannot find `CoeSort X (Type _)`
 theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
-    (h₁ : α = β) (x x' : X.carrier) (h₂ : x = x') :
+    (h₁ : α = β) (x x' : X) (h₂ : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h₂]) =
       eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' :=
   stalk_hom_ext _ fun U hx => by subst h₁; subst h₂; simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr AlgebraicGeometry.PresheafedSpace.stalkMap.congr
 
--- Porting note : Lean cannot find `CoeSort X (Type _)`
-theorem congr_hom {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y) (h : α = β) (x : X.carrier) :
+theorem congr_hom {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y) (h : α = β) (x : X) :
     stalkMap α x =
       eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x) by rw [h]) ≫ stalkMap β x :=
   by rw [← stalkMap.congr α β h x x rfl, eqToHom_refl, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_hom AlgebraicGeometry.PresheafedSpace.stalkMap.congr_hom
 
--- Porting note : Lean cannot find `CoeSort X (Type _)`
 theorem congr_point {X Y : PresheafedSpace.{_, _, v} C}
-    (α : X ⟶ Y) (x x' : X.carrier) (h : x = x') :
+    (α : X ⟶ Y) (x x' : X) (h : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h]) =
       eqToHom (show Y.stalk (α.base x) = Y.stalk (α.base x') by rw [h]) ≫ stalkMap α x' :=
   by rw [stalkMap.congr α α rfl x x' h]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_point AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
 
--- Porting note : Lean cannot find `CoeSort X (Type _)`
-instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X.carrier) :
+instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X) :
     IsIso (stalkMap α x) where
   out := by
     let β : Y ⟶ X := CategoryTheory.inv α
@@ -221,8 +214,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- An isomorphism between presheafed spaces induces an isomorphism of stalks.
 -/
--- Porting note : Lean cannot find `CoeSort X (Type _)`
-def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X.carrier) :
+def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.stalk (α.hom.base x) ≅ X.stalk x :=
   asIso (stalkMap α.hom x)
 set_option linter.uppercaseLean3 false in
