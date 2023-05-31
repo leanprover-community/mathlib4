@@ -1057,7 +1057,9 @@ protected def Fintype.total : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
     ext
     simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
   map_smul' r v := by
-    ext g
+    -- Porting note: `ext` now applies a different lemma.
+    apply LinearMap.ext
+    intro g
     -- Porting note: `smul_comm _ r` → `fun x => smul_comm (g x) r (v x)`
     simp [Finset.smul_sum, fun x => smul_comm (g x) r (v x)]
 #align fintype.total Fintype.total
