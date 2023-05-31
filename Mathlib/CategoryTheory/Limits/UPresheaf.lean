@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Bhavik Mehta, Brendan Murphy
 
 ! This file was ported from Lean 3 source module category_theory.limits.presheaf
 ! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
@@ -20,18 +20,18 @@ import Mathlib.CategoryTheory.UYoneda
 /-!
 # Colimit of representables
 
-This file constructs an adjunction `yonedaAdjunction` between `(Cᵒᵖ ⥤ Type u)` and `ℰ` given a
+This file constructs an adjunction `uyonedaAdjunction` between `(Cᵒᵖ ⥤ Type u)` and `ℰ` given a
 functor `A : C ⥤ ℰ`, where the right adjoint sends `(E : ℰ)` to `c ↦ (A.obj c ⟶ E)` (provided `ℰ`
 has colimits).
 
 This adjunction is used to show that every presheaf is a colimit of representables.
 
-Further, the left adjoint `colimitAdj.extendAlongYoneda : (Cᵒᵖ ⥤ Type u) ⥤ ℰ` satisfies
+Further, the left adjoint `colimitAdj.extendAlongUYoneda : (Cᵒᵖ ⥤ Type u) ⥤ ℰ` satisfies
 `yoneda ⋙ L ≅ A`, that is, an extension of `A : C ⥤ ℰ` to `(Cᵒᵖ ⥤ Type u) ⥤ ℰ` through
 `yoneda : C ⥤ Cᵒᵖ ⥤ Type u`. It is the left Kan extension of `A` along the yoneda embedding,
 sometimes known as the Yoneda extension, as proved in `extendAlongYonedaIsoKan`.
 
-`uniqueExtensionAlongYoneda` shows `extendAlongYoneda` is unique amongst cocontinuous functors
+`uniqueExtensionAlongUYoneda` shows `extendAlongIYoneda` is unique amongst cocontinuous functors
 with this property, establishing the presheaf category as the free cocompletion of a small category.
 
 ## Tags
@@ -62,6 +62,7 @@ The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It
 that this functor has a left adjoint (provided `E` has colimits) given by taking colimits over
 categories of elements.
 In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is isomorphic to the identity.
+
 
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/

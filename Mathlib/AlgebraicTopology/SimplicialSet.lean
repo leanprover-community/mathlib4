@@ -229,18 +229,18 @@ end SSet
 
 /-- The functor associating the singular simplicial set to a topological space. -/
 noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
-  ColimitAdj.restrictedYoneda.{0, u} (SimplexCategory.toTop ⋙ uliftFunctor.{0, u})
-
+  ColimitAdj.restrictedYoneda (SimplexCategory.toTop ⋙ TopCat.uliftFunctor)
 
 set_option linter.uppercaseLean3 false in
 #align Top.to_sSet TopCat.toSSet
 
-set_option pp.universes true
-#check TopCat.toSSet
-
 /-- The geometric realization functor. -/
-noncomputable def SSet.toTop : SSet ⥤ TopCat :=
-  ColimitAdj.extendAlongYoneda SimplexCategory.toTop
+noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
+  @ColimitAdj.extendAlongYoneda _ _ _ _
+    (SimplexCategory.toTop ⋙ TopCat.uliftFunctor)
+    $ @Limits.hasColimitsOfSize_shrink.{0, u, u, u} _ _
+      $ TopCat.topCat_hasColimitsOfSize.{u, u}
+
 set_option linter.uppercaseLean3 false in
 #align sSet.to_Top SSet.toTop
 
@@ -253,7 +253,10 @@ set_option linter.uppercaseLean3 false in
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
-    (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
-  ColimitAdj.isExtensionAlongYoneda _
+    uyoneda.{0, 0, u} ⋙ SSet.toTop.{u} ≅ SimplexCategory.toTop ⋙ TopCat.uliftFunctor :=
+  @ColimitAdj.isExtensionAlongUYoneda _ _ _ _
+    (@Limits.hasColimitsOfSize_shrink.{0, u, u, u} _ _
+    $ TopCat.topCat_hasColimitsOfSize.{u, u})
+    _
 set_option linter.uppercaseLean3 false in
 #align sSet.to_Top_simplex SSet.toTopSimplex
