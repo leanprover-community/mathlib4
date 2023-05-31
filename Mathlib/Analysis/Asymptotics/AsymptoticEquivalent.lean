@@ -8,7 +8,7 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
@@ -93,6 +93,12 @@ theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
   simp
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent.is_O_symm Asymptotics.IsEquivalent.isBigO_symm
+
+theorem IsEquivalent.isTheta (h : u ~[l] v) : u =Θ[l] v :=
+  ⟨h.isBigO, h.isBigO_symm⟩
+
+theorem IsEquivalent.isTheta_symm (h : u ~[l] v) : v =Θ[l] u :=
+  ⟨h.isBigO_symm, h.isBigO⟩
 
 @[refl]
 theorem IsEquivalent.refl : u ~[l] u := by
