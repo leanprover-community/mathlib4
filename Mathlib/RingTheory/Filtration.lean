@@ -385,11 +385,9 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
     · intro n m e
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]
       intro i hi
-
-      sorry
-      --refine'
-      --  (Set.Subset.trans _ (Set.subset_iUnion₂ i (hi.trans e : _))).trans Submodule.subset_span
-      --rfl
+      refine Set.Subset.trans ?_ Submodule.subset_span
+      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      exact hi.trans e
   · rintro ⟨n, hn⟩
     rw [hn]
     simp_rw [Submodule.span_iUnion₂, ← Finset.mem_range_succ_iff, iSup_subtype']
