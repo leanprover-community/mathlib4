@@ -101,7 +101,8 @@ theorem unify_sigma_mk_self {α : Type _} {i : ι} {x : α → G i} :
 
 theorem comp_unify {α : Type _} {x : α → Σi, G i} {i j : ι} (ij : i ≤ j)
     (h : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    f i j ij ∘ unify f x i h = unify f x j fun k hk => _root_.trans (mem_upperBounds.1 h k hk) ij := by
+    f i j ij ∘ unify f x i h = unify f x j
+      fun k hk => _root_.trans (mem_upperBounds.1 h k hk) ij := by
   ext a
   simp [unify, DirectedSystem.map_map]
 #align first_order.language.direct_limit.comp_unify FirstOrder.Language.DirectLimit.comp_unify
@@ -117,15 +118,15 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι)(ik : i ≤ k)(jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, x⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, ik, jk, h⟩ =>
-      ⟨k, jk, ik, h.symm⟩, @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ =>
-      by
-      obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
-      refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
-      rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
-      symm
-      rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map]
-      assumption
-      assumption⟩
+      ⟨k, jk, ik, h.symm⟩,
+      @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
+        obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
+        refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
+        rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
+        symm
+        rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map]
+        assumption
+        assumption⟩
 #align first_order.language.direct_limit.setoid FirstOrder.Language.DirectLimit.setoid
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
@@ -149,6 +150,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
   Quotient (DirectLimit.setoid G f)
 #align first_order.language.direct_limit FirstOrder.Language.DirectLimit
 
+set_option synthInstance.checkSynthOrder false
 attribute [local instance] DirectLimit.setoid
 
 instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
@@ -222,8 +224,8 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
     rw [h]
   rel_equiv {n} {R} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine'
-      _root_.trans (relMap_equiv_unify G f R x i hx) (_root_.trans _ (symm (relMap_equiv_unify G f R y i hy)))
+    refine' _root_.trans (relMap_equiv_unify G f R x i hx)
+      (_root_.trans _ (symm (relMap_equiv_unify G f R y i hy)))
     rw [h]
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 
@@ -268,8 +270,8 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type _} [Fintype α] (x : α → 
   rw [Quotient.eq_mk_iff_out, Function.comp_apply, unify]
   let r := unify.proof_1 (Quotient.out ∘ x) i hi a
   change _ ≈ ⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩
-  have hi' : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : Σi, G i).fst ≤ i := le_rfl
-  rw [equiv_iff G f (i := i) (hi _) hi']
+  have : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : Σi, G i).fst ≤ i := le_rfl
+  rw [equiv_iff G f (i := i) (hi _) this]
   · simp only [DirectedSystem.map_self]
   exact ⟨a, rfl⟩
 #align first_order.language.direct_limit.exists_quotient_mk_sigma_mk_eq FirstOrder.Language.DirectLimit.exists_quotient_mk'_sigma_mk'_eq
@@ -367,7 +369,8 @@ def lift : DirectLimit G f ↪[L] P where
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     simp
-    change RelMap R (Quotient.lift (fun x ↦ (g x.fst) x.snd) _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y) ↔ RelMap R (fun a => (Quotient.mk _ (Sigma.mk i (y a))))
+    change RelMap R (Quotient.lift (fun x ↦ (g x.fst) x.snd) _ ∘ Quotient.mk _ ∘ Sigma.mk i ∘ y)
+      ↔ RelMap R (fun a => (Quotient.mk _ (Sigma.mk i (y a))))
     rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp.assoc,
       Quotient.lift_comp_mk]
     rfl
