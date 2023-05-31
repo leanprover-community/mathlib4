@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Slice
+import Mathlib.Tactic.CategoryTheory.Slice
 
 open CategoryTheory
 

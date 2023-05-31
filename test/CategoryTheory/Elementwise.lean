@@ -1,5 +1,5 @@
 import Std.Tactic.GuardExpr
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 --import Mathlib.Algebra.Category.Mon.Basic
 
 namespace ElementwiseTest
