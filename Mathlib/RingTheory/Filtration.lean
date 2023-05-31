@@ -344,8 +344,11 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
   · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
-    have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' :=
-      sorry--fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span
+    have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := by
+      intro i hi
+      refine Set.Subset.trans ?_ Submodule.subset_span
+      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      exact hi
     induction' i with j hj
     · exact this _ (zero_le _)
     by_cases hj' : j.succ ≤ n₀
@@ -382,6 +385,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
     · intro n m e
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]
       intro i hi
+
       sorry
       --refine'
       --  (Set.Subset.trans _ (Set.subset_iUnion₂ i (hi.trans e : _))).trans Submodule.subset_span
