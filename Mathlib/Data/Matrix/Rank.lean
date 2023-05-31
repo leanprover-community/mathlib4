@@ -171,7 +171,7 @@ end CommRing
 This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
 
 Unfortunately the proofs are essentially duplicated between the two; `ℚ` is a linearly-ordered ring
-but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open_locale complex_order`) but
+but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open ComplexOrder`) but
 not linearly ordered. For now we don't prove the transpose case for `ℂ`.
 
 TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
