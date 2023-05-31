@@ -2853,7 +2853,7 @@ theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
 section SplitAtOn
 
 /- Porting note: the new version of `splitOnP` uses a `Bool`-valued predicate instead of a
-  `Prop`-valued one. All downstream defintions have been updated to match. -/
+  `Prop`-valued one. All downstream definitions have been updated to match. -/
 
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 

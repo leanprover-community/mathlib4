@@ -103,7 +103,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
 * `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and a
   `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
-* `Finset.bInter`: TODO: Implemement finite intersections.
+* `Finset.bInter`: TODO: Implement finite intersections.
 
 ### Maps constructed using finsets
 
