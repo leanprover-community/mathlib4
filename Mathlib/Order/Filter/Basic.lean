@@ -233,7 +233,7 @@ theorem forall_in_swap {β : Type _} {p : Set α → β → Prop} :
 
 end Filter
 
-namespace Lean.Parser.Tactic
+namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
 
@@ -255,10 +255,9 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
   (" with" (ppSpace colGt term:max)*)? (" using " term)? : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do
+| `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
   let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
-  let args := (args.map Syntax.TSepArray.getElems).getD #[]
-  for e in args.reverse do
+  for e in args.getD #[] |>.reverse do
     let goal ← getMainGoal
     replaceMainGoal <| ← goal.withContext <| runTermElab do
       let m ← mkFreshExprMVar none
@@ -274,7 +273,7 @@ elab_rules : tactic
   if let some e := usingArg then
     evalTactic <|← `(tactic| exact $e)
 
-end Lean.Parser.Tactic
+end Mathlib.Tactic
 
 namespace Filter
 
