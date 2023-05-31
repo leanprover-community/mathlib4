@@ -360,6 +360,13 @@ namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
 
+section synthOrder
+
+/- porting note: Lean correctly determines that there is no good synthesization order for this
+instance, but in this case it is only a local instance with low priority so we circumvent the
+check. In addition, note that this instance is not actually needed for the *statement* of
+`LinearMap.adjoint`. -/
+set_option synthInstance.checkSynthOrder false
 attribute [local instance 20] FiniteDimensional.complete
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
@@ -392,6 +399,8 @@ theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoi
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
+
+end synthOrder
 
 /-- The adjoint is involutive. -/
 @[simp]
