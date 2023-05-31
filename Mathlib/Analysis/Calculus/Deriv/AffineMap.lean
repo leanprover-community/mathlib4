@@ -9,7 +9,9 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 /-!
 # Derivatives of affine maps
 
-In this file we prove formulas for one-dimensional derivatives of affine maps `f : 𝕜 →ᵃ[𝕜] E`.
+In this file we prove formulas for one-dimensional derivatives of affine maps `f : 𝕜 →ᵃ[𝕜] E`. We
+also specialise some of these results to `AffineMap.lineMap` because it is useful to transfer MVT
+from dimension 1 to a domain in higher dimension.
 
 ## TODO
 
