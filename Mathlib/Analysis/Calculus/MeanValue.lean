@@ -9,6 +9,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.LocalExtr
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.Normed
@@ -454,34 +455,26 @@ namespace Convex
 
 variable {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
+open AffineMap in
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `has_fderiv_within`. -/
 theorem norm_image_sub_le_of_norm_has_fderiv_within_le
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ := by
   letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
-  /- By composition with `t ↦ x + t • (y-x)`, we reduce to a statement for functions defined
+  /- By composition with `AffineMap.lineMap x y`, we reduce to a statement for functions defined
     on `[0,1]`, for which it is proved in `norm_image_sub_le_of_norm_deriv_le_segment`.
     We just have to check the differentiability of the composition and bounds on its derivative,
     which is straightforward but tedious for lack of automation. -/
-  set g : ℝ → E := fun t => x + t • (y - x)
-  have Dg : ∀ t, HasDerivAt g (y - x) t := by
-    intro t
-    simpa only [one_smul] using ((hasDerivAt_id t).smul_const (y - x)).const_add x
-  have segm : Icc 0 1 ⊆ g ⁻¹' s := by
-    rw [← image_subset_iff, ← segment_eq_image']
-    apply hs.segment_subset xs ys
-  have : f x = f (g 0) := by simp only; rw [zero_smul, add_zero]
-  rw [this]
-  have : f y = f (g 1) := by simp only; rw [one_smul, add_sub_cancel'_right]
-  rw [this]
-  have D2 : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt (f ∘ g) (f' (g t) (y - x)) (Icc 0 1) t := by
-    intro t ht
-    have : HasFDerivWithinAt f ((f' (g t)).restrictScalars ℝ) s (g t) := hf (g t) (segm ht)
-    exact this.comp_hasDerivWithinAt _ (Dg t).hasDerivWithinAt segm
-  apply norm_image_sub_le_of_norm_deriv_le_segment_01' D2
-  refine' fun t ht => le_of_op_norm_le _ _ _
-  exact bound (g t) (segm <| Ico_subset_Icc_self ht)
+  set g := (lineMap x y : ℝ → E)
+  have segm : MapsTo g (Icc 0 1 : Set ℝ) s := hs.mapsTo_lineMap xs ys
+  have hD : ∀ t ∈ Icc (0 : ℝ) 1,
+      HasDerivWithinAt (f ∘ g) (f' (g t) (y - x)) (Icc 0 1) t := fun t ht ↦ by
+    simpa using ((hf (g t) (segm ht)).restrictScalars ℝ).comp_hasDerivWithinAt _
+      hasDerivWithinAt_lineMap segm
+  have bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖f' (g t) (y - x)‖ ≤ C * ‖y - x‖ := fun t ht ↦
+    le_of_op_norm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
+  simpa using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le Convex.norm_image_sub_le_of_norm_has_fderiv_within_le
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C` on
@@ -796,7 +789,6 @@ theorem exists_deriv_eq_slope : ∃ c ∈ Ioo a b, deriv f c = (f b - f a) / (b 
 
 end Interval
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » D) -/
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `C < f'`, then
 `f` grows faster than `C * x` on `D`, i.e., `C * (y - x) < f y - f x` whenever `x, y ∈ D`,
@@ -1299,7 +1291,7 @@ theorem strictConcaveOn_univ_of_deriv2_neg {f : ℝ → ℝ} (hf : Continuous f)
 /-! ### Functions `f : E → ℝ` -/
 
 open AffineMap in
-/-- Lagrange's Mean Value Theorem, applied to convex domains. -/
+/-- Lagrange's **Mean Value Theorem**, applied to convex domains. -/
 theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ] ℝ}
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
@@ -1352,7 +1344,8 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
   rintro ⟨a, b⟩ h
   rw [← ball_prod_same, prod_mk_mem_set_prod_eq] at h
   -- exploit the choice of ε as the modulus of continuity of f'
-  have hf' : ∀ x' ∈ ball x ε, ‖f' x' - f' x‖ ≤ c := by intro x' H'; rw [← dist_eq_norm];
+  have hf' : ∀ x' ∈ ball x ε, ‖f' x' - f' x‖ ≤ c := fun x' H' ↦ by
+    rw [← dist_eq_norm]
     exact le_of_lt (hε H').2
   -- apply mean value theorem
   letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
