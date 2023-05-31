@@ -169,7 +169,7 @@ set_option linter.uppercaseLean3 false in
 -- colimit.pre ((OpenNhds.inclusion x).op ⋙ ℱ) (OpenNhds.map f x).op
 namespace stalkPushforward
 
--- Porting note: TODO: attribute [local tidy] tactic.op_induction'
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
