@@ -150,6 +150,12 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
   Quotient (DirectLimit.setoid G f)
 #align first_order.language.direct_limit FirstOrder.Language.DirectLimit
 
+-- Porting note: Lean4 is not able to find synthesization order for the setoid instance
+-- because Lean cannot infer the type of `L` from `Σi, G i`, but it needs it to
+-- determine the setoid instance on `Σi, G i`
+-- so we use the temporary solution of using the following set_option
+-- A refactor will be needed after the porting, perhaps an alias for `Σi, G i` depending on `L`
+-- see the discussion on Zulip: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
 set_option synthInstance.checkSynthOrder false
 attribute [local instance] DirectLimit.setoid
 
