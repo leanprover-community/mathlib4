@@ -165,13 +165,15 @@ theorem effectiveEpiFamily_of_jointly_surjective
 
 open EffectiveEpiFamily
 
+open List in
 theorem effectiveEpiFamily_tfae
     {α : Type} [Fintype α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B)) :
+    TFAE
     [ EffectiveEpiFamily X π
     , Epi (Sigma.desc π)
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
-    ].TFAE := by
+    ] := by
   tfae_have 1 → 2
   · intro ; infer_instance
   tfae_have 2 → 3
