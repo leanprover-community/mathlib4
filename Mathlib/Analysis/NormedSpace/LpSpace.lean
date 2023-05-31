@@ -241,7 +241,6 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
     split_ifs with h
     · simpa using NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
     · let F : Fin 2 → ℝ≥0 := ![‖f i‖₊, ‖g i‖₊]
-      have : ∀ i, (0 : ℝ) ≤ F i := fun i => (F i).coe_nonneg
       simp only [not_lt] at h
       simpa [Fin.sum_univ_succ] using
         Real.rpow_sum_le_const_mul_sum_rpow_of_nonneg Finset.univ h fun i _ => (F i).coe_nonneg
@@ -330,18 +329,10 @@ namespace lp
 
 -- Porting note: was `Coe`
 instance : CoeOut (lp E p) (∀ i, E i) :=
-  ⟨Subtype.val⟩ -- Porting note: Originally `coeSubtype`
+  ⟨Subtype.val (α := ∀ i, E i)⟩ -- Porting note: Originally `coeSubtype`
 
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
   ⟨fun f => (f : ∀ i, E i)⟩
-
--- Porting note: new
-@[simp]
-theorem zero_apply : (0 : lp E p) x = 0 := rfl
-
--- Porting note: new
-@[simp]
-theorem neg_apply : (-f : lp E p) x = -f x := rfl
 
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
@@ -383,14 +374,10 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 #align lp.coe_fn_add lp.coeFn_add
 
-@[simp]
+-- porting note: removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type _} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i in s, f i) = ∑ i in s, ⇑(f i) := by
-  classical
-  refine' Finset.induction _ _ s
-  · simp
-  intro i s his
-  simp [Finset.sum_insert his]
+  simp
 #align lp.coe_fn_sum lp.coeFn_sum
 
 @[simp]
@@ -494,18 +481,19 @@ theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 #align lp.eq_zero_iff_coe_fn_eq_zero lp.eq_zero_iff_coeFn_eq_zero
 
+-- porting note: this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
-  · simp [lp.norm_eq_card_dsupport]
+  · simp only [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
   · cases isEmpty_or_nonempty α
-    · simp [lp.eq_zero' f]
+    · simp only [lp.eq_zero' f, neg_zero, norm_zero]
     apply (lp.isLUB_norm (-f)).unique
-    simpa using lp.isLUB_norm f
+    simpa only [coeFn_neg, Pi.neg_apply, norm_neg] using lp.isLUB_norm f
   · suffices ‖-f‖ ^ p.toReal = ‖f‖ ^ p.toReal by
       exact Real.rpow_left_injOn hp.ne' (norm_nonneg' _) (norm_nonneg' _) this
     apply (lp.hasSum_norm hp (-f)).unique
-    simpa using lp.hasSum_norm hp f
+    simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 #align lp.norm_neg lp.norm_neg
 
 instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
@@ -518,7 +506,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         · cases isEmpty_or_nonempty α
           · -- Porting note: was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
-            simp
+            simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -726,7 +714,7 @@ section NormedSpace
 
 variable {𝕜 : Type _} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-instance [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
+instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
 
 end NormedSpace
@@ -754,7 +742,7 @@ instance : Star (lp E p) where
   star f := ⟨(star f : ∀ i, E i), f.property.star_mem⟩
 
 @[simp]
-theorem coeFn_star (f : lp E p) : ⇑(star f) = star f :=
+theorem coeFn_star (f : lp E p) : ⇑(star f) = star (⇑f) :=
   rfl
 #align lp.coe_fn_star lp.coeFn_star
 
@@ -763,11 +751,11 @@ protected theorem star_apply (f : lp E p) (i : α) : star f i = star (f i) :=
   rfl
 #align lp.star_apply lp.star_apply
 
-instance : InvolutiveStar (lp E p) where
+instance instInvolutiveStar : InvolutiveStar (lp E p) where
   star_involutive x := by simp [star]
 
-instance : StarAddMonoid (lp E p) where
-  star_add f g := ext <| star_add _ _
+instance instStarAddMonoid : StarAddMonoid (lp E p) where
+  star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
 
 instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
   norm_star f := by
@@ -783,7 +771,7 @@ variable {𝕜 : Type _} [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
-  star_smul r f := ext <| star_smul _ _
+  star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
 
 end NormedStarGroup
 
@@ -804,14 +792,11 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 #align mem_ℓp.infty_mul Memℓp.infty_mul
 
--- Porting note: Added this instance to get `Mul (lp B ∞)` to work.
-instance : Mul (PreLp B) := by unfold PreLp; infer_instance
-
 instance : Mul (lp B ∞) where
-  mul f g := ⟨(f * g : ∀ i, B i), f.property.infty_mul g.property⟩
+  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
 
 @[simp]
-theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = f * g :=
+theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 #align lp.infty_coe_fn_mul lp.infty_coeFn_mul
 
@@ -820,7 +805,7 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup with
+  { lp.normedAddCommGroup, lp.nonUnitalRing with
     norm_mul := fun f g =>
       lp.norm_le_of_forall_le (mul_nonneg (norm_nonneg f) (norm_nonneg g)) fun i =>
         calc
@@ -832,12 +817,12 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
 -- we also want a `non_unital_normed_comm_ring` instance, but this has to wait for #13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
-  ⟨fun r f g => lp.ext <| smul_assoc r (⇑f) (⇑g)⟩
+  ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 #align lp.infty_is_scalar_tower lp.infty_isScalarTower
 
 instance infty_sMulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
-  ⟨fun r f g => lp.ext <| smul_comm r (⇑f) (⇑g)⟩
+  ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 #align lp.infty_smul_comm_class lp.infty_sMulCommClass
 
 section StarRing
@@ -845,18 +830,17 @@ section StarRing
 variable [∀ i, StarRing (B i)] [∀ i, NormedStarGroup (B i)]
 
 instance inftyStarRing : StarRing (lp B ∞) :=
-  { (show StarAddMonoid (lp B ∞) by
-      letI : ∀ i, StarAddMonoid (B i) := fun i => inferInstance
-      infer_instance) with
-    star_mul := fun f g => ext <| star_mul (_ : ∀ i, B i) _ }
+  { lp.instStarAddMonoid with
+    star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
 #align lp.infty_star_ring lp.inftyStarRing
 
 instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
-  norm_star_mul_self f := by
+  norm_star_mul_self := by
+    intro f
     apply le_antisymm
     · rw [← sq]
       refine' lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => _
-      simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coe_fn_mul, Pi.mul_apply]
+      simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
       refine' sq_le_sq' _ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
       linarith [norm_nonneg (f i), norm_nonneg f]
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
@@ -918,7 +902,7 @@ theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
 #align lp.infty_coe_fn_one lp.infty_coeFn_one
 
 @[simp]
-theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
+theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align lp.infty_coe_fn_pow lp.infty_coeFn_pow
 
@@ -975,7 +959,7 @@ variable [∀ i, NormOneClass (B i)]
 
 theorem _root_.algebraMap_memℓp_infty (k : 𝕜) : Memℓp (algebraMap 𝕜 (∀ i, B i) k) ∞ := by
   rw [Algebra.algebraMap_eq_smul_one]
-  exact (one_memℓp_infty.const_smul k : Memℓp (k • 1 : ∀ i, B i) ∞)
+  exact (one_memℓp_infty.const_smul k : Memℓp (k • (1 : ∀ i, B i)) ∞)
 #align algebra_map_mem_ℓp_infty algebraMap_memℓp_infty
 
 variable (𝕜 B)
@@ -991,7 +975,7 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 variable {𝕜 B}
 
 instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
-  { (lpInftySubalgebra 𝕜 B).algebra, (lp.normedSpace : NormedSpace 𝕜 (lp B ∞)) with }
+  { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
 #align lp.infty_normed_algebra lp.inftyNormedAlgebra
 
 end Algebra
@@ -1044,14 +1028,11 @@ protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
   by_cases hi : j = i
   · subst hi
     dsimp
-    rw [Pi.smul_apply]
     simp [lp.single_apply_self]
   · dsimp
-    rw [Pi.smul_apply]
     simp [lp.single_apply_ne p i _ hi]
 #align lp.single_smul lp.single_smul
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i «expr ∉ » s) -/
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ∑ i in s, ‖f i‖ ^ p.toReal := by
   refine' (hasSum_norm hp (∑ i in s, lp.single p i (f i))).unique _
@@ -1071,7 +1052,6 @@ protected theorem norm_single (hp : 0 < p.toReal) (f : ∀ i, E i) (i : α) :
   simpa using lp.norm_sum_single hp f {i}
 #align lp.norm_single lp.norm_single
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i «expr ∉ » s) -/
 protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ‖f‖ ^ p.toReal - ‖f - ∑ i in s, lp.single p i (f i)‖ ^ p.toReal =
       ∑ i in s, ‖f i‖ ^ p.toReal := by
@@ -1119,7 +1099,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   have : |‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal| =
       ‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal := by
     simp only [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
-  linarith
+  exact this ▸ hs
 #align lp.has_sum_single lp.hasSum_single
 
 end Single
@@ -1132,12 +1112,12 @@ open scoped Topology uniformity
 
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
-    UniformContinuous ((↑) : lp E p → ∀ i, E i) := by
+    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) := by
   have hp : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
   rw [uniformContinuous_pi]
   intro i
   rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
-      NormedAddCommGroup.uniformity_basis_dist]
+    NormedAddCommGroup.uniformity_basis_dist]
   intro ε hε
   refine' ⟨ε, hε, _⟩
   rintro f g (hfg : ‖f - g‖ < ε)
