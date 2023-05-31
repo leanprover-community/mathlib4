@@ -396,13 +396,13 @@ theorem norm_eq_card_dsupport (f : lp E 0) : ‖f‖ = (lp.memℓp f).finite_dsu
   dif_pos rfl
 #align lp.norm_eq_card_dsupport lp.norm_eq_card_dsupport
 
-theorem norm_eq_csupr (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := by
+theorem norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := by
   dsimp [norm]
   rw [dif_neg ENNReal.top_ne_zero, if_pos rfl]
-#align lp.norm_eq_csupr lp.norm_eq_csupr
+#align lp.norm_eq_csupr lp.norm_eq_ciSup
 
 theorem isLUB_norm [Nonempty α] (f : lp E ∞) : IsLUB (Set.range fun i => ‖f i‖) ‖f‖ := by
-  rw [lp.norm_eq_csupr]
+  rw [lp.norm_eq_ciSup]
   exact isLUB_ciSup (lp.memℓp f)
 #align lp.is_lub_norm lp.isLUB_norm
 
@@ -434,7 +434,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
   · cases' isEmpty_or_nonempty α with _i _i
-    · rw [lp.norm_eq_csupr]
+    · rw [lp.norm_eq_ciSup]
       simp [Real.ciSup_empty]
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
@@ -447,7 +447,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport]
-  · simp [lp.norm_eq_csupr]
+  · simp [lp.norm_eq_ciSup]
   · rw [lp.norm_eq_tsum_rpow hp]
     have hp' : 1 / p.toReal ≠ 0 := one_div_ne_zero hp.ne'
     simpa [Real.zero_rpow hp.ne'] using Real.zero_rpow hp'
@@ -763,7 +763,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
       norm_num at this
-    · simp only [lp.norm_eq_csupr, lp.star_apply, norm_star]
+    · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable {𝕜 : Type _} [Star 𝕜] [NormedRing 𝕜]
@@ -917,7 +917,7 @@ theorem infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_int_cast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
-  norm_one := by simp_rw [lp.norm_eq_csupr, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
+  norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
 instance inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
