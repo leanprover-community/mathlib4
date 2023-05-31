@@ -16,9 +16,9 @@ import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Subring.Basic
 
 /-!
-# The structure sheaf on `prime_spectrum R`.
+# The structure sheaf on `PrimeSpectrum R`.
 
-We define the structure sheaf on `Top.of (prime_spectrum R)`, for a commutative ring `R` and prove
+We define the structure sheaf on `TopCat.of (PrimeSpectrum R)`, for a commutative ring `R` and prove
 basic properties about it. We define this as a subsheaf of the sheaf of dependent functions into the
 localizations, cut out by the condition that the function must be locally equal to a ratio of
 elements of `R`.
@@ -34,7 +34,7 @@ and also `topology.sheaves.local_predicate`, where we characterise the predicate
 which pick out sub-presheaves and sub-sheaves of these sheaves.)
 
 We also set up the ring structure, obtaining
-`structure_sheaf R : sheaf CommRing (Top.of (prime_spectrum R))`.
+`structure_sheaf R : sheaf CommRingCat (TopCat.of (PrimeSpectrum R))`.
 
 We then construct two basic isomorphisms, relating the structure sheaf to the underlying ring `R`.
 First, `structure_sheaf.stalk_iso` gives an isomorphism between the stalk of the structure sheaf
@@ -75,13 +75,13 @@ set_option linter.uppercaseLean3 false in
 
 namespace StructureSheaf
 
-/-- The type family over `prime_spectrum R` consisting of the localization over each point.
+/-- The type family over `PrimeSpectrum R` consisting of the localization over each point.
 -/
 def Localizations (P : PrimeSpectrum.Top R) : Type u :=
   Localization.AtPrime P.asIdeal
 #align algebraic_geometry.structure_sheaf.localizations AlgebraicGeometry.StructureSheaf.Localizations
 
--- Porting note : can't derive `CommRing`
+-- Porting note : can't derive `CommRingCat`
 instance CommRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
 show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
 
@@ -221,7 +221,7 @@ end StructureSheaf
 
 open StructureSheaf
 
-/-- The structure sheaf (valued in `Type`, not yet `CommRing`) is the subsheaf consisting of
+/-- The structure sheaf (valued in `Type`, not yet `CommRingCat`) is the subsheaf consisting of
 functions satisfying `is_locally_fraction`.
 -/
 def structureSheafInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
@@ -235,7 +235,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (PrimeSpectrum.Top R))ᵒ�
 
 open PrimeSpectrum
 
-/-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
+/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type` valued
 structure presheaf.
 -/
 @[simps]
@@ -250,7 +250,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_in_CommRing AlgebraicGeometry.structurePresheafInCommRing
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees
+/-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
@@ -260,13 +260,13 @@ set_option linter.uppercaseLean3 false in#align algebraic_geometry.structure_pre
 
 open TopCat.Presheaf
 
-/-- The structure sheaf on $Spec R$, valued in `CommRing`.
+/-- The structure sheaf on $Spec R$, valued in `CommRingCat`.
 
 This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later.
 -/
 def Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRing R,
-    (-- We check the sheaf condition under `forget CommRing`.
+    (-- We check the sheaf condition under `forget CommRingCat`.
           isSheaf_iff_isSheaf_comp
           _ _).mpr
       (isSheaf_of_iso (structurePresheafCompForget R).symm (structureSheafInType R).cond)⟩
@@ -1054,7 +1054,7 @@ variable {R} {S : Type u} [CommRing S] {P : Type u} [CommRing P]
 /--
 Given a ring homomorphism `f : R →+* S`, an open set `U` of the prime spectrum of `R` and an open
 set `V` of the prime spectrum of `S`, such that `V ⊆ (comap f) ⁻¹' U`, we can push a section `s`
-on `U` to a section on `V`, by composing with `localization.local_ring_hom _ _ f` from the left and
+on `U` to a section on `V`, by composing with `Localization.localRingHom _ _ f` from the left and
 `comap f` from the right. Explicitly, if `s` evaluates on `comap f p` to `a / b`, its image on `V`
 evaluates on `p` to `f(a) / f(b)`.
 
@@ -1074,7 +1074,7 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
     (s : ∀ x : U, Localizations R x) (hs : (isLocallyFraction R).toPrelocalPredicate.pred s) :
     (isLocallyFraction S).toPrelocalPredicate.pred (comapFun f U V hUV s) := by
   rintro ⟨p, hpV⟩
-  -- Since `s` is locally fraction, we can find a neighborhood `W` of `prime_spectrum.comap f p`
+  -- Since `s` is locally fraction, we can find a neighborhood `W` of `PrimeSpectrum.comap f p`
   -- in `U`, such that `s = a / b` on `W`, for some ring elements `a, b : R`.
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
@@ -1161,10 +1161,10 @@ theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
     Subtype.eq <|
       funext fun p => by
         rw [comap_apply]
-        -- Unfortunately, we cannot use `localization.local_ring_hom_id` here, because
-        -- `prime_spectrum.comap (ring_hom.id R) p` is not *definitionally* equal to `p`. Instead, we use
+        -- Unfortunately, we cannot use `Localization.localRingHom_id` here, because
+        -- `PrimeSpectrum.comap (RingHom.id R) p` is not *definitionally* equal to `p`. Instead, we use
         -- that we can write `s` as a fraction `a/b` in a small neighborhood around `p`. Since
-        -- `prime_spectrum.comap (ring_hom.id R) p` equals `p`, it is also contained in the same
+        -- `PrimeSpectrum.comap (RingHom.id R) p` equals `p`, it is also contained in the same
         -- neighborhood, hence `s` equals `a/b` there too.
         obtain ⟨W, hpW, iWU, h⟩ := s.2 (iVU p)
         obtain ⟨a, b, h'⟩ := h.eq_mk'
@@ -1202,8 +1202,8 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
       funext fun p => by
         rw [comap_apply]
         erw [Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
-        -- refl works here, because `prime_spectrum.comap (g.comp f) p` is defeq to
-        -- `prime_spectrum.comap f (prime_spectrum.comap g p)`
+        -- refl works here, because `PrimeSpectrum.comap (g.comp f) p` is defeq to
+        -- `PrimeSpectrum.comap f (PrimeSpectrum.comap g p)`
         rfl
 #align algebraic_geometry.structure_sheaf.comap_comp AlgebraicGeometry.StructureSheaf.comap_comp
 
