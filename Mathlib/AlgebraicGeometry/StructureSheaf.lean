@@ -581,7 +581,8 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
         CommRingCat.coe_of, Category.comp_id]
       rw [stalkToFiberRingHom_germ']
-      obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ := exists_const _ _ s x hxU
+      obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
+        exists_const _ _ s x hxU
       erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
       refine' (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU _
       dsimp
@@ -616,7 +617,8 @@ theorem localizationToStalk_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
 
 /-- The canonical ring homomorphism interpreting `s ∈ R_f` as a section of the structure sheaf
 on the basic open defined by `f ∈ R`. -/
-def toBasicOpen (f : R) : Localization.Away f →+* (structureSheaf R).1.obj (op <| PrimeSpectrum.basicOpen f) :=
+def toBasicOpen (f : R) :
+    Localization.Away f →+* (structureSheaf R).1.obj (op <| PrimeSpectrum.basicOpen f) :=
   IsLocalization.Away.lift f (isUnit_to_basicOpen_self R f)
 #align algebraic_geometry.structure_sheaf.to_basic_open AlgebraicGeometry.StructureSheaf.toBasicOpen
 
@@ -681,9 +683,9 @@ Every section can locally be represented on basic opens `basic_opens g` as a fra
 -/
 theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (x : U) :
-    ∃ (f g : R)(i : PrimeSpectrum.basicOpen g ⟶ U),
-      x.1 ∈ PrimeSpectrum.basicOpen g ∧
-        (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) = (structureSheaf R).1.map i.op s := by
+    ∃ (f g : R)(i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
+      (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) =
+      (structureSheaf R).1.map i.op s := by
   -- First, any section `s` can be represented as a fraction `f/g` on some open neighborhood of `x`
   -- and we may pass to a `basic_open h`, since these form a basis
   obtain ⟨V, hxV : x.1 ∈ V.1, iVU, f, g, hVDg : V ≤ PrimeSpectrum.basicOpen g, s_eq⟩ :=
@@ -777,8 +779,8 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- We need one power `(h i * h j) ^ N` that works for *all* pairs `(i,j)`
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
-  have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) = PrimeSpectrum.basicOpen (h i) := fun i =>
-    PrimeSpectrum.basicOpen_pow _ _ (by linarith)
+  have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
+    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by linarith)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine'
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
@@ -838,7 +840,8 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   simp only [← Opens.coe_iSup, SetLike.coe_subset_coe] at ht_cover'
   -- We use the normalization lemma from above to obtain the relation `a i * h j = h i * a j`
   obtain ⟨a, h, iDh, ht_cover, ah_ha, s_eq⟩ :=
-    normalize_finite_fraction_representation R (PrimeSpectrum.basicOpen f) s t a' h' iDh' ht_cover' s_eq'
+    normalize_finite_fraction_representation R (PrimeSpectrum.basicOpen f)
+      s t a' h' iDh' ht_cover' s_eq'
   clear s_eq' iDh' hxDh' ht_cover' a' h'
   -- Porting note : simp with `[← SetLike.coe_subset_coe, Opens.coe_iSup]` does not result in
   -- desired form
@@ -919,7 +922,8 @@ instance isIso_toBasicOpen (f : R) :
 /-- The ring isomorphism between the structure sheaf on `basic_open f` and the localization of `R`
 at the submonoid of powers of `f`. -/
 def basicOpenIso (f : R) :
-    (structureSheaf R).1.obj (op (PrimeSpectrum.basicOpen f)) ≅ CommRingCat.of (Localization.Away f) :=
+    (structureSheaf R).1.obj (op (PrimeSpectrum.basicOpen f)) ≅
+    CommRingCat.of (Localization.Away f) :=
   (asIso (show CommRingCat.of (Localization.Away f) ⟶ _ from toBasicOpen R f)).symm
 #align algebraic_geometry.structure_sheaf.basic_open_iso AlgebraicGeometry.StructureSheaf.basicOpenIso
 
@@ -981,7 +985,8 @@ instance to_basicOpen_epi (r : R) : Epi (toOpen R (PrimeSpectrum.basicOpen r)) :
 theorem to_global_factors :
     toOpen R ⊤ =
       CommRingCat.ofHom (algebraMap R (Localization.Away (1 : R))) ≫
-        toBasicOpen R (1 : R) ≫ (structureSheaf R).1.map (eqToHom PrimeSpectrum.basicOpen_one.symm).op := by
+        toBasicOpen R (1 : R) ≫
+        (structureSheaf R).1.map (eqToHom PrimeSpectrum.basicOpen_one.symm).op := by
   rw [← Category.assoc]
   change toOpen R ⊤ =
     (CommRingCat.ofHom <| (toBasicOpen R 1).comp (algebraMap R (Localization.Away 1))) ≫
@@ -1157,22 +1162,20 @@ to OO_X(U) is the identity.
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
     (comap (RingHom.id R) U V fun p hpV => leOfHom iVU <| hpV) =
       (structureSheaf R).1.map iVU.op :=
-  RingHom.ext fun s =>
-    Subtype.eq <|
-      funext fun p => by
-        rw [comap_apply]
-        -- Unfortunately, we cannot use `Localization.localRingHom_id` here, because
-        -- `PrimeSpectrum.comap (RingHom.id R) p` is not *definitionally* equal to `p`. Instead, we use
-        -- that we can write `s` as a fraction `a/b` in a small neighborhood around `p`. Since
-        -- `PrimeSpectrum.comap (RingHom.id R) p` equals `p`, it is also contained in the same
-        -- neighborhood, hence `s` equals `a/b` there too.
-        obtain ⟨W, hpW, iWU, h⟩ := s.2 (iVU p)
-        obtain ⟨a, b, h'⟩ := h.eq_mk'
-        obtain ⟨hb₁, s_eq₁⟩ := h' ⟨p, hpW⟩
-        obtain ⟨hb₂, s_eq₂⟩ :=
-          h' ⟨PrimeSpectrum.comap (RingHom.id _) p.1, hpW⟩
-        dsimp only at s_eq₁ s_eq₂
-        erw [s_eq₂, Localization.localRingHom_mk', ← s_eq₁, ← res_apply _ _ _ iVU]
+  RingHom.ext fun s => Subtype.eq <| funext fun p => by
+    rw [comap_apply]
+    -- Unfortunately, we cannot use `Localization.localRingHom_id` here, because
+    -- `PrimeSpectrum.comap (RingHom.id R) p` is not *definitionally* equal to `p`. Instead, we use
+    -- that we can write `s` as a fraction `a/b` in a small neighborhood around `p`. Since
+    -- `PrimeSpectrum.comap (RingHom.id R) p` equals `p`, it is also contained in the same
+    -- neighborhood, hence `s` equals `a/b` there too.
+    obtain ⟨W, hpW, iWU, h⟩ := s.2 (iVU p)
+    obtain ⟨a, b, h'⟩ := h.eq_mk'
+    obtain ⟨hb₁, s_eq₁⟩ := h' ⟨p, hpW⟩
+    obtain ⟨hb₂, s_eq₂⟩ :=
+      h' ⟨PrimeSpectrum.comap (RingHom.id _) p.1, hpW⟩
+    dsimp only at s_eq₁ s_eq₂
+    erw [s_eq₂, Localization.localRingHom_mk', ← s_eq₁, ← res_apply _ _ _ iVU]
 #align algebraic_geometry.structure_sheaf.comap_id_eq_map AlgebraicGeometry.StructureSheaf.comap_id_eq_map
 
 /--
