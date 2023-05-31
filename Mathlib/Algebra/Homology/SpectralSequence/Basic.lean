@@ -5,14 +5,18 @@ import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits ZeroObject
 
+lemma Int.eq_add_ofNat_of_le {i j : ℤ} (hij : i ≤ j) :
+    ∃ (d : ℕ), j = i + d := by
+  have h : 0 ≤ j - i := by linarith
+  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le h
+  exact ⟨d, by linarith⟩
+
 lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
     (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
     ∃ (m : ℤ) (_ : m ∈ S), ∀ (x : ℤ) (_ : x ∈ S), m ≤ x := by
   let T : Set ℕ := fun i => m₀ + i ∈ S
   obtain ⟨x, hx⟩ := hS
-  have hx' : 0 ≤ x - m₀ := by linarith [hm₀ x hx]
-  obtain ⟨t₀, ht₀⟩ := Int.eq_ofNat_of_zero_le hx'
-  obtain rfl : x = m₀ + t₀ := by linarith
+  obtain ⟨t₀, rfl⟩ := Int.eq_add_ofNat_of_le (hm₀ x hx)
   have hT : T.Nonempty := ⟨t₀, hx⟩
   let μ := (Nat.lt_wfRel.wf).min T hT
   refine' ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy => _⟩
@@ -200,14 +204,100 @@ structure StronglyConvergesToInDegree (n : ℤ) (X : C) where
       IsZero ((filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i)
   isIso_filtration_hom :
     ∃ (i : ℤ), ∀ (j : ℤ) (_ : i ≤ j), IsIso ((filtration ⋙ MonoOver.forget X).obj j).hom
-  π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
+  π' (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
     (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i ⟶ E.pageInfinity pq
-  epi_π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) : Epi (π i pq hpq)
-  comp_π (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+  epi_π' (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) : Epi (π' i pq hpq)
+  comp_π' (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
     (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).map
-      (homOfLE (show i ≤ j by linarith)) ≫ π j pq hpq = 0
-  exact (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
-    (ShortComplex.mk _ _ (comp_π i j hij pq hpq)).Exact
+      (homOfLE (show i ≤ j by linarith)) ≫ π' j pq hpq = 0
+  exact' (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    (ShortComplex.mk _ _ (comp_π' i j hij pq hpq)).Exact
+
+namespace StronglyConvergesToInDegree
+
+variable {E c}
+variable {n : ℤ} {X : C} (h : E.StronglyConvergesToInDegree c n X)
+
+def filtration' : ℤ ⥤ C := h.filtration ⋙ MonoOver.forget X ⋙ Over.forget X
+
+def π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
+    (h.filtration').obj i ⟶ E.pageInfinity pq := h.π' i pq hpq
+
+instance (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
+    Epi (h.π i pq hpq) := h.epi_π' i pq hpq
+
+lemma comp_π {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    (h.filtration').map φ ≫ h.π j pq hpq = 0 :=
+  h.comp_π' i j hij pq hpq
+
+instance {i j : ℤ} (f : i ⟶ j) :
+    Mono ((h.filtration').map f) :=
+  mono_of_mono_fac (MonoOver.w (h.filtration.map f))
+
+
+lemma shortExact {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    (ShortComplex.mk _ _ (h.comp_π φ hij pq hpq)).ShortExact where
+  exact := h.exact' i j hij pq hpq
+
+lemma isIso_filtration_map_succ_iff {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) :
+    IsIso ((h.filtration').map φ) ↔ IsZero (E.pageInfinity (c.position n j)) :=
+  (h.shortExact φ hij (c.position n j) rfl).isIso_f_iff
+
+lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
+    IsIso ((h.filtration').map φ) ↔
+      ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k)) := by
+  let H := fun (d : ℕ) => ∀ {i j : ℤ} (φ : i ⟶ j) (_ : i + d = j),
+    IsIso ((h.filtration').map φ) ↔
+      ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))
+  suffices ∀ (d : ℕ), H d by
+    obtain ⟨d, hd⟩ := Int.eq_add_ofNat_of_le (leOfHom φ)
+    exact this d φ hd.symm
+  intro d
+  induction' d with d hd
+  . intro i j φ hij
+    simp only [Nat.zero_eq, Nat.cast_zero, add_zero] at hij
+    subst hij
+    obtain rfl : φ = 𝟙 _ := Subsingleton.elim _ _
+    constructor
+    . intro _ k _ _
+      exfalso
+      linarith
+    . intro
+      infer_instance
+  . intro i j' φ hij'
+    simp only [Nat.cast_succ, ← add_assoc ] at hij'
+    subst hij'
+    have hij : i ≤ i + d := by linarith
+    have hjj' : i + d ≤ i + d + 1 := by linarith
+    have fac : (h.filtration').map φ = (h.filtration').map (homOfLE hij) ≫
+      (h.filtration').map (homOfLE hjj') := by
+        rw [← Functor.map_comp]
+        congr
+    constructor
+    . intro h₁₂
+      have : Epi ((h.filtration').map φ) := IsIso.epi_of_iso ((h.filtration').map φ)
+      have := epi_of_epi_fac fac.symm
+      have h₁ : IsIso ((h.filtration').map (homOfLE hjj')) := isIso_of_mono_of_epi _
+      have h₂ := IsIso.of_isIso_fac_right fac.symm
+      rw [h.isIso_filtration_map_succ_iff _ rfl] at h₁
+      rw [hd _ rfl] at h₂
+      intro k hk hk'
+      by_cases k ≤ i + d
+      . exact h₂ _ hk h
+      . obtain rfl : k = i + d + 1 := by linarith
+        exact h₁
+    . intro hij'
+      have : IsIso ((h.filtration').map (homOfLE hij)) := by
+        rw [hd _ rfl]
+        intro k hk hk'
+        exact hij' _ hk (by linarith)
+      have : IsIso ((h.filtration').map (homOfLE hjj')) := by
+        rw [h.isIso_filtration_map_succ_iff _ rfl]
+        exact hij' _ (by linarith) (by linarith)
+      rw [fac]
+      infer_instance
+
+end StronglyConvergesToInDegree
 
 variable (X : ℤ → C)
 

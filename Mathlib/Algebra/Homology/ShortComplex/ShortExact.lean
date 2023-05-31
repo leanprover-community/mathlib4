@@ -104,6 +104,32 @@ section Preadditive
 
 variable [Preadditive C]
 
+lemma ShortExact.isIso_f_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
+    IsIso S.f ↔ IsZero S.X₃ := by
+  have := hS.exact.hasZeroObject
+  have := hS.mono_f
+  have := hS.epi_g
+  constructor
+  . intro hf
+    simp only [IsZero.iff_id_eq_zero, ← cancel_epi S.g, ← cancel_epi S.f,
+      S.zero_assoc, zero_comp]
+  . intro hX₃
+    have : Epi S.f := (S.exact_iff_epi (hX₃.eq_of_tgt _ _)).1 hS.exact
+    apply isIso_of_mono_of_epi
+
+lemma ShortExact.isIso_g_iff  {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
+    IsIso S.g ↔ IsZero S.X₁ := by
+  have := hS.exact.hasZeroObject
+  have := hS.mono_f
+  have := hS.epi_g
+  constructor
+  . intro hf
+    simp only [IsZero.iff_id_eq_zero, ← cancel_mono S.f, ← cancel_mono S.g,
+      S.zero, zero_comp, assoc, comp_zero]
+  . intro hX₁
+    have : Mono S.g := (S.exact_iff_mono (hX₁.eq_of_src _ _)).1 hS.exact
+    apply isIso_of_mono_of_epi
+
 lemma isIso₂_of_shortExact_of_isIso₁₃ [Balanced C] {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) [IsIso φ.τ₁] [IsIso φ.τ₃] : IsIso φ.τ₂ := by
   have := h₁.mono_f
