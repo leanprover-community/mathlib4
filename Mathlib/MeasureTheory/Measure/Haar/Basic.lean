@@ -90,7 +90,7 @@ namespace haar
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.
---               TODO Fix this.
+--               Please refer to leanprover/lean4#2077.
 
 /-- The index or Haar covering number or ratio of `K` w.r.t. `V`, denoted `(K : V)`:
   it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
@@ -396,7 +396,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.
---               TODO Fix this.
+--               Please refer to leanprover/lean4#2077.
 
 /-- This is the "limit" of `prehaar K₀ U K` as `U` becomes a smaller and smaller open
   neighborhood of `(1 : G)`. More precisely, it is defined to be an arbitrary element
@@ -537,7 +537,7 @@ variable [T2Space G]
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.
---               TODO Fix this.
+--               Please refer to leanprover/lean4#2077.
 
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
 @[to_additive "additive version of `measure_theory.measure.haar.haar_content`"]
@@ -600,7 +600,7 @@ variable [TopologicalSpace G] [T2Space G] [TopologicalGroup G] [MeasurableSpace 
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.
---               TODO Fix this.
+--               Please refer to leanprover/lean4#2077.
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
 @[to_additive
