@@ -113,7 +113,7 @@ theorem isClosed_iff_close_eq_self {X : C} (S : Sieve X) : J₁.IsClosed S ↔ J
   · intro h
     apply le_antisymm
     · intro Y f hf
-      rw [← J₁.covers_iff_mem_of_closed h]
+      rw [← J₁.covers_iff_mem_of_isClosed h]
       apply hf
     · apply J₁.le_close
   · intro e
@@ -203,7 +203,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
     ext Y
     intro f
     dsimp only [Subtype.coe_mk]
-    rw [← J₁.covers_iff_mem_of_closed hM, ← J₁.covers_iff_mem_of_closed hN]
+    rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
