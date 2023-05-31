@@ -142,13 +142,16 @@ theorem tendstoInMeasure_of_tendsto_ae [FiniteMeasure μ] (hf : ∀ n, AEStrongl
   exact hxfg
 #align measure_theory.tendsto_in_measure_of_tendsto_ae MeasureTheory.tendstoInMeasure_of_tendsto_ae
 
+-- Porting note: See issue #2220
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+
 namespace ExistsSeqTendstoAe
 
 theorem exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n : ℕ) :
-    ∃ N, ∀ m ≥ N, μ { x | 2⁻¹ ^ n ≤ dist (f m x) (g x) } ≤ 2⁻¹ ^ n := by
-  specialize hfg (2⁻¹ ^ n) (by simp only [Real.rpow_nat_cast, inv_pos, zero_lt_two, pow_pos])
+    ∃ N, ∀ m ≥ N, μ { x | (2 : ℝ)⁻¹ ^ n ≤ dist (f m x) (g x) } ≤ (2⁻¹ : ℝ≥0∞) ^ n := by
+  specialize hfg ((2⁻¹ : ℝ) ^ n) (by simp only [Real.rpow_nat_cast, inv_pos, zero_lt_two, pow_pos])
   rw [ENNReal.tendsto_atTop_zero] at hfg
-  exact hfg (2⁻¹ ^ n) (pos_iff_ne_zero.mpr fun h_zero => by simpa using pow_eq_zero h_zero)
+  exact hfg ((2 : ℝ≥0∞)⁻¹ ^ n) (pos_iff_ne_zero.mpr fun h_zero => by simpa using pow_eq_zero h_zero)
 #align measure_theory.exists_seq_tendsto_ae.exists_nat_measure_lt_two_inv MeasureTheory.ExistsSeqTendstoAe.exists_nat_measure_lt_two_inv
 
 /-- Given a sequence of functions `f` which converges in measure to `g`,
@@ -171,7 +174,8 @@ theorem seqTendstoAeSeq_succ (hfg : TendstoInMeasure μ f atTop g) {n : ℕ} :
 #align measure_theory.exists_seq_tendsto_ae.seq_tendsto_ae_seq_succ MeasureTheory.ExistsSeqTendstoAe.seqTendstoAeSeq_succ
 
 theorem seqTendstoAeSeq_spec (hfg : TendstoInMeasure μ f atTop g) (n k : ℕ)
-    (hn : seqTendstoAeSeq hfg n ≤ k) : μ { x | 2⁻¹ ^ n ≤ dist (f k x) (g x) } ≤ 2⁻¹ ^ n := by
+    (hn : seqTendstoAeSeq hfg n ≤ k) :
+    μ { x | (2 : ℝ)⁻¹ ^ n ≤ dist (f k x) (g x) } ≤ (2 : ℝ≥0∞)⁻¹ ^ n := by
   cases n
   · exact Classical.choose_spec (exists_nat_measure_lt_two_inv hfg 0) k hn
   · exact Classical.choose_spec
@@ -198,16 +202,20 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
 
     On the other hand, as `s` is precisely the set for which `f (ns k)`
     doesn't converge to `g`, `f (ns k)` converges almost everywhere to `g` as required. -/
-  have h_lt_ε_real : ∀ (ε : ℝ) (hε : 0 < ε), ∃ k : ℕ, 2 * 2⁻¹ ^ k < ε := by
+  have h_lt_ε_real : ∀ (ε : ℝ) (hε : 0 < ε), ∃ k : ℕ, 2 * (2 : ℝ)⁻¹ ^ k < ε := by
     intro ε hε
-    obtain ⟨k, h_k⟩ : ∃ k : ℕ, 2⁻¹ ^ k < ε := exists_pow_lt_of_lt_one hε (by norm_num)
+    obtain ⟨k, h_k⟩ : ∃ k : ℕ, (2 : ℝ)⁻¹ ^ k < ε := exists_pow_lt_of_lt_one hε (by norm_num)
     refine' ⟨k + 1, (le_of_eq _).trans_lt h_k⟩
     rw [pow_add]; ring
   set ns := ExistsSeqTendstoAe.seqTendstoAeSeq hfg
   use ns
-  let S k := { x | 2⁻¹ ^ k ≤ dist (f (ns k) x) (g x) }
-  have hμS_le : ∀ k, μ (S k) ≤ 2⁻¹ ^ k :=
-    fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
+  let S := fun k => { x | (2 : ℝ)⁻¹ ^ k ≤ dist (f (ns k) x) (g x) }
+  have hμS_le : ∀ k, μ (S k) ≤ (2 : ℝ≥0∞)⁻¹ ^ k := by
+    intro k
+    have := ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
+    convert this
+
+  --  fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
     refine' measure_limsup_eq_zero (ne_of_lt <| lt_of_le_of_lt (ENNReal.tsum_le_tsum hμS_le) _)
@@ -221,7 +229,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     obtain ⟨k, hk_lt_ε⟩ := h_lt_ε_real ε hε
     refine' ⟨max N (k - 1), fun n hn_ge => lt_of_le_of_lt _ hk_lt_ε⟩
     specialize hNx n ((le_max_left _ _).trans hn_ge)
-    have h_inv_n_le_k : (2 : ℝ)⁻¹ ^ n ≤ 2 * 2⁻¹ ^ k := by
+    have h_inv_n_le_k : (2 : ℝ)⁻¹ ^ n ≤ 2 * (2 : ℝ)⁻¹ ^ k := by
       rw [mul_comm, ← inv_mul_le_iff' (zero_lt_two' ℝ)]
       conv_lhs =>
         congr
