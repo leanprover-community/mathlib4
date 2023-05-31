@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.Haar.Basic
-import Mathbin.Analysis.InnerProductSpace.PiL2
+import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -54,8 +54,7 @@ theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
 theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
-    f '' parallelepiped v = parallelepiped (f ∘ v) :=
-  by
+    f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
   simp only [Function.comp_apply, LinearMap.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
@@ -64,12 +63,10 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
 @[simp]
 theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
-    parallelepiped (v ∘ e) = parallelepiped v :=
-  by
+    parallelepiped (v ∘ e) = parallelepiped v := by
   simp only [parallelepiped]
   let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun a : ι' => ℝ) e
-  have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 :=
-    by
+  have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 := by
     rw [← Equiv.preimage_eq_iff_eq_image]
     ext x
     simp only [mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
@@ -88,20 +85,17 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
 theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
-    parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 :=
-  by
+    parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 := by
   have e : ι ≃ Fin 1 := by
     apply Fintype.equivFinOfCardEq
     simp only [← finrank_eq_card_basis b.to_basis, finrank_self]
-  have B : parallelepiped (b.reindex e) = parallelepiped b :=
-    by
+  have B : parallelepiped (b.reindex e) = parallelepiped b := by
     convert parallelepiped_comp_equiv b e.symm
     ext i
     simp only [OrthonormalBasis.coe_reindex]
   rw [← B]
   let F : ℝ → Fin 1 → ℝ := fun t => fun i => t
-  have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 :=
-    by
+  have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply subset.antisymm
     · intro x hx
       refine' ⟨x 0, ⟨hx.1 0, hx.2 0⟩, _⟩
@@ -120,8 +114,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       neg_zero, Finset.univ_unique]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
 
-theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) :=
-  by
+theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
   simp only [mem_parallelepiped_iff, Set.mem_finset_sum, Finset.mem_univ, forall_true_left,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
@@ -135,8 +128,7 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
   simp_rw [hg]
 #align parallelepiped_eq_sum_segment parallelepiped_eq_sum_segment
 
-theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) :=
-  by
+theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
   -- TODO: add `convex.sum` to match `convex.add`
   let this : AddSubmonoid (Set E) :=
@@ -148,8 +140,7 @@ theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) :=
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
-    parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) :=
-  by
+    parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
   -- TODO: add `convex_hull_sum` to match `convex_hull_add`
   let this : Set E →+ Set E :=
     { toFun := convexHull ℝ
@@ -161,8 +152,7 @@ theorem parallelepiped_eq_convexHull (v : ι → E) :
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
 theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
-    (parallelepiped fun i => Pi.single i (a i)) = Set.uIcc 0 a :=
-  by
+    (parallelepiped fun i => Pi.single i (a i)) = Set.uIcc 0 a := by
   ext
   simp_rw [Set.uIcc, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and, Pi.inf_apply,
     Pi.sup_apply, ← Pi.single_smul', Pi.one_apply, Pi.zero_apply, ← Pi.smul_apply',
@@ -199,22 +189,19 @@ section NormedSpace
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 /-- The parallelepiped spanned by a basis, as a compact set with nonempty interior. -/
-def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E
-    where
+def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := parallelepiped b
   is_compact' :=
     isCompact_Icc.image
       (continuous_finset_sum Finset.univ fun (i : ι) (H : i ∈ Finset.univ) =>
         (continuous_apply i).smul continuous_const)
-  interior_nonempty' :=
-    by
+  interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equiv_funL.symm.to_homeomorph '' Icc 0 1))
     · dsimp only [parallelepiped]
       convert H
       ext t
       exact (b.equiv_fun_symm_apply t).symm
-    have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) :=
-      by
+    have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]
       simp only [univ_pi_nonempty_iff, Pi.zero_apply, Pi.one_apply, interior_Icc, nonempty_Ioo,
         zero_lt_one, imp_true_iff]
@@ -295,8 +282,7 @@ instance : BorelSpace (EuclideanSpace ℝ ι) :=
 
 /-- `pi_Lp.equiv` as a `measurable_equiv`. -/
 @[simps toEquiv]
-protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ)
-    where
+protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   toEquiv := PiLp.equiv _ _
   measurable_to_fun := measurable_id
   measurable_inv_fun := measurable_id
