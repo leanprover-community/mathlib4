@@ -37,6 +37,8 @@ open Opposite
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
+-- Porting note : no tidy tactic
+-- attribute [local tidy] tactic.op_induction' tactic.auto_cases_opens
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 open TopCat.Presheaf
