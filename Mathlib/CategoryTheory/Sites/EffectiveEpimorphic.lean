@@ -241,7 +241,7 @@ attribute [nolint docBlame]
   EffectiveEpiFamilyStruct.uniq
 
 /--
-A family of morphisms `f a : X a ⟶ B` indexed by `a : α` is effective epimorphic
+A family of morphisms `f a : X a ⟶ B` indexed by `α` is effective epimorphic
 provided that the `f a` exhibit `B` as a colimit of the diagram of all "relations"
 `R → X a₁`, `R ⟶ X a₂` for all `a₁ a₂ : α`.
 -/
