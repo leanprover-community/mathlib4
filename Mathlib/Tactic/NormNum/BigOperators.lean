@@ -338,7 +338,7 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
 
   evalFinsetBigop q(Finset.prod) f res_empty (fun {a s' h} res_fa res_prod_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res : Result _ ← evalMul.core q($fa * Finset.prod $s' $f) _ _ instS res_fa res_prod_s'
+      let res : Result _ ← evalMul.core q($fa * Finset.prod $s' $f) q((· * ·)) _ _ instS res_fa res_prod_s'
       let eq : Q(Finset.prod (Finset.cons $a $s' $h) $f = $fa * Finset.prod $s' $f) :=
         q(Finset.prod_cons $h)
       pure <| res.eq_trans eq)
@@ -365,7 +365,7 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
 
   evalFinsetBigop q(Finset.sum) f res_empty (fun {a s' h} res_fa res_sum_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res : Result _ ← evalAdd.core q($fa + Finset.sum $s' $f) _ _ res_fa res_sum_s'
+      let res : Result _ ← evalAdd.core q($fa + Finset.sum $s' $f) q((· + ·)) _ _ res_fa res_sum_s'
       let eq : Q(Finset.sum (Finset.cons $a $s' $h) $f = $fa + Finset.sum $s' $f) :=
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
