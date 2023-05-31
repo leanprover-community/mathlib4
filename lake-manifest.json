@@ -16,6 +16,6 @@
   {"git":
    {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "8e27e9a8ebc83cd28d434b59b7020c886617de41",
+    "rev": "609a112f3fd7774f84b610c9b99a185f0fe3b32c",
     "name": "std",
     "inputRev?": "nightly-2023-05-31"}}]}
