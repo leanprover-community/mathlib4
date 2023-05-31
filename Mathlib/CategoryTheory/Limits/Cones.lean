@@ -286,7 +286,7 @@ commutes with the cone legs. -/
 structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   Hom : A.pt ⟶ B.pt
-  /-- The triangle consisting of the two natural tranformations and `Hom` commutes -/
+  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
   w : ∀ j : J, Hom ≫ B.π.app j = A.π.app j := by aesop_cat
 #align category_theory.limits.cone_morphism CategoryTheory.Limits.ConeMorphism
 #align category_theory.limits.cone_morphism.w' CategoryTheory.Limits.ConeMorphism.w

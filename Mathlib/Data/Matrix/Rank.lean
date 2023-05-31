@@ -176,7 +176,7 @@ not linearly ordered. For now we don't prove the transpose case for `ℂ`.
 
 TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
 proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
-`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unecessary assumptions on `R`, and should
+`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
 be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
 -/
 
