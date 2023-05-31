@@ -59,7 +59,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap
 
 @[simp, elementwise, reassoc]
-theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y.carrier)
+theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
     (x : (Opens.map α.base).obj U) :
     Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ stalkMap α ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
   rw [stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
@@ -130,7 +130,7 @@ end Restrict
 namespace stalkMap
 
 @[simp]
-theorem id (X : PresheafedSpace.{_, _, v} C) (x : X.carrier) :
+theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
   dsimp [stalkMap]
   simp only [stalkPushforward.id]
@@ -221,7 +221,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp, reassoc, elementwise]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
-    (f : X ⟶ Y) {x y : X.carrier} (h : x ⤳ y) :
+    (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
     Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ stalkMap f x =
       stalkMap f y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
