@@ -16,27 +16,69 @@ variable {α : Type} [Fintype α] {B : CompHaus.{u}}
 
 def Pullback {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) : CompHaus.{u} :=
   letI set := { xy : X × Y | f xy.1 = g xy.2 }
-  haveI : CompactSpace set := sorry
+  haveI : CompactSpace set := by
+    rw [← isCompact_iff_compactSpace]
+    apply IsClosed.isCompact
+    apply isClosed_eq
+    apply Continuous.comp
+    exact f.continuous
+    exact continuous_fst
+    apply Continuous.comp
+    exact g.continuous
+    exact continuous_snd
   CompHaus.of set
 
 def Pullback.fst {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) :
     Pullback f g ⟶ X where
-  toFun := fun ⟨⟨x,y⟩,h⟩ => x
-  continuous_toFun := sorry
+  toFun := fun ⟨⟨x,_⟩,_⟩ => x
+  continuous_toFun := by
+    apply Continuous.comp
+    exact continuous_fst
+    exact continuous_subtype_val
 
 def Pullback.snd {X Y B : CompHaus.{u}} (f : X ⟶ B) (g : Y ⟶ B) :
     Pullback f g ⟶ Y where
-  toFun := fun ⟨⟨x,y⟩,h⟩ => y
-  continuous_toFun := sorry
+  toFun := fun ⟨⟨_,y⟩,_⟩ => y
+  continuous_toFun := by
+    apply Continuous.comp
+    exact continuous_snd
+    exact continuous_subtype_val
 
 def DisjointUnion : CompHaus.{u} := CompHaus.of <| Σ (a : α), X a
 
 variable {X}
 
+def DisjointUnion.desc : DisjointUnion X ⟶ B where
+  toFun := fun ⟨a,x⟩ => π a x
+  continuous_toFun := by
+    apply continuous_sigma
+    intro i
+    exact (π i).continuous
+
+def DisjointUnion.incl (a : α) : X a ⟶ DisjointUnion X where
+  toFun := fun x => ⟨a,x⟩
+  continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
+
+variable (X) in
+def DisjointUnion.cocone : Cocone (Discrete.functor X) where
+  pt := DisjointUnion X
+  ι := Discrete.natTrans <| fun ⟨a⟩ => DisjointUnion.incl a
+
+variable (X) in
+def DisjointUnion.isColimit : IsColimit (DisjointUnion.cocone X) where
+  desc := fun S => DisjointUnion.desc <| fun a => S.ι.app ⟨a⟩
+  fac := fun S ⟨a⟩ => by ext ; rfl
+  uniq := by
+    intro S m hm
+    ext ⟨a,t⟩
+    specialize hm ⟨a⟩
+    apply_fun (fun q => q t) at hm
+    exact hm
+
 def Relation : Setoid (DisjointUnion X) where
   r a b := ∃ (Z : CompHaus.{u}) (z : Z)
-    (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst) (w : fst ≫ π _ = snd ≫ π _),
-    fst z = a.snd ∧ snd z = b.snd
+    (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst),
+    fst ≫ π _ = snd ≫ π _ ∧ fst z = a.snd ∧ snd z = b.snd
   iseqv := by
     constructor
     · rintro ⟨a,x⟩
@@ -54,7 +96,12 @@ def Relation : Setoid (DisjointUnion X) where
       rw [h]
 
 def ι_fun : Quotient (Relation π) → B :=
-  Quotient.lift (fun ⟨a,x⟩ => π a x) sorry
+  Quotient.lift (fun ⟨a,x⟩ => π a x) <| by
+    rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,h,hx,hy⟩
+    dsimp at *
+    rw [← hx, ← hy]
+    apply_fun (fun t => t z) at h
+    exact h
 
 lemma ι_fun_continuous : Continuous (ι_fun π) := by
   apply Continuous.quotient_lift
@@ -62,7 +109,11 @@ lemma ι_fun_continuous : Continuous (ι_fun π) := by
   intro a
   exact (π a).continuous
 
-lemma ι_fun_injective : (ι_fun π).Injective := sorry
+lemma ι_fun_injective : (ι_fun π).Injective := by
+  rintro ⟨⟨a,x⟩⟩ ⟨⟨b,y⟩⟩ (h : π _ _ = π _ _)
+  apply Quotient.sound'
+  refine ⟨Pullback (π a) (π b), ⟨⟨x,y⟩,h⟩, Pullback.fst _ _, Pullback.snd _ _, ?_, rfl, rfl⟩
+  ext ⟨_, h⟩ ; exact h
 
 def QB : CompHaus.{u} :=
   haveI : T2Space (Quotient <| Relation π) :=
@@ -90,17 +141,54 @@ def π' : (a : α) → (X a ⟶ QB π) := fun a =>
 
 def struct_aux : EffectiveEpiFamilyStruct X (π' π) where
   desc := fun {W} e h => {
-    toFun := Quotient.lift (fun ⟨a,x⟩ => e a x) sorry
-    continuous_toFun := sorry
-  }
-  fac := sorry
-  uniq := sorry
+    toFun := Quotient.lift (fun ⟨a,x⟩ => e a x) <| by
+      rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,hh,hx,hy⟩ ; dsimp at *
+      rw [← hx, ← hy]
+      specialize h _ _ fst snd ?_
+      · ext z
+        apply ι_fun_injective
+        apply_fun (fun q => q z) at hh
+        exact hh
+      apply_fun (fun q => q z) at h
+      exact h
+    continuous_toFun := by
+      apply Continuous.quotient_lift
+      apply continuous_sigma
+      intro a
+      exact (e a).continuous }
+  fac := by intro Z e h a ; ext ; rfl
+  uniq := by
+    intro Z e h m hm
+    ext ⟨⟨a,x⟩⟩
+    specialize hm a
+    apply_fun (fun q => q x) at hm
+    exact hm
 
+@[reassoc (attr := simp)]
+lemma π'_comp_ι_hom (a : α) : π' π a ≫ (ι _ surj).hom = π a := by ext ; rfl
+
+@[reassoc (attr := simp)]
+lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a :=  by
+  rw [Iso.comp_inv_eq]
+  exact π'_comp_ι_hom _ surj _
+
+-- TODO: Make a general construction for transferring such structs along isomorphisms.
 noncomputable
 def struct : EffectiveEpiFamilyStruct X π where
-  desc := fun {W} e h => (ι π surj).inv ≫ (struct_aux π).desc e sorry
-  fac := sorry
-  uniq := sorry
+  desc := fun {W} e h => (ι π surj).inv ≫ (struct_aux π).desc e (fun {Z} a₁ a₂ g₁ g₂ hh => by
+      apply h
+      rw [← cancel_mono (ι _ surj).inv]
+      simpa only [Category.assoc, π_comp_ι_inv])
+  fac := by
+    intro W e h a
+    simp only [Eq.ndrec, id_eq, eq_mpr_eq_cast, π_comp_ι_inv_assoc, (struct_aux π).fac]
+  uniq := by
+    intro W e h m hm
+    dsimp
+    rw [Iso.eq_inv_comp]
+    apply (struct_aux π).uniq
+    intro a
+    simpa using hm a
 
 end EffectiveEpiFamily
 
@@ -111,7 +199,55 @@ theorem effectiveEpiFamily_of_jointly_surjective
     EffectiveEpiFamily X π :=
   ⟨⟨CompHaus.EffectiveEpiFamily.struct π surj⟩⟩
 
-instance : Precoherent CompHaus.{u} := sorry
+open EffectiveEpiFamily
+
+theorem effectiveEpiFamily_tfae
+    {α : Type} [Fintype α] {B : CompHaus.{u}}
+    (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B)) :
+    [ EffectiveEpiFamily X π
+    , Epi (Sigma.desc π)
+    , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
+    ].TFAE := by
+  tfae_have 1 → 2
+  · intro ; infer_instance
+  tfae_have 2 → 3
+  · intro e ; rw [epi_iff_surjective] at e
+    let i : ∐ X ≅ DisjointUnion X :=
+      (colimit.isColimit _).coconePointUniqueUpToIso (DisjointUnion.isColimit _)
+    intro b
+    obtain ⟨t,rfl⟩ := e b
+    let q := i.hom t
+    refine ⟨q.1,q.2,?_⟩
+    have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id] ; rfl
+    rw [this]
+    show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
+    suffices i.inv ≫ Sigma.desc π = DisjointUnion.desc π by
+      rw [this] ; rfl
+    rw [Iso.inv_comp_eq]
+    apply colimit.hom_ext
+    rintro ⟨a⟩
+    simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+      colimit.comp_coconePointUniqueUpToIso_hom_assoc]
+    ext ; rfl
+  tfae_have 3 → 1
+  · apply effectiveEpiFamily_of_jointly_surjective
+  tfae_finish
+
+instance : Precoherent CompHaus.{u} := by
+  constructor
+  intro B₁ B₂ f α _ X₁ π₁ h₁
+  refine ⟨α, inferInstance, fun a => Pullback f (π₁ a), fun a => Pullback.fst _ _, ?_,
+    id, fun a => Pullback.snd _ _, ?_⟩
+  · have := (effectiveEpiFamily_tfae _ π₁).out 0 2 ; rw [this] at h₁ ; clear this
+    have := (effectiveEpiFamily_tfae _ (fun a => Pullback.fst f (π₁ a))).out 0 2
+    rw [this] ; clear this
+    intro b₂
+    obtain ⟨a,x,h⟩ := h₁ (f b₂)
+    refine ⟨a, ⟨⟨b₂, x⟩, h.symm⟩, rfl⟩
+  · intro a
+    dsimp
+    ext ⟨⟨_,_⟩,h⟩
+    exact h.symm
 
 end CompHaus
 
@@ -119,5 +255,8 @@ namespace Condensed
 
 def Condensed.{u} (C : Type _) [Category C] :=
   Sheaf (CoherentTopology CompHaus.{u}) C
+
+instance {C : Type _} [Category C] : Category (Condensed.{u} C) :=
+  show Category (Sheaf _ _) from inferInstance
 
 end Condensed
