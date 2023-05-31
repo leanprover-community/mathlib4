@@ -192,7 +192,7 @@ noncomputable def isoPageInfinityOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
 structure ConvergenceStripes where
   stripe : ℤ × ℤ → ℤ
   position (n i : ℤ) : ℤ × ℤ
-  position_stripe (n i : ℤ) : stripe (position n i) = n
+  position_stripe (n i : ℤ) : stripe (position n i) = n := by aesop
 
 variable (c : ConvergenceStripes)
 
@@ -275,7 +275,7 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
     subst hij
     obtain rfl : φ = 𝟙 _ := Subsingleton.elim _ _
     constructor
-    . intro _ k _ _
+    . intros
       exfalso
       linarith
     . intro
@@ -405,3 +405,115 @@ lemma StronglyConvergesTo.hasInfinityPageAt (pq : ℤ × ℤ) :
   (h.stronglyConvergesToInDegree (c.stripe pq)).hasInfinityPageAt pq rfl
 
 end SpectralSequence
+
+
+namespace CohomologicalSpectralSequence
+
+variable {C r₀}
+variable (E : CohomologicalSpectralSequence C r₀)
+
+def cohomologicalStripes : SpectralSequence.ConvergenceStripes where
+  stripe pq := pq.1 + pq.2
+  position n i := ⟨n+1-i, i-1⟩
+
+abbrev StronglyConvergesToInDegree (n : ℤ) (X : C) :=
+  SpectralSequence.StronglyConvergesToInDegree E cohomologicalStripes n X
+
+abbrev StronglyConvergesTo (X : ℤ → C) :=
+  SpectralSequence.StronglyConvergesTo E cohomologicalStripes X
+
+class IsFirstQuadrant : Prop :=
+  isZero (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r hr pq)
+
+section IsFirstQuadrant
+
+variable [E.IsFirstQuadrant]
+
+lemma isZero_of_isFirstQuadrant (r : ℤ) (hr : r₀ ≤ r)
+    (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r hr pq) := IsFirstQuadrant.isZero _ _ _ hpq
+
+instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
+  nonemptyFromSet' := by
+    by_cases pq.2 < 0
+    . refine' ⟨max r₀ 1, le_max_left _ _, _⟩
+      rintro r' hr' _ rfl
+      refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
+      dsimp
+      linarith [(le_max_right _ _).trans hr']
+    . refine' ⟨max r₀ (pq.2 + 2), le_max_left _ _, _⟩
+      rintro r' hr' _ rfl
+      refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
+      dsimp
+      linarith [(le_max_right _ _ ).trans hr']
+  nonemptyToSet' := by
+    by_cases pq.1 < 0
+    . refine' ⟨max r₀ 0, le_max_left _ _ ,_ ⟩
+      rintro r' hr' pq' rfl
+      refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
+      dsimp at h
+      linarith [(le_max_right _ _ ).trans hr']
+    . refine' ⟨max r₀ (pq.fst + 1), le_max_left _ _, _⟩
+      rintro r' hr' pq' rfl
+      refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
+      dsimp at h hr'
+      linarith [(le_max_right _ _ ).trans hr']
+
+lemma mem_toSet_of_isFirstQuadrant (pq : ℤ × ℤ) :
+    max r₀ (pq.1 + 1) ∈ E.toSet pq := by
+  refine' ⟨le_max_left _ _, _⟩
+  rintro r' hr' pq' rfl
+  refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
+  dsimp at hr'
+  linarith [(le_max_right _ _ ).trans hr']
+
+lemma mem_fromSet_of_isFirstQuadrant (pq : ℤ × ℤ)  :
+    max r₀ (pq.2+2) ∈ E.fromSet pq := by
+  refine' ⟨le_max_left _ _, _⟩
+  rintro r' hr' pq' rfl
+  refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
+  dsimp
+  linarith [(le_max_right _ _ ).trans hr']
+
+lemma rToMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
+    E.rToMin pq ≤ max r₀ (pq.1 + 1) :=
+  E.rToMin_le _ _ (E.mem_toSet_of_isFirstQuadrant pq)
+
+lemma rFromMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
+    E.rFromMin pq ≤ max r₀ (pq.2 + 2) :=
+  E.rFromMin_le _ _ (E.mem_fromSet_of_isFirstQuadrant pq)
+
+lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
+    E.rMin pq ≤ max r₀ (max (pq.1 + 1) (pq.2 + 2)) := by
+  apply max_le
+  . apply (E.rToMin_le_of_isFirstQuadrant pq).trans
+    apply max_le
+    . apply le_max_left
+    . exact (le_max_left _ _).trans (le_max_right _ _)
+  . apply (E.rFromMin_le_of_isFirstQuadrant pq).trans
+    apply max_le
+    . apply le_max_left
+    . exact (le_max_right _ _).trans (le_max_right _ _)
+
+lemma rMin_zero_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 2):
+    E.rMin ⟨0, 0⟩ ≤ 2 :=
+  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
+
+lemma rMin_one_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 2):
+    E.rMin ⟨1, 0⟩ ≤ 2 :=
+  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
+
+lemma rMin_two_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 3):
+    E.rMin ⟨2, 0⟩ ≤ 3 :=
+  (E.rMin_le_of_isFirstQuadrant _).trans (by
+    refine' max_le _ (max_le _ _)
+    all_goals dsimp ; linarith)
+
+lemma rMin_zero_one_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 3):
+    E.rMin ⟨0, 1⟩ ≤ 3 :=
+  (E.rMin_le_of_isFirstQuadrant _).trans (by
+    refine' max_le _ (max_le _ _)
+    all_goals dsimp ; linarith)
+
+end IsFirstQuadrant
+
+end CohomologicalSpectralSequence
