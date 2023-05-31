@@ -83,10 +83,10 @@ def IsClosed {X : C} (S : Sieve X) : Prop :=
 #align category_theory.grothendieck_topology.is_closed CategoryTheory.GrothendieckTopology.IsClosed
 
 /-- If `S` is `J₁`-closed, then `S` covers exactly the arrows it contains. -/
-theorem covers_iff_mem_of_closed {X : C} {S : Sieve X} (h : J₁.IsClosed S) {Y : C} (f : Y ⟶ X) :
+theorem covers_iff_mem_of_isClosed {X : C} {S : Sieve X} (h : J₁.IsClosed S) {Y : C} (f : Y ⟶ X) :
     J₁.Covers S f ↔ S f :=
   ⟨h _, J₁.arrow_max _ _⟩
-#align category_theory.grothendieck_topology.covers_iff_mem_of_closed CategoryTheory.GrothendieckTopology.covers_iff_mem_of_closed
+#align category_theory.grothendieck_topology.covers_iff_mem_of_closed CategoryTheory.GrothendieckTopology.covers_iff_mem_of_isClosed
 
 /-- Being `J`-closed is stable under pullback. -/
 theorem isClosed_pullback {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
