@@ -16,6 +16,7 @@ In this file, we show that the following are all equivalent:
 - The family `π` is effective epimorphic.
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
+This is the main result of this file, which can be found in `CompHaus.effectiveEpiFamily_tfae`
 
 As a consequence, we also show that `CompHaus` is precoherent.
 
@@ -196,7 +197,7 @@ theorem effectiveEpiFamily_tfae
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
 
-instance : Precoherent CompHaus.{u} := by
+instance Precoherent : Precoherent CompHaus.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
   refine ⟨α, inferInstance, fun a => Pullback f (π₁ a), fun a => Pullback.fst _ _, ?_,
