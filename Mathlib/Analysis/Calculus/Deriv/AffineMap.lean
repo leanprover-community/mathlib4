@@ -9,7 +9,9 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 /-!
 # Derivatives of affine maps
 
-In this file we prove formulas for one-dimensional derivatives of affine maps `f : 𝕜 →ᵃ[𝕜] E`.
+In this file we prove formulas for one-dimensional derivatives of affine maps `f : 𝕜 →ᵃ[𝕜] E`. We
+also specialise some of these results to `AffineMap.lineMap` because it is useful to transfer MVT
+from dimension 1 to a domain in higher dimension.
 
 ## TODO
 
@@ -51,5 +53,21 @@ protected theorem differentiableWithinAt : DifferentiableWithinAt 𝕜 f s x :=
   f.differentiableAt.differentiableWithinAt
 
 protected theorem differentiableOn : DifferentiableOn 𝕜 f s := fun _ _ ↦ f.differentiableWithinAt
+
+/-!
+### Line map
+
+In this section we specialize some lemmas to `AffineMap.lineMap` because this map is very useful to
+deduce higher dimensional lemmas from one-dimensional versions.
+-/
+
+theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
+  simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
+
+theorem hasDerivAt_lineMap :  HasDerivAt (lineMap a b) (b - a) x :=
+  hasStrictDerivAt_lineMap.hasDerivAt
+
+theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=
+  hasDerivAt_lineMap.hasDerivWithinAt
 
 end AffineMap
