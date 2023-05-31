@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
