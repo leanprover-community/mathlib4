@@ -45,10 +45,16 @@ namespace AlgebraCat
 instance : CoeSort (AlgebraCat R) (Type v) :=
   ⟨AlgebraCat.carrier⟩
 
+attribute [coe] AlgebraCat.carrier
+
 instance : Category (AlgebraCat.{v} R) where
   Hom A B := A →ₐ[R] B
   id A := AlgHom.id R A
   comp f g := g.comp f
+
+-- simplifies definitions below
+instance {S T : AlgebraCat.{v} R} : FunLike (S ⟶ T) S (fun _ => T) :=
+  ⟨fun f => f.toFun, fun _ _ h => AlgHom.ext (congr_fun h)⟩
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
@@ -56,16 +62,27 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
 
+instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
+  (inferInstance : Ring S.carrier)
+
+instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
+  (inferInstance : Algebra R S.carrier)
+
+-- porting note: added to ease automation
+@[ext]
+lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+  FunLike.ext _ _ h
+
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v}
     where forget₂ :=
     { obj := fun A => RingCat.of A
-      map := fun f => AlgHom.toRingHom f }
+      map := fun f => RingCat.ofHom f.toRingHom }
 #align Algebra.has_forget_to_Ring AlgebraCat.hasForgetToRing
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)
     where forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => AlgHom.toLinearMap f }
+      map := fun f => ModuleCat.ofHom f.toLinearMap }
 #align Algebra.has_forget_to_Module AlgebraCat.hasForgetToModule
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
@@ -172,8 +189,8 @@ namespace CategoryTheory.Iso
 /-- Build a `alg_equiv` from an isomorphism in the category `Algebra R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
-  toFun := i.hom.toFun
-  invFun := i.inv.toFun
+  toFun := i.hom
+  invFun := i.inv
   left_inv := by simp
   right_inv := by simp
   map_add' := by simp
