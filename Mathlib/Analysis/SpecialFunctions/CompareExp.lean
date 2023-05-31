@@ -18,7 +18,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 Let `l` be a filter on `ℂ` such that `Complex.re` tends to infinity along `l` and `Complex.im z`
 grows at a subexponential rate compared to `Complex.re z`. Then
 
-- `Complex.is_o_log_abs_re_of_subexponential_im_re`: `Real.log ∘ Complex.abs` is `o`-small of
+- `Complex.isLittleO_log_abs_re`: `Real.log ∘ Complex.abs` is `o`-small of
   `Complex.re` along `l`;
 
 - `Complex.isLittleO_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$
