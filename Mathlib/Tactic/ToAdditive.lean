@@ -33,23 +33,23 @@ theory to an additive theory.
 open Lean Meta Elab Command Std
 
 /-- The  `to_additive_ignore_args` attribute. -/
-syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
+syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 /-- The  `to_additive_relevant_arg` attribute. -/
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
+syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 /-- The  `to_additive_reorder` attribute. -/
-syntax (name := to_additive_reorder) "to_additive_reorder" (num+),+ : attr
+syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
 /-- The  `to_additive_change_numeral` attribute. -/
-syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : attr
+syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
-syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
+syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
-syntax toAdditiveReorderOption := &"reorder" ":=" (num+),+
+syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 

@@ -76,7 +76,7 @@ Initialize a new "label" attribute.
 Declarations tagged with the attribute can be retrieved using `Mathlib.Tactic.LabelAttr.labelled`.
 -/
 macro (name := _root_.Lean.Parser.Command.registerLabelAttr) doc:(docComment)?
-  "register_label_attr" id:ident : command => do
+  "register_label_attr " id:ident : command => do
   let str := id.getId.toString
   let idParser := mkIdentFrom id (`Parser.Attr ++ id.getId)
   let descr := quote (removeLeadingSpaces

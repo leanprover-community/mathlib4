@@ -252,7 +252,7 @@ Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] wi
 Note that in this case, the `aᵢ` terms can be used in `e`.
 -/
 syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
-  ("with" (colGt term:max)*)? ("using" term)? : tactic
+  (" with" (ppSpace colGt term:max)*)? (" using " term)? : tactic
 
 elab_rules : tactic
 | `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do

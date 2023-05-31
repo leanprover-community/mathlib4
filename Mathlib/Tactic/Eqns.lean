@@ -29,7 +29,7 @@ theorem transpose_const {m n} (c : ℕ) :
 -/
 open Lean Elab
 
-syntax (name := eqns) "eqns" ident* : attr
+syntax (name := eqns) "eqns" (ppSpace ident)* : attr
 
 initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {

@@ -130,7 +130,7 @@ The tactics are not related: `cancel_denoms` will only handle numeric denominato
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
 syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (simpArgs)? (ppSpace location)? : tactic
+  (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
