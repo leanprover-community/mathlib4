@@ -20,9 +20,9 @@ measure, which gives measure `1` to the parallelepiped spanned by the basis.
 ## Main definitions
 
 * `parallelepiped v` is the parallelepiped spanned by a finite family of vectors.
-* `basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
+* `Basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
 nonempty interior.
-* `basis.add_haar` is the Lebesgue measure associated to a basis, giving measure `1` to the
+* `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
 corresponding parallelepiped.
 
 In particular, we declare a `measure_space` instance on any finite-dimensional inner product space,
@@ -49,7 +49,7 @@ def parallelepiped (v : ι → E) : Set E :=
 #align parallelepiped parallelepiped
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
-    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ)(ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
+    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ)(_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
@@ -65,7 +65,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
 theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     parallelepiped (v ∘ e) = parallelepiped v := by
   simp only [parallelepiped]
-  let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun a : ι' => ℝ) e
+  let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun _a : ι' => ℝ) e
   have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 := by
     rw [← Equiv.preimage_eq_iff_eq_image]
     ext x
@@ -95,7 +95,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     ext i
     simp only [OrthonormalBasis.coe_reindex]
   rw [← B]
-  let F : ℝ → Fin 1 → ℝ := fun t => fun i => t
+  let F : ℝ → Fin 1 → ℝ := fun t => fun _i => t
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply Subset.antisymm
     · intro x hx
@@ -103,7 +103,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       ext j
       simp only [Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
-      exact ⟨fun j => hy.1, fun j => hy.2⟩
+      exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
@@ -130,18 +130,18 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
 
 theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
-  -- TODO: add `convex.sum` to match `convex.add`
+  -- TODO: add `convex.sum` to match `Convex.add`
   let A : AddSubmonoid (Set E) :=
     { carrier := { s | Convex ℝ s }
       zero_mem' := convex_singleton _
       add_mem' := Convex.add }
-  refine A.sum_mem (fun i hi => convex_segment _ _)
+  refine A.sum_mem (fun i _hi => convex_segment _ _)
 #align convex_parallelepiped convex_parallelepiped
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
     parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
-  -- TODO: add `convex_hull_sum` to match `convex_hull_add`
+  -- TODO: add `convex_hull_sum` to match `convexHull_add`
   let A : Set E →+ Set E :=
     { toFun := convexHull ℝ
       map_zero' := convexHull_singleton _
@@ -192,7 +192,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [Norm
 def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (H : i ∈ Finset.univ) =>
+      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
         (continuous_apply i).smul continuous_const)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1))
@@ -252,7 +252,7 @@ end NormedSpace
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
-is proved in `orthonormal_basis.volume_parallelepiped`. -/
+is proved in `orthonormalBasis.volume_parallelepiped`. -/
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
@@ -263,22 +263,22 @@ situations if we do not declare it explicitly. -/
 instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
 #align real.measure_space Real.measureSpace
 
-/-! # Miscellaneous instances for `euclidean_space`
+/-! # Miscellaneous instances for `EuclideanSpace`
 
-In combination with `measure_space_of_inner_product_space`, these put a `measure_space` structure
-on `euclidean_space`. -/
+In combination with `measureSpaceOfInnerProductSpace`, these put a `measure_space` structure
+on `EuclideanSpace`. -/
 
 
 namespace EuclideanSpace
 
 variable (ι)
 
--- TODO: do we want these instances for `pi_Lp` too?
+-- TODO: do we want these instances for `PiLp` too?
 instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
 instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
-/-- `pi_Lp.equiv` as a `measurable_equiv`. -/
+/-- `PiLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
 protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   toEquiv := PiLp.equiv _ _
