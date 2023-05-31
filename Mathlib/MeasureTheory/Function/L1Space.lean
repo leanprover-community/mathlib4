@@ -303,7 +303,7 @@ theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ �
 #align measure_theory.all_ae_of_real_f_le_bound MeasureTheory.all_ae_ofReal_f_le_bound
 
 theorem hasFiniteIntegral_of_dominated_convergence {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
-    (bound_has_finite_integral : HasFiniteIntegral bound μ)
+    (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) : HasFiniteIntegral f μ := by
   /- `‖F n a‖ ≤ bound a` and `‖F n a‖ --> ‖f a‖` implies `‖f a‖ ≤ bound a`,
@@ -314,13 +314,13 @@ theorem hasFiniteIntegral_of_dominated_convergence {F : ℕ → α → β} {f : 
       lintegral_mono_ae <| all_ae_ofReal_f_le_bound h_bound h_lim
     _ < ∞ := by
       rw [← hasFiniteIntegral_iff_ofReal]
-      · exact bound_has_finite_integral
+      · exact bound_hasFiniteIntegral
       exact (h_bound 0).mono fun a h => le_trans (norm_nonneg _) h
 #align measure_theory.has_finite_integral_of_dominated_convergence MeasureTheory.hasFiniteIntegral_of_dominated_convergence
 
 theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ)
-    (bound_has_finite_integral : HasFiniteIntegral bound μ)
+    (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
     Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 0) := by
@@ -354,13 +354,13 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
   -- Show `λa, ‖f a - F n a‖` is almost everywhere measurable for all `n`
   · exact fun n =>
       measurable_ofReal.comp_aemeasurable ((F_measurable n).sub f_measurable).norm.aemeasurable
-  -- Show `2 * bound` is has_finite_integral
-  · rw [hasFiniteIntegral_iff_ofReal] at bound_has_finite_integral
+  -- Show `2 * bound` `HasFiniteIntegral`
+  · rw [hasFiniteIntegral_iff_ofReal] at bound_hasFiniteIntegral
     · calc
         (∫⁻ a, b a ∂μ) = 2 * ∫⁻ a, ENNReal.ofReal (bound a) ∂μ := by
           rw [lintegral_const_mul']
           exact coe_ne_top
-        _ ≠ ∞ := mul_ne_top coe_ne_top bound_has_finite_integral.ne
+        _ ≠ ∞ := mul_ne_top coe_ne_top bound_hasFiniteIntegral.ne
     filter_upwards [h_bound 0] with _ h using le_trans (norm_nonneg _) h
   -- Show `‖f a - F n a‖ --> 0`
   · exact h
@@ -956,6 +956,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       simpa only [Ne.def, ENNReal.coe_eq_zero] using hx
   norm_map' := by
     intro u
+    -- Porting note: Lean can't infer types of `AddHom.coe_mk`.
     simp only [snorm, LinearMap.coe_mk,
       AddHom.coe_mk (M := Lp E 1 (μ.withDensity fun x => f x)) (N := Lp E 1 μ), Lp.norm_toLp,
       one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, snorm', ENNReal.rpow_one,
