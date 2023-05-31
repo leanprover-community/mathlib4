@@ -202,7 +202,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
 
     On the other hand, as `s` is precisely the set for which `f (ns k)`
     doesn't converge to `g`, `f (ns k)` converges almost everywhere to `g` as required. -/
-  have h_lt_ε_real : ∀ (ε : ℝ) (hε : 0 < ε), ∃ k : ℕ, 2 * (2 : ℝ)⁻¹ ^ k < ε := by
+  have h_lt_ε_real : ∀ (ε : ℝ) (_ : 0 < ε), ∃ k : ℕ, 2 * (2 : ℝ)⁻¹ ^ k < ε := by
     intro ε hε
     obtain ⟨k, h_k⟩ : ∃ k : ℕ, (2 : ℝ)⁻¹ ^ k < ε := exists_pow_lt_of_lt_one hε (by norm_num)
     refine' ⟨k + 1, (le_of_eq _).trans_lt h_k⟩
