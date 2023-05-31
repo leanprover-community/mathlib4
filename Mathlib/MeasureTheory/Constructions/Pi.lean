@@ -21,14 +21,14 @@ In this file we define and prove properties about finite products of measures
 ## Main definition
 
 * `MeasureTheory.Measure.pi`: The product of finitely many σ-finite measures.
-  Given `μ : ∀ i : ι, Measure (α i)` for `[Fintype ι]` it has type `Measure (∀ i : ι, α i)`.
+  Given `μ : (i : ι) → Measure (α i)` for `[Fintype ι]` it has type `Measure ((i : ι) → α i)`.
 
 To apply Fubini along some subset of the variables, use
 `MeasureTheory.measurePreserving_piEquivPiSubtypeProd` to reduce to the situation of a product
 of two measures: this lemma states that the bijection
 `MeasurableEquiv.piEquivPiSubtypeProd α p` between `(∀ i : ι, α i)` and
-`(∀ i : {i // p i}, α i) × (∀ i : {i // ¬ p i}, α i)` maps a product measure to a direct product of
-product measures, to which one can apply the usual Fubini for direct product of measures.
+`((i : {i // p i}) → α i) × ((i : {i // ¬ p i}) → α i)` maps a product measure to a direct product
+of product measures, to which one can apply the usual Fubini for direct product of measures.
 
 ## Implementation Notes
 
@@ -44,8 +44,8 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
   `∀ ι, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
 * On this iterated product we can easily define a product measure `MeasureTheory.Measure.tprod`
   by iterating `MeasureTheory.Measure.prod`
-* Using the previous two steps we construct `MeasureTheory.Measure.pi'` on `∀ ι, α i` for countable
-  `ι`.
+* Using the previous two steps we construct `MeasureTheory.Measure.pi'` on `(i : ι) → α i` for
+  countable `ι`.
 * We know that `MeasureTheory.Measure.pi'` sends products of sets to products of measures, and
   since `MeasureTheory.Measure.pi` is the maximal such measure (or at least, it comes from an outer
   measure which is the maximal such outer measure), we get the same rule for
@@ -113,7 +113,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     choose t h1t h2t using hC
     simp_rw [eval_preimage, ← h2t]
     rw [← @iUnion_const _ ℕ _ s]
-    have : Set.pi univ (update (fun i' : ι => iUnion (t i')) i (⋃ i' : ℕ, s)) =
+    have : Set.pi univ (update (fun i' : ι => iUnion (t i')) i (⋃ _i' : ℕ, s)) =
         Set.pi univ fun k => ⋃ j : ℕ,
         @update ι (fun i' => Set (α i')) _ (fun i' => t i' j) i s k := by
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
@@ -126,7 +126,8 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     apply mem_image_of_mem; intro j _; dsimp only
     by_cases h : j = i; subst h; rwa [update_same]; rw [update_noteq h]; apply h1t
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
-    rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i; apply measurable_pi_apply
+    rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
+    apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))
     exact measurableSet_generateFrom (hs i (mem_univ i))
 #align generate_from_pi_eq generateFrom_pi_eq
 
@@ -246,9 +247,9 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (π i)) :
 
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
-  induction' l with i l ih
-  · rw [tprod_nil]; infer_instance
-  · rw [tprod_cons]; infer_instance
+  induction l with
+  | nil => rw [tprod_nil]; infer_instance
+  | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ ih _
 #align measure_theory.measure.sigma_finite_tprod MeasureTheory.Measure.sigmaFinite_tprod
 
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
@@ -277,7 +278,7 @@ theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
   rw [pi']
   simp only [TProd.elim'] -- Porting note: new step
-  rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
+  erw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
     MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
     List.prod_toFinset, sortedUniv_toFinset] <;>
   exact sortedUniv_nodup ι
