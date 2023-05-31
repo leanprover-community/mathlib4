@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.Refinements
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LibrarySearch
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -169,13 +170,54 @@ lemma isoPageOfLE_eq
     linarith [(Int.eq_ofNat_of_zero_le this).choose_spec]
   rfl
 
-noncomputable def pageInfinity : C := E.page (E.rMin pq) (E.le_rMin pq) pq
+end
+
+noncomputable def pageInfinity (pq : ℤ × ℤ) : C := by
+  by_cases E.HasInfinityPageAt pq
+  . exact E.page (E.rMin pq) (E.le_rMin pq) pq
+  . exact 0
+
+noncomputable def pageInfinityIso (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] :
+    E.pageInfinity pq ≅ E.page (E.rMin pq) (E.le_rMin pq) pq := eqToIso (dif_pos _)
 
 noncomputable def isoPageInfinityOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
     (r : ℤ) (hr : E.rMin pq ≤ r) :
     E.page r ((E.le_rMin pq).trans hr) pq ≅ E.pageInfinity pq :=
-  Iso.symm (E.isoPageOfLE pq _ _ (by rfl) hr)
+  Iso.symm (E.pageInfinityIso pq ≪≫ E.isoPageOfLE pq _ _ (by rfl) hr)
 
-end
+structure ConvergenceStripes where
+  stripe : ℤ × ℤ → ℤ
+  position (n i : ℤ) : ℤ × ℤ
+  position_stripe (n i : ℤ) : stripe (position n i) = n
+
+variable (c : ConvergenceStripes)
+
+structure StronglyConvergesToInDegree (n : ℤ) (X : C) where
+  hasInfinityPageAt : ∀ (pq : ℤ × ℤ) (_ : c.stripe pq = n), E.HasInfinityPageAt pq
+  filtration : ℤ ⥤ MonoOver X
+  isZero_filtration :
+    ∃ (j : ℤ), ∀ (i : ℤ) (_ : i ≤ j),
+      IsZero ((filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i)
+  isIso_filtration_hom :
+    ∃ (i : ℤ), ∀ (j : ℤ) (_ : i ≤ j), IsIso ((filtration ⋙ MonoOver.forget X).obj j).hom
+  π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
+    (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i ⟶ E.pageInfinity pq
+  epi_π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) : Epi (π i pq hpq)
+  comp_π (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).map
+      (homOfLE (show i ≤ j by linarith)) ≫ π j pq hpq = 0
+  exact (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    (ShortComplex.mk _ _ (comp_π i j hij pq hpq)).Exact
+
+variable (X : ℤ → C)
+
+structure StronglyConvergesTo where
+  stronglyConvergesToInDegree (n : ℤ) : E.StronglyConvergesToInDegree c n (X n)
+
+variable (h : E.StronglyConvergesTo c X)
+
+lemma StronglyConvergesTo.hasInfinityPageAt (pq : ℤ × ℤ) :
+    E.HasInfinityPageAt pq :=
+  (h.stronglyConvergesToInDegree (c.stripe pq)).hasInfinityPageAt pq rfl
 
 end SpectralSequence
