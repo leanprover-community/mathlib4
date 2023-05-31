@@ -284,6 +284,12 @@ noncomputable def EObjIso (D : Arrow₃ ι) :
 
 pp_extended_field_notation EObjIso
 
+lemma isZero_E_of_isZero_H (D : Arrow₃ ι) (h : IsZero ((X.H n₁).obj (Arrow.mk D.g))) :
+    IsZero ((X.E n₀ n₁ n₂ hn₁ hn₂).obj D) := by
+  refine' IsZero.of_iso _ (X.EObjIso n₀ n₁ n₂ hn₁ hn₂ D)
+  rw [← ShortComplex.exact_iff_isZero_homology]
+  exact ShortComplex.exact_of_isZero_X₂ _ h
+
 -- this is helpful in order to compute the initial page of the spectral sequence
 noncomputable def EObjIsoH (D : Arrow₃ ι) (h₁ : IsIso D.f) (h₂ : IsIso D.h) :
     (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.H n₁).obj (Arrow.mk D.g) :=
@@ -595,18 +601,25 @@ noncomputable def filtration (n : ℤ) : ι ⥤ Subobject (X.abutment n) :=
 
 pp_extended_field_notation filtration
 
-class IsStationary (γ₁ γ₂ : ℤ → ι) where
-  isZero₁' (n : ℤ) {i j : ι} (g : i ⟶ j) (α : j ⟶ γ₁ n) : IsZero ((X.H n).obj (Arrow.mk g))
-  isZero₂' (n : ℤ) {i j : ι} (g : i ⟶ j) (β : γ₂ n ⟶ i) : IsZero ((X.H n).obj (Arrow.mk g))
+variable (ι)
 
-variable (γ₁ γ₂ : ℤ → ι) [hX : X.IsStationary γ₁ γ₂]
+structure Bounds where
+  (γ₁ γ₂ : ℤ → ι)
 
-lemma isZero₁_H (n : ℤ) {i j : ι} (g : i ⟶ j) (α : j ⟶ γ₁ n) :
+variable {ι}
+
+class IsStationary (B : Bounds ι) where
+  isZero₁' (n : ℤ) {i j : ι} (g : i ⟶ j) (α : j ⟶ B.γ₁ n) : IsZero ((X.H n).obj (Arrow.mk g))
+  isZero₂' (n : ℤ) {i j : ι} (g : i ⟶ j) (β : B.γ₂ n ⟶ i) : IsZero ((X.H n).obj (Arrow.mk g))
+
+variable (B : Bounds ι) [hX : X.IsStationary B]
+
+lemma isZero₁_H (n : ℤ) {i j : ι} (g : i ⟶ j) (α : j ⟶ B.γ₁ n) :
     IsZero ((X.H n).obj (Arrow.mk g)) :=
   hX.isZero₁' n g α
 
 lemma mono_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.right)
-    (α : D₂.left ⟶ γ₁ n) : Mono ((X.H n).map φ) := by
+    (α : D₂.left ⟶ B.γ₁ n) : Mono ((X.H n).map φ) := by
   let D₁' := Arrow.mk (φ.left ≫ D₂.hom)
   let φ' : D₁' ⟶ D₂ :=
     { left := φ.left
@@ -622,11 +635,11 @@ lemma mono_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ :
     rw [hφ, Functor.map_comp]
     apply mono_comp
   exact (ShortComplex.exact_iff_mono _
-    (IsZero.eq_of_src (X.isZero₁_H γ₁ γ₂ _ _ α) _ _)).1
+    (IsZero.eq_of_src (X.isZero₁_H B _ _ α) _ _)).1
       (X.exact₂ n (Arrow₂.mk φ.left D₂.hom))
 
 lemma epi_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.right)
-    (n' : ℤ) (hn' : n + 1 = n') (α : D₂.left ⟶ γ₁ n') : Epi ((X.H n).map φ) := by
+    (n' : ℤ) (hn' : n + 1 = n') (α : D₂.left ⟶ B.γ₁ n') : Epi ((X.H n).map φ) := by
   let D₁' := Arrow.mk (φ.left ≫ D₂.hom)
   let φ' : D₁' ⟶ D₂ :=
     { left := φ.left
@@ -642,38 +655,38 @@ lemma epi_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : 
     rw [hφ, Functor.map_comp]
     apply epi_comp
   exact (ShortComplex.exact_iff_epi _
-    (IsZero.eq_of_tgt (X.isZero₁_H γ₁ γ₂ _ _ α) _ _)).1
+    (IsZero.eq_of_tgt (X.isZero₁_H B _ _ α) _ _)).1
       (X.exact₃ n n' hn' (Arrow₂.mk φ.left D₂.hom))
 
 lemma isIso_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.right)
-    (α : D₂.left ⟶ γ₁ n) (n' : ℤ) (hn' : n + 1 = n') (α' : D₂.left ⟶ γ₁ n') :
+    (α : D₂.left ⟶ B.γ₁ n) (n' : ℤ) (hn' : n + 1 = n') (α' : D₂.left ⟶ B.γ₁ n') :
     IsIso ((X.H n).map φ) := by
-  have := X.mono_H_map₁ γ₁ γ₂ n φ hφ α
-  have := X.epi_H_map₁ γ₁ γ₂ n φ hφ n' hn' α'
+  have := X.mono_H_map₁ B n φ hφ α
+  have := X.epi_H_map₁ B n φ hφ n' hn' α'
   apply isIso_of_mono_of_epi
 
-lemma isZero_overAbutment_obj (n : ℤ) (i : ι) (α : i ⟶ γ₁ n) :
+lemma isZero_overAbutment_obj (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
     IsZero ((X.overAbutment n ⋙ Over.forget _).obj i) := by
   let φ : Arrow.mk (initial.to i) ⟶ Arrow.mk (𝟙 i) :=
     { left := initial.to i
       right := 𝟙 _
       w := by simp }
-  have := X.mono_H_map₁ γ₁ γ₂ n φ (by dsimp ; infer_instance) α
+  have := X.mono_H_map₁ B n φ (by dsimp ; infer_instance) α
   rw [IsZero.iff_id_eq_zero, ← cancel_mono ((X.H n).map φ)]
   exact IsZero.eq_of_tgt (X.isZero_H_of_isIso n _ (by dsimp ; infer_instance)) _ _
 
-lemma filtration_obj_eq_bot (n : ℤ) (i : ι) (α : i ⟶ γ₁ n) :
+lemma filtration_obj_eq_bot (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
     (X.filtration n).obj i = ⊥ := by
   erw [Subobject.mk_eq_bot_iff_zero]
   rw [← cancel_epi (Abelian.factorThruImage _), comp_zero, kernel.lift_ι]
-  exact IsZero.eq_of_src (X.isZero_overAbutment_obj γ₁ γ₂ n i α) _ _
+  exact IsZero.eq_of_src (X.isZero_overAbutment_obj B n i α) _ _
 
-lemma isZero₂_H (n : ℤ) {i j : ι} (g : i ⟶ j) (β : γ₂ n ⟶ i) :
+lemma isZero₂_H (n : ℤ) {i j : ι} (g : i ⟶ j) (β : B.γ₂ n ⟶ i) :
     IsZero ((X.H n).obj (Arrow.mk g)) :=
   hX.isZero₂' n g β
 
 lemma epi_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.left)
-    (β : γ₂ n ⟶ D₁.right) : Epi ((X.H n).map φ) := by
+    (β : B.γ₂ n ⟶ D₁.right) : Epi ((X.H n).map φ) := by
   let D₂' := Arrow.mk (D₁.hom ≫ φ.right)
   let φ' : D₁ ⟶ D₂' :=
     { left := 𝟙 _
@@ -689,11 +702,11 @@ lemma epi_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : 
     rw [hφ, Functor.map_comp]
     apply epi_comp
   exact (ShortComplex.exact_iff_epi _
-    (IsZero.eq_of_tgt (X.isZero₂_H γ₁ γ₂ _ _ β) _ _)).1
+    (IsZero.eq_of_tgt (X.isZero₂_H B _ _ β) _ _)).1
       (X.exact₂ n (Arrow₂.mk D₁.hom φ.right))
 
 lemma mono_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.left)
-    (n' : ℤ) (hn' : n' + 1 = n) (β : γ₂ n' ⟶ D₁.right) :
+    (n' : ℤ) (hn' : n' + 1 = n) (β : B.γ₂ n' ⟶ D₁.right) :
     Mono ((X.H n).map φ) := by
   let D₂' := Arrow.mk (D₁.hom ≫ φ.right)
   let φ' : D₁ ⟶ D₂' :=
@@ -710,30 +723,30 @@ lemma mono_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ :
     rw [hφ, Functor.map_comp]
     apply mono_comp
   exact (ShortComplex.exact_iff_mono _
-    (IsZero.eq_of_src (X.isZero₂_H γ₁ γ₂ _ _ β) _ _)).1
+    (IsZero.eq_of_src (X.isZero₂_H B _ _ β) _ _)).1
       (X.exact₁ n' n hn' (Arrow₂.mk D₁.hom φ.right))
 
 lemma isIso_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ : IsIso φ.left)
-    (β : γ₂ n ⟶ D₁.right)
-    (n' : ℤ) (hn' : n' + 1 = n) (β' : γ₂ n' ⟶ D₁.right) :
+    (β : B.γ₂ n ⟶ D₁.right)
+    (n' : ℤ) (hn' : n' + 1 = n) (β' : B.γ₂ n' ⟶ D₁.right) :
     IsIso ((X.H n).map φ) := by
-  have := X.epi_H_map₂ γ₁ γ₂ n φ hφ β
-  have := X.mono_H_map₂ γ₁ γ₂ n φ hφ n' hn' β'
+  have := X.epi_H_map₂ B n φ hφ β
+  have := X.mono_H_map₂ B n φ hφ n' hn' β'
   apply isIso_of_mono_of_epi
 
-lemma epi_overAbutment_obj_hom (n : ℤ) (i : ι) (β : γ₂ n ⟶ i) :
+lemma epi_overAbutment_obj_hom (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i) :
     Epi ((X.overAbutment n).obj i).hom :=
-  X.epi_H_map₂ γ₁ γ₂ n _ (by dsimp ; infer_instance) β
+  X.epi_H_map₂ B n _ (by dsimp ; infer_instance) β
 
-lemma isIso_overAbutment_obj_hom (n : ℤ) (i : ι) (β : γ₂ n ⟶ i)
-    (n' : ℤ) (hn' : n' + 1 = n) (β' : γ₂ n' ⟶ i) :
+lemma isIso_overAbutment_obj_hom (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i)
+    (n' : ℤ) (hn' : n' + 1 = n) (β' : B.γ₂ n' ⟶ i) :
     IsIso ((X.overAbutment n).obj i).hom :=
-  X.isIso_H_map₂ γ₁ γ₂ n _ (by dsimp ; infer_instance) β n' hn' β'
+  X.isIso_H_map₂ B n _ (by dsimp ; infer_instance) β n' hn' β'
 
-lemma filtration_obj_eq_top (n : ℤ) (i : ι) (β : γ₂ n ⟶ i) :
+lemma filtration_obj_eq_top (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i) :
     (X.filtration n).obj i = ⊤ := by
   erw [← Subobject.isIso_iff_mk_eq_top]
-  have := X.epi_overAbutment_obj_hom γ₁ γ₂ n i β
+  have := X.epi_overAbutment_obj_hom B n i β
   have := epi_of_epi_fac (image.fac ((X.overAbutment n).obj i).hom)
   apply isIso_of_mono_of_epi
 
