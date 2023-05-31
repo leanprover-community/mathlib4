@@ -26,7 +26,7 @@ We show that the norm on `ℍ[ℝ]` agrees with the euclidean norm of its compon
 
 ## Notation
 
-The following notation is available with `open_locale quaternion`:
+The following notation is available with `open_locale Quaternion`:
 
 * `ℍ` : quaternions
 
@@ -183,7 +183,7 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
 set_option linter.uppercaseLean3 false in
 #align quaternion.norm_pi_Lp_equiv_symm_equiv_tuple Quaternion.norm_piLp_equiv_symm_equivTuple
 
-/-- `quaternion_algebra.linear_equiv_tuple` as a `linear_isometry_equiv`. -/
+/-- `QuaternionAlgebra.linearEquivTuple` as a `LinearIsometryEquiv`. -/
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (-1 : ℝ)).trans
