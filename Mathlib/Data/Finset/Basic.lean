@@ -1481,7 +1481,8 @@ theorem right_eq_union_iff_subset {s t : Finset α} : s = t ∪ s ↔ t ⊆ s :=
   rw [← union_eq_right_iff_subset, eq_comm]
 #align finset.right_eq_union_iff_subset Finset.right_eq_union_iff_subset
 
-theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ⊔ u :=
+-- Porting note: replaced `⊔` in RHS
+theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 #align finset.union_congr_left Finset.union_congr_left
 

@@ -277,7 +277,7 @@ instance isCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S N] :
 
 end SMul
 
-/-- The cartesian product of two alternating maps, as a multilinear map. -/
+/-- The cartesian product of two alternating maps, as an alternating map. -/
 @[simps!]
 def prod (f : AlternatingMap R M N ι) (g : AlternatingMap R M P ι) : AlternatingMap R M (N × P) ι :=
   { f.toMultilinearMap.prod g.toMultilinearMap with
