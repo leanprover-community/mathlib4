@@ -103,7 +103,7 @@ lemma rToMin_le (r : ℤ) (hr : r ∈ E.toSet pq) :
 lemma le_rToMin :
     r₀ ≤ E.rToMin pq := (E.rToMin_mem pq).1
 
-lemma d_to_eq_zero (r r' : ℤ) (hr : E.rToMin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
+lemma d_to_eq_zero (r : ℤ) (hr : E.rToMin pq ≤ r) (pq' : ℤ × ℤ)
     (hpq' : pq' + degrees r = pq) :
       E.d r ((E.le_rToMin pq).trans hr) pq' pq hpq' = 0 :=
   (E.rToMin_mem pq).2 r hr pq' hpq'
@@ -121,7 +121,7 @@ lemma rFromMin_le (r : ℤ) (hr : r ∈ E.fromSet pq) :
 lemma le_rFromMin :
     r₀ ≤ E.rFromMin pq := (E.rFromMin_mem pq).1
 
-lemma d_from_eq_zero (r r' : ℤ) (hr : E.rFromMin pq ≤ r) (_ : r + 1 = r') (pq' : ℤ × ℤ)
+lemma d_from_eq_zero (r : ℤ) (hr : E.rFromMin pq ≤ r) (pq' : ℤ × ℤ)
     (hpq' : pq + degrees r = pq') :
       E.d r ((E.le_rFromMin pq).trans hr) pq pq' hpq' = 0 :=
   (E.rFromMin_mem pq).2 r hr pq' hpq'
@@ -144,8 +144,8 @@ noncomputable def isoPageSucc (r r' : ℤ)
     refine' Iso.symm _ ≪≫ E.iso r r' ((E.le_rMin pq).trans hr) hr'
       (pq - degrees r) pq (pq + degrees r) (by simp) rfl
     refine' (ShortComplex.HomologyData.ofZeros _ _ _).left.homologyIso
-    . exact E.d_to_eq_zero pq r r' ((E.rToMin_le_rMin pq).trans hr) hr' _ _
-    . exact E.d_from_eq_zero pq r r' ((E.rFromMin_le_rMin pq).trans hr) hr' _ _
+    . exact E.d_to_eq_zero pq r ((E.rToMin_le_rMin pq).trans hr) _ _
+    . exact E.d_from_eq_zero pq r ((E.rFromMin_le_rMin pq).trans hr) _ _
 
 noncomputable def isoPageOfAddNat (r : ℤ) (hr : E.rMin pq ≤ r) (k : ℕ) :
     E.page r ((E.le_rMin pq).trans hr) pq ≅
@@ -198,17 +198,16 @@ variable (c : ConvergenceStripes)
 
 structure StronglyConvergesToInDegree (n : ℤ) (X : C) where
   hasInfinityPageAt : ∀ (pq : ℤ × ℤ) (_ : c.stripe pq = n), E.HasInfinityPageAt pq
-  filtration : ℤ ⥤ MonoOver X
-  isZero_filtration :
-    ∃ (j : ℤ), ∀ (i : ℤ) (_ : i ≤ j),
-      IsZero ((filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i)
-  isIso_filtration_hom :
-    ∃ (i : ℤ), ∀ (j : ℤ) (_ : i ≤ j), IsIso ((filtration ⋙ MonoOver.forget X).obj j).hom
+  filtration' : ℤ ⥤ MonoOver X
+  exists_isZero_filtration' :
+    ∃ (j : ℤ), IsZero ((filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).obj j)
+  exists_isIso_filtration'_hom :
+    ∃ (i : ℤ), IsIso ((filtration' ⋙ MonoOver.forget X).obj i).hom
   π' (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
-    (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).obj i ⟶ E.pageInfinity pq
+    (filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).obj i ⟶ E.pageInfinity pq
   epi_π' (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) : Epi (π' i pq hpq)
   comp_π' (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
-    (filtration ⋙ MonoOver.forget X ⋙ Over.forget X).map
+    (filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).map
       (homOfLE (show i ≤ j by linarith)) ≫ π' j pq hpq = 0
   exact' (i j : ℤ) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
     (ShortComplex.mk _ _ (comp_π' i j hij pq hpq)).Exact
@@ -218,36 +217,53 @@ namespace StronglyConvergesToInDegree
 variable {E c}
 variable {n : ℤ} {X : C} (h : E.StronglyConvergesToInDegree c n X)
 
-def filtration' : ℤ ⥤ C := h.filtration ⋙ MonoOver.forget X ⋙ Over.forget X
+def filtration : ℤ ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙ Over.forget X
+
+def filtrationι (i : ℤ) : h.filtration.obj i ⟶ X :=
+  ((h.filtration' ⋙ MonoOver.forget X).obj i).hom
+
+instance (i : ℤ) : Mono (h.filtrationι i) := by
+  dsimp [filtrationι]
+  infer_instance
+
+lemma exists_isZero_filtration_obj :
+    ∃ (j : ℤ), IsZero (h.filtration.obj j) := h.exists_isZero_filtration'
+
+lemma exists_isIso_filtrationι :
+    ∃ (i : ℤ), IsIso (h.filtrationι i) := h.exists_isIso_filtration'_hom
+
+@[reassoc (attr := simp)]
+lemma filtration_map_ι {i j : ℤ} (φ : i ⟶ j) :
+    h.filtration.map φ ≫ h.filtrationι j = h.filtrationι i := by
+  simp [filtration, filtrationι]
 
 def π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
-    (h.filtration').obj i ⟶ E.pageInfinity pq := h.π' i pq hpq
+    h.filtration.obj i ⟶ E.pageInfinity pq := h.π' i pq hpq
 
 instance (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
     Epi (h.π i pq hpq) := h.epi_π' i pq hpq
 
 lemma comp_π {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
-    (h.filtration').map φ ≫ h.π j pq hpq = 0 :=
+    h.filtration.map φ ≫ h.π j pq hpq = 0 :=
   h.comp_π' i j hij pq hpq
 
 instance {i j : ℤ} (f : i ⟶ j) :
-    Mono ((h.filtration').map f) :=
-  mono_of_mono_fac (MonoOver.w (h.filtration.map f))
-
+    Mono (h.filtration.map f) :=
+  mono_of_mono_fac (MonoOver.w (h.filtration'.map f))
 
 lemma shortExact {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
     (ShortComplex.mk _ _ (h.comp_π φ hij pq hpq)).ShortExact where
   exact := h.exact' i j hij pq hpq
 
 lemma isIso_filtration_map_succ_iff {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) :
-    IsIso ((h.filtration').map φ) ↔ IsZero (E.pageInfinity (c.position n j)) :=
+    IsIso (h.filtration.map φ) ↔ IsZero (E.pageInfinity (c.position n j)) :=
   (h.shortExact φ hij (c.position n j) rfl).isIso_f_iff
 
 lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
-    IsIso ((h.filtration').map φ) ↔
+    IsIso (h.filtration.map φ) ↔
       ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k)) := by
   let H := fun (d : ℕ) => ∀ {i j : ℤ} (φ : i ⟶ j) (_ : i + d = j),
-    IsIso ((h.filtration').map φ) ↔
+    IsIso (h.filtration.map φ) ↔
       ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))
   suffices ∀ (d : ℕ), H d by
     obtain ⟨d, hd⟩ := Int.eq_add_ofNat_of_le (leOfHom φ)
@@ -269,15 +285,15 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
     subst hij'
     have hij : i ≤ i + d := by linarith
     have hjj' : i + d ≤ i + d + 1 := by linarith
-    have fac : (h.filtration').map φ = (h.filtration').map (homOfLE hij) ≫
-      (h.filtration').map (homOfLE hjj') := by
+    have fac : h.filtration.map φ = h.filtration.map (homOfLE hij) ≫
+      h.filtration.map (homOfLE hjj') := by
         rw [← Functor.map_comp]
         congr
     constructor
     . intro h₁₂
-      have : Epi ((h.filtration').map φ) := IsIso.epi_of_iso ((h.filtration').map φ)
+      have : Epi (h.filtration.map φ) := IsIso.epi_of_iso (h.filtration.map φ)
       have := epi_of_epi_fac fac.symm
-      have h₁ : IsIso ((h.filtration').map (homOfLE hjj')) := isIso_of_mono_of_epi _
+      have h₁ : IsIso (h.filtration.map (homOfLE hjj')) := isIso_of_mono_of_epi _
       have h₂ := IsIso.of_isIso_fac_right fac.symm
       rw [h.isIso_filtration_map_succ_iff _ rfl] at h₁
       rw [hd _ rfl] at h₂
@@ -287,15 +303,93 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
       . obtain rfl : k = i + d + 1 := by linarith
         exact h₁
     . intro hij'
-      have : IsIso ((h.filtration').map (homOfLE hij)) := by
+      have : IsIso (h.filtration.map (homOfLE hij)) := by
         rw [hd _ rfl]
         intro k hk hk'
         exact hij' _ hk (by linarith)
-      have : IsIso ((h.filtration').map (homOfLE hjj')) := by
+      have : IsIso (h.filtration.map (homOfLE hjj')) := by
         rw [h.isIso_filtration_map_succ_iff _ rfl]
         exact hij' _ (by linarith) (by linarith)
       rw [fac]
       infer_instance
+
+lemma isZero_filtration_obj_iff_of_le (i j : ℤ) (hij : i ≤ j):
+    IsZero (h.filtration.obj j) ↔
+      (IsZero (h.filtration.obj i) ∧
+        ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))) := by
+  rw [← h.isIso_filtration_map_iff (homOfLE hij)]
+  constructor
+  . intro hj
+    have : IsZero (h.filtration.obj i) := by
+      simp only [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map (homOfLE hij))]
+      exact hj.eq_of_tgt _ _
+    exact ⟨this, ⟨0, this.eq_of_src _ _, hj.eq_of_src _ _⟩⟩
+  . rintro ⟨hi, _⟩
+    exact IsZero.of_iso hi (asIso (h.filtration.map (homOfLE hij))).symm
+
+lemma isZero_filtration_obj_iff (j : ℤ) :
+    IsZero (h.filtration.obj j) ↔
+      ∀ (k : ℤ) (_ : k ≤ j), IsZero (E.pageInfinity (c.position n k)) := by
+  obtain ⟨i, hi⟩ := h.exists_isZero_filtration_obj
+  have : ∀ (k : ℤ) (_ : k ≤ i), IsZero (E.pageInfinity (c.position n k)) := by
+    intro k hk
+    rw [h.isZero_filtration_obj_iff_of_le (k-1) i (by linarith)] at hi
+    exact hi.2 k (by linarith) hk
+  by_cases hij : j ≤ i
+  . rw [h.isZero_filtration_obj_iff_of_le j i (by linarith)] at hi
+    simp only [hi.1, true_iff]
+    intro k hk
+    exact this _ (by linarith)
+  . simp only [not_le] at hij
+    simp only [h.isZero_filtration_obj_iff_of_le i j (by linarith), hi, true_and]
+    constructor
+    . intro H k hk
+      by_cases hik : i < k
+      . exact H k hik hk
+      . simp only [not_lt] at hik
+        exact this k hik
+    . tauto
+
+lemma isIso_filtrationι_iff_of_le (i j : ℤ) (hij : i ≤ j):
+    IsIso (h.filtrationι i) ↔
+      (IsIso (h.filtrationι j) ∧
+        ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))) := by
+  rw [← h.isIso_filtration_map_iff (homOfLE hij)]
+  constructor
+  . intro hi
+    have fac := (h.filtration_map_ι (homOfLE hij))
+    have := epi_of_epi_fac fac
+    have : IsIso (h.filtrationι j) := isIso_of_mono_of_epi _
+    simp only [this, true_and]
+    exact IsIso.of_isIso_fac_right fac
+  . rintro ⟨_, _⟩
+    rw [← h.filtration_map_ι (homOfLE hij)]
+    infer_instance
+
+lemma isIso_filtrationι_iff (j : ℤ) :
+    IsIso (h.filtrationι j) ↔
+      ∀ (k : ℤ) (_ : j < k), IsZero (E.pageInfinity (c.position n k)) := by
+  obtain ⟨i, hi⟩ := h.exists_isIso_filtrationι
+  have : ∀ (k : ℤ) (_ : i < k), IsZero (E.pageInfinity (c.position n k)) := by
+    intro k hk
+    rw [h.isIso_filtrationι_iff_of_le i k (by linarith)] at hi
+    exact hi.2 k hk (by rfl)
+  by_cases hij : i ≤ j
+  . rw [h.isIso_filtrationι_iff_of_le i j (by linarith)] at hi
+    simp only [hi.1, true_iff]
+    intro k hk
+    exact this _ (by linarith)
+  . simp only [not_le] at hij
+    simp only [h.isIso_filtrationι_iff_of_le j i (by linarith), hi, true_and]
+    constructor
+    . intro H k hk
+      by_cases hik : i < k
+      . exact this _ hik
+      . simp only [not_lt] at hik
+        exact H k hk hik
+    . tauto
+
+-- TODO: Cartan-Eilenberg, prop 5.6, p. 326
 
 end StronglyConvergesToInDegree
 
