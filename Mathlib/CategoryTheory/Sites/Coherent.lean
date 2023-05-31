@@ -42,6 +42,7 @@ class Precoherent : Prop where
       EffectiveEpiFamily X₂ π₂ ∧
       ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))),
       ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
+
 /--
 The coherent coverage on a precoherent category `C`.
 -/
@@ -67,14 +68,11 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
       EffectiveEpiFamily X π → (Presieve.ofArrows X π).IsSheafFor P) := by
   constructor
   · intro hP B α _ X π h
-    dsimp only [CoherentTopology] at hP
-    rw [Presieve.isSheaf_coverage] at hP
+    simp only [CoherentTopology, Presieve.isSheaf_coverage] at hP
     apply hP
-    dsimp only [CoherentCoverage]
     refine ⟨α, inferInstance, X, π, rfl, h⟩
   · intro h
-    dsimp only [CoherentTopology]
-    rw [Presieve.isSheaf_coverage]
+    simp only [CoherentTopology, Presieve.isSheaf_coverage]
     rintro B S ⟨α, _, X, π, rfl, hS⟩
     exact h _ _ _ _ hS
 
