@@ -255,9 +255,9 @@ theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ
 #align mul_char.coe_equiv_to_unit_hom MulChar.coe_equivToUnitHom
 
 @[simp]
-theorem equiv_unit_hom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
+theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
-#align mul_char.equiv_unit_hom_symm_coe MulChar.equiv_unit_hom_symm_coe
+#align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
 /-!
 ### Commutative group structure on multiplicative characters
@@ -325,8 +325,7 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
-  { MonoidWithZero.inverse.toMonoidHom.comp
-      χ.toMonoidHom with
+  { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
     toFun := fun a => MonoidWithZero.inverse (χ a)
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 #align mul_char.inv MulChar.inv
