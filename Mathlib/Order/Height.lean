@@ -190,8 +190,9 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
 theorem chainHeight_le_chainHeight_TFAE (s : Set α) (t : Set β) :
     TFAE [s.chainHeight ≤ t.chainHeight, ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l = length l',
       ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l ≤ length l'] := by
-  tfae_have 1 ↔ 3; · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
-  tfae_have 2 ↔ 3;
+  tfae_have 1 ↔ 3
+  · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
+  tfae_have 2 ↔ 3
   · refine' forall₂_congr fun l hl ↦ _
     simp_rw [← (le_chainHeight_TFAE t l.length).out 1 2, eq_comm]
   tfae_finish

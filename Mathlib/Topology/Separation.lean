@@ -466,8 +466,10 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
       ∀ ⦃x y : α⦄, x ≠ y → Disjoint (𝓝 x) (pure y),
       ∀ ⦃x y : α⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
       ∀ ⦃x y : α⦄, x ⤳ y → x = y] := by
-  tfae_have 1 ↔ 2; exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 2 ↔ 3; · simp only [isOpen_compl_iff]
+  tfae_have 1 ↔ 2
+  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 2 ↔ 3
+  · simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3
   · refine' forall_swap.trans _
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
@@ -478,13 +480,14 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
       and_left_comm]
   tfae_have 5 ↔ 8
   · simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9; exact forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 8 ↔ 9
+  · exact forall_swap.trans (by simp only [disjoint_comm, ne_comm])
   tfae_have 1 → 4
   · simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
     exacts[isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
   tfae_have 4 → 2
-  exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
+  · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
   tfae_have 2 ↔ 10
   · simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
@@ -1478,7 +1481,8 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
-  tfae_have 5 → 6; exact fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
+  tfae_have 5 → 6
+  · exact fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have 6 → 4
   · intro H a s hs
     rw [← H] at hs
@@ -1493,7 +1497,8 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_have 2 → 3
   · refine' fun H a s => ⟨fun hd has => mem_closure_iff_nhds_neBot.mp has _, H s a⟩
     exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
-  tfae_have 3 → 1; exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
+  tfae_have 3 → 1
+  · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
