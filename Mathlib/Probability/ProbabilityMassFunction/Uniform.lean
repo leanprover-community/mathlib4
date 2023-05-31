@@ -162,13 +162,12 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : Pmf α :=
     ENNReal.summable.hasSum_iff.2
       (calc
         (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
-          = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, s.count b := by sorry
-          -- simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
+          = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by
+            simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
         _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b in s.toFinset, (s.count b : ℝ≥0∞) :=
-          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x) sorry
-            -- (tsum_eq_sum fun a ha => by sorry
-              -- Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset])
-            )
+          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x)
+            (tsum_eq_sum fun a ha =>
+              Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
             ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
@@ -203,16 +202,16 @@ variable (t : Set α)
 
 @[simp]
 theorem toOuterMeasure_ofMultiset_apply :
-    (ofMultiset s hs).toOuterMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / (Multiset.card s) := by
+    (ofMultiset s hs).toOuterMeasure t =
+      (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
-  sorry
-  -- refine' tsum_congr fun x => _
-  -- by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
+  refine' tsum_congr fun x => _
+  by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 #align pmf.to_outer_measure_of_multiset_apply Pmf.toOuterMeasure_ofMultiset_apply
 
 @[simp]
 theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x) / (Multiset.card s) :=
+    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 #align pmf.to_measure_of_multiset_apply Pmf.toMeasure_ofMultiset_apply
 
