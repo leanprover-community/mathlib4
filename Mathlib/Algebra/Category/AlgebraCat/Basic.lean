@@ -53,19 +53,19 @@ instance : Category (AlgebraCat.{v} R) where
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun {R S} f => (f : R → S) }
-  forget_faithful := { }
+      map := fun f => f.toFun }
+  forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
 
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v}
     where forget₂ :=
     { obj := fun A => RingCat.of A
-      map := fun A₁ A₂ f => AlgHom.toRingHom f }
+      map := fun f => AlgHom.toRingHom f }
 #align Algebra.has_forget_to_Ring AlgebraCat.hasForgetToRing
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)
     where forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun M₁ M₂ f => AlgHom.toLinearMap f }
+      map := fun f => AlgHom.toLinearMap f }
 #align Algebra.has_forget_to_Module AlgebraCat.hasForgetToModule
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
@@ -172,13 +172,13 @@ namespace CategoryTheory.Iso
 /-- Build a `alg_equiv` from an isomorphism in the category `Algebra R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
-  toFun := i.hom
-  invFun := i.inv
-  left_inv := by tidy
-  right_inv := by tidy
-  map_add' := by tidy
-  map_mul' := by tidy
-  commutes' := by tidy
+  toFun := i.hom.toFun
+  invFun := i.inv.toFun
+  left_inv := by simp
+  right_inv := by simp
+  map_add' := by simp
+  map_mul' := by simp
+  commutes' := by simp
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 
 end CategoryTheory.Iso
@@ -196,9 +196,9 @@ instance (X : Type u) [Ring X] [Algebra R X] : Coe (Subalgebra R X) (AlgebraCat 
   ⟨fun N => AlgebraCat.of R N⟩
 
 instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R))
-    where reflects X Y f _ := by
-    skip
-    let i := as_iso ((forget (AlgebraCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f, i.to_equiv with }
-    exact ⟨(is_iso.of_iso e.to_Algebra_iso).1⟩
+    where reflects {X Y} f _ := by
+    { skip
+      let i := asIso ((forget (AlgebraCat.{u} R)).map f)
+      let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
+      exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩ }
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
