@@ -44,6 +44,7 @@ For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ --
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 noncomputable section
 
