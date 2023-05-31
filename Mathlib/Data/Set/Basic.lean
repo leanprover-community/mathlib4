@@ -65,8 +65,16 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
-/-! ### Set coercion to a type -/
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Union.union
+compile_def% Inter.inter
+compile_def% SDiff.sdiff
+compile_def% HasCompl.compl
+compile_def% EmptyCollection.emptyCollection
+compile_def% Insert.insert
+compile_def% Singleton.singleton
 
+/-! ### Set coercion to a type -/
 
 open Function
 
@@ -225,8 +233,7 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
--- Porting note: remove `noncomputable` later
-noncomputable instance : Inhabited (Set α) :=
+instance : Inhabited (Set α) :=
   ⟨∅⟩
 
 attribute [ext] Set.ext
