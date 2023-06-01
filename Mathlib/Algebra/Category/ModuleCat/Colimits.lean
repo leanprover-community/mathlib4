@@ -232,8 +232,8 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_smul' := by intros ; apply Quot.sound; apply relation.smul
-  map_add' := by intros <;> apply Quot.sound <;> apply relation.add
+  map_smul' := by intros <;> apply Quot.sound <;> apply Relation.smul
+  map_add' := by intros <;> apply Quot.sound <;> apply Relation.add
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
 
 @[simp]
@@ -246,7 +246,8 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
-    (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by rw [← cocone_naturality F f];
+    (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
+  rw [← cocone_naturality F f]
   rfl
 #align Module.colimits.cocone_naturality_components ModuleCat.Colimits.cocone_naturality_components
 
@@ -330,6 +331,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
+  fac := sorry -- Workaround https://github.com/JLimperg/aesop/issues/57 Remove after `uniq` done.
   desc s := descMorphism F s
   uniq s m w := by
     ext ⟨⟨x_j, x_x⟩⟩
