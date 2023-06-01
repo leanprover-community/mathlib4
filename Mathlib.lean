@@ -552,6 +552,7 @@ import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Analysis.NormedSpace.FiniteDimension
