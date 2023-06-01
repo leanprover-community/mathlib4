@@ -156,15 +156,12 @@ variable {n : ℕ}
 
 open OrthonormalBasis
 
--- porting note: TODO: derive this
-variable [FiniteDimensional ℝ E]
-
 /-- An orthonormal basis, indexed by `Fin n`, with the given orientation. -/
 protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orientation ℝ E (Fin n)) :
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI := finiteDimensional_of_finrank (h.symm ▸ hn : 0 < finrank ℝ E)
-  exact ((stdOrthonormalBasis _ _).reindex <| finCongr h).adjustToOrientation x
+  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
 #align orientation.fin_orthonormal_basis Orientation.finOrthonormalBasis
 
 /-- `Orientation.finOrthonormalBasis` gives a basis with the required orientation. -/
@@ -343,7 +340,6 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
 
 -- porting note: TODO: added for the theorem below...
 theorem volumeForm_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-    [FiniteDimensional ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
   cases' n with n
