@@ -18,21 +18,21 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 ## Main definitions
 
-* `orthonormal_basis.adjust_to_orientation` takes an orthonormal basis and an orientation, and
+* `OrthonormalBasis.adjustToOrientation` takes an orthonormal basis and an orientation, and
   returns an orthonormal basis with that orientation: either the original orthonormal basis, or one
   constructed by negating a single (arbitrary) basis vector.
-* `orientation.fin_orthonormal_basis` is an orthonormal basis, indexed by `fin n`, with the given
+* `Orientation.finOrthonormalBasis` is an orthonormal basis, indexed by `Fin n`, with the given
   orientation.
-* `orientation.volume_form` is a nonvanishing top-dimensional alternating form on an oriented real
+* `Orientation.volumeForm` is a nonvanishing top-dimensional alternating form on an oriented real
   inner product space, uniquely defined by compatibility with the orientation and inner product
   structure.
 
 ## Main theorems
 
-* `orientation.volume_form_apply_le` states that the result of applying the volume form to a set of
+* `Orientation.volumeForm_apply_le` states that the result of applying the volume form to a set of
   `n` vectors, where `n` is the dimension the inner product space, is bounded by the product of the
   lengths of the vectors.
-* `orientation.abs_volume_form_apply_of_pairwise_orthogonal` states that the result of applying the
+* `Orientation.abs_volumeForm_apply_of_pairwise_orthogonal` states that the result of applying the
   volume form to a set of `n` orthogonal vectors, where `n` is the dimension the inner product
   space, is equal up to sign to the product of the lengths of the vectors.
 
@@ -101,7 +101,7 @@ theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.
 
 section AdjustToOrientation
 
-/-- `orthonormal_basis.adjust_to_orientation`, applied to an orthonormal basis, preserves the
+/-- `OrthonormalBasis.adjustToOrientation`, applied to an orthonormal basis, preserves the
 property of orthonormality. -/
 theorem orthonormal_adjustToOrientation : Orthonormal ℝ (e.toBasis.adjustToOrientation x) := by
   apply e.orthonormal.orthonormal_of_forall_eq_or_eq_neg
@@ -159,7 +159,7 @@ open OrthonormalBasis
 -- porting note: TODO: derive this
 variable [FiniteDimensional ℝ E]
 
-/-- An orthonormal basis, indexed by `fin n`, with the given orientation. -/
+/-- An orthonormal basis, indexed by `Fin n`, with the given orientation. -/
 protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orientation ℝ E (Fin n)) :
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
@@ -167,7 +167,7 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
   exact ((stdOrthonormalBasis _ _).reindex <| finCongr h).adjustToOrientation x
 #align orientation.fin_orthonormal_basis Orientation.finOrthonormalBasis
 
-/-- `orientation.fin_orthonormal_basis` gives a basis with the required orientation. -/
+/-- `Orientation.finOrthonormalBasis` gives a basis with the required orientation. -/
 @[simp]
 theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
