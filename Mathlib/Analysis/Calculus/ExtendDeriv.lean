@@ -196,6 +196,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     have : Tendsto g (𝓝[>] x) (𝓝 (g x)) := tendsto_inf_left hg
     apply this.congr' _
     apply mem_of_superset self_mem_nhdsWithin fun y hy => _
+    intros y hy
     exact (f_diff y (ne_of_gt hy)).deriv.symm
   have B : HasDerivWithinAt f (g x) (Iic x) x := by
     have diff : DifferentiableOn ℝ f (Iio x) := fun y hy =>
@@ -208,6 +209,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     have : Tendsto g (𝓝[<] x) (𝓝 (g x)) := tendsto_inf_left hg
     apply this.congr' _
     apply mem_of_superset self_mem_nhdsWithin fun y hy => _
+    intros y hy
     exact (f_diff y (ne_of_lt hy)).deriv.symm
   simpa using B.union A
 #align has_deriv_at_of_has_deriv_at_of_ne hasDerivAt_of_hasDerivAt_of_ne
