@@ -365,7 +365,9 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_denseInducing Completion.denseInducing_coe
 #align valued.valued_completion Valued.valuedCompletion
 
-@[simp, norm_cast]
+-- Porting note: removed @[norm_cast] attribute due to error:
+-- norm_cast: badly shaped lemma, rhs can't start with coe
+@[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
 #align valued.valued_completion_apply Valued.valuedCompletion_apply
