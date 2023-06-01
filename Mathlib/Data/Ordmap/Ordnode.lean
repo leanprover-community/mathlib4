@@ -970,7 +970,7 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     insertWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 def insertWith (f : α → α) (x : α) : Ordnode α → Ordnode α
   | nil => ι x
-  | _t@(node sz l y r) =>
+  | node sz l y r =>
     match cmpLE x y with
     | Ordering.lt => balanceL (insertWith f x l) y r
     | Ordering.eq => node sz l (f y) r
