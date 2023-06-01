@@ -189,6 +189,8 @@ where
 argument indices. -/
 def fnArgMatcher (matchf : Matcher) (matchers : Array (Nat × Matcher)) : Matcher := fun s => do
   let mut s := s
+  let nargs := (← getExpr).getAppNumArgs
+  guard <| matchers.all (fun (i, _) => i < nargs)
   s ← withNaryFn <| matchf s
   for (i, matcher) in matchers do
     s ← withNaryArg i <| matcher s
@@ -489,7 +491,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       | .foldr => result ← `(let $id := MatchState.getFoldArray s $(quote name); $result)
     if hasBindersItem then
       result ← `(`(extBinders| $$(MatchState.scopeState s)*) >>= fun binders => $result)
-    let r ← `($matcher MatchState.empty >>= fun s => $result)
+    let r ← `(whenPPOption getPPNotation <| $matcher MatchState.empty >>= fun s => $result)
     elabCommand <| ← `(command| def $(Lean.mkIdent delabName) : Delab := $r)
     trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
     let delabKeys := ms.foldr (·.1 ++ ·) []
