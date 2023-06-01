@@ -714,7 +714,7 @@ section NormedSpace
 
 variable {𝕜 : Type _} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
+instance normedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
 
 end NormedSpace
@@ -975,7 +975,7 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 variable {𝕜 B}
 
 instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
-  { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
+  { (lpInftySubalgebra 𝕜 B).algebra, (lp.normedSpace : NormedSpace 𝕜 (lp B ∞)) with }
 #align lp.infty_normed_algebra lp.inftyNormedAlgebra
 
 end Algebra
