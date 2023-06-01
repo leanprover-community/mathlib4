@@ -20,7 +20,7 @@ as well as braided functors.
 
 ## Implementation note
 
-We make `braided_monoidal_category` another typeclass, but then have `symmetric_monoidal_category`
+We make `BraidedMonoidalCategory` another typeclass, but then have `SymmetricMonoidalCategory`
 extend this. The rationale is that we are not carrying any additional data,
 just requiring a property.
 
@@ -303,7 +303,9 @@ structure BraidedFunctor extends MonoidalFunctor C D where
 
 attribute [simp] BraidedFunctor.braided
 
-/-- A braided category with a braided functor to a symmetric category is itself symmetric. -/
+/--
+A braided category with a faithful braided functor to a symmetric category is itself symmetric.
+-/
 def symmetricCategoryOfFaithful {C D : Type _} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : BraidedFunctor C D)
     [Faithful F.toFunctor] : SymmetricCategory C
@@ -346,7 +348,7 @@ theorem comp_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ 
   rfl
 #align category_theory.braided_functor.comp_to_nat_trans CategoryTheory.BraidedFunctor.comp_toNatTrans
 
-/-- Interpret a natural isomorphism of the underlyling monoidal functors as an
+/-- Interpret a natural isomorphism of the underlying monoidal functors as an
 isomorphism of the braided monoidal functors.
 -/
 @[simps]
