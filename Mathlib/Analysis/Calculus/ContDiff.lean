@@ -363,19 +363,18 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFTaylorSeriesUpT
   constructor
   · intro x hx
     simp only [(hf.zero_eq (g x) hx).symm, Function.comp_apply]
-    change (p (g x) 0 fun i : Fin 0 => g 0) = p (g x) 0 0
+    change (p (g x) 0 fun _ : Fin 0 => g 0) = p (g x) 0 0
     rw [ContinuousLinearMap.map_zero]
     rfl
   · intro m hm x hx
-    convert(hA m).HasFDerivAt.comp_hasFDerivWithinAt x
-        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithin_at (subset.refl _))
+    convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
+        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
     ext (y v)
     change p (g x) (Nat.succ m) (g ∘ cons y v) = p (g x) m.succ (cons (g y) (g ∘ v))
     rw [comp_cons]
   · intro m hm
-    exact
-      (hA m).continuous.comp_continuousOn
-        ((hf.cont m hm).comp g.continuous.continuousOn (subset.refl _))
+    exact (hA m).continuous.comp_continuousOn <| (hf.cont m hm).comp g.continuous.continuousOn <|
+      Subset.refl _
 #align has_ftaylor_series_up_to_on.comp_continuous_linear_map HasFTaylorSeriesUpToOn.compContinuousLinearMap
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions at a point on
@@ -384,9 +383,9 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     (hf : ContDiffWithinAt 𝕜 n f s (g x)) : ContDiffWithinAt 𝕜 n (f ∘ g) (g ⁻¹' s) x := by
   intro m hm
   rcases hf m hm with ⟨u, hu, p, hp⟩
-  refine' ⟨g ⁻¹' u, _, _, hp.comp_continuous_linear_map g⟩
-  apply ContinuousWithinAt.preimage_mem_nhds_within'
-  · exact g.continuous.continuous_within_at
+  refine' ⟨g ⁻¹' u, _, _, hp.compContinuousLinearMap g⟩
+  apply ContinuousWithinAt.preimage_mem_nhdsWithin'
+  · exact g.continuous.continuousWithinAt
   · apply nhdsWithin_mono (g x) _ hu
     rw [image_insert_eq]
     exact insert_subset_insert (image_preimage_subset g s)
@@ -394,7 +393,7 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions on domains. -/
 theorem ContDiffOn.comp_continuousLinearMap (hf : ContDiffOn 𝕜 n f s) (g : G →L[𝕜] E) :
-    ContDiffOn 𝕜 n (f ∘ g) (g ⁻¹' s) := fun x hx => (hf (g x) hx).compContinuousLinearMap g
+    ContDiffOn 𝕜 n (f ∘ g) (g ⁻¹' s) := fun x hx => (hf (g x) hx).comp_continuousLinearMap g
 #align cont_diff_on.comp_continuous_linear_map ContDiffOn.comp_continuousLinearMap
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions. -/
@@ -524,7 +523,7 @@ theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert(L m).HasFDerivAt.comp_hasFDerivWithinAt x
+    convert(L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).Prod (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).Prod (hg.cont m hm))
@@ -614,9 +613,9 @@ private theorem cont_diff_on.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu
     show w ∈ 𝓝[s] x
     · apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
-      apply ContinuousWithinAt.preimage_mem_nhds_within'
+      apply ContinuousWithinAt.preimage_mem_nhdsWithin'
       · rw [← continuousWithinAt_inter' hu]
-        exact (hf' x xu).DifferentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
+        exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
       · apply nhdsWithin_mono _ _ hv
         exact subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
     show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
@@ -694,7 +693,7 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
     ⟨(mem_of_mem_nhdsWithin (mem_insert (f x) _) u_nhd : _),
       mem_of_mem_nhdsWithin (mem_insert x s) v_nhd⟩
   have : f ⁻¹' u ∈ 𝓝[insert x s] x := by
-    apply hf.continuous_within_at.insert_self.preimage_mem_nhds_within'
+    apply hf.continuousWithinAt.insert_self.preimage_mem_nhdsWithin'
     apply nhdsWithin_mono _ _ u_nhd
     rw [image_insert_eq]
     exact insert_subset_insert (image_subset_iff.mpr st)
@@ -975,19 +974,19 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     refine' nhdsWithin_mono _ _ (nhdsWithin_prod self_mem_nhdsWithin hgt)
     simp_rw [image_subset_iff, mk_preimage_prod, preimage_id', subset_inter_iff, subset_insert,
       true_and_iff, subset_preimage_image]
-  obtain ⟨v, hv, hvs, f', hvf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithin_at'.mp hf
+  obtain ⟨v, hv, hvs, f', hvf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithinAt'.mp hf
   refine'
     ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, _, inter_subset_right _ _, fun z =>
       (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), _, _⟩
   · refine' inter_mem _ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
-    refine' mem_nhds_within_insert.mpr ⟨this, _⟩
-    refine' (continuous_within_at_id.prod hg.continuous_within_at).preimage_mem_nhds_within' _
+    refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
+    refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
     rw [← nhdsWithin_le_iff] at hst hv⊢
     refine' (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
-    refine' this.comp _ (hasFDerivAt_prod_mk_right _ _).HasFDerivWithinAt _
+    refine' this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt _
     exact maps_to'.mpr (image_prod_mk_subset_prod_right hz.2)
   ·
     exact
@@ -1166,7 +1165,7 @@ theorem hasFTaylorSeriesUpToOn_pi :
     exact (h i).zero_eq x hx
   · intro m hm x hx
     have := hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
-    convert(L m).HasFDerivAt.comp_hasFDerivWithinAt x this
+    convert(L m).hasFDerivAt.comp_hasFDerivWithinAt x this
   · intro m hm
     have := continuousOn_pi.2 fun i => (h i).cont m hm
     convert(L m).continuous.comp_continuousOn this
@@ -1521,7 +1520,7 @@ theorem ContDiffWithinAt.pow {f : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s 
   (contDiff_id.pow m).comp_contDiffWithinAt hf
 #align cont_diff_within_at.pow ContDiffWithinAt.pow
 
-theorem ContDiffAt.pow {f : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (m : ℕ) :
+nonrec theorem ContDiffAt.pow {f : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (m : ℕ) :
     ContDiffAt 𝕜 n (fun y => f y ^ m) x :=
   hf.pow m
 #align cont_diff_at.pow ContDiffAt.pow
@@ -2047,26 +2046,26 @@ theorem ContDiffAt.hasStrictDerivAt' {f : 𝕂 → F'} {f' : F'} {x : 𝕂} (hf 
 is also a strict derivative. -/
 theorem ContDiffAt.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 n f x) (hn : 1 ≤ n) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
-  hf.has_strict_fderivAt' (hf.DifferentiableAt hn).HasFDerivAt hn
+  hf.has_strict_fderivAt' (hf.differentiableAt hn).hasFDerivAt hn
 #align cont_diff_at.has_strict_fderiv_at ContDiffAt.hasStrictFDerivAt
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
 is also a strict derivative. -/
 theorem ContDiffAt.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x) (hn : 1 ≤ n) :
     HasStrictDerivAt f (deriv f x) x :=
-  (hf.HasStrictFDerivAt hn).HasStrictDerivAt
+  (hf.hasStrictFDerivAt hn).hasStrictDerivAt
 #align cont_diff_at.has_strict_deriv_at ContDiffAt.hasStrictDerivAt
 
 /-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
 theorem ContDiff.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
-  hf.contDiffAt.HasStrictFDerivAt hn
+  hf.contDiffAt.hasStrictFDerivAt hn
 #align cont_diff.has_strict_fderiv_at ContDiff.hasStrictFDerivAt
 
 /-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
 theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
     HasStrictDerivAt f (deriv f x) x :=
-  hf.contDiffAt.HasStrictDerivAt hn
+  hf.contDiffAt.hasStrictDerivAt hn
 #align cont_diff.has_strict_deriv_at ContDiff.hasStrictDerivAt
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
@@ -2105,7 +2104,7 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGro
     (hf : ContDiffWithinAt ℝ 1 f s x) (hs : Convex ℝ s) :
     ∃ K : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   rcases hf 1 le_rfl with ⟨t, hst, p, hp⟩
-  rcases metric.mem_nhds_within_iff.mp hst with ⟨ε, ε0, hε⟩
+  rcases metric.mem_nhdsWithin_iff.mp hst with ⟨ε, ε0, hε⟩
   replace hp : HasFTaylorSeriesUpToOn 1 f p (Metric.ball x ε ∩ insert x s) := hp.mono hε
   clear hst hε t
   rw [← insert_eq_of_mem (Metric.mem_ball_self ε0), ← insert_inter_distrib] at hp
@@ -2119,13 +2118,13 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGro
 theorem ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt {f : E' → F'} {x : E'}
     (hf : ContDiffAt 𝕂 1 f x) (K : ℝ≥0) (hK : ‖fderiv 𝕂 f x‖₊ < K) :
     ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
-  (hf.HasStrictFDerivAt le_rfl).exists_lipschitzOnWith_of_nnnorm_lt K hK
+  (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith_of_nnnorm_lt K hK
 #align cont_diff_at.exists_lipschitz_on_with_of_nnnorm_lt ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt
 
 /-- If `f` is `C^1` at `x`, then `f` is Lipschitz in a neighborhood of `x`. -/
 theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 1 f x) :
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
-  (hf.HasStrictFDerivAt le_rfl).exists_lipschitzOnWith
+  (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 #align cont_diff_at.exists_lipschitz_on_with ContDiffAt.exists_lipschitzOnWith
 
 end Real
@@ -2359,7 +2358,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
               ∑ i : ℕ in Finset.range (n + 1),
                 n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
                   ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 g s) s x‖ :=
-          IH _ (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderiv_within hs In)
+          IH _ (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
         _ ≤
             ‖B‖ *
               ∑ i : ℕ in Finset.range (n + 1),
@@ -2385,7 +2384,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
               ∑ i : ℕ in Finset.range (n + 1),
                 n.choose i * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 f s) s x‖ *
                   ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
-          IH _ (hf.fderiv_within hs In) (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
+          IH _ (hf.fderivWithin hs In) (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
         _ ≤
             ‖B‖ *
               ∑ i : ℕ in Finset.range (n + 1),
@@ -2409,14 +2408,14 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       have L : (1 : ℕ∞) ≤ n.succ := by
         simpa only [ENat.coe_one, Nat.one_le_cast] using Nat.succ_pos n
       exact
-        B.fderiv_within_of_bilinear (hf.differentiableOn L y hy) (hg.differentiableOn L y hy)
+        B.fderivWithin_of_bilinear (hf.differentiableOn L y hy) (hg.differentiableOn L y hy)
           (hs y hy)
     rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, LinearIsometryEquiv.norm_map, J]
     have A : ContDiffOn 𝕜 n (fun y => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s :=
       (B.precompR Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂
-        (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderiv_within hs In)
+        (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
-      (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂ (hf.fderiv_within hs In)
+      (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂ (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
     rw [iteratedFDerivWithin_add_apply' A A' hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq _))
@@ -2661,7 +2660,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
     · intro j hj h'j
       exact hD j hj (h'j.trans (hi.trans n.le_succ))
-    · apply hg.fderiv_within ht
+    · apply hg.fderivWithin ht
       simp only [Nat.cast_succ]
       exact add_le_add_right (Nat.cast_le.2 hi) _
     · intro j hj
@@ -2706,10 +2705,10 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
             ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ := by
       have A : ContDiffOn 𝕜 n (fderivWithin 𝕜 g t ∘ f) s := by
         apply ContDiffOn.comp _ (hf.of_le M.le) hst
-        apply hg.fderiv_within ht
+        apply hg.fderivWithin ht
         simp only [Nat.cast_succ, le_refl]
       have B : ContDiffOn 𝕜 n (fderivWithin 𝕜 f s) s := by
-        apply hf.fderiv_within hs
+        apply hf.fderivWithin hs
         simp only [Nat.cast_succ, le_refl]
       exact
         (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one A B
