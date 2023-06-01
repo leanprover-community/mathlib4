@@ -9,7 +9,7 @@ Authors: Heather Macbeth
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.NormedSpace.LpSpace
+import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
