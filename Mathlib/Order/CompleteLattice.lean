@@ -110,22 +110,8 @@ macro_rules
 /-- Indexed supremum. -/
 notation3 "⨆ "(...)", "r:(scoped f => iSup f) => r
 
-/-- Unexpander for the indexed supremum notation.-/
-@[app_unexpander iSup]
-def iSup.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident ↦ $p) => `(⨆ $x:ident, $p)
-  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨆ ($x:ident : $ty:term), $p)
-  | _ => throw ()
-
 /-- Indexed infimum. -/
 notation3 "⨅ "(...)", "r:(scoped f => iInf f) => r
-
-/-- Unexpander for the indexed infimum notation.-/
-@[app_unexpander iInf]
-def iInf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident ↦ $p) => `(⨅ $x:ident, $p)
-  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨅ ($x:ident : $ty:term), $p)
-  | _ => throw ()
 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
