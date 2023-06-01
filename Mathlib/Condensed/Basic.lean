@@ -33,6 +33,10 @@ open CategoryTheory
 
 universe u
 
+/--
+`Condensed.{u} C` is the category of condensed objects in a category `C`, which are
+defined as sheaves on `CompHaus.{u}` with respect to the coherent Grothendieck topology.
+-/
 def Condensed (C : Type _) [Category C] :=
   Sheaf (coherentTopology CompHaus.{u}) C
 
