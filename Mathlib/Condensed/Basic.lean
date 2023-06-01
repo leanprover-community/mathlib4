@@ -31,14 +31,10 @@ open CategoryTheory Limits
 
 open CategoryTheory
 
-namespace Condensed
-
 universe u
 
 def Condensed (C : Type _) [Category C] :=
-  Sheaf (CoherentTopology CompHaus.{u}) C
+  Sheaf (coherentTopology CompHaus.{u}) C
 
 instance {C : Type _} [Category C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
-
-end Condensed
