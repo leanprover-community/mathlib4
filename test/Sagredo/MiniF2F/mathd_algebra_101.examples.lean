@@ -4,6 +4,28 @@ import Mathlib.Data.Real.Basic
 
 open Real
 
+-- On 2023-05-28, gets it cleanly first time:
+theorem mathd_algebra_101
+  (x : ℝ)
+  (h₀ : x^2 - 5 * x - 4 ≤ 10) :
+  x ≥ -2 ∧ x ≤ 7 := by
+  have h₁ : x^2 - 5 * x - 14 ≤ 0 := by linarith
+  by_cases x < -2
+  focus
+    have h₃ : (x - 7) * (x + 2) > 0 := by nlinarith
+    exfalso
+    linarith
+  focus
+    by_cases x > 7
+    focus
+      have h₅ : (x - 7) * (x + 2) > 0 := by nlinarith
+      exfalso
+      linarith
+    focus
+      apply And.intro
+      linarith
+      linarith
+
 example (x : ℝ) (h₀ : x^2 - 5 * x - 4 ≤ 10) : x ≥ -2 ∧ x ≤ 7 := by
   have h₁ : x^2 - 5 * x - 4 - 10 ≤ 0 := by
     linarith
@@ -36,25 +58,3 @@ example (x : ℝ) (h₀ : x^2 - 5 * x - 4 ≤ 10) : x ≥ -2 ∧ x ≤ 7 := by
   contrapose! h₁ with h₃
   calc 5 * x + 14 < 5 * -2 + 14 : add_lt_add_of_lt_of_le (mul_lt_mul_of_neg_left h₃ (by linarith)) (le_refl _)
               ... < x^2 : by linarith
-
--- On 2023-05-28, gets it cleanly first time:
-theorem mathd_algebra_101
-  (x : ℝ)
-  (h₀ : x^2 - 5 * x - 4 ≤ 10) :
-  x ≥ -2 ∧ x ≤ 7 := by
-  have h₁ : x^2 - 5 * x - 14 ≤ 0 := by linarith
-  by_cases x < -2
-  focus
-    have h₃ : (x - 7) * (x + 2) > 0 := by nlinarith
-    exfalso
-    linarith
-  focus
-    by_cases x > 7
-    focus
-      have h₅ : (x - 7) * (x + 2) > 0 := by nlinarith
-      exfalso
-      linarith
-    focus
-      apply And.intro
-      linarith
-      linarith
