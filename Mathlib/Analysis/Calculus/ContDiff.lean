@@ -586,11 +586,11 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
   induction' n using ENat.nat_induction with n IH Itop generalizing Eu Fu Gu
   · rw [contDiffOn_zero] at hf hg⊢
     exact ContinuousOn.comp hg hf st
-  · rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg⊢
+  · rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
-    rcases(contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
+    rcases (contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
     rcases hg (f x) (st hx) with ⟨v, hv, g', hg', g'_diff⟩
-    rw [insert_eq_of_mem hx] at hu⊢
+    rw [insert_eq_of_mem hx] at hu ⊢
     have xu : x ∈ u := mem_of_mem_nhdsWithin hx hu
     let w := s ∩ (u ∩ f ⁻¹' v)
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
@@ -616,7 +616,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
       have D : ContDiffOn 𝕜 n (fun p : (Fu →L[𝕜] Gu) × (Eu →L[𝕜] Fu) => p.1.comp p.2) univ :=
         isBoundedBilinearMap_comp.contDiff.contDiffOn
       exact IH D C (subset_univ _)
-  · rw [contDiffOn_top] at hf hg⊢
+  · rw [contDiffOn_top] at hf hg ⊢
     exact fun n => Itop n (hg n) (hf n) st
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
@@ -960,7 +960,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
     refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
     refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
-    rw [← nhdsWithin_le_iff] at hst hv⊢
+    rw [← nhdsWithin_le_iff] at hst hv ⊢
     refine' (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
@@ -1242,7 +1242,7 @@ theorem iteratedFDerivWithin_add_apply' {f g : E → F} (hf : ContDiffOn 𝕜 i 
 
 theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f) (hg : ContDiff 𝕜 i g) :
     iteratedFDeriv 𝕜 i (f + g) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x := by
-  simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at hf hg⊢
+  simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at hf hg ⊢
   exact iteratedFDerivWithin_add_apply hf hg uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_add_apply iteratedFDeriv_add_apply
 
@@ -2720,7 +2720,7 @@ theorem norm_iteratedFDeriv_comp_le {g : F → G} {f : E → F} {n : ℕ} {N : �
     (hC : ∀ i, i ≤ n → ‖iteratedFDeriv 𝕜 i g (f x)‖ ≤ C)
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i) :
     ‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n ! * C * D ^ n := by
-  simp_rw [← iteratedFDerivWithin_univ] at hC hD⊢
+  simp_rw [← iteratedFDerivWithin_univ] at hC hD ⊢
   exact
     norm_iteratedFDerivWithin_comp_le hg.contDiffOn hf.contDiffOn hn uniqueDiffOn_univ
       uniqueDiffOn_univ (mapsTo_univ _ _) (mem_univ x) hC hD
