@@ -34,10 +34,6 @@ open scoped Topology
 
 attribute [local mono] prod_mono
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If a function `f` is differentiable in a convex open set and continuous on its closure, and its
 derivative converges to a limit `f'` at a point on the boundary, then `f` is differentiable there
 with derivative `f'`. -/
@@ -51,7 +47,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     -- statement is empty otherwise
     by_cases hx : x ∉ closure s
     · rw [← closure_closure] at hx ; exact hasFDerivWithinAt_of_not_mem_closure hx
-    push_neg  at hx 
+    push_neg  at hx
     rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in `closure
       s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it suffices to
@@ -66,7 +62,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     suffices
       ∀ p : E × E,
         p ∈ closure ((B ∩ s) ×ˢ (B ∩ s)) → ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ by
-      rw [closure_prod_eq] at this 
+      rw [closure_prod_eq] at this
       intro y y_in
       apply this ⟨x, y⟩
       have : B ∩ closure s ⊆ closure (B ∩ s) := is_open_ball.inter_closure
@@ -224,4 +220,3 @@ theorem hasDerivAt_of_hasDerivAt_of_ne' {f g : ℝ → E} {x : ℝ}
   · exact hasDerivAt_of_hasDerivAt_of_ne f_diff hf hg
   · exact f_diff y hne
 #align has_deriv_at_of_has_deriv_at_of_ne' hasDerivAt_of_hasDerivAt_of_ne'
-
