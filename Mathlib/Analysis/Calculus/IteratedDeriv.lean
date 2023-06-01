@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Comp
-import Mathbin.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.ContDiffDef
 
 /-!
 # One-dimensional iterated derivatives
@@ -96,8 +96,7 @@ theorem iteratedDerivWithin_eq_equiv_comp :
 iterated derivative. -/
 theorem iteratedFderivWithin_eq_equiv_comp :
     iteratedFderivWithin 𝕜 n f s =
-      ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s :=
-  by
+      ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s := by
   rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
     Function.left_id]
 #align iterated_fderiv_within_eq_equiv_comp iteratedFderivWithin_eq_equiv_comp
@@ -106,8 +105,7 @@ theorem iteratedFderivWithin_eq_equiv_comp :
 multiplied by the product of the `m i`s. -/
 theorem iteratedFderivWithin_apply_eq_iteratedDerivWithin_mul_prod {m : Fin n → 𝕜} :
     (iteratedFderivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) m =
-      (∏ i, m i) • iteratedDerivWithin n f s x :=
-  by
+      (∏ i, m i) • iteratedDerivWithin n f s x := by
   rw [iteratedDerivWithin_eq_iteratedFderivWithin, ← ContinuousMultilinearMap.map_smul_univ]
   simp
 #align iterated_fderiv_within_apply_eq_iterated_deriv_within_mul_prod iteratedFderivWithin_apply_eq_iteratedDerivWithin_mul_prod
@@ -135,8 +133,7 @@ but this is an equivalence when the set has unique derivatives, see
 theorem contDiffOn_of_continuousOn_differentiableOn_deriv {n : ℕ∞}
     (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedDerivWithin m f s x) s)
     (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x => iteratedDerivWithin m f s x) s) :
-    ContDiffOn 𝕜 n f s :=
-  by
+    ContDiffOn 𝕜 n f s := by
   apply contDiffOn_of_continuousOn_differentiableOn
   · simpa [iteratedFderivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_continuousOn_iff]
   · simpa [iteratedFderivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_differentiableOn_iff]
@@ -183,8 +180,7 @@ reformulated in terms of the one-dimensional derivative on sets with unique deri
 theorem contDiffOn_iff_continuousOn_differentiableOn_deriv {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (iteratedDerivWithin m f s) s) ∧
-        ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s :=
-  by
+        ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := by
   simp only [contDiffOn_iff_continuousOn_differentiableOn hs, iteratedFderivWithin_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuousOn_iff, LinearIsometryEquiv.comp_differentiableOn_iff]
 #align cont_diff_on_iff_continuous_on_differentiable_on_deriv contDiffOn_iff_continuousOn_differentiableOn_deriv
@@ -192,8 +188,7 @@ theorem contDiffOn_iff_continuousOn_differentiableOn_deriv {n : ℕ∞} (hs : Un
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 differentiating the `n`-th iterated derivative. -/
 theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x :=
-  by
+    iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x := by
   rw [iteratedDerivWithin_eq_iteratedFderivWithin, iteratedFderivWithin_succ_apply_left,
     iteratedFderivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_fderivWithin _ hxs, derivWithin]
   change
@@ -208,8 +203,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
 /-- The `n`-th iterated derivative within a set with unique derivatives can be obtained by
 iterating `n` times the differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedDerivWithin n f s x = ((fun g : 𝕜 → F => derivWithin g s)^[n]) f x :=
-  by
+    iteratedDerivWithin n f s x = ((fun g : 𝕜 → F => derivWithin g s)^[n]) f x := by
   induction' n with n IH generalizing x
   · simp
   · rw [iteratedDerivWithin_succ (hs x hx), Function.iterate_succ']
@@ -273,8 +267,7 @@ reformulated in terms of the one-dimensional derivative. -/
 theorem contDiff_iff_iteratedDeriv {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous (iteratedDeriv m f)) ∧
-        ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 (iteratedDeriv m f) :=
-  by
+        ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 (iteratedDeriv m f) := by
   simp only [contDiff_iff_continuous_differentiable, iteratedFderiv_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuous_iff, LinearIsometryEquiv.comp_differentiable_iff]
 #align cont_diff_iff_iterated_deriv contDiff_iff_iteratedDeriv
@@ -301,8 +294,7 @@ theorem ContDiff.differentiable_iteratedDeriv {n : ℕ∞} (m : ℕ) (h : ContDi
 
 /-- The `n+1`-th iterated derivative can be obtained by differentiating the `n`-th
 iterated derivative. -/
-theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f) :=
-  by
+theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f) := by
   ext x
   rw [← iteratedDerivWithin_univ, ← iteratedDerivWithin_univ, ← derivWithin_univ]
   exact iteratedDerivWithin_succ uniqueDiffWithinAt_univ
@@ -310,8 +302,7 @@ theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f)
 
 /-- The `n`-th iterated derivative can be obtained by iterating `n` times the
 differentiation operation. -/
-theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = (deriv^[n]) f :=
-  by
+theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = (deriv^[n]) f := by
   ext x
   rw [← iteratedDerivWithin_univ]
   convert iteratedDerivWithin_eq_iterate uniqueDiffOn_univ (mem_univ x)
