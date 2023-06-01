@@ -106,10 +106,10 @@ protected theorem Multiset.exists_coe (p : m → Prop) :
 
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
-    (m.toFinset.bunionᵢ fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
+    (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
     (by
       rintro ⟨x, i⟩
-      simp only [Finset.mem_bunionᵢ, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
+      simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
       simp only [←and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
@@ -147,8 +147,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
   intro x
   by_cases hx : x ∈ m₁
   · apply Nat.le_of_pred_lt
-    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset :=
-      by
+    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset := by
       rw [Multiset.mem_toEnumFinset]
       exact Nat.pred_lt (ne_of_gt (Multiset.count_pos.mpr hx))
     simpa only [Multiset.mem_toEnumFinset] using h this

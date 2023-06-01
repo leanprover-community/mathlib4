@@ -91,8 +91,8 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   rfl
 #align category_theory.arrow.mk_eq CategoryTheory.Arrow.mk_eq
 
-theorem mk_injective (A B : T) : Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h =>
-  by
+theorem mk_injective (A B : T) :
+    Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
   rfl
 #align category_theory.arrow.mk_injective CategoryTheory.Arrow.mk_injective

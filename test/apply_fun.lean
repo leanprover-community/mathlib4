@@ -220,3 +220,15 @@ example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   apply_fun Fintype.card at h
   guard_hyp h : Fintype.card α = Fintype.card β
   trivial
+
+-- Check that metavariables in the goal do not prevent apply_fun from detecting the relation
+example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
+  change _
+  -- now the goal is a metavariable
+  apply_fun f
+  exact h
+
+-- Check that lack of WHNF does not prevent apply_fun_from detecting the relation
+example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
+  apply_fun f
+  exact h

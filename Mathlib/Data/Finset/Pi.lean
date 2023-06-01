@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.finset.pi
-! leanprover-community/mathlib commit 4c586d291f189eecb9d00581aeb3dd998ac34442
+! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,9 +74,9 @@ theorem Pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s �
   Multiset.Pi.cons_ne _ (Ne.symm ha)
 #align finset.pi.cons_ne Finset.Pi.cons_ne
 
-theorem pi_cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
+theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
     Function.Injective (Pi.cons s a b) := fun e₁ e₂ eq =>
-  @Multiset.pi_cons_injective α _ δ a b s.1 hs _ _ <|
+  @Multiset.Pi.cons_injective α _ δ a b s.1 hs _ _ <|
     funext fun e =>
       funext fun h =>
         have :
@@ -84,7 +84,7 @@ theorem pi_cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
             Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
           by rw [eq]
         this
-#align finset.pi_cons_injective Finset.pi_cons_injective
+#align finset.pi.cons_injective Finset.Pi.cons_injective
 
 @[simp]
 theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
@@ -93,8 +93,7 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
-    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (Pi.cons s a b) :=
-  by
+    (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
   refine'
@@ -109,12 +108,11 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
       _ (insert_val_of_not_mem ha)
   subst s'; rw [pi_cons]
   congr ; funext b
-  exact ((pi s t).nodup.map <| Multiset.pi_cons_injective ha).dedup.symm
+  exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 #align finset.pi_insert Finset.pi_insert
 
 theorem pi_singletons {β : Type _} (s : Finset α) (f : α → β) :
-    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} :=
-  by
+    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
   rw [eq_singleton_iff_unique_mem]
   constructor
   · simp

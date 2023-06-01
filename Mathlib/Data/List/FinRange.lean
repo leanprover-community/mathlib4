@@ -26,7 +26,7 @@ variable {α : Type u}
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  simp_rw [finRange, map_pmap, Fin.val_mk, pmap_eq_map]
+  simp_rw [finRange, map_pmap, pmap_eq_map]
   exact List.map_id _
 #align list.map_coe_fin_range List.map_coe_finRange
 

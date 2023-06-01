@@ -51,9 +51,9 @@ instance : LinearOrder ℤ where
   lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  decidable_eq := by infer_instance
-  decidable_le := by infer_instance
-  decidable_lt := by infer_instance
+  decidableEq := by infer_instance
+  decidableLE := by infer_instance
+  decidableLT := by infer_instance
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs
@@ -82,8 +82,7 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) 
       rw [h] at this
       exact absurd this (lt_irrefl _)
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) =>
-      by
+    | Or.inr (Or.inr hgt₂) => by
       have : 0 > a * b := Int.mul_neg_of_pos_of_neg hlt₁ hgt₂
       rw [h] at this
       exact absurd this (lt_irrefl _)
@@ -95,8 +94,7 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) 
       rw [h] at this
       exact absurd this (lt_irrefl _)
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) =>
-      by
+    | Or.inr (Or.inr hgt₂) => by
       have : 0 < a * b := Int.mul_pos_of_neg_of_neg hgt₁ hgt₂
       rw [h] at this
       exact absurd this (lt_irrefl _)

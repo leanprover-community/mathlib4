@@ -188,7 +188,7 @@ theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X
 
 end FunctorToTypes
 
-/-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
+/-- The isomorphism between a `Type` which has been `ULift`ed to the same universe,
 and the original type.
 -/
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
@@ -222,7 +222,7 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
 
-/-- The functor embedding `Type u` into `Type u` via `ulift` is isomorphic to the identity functor.
+/-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
   NatIso.ofComponents uliftTrivial (by aesop_cat)
@@ -230,7 +230,7 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 
 -- TODO We should connect this to a general story about concrete categories
 -- whose forgetful functor is representable.
-/-- Any term `x` of a type `X` corresponds to a morphism `punit ⟶ X`. -/
+/-- Any term `x` of a type `X` corresponds to a morphism `PUnit ⟶ X`. -/
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 #align category_theory.hom_of_element CategoryTheory.homOfElement
 
@@ -350,6 +350,8 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
+
+pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=

@@ -95,8 +95,7 @@ def elim (γ : Type _) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
 
 theorem elim_injective (γ : Type _) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
-  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h =>
-    by
+  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
@@ -187,7 +186,7 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.recC encodable_zero encodable_succ n
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl

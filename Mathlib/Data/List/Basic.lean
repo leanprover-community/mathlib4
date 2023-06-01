@@ -22,8 +22,7 @@ open Function
 
 open Nat hiding one_pos
 
--- Porting note: missing impl
--- assert_not_exists Set.range
+assert_not_exists Set.range
 
 namespace List
 
@@ -456,7 +455,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
 
 @[simp] theorem map_replicate (f : α → β) (n) (a : α) :
     map f (replicate n a) = replicate n (f a) := by
-  induction n <;> [rfl, simp only [*, replicate, map]]
+  induction n <;> [rfl; simp only [*, replicate, map]]
 #align list.map_replicate List.map_replicate
 
 @[simp] theorem tail_replicate (a : α) (n) :
@@ -464,7 +463,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
 #align list.tail_replicate List.tail_replicate
 
 @[simp] theorem join_replicate_nil (n : ℕ) : join (replicate n []) = @nil α := by
-  induction n <;> [rfl, simp only [*, replicate, join, append_nil]]
+  induction n <;> [rfl; simp only [*, replicate, join, append_nil]]
 #align list.join_replicate_nil List.join_replicate_nil
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
@@ -946,7 +945,7 @@ set_option linter.deprecated false -- TODO(Mario): make replacements for theorem
 @[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simpa [← lt_tsub_iff_right] using h)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
-  -- Porting note: cases l <;> [cases h, rfl] fails
+  -- Porting note: cases l <;> [cases h; rfl] fails
   cases l
   · cases h
   · rfl
@@ -1173,14 +1172,12 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) 
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
-
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
   simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
-
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
@@ -1790,7 +1787,7 @@ theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ �
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
     map f (concat l a) = concat (map f l) (f a) := by
-  induction l <;> [rfl, simp only [*, concat_eq_append, cons_append, map, map_append]]
+  induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
 @[simp]
@@ -1808,7 +1805,7 @@ theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) :
 
 @[simp]
 theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (map (map f) L) := by
-  induction L <;> [rfl, simp only [*, join, map, map_append]]
+  induction L <;> [rfl; simp only [*, join, map, map_append]]
 #align list.map_join List.map_join
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
@@ -2497,14 +2494,14 @@ theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι →
     foldl op₃ (f a b) l = f (foldl op₁ a l) (foldl op₂ b l) :=
   Eq.symm <| by
     revert a b
-    induction l <;> intros <;> [rfl, simp only [*, foldl]]
+    induction l <;> intros <;> [rfl; simp only [*, foldl]]
 #align list.foldl_hom₂ List.foldl_hom₂
 
 theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α → α) (op₂ : ι → β → β)
     (op₃ : ι → γ → γ) (a : α) (b : β) (h : ∀ a b i, f (op₁ i a) (op₂ i b) = op₃ i (f a b)) :
     foldr op₃ (f a b) l = f (foldr op₁ a l) (foldr op₂ b l) := by
   revert a
-  induction l <;> intros <;> [rfl, simp only [*, foldr]]
+  induction l <;> intros <;> [rfl; simp only [*, foldr]]
 #align list.foldr_hom₂ List.foldr_hom₂
 
 theorem injective_foldl_comp {α : Type _} {l : List (α → α)} {f : α → α}
@@ -2767,7 +2764,6 @@ theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a�
     calc
       ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
       _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
-
 #align list.foldl_assoc List.foldl_assoc
 
 theorem foldl_op_eq_op_foldr_assoc :
@@ -2857,7 +2853,7 @@ theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
 section SplitAtOn
 
 /- Porting note: the new version of `splitOnP` uses a `Bool`-valued predicate instead of a
-  `Prop`-valued one. All downstream defintions have been updated to match. -/
+  `Prop`-valued one. All downstream definitions have been updated to match. -/
 
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 
@@ -2921,60 +2917,27 @@ theorem splitOnP_nil : [].splitOnP p = [[]] :=
 #noalign list.split_on_p_aux_eq
 #noalign list.split_on_p_aux_nil
 
-theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α)) :
-    splitOnP.go p xs acc r = r.toListAppend (splitOnP.go p xs acc #[]) := by
-  cases xs with
-  | nil => rfl
-  | cons a as =>
-    simp only [go]
-    by_cases h : p a
-    · simp only [h, cond_true]
-      rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
-      simp only [Array.toListAppend_eq, Array.push_data]
-      rw [Array.data_toArray, nil_append, append_assoc]
-    · simp only [eq_false_of_ne_true h, cond_false]
-      exact go_append as _ _
+theorem splitOnP.go_ne_nil (xs acc : List α) : splitOnP.go p xs acc ≠ [] := by
+  induction xs generalizing acc <;> simp [go]; split <;> simp [*]
 
-theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
-    splitOnP.go p xs acc #[] = modifyHead (acc.toListAppend) (splitOnP.go p xs #[] #[]) := by
-  cases xs with
-  | nil => rfl
-  | cons hd tl =>
-    simp only [go]
-    by_cases h : p hd
-    · simp only [h, cond_true]
-      rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
-      rfl
-    · simp only [eq_false_of_ne_true h, cond_false]
-      rw [go_acc tl, go_acc tl (Array.push #[] hd), modifyHead_modifyHead]
-      change modifyHead (fun a ↦ Array.toListAppend (Array.push acc hd) a) _ =
-        modifyHead (fun a ↦ Array.toListAppend acc <| Array.toListAppend (Array.push #[] hd) a) _
-      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
-        append_assoc]
+theorem splitOnP.go_acc (xs acc : List α) :
+    splitOnP.go p xs acc = modifyHead (acc.reverse ++ ·) (splitOnP p xs) := by
+  induction xs generalizing acc with
+  | nil => simp only [go, modifyHead, splitOnP_nil, append_nil]
+  | cons hd tl ih =>
+    simp only [splitOnP, go]; split
+    · simp only [modifyHead, reverse_nil, append_nil]
+    · rw [ih [hd], modifyHead_modifyHead, ih]
+      congr; funext x; simp only [reverse_cons, append_assoc]; rfl
 
-theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
-  cases xs with
-  | nil => exact cons_ne_nil [] []
-  | cons hd tl =>
-    rw [splitOnP, splitOnP.go]
-    by_cases h : p hd
-    · rw [h, cond_true, splitOnP.go_append]
-      exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
-    · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
-      exact modifyHead_ne_nil_of_ne_nil (splitOnP_ne_nil tl)
-where
-  modifyHead_ne_nil_of_ne_nil {α} {f} {l : List α} (_ : l ≠ []) : modifyHead f l ≠ [] := by
-    cases l with | nil => contradiction | cons => rw [modifyHead]; exact cons_ne_nil _ _
+theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := splitOnP.go_ne_nil _ _ _
 #align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
 
 @[simp]
 theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
-  rw [splitOnP, splitOnP.go]
-  by_cases h : p x
-  · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
-  · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
+  rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 #align list.split_on_p_cons List.splitOnP_consₓ
 
 /-- The original list `L` can be recovered by joining the lists produced by `splitOnP p L`,
@@ -3110,20 +3073,7 @@ end ModifyLast
 
 /-! ### map for partial functions -/
 
-/-- Partial map. If `f : Π a, p a → β` is a partial function defined on
-  `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
-  but is defined only when all members of `l` satisfy `p`, using the proof
-  to apply `f`. -/
-@[simp]
-def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
-  | [], _ => []
-  | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
 #align list.pmap List.pmap
-
-/-- "Attach" the proof that the elements of `l` are in `l` to produce a new list
-  with the same elements but in the type `{x // x ∈ l}`. -/
-def attach (l : List α) : List { x // x ∈ l } :=
-  pmap Subtype.mk l fun _ => id
 #align list.attach List.attach
 
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
@@ -3137,7 +3087,7 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
 @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (l : List α) (H) :
     @pmap _ _ p (fun a _ => f a) l H = map f l := by
-  induction l <;> [rfl, simp only [*, pmap, map]]
+  induction l <;> [rfl; simp only [*, pmap, map]]
 #align list.pmap_eq_map List.pmap_eq_map
 
 theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (l : List α) {H₁ H₂}
@@ -3149,12 +3099,12 @@ theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a �
 
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (l H) :
     map g (pmap f l H) = pmap (fun a h => g (f a h)) l H := by
-  induction l <;> [rfl, simp only [*, pmap, map]]
+  induction l <;> [rfl; simp only [*, pmap, map]]
 #align list.map_pmap List.map_pmap
 
 theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H) :
     pmap g (map f l) H = pmap (fun a h => g (f a) h) l fun a h => H _ (mem_map_of_mem _ h) := by
-  induction l <;> [rfl, simp only [*, pmap, map]]
+  induction l <;> [rfl; simp only [*, pmap, map]]
 #align list.pmap_map List.pmap_map
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
@@ -3195,7 +3145,7 @@ theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
 
 @[simp]
 theorem length_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H} : length (pmap f l H) = length l := by
-  induction l <;> [rfl, simp only [*, pmap, length]]
+  induction l <;> [rfl; simp only [*, pmap, length]]
 #align list.length_pmap List.length_pmap
 
 @[simp]
@@ -3233,7 +3183,6 @@ theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
   · cases' n with n
     . simp
     . simp [hl]
-      dsimp
 #align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
@@ -3597,7 +3546,6 @@ theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p
     . simp [filter, h1]
     . rw [filter]
       cases p x <;> simp [mem_filter_of_mem h h1]
-
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 
 #align list.mem_filter List.mem_filter
@@ -3651,22 +3599,16 @@ theorem filter_false (l : List α) :
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
   ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
-  | [], l₂ => by simp [span.loop]
-  | (a :: l), l₂ => by cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop]
+  | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
+  | (a :: l), l₂ => by
+    cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
 
 @[simp]
 theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
 #align list.span_eq_take_drop List.span_eq_take_drop
 
-@[simp]
-theorem takeWhile_append_drop : ∀ l : List α, takeWhile p l ++ dropWhile p l = l
-  | [] => rfl
-  | a :: l =>
-    if pa : p a then by
-      simp [takeWhile, dropWhile, pa, cons_append, takeWhile_append_drop l]
-    else by simp [takeWhile, dropWhile, pa, nil_append]
-#align list.take_while_append_drop List.takeWhile_append_drop
+#align list.take_while_append_drop List.takeWhile_append_dropWhile
 
 theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).nthLe 0 hl) := by
@@ -3707,9 +3649,8 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
-  induction' l with hd tl IH
-  · simp at hx
-  · simp only [takeWhile] at hx
+  induction l with simp [takeWhile] at hx
+  | cons hd tl IH =>
     cases hp : p hd
     · simp [hp] at hx
     · rw [hp, mem_cons] at hx
@@ -3807,7 +3748,7 @@ theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α}
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
-  induction l₂ generalizing l₁ <;> [rfl, simp only [foldl_cons, map_erase finj, *]]
+  induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 #align list.map_foldl_erase List.map_foldl_erase
 
 end Erase

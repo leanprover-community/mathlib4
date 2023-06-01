@@ -325,8 +325,6 @@ theorem hasSum_sum {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
       sum_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.add (IH h)
-
-
 #align has_sum_sum hasSum_sum
 
 theorem summable_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summable (f i)) :
@@ -345,7 +343,7 @@ theorem hasSum_sum_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι →
     (hs : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, HasSum (f ∘ (↑) : t i → α) (a i)) :
     HasSum (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∑ i in s, a i) := by
   simp_rw [hasSum_subtype_iff_indicator] at *
-  rw [Set.indicator_finset_bunionᵢ _ _ hs]
+  rw [Set.indicator_finset_biUnion _ _ hs]
   exact hasSum_sum hf
 #align has_sum_sum_disjoint hasSum_sum_disjoint
 
@@ -397,10 +395,8 @@ theorem HasSum.sigma [RegularSpace α] {γ : β → Type _} {f : (Σ b : β, γ 
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, ge_iff_le, Finset.le_iff_subset] at hu
-  have :
-    Tendsto (fun t : Finset (Σb, γ b) => ∑ p in t.filter fun p => p.1 ∈ bs, f p) atTop
-      (𝓝 <| ∑ b in bs, g b) :=
-    by
+  have : Tendsto (fun t : Finset (Σb, γ b) => ∑ p in t.filter fun p => p.1 ∈ bs, f p) atTop
+      (𝓝 <| ∑ b in bs, g b) := by
     simp only [← sigma_preimage_mk, sum_sigma]
     refine' tendsto_finset_sum _ fun b _ => _
     change
@@ -433,8 +429,7 @@ it gives a relationship between the sums of `f` and `f.update` given that both e
 theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
     (hf' : HasSum (update f b x) a') : a + x = a' + f b := by
-  have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 :=
-    by
+  have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 := by
     intro b'
     split_ifs with hb'
     · simpa only [Function.update_apply, hb', eq_self_iff_true] using add_comm (f b) x
@@ -661,8 +656,7 @@ theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f 
       tsum_congr fun n => by split_ifs with h <;> simp [update_apply, h]
     _ = (∑' x, ite (x = b) (f x) 0) + ∑' x, update f b 0 x :=
       tsum_add ⟨ite (b = b) (f b) 0, hasSum_single b fun b hb => if_neg hb⟩ hf
-    _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x :=
-    by
+    _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x := by
       congr
       exact tsum_eq_single b fun b' hb' => if_neg hb'
     _ = f b + ∑' x, ite (x = b) 0 (f x) :=
@@ -697,7 +691,7 @@ variable [Encodable γ]
 
 /-- You can compute a sum over an encodably type by summing over the natural numbers and
   taking a supremum. This is useful for outer measures. -/
-theorem tsum_supᵢ_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
+theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     (∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b)) = ∑' b : γ, m (s b) := by
   have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
     intro n h
@@ -724,13 +718,13 @@ theorem tsum_supᵢ_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ =
     rw [show decode₂ γ n = _ from Option.get_mem (H n h)]
     congr
     simp [ext_iff, -Option.some_get]
-#align tsum_supr_decode₂ tsum_supᵢ_decode₂
+#align tsum_supr_decode₂ tsum_iSup_decode₂
 
-/-- `tsum_supᵢ_decode₂` specialized to the complete lattice of sets. -/
-theorem tsum_unionᵢ_decode₂ (m : Set β → α) (m0 : m ∅ = 0) (s : γ → Set β) :
+/-- `tsum_iSup_decode₂` specialized to the complete lattice of sets. -/
+theorem tsum_iUnion_decode₂ (m : Set β → α) (m0 : m ∅ = 0) (s : γ → Set β) :
     (∑' i, m (⋃ b ∈ decode₂ γ i, s b)) = ∑' b, m (s b) :=
-  tsum_supᵢ_decode₂ m m0 s
-#align tsum_Union_decode₂ tsum_unionᵢ_decode₂
+  tsum_iSup_decode₂ m m0 s
+#align tsum_Union_decode₂ tsum_iUnion_decode₂
 
 end Encodable
 
@@ -746,28 +740,28 @@ section Countable
 variable [Countable γ]
 
 /-- If a function is countably sub-additive then it is sub-additive on countable types -/
-theorem rel_supᵢ_tsum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : γ → β) :
+theorem rel_iSup_tsum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : γ → β) :
     R (m (⨆ b : γ, s b)) (∑' b : γ, m (s b)) := by
   cases nonempty_encodable γ
-  rw [← supᵢ_decode₂, ← tsum_supᵢ_decode₂ _ m0 s]
-  exact m_supᵢ _
-#align rel_supr_tsum rel_supᵢ_tsum
+  rw [← iSup_decode₂, ← tsum_iSup_decode₂ _ m0 s]
+  exact m_iSup _
+#align rel_supr_tsum rel_iSup_tsum
 
 /-- If a function is countably sub-additive then it is sub-additive on finite sets -/
-theorem rel_supᵢ_sum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : δ → β) (t : Finset δ) :
+theorem rel_iSup_sum [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s : δ → β) (t : Finset δ) :
     R (m (⨆ d ∈ t, s d)) (∑ d in t, m (s d)) := by
-  rw [supᵢ_subtype', ← Finset.tsum_subtype]
-  exact rel_supᵢ_tsum m m0 R m_supᵢ _
-#align rel_supr_sum rel_supᵢ_sum
+  rw [iSup_subtype', ← Finset.tsum_subtype]
+  exact rel_iSup_tsum m m0 R m_iSup _
+#align rel_supr_sum rel_iSup_sum
 
 /-- If a function is countably sub-additive then it is binary sub-additive -/
 theorem rel_sup_add [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (R : α → α → Prop)
-    (m_supᵢ : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s₁ s₂ : β) :
+    (m_iSup : ∀ s : ℕ → β, R (m (⨆ i, s i)) (∑' i, m (s i))) (s₁ s₂ : β) :
     R (m (s₁ ⊔ s₂)) (m s₁ + m s₂) := by
-  convert rel_supᵢ_tsum m m0 R m_supᵢ fun b => cond b s₁ s₂
-  · simp only [supᵢ_bool_eq, cond]
+  convert rel_iSup_tsum m m0 R m_iSup fun b => cond b s₁ s₂
+  · simp only [iSup_bool_eq, cond]
   · rw [tsum_fintype, Fintype.sum_bool, cond, cond]
 #align rel_sup_add rel_sup_add
 
@@ -822,8 +816,8 @@ theorem summable_neg_iff : (Summable fun b => -f b) ↔ Summable f :=
   ⟨Summable.of_neg, Summable.neg⟩
 #align summable_neg_iff summable_neg_iff
 
-theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) : HasSum (fun b => f b - g b) (a₁ - a₂) :=
-  by
+theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) :
+    HasSum (fun b => f b - g b) (a₁ - a₂) := by
   simp only [sub_eq_add_neg]
   exact hf.add hg.neg
 #align has_sum.sub HasSum.sub
@@ -991,8 +985,7 @@ assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   by_cases hf : Summable f
-  · have h₀ : (fun i => (∑' i, f i) - ∑ j in range i, f j) = fun i => ∑' k : ℕ, f (k + i) :=
-      by
+  · have h₀ : (fun i => (∑' i, f i) - ∑ j in range i, f j) = fun i => ∑' k : ℕ, f (k + i) := by
       ext1 i
       rw [sub_eq_iff_eq_add, add_comm, sum_add_tsum_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
@@ -1063,28 +1056,27 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
       · simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
   refine' ⟨u1 ∪ u2, A, _⟩
   calc
-    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) = (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x :=
-      by
-        rw [sum_add_distrib]
-        congr 1
-        refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
-        · intro x hx
-          suffices x ≠ 0 by simp only [this, if_false]
-          rintro rfl
-          simp at hx
-        · intro x hx
-          simp only [mem_inter, mem_image, exists_prop] at hx
-          have : x = 0 := by
-            apply le_antisymm
-            · rcases hx.2 with ⟨a, _, rfl⟩
-              simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-            · rcases hx.1 with ⟨a, _, rfl⟩
-              simp only [Nat.cast_nonneg]
-          simp only [this, eq_self_iff_true, if_true]
+    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) =
+        (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
+      rw [sum_add_distrib]
+      congr 1
+      refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
+      · intro x hx
+        suffices x ≠ 0 by simp only [this, if_false]
+        rintro rfl
+        simp at hx
+      · intro x hx
+        simp only [mem_inter, mem_image, exists_prop] at hx
+        have : x = 0 := by
+          apply le_antisymm
+          · rcases hx.2 with ⟨a, _, rfl⟩
+            simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
+          · rcases hx.1 with ⟨a, _, rfl⟩
+            simp only [Nat.cast_nonneg]
+        simp only [this, eq_self_iff_true, if_true]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
-
 #align has_sum.sum_nat_of_sum_int HasSum.sum_nat_of_sum_int
 
 end Nat
@@ -1140,8 +1132,7 @@ theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
     refine' ⟨s, fun a sa => oe _⟩
     have A : Summable fun b : { x // x ∉ a } => f b := a.summable_compl_iff.2 H
     refine' IsClosed.mem_of_tendsto o_closed A.hasSum (eventually_of_forall fun b => _)
-    have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s :=
-      by
+    have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s := by
       refine' disjoint_left.2 fun i hi his => _
       rcases mem_image.1 hi with ⟨i', _, rfl⟩
       exact i'.2 (sa his)

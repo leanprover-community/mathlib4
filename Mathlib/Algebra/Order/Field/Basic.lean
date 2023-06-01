@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit 44e29dbcff83ba7114a464d592b8c3743987c1e5
+! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -493,7 +493,7 @@ The equalities also hold in semifields of characteristic `0`.
 
 
 /- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`division_semiring` + `char_zero` -/
+`DivisionSemiring` + `CharZero` -/
 theorem add_halves (a : α) : a / 2 + a / 2 = a := by
   rw [div_add_div_same, ← two_mul, mul_div_cancel_left a two_ne_zero]
 #align add_halves add_halves
@@ -511,21 +511,24 @@ theorem one_half_pos : (0 : α) < 1 / 2 :=
   half_pos zero_lt_one
 #align one_half_pos one_half_pos
 
-theorem div_two_lt_of_pos (h : 0 < a) : a / 2 < a := by
-  rw [div_lt_iff (zero_lt_two' α)]
-  exact lt_mul_of_one_lt_right h one_lt_two
-#align div_two_lt_of_pos div_two_lt_of_pos
+@[simp]
+theorem half_le_self_iff : a / 2 ≤ a ↔ 0 ≤ a := by
+  rw [div_le_iff (zero_lt_two' α), mul_two, le_add_iff_nonneg_left]
+#align half_le_self_iff half_le_self_iff
 
-theorem half_lt_self : 0 < a → a / 2 < a :=
-  div_two_lt_of_pos
+@[simp]
+theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
+  rw [div_lt_iff (zero_lt_two' α), mul_two, lt_add_iff_pos_left]
+#align half_lt_self_iff half_lt_self_iff
+
+alias half_le_self_iff ↔ _ half_le_self
+#align half_le_self half_le_self
+
+alias half_lt_self_iff ↔ _ half_lt_self
 #align half_lt_self half_lt_self
 
-theorem half_le_self (ha_nonneg : 0 ≤ a) : a / 2 ≤ a := by
-  by_cases h0 : a = 0
-  · simp [h0]
-  · rw [← Ne.def] at h0
-    exact (half_lt_self (lt_of_le_of_ne ha_nonneg h0.symm)).le
-#align half_le_self half_le_self
+alias half_lt_self ← div_two_lt_of_pos
+#align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
   half_lt_self zero_lt_one
@@ -540,6 +543,10 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff, 
 
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff, mul_two]
 #align add_div_two_lt_right add_div_two_lt_right
+
+theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
+  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+    mul_div_cancel_left a three_ne_zero]
 
 /-!
 ### Miscellaneous lemmas
@@ -571,7 +578,7 @@ theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
 
 theorem Monotone.div_const {β : Type _} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := by
-  haveI := @LinearOrder.decidable_le α _
+  haveI := @LinearOrder.decidableLE α _
   simpa only [div_eq_mul_inv] using (monotone_mul_right_of_nonneg (inv_nonneg.2 hc)).comp hf
 #align monotone.div_const Monotone.div_const
 

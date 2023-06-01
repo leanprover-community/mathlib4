@@ -111,8 +111,7 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
-#align finset.card_div_choose_le_card_shadow_div_choose
-    Finset.card_div_choose_le_card_shadow_div_choose
+#align finset.card_div_choose_le_card_shadow_div_choose Finset.card_div_choose_le_card_shadow_div_choose
 
 end LocalLYM
 
@@ -133,7 +132,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
-  simp_rw [falling, mem_sup, mem_powersetLen, exists_and_right]
+  simp_rw [falling, mem_sup, mem_powersetLen]
   aesop
 #align finset.mem_falling Finset.mem_falling
 
@@ -152,7 +151,7 @@ theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
-  simp_rw [mem_union, mem_slice, mem_shadow_iff, exists_prop, mem_falling]
+  simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
   constructor
   · rintro (h | ⟨s, ⟨⟨t, ht, hst⟩, hs⟩, a, ha, rfl⟩)
     · exact ⟨⟨s, h.1, Subset.refl _⟩, h.2⟩
@@ -173,9 +172,8 @@ variable {𝒜 k}
 antichain property. -/
 theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) ((∂ ) (falling n 𝒜)) :=
-  disjoint_right.2 fun s h₁ h₂ =>
-    by
-    simp_rw [mem_shadow_iff, exists_prop, mem_falling] at h₁
+  disjoint_right.2 fun s h₁ h₂ => by
+    simp_rw [mem_shadow_iff, mem_falling] at h₁
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
     rintro rfl
@@ -202,8 +200,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     add_le_add_left
       ((ih <| le_of_succ_le hk).trans <|
         card_div_choose_le_card_shadow_div_choose (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <|
-          sized_falling _ _)
-      _
+          sized_falling _ _) _
 #align finset.le_card_falling_div_choose Finset.le_card_falling_div_choose
 
 end Falling
@@ -236,10 +233,8 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical
-    suffices
-      (∑ r in Iic (Fintype.card α),
-          ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1
-      by
+    suffices (∑ r in Iic (Fintype.card α),
+        ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       simp only [cast_le] at this
       rwa [sum_card_slice] at this

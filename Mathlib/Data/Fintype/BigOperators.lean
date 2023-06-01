@@ -233,7 +233,6 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
     (∏ i : Fin n, f i) = ∏ i : { x // x ∈ range n }, f i :=
       (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).prod_comp' _ _ (by simp)
     _ = ∏ i in range n, f i := by rw [← attach_eq_univ, prod_attach]
-
 #align fin.prod_univ_eq_prod_range Fin.prod_univ_eq_prod_range
 #align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range
 
@@ -271,8 +270,8 @@ theorem Fintype.prod_fiberwise [Fintype α] [DecidableEq β] [Fintype β] [CommM
 
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ (a : α) (_ha : p a), β) (g : ∀ (a : α) (_ha : ¬p a), β) :
-    (∏ a, dite (p a) (f a) (g a)) = (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 :=
-  by
+    (∏ a, dite (p a) (f a) (g a)) =
+    (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
   simp only [prod_dite, attach_eq_univ]
   congr 1
   · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // p x } => f x x.2

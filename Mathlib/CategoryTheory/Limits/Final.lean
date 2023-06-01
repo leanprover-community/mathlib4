@@ -411,10 +411,8 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
 -/
 theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
-  ⟨fun d =>
-    by
-    have : Nonempty (StructuredArrow d F) :=
-      by
+  ⟨fun d => by
+    have : Nonempty (StructuredArrow d F) := by
       have := (I d).inv PUnit.unit
       obtain ⟨j, y, rfl⟩ := Limits.Types.jointly_surjective'.{v, v} this
       exact ⟨StructuredArrow.mk y⟩

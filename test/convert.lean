@@ -32,8 +32,7 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
   convert (config := { typeEqs := true }) (37, 57, 2, b)
 
-example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
-by
+example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ := by
   have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
   convert Set.preimage_empty
   rw [←Set.preimage_inter, this]

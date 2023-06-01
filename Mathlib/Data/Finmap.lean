@@ -115,7 +115,6 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     revert this
     rcases s.entries with ⟨l⟩
     exact id
-
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]

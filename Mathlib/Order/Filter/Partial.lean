@@ -236,8 +236,8 @@ theorem ptendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α →.
   Iff.rfl
 #align filter.ptendsto_iff_rtendsto Filter.ptendsto_iff_rtendsto
 
-theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) : pmap (PFun.res f s) l = map f (l ⊓ 𝓟 s) :=
-  by
+theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) :
+    pmap (PFun.res f s) l = map f (l ⊓ 𝓟 s) := by
   ext t
   simp only [PFun.core_res, mem_pmap, mem_map, mem_inf_principal, imp_iff_not_or]
   rfl

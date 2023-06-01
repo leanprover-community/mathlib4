@@ -152,7 +152,6 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
-
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
 theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
@@ -313,7 +312,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.traverseₓ'. -/
 
 /-- Defines a `traverse` function on the second component of a sum type.
-This is used to give a `traversable` instance for the functor `σ ⊕ -`. -/
+This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
 protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
   | Sum.inl x => pure (Sum.inl x)
   | Sum.inr x => Sum.inr <$> f x

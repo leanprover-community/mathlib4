@@ -334,7 +334,7 @@ protected def nonAssocSemiring [NonAssocSemiring β] : NonAssocSemiring α := by
   apply e.injective.nonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_assoc_semiring Equiv.nonAssocSemiring
 
-/-- Transfer `semiring` across an `Equiv` -/
+/-- Transfer `Semiring` across an `Equiv` -/
 @[reducible]
 protected def semiring [Semiring β] : Semiring α := by
   let mul := e.Mul

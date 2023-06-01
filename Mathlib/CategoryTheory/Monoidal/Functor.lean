@@ -327,8 +327,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
   { F.toFunctor ⋙ G.toFunctor with
     ε := G.ε ≫ G.map F.ε
     μ := fun X Y => G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y)
-    μ_natural := @fun _ _ _ _ f g =>
-      by
+    μ_natural := @fun _ _ _ _ f g => by
       simp only [Functor.comp_map, assoc]
       rw [← Category.assoc, LaxMonoidalFunctor.μ_natural, Category.assoc, ← map_comp, ← map_comp,
         ← LaxMonoidalFunctor.μ_natural]

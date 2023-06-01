@@ -93,14 +93,15 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
     let ng ← mkFreshExprMVar none
     let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
       withoutRecover <| runTermElab do
+        -- This coerces `f` to be a function as necessary:
         let pf ← Term.elabTermEnsuringType (← `($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
                     (← g.getType)
         Term.synthesizeSyntheticMVarsUsingDefault
         return pf
     g.assign pf
     return ng.mvarId! :: gs
-  match (← g.getType).getAppFnArgs with
-  | (``Ne, #[_, _, _]) => handle ``ne_of_apply_ne
+  let gty ← whnfR (← instantiateMVars (← g.getType))
+  match gty.getAppFnArgs with
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
@@ -140,7 +141,7 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 * If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
   and create a subsidiary goal `Monotone f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
-  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
+  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : Monotone f`.
 * If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
 * If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
   and create a subsidiary goal `injective f`.

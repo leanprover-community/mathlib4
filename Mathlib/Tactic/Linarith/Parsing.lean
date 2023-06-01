@@ -102,7 +102,7 @@ RBMap.empty.insert m 1
 /-- The unit monomial `one` is represented by the empty RBMap. -/
 def one : Monom := RBMap.empty
 
-/-- A scalar `z` is represented by a `sum` with coefficient `z` and monomial `one` -/
+/-- A scalar `z` is represented by a `Sum` with coefficient `z` and monomial `one` -/
 def scalar (z : ℤ) : Sum :=
 RBMap.empty.insert one z
 
@@ -169,10 +169,10 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
   | (``Neg.neg, #[_, _, e]) => do
     let (m1, comp) ← linearFormOfExpr red m e
     return (m1, comp.mapVal (fun _ v => -v))
-  | (``HPow.hPow, #[_, _, _, _, e, n]) => do
+  | (``HPow.hPow, #[_, _, _, _, a, n]) => do
     match n.numeral? with
     | some n => do
-      let (m1, comp) ← linearFormOfExpr red m e
+      let (m1, comp) ← linearFormOfExpr red m a
       return (m1, comp.pow n)
     | none => linearFormOfAtom red m e
   | _ => linearFormOfAtom red m e

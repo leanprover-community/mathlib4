@@ -521,7 +521,6 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
   · rw [_root_.map_add, card_replicate, hs]; simp [h]
   · rw [_root_.map_add, card_replicate, ht]; simp [h]
   · rw [prod_add, prod_add, hst]
-
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 

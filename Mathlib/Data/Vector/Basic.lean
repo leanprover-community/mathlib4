@@ -102,15 +102,14 @@ theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).t
 #align vector.to_list_map Vector.toList_map
 
 @[simp]
-theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head :=
-  by
+theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, head_cons, head_cons]
 #align vector.head_map Vector.head_map
 
 @[simp]
-theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).tail = v.tail.map f :=
-  by
+theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
+    (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
 #align vector.tail_map Vector.tail_map
@@ -206,8 +205,7 @@ theorem toList_empty (v : Vector α 0) : v.toList = [] :=
 /-- The list that makes up a `Vector` made up of a single element,
 retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
-theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] :=
-  by
+theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] := by
   rw [← v.cons_head_tail]
   simp only [toList_cons, toList_nil, head_cons, eq_self_iff_true, and_self_iff, singleton_tail]
 #align vector.to_list_singleton Vector.toList_singleton
@@ -250,8 +248,7 @@ theorem toList_reverse {v : Vector α n} : v.reverse.toList = v.toList.reverse :
 #align vector.to_list_reverse Vector.toList_reverse
 
 @[simp]
-theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v :=
-  by
+theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v := by
   cases v
   simp [Vector.reverse]
 #align vector.reverse_reverse Vector.reverse_reverse
@@ -295,7 +292,7 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
-  simp_rw [toList_reverse, Fin.val_last, Fin.val_zero]
+  simp_rw [toList_reverse]
   rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
   · congr
     simp
@@ -399,7 +396,7 @@ theorem scanl_get (i : Fin n) :
 end Scan
 
 /-- Monadic analog of `Vector.ofFn`.
-Given a monadic function on `fin n`, return a `Vector α n` inside the monad. -/
+Given a monadic function on `Fin n`, return a `Vector α n` inside the monad. -/
 def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector α n)
   | 0, _ => pure nil
   | _ + 1, f => do
@@ -663,8 +660,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
   rintro ⟨xs, rfl⟩ ; rfl
 #align vector.traverse_def Vector.traverse_def
 
-protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure: _ → Id _)= x :=
-  by
+protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
   simp! [IH]; rfl

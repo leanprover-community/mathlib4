@@ -10,7 +10,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Direct sum
@@ -164,8 +163,8 @@ theorem of_injective (i : ι) : Function.Injective (of β i) :=
 
 @[elab_as_elim]
 protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H_zero : C 0)
-    (H_basic : ∀ (i : ι) (x : β i), C (of β i x)) (H_plus : ∀ x y, C x → C y → C (x + y)) : C x :=
-  by
+    (H_basic : ∀ (i : ι) (x : β i), C (of β i x))
+    (H_plus : ∀ x y, C x → C y → C (x + y)) : C x := by
   apply Dfinsupp.induction x H_zero
   intro i b f h1 h2 ih
   solve_by_elim
@@ -182,7 +181,7 @@ theorem addHom_ext {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ�
 then they are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => FunLike.congr_fun <| H i
@@ -213,7 +212,6 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   -- Porting note: ext applied unsuitable ext lemma
   apply Dfinsupp.addHom_ext'
   simp [toAddMonoid, of]
-
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
 
 end ToAddMonoid
@@ -330,10 +328,9 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
   @Dfinsupp.sigmaCurry_apply _ _ δ _ _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
--- Porting note: marked noncomputable
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
     where
   toFun := Dfinsupp.sigmaUncurry
@@ -390,12 +387,10 @@ def IsInternal {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 #align direct_sum.is_internal DirectSum.IsInternal
 
--- Porting note: This times out; lean4#2003 may fix this?
-set_option maxHeartbeats 0
-theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
-    (A : ι → AddSubmonoid M) (h : IsInternal A) : supᵢ A = ⊤ := by
-  rw [AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
+    (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
-#align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
+#align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_iSup_eq_top
 
 end DirectSum

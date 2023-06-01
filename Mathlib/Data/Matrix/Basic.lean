@@ -26,7 +26,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
@@ -382,7 +382,7 @@ theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n 
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  Pi.IsSMulRegular.pi fun _ => Pi.IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
 #align is_smul_regular.matrix IsSMulRegular.matrix
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :

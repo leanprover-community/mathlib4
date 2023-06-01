@@ -41,7 +41,7 @@ def smallSets (l : Filter α) : Filter (Set α) :=
 #align filter.small_sets Filter.smallSets
 
 theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) := by
-  simp_rw [generate_eq_binfᵢ, smallSets, infᵢ_image]
+  simp_rw [generate_eq_biInf, smallSets, iInf_image]
   rfl
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
@@ -120,9 +120,9 @@ theorem comap_smallSets (l : Filter β) (f : α → Set β) :
   comap_lift'_eq
 #align filter.comap_small_sets Filter.comap_smallSets
 
-theorem smallSets_infᵢ {f : ι → Filter α} : (infᵢ f).smallSets = ⨅ i, (f i).smallSets :=
-  lift'_infᵢ_of_map_univ (powerset_inter _ _) powerset_univ
-#align filter.small_sets_infi Filter.smallSets_infᵢ
+theorem smallSets_iInf {f : ι → Filter α} : (iInf f).smallSets = ⨅ i, (f i).smallSets :=
+  lift'_iInf_of_map_univ (powerset_inter _ _) powerset_univ
+#align filter.small_sets_infi Filter.smallSets_iInf
 
 theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁.smallSets ⊓ l₂.smallSets :=
   lift'_inf _ _ powerset_inter
@@ -159,7 +159,6 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
       eventually_small_sets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
-
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually
 
 @[simp]

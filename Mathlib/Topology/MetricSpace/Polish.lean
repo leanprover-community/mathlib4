@@ -37,16 +37,16 @@ In this file, we establish the basic properties of Polish spaces.
 A fundamental property of Polish spaces is that one can put finer topologies, still Polish,
 with additional properties:
 
-* `exists_polish_space_forall_le`: on a topological space, consider countably many topologies
+* `exists_polishSpace_forall_le`: on a topological space, consider countably many topologies
   `t n`, all Polish and finer than the original topology. Then there exists another Polish
   topology which is finer than all the `t n`.
-* `is_clopenable s` is a property of a subset `s` of a topological space, requiring that there
+* `IsClopenable s` is a property of a subset `s` of a topological space, requiring that there
   exists a finer topology, which is Polish, for which `s` becomes open and closed. We show that
   this property is satisfied for open sets, closed sets, for complements, and for countable unions.
   Once Borel-measurable sets are defined in later files, it will follow that any Borel-measurable
   set is clopenable. Once the Lusin-Souslin theorem is proved using analytic sets, we will even
   show that a set is clopenable if and only if it is Borel-measurable, see
-  `is_clopenable_iff_measurable_set`.
+  `isClopenable_iff_measurableSet`.
 -/
 
 noncomputable section
@@ -176,7 +176,7 @@ theorem _root_.IsClosed.polishSpace {α : Type _} [TopologicalSpace α] [PolishS
 #align is_closed.polish_space IsClosed.polishSpace
 
 /-- A sequence of type synonyms of a given type `α`, useful in the proof of
-`exists_polish_space_forall_le` to endow each copy with a different topology. -/
+`exists_polishSpace_forall_le` to endow each copy with a different topology. -/
 @[nolint unusedArguments]
 def AuxCopy (α : Type _) {ι : Type _} (_i : ι) : Type _ := α
 #align polish_space.aux_copy PolishSpace.AuxCopy
@@ -202,7 +202,7 @@ theorem exists_polishSpace_forall_le {ι : Type _} [Countable ι] [t : Topologic
   -- show that the induced topology is finer than all the `m n`.
   have T_le_m : ∀ n, T.induced f ≤ m n := fun n ↦ by
     rw [induced_to_pi]
-    exact infᵢ_le_of_le n (@induced_id _ (m n)).le
+    exact iInf_le_of_le n (@induced_id _ (m n)).le
   refine' ⟨T.induced f, fun n => T_le_m n, (T_le_m default).trans (hm default), _⟩
   -- show that the new topology is Polish, as the pullback of a Polish topology under a closed
   -- embedding.
@@ -210,14 +210,14 @@ theorem exists_polishSpace_forall_le {ι : Type _} [Countable ι] [t : Topologic
     ext x
     constructor
     · rintro ⟨y, rfl⟩
-      exact mem_interᵢ.2 fun n => by simp only [mem_setOf_eq]
+      exact mem_iInter.2 fun n => by simp only [mem_setOf_eq]
     · refine fun hx ↦ ⟨x default, ?_⟩
       ext1 n
       symm
-      exact mem_interᵢ.1 hx n
+      exact mem_iInter.1 hx n
   have f_closed : IsClosed (range f) := by
     rw [A]
-    refine isClosed_interᵢ fun n => ?_
+    refine isClosed_iInter fun n => ?_
     have C : ∀ i : ι, Continuous fun x : ∀ n, AuxCopy α n => (id (x i) : α) := fun i ↦
       have : Continuous (show AuxCopy α i → α from id) := continuous_id_of_le (hm i)
       this.comp (continuous_apply i)
@@ -369,7 +369,7 @@ namespace PolishSpace
 
 /-- A set in a topological space is clopenable if there exists a finer Polish topology for which
 this set is open and closed. It turns out that this notion is equivalent to being Borel-measurable,
-but this is nontrivial (see `is_clopenable_iff_measurable_set`). -/
+but this is nontrivial (see `isClopenable_iff_measurableSet`). -/
 def IsClopenable [t : TopologicalSpace α] (s : Set α) : Prop :=
   ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s
 #align polish_space.is_clopenable PolishSpace.IsClopenable
@@ -409,14 +409,14 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
 #align is_open.is_clopenable IsOpen.isClopenable
 
 -- porting note: TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
-theorem IsClopenable.unionᵢ [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
+theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
   obtain ⟨t', t'm, -, t'_polish⟩ :
     ∃ t' : TopologicalSpace α, (∀ n : ℕ, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le m mt m_polish
   have A : IsOpen[t'] (⋃ n, s n) := by
-    apply isOpen_unionᵢ
+    apply isOpen_iUnion
     intro n
     apply t'm n
     exact m_open n
@@ -424,7 +424,6 @@ theorem IsClopenable.unionᵢ [t : TopologicalSpace α] [PolishSpace α] {s : �
       t'' ≤ t' ∧ @PolishSpace α t'' ∧ IsClosed[t''] (⋃ n, s n) ∧ IsOpen[t''] (⋃ n, s n) :=
     @IsOpen.isClopenable α t' t'_polish _ A
   exact ⟨t'', t''_le.trans ((t'm 0).trans (mt 0)), t''_polish, h1, h2⟩
-#align polish_space.is_clopenable.Union PolishSpace.IsClopenable.unionᵢ
+#align polish_space.is_clopenable.Union PolishSpace.IsClopenable.iUnion
 
 end PolishSpace
-

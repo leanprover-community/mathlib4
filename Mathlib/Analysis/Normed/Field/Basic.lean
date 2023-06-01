@@ -286,7 +286,6 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
-set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
@@ -473,8 +472,8 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_tendsto_zero.2 <| by
-        have : ∀ e : α × α, ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
-          by
+        have : ∀ e : α × α,
+            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
@@ -483,26 +482,15 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        -- porting note: the new `convert` sucks, it's way too dumb without using the type
-        -- of the goal to figure out how to match things up. The rest of this proof was:
-        /- convert
+        convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        show tendsto _ _ _
+        -- Porting note: `show` used to select a goal to work on
+        rotate_right
+        show Tendsto _ _ _
         exact tendsto_const_nhds
-        simp -/
-        rw [←zero_add 0]
-        refine Tendsto.add ?_ ?_
-        · rw [←mul_zero (‖x.fst‖)]
-          refine Filter.Tendsto.mul ?_ ?_
-          · exact (continuous_fst.tendsto x).norm
-          · rw [←norm_zero (E := α), ←sub_self x.snd]
-            exact ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm
-        · rw [←zero_mul (‖x.snd‖)]
-          refine' Filter.Tendsto.mul _ tendsto_const_nhds
-          rw [←norm_zero (E := α), ←sub_self x.fst]
-          exact ((continuous_fst.tendsto x).sub tendsto_const_nhds).norm⟩
+        simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -603,8 +591,8 @@ theorem nnnorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnnormHom : α →*₀ ℝ≥0)
 #align nnnorm_zpow nnnorm_zpow
 
-theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) : dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) :=
-  by
+theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+    dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by
   rw [dist_eq_norm, inv_sub_inv' hz hw, norm_mul, norm_mul, norm_inv, norm_inv, mul_comm ‖z‖⁻¹,
     mul_assoc, dist_eq_norm', div_eq_mul_inv, mul_inv]
 #align dist_inv_inv₀ dist_inv_inv₀
@@ -636,8 +624,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
   refine' ⟨fun r r0 => tendsto_iff_norm_tendsto_zero.2 _⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
-  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε :=
-    by
+  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
     filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr]with e he
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
@@ -690,7 +677,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
-normed; in particular, the `padic`s exhibit this fact. -/
+normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
@@ -1043,8 +1030,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- porting note: add this back in once `assert_not_exists` is ported
-/-
 -- Guard again import creep.
 assert_not_exists RestrictScalars
--/

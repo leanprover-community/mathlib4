@@ -24,7 +24,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
 
 ## TODO
 
@@ -113,7 +113,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [MulActionWithZero 𝕜 E]
 
-set_option synthInstance.etaExperiment true
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
@@ -183,8 +182,8 @@ variable [Nontrivial 𝕜] [DenselyOrdered 𝕜]
 theorem openSegment_same (x : E) : openSegment 𝕜 x x = {x} :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
-      simpa only [← add_smul, mem_singleton_iff, hab, one_smul, eq_comm] using hz, fun h : z = x =>
-      by
+      simpa only [← add_smul, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
+    fun h : z = x => by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
       refine' ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel'_right _ _, _⟩
       rw [← add_smul, add_sub_cancel'_right, one_smul, h]⟩
@@ -222,8 +221,8 @@ theorem openSegment_eq_image' (x y : E) :
   abel
 #align open_segment_eq_image' openSegment_eq_image'
 
-theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] = AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 :=
-  by
+theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
+    AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
   convert segment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 #align segment_eq_image_line_map segment_eq_image_lineMap
@@ -354,9 +353,8 @@ theorem mem_segment_iff_div :
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
-theorem mem_openSegment_iff_div :
-    x ∈ openSegment 𝕜 y z ↔ ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ (a / (a + b)) • y + (b / (a + b)) • z = x :=
-  by
+theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
+    ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ (a / (a + b)) • y + (b / (a + b)) • z = x := by
   constructor
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     use a, b, ha, hb
@@ -416,7 +414,7 @@ end LinearOrderedField
 /-!
 #### Segments in an ordered space
 
-Relates `segment`, `openSegment` and `set.Icc`, `set.Ico`, `set.Ioc`, `set.Ioo`
+Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
 
 
@@ -434,11 +432,9 @@ theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg h hb) _
-
   calc
     a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg h ha) _
     _ = y := Convex.combo_self hab _
-
 #align segment_subset_Icc segment_subset_Icc
 
 end OrderedAddCommMonoid
@@ -453,11 +449,9 @@ theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y :=
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ < a • x + b • y := add_lt_add_left (smul_lt_smul_of_pos h hb) _
-
   calc
     a • x + b • y < a • y + b • y := add_lt_add_right (smul_lt_smul_of_pos h ha) _
     _ = y := Convex.combo_self hab _
-
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
 end OrderedCancelAddCommMonoid

@@ -127,7 +127,6 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a
     _ = 2 * a := (two_mul _).symm
-
 #align add_one_le_two_mul add_one_le_two_mul
 
 /-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and
@@ -257,7 +256,6 @@ theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (
     a + (2 + b) ≤ a + (a + a * b) :=
       add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
-
 #align add_le_mul_two_add add_le_mul_two_add
 
 theorem one_le_mul_of_one_le_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) : (1 : α) ≤ a * b :=
@@ -796,7 +794,7 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
-attribute [local instance] LinearOrderedSemiring.decidable_le LinearOrderedSemiring.decidable_lt
+attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
@@ -856,12 +854,10 @@ theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a 
       _ < 2 := zero_lt_two
       _ ≤ a := a2
       _ ≤ b := ab
-
   calc
     a + b ≤ b + b := add_le_add_right ab b
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_right this).mpr a2
-
 #align add_le_mul_of_left_le_right add_le_mul_of_left_le_right
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
@@ -871,12 +867,10 @@ theorem add_le_mul_of_right_le_left (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a 
       _ < 2 := zero_lt_two
       _ ≤ b := b2
       _ ≤ a := ba
-
   calc
     a + b ≤ a + a := add_le_add_left ba a
     _ = a * 2 := (mul_two a).symm
     _ ≤ a * b := (mul_le_mul_left this).mpr b2
-
 #align add_le_mul_of_right_le_left add_le_mul_of_right_le_left
 
 theorem add_le_mul (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
@@ -1019,7 +1013,7 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b c : α}
 
-attribute [local instance] LinearOrderedRing.decidable_le LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
@@ -1119,7 +1113,6 @@ theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
     a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
     _ ↔ 0 ≤ -a := neg_le_self_iff
     _ ↔ a ≤ 0 := neg_nonneg
-
 #align le_neg_self_iff le_neg_self_iff
 
 @[simp]
@@ -1128,7 +1121,6 @@ theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
     a < -a ↔ - -a < -a := by rw [neg_neg]
     _ ↔ 0 < -a := neg_lt_self_iff
     _ ↔ a < 0 := neg_pos
-
 #align lt_neg_self_iff lt_neg_self_iff
 
 theorem neg_one_lt_zero : -1 < (0 : α) :=
