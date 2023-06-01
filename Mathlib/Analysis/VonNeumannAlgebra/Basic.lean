@@ -20,10 +20,10 @@ import Mathlib.Algebra.Star.Subalgebra
 We give the "abstract" and "concrete" definitions of a von Neumann algebra.
 We still have a major project ahead of us to show the equivalence between these definitions!
 
-An abstract von Neumann algebra `wstar_algebra M` is a C^* algebra with a Banach space predual,
+An abstract von Neumann algebra `WStarAlgebra M` is a C^* algebra with a Banach space predual,
 per Sakai (1971).
 
-A concrete von Neumann algebra `von_neumann_algebra H` (where `H` is a Hilbert space)
+A concrete von Neumann algebra `VonNeumannAlgebra H` (where `H` is a Hilbert space)
 is a *-closed subalgebra of bounded operators on `H` which is equal to its double commutant.
 
 We'll also need to prove the von Neumann double commutant theorem,
@@ -37,7 +37,7 @@ universe u v
 
 So that we can unambiguously talk about these "abstract" von Neumann algebras
 in parallel with the "concrete" ones (weakly closed *-subalgebras of B(H)),
-we name this definition `wstar_algebra`.
+we name this definition `WStarAlgebra`.
 
 Note that for now we only assert the mere existence of predual, rather than picking one.
 This may later prove problematic, and need to be revisited.
@@ -46,27 +46,27 @@ One the other hand, not picking one means that the weak-* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
-class WstarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
+class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
     [NormedAlgebra ℂ M] [StarModule ℂ M] where
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
       Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
-#align wstar_algebra WstarAlgebra
+#align wstar_algebra WStarAlgebra
 
--- TODO: Without this, `von_neumann_algebra` times out. Why?
+-- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
 as a *-closed subalgebra of bounded operators on a Hilbert space,
 which is equal to its double commutant.
 
 Note that this definition is parameterised by the Hilbert space
 on which the algebra faithfully acts, as is standard in the literature.
-See `wstar_algebra` for the abstract notion (a C^*-algebra with Banach space predual).
+See `WStarAlgebra` for the abstract notion (a C^*-algebra with Banach space predual).
 
 Note this is a bundled structure, parameterised by the Hilbert space `H`,
 rather than a typeclass on the type of elements.
-Thus we can't say that the bounded operators `H →L[ℂ] H` form a `von_neumann_algebra`
-(although we will later construct the instance `wstar_algebra (H →L[ℂ] H)`),
-and instead will use `⊤ : von_neumann_algebra H`.
+Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannAlgebra`
+(although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
+and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
 -- porting note: I don't think the nonempty intance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
@@ -116,7 +116,7 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
   S.centralizer_centralizer'
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
 
-/-- The centralizer of a `von_neumann_algebra`, as a `von_neumann_algebra`.-/
+/-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`.-/
 def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H :=
   {
     StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H)) fun a (ha : a ∈ S) =>
