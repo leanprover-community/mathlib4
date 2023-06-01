@@ -40,8 +40,8 @@ with derivative `f'`. -/
 theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : E} {f' : E →L[ℝ] F}
     (f_diff : DifferentiableOn ℝ f s) (s_conv : Convex ℝ s) (s_open : IsOpen s)
     (f_cont : ∀ y ∈ closure s, ContinuousWithinAt f s y)
-    (h : Tendsto (fun y => fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) : HasFDerivWithinAt f f' (closure s) x :=
-  by
+    (h : Tendsto (fun y => fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) :
+    HasFDerivWithinAt f f' (closure s) x := by
   classical
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
@@ -49,10 +49,11 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     · rw [← closure_closure] at hx ; exact hasFDerivWithinAt_of_not_mem_closure hx
     push_neg  at hx
     rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
-    /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in `closure
-      s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it suffices to
-      prove this for nearby points inside `s`. In a neighborhood of `x`, the derivative of `f` is
-      arbitrarily close to `f'` by assumption. The mean value inequality completes the proof. -/
+    /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
+      `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it
+      suffices to prove this for nearby points inside `s`. In a neighborhood of `x`, the derivative
+      of `f` is arbitrarily close to `f'` by assumption. The mean value inequality completes the
+      proof. -/
     intro ε ε_pos
     obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ y ∈ s, dist y x < δ → ‖fderiv ℝ f y - f'‖ < ε := by
       simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
@@ -67,9 +68,8 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
       apply this ⟨x, y⟩
       have : B ∩ closure s ⊆ closure (B ∩ s) := isOpen_ball.inter_closure
       exact ⟨this ⟨mem_ball_self δ_pos, hx⟩, this y_in⟩
-    have key :
-      ∀ p : E × E, p ∈ (B ∩ s) ×ˢ (B ∩ s) → ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ :=
-      by
+    have key : ∀ p : E × E, p ∈ (B ∩ s) ×ˢ (B ∩ s) →
+          ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ := by
       rintro ⟨u, v⟩ ⟨u_in, v_in⟩
       have conv : Convex ℝ (B ∩ s) := (convex_ball _ _).inter s_conv
       have diff : DifferentiableOn ℝ f (B ∩ s) := f_diff.mono (inter_subset_right _ _)
