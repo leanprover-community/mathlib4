@@ -173,8 +173,10 @@ def natLitMatcher (n : Nat) : Matcher := fun s => do
 /-- Given an identifier `f`, returns
 (1) the resolved constant (if it's not an fvar)
 (2) a Term for a matcher for the function
-(3) the positions at which the function takes an explicit argument -/
-def getExplicitArgIndices (f : Syntax) : OptionT TermElabM (Option Name × Term × Array Nat) := do
+(3) the arity
+(4) the positions at which the function takes an explicit argument -/
+def getExplicitArgIndices (f : Syntax) :
+    OptionT TermElabM (Option Name × Term × Nat × Array Nat) := do
   let fe? ← try liftM <| Term.resolveId? f catch _ => pure none
   match fe? with
   | some fe@(.const f _) =>
@@ -186,20 +188,21 @@ def getExplicitArgIndices (f : Syntax) : OptionT TermElabM (Option Name × Term 
     trace[notation3] "could not resolve name {f}"
     failure
 where
-  collectIdxs (ty : Expr) : MetaM (Array Nat) := do
+  collectIdxs (ty : Expr) : MetaM (Nat × Array Nat) := do
     let (_, binderInfos, _) ← Meta.forallMetaTelescope ty
     let mut idxs := #[]
     for bi in binderInfos, i in [0:binderInfos.size] do
       if bi.isExplicit then
         idxs := idxs.push i
-    return idxs
+    return (binderInfos.size, idxs)
 
 /-- A matcher that runs `matchf` for the function and the `matchers` for the associated
-argument indices. -/
-def fnArgMatcher (matchf : Matcher) (matchers : Array (Nat × Matcher)) : Matcher := fun s => do
+argument indices. Fails if the function doesn't have exactly `arity` arguments. -/
+def fnArgMatcher (arity : Nat) (matchf : Matcher) (matchers : Array (Nat × Matcher)) :
+    Matcher := fun s => do
   let mut s := s
   let nargs := (← getExpr).getAppNumArgs
-  guard <| matchers.all (fun (i, _) => i < nargs)
+  guard <| nargs == arity
   s ← withNaryFn <| matchf s
   for (i, matcher) in matchers do
     s ← withNaryArg i <| matcher s
@@ -236,14 +239,19 @@ partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
       failure
 where
   processFn (f : Term) (args : TSyntaxArray `term) : OptionT TermElabM (List Name × Term) := do
-    let (name?, matchf, idxs) ← getExplicitArgIndices f
-    guard <| args.size ≤ idxs.size
+    let (name?, matchf, arity, idxs) ← getExplicitArgIndices f
+    unless args.size ≤ idxs.size do
+      trace[notation3] "Function {f} has been given more explicit arguments than expected"
+      failure
     let mut matchers := #[]
     for i in idxs, arg in args do
       let (_, matcher) ← mkExprMatcher arg boundNames
       matchers := matchers.push <| ← `(($(quote i), $matcher))
+    -- `arity'` is the number of arguments (including trailing implicits) given these
+    -- explicit arguments. This reflects how the function would be elaborated.
+    let arity' := if _ : args.size < idxs.size then idxs[args.size] else arity
     let key? := name?.map (`app ++ ·)
-    return (key?.toList, ← ``(fnArgMatcher $matchf #[$matchers,*]))
+    return (key?.toList, ← ``(fnArgMatcher $(quote arity') $matchf #[$matchers,*]))
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
 against is in the `lit` variable.
