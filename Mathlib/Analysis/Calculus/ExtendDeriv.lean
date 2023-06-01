@@ -75,10 +75,13 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
       have diff : DifferentiableOn ℝ f (B ∩ s) := f_diff.mono (inter_subset_right _ _)
       have bound : ∀ z ∈ B ∩ s, ‖fderivWithin ℝ f (B ∩ s) z - f'‖ ≤ ε := by
         intro z z_in
-        convert le_of_lt (hδ _ z_in.2 z_in.1)
-        have op : IsOpen (B ∩ s) := isOpen_ball.inter s_open
-        rw [DifferentiableAt.fderivWithin _ (op.uniqueDiffOn z z_in)]
-        exact (diff z z_in).DifferentiableAt (IsOpen.mem_nhds op z_in)
+        have h := hδ z
+        have : fderivWithin ℝ f (B ∩ s) z = fderiv ℝ f z := by
+          have op : IsOpen (B ∩ s) := isOpen_ball.inter s_open
+          rw [DifferentiableAt.fderivWithin _ (op.uniqueDiffOn z z_in)]
+          exact (diff z z_in).differentiableAt (IsOpen.mem_nhds op z_in)
+        rw [← this] at h
+        exact (le_of_lt (h z_in.2 z_in.1))
       simpa using conv.norm_image_sub_le_of_norm_fderivWithin_le' diff bound u_in v_in
     rintro ⟨u, v⟩ uv_in
     refine' ContinuousWithinAt.closure_le uv_in _ _ key
