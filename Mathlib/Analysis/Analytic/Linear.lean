@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Linear functions are analytic
@@ -102,8 +102,7 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
   { r_le := by simp
     r_pos := ENNReal.coe_lt_top
     HasSum := fun y _ =>
-      (hasSum_nat_add_iff' 3).1 <|
-        by
+      (hasSum_nat_add_iff' 3).1 <| by
         simp only [Finset.sum_range_succ, Finset.sum_range_one, Prod.fst_add, Prod.snd_add,
           f.map_add_add]
         dsimp; simp only [add_comm, sub_self, hasSum_zero] }
