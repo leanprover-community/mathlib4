@@ -8,11 +8,11 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Dual
-import Mathbin.Analysis.NormedSpace.Star.Basic
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.Analysis.InnerProductSpace.Adjoint
-import Mathbin.Algebra.Star.Subalgebra
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Algebra.Star.Subalgebra
 
 /-!
 # Von Neumann algebras
@@ -89,8 +89,7 @@ instance : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) :=
 
 instance : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where star_mem s a := s.star_mem'
 
-instance : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H)
-    where
+instance : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   add_mem := add_mem'
   mul_mem := mul_mem'
   one_mem := one_mem'
