@@ -23,7 +23,6 @@ section
 variable {C}
 variable [HasZeroMorphisms C]
 
-/-- Morphisms of short complexes are the commutative diagrams of the obvious shape. -/
 @[ext]
 structure Hom (S₁ S₂ : ShortComplex₄ C) where
   τ₁ : S₁.X₁ ⟶ S₂.X₁
@@ -147,6 +146,51 @@ lemma cyclesCoToCycles_fac
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
     S.shortComplex₁.pCyclesCo ≫ S.cyclesCoToCycles ≫ S.shortComplex₂.iCycles = S.g :=
   S.cokerToKer'_fac _ _ (S.shortComplex₁.cyclesCoIsCokernel) (S.shortComplex₂.cyclesIsKernel)
+
+end
+
+section
+
+variable (S T : ShortComplex C) (e : S.X₃ ≅ T.X₁) (φ : S.X₂ ⟶ T.X₂) (hφ : φ = S.g ≫ e.hom ≫ T.f)
+
+@[simps]
+def connectShortComplex : ShortComplex₄ C where
+  X₁ := S.X₁
+  X₂ := S.X₂
+  X₃ := T.X₂
+  X₄ := T.X₃
+  f := S.f
+  g := φ
+  h := T.g
+  zero₁ := by simp [hφ]
+  zero₂ := by simp [hφ]
+
+@[simps]
+def connectShortComplexι : S ⟶ (connectShortComplex S T e φ hφ).shortComplex₁ where
+  τ₁ := 𝟙 _
+  τ₂ := 𝟙 _
+  τ₃ := e.hom ≫ T.f
+
+instance : IsIso (connectShortComplexι S T e φ hφ).τ₁ := by dsimp ; infer_instance
+instance : IsIso (connectShortComplexι S T e φ hφ).τ₂ := by dsimp ; infer_instance
+instance [Mono T.f] : Mono (connectShortComplexι S T e φ hφ).τ₃ := mono_comp _ _
+
+@[simps]
+def connectShortComplexπ : (connectShortComplex S T e φ hφ).shortComplex₂ ⟶ T where
+  τ₁ := S.g ≫ e.hom
+  τ₂ := 𝟙 _
+  τ₃ := 𝟙 _
+
+instance [Epi S.g] : Epi (connectShortComplexπ S T e φ hφ).τ₁ := epi_comp _ _
+instance : IsIso (connectShortComplexπ S T e φ hφ).τ₂ := by dsimp ; infer_instance
+instance : IsIso (connectShortComplexπ S T e φ hφ).τ₃ := by dsimp ; infer_instance
+
+lemma connectShortComplex_exact (hS : S.Exact) (hT : T.Exact) [Epi S.g] [Mono T.f] :
+    (connectShortComplex S T e φ hφ).Exact where
+  exact₁ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
+    (connectShortComplexι S T e φ hφ)).1 hS
+  exact₂ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
+    (connectShortComplexπ S T e φ hφ)).2 hT
 
 end
 
