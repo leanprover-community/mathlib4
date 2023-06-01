@@ -11,7 +11,8 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 # Condensed Objects
 
-This file defines the category of condensed objects in a category `C`.
+This file defines the category of condensed objects in a category `C`, following the work
+of Clausen-Scholze and Barwick-Haine.
 
 ## Implementation Details
 
@@ -24,6 +25,11 @@ suitable assumptions on `C`).
 
 Note: Our definition more closely resembles "Pyknotic objects" in the sense of Barwick-Haine,
 as we do not impose cardinality bounds, and manage universes carefully instead.
+
+## References
+
+- [barwickhaine2019]: *Pyknotic objects, I. Basic notions*, 2019.
+- [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
 
 -/
 
