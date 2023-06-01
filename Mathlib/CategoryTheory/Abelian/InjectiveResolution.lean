@@ -102,7 +102,7 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
 @[reassoc (attr := simp)]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
     (J : InjectiveResolution Z) : J.ι ≫ desc f I J = (CochainComplex.single₀ C).map f ≫ I.ι := by
-  ext n
+  ext
   simp [desc, descFOne, descFZero]
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
 
