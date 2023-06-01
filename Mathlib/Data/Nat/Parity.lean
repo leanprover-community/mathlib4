@@ -263,8 +263,7 @@ theorem bit0_mod_bit0 : bit0 n % bit0 m = bit0 (n % m) := by
 #align nat.bit0_mod_bit0 Nat.bit0_mod_bit0
 
 @[simp]
-theorem bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) :=
-  by
+theorem bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) := by
   have h₁ := congr_arg bit1 (Nat.div_add_mod n m)
   -- `∀ m n : ℕ, bit0 m * n = bit0 (m * n)` seems to be missing...
   rw [bit1_add, bit0_eq_two_mul, ← mul_assoc, ← bit0_eq_two_mul] at h₁
@@ -317,7 +316,6 @@ theorem iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
 theorem iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rcases hn with ⟨m, rfl⟩
   rw [iterate_add, hf.iterate_two_mul, comp.left_id, iterate_one]
-
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
 theorem iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=

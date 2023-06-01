@@ -50,7 +50,7 @@ def Functor.Elements (F : C ⥤ Type w) :=
   Σc : C, F.obj c
 #align category_theory.functor.elements CategoryTheory.Functor.Elements
 
--- porting note: added because Sigma.ext would be trigged automatically
+-- porting note: added because Sigma.ext would be triggered automatically
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -137,7 +137,6 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
   obj X := StructuredArrow.mk fun _ => X.2
   map {X Y} f := StructuredArrow.homMk f.val (by funext; simp [f.2])
-
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
 
 @[simp]

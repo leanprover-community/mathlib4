@@ -18,7 +18,7 @@ In this file we define typeclass for bicategories.
 A bicategory `B` consists of
 * objects `a : B`,
 * 1-morphisms `f : a ⟶ b` between objects `a b : B`, and
-* 2-morphisms `η : f ⟶ g` beween 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
+* 2-morphisms `η : f ⟶ g` between 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
 
 We use `u`, `v`, and `w` as the universe variables for objects, 1-morphisms, and 2-morphisms,
 respectively.
@@ -203,8 +203,7 @@ theorem hom_inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
     η.hom ▷ h ≫ η.inv ▷ h = 𝟙 (f ≫ h) := by rw [← comp_whiskerRight, hom_inv_id, id_whiskerRight]
-#align category_theory.bicategory.hom_inv_whisker_right
-  CategoryTheory.Bicategory.hom_inv_whiskerRight
+#align category_theory.bicategory.hom_inv_whisker_right CategoryTheory.Bicategory.hom_inv_whiskerRight
 
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
@@ -264,8 +263,7 @@ theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
 @[reassoc (attr := simp)]
 theorem pentagon_inv_inv_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom =
-      f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv :=
-  by
+    f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv := by
   rw [← cancel_epi (f ◁ (α_ g h i).inv), ← cancel_mono (α_ (f ≫ g) h i).inv]
   simp
 #align category_theory.bicategory.pentagon_inv_inv_hom_hom_inv CategoryTheory.Bicategory.pentagon_inv_inv_hom_hom_inv
@@ -294,8 +292,7 @@ theorem pentagon_hom_hom_inv_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
 @[reassoc (attr := simp)]
 theorem pentagon_hom_inv_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f g (h ≫ i)).hom ≫ f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv =
-      (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i :=
-  by
+    (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i := by
   rw [← cancel_epi (α_ f g (h ≫ i)).inv, ← cancel_mono ((α_ f g h).inv ▷ i)]
   simp
 #align category_theory.bicategory.pentagon_hom_inv_inv_inv_hom CategoryTheory.Bicategory.pentagon_hom_inv_inv_inv_hom
@@ -335,8 +332,7 @@ theorem triangle_assoc_comp_right (f : a ⟶ b) (g : b ⟶ c) :
 theorem triangle_assoc_comp_right_inv (f : a ⟶ b) (g : b ⟶ c) :
     (ρ_ f).inv ▷ g ≫ (α_ f (𝟙 b) g).hom = f ◁ (λ_ g).inv := by
   simp [← cancel_mono (f ◁ (λ_ g).hom)]
-#align category_theory.bicategory.triangle_assoc_comp_right_inv
-  CategoryTheory.Bicategory.triangle_assoc_comp_right_inv
+#align category_theory.bicategory.triangle_assoc_comp_right_inv CategoryTheory.Bicategory.triangle_assoc_comp_right_inv
 
 @[reassoc (attr := simp)]
 theorem triangle_assoc_comp_left_inv (f : a ⟶ b) (g : b ⟶ c) :
@@ -393,8 +389,7 @@ theorem comp_whiskerLeft_symm (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η :
 theorem leftUnitor_naturality {f g : a ⟶ b} (η : f ⟶ g) :
     𝟙 a ◁ η ≫ (λ_ g).hom = (λ_ f).hom ≫ η :=
   by simp
-#align category_theory.bicategory.left_unitor_naturality
-  CategoryTheory.Bicategory.leftUnitor_naturality
+#align category_theory.bicategory.left_unitor_naturality CategoryTheory.Bicategory.leftUnitor_naturality
 
 @[reassoc]
 theorem leftUnitor_inv_naturality {f g : a ⟶ b} (η : f ⟶ g) :

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.star.basic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
+! leanprover-community/mathlib commit dc7ac07acd84584426773e69e51035bea9a770e7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,7 +13,6 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Star monoids, rings, and modules
@@ -44,9 +43,8 @@ positive cone which is the closure of the sums of elements `star r * r`. A weake
 advantage of not requiring a topology.
 -/
 
--- Porting note: `assert_not_exists` not implemented yet
---assert_not_exists finset
---assert_not_exists subgroup
+assert_not_exists Finset
+assert_not_exists Subgroup
 
 universe u v
 
@@ -57,6 +55,9 @@ open MulOpposite
 class Star (R : Type u) where
   star : R → R
 #align has_star Star
+
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Star.star
 
 variable {R : Type u}
 
@@ -101,6 +102,11 @@ theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) 
   Function.Involutive.injective star_involutive
 #align star_injective star_injective
 
+@[simp]
+theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
+  star_injective.eq_iff
+#align star_inj star_inj
+
 /-- `star` as an equivalence when it is involutive. -/
 protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
@@ -140,6 +146,39 @@ class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
 export StarSemigroup (star_mul)
 
 attribute [simp 900] star_mul
+
+section StarSemigroup
+
+variable [Semigroup R] [StarSemigroup R]
+
+theorem star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
+#align star_star_mul star_star_mul
+
+theorem star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
+#align star_mul_star star_mul_star
+
+@[simp]
+theorem semiconjBy_star_star_star {x y z : R} :
+    SemiconjBy (star x) (star z) (star y) ↔ SemiconjBy x y z := by
+  simp_rw [SemiconjBy, ← star_mul, star_inj, eq_comm]
+#align semiconj_by_star_star_star semiconjBy_star_star_star
+
+alias semiconjBy_star_star_star ↔ _ SemiconjBy.star_star_star
+#align semiconj_by.star_star_star SemiconjBy.star_star_star
+
+@[simp]
+theorem commute_star_star {x y : R} : Commute (star x) (star y) ↔ Commute x y :=
+  semiconjBy_star_star_star
+#align commute_star_star commute_star_star
+
+alias commute_star_star ↔ _ Commute.star_star
+#align commute.star_star Commute.star_star
+
+theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
+  rw [← commute_star_star, star_star]
+#align commute_star_comm commute_star_comm
+
+end StarSemigroup
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
@@ -315,8 +354,6 @@ theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
   star_natCast _
 
 section
--- Porting note: This takes too long
-set_option maxHeartbeats 0
 
 @[simp, norm_cast]
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=

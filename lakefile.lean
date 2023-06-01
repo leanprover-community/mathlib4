@@ -2,14 +2,21 @@ import Lake
 
 open Lake DSL
 
-package mathlib
+def moreServerArgs := #[
+  "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
+]
+
+-- These settings only apply during `lake build`, but not in VSCode editor.
+def moreLeanArgs := #[
+  "-DwarningAsError=true"
+] ++ moreServerArgs
+
+package mathlib where
+  moreServerArgs := moreServerArgs
 
 @[default_target]
 lean_lib Mathlib where
-  moreLeanArgs := #[
-    "-DwarningAsError=true",
-    "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
-  ]
+  moreLeanArgs := moreLeanArgs
 
 @[default_target]
 lean_exe runLinter where
@@ -24,7 +31,11 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 
 lean_lib Cache where
+  moreLeanArgs := moreLeanArgs
   roots := #[`Cache]
 
 lean_exe cache where
   root := `Cache.Main
+
+lean_lib MathlibExtras where
+  roots := #[`MathlibExtras]

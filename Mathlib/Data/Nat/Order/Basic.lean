@@ -50,7 +50,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
@@ -175,18 +175,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
-
-theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  calc
-    m + n > 0 + n := Nat.add_lt_add_right h n
-    _ = n := Nat.zero_add n
-    _ ≥ 0 := zero_le n
-
 #align nat.add_pos_left Nat.add_pos_left
-
-theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
-  rw [add_comm]
-  exact add_pos_left h m
 #align nat.add_pos_right Nat.add_pos_right
 
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
@@ -211,7 +200,6 @@ theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m
   cases n <;>
   simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
     succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
-
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
@@ -271,7 +259,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left, right]
+  cases' le_or_lt m k with h' h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
@@ -396,7 +384,6 @@ protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
         _ = m := mod_add_div _ _
         _ ≤ k * n := h) k0
-
 #align nat.div_le_of_le_mul' Nat.div_le_of_le_mul'
 
 protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
@@ -405,7 +392,6 @@ protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
       calc
         m = 1 * m := (one_mul _).symm
         _ ≤ n * m := Nat.mul_le_mul_right _ n0
-
 #align nat.div_le_self' Nat.div_le_self'
 
 protected theorem div_lt_of_lt_mul (h : m < n * k) : m / n < k :=
@@ -432,8 +418,6 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
-
-
 #align nat.div_mul_div_le_div Nat.div_mul_div_le_div
 
 theorem eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 :=
@@ -548,7 +532,6 @@ theorem div_mul_div_comm (hmn : n ∣ m) (hkl : l ∣ k) : m / n * (k / l) = m *
       repeat' assumption
       -- Porting note: this line was `cc` in Lean3
       simp only [mul_comm, mul_left_comm, mul_assoc]
-
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by

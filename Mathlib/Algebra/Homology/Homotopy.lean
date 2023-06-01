@@ -206,7 +206,6 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
   zero i j w := by dsimp ; rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
-
 #align homotopy.comp_right Homotopy.compRight
 
 /-- homotopy is closed under composition (on the left) -/
@@ -350,8 +349,7 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
 
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
-def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 :=
-  by
+def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
   intro i j hij
   dsimp
@@ -446,7 +444,7 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
 so that as we construct each component, we have available the previous two components,
 and the fact that they satisfy the homotopy condition.
 
-To simplify the situation, we only construct homotopies of the form `homotopy e 0`.
+To simplify the situation, we only construct homotopies of the form `Homotopy e 0`.
 `Homotopy.equivSubZero` can provide the general case.
 
 Notice however, that this construction does not have particularly good definitional properties:
@@ -774,7 +772,7 @@ theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
     Preadditive.comp_add]
   rw [← Preadditive.sub_comp]
   simp only [CategoryTheory.Subobject.factorThru_add_sub_factorThru_right]
-  erw [Subobject.factorThru_ofLe (D.boundaries_le_cycles i)]
+  erw [Subobject.factorThru_ofLE (D.boundaries_le_cycles i)]
   · simp
   · rw [prevD_eq_toPrev_dTo, ← Category.assoc]
     apply imageSubobject_factors_comp_self

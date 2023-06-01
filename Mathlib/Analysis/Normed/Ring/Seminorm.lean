@@ -336,7 +336,6 @@ instance : Inhabited (MulRingNorm R) :=
 
 end MulRingNorm
 
-set_option synthInstance.etaExperiment true in
 /-- A nonzero ring seminorm on a field `K` is a ring norm. -/
 def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=

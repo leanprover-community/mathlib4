@@ -486,7 +486,7 @@ namespace FreeGroup
 
 variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
 
-/-- The canonical map from `list (α × bool)` to the free group on `α`. -/
+/-- The canonical map from `List (α × Bool)` to the free group on `α`. -/
 @[to_additive "The canonical map from `list (α × bool)` to the free additive group on `α`."]
 def mk (L : List (α × Bool)) : FreeGroup α :=
   Quot.mk Red.Step L
@@ -666,7 +666,6 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
     mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
-
 #align free_group.red.exact FreeGroup.Red.exact
 #align free_add_group.red.exact FreeAddGroup.Red.exact
 
@@ -682,7 +681,7 @@ section lift
 
 variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
-/-- Given `f : α → β` with `β` a group, the canonical map `list (α × bool) → β` -/
+/-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive "Given `f : α → β` with `β` an additive group, the canonical map
   `list (α × bool) → β`"]
 def Lift.aux : List (α × Bool) → β := fun L =>
@@ -1166,6 +1165,11 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
         simp [List.length] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
+        -- Porting note: needed to add this step in #3414.
+        -- However it is not caused by lean4#2210 (reenableeta)
+        -- but rather by https://github.com/leanprover/lean4/pull/2146.
+        -- Nevertheless the proof could be cleaned up.
+        cases this
       | cons hd tail =>
         cases' hd with y c
         dsimp only
@@ -1433,7 +1437,6 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
     _ = norm x + norm y := List.length_append _ _
-
 #align free_group.norm_mul_le FreeGroup.norm_mul_le
 #align free_add_group.norm_add_le FreeAddGroup.norm_add_le
 

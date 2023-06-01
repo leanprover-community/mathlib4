@@ -85,9 +85,9 @@ variable {R : Type _} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
--- mathport name: «expr [ ⁻¹]»
 @[inherit_doc OreLocalization]
-notation:1075 R "[" S "⁻¹]" => OreLocalization R S
+scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
+macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $R $S)
 
 attribute [local instance] oreEqv
 
@@ -142,7 +142,6 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t 
     _ = r₁ * r' * (r₂ * t') /ₒ (s * t') := by rw [hr₂]
     _ = r₁ * r' * r₂ * t' /ₒ (s * t') := by simp [← mul_assoc]
     _ = r₁ * r' * r₂ /ₒ s := (OreLocalization.expand _ _ _ _).symm
-
 #align ore_localization.eq_of_num_factor_eq OreLocalization.eq_of_num_factor_eq
 
 /-- A function or predicate over `R` and `S` can be lifted to `R[S⁻¹]` if it is invariant
@@ -227,18 +226,15 @@ protected def mul : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] :=
     dsimp at h₂
     rcases oreCondition r (s₂' * s_star) with ⟨p_flat, s_flat, h₃⟩
     simp only [S.coe_mul] at h₃
-    have : r₁ * r * s_flat = s₂ * p * (p' * p_flat) :=
-      by
+    have : r₁ * r * s_flat = s₂ * p * (p' * p_flat) := by
       rw [← mul_assoc, ← h₂, ← h₁, mul_assoc, h₃]
       simp only [mul_assoc]
     rw [mul'_char (r₂ * p) (r₁ * r) ⟨↑s₂ * p, hp⟩ ⟨↑s₁ * r, hr⟩ _ _ this]
     clear this
-    have hsssp : ↑s₁ * ↑s₂' * ↑s_star * p_flat ∈ S :=
-      by
+    have hsssp : ↑s₁ * ↑s₂' * ↑s_star * p_flat ∈ S := by
       rw [mul_assoc, mul_assoc, ← mul_assoc (s₂' : R), ← h₃, ← mul_assoc]
       exact S.mul_mem hr (SetLike.coe_mem s_flat)
-    have : (⟨↑s₁ * r, hr⟩ : S) * s_flat = ⟨s₁ * s₂' * s_star * p_flat, hsssp⟩ :=
-      by
+    have : (⟨↑s₁ * r, hr⟩ : S) * s_flat = ⟨s₁ * s₂' * s_star * p_flat, hsssp⟩ := by
       ext
       simp only [Submonoid.coe_mul]
       rw [mul_assoc, h₃, ← mul_assoc, ← mul_assoc]
@@ -714,8 +710,7 @@ protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z
   rcases oreDivMulChar' r₁ (r₂ * sa) s₁ (s₂ * sa) with ⟨rb, sb, hb, q⟩
   rw [q]
   clear q
-  have hs₃rasb : ↑s₃ * (ra * sb) ∈ S :=
-    by
+  have hs₃rasb : ↑s₃ * (ra * sb) ∈ S := by
     rw [← mul_assoc, ← ha]
     norm_cast
     apply SetLike.coe_mem

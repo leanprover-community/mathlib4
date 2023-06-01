@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 
 ! This file was ported from Lean 3 source module data.fin.tuple.basic
-! leanprover-community/mathlib commit d97a0c9f7a7efe6d76d652c5a6b7c9c634b70e0a
+! leanprover-community/mathlib commit ef997baa41b5c428be3fb50089a7139bf4ee886b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -456,16 +456,16 @@ theorem init_snoc : init (snoc p x) = p := by
 #align fin.init_snoc Fin.init_snoc
 
 @[simp]
-theorem snoc_cast_succ : snoc p x (castSucc i) = p i := by
+theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
   simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
-#align fin.snoc_cast_succ Fin.snoc_cast_succ
+#align fin.snoc_cast_succ Fin.snoc_castSucc
 
 @[simp]
-theorem snoc_comp_cast_succ {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
+theorem snoc_comp_castSucc {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
     (snoc f a : Fin (n + 1) → α) ∘ castSucc = f :=
-  funext fun i ↦ by rw [Function.comp_apply, snoc_cast_succ]
-#align fin.snoc_comp_cast_succ Fin.snoc_comp_cast_succ
+  funext fun i ↦ by rw [Function.comp_apply, snoc_castSucc]
+#align fin.snoc_comp_cast_succ Fin.snoc_comp_castSucc
 
 @[simp]
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
@@ -479,8 +479,8 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
   refine' Fin.lastCases _ (fun i ↦ _) i
   · simp only [Function.comp_apply]
     rw [snoc_last, natAdd_last, snoc_last]
-  · simp only [comp_apply, snoc_cast_succ]
-    rw [natAdd_castSucc, snoc_cast_succ]
+  · simp only [comp_apply, snoc_castSucc]
+    rw [natAdd_castSucc, snoc_castSucc]
 #align fin.snoc_comp_nat_add Fin.snoc_comp_nat_add
 
 @[simp]
@@ -607,14 +607,14 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     simp
 #align fin.comp_snoc Fin.comp_snoc
 
-/-- Appending a one-tuple to the right is the same as `fin.snoc`. -/
+/-- Appending a one-tuple to the right is the same as `Fin.snoc`. -/
 theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i
   refine' Fin.addCases _ _ i <;> clear i
   · intro i
     rw [Fin.append_left]
-    exact (@snoc_cast_succ _ (fun _ => α) _ _ i).symm
+    exact (@snoc_castSucc _ (fun _ => α) _ _ i).symm
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_right]
     exact (@snoc_last _ (fun _ => α) _ _).symm
@@ -739,7 +739,7 @@ theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAb
   ext j
   apply eq_of_heq
   trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
-  · rw [snoc_cast_succ]
+  · rw [snoc_castSucc]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq
     rw [succAbove_last]
@@ -948,6 +948,44 @@ theorem mem_find_of_unique {p : Fin n → Prop} [DecidablePred p] (h : ∀ i j, 
 #align fin.mem_find_of_unique Fin.mem_find_of_unique
 
 end Find
+
+section ContractNth
+
+variable {α : Type _}
+
+/-- Sends `(g₀, ..., gₙ)` to `(g₀, ..., op gⱼ gⱼ₊₁, ..., gₙ)`. -/
+def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n) : α :=
+  if (k : ℕ) < j then g (Fin.castSucc k)
+  else if (k : ℕ) = j then op (g (Fin.castSucc k)) (g k.succ) else g k.succ
+#align fin.contract_nth Fin.contractNth
+
+theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
+  if_pos h
+#align fin.contract_nth_apply_of_lt Fin.contractNth_apply_of_lt
+
+theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
+  have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
+  rw [contractNth, if_neg this, if_pos h]
+#align fin.contract_nth_apply_of_eq Fin.contractNth_apply_of_eq
+
+theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
+  rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
+#align fin.contract_nth_apply_of_gt Fin.contractNth_apply_of_gt
+
+theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
+  rcases lt_trichotomy (k : ℕ) j with (h | h | h)
+  · rwa [j.succAbove_below, contractNth_apply_of_lt]
+    · rwa [Fin.lt_iff_val_lt_val]
+  · exact False.elim (hjk h.symm)
+  · rwa [j.succAbove_above, contractNth_apply_of_gt]
+    · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+#align fin.contract_nth_apply_of_ne Fin.contractNth_apply_of_ne
+
+end ContractNth
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
 `Fin.cast`. -/

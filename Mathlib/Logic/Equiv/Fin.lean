@@ -401,7 +401,6 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   ext
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, add_comm]
-
 #align fin_rotate_of_lt finRotate_of_lt
 
 theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by

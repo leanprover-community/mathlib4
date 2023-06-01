@@ -11,7 +11,7 @@ Coinductive formalization of unbounded computations.
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -178,7 +178,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
 
 @[simp]
 theorem tail_think (s : Computation α) : tail (think s) = s := by
-  cases' s with f al ; apply Subtype.eq ; dsimp [tail, think] ; rw [Stream'.tail_cons]
+  cases' s with f al ; apply Subtype.eq ; dsimp [tail, think]
 #align computation.tail_think Computation.tail_think
 
 @[simp]
@@ -719,7 +719,6 @@ theorem map_id : ∀ s : Computation α, map id s = s
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Computation α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
     apply Subtype.eq ; dsimp [map]
-    rw [Stream'.map_map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 #align computation.map_comp Computation.map_comp
@@ -1242,7 +1241,7 @@ theorem map_congr {s1 s2 : Computation α} {f : α → β}
     exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 #align computation.map_congr Computation.map_congr
 
-/-- Alternate defintion of `LiftRel` over relations between `Computation`s-/
+/-- Alternate definition of `LiftRel` over relations between `Computation`s-/
 def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β → Prop) :
     Sum α (Computation α) → Sum β (Computation β) → Prop
   | Sum.inl a, Sum.inl b => R a b

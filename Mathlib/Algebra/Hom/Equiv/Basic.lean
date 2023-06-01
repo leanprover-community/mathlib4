@@ -46,7 +46,6 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
       g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
-
 #align mul_hom.inverse MulHom.inverse
 #align add_hom.inverse AddHom.inverse
 
@@ -192,6 +191,10 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     congr
     apply Equiv.coe_fn_injective h₁
   map_mul := map_mul'
+
+@[to_additive] -- shortcut instance that doesn't generate any subgoals
+instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+  coe f := f
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 

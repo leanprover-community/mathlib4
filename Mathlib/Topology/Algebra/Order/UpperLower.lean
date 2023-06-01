@@ -44,16 +44,13 @@ variable {α : Type _} [TopologicalSpace α]
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedCommGroup α]
-    [ContinuousConstSMul α α] : HasUpperLowerClosure α
-    where
+    [ContinuousConstSMul α α] : HasUpperLowerClosure α where
   isUpperSet_closure s h x y hxy hx :=
-    closure_mono (h.smul_subset <| one_le_div'.2 hxy) <|
-      by
+    closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
       rw [closure_smul]
       exact ⟨x, hx, div_mul_cancel' _ _⟩
   isLowerSet_closure s h x y hxy hx :=
-    closure_mono (h.smul_subset <| div_le_one'.2 hxy) <|
-      by
+    closure_mono (h.smul_subset <| div_le_one'.2 hxy) <| by
       rw [closure_smul]
       exact ⟨x, hx, div_mul_cancel' _ _⟩
   isOpen_upperClosure s hs := by

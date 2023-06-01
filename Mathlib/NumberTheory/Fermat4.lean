@@ -161,8 +161,8 @@ theorem Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 #align int.coprime_of_sq_sum Int.coprime_of_sq_sum
 
-theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) : IsCoprime (r ^ 2 + s ^ 2) (r * s) :=
-  by
+theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
+    IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.coprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.coprime_of_sq_sum h
 #align int.coprime_of_sq_sum' Int.coprime_of_sq_sum'

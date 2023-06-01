@@ -15,7 +15,6 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Set
 
 /-!
 # Cauchy sequences
@@ -730,7 +729,6 @@ theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f <
   show Pos (h - f) by
     convert pos_add_limZero fg (neg_limZero gh) using 1
     simp
-
 #align cau_seq.lt_of_lt_of_eq CauSeq.lt_of_lt_of_eq
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -929,7 +927,6 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (sup_equiv_sup h (Setoid.refl _)) _
     rw [CauSeq.sup_idem]
-    exact Setoid.refl _
 #align cau_seq.sup_eq_right CauSeq.sup_eq_right
 
 protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈ b := by
@@ -942,7 +939,6 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) _
     rw [CauSeq.inf_idem]
-    exact Setoid.refl _
 #align cau_seq.inf_eq_right CauSeq.inf_eq_right
 
 protected theorem sup_eq_left {a b : CauSeq α abs} (h : b ≤ a) : a ⊔ b ≈ a := by

@@ -206,7 +206,6 @@ def NonUnitalRingHom.op {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAsso
   invFun f := { AddMonoidHom.mulUnop f.toAddMonoidHom, MulHom.unop f.toMulHom with }
   left_inv _ := rfl
   right_inv _ := rfl
-
 #align non_unital_ring_hom.op NonUnitalRingHom.op
 
 /-- The 'unopposite' of a non-unital ring hom `αᵐᵒᵖ →ₙ+* βᵐᵒᵖ`. Inverse to

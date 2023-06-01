@@ -83,7 +83,7 @@ theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
-  infₛ_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 #align submonoid.closure_mul_le Submonoid.closure_mul_le
@@ -200,16 +200,16 @@ theorem inv_top : (⊤ : Submonoid G)⁻¹ = ⊤ :=
 #align add_submonoid.neg_top AddSubmonoid.neg_top
 
 @[to_additive (attr := simp)]
-theorem inv_infᵢ {ι : Sort _} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
-  (invOrderIso : Submonoid G ≃o Submonoid G).map_infᵢ _
-#align submonoid.inv_infi Submonoid.inv_infᵢ
-#align add_submonoid.neg_infi AddSubmonoid.neg_infᵢ
+theorem inv_iInf {ι : Sort _} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
+  (invOrderIso : Submonoid G ≃o Submonoid G).map_iInf _
+#align submonoid.inv_infi Submonoid.inv_iInf
+#align add_submonoid.neg_infi AddSubmonoid.neg_iInf
 
 @[to_additive (attr := simp)]
-theorem inv_supᵢ {ι : Sort _} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
-  (invOrderIso : Submonoid G ≃o Submonoid G).map_supᵢ _
-#align submonoid.inv_supr Submonoid.inv_supᵢ
-#align add_submonoid.neg_supr AddSubmonoid.neg_supᵢ
+theorem inv_iSup {ι : Sort _} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
+  (invOrderIso : Submonoid G ≃o Submonoid G).map_iSup _
+#align submonoid.inv_supr Submonoid.inv_iSup
+#align add_submonoid.neg_supr AddSubmonoid.neg_iSup
 
 end Submonoid
 
@@ -533,12 +533,12 @@ protected def mul : Mul (AddSubmonoid R) :=
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
-  (le_supᵢ _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
+  (le_iSup _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
 #align add_submonoid.mul_mem_mul AddSubmonoid.mul_mem_mul
 
 theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
   ⟨fun H _m hm _n hn => H <| mul_mem_mul hm hn, fun H =>
-    supᵢ_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
 #align add_submonoid.mul_le AddSubmonoid.mul_le
 
 @[elab_as_elim]

@@ -92,8 +92,7 @@ theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
 end Int
 
 @[simp, norm_cast]
-theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b :=
-  by
+theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
   exact Int.coe_nat_inj'
 #align nat.cast_int_covby_iff Nat.cast_int_covby_iff

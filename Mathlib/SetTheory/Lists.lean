@@ -57,6 +57,7 @@ inductive Lists'.{u} (α : Type u) : Bool → Type u
   | cons' {b} : Lists' α b → Lists' α true → Lists' α true
   deriving DecidableEq
 #align lists' Lists'
+compile_inductive% Lists'
 
 /-- Hereditarily finite list, aka ZFA list. A ZFA list is either an "atom" (`b = false`),
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
@@ -203,8 +204,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
 #align lists'.mem_of_subset' Lists'.mem_of_subset'
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
-  ⟨fun H a => mem_of_subset' H, fun H =>
-    by
+  ⟨fun H a => mem_of_subset' H, fun H => by
     rw [← of_toList l₁]
     revert H; induction' toList l₁ with h t t_ih <;> intro H
     · exact Subset.nil
@@ -260,14 +260,10 @@ instance : Inhabited (Lists α) :=
 
 instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: 'Lists'._sizeOf_inst' does not have executable code.
--- So noncomputable is added.
-noncomputable instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: Made noncomputable because code generator does not support recursor
--- Lists'.rec yet
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
-noncomputable def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
+def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
@@ -315,7 +311,7 @@ theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
 #align lists.equiv_atom Lists.equiv_atom
 
 theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
-  cases' h with _ _ _ h₁ h₂ <;> [rfl, exact Equiv.antisymm h₂ h₁]
+  cases' h with _ _ _ h₁ h₂ <;> [rfl; exact Equiv.antisymm h₂ h₁]
 #align lists.equiv.symm Lists.Equiv.symm
 
 theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
@@ -362,10 +358,9 @@ instance : Setoid (Lists α) :=
 
 section Decidable
 
--- porting note: Noncomputable because Lists.instSizeOfLists is
 /-- Auxillary function to prove termination of decidability checking -/
 @[simp]
-noncomputable def Equiv.decidableMeas :
+def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
       ℕ

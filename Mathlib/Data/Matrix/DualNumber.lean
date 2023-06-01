@@ -33,9 +33,9 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
   map_mul' A B := by
     ext
     · dsimp [mul_apply]
-      simp_rw [fst_sum, fst_mul]
+      simp_rw [fst_sum]
       rfl
-    · simp_rw [snd_sum, snd_mul, smul_eq_mul, op_smul_eq_mul, Finset.sum_add_distrib]
+    · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
       simp [mul_apply, snd_sum, snd_mul]
       rw [← Finset.sum_add_distrib]
   map_add' A B := TrivSqZeroExt.ext rfl rfl

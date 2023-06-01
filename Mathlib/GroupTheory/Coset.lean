@@ -46,14 +46,14 @@ open Set Function
 
 variable {α : Type _}
 
-/-- The left coset `a * s` for an element `a : α` and a subset `s : set α` -/
+/-- The left coset `a * s` for an element `a : α` and a subset `s : Set α` -/
 @[to_additive leftAddCoset "The left coset `a+s` for an element `a : α` and a subset `s : set α`"]
 def leftCoset [Mul α] (a : α) (s : Set α) : Set α :=
   (fun x => a * x) '' s
 #align left_coset leftCoset
 #align left_add_coset leftAddCoset
 
-/-- The right coset `s * a` for an element `a : α` and a subset `s : set α` -/
+/-- The right coset `s * a` for an element `a : α` and a subset `s : Set α` -/
 @[to_additive rightAddCoset
       "The right coset `s+a` for an element `a : α` and a subset `s : set α`"]
 def rightCoset [Mul α] (s : Set α) (a : α) : Set α :=
@@ -328,7 +328,6 @@ theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y �
     _ ↔ ∃ a : s, x⁻¹ * y = a⁻¹ :=
       by simp only [inv_mul_eq_iff_eq_mul, Subgroup.coe_inv, eq_mul_inv_iff_mul_eq]
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
 #align quotient_group.left_rel_apply QuotientGroup.leftRel_apply
 #align quotient_add_group.left_rel_apply QuotientAddGroup.leftRel_apply
 
@@ -347,8 +346,7 @@ theorem leftRel_r_eq_leftCosetEquivalence :
   ext
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
-#align quotient_group.left_rel_r_eq_left_coset_equivalence
-  QuotientGroup.leftRel_r_eq_leftCosetEquivalence
+#align quotient_group.left_rel_r_eq_left_coset_equivalence QuotientGroup.leftRel_r_eq_leftCosetEquivalence
 
 @[to_additive]
 instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
@@ -381,7 +379,6 @@ theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ 
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ :=
       by simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
 #align quotient_group.right_rel_apply QuotientGroup.rightRel_apply
 #align quotient_add_group.right_rel_apply QuotientAddGroup.rightRel_apply
 
@@ -414,14 +411,12 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s
     where
   toFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b =>
-      by
+    Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- porting note: replace with `by group`
   invFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b =>
-      by
+    Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- porting note: replace with `by group`
@@ -522,7 +517,6 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
     _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
-
 #align quotient_group.eq QuotientGroup.eq
 #align quotient_add_group.eq QuotientAddGroup.eq
 
@@ -569,7 +563,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (fun y : α => y * x) ⁻¹' s := by
   ext x
-  simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_unionᵢ,
+  simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
     Set.mem_image, ← eq_inv_mul_iff_mul_eq]
   exact
     ⟨fun ⟨y, hs, hN⟩ => ⟨_, N.inv_mem hN, by simpa using hs⟩, fun ⟨z, hz, hxz⟩ =>
@@ -617,7 +611,6 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
         rfl
     _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
-
 #align subgroup.group_equiv_quotient_times_subgroup Subgroup.groupEquivQuotientProdSubgroup
 #align add_subgroup.add_group_equiv_quotient_times_add_subgroup AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 
@@ -690,8 +683,7 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t
     where
   toFun :=
-    Quotient.map' (inclusion h) fun a b =>
-      by
+    Quotient.map' (inclusion h) fun a b => by
       simp_rw [leftRel_eq]
       exact id
   inj' :=
@@ -707,7 +699,6 @@ theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t)
     quotientSubgroupOfEmbeddingOfLe H h (QuotientGroup.mk g) =
       (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
   rfl
-
 #align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe_apply_mk
 
@@ -727,10 +718,8 @@ theorem quotientSubgroupOfMapOfLe_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
     quotientSubgroupOfMapOfLe H h (QuotientGroup.mk g) =
       (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf t H) :=
   rfl
-#align subgroup.quotient_subgroup_of_map_of_le_apply_mk
-  Subgroup.quotientSubgroupOfMapOfLe_apply_mk
-#align add_subgroup.quotient_add_subgroup_of_map_of_le_apply_mk
-  AddSubgroup.quotientAddSubgroupOfMapOfLe_apply_mk
+#align subgroup.quotient_subgroup_of_map_of_le_apply_mk Subgroup.quotientSubgroupOfMapOfLe_apply_mk
+#align add_subgroup.quotient_add_subgroup_of_map_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfMapOfLe_apply_mk
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
 @[to_additive "If `s ≤ t`, then there is an map `α ⧸ s → α ⧸ t`."]
@@ -751,44 +740,44 @@ theorem quotientMapOfLe_apply_mk (h : s ≤ t) (g : α) :
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
-def quotientInfᵢSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α) :
+def quotientiInfSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H
     where
-  toFun q i := quotientSubgroupOfMapOfLe H (infᵢ_le f i) q
+  toFun q i := quotientSubgroupOfMapOfLe H (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
-      simp_rw [funext_iff, quotientSubgroupOfMapOfLe_apply_mk, eq', mem_subgroupOf, mem_infᵢ,
+      simp_rw [funext_iff, quotientSubgroupOfMapOfLe_apply_mk, eq', mem_subgroupOf, mem_iInf,
         imp_self, forall_const]
-#align subgroup.quotient_infi_subgroup_of_embedding Subgroup.quotientInfᵢSubgroupOfEmbedding
-#align add_subgroup.quotient_infi_add_subgroup_of_embedding AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding
+#align subgroup.quotient_infi_subgroup_of_embedding Subgroup.quotientiInfSubgroupOfEmbedding
+#align add_subgroup.quotient_infi_add_subgroup_of_embedding AddSubgroup.quotientiInfAddSubgroupOfEmbedding
 
 -- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
-theorem quotientInfᵢSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α)
+theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
-    quotientInfᵢSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
+    quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
       (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf (f i) H) :=
   rfl
-#align subgroup.quotient_infi_subgroup_of_embedding_apply_mk Subgroup.quotientInfᵢSubgroupOfEmbedding_apply_mk
-#align add_subgroup.quotient_infi_add_subgroup_of_embedding_apply_mk AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding_apply_mk
+#align subgroup.quotient_infi_subgroup_of_embedding_apply_mk Subgroup.quotientiInfSubgroupOfEmbedding_apply_mk
+#align add_subgroup.quotient_infi_add_subgroup_of_embedding_apply_mk AddSubgroup.quotientiInfAddSubgroupOfEmbedding_apply_mk
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
-def quotientInfᵢEmbedding {ι : Type _} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
+def quotientiInfEmbedding {ι : Type _} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
     where
-  toFun q i := quotientMapOfLe (infᵢ_le f i) q
+  toFun q i := quotientMapOfLe (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
-      simp_rw [funext_iff, quotientMapOfLe_apply_mk, eq', mem_infᵢ, imp_self, forall_const]
-#align subgroup.quotient_infi_embedding Subgroup.quotientInfᵢEmbedding
-#align add_subgroup.quotient_infi_embedding AddSubgroup.quotientInfᵢEmbedding
+      simp_rw [funext_iff, quotientMapOfLe_apply_mk, eq', mem_iInf, imp_self, forall_const]
+#align subgroup.quotient_infi_embedding Subgroup.quotientiInfEmbedding
+#align add_subgroup.quotient_infi_embedding AddSubgroup.quotientiInfEmbedding
 
 @[to_additive (attr := simp)]
-theorem quotientInfᵢEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (g : α) (i : ι) :
-    quotientInfᵢEmbedding f (QuotientGroup.mk g) i = QuotientGroup.mk g :=
+theorem quotientiInfEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (g : α) (i : ι) :
+    quotientiInfEmbedding f (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
-#align subgroup.quotient_infi_embedding_apply_mk Subgroup.quotientInfᵢEmbedding_apply_mk
-#align add_subgroup.quotient_infi_embedding_apply_mk AddSubgroup.quotientInfᵢEmbedding_apply_mk
+#align subgroup.quotient_infi_embedding_apply_mk Subgroup.quotientiInfEmbedding_apply_mk
+#align add_subgroup.quotient_infi_embedding_apply_mk AddSubgroup.quotientiInfEmbedding_apply_mk
 
 @[to_additive]
 theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [Fintype s]
@@ -823,7 +812,6 @@ theorem card_dvd_of_injective [Fintype α] [Fintype H] (f : α →* H) (hf : Fun
   classical calc
       card α = card (f.range : Subgroup H) := card_congr (Equiv.ofInjective f hf)
       _ ∣ card H := card_subgroup_dvd_card _
-
 #align subgroup.card_dvd_of_injective Subgroup.card_dvd_of_injective
 #align add_subgroup.card_dvd_of_injective AddSubgroup.card_dvd_of_injective
 
@@ -842,7 +830,6 @@ theorem card_comap_dvd_of_injective (K : Subgroup H) [Fintype K] (f : α →* H)
       Fintype.card (K.comap f) = Fintype.card ((K.comap f).map f) :=
         Fintype.card_congr (equivMapOfInjective _ _ hf).toEquiv
       _ ∣ Fintype.card K := card_dvd_of_le (map_comap_le _ _)
-
 #align subgroup.card_comap_dvd_of_injective Subgroup.card_comap_dvd_of_injective
 #align add_subgroup.card_comap_dvd_of_injective AddSubgroup.card_comap_dvd_of_injective
 

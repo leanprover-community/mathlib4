@@ -435,7 +435,7 @@ def unflip {X α β : Type _} [Finite α] [TopologicalSpace X] (f : α → Local
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
-    exact isOpen_interᵢ fun a => (f a).isLocallyConstant _
+    exact isOpen_iInter fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]

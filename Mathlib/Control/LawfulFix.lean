@@ -12,7 +12,6 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.WLOG
 
 /-!
 # Lawful fixed point operators
@@ -38,7 +37,7 @@ open OmegaCompletePartialOrder
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
-halting problem. Instead, this requirement is limited to only functions that are `continuous` in the
+halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
@@ -87,7 +86,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip, symm] <;> apply_assumption <;> assumption
+    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -208,9 +207,7 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
     erw [hc, Chain.map_comp]; rfl
 #align part.to_unit_cont Part.to_unit_cont
 
--- Porting note: `noncomputable` is required because the code generator does not support recursor
---               `Acc.rec` yet.
-noncomputable instance lawfulFix : LawfulFix (Part α) :=
+instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
     rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
 #align part.lawful_fix Part.lawfulFix
@@ -221,9 +218,7 @@ open Sigma
 
 namespace Pi
 
--- Porting note: `noncomputable` is required because the code generator does not support recursor
---               `Acc.rec` yet.
-noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
+instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 

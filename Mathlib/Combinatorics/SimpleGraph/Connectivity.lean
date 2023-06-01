@@ -1887,8 +1887,8 @@ protected theorem Reachable.trans {u v w : V} (huv : G.Reachable u v) (hvw : G.R
   huv.elim fun puv => hvw.elim fun pvw => ⟨puv.append pvw⟩
 #align simple_graph.reachable.trans SimpleGraph.Reachable.trans
 
-theorem reachable_iff_reflTransGen (u v : V) : G.Reachable u v ↔ Relation.ReflTransGen G.Adj u v :=
-  by
+theorem reachable_iff_reflTransGen (u v : V) :
+    G.Reachable u v ↔ Relation.ReflTransGen G.Adj u v := by
   constructor
   · rintro ⟨h⟩
     induction h with
@@ -2315,7 +2315,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   cases' p with _ _ w _ huw pwv
   · simp [eq_comm]
   · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_unionᵢ, Set.mem_image, exists_prop]
+      Set.mem_iUnion, Set.mem_image, exists_prop]
     constructor
     · rintro rfl
       exact ⟨w, huw, pwv, rfl, rfl⟩
@@ -2343,7 +2343,7 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       exact {Walk.nil}
     else ∅
   | n + 1 =>
-    Finset.univ.bunionᵢ fun (w : G.neighborSet u) =>
+    Finset.univ.biUnion fun (w : G.neighborSet u) =>
       (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
 #align simple_graph.finset_walk_length SimpleGraph.finsetWalkLength
 
@@ -2351,11 +2351,11 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction' n with n ih generalizing u v
   · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_bunionᵢ, Finset.mem_coe,
-      Finset.mem_univ, Set.unionᵢ_true]
+  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
+      Finset.mem_univ, Set.iUnion_true]
     ext p
-    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.unionᵢ_coe_set,
-      Set.mem_unionᵢ, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
+    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
+      Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
     congr!
     rename_i w _ q
     have := Set.ext_iff.mp (ih w v) q
@@ -2521,9 +2521,8 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 
-theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
-    G.IsBridge ⟦(v, w)⟧ ↔ G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges :=
-  by
+theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge ⟦(v, w)⟧ ↔
+    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
   rw [← not_iff_not]

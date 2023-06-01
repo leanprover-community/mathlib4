@@ -681,20 +681,20 @@ theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type _} [Preorder β] {f g
 
 end Eventually
 
-/-! ### `isMaxOn`/`isMinOn` imply `csupᵢ`/`cinfᵢ` -/
+/-! ### `isMaxOn`/`isMinOn` imply `ciSup`/`ciInf` -/
 
 
 section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {f : β → α} {s : Set β} {x₀ : β}
 
-theorem IsMaxOn.supᵢ_eq (hx₀ : x₀ ∈ s) (h : IsMaxOn f s x₀) : (⨆ x : s, f x) = f x₀ :=
+theorem IsMaxOn.iSup_eq (hx₀ : x₀ ∈ s) (h : IsMaxOn f s x₀) : (⨆ x : s, f x) = f x₀ :=
   haveI : Nonempty s := ⟨⟨x₀, hx₀⟩⟩
-  csupᵢ_eq_of_forall_le_of_forall_lt_exists_gt (fun x => h x.2) fun _w hw => ⟨⟨x₀, hx₀⟩, hw⟩
-#align is_max_on.supr_eq IsMaxOn.supᵢ_eq
+  ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun x => h x.2) fun _w hw => ⟨⟨x₀, hx₀⟩, hw⟩
+#align is_max_on.supr_eq IsMaxOn.iSup_eq
 
-theorem IsMinOn.infᵢ_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : (⨅ x : s, f x) = f x₀ :=
-  @IsMaxOn.supᵢ_eq αᵒᵈ β _ _ _ _ hx₀ h
-#align is_min_on.infi_eq IsMinOn.infᵢ_eq
+theorem IsMinOn.iInf_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : (⨅ x : s, f x) = f x₀ :=
+  @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ hx₀ h
+#align is_min_on.infi_eq IsMinOn.iInf_eq
 
 end ConditionallyCompleteLinearOrder

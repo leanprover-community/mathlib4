@@ -10,7 +10,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Finite products and sums over types and sets
@@ -181,18 +180,13 @@ theorem finprod_eq_prod_pLift_of_mulSupport_toFinset_subset {f : α → M}
   rw [finprod, dif_pos]
   refine' Finset.prod_subset hs fun x _ hxf => _
   rwa [hf.mem_toFinset, nmem_mulSupport] at hxf
-#align
-  finprod_eq_prod_plift_of_mul_support_to_finset_subset
-  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset
-#align
-  finsum_eq_sum_plift_of_support_to_finset_subset
-  finsum_eq_sum_pLift_of_support_toFinset_subset
+#align finprod_eq_prod_plift_of_mul_support_to_finset_subset finprod_eq_prod_pLift_of_mulSupport_toFinset_subset
+#align finsum_eq_sum_plift_of_support_to_finset_subset finsum_eq_sum_pLift_of_support_toFinset_subset
 
 @[to_additive]
 theorem finprod_eq_prod_pLift_of_mulSupport_subset {f : α → M} {s : Finset (PLift α)}
     (hs : mulSupport (f ∘ PLift.down) ⊆ s) : (∏ᶠ i, f i) = ∏ i in s, f i.down :=
-  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx =>
-    by
+  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx => by
     rw [Finite.mem_toFinset] at hx
     exact hs hx
 #align finprod_eq_prod_plift_of_mul_support_subset finprod_eq_prod_pLift_of_mulSupport_subset
@@ -223,8 +217,7 @@ theorem finprod_false (f : False → M) : (∏ᶠ i, f i) = 1 :=
 @[to_additive]
 theorem finprod_eq_single (f : α → M) (a : α) (ha : ∀ (x) (_ : x ≠ a), f x = 1) :
     (∏ᶠ x, f x) = f a := by
-  have : mulSupport (f ∘ PLift.down) ⊆ ({PLift.up a} : Finset (PLift α)) :=
-    by
+  have : mulSupport (f ∘ PLift.down) ⊆ ({PLift.up a} : Finset (PLift α)) := by
     intro x
     contrapose
     simpa [PLift.eq_up_iff_down_eq] using ha x.down
@@ -388,12 +381,10 @@ theorem finprod_mem_def (s : Set α) (f : α → M) : (∏ᶠ a ∈ s, f a) = �
 @[to_additive]
 theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h : mulSupport f ⊆ s) :
     (∏ᶠ i, f i) = ∏ i in s, f i := by
-  have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f :=
-    by
+  have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f := by
     rw [mulSupport_comp_eq_preimage]
     exact (Equiv.plift.symm.image_eq_preimage _).symm
-  have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding :=
-    by
+  have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
     exact image_subset _ h
   rw [finprod_eq_prod_pLift_of_mulSupport_subset this]
@@ -451,8 +442,7 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : (∏ᶠ i : α,
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_hi : p i), f i) = ∏ i in t, f i := by
   set s := { x | p x }
-  have : mulSupport (s.mulIndicator f) ⊆ t :=
-    by
+  have : mulSupport (s.mulIndicator f) ⊆ t := by
     rw [Set.mulSupport_mulIndicator]
     intro x hx
     exact (h hx.2).1 hx.1
@@ -950,7 +940,7 @@ theorem finprod_mem_image {s : Set β} {g : β → α} (hg : s.InjOn g) :
 #align finprod_mem_image finprod_mem_image
 #align finsum_mem_image finsum_mem_image
 
-/-- The product of `f y` over `y ∈ set.range g` equals the product of `f (g i)` over all `i`
+/-- The product of `f y` over `y ∈ Set.range g` equals the product of `f (g i)` over all `i`
 provided that `g` is injective on `mulSupport (f ∘ g)`. -/
 @[to_additive
       "The sum of `f y` over `y ∈ Set.range g` equals the sum of `f (g i)` over all `i`
@@ -1064,17 +1054,17 @@ theorem finprod_mem_mul_diff (hst : s ⊆ t) (ht : t.Finite) :
       "Given a family of pairwise disjoint finite sets `t i` indexed by a finite type, the
       sum of `f a` over the union `⋃ i, t i` is equal to the sum over all indexes `i` of the
       sums of `f a` over `a ∈ t i`."]
-theorem finprod_mem_unionᵢ [Finite ι] {t : ι → Set α} (h : Pairwise (Disjoint on t))
+theorem finprod_mem_iUnion [Finite ι] {t : ι → Set α} (h : Pairwise (Disjoint on t))
     (ht : ∀ i, (t i).Finite) : (∏ᶠ a ∈ ⋃ i : ι, t i, f a) = ∏ᶠ i, ∏ᶠ a ∈ t i, f a := by
   cases nonempty_fintype ι
   lift t to ι → Finset α using ht
   classical
-    rw [← bunionᵢ_univ, ← Finset.coe_univ, ← Finset.coe_bunionᵢ, finprod_mem_coe_finset,
-      Finset.prod_bunionᵢ]
+    rw [← biUnion_univ, ← Finset.coe_univ, ← Finset.coe_biUnion, finprod_mem_coe_finset,
+      Finset.prod_biUnion]
     · simp only [finprod_mem_coe_finset, finprod_eq_prod_of_fintype]
     · exact fun x _ y _ hxy => Finset.disjoint_coe.1 (h hxy)
-#align finprod_mem_Union finprod_mem_unionᵢ
-#align finsum_mem_Union finsum_mem_unionᵢ
+#align finprod_mem_Union finprod_mem_iUnion
+#align finsum_mem_Union finsum_mem_iUnion
 
 /-- Given a family of sets `t : ι → Set α`, a finite set `I` in the index type such that all sets
 `t i`, `i ∈ I`, are finite, if all `t i`, `i ∈ I`, are pairwise disjoint, then the product of `f a`
@@ -1085,33 +1075,32 @@ over `a ∈ ⋃ i ∈ I, t i` is equal to the product over `i ∈ I` of the prod
       all sets `t i`, `i ∈ I`, are finite, if all `t i`, `i ∈ I`, are pairwise disjoint, then the
       sum of `f a` over `a ∈ ⋃ i ∈ I, t i` is equal to the sum over `i ∈ I` of the sums of `f a`
       over `a ∈ t i`."]
-theorem finprod_mem_bunionᵢ {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisjoint t) (hI : I.Finite)
+theorem finprod_mem_biUnion {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisjoint t) (hI : I.Finite)
     (ht : ∀ i ∈ I, (t i).Finite) : (∏ᶠ a ∈ ⋃ x ∈ I, t x, f a) = ∏ᶠ i ∈ I, ∏ᶠ j ∈ t i, f j := by
   haveI := hI.fintype
-  rw [bunionᵢ_eq_unionᵢ, finprod_mem_unionᵢ, ← finprod_set_coe_eq_finprod_mem]
+  rw [biUnion_eq_iUnion, finprod_mem_iUnion, ← finprod_set_coe_eq_finprod_mem]
   exacts[fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b => ht b b.2]
-#align finprod_mem_bUnion finprod_mem_bunionᵢ
-#align finsum_mem_bUnion finsum_mem_bunionᵢ
+#align finprod_mem_bUnion finprod_mem_biUnion
+#align finsum_mem_bUnion finsum_mem_biUnion
 
 /-- If `t` is a finite set of pairwise disjoint finite sets, then the product of `f a`
 over `a ∈ ⋃₀ t` is the product over `s ∈ t` of the products of `f a` over `a ∈ s`. -/
 @[to_additive
       "If `t` is a finite set of pairwise disjoint finite sets, then the sum of `f a` over
       `a ∈ ⋃₀ t` is the sum over `s ∈ t` of the sums of `f a` over `a ∈ s`."]
-theorem finprod_mem_unionₛ {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀ : t.Finite)
+theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀ : t.Finite)
     (ht₁ : ∀ x ∈ t, Set.Finite x) : (∏ᶠ a ∈ ⋃₀ t, f a) = ∏ᶠ s ∈ t, ∏ᶠ a ∈ s, f a := by
-  rw [Set.unionₛ_eq_bunionᵢ]
-  exact finprod_mem_bunionᵢ h ht₀ ht₁
-#align finprod_mem_sUnion finprod_mem_unionₛ
-#align finsum_mem_sUnion finsum_mem_unionₛ
+  rw [Set.sUnion_eq_biUnion]
+  exact finprod_mem_biUnion h ht₀ ht₁
+#align finprod_mem_sUnion finprod_mem_sUnion
+#align finsum_mem_sUnion finsum_mem_sUnion
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_h : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
     rw [finprod_eq_prod _ hf]
-    have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) :=
-      by
+    have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) := by
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
       exact ⟨fun h => And.intro hx h, fun h => h.2⟩
@@ -1161,7 +1150,6 @@ theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α �
         Finset.single_le_prod' (fun j _ => h j) (Finset.mem_insert_self _ _)
       _ = ∏ᶠ j, f j :=
         (finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_insert _ _)).symm
-
 #align single_le_finprod single_le_finprod
 #align single_le_finsum single_le_finsum
 
@@ -1179,17 +1167,16 @@ theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
     (∏ᶠ a : α, ∏ b in s, f a b) = ∏ b in s, ∏ᶠ a : α, f a b := by
   have hU :
     (mulSupport fun a => ∏ b in s, f a b) ⊆
-      (s.finite_toSet.bunionᵢ fun b hb => h b (Finset.mem_coe.1 hb)).toFinset :=
-    by
+      (s.finite_toSet.biUnion fun b hb => h b (Finset.mem_coe.1 hb)).toFinset := by
     rw [Finite.coe_toFinset]
     intro x hx
-    simp only [exists_prop, mem_unionᵢ, Ne.def, mem_mulSupport, Finset.mem_coe]
+    simp only [exists_prop, mem_iUnion, Ne.def, mem_mulSupport, Finset.mem_coe]
     contrapose! hx
     rw [mem_mulSupport, not_not, Finset.prod_congr rfl hx, Finset.prod_const_one]
   rw [finprod_eq_prod_of_mulSupport_subset _ hU, Finset.prod_comm]
   refine' Finset.prod_congr rfl fun b hb => (finprod_eq_prod_of_mulSupport_subset _ _).symm
   intro a ha
-  simp only [Finite.coe_toFinset, mem_unionᵢ]
+  simp only [Finite.coe_toFinset, mem_iUnion]
   exact ⟨b, hb, ha⟩
 #align finprod_prod_comm finprod_prod_comm
 #align finsum_sum_comm finsum_sum_comm
@@ -1219,12 +1206,8 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   suffices (s.filter fun a : α => g a = b).Nonempty by
     simpa only [s.fiber_nonempty_iff_mem_image g b, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
-#align
-  finset.mul_support_of_fiberwise_prod_subset_image
-  Finset.mulSupport_of_fiberwise_prod_subset_image
-#align
-  finset.support_of_fiberwise_sum_subset_image
-  Finset.support_of_fiberwise_sum_subset_image
+#align finset.mul_support_of_fiberwise_prod_subset_image Finset.mulSupport_of_fiberwise_prod_subset_image
+#align finset.support_of_fiberwise_sum_subset_image Finset.support_of_fiberwise_sum_subset_image
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
 we can simplify the right hand side of this lemma. However the form stated here is more useful for
@@ -1240,8 +1223,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
   have :
     ∀ a,
       (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
-        (Finset.filter (fun ab => Prod.fst ab = a) s).prod f :=
-    by
+        (Finset.filter (fun ab => Prod.fst ab = a) s).prod f := by
     refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;>-- `finish` closes these goals
       try simp; done
     suffices ∀ a' b, (a', b) ∈ s → a' = a → (a, b) ∈ s ∧ a' = a by simpa

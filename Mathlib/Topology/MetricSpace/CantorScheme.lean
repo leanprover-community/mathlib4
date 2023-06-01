@@ -84,7 +84,7 @@ variable {A}
 its image under this map is in each set along the corresponding branch. -/
 theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
   have := x.property.some_mem
-  rw [mem_interᵢ] at this
+  rw [mem_iInter] at this
   exact this n
 #align cantor_scheme.map_mem CantorScheme.map_mem
 
@@ -134,19 +134,16 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
     ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε := by
   specialize hA x
   rw [ENNReal.tendsto_atTop_zero] at hA
-  cases'
-    hA (ENNReal.ofReal (ε / 2))
-      (by
-        simp only [gt_iff_lt, ENNReal.ofReal_pos]
-        exact half_pos ε_pos) with -- Porting note: was `linarith`
-    n hn
+  cases' hA (ENNReal.ofReal (ε / 2)) (by
+    simp only [gt_iff_lt, ENNReal.ofReal_pos]
+    linarith) with n hn
   use n
   intro y hy z hz
   rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← edist_dist]
   apply lt_of_le_of_lt (EMetric.edist_le_diam_of_mem hy hz)
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
-  exact half_lt_self ε_pos -- Porting note: was `linarith`
+  linarith
 #align cantor_scheme.vanishing_diam.dist_lt CantorScheme.VanishingDiam.dist_lt
 
 /-- A scheme with vanishing diameter along each branch induces a continuous map. -/
@@ -191,7 +188,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     apply hn <;> apply umem <;> assumption
   cases' cauchySeq_tendsto_of_complete this with y hy
   use y
-  rw [mem_interᵢ]
+  rw [mem_iInter]
   intro n
   apply hanti _ (x n)
   apply mem_closure_of_tendsto hy

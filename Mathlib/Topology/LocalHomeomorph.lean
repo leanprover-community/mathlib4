@@ -426,8 +426,8 @@ theorem eventually_nhdsWithin' (e : LocalHomeomorph α β) {x : α} (p : α → 
   of `e` and some other neighborhood of `f x` (which will be the source of a chart on `γ`).  -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph α β} {s : Set α}
     {t : Set γ} {x : α} {f : α → γ} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
-    (ht : t ∈ 𝓝 (f x)) : e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) :=
-  by
+    (ht : t ∈ 𝓝 (f x)) :
+    e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) := by
   rw [eventuallyEq_set, e.eventually_nhds _ hxe]
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
