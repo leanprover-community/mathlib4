@@ -474,9 +474,7 @@ def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
           . dsimp
             rw [Category.id_comp]
             rfl })
-    fun f => by
-      ext
-      aesop_cat
+    fun f => by ext; aesop_cat
 
 #align cochain_complex.single₀_iso_single CochainComplex.single₀IsoSingle
 
