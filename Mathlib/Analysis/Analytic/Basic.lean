@@ -753,7 +753,8 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
         _ = ‖p (n + 2)‖ * ‖y - (x, x)‖ ^ n * (↑(n + 2) * ‖y - (x, x)‖ * ‖y.1 - y.2‖) := by
           rw [pow_succ ‖y - (x, x)‖]
           ring
-        -- porting note: the two `↑` in `↑r'` are new, without them, Lean errors with `HDiv, HMul`
+        -- porting note: the two `↑` in `↑r'` are new, without them, Lean fails to synthesize
+        -- instances `HDiv ℝ ℝ≥0 ?m` or `HMul ℝ ℝ≥0 ?m`
         _ ≤ C * a ^ (n + 2) / ↑r' ^ (n + 2) * ↑r' ^ n * (↑(n + 2) * ‖y - (x, x)‖ * ‖y.1 - y.2‖) :=
           by apply_rules [mul_le_mul_of_nonneg_right, mul_le_mul, hp, pow_le_pow_of_le_left, hy'.le,
             norm_nonneg, pow_nonneg, div_nonneg, mul_nonneg, Nat.cast_nonneg, hC.le, r'.coe_nonneg,
