@@ -28,7 +28,7 @@ instance {n : Nat} : FromJson (Fin n) where
     if h : i < n then
       return ⟨i, h⟩
     else
-      throw "must be less than {n}"
+      throw s!"must be less than {n}"
 
 instance {n : Nat} : ToJson (Fin n) where
   toJson i := toJson i.val
