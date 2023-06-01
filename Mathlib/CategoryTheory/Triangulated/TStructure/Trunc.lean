@@ -467,6 +467,22 @@ lemma natTransTruncLEOfLE_ι_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
 lemma natTransTruncLEOfLE_ι (a b : ℤ) (h : a ≤ b) :
     t.natTransTruncLEOfLE a b h ≫ t.truncLEι b = t.truncLEι a := by aesop_cat
 
+@[simp]
+lemma natTransTruncLEOfLE_eq_id (n : ℤ) :
+    t.natTransTruncLEOfLE n n (by rfl) = 𝟙 _ := by
+  ext X
+  apply t.to_truncLE_obj_ext
+  simp
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLEOfLE_comp (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncLEOfLE a b hab ≫ t.natTransTruncLEOfLE b c hbc =
+      t.natTransTruncLEOfLE a c (hab.trans hbc) := by
+  ext X
+  have : t.IsLE ((t.truncLE a).obj X) c := t.isLE_of_LE _ _ _ (hab.trans hbc)
+  apply t.to_truncLE_obj_ext
+  simp
+
 noncomputable def natTransTruncGEOfGE (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) :
     t.truncGE n₀ ⟶ t.truncGE n₁ := by
   have : ∀ (X : C), IsGE t ((truncGE t n₁).obj X) n₀ := fun _ => t.isGE_of_GE  _ n₀ n₁ h
@@ -984,6 +1000,22 @@ noncomputable def truncGELTIsoTruncGELE (a b b' : ℤ) (hb' : b + 1 = b') :
 noncomputable def natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLT a ⟶ t.truncLT b :=
   t.natTransTruncLEOfLE (a-1) (b-1) (by linarith)
+
+@[simp]
+lemma natTransTruncLTOfLE_eq_id (n : ℤ) :
+    t.natTransTruncLTOfLE n n (by rfl) = 𝟙 _ :=
+  t.natTransTruncLEOfLE_eq_id (n-1)
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLTOfLE_comp (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncLTOfLE a b hab ≫ t.natTransTruncLTOfLE b c hbc =
+      t.natTransTruncLTOfLE a c (hab.trans hbc) :=
+  t.natTransTruncLEOfLE_comp (a-1) (b-1) (c-1) (by linarith) (by linarith)
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLTOfLE_ι (a b : ℤ) (h : a ≤ b) :
+    t.natTransTruncLTOfLE a b h ≫ t.truncLTι b = t.truncLTι a :=
+  t.natTransTruncLEOfLE_ι (a-1) (b-1) (by linarith)
 
 @[reassoc (attr := simp)]
 lemma natTransTruncLTOfLE_comp_truncLTIsoTruncLE_hom (a b b' : ℤ) (h : a ≤ b) (hb' : b' + 1 = b) :
