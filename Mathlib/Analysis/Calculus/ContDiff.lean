@@ -1140,7 +1140,7 @@ theorem hasFTaylorSeriesUpToOn_pi' :
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert hasFTaylorSeriesUpToOn_pi; ext; rfl
+  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 #align has_ftaylor_series_up_to_on_pi' hasFTaylorSeriesUpToOn_pi'
 
 theorem contDiffWithinAt_pi :
@@ -1174,8 +1174,6 @@ theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun f : ι → E => f i :=
 theorem contDiff_apply_apply (i : ι) (j : ι') : ContDiff 𝕜 n fun f : ι → ι' → E => f i j :=
   contDiff_pi.mp (contDiff_apply 𝕜 (ι' → E) i) j
 #align cont_diff_apply_apply contDiff_apply_apply
-
-variable {𝕜 E}
 
 end Pi
 
@@ -1227,9 +1225,8 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
     (hg : ContDiffOn 𝕜 i g s) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (f + g) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
-  Eq.symm <|
-    ((hf.ftaylorSeriesWithin hu).add (hg.ftaylorSeriesWithin hu)).eq_ftaylor_series_of_uniqueDiffOn
-      le_rfl hu hx
+  Eq.symm <| ((hf.ftaylorSeriesWithin hu).add
+    (hg.ftaylorSeriesWithin hu)).eq_ftaylor_series_of_uniqueDiffOn le_rfl hu hx
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
@@ -1258,7 +1255,6 @@ theorem iteratedFDeriv_add_apply' {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 
 end Add
 
 /-! ### Negative -/
-
 
 section Neg
 
@@ -1291,6 +1287,8 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
+-- porting note: TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
   induction' i with i hi generalizing x
@@ -1522,7 +1520,14 @@ theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDif
 
 end Smul
 
-/-! ### Constant scalar multiplication -/
+/-! ### Constant scalar multiplication
+
+Porting note: TODO: generalize results in this section.
+
+1. It should be possible to assume `[Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]`.
+2. If `c` is a unit (or `R` is a group), then one can drop `ContDiff*` assumptions in some
+  lemmas.
+-/
 
 section ConstSmul
 
@@ -1564,7 +1569,7 @@ variable {i : ℕ} {a : R}
 
 theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffOn 𝕜 i f s) (hu : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : iteratedFDerivWithin 𝕜 i (a • f) s x = a • iteratedFDerivWithin 𝕜 i f s x :=
-  (a • (1 : F →L[𝕜] F)).iteratedFDerivWithin_comp_left hu hf hx le_rfl
+  (a • (1 : F →L[𝕜] F)).iteratedFDerivWithin_comp_left hf hu hx le_rfl
 #align iterated_fderiv_within_const_smul_apply iteratedFDerivWithin_const_smul_apply
 
 theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
@@ -2077,7 +2082,7 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
     · ext x; simp [derivWithin]
     simp only [this]
     apply ContDiff.comp_contDiffOn _ h
-    have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMapSmulRight
+    have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight
     exact (this.isBoundedLinearMap_right _).contDiff
 #align cont_diff_on_succ_iff_deriv_within contDiffOn_succ_iff_derivWithin
 
@@ -2085,7 +2090,7 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
 differentiable there, and its derivative (formulated with `deriv`) is `C^n`. -/
 theorem contDiffOn_succ_iff_deriv_of_open {n : ℕ} (hs : IsOpen s₂) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 n (deriv f₂) s₂ := by
-  rw [contDiffOn_succ_iff_derivWithin hs.unique_diff_on]
+  rw [contDiffOn_succ_iff_derivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_open hs)
 #align cont_diff_on_succ_iff_deriv_of_open contDiffOn_succ_iff_deriv_of_open
 
@@ -2109,7 +2114,7 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
 there, and its derivative (formulated with `deriv`) is `C^∞`. -/
 theorem contDiffOn_top_iff_deriv_of_open (hs : IsOpen s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (deriv f₂) s₂ := by
-  rw [contDiffOn_top_iff_derivWithin hs.unique_diff_on]
+  rw [contDiffOn_top_iff_derivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and <| contDiffOn_congr fun _ => derivWithin_of_open hs
 #align cont_diff_on_top_iff_deriv_of_open contDiffOn_top_iff_deriv_of_open
 
@@ -2202,9 +2207,10 @@ variable {p' : E → FormalMultilinearSeries 𝕜' E F}
 theorem HasFTaylorSeriesUpToOn.restrictScalars (h : HasFTaylorSeriesUpToOn n f p' s) :
     HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s where
   zero_eq x hx := h.zero_eq x hx
-  fderivWithin m hm x hx :=
-    (ContinuousMultilinearMap.restrictScalarsLinear 𝕜).hasFDerivAt.comp_hasFDerivWithinAt _ <|
-      (h.fderivWithin m hm x hx).restrictScalars 𝕜
+  fderivWithin m hm x hx := by
+    simpa only using -- porting note: added `by simpa only using`
+      (ContinuousMultilinearMap.restrictScalarsLinear 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x <|
+        (h.fderivWithin m hm x hx).restrictScalars 𝕜
   cont m hm := ContinuousMultilinearMap.continuous_restrictScalars.comp_continuousOn (h.cont m hm)
 #align has_ftaylor_series_up_to_on.restrict_scalars HasFTaylorSeriesUpToOn.restrictScalars
 
@@ -2249,11 +2255,9 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
   induction' n with n IH generalizing Eu Fu Gu
-  · simp only [← mul_assoc, norm_iteratedFDerivWithin_zero, Finset.range_one, Finset.sum_singleton,
-      Nat.choose_self, algebraMap.coe_one, one_mul]
-    apply ((B (f x)).le_op_norm (g x)).trans
-    apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
-    exact B.le_op_norm (f x)
+  · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+      Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
+    apply B.le_op_norm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
     have I1 :
       ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
@@ -2656,7 +2660,6 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     _ = (n + 1)! * C * D ^ (n + 1) := by
       simp only [mul_assoc, mul_one, Finset.sum_const, Finset.card_range, nsmul_eq_mul,
         Nat.factorial_succ, Nat.cast_mul]
-
 #align norm_iterated_fderiv_within_comp_le_aux norm_iteratedFDerivWithin_comp_le_aux
 
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
@@ -2679,7 +2682,7 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
   let fu : E → Fu := isoF.symm ∘ f
   let gu : Fu → Gu := isoG.symm ∘ g ∘ isoF
   let tu := isoF ⁻¹' t
-  have htu : UniqueDiffOn 𝕜 tu := isoF.toContinuousLinearEquiv.unique_diff_on_preimage_iff.2 ht
+  have htu : UniqueDiffOn 𝕜 tu := isoF.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 ht
   have hstu : MapsTo fu s tu := fun y hy ↦ by
     simpa only [mem_preimage, LinearIsometryEquiv.apply_symm_apply] using hst hy
   have Ffu : isoF (fu x) = f x := by simp only [LinearIsometryEquiv.apply_symm_apply]
@@ -2688,8 +2691,7 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
   have hgu : ContDiffOn 𝕜 n gu tu :=
     isoG.symm.contDiff.comp_contDiffOn
       ((hg.of_le hn).comp_continuousLinearMap (isoF : Fu →L[𝕜] F))
-  have Nfu : ∀ i, ‖iteratedFDerivWithin 𝕜 i fu s x‖ = ‖iteratedFDerivWithin 𝕜 i f s x‖ := by
-    intro i
+  have Nfu : ∀ i, ‖iteratedFDerivWithin 𝕜 i fu s x‖ = ‖iteratedFDerivWithin 𝕜 i f s x‖ := fun i ↦ by
     rw [LinearIsometryEquiv.norm_iteratedFDerivWithin_comp_left _ _ hs hx]
   simp_rw [← Nfu] at hD
   have Ngu : ∀ i,
