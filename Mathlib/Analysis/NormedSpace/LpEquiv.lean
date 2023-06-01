@@ -16,26 +16,26 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 # Equivalences among $L^p$ spaces
 
 In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
-when `α` is a `fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, there is a natural linear isometric
-equivalence `lp_pi_Lpₗᵢ : lp E p ≃ₗᵢ pi_Lp p E`. In addition, when `α` is a discrete topological
+when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, there is a natural linear isometric
+equivalence `lpPiLpₗᵢₓ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
 space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (λ _, β) ∞`. Here there
 can be more structure, including ring and algebra structures, and we implement these equivalences
 accordingly as well.
 
 We keep this as a separate file so that the various $L^p$ space files don't import the others.
 
-Recall that `pi_Lp` is just a type synonym for `Π i, E i` but given a different metric and norm
+Recall that `PiLp` is just a type synonym for `Π i, E i` but given a different metric and norm
 structure, although the topological, uniform and bornological structures coincide definitionally.
-These structures are only defined on `pi_Lp` for `fintype α`, so there are no issues of convergence
+These structures are only defined on `PiLp` for `Fintype α`, so there are no issues of convergence
 to consider.
 
-While `pre_lp` is also a type synonym for `Π i, E i`, it allows for infinite index types. On this
-type there is a predicate `mem_ℓp` which says that the relevant `p`-norm is finite and `lp E p` is
-the subtype of `pre_lp` satisfying `mem_ℓp`.
+While `PreLp` is also a type synonym for `Π i, E i`, it allows for infinite index types. On this
+type there is a predicate `Memℓp` which says that the relevant `p`-norm is finite and `lp E p` is
+the subtype of `PreLp` satisfying `Memℓp`.
 
 ## TODO
 
-* Equivalence between `lp` and `measure_theory.Lp`, for `f : α → E` (i.e., functions rather than
+* Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
 
 -/
@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false
 
 variable {α : Type _} {E : α → Type _} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
-/-- When `α` is `finite`, every `f : pre_lp E p` satisfies `mem_ℓp f p`. -/
+/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
 theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | _h)
   · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
@@ -59,7 +59,7 @@ theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
 
 variable [Fintype α]
 
-/-- The canonical `equiv` between `lp E p ≃ pi_Lp p E` when `E : α → Type u` with `[fintype α]`. -/
+/-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Fintype α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
   toFun f := ⇑f
   invFun f := ⟨f, Memℓp.all f⟩
@@ -82,8 +82,8 @@ theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
   · rw [PiLp.norm_eq_sum h, lp.norm_eq_tsum_rpow h, tsum_fintype]; rfl
 #align equiv_lp_pi_Lp_norm equiv_lpPiLp_norm
 
-/-- The canonical `add_equiv` between `lp E p` and `pi_Lp p E` when `E : α → Type u` with
-`[fintype α]` and `[fact (1 ≤ p)]`. -/
+/-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
+`[Fintype α]` and `[Fact (1 ≤ p)]`. -/
 def AddEquiv.lpPiLp [Fact (1 ≤ p)] : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g => rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
@@ -105,8 +105,8 @@ variable (E)
 annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
 dependencies. -/
 
-/-- The canonical `linear_isometry_equiv` between `lp E p` and `pi_Lp p E` when `E : α → Type u`
-with `[fintype α]` and `[fact (1 ≤ p)]`. -/
+/-- The canonical `LinearIsometryEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u`
+with `[Fintype α]` and `[Fact (1 ≤ p)]`. -/
 noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p E :=
   { AddEquiv.lpPiLp with
     map_smul' := fun _k _f => rfl
@@ -144,7 +144,7 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as an `add_equiv`. -/
+/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBcf : lp (fun _ : α => E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
@@ -167,7 +167,7 @@ variable (E)
 annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
 dependencies. -/
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as a `linear_isometry_equiv`. -/
+/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBcfₗᵢ : lp (fun _ : α => E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBcf with
     map_smul' := fun k f => rfl
@@ -188,7 +188,7 @@ end NormedAddCommGroup
 
 section RingAlgebra
 
-/-- The canonical map between `lp (λ (_ : α), R) ∞` and `α →ᵇ R` as a `ring_equiv`. -/
+/-- The canonical map between `lp (λ (_ : α), R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBcf : lp (fun _ : α => R) ∞ ≃+* (α →ᵇ R) :=
   { @AddEquiv.lpBcf _ R _ _ _ with
     map_mul' := fun _f _g => BoundedContinuousFunction.ext fun _x => rfl }
@@ -207,9 +207,9 @@ theorem coe_ringEquiv_lpBcf_symm (f : α →ᵇ R) : ((RingEquiv.lpBcf R).symm f
 variable (α)
 
 -- even `α` needs to be explicit here for elaboration
--- the `norm_one_class A` shouldn't really be necessary, but currently it is for
--- `one_mem_ℓp_infty` to get the `ring` instance on `lp`.
-/-- The canonical map between `lp (λ (_ : α), A) ∞` and `α →ᵇ A` as an `alg_equiv`. -/
+-- the `NormOneClass A` shouldn't really be necessary, but currently it is for
+-- `one_memℓp_infty` to get the `Ring` instance on `lp`.
+/-- The canonical map between `lp (λ (_ : α), A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBcf : lp (fun _ : α => A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBcf A with commutes' := fun _k => rfl }
 #align alg_equiv.lp_bcf AlgEquiv.lpBcf
