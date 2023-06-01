@@ -93,7 +93,8 @@ def tacticSuggestion (badTactic : String) : String :=
   s!"You used {badTactic}, but it looks like you maybe meant {suggestion}. Try that instead.\n"
 
 def feedback : M IO String := do
-  let errors ← (← errors).mapM (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
+  let errors ← ((← errors).filter (·.severity == .error)).mapM
+    (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
   -- We now look at the errors, and given different responses depending on what we see.
   let (unsolvedGoals, otherErrors) := errors.partition fun e => e.type == .unsolvedGoals
   let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.type == .usesSorry
