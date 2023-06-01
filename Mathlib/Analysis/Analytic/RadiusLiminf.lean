@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.Basic
-import Mathbin.Analysis.SpecialFunctions.Pow.Nnreal
+import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Representation of `formal_multilinear_series.radius` as a `liminf`
@@ -38,8 +38,7 @@ theorem radius_eq_liminf : p.radius = liminf (fun n => 1 / (‖p n‖₊ ^ (1 / 
   by
   have :
     ∀ (r : ℝ≥0) {n : ℕ},
-      0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) :=
-    by
+      0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) := by
     intro r n hn
     have : 0 < (n : ℝ) := Nat.cast_pos.2 hn
     conv_lhs =>
