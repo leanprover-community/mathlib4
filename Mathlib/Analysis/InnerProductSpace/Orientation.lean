@@ -170,7 +170,7 @@ theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI := finiteDimensional_of_finrank (h.symm ▸ hn : 0 < finrank ℝ E)
-  exact ((stdOrthonormalBasis _ _).reindex <| finCongr h).orientation_adjustToOrientation x
+  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <| finCongr h).orientation_adjustToOrientation x
 #align orientation.fin_orthonormal_basis_orientation Orientation.finOrthonormalBasis_orientation
 
 section VolumeForm
