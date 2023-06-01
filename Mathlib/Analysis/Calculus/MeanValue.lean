@@ -843,7 +843,6 @@ theorem mul_sub_le_image_sub_of_le_deriv {f : ℝ → ℝ} (hf : Differentiable 
     (fun x _ => hf'_ge x) x trivial y trivial hxy
 #align mul_sub_le_image_sub_of_le_deriv mul_sub_le_image_sub_of_le_deriv
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » D) -/
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f' < C`, then
 `f` grows slower than `C * x` on `D`, i.e., `f y - f x < C * (y - x)` whenever `x, y ∈ D`,
