@@ -60,7 +60,11 @@ instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
 
--- porting note: the following lemma is removed because it is a syntactic tauto
+attribute [coe] PresheafedSpace.carrier
+
+instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
+
+-- porting note: the following lemma is removed because it is a syntatic tauto
 /-@[simp]
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
   rfl
@@ -431,7 +435,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
           erw [Iso.inv_hom_id]
           rw [Presheaf.Pushforward.id_eq]) := by
   /- another approach would be to prove the left hand side
-       is a natural isoomorphism, but I encountered a universe
+       is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
   apply NatTrans.ext
   ext1 U
@@ -441,8 +445,6 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_top_c AlgebraicGeometry.PresheafedSpace.ofRestrict_top_c
 
-/- or `rw [opens.inclusion_top_functor, ←comp_obj, ←opens.map_comp_eq],
-         erw iso.inv_hom_id, cases U, refl` after `dsimp` -/
 /-- The map to the restriction of a presheafed space along the canonical inclusion from the top
 subspace.
 -/
