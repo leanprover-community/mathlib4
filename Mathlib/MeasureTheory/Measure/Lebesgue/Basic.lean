@@ -31,7 +31,6 @@ More properties of the Lebesgue measure are deduced from this in `lebesgue.eq_ha
 are proved more generally for any additive Haar measure on a finite-dimensional real vector space.
 -/
 
-
 assert_not_exists measure_theory.integral
 
 noncomputable section
@@ -41,6 +40,9 @@ open Classical Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 open ENNReal (ofReal)
 
 open scoped BigOperators ENNReal NNReal Topology
+
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+-- porting note: see lean4#2220
 
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
@@ -135,7 +137,7 @@ theorem volume_emetric_closedBall (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.c
 #align real.volume_emetric_closed_ball Real.volume_emetric_closedBall
 
 instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
-  ⟨fun x => volume_singleton⟩
+  ⟨fun _ => volume_singleton⟩
 #align real.has_no_atoms_volume Real.noAtoms_volume
 
 @[simp]
@@ -408,11 +410,9 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
       Matrix.mulVec, LinearEquiv.map_add, ite_mul, e, Matrix.toLin'_apply, Pi.smul_apply,
       Subtype.coe_mk, g, LinearMap.add_apply, Finset.sum_congr, Matrix.toLin'_one]
     by_cases h : t_i = k
-    ·
-      simp only [h, true_and_iff, Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq,
+    · simp only [h, true_and_iff, Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq,
         one_apply, boole_mul, add_comm]
-    ·
-      simp only [h, Ne.symm h, add_zero, if_false, Finset.sum_const_zero, false_and_iff,
+    · simp only [h, Ne.symm h, add_zero, if_false, Finset.sum_const_zero, false_and_iff,
         MulZeroClass.mul_zero]
   rw [this]
   have A : measure_preserving e := by
@@ -440,8 +440,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
   · conv_rhs => rw [← smul_map_diagonal_volume_pi hD]
     rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,
       ENNReal.ofReal_one, one_smul]
-  ·
-    simp only [Matrix.TransvectionStruct.det, ENNReal.ofReal_one,
+  · simp only [Matrix.TransvectionStruct.det, ENNReal.ofReal_one,
       (volume_preserving_transvection_struct _).map_eq, one_smul, _root_.inv_one, abs_one]
   · rw [to_lin'_mul, det_mul, LinearMap.coe_comp, ← measure.map_map, IHB, measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
@@ -456,13 +455,13 @@ determinant. -/
 theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] ι → ℝ} (hf : f.det ≠ 0) :
     Measure.map f volume = ENNReal.ofReal (abs f.det⁻¹) • volume := by
   classical
-    -- this is deduced from the matrix case
-    let M := f.to_matrix'
-    have A : f.det = det M := by simp only [LinearMap.det_toMatrix']
-    have B : f = M.to_lin' := by simp only [to_lin'_to_matrix']
-    rw [A, B]
-    apply map_matrix_volume_pi_eq_smul_volume_pi
-    rwa [A] at hf
+  -- this is deduced from the matrix case
+  let M := f.to_matrix'
+  have A : f.det = det M := by simp only [LinearMap.det_toMatrix']
+  have B : f = M.to_lin' := by simp only [to_lin'_to_matrix']
+  rw [A, B]
+  apply map_matrix_volume_pi_eq_smul_volume_pi
+  rwa [A] at hf
 #align real.map_linear_map_volume_pi_eq_smul_volume_pi Real.map_linearMap_volume_pi_eq_smul_volume_pi
 
 end Real
@@ -478,7 +477,7 @@ def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g s ⊆ s ×ˢ univ := by
-  simpa only [prod_univ, regionBetween, Set.preimage, set_of_subset_set_of] using fun a => And.left
+  simpa only [prod_univ, regionBetween, Set.preimage, setOf_subset_setOf] using fun a => And.left
 #align region_between_subset regionBetween_subset
 
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
@@ -542,27 +541,27 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
     (hs : MeasurableSet s) :
     μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by
   classical
-    rw [Measure.prod_apply]
-    · have h :
-        (fun x => volume { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) }) =
-          s.indicator fun x => ENNReal.ofReal (g x - f x) := by
-        funext x
-        rw [indicator_apply]
-        split_ifs
-        · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = Ioo (f x) (g x) := by simp [h, Ioo]
-          simp only [hx, Real.volume_Ioo, sub_zero]
-        · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
-          simp only [hx, measure_empty]
-      dsimp only [regionBetween, preimage_setOf_eq]
-      rw [h, lintegral_indicator] <;> simp only [hs, Pi.sub_apply]
-    · exact measurableSet_regionBetween hf hg hs
+  rw [Measure.prod_apply]
+  · have h :
+      (fun x => volume { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) }) =
+        s.indicator fun x => ENNReal.ofReal (g x - f x)
+    · funext x
+      rw [indicator_apply]
+      split_ifs with h
+      · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = Ioo (f x) (g x) := by simp [h, Ioo]
+        simp only [hx, Real.volume_Ioo, sub_zero]
+      · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
+        simp only [hx, measure_empty]
+    dsimp only [regionBetween, preimage_setOf_eq]
+    rw [h, lintegral_indicator] <;> simp only [hs, Pi.sub_apply]
+  · exact measurableSet_regionBetween hf hg hs
 #align volume_region_between_eq_lintegral' volume_regionBetween_eq_lintegral'
 
 /-- The volume of the region between two almost everywhere measurable functions on a measurable set
     can be represented as a Lebesgue integral. -/
 theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f (μ.restrict s))
     (hg : AEMeasurable g (μ.restrict s)) (hs : MeasurableSet s) :
-    μ.Prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by
+    μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by
   have h₁ :
     (fun y => ENNReal.ofReal ((g - f) y)) =ᵐ[μ.restrict s] fun y =>
       ENNReal.ofReal ((AEMeasurable.mk g hg - AEMeasurable.mk f hf) y) :=
@@ -575,8 +574,8 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
     exact
       ((quasi_measure_preserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ eventually_eq.rfl).inter
         (eventually_eq.rfl.comp₂ _ <| quasi_measure_preserving_fst.ae_eq_comp hg.ae_eq_mk)
-  rw [lintegral_congr_ae h₁, ←
-    volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
+  rw [lintegral_congr_ae h₁,
+    ← volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert h₂ using 1
   · rw [measure.restrict_prod_eq_prod_univ]
     exact (measure.restrict_eq_self _ (regionBetween_subset f g s)).symm
@@ -598,21 +597,21 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_Union_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
-    is_open_Union_countable _ fun p => isOpen_Ioo
+    isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have : s ⊆ s \ u ∪ ⋃ p ∈ A, s ∩ T p := by
     intro x hx
     by_cases h'x : x ∈ ⋃ i : ↥s × ↥s, T i
     · rw [← hA] at h'x
       obtain ⟨p, pA, xp⟩ : ∃ p : ↥s × ↥s, p ∈ A ∧ x ∈ T p := by
-        simpa only [mem_Union, exists_prop, SetCoe.exists, exists_and_right] using h'x
+        simpa only [mem_iUnion, exists_prop, SetCoe.exists, exists_and_right] using h'x
       right
-      exact mem_bUnion pA ⟨hx, xp⟩
+      exact mem_biUnion pA ⟨hx, xp⟩
     · exact Or.inl ⟨hx, h'x⟩
   apply ae_restrict_of_ae_restrict_of_subset this
-  rw [ae_restrict_union_iff, ae_restrict_bUnion_iff _ A_count]
+  rw [ae_restrict_union_iff, ae_restrict_biUnion_iff _ A_count]
   constructor
   · have : μ.restrict (s \ u) = 0 := by simp only [restrict_eq_zero, hfinite.measure_zero]
     simp only [this, ae_zero]
@@ -632,12 +631,12 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_Union_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
-    is_open_Union_countable _ fun p => isOpen_Ioo
+    isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have M : ∀ᵐ x ∂μ, x ∉ s \ u := hfinite.countable.ae_not_mem _
-  have M' : ∀ᵐ x ∂μ, ∀ (i : ↥s × ↥s) (H : i ∈ A), x ∈ s ∩ T i → p x := by
+  have M' : ∀ᵐ x ∂μ, ∀ (i : ↥s × ↥s) (_ : i ∈ A), x ∈ s ∩ T i → p x := by
     rw [ae_ball_iff A_count]
     rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
     change ∀ᵐ x : ℝ ∂μ, x ∈ s ∩ Ioo a b → p x
@@ -645,12 +644,12 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
     · simp only [Ioo_eq_empty_of_le hba, inter_empty, IsEmpty.forall_iff, eventually_true,
         mem_empty_iff_false]
     · exact h a b as bs hab
-  filter_upwards [M, M']with x hx h'x
+  filter_upwards [M, M'] with x hx h'x
   intro xs
   by_cases Hx : x ∈ ⋃ i : ↥s × ↥s, T i
   · rw [← hA] at Hx
     obtain ⟨p, pA, xp⟩ : ∃ p : ↥s × ↥s, p ∈ A ∧ x ∈ T p := by
-      simpa only [mem_Union, exists_prop, SetCoe.exists, exists_and_right] using Hx
+      simpa only [mem_iUnion, exists_prop, SetCoe.exists, exists_and_right] using Hx
     apply h'x p pA ⟨xs, xp⟩
   · exact False.elim (hx ⟨xs, Hx⟩)
 #align ae_of_mem_of_ae_of_mem_inter_Ioo ae_of_mem_of_ae_of_mem_inter_Ioo
