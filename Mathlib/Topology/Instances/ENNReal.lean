@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module topology.instances.ennreal
-! leanprover-community/mathlib commit 90ac7a91781abbb5f0206888d68bd095f88c4229
+! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -656,6 +656,18 @@ theorem iSup_mul {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f
   rw [mul_comm, mul_iSup]; congr; funext; rw [mul_comm]
 #align ennreal.supr_mul ENNReal.iSup_mul
 
+theorem smul_iSup {ι : Sort _} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
+    (c : R) : (c • ⨆ i, f i) = ⨆ i, c • f i := by
+  -- Porting note: replaced `iSup _` with `iSup f`
+  simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup f), ENNReal.mul_iSup]
+#align ennreal.smul_supr ENNReal.smul_iSup
+
+theorem smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
+    c • sSup s = ⨆ i ∈ s, c • i := by
+  -- Porting note: replaced `_` with `s`
+  simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
+#align ennreal.smul_Sup ENNReal.smul_sSup
+
 theorem iSup_div {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f / a = ⨆ i, f i / a :=
   iSup_mul
 #align ennreal.supr_div ENNReal.iSup_div
@@ -682,7 +694,7 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
     ∃ y' z', y' < y ∧ z' < z ∧ x < y' + z' := by
   have : NeZero y := ⟨hy⟩
   have : NeZero z := ⟨hz⟩
-  have A : Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 + p.2) (𝓝[<] y ×ᶠ 𝓝[<] z) (𝓝 (y + z)) := by
+  have A : Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 + p.2) (𝓝[<] y ×ˢ 𝓝[<] z) (𝓝 (y + z)) := by
     apply Tendsto.mono_left _ (Filter.prod_mono nhdsWithin_le_nhds nhdsWithin_le_nhds)
     rw [← nhds_prod_eq]
     exact tendsto_add
@@ -898,6 +910,11 @@ protected theorem tsum_mul_left : (∑' i, a * f i) = a * ∑' i, f i := by
 protected theorem tsum_mul_right : (∑' i, f i * a) = (∑' i, f i) * a := by
   simp [mul_comm, ENNReal.tsum_mul_left]
 #align ennreal.tsum_mul_right ENNReal.tsum_mul_right
+
+protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (a : R) :
+    (∑' i, a • f i) = a • ∑' i, f i := by
+  simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
+#align ennreal.tsum_const_smul ENNReal.tsum_const_smul
 
 @[simp]
 theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _h : a = b, f b) = f a :=

@@ -99,7 +99,7 @@ def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM 
 
 /-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable. -/
 def symm (g : MVarId) : MetaM MVarId := do
-  g.symmAux (← g.getType') fun lem args body g => do
+  g.symmAux (← g.getType'') fun lem args body g => do
     let .true ← isDefEq (← g.getType) body | failure
     g.assign (mkAppN lem args)
     return args.back.mvarId!

@@ -37,9 +37,6 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
--- Porting note: TODO Erase this line. Workaround for lean4#2074.
-attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
 
 variable [dec_ι : DecidableEq ι]
@@ -290,7 +287,7 @@ section Basis
 
 /-- The direct sum of free modules is free.
 
-Note that while this is stated for `Dfinsupp` not `direct_sum`, the types are defeq. -/
+Note that while this is stated for `Dfinsupp` not `DirectSum`, the types are defeq. -/
 noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
@@ -320,7 +317,7 @@ theorem dfinsupp_sumAddHom_mem {β : ι → Type _} [∀ i, AddZeroClass (β i)]
 #align submodule.dfinsupp_sum_add_hom_mem Submodule.dfinsupp_sumAddHom_mem
 
 /-- The supremum of a family of submodules is equal to the range of `Dfinsupp.lsum`; that is
-every element in the `supr` can be produced from taking a finite number of non-zero elements
+every element in the `iSup` can be produced from taking a finite number of non-zero elements
 of `p i`, coercing them to `N`, and summing them. -/
 theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
     iSup p = LinearMap.range (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
@@ -335,7 +332,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `Dfinsupp.sumAddHom` composed with `Dfinsupp.filter_add_monoid_hom`; that is, every element in the
-bounded `supr` can be produced from taking a finite number of non-zero elements from the `S i` that
+bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
     (⨆ (i) (_h : p i), S i) =
@@ -482,7 +479,7 @@ section Ring
 
 variable [Ring R] [AddCommGroup N] [Module R N]
 
-/- If `Dfinsupp.sumAddHom` applied with `add_submonoid.subtype` is injective then the additive
+/- If `Dfinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
 theorem independent_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by

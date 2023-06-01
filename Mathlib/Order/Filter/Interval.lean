@@ -68,11 +68,11 @@ eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is even
 We mark `l₂` as an `outParam` so that Lean can automatically find an appropriate `l₂` based on
 `Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`. -/
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
-  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ᶠ l₁`. In other words, for any
+  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
   `s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
 
   Use lemmas like `Filter.Tendsto.Icc` instead. -/
-  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ᶠ l₁) l₂.smallSets
+  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 #align filter.tendsto_Ixx_class Filter.TendstoIxxClass
 
 protected theorem Tendsto.Icc {l₁ l₂ : Filter α} [TendstoIxxClass Icc l₁ l₂] {lb : Filter β}

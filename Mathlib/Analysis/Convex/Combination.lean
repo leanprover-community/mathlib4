@@ -379,8 +379,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
   rw [_root_.convexHull_eq] at hx hy ⊢
   obtain ⟨ι, a, w, S, hw, hw', hS, hSp⟩ := hx
   obtain ⟨κ, b, v, T, hv, hv', hT, hTp⟩ := hy
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
-  have h_sum : (∑ i : ι × κ in a ×ᶠ b, w i.fst * v i.snd) = 1 := by
+  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
     ext i
@@ -390,9 +389,8 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
       simp [mul_comm]
     rw [this, ← Finset.sum_mul, hv']
     simp
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
   refine'
-    ⟨ι × κ, a ×ᶠ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
+    ⟨ι × κ, a ×ˢ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
       fun p hp => _, _⟩
   · rw [mem_product] at hp
     exact mul_nonneg (hw p.1 hp.1) (hv p.2 hp.2)

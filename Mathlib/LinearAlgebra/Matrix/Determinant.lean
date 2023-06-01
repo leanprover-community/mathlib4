@@ -150,7 +150,7 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
       mul_swap_involutive i j σ
 #align matrix.det_mul_aux Matrix.det_mul_aux
 
--- Porting note: need to bump for last simp
+-- Porting note: need to bump for last simp; new after #3414 (reenableeta)
 set_option maxHeartbeats 300000 in
 @[simp]
 theorem det_mul (M N : Matrix n n R) : det (M ⬝ N) = det M * det N :=
