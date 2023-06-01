@@ -94,8 +94,9 @@ top-dimensional forms on `E`. -/
 theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.toBasis.orientation) :
     e.toBasis.det = -f.toBasis.det := by
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
-  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h, ]
-  rw [neg_one_smul _]
+  -- Porting note: added `neg_one_smul` with explicit type
+  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h,
+    neg_one_smul ℝ (M := AlternatingMap ℝ E ℝ ι)]
 #align orthonormal_basis.det_eq_neg_det_of_opposite_orientation OrthonormalBasis.det_eq_neg_det_of_opposite_orientation
 
 section AdjustToOrientation
