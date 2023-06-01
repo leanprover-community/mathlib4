@@ -220,10 +220,9 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.denseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
-    have :
-      ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'), x * y⁻¹ ∈ V :=
-      by
-      have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1).prod (𝓝 1)) (𝓝 1) := by
+    have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
+      x * y⁻¹ ∈ V := by
+      have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
         rw [← nhds_prod_eq]
         conv =>
           congr
@@ -326,8 +325,8 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
-    closure ((↑) '' { x : K | v x < (γ : Γ₀) }) = { x : hat K | extensionValuation x < (γ : Γ₀) } :=
-  by
+    closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
+    { x : hat K | extensionValuation x < (γ : Γ₀) } := by
   ext x
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
