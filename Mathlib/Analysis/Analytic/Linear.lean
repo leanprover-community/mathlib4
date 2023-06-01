@@ -13,7 +13,7 @@ import Mathlib.Analysis.Analytic.Basic
 /-!
 # Linear functions are analytic
 
-In this file we prove that a `continuous_linear_map` defines an analytic function with
+In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`.
 -/
 
