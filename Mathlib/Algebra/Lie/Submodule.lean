@@ -995,7 +995,7 @@ theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by rw [← le_bot_iff]
 #align lie_ideal.map_eq_bot_iff LieIdeal.map_eq_bot_iff
 
 theorem coe_map_of_surjective (h : Function.Surjective f) :
-    (I.map f : Submodule R L') = (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L') := by
+    LieSubmodule.toSubmodule (I.map f) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
   let J : LieIdeal R L' :=
     { (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L') with
       lie_mem := fun {x y} hy ↦ by
