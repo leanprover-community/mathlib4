@@ -157,7 +157,7 @@ instance : CoeFun (QuadraticForm R M) fun _ => M → R :=
 
 variable (Q)
 
-/-- The `simp` normal form for a quadratic form is `coeFn`, not `toFun`. -/
+/-- The `simp` normal form for a quadratic form is `FunLike.coe`, not `toFun`. -/
 @[simp]
 theorem toFun_eq_coe : Q.toFun = ⇑Q :=
   rfl
@@ -227,7 +227,7 @@ theorem map_add_self (x : M) : Q (x + x) = 4 * Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticForm.map_add_self
 
--- porting note: removed @[simp]
+-- porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
 theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
@@ -835,7 +835,7 @@ instance canLift : CanLift (BilinForm R M) (QuadraticForm R M) (associatedHom �
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
 theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
-    -- Porting note: added type ascription
+    -- Porting note: added implicit argument
     (hB₁ : associated' (R := R) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
@@ -903,7 +903,7 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
 theorem nondegenerate_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M)
     (hB : Q.Anisotropic) :
-    -- Porting note: added type ascription
+    -- Porting note: added implicit argument
     (QuadraticForm.associated' (R := R) Q).Nondegenerate := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
