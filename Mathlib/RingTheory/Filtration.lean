@@ -345,6 +345,8 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
     have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := by
+      -- Porting note: Original proof was
+      -- `fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span`
       intro i hi
       refine Set.Subset.trans ?_ Submodule.subset_span
       refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
@@ -373,7 +375,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   constructor
   · rintro H
     apply H.stablizes_of_iSup_eq
-        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (H : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
+        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_H : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
       congr 1
