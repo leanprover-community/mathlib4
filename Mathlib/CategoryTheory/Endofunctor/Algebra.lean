@@ -283,7 +283,7 @@ theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
   exact left_inv h
 #align category_theory.endofunctor.algebra.initial.right_inv CategoryTheory.Endofunctor.Algebra.Initial.right_inv
 
-/-- The structure map of the inital algebra is an isomorphism,
+/-- The structure map of the initial algebra is an isomorphism,
 hence endofunctors preserve their initial algebras
 -/
 theorem str_isIso (h : Limits.IsInitial A) : IsIso A.str :=

@@ -62,7 +62,7 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 pp_extended_field_notation NatTrans.app
 
 -- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transfomations moving earlier.
+-- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
 #align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 

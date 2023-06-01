@@ -391,7 +391,7 @@ a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient
 def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient (X := X) x₀ x₁ := p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
-/-- Help the typechecker by convering a path in a topological space to an arrow in the
+/-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
 @[reducible]
 def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ := p
