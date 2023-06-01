@@ -1155,7 +1155,6 @@ theorem hasFTaylorSeriesUpToOn_pi :
     ContinuousMultilinearMap.piₗᵢ _ _
   refine' ⟨fun h i => _, fun h => ⟨fun x hx => _, _, _⟩⟩
   · convert h.continuousLinearMap_comp (pr i)
-    ext; rfl
   · ext1 i
     exact (h i).zero_eq x hx
   · intro m hm x hx
@@ -1168,27 +1167,24 @@ theorem hasFTaylorSeriesUpToOn_pi :
 
 @[simp]
 theorem hasFTaylorSeriesUpToOn_pi' :
-    HasFTaylorSeriesUpToOn n Φ P' s ↔
-      ∀ i,
-        HasFTaylorSeriesUpToOn n (fun x => Φ x i)
-          (fun x m =>
-            (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap (P' x m))
-          s :=
-  by convert hasFTaylorSeriesUpToOn_pi; ext; rfl
+    HasFTaylorSeriesUpToOn n Φ P' s ↔ ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
+      (fun x m =>
+        (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap (P' x m)) s :=
+  by convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x => Φ x i); ext; rfl
 #align has_ftaylor_series_up_to_on_pi' hasFTaylorSeriesUpToOn_pi'
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
-  refine' ⟨fun h i => h.continuousLinearMapComp (pr i), fun h m hm => _⟩
+  refine' ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h m hm => _⟩
   choose u hux p hp using fun i => h i m hm
   exact
     ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
-      hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| Inter_subset _ _⟩
+      hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _⟩
 #align cont_diff_within_at_pi contDiffWithinAt_pi
 
 theorem contDiffOn_pi : ContDiffOn 𝕜 n Φ s ↔ ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s :=
-  ⟨fun h i x hx => contDiffWithinAt_pi.1 (h x hx) _, fun h x hx =>
+  ⟨fun h _ x hx => contDiffWithinAt_pi.1 (h x hx) _, fun h x hx =>
     contDiffWithinAt_pi.2 fun i => h i x hx⟩
 #align cont_diff_on_pi contDiffOn_pi
 
@@ -1234,7 +1230,7 @@ theorem ContDiffWithinAt.add {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 
 /-- The sum of two `C^n` functions at a point is `C^n` at this point. -/
 theorem ContDiffAt.add {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     ContDiffAt 𝕜 n (fun x => f x + g x) x := by
-  rw [← contDiffWithinAt_univ] at * <;> exact hf.add hg
+  rw [← contDiffWithinAt_univ] at *; exact hf.add hg
 #align cont_diff_at.add ContDiffAt.add
 
 /-- The sum of two `C^n`functions is `C^n`. -/
@@ -1259,9 +1255,9 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
     iteratedFDerivWithin 𝕜 i (f + g) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x := by
   induction' i with i hi generalizing x
-  · ext h; simp
+  · ext; simp
   · ext h
-    have hi' : (i : ℕ∞) < i + 1 := with_top.coe_lt_coe.mpr (Nat.lt_succ_self _)
+    have hi' : (i : ℕ∞) < i + 1 := WithTop.coe_lt_coe.mpr (Nat.lt_succ_self _)
     have hdf : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i f s) s :=
       hf.differentiableOn_iteratedFDerivWithin hi' hu
     have hdg : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i g s) s :=
@@ -1329,7 +1325,7 @@ theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt �
 
 /-- The negative of a `C^n` function at a point is `C^n` at this point. -/
 theorem ContDiffAt.neg {f : E → F} (hf : ContDiffAt 𝕜 n f x) : ContDiffAt 𝕜 n (fun x => -f x) x :=
-  by rw [← contDiffWithinAt_univ] at * <;> exact hf.neg
+  by rw [← contDiffWithinAt_univ] at *; exact hf.neg
 #align cont_diff_at.neg ContDiffAt.neg
 
 /-- The negative of a `C^n`function is `C^n`. -/
@@ -1347,9 +1343,8 @@ variable {i : ℕ}
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
   induction' i with i hi generalizing x
-  · ext h; simp
+  · ext; simp
   · ext h
-    have hi' : (i : ℕ∞) < i + 1 := with_top.coe_lt_coe.mpr (Nat.lt_succ_self _)
     calc
       iteratedFDerivWithin 𝕜 (i + 1) (-f) s x h =
           fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (-f) s) s x (h 0) (Fin.tail h) :=
@@ -1413,7 +1408,7 @@ theorem ContDiffWithinAt.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} 
 theorem ContDiffAt.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {x : E}
     (h : ∀ i ∈ s, ContDiffAt 𝕜 n (fun x => f i x) x) :
     ContDiffAt 𝕜 n (fun x => ∑ i in s, f i x) x := by
-  rw [← contDiffWithinAt_univ] at * <;> exact ContDiffWithinAt.sum h
+  rw [← contDiffWithinAt_univ] at *; exact ContDiffWithinAt.sum h
 #align cont_diff_at.sum ContDiffAt.sum
 
 theorem ContDiffOn.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {t : Set E}
@@ -1424,7 +1419,7 @@ theorem ContDiffOn.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {t : S
 
 theorem ContDiff.sum {ι : Type _} {f : ι → E → F} {s : Finset ι}
     (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i in s, f i x := by
-  simp only [← contDiffOn_univ] at * <;> exact ContDiffOn.sum h
+  simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 #align cont_diff.sum ContDiff.sum
 
 /-! ### Product of two functions -/
@@ -1448,7 +1443,7 @@ theorem ContDiffWithinAt.mul {s : Set E} {f g : E → 𝔸} (hf : ContDiffWithin
 #align cont_diff_within_at.mul ContDiffWithinAt.mul
 
 /-- The product of two `C^n` functions at a point is `C^n` at this point. -/
-theorem ContDiffAt.mul {f g : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+nonrec theorem ContDiffAt.mul {f g : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     ContDiffAt 𝕜 n (fun x => f x * g x) x :=
   hf.mul hg
 #align cont_diff_at.mul ContDiffAt.mul
@@ -1497,17 +1492,17 @@ theorem contDiffOn_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ 
 
 theorem contDiff_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
     ContDiff 𝕜 n (∏ i in t, f i) :=
-  contDiff_iff_contDiffAt.mpr fun x => contDiffAt_prod' fun i hi => (h i hi).contDiffAt
+  contDiff_iff_contDiffAt.mpr fun _x => contDiffAt_prod' fun i hi => (h i hi).contDiffAt
 #align cont_diff_prod' contDiff_prod'
 
 theorem contDiff_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
     ContDiff 𝕜 n fun y => ∏ i in t, f i y :=
-  contDiff_iff_contDiffAt.mpr fun x => contDiffAt_prod fun i hi => (h i hi).contDiffAt
+  contDiff_iff_contDiffAt.mpr fun _x => contDiffAt_prod fun i hi => (h i hi).contDiffAt
 #align cont_diff_prod contDiff_prod
 
 theorem ContDiff.pow {f : E → 𝔸} (hf : ContDiff 𝕜 n f) : ∀ m : ℕ, ContDiff 𝕜 n fun x => f x ^ m
   | 0 => by simpa using contDiff_const
-  | m + 1 => by simpa [pow_succ] using hf.mul (ContDiff.pow m)
+  | m + 1 => by simpa [pow_succ] using hf.mul (ContDiff.pow hf m)
 #align cont_diff.pow ContDiff.pow
 
 theorem ContDiffWithinAt.pow {f : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (m : ℕ) :
@@ -1529,7 +1524,7 @@ theorem ContDiffWithinAt.div_const {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 
   simpa only [div_eq_mul_inv] using hf.mul contDiffWithinAt_const
 #align cont_diff_within_at.div_const ContDiffWithinAt.div_const
 
-theorem ContDiffAt.div_const {f : E → 𝕜'} {n} (hf : ContDiffAt 𝕜 n f x) (c : 𝕜') :
+nonrec theorem ContDiffAt.div_const {f : E → 𝕜'} {n} (hf : ContDiffAt 𝕜 n f x) (c : 𝕜') :
     ContDiffAt 𝕜 n (fun x => f x / c) x :=
   hf.div_const c
 #align cont_diff_at.div_const ContDiffAt.div_const
@@ -1564,7 +1559,7 @@ theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : C
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 theorem ContDiffAt.smul {f : E → 𝕜} {g : E → F} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => f x • g x) x := by
-  rw [← contDiffWithinAt_univ] at * <;> exact hf.smul hg
+  rw [← contDiffWithinAt_univ] at *; exact hf.smul hg
 #align cont_diff_at.smul ContDiffAt.smul
 
 /-- The scalar multiplication of two `C^n` functions is `C^n`. -/
@@ -1606,7 +1601,7 @@ theorem ContDiffWithinAt.const_smul {s : Set E} {f : E → F} {x : E} (c : R)
 point. -/
 theorem ContDiffAt.const_smul {f : E → F} {x : E} (c : R) (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun y => c • f y) x := by
-  rw [← contDiffWithinAt_univ] at * <;> exact hf.const_smul c
+  rw [← contDiffWithinAt_univ] at *; exact hf.const_smul c
 #align cont_diff_at.const_smul ContDiffAt.const_smul
 
 /-- The scalar multiplication of a constant and a `C^n` function is `C^n`. -/
@@ -1627,7 +1622,7 @@ theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffOn 𝕜 i f s) (hu :
   induction' i with i hi generalizing x
   · ext; simp
   · ext h
-    have hi' : (i : ℕ∞) < i + 1 := with_top.coe_lt_coe.mpr (Nat.lt_succ_self _)
+    have hi' : (i : ℕ∞) < i + 1 := WithTop.coe_lt_coe.mpr (Nat.lt_succ_self _)
     have hdf : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i f s) s :=
       hf.differentiableOn_iteratedFDerivWithin hi' hu
     have hcdf : ContDiffOn 𝕜 i f s := hf.of_le hi'.le
@@ -1637,8 +1632,8 @@ theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffOn 𝕜 i f s) (hu :
         rfl
       _ = fderivWithin 𝕜 (a • iteratedFDerivWithin 𝕜 i f s) s x (h 0) (Fin.tail h) := by
         rw [fderivWithin_congr' (fun _ => hi hcdf) hx]; rfl
-      _ = (a • fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i f s)) s x (h 0) (Fin.tail h) := by
-        rw [Pi.smul_def, fderivWithin_const_smul (hu x hx) (hdf x hx)]; rfl
+      _ = (a • fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i f s) s x) (h 0) (Fin.tail h) := by
+        rw [Pi.smul_def, fderivWithin_const_smul (hu x hx) (hdf x hx)]
       _ = a • iteratedFDerivWithin 𝕜 (i + 1) f s x h := rfl
 
 #align iterated_fderiv_within_const_smul_apply iteratedFDerivWithin_const_smul_apply
@@ -1666,7 +1661,7 @@ within the product set at the product point. -/
 theorem ContDiffWithinAt.prod_map' {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {p : E × E'}
     (hf : ContDiffWithinAt 𝕜 n f s p.1) (hg : ContDiffWithinAt 𝕜 n g t p.2) :
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) p :=
-  (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).Prod
+  (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prod
     (hg.comp p contDiffWithinAt_snd (prod_subset_preimage_snd _ _))
 #align cont_diff_within_at.prod_map' ContDiffWithinAt.prod_map'
 
@@ -1682,7 +1677,7 @@ theorem ContDiffWithinAt.prod_map {s : Set E} {t : Set E'} {f : E → F} {g : E'
 theorem ContDiffOn.prod_map {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type _}
     [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
-  (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).Prod
+  (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prod
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 #align cont_diff_on.prod_map ContDiffOn.prod_map
 
@@ -1707,7 +1702,7 @@ theorem ContDiffAt.prod_map' {f : E → F} {g : E' → F'} {p : E × E'} (hf : C
 theorem ContDiff.prod_map {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n (Prod.map f g) := by
   rw [contDiff_iff_contDiffAt] at *
-  exact fun ⟨x, y⟩ => (hf x).Prod_map (hg y)
+  exact fun ⟨x, y⟩ => (hf x).prod_map (hg y)
 #align cont_diff.prod_map ContDiff.prod_map
 
 theorem contDiff_prod_mk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
@@ -1725,7 +1720,9 @@ end Prod_map
 
 section AlgebraInverse
 
-variable (𝕜) {R : Type _} [NormedRing R] [NormedAlgebra 𝕜 R]
+variable (𝕜) {R : Type _} [NormedRing R]
+-- porting note: this couldn't be on the same line as the binder type update of `𝕜`
+variable [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -1743,16 +1740,16 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) : ContDiffAt 𝕜 n 
       rw [le_antisymm hm bot_le, hasFTaylorSeriesUpToOn_zero_iff]
       constructor
       · rintro _ ⟨x', rfl⟩
-        exact (inverse_continuous_at x').continuousWithinAt
+        exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
   · apply contDiffAt_succ_iff_hasFDerivAt.mpr
-    refine' ⟨fun x : R => -mul_left_right 𝕜 R (inverse x) (inverse x), _, _⟩
+    refine' ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), _, _⟩
     · refine' ⟨{ y : R | IsUnit y }, x.nhds, _⟩
       rintro _ ⟨y, rfl⟩
       rw [inverse_unit]
       exact hasFDerivAt_ring_inverse y
     ·
-      convert(mul_left_right_is_bounded_bilinear 𝕜 R).contDiff.neg.comp_contDiffAt (x : R)
+      convert(mulLeftRight_isBoundedBilinear 𝕜 R).contDiff.neg.comp_contDiffAt (x : R)
           (IH.prod IH)
   · exact contDiffAt_top.mpr Itop
 #align cont_diff_at_ring_inverse contDiffAt_ring_inverse
