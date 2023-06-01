@@ -403,8 +403,9 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
 
 -- Porting note: added a `DecidableEq` argument to help with timeouts in
 -- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
-theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] : (gramSchmidtOrthonormalBasis h f).toBasis.det f =
-    ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
+theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
+    (gramSchmidtOrthonormalBasis h f).toBasis.det f =
+      ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
   convert Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 #align gram_schmidt_orthonormal_basis_det gramSchmidtOrthonormalBasis_det
