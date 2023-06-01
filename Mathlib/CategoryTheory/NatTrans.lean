@@ -61,9 +61,6 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 
 pp_extended_field_notation NatTrans.app
 
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
-
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transfomations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
