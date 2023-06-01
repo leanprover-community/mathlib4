@@ -1047,18 +1047,10 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 protected def Fintype.total : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v :=
     { toFun := fun f => ∑ i, f i • v i
-      map_add' := fun f g => by
-        simp_rw [← Finset.sum_add_distrib, ← add_smul]
-        rfl
-      map_smul' := fun r f => by
-        simp_rw [Finset.smul_sum, smul_smul]
-        rfl }
-  map_add' u v := by
-    ext
-    simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by
-    ext g
-    simp [Finset.smul_sum, smul_comm]
+      map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
+      map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl }
+  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
 #align fintype.total Fintype.total
 
 variable {S}
