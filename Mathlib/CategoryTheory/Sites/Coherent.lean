@@ -14,9 +14,15 @@ import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 This file defines the coherent Grothendieck topology (and coverage) on a category `C`.
 The category `C` must satisfy a `Precoherent C` condition, which is essentially the minimal
 requirement for the coherent coverage to exist.
+Given such a category, the coherent coverage is `coherentCoverage C` and the corresponding
+Grothendieck topology is `coherentTopology C`.
 
 In `isSheaf_coherent`, we characterize the sheaf condition for presheaves of types for the
 coherent Grothendieck topology in terms of finite effective epimorphic families.
+
+## References:
+- [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
+- [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
 
 -/
 
@@ -46,7 +52,7 @@ class Precoherent : Prop where
 /--
 The coherent coverage on a precoherent category `C`.
 -/
-def CoherentCoverage [Precoherent C] : Coverage C where
+def coherentCoverage [Precoherent C] : Coverage C where
   covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
   pullback := by
@@ -59,20 +65,20 @@ def CoherentCoverage [Precoherent C] : Coverage C where
 /--
 The coherent Grothendieck topology on a precoherent category `C`.
 -/
-def CoherentTopology [Precoherent C] : GrothendieckTopology C :=
-  Coverage.toGrothendieck _ <| CoherentCoverage C
+def coherentTopology [Precoherent C] : GrothendieckTopology C :=
+  Coverage.toGrothendieck _ <| coherentCoverage C
 
 lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
-    Presieve.IsSheaf (CoherentTopology C) P ↔
+    Presieve.IsSheaf (coherentTopology C) P ↔
     (∀ (B : C) (α : Type) [Fintype α] (X : α → C) (π : (a : α) → (X a ⟶ B)),
       EffectiveEpiFamily X π → (Presieve.ofArrows X π).IsSheafFor P) := by
   constructor
   · intro hP B α _ X π h
-    simp only [CoherentTopology, Presieve.isSheaf_coverage] at hP
+    simp only [coherentTopology, Presieve.isSheaf_coverage] at hP
     apply hP
     refine ⟨α, inferInstance, X, π, rfl, h⟩
   · intro h
-    simp only [CoherentTopology, Presieve.isSheaf_coverage]
+    simp only [coherentTopology, Presieve.isSheaf_coverage]
     rintro B S ⟨α, _, X, π, rfl, hS⟩
     exact h _ _ _ _ hS
 
