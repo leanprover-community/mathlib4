@@ -562,8 +562,8 @@ theorem Pi.exp_def {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [∀ i, Nor
 
 theorem Function.update_exp {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [DecidableEq ι]
     [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
-    (j : ι) (xj : 𝔸 j) : Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) :=
-  by
+    (j : ι) (xj : 𝔸 j) :
+    Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) := by
   ext i
   simp_rw [Pi.exp_def]
   exact (Function.apply_update (fun i => exp 𝕂) x j xj i).symm
