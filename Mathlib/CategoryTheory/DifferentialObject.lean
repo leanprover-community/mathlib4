@@ -115,8 +115,11 @@ instance forget_faithful : Faithful (forget C) where
   map_injective := Hom.ext _ _ -- Porting note: Added a definition for `map_injective`
 #align category_theory.differential_object.forget_faithful CategoryTheory.DifferentialObject.forget_faithful
 
+-- Porting note : `aesop(_cat)` can't solve `comp_zero` and `zero_comp`
 instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where
   Zero X Y := ⟨{ f := 0 }⟩
+  comp_zero := fun {X Y} f Z => Hom.ext _ _ <| comp_zero (f := f.f)
+  zero_comp := fun {X Y Z} f => Hom.ext _ _ <| zero_comp (f := f.f)
 #align category_theory.differential_object.has_zero_morphisms CategoryTheory.DifferentialObject.hasZeroMorphisms
 
 variable {C}
