@@ -51,7 +51,7 @@ variable {K : Type _} {R : Type _}
 -- mathport name: exprq
 local notation "q" => Fintype.card K
 
-open Finset Function
+open Finset
 
 open scoped BigOperators Polynomial
 
@@ -67,20 +67,21 @@ open Polynomial
   polynomial -/
 theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 0 < p.degree) :
     Fintype.card R ≤ natDegree p * (univ.image fun x => eval x p).card :=
-  Finset.card_le_mul_card_image _ _ fun a _ =>
+  Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
       _ = (p - C a).roots.toFinset.card :=
-        congr_arg card (by simp [Finset.ext_iff, mem_roots_sub_C hp])
-      _ ≤ (p - C a).roots.card := (Multiset.toFinset_card_le _)
-      _ ≤ _ := card_roots_sub_C' hp
-      
+        congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
+      _ ≤ Multiset.card (p - C a).roots := (Multiset.toFinset_card_le _)
+      _ ≤ _ := card_roots_sub_C' hp)
+
 #align finite_field.card_image_polynomial_eval FiniteField.card_image_polynomial_eval
 
 /-- If `f` and `g` are quadratic polynomials, then the `f.eval a + g.eval b = 0` has a solution. -/
 theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) (hg2 : degree g = 2)
     (hR : Fintype.card R % 2 = 1) : ∃ a b, f.eval a + g.eval b = 0 :=
   letI := Classical.decEq R
-  suffices ¬Disjoint (univ.image fun x : R => eval x f) (univ.image fun x : R => eval x (-g)) by
+  suffices ¬Disjoint (univ.image fun x : R => eval x f)
+    (univ.image fun x : R => eval x (-g)) by
     simp only [disjoint_left, mem_image] at this
     push_neg  at this
     rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
@@ -93,17 +94,16 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
         Nat.mul_le_mul_left _ (Finset.card_le_univ _)
       _ = Fintype.card R + Fintype.card R := (two_mul _)
       _ <
-          nat_degree f * (univ.image fun x : R => eval x f).card +
-            nat_degree (-g) * (univ.image fun x : R => eval x (-g)).card :=
+          natDegree f * (univ.image fun x : R => eval x f).card +
+            natDegree (-g) * (univ.image fun x : R => eval x (-g)).card :=
         (add_lt_add_of_lt_of_le
-          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2] <;> exact by decide))
-            (mt (congr_arg (· % 2)) (by simp [nat_degree_eq_of_degree_eq_some hf2, hR])))
-          (card_image_polynomial_eval (by rw [degree_neg, hg2] <;> exact by decide)))
+          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; exact by decide))
+            (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
+          (card_image_polynomial_eval (by rw [degree_neg, hg2]; exact by decide)))
       _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
-        rw [card_disjoint_union hd] <;>
-          simp [nat_degree_eq_of_degree_eq_some hf2, nat_degree_eq_of_degree_eq_some hg2, bit0,
-            mul_add]
-      
+        rw [card_disjoint_union hd];
+          simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
+
 #align finite_field.exists_root_sum_quadratic FiniteField.exists_root_sum_quadratic
 
 end Polynomial
@@ -130,7 +130,7 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 :=
       classical
         rw [← Fintype.card_units, pow_card_eq_one]
         rfl
-    
+
 #align finite_field.pow_card_sub_one_eq_one FiniteField.pow_card_sub_one_eq_one
 
 theorem pow_card (a : K) : a ^ q = a := by
@@ -205,7 +205,7 @@ theorem sum_pow_units [Fintype Kˣ] (i : ℕ) :
   calc
     (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
     _ = if q - 1 ∣ i then -1 else 0 := _
-    
+
   suffices q - 1 ∣ i ↔ φ = 1 by
     simp only [this]
     split_ifs with h h; swap; rfl
@@ -235,7 +235,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : (∑ x : K, x ^ i) =
           zero_pow (Nat.pos_of_ne_zero hi), add_zero]
       _ = ∑ x : Kˣ, x ^ i := by rw [← this, univ.sum_map φ]; rfl
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
-      
+
 #align finite_field.sum_pow_lt_card_sub_one FiniteField.sum_pow_lt_card_sub_one
 
 open Polynomial
@@ -261,7 +261,7 @@ theorem x_pow_card_sub_x_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
     calc
       1 < _ := hp
       _ = _ := (x_pow_card_sub_x_natDegree_eq K' hp).symm
-      
+
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.x_pow_card_sub_x_ne_zero
 
 theorem x_pow_card_pow_sub_x_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
@@ -553,4 +553,3 @@ theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
 end FiniteField
 
 end
-
