@@ -383,11 +383,8 @@ a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' p�
 -/
 structure HasFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (r : ℝ≥0∞) :
     Prop where
-  /-- The provided radius is at mots the `FormalMultilinearSeries.radius`. -/
   r_le : r ≤ p.radius
-  /-- The provided radius is positive. -/
   r_pos : 0 < r
-  /-- For every `y` in the ball of radius `r` centered at `0`, `f (x + y) = ∑' pₙ yⁿ`. -/
   hasSum :
     ∀ {y}, y ∈ EMetric.ball (0 : E) r → HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
 #align has_fpower_series_on_ball HasFPowerSeriesOnBall
