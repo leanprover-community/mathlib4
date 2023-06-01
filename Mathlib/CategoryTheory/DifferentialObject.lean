@@ -37,35 +37,58 @@ variable (C : Type u) [Category.{v} C]
 variable [HasZeroMorphisms C] [HasShift C ℤ]
 
 /-- A differential object in a category with zero morphisms and a shift is
-an object `X` equipped with
+an object `pt` equipped with
 a morphism `d : X ⟶ X⟦1⟧`, such that `d^2 = 0`. -/
 -- Porting note: Removed `@[nolint has_nonempty_instance]`
 structure DifferentialObject where
+  /-- The underlying object of a differential object. -/
   pt : C
+  /-- The differential of a differential object. -/
   d : pt ⟶ pt⟦(1 : ℤ)⟧
+  /-- The differential `d` satisfies that `d² = 0`. -/
   d_squared' : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object CategoryTheory.DifferentialObject
 
-restate_axiom DifferentialObject.d_squared'
+-- Porting note : this resulted in a `INCORRECT DEF/LEMMA` liner error, so `Hom.comm` is
+-- made manually
+-- restate_axiom DifferentialObject.d_squared'
 
-attribute [simp] DifferentialObject.d_squared
+-- attribute [simp] DifferentialObject.d_squared
 
 variable {C}
 
 namespace DifferentialObject
 
+@[simp]
+lemma d_squared (X : DifferentialObject C) : X.d ≫ X.d⟦1⟧' = 0 := X.d_squared'
+
 /-- A morphism of differential objects is a morphism commuting with the differentials. -/
 @[ext] -- Porting note: Removed `nolint has_nonempty_instance`
 structure Hom (X Y : DifferentialObject C) where
+  /-- the morphism between underlying objects of the two differentiable object -/
   f : X.pt ⟶ Y.pt
+  /-- the morphism should form a commutative square:
+  ```
+     d
+  X ---> X
+  | f    | f
+  v      v
+  Y ---> Y
+     d
+  ```
+  -/
   comm' : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object.hom CategoryTheory.DifferentialObject.Hom
 
-restate_axiom Hom.comm'
-
-attribute [reassoc (attr := simp)] Hom.comm
+-- Porting note : this resulted in a `INCORRECT DEF/LEMMA` liner error, so `Hom.comm` is
+-- made manually
+-- restate_axiom Hom.comm'
+-- attribute [reassoc (attr := simp)] Hom.comm
 
 namespace Hom
+
+@[simp, reassoc (attr := simp)]
+lemma comm {X Y : DifferentialObject C} (f : Hom X Y) : X.d ≫ f.f⟦1⟧' = f.f ≫ Y.d := f.comm'
 
 /-- The identity morphism of a differential object. -/
 @[simps]
