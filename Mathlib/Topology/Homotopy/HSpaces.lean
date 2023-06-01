@@ -141,7 +141,10 @@ lead to a diamond since a topological field would inherit two `H_space` structur
 `mul_one_class` and one from the `add_zero_class`. In the case of a group, we make
 `topological_group.H_space` an instance."-/
 @[to_additive
-      "The definition `to_H_space` is not an instance because it comes together with a\nmultiplicative version which would lead to a diamond since a topological field would inherit two\n`H_space` structures, one from the `mul_one_class` and one from the `add_zero_class`. In the case\nof an additive group, we make `topological_group.H_space` an instance."]
+      "The definition `to_H_space` is not an instance because it comes together with a
+      multiplicative version which would lead to a diamond since a topological field would inherit
+      two `H_space` structures, one from the `mul_one_class` and one from the `add_zero_class`.
+      In the case of an additive group, we make `topological_group.H_space` an instance."]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -149,7 +152,7 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   eHmul := (HomotopyRel.refl _ _).cast rfl (by ext1; apply one_mul)
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
 #align topological_group.to_H_space TopologicalGroup.toHSpace
-#align topological_add_group.to_H_space TopologicalAddGroup.to_H_space
+#align topological_add_group.to_H_space TopologicalAddGroup.toHSpace
 
 @[to_additive]
 instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [TopologicalGroup G] :
