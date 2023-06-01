@@ -102,7 +102,7 @@ initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
     return ⟨none, ← buildDiscrTree⟩
 
 /--
-Retrieve the current current of lemmas.
+Retrieve the current cache of lemmas.
 -/
 def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
 
@@ -138,6 +138,7 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   let type ← instantiateMVars (← goal.getType)
 
   -- Get all lemmas which could match some subexpression
+  -- DiscrTree.getSubexpressionMatches
   let candidates := (← lemmas.1.getSubexpressionMatches type)
     ++ (← lemmas.2.getSubexpressionMatches type)
 
@@ -147,13 +148,15 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
 
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
-  let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
+
+  -- let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let some result ← try? <| goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
-      | return none
+    let result ← try
+      goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    catch _ => return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
     else
