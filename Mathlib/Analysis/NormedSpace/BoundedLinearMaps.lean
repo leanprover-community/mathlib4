@@ -355,7 +355,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
           apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
 #align continuous_linear_map.is_bounded_bilinear_map ContinuousLinearMap.isBoundedBilinearMap
 
--- porting note: new definiton
+-- porting note: new definition
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
 def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :

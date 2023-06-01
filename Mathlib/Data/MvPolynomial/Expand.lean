@@ -13,7 +13,7 @@ import Mathlib.Data.MvPolynomial.Monad
 /-!
 ## Expand multivariate polynomials
 
-Given a multivariate polynomial `φ`, one may replace every occurence of `X i` by `X i ^ n`,
+Given a multivariate polynomial `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some natural number `n`.
 This operation is called `MvPolynomial.expand` and it is an algebra homomorphism.
 
