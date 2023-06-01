@@ -169,8 +169,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.mem_basic_open AlgebraicGeometry.RingedSpace.mem_basicOpen
 
 @[simp]
-theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
--- Porting note : used to be `x : X`, Lean seems not able to find `CoeSort X (Type _)`
+theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ ⟨x, show x ∈ (⊤ : Opens X) by trivial⟩ f) :=
   mem_basicOpen X f ⟨x, _⟩
 set_option linter.uppercaseLean3 false in
