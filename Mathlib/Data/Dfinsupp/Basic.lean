@@ -2019,18 +2019,12 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp
   right_inv ψ := by
     classical
-    -- Porting note: this was by `ext x`, but `ext` is now using a different lemma.
-    apply AddMonoidHom.ext
-    intro x
-    apply Dfinsupp.induction x
-    · simp
-    intros i b f _ _ IH
-    simp [IH]
+    ext x
+    simp
   map_add' F G := by
     classical
-    -- Porting note: this was by `ext`, but `ext` is now using a different lemma.
-    apply AddMonoidHom.ext
-    simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
+    ext
+    simp
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
 #align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply

@@ -98,8 +98,8 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append' n (m-n) (l-m) using 2
-  · rw [add_tsub_cancel_of_le hnm]
+  convert range'_append n (m-n) (l-m) 1 using 2
+  · rw [one_mul, add_tsub_cancel_of_le hnm]
   · rw [tsub_add_tsub_cancel hml hnm]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
@@ -138,13 +138,14 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   dsimp [Ico]
   rw [tsub_tsub_cancel_of_le (succ_le_of_lt h)]
-  simp [range']
+  simp [← Nat.one_eq_succ_zero]
+
 #align list.Ico.pred_singleton List.Ico.pred_singleton
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   by_cases n < m
   · rw [eq_cons h]
-    exact chain_succ_range'' _ _
+    exact chain_succ_range' _ _ 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ

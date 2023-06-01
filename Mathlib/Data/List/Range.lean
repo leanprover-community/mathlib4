@@ -14,8 +14,8 @@ import Mathlib.Data.List.Zip
 /-!
 # Ranges of naturals as lists
 
-This file shows basic results about `List.iota`, `List.range`, `List.range'` (all defined in
-`data.list.defs`) and defines `List.finRange`.
+This file shows basic results about `List.iota`, `List.range`, `List.range'`
+and defines `List.finRange`.
 `finRange n` is the list of elements of `Fin n`.
 `iota n = [n, n - 1, ..., 1]` and `range n = [0, ..., n - 1]` are basic list constructions used for
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
@@ -31,63 +31,36 @@ namespace List
 
 variable {α : Type u}
 
+@[simp] theorem range'_one : range' s 1 step = [s] := rfl
+
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
-#align list.mem_range' List.mem_range'
+#align list.mem_range' List.mem_range'_1
 #align list.map_add_range' List.map_add_range'
 #align list.map_sub_range' List.map_sub_range'
+#align list.chain_succ_range' List.chain_succ_range'
+#align list.chain_lt_range' List.chain_lt_range'
 
--- Porting note: note `List.chain_succ_range'` in `Std4` with a different signature.
-theorem chain_succ_range'' : ∀ s n : ℕ, Chain (fun a b => b = succ a) s (range' (s + 1) n)
-  | _, 0 => Chain.nil
-  | s, n + 1 => (chain_succ_range'' (s + 1) n).cons rfl
-#align list.chain_succ_range' List.chain_succ_range''
-
--- Porting note: note `List.chain_lt_range'` in `Std4` with a different signature.
-theorem chain_lt_range'' (s n : ℕ) : Chain (· < ·) s (range' (s + 1) n) :=
-  (chain_succ_range'' s n).imp fun _ _ e => e.symm ▸ lt_succ_self _
-#align list.chain_lt_range' List.chain_lt_range''
-
-theorem pairwise_lt_range' : ∀ s n : ℕ, Pairwise (· < ·) (range' s n)
-  | _, 0 => Pairwise.nil
-  | s, n + 1 => chain_iff_pairwise.1 (chain_lt_range'' s n)
+theorem pairwise_lt_range' : ∀ s n (step := 1) (_ : 0 < step := by simp),
+  Pairwise (· < ·) (range' s n step)
+  | _, 0, _, _ => Pairwise.nil
+  | s, n + 1, _, h => chain_iff_pairwise.1 (chain_lt_range' s n h)
 #align list.pairwise_lt_range' List.pairwise_lt_range'
 
-theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
-  (pairwise_lt_range' s n).imp _root_.ne_of_lt
+theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (range' s n step) :=
+  (pairwise_lt_range' s n step h).imp _root_.ne_of_lt
 #align list.nodup_range' List.nodup_range'
-
--- Porting note: note `List.range'_append` in `Std4` with a different signature.
-@[simp]
-theorem range'_append' : ∀ s m n : ℕ, range' s m ++ range' (s + m) n = range' s (n + m)
-  | s, 0, n => rfl
-  | s, m + 1, n =>
-    show s :: (range' (s + 1) m ++ range' (s + m + 1) n) = s :: range' (s + 1) (n + m) by
-      rw [add_right_comm, range'_append' (s + 1) m n]
-#align list.range'_append List.range'_append'
-
+#align list.range'_append List.range'_append
 #align list.range'_sublist_right List.range'_sublist_right
 #align list.range'_subset_right List.range'_subset_right
-
--- Porting note: note `List.get?_range'` in `Std4` with a different signature.
-theorem get?_range'' : ∀ (s) {m n : ℕ}, m < n → get? (range' s n) m = some (s + m)
-  | s, 0, n + 1, _ => rfl
-  | s, m + 1, n + 1, h =>
-    (get?_range'' (s + 1) (lt_of_add_lt_add_right h)).trans <| by rw [add_right_comm] ; rfl
-#align list.nth_range' List.get?_range''
-
--- Porting note: new theorem
--- Porting note: note `List.get_range'` in `Std4` with a different signature.
-@[simp]
-theorem get_range'' {n m} (i) (H : i < (range' n m).length) : get (range' n m) ⟨i, H⟩ = n + i :=
-  Option.some.inj <| by rw [← get?_eq_get _, get?_range'' _ (by simpa using H)]
+#align list.nth_range' List.get?_range'
 
 set_option linter.deprecated false in
 @[simp]
-theorem nthLe_range' {n m} (i) (H : i < (range' n m).length) : nthLe (range' n m) i H = n + i :=
-  get_range'' i H
+theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
+  nthLe (range' n m step) i H = n + step * i :=
+  get_range' i H
 #align list.nth_le_range' List.nthLe_range'
-
 #align list.range'_concat List.range'_concat
 #align list.range_core List.range.loop
 #align list.range_core_range' List.range_loop_range'
@@ -107,7 +80,6 @@ theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
 
 theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
-
 #align list.range_sublist List.range_sublist
 #align list.range_subset List.range_subset
 #align list.mem_range List.mem_range
@@ -199,12 +171,7 @@ theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
 #align list.prod_range_succ' List.prod_range_succ'
 #align list.sum_range_succ' List.sum_range_succ'
 
-@[simp]
-theorem enum_from_map_fst : ∀ (n) (l : List α), map Prod.fst (enumFrom n l) = range' n l.length
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg (cons _) (enum_from_map_fst _ _)
-#align list.enum_from_map_fst List.enum_from_map_fst
-
+#align list.enum_from_map_fst List.enumFrom_map_fst
 #align list.enum_map_fst List.enum_map_fst
 
 theorem enum_eq_zip_range (l : List α) : l.enum = (range l.length).zip l :=
@@ -216,15 +183,15 @@ theorem unzip_enum_eq_prod (l : List α) : l.enum.unzip = (range l.length, l) :=
   simp only [enum_eq_zip_range, unzip_zip, length_range]
 #align list.unzip_enum_eq_prod List.unzip_enum_eq_prod
 
-theorem enum_from_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
-  zip_of_prod (enum_from_map_fst _ _) (enumFrom_map_snd _ _)
-#align list.enum_from_eq_zip_range' List.enum_from_eq_zip_range'
+theorem enumFrom_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
+  zip_of_prod (enumFrom_map_fst _ _) (enumFrom_map_snd _ _)
+#align list.enum_from_eq_zip_range' List.enumFrom_eq_zip_range'
 
 @[simp]
-theorem unzip_enum_from_eq_prod (l : List α) {n : ℕ} :
+theorem unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
     (l.enumFrom n).unzip = (range' n l.length, l) := by
-  simp only [enum_from_eq_zip_range', unzip_zip, length_range']
-#align list.unzip_enum_from_eq_prod List.unzip_enum_from_eq_prod
+  simp only [enumFrom_eq_zip_range', unzip_zip, length_range']
+#align list.unzip_enum_from_eq_prod List.unzip_enumFrom_eq_prod
 
 set_option linter.deprecated false in
 @[simp]

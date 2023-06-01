@@ -343,10 +343,9 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
+#align list.chain_cons List.chain_cons
 
 section Chain
-
-#align list.chain_cons List.chain_cons
 
 instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by

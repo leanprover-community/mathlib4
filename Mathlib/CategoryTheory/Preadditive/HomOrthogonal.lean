@@ -93,8 +93,8 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     biproduct.matrix fun j k =>
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
   left_inv z := by
-    -- Porting note: `ext j k` used to achieve the next four steps,
-    -- but now applies the lemmas in the wrong order and gets stuck.
+    -- Porting note: `ext j k` applies the lemmas in the other order,
+    -- and gets stuck. Consider adjusting priorities, or making this proof more robust.
     apply biproduct.hom_ext
     intro j
     apply biproduct.hom_ext'
