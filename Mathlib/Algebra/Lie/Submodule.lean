@@ -695,7 +695,9 @@ theorem coeSubmodule_map :
 `M`. -/
 def comap : LieSubmodule R L M :=
   { (N' : Submodule R M').comap (f : M →ₗ[R] M') with
-    lie_mem := fun {x m} h ↦ by suffices ⁅x, f m⁆ ∈ N' by simp [this]; apply N'.lie_mem h }
+    lie_mem := fun {x m} h ↦ by
+      suffices ⁅x, f m⁆ ∈ N' by simp [this]
+      apply N'.lie_mem h }
 #align lie_submodule.comap LieSubmodule.comap
 
 @[simp]
@@ -794,7 +796,9 @@ theorem map_le : map f I ≤ J ↔ f '' I ⊆ J :=
 
 variable {f I I₂ J}
 
-theorem mem_map {x : L} (hx : x ∈ I) : f x ∈ map f I := by apply LieSubmodule.subset_lieSpan; use x;
+theorem mem_map {x : L} (hx : x ∈ I) : f x ∈ map f I := by
+  apply LieSubmodule.subset_lieSpan
+  use x
   exact ⟨hx, rfl⟩
 #align lie_ideal.mem_map LieIdeal.mem_map
 
@@ -803,7 +807,8 @@ theorem mem_comap {x : L} : x ∈ comap f J ↔ f x ∈ J :=
   Iff.rfl
 #align lie_ideal.mem_comap LieIdeal.mem_comap
 
-theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by rw [map_le];
+theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by
+  rw [map_le]
   exact Set.image_subset_iff
 #align lie_ideal.map_le_iff_le_comap LieIdeal.map_le_iff_le_comap
 
@@ -986,7 +991,8 @@ namespace LieIdeal
 variable {f : L →ₗ⁅R⁆ L'} {I : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
-theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by rw [← le_bot_iff];
+theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by
+  rw [← le_bot_iff]
   exact LieIdeal.map_le_iff_le_comap
 #align lie_ideal.map_eq_bot_iff LieIdeal.map_eq_bot_iff
 
