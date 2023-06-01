@@ -74,7 +74,7 @@ export SeminormClass (map_smul_eq_mul)
 section Of
 
 /-- Alternative constructor for a `Seminorm` on an `AddCommGroup E` that is a module over a
-`semi_norm_ring 𝕜`. -/
+`SeminormedRing 𝕜`. -/
 def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ)
     (add_le : ∀ x y : E, f (x + y) ≤ f x + f y) (smul : ∀ (a : 𝕜) (x : E), f (a • x) = ‖a‖ * f x) :
     Seminorm 𝕜 E where
@@ -87,12 +87,12 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
 
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
-def Seminorm.ofSMulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
+def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
     refine' le_antisymm (smul_le r x) _
-    by_cases r = 0
+    by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
@@ -100,7 +100,7 @@ def Seminorm.ofSMulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [norm_inv] at smul_le
     convert smul_le
     simp [h]
-#align seminorm.of_smul_le Seminorm.ofSMulLe
+#align seminorm.of_smul_le Seminorm.ofSMulLE
 
 end Of
 
@@ -159,8 +159,8 @@ instance : Inhabited (Seminorm 𝕜 E) :=
 variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
-instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E)
-    where smul r p :=
+instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
+  smul r p :=
     { r • p.toAddGroupSeminorm with
       toFun := fun x => r • p x
       smul' := fun _ _ => by
@@ -182,8 +182,8 @@ theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (
   rfl
 #align seminorm.smul_apply Seminorm.smul_apply
 
-instance instAdd : Add (Seminorm 𝕜 E)
-    where add p q :=
+instance instAdd : Add (Seminorm 𝕜 E) where
+  add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
       toFun := fun x => p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
@@ -383,10 +383,6 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 #align seminorm.bot_eq_zero Seminorm.bot_eq_zero
 
--- Porting note:
--- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
--- and needs an increase to `synthInstance.maxHeartbeats`.
-set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -464,8 +460,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    -- Porting note: the following was previously `dsimp; positivity`
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
+    dsimp ; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
@@ -1056,7 +1051,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert(p.convexOn.translate_left (-x)).convex_lt r
+  convert (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl
@@ -1230,5 +1225,4 @@ theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
 
 end normSeminorm
 
--- Porting note: no guards here
--- assert_not_exists balancedCore
+assert_not_exists balancedCore

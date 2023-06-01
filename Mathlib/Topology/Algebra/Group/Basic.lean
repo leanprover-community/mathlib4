@@ -178,6 +178,8 @@ over `M`, for example, is obtained by requiring the instances `AddGroup M` and
 class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
   continuous_neg : Continuous fun a : G => -a
 #align has_continuous_neg ContinuousNeg
+-- Porting note: added
+attribute [continuity] ContinuousNeg.continuous_neg
 
 /-- Basic hypothesis to talk about a topological group. A topological group over `M`, for example,
 is obtained by requiring the instances `Group M` and `ContinuousMul M` and
@@ -187,6 +189,8 @@ class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
 #align has_continuous_inv ContinuousInv
 --#align has_continuous_neg ContinuousNeg
+-- Porting note: added
+attribute [continuity] ContinuousInv.continuous_inv
 
 export ContinuousInv (continuous_inv)
 
@@ -914,7 +918,7 @@ theorem ContinuousInv.of_nhds_one {G : Type _} [Group G] [TopologicalSpace G]
 
 @[to_additive]
 theorem TopologicalGroup.of_nhds_one' {G : Type u} [Group G] [TopologicalSpace G]
-    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ᶠ 𝓝 1) (𝓝 1))
+    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1))
     (hright : ∀ x₀ : G, 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)) : TopologicalGroup G :=
@@ -931,7 +935,7 @@ theorem TopologicalGroup.of_nhds_one' {G : Type u} [Group G] [TopologicalSpace G
 
 @[to_additive]
 theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
-    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ᶠ 𝓝 1) (𝓝 1))
+    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (fun x => x₀ * x * x₀⁻¹) (𝓝 1) (𝓝 1)) : TopologicalGroup G := by
@@ -946,7 +950,7 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
 
 @[to_additive]
 theorem TopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [TopologicalSpace G]
-    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ᶠ 𝓝 1) (𝓝 1))
+    (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : TopologicalGroup G :=
   TopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using tendsto_id)
@@ -1399,7 +1403,7 @@ non-commutative groups too.
 class AddGroupWithZeroNhd (G : Type u) extends AddCommGroup G where
   z : Filter G
   zero_z : pure 0 ≤ z
-  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (Z ×ᶠ Z) Z
+  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (Z ×ˢ Z) Z
 #align add_group_with_zero_nhd AddGroupWithZeroNhd
 
 section FilterMul

@@ -53,6 +53,10 @@ theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCa
 
 theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
 
+@[elab_as_elim]
+theorem isNat.natElim {p : ℕ → Prop} : {n : ℕ} → {n' : ℕ} → IsNat n n' → p n' → p n
+  | _, _, ⟨rfl⟩, h => h
+
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
   /-- The element is equal to the coercion of the integer. -/
@@ -629,6 +633,34 @@ def isRatLit (e : Expr) : Option ℚ := do
     pure q
   else
     isIntLit e
+
+/-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
+  Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
+  then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
+  in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
+@[reducible]
+def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
+Q(Bool.rec (¬ $p) ($p) $b)
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
+  let .isBool b prf ← derive (α := (q(Prop) : Q(Type))) p | failure
+  pure ⟨b, prf⟩
+
+/-- Obtain a `Result` from a `BoolResult`. -/
+def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) :
+  Result q(Prop) :=
+  Result'.isBool b prf
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
+    MetaM ((b : Bool) × BoolResult p' b) := do
+  let ⟨b, pb⟩ ← deriveBool p
+  match b with
+  | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
+  | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
 /-- Test if an expression represents an explicit number written in normal form. -/
 def isNormalForm : Expr → Bool

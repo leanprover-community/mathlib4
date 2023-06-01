@@ -81,7 +81,7 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redunant binder update annotation
+-- porting note: removed `variable` because of redundant binder update annotation
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
@@ -509,10 +509,6 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.not_is_unit_X_sub_C Polynomial.not_isUnit_X_sub_C
 
 end Ring
-
--- porting note: workaround lean4#2074, this declaration works with
--- `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
 
 theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by

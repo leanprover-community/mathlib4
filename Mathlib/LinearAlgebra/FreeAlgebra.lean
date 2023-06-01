@@ -25,7 +25,6 @@ universe u v
 
 namespace FreeAlgebra
 
-set_option synthInstance.etaExperiment true in
 /-- The `FreeMonoid X` basis on the `FreeAlgebra R X`,
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]

@@ -956,7 +956,7 @@ theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous (f ^ n : Circl
 
 theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn : 0 < n) :
     τ f = m / n ↔ ∃ x, (f ^ n) x = x + m := by
-  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
+  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip; exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 #align circle_deg1_lift.translation_number_eq_rat_iff CircleDeg1Lift.translationNumber_eq_rat_iff
 

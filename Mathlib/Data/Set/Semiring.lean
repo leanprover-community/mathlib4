@@ -187,8 +187,7 @@ section One
 
 variable [One α]
 
--- porting note: noncomputable?
-noncomputable instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+instance : One (SetSemiring α) where one := Set.up (1 : Set α)
 
 theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl

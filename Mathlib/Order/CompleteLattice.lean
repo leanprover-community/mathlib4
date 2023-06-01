@@ -114,7 +114,7 @@ notation3 "⨆ "(...)", "r:(scoped f => iSup f) => r
 @[app_unexpander iSup]
 def iSup.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨆ $x:ident, $p)
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨆ $x:ident : $ty:term, $p)
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨆ ($x:ident : $ty:term), $p)
   | _ => throw ()
 
 /-- Indexed infimum. -/
@@ -124,7 +124,7 @@ notation3 "⨅ "(...)", "r:(scoped f => iInf f) => r
 @[app_unexpander iInf]
 def iInf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨅ $x:ident, $p)
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨅ $x:ident : $ty:term, $p)
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `(⨅ ($x:ident : $ty:term), $p)
   | _ => throw ()
 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
@@ -264,7 +264,7 @@ theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x)
       solve_by_elim [le_trans _ hy'])
 #align Inf_le_Inf_of_forall_exists_le sInf_le_sInf_of_forall_exists_le
 
--- We will generalize this to conditionally complete lattices in `cInf_singleton`.
+-- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
 #align Inf_singleton sInf_singleton

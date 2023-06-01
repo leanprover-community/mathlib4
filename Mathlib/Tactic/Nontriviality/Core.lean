@@ -47,7 +47,7 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
     pure g₂.mvarId!
 
 /--
-Tries to generate a `nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
+Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do

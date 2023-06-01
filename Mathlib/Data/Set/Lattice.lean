@@ -81,12 +81,12 @@ def sInter (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sInter` Intersection of a set of sets. -/
 prefix:110 "⋂₀ " => sInter
 
-/-- Intersection of a set of sets. -/
+/-- Union of a set of sets. -/
 def sUnion (S : Set (Set α)) : Set α :=
   sSup S
 #align set.sUnion Set.sUnion
 
-/-- Notation for Set.sUnion`. Union of a set of sets. -/
+/-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
 @[simp]

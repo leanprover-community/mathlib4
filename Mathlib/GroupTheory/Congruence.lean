@@ -314,7 +314,7 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 #align con.lift_on₂ Con.liftOn₂
 #align add_con.lift_on₂ AddCon.liftOn₂
 
-/-- A version of `quotient.hrec_on₂'` for quotients by `con`. -/
+/-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
 @[to_additive "A version of `quotient.hrec_on₂'` for quotients by `add_con`."]
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort _}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
@@ -343,7 +343,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align con.induction_on Con.induction_on
 #align add_con.induction_on AddCon.induction_on
 
-/-- A version of `con.induction_on` for predicates which take two arguments. -/
+/-- A version of `Con.induction_on` for predicates which take two arguments. -/
 @[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
@@ -1157,8 +1157,13 @@ protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
 #align add_con.nsmul AddCon.nsmul
 
 @[to_additive]
-instance {M : Type _} [MulOneClass M] (c : Con M) : One c.Quotient
-    where one := ((1 : M) : c.Quotient)
+instance [MulOneClass M] (c : Con M) : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
 theorem smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
@@ -1270,9 +1275,10 @@ instance zpowinst : Pow c.Quotient ℤ :=
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
-an `add_group`."]
+an `AddGroup`."]
 instance group : Group c.Quotient :=
-  Function.Surjective.group _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
+  Function.Surjective.group Quotient.mk''
+    Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align con.group Con.group
 #align add_con.add_group AddCon.addGroup
@@ -1307,8 +1313,8 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
 #align con.lift_on_units Con.liftOnUnits
 #align add_con.lift_on_add_units AddCon.liftOnAddUnits
 
-/-- In order to define a function `(con.quotient c)ˣ → α` on the units of `con.quotient c`,
-where `c : con M` is a multiplicative congruence on a monoid, it suffices to define a function `f`
+/-- In order to define a function `(Con.Quotient c)ˣ → α` on the units of `Con.Quotient c`,
+where `c : Con M` is a multiplicative congruence on a monoid, it suffices to define a function `f`
 that takes elements `x y : M` with proofs of `c (x * y) 1` and `c (y * x) 1`, and returns an element
 of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. -/
 add_decl_doc AddCon.liftOnAddUnits
