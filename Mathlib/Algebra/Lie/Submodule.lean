@@ -51,8 +51,7 @@ structure LieSubmodule extends Submodule R M where
   lie_mem : ∀ {x : L} {m : M}, m ∈ carrier → ⁅x, m⁆ ∈ carrier
 #align lie_submodule LieSubmodule
 
--- Porting note: doc_blame doesn't exist.
--- attribute [nolint doc_blame] LieSubmodule.toSubmodule
+attribute [nolint docBlame] LieSubmodule.toSubmodule
 attribute [coe] LieSubmodule.toSubmodule
 
 namespace LieSubmodule
@@ -74,7 +73,8 @@ instance : Zero (LieSubmodule R L M) :=
   ⟨{ (0 : Submodule R M) with
       lie_mem := fun {x m} h ↦ by rw [(Submodule.mem_bot R).1 h]; apply lie_zero }⟩
 
-instance : Inhabited (LieSubmodule R L M) := ⟨0⟩
+instance : Inhabited (LieSubmodule R L M) :=
+  ⟨0⟩
 
 instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
@@ -84,7 +84,8 @@ instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
 #noalign lie_submodule.to_submodule_eq_coe
 
 @[norm_cast]
-theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N := rfl
+theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
+  rfl
 #align lie_submodule.coe_to_submodule LieSubmodule.coe_toSubmodule
 
 -- Porting note: `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
@@ -121,7 +122,8 @@ theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
 
 @[simp]
 theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubmodule R L M) : Set M) = S := rfl
+    ((⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubmodule R L M) : Set M) = S :=
+  rfl
 #align lie_submodule.coe_to_set_mk LieSubmodule.coe_toSet_mk
 
 @[simp]
@@ -148,6 +150,7 @@ theorem coe_toSubmodule_eq_iff : (N : Submodule R M) = (N' : Submodule R M) ↔ 
 equalities. -/
 protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
+  -- Porting note: all the proofs below were in term mode
   zero_mem' := by exact hs.symm ▸ N.zero_mem'
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
@@ -186,27 +189,33 @@ instance : LieModule R L N where
   smul_lie := by intro t x y; apply SetCoe.ext; apply smul_lie
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : N) : M) = (0 : M) := rfl
+theorem coe_zero : ((0 : N) : M) = (0 : M) :=
+  rfl
 #align lie_submodule.coe_zero LieSubmodule.coe_zero
 
 @[simp, norm_cast]
-theorem coe_add (m m' : N) : (↑(m + m') : M) = (m : M) + (m' : M) := rfl
+theorem coe_add (m m' : N) : (↑(m + m') : M) = (m : M) + (m' : M) :=
+  rfl
 #align lie_submodule.coe_add LieSubmodule.coe_add
 
 @[simp, norm_cast]
-theorem coe_neg (m : N) : (↑(-m) : M) = -(m : M) := rfl
+theorem coe_neg (m : N) : (↑(-m) : M) = -(m : M) :=
+  rfl
 #align lie_submodule.coe_neg LieSubmodule.coe_neg
 
 @[simp, norm_cast]
-theorem coe_sub (m m' : N) : (↑(m - m') : M) = (m : M) - (m' : M) := rfl
+theorem coe_sub (m m' : N) : (↑(m - m') : M) = (m : M) - (m' : M) :=
+  rfl
 #align lie_submodule.coe_sub LieSubmodule.coe_sub
 
 @[simp, norm_cast]
-theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) := rfl
+theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
+  rfl
 #align lie_submodule.coe_smul LieSubmodule.coe_smul
 
 @[simp, norm_cast]
-theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ := rfl
+theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
+  rfl
 #align lie_submodule.coe_bracket LieSubmodule.coe_bracket
 
 end LieSubmodule
@@ -227,6 +236,7 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 #align lie_mem_left lie_mem_left
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
+-- Porting note: added `@[coe]` to fix `norm_cast` issues, but this causes bad pretty-printing.
 @[coe]
 def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
@@ -236,9 +246,12 @@ instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨lieIdealSubalgebra R L⟩
 
 @[norm_cast]
-theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I := rfl
+theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I :=
+  rfl
 #align lie_ideal.coe_to_subalgebra LieIdeal.coe_toSubalgebra
 
+-- Porting note: here and below, used `LieSubmodule.toSubmodule` rather than coercions, because
+-- those are treated like `((I : LieSubalgebra R L) : Submodule R L)` instead.
 @[norm_cast]
 theorem LieIdeal.coe_to_lieSubalgebra_to_submodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
@@ -348,14 +361,17 @@ theorem coeSubmodule_le_coeSubmodule : (N : Submodule R M) ≤ N' ↔ N ≤ N' :
   Iff.rfl
 #align lie_submodule.coe_submodule_le_coe_submodule LieSubmodule.coeSubmodule_le_coeSubmodule
 
-instance : Bot (LieSubmodule R L M) := ⟨0⟩
+instance : Bot (LieSubmodule R L M) :=
+  ⟨0⟩
 
 @[simp]
-theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} := rfl
+theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} :=
+  rfl
 #align lie_submodule.bot_coe LieSubmodule.bot_coe
 
 @[simp]
-theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ := rfl
+theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
+  rfl
 #align lie_submodule.bot_coe_submodule LieSubmodule.bot_coeSubmodule
 
 @[simp]
@@ -367,11 +383,13 @@ instance : Top (LieSubmodule R L M) :=
   ⟨{ (⊤ : Submodule R M) with lie_mem := fun {x m} _ ↦ mem_univ ⁅x, m⁆ }⟩
 
 @[simp]
-theorem top_coe : ((⊤ : LieSubmodule R L M) : Set M) = univ := rfl
+theorem top_coe : ((⊤ : LieSubmodule R L M) : Set M) = univ :=
+  rfl
 #align lie_submodule.top_coe LieSubmodule.top_coe
 
 @[simp]
-theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ := rfl
+theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
+  rfl
 #align lie_submodule.top_coe_submodule LieSubmodule.top_coeSubmodule
 
 @[simp]
@@ -390,11 +408,11 @@ instance : InfSet (LieSubmodule R L M) :=
       lie_mem := fun {x m} h ↦ by
         simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
           forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h⊢
-        intro N hN
-        apply N.lie_mem (h N hN) }⟩
+        intro N hN; apply N.lie_mem (h N hN) }⟩
 
 @[simp]
-theorem inf_coe : (↑(N ⊓ N') : Set M) = ↑N ∩ ↑N' := rfl
+theorem inf_coe : (↑(N ⊓ N') : Set M) = ↑N ∩ ↑N' :=
+  rfl
 #align lie_submodule.inf_coe LieSubmodule.inf_coe
 
 @[simp]
@@ -445,17 +463,18 @@ instance : AddCommMonoid (LieSubmodule R L M) where
   add_comm _ _ := sup_comm
 
 @[simp]
-theorem add_eq_sup : N + N' = N ⊔ N' := rfl
+theorem add_eq_sup : N + N' = N ⊔ N' :=
+  rfl
 #align lie_submodule.add_eq_sup LieSubmodule.add_eq_sup
 
 @[norm_cast, simp]
 theorem sup_coe_toSubmodule :
     (↑(N ⊔ N') : Submodule R M) = (N : Submodule R M) ⊔ (N' : Submodule R M) := by
-  have aux : ∀ (x : L) (m), m ∈ (N ⊔ N' : Submodule R M) → ⁅x, m⁆ ∈ (N ⊔ N' : Submodule R M) := by
+  have aux : ∀ {x : L} {m}, m ∈ (N ⊔ N' : Submodule R M) → ⁅x, m⁆ ∈ (N ⊔ N' : Submodule R M) := by
     simp only [Submodule.mem_sup]
     rintro x m ⟨y, hy, z, hz, rfl⟩
     refine' ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩
-  refine' le_antisymm (sInf_le ⟨{ (N ⊔ N' : Submodule R M) with lie_mem := @aux }, _⟩) _
+  refine' le_antisymm (sInf_le ⟨{ (N ⊔ N' : Submodule R M) with lie_mem := aux }, _⟩) _
   -- Porting note: rewrote proof
   · simp only [← coeSubmodule_le_coeSubmodule, mem_setOf_eq, and_true_iff]
     constructor <;> intro x hx <;> simp [Submodule.mem_sup_left hx, hx, Submodule.mem_sup_right hx]
@@ -464,7 +483,8 @@ theorem sup_coe_toSubmodule :
 
 @[norm_cast, simp]
 theorem inf_coe_toSubmodule :
-    (↑(N ⊓ N') : Submodule R M) = (N : Submodule R M) ⊓ (N' : Submodule R M) := rfl
+    (↑(N ⊓ N') : Submodule R M) = (N : Submodule R M) ⊓ (N' : Submodule R M) :=
+  rfl
 #align lie_submodule.inf_coe_to_submodule LieSubmodule.inf_coe_toSubmodule
 
 @[simp]
@@ -489,7 +509,7 @@ instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmo
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
     simp only [← coeSubmodule_le_coeSubmodule, sup_coe_toSubmodule, inf_coe_toSubmodule]
-    apply IsModularLattice.sup_inf_le_assoc_of_le
+    exact IsModularLattice.sup_inf_le_assoc_of_le _
 
 variable (R L M)
 
@@ -540,16 +560,18 @@ def incl : N →ₗ⁅R,L⁆ M :=
   { Submodule.subtype (N : Submodule R M) with map_lie' := fun {_ _} ↦ rfl }
 #align lie_submodule.incl LieSubmodule.incl
 
--- Porting note: Added `toLinearMap`
 @[simp]
-theorem incl_coe : (N.incl.toLinearMap : N →ₗ[R] M) = (N : Submodule R M).subtype := rfl
+theorem incl_coe : (N.incl : N →ₗ[R] M) = (N : Submodule R M).subtype :=
+  rfl
 #align lie_submodule.incl_coe LieSubmodule.incl_coe
 
 @[simp]
-theorem incl_apply (m : N) : N.incl m = m := rfl
+theorem incl_apply (m : N) : N.incl m = m :=
+  rfl
 #align lie_submodule.incl_apply LieSubmodule.incl_apply
 
-theorem incl_eq_val : (N.incl : N → M) = Subtype.val := rfl
+theorem incl_eq_val : (N.incl : N → M) = Subtype.val :=
+  rfl
 #align lie_submodule.incl_eq_val LieSubmodule.incl_eq_val
 
 variable {N N'} (h : N ≤ N')
@@ -560,10 +582,12 @@ def homOfLe : N →ₗ⁅R,L⁆ N' :=
 #align lie_submodule.hom_of_le LieSubmodule.homOfLe
 
 @[simp]
-theorem coe_homOfLe (m : N) : (homOfLe h m : M) = m := rfl
+theorem coe_homOfLe (m : N) : (homOfLe h m : M) = m :=
+  rfl
 #align lie_submodule.coe_hom_of_le LieSubmodule.coe_homOfLe
 
-theorem homOfLe_apply (m : N) : homOfLe h m = ⟨m.1, h m.2⟩ := rfl
+theorem homOfLe_apply (m : N) : homOfLe h m = ⟨m.1, h m.2⟩ :=
+  rfl
 #align lie_submodule.hom_of_le_apply LieSubmodule.homOfLe_apply
 
 theorem homOfLe_injective : Function.Injective (homOfLe h) := fun x y ↦ by
@@ -675,7 +699,6 @@ namespace LieSubmodule
 
 variable (f : M →ₗ⁅R,L⁆ M') (N N₂ : LieSubmodule R L M) (N' : LieSubmodule R L M')
 
--- Porting note: Added `toLinearMap` here, and in many other places
 /-- A morphism of Lie modules `f : M → M'` pushes forward Lie submodules of `M` to Lie submodules
 of `M'`. -/
 def map : LieSubmodule R L M' :=
@@ -687,8 +710,8 @@ def map : LieSubmodule R L M' :=
 #align lie_submodule.map LieSubmodule.map
 
 @[simp]
-theorem coeSubmodule_map :
-    (N.map f : Submodule R M') = (N : Submodule R M).map (f : M →ₗ[R] M') := rfl
+theorem coeSubmodule_map : (N.map f : Submodule R M') = (N : Submodule R M).map (f : M →ₗ[R] M') :=
+  rfl
 #align lie_submodule.coe_submodule_map LieSubmodule.coeSubmodule_map
 
 /-- A morphism of Lie modules `f : M → M'` pulls back Lie submodules of `M'` to Lie submodules of
@@ -702,7 +725,8 @@ def comap : LieSubmodule R L M :=
 
 @[simp]
 theorem coeSubmodule_comap :
-    (N'.comap f : Submodule R M) = (N' : Submodule R M').comap (f : M →ₗ[R] M') := rfl
+    (N'.comap f : Submodule R M) = (N' : Submodule R M').comap (f : M →ₗ[R] M') :=
+  rfl
 #align lie_submodule.coe_submodule_comap LieSubmodule.coeSubmodule_comap
 
 variable {f N N₂ N'}
@@ -713,8 +737,7 @@ theorem map_le_iff_le_comap : map f N ≤ N' ↔ N ≤ comap f N' :=
 
 variable (f)
 
-theorem gc_map_comap : GaloisConnection (map f) (comap f) :=
-  fun _ _ ↦ map_le_iff_le_comap
+theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
 #align lie_submodule.gc_map_comap LieSubmodule.gc_map_comap
 
 variable {f}
@@ -751,7 +774,8 @@ namespace LieIdeal
 variable (f : L →ₗ⁅R⁆ L') (I I₂ : LieIdeal R L) (J : LieIdeal R L')
 
 @[simp]
-theorem top_coe_lieSubalgebra : ((⊤ : LieIdeal R L) : LieSubalgebra R L) = ⊤ := rfl
+theorem top_coe_lieSubalgebra : ((⊤ : LieIdeal R L) : LieSubalgebra R L) = ⊤ :=
+  rfl
 #align lie_ideal.top_coe_lie_subalgebra LieIdeal.top_coe_lieSubalgebra
 
 /-- A morphism of Lie algebras `f : L → L'` pushes forward Lie ideals of `L` to Lie ideals of `L'`.
@@ -781,8 +805,7 @@ def comap : LieIdeal R L :=
 @[simp]
 theorem map_coeSubmodule (h : ↑(map f I) = f '' I) :
     LieSubmodule.toSubmodule (map f I) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
-  rw [SetLike.ext'_iff, LieSubmodule.coe_toSubmodule, h, Submodule.map_coe]
-  rfl
+  rw [SetLike.ext'_iff, LieSubmodule.coe_toSubmodule, h, Submodule.map_coe]; rfl
 #align lie_ideal.map_coe_submodule LieIdeal.map_coeSubmodule
 
 @[simp]
@@ -815,8 +838,7 @@ theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by
 
 variable (f)
 
-theorem gc_map_comap : GaloisConnection (map f) (comap f) :=
-  fun _ _ ↦ map_le_iff_le_comap
+theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
 #align lie_ideal.gc_map_comap LieIdeal.gc_map_comap
 
 variable {f}
@@ -880,7 +902,8 @@ def idealRange : LieIdeal R L' :=
   LieSubmodule.lieSpan R L' f.range
 #align lie_hom.ideal_range LieHom.idealRange
 
-theorem idealRange_eq_lieSpan_range : f.idealRange = LieSubmodule.lieSpan R L' f.range := rfl
+theorem idealRange_eq_lieSpan_range : f.idealRange = LieSubmodule.lieSpan R L' f.range :=
+  rfl
 #align lie_hom.ideal_range_eq_lie_span_range LieHom.idealRange_eq_lieSpan_range
 
 theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
@@ -953,16 +976,13 @@ theorem le_ker_iff : I ≤ f.ker ↔ ∀ x, x ∈ I → f x = 0 := by
 #align lie_hom.le_ker_iff LieHom.le_ker_iff
 
 theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
-  erw [injective_iff_map_eq_zero' f.toAddMonoidHom, SetLike.ext_iff]
-  simp_rw [mem_ker, LieSubmodule.mem_bot, LinearMap.toAddMonoidHom_coe, coe_toLinearMap]
-  -- porting note: I changed the proof.  It used to be:
-  --rw [← LieSubmodule.coe_toSubmodule_eq_iff, ker_coeSubmodule, LieSubmodule.bot_coeSubmodule,
-  --  LinearMap.ker_eq_bot, coe_toLinearMap]
+  rw [← LieSubmodule.coe_toSubmodule_eq_iff, ker_coeSubmodule, LieSubmodule.bot_coeSubmodule,
+    LinearMap.ker_eq_bot, coe_toLinearMap]
 #align lie_hom.ker_eq_bot LieHom.ker_eq_bot
 
 @[simp]
-theorem range_coeSubmodule :
-    (f.range : Submodule R L') = LinearMap.range (f : L →ₗ[R] L') := rfl
+theorem range_coeSubmodule : (f.range : Submodule R L') = LinearMap.range (f : L →ₗ[R] L') :=
+  rfl
 #align lie_hom.range_coe_submodule LieHom.range_coeSubmodule
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
@@ -1034,7 +1054,8 @@ def homOfLe {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) : I₁ →ₗ⁅R⁆ 
 #align lie_ideal.hom_of_le LieIdeal.homOfLe
 
 @[simp]
-theorem coe_homOfLe {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) : (homOfLe h x : L) = x := rfl
+theorem coe_homOfLe {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) : (homOfLe h x : L) = x :=
+  rfl
 #align lie_ideal.coe_hom_of_le LieIdeal.coe_homOfLe
 
 theorem homOfLe_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) : homOfLe h x = ⟨x.1, h x.2⟩ :=
@@ -1090,11 +1111,13 @@ theorem incl_range : I.incl.range = I :=
 #align lie_ideal.incl_range LieIdeal.incl_range
 
 @[simp]
-theorem incl_apply (x : I) : I.incl x = x := rfl
+theorem incl_apply (x : I) : I.incl x = x :=
+  rfl
 #align lie_ideal.incl_apply LieIdeal.incl_apply
 
 @[simp]
-theorem incl_coe : (I.incl.toLinearMap : I →ₗ[R] L) = (I : Submodule R L).subtype := rfl
+theorem incl_coe : (I.incl.toLinearMap : I →ₗ[R] L) = (I : Submodule R L).subtype :=
+  rfl
 #align lie_ideal.incl_coe LieIdeal.incl_coe
 
 @[simp]
@@ -1110,21 +1133,13 @@ theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
   --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, I.incl.ker_coeSubmodule,
   --    LieSubmodule.bot_coeSubmodule, incl_coe, Submodule.ker_subtype]
 #align lie_ideal.ker_incl LieIdeal.ker_incl
-set_option maxHeartbeats 0
+
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
-  ext x
-  rw [LieHom.mem_idealRange_iff]
-  simp [incl_apply, Subtype.exists, LieSubmodule.mem_coeSubmodule, exists_prop, exists_eq_right]
-  refine (LieHom.isIdealMorphism_iff (incl I)).mpr ?_
-  simpa only [incl_apply, Subtype.exists, LieSubmodule.mem_coeSubmodule, exists_prop,
-    exists_eq_right', Subtype.forall] using lie_mem_right R L I
-  --  porting note: the proof used to be
-  --  rw [lie_hom.ideal_range_eq_lie_span_range, ← lie_subalgebra.coe_to_submodule,
-  --    ← lie_submodule.coe_to_submodule_eq_iff, incl_range, coe_to_lie_subalgebra_to_submodule,
-  --    lie_submodule.coe_lie_span_submodule_eq_iff],
-  --  use I,
-
+  rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.coe_to_submodule, ←
+    LieSubmodule.coe_toSubmodule_eq_iff, incl_range, coe_to_lieSubalgebra_to_submodule,
+    LieSubmodule.coe_lieSpan_submodule_eq_iff]
+  use I
 #align lie_ideal.incl_ideal_range LieIdeal.incl_idealRange
 
 theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
@@ -1171,7 +1186,8 @@ theorem mem_ker (m : M) : m ∈ f.ker ↔ f m = 0 :=
 #align lie_module_hom.mem_ker LieModuleHom.mem_ker
 
 @[simp]
-theorem ker_id : (LieModuleHom.id : M →ₗ⁅R,L⁆ M).ker = ⊥ := rfl
+theorem ker_id : (LieModuleHom.id : M →ₗ⁅R,L⁆ M).ker = ⊥ :=
+  rfl
 #align lie_module_hom.ker_id LieModuleHom.ker_id
 
 @[simp]
@@ -1191,12 +1207,13 @@ def range : LieSubmodule R L N :=
 #align lie_module_hom.range LieModuleHom.range
 
 @[simp]
-theorem coe_range : (f.range : Set N) = Set.range f := rfl
+theorem coe_range : (f.range : Set N) = Set.range f :=
+  rfl
 #align lie_module_hom.coe_range LieModuleHom.coe_range
 
 @[simp]
-theorem coeSubmodule_range :
-    (f.range : Submodule R N) = LinearMap.range (f : M →ₗ[R] N) := rfl
+theorem coeSubmodule_range : (f.range : Submodule R N) = LinearMap.range (f : M →ₗ[R] N) :=
+  rfl
 #align lie_module_hom.coe_submodule_range LieModuleHom.coeSubmodule_range
 
 @[simp]
@@ -1220,18 +1237,15 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (N : LieSubmodule R L M)
 
 @[simp]
-theorem ker_incl : N.incl.ker = ⊥ := by
-  simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem ker_incl : N.incl.ker = ⊥ := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
 #align lie_submodule.ker_incl LieSubmodule.ker_incl
 
 @[simp]
-theorem range_incl : N.incl.range = N := by
-  simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem range_incl : N.incl.range = N := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
 #align lie_submodule.range_incl LieSubmodule.range_incl
 
 @[simp]
-theorem comap_incl_self : comap N.incl N = ⊤ := by
-  simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem comap_incl_self : comap N.incl N = ⊤ := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
 #align lie_submodule.comap_incl_self LieSubmodule.comap_incl_self
 
 end LieSubmodule
@@ -1265,7 +1279,8 @@ def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
 #align lie_ideal.top_equiv LieIdeal.topEquiv
 
 @[simp]
-theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x := rfl
+theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
+  rfl
 #align lie_ideal.top_equiv_apply LieIdeal.topEquiv_apply
 
 end TopEquiv
