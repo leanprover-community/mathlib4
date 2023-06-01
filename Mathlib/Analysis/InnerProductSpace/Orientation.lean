@@ -247,7 +247,9 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
     · rintro rfl
       simp [volumeForm_zero_neg]
     · rintro rfl
-      sorry
+      -- Porting note: added
+      rw [neg_neg (positiveOrientation (R := ℝ))]
+      simp [volumeForm_zero_neg]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by
@@ -273,21 +275,22 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _
     · rintro rfl
       simp only [Nat.zero_eq, volumeForm_zero_pos, AlternatingMap.constLinearEquivOfIsEmpty_apply,
-        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_one, Finset.univ_eq_empty, Finset.prod_empty,
-        le_refl]
+        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_one, Finset.univ_eq_empty,
+        Finset.prod_empty, le_refl]
     · rintro rfl
       simp only [Nat.zero_eq, volumeForm_neg_orientation, volumeForm_zero_pos,
-        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply, AlternatingMap.constOfIsEmpty_apply,
-        Function.const_apply, abs_neg, abs_one, Finset.univ_eq_empty, Finset.prod_empty, le_refl]
+        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply,
+        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_neg, abs_one,
+        Finset.univ_eq_empty, Finset.prod_empty, le_refl]
   haveI : FiniteDimensional ℝ E := fact_finiteDimensional_of_finrank_eq_succ n
   have : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis this v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det this v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
   apply Finset.prod_le_prod
-  · intro i hi
+  · rintro i -
     positivity
-  intro i hi
+  rintro i -
   convert abs_real_inner_le_norm (b i) (v i)
   simp [b.orthonormal.1 i]
 #align orientation.abs_volume_form_apply_le Orientation.abs_volumeForm_apply_le
@@ -305,11 +308,13 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _
     · rintro rfl
       simp only [Nat.zero_eq, volumeForm_zero_pos, AlternatingMap.constLinearEquivOfIsEmpty_apply,
-        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_one, Finset.univ_eq_empty, Finset.prod_empty]
+        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_one, Finset.univ_eq_empty,
+        Finset.prod_empty]
     · rintro rfl
       simp only [Nat.zero_eq, volumeForm_neg_orientation, volumeForm_zero_pos,
-        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply, AlternatingMap.constOfIsEmpty_apply,
-        Function.const_apply, abs_neg, abs_one, Finset.univ_eq_empty, Finset.prod_empty]
+        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply,
+        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, abs_neg, abs_one,
+        Finset.univ_eq_empty, Finset.prod_empty]
   haveI : FiniteDimensional ℝ E := fact_finiteDimensional_of_finrank_eq_succ n
   have hdim : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis hdim v
@@ -347,12 +352,14 @@ theorem volumeForm_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace �
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _
     · rintro rfl
       simp only [Nat.zero_eq, map_positiveOrientation_of_isEmpty, volumeForm_zero_pos,
-        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.constOfIsEmpty_apply, Function.const_apply,
-        Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
+        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.constOfIsEmpty_apply,
+        Function.const_apply, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
     · rintro rfl
-      simp only [Nat.zero_eq, Orientation.map_neg, map_positiveOrientation_of_isEmpty, volumeForm_neg_orientation,
-        volumeForm_zero_pos, AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply,
-        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
+      simp only [Nat.zero_eq, Orientation.map_neg, map_positiveOrientation_of_isEmpty,
+        volumeForm_neg_orientation, volumeForm_zero_pos,
+        AlternatingMap.constLinearEquivOfIsEmpty_apply, AlternatingMap.neg_apply,
+        AlternatingMap.constOfIsEmpty_apply, Function.const_apply, Function.comp_apply,
+        EmbeddingLike.apply_eq_iff_eq]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos (Fact.out)
   have he : e.toBasis.orientation = o :=
     o.finOrthonormalBasis_orientation n.succ_pos (Fact.out)
