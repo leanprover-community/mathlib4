@@ -963,7 +963,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
--- porting note: todo: make `odd` and `even` available here, drop `bit1`
+-- porting note: todo: make `Odd` and `Even` available here, drop `bit1`
 set_option linter.deprecated false in
 theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
     (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
@@ -1385,7 +1385,7 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
-    (atTop : Filter α) ×ᶠ (atTop : Filter β) = (atTop : Filter (α × β)) := by
+    (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
   cases isEmpty_or_nonempty α; exact Subsingleton.elim _ _
   cases isEmpty_or_nonempty β; exact Subsingleton.elim _ _
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
@@ -1393,19 +1393,19 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atBot_atBot_eq [Preorder β₁] [Preorder β₂] :
-    (atBot : Filter β₁) ×ᶠ (atBot : Filter β₂) = (atBot : Filter (β₁ × β₂)) :=
+    (atBot : Filter β₁) ×ˢ (atBot : Filter β₂) = (atBot : Filter (β₁ × β₂)) :=
   @prod_atTop_atTop_eq β₁ᵒᵈ β₂ᵒᵈ _ _
 #align filter.prod_at_bot_at_bot_eq Filter.prod_atBot_atBot_eq
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type _} [Preorder β₁] [Preorder β₂]
-    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ᶠ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
+    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
   rw [prod_map_map_eq, prod_atTop_atTop_eq, Prod.map_def]
 #align filter.prod_map_at_top_eq Filter.prod_map_atTop_eq
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type _} [Preorder β₁] [Preorder β₂]
-    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ᶠ map u₂ atBot = map (Prod.map u₁ u₂) atBot :=
+    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ˢ map u₂ atBot = map (Prod.map u₁ u₂) atBot :=
   @prod_map_atTop_eq _ _ β₁ᵒᵈ β₂ᵒᵈ _ _ _ _
 #align filter.prod_map_at_bot_eq Filter.prod_map_atBot_eq
 
@@ -1427,14 +1427,14 @@ theorem tendsto_atTop_diagonal [SemilatticeSup α] : Tendsto (fun a : α => (a, 
 
 theorem Tendsto.prod_map_prod_atBot [SemilatticeInf γ] {F : Filter α} {G : Filter β} {f : α → γ}
     {g : β → γ} (hf : Tendsto f F atBot) (hg : Tendsto g G atBot) :
-    Tendsto (Prod.map f g) (F ×ᶠ G) atBot := by
+    Tendsto (Prod.map f g) (F ×ˢ G) atBot := by
   rw [← prod_atBot_atBot_eq]
   exact hf.prod_map hg
 #align filter.tendsto.prod_map_prod_at_bot Filter.Tendsto.prod_map_prod_atBot
 
 theorem Tendsto.prod_map_prod_atTop [SemilatticeSup γ] {F : Filter α} {G : Filter β} {f : α → γ}
     {g : β → γ} (hf : Tendsto f F atTop) (hg : Tendsto g G atTop) :
-    Tendsto (Prod.map f g) (F ×ᶠ G) atTop := by
+    Tendsto (Prod.map f g) (F ×ˢ G) atTop := by
   rw [← prod_atTop_atTop_eq]
   exact hf.prod_map hg
 #align filter.tendsto.prod_map_prod_at_top Filter.Tendsto.prod_map_prod_atTop

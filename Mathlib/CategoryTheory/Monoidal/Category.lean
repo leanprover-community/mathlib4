@@ -78,7 +78,7 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
   tensorObj : C → C → C
   /-- curried tensor product of morphisms -/
   tensorHom : ∀ {X₁ Y₁ X₂ Y₂ : C}, (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
-  /-- Tensor product of identiy maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
+  /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by aesop_cat
   /--
   Composition of tensor products is tensor product of compositions:

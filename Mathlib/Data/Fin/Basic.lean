@@ -13,8 +13,6 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.Set
-import Qq
 
 /-!
 # The finite type with `n` elements
@@ -395,7 +393,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 -- porting note: `fin.val_zero` previously existed in core with statement
--- `(0 : fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- `(0 : Fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
 -- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
@@ -1191,7 +1189,7 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the succesor of the cast. See `Fin.succ_cast_eq` for rewriting in
+/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
 the reverse direction. -/
 @[simp]
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :

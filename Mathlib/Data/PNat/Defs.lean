@@ -12,8 +12,6 @@ Authors: Mario Carneiro, Neil Strickland
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Lift
 
 /-!
 # The positive natural numbers

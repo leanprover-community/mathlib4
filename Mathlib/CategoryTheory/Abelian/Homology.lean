@@ -12,8 +12,6 @@ import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
-import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 

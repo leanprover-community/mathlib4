@@ -9,7 +9,6 @@ Authors: Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Zorn
-import Mathlib.Tactic.ByContra
 
 /-!
 # Extend a partial order to a linear order

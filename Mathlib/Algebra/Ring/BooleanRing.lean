@@ -12,7 +12,6 @@ import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Boolean rings
@@ -343,7 +342,7 @@ theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg
   rfl
 #align to_boolalg_mul toBoolAlg_mul
 
--- `to_boolalg_add` simplifies the LHS but this lemma is eligible to `dsimp`
+-- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
 @[simp, nolint simpNF]
 theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
@@ -390,12 +389,12 @@ def AsBoolRing (α : Type _) :=
   α
 #align as_boolring AsBoolRing
 
-/-- The "identity" equivalence between `as_boolring α` and `α`. -/
+/-- The "identity" equivalence between `AsBoolRing α` and `α`. -/
 def toBoolRing : α ≃ AsBoolRing α :=
   Equiv.refl _
 #align to_boolring toBoolRing
 
-/-- The "identity" equivalence between `α` and `as_boolring α`. -/
+/-- The "identity" equivalence between `α` and `AsBoolRing α`. -/
 def ofBoolRing : AsBoolRing α ≃ α :=
   Equiv.refl _
 #align of_boolring ofBoolRing

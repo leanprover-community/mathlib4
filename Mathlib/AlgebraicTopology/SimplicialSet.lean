@@ -13,7 +13,7 @@ import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 A simplicial set is just a simplicial object in `Type`,
