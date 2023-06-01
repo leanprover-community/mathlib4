@@ -258,16 +258,20 @@ def π (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
 instance (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
     Epi (h.π i pq hpq) := h.epi_π' i pq hpq
 
-lemma comp_π {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
-    h.filtration.map φ ≫ h.π j pq hpq = 0 :=
-  h.comp_π' i j hij pq hpq
+lemma comp_π {i j : ℤ} (φ : i ⟶ j) (hij : i < j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    h.filtration.map φ ≫ h.π j pq hpq = 0 := by
+  have eq : φ = homOfLE (show i ≤ j-1 by linarith) ≫
+    homOfLE (show j-1 ≤ j by linarith) := rfl
+  erw [eq, Functor.map_comp, assoc, h.comp_π' (j-1) j (by linarith) pq hpq,
+    comp_zero]
 
 instance {i j : ℤ} (f : i ⟶ j) :
     Mono (h.filtration.map f) :=
   mono_of_mono_fac (MonoOver.w (h.filtration'.map f))
 
 lemma shortExact {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
-    (ShortComplex.mk _ _ (h.comp_π φ hij pq hpq)).ShortExact where
+    (ShortComplex.mk _ _
+      (h.comp_π φ (by simpa only [← hij] using lt_add_one i) pq hpq)).ShortExact where
   exact := h.exact' i j hij pq hpq
 
 lemma isIso_filtration_map_succ_iff {i j : ℤ} (φ : i ⟶ j) (hij : i + 1 = j) :
@@ -465,6 +469,12 @@ lemma filtrationIsoAbutment_inv_ι : (h.filtrationIsoAbutment i H).inv ≫ h.fil
 lemma ι_filtrationIsoAbutment_inv : h.filtrationι i ≫ (h.filtrationIsoAbutment i H).inv = 𝟙 _ :=
   (h.filtrationIsoAbutment i H).hom_inv_id
 
+@[reassoc]
+lemma ι_filtrationIsoAbutment_inv' (j : ℤ) (hj : j ≤ i) :
+    h.filtrationι j ≫ (h.filtrationIsoAbutment i H).inv = h.filtration.map (homOfLE hj) := by
+  simp only [← cancel_mono (h.filtrationι i), assoc, filtrationIsoAbutment_inv_ι,
+    comp_id, filtration_map_ι]
+
 noncomputable def abutmentToPageInfinity : X ⟶ E.pageInfinity pq :=
   (h.filtrationIsoAbutment i H).inv ≫ h.π i pq hpq
 
@@ -499,6 +509,50 @@ lemma abutmentToPageInfinity_pageInfinityToAbutment :
 noncomputable def pageInfinityIsoAbutment : E.pageInfinity pq ≅ X where
   hom := h.pageInfinityToAbutment i pq hpq (E.isZero_of_collapsesAt_ofLT c n i)
   inv := h.abutmentToPageInfinity i pq hpq (E.isZero_of_collapsesAt_ofGT c n i)
+
+end
+
+section
+
+variable {i j : ℤ} (φ : i ⟶ j) (pqi : ℤ × ℤ) (pqj : ℤ × ℤ)
+    (hpqi : c.position n i = pqi) (hpqj : c.position n j = pqj) (hij : i ≠ j)
+    (Hi : ∀ (k : ℤ) (_ : k < i), IsZero (E.pageInfinity (c.position n k)))
+    (Hj : ∀ (k : ℤ) (_ : j < k), IsZero (E.pageInfinity (c.position n k)))
+    (Hij : ∀ (k : ℤ) (_ : i < k) (_ : k < j), IsZero (E.pageInfinity (c.position n k)))
+
+lemma pageInfinityToAbutment_abutmentToPageInfinity_eq_zero :
+    h.pageInfinityToAbutment i pqi hpqi Hi ≫
+      h.abutmentToPageInfinity j pqj hpqj Hj = 0 := by
+  dsimp [pageInfinityToAbutment, abutmentToPageInfinity]
+  rw [assoc, Preadditive.IsIso.comp_left_eq_zero,
+    ι_filtrationIsoAbutment_inv'_assoc _ _ _ i (leOfHom φ), comp_π]
+  by_contra'
+  apply hij
+  linarith [leOfHom φ]
+
+@[simps]
+noncomputable def shortComplexPageInfinityToAbutmentAbutmentToPageInfinity : ShortComplex C :=
+  ShortComplex.mk _ _
+    (h.pageInfinityToAbutment_abutmentToPageInfinity_eq_zero φ pqi pqj hpqi hpqj hij Hi Hj)
+
+def shortComplexPageInfinityToAbutmentAbutmentToPageInfinity_exact :
+    (h.shortComplexPageInfinityToAbutmentAbutmentToPageInfinity φ
+      pqi pqj hpqi hpqj hij Hi Hj).ShortExact := by
+  have := (h.isIso_π_iff i pqi hpqi).2 Hi
+  have := (h.isIso_filtrationι_iff j).2 Hj
+  let φ₁ : i ⟶ j-1 := homOfLE (by
+    by_contra'
+    apply hij
+    linarith [leOfHom φ])
+  let φ₂ : j-1 ⟶ j := homOfLE (by linarith)
+  have : IsIso (h.filtration.map φ₁) := (h.isIso_filtration_map_iff φ₁).2 (by
+    intro k hik hkj
+    exact Hij k hik (by linarith))
+  refine' ShortComplex.shortExact_of_iso _
+    ((h.shortExact φ₂ (by linarith) pqj hpqj))
+  refine' ShortComplex.isoMk ((asIso (h.filtration.map φ₁)).symm ≪≫ asIso (h.π i pqi hpqi))
+    (asIso (h.filtrationι j)) (Iso.refl _) _ _
+  all_goals aesop_cat
 
 end
 
