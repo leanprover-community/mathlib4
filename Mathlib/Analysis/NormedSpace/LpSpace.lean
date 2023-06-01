@@ -456,14 +456,14 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine' ⟨fun h => _, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
-  · ext; funext i
+  · ext i
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
     have : (¬f i = 0) = False := congr_fun this i
     tauto
   · cases' isEmpty_or_nonempty α with _i _i
     · simp
     have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
-    ext; funext i
+    ext i
     have : ‖f i‖ = 0 := le_antisymm (H.1 ⟨i, rfl⟩) (norm_nonneg _)
     simpa using this
   · have hf : HasSum (fun i : α => ‖f i‖ ^ p.toReal) 0 := by
@@ -471,7 +471,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
       rwa [h, Real.zero_rpow hp.ne'] at this
     have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
     rw [hasSum_zero_iff_of_nonneg this] at hf
-    ext; funext i
+    ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
       simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using congr_fun hf i
     exact this.1
