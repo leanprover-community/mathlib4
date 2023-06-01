@@ -24,17 +24,8 @@ presheaves.
 
 universe v u
 
-open CategoryTheory
-
-open TopCat
-
-open TopologicalSpace
-
-open Opposite
-
-open CategoryTheory.Limits
-
-open CategoryTheory.Category CategoryTheory.Functor
+open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
+  CategoryTheory.Functor
 
 variable (C : Type u) [Category.{v} C]
 
@@ -69,7 +60,7 @@ set_option linter.uppercaseLean3 false in
 -- theorem as_coe (X : SheafedSpace.{v} C) : X.carrier = (X : TopCat.{v}) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
--- #align algebraic_geometry.SheafedSpace.as_coe AlgebraicGeometry.SheafedSpace.as_coe
+#noalign algebraic_geometry.SheafedSpace.as_coe
 
 -- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]

@@ -14,6 +14,22 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 We define the notion of effective epimorphic (pre)sieves, morphisms and family of morphisms
 and provide some API for relating the three notions.
 
+More precisely, if `f` is a morphism, then `f` is an effective epi if and only if the sieve
+it generates is effective epimorphic; see `CategoryTheory.Sieve.effectiveEpimorphic_singleton`.
+The analogous statement for a family of morphisms is in the theorem
+`CategoryTheory.Sieve.effectiveEpimorphic_family`.
+
+We have defined the notion of effective epi for morphisms and families of morphisms in such a
+way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
+then these definitions should be equivalent (project: formalize this!).
+See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
+[Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
+
+## References
+- [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
+- [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
+- [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
+
 -/
 
 namespace CategoryTheory
@@ -26,7 +42,7 @@ variable {C : Type _} [Category C]
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
   Nonempty (IsColimit (S : Presieve X).cocone)
 
-/-- A presieve is effective epimorphic if the cocone assocaited to the sieve it generates
+/-- A presieve is effective epimorphic if the cocone associated to the sieve it generates
 is a colimit cocone. -/
 abbrev Presieve.EffectiveEpimorphic {X : C} (S : Presieve X) : Prop :=
   (Sieve.generate S).EffectiveEpimorphic
@@ -37,7 +53,7 @@ This is equal to `Sieve.generate (Presieve.singleton f)`, but has
 more convenient definitional properties.
 -/
 def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
-  arrows Z g := ∃ (e : Z ⟶ Y), e ≫ f = g
+  arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
   downward_closed := by
     rintro W Z g ⟨e,rfl⟩ q
     refine ⟨q ≫ e, by simp⟩
@@ -82,26 +98,26 @@ attribute [nolint docBlame] EffectiveEpi.effectiveEpi
 
 /-- Some chosen `EffectiveEpiStruct` associated to an effective epi. -/
 noncomputable
-def EffectiveEpi.struct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] :
+def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] :
   EffectiveEpiStruct f := EffectiveEpi.effectiveEpi.some
 
 /-- Descend along an effective epi. -/
 noncomputable
 def EffectiveEpi.desc {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
   (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
-  X ⟶ W := (EffectiveEpi.struct f).desc e h
+  X ⟶ W := (EffectiveEpi.getStruct f).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpi.fac {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
     (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
     f ≫ EffectiveEpi.desc f e h = e :=
-  (EffectiveEpi.struct f).fac e h
+  (EffectiveEpi.getStruct f).fac e h
 
 lemma EffectiveEpi.uniq {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
     (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e)
     (m : X ⟶ W) (hm : f ≫ m = e) :
     m = EffectiveEpi.desc f e h :=
-  (EffectiveEpi.struct f).uniq e h _ hm
+  (EffectiveEpi.getStruct f).uniq e h _ hm
 
 instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := by
   constructor
@@ -205,7 +221,7 @@ more convenient definitional properties.
 -/
 def Sieve.generateFamily {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve B where
-  arrows Y f := ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f
+  arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
     refine ⟨a, e ≫ q, by simp⟩
@@ -241,7 +257,7 @@ attribute [nolint docBlame]
   EffectiveEpiFamilyStruct.uniq
 
 /--
-A family of morphisms `f a : X a ⟶ B` indexed by `a : α` is effective epimorphic
+A family of morphisms `f a : X a ⟶ B` indexed by `α` is effective epimorphic
 provided that the `f a` exhibit `B` as a colimit of the diagram of all "relations"
 `R → X a₁`, `R ⟶ X a₂` for all `a₁ a₂ : α`.
 -/
@@ -252,7 +268,7 @@ attribute [nolint docBlame] EffectiveEpiFamily.effectiveEpiFamily
 
 /-- Some chosen `EffectiveEpiFamilyStruct` associated to an effective epi family. -/
 noncomputable
-def EffectiveEpiFamily.struct {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+def EffectiveEpiFamily.getStruct {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] : EffectiveEpiFamilyStruct X π :=
   EffectiveEpiFamily.effectiveEpiFamily.some
 
@@ -262,7 +278,7 @@ def EffectiveEpiFamily.desc {B W : C} {α : Type _} (X : α → C) (π : (a : α
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) : B ⟶ W :=
-  (EffectiveEpiFamily.struct X π).desc e h
+  (EffectiveEpiFamily.getStruct X π).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpiFamily.fac {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
@@ -270,10 +286,13 @@ lemma EffectiveEpiFamily.fac {B W : C} {α : Type _} (X : α → C) (π : (a : �
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α) :
     π a ≫ EffectiveEpiFamily.desc X π e h = e a :=
-  (EffectiveEpiFamily.struct X π).fac e h a
+  (EffectiveEpiFamily.getStruct X π).fac e h a
 
--- NOTE: The `simpNF` linter complains for some reason.
--- See the two examples below.
+/-
+NOTE: The `simpNF` linter complains for some reason. See the two examples below.
+Zulip discussion:
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20bug.3F
+-/
 attribute [nolint simpNF]
   EffectiveEpiFamily.fac
   EffectiveEpiFamily.fac_assoc
@@ -299,7 +318,7 @@ lemma EffectiveEpiFamily.uniq {B W : C} {α : Type _} (X : α → C) (π : (a : 
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _)
     (m : B ⟶ W) (hm : ∀ a, π a ≫ m = e a) :
     m = EffectiveEpiFamily.desc X π e h :=
-  (EffectiveEpiFamily.struct X π).uniq e h m hm
+  (EffectiveEpiFamily.getStruct X π).uniq e h m hm
 
 -- TODO: Once we have "jointly epimorphic families", we could rephrase this as such a property.
 lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))

@@ -1706,7 +1706,8 @@ def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
 #align add_subgroup.prod AddSubgroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (H : Subgroup G) (K : Subgroup N) : (H.prod K : Set (G × N)) = H ×ˢ K :=
+theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
+    (H.prod K : Set (G × N)) = (H : Set G) ×ˢ (K : Set N) :=
   rfl
 #align subgroup.coe_prod Subgroup.coe_prod
 #align add_subgroup.coe_prod AddSubgroup.coe_prod

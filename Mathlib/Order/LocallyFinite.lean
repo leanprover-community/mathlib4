@@ -768,10 +768,10 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
     cases' h₀ with h₀_finset_Ioi h₀_finset_Ici h₀_finset_mem_Ici h₀_finset_mem_Ioi
     cases' h₁ with h₁_finset_Ioi h₁_finset_Ici h₁_finset_mem_Ici h₁_finset_mem_Ioi
     have hIci : h₀_finset_Ici = h₁_finset_Ici := by
-      ext (a b x)
+      ext a b
       rw [h₀_finset_mem_Ici, h₁_finset_mem_Ici]
     have hIoi : h₀_finset_Ioi = h₁_finset_Ioi := by
-      ext (a b x)
+      ext a b
       rw [h₀_finset_mem_Ioi, h₁_finset_mem_Ioi]
     simp_rw [hIci, hIoi]
 
@@ -780,10 +780,10 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
     cases' h₀ with h₀_finset_Iio h₀_finset_Iic h₀_finset_mem_Iic h₀_finset_mem_Iio
     cases' h₁ with h₁_finset_Iio h₁_finset_Iic h₁_finset_mem_Iic h₁_finset_mem_Iio
     have hIic : h₀_finset_Iic = h₁_finset_Iic := by
-      ext (a b x)
+      ext a b
       rw [h₀_finset_mem_Iic, h₁_finset_mem_Iic]
     have hIio : h₀_finset_Iio = h₁_finset_Iio := by
-      ext (a b x)
+      ext a b
       rw [h₀_finset_mem_Iio, h₁_finset_mem_Iio]
     simp_rw [hIic, hIio]
 
@@ -954,32 +954,32 @@ namespace Prod
 
 instance [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrder (α × β) :=
-  LocallyFiniteOrder.ofIcc' (α × β) (fun a b => Icc a.fst b.fst ×ᶠ Icc a.snd b.snd) fun a b x => by
+  LocallyFiniteOrder.ofIcc' (α × β) (fun a b => Icc a.fst b.fst ×ˢ Icc a.snd b.snd) fun a b x => by
     rw [mem_product, mem_Icc, mem_Icc, and_and_and_comm]
     rfl
 
 instance [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrderTop (α × β) :=
-  LocallyFiniteOrderTop.ofIci' (α × β) (fun a => Ici a.fst ×ᶠ Ici a.snd) fun a x => by
+  LocallyFiniteOrderTop.ofIci' (α × β) (fun a => Ici a.fst ×ˢ Ici a.snd) fun a x => by
     rw [mem_product, mem_Ici, mem_Ici]
     rfl
 
 instance [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrderBot (α × β) :=
-  LocallyFiniteOrderBot.ofIic' (α × β) (fun a => Iic a.fst ×ᶠ Iic a.snd) fun a x => by
+  LocallyFiniteOrderBot.ofIic' (α × β) (fun a => Iic a.fst ×ˢ Iic a.snd) fun a x => by
     rw [mem_product, mem_Iic, mem_Iic]
     rfl
 
 theorem Icc_eq [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (p q : α × β) :
-    Finset.Icc p q = Finset.Icc p.1 q.1 ×ᶠ Finset.Icc p.2 q.2 :=
+    Finset.Icc p q = Finset.Icc p.1 q.1 ×ˢ Finset.Icc p.2 q.2 :=
   rfl
 #align prod.Icc_eq Prod.Icc_eq
 
 @[simp]
 theorem Icc_mk_mk [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (a₁ a₂ : α) (b₁ b₂ : β) :
-    Finset.Icc (a₁, b₁) (a₂, b₂) = Finset.Icc a₁ a₂ ×ᶠ Finset.Icc b₁ b₂ :=
+    Finset.Icc (a₁, b₁) (a₂, b₂) = Finset.Icc a₁ a₂ ×ˢ Finset.Icc b₁ b₂ :=
   rfl
 #align prod.Icc_mk_mk Prod.Icc_mk_mk
 
@@ -999,14 +999,14 @@ variable [Lattice α] [Lattice β]
 
 theorem uIcc_eq [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (p q : α × β) :
-    Finset.uIcc p q = Finset.uIcc p.1 q.1 ×ᶠ Finset.uIcc p.2 q.2 :=
+    Finset.uIcc p q = Finset.uIcc p.1 q.1 ×ˢ Finset.uIcc p.2 q.2 :=
   rfl
 #align prod.uIcc_eq Prod.uIcc_eq
 
 @[simp]
 theorem uIcc_mk_mk [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (a₁ a₂ : α) (b₁ b₂ : β) :
-    Finset.uIcc (a₁, b₁) (a₂, b₂) = Finset.uIcc a₁ a₂ ×ᶠ Finset.uIcc b₁ b₂ :=
+    Finset.uIcc (a₁, b₁) (a₂, b₂) = Finset.uIcc a₁ a₂ ×ˢ Finset.uIcc b₁ b₂ :=
   rfl
 #align prod.uIcc_mk_mk Prod.uIcc_mk_mk
 

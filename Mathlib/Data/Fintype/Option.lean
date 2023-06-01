@@ -87,7 +87,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
 -- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
--- I had to explicitely name `h_fintype` in order to access it manually.
+-- I had to explicitly name `h_fintype` in order to access it manually.
 -- was `[Fintype α]`
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
