@@ -34,7 +34,7 @@ syntax (name := eqns) "eqns" ident* : attr
 initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {
     name  := `eqns
-    descr := "Overrides the equation lemmas for a declation to the provided list"
+    descr := "Overrides the equation lemmas for a declaration to the provided list"
     add   :=  fun
     | _, `(attr| eqns $[$names]*) =>
       names.mapM resolveGlobalConstNoOverloadWithInfo
