@@ -93,9 +93,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
         let this : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true])
     _ = (s.filter (· ∈ t)).card / s.card := by
-      have : (s.card : ℝ≥0∞) ≠ 0 :=
-        Nat.cast_ne_zero.2 (hs.recOn fun _ => Finset.card_ne_zero_of_mem)
-      simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
+        simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
 #align pmf.to_outer_measure_uniform_of_finset_apply Pmf.toOuterMeasure_uniformOfFinset_apply
 
@@ -139,8 +137,8 @@ variable (s : Set α)
 
 theorem toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
-  simp [uniformOfFintype]
-
+  rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply,Fintype.card_ofFinset]
+  rfl
 #align pmf.to_outer_measure_uniform_of_fintype_apply Pmf.toOuterMeasure_uniformOfFintype_apply
 
 theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
