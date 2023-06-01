@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.NormedSpace.LpSpace
+import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Topology.Sets.Compacts
 
 /-!
