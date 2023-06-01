@@ -987,6 +987,7 @@ import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Control.LawfulFix
 import Mathlib.Control.Monad.Basic
+import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
@@ -994,7 +995,6 @@ import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
-import Mathlib.Control.Writer
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
