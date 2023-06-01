@@ -44,6 +44,9 @@ open ENNReal (ofReal)
 
 open scoped BigOperators ENNReal NNReal Topology
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+-- porting note: see lean4#2220
+
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
 -/
@@ -258,14 +261,14 @@ theorem volume_pi_Ico_toReal {a b : ι → ℝ} (h : a ≤ b) :
 @[simp]
 nonrec theorem volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     volume (Metric.ball a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
-  simp only [volume_pi_ball a hr, volume_ball, Finset.prod_const]
+  simp only [MeasureTheory.volume_pi_ball a hr, volume_ball, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr.le) _).symm
 #align real.volume_pi_ball Real.volume_pi_ball
 
 @[simp]
 nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
     volume (Metric.closedBall a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
-  simp only [volume_pi_closedBall a hr, volume_closedBall, Finset.prod_const]
+  simp only [MeasureTheory.volume_pi_closedBall a hr, volume_closedBall, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr) _).symm
 #align real.volume_pi_closed_ball Real.volume_pi_closedBall
 
@@ -639,7 +642,7 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
     · simp only [Ioo_eq_empty_of_le hba, inter_empty, IsEmpty.forall_iff, eventually_true,
         mem_empty_iff_false]
     · exact h a b as bs hab
-  filter_upwards [M, M']with x hx h'x
+  filter_upwards [M, M'] with x hx h'x
   intro xs
   by_cases Hx : x ∈ ⋃ i : ↥s × ↥s, T i
   · rw [← hA] at Hx
