@@ -176,13 +176,13 @@ theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
 section VolumeForm
 
 variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
--- porting note: TODO: proof this
-variable [IsEmpty (Fin Nat.zero)]
+
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/
 irreducible_def volumeForm : AlternatingMap ℝ E ℝ (Fin n) := by
   classical
+    haveI := inferInstanceAs (IsEmpty (Fin 0))
     cases' n with n
     · let opos : AlternatingMap ℝ E ℝ (Fin 0) := AlternatingMap.constOfIsEmpty ℝ E (1 : ℝ)
       exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
