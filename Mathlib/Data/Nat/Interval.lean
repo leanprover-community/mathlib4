@@ -332,7 +332,7 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, tsub_zero, tsub_self]
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
--- Porting note: had to use `@` and specify `(a + b)` explicitely. mathlib3 managed without.
+-- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
   convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm

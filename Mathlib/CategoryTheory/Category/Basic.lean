@@ -381,7 +381,7 @@ One would usually hope that the same effect could be achieved simply with `simp`
 
 The essential issue is that composition of morphisms involves dependent types.
 When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
-then `simp` can operate succesfully on the morphisms
+then `simp` can operate successfully on the morphisms
 (e.g. if `f` is the identity it can strip that off).
 
 However if we have an equality of objects, say `Y = Y'`,

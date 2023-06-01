@@ -73,7 +73,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ)
     where
-  -- porting note: TODO: figure out how to do this correcly
+  -- porting note: TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
