@@ -354,12 +354,11 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
     rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
   · intro m (hm : (m : ℕ∞) ≤ n)
-    have A : (m.succ : ℕ∞) ≤ n.succ := by
-      rw [Nat.cast_le] at hm ⊢
-      exact Nat.succ_le_succ hm
-    change ContinuousOn ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · (m + 1))) s
-    simp_rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_continuousOn_iff]
-    exact H.cont _ A
+    suffices A : ContinuousOn (p · (m + 1)) s
+    · exact ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).continuous.comp_continuousOn A
+    refine H.cont _ ?_
+    rw [Nat.cast_le] at hm ⊢
+    exact Nat.succ_le_succ hm
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. -/
@@ -397,14 +396,10 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
           (Hfderiv_zero x hx).differentiableWithinAt
         exact this.continuousOn
-      · have A : (m : ℕ∞) ≤ n := by
-          rw [Nat.cast_le] at hm ⊢
-          exact Nat.lt_succ_iff.mp hm
-        have :
-          ContinuousOn
-            ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ fun y : E => p y m.succ) s :=
-          Htaylor.cont _ A
-        rwa [LinearIsometryEquiv.comp_continuousOn_iff] at this
+      · refine (continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm.comp_continuousOn_iff.mp ?_
+        refine Htaylor.cont _ ?_
+        rw [Nat.cast_le] at hm ⊢
+        exact Nat.lt_succ_iff.mp hm
 #align has_ftaylor_series_up_to_on_succ_iff_right hasFTaylorSeriesUpToOn_succ_iff_right
 
 /-! ### Smooth functions within a set around a point -/
@@ -808,7 +803,8 @@ theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
 and the derivative of the `n`-th derivative. -/
 theorem iteratedFDerivWithin_succ_eq_comp_left {n : ℕ} :
     iteratedFDerivWithin 𝕜 (n + 1) f s =
-      continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F ∘
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F :
+          (E →L[𝕜] (E [×n]→L[𝕜] F)) → (E [×n.succ]→L[𝕜] F)) ∘
         fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s :=
   rfl
 #align iterated_fderiv_within_succ_eq_comp_left iteratedFDerivWithin_succ_eq_comp_left
@@ -840,23 +836,15 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
           (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E[×n + 1]→L[𝕜] F) (m 0)
             (tail m) :=
         rfl
-      _ =
-          (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E[×n + 1]→L[𝕜] F)
-            (m 0) (tail m) :=
-        by rw [fderivWithin_congr A (A x hx)]
-      _ =
-          (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E[×n + 1]→L[𝕜] F)
-            (m 0) (tail m) :=
-        by rw [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
-      _ =
-          (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
-              E → E[×n]→L[𝕜] E →L[𝕜] F)
-            (m 0) (init (tail m)) ((tail m) (last n)) :=
-        rfl
-      _ =
-          iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
+      _ = (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
+              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+        rw [fderivWithin_congr A (A x hx)]
+      _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
+              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
+      _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
+              E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
+      _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
             (m (last (n + 1))) := by
         rw [iteratedFDerivWithin_succ_apply_left, tail_init_eq_init_tail]
         rfl
