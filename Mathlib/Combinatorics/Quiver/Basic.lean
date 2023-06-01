@@ -70,10 +70,10 @@ pp_extended_field_notation Prefunctor.map
 
 namespace Prefunctor
 
-@[simp]
+-- Porting note: added during port.
+-- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- Nevertheless they are sometimes useful when building functors.
 lemma mk_obj [Quiver V] {obj : V → V} {map} {X : V} : (Prefunctor.mk obj map).obj X = obj X := rfl
-
-@[simp]
 lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
