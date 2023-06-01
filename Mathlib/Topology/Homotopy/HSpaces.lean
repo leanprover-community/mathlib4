@@ -8,8 +8,8 @@ Authors: Filippo A. E. Nuccio, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.CompactOpen
-import Mathbin.Topology.Homotopy.Path
+import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Homotopy.Path
 
 /-!
 # H-spaces
@@ -77,15 +77,13 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
-    [HSpace Y] : HSpace (X × Y)
-    where
+    [HSpace Y] : HSpace (X × Y) where
   hmul := ⟨fun p => (p.1.1⋀p.2.1, p.1.2⋀p.2.2), by continuity⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
-  eHmul :=
-    by
+  eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
@@ -104,8 +102,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             ⟨homotopy_rel.eq_fst HSpace.eHmul t (set.mem_singleton_iff.mpr h.1),
               homotopy_rel.eq_fst HSpace.eHmul t (set.mem_singleton_iff.mpr h.2)⟩,
           prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
-  hmulE :=
-    by
+  hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.hmulE.1.1.2
@@ -134,8 +131,7 @@ lead to a diamond since a topological field would inherit two `H_space` structur
 `topological_group.H_space` an instance."-/
 @[to_additive
       "The definition `to_H_space` is not an instance because it comes together with a\nmultiplicative version which would lead to a diamond since a topological field would inherit two\n`H_space` structures, one from the `mul_one_class` and one from the `add_zero_class`. In the case\nof an additive group, we make `topological_group.H_space` an instance."]
-def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M
-    where
+def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
   hmul_e_e := one_mul 1
@@ -187,8 +183,7 @@ theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
       apply add_le_add_left (le_one _)
 #align unit_interval.Q_right_one_left unitInterval.qRight_one_left
 
-theorem qRight_zero_right (t : I) : (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then 2 * t else 1 :=
-  by
+theorem qRight_zero_right (t : I) : (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then 2 * t else 1 := by
   simp only [Q_right, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]; exacts[rfl, ⟨t.2.1, h⟩]
@@ -210,8 +205,7 @@ variable {X : Type u} [TopologicalSpace X] {x y : X}
 
 /-- This is the function analogous to the one on p. 475 of [serre1951], defining a homotopy from
 the product path `γ ∧ e` to `γ`.-/
-def delayReflRight (θ : I) (γ : Path x y) : Path x y
-    where
+def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := γ.Continuous.comp (continuous_qRight.comp <| Continuous.Prod.mk_left θ)
   source' := by dsimp only; rw [Q_right_zero_left, γ.source]
@@ -224,8 +218,7 @@ theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayRef
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
 #align path.continuous_delay_refl_right Path.continuous_delayReflRight
 
-theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) :=
-  by
+theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
   simp only [delay_refl_right, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
     refl_apply]
@@ -262,8 +255,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
 (resp. `Hmul_e`) neither implies nor is implied by `path.homotopy.refl_trans`
 (resp. `path.homotopy.trans_refl`).
 -/
-instance (x : X) : HSpace (Path x x)
-    where
+instance (x : X) : HSpace (Path x x) where
   hmul := ⟨fun ρ => ρ.1.trans ρ.2, continuous_trans⟩
   e := refl x
   hmul_e_e := refl_trans_refl
