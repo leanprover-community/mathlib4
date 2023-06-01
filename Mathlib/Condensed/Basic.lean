@@ -22,7 +22,7 @@ In future work, we will define similar Grothendieck topologies on the category o
 and extremally disconnected sets, and show that the three categories are equivalent (under
 suitable assumptions on `C`).
 
-Note: Our definition more closely resembels "Pyknotic objects" in the sense of Barwick-Haine,
+Note: Our definition more closely resembles "Pyknotic objects" in the sense of Barwick-Haine,
 as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
