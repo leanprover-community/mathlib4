@@ -37,8 +37,6 @@ initialize registerTraceClass `Tactic.librarySearch.lemmas
 /--
 A "modifier" for a declaration.
 * `none` indicates the original declaration,
-* `symm` indicates that (possibly after binders) the declaration is an `=` or `↔`,
-  and we want to consider the symmetric version,
 * `mp` indicates that (possibly after binders) the declaration is an `↔`,
   and we want to consider the forward direction,
 * `mpr` similarly, but for the backward direction.

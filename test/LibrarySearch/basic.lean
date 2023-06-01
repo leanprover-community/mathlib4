@@ -137,9 +137,6 @@ assert_no_sorry Bool_eq_iff2
 -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20regression/near/354025788
 example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by library_search
 
-set_option trace.Tactic.librarySearch true
-set_option trace.Tactic.librarySearch.lemmas true
-
 -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20failing.20to.20apply.20symm
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   library_search
