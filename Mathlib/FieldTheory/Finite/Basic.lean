@@ -111,7 +111,7 @@ end Polynomial
 theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
     (∏ x : Kˣ, x) = (-1 : Kˣ) := by
   classical
-    have : (∏ x in (@univ Kˣ _).eraseₓ (-1), x) = 1 :=
+    have : (∏ x in (@univ Kˣ _).erase (-1), x) = 1 :=
       prod_involution (fun x _ => x⁻¹) (by simp)
         (fun a => by simp (config := { contextual := true }) [Units.inv_eq_self_iff])
         (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
