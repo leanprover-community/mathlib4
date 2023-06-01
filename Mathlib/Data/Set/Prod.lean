@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SProd
 
 /-!
 # Sets in product and pi types
@@ -42,9 +43,9 @@ def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-infixr:82 " ×ˢ " => Set.prod
+@[default_instance]
+instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+  sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
   rfl

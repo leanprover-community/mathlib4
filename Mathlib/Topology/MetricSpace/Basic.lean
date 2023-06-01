@@ -891,7 +891,7 @@ theorem finite_approx_of_totallyBounded {s : Set α} (hs : TotallyBounded s) :
 theorem tendstoUniformlyOnFilter_iff {ι : Type _} {F : ι → β → α} {f : β → α} {p : Filter ι}
     {p' : Filter β} :
     TendstoUniformlyOnFilter F f p p' ↔
-      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ᶠ p', dist (f n.snd) (F n.fst n.snd) < ε := by
+      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
   refine' ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
   refine' (H ε εpos).mono fun n hn => hε hn
@@ -959,7 +959,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 in a pseudo-metric space.-/
 theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} {x₀ : α}
     {p : α × ι → Prop} :
-    (∀ᶠ x in 𝓝 x₀ ×ᶠ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
   simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left, and_imp]
@@ -969,7 +969,7 @@ theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space.-/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
-    (∀ᶠ x in f ×ᶠ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
   rw [eventually_swap_iff, Metric.eventually_nhds_prod_iff]
   constructor <;>
@@ -2421,7 +2421,7 @@ theorem bounded_range_iff {f : β → α} : Bounded (range f) ↔ ∃ C, ∀ x y
 #align metric.bounded_range_iff Metric.bounded_range_iff
 
 theorem bounded_range_of_tendsto_cofinite_uniformity {f : β → α}
-    (hf : Tendsto (Prod.map f f) (cofinite ×ᶠ cofinite) (𝓤 α)) : Bounded (range f) := by
+    (hf : Tendsto (Prod.map f f) (.cofinite ×ˢ .cofinite) (𝓤 α)) : Bounded (range f) := by
   rcases (hasBasis_cofinite.prod_self.tendsto_iff uniformity_basis_dist).1 hf 1 zero_lt_one with
     ⟨s, hsf, hs1⟩
   rw [← image_univ, ← union_compl_self s, image_union, bounded_union]

@@ -382,7 +382,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `Num`s by transfering them to the `Nat` world and
+This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
 then trying to call `simp`.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
@@ -1429,7 +1429,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [cast_add] | rw [mul_to_int] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `ZNum`s by transfering them to the `Int` world and
+This tactic tries to prove (in)equalities about `ZNum`s by transferring them to the `Int` world and
 then trying to call `simp`.
 ```lean
 example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by

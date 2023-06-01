@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module measure_theory.function.strongly_measurable.basic
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
+! leanprover-community/mathlib commit ef95945cd48c932c9e034872bd25c3c220d9c946
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -483,20 +483,27 @@ end Arithmetic
 
 section MulAction
 
-variable [TopologicalSpace β] {G : Type _} [Group G] [MulAction G β] [ContinuousConstSMul G β]
+variable {M G G₀ : Type _}
+variable [TopologicalSpace β]
+variable [Monoid M] [MulAction M β] [ContinuousConstSMul M β]
+variable [Group G] [MulAction G β] [ContinuousConstSMul G β]
+variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
 #align strongly_measurable_const_smul_iff stronglyMeasurable_const_smul_iff
 
-variable {G₀ : Type _} [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
+nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
+    (hc : IsUnit c) :
+    (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
+  let ⟨u, hu⟩ := hc
+  hu ▸ stronglyMeasurable_const_smul_iff u
+#align is_unit.strongly_measurable_const_smul_iff IsUnit.stronglyMeasurable_const_smul_iff
 
-theorem _root_.stronglyMeasurable_const_smul_iff₀ {m : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
-    (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f := by
-  refine' ⟨fun h => _, fun h => h.const_smul c⟩
-  convert h.const_smul' c⁻¹
-  simp [smul_smul, inv_mul_cancel hc]
+theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
+    (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
+  (IsUnit.mk0 _ hc).stronglyMeasurable_const_smul_iff
 #align strongly_measurable_const_smul_iff₀ stronglyMeasurable_const_smul_iff₀
 
 end MulAction
@@ -1743,20 +1750,25 @@ end NormedSpace
 
 section MulAction
 
-variable {G : Type _} [Group G] [MulAction G β] [ContinuousConstSMul G β]
+variable {M G G₀ : Type _}
+variable [Monoid M] [MulAction M β] [ContinuousConstSMul M β]
+variable [Group G] [MulAction G β] [ContinuousConstSMul G β]
+variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
 #align ae_strongly_measurable_const_smul_iff aestronglyMeasurable_const_smul_iff
 
-variable {G₀ : Type _} [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
+nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
+    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+  let ⟨u, hu⟩ := hc
+  hu ▸ aestronglyMeasurable_const_smul_iff u
+#align is_unit.ae_strongly_measurable_const_smul_iff IsUnit.aestronglyMeasurable_const_smul_iff
 
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
-    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ := by
-  refine' ⟨fun h => _, fun h => h.const_smul c⟩
-  convert h.const_smul' c⁻¹
-  simp [smul_smul, inv_mul_cancel hc]
+    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+  (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 #align ae_strongly_measurable_const_smul_iff₀ aestronglyMeasurable_const_smul_iff₀
 
 end MulAction
@@ -2039,4 +2051,4 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
 end MeasureTheory
 
 -- Guard against import creep
--- assert_not_exists inner_product_space
+assert_not_exists InnerProductSpace
