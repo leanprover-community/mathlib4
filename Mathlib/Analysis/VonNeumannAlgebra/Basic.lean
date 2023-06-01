@@ -48,6 +48,8 @@ and we may be unhappy with the resulting opaqueness of the definition.
 -/
 class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
     [NormedAlgebra ℂ M] [StarModule ℂ M] where
+  /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
+  to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
       Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
@@ -71,6 +73,7 @@ and instead will use `⊤ : VonNeumannAlgebra H`.
 -- porting note: I don't think the nonempty intance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
+  /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
 #align von_neumann_algebra VonNeumannAlgebra
 
@@ -101,9 +104,10 @@ instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) w
 
 @[simp]
 theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
-    x ∈ S.carrier ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
+    x ∈ S.toStarSubalgebra ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
   Iff.rfl
-#align von_neumann_algebra.mem_carrier VonNeumannAlgebra.mem_carrier
+#align von_neumann_algebra.mem_carrier VonNeumannAlgebra.mem_carrierₓ
+-- porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[ext]
 theorem ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
