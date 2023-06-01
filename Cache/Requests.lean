@@ -96,7 +96,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         pure (last, success, failed, done)
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded {success} file(s) [{size}/{size} = 100%]"
+        let mut msg := s!"\rDownloaded {success} file(s) [{success}/{size} = {100*success/size}%]"
         if failed != 0 then
           msg := msg ++ ", {failed} failed"
         IO.eprintln msg
