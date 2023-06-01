@@ -85,7 +85,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
       simpa using conv.norm_image_sub_le_of_norm_fderivWithin_le' diff bound u_in v_in
     rintro ⟨u, v⟩ uv_in
     refine' ContinuousWithinAt.closure_le uv_in _ _ key
-    have f_cont' : ∀ y ∈ closure s, ContinuousWithinAt (f - f') s y := by
+    have f_cont' : ∀ y ∈ closure s, ContinuousWithinAt (f -  ⇑f') s y := by
       intro y y_in
       exact Tendsto.sub (f_cont y y_in) f'.cont.continuousWithinAt
     all_goals
@@ -99,14 +99,14 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     · have : ∀ u v, f v - f u - (f' v - f' u) = f v - f' v - (f u - f' u) := by intros; abel
       simp only [this]
       exact
-        tendsto.comp continuous_norm.continuous_at
-          ((tendsto.comp (f_cont' v v_in) tendsto_snd).sub <|
-            tendsto.comp (f_cont' u u_in) tendsto_fst)
+        Tendsto.comp continuous_norm.continuousAt
+          ((Tendsto.comp (f_cont' v v_in) tendsto_snd).sub <|
+            Tendsto.comp (f_cont' u u_in) tendsto_fst)
     · apply tendsto_nhdsWithin_of_tendsto_nhds
       rw [nhds_prod_eq]
       exact
         tendsto_const_nhds.mul
-          (tendsto.comp continuous_norm.continuous_at <| tendsto_snd.sub tendsto_fst)
+          (Tendsto.comp continuous_norm.continuousAt <| tendsto_snd.sub tendsto_fst)
 #align has_fderiv_at_boundary_of_tendsto_fderiv has_fderiv_at_boundary_of_tendsto_fderiv
 
 /-- If a function is differentiable on the right of a point `a : ℝ`, continuous at `a`, and
