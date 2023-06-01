@@ -26,8 +26,8 @@ definition in order to make `exp` independent of a particular choice of norm. Th
 does not require that `𝔸` be complete, but we need to assume it for most results.
 
 We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
-Results involving derivatives and comparisons with `real.exp` and `complex.exp` can be found in
-`analysis/special_functions/exponential`.
+Results involving derivatives and comparisons with `Real.exp` and `Complex.exp` can be found in
+`Analysis.SpecialFunctions.Exponential`.
 
 ## Main results
 
@@ -46,15 +46,15 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
-- `exp_series_radius_eq_top` : the `formal_multilinear_series` defining `exp 𝕂` has infinite
+- `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `exp 𝕂` has infinite
   radius of convergence
 - `exp_add_of_commute` : given two commuting elements `x` and `y`, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
 - `exp_add` : if `𝔸` is commutative, then we have `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
   for any `x` and `y`
 - `exp_neg` : if `𝔸` is a division ring, then we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
-- `exp_sum_of_commute` : the analogous result to `exp_add_of_commute` for `finset.sum`.
-- `exp_sum` : the analogous result to `exp_add` for `finset.sum`.
+- `exp_sum_of_commute` : the analogous result to `exp_add_of_commute` for `Finset.sum`.
+- `exp_sum` : the analogous result to `exp_add` for `Finset.sum`.
 - `exp_nsmul` : repeated addition in the domain corresponds to repeated multiplication in the
   codomain.
 - `exp_zsmul` : repeated addition in the domain corresponds to repeated multiplication in the
@@ -75,7 +75,7 @@ section TopologicalAlgebra
 
 variable (𝕂 𝔸 : Type _) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
-/-- `exp_series 𝕂 𝔸` is the `formal_multilinear_series` whose `n`-th term is the map
+/-- `expSeries 𝕂 𝔸` is the `FormalMultilinearSeries` whose `n`-th term is the map
 `(xᵢ) : 𝔸ⁿ ↦ (1/n! : 𝕂) • ∏ xᵢ`. Its sum is the exponential map `exp 𝕂 : 𝔸 → 𝔸`. -/
 def expSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   (n !⁻¹ : 𝕂) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
@@ -84,10 +84,10 @@ def expSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
 variable {𝔸}
 
 /-- `exp 𝕂 : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
-It is defined as the sum of the `formal_multilinear_series` `exp_series 𝕂 𝔸`.
+It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 
-Note that when `𝔸 = matrix n n 𝕂`, this is the **Matrix Exponential**; see
-[`analysis.normed_space.matrix_exponential`](../matrix_exponential) for lemmas specific to that
+Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
+[`Analysis.NormedSpace.MatrixExponential`](../MatrixExponential) for lemmas specific to that
 case. -/
 noncomputable def exp (x : 𝔸) : 𝔸 :=
   (expSeries 𝕂 𝔸).sum x
@@ -413,9 +413,9 @@ theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 #align norm_exp_series_summable norm_expSeries_summable
 
-theorem norm_exp_series_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
+theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
   norm_expSeries_summable_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-#align norm_exp_series_summable' norm_exp_series_summable'
+#align norm_exp_series_summable' norm_expSeries_summable'
 
 section CompleteAlgebra
 
@@ -425,9 +425,9 @@ theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n 
   summable_of_summable_norm (norm_expSeries_summable x)
 #align exp_series_summable expSeries_summable
 
-theorem exp_series_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
-  summable_of_summable_norm (norm_exp_series_summable' x)
-#align exp_series_summable' exp_series_summable'
+theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
+  summable_of_summable_norm (norm_expSeries_summable' x)
+#align exp_series_summable' expSeries_summable'
 
 theorem expSeries_hasSum_exp (x : 𝔸) : HasSum (fun n => expSeries 𝕂 𝔸 n fun _ => x) (exp 𝕂 x) :=
   expSeries_hasSum_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
@@ -550,9 +550,8 @@ theorem Prod.snd_exp [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp 𝕂 x).snd 
 theorem Pi.exp_apply {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp 𝕂 x i = exp 𝕂 (x i) :=
-  letI-- Lean struggles to infer this instance due to it wanting `[Π i, semi_normed_ring (𝔸 i)]`
-   : NormedAlgebra 𝕂 (∀ i, 𝔸 i) := Pi.normedAlgebra _
   map_exp _ (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
+  -- porting note: Lean can now handle Π-types in type class inference!
 #align pi.exp_apply Pi.exp_apply
 
 theorem Pi.exp_def {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
@@ -584,20 +583,20 @@ variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedDivisionRing 𝔸] [NormedAlg
 
 variable (𝕂)
 
-theorem norm_exp_series_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
+theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
   norm_expSeries_div_summable_of_mem_ball 𝕂 x
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-#align norm_exp_series_div_summable norm_exp_series_div_summable
+#align norm_exp_series_div_summable norm_expSeries_div_summable
 
 variable [CompleteSpace 𝔸]
 
-theorem exp_series_div_summable (x : 𝔸) : Summable fun n => x ^ n / n ! :=
-  summable_of_summable_norm (norm_exp_series_div_summable 𝕂 x)
-#align exp_series_div_summable exp_series_div_summable
+theorem expSeries_div_summable (x : 𝔸) : Summable fun n => x ^ n / n ! :=
+  summable_of_summable_norm (norm_expSeries_div_summable 𝕂 x)
+#align exp_series_div_summable expSeries_div_summable
 
-theorem exp_series_div_hasSum_exp (x : 𝔸) : HasSum (fun n => x ^ n / n !) (exp 𝕂 x) :=
+theorem expSeries_div_hasSum_exp (x : 𝔸) : HasSum (fun n => x ^ n / n !) (exp 𝕂 x) :=
   expSeries_div_hasSum_exp_of_mem_ball 𝕂 x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-#align exp_series_div_has_sum_exp exp_series_div_hasSum_exp
+#align exp_series_div_has_sum_exp expSeries_div_hasSum_exp
 
 variable {𝕂}
 
@@ -650,7 +649,7 @@ variable (𝕂 𝕂' 𝔸 : Type _) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Alge
   [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
 /-- If a normed ring `𝔸` is a normed algebra over two fields, then they define the same
-`exp_series` on `𝔸`. -/
+`expSeries` on `𝔸`. -/
 theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_nat_cast_smul_eq 𝕂 𝕂']
@@ -669,7 +668,7 @@ theorem exp_ℝ_ℂ_eq_exp_ℂ_ℂ : (exp ℝ : ℂ → ℂ) = exp ℂ :=
   exp_eq_exp ℝ ℂ ℂ
 #align exp_ℝ_ℂ_eq_exp_ℂ_ℂ exp_ℝ_ℂ_eq_exp_ℂ_ℂ
 
-/-- A version of `complex.of_real_exp` for `exp` instead of `complex.exp` -/
+/-- A version of `Complex.ofReal_exp` for `exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp ℝ r) = exp ℂ (r : ℂ) :=
   (map_exp ℝ (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r).trans (congr_fun exp_ℝ_ℂ_eq_exp_ℂ_ℂ _)
