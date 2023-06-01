@@ -200,14 +200,13 @@ theorem eq_or_eq_neg_of_isEmpty [Nontrivial R] [IsEmpty ι] (o : Orientation R M
   simp only [ray_eq_iff, sameRay_neg_swap]
   rw [sameRay_or_sameRay_neg_iff_not_linearIndependent]
   intro h
-  let a : R := AlternatingMap.constLinearEquivOfIsEmpty.symm x
-  have H : LinearIndependent R ![a, 1] := by
-    let f := (@AlternatingMap.constLinearEquivOfIsEmpty ι R M R _ _ _ _ _ _).symm
-    rw [show ![a, 1] = (f.toLinearMap ∘ ![x, AlternatingMap.constOfIsEmpty R M 1])
-      by (ext i ; fin_cases i <;> simp)]
-    exact h.map' f.toLinearMap f.ker
+  set f : AlternatingMap R M R ι ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
+  have H : LinearIndependent R ![f x, 1] := by
+    convert h.map' f.toLinearMap f.ker
+    ext i
+    fin_cases i <;> simp
   rw [linearIndependent_iff'] at H
-  simpa using H Finset.univ ![1, -a] (by simp [Fin.sum_univ_succ]) 0 (by simp)
+  simpa using H Finset.univ ![1, -f x] (by simp [Fin.sum_univ_succ]) 0 (by simp)
 #align orientation.eq_or_eq_neg_of_is_empty Orientation.eq_or_eq_neg_of_isEmpty
 
 end Orientation
