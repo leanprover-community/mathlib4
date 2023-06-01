@@ -23,43 +23,43 @@ equivalently, if it is `C^1` and its derivative is `C^{n-1}`.
 Finally, it is `C^∞` if it is `C^n` for all n.
 
 We formalize these notions by defining iteratively the `n+1`-th derivative of a function as the
-derivative of the `n`-th derivative. It is called `iterated_fderiv 𝕜 n f x` where `𝕜` is the
+derivative of the `n`-th derivative. It is called `iteratedFDeriv 𝕜 n f x` where `𝕜` is the
 field, `n` is the number of iterations, `f` is the function and `x` is the point, and it is given
-as an `n`-multilinear map. We also define a version `iterated_fderiv_within` relative to a domain,
-as well as predicates `cont_diff_within_at`, `cont_diff_at`, `cont_diff_on` and
-`cont_diff` saying that the function is `C^n` within a set at a point, at a point, on a set
+as an `n`-multilinear map. We also define a version `iteratedFDerivWithin` relative to a domain,
+as well as predicates `ContDiffWithinAt`, `ContDiffAt`, `ContDiffOn` and
+`ContDiff` saying that the function is `C^n` within a set at a point, at a point, on a set
 and on the whole space respectively.
 
 To avoid the issue of choice when choosing a derivative in sets where the derivative is not
-necessarily unique, `cont_diff_on` is not defined directly in terms of the
-regularity of the specific choice `iterated_fderiv_within 𝕜 n f s` inside `s`, but in terms of the
+necessarily unique, `ContDiffOn` is not defined directly in terms of the
+regularity of the specific choice `iteratedFDerivWithin 𝕜 n f s` inside `s`, but in terms of the
 existence of a nice sequence of derivatives, expressed with a predicate
-`has_ftaylor_series_up_to_on`.
+`HasFTaylorSeriesUpToOn`.
 
 We prove basic properties of these notions.
 
 ## Main definitions and results
 Let `f : E → F` be a map between normed vector spaces over a nontrivially normed field `𝕜`.
 
-* `has_ftaylor_series_up_to n f p`: expresses that the formal multilinear series `p` is a sequence
+* `HasFTaylorSeriesUpTo n f p`: expresses that the formal multilinear series `p` is a sequence
   of iterated derivatives of `f`, up to the `n`-th term (where `n` is a natural number or `∞`).
-* `has_ftaylor_series_up_to_on n f p s`: same thing, but inside a set `s`. The notion of derivative
+* `HasFTaylorSeriesUpToOn n f p s`: same thing, but inside a set `s`. The notion of derivative
   is now taken inside `s`. In particular, derivatives don't have to be unique.
-* `cont_diff 𝕜 n f`: expresses that `f` is `C^n`, i.e., it admits a Taylor series up to
+* `ContDiff 𝕜 n f`: expresses that `f` is `C^n`, i.e., it admits a Taylor series up to
   rank `n`.
-* `cont_diff_on 𝕜 n f s`: expresses that `f` is `C^n` in `s`.
-* `cont_diff_at 𝕜 n f x`: expresses that `f` is `C^n` around `x`.
-* `cont_diff_within_at 𝕜 n f s x`: expresses that `f` is `C^n` around `x` within the set `s`.
-* `iterated_fderiv_within 𝕜 n f s x` is an `n`-th derivative of `f` over the field `𝕜` on the
+* `ContDiffOn 𝕜 n f s`: expresses that `f` is `C^n` in `s`.
+* `ContDiffAt 𝕜 n f x`: expresses that `f` is `C^n` around `x`.
+* `ContDiffWithinAt 𝕜 n f s x`: expresses that `f` is `C^n` around `x` within the set `s`.
+* `iteratedFDerivWithin 𝕜 n f s x` is an `n`-th derivative of `f` over the field `𝕜` on the
   set `s` at the point `x`. It is a continuous multilinear map from `E^n` to `F`, defined as a
-  derivative within `s` of `iterated_fderiv_within 𝕜 (n-1) f s` if one exists, and `0` otherwise.
-* `iterated_fderiv 𝕜 n f x` is the `n`-th derivative of `f` over the field `𝕜` at the point `x`.
+  derivative within `s` of `iteratedFDerivWithin 𝕜 (n-1) f s` if one exists, and `0` otherwise.
+* `iteratedFDeriv 𝕜 n f x` is the `n`-th derivative of `f` over the field `𝕜` at the point `x`.
   It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
-  `iterated_fderiv 𝕜 (n-1) f` if one exists, and `0` otherwise.
+  `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
 
-In sets of unique differentiability, `cont_diff_on 𝕜 n f s` can be expressed in terms of the
-properties of `iterated_fderiv_within 𝕜 m f s` for `m ≤ n`. In the whole space,
-`cont_diff 𝕜 n f` can be expressed in terms of the properties of `iterated_fderiv 𝕜 m f`
+In sets of unique differentiability, `ContDiffOn 𝕜 n f s` can be expressed in terms of the
+properties of `iteratedFDerivWithin 𝕜 m f s` for `m ≤ n`. In the whole space,
+`ContDiff 𝕜 n f` can be expressed in terms of the properties of `iteratedFDeriv 𝕜 m f`
 for `m ≤ n`.
 
 ## Implementation notes
@@ -72,7 +72,7 @@ in general. In the usual situations, they coincide with the usual definitions.
 ### Definition of `C^n` functions in domains
 
 One could define `C^n` functions in a domain `s` by fixing an arbitrary choice of derivatives (this
-is what we do with `iterated_fderiv_within`) and requiring that all these derivatives up to `n` are
+is what we do with `iteratedFDerivWithin`) and requiring that all these derivatives up to `n` are
 continuous. If the derivative is not unique, this could lead to strange behavior like two `C^n`
 functions `f` and `g` on `s` whose sum is not `C^n`. A better definition is thus to say that a
 function is `C^n` inside `s` if it admits a sequence of derivatives up to `n` inside `s`.
@@ -86,14 +86,14 @@ problems for the order parameter: one could image a function which, for each `n`
 sequence of derivatives up to order `n`, but they do not coincide for varying `n` and can therefore
 not be glued to give rise to an infinite sequence of derivatives. This would give a function
 which is `C^n` for all `n`, but not `C^∞`. We solve this issue by putting locality conditions
-in space and order in our definition of `cont_diff_within_at` and `cont_diff_on`.
+in space and order in our definition of `ContDiffWithinAt` and `ContDiffOn`.
 The resulting definition is slightly more complicated to work with (in fact not so much), but it
 gives rise to completely satisfactory theorems.
 
 For instance, with this definition, a real function which is `C^m` (but not better) on `(-1/m, 1/m)`
 for each natural `m` is by definition `C^∞` at `0`.
 
-There is another issue with the definition of `cont_diff_within_at 𝕜 n f s x`. We can
+There is another issue with the definition of `ContDiffWithinAt 𝕜 n f s x`. We can
 require the existence and good behavior of derivatives up to order `n` on a neighborhood of `x`
 within `s`. However, this does not imply continuity or differentiability within `s` of the function
 at `x` when `x` does not belong to `s`. Therefore, we require such existence and good behavior on
@@ -115,7 +115,7 @@ derivative in `E →L[𝕜] F` (contrary to the approach from the left, where on
 enough on the `n`-th derivative to deduce things on the `n+1`-th derivative).
 
 However, the definition from the right leads to a universe polymorphism problem: if we define
-`iterated_fderiv 𝕜 (n + 1) f x = iterated_fderiv 𝕜 n (fderiv 𝕜 f) x` by induction, we need to
+`iteratedFDeriv 𝕜 (n + 1) f x = iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x` by induction, we need to
 generalize over all spaces (as `f` and `fderiv 𝕜 f` don't take values in the same space). It is
 only possible to generalize over all spaces in some fixed universe in an inductive definition.
 For `f : E → F`, then `fderiv 𝕜 f` is a map `E → (E →L[𝕜] F)`. Therefore, the definition will only
@@ -181,9 +181,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-! ### Functions with a Taylor series on a domain -/
 
-/-- `has_ftaylor_series_up_to_on n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
+/-- `HasFTaylorSeriesUpToOn n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`has_fderiv_within_at` but for higher order derivatives. -/
+`HasFDerivWithinAt` but for higher order derivatives. -/
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
@@ -250,7 +250,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff :
 #align has_ftaylor_series_up_to_on_top_iff hasFTaylorSeriesUpToOn_top_iff
 
 /-- In the case that `n = ∞` we don't need the continuity assumption in
-`has_ftaylor_series_up_to_on`. -/
+`HasFTaylorSeriesUpToOn`. -/
 theorem hasFTaylorSeriesUpToOn_top_iff' :
     HasFTaylorSeriesUpToOn ∞ f p s ↔
       (∀ x ∈ s, (p x 0).uncurry0 = f x) ∧
@@ -595,7 +595,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
           rw [snoc_last, init_snoc]
 #align cont_diff_within_at_succ_iff_has_fderiv_within_at contDiffWithinAt_succ_iff_hasFDerivWithinAt
 
-/-- A version of `cont_diff_within_at_succ_iff_has_fderiv_within_at` where all derivatives
+/-- A version of `contDiffWithinAt_succ_iff_hasFDerivWithinAt` where all derivatives
   are taken within the same set. -/
 theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
     ContDiffWithinAt 𝕜 (n + 1 : ℕ) f s x ↔
@@ -900,16 +900,16 @@ theorem Filter.EventuallyEq.iteratedFDerivWithin_eq (h : f₁ =ᶠ[𝓝[s] x] f)
 #align filter.eventually_eq.iterated_fderiv_within_eq Filter.EventuallyEq.iteratedFDerivWithin_eq
 
 /-- If two functions coincide on a set `s`, then their iterated differentials within this set
-coincide. See also `filter.eventually_eq.iterated_fderiv_within_eq` and
-`filter.eventually_eq.iterated_fderiv_within`. -/
+coincide. See also `Filter.EventuallyEq.iteratedFDerivWithin_eq` and
+`Filter.EventuallyEq.iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_congr (hs : EqOn f₁ f s) (hx : x ∈ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ s x = iteratedFDerivWithin 𝕜 n f s x :=
   (hs.eventuallyEq.filter_mono inf_le_right).iteratedFDerivWithin_eq (hs hx) _
 #align iterated_fderiv_within_congr iteratedFDerivWithin_congr
 
 /-- If two functions coincide on a set `s`, then their iterated differentials within this set
-coincide. See also `filter.eventually_eq.iterated_fderiv_within_eq` and
-`filter.eventually_eq.iterated_fderiv_within`. -/
+coincide. See also `Filter.EventuallyEq.iteratedFDerivWithin_eq` and
+`Filter.EventuallyEq.iteratedFDerivWithin`. -/
 protected theorem Set.EqOn.iteratedFDerivWithin (hs : EqOn f₁ f s) (n : ℕ) :
     EqOn (iteratedFDerivWithin 𝕜 n f₁ s) (iteratedFDerivWithin 𝕜 n f s) s := fun _x hx =>
   iteratedFDerivWithin_congr hs hx n
@@ -982,7 +982,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
 #align cont_diff_within_at_zero contDiffWithinAt_zero
 
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
-with the one we have chosen in `iterated_fderiv_within 𝕜 m f s`. -/
+with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
 theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
@@ -999,7 +999,7 @@ theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
 #align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
-`ftaylor_series_within 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
+`ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
 protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   constructor
@@ -1115,7 +1115,7 @@ theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f 
 #align cont_diff_on_succ_of_fderiv_within contDiffOn_succ_of_fderivWithin
 
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
-differentiable there, and its derivative (expressed with `fderiv_within`) is `C^n`. -/
+differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s := by
@@ -1155,7 +1155,7 @@ theorem contDiffOn_succ_iff_fderiv_of_open {n : ℕ} (hs : IsOpen s) :
 #align cont_diff_on_succ_iff_fderiv_of_open contDiffOn_succ_iff_fderiv_of_open
 
 /-- A function is `C^∞` on a domain with unique derivatives if and only if it is differentiable
-there, and its derivative (expressed with `fderiv_within`) is `C^∞`. -/
+there, and its derivative (expressed with `fderivWithin`) is `C^∞`. -/
 theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔
       DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y => fderivWithin 𝕜 f s y) s := by
@@ -1207,9 +1207,9 @@ theorem ContDiffOn.continuousOn_fderiv_of_open (h : ContDiffOn 𝕜 n f s) (hs :
 
 /-! ### Functions with a Taylor series on the whole space -/
 
-/-- `has_ftaylor_series_up_to n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
+/-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`has_fderiv_at` but for higher order derivatives. -/
+`HasFDerivAt` but for higher order derivatives. -/
 structure HasFTaylorSeriesUpTo (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) :
   Prop where
   zero_eq : ∀ x, (p x 0).uncurry0 = f x
@@ -1273,7 +1273,7 @@ theorem hasFTaylorSeriesUpTo_top_iff :
 #align has_ftaylor_series_up_to_top_iff hasFTaylorSeriesUpTo_top_iff
 
 /-- In the case that `n = ∞` we don't need the continuity assumption in
-`has_ftaylor_series_up_to`. -/
+`HasFTaylorSeriesUpTo`. -/
 theorem hasFTaylorSeriesUpTo_top_iff' :
     HasFTaylorSeriesUpTo ∞ f p ↔
       (∀ x, (p x 0).uncurry0 = f x) ∧
@@ -1626,7 +1626,7 @@ theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
 #align iterated_fderiv_one_apply iteratedFDeriv_one_apply
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
-`ftaylor_series_within 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
+`ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
 theorem contDiff_iff_ftaylorSeries :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   constructor
