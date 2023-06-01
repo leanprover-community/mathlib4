@@ -787,7 +787,8 @@ theorem map_coeSubmodule (h : ↑(map f I) = f '' I) :
 
 @[simp]
 theorem comap_coeSubmodule :
-    (LieSubmodule.toSubmodule (comap f J)) = (LieSubmodule.toSubmodule J).comap (f : L →ₗ[R] L') := rfl
+    (LieSubmodule.toSubmodule (comap f J)) = (LieSubmodule.toSubmodule J).comap (f : L →ₗ[R] L') :=
+  rfl
 #align lie_ideal.comap_coe_submodule LieIdeal.comap_coeSubmodule
 
 theorem map_le : map f I ≤ J ↔ f '' I ⊆ J :=
