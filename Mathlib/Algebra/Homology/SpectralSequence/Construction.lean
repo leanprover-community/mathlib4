@@ -1,28 +1,10 @@
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
+import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 
 open CategoryTheory Category Limits
 
 variable {C : Type _} [Category C] [Abelian C]
-
-abbrev ℤt := WithTop (WithBot ℤ)
-
-@[simp]
-def ℤt.mk (a : ℤ) : ℤt := (a : WithBot ℤ)
-
-lemma ℤt.mk_monotone : Monotone ℤt.mk := by
-  intro a b h
-  dsimp [mk]
-  simpa only [WithTop.coe_le_coe, WithBot.coe_le_coe] using h
-
-@[simps! obj map]
-def ιℤt  : ℤ ⥤ ℤt := ℤt.mk_monotone.functor
-
-instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
-  IsIso.of_iso (Iso.refl a)
-
-instance : HasTerminal ℤt := (@isTerminalTop ℤt _  _).hasTerminal
-instance : HasInitial ℤt := (@isInitialBot ℤt _  _).hasInitial
 
 namespace CategoryTheory
 
@@ -80,52 +62,19 @@ lemma toE₂CohomologicalSpectralSequence_isZero_page (r : ℤ) (hr : 2 ≤ r) (
   . apply X.isZero₂_H (Bounds.quadrantUR p₀ q₀)
     apply homOfLE
     dsimp
-    simp only [WithTop.coe_le_coe, WithBot.coe_le_coe, tsub_le_iff_right]
+    simp
     linarith
   . apply X.isZero₁_H (Bounds.quadrantUR p₀ q₀)
     apply homOfLE
     dsimp
-    simp only [WithTop.coe_le_coe, WithBot.coe_le_coe]
+    simp
     linarith
 
-lemma toE₂CohomologicalSpectralSequence_hasInfinityPageAt
-    (p₀ q₀ : ℤ) [X.IsStationary (Bounds.quadrantUR p₀ q₀)] (pq : ℤ × ℤ) :
-    X.toE₂CohomologicalSpectralSequence.HasInfinityPageAt pq where
-  d_to := by
-    obtain ⟨p, q⟩ := pq
-    refine' ⟨p - p₀ + 1, _⟩
-    rintro r hr hr' ⟨p', q'⟩ hpq'
-    simp only [Prod.mk_add_mk, Prod.mk.injEq] at hpq'
-    by_cases p < p₀
-    . apply IsZero.eq_of_tgt
-      exact X.toE₂CohomologicalSpectralSequence_isZero_page r hr p₀ q₀ ⟨p, q⟩ (Or.inl h)
-    . obtain ⟨rfl, rfl⟩ := hpq'
-      apply IsZero.eq_of_src
-      refine' X.toE₂CohomologicalSpectralSequence_isZero_page r hr p₀ q₀ _ (Or.inl _)
-      dsimp
-      linarith
-  d_from := by
-    obtain ⟨p, q⟩ := pq
-    refine' ⟨q - q₀ + 2, _⟩
-    rintro r hr hr' ⟨p', q'⟩ hpq'
-    simp only [Prod.mk_add_mk, Prod.mk.injEq] at hpq'
-    by_cases q < q₀
-    . apply IsZero.eq_of_src
-      exact X.toE₂CohomologicalSpectralSequence_isZero_page r hr p₀ q₀ ⟨p, q⟩ (Or.inr h)
-    . obtain ⟨rfl, rfl⟩ := hpq'
-      apply IsZero.eq_of_tgt
-      refine' X.toE₂CohomologicalSpectralSequence_isZero_page r hr p₀ q₀ _ (Or.inr _)
-      dsimp
-      linarith
-
-instance [X.IsStationary Bounds.firstQuadrant] (pq : ℤ × ℤ) :
-    X.toE₂CohomologicalSpectralSequence.HasInfinityPageAt pq :=
-  X.toE₂CohomologicalSpectralSequence_hasInfinityPageAt 0 0 pq
-
-lemma toE₂CohomologicalSpectralSequence_rmin_LE
-    (p₀ q₀ : ℤ) [X.IsStationary (Bounds.quadrantUR p₀ q₀)] (pq : ℤ × ℤ)
-    [X.toE₂CohomologicalSpectralSequence.HasInfinityPageAt pq] (r : ℤ) (hr : 2 ≤ r) :
-    X.toE₂CohomologicalSpectralSequence.rmin pq ≤ r := sorry-/
+instance [X.IsStationary (Bounds.firstQuadrant)] :
+    X.toE₂CohomologicalSpectralSequence.IsFirstQuadrant where
+  isZero := by
+    intro r hr pq hpq
+    exact X.toE₂CohomologicalSpectralSequence_isZero_page r hr 0 0 pq hpq-/
 
 end SpectralObject
 

@@ -236,6 +236,7 @@ import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.Construction
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
+import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow

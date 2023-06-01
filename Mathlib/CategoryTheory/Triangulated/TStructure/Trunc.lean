@@ -503,6 +503,27 @@ lemma π_natTransTruncGEOfGE_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
   dsimp [natTransTruncGEOfGE]
   rw [t.π_descTruncGE]
 
+@[reassoc (attr := simp)]
+lemma π_natTransTruncGEOfGE (a b : ℤ) (h : a ≤ b) :
+    t.truncGEπ a ≫ t.natTransTruncGEOfGE a b h =
+      t.truncGEπ b := by aesop_cat
+
+@[simp]
+lemma natTransTruncGEOfGE_eq_id (n : ℤ) :
+    t.natTransTruncGEOfGE n n (by rfl) = 𝟙 _ := by
+  ext X
+  apply t.from_truncGE_obj_ext
+  simp
+
+@[reassoc (attr := simp)]
+lemma natTransTruncGEOfGE_comp (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncGEOfGE a b hab ≫ t.natTransTruncGEOfGE b c hbc =
+      t.natTransTruncGEOfGE a c (hab.trans hbc) := by
+  ext X
+  have : t.IsGE ((t.truncGE c).obj X) a := t.isGE_of_GE _ _ _ (hab.trans hbc)
+  apply t.from_truncGE_obj_ext
+  simp
+
 lemma isIso_truncLEmap_iff {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     IsIso ((t.truncLE n₀).map f) ↔
       ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ ((t.truncLE n₀).obj X)⟦1⟧)
