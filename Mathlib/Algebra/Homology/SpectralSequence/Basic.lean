@@ -196,6 +196,21 @@ structure ConvergenceStripes where
 
 variable (c : ConvergenceStripes)
 
+class CollapsesAt (n i : ℤ) where
+  condition : ∀ (k : ℤ) (_ : k ≠ i), IsZero (E.pageInfinity (c.position n k))
+
+lemma isZero_of_collapsesAt (n i : ℤ) [h : E.CollapsesAt c n i]
+    (k : ℤ) (hk : k ≠ i) : IsZero (E.pageInfinity (c.position n k)) :=
+  h.condition k hk
+
+lemma isZero_of_collapsesAt_ofLT (n i : ℤ) [E.CollapsesAt c n i]
+    (k : ℤ) (hk : k < i) : IsZero (E.pageInfinity (c.position n k)) :=
+  E.isZero_of_collapsesAt c n i k (by linarith)
+
+lemma isZero_of_collapsesAt_ofGT (n i : ℤ) [E.CollapsesAt c n i]
+    (k : ℤ) (hk : i < k) : IsZero (E.pageInfinity (c.position n k)) :=
+  E.isZero_of_collapsesAt c n i k (by linarith)
+
 structure StronglyConvergesToInDegree (n : ℤ) (X : C) where
   hasInfinityPageAt : ∀ (pq : ℤ × ℤ) (_ : c.stripe pq = n), E.HasInfinityPageAt pq
   filtration' : ℤ ⥤ MonoOver X
@@ -389,7 +404,103 @@ lemma isIso_filtrationι_iff (j : ℤ) :
         exact H k hk hik
     . tauto
 
--- TODO: Cartan-Eilenberg, prop 5.6, p. 326
+lemma isIso_π_iff' (j : ℤ) (pq : ℤ × ℤ) (hpq : c.position n j = pq) (i : ℤ) (hij : i + 1 = j) :
+    IsIso (h.π j pq hpq) ↔ IsZero (h.filtration.obj i) :=
+  (h.shortExact (homOfLE (show i ≤ j by linarith)) hij pq hpq).isIso_g_iff
+
+lemma isIso_π_iff (j : ℤ) (pq : ℤ × ℤ) (hpq : c.position n j = pq) :
+    IsIso (h.π j pq hpq) ↔ ∀ (k : ℤ) (_ : k < j), IsZero (E.pageInfinity (c.position n k)) := by
+  simp only [h.isIso_π_iff' j pq hpq (j-1) (by linarith), isZero_filtration_obj_iff,
+    Int.le_sub_one_iff]
+
+section
+
+variable (j : ℤ) (pq : ℤ × ℤ) (hpq : c.position n j = pq)
+    (H : ∀ (k : ℤ) (_ : k < j), IsZero (E.pageInfinity (c.position n k)))
+
+@[simps! inv]
+noncomputable def pageInfinityIsoFiltration : E.pageInfinity pq ≅ h.filtration.obj j := by
+  have := (h.isIso_π_iff j pq hpq).2 H
+  exact (asIso (h.π j pq hpq)).symm
+
+@[reassoc (attr := simp)]
+lemma pageInfinityToAbutment_hom_π :
+    (h.pageInfinityIsoFiltration j pq hpq H).hom ≫ h.π j pq hpq = 𝟙 _ :=
+  (h.pageInfinityIsoFiltration j pq hpq H).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma π_pageInfinityToAbutment_hom :
+    h.π j pq hpq ≫ (h.pageInfinityIsoFiltration j pq hpq H).hom = 𝟙 _ :=
+  (h.pageInfinityIsoFiltration j pq hpq H).inv_hom_id
+
+noncomputable def pageInfinityToAbutment : E.pageInfinity pq ⟶ X :=
+  (h.pageInfinityIsoFiltration j pq hpq H).hom ≫ h.filtrationι j
+
+@[reassoc (attr := simp)]
+lemma π_pageInfinityToAbutment :
+    h.π j pq hpq ≫ h.pageInfinityToAbutment j pq hpq H = h.filtrationι j :=
+  (h.pageInfinityIsoFiltration j pq hpq H).inv_hom_id_assoc _
+
+instance : Mono (h.pageInfinityToAbutment j pq hpq H) := by
+  dsimp [pageInfinityToAbutment]
+  infer_instance
+
+end
+
+section
+
+variable (i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq)
+    (H : ∀ (k : ℤ) (_ : i < k), IsZero (E.pageInfinity (c.position n k)))
+
+@[simps! hom]
+noncomputable def filtrationIsoAbutment : h.filtration.obj i ≅ X := by
+  have := (h.isIso_filtrationι_iff i).2 H
+  exact asIso (h.filtrationι i)
+
+@[reassoc (attr := simp)]
+lemma filtrationIsoAbutment_inv_ι : (h.filtrationIsoAbutment i H).inv ≫ h.filtrationι i = 𝟙 X :=
+  (h.filtrationIsoAbutment i H).inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma ι_filtrationIsoAbutment_inv : h.filtrationι i ≫ (h.filtrationIsoAbutment i H).inv = 𝟙 _ :=
+  (h.filtrationIsoAbutment i H).hom_inv_id
+
+noncomputable def abutmentToPageInfinity : X ⟶ E.pageInfinity pq :=
+  (h.filtrationIsoAbutment i H).inv ≫ h.π i pq hpq
+
+@[reassoc (attr := simp)]
+lemma ι_abutmentToPageInfinity :
+    h.filtrationι i ≫ h.abutmentToPageInfinity i pq hpq H = h.π i pq hpq :=
+  (h.filtrationIsoAbutment i H).hom_inv_id_assoc _
+
+instance : Epi (h.abutmentToPageInfinity i pq hpq H) := by
+  dsimp [abutmentToPageInfinity]
+  apply epi_comp
+
+end
+
+
+section
+
+variable (i : ℤ) [E.CollapsesAt c n i] (pq : ℤ × ℤ) (hpq : c.position n i = pq)
+
+@[reassoc (attr := simp)]
+lemma pageInfinityToAbutment_abutmentToPageInfinity :
+    h.pageInfinityToAbutment i pq hpq (E.isZero_of_collapsesAt_ofLT c n i) ≫
+      h.abutmentToPageInfinity i pq hpq ((E.isZero_of_collapsesAt_ofGT c n i)) = 𝟙 _ := by
+  simp [pageInfinityToAbutment, abutmentToPageInfinity]
+
+@[reassoc (attr := simp)]
+lemma abutmentToPageInfinity_pageInfinityToAbutment :
+    h.abutmentToPageInfinity i pq hpq (E.isZero_of_collapsesAt_ofGT c n i) ≫
+      h.pageInfinityToAbutment i pq hpq (E.isZero_of_collapsesAt_ofLT c n i) = 𝟙 _ := by
+  simp [pageInfinityToAbutment, abutmentToPageInfinity]
+
+noncomputable def pageInfinityIsoAbutment : E.pageInfinity pq ≅ X where
+  hom := h.pageInfinityToAbutment i pq hpq (E.isZero_of_collapsesAt_ofLT c n i)
+  inv := h.abutmentToPageInfinity i pq hpq (E.isZero_of_collapsesAt_ofGT c n i)
+
+end
 
 end StronglyConvergesToInDegree
 
@@ -406,7 +517,6 @@ lemma StronglyConvergesTo.hasInfinityPageAt (pq : ℤ × ℤ) :
 
 end SpectralSequence
 
-
 namespace CohomologicalSpectralSequence
 
 variable {C r₀}
@@ -415,6 +525,9 @@ variable (E : CohomologicalSpectralSequence C r₀)
 def cohomologicalStripes : SpectralSequence.ConvergenceStripes where
   stripe pq := pq.1 + pq.2
   position n i := ⟨n+1-i, i-1⟩
+
+abbrev CollapsesAt (n i : ℤ) :=
+  SpectralSequence.CollapsesAt E cohomologicalStripes n i
 
 abbrev StronglyConvergesToInDegree (n : ℤ) (X : C) :=
   SpectralSequence.StronglyConvergesToInDegree E cohomologicalStripes n X
@@ -494,25 +607,10 @@ lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
     . apply le_max_left
     . exact (le_max_right _ _).trans (le_max_right _ _)
 
-lemma rMin_zero_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 2):
-    E.rMin ⟨0, 0⟩ ≤ 2 :=
-  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
-
-lemma rMin_one_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 2):
-    E.rMin ⟨1, 0⟩ ≤ 2 :=
-  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
-
-lemma rMin_two_zero_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 3):
-    E.rMin ⟨2, 0⟩ ≤ 3 :=
-  (E.rMin_le_of_isFirstQuadrant _).trans (by
-    refine' max_le _ (max_le _ _)
-    all_goals dsimp ; linarith)
-
-lemma rMin_zero_one_le_of_isFirstQuadrant (hr₀ : r₀ ≤ 3):
-    E.rMin ⟨0, 1⟩ ≤ 3 :=
-  (E.rMin_le_of_isFirstQuadrant _).trans (by
-    refine' max_le _ (max_le _ _)
-    all_goals dsimp ; linarith)
+lemma isZero_pageInfinity_of_isFirstQuadrant (pq : ℤ × ℤ)
+    (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.pageInfinity pq) :=
+  IsZero.of_iso (E.isZero_of_isFirstQuadrant _ _ hpq)
+    (E.isoPageInfinityOfLE pq (E.rMin pq) (by rfl)).symm
 
 end IsFirstQuadrant
 
