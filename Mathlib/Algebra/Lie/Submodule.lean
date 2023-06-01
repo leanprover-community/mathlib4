@@ -679,7 +679,7 @@ variable (f : M →ₗ⁅R,L⁆ M') (N N₂ : LieSubmodule R L M) (N' : LieSubmo
 /-- A morphism of Lie modules `f : M → M'` pushes forward Lie submodules of `M` to Lie submodules
 of `M'`. -/
 def map : LieSubmodule R L M' :=
-  { (N : Submodule R M).map (f.toLinearMap : M →ₗ[R] M') with
+  { (N : Submodule R M).map (f : M →ₗ[R] M') with
     lie_mem := fun {x m'} h ↦ by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
@@ -688,19 +688,19 @@ def map : LieSubmodule R L M' :=
 
 @[simp]
 theorem coeSubmodule_map :
-    (N.map f : Submodule R M') = (N : Submodule R M).map (f.toLinearMap : M →ₗ[R] M') := rfl
+    (N.map f : Submodule R M') = (N : Submodule R M).map (f : M →ₗ[R] M') := rfl
 #align lie_submodule.coe_submodule_map LieSubmodule.coeSubmodule_map
 
 /-- A morphism of Lie modules `f : M → M'` pulls back Lie submodules of `M'` to Lie submodules of
 `M`. -/
 def comap : LieSubmodule R L M :=
-  { (N' : Submodule R M').comap (f.toLinearMap : M →ₗ[R] M') with
+  { (N' : Submodule R M').comap (f : M →ₗ[R] M') with
     lie_mem := fun {x m} h ↦ by suffices ⁅x, f m⁆ ∈ N' by simp [this]; apply N'.lie_mem h }
 #align lie_submodule.comap LieSubmodule.comap
 
 @[simp]
 theorem coeSubmodule_comap :
-    (N'.comap f : Submodule R M) = (N' : Submodule R M').comap (f.toLinearMap : M →ₗ[R] M') := rfl
+    (N'.comap f : Submodule R M) = (N' : Submodule R M').comap (f : M →ₗ[R] M') := rfl
 #align lie_submodule.coe_submodule_comap LieSubmodule.coeSubmodule_comap
 
 variable {f N N₂ N'}
@@ -758,7 +758,7 @@ Note that unlike `LieSubmodule.map`, we must take the `lieSpan` of the image. Ma
 this is because although `f` makes `L'` into a Lie module over `L`, in general the `L` submodules of
 `L'` are not the same as the ideals of `L'`. -/
 def map : LieIdeal R L' :=
-  LieSubmodule.lieSpan R L' <| (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L')
+  LieSubmodule.lieSpan R L' <| (I : Submodule R L).map (f : L →ₗ[R] L')
 #align lie_ideal.map LieIdeal.map
 
 /-- A morphism of Lie algebras `f : L → L'` pulls back Lie ideals of `L'` to Lie ideals of `L`.
@@ -766,7 +766,7 @@ def map : LieIdeal R L' :=
 Note that `f` makes `L'` into a Lie module over `L` (turning `f` into a morphism of Lie modules)
 and so this is a special case of `LieSubmodule.comap` but we do not exploit this fact. -/
 def comap : LieIdeal R L :=
-  { (J : Submodule R L').comap (f.toLinearMap : L →ₗ[R] L') with
+  { (J : Submodule R L').comap (f : L →ₗ[R] L') with
     lie_mem := fun {x y} h ↦ by
       suffices ⁅f x, f y⁆ ∈ J by
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
@@ -778,18 +778,14 @@ def comap : LieIdeal R L :=
 
 @[simp]
 theorem map_coeSubmodule (h : ↑(map f I) = f '' I) :
-    (map f I : Submodule R L') = (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L') := by
-  -- porting note: the proof was just a chain of `rw`
-  rw [SetLike.ext'_iff]
-  dsimp only [Submodule.map_coe, LieHom.coe_toLinearMap]
-  erw [LieSubmodule.coe_toSubmodule]
-  erw [h]
-  --  porting note: `rw [Submodule.map_coe], rfl` is no longer needed, now that `dsimp` used it.
+    LieSubmodule.toSubmodule (map f I) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
+  rw [SetLike.ext'_iff, LieSubmodule.coe_toSubmodule, h, Submodule.map_coe]
+  rfl
 #align lie_ideal.map_coe_submodule LieIdeal.map_coeSubmodule
 
 @[simp]
 theorem comap_coeSubmodule :
-    (comap f J : Submodule R L) = (J : Submodule R L').comap (f.toLinearMap : L →ₗ[R] L') := rfl
+    (LieSubmodule.toSubmodule (comap f J)) = (LieSubmodule.toSubmodule J).comap (f : L →ₗ[R] L') := rfl
 #align lie_ideal.comap_coe_submodule LieIdeal.comap_coeSubmodule
 
 theorem map_le : map f I ≤ J ↔ f '' I ⊆ J :=
@@ -922,13 +918,13 @@ theorem ker_le_comap : f.ker ≤ J.comap f :=
 #align lie_hom.ker_le_comap LieHom.ker_le_comap
 
 @[simp]
-theorem ker_coeSubmodule : (ker f : Submodule R L) = LinearMap.ker (f.toLinearMap : L →ₗ[R] L') :=
+theorem ker_coeSubmodule : LieSubmodule.toSubmodule (ker f) = LinearMap.ker (f : L →ₗ[R] L') :=
   rfl
 #align lie_hom.ker_coe_submodule LieHom.ker_coeSubmodule
 
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
-  show x ∈ (f.ker : Submodule R L) ↔ _ by
+  show x ∈ LieSubmodule.toSubmodule (f.ker) ↔ _ by
     simp only [ker_coeSubmodule, LinearMap.mem_ker, coe_toLinearMap]
 #align lie_hom.mem_ker LieHom.mem_ker
 
@@ -960,7 +956,7 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 
 @[simp]
 theorem range_coeSubmodule :
-    (f.range : Submodule R L') = LinearMap.range (f.toLinearMap : L →ₗ[R] L') := rfl
+    (f.range : Submodule R L') = LinearMap.range (f : L →ₗ[R] L') := rfl
 #align lie_hom.range_coe_submodule LieHom.range_coeSubmodule
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
@@ -997,7 +993,7 @@ theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by rw [← le_bot_iff]
 theorem coe_map_of_surjective (h : Function.Surjective f) :
     LieSubmodule.toSubmodule (I.map f) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
   let J : LieIdeal R L' :=
-    { (I : Submodule R L).map (f.toLinearMap : L →ₗ[R] L') with
+    { (I : Submodule R L).map (f : L →ₗ[R] L') with
       lie_mem := fun {x y} hy ↦ by
         have hy' : ∃ x : L, x ∈ I ∧ f x = y := by simpa [hy]
         obtain ⟨z₂, hz₂, rfl⟩ := hy'
@@ -1151,7 +1147,7 @@ def ker : LieSubmodule R L M :=
 #align lie_module_hom.ker LieModuleHom.ker
 
 @[simp]
-theorem ker_coeSubmodule : (f.ker : Submodule R M) = LinearMap.ker (f.toLinearMap : M →ₗ[R] N) :=
+theorem ker_coeSubmodule : (f.ker : Submodule R M) = LinearMap.ker (f : M →ₗ[R] N) :=
   rfl
 #align lie_module_hom.ker_coe_submodule LieModuleHom.ker_coeSubmodule
 
@@ -1193,7 +1189,7 @@ theorem coe_range : (f.range : Set N) = Set.range f := rfl
 
 @[simp]
 theorem coeSubmodule_range :
-    (f.range : Submodule R N) = LinearMap.range (f.toLinearMap : M →ₗ[R] N) := rfl
+    (f.range : Submodule R N) = LinearMap.range (f : M →ₗ[R] N) := rfl
 #align lie_module_hom.coe_submodule_range LieModuleHom.coeSubmodule_range
 
 @[simp]
