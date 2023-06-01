@@ -12,11 +12,12 @@ import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
-# Representation of `formal_multilinear_series.radius` as a `liminf`
+# Representation of `FormalMultilinearSeries.radius` as a `liminf`
 
-In this file we prove that the radius of convergence of a `formal_multilinear_series` is equal to
-$\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `basic.lean` because this
-would create a circular dependency once we redefine `exp` using `formal_multilinear_series`.
+In this file we prove that the radius of convergence of a `FormalMultilinearSeries` is equal to
+$\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `Analysis.Analytic.Basic`
+because this would create a circular dependency once we redefine `exp` using
+`FormalMultilinearSeries`.
 -/
 
 
@@ -37,8 +38,9 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 /-- The radius of a formal multilinear series is equal to
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
-theorem radius_eq_liminf : p.radius = liminf (fun n => 1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0)) atTop :=
-  by
+theorem radius_eq_liminf :
+  p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+  -- porting note: added type ascription to make elaborated statement match Lean 3 version
   have :
     ∀ (r : ℝ≥0) {n : ℕ},
       0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) := by
@@ -53,18 +55,13 @@ theorem radius_eq_liminf : p.radius = liminf (fun n => 1 / (‖p n‖₊ ^ (1 / 
   · have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * r ^ n) 1).out 1 7).1
       (p.isLittleO_of_lt_radius hr)
     obtain ⟨a, ha, H⟩ := this
-    rw [ENNReal.coe_le_coe]
     apply le_liminf_of_le
-    sorry
-    rw [←eventually_map]
-    --refine' le_liminf_of_le (f := atTop) (u := (fun n ↦ 1 / ‖p n‖₊ ^ (1 / ↑n)))
-      --_ (eventually_map.2 <| _)
-    refine'
-      H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => _)
-    --  (this _ hn₀).2 (NNReal.coe_le_coe.1 _)
-    have foo := (this r hn₀).2
-    push_cast
-    exact (le_abs_self _).trans (hn.trans (pow_le_one _ ha.1.le ha.2.le))
+    · infer_param
+    · rw [←eventually_map]
+      refine'
+        H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 _))
+      push_cast
+      exact (le_abs_self _).trans (hn.trans (pow_le_one _ ha.1.le ha.2.le))
   · refine' p.le_radius_of_isBigO (IsBigO.of_bound 1 _)
     refine' (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => _)
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
