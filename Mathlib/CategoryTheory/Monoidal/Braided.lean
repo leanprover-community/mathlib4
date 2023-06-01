@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathbin.CategoryTheory.Monoidal.NaturalTransformation
-import Mathbin.CategoryTheory.Monoidal.Discrete
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+import Mathlib.CategoryTheory.Monoidal.Discrete
 
 /-!
 # Braided and symmetric monoidal categories
@@ -103,8 +103,7 @@ by a faithful monoidal functor.
 def braidedCategoryOfFaithful {C D : Type _} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] (F : MonoidalFunctor C D) [Faithful F.toFunctor] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
-    (w : ∀ X Y, F.μ _ _ ≫ F.map (β X Y).Hom = (β_ _ _).Hom ≫ F.μ _ _) : BraidedCategory C
-    where
+    (w : ∀ X Y, F.μ _ _ ≫ F.map (β X Y).Hom = (β_ _ _).Hom ≫ F.μ _ _) : BraidedCategory C where
   braiding := β
   braiding_naturality' := by
     intros
@@ -283,15 +282,13 @@ theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).Hom ≫ (ρ_ X).Hom = (
 #align category_theory.braiding_right_unitor CategoryTheory.braiding_rightUnitor
 
 @[simp]
-theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).Hom = (ρ_ X).inv :=
-  by
+theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).Hom = (ρ_ X).inv := by
   apply (cancel_mono (ρ_ X).Hom).1
   simp only [assoc, braiding_right_unitor, iso.inv_hom_id]
 #align category_theory.left_unitor_inv_braiding CategoryTheory.leftUnitor_inv_braiding
 
 @[simp]
-theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).Hom = (λ_ X).inv :=
-  by
+theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).Hom = (λ_ X).inv := by
   apply (cancel_mono (λ_ X).Hom).1
   simp only [assoc, braiding_left_unitor, iso.inv_hom_id]
 #align category_theory.right_unitor_inv_braiding CategoryTheory.rightUnitor_inv_braiding
@@ -514,8 +511,7 @@ theorem tensorμ_def₂ (X₁ X₂ Y₁ Y₂ : C) :
 theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : U₁ ⟶ V₁)
     (g₂ : U₂ ⟶ V₂) :
     ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensorμ C (Y₁, Y₂) (V₁, V₂) =
-      tensorμ C (X₁, X₂) (U₁, U₂) ≫ ((f₁ ⊗ g₁) ⊗ f₂ ⊗ g₂) :=
-  by
+      tensorμ C (X₁, X₂) (U₁, U₂) ≫ ((f₁ ⊗ g₁) ⊗ f₂ ⊗ g₂) := by
   dsimp [tensor_μ]
   slice_lhs 1 2 => rw [associator_naturality]
   slice_lhs 2 3 =>
@@ -541,8 +537,7 @@ theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X
 theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).Hom =
       ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
-        tensorμ C (𝟙_ C, 𝟙_ C) (X₁, X₂) ≫ ((λ_ X₁).Hom ⊗ (λ_ X₂).Hom) :=
-  by
+        tensorμ C (𝟙_ C, 𝟙_ C) (X₁, X₂) ≫ ((λ_ X₁).Hom ⊗ (λ_ X₂).Hom) := by
   dsimp [tensor_μ]
   have :
     ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
@@ -568,8 +563,7 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
 theorem tensor_right_unitality (X₁ X₂ : C) :
     (ρ_ (X₁ ⊗ X₂)).Hom =
       (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) ≫
-        tensorμ C (X₁, X₂) (𝟙_ C, 𝟙_ C) ≫ ((ρ_ X₁).Hom ⊗ (ρ_ X₂).Hom) :=
-  by
+        tensorμ C (X₁, X₂) (𝟙_ C, 𝟙_ C) ≫ ((ρ_ X₁).Hom ⊗ (ρ_ X₂).Hom) := by
   dsimp [tensor_μ]
   have :
     (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) ≫
@@ -607,8 +601,7 @@ theorem tensor_associativity_aux (W X Y Z : C) :
       (𝟙 (W ⊗ X) ⊗ (β_ Y Z).Hom) ≫
         (α_ (W ⊗ X) Z Y).inv ≫
           ((α_ W X Z).Hom ⊗ 𝟙 Y) ≫
-            ((β_ W (X ⊗ Z)).Hom ⊗ 𝟙 Y) ≫ ((α_ X Z W).Hom ⊗ 𝟙 Y) ≫ (α_ X (Z ⊗ W) Y).Hom :=
-  by
+            ((β_ W (X ⊗ Z)).Hom ⊗ 𝟙 Y) ≫ ((α_ X Z W).Hom ⊗ 𝟙 Y) ≫ (α_ X (Z ⊗ W) Y).Hom := by
   slice_rhs 3 5 => rw [← tensor_comp, ← tensor_comp, hexagon_forward, tensor_comp, tensor_comp]
   slice_rhs 5 6 => rw [associator_naturality]
   slice_rhs 2 3 => rw [← associator_inv_naturality]
@@ -743,8 +736,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensorμ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (Z₁ ⊗ Z₂)) ≫
         tensorμ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).Hom ⊗ (α_ X₂ Y₂ Z₂).Hom) =
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).Hom ≫
-        (𝟙 (X₁ ⊗ X₂) ⊗ tensorμ C (Y₁, Y₂) (Z₁, Z₂)) ≫ tensorμ C (X₁, X₂) (Y₁ ⊗ Z₁, Y₂ ⊗ Z₂) :=
-  by
+        (𝟙 (X₁ ⊗ X₂) ⊗ tensorμ C (Y₁, Y₂) (Z₁, Z₂)) ≫ tensorμ C (X₁, X₂) (Y₁ ⊗ Z₁, Y₂ ⊗ Z₂) := by
   have :
     (α_ X₁ Y₁ Z₁).Hom ⊗ (α_ X₂ Y₂ Z₂).Hom =
       (α_ (X₁ ⊗ Y₁) Z₁ ((X₂ ⊗ Y₂) ⊗ Z₂)).Hom ≫
@@ -848,8 +840,7 @@ def tensorMonoidal : MonoidalFunctor (C × C) C :=
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem leftUnitor_monoidal (X₁ X₂ : C) :
     (λ_ X₁).Hom ⊗ (λ_ X₂).Hom =
-      tensorμ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).Hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).Hom :=
-  by
+      tensorμ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).Hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).Hom := by
   dsimp [tensor_μ]
   have :
     (λ_ X₁).Hom ⊗ (λ_ X₂).Hom =
@@ -875,8 +866,7 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem rightUnitor_monoidal (X₁ X₂ : C) :
     (ρ_ X₁).Hom ⊗ (ρ_ X₂).Hom =
-      tensorμ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).Hom) ≫ (ρ_ (X₁ ⊗ X₂)).Hom :=
-  by
+      tensorμ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).Hom) ≫ (ρ_ (X₁ ⊗ X₂)).Hom := by
   dsimp [tensor_μ]
   have :
     (ρ_ X₁).Hom ⊗ (ρ_ X₂).Hom =
@@ -910,8 +900,7 @@ theorem associator_monoidal_aux (W X Y Z : C) :
       (α_ W X (Y ⊗ Z)).inv ≫
         (α_ (W ⊗ X) Y Z).inv ≫
           ((β_ (W ⊗ X) Y).Hom ⊗ 𝟙 Z) ≫
-            ((α_ Y W X).inv ⊗ 𝟙 Z) ≫ (α_ (Y ⊗ W) X Z).Hom ≫ (𝟙 (Y ⊗ W) ⊗ (β_ X Z).Hom) :=
-  by
+            ((α_ Y W X).inv ⊗ 𝟙 Z) ≫ (α_ (Y ⊗ W) X Z).Hom ≫ (𝟙 (Y ⊗ W) ⊗ (β_ X Z).Hom) := by
   slice_rhs 1 2 => rw [← pentagon_inv]
   slice_rhs 3 5 => rw [← tensor_comp, ← tensor_comp, hexagon_reverse, tensor_comp, tensor_comp]
   slice_rhs 5 6 => rw [associator_naturality]
@@ -1047,8 +1036,7 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensorμ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensorμ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).Hom =
       ((α_ X₁ X₂ X₃).Hom ⊗ (α_ Y₁ Y₂ Y₃).Hom) ≫
-        tensorμ C (X₁, X₂ ⊗ X₃) (Y₁, Y₂ ⊗ Y₃) ≫ (𝟙 (X₁ ⊗ Y₁) ⊗ tensorμ C (X₂, X₃) (Y₂, Y₃)) :=
-  by
+        tensorμ C (X₁, X₂ ⊗ X₃) (Y₁, Y₂ ⊗ Y₃) ≫ (𝟙 (X₁ ⊗ Y₁) ⊗ tensorμ C (X₂, X₃) (Y₂, Y₃)) := by
   have :
     (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).Hom =
       ((α_ X₁ Y₁ (X₂ ⊗ Y₂)).Hom ⊗ 𝟙 (X₃ ⊗ Y₃)) ≫
