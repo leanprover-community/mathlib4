@@ -58,9 +58,13 @@ theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (
 set_option linter.deprecated false in
 @[simp]
 theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
-  nthLe (range' n m step) i H = n + step * i :=
-  get_range' i H
-#align list.nth_le_range' List.nthLe_range'
+    nthLe (range' n m step) i H = n + step * i := get_range' i H
+
+set_option linter.deprecated false in
+theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
+    nthLe (range' n m) i H = n + i := by simp
+#align list.nth_le_range' List.nthLe_range'_1
+
 #align list.range'_concat List.range'_concat
 #align list.range_core List.range.loop
 #align list.range_core_range' List.range_loop_range'
