@@ -418,9 +418,9 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     HashSet.empty.insertMany <| boundValues.toArray.map Prod.fst
   -- Function to update `syntaxArgs` and `pattArgs` using `macroArg` syntax
   let pushMacro (syntaxArgs : Array (TSyntax `stx)) (pattArgs : Array Syntax)
-        (mac : TSyntax `Lean.Parser.Command.macroArg) := do
-      let (syntaxArg, pattArg) ← expandMacroArg mac
-      return (syntaxArgs.push syntaxArg, pattArgs.push pattArg)
+      (mac : TSyntax ``macroArg) := do
+    let (syntaxArg, pattArg) ← expandMacroArg mac
+    return (syntaxArgs.push syntaxArg, pattArgs.push pattArg)
   -- Arguments for the `syntax` command
   let mut syntaxArgs := #[]
   -- Arguments for the LHS pattern in the `macro`. Also used to construct the syntax
@@ -433,7 +433,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
   -- Whether we've seen a `scoped` item
   let mut hasScoped := false
   for item in items do
-    match (item : TSyntax ``notation3Item) with
+    match item with
     | `(notation3Item| $lit:str) =>
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
@@ -445,8 +445,8 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       hasBindersItem := true
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs
-                                (← `(macroArg| $id:ident:sepBy(term, $sep:str)))
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
+        `(macroArg| $id:ident:sepBy(term, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       let init' ← init.replaceM fun s => pure (boundValues.find? s.getId)
@@ -454,29 +454,29 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       match kind with
         | `(foldKind| foldl) =>
           boundValues := boundValues.insert id.getId <| ←
-                          `(expand_foldl% ($x $y => $scopedTerm') $init' [$$(.ofElems $id),*])
+            `(expand_foldl% ($x $y => $scopedTerm') $init' [$$(.ofElems $id),*])
           boundType := boundType.insert id.getId .foldl
-          matchers := matchers.push <| mkFoldlMatcher id.getId x.getId y.getId scopedTerm init
-                                        (getBoundNames boundValues)
+          matchers := matchers.push <|
+            mkFoldlMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | `(foldKind| foldr) =>
           boundValues := boundValues.insert id.getId <| ←
-                          `(expand_foldr% ($x $y => $scopedTerm') $init' [$$(.ofElems $id),*])
+            `(expand_foldr% ($x $y => $scopedTerm') $init' [$$(.ofElems $id),*])
           boundType := boundType.insert id.getId .foldr
-          matchers := matchers.push <| mkFoldrMatcher id.getId x.getId y.getId scopedTerm init
-                                        (getBoundNames boundValues)
+          matchers := matchers.push <|
+            mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
     | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
       if hasScoped then
         throwErrorAt item "Cannot have more than one `scoped` item."
       hasScoped := true
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| $lit:ident:term))
-      matchers := matchers.push <| mkScopedMatcher lit.getId scopedId.getId scopedTerm
-                                    (getBoundNames boundValues)
+      matchers := matchers.push <|
+        mkScopedMatcher lit.getId scopedId.getId scopedTerm (getBoundNames boundValues)
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
-      boundValues := boundValues.insert lit.getId <|
-        ← `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
-            $(⟨lit.1.mkAntiquotNode `term⟩):term)
+      boundValues := boundValues.insert lit.getId <| ←
+        `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
+          $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| $lit:ident:term))
       boundIdents := boundIdents.insert lit.getId lit
@@ -512,9 +512,9 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     let matchersM? := (matchers.reverse.mapM id).run
     -- We let local notations have access to `variable` declarations
     let matchers? ← if isLocalAttrKind attrKind then
-                      runTermElabM fun _ => matchersM?
-                    else
-                      liftTermElabM matchersM?
+      runTermElabM fun _ => matchersM?
+    else
+      liftTermElabM matchersM?
     if let some ms := matchers? then
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
       let delabName := name ++ `delab
@@ -524,10 +524,10 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       for (name, id) in boundIdents.toArray do
         match boundType.findD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)
-        | .foldl => result ← `(let $id := (MatchState.getFoldArray s $(quote name)).reverse
-                               $result)
-        | .foldr => result ← `(let $id := MatchState.getFoldArray s $(quote name)
-                               $result)
+        | .foldl => result ←
+          `(let $id := (MatchState.getFoldArray s $(quote name)).reverse; $result)
+        | .foldr => result ←
+          `(let $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.scopeState s)*) >>= fun binders => $result)
       elabCommand <| ← `(command|
