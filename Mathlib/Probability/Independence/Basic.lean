@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -160,8 +160,7 @@ theorem IndepCat.symm {m₁ m₂ : MeasurableSpace Ω} [MeasurableSpace Ω] {μ 
 #align probability_theory.indep.symm ProbabilityTheory.IndepCat.symm
 
 theorem indepCat_bot_right (m' : MeasurableSpace Ω) {m : MeasurableSpace Ω} {μ : Measure Ω}
-    [ProbabilityMeasure μ] : IndepCat m' ⊥ μ :=
-  by
+    [ProbabilityMeasure μ] : IndepCat m' ⊥ μ := by
   intro s t hs ht
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   cases ht
@@ -205,8 +204,7 @@ theorem indepCat_of_indepCat_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} [
 #align probability_theory.indep_of_indep_of_le_right ProbabilityTheory.indepCat_of_indepCat_of_le_right
 
 theorem IndepSetsCat.union [MeasurableSpace Ω] {s₁ s₂ s' : Set (Set Ω)} {μ : Measure Ω}
-    (h₁ : IndepSetsCat s₁ s' μ) (h₂ : IndepSetsCat s₂ s' μ) : IndepSetsCat (s₁ ∪ s₂) s' μ :=
-  by
+    (h₁ : IndepSetsCat s₁ s' μ) (h₂ : IndepSetsCat s₂ s' μ) : IndepSetsCat (s₁ ∪ s₂) s' μ := by
   intro t1 t2 ht1 ht2
   cases' (Set.mem_union _ _ _).mp ht1 with ht1₁ ht1₂
   · exact h₁ t1 t2 ht1₁ ht2
@@ -223,8 +221,7 @@ theorem IndepSetsCat.union_iff [MeasurableSpace Ω] {s₁ s₂ s' : Set (Set Ω)
 #align probability_theory.indep_sets.union_iff ProbabilityTheory.IndepSetsCat.union_iff
 
 theorem IndepSetsCat.iUnion [MeasurableSpace Ω] {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
-    {μ : Measure Ω} (hyp : ∀ n, IndepSetsCat (s n) s' μ) : IndepSetsCat (⋃ n, s n) s' μ :=
-  by
+    {μ : Measure Ω} (hyp : ∀ n, IndepSetsCat (s n) s' μ) : IndepSetsCat (⋃ n, s n) s' μ := by
   intro t1 t2 ht1 ht2
   rw [Set.mem_iUnion] at ht1
   cases' ht1 with n ht1
@@ -275,8 +272,7 @@ theorem IndepSets.indepSetsCat {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {�
     (h_indep : IndepSets s μ) {i j : ι} (hij : i ≠ j) : IndepSetsCat (s i) (s j) μ := by
   classical
     intro t₁ t₂ ht₁ ht₂
-    have hf_m : ∀ x : ι, x ∈ {i, j} → ite (x = i) t₁ t₂ ∈ s x :=
-      by
+    have hf_m : ∀ x : ι, x ∈ {i, j} → ite (x = i) t₁ t₂ ∈ s x := by
       intro x hx
       cases' finset.mem_insert.mp hx with hx hx
       · simp [hx, ht₁]
@@ -289,8 +285,7 @@ theorem IndepSets.indepSetsCat {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {�
       by simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
     have h_prod :
       (∏ t : ι in ({i, j} : Finset ι), μ (ite (t = i) t₁ t₂)) =
-        μ (ite (i = i) t₁ t₂) * μ (ite (j = i) t₁ t₂) :=
-      by
+        μ (ite (i = i) t₁ t₂) * μ (ite (j = i) t₁ t₂) := by
       simp only [hij, Finset.prod_singleton, Finset.prod_insert, not_false_iff,
         Finset.mem_singleton]
     rw [h1]
@@ -300,8 +295,7 @@ theorem IndepSets.indepSetsCat {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {�
 #align probability_theory.Indep_sets.indep_sets ProbabilityTheory.IndepSets.indepSetsCat
 
 theorem Indep.indepCat {m : ι → MeasurableSpace Ω} [MeasurableSpace Ω] {μ : Measure Ω}
-    (h_indep : Indep m μ) {i j : ι} (hij : i ≠ j) : IndepCat (m i) (m j) μ :=
-  by
+    (h_indep : Indep m μ) {i j : ι} (hij : i ≠ j) : IndepCat (m i) (m j) μ := by
   change indep_sets ((fun x => measurable_set[m x]) i) ((fun x => measurable_set[m x]) j) μ
   exact Indep_sets.indep_sets h_indep hij
 #align probability_theory.Indep.indep ProbabilityTheory.Indep.indepCat
@@ -349,8 +343,7 @@ section FromPiSystemsToMeasurableSpaces
 private theorem indep_sets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω}
     {μ : Measure Ω} [ProbabilityMeasure μ] {p1 p2 : Set (Set Ω)} (h2 : m2 ≤ m) (hp2 : IsPiSystem p2)
     (hpm2 : m2 = generateFrom p2) (hyp : IndepSetsCat p1 p2 μ) {t1 t2 : Set Ω} (ht1 : t1 ∈ p1)
-    (ht2m : measurable_set[m2] t2) : μ (t1 ∩ t2) = μ t1 * μ t2 :=
-  by
+    (ht2m : measurable_set[m2] t2) : μ (t1 ∩ t2) = μ t1 * μ t2 := by
   let μ_inter := μ.restrict t1
   let ν := μ t1 • μ
   have h_univ : μ_inter Set.univ = ν Set.univ := by
@@ -368,8 +361,7 @@ private theorem indep_sets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSp
 theorem IndepSetsCat.indepCat {m1 m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω} {μ : Measure Ω}
     [ProbabilityMeasure μ] {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ m) (h2 : m2 ≤ m) (hp1 : IsPiSystem p1)
     (hp2 : IsPiSystem p2) (hpm1 : m1 = generateFrom p1) (hpm2 : m2 = generateFrom p2)
-    (hyp : IndepSetsCat p1 p2 μ) : IndepCat m1 m2 μ :=
-  by
+    (hyp : IndepSetsCat p1 p2 μ) : IndepCat m1 m2 μ := by
   intro t1 t2 ht1 ht2
   let μ_inter := μ.restrict t2
   let ν := μ t2 • μ
@@ -397,15 +389,12 @@ variable {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem indepSetsCat_piiUnionInter_of_disjoint [ProbabilityMeasure μ] {s : ι → Set (Set Ω)}
     {S T : Set ι} (h_indep : IndepSets s μ) (hST : Disjoint S T) :
-    IndepSetsCat (piiUnionInter s S) (piiUnionInter s T) μ :=
-  by
+    IndepSetsCat (piiUnionInter s S) (piiUnionInter s T) μ := by
   rintro t1 t2 ⟨p1, hp1, f1, ht1_m, ht1_eq⟩ ⟨p2, hp2, f2, ht2_m, ht2_eq⟩
   classical
     let g i := ite (i ∈ p1) (f1 i) Set.univ ∩ ite (i ∈ p2) (f2 i) Set.univ
-    have h_P_inter : μ (t1 ∩ t2) = ∏ n in p1 ∪ p2, μ (g n) :=
-      by
-      have hgm : ∀ i ∈ p1 ∪ p2, g i ∈ s i :=
-        by
+    have h_P_inter : μ (t1 ∩ t2) = ∏ n in p1 ∪ p2, μ (g n) := by
+      have hgm : ∀ i ∈ p1 ∪ p2, g i ∈ s i := by
         intro i hi_mem_union
         rw [Finset.mem_union] at hi_mem_union
         cases' hi_mem_union with hi1 hi2
@@ -417,16 +406,14 @@ theorem indepSetsCat_piiUnionInter_of_disjoint [ProbabilityMeasure μ] {s : ι �
           exact ht2_m i hi2
       have h_p1_inter_p2 :
         ((⋂ x ∈ p1, f1 x) ∩ ⋂ x ∈ p2, f2 x) =
-          ⋂ i ∈ p1 ∪ p2, ite (i ∈ p1) (f1 i) Set.univ ∩ ite (i ∈ p2) (f2 i) Set.univ :=
-        by
+          ⋂ i ∈ p1 ∪ p2, ite (i ∈ p1) (f1 i) Set.univ ∩ ite (i ∈ p2) (f2 i) Set.univ := by
         ext1 x
         simp only [Set.mem_ite_univ_right, Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union]
         exact
           ⟨fun h i _ => ⟨h.1 i, h.2 i⟩, fun h =>
             ⟨fun i hi => (h i (Or.inl hi)).1 hi, fun i hi => (h i (Or.inr hi)).2 hi⟩⟩
       rw [ht1_eq, ht2_eq, h_p1_inter_p2, ← h_indep _ hgm]
-    have h_μg : ∀ n, μ (g n) = ite (n ∈ p1) (μ (f1 n)) 1 * ite (n ∈ p2) (μ (f2 n)) 1 :=
-      by
+    have h_μg : ∀ n, μ (g n) = ite (n ∈ p1) (μ (f1 n)) 1 * ite (n ∈ p2) (μ (f2 n)) 1 := by
       intro n
       simp_rw [g]
       split_ifs
@@ -440,8 +427,7 @@ theorem indepSetsCat_piiUnionInter_of_disjoint [ProbabilityMeasure μ] {s : ι �
 
 theorem IndepSet.indepCat_generateFrom_of_disjoint [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : IndepSet s μ) (S T : Set ι) (hST : Disjoint S T) :
-    IndepCat (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) μ :=
-  by
+    IndepCat (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) μ := by
   rw [← generateFrom_piiUnionInter_singleton_left, ← generateFrom_piiUnionInter_singleton_left]
   refine'
     indep_sets.indep'
@@ -456,8 +442,7 @@ theorem IndepSet.indepCat_generateFrom_of_disjoint [ProbabilityMeasure μ] {s : 
 
 theorem indepCat_iSup_of_disjoint [ProbabilityMeasure μ] {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ m0) (h_indep : Indep m μ) {S T : Set ι} (hST : Disjoint S T) :
-    IndepCat (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ :=
-  by
+    IndepCat (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ := by
   refine'
     indep_sets.indep (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) _ _
       (generateFrom_piiUnionInter_measurableSet m S).symm
@@ -480,8 +465,7 @@ theorem indepCat_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0
   have hp'_pi : IsPiSystem p' := @is_pi_system_measurable_set Ω m'
   have h_gen' : m' = generate_from p' := (@generate_from_measurable_set Ω m').symm
   -- the π-systems defined are independent
-  have h_pi_system_indep : indep_sets (⋃ n, p n) p' μ :=
-    by
+  have h_pi_system_indep : indep_sets (⋃ n, p n) p' μ := by
     refine' indep_sets.Union _
     simp_rw [h_gen_n, h_gen'] at h_indep
     exact fun n => (h_indep n).IndepSetsCat
@@ -492,8 +476,7 @@ theorem indepCat_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0
 
 theorem IndepSet.indepCat_generateFrom_lt [Preorder ι] [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : IndepSet s μ) (i : ι) :
-    IndepCat (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ :=
-  by
+    IndepCat (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ := by
   convert hs.indep_generate_from_of_disjoint hsm {i} { j | j < i }
       (set.disjoint_singleton_left.mpr (lt_irrefl _))
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
@@ -501,8 +484,7 @@ theorem IndepSet.indepCat_generateFrom_lt [Preorder ι] [ProbabilityMeasure μ] 
 
 theorem IndepSet.indepCat_generateFrom_le [LinearOrder ι] [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : IndepSet s μ) (i : ι) {k : ι} (hk : i < k) :
-    IndepCat (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ :=
-  by
+    IndepCat (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ := by
   convert hs.indep_generate_from_of_disjoint hsm {k} { j | j ≤ i }
       (set.disjoint_singleton_left.mpr hk.not_le)
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
@@ -529,14 +511,12 @@ theorem indepCat_iSup_of_antitone [SemilatticeInf ι] {Ω} {m : ι → Measurabl
 #align probability_theory.indep_supr_of_antitone ProbabilityTheory.indepCat_iSup_of_antitone
 
 theorem IndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
-    (hp_ind : IndepSets π μ) (haS : a ∉ S) : IndepSetsCat (piiUnionInter π S) (π a) μ :=
-  by
+    (hp_ind : IndepSets π μ) (haS : a ∉ S) : IndepSetsCat (piiUnionInter π S) (π a) μ := by
   rintro t1 t2 ⟨s, hs_mem, ft1, hft1_mem, ht1_eq⟩ ht2_mem_pia
   rw [Finset.coe_subset] at hs_mem
   classical
     let f n := ite (n = a) t2 (ite (n ∈ s) (ft1 n) Set.univ)
-    have h_f_mem : ∀ n ∈ insert a s, f n ∈ π n :=
-      by
+    have h_f_mem : ∀ n ∈ insert a s, f n ∈ π n := by
       intro n hn_mem_insert
       simp_rw [f]
       cases' finset.mem_insert.mp hn_mem_insert with hn_mem hn_mem
@@ -544,8 +524,7 @@ theorem IndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {
       · have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hn_mem)
         simp [hn_ne_a, hn_mem, hft1_mem n hn_mem]
     have h_f_mem_pi : ∀ n ∈ s, f n ∈ π n := fun x hxS => h_f_mem x (by simp [hxS])
-    have h_t1 : t1 = ⋂ n ∈ s, f n :=
-      by
+    have h_t1 : t1 = ⋂ n ∈ s, f n := by
       suffices h_forall : ∀ n ∈ s, f n = ft1 n
       · rw [ht1_eq]
         congr with (n x)
@@ -556,8 +535,7 @@ theorem IndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {
       simp_rw [f, if_pos hnS, if_neg hn_ne_a]
     have h_μ_t1 : μ t1 = ∏ n in s, μ (f n) := by rw [h_t1, ← hp_ind s h_f_mem_pi]
     have h_t2 : t2 = f a := by simp_rw [f]; simp
-    have h_μ_inter : μ (t1 ∩ t2) = ∏ n in insert a s, μ (f n) :=
-      by
+    have h_μ_inter : μ (t1 ∩ t2) = ∏ n in insert a s, μ (f n) := by
       have h_t1_inter_t2 : t1 ∩ t2 = ⋂ n ∈ insert a s, f n := by
         rw [h_t1, h_t2, Finset.set_biInter_insert, Set.inter_comm]
       rw [h_t1_inter_t2, ← hp_ind (insert a s) h_f_mem]
@@ -579,8 +557,7 @@ theorem IndepSets.indep [ProbabilityMeasure μ] (m : ι → MeasurableSpace Ω) 
     rw [Finset.set_biInter_insert, Finset.prod_insert ha_notin_S, ← h_rec hf_m_S]
     let p := piiUnionInter π S
     set m_p := generate_from p with hS_eq_generate
-    have h_indep : indep m_p (m a) μ :=
-      by
+    have h_indep : indep m_p (m a) μ := by
       have hp : IsPiSystem p := isPiSystem_piiUnionInter π h_pi S
       have h_le' : ∀ i, generate_from (π i) ≤ m0 := fun i => (h_generate i).symm.trans_le (h_le i)
       have hm_p : m_p ≤ m0 := generateFrom_piiUnionInter_le π h_le' S
@@ -634,8 +611,7 @@ theorem IndepSetsCat.indepSetCat_of_mem {m0 : MeasurableSpace Ω} (hs : s ∈ S)
 
 theorem IndepCat.indepSetCat_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {μ : Measure Ω}
     (h_indep : IndepCat m₁ m₂ μ) {s t : Set Ω} (hs : measurable_set[m₁] s)
-    (ht : measurable_set[m₂] t) : IndepSetCat s t μ :=
-  by
+    (ht : measurable_set[m₂] t) : IndepSetCat s t μ := by
   refine' fun s' t' hs' ht' => h_indep s' t' _ _
   · refine' generate_from_induction (fun u => measurable_set[m₁] u) {s} _ _ _ _ hs'
     · simp only [hs, Set.mem_singleton_iff, Set.mem_setOf_eq, forall_eq]
@@ -672,8 +648,7 @@ theorem indepFunCat_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} :
     IndepFunCat f g μ ↔
       ∀ s t,
-        MeasurableSet s → MeasurableSet t → μ (f ⁻¹' s ∩ g ⁻¹' t) = μ (f ⁻¹' s) * μ (g ⁻¹' t) :=
-  by
+        MeasurableSet s → MeasurableSet t → μ (f ⁻¹' s ∩ g ⁻¹' t) = μ (f ⁻¹' s) * μ (g ⁻¹' t) := by
   constructor <;> intro h
   · refine' fun s t hs ht => h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   · rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩; exact h s t hs ht
@@ -683,32 +658,27 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Ty
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
     IndepFun m f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (H : ∀ i, i ∈ S → measurable_set[m i] (sets i)),
-        μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i in S, μ (f i ⁻¹' sets i) :=
-  by
+        μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i in S, μ (f i ⁻¹' sets i) := by
   refine' ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, _⟩
   intro h S setsΩ h_meas
   classical
     let setsβ : ∀ i : ι, Set (β i) := fun i =>
       dite (i ∈ S) (fun hi_mem => (h_meas i hi_mem).some) fun _ => Set.univ
-    have h_measβ : ∀ i ∈ S, measurable_set[m i] (setsβ i) :=
-      by
+    have h_measβ : ∀ i ∈ S, measurable_set[m i] (setsβ i) := by
       intro i hi_mem
       simp_rw [setsβ, dif_pos hi_mem]
       exact (h_meas i hi_mem).choose_spec.1
-    have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i :=
-      by
+    have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i := by
       intro i hi_mem
       simp_rw [setsβ, dif_pos hi_mem]
       exact (h_meas i hi_mem).choose_spec.2.symm
-    have h_left_eq : μ (⋂ i ∈ S, setsΩ i) = μ (⋂ i ∈ S, f i ⁻¹' setsβ i) :=
-      by
+    have h_left_eq : μ (⋂ i ∈ S, setsΩ i) = μ (⋂ i ∈ S, f i ⁻¹' setsβ i) := by
       congr with (i x)
       simp only [Set.mem_iInter]
       constructor <;> intro h hi_mem <;> specialize h hi_mem
       · rwa [h_preim i hi_mem] at h
       · rwa [h_preim i hi_mem]
-    have h_right_eq : (∏ i in S, μ (setsΩ i)) = ∏ i in S, μ (f i ⁻¹' setsβ i) :=
-      by
+    have h_right_eq : (∏ i in S, μ (setsΩ i)) = ∏ i in S, μ (f i ⁻¹' setsβ i) := by
       refine' Finset.prod_congr rfl fun i hi_mem => _
       rw [h_preim i hi_mem]
     rw [h_left_eq, h_right_eq]
@@ -718,8 +688,7 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Ty
 theorem indepFunCat_iff_indepSetCat_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [ProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFunCat f g μ ↔
-      ∀ s t, MeasurableSet s → MeasurableSet t → IndepSetCat (f ⁻¹' s) (g ⁻¹' t) μ :=
-  by
+      ∀ s t, MeasurableSet s → MeasurableSet t → IndepSetCat (f ⁻¹' s) (g ⁻¹' t) μ := by
   refine' indep_fun_iff_measure_inter_preimage_eq_mul.trans _
   constructor <;> intro h s t hs ht <;> specialize h s t hs ht
   · rwa [indep_set_iff_measure_inter_eq_mul (hf hs) (hg ht) μ]
@@ -733,8 +702,7 @@ theorem IndepFunCat.symm {mβ : MeasurableSpace β} {f g : Ω → β} (hfg : Ind
 #align probability_theory.indep_fun.symm ProbabilityTheory.IndepFunCat.symm
 
 theorem IndepFunCat.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFunCat f g μ)
-    (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFunCat f' g' μ :=
-  by
+    (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFunCat f' g' μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   have h1 : f ⁻¹' A =ᵐ[μ] f' ⁻¹' A := hf.fun_comp A
   have h2 : g ⁻¹' B =ᵐ[μ] g' ⁻¹' B := hg.fun_comp B
@@ -745,8 +713,7 @@ theorem IndepFunCat.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hf
 theorem IndepFunCat.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFunCat f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
-    IndepFunCat (φ ∘ f) (ψ ∘ g) μ :=
-  by
+    IndepFunCat (φ ∘ f) (ψ ∘ g) μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   apply hfg
   · exact ⟨φ ⁻¹' A, hφ hA, set.preimage_comp.symm⟩
@@ -759,16 +726,14 @@ tuple `(f i)_i` for `i ∈ T`. -/
 theorem IndepFun.indepFunCat_finset [ProbabilityMeasure μ] {ι : Type _} {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : IndepFun m f μ) (hf_meas : ∀ i, Measurable (f i)) :
-    IndepFunCat (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
-  by
+    IndepFunCat (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ := by
   -- We introduce π-systems, build from the π-system of boxes which generates `measurable_space.pi`.
   let πSβ :=
     Set.pi (Set.univ : Set S) ''
       Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | measurable_set[m i] s }
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
   have hπS_pi : IsPiSystem πS := is_pi_system_pi.comap fun a i => f i a
-  have hπS_gen : (measurable_space.pi.comap fun a (i : S) => f i a) = generate_from πS :=
-    by
+  have hπS_gen : (measurable_space.pi.comap fun a (i : S) => f i a) = generate_from πS := by
     rw [generate_from_pi.symm, comap_generate_from]
     · congr with s
       simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop]
@@ -778,8 +743,7 @@ theorem IndepFun.indepFunCat_finset [ProbabilityMeasure μ] {ι : Type _} {β : 
       Set.pi (Set.univ : Set T) fun i => { s : Set (β i) | measurable_set[m i] s }
   let πT := { s : Set Ω | ∃ t ∈ πTβ, (fun a (i : T) => f i a) ⁻¹' t = s }
   have hπT_pi : IsPiSystem πT := is_pi_system_pi.comap fun a i => f i a
-  have hπT_gen : (measurable_space.pi.comap fun a (i : T) => f i a) = generate_from πT :=
-    by
+  have hπT_gen : (measurable_space.pi.comap fun a (i : T) => f i a) = generate_from πT := by
     rw [generate_from_pi.symm, comap_generate_from]
     · congr with s
       simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop]
@@ -827,8 +791,7 @@ theorem IndepFun.indepFunCat_finset [ProbabilityMeasure μ] {ι : Type _} {β : 
     rw [h_eq_inter_S, h_eq_inter_T, hf_Indep S h_meas_s', hf_Indep T h_meas_t']
     have h_Inter_inter :
       ((⋂ i ∈ S, f i ⁻¹' sets_s' i) ∩ ⋂ i ∈ T, f i ⁻¹' sets_t' i) =
-        ⋂ i ∈ S ∪ T, f i ⁻¹' (sets_s' i ∩ sets_t' i) :=
-      by
+        ⋂ i ∈ S ∪ T, f i ⁻¹' (sets_s' i ∩ sets_t' i) := by
       ext1 x
       simp only [Set.mem_inter_iff, Set.mem_iInter, Set.mem_preimage, Finset.mem_union]
       constructor <;> intro h
@@ -871,8 +834,7 @@ theorem IndepFun.indepFunCat_prod [ProbabilityMeasure μ] {ι : Type _} {β : ι
         (fun p : ∀ l : s, β l =>
             (p ⟨i, Finset.mem_insert_self i _⟩,
               p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘
-          fun a (j : s) => f j a :=
-      by
+          fun a (j : s) => f j a := by
       ext1 a
       simp only [Prod.mk.inj_iff]
       constructor <;> rfl
@@ -893,8 +855,7 @@ theorem IndepFun.indepFunCat_prod [ProbabilityMeasure μ] {ι : Type _} {β : ι
 theorem IndepFun.mul [ProbabilityMeasure μ] {ι : Type _} {β : Type _} {m : MeasurableSpace β}
     [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : IndepFun (fun _ => m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFunCat (f i * f j) (f k) μ :=
-  by
+    IndepFunCat (f i * f j) (f k) μ := by
   have : indep_fun (fun ω => (f i ω, f j ω)) (f k) μ :=
     hf_Indep.indep_fun_prod hf_meas i j k hik hjk
   change indep_fun ((fun p : β × β => p.fst * p.snd) ∘ fun ω => (f i ω, f j ω)) (id ∘ f k) μ
@@ -916,8 +877,7 @@ theorem IndepFun.indepFunCat_finset_prod_of_not_mem [ProbabilityMeasure μ] {ι 
     have h_meas_right :
       Measurable fun p : ∀ j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩ :=
       measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : (∏ j in s, f j) = (fun p : ∀ j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a :=
-      by
+    have h_left : (∏ j in s, f j) = (fun p : ∀ j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
       ext1 a
       simp only [Function.comp_apply]
       have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
