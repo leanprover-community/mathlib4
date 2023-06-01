@@ -1503,7 +1503,7 @@ open WalkingCospan
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
-/-- Making this a global instance would make the typeclass seach go in an infinite loop. -/
+/-- Making this a global instance would make the typeclass search go in an infinite loop. -/
 theorem hasPullback_symmetry [HasPullback f g] : HasPullback g f :=
   ⟨⟨⟨PullbackCone.mk _ _ pullback.condition.symm,
         PullbackCone.flipIsLimit (pullbackIsPullback _ _)⟩⟩⟩
@@ -1547,7 +1547,7 @@ open WalkingCospan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 
-/-- Making this a global instance would make the typeclass seach go in an infinite loop. -/
+/-- Making this a global instance would make the typeclass search go in an infinite loop. -/
 theorem hasPushout_symmetry [HasPushout f g] : HasPushout g f :=
   ⟨⟨⟨PushoutCocone.mk _ _ pushout.condition.symm,
         PushoutCocone.flipIsColimit (pushoutIsPushout _ _)⟩⟩⟩
@@ -2381,7 +2381,7 @@ theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback 
   ⟨⟨⟨_, pullbackAssocSymmIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
 #align category_theory.limits.has_pullback_assoc_symm CategoryTheory.Limits.hasPullback_assoc_symm
 
-/- Porting note : these don't seem to be propogating change from
+/- Porting note : these don't seem to be propagating change from
 -- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
 variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)]
 
@@ -2582,7 +2582,7 @@ theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g�
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
 #align category_theory.limits.has_pushout_assoc_symm CategoryTheory.Limits.hasPushout_assoc_symm
 
--- Porting note: these are not propogating so moved into statements
+-- Porting note: these are not propagating so moved into statements
 -- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/

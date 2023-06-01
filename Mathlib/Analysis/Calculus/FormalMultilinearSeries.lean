@@ -75,6 +75,10 @@ end Module
 
 namespace FormalMultilinearSeries
 
+@[ext] -- porting note: new theorem
+protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
+  funext h
+
 protected theorem ext_iff {p q : FormalMultilinearSeries 𝕜 E F} : p = q ↔ ∀ n, p n = q n :=
   Function.funext_iff
 #align formal_multilinear_series.ext_iff FormalMultilinearSeries.ext_iff
