@@ -322,8 +322,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
   by_cases h : ∃ i, v i = 0
   obtain ⟨i, hi⟩ := h
-  ·
-    rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
+  · rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
       simp [hi]
   push_neg  at h
   congr
@@ -331,8 +330,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   have hb : b i = ‖v i‖⁻¹ • v i := gramSchmidtOrthonormalBasis_apply_of_orthogonal hdim hv (h i)
   simp only [hb, inner_smul_left, real_inner_self_eq_norm_mul_norm, IsROrC.conj_to_real]
   rw [abs_of_nonneg]
-  · have : ‖v i‖ ≠ 0 := by simpa using h i
-    field_simp
+  · field_simp
   · positivity
 #align orientation.abs_volume_form_apply_of_pairwise_orthogonal Orientation.abs_volumeForm_apply_of_pairwise_orthogonal
 
