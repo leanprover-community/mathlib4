@@ -403,6 +403,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
+import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
@@ -561,7 +562,7 @@ import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.NormedSpace.LpSpace
+import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.MazurUlam
 import Mathlib.Analysis.NormedSpace.Multilinear
@@ -575,6 +576,7 @@ import Mathlib.Analysis.NormedSpace.Star.Mul
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.Seminorm
@@ -869,10 +871,12 @@ import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Closed
+import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.LeftExact
