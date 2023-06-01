@@ -869,8 +869,8 @@ theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜
 
 @[simp]
 theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fin 1 → E) :
-    (iteratedFDerivWithin 𝕜 1 f s x : (Fin 1 → E) → F) m = (fderivWithin 𝕜 f s x : E → F) (m 0) :=
-  by
+    (iteratedFDerivWithin 𝕜 1 f s x : (Fin 1 → E) → F) m =
+      (fderivWithin 𝕜 f s x : E → F) (m 0) := by
   simp only [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
     (continuousMultilinearCurryFin0 𝕜 E F).symm.comp_fderivWithin h]
   rfl
