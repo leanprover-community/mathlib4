@@ -288,8 +288,11 @@ lemma EffectiveEpiFamily.fac {B W : C} {α : Type _} (X : α → C) (π : (a : �
     π a ≫ EffectiveEpiFamily.desc X π e h = e a :=
   (EffectiveEpiFamily.getStruct X π).fac e h a
 
--- NOTE: The `simpNF` linter complains for some reason.
--- See the two examples below.
+/-
+NOTE: The `simpNF` linter complains for some reason. See the two examples below.
+Zulip discussion:
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20bug.3F
+-/
 attribute [nolint simpNF]
   EffectiveEpiFamily.fac
   EffectiveEpiFamily.fac_assoc
