@@ -172,7 +172,8 @@ noncomputable def lpBcfₗᵢ : lp (fun _ : α => E) ∞ ≃ₗᵢ[𝕜] α →�
   { AddEquiv.lpBcf with
     map_smul' := fun k f => rfl
     norm_map' := fun f => by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
-#align lp_bcfₗᵢ lpBcfₗᵢ
+#align lp_bcfₗᵢ lpBcfₗᵢₓ
+-- porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
 
 variable {𝕜 E}
 
