@@ -68,7 +68,7 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `von_neumann
 (although we will later construct the instance `wstar_algebra (H →L[ℂ] H)`),
 and instead will use `⊤ : von_neumann_algebra H`.
 -/
-@[nolint has_nonempty_instance]
+-- porting note: I don't think the nonempty intance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
@@ -84,17 +84,20 @@ namespace VonNeumannAlgebra
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-instance : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) :=
-  ⟨VonNeumannAlgebra.carrier, fun S T h => by cases S <;> cases T <;> congr⟩
+instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
+  coe S := S.carrier
+  coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
-instance : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where star_mem s a := s.star_mem'
+-- porting note: `StarMemClass` should be in `Prop`?
+noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
+  star_mem {s} := s.star_mem'
 
-instance : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
-  add_mem := add_mem'
-  mul_mem := mul_mem'
-  one_mem := one_mem'
-  zero_mem := zero_mem'
-  neg_mem s a ha := show -a ∈ s.toStarSubalgebra from neg_mem ha
+instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
+  add_mem {s} := s.add_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem {s} := s.one_mem'
+  zero_mem {s} := s.zero_mem'
+  neg_mem {s} a ha := show -a ∈ s.toStarSubalgebra from neg_mem ha
 
 @[simp]
 theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
@@ -140,4 +143,3 @@ theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = 
 #align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 
 end VonNeumannAlgebra
-
