@@ -174,7 +174,7 @@ theorem limit.w (F : J ⥤ C) [HasLimit F] {j j' : J} (f : j ⟶ j') :
   (limit.cone F).w f
 #align category_theory.limits.limit.w CategoryTheory.Limits.limit.w
 
-/-- Evidence that the arbitrary choice of cone provied by `limit.cone F` is a limit cone. -/
+/-- Evidence that the arbitrary choice of cone provided by `limit.cone F` is a limit cone. -/
 def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (limit.cone F) :=
   (getLimitCone F).isLimit
 #align category_theory.limits.limit.is_limit CategoryTheory.Limits.limit.isLimit

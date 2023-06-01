@@ -45,7 +45,7 @@ def Sym (α : Type _) (n : ℕ) :=
 #align sym Sym
 
 --Porting note: new definition
-/-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
+/-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 

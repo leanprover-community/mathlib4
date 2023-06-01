@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
+! leanprover-community/mathlib commit 5bb9fffd23f9f65b367f5d451da18cc60bf47335
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -486,7 +486,7 @@ def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
 
 instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
-  Fintype.ofFinset (s.toFinset ×ᶠ t.toFinset) <| by simp
+  Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 #align set.fintype_prod Set.fintypeProd
 
 instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
@@ -519,8 +519,11 @@ end FintypeInstances
 
 end Set
 
-/-! ### Finset -/
+theorem Equiv.set_finite_iff {s : Set α} {t : Set β} (hst : s ≃ t) : s.Finite ↔ t.Finite := by
+  simp_rw [← Set.finite_coe_iff, hst.finite_iff]
+#align equiv.set_finite_iff Equiv.set_finite_iff
 
+/-! ### Finset -/
 
 namespace Finset
 
@@ -802,6 +805,18 @@ theorem Finite.sInter {α : Type _} {s : Set (Set α)} {t : Set α} (ht : t ∈ 
   hf.subset (sInter_subset_of_mem ht)
 #align set.finite.sInter Set.Finite.sInter
 
+/-- If sets `s i` are finite for all `i` from a finite set `t` and are empty for `i ∉ t`, then the
+union `⋃ i, s i` is a finite set. -/
+theorem Finite.iUnion {ι : Type _} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
+    (hs : ∀ i ∈ t, (s i).Finite) (he : ∀ i, i ∉ t → s i = ∅) : (⋃ i, s i).Finite := by
+  suffices (⋃ i, s i) ⊆ ⋃ i ∈ t, s i by exact (ht.biUnion hs).subset this
+  refine' iUnion_subset fun i x hx => _
+  by_cases hi : i ∈ t
+  · exact mem_biUnion hi hx
+  · rw [he i hi, mem_empty_iff_false] at hx
+    contradiction
+#align set.finite.Union Set.Finite.iUnion
+
 theorem Finite.bind {α β} {s : Set α} {f : α → Set β} (h : s.Finite) (hf : ∀ a ∈ s, (f a).Finite) :
     (s >>= f).Finite :=
   h.biUnion hf
@@ -1052,7 +1067,7 @@ theorem Finite.toFinset_insert' [DecidableEq α] {a : α} {s : Set α} (hs : s.F
 #align set.finite.to_finset_insert' Set.Finite.toFinset_insert'
 
 theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
-    hs.toFinset ×ᶠ ht.toFinset = (hs.prod ht).toFinset :=
+    hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 #align set.finite.to_finset_prod Set.Finite.toFinset_prod
 
