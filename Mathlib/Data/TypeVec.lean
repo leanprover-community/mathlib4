@@ -408,7 +408,7 @@ section Liftp'
 
 open Nat
 
-/-- `repeat n t` is a `n-length` type vector that contains `n` occurences of `t` -/
+/-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
 def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t

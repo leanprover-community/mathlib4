@@ -15,7 +15,7 @@ import Mathlib.Data.Int.Order.Basic
 
 /-! # Image and map operations on finite sets
 
-Thie file provides the finite analog of `Set.image`, along with some other similar functions.
+This file provides the finite analog of `Set.image`, along with some other similar functions.
 
 Note there are two ways to take the image over a finset; via `Finset.image` which applies the
 function then removes duplicates (requiring `DecidableEq`), or via `Finset.map` which exploits

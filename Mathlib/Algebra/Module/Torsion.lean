@@ -27,7 +27,7 @@ import Mathlib.RingTheory.Finiteness
   `a • x = 0` for all `a` in `s`.
 * `Submodule.torsion' R M S` : the `S`-torsion submodule, containing all elements `x` of `M` such
   that `a • x = 0` for some `a` in `S`.
-* `Submodule.torsion R M` : the torsion submoule, containing all elements `x` of `M` such that
+* `Submodule.torsion R M` : the torsion submodule, containing all elements `x` of `M` such that
   `a • x = 0` for some non-zero-divisor `a` in `R`.
 * `Module.IsTorsionBy R M a` : the property that defines a `a`-torsion module. Similarly,
   `IsTorsionBySet`, `IsTorsion'` and `IsTorsion`.
