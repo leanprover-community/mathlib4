@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.LpSpace
-import Mathbin.Analysis.NormedSpace.PiLp
-import Mathbin.Topology.ContinuousFunction.Bounded
+import Mathlib.Analysis.NormedSpace.LpSpace
+import Mathlib.Analysis.NormedSpace.PiLp
+import Mathlib.Topology.ContinuousFunction.Bounded
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -48,8 +48,7 @@ section LpPiLp
 variable {α : Type _} {E : α → Type _} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 /-- When `α` is `finite`, every `f : pre_lp E p` satisfies `mem_ℓp f p`. -/
-theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p :=
-  by
+theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | h)
   · exact mem_ℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
   · exact mem_ℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α => ‖f i‖).toFinite)
@@ -74,8 +73,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
   rfl
 #align coe_equiv_lp_pi_Lp_symm coe_equiv_lpPiLp_symm
 
-theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ :=
-  by
+theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | h)
   · rw [PiLp.norm_eq_card, lp.norm_eq_card_dsupport]; rfl
   · rw [PiLp.norm_eq_ciSup, lp.norm_eq_ciSup]; rfl
@@ -139,8 +137,7 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 section NormedAddCommGroup
 
 /-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as an `add_equiv`. -/
-noncomputable def AddEquiv.lpBcf : lp (fun _ : α => E) ∞ ≃+ (α →ᵇ E)
-    where
+noncomputable def AddEquiv.lpBcf : lp (fun _ : α => E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.Prop)
   invFun f := ⟨f, f.bddAbove_range_norm_comp⟩
   left_inv f := lp.ext rfl
