@@ -124,7 +124,7 @@ def finiteCoproduct : CompHaus := CompHaus.of <| Σ (a : α), X a
 /--
 The inclusion of one of the factors into the explicit finite coproduct.
 -/
-def finiteCoproduct.incl (a : α) : X a ⟶ finiteCoproduct X where
+def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
   toFun := fun x => ⟨a,x⟩
   continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
 
@@ -141,11 +141,11 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
     intro a ; exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.incl_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.incl X a ≫ finiteCoproduct.desc X e = e a := rfl
+lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
 lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
-    (h : ∀ a : α, finiteCoproduct.incl X a ≫ f = finiteCoproduct.incl X a ≫ g) : f = g := by
+    (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
   specialize h a
   apply_fun (fun q => q x) at h
@@ -157,7 +157,7 @@ The coproduct cocone associated to the explicit finite coproduct.
 @[simps]
 def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
   pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.incl X a
+  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
 
 /--
 The explicit finite coproduct cocone is a colimit cocone.
@@ -165,7 +165,7 @@ The explicit finite coproduct cocone is a colimit cocone.
 @[simps]
 def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
   desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.incl_desc _ _ _
+  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
     specialize hm ⟨a⟩
     ext t
