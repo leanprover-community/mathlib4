@@ -51,7 +51,8 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : Pmf α := by
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
 @[simp]
-theorem uniformOfFinset_apply (a : α) : uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
+theorem uniformOfFinset_apply (a : α) :
+    uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
   rfl
 #align pmf.uniform_of_finset_apply Pmf.uniformOfFinset_apply
 
