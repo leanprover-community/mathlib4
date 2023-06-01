@@ -46,9 +46,9 @@ exact pairings and duals.
 
 ## Notes
 
-Although we construct the adjunction `tensor_left Y ⊣ tensor_left X` from `ExactPairing X Y`,
+Although we construct the adjunction `tensorLeft Y ⊣ tensorLeft X` from `ExactPairing X Y`,
 this is not a bijective correspondence.
-I think the correct statement is that `tensor_left Y` and `tensor_left X` are
+I think the correct statement is that `tensorLeft Y` and `tensorLeft X` are
 module endofunctors of `C` as a right `C` module category,
 and `ExactPairing X Y` is in bijection with adjunctions compatible with this right `C` action.
 
@@ -296,7 +296,7 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
 we get a bijection on hom-sets `(Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z)`
 by "pulling the string on the left" up or down.
 
-This gives the adjunction `tensor_left_adjunction Y Y' : tensor_left Y' ⊣ tensor_left Y`.
+This gives the adjunction `tensorLeftAdjunction Y Y' : tensorLeft Y' ⊣ tensorLeft Y`.
 
 This adjunction is often referred to as "Frobenius reciprocity" in the
 fusion categories / planar algebras / subfactors literature.
@@ -406,7 +406,7 @@ theorem tensorRightHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'
 #align category_theory.tensor_right_hom_equiv_symm_naturality CategoryTheory.tensorRightHomEquiv_symm_naturality
 
 /-- If `Y Y'` have an exact pairing,
-then the functor `tensor_left Y'` is left adjoint to `tensor_left Y`.
+then the functor `tensorLeft Y'` is left adjoint to `tensorLeft Y`.
 -/
 def tensorLeftAdjunction (Y Y' : C) [ExactPairing Y Y'] : tensorLeft Y' ⊣ tensorLeft Y :=
   Adjunction.mkOfHomEquiv
