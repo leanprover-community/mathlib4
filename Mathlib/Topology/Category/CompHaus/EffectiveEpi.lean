@@ -43,7 +43,7 @@ variable {α : Type} [Fintype α] {B : CompHaus.{u}}
 Implementation: This is a setoid on the explicit finite coproduct of `X` whose quotient
 will be isomorphic to `B` provided that `X a → B` is an effective epi family.
 -/
-def relation : Setoid (FiniteCoproduct X) where
+def relation : Setoid (finiteCoproduct X) where
   r a b := ∃ (Z : CompHaus.{u}) (z : Z)
     (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst),
     fst ≫ π _ = snd ≫ π _ ∧ fst z = a.snd ∧ snd z = b.snd
@@ -54,8 +54,8 @@ def relation : Setoid (FiniteCoproduct X) where
     · rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,w,h1,h2⟩
       exact ⟨Z,z,snd,fst,w.symm,h2,h1⟩
     · rintro ⟨a,x⟩ ⟨b,y⟩ ⟨z,c⟩ ⟨Z,z,fstZ,sndZ,hZ,hZ1,hZ2⟩ ⟨W,w,fstW,sndW,hW,hW1,hW2⟩
-      refine ⟨Pullback sndZ fstW, ⟨⟨z,w⟩, by simp [hZ2, hW1]⟩,
-        Pullback.fst _ _ ≫ fstZ, Pullback.snd _ _ ≫ sndW, ?_, hZ1, hW2⟩
+      refine ⟨pullback sndZ fstW, ⟨⟨z,w⟩, by simp [hZ2, hW1]⟩,
+        pullback.fst _ _ ≫ fstZ, pullback.snd _ _ ≫ sndW, ?_, hZ1, hW2⟩
       dsimp at *
       simp only [Category.assoc, hZ, ← hW]
       apply ContinuousMap.ext
@@ -84,7 +84,7 @@ lemma ιFun_continuous : Continuous (ιFun π) := by
 lemma ιFun_injective : (ιFun π).Injective := by
   rintro ⟨⟨a,x⟩⟩ ⟨⟨b,y⟩⟩ (h : π _ _ = π _ _)
   apply Quotient.sound'
-  refine ⟨Pullback (π a) (π b), ⟨⟨x,y⟩,h⟩, Pullback.fst _ _, Pullback.snd _ _, ?_, rfl, rfl⟩
+  refine ⟨pullback (π a) (π b), ⟨⟨x,y⟩,h⟩, pullback.fst _ _, pullback.snd _ _, ?_, rfl, rfl⟩
   ext ⟨_, h⟩ ; exact h
 
 /--
@@ -203,8 +203,8 @@ theorem effectiveEpiFamily_tfae
   · intro ; infer_instance
   tfae_have 2 → 3
   · intro e ; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ FiniteCoproduct X :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (FiniteCoproduct.isColimit _)
+    let i : ∐ X ≅ finiteCoproduct X :=
+      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
     intro b
     obtain ⟨t,rfl⟩ := e b
     let q := i.hom t
@@ -212,7 +212,7 @@ theorem effectiveEpiFamily_tfae
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id] ; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = FiniteCoproduct.desc X π by
+    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
       rw [this] ; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
@@ -224,13 +224,13 @@ theorem effectiveEpiFamily_tfae
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
 
-instance Precoherent : Precoherent CompHaus.{u} := by
+instance precoherent : Precoherent CompHaus.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
-  refine ⟨α, inferInstance, fun a => Pullback f (π₁ a), fun a => Pullback.fst _ _, ?_,
-    id, fun a => Pullback.snd _ _, ?_⟩
+  refine ⟨α, inferInstance, fun a => pullback f (π₁ a), fun a => pullback.fst _ _, ?_,
+    id, fun a => pullback.snd _ _, ?_⟩
   · have := (effectiveEpiFamily_tfae _ π₁).out 0 2 ; rw [this] at h₁ ; clear this
-    have := (effectiveEpiFamily_tfae _ (fun a => Pullback.fst f (π₁ a))).out 0 2
+    have := (effectiveEpiFamily_tfae _ (fun a => pullback.fst f (π₁ a))).out 0 2
     rw [this] ; clear this
     intro b₂
     obtain ⟨a,x,h⟩ := h₁ (f b₂)
