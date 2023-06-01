@@ -366,11 +366,11 @@ theorem volumeForm_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace �
 
 /-- The volume form is invariant under pullback by a positively-oriented isometric automorphism. -/
 theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
-    (hφ : 0 < (φ.toLinearEquiv : E →ₗ[ℝ] E).det) (x : Fin n → E) :
+    (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : Fin n → E) :
     o.volumeForm (φ ∘ x) = o.volumeForm x := by
   convert o.volumeForm_map φ (φ ∘ x)
   · symm
-    rwa [← o.map_eq_iff_det_pos φ.to_linear_equiv] at hφ
+    rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [_i.out, Fintype.card_fin]
   · ext
     simp
