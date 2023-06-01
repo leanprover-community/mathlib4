@@ -382,7 +382,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 the family of linear isometries `λ i, λ k, k • v i`. -/
 theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
     (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
-    IsHilbertSum 𝕜 (fun i : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
+    IsHilbertSum 𝕜 (fun _i : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   IsHilbertSum.mk hv.orthogonalFamily
     (by
       convert hsp
@@ -391,14 +391,14 @@ theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
 
 theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSpace K] :
     IsHilbertSum 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ := by
-  have : ∀ b, CompleteSpace ↥(cond b K Kᗮ) := by
+  have : ∀ b, CompleteSpace (↥(cond b K Kᗮ)) := by
     intro b
-    cases b <;> first |exact orthogonal.complete_space K|assumption
-  refine' IsHilbertSum.mkInternal _ K.orthogonal_family_self _
+    cases b <;> first | exact instOrthogonalCompleteSpace K | assumption
+  refine' IsHilbertSum.mkInternal _ K.orthogonalFamily_self _
   refine' le_trans _ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
   refine' Codisjoint.top_le _
-  exact submodule.is_compl_orthogonal_of_complete_space.codisjoint
+  exact Submodule.isCompl_orthogonal_of_completeSpace.codisjoint
 #align submodule.is_hilbert_sum_orthogonal Submodule.isHilbertSumOrthogonal
 
 end IsHilbertSum
@@ -457,15 +457,16 @@ protected theorem orthonormal (b : HilbertBasis ι 𝕜 E) : Orthonormal 𝕜 b 
 protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, 𝕜)) :
     HasSum (fun i => f i • b i) (b.repr.symm f) := by
   suffices H :
-    (fun i : ι => f i • b i) = fun b_1 : ι =>
-      b.repr.symm.toContinuousLinearEquiv ((fun i : ι => lp.single 2 i (f i)) b_1)
+    (fun i : ι => f i • b i) = fun b_1 : ι => b.repr.symm.toContinuousLinearEquiv <|
+      (fun i : ι => lp.single 2 i (f i) (E := (fun _ : ι => 𝕜))) b_1
   · rw [H]
     have : HasSum (fun i : ι => lp.single 2 i (f i)) f := lp.hasSum_single ENNReal.two_ne_top f
-    exact (↑b.repr.symm.to_continuous_linear_equiv : ℓ²(ι, 𝕜) →L[𝕜] E).HasSum this
+    exact (↑b.repr.symm.toContinuousLinearEquiv : ℓ²(ι, 𝕜) →L[𝕜] E).hasSum this
   ext i
   apply b.repr.injective
-  letI : NormedSpace 𝕜 (lp (fun i : ι => 𝕜) 2) := by infer_instance
-  have : lp.single 2 i (f i * 1) = f i • lp.single 2 i 1 := lp.single_smul 2 i (1 : 𝕜) (f i)
+  letI : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
+  have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
+    lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (1 : 𝕜) (f i)
   rw [mul_one] at this
   rw [LinearIsometryEquiv.map_smul, b.repr_self, ← this,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv]
