@@ -39,6 +39,10 @@ variable {α : Type} [Fintype α] {B : CompHaus.{u}}
   {X : α → CompHaus.{u}} (π : (a : α) → (X a ⟶ B))
   (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
 
+/--
+Implementation: This is a setoid on the explicit finite coproduct of `X` whose quotient
+will be isomorphic to `B` provided that `X a → B` is an effective epi family.
+-/
 def relation : Setoid (FiniteCoproduct X) where
   r a b := ∃ (Z : CompHaus.{u}) (z : Z)
     (fst : Z ⟶ X a.fst) (snd : Z ⟶ X b.fst),
@@ -59,7 +63,11 @@ def relation : Setoid (FiniteCoproduct X) where
       change π b (sndZ u) = π b (fstW v)
       rw [h]
 
-def ι_fun : Quotient (relation π) → B :=
+/--
+Implementation: the map from the quotient of `relation π` to `B`, which will eventually
+become the function underlying an isomorphism, provided that `X a → B` is an effective epi family.
+-/
+def ιFun : Quotient (relation π) → B :=
   Quotient.lift (fun ⟨a,x⟩ => π a x) <| by
     rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,h,hx,hy⟩
     dsimp at *
@@ -67,35 +75,45 @@ def ι_fun : Quotient (relation π) → B :=
     apply_fun (fun t => t z) at h
     exact h
 
-lemma ι_fun_continuous : Continuous (ι_fun π) := by
+lemma ιFun_continuous : Continuous (ιFun π) := by
   apply Continuous.quotient_lift
   apply continuous_sigma
   intro a
   exact (π a).continuous
 
-lemma ι_fun_injective : (ι_fun π).Injective := by
+lemma ιFun_injective : (ιFun π).Injective := by
   rintro ⟨⟨a,x⟩⟩ ⟨⟨b,y⟩⟩ (h : π _ _ = π _ _)
   apply Quotient.sound'
   refine ⟨Pullback (π a) (π b), ⟨⟨x,y⟩,h⟩, Pullback.fst _ _, Pullback.snd _ _, ?_, rfl, rfl⟩
   ext ⟨_, h⟩ ; exact h
 
+/--
+Implementation: The quotient of `relation π`, considered as an object of `CompHaus`.
+-/
 def QB : CompHaus.{u} :=
   haveI : T2Space (Quotient <| relation π) :=
-    ⟨fun _ _ h => separated_by_continuous (ι_fun_continuous π) <| (ι_fun_injective π).ne h ⟩
+    ⟨fun _ _ h => separated_by_continuous (ιFun_continuous π) <| (ιFun_injective π).ne h ⟩
   CompHaus.of (Quotient <| relation π)
 
-def ι_hom : (QB π) ⟶ B := ⟨ι_fun π, ι_fun_continuous π⟩
+/-- The function `ι_fun`, considered as a morphism. -/
+def ιHom : (QB π) ⟶ B := ⟨ιFun π, ιFun_continuous π⟩
 
+/--
+Implementation: The promised isomorphism between `QB` and `B`.
+-/
 noncomputable
 def ι : (QB π) ≅ B :=
-  haveI : IsIso (ι_hom π) := by
+  haveI : IsIso (ιHom π) := by
     apply isIso_of_bijective
-    refine ⟨ι_fun_injective _, ?_⟩
+    refine ⟨ιFun_injective _, ?_⟩
     intro b
     obtain ⟨a,x,h⟩ := surj b
     refine ⟨Quotient.mk _ ⟨a,x⟩, h⟩
-  asIso (ι_hom π)
+  asIso (ιHom π)
 
+/--
+Implementation: The family of morphisms `X a ⟶ QB` which will be shown to be effective epi.
+-/
 def π' : (a : α) → (X a ⟶ QB π) := fun a =>
   { toFun := fun x => Quotient.mk _ ⟨a, x⟩
     continuous_toFun := by
@@ -103,14 +121,17 @@ def π' : (a : α) → (X a ⟶ QB π) := fun a =>
       apply continuous_quot_mk
       apply continuous_sigmaMk (σ := fun a => X a) }
 
-def struct_aux : EffectiveEpiFamilyStruct X (π' π) where
+/--
+Implementation: The family of morphisms `X a ⟶ QB` is an effective epi.
+-/
+def structAux : EffectiveEpiFamilyStruct X (π' π) where
   desc := fun {W} e h => {
     toFun := Quotient.lift (fun ⟨a,x⟩ => e a x) <| by
       rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,hh,hx,hy⟩ ; dsimp at *
       rw [← hx, ← hy]
       specialize h _ _ fst snd ?_
       · ext z
-        apply ι_fun_injective
+        apply ιFun_injective
         apply_fun (fun q => q z) at hh
         exact hh
       apply_fun (fun q => q z) at h
@@ -128,29 +149,33 @@ def struct_aux : EffectiveEpiFamilyStruct X (π' π) where
     apply_fun (fun q => q x) at hm
     exact hm
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma π'_comp_ι_hom (a : α) : π' π a ≫ (ι _ surj).hom = π a := by ext ; rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a :=  by
   rw [Iso.comp_inv_eq]
   exact π'_comp_ι_hom _ surj _
 
 -- TODO: Make a general construction for transferring such structs along isomorphisms.
+/--
+Implementation: The family `X` is an effective epi, provided that `π` are jointly surjective.
+The theorem `CompHaus.effectiveEpiFamily_tfae` should be used instead.
+-/
 noncomputable
 def struct : EffectiveEpiFamilyStruct X π where
-  desc := fun {W} e h => (ι π surj).inv ≫ (struct_aux π).desc e (fun {Z} a₁ a₂ g₁ g₂ hh => by
+  desc := fun {W} e h => (ι π surj).inv ≫ (structAux π).desc e (fun {Z} a₁ a₂ g₁ g₂ hh => by
       apply h
       rw [← cancel_mono (ι _ surj).inv]
       simpa only [Category.assoc, π_comp_ι_inv])
   fac := by
     intro W e h a
-    simp only [Eq.ndrec, id_eq, eq_mpr_eq_cast, π_comp_ι_inv_assoc, (struct_aux π).fac]
+    simp only [Eq.ndrec, id_eq, eq_mpr_eq_cast, π_comp_ι_inv_assoc, (structAux π).fac]
   uniq := by
     intro W e h m hm
     dsimp
     rw [Iso.eq_inv_comp]
-    apply (struct_aux π).uniq
+    apply (structAux π).uniq
     intro a
     simpa using hm a
 
