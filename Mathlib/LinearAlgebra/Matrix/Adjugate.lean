@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.matrix.adjugate
-! leanprover-community/mathlib commit 0e2aab2b0d521f060f62a14d2cf2e2c54e8491d6
+! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -421,6 +421,35 @@ theorem adjugate_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
 theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b; -c, a] :=
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
+
+theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
+    adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) :=
+  by
+  simp_rw [adjugate_apply, det_succ_row _ j, update_row_self, submatrix_update_row_succ_above]
+  rw [Fintype.sum_eq_single i fun h hjk => _, Pi.single_eq_same, mul_one]
+  rw [Pi.single_eq_of_ne hjk, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
+#align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
+
+theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
+    det A = ∑ j : n, A i j * adjugate A j i :=
+  by
+  haveI : Nonempty n := ⟨i⟩
+  obtain ⟨n', hn'⟩ := Nat.exists_eq_succ_of_ne_zero (Fintype.card_ne_zero : Fintype.card n ≠ 0)
+  obtain ⟨e⟩ := Fintype.truncEquivFinOfCardEq hn'
+  let A' := reindex e e A
+  suffices det A' = ∑ j : Fin n'.succ, A' (e i) j * adjugate A' j (e i)
+    by
+    simp_rw [A', det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
+      Equiv.symm_apply_apply] at this
+    exact this
+  rw [det_succ_row A' (e i)]
+  simp_rw [mul_assoc, mul_left_comm _ (A' _ _), ← adjugate_fin_succ_eq_det_submatrix]
+#align matrix.det_eq_sum_mul_adjugate_row Matrix.det_eq_sum_mul_adjugate_row
+
+theorem det_eq_sum_mul_adjugate_col (A : Matrix n n α) (j : n) :
+    det A = ∑ i : n, A i j * adjugate A j i := by
+  simpa only [det_transpose, ← adjugate_transpose] using det_eq_sum_mul_adjugate_row Aᵀ j
+#align matrix.det_eq_sum_mul_adjugate_col Matrix.det_eq_sum_mul_adjugate_col
 
 theorem adjugate_conjTranspose [StarRing α] (A : Matrix n n α) : A.adjugateᴴ = adjugate Aᴴ := by
   dsimp only [conjTranspose]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 
 ! This file was ported from Lean 3 source module data.matrix.notation
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -385,6 +385,20 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
   ext (i j)
   refine' Fin.cases _ _ i <;> simp [submatrix]
 #align matrix.submatrix_cons_row Matrix.submatrix_cons_row
+
+/-- Updating a row then removing it is the same as removing it. -/
+@[simp]
+theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
+    (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
+  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
+#align matrix.submatrix_update_row_succ_above Matrix.submatrix_updateRow_succAbove
+
+/-- Updating a column then removing it is the same as removing it. -/
+@[simp]
+theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+    (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
+  ext fun r s => updateColumn_ne (Fin.succAbove_ne i s)
+#align matrix.submatrix_update_column_succ_above Matrix.submatrix_updateColumn_succAbove
 
 end Submatrix
 
