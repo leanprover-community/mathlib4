@@ -103,7 +103,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
 * `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and a
   `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
-* `Finset.bInter`: TODO: Implemement finite intersections.
+* `Finset.bInter`: TODO: Implement finite intersections.
 
 ### Maps constructed using finsets
 
@@ -1481,7 +1481,8 @@ theorem right_eq_union_iff_subset {s t : Finset α} : s = t ∪ s ↔ t ⊆ s :=
   rw [← union_eq_right_iff_subset, eq_comm]
 #align finset.right_eq_union_iff_subset Finset.right_eq_union_iff_subset
 
-theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ⊔ u :=
+-- Porting note: replaced `⊔` in RHS
+theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 #align finset.union_congr_left Finset.union_congr_left
 

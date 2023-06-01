@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.Tactic.Slice
+import Mathlib.Tactic.CategoryTheory.Slice
 /-!
 # Equivalence of categories
 

@@ -2651,7 +2651,7 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
 section Rel
 
 /-- `Rel r s t` -- lift the relation `r` between two elements to a relation between `s` and `t`,
-s.t. there is a one-to-one mapping betweem elements in `s` and `t` following `r`. -/
+s.t. there is a one-to-one mapping between elements in `s` and `t` following `r`. -/
 @[mk_iff]
 inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0

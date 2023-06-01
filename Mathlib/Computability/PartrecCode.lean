@@ -17,7 +17,7 @@ This file defines `Nat.Partrec.Code`, an inductive datatype describing code for 
 recursive functions on ℕ. It defines an encoding for these codes, and proves that the constructors
 are primitive recursive with respect to the encoding.
 
-It also defines the evalution of these codes as partial functions using `PFun`, and proves that a
+It also defines the evaluation of these codes as partial functions using `PFun`, and proves that a
 function is partially recursive (as defined by `Nat.Partrec`) if and only if it is the evaluation
 of some code.
 

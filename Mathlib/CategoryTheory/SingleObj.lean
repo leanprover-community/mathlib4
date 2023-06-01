@@ -17,7 +17,7 @@ import Mathlib.Combinatorics.Quiver.SingleObj
 # Single-object category
 
 Single object category with a given monoid of endomorphisms.
-It is defined to facilitate transfering some definitions and lemmas (e.g., conjugacy etc.)
+It is defined to facilitate transferring some definitions and lemmas (e.g., conjugacy etc.)
 from category theory to monoids and groups.
 
 ## Main definitions
