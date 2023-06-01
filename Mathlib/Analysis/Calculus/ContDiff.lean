@@ -54,61 +54,6 @@ universe u v w uD uE uF uG
 attribute [local instance 1001]
   NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
 
-namespace Finset
-
--- TODO porting note: move the next two lemmas to the file `data.nat.choose.sum`
-/-- The sum of `(n+1).choose i * f i (n+1-i)` can be split into two sums at rank `n`,
-respectively of `n.choose i * f i (n+1-i)` and `n.choose i * f (i+1) (n-i)`. -/
-theorem sum_choose_succ_mul {R : Type _} [Semiring R] (f : ℕ → ℕ → R) (n : ℕ) :
-    (∑ i in range (n + 2), ((n + 1).choose i : R) * f i (n + 1 - i)) =
-      (∑ i in range (n + 1), (n.choose i : R) * f i (n + 1 - i)) +
-        ∑ i in range (n + 1), (n.choose i : R) * f (i + 1) (n - i) := by
-  have A :
-    (∑ i in range (n + 1), (n.choose (i + 1) : R) * f (i + 1) (n - i)) + f 0 (n + 1) =
-      ∑ i in range (n + 1), n.choose i * f i (n + 1 - i) := by
-    rw [Finset.sum_range_succ, Finset.sum_range_succ']
-    simp only [Nat.choose_succ_self, algebraMap.coe_zero, MulZeroClass.zero_mul, add_zero,
-      Nat.succ_sub_succ_eq_sub, Nat.choose_zero_right, algebraMap.coe_one, one_mul, tsub_zero]
-  calc
-    (∑ i in Finset.range (n + 2), ((n + 1).choose i : R) * f i (n + 1 - i)) =
-        (∑ i in Finset.range (n + 1), ((n + 1).choose (i + 1) : R) * f (i + 1) (n + 1 - (i + 1))) +
-          f 0 (n + 1 - 0) := by
-      rw [Finset.sum_range_succ']
-      simp only [Nat.choose_zero_right, algebraMap.coe_one, one_mul]
-    _ =
-        (∑ i in Finset.range (n + 1), (n.choose i : R) * f i (n + 1 - i)) +
-          ∑ i in Finset.range (n + 1), n.choose i * f (i + 1) (n - i) := by
-      simp only [Nat.choose_succ_succ, Nat.cast_add, Nat.succ_sub_succ_eq_sub, tsub_zero, add_mul]
-      rw [Finset.sum_add_distrib, ← A]
-      abel
-    
-#align finset.sum_choose_succ_mul Finset.sum_choose_succ_mul
-
-/-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
-antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
-theorem sum_antidiagonal_choose_succ_mul {R : Type _} [Semiring R] (f : ℕ → ℕ → R) (n : ℕ) :
-    (∑ ij in Nat.antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
-      (∑ ij in Nat.antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
-        ∑ ij in Nat.antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
-  convert sum_choose_succ_mul f n using 1
-  · exact nat.sum_antidiagonal_eq_sum_range_succ (fun i j => ((n + 1).choose i : R) * f i j) (n + 1)
-  congr 1
-  · rw [nat.sum_antidiagonal_eq_sum_range_succ (fun i j => (n.choose i : R) * f i (j + 1)) n]
-    apply Finset.sum_congr rfl fun i hi => _
-    have : n + 1 - i = n - i + 1 := Nat.sub_add_comm (Nat.lt_succ_iff.1 (Finset.mem_range.1 hi))
-    simp only [this]
-  · suffices H :
-      (∑ ij in nat.antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2) =
-        ∑ ij in nat.antidiagonal n, (n.choose ij.1 : R) * f (ij.1 + 1) ij.2
-    · rw [H, nat.sum_antidiagonal_eq_sum_range_succ (fun i j => (n.choose i : R) * f (i + 1) j) n]
-    apply Finset.sum_congr rfl fun i hi => _
-    congr 2
-    apply Nat.choose_symm_of_eq_add
-    rw [← nat.mem_antidiagonal.1 hi, add_comm]
-#align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
-
-end Finset
-
 open Set Fin Filter Function
 
 open scoped Topology
@@ -120,7 +65,6 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAdd
   {g : F → G} {x x₀ : E} {c : F} {b : E × F → G} {m n : ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
-
 
 @[simp]
 theorem iteratedFderiv_zero_fun {n : ℕ} : (iteratedFderiv 𝕜 n fun x : E => (0 : F)) = 0 := by
@@ -253,9 +197,9 @@ theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContD
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
-theorem HasFtaylorSeriesUpToOn.continuousLinearMapComp (g : F →L[𝕜] G)
-    (hf : HasFtaylorSeriesUpToOn n f p s) :
-    HasFtaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s := by
+theorem HasFTaylorSeriesUpToOn.continuousLinearMapComp (g : F →L[𝕜] G)
+    (hf : HasFTaylorSeriesUpToOn n f p s) :
+    HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s := by
   set L : ∀ m : ℕ, (E[×m]→L[𝕜] F) →L[𝕜] E[×m]→L[𝕜] G := fun m =>
     ContinuousLinearMap.compContinuousMultilinearMapL 𝕜 (fun _ => E) F G g
   constructor
@@ -264,7 +208,7 @@ theorem HasFtaylorSeriesUpToOn.continuousLinearMapComp (g : F →L[𝕜] G)
     convert(L m).HasFDerivAt.comp_hasFDerivWithinAt x (hf.fderiv_within m hm x hx)
   · intro m hm
     convert(L m).Continuous.comp_continuousOn (hf.cont m hm)
-#align has_ftaylor_series_up_to_on.continuous_linear_map_comp HasFtaylorSeriesUpToOn.continuousLinearMapComp
+#align has_ftaylor_series_up_to_on.continuous_linear_map_comp HasFTaylorSeriesUpToOn.continuousLinearMapComp
 
 /-- Composition by continuous linear maps on the left preserves `C^n` functions in a domain
 at a point. -/
@@ -416,9 +360,9 @@ theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term is given by `p k (g v₁, ..., g vₖ)` . -/
-theorem HasFtaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFtaylorSeriesUpToOn n f p s)
+theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFTaylorSeriesUpToOn n f p s)
     (g : G →L[𝕜] E) :
-    HasFtaylorSeriesUpToOn n (f ∘ g) (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g)
+    HasFTaylorSeriesUpToOn n (f ∘ g) (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g)
       (g ⁻¹' s) := by
   let A : ∀ m : ℕ, (E[×m]→L[𝕜] F) → G[×m]→L[𝕜] F := fun m h => h.compContinuousLinearMap fun _ => g
   have hA : ∀ m, IsBoundedLinearMap 𝕜 (A m) := fun m =>
@@ -439,7 +383,7 @@ theorem HasFtaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFtaylorSeriesUpT
     exact
       (hA m).Continuous.comp_continuousOn
         ((hf.cont m hm).comp g.continuous.continuous_on (subset.refl _))
-#align has_ftaylor_series_up_to_on.comp_continuous_linear_map HasFtaylorSeriesUpToOn.compContinuousLinearMap
+#align has_ftaylor_series_up_to_on.comp_continuous_linear_map HasFTaylorSeriesUpToOn.compContinuousLinearMap
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions at a point on
 a domain. -/
@@ -580,9 +524,9 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFtaylorSeriesUpToOn.prod (hf : HasFtaylorSeriesUpToOn n f p s) {g : E → G}
-    {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFtaylorSeriesUpToOn n g q s) :
-    HasFtaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).Prod (q y k)) s := by
+theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
+    {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
+    HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).Prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun i : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
@@ -591,7 +535,7 @@ theorem HasFtaylorSeriesUpToOn.prod (hf : HasFtaylorSeriesUpToOn n f p s) {g : E
         ((hf.fderiv_within m hm x hx).Prod (hg.fderiv_within m hm x hx))
   · intro m hm
     exact (L m).Continuous.comp_continuousOn ((hf.cont m hm).Prod (hg.cont m hm))
-#align has_ftaylor_series_up_to_on.prod HasFtaylorSeriesUpToOn.prod
+#align has_ftaylor_series_up_to_on.prod HasFTaylorSeriesUpToOn.prod
 
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -1214,10 +1158,10 @@ variable {ι ι' : Type _} [Fintype ι] [Fintype ι'] {F' : ι → Type _} [∀ 
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
-theorem hasFtaylorSeriesUpToOn_pi :
-    HasFtaylorSeriesUpToOn n (fun x i => φ i x)
+theorem hasFTaylorSeriesUpToOn_pi :
+    HasFTaylorSeriesUpToOn n (fun x i => φ i x)
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
-      ∀ i, HasFtaylorSeriesUpToOn n (φ i) (p' i) s := by
+      ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
   letI : ∀ (m : ℕ) (i : ι), NormedSpace 𝕜 (E[×m]→L[𝕜] F' i) := fun m i => inferInstance
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
@@ -1233,18 +1177,18 @@ theorem hasFtaylorSeriesUpToOn_pi :
   · intro m hm
     have := continuousOn_pi.2 fun i => (h i).cont m hm
     convert(L m).Continuous.comp_continuousOn this
-#align has_ftaylor_series_up_to_on_pi hasFtaylorSeriesUpToOn_pi
+#align has_ftaylor_series_up_to_on_pi hasFTaylorSeriesUpToOn_pi
 
 @[simp]
-theorem hasFtaylorSeriesUpToOn_pi' :
-    HasFtaylorSeriesUpToOn n Φ P' s ↔
+theorem hasFTaylorSeriesUpToOn_pi' :
+    HasFTaylorSeriesUpToOn n Φ P' s ↔
       ∀ i,
-        HasFtaylorSeriesUpToOn n (fun x => Φ x i)
+        HasFTaylorSeriesUpToOn n (fun x => Φ x i)
           (fun x m =>
             (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap (P' x m))
           s :=
-  by convert hasFtaylorSeriesUpToOn_pi; ext; rfl
-#align has_ftaylor_series_up_to_on_pi' hasFtaylorSeriesUpToOn_pi'
+  by convert hasFTaylorSeriesUpToOn_pi; ext; rfl
+#align has_ftaylor_series_up_to_on_pi' hasFTaylorSeriesUpToOn_pi'
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
@@ -1253,7 +1197,7 @@ theorem contDiffWithinAt_pi :
   choose u hux p hp using fun i => h i m hm
   exact
     ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
-      hasFtaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| Inter_subset _ _⟩
+      hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| Inter_subset _ _⟩
 #align cont_diff_within_at_pi contDiffWithinAt_pi
 
 theorem contDiffOn_pi : ContDiffOn 𝕜 n Φ s ↔ ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s :=
@@ -1809,7 +1753,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) : ContDiffAt 𝕜 n 
     · simp [nhdsWithin_univ]
       exact x.nhds
     · use ftaylorSeriesWithin 𝕜 inverse univ
-      rw [le_antisymm hm bot_le, hasFtaylorSeriesUpToOn_zero_iff]
+      rw [le_antisymm hm bot_le, hasFTaylorSeriesUpToOn_zero_iff]
       constructor
       · rintro _ ⟨x', rfl⟩
         exact (inverse_continuous_at x').ContinuousWithinAt
@@ -2081,12 +2025,12 @@ variable {𝕂 : Type _} [IsROrC 𝕂] {E' : Type _} [NormedAddCommGroup E'] [No
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
     domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
-theorem HasFtaylorSeriesUpToOn.hasStrictFDerivAt {s : Set E'} {f : E' → F'} {x : E'}
-    {p : E' → FormalMultilinearSeries 𝕂 E' F'} (hf : HasFtaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
+theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {s : Set E'} {f : E' → F'} {x : E'}
+    {p : E' → FormalMultilinearSeries 𝕂 E' F'} (hf : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
     (hs : s ∈ 𝓝 x) : HasStrictFDerivAt f ((continuousMultilinearCurryFin1 𝕂 E' F') (p x 1)) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hf.eventually_hasFDerivAt hn hs) <|
     (continuousMultilinearCurryFin1 𝕂 E' F').ContinuousAt.comp <| (hf.cont 1 hn).ContinuousAt hs
-#align has_ftaylor_series_up_to_on.has_strict_fderiv_at HasFtaylorSeriesUpToOn.hasStrictFDerivAt
+#align has_ftaylor_series_up_to_on.has_strict_fderiv_at HasFTaylorSeriesUpToOn.hasStrictFDerivAt
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, and its derivative at that point is given to
 us as `f'`, then `f'` is also a strict derivative. -/
@@ -2134,10 +2078,10 @@ theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff �
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFtaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type _}
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type _}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
-    (hf : HasFtaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
+    (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
     (hK : ‖p x 1‖₊ < K) : ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   set f' := fun y => continuousMultilinearCurryFin1 ℝ E F (p y 1)
   have hder : ∀ y ∈ s, HasFDerivWithinAt f (f' y) s y := fun y hy =>
@@ -2149,17 +2093,17 @@ theorem HasFtaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type _
   exact
     hs.exists_nhds_within_lipschitz_on_with_of_has_fderiv_within_at_of_nnnorm_lt
       (eventually_nhdsWithin_iff.2 <| eventually_of_forall hder) hcont K hK
-#align has_ftaylor_series_up_to_on.exists_lipschitz_on_with_of_nnnorm_lt HasFtaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
+#align has_ftaylor_series_up_to_on.exists_lipschitz_on_with_of_nnnorm_lt HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFtaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
-    (hf : HasFtaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
+    (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
     ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t :=
   (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
-#align has_ftaylor_series_up_to_on.exists_lipschitz_on_with HasFtaylorSeriesUpToOn.exists_lipschitzOnWith
+#align has_ftaylor_series_up_to_on.exists_lipschitz_on_with HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
 
 /-- If `f` is `C^1` within a conves set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
@@ -2169,7 +2113,7 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGro
     ∃ K : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   rcases hf 1 le_rfl with ⟨t, hst, p, hp⟩
   rcases metric.mem_nhds_within_iff.mp hst with ⟨ε, ε0, hε⟩
-  replace hp : HasFtaylorSeriesUpToOn 1 f p (Metric.ball x ε ∩ insert x s) := hp.mono hε
+  replace hp : HasFTaylorSeriesUpToOn 1 f p (Metric.ball x ε ∩ insert x s) := hp.mono hε
   clear hst hε t
   rw [← insert_eq_of_mem (Metric.mem_ball_self ε0), ← insert_inter_distrib] at hp
   rcases hp.exists_lipschitz_on_with ((convex_ball _ _).inter hs) with ⟨K, t, hst, hft⟩
@@ -2352,8 +2296,8 @@ variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}
 
-theorem HasFtaylorSeriesUpToOn.restrictScalars (h : HasFtaylorSeriesUpToOn n f p' s) :
-    HasFtaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s :=
+theorem HasFTaylorSeriesUpToOn.restrictScalars (h : HasFTaylorSeriesUpToOn n f p' s) :
+    HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s :=
   { zero_eq := fun x hx => h.zero_eq x hx
     fderivWithin := by
       intro m hm x hx
@@ -2361,7 +2305,7 @@ theorem HasFtaylorSeriesUpToOn.restrictScalars (h : HasFtaylorSeriesUpToOn n f p
           ((h.fderiv_within m hm x hx).restrictScalars 𝕜)
     cont := fun m hm =>
       ContinuousMultilinearMap.continuous_restrictScalars.comp_continuousOn (h.cont m hm) }
-#align has_ftaylor_series_up_to_on.restrict_scalars HasFtaylorSeriesUpToOn.restrictScalars
+#align has_ftaylor_series_up_to_on.restrict_scalars HasFTaylorSeriesUpToOn.restrictScalars
 
 theorem ContDiffWithinAt.restrict_scalars (h : ContDiffWithinAt 𝕜' n f s x) :
     ContDiffWithinAt 𝕜 n f s x := by
@@ -2385,7 +2329,6 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
 end RestrictScalars
 
 /-!## Quantitative bounds -/
-
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
