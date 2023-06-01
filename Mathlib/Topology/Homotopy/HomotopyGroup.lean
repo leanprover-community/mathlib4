@@ -24,7 +24,7 @@ that `π 1 x` is equivalent to the fundamental group at `x`.
 
 ## definitions
 
-* `GenLoop n x` is the type of continous fuctions `I^n → X` that send the boundary to `x`
+* `GenLoop n x` is the type of continuous functions `I^n → X` that send the boundary to `x`
 * `HomotopyGroup n x` denoted `π n x` is the quotient of `GenLoop n x` by homotopy relative
   to the boundary
 
