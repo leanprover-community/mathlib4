@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.LpSpace
-import Mathbin.Topology.Sets.Compacts
+import Mathlib.Analysis.NormedSpace.LpSpace
+import Mathlib.Topology.Sets.Compacts
 
 /-!
 # The Kuratowski embedding
@@ -42,8 +42,7 @@ variable {f g : ℓ_infty_ℝ} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ →
 a fixed countable set, if this set is dense. This map is given in `Kuratowski_embedding`,
 without density assumptions. -/
 def embeddingOfSubset : ℓ_infty_ℝ :=
-  ⟨fun n => dist a (x n) - dist (x 0) (x n),
-    by
+  ⟨fun n => dist a (x n) - dist (x 0) (x n), by
     apply memℓp_infty
     use dist a (x 0)
     rintro - ⟨n, rfl⟩
@@ -56,8 +55,7 @@ theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x
 
 /-- The embedding map is always a semi-contraction. -/
 theorem embeddingOfSubset_dist_le (a b : α) :
-    dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b :=
-  by
+    dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   refine' lp.norm_le_of_forall_le dist_nonneg fun n => _
   simp only [lp.coeFn_sub, Pi.sub_apply, embedding_of_subset_coe, Real.dist_eq]
   convert abs_dist_sub_le a b (x n) using 2
@@ -65,8 +63,7 @@ theorem embeddingOfSubset_dist_le (a b : α) :
 #align Kuratowski_embedding.embedding_of_subset_dist_le KuratowskiEmbedding.embeddingOfSubset_dist_le
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
-theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) :=
-  by
+theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
   refine' Isometry.of_dist_eq fun a b => _
   refine' (embedding_of_subset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => _)
   -- First step: find n with dist a (x n) < e
@@ -82,12 +79,10 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         apply_rules [add_le_add_left, le_abs_self]
       _ ≤ 2 * (e / 2) + |embedding_of_subset x b n - embedding_of_subset x a n| := by rw [C];
         apply_rules [add_le_add, mul_le_mul_of_nonneg_left, hn.le, le_refl] ; norm_num
-      _ ≤ 2 * (e / 2) + dist (embedding_of_subset x b) (embedding_of_subset x a) :=
-        by
+      _ ≤ 2 * (e / 2) + dist (embedding_of_subset x b) (embedding_of_subset x a) := by
         have :
           |embedding_of_subset x b n - embedding_of_subset x a n| ≤
-            dist (embedding_of_subset x b) (embedding_of_subset x a) :=
-          by
+            dist (embedding_of_subset x b) (embedding_of_subset x a) := by
           simpa [dist_eq_norm] using
             lp.norm_apply_le_norm ENNReal.top_ne_zero
               (embedding_of_subset x b - embedding_of_subset x a) n
@@ -99,8 +94,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
 
 /-- Every separable metric space embeds isometrically in `ℓ_infty_ℝ`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
-    ∃ f : α → ℓ_infty_ℝ, Isometry f :=
-  by
+    ∃ f : α → ℓ_infty_ℝ, Isometry f := by
   cases' (univ : Set α).eq_empty_or_nonempty with h h
   · use fun _ => 0; intro x; exact absurd h (nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
@@ -130,8 +124,7 @@ protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [S
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
-    [Nonempty α] : NonemptyCompacts ℓ_infty_ℝ
-    where
+    [Nonempty α] : NonemptyCompacts ℓ_infty_ℝ where
   carrier := range (kuratowskiEmbedding α)
   is_compact' := isCompact_range (kuratowskiEmbedding.isometry α).Continuous
   nonempty' := range_nonempty _
