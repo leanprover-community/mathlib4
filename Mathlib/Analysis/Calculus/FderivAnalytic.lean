@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.Basic
-import Mathbin.Analysis.Calculus.Deriv.Basic
-import Mathbin.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.ContDiffDef
 
 /-!
 # Frechet derivatives of analytic functions.
@@ -37,8 +37,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
 variable {f : E → F} {x : E} {s : Set E}
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
-    HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x :=
-  by
+    HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
   refine' h.is_O_image_sub_norm_mul_norm_sub.trans_is_o (is_o.of_norm_right _)
   refine' is_o_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, _, eventually_eq.rfl⟩
   refine' (continuous_id.sub continuous_const).norm.tendsto' _ _ _
@@ -94,8 +93,7 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
       ((continuousMultilinearCurryFin1 𝕜 E F :
             (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries
         (p.changeOriginSeries 1))
-      x r :=
-  by
+      x r := by
   suffices A :
     HasFPowerSeriesOnBall
       (fun z => continuousMultilinearCurryFin1 𝕜 E F (p.change_origin (z - x) 1))
@@ -130,8 +128,7 @@ theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) : Analytic
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 (iteratedFDeriv 𝕜 n f) s :=
-  by
+    AnalyticOn 𝕜 (iteratedFDeriv 𝕜 n f) s := by
   induction' n with n IH
   · rw [iteratedFDeriv_zero_eq_comp]
     exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOn h
