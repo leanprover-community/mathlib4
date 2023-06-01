@@ -569,7 +569,7 @@ theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g 
 #align finset.prod_le_prod Finset.prod_le_prod
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
-See also `finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
+See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 := by
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one

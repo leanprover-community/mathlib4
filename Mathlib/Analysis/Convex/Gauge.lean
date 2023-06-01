@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 
 ! This file was ported from Lean 3 source module analysis.convex.gauge
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
+! leanprover-community/mathlib commit 373b03b5b9d0486534edbe94747f23cb3712f93d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -41,7 +41,8 @@ Minkowski functional, gauge
 -/
 
 
-open NormedField Set Pointwise
+open NormedField Set
+open scoped Pointwise Topology NNReal
 
 noncomputable section
 
@@ -453,24 +454,7 @@ section Norm
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
 
 theorem gauge_unit_ball (x : E) : gauge (Metric.ball (0 : E) 1) x = ‖x‖ := by
-  obtain rfl | hx := eq_or_ne x 0
-  · rw [norm_zero, gauge_zero]
-  refine' (le_of_forall_pos_le_add fun ε hε => _).antisymm _
-  · have : 0 < ‖x‖ + ε :=
-      -- Porting note: was `by positivity`
-      add_pos_of_nonneg_of_pos (norm_nonneg _) hε
-    refine' gauge_le_of_mem this.le _
-    rw [smul_ball this.ne', smul_zero, Real.norm_of_nonneg this.le, mul_one, mem_ball_zero_iff]
-    exact lt_add_of_pos_right _ hε
-  refine'
-    le_gauge_of_not_mem balanced_ball_zero.starConvex (absorbent_ball_zero zero_lt_one).absorbs
-      fun h => _
-  obtain hx' | hx' := eq_or_ne ‖x‖ 0
-  · rw [hx'] at h
-    exact hx (zero_smul_set_subset _ h)
-  · rw [mem_smul_set_iff_inv_smul_mem₀ hx', mem_ball_zero_iff, norm_smul, norm_inv, norm_norm,
-      inv_mul_cancel hx'] at h
-    exact lt_irrefl _ h
+  rw [← ball_normSeminorm ℝ, Seminorm.gauge_ball, coe_normSeminorm]
 #align gauge_unit_ball gauge_unit_ball
 
 theorem gauge_ball (hr : 0 < r) (x : E) : gauge (Metric.ball (0 : E) r) x = ‖x‖ / r := by
@@ -486,5 +470,24 @@ theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤
   rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr]
   exact gauge_mono (absorbent_ball_zero hr) hs x
 #align mul_gauge_le_norm mul_gauge_le_norm
+
+theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r)
+    (hs : Metric.ball (0 : E) r ⊆ s) : LipschitzWith r⁻¹ (gauge s) :=
+  have : Absorbent ℝ (Metric.ball (0 : E) r) := absorbent_ball_zero hr
+  LipschitzWith.of_le_add_mul _ fun x y =>
+    calc
+      gauge s x = gauge s (y + (x - y)) := by simp
+      _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.subset hs) _ _
+      _ ≤ gauge s y + ‖x - y‖ / r :=
+        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr _)) _
+      _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]
+#align convex.lipschitz_with_gauge Convex.lipschitzWith_gauge
+
+theorem Convex.uniformContinuous_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :
+    UniformContinuous (gauge s) := by
+  obtain ⟨r, hr₀, hr⟩ := Metric.mem_nhds_iff.1 h₀
+  lift r to ℝ≥0 using le_of_lt hr₀
+  exact (hc.lipschitzWith_gauge hr₀ hr).uniformContinuous
+#align convex.uniform_continuous_gauge Convex.uniformContinuous_gauge
 
 end Norm

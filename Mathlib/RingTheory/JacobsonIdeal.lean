@@ -27,15 +27,16 @@ as the intersection of maximal ideals containing `I`.
 
 Let `R` be a commutative ring, and `I` be an ideal of `R`
 
-* `jacobson I` is the jacobson radical, i.e. the infimum of all maximal ideals containing I.
+* `Ideal.jacobson I` is the jacobson radical, i.e. the infimum of all maximal ideals containing I.
 
-* `is_local I` is the proposition that the jacobson radical of `I` is itself a maximal ideal
+* `Ideal.IsLocal I` is the proposition that the jacobson radical of `I` is itself a maximal ideal
 
 ## Main statements
 
 * `mem_jacobson_iff` gives a characterization of members of the jacobson of I
 
-* `is_local_of_is_maximal_radical`: if the radical of I is maximal then so is the jacobson radical
+* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the jacobson
+  radical
 
 ## Tags
 

@@ -126,7 +126,7 @@ theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q
 theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (p : P) :
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
-  ext m;
+  ext m
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
     RingHom.id_apply, LinearMap.smul_apply]
   rw [smul_comm]
@@ -303,7 +303,7 @@ variable (R M N P Q)
 
 /-- When `M` and `N` are free `R` modules, the map `homTensorHomMap` is an equivalence. Note that
 `homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the equivalence
-between the two is given by `hom_tensor_hom_equiv_to_linear_map` and `hom_tensor_hom_equiv_apply`.
+between the two is given by `homTensorHomEquiv_toLinearMap` and `homTensorHomEquiv_apply`.
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   rTensorHomEquivHomRTensor R M P _ ≪≫ₗ
@@ -333,4 +333,3 @@ theorem homTensorHomEquiv_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
 end CommRing
 
 end HomTensorHom
-

@@ -20,6 +20,8 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
@@ -31,7 +33,6 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -76,7 +77,6 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
@@ -333,8 +333,6 @@ namespace Command
 
 /- S -/ syntax (name := printSorryIn) "#print_sorry_in " ident : command
 
-/- E -/ syntax (name := assertExists) "assert_exists " ident : command
-/- E -/ syntax (name := assertNotExists) "assert_not_exists " ident : command
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 

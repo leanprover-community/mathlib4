@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
+! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -343,9 +343,11 @@ theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
 instance [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
-instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [∀ i, T0Space (π i)] :
+instance Pi.instT0Space {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T0Space (π i)] :
     T0Space (∀ i, π i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
+#align pi.t0_space Pi.instT0Space
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space α := by
@@ -453,10 +455,8 @@ protected theorem Finset.isClosed [T1Space α] (s : Finset α) : IsClosed (s : S
   s.finite_toSet.isClosed
 #align finset.is_closed Finset.isClosed
 
--- Porting note: used `tfae` tactic
-open List in
 theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
-    TFAE [T1Space α,
+    List.TFAE [T1Space α,
       ∀ x, IsClosed ({ x } : Set α),
       ∀ x, IsOpen ({ x }ᶜ : Set α),
       Continuous (@CofiniteTopology.of α),
@@ -466,22 +466,32 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
       ∀ ⦃x y : α⦄, x ≠ y → Disjoint (𝓝 x) (pure y),
       ∀ ⦃x y : α⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
       ∀ ⦃x y : α⦄, x ⤳ y → x = y] := by
-  simp only [Ne, @not_imp_comm (_ = _), disjoint_comm (b := 𝓝 _), isOpen_compl_iff, not_exists,
-    not_and, not_not, ← specializes_iff_forall_open, ← clusterPt_iff_not_disjoint,
-    ← specializes_iff_clusterPt, continuous_iff_isClosed, CofiniteTopology.isClosed_iff]
-  simp only [← Filter.mem_pure, ← Filter.le_def, ← specializes_iff_pure]
-  simp only [← mem_interior_iff_mem_nhds, interior_compl, mem_compl_iff, not_not,
-    ← specializes_iff_mem_closure]
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> dsimp only [ilast'] <;> try { exact id }
-  · exact @T1Space.t1 _ _
-  · rintro h U (rfl | hU)
-    · exact isClosed_univ
-    · rw [← biUnion_of_singleton U]
-      exact isClosed_biUnion hU fun x _ => h x
-  · exact fun h x y hyx => (h {y} (.inr <| finite_singleton _)).closure_subset hyx.mem_closure
-  · exact fun h₁ _ _ h₂ => (h₁ h₂).symm
-  · refine' fun h => ⟨fun x => isClosed_iff_clusterPt.2 fun y hy => (h _).symm⟩
-    rwa [specializes_iff_clusterPt, ← principal_singleton]
+  tfae_have 1 ↔ 2
+  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 2 ↔ 3
+  · simp only [isOpen_compl_iff]
+  tfae_have 5 ↔ 3
+  · refine' forall_swap.trans _
+    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
+  tfae_have 5 ↔ 6
+  · simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
+  tfae_have 5 ↔ 7
+  · simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
+      and_left_comm]
+  tfae_have 5 ↔ 8
+  · simp only [← principal_singleton, disjoint_principal_right]
+  tfae_have 8 ↔ 9
+  · exact forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 1 → 4
+  · simp only [continuous_def, CofiniteTopology.isOpen_iff']
+    rintro H s (rfl | hs)
+    exacts[isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
+  tfae_have 4 → 2
+  · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
+  tfae_have 2 ↔ 10
+  · simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
+      mem_singleton_iff, eq_comm]
+  tfae_finish
 #align t1_space_tfae t1Space_TFAE
 
 theorem t1Space_iff_continuous_cofinite_of {α : Type _} [TopologicalSpace α] :
@@ -1318,8 +1328,8 @@ theorem IsCompact.binary_compact_cover [T2Space α] {K U V : Set α} (hK : IsCom
 #align is_compact.binary_compact_cover IsCompact.binary_compact_cover
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
-theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β} (h : Continuous f) :
-    IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
+protected theorem Continuous.isClosedMap [CompactSpace α] [T2Space β] {f : α → β}
+    (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
 #align continuous.is_closed_map Continuous.isClosedMap
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
@@ -1327,6 +1337,12 @@ theorem Continuous.closedEmbedding [CompactSpace α] [T2Space β] {f : α → β
     (hf : Function.Injective f) : ClosedEmbedding f :=
   closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
 #align continuous.closed_embedding Continuous.closedEmbedding
+
+/-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
+theorem QuotientMap.of_surjective_continuous [CompactSpace α] [T2Space β] {f : α → β}
+    (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
+  hcont.isClosedMap.to_quotientMap hcont hsurj
+#align quotient_map.of_surjective_continuous QuotientMap.of_surjective_continuous
 
 section
 
@@ -1452,34 +1468,38 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 #align regular_space RegularSpace
 
--- Porting note: used `tfae` tactic
-open List in
 theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
-    TFAE [RegularSpace X,
+    List.TFAE [RegularSpace X,
       ∀ (s : Set X) a, a ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 a),
       ∀ (a : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s,
       ∀ (a : X) (s : Set X), s ∈ 𝓝 a → ∃ t ∈ 𝓝 a, IsClosed t ∧ t ⊆ s,
       ∀ a : X, (𝓝 a).lift' closure ≤ 𝓝 a,
       ∀ a : X , (𝓝 a).lift' closure = 𝓝 a] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
-  · exact fun h s a ha => (h.1 isClosed_closure ha).mono_left (nhdsSet_mono subset_closure)
-  · refine fun h a s => ⟨fun hd => ?_, h s a⟩
-    replace hd := hd.mono_left principal_le_nhdsSet
-    rwa [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, ← disjoint_principal_left]
-  · refine fun h a s ha => ?_
-    rw [← mem_interior_iff_mem_nhds, ← compl_compl s, interior_compl, mem_compl_iff, ← h] at ha
-    rcases (hasBasis_nhdsSet _).disjoint_iff_left.1 ha with ⟨U, ⟨hUo, hsU⟩, ha⟩
-    exact ⟨Uᶜ, ha, hUo.isClosed_compl, compl_subset_comm.2 hsU⟩
-  · refine fun h a s hs => ?_
-    rcases h a s hs with ⟨t, ha, hc, hts⟩
-    exact flip mem_of_superset hts <| hc.closure_eq ▸ mem_lift' ha
-  · exact fun h a => (h a).antisymm (le_lift'_closure _)
-  · refine fun h => ⟨fun hs ha => ?_⟩
-    rw [← hs.closure_eq, ← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, ← h,
-      mem_lift'_sets (monotone_closure X)] at ha
-    rcases ha with ⟨t, ha, hs⟩
-    refine' disjoint_of_disjoint_of_mem disjoint_compl_left ?_ ha
-    rwa [← subset_interior_iff_mem_nhdsSet, interior_compl, subset_compl_comm]
+  tfae_have 1 ↔ 5
+  · rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
+    simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
+      (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
+      (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
+      interior_compl, compl_subset_compl]
+  tfae_have 5 → 6
+  · exact fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
+  tfae_have 6 → 4
+  · intro H a s hs
+    rw [← H] at hs
+    rcases(𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
+    exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
+  tfae_have 4 → 2
+  · intro H s a ha
+    have ha' : sᶜ ∈ 𝓝 a := by rwa [← mem_interior_iff_mem_nhds, interior_compl]
+    rcases H _ _ ha' with ⟨U, hU, hUc, hUs⟩
+    refine' disjoint_of_disjoint_of_mem disjoint_compl_left _ hU
+    rwa [← subset_interior_iff_mem_nhdsSet, hUc.isOpen_compl.interior_eq, subset_compl_comm]
+  tfae_have 2 → 3
+  · refine' fun H a s => ⟨fun hd has => mem_closure_iff_nhds_neBot.mp has _, H s a⟩
+    exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
+  tfae_have 3 → 1
+  · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
+  tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
 theorem RegularSpace.ofLift'_closure (h : ∀ a : α, (𝓝 a).lift' closure = 𝓝 a) : RegularSpace α :=
@@ -1883,7 +1903,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
   · have H1 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hu hv huv
     rw [union_comm] at H
     have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
-    by_cases hxu : x ∈ u <;> [left, right]
+    by_cases hxu : x ∈ u <;> [left; right]
     -- The x ∈ u case.
     · suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)

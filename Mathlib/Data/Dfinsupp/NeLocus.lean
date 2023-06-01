@@ -18,7 +18,7 @@ Let `N : α → Type*` be a type family, assume that `N a` has a `0` for all `a 
 
 ## Main definition
 
-* `Dfinsupp.neLocus f g : finset α`, the finite subset of `α` where `f` and `g` differ.
+* `Dfinsupp.neLocus f g : Finset α`, the finite subset of `α` where `f` and `g` differ.
 In the case in which `N a` is an additive group for all `a`, `Dfinsupp.neLocus f g` coincides with
 `Dfinsupp.support (f - g)`.
 -/

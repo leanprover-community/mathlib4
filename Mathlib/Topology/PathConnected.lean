@@ -67,9 +67,7 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Classical Topology Filter unitInterval
-
-open Filter Set Function unitInterval
+open Classical Topology Filter unitInterval Set Function
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type _}
 
@@ -253,8 +251,8 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.path_extend {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ᶠ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
-    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ᶠ l₁) l₂ :=
+    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 #align filter.tendsto.path_extend Filter.Tendsto.path_extend
 
@@ -279,7 +277,7 @@ theorem extend_one : γ.extend 1 = y := by simp
 @[simp]
 theorem extend_extends' {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
-  Icc_extend_coe _ γ t
+  IccExtend_val _ γ t
 #align path.extend_extends' Path.extend_extends'
 
 @[simp]
@@ -326,11 +324,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
     refine'
       (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
-    -- TODO: the following are provable by `continuity` but it is too slow
-    -- porting note: the new `continuity` succeeds and it isn't too slow!
     continuity
-    --exacts[γ.continuous_extend.comp (continuous_const.mul continuous_id),
-     -- γ'.continuous_extend.comp ((continuous_const.mul continuous_id).sub continuous_const)]
   source' := by norm_num
   target' := by norm_num
 #align path.trans Path.trans
@@ -684,7 +678,6 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
   have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
-    --continuous_const.prod_mk continuous_id
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 

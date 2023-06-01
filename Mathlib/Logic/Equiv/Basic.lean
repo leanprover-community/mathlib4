@@ -413,7 +413,7 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
   rfl
 #align equiv.empty_sum_apply_inr Equiv.emptySum_apply_inr
 
-/-- `Option α` is equivalent to `α ⊕ punit` -/
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
@@ -471,7 +471,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
 `β` to be types from the same universe, so it cannot by used directly to transfer theorems about
-sigma types to theorems about sum types. In many cases one can use `ulift` to work around this
+sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
   ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
