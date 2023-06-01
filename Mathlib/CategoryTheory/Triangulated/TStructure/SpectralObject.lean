@@ -87,6 +87,49 @@ noncomputable def truncGEt : ℤt ⥤ C ⥤ C where
     obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
     all_goals simp at hbc hab <;> dsimp [TruncGEt.map] <;> simp
 
+namespace TruncGEtδLTt
+
+noncomputable def app : ∀ (a : ℤt), t.truncGEt.obj a ⟶ t.truncLTt.obj a ⋙ shiftFunctor C (1 : ℤ)
+  | some none => 0
+  | some (some a) => t.truncGEδLT a
+  | none => 0
+
+end TruncGEtδLTt
+
+/-@[simp]
+lemma natTransTruncGEOfGE_comp_truncGEδLT (a b : ℤ) (h : a ≤ b) :
+    t.natTransTruncGEOfGE a b h ≫ t.truncGEδLT b =
+      t.truncGEδLT a ≫ whiskerRight (t.natTransTruncLTOfLE a b h) (shiftFunctor C (1 : ℤ)) := by
+  ext X
+  dsimp
+  simp
+  sorry
+
+noncomputable def truncGEtδLTt :
+    t.truncGEt ⟶ t.truncLTt ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
+  app a := TruncGEtδLTt.app t a
+  naturality {a b} hab := by
+    have hab' := leOfHom hab
+    obtain (_|_|a) := a
+    . apply IsZero.eq_of_src
+      exact isZero_zero _
+    . obtain (_|_|_) := b
+      . dsimp [truncGEt, TruncGEt.map, TruncGEtδLTt.app]
+        simp
+      . obtain rfl : hab = 𝟙 _ := Subsingleton.elim _ _
+        simp
+      . dsimp [truncGEt, TruncGEt.map, TruncGEtδLTt.app]
+        simp
+    . obtain (_|_|b) := b
+      . dsimp [truncGEt, TruncGEt.map, TruncGEtδLTt.app, truncLTt, TruncLTt.map]
+        simp
+      . dsimp [truncGEt, TruncGEt.map, TruncGEtδLTt.app, truncLTt, TruncLTt.map]
+        ext
+        simp
+      . dsimp [truncGEt, TruncGEt.map, TruncGEtδLTt.app]
+        simp at hab'
+        exact t.natTransTruncGEOfGE_comp_truncGEδLT _ _ hab'-/
+
 end TStructure
 
 end Triangulated

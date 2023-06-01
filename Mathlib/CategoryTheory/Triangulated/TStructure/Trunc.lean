@@ -795,6 +795,18 @@ lemma truncTriangleLTSelfGE_distinguished (n : ℤ) (X : C) :
   exact ((evaluation _ _).obj X).mapIso
     (t.truncTriangleLTSelfGEFunctorIsoTruncTriangleLESelfGEFunctor (n-1) n (by linarith))
 
+@[reassoc (attr := simp)]
+lemma truncGEπ_comp_truncGEδLT (n : ℤ) :
+    t.truncGEπ n ≫ t.truncGEδLT n = 0 := by
+  ext X
+  exact comp_dist_triangle_mor_zero₂₃ _ (t.truncTriangleLTSelfGE_distinguished n X)
+
+@[reassoc (attr := simp)]
+lemma truncGEδLT_comp_truncLTι (n : ℤ) :
+    t.truncGEδLT n ≫ whiskerRight (t.truncLTι n) (shiftFunctor C (1 : ℤ)) = 0 := by
+  ext X
+  exact comp_dist_triangle_mor_zero₃₁ _ (t.truncTriangleLTSelfGE_distinguished n X)
+
 noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
 instance (a b : ℤ) (X : C) : t.IsLE ((t.truncGELE a b).obj X) b := by
@@ -1126,6 +1138,8 @@ noncomputable def truncTriangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) 
     (t.truncTriangleLTLEGELE_distinguished a (b-1) (by linarith) X) _ _
   exact ((evaluation _ _).obj X).mapIso
     (t.truncTriangleLTLTGELTFunctorIsoTruncTriangleLTLEGELEFunctor a b h (b-1) (by linarith))
+
+
 
 end TStructure
 
