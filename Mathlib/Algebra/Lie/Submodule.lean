@@ -227,23 +227,23 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 #align lie_mem_left lie_mem_left
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
+@[coe]
 def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 #align lie_ideal_subalgebra lieIdealSubalgebra
 
-attribute [coe] LieSubalgebra.toSubmodule
-
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
-  ⟨fun I ↦ lieIdealSubalgebra R L I⟩
+  ⟨lieIdealSubalgebra R L⟩
 
 @[norm_cast]
 theorem LieIdeal.coe_toSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I := rfl
 #align lie_ideal.coe_to_subalgebra LieIdeal.coe_toSubalgebra
 
--- porting note: `LieIdeal.coe_toLieSubalgebra_toSubmodule`, corresponding to
--- `lie_ideal.coe_to_lie_subalgebra_to_submodule` is a syntactic tautology and I erased it.
--- I also added by hand the `#noalign` below
-#noalign lie_ideal.coe_to_lie_subalgebra_to_submodule
+@[norm_cast]
+theorem LieIdeal.coe_to_lieSubalgebra_to_submodule (I : LieIdeal R L) :
+    ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
+  rfl
+#align lie_ideal.coe_to_lie_subalgebra_to_submodule LieIdeal.coe_to_lieSubalgebra_to_submodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
@@ -899,7 +899,7 @@ theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebr
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
     LieSubalgebra.coe_to_submodule_eq_iff, ← f.range.coe_to_submodule,
-    LieSubmodule.coe_lieSpan_submodule_eq_iff,
+    LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
     LieSubalgebra.mem_coe_submodule, mem_range, exists_imp,
     Submodule.exists_lieSubmodule_coe_eq_iff]
   constructor
