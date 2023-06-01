@@ -88,7 +88,7 @@ open Lean Elab Tactic
 -- we can just `` evalTactic (← `(tactic| ext))``
 -- (But it would be good to have a name for that, too, so we can pass it to aesop.)
 def extCore' : TacticM Unit := do
-  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
+  let (_, gs) ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
   replaceMainGoal <| gs.map (·.1) |>.toList
 
 end Std.Tactic.Ext
