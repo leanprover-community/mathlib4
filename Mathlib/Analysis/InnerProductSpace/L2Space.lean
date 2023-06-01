@@ -102,10 +102,10 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace
 
 variable {G : ι → Type _} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
--- mathport name: «exprℓ²( , )»
+/-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
+as `lp (fun i : ι => 𝕜) 2`. -/
 notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
 
 /-! ### Inner product space structure on `lp G 2` -/
@@ -193,8 +193,6 @@ end lp
 namespace OrthogonalFamily
 
 variable {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
-
---include cplt hV
 
 protected theorem summable_of_lp (f : lp G 2) : Summable fun i => V i (f i) := by
   rw [hV.summable_iff_norm_sq_summable]
@@ -286,8 +284,6 @@ section IsHilbertSum
 variable (𝕜 G)
 variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
--- include cplt
-
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
 `Φ : lp G 2 → E` is surjective.
@@ -295,7 +291,9 @@ space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that t
 Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type*`, this is analogous
 to `direct_sum.is_internal`, except that we don't express it in terms of actual submodules. -/
 structure IsHilbertSum : Prop where ofSurjective ::
+  /-- The orthogonal family consituting the summands in the Hilbert sum. -/
   protected OrthogonalFamily : OrthogonalFamily 𝕜 G V
+  /-- The isometry `lp G 2 → E` induced by the orthogonal family is surjective. -/
   protected surjective_isometry : Function.Surjective OrthogonalFamily.linearIsometry
 #align is_hilbert_sum IsHilbertSum
 
@@ -413,6 +411,7 @@ variable (ι) (𝕜) (E)
 /-- A Hilbert basis on `ι` for an inner product space `E` is an identification of `E` with the `lp`
 space `ℓ²(ι, 𝕜)`. -/
 structure HilbertBasis where ofRepr ::
+  /-- The linear isometric equivlence implementing identifiying the hilbert space with `ℓ²`. -/
   repr : E ≃ₗᵢ[𝕜] ℓ²(ι, 𝕜)
 #align hilbert_basis HilbertBasis
 
@@ -433,10 +432,10 @@ protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
   rfl
 #align hilbert_basis.repr_symm_single HilbertBasis.repr_symm_single
 
-@[simp]
+-- porting note: removed `@[simp]` because `simp` can prove this
 protected theorem repr_self (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  rw [← b.repr_symm_single, LinearIsometryEquiv.apply_symm_apply]
+  simp
 #align hilbert_basis.repr_self HilbertBasis.repr_self
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
@@ -550,8 +549,6 @@ theorem finite_spans_dense (b : HilbertBasis ι 𝕜 E) :
 
 variable {v : ι → E} (hv : Orthonormal 𝕜 v)
 
--- include hv cplt
-
 /-- An orthonormal family of vectors whose span is dense in the whole module is a Hilbert basis. -/
 protected def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
   HilbertBasis.ofRepr <| (hv.isHilbertSum hsp).linearIsometryEquiv
@@ -581,8 +578,6 @@ protected theorem coe_of_orthogonal_eq_bot_mk (hsp : (span 𝕜 (Set.range v))�
     ⇑(HilbertBasis.mkOfOrthogonalEqBot hv hsp) = v :=
   HilbertBasis.coe_mk hv _
 #align hilbert_basis.coe_of_orthogonal_eq_bot_mk HilbertBasis.coe_of_orthogonal_eq_bot_mk
-
--- omit hv
 
 -- Note : this should be `b.repr` composed with an identification of `lp (λ i : ι, 𝕜) p` with
 -- `pi_Lp p (λ i : ι, 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
@@ -620,3 +615,4 @@ theorem _root_.exists_hilbertBasis : ∃ (w : Set E)(b : HilbertBasis w 𝕜 E),
 #align exists_hilbert_basis exists_hilbertBasis
 
 end HilbertBasis
+#lint
