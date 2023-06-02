@@ -8,9 +8,9 @@ Authors: Damiano Testa, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.MeanValue
-import Mathbin.Data.Polynomial.DenomsClearable
-import Mathbin.Data.Real.Irrational
+import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Data.Polynomial.DenomsClearable
+import Mathlib.Data.Real.Irrational
 
 /-!
 
@@ -37,8 +37,7 @@ def Liouville (x : ℝ) :=
 
 namespace Liouville
 
-protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x :=
-  by
+protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- By contradiction, `x = a / b`, with `a ∈ ℤ`, `0 < b ∈ ℕ` is a Liouville number,
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
@@ -110,8 +109,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type _} [PseudoMetricSpace R] {d : N
     (B : ∀ ⦃y : R⦄, y ∈ closedBall α ε → dist (f α) (f y) ≤ dist α y * M)
     -- clear denominators
     (L : ∀ ⦃z : Z⦄, ∀ ⦃a : N⦄, j z a ∈ closedBall α ε → 1 ≤ d a * dist (f α) (f (j z a))) :
-    ∃ A : ℝ, 0 < A ∧ ∀ z : Z, ∀ a : N, 1 ≤ d a * (dist α (j z a) * A) :=
-  by
+    ∃ A : ℝ, 0 < A ∧ ∀ z : Z, ∀ a : N, 1 ≤ d a * (dist α (j z a) * A) := by
   -- A useful inequality to keep at hand
   have me0 : 0 < max (1 / ε) M := lt_max_iff.mpr (Or.inl (one_div_pos.mpr e0))
   -- The maximum between `1 / ε` and `M` works
@@ -120,8 +118,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type _} [PseudoMetricSpace R] {d : N
   by_cases dm1 : 1 ≤ dist α (j z a) * max (1 / ε) M
   · exact one_le_mul_of_one_le_of_one_le (d0 a) dm1
   · -- `j z a = z / (a + 1)`: we prove that this ratio is close to `α`
-    have : j z a ∈ closed_ball α ε :=
-      by
+    have : j z a ∈ closed_ball α ε := by
       refine' mem_closed_ball'.mp (le_trans _ ((one_div_le me0 e0).mpr (le_max_left _ _)))
       exact (le_div_iff me0).mpr (not_le.mp dm1).le
     -- use the "separation from `1`" (assumption `L`) for numerators,
@@ -186,8 +183,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
 #align liouville.exists_pos_real_of_irrational_root Liouville.exists_pos_real_of_irrational_root
 
 /-- **Liouville's Theorem** -/
-protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x :=
-  by
+protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x := by
   -- Proceed by contradiction: if `x` is algebraic, then `x` is the root (`ef0`) of a
   -- non-zero (`f0`) polynomial `f`
   rintro ⟨f : ℤ[X], f0, ef0⟩
