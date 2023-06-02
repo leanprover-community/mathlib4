@@ -819,6 +819,7 @@ import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Monad.Types
+import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Monoidal.Discrete
