@@ -210,6 +210,6 @@ def unitCounit : Adjunction.CoreUnitCounit 𝒪 pt where
  counit := counit
 
 -- the final goal
-theorem frame_top_adjunction : 𝒪 ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
+def frame_top_adjunction : 𝒪 ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
 
 end frame_top_adjunction
