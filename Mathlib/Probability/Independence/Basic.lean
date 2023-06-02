@@ -13,12 +13,12 @@ import Mathlib.MeasureTheory.Constructions.Pi
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
 
-* A family of sets of sets `π : ι → set (set Ω)` is independent with respect to a measure `μ` if for
+* A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if for
   any finite set of indices `s = {i_1, ..., i_n}`, for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`,
   `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. It will be used for families of π-systems.
 * A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
   measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
-  define is independent. I.e., `m : ι → measurable_space Ω` is independent with respect to a
+  define is independent. I.e., `m : ι → MeasurableSpace Ω` is independent with respect to a
   measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
   `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i)`.
 * Independence of sets (or events in probabilistic parlance) is defined as independence of the
@@ -26,47 +26,45 @@ import Mathlib.MeasureTheory.Constructions.Pi
   measurable sets `∅, s, sᶜ, univ`.
 * Independence of functions (or random variables) is also defined as independence of the measurable
   space structures they generate: a function `f` for which we have a measurable space `m` on the
-  codomain generates `measurable_space.comap f m`.
+  codomain generates `MeasurableSpace.comap f m`.
 
 ## Main statements
 
-* `Indep_sets.Indep`: if π-systems are independent as sets of sets, then the
+* `iIndepSets.iIndep`: if π-systems are independent as sets of sets, then the
   measurable space structures they generate are independent.
-* `indep_sets.indep`: variant with two π-systems.
+* `IndepSets.indep`: variant with two π-systems.
 
 ## Implementation notes
 
 We provide one main definition of independence:
-* `Indep_sets`: independence of a family of sets of sets `pi : ι → set (set Ω)`.
-Three other independence notions are defined using `Indep_sets`:
-* `Indep`: independence of a family of measurable space structures `m : ι → measurable_space Ω`,
-* `Indep_set`: independence of a family of sets `s : ι → set Ω`,
-* `Indep_fun`: independence of a family of functions. For measurable spaces
-  `m : Π (i : ι), measurable_space (β i)`, we consider functions `f : Π (i : ι), Ω → β i`.
+* `iIndepSets`: independence of a family of sets of sets `pi : ι → Set (Set Ω)`.
+Three other independence notions are defined using `iIndepSets`:
+* `iIndep`: independence of a family of measurable space structures `m : ι → MeasurableSpace Ω`,
+* `iIndepSet`: independence of a family of sets `s : ι → Set Ω`,
+* `iIndepFun`: independence of a family of functions. For measurable spaces
+  `m : Π (i : ι), MeasurableSpace (β i)`, we consider functions `f : Π (i : ι), Ω → β i`.
 
 Additionally, we provide four corresponding statements for two measurable space structures (resp.
 sets of sets, sets, functions) instead of a family. These properties are denoted by the same names
-as for a family, but without a capital letter, for example `indep_fun` is the version of `Indep_fun`
+as for a family, but without the starting `i`, for example `IndepFun` is the version of `iIndepFun`
 for two functions.
 
-The definition of independence for `Indep_sets` uses finite sets (`finset`). An alternative and
+The definition of independence for `iIndepSets` uses finite sets (`Finset`). An alternative and
 equivalent way of defining independence would have been to use countable sets.
 TODO: prove that equivalence.
 
 Most of the definitions and lemma in this file list all variables instead of using the `variables`
 keyword at the beginning of a section, for example
-`lemma indep.symm {Ω} {m₁ m₂ : measurable_space Ω} [measurable_space Ω] {μ : measure Ω} ...` .
-This is intentional, to be able to control the order of the `measurable_space` variables. Indeed
+`lemma Indep.symm {Ω} {m₁ m₂ : MeasurableSpace Ω} [MeasurableSpace Ω] {μ : measure Ω} ...` .
+This is intentional, to be able to control the order of the `MeasurableSpace` variables. Indeed
 when defining `μ` in the example above, the measurable space used is the last one defined, here
-`[measurable_space Ω]`, and not `m₁` or `m₂`.
+`[MeasurableSpace Ω]`, and not `m₁` or `m₂`.
 
 ## References
 
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
 Part A, Chapter 4.
 -/
-
--- Porting note: Make sure all `Cat` are gone and check also comments
 
 open MeasureTheory MeasurableSpace
 
@@ -78,7 +76,7 @@ variable {Ω ι : Type _}
 
 section Definitions
 
-/-- A family of sets of sets `π : ι → set (set Ω)` is independent with respect to a measure `μ` if
+/-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `.
 It will be used for families of pi_systems. -/
@@ -96,7 +94,7 @@ def IndepSets [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
-define is independent. `m : ι → measurable_space Ω` is independent with respect to measure `μ` if
+define is independent. `m : ι → MeasurableSpace Ω` is independent with respect to measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. -/
 def iIndep (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac) : Prop :=
@@ -127,7 +125,7 @@ def IndepSet [MeasurableSpace Ω] (s t : Set Ω) (μ : Measure Ω := by volume_t
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
-space structure `m`, the generated measurable space structure is `measurable_space.comap g m`. -/
+space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
 def iIndepFun [MeasurableSpace Ω] {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
     (f : ∀ x : ι, Ω → β x) (μ : Measure Ω := by volume_tac) : Prop :=
     iIndep (fun x => MeasurableSpace.comap (f x) (m x)) μ
@@ -136,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
-measurable space structure is `measurable_space.comap f m`. -/
+measurable space structure is `MeasurableSpace.comap f m`. -/
 def IndepFun {β γ} [MeasurableSpace Ω] [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) : Prop :=
     Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) μ
@@ -304,6 +302,7 @@ theorem iIndepFun.indepFun {m₀ : MeasurableSpace Ω} {μ : Measure Ω} {β : �
     {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f μ) {i j : ι}
     (hij : i ≠ j) : IndepFun (f i) (f j) μ :=
   hf_Indep.indep hij
+set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun ProbabilityTheory.iIndepFun.indepFun
 
 end FromIndepToIndep
@@ -426,7 +425,7 @@ theorem indepSets_piiUnionInter_of_disjoint [ProbabilityMeasure μ] {s : ι → 
       h_indep p1 ht1_m, ht2_eq, ← h_indep p2 ht2_m]
 #align probability_theory.indep_sets_pi_Union_Inter_of_disjoint ProbabilityTheory.indepSets_piiUnionInter_of_disjoint
 
-theorem IndepSet.indep_generateFrom_of_disjoint [ProbabilityMeasure μ] {s : ι → Set Ω}
+theorem iIndepSet.indep_generateFrom_of_disjoint [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (S T : Set ι) (hST : Disjoint S T) :
     Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) μ := by
   rw [← generateFrom_piiUnionInter_singleton_left, ← generateFrom_piiUnionInter_singleton_left]
@@ -440,7 +439,7 @@ theorem IndepSet.indep_generateFrom_of_disjoint [ProbabilityMeasure μ] {s : ι 
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · classical exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n => rfl) hs) hST
 set_option linter.uppercaseLean3 false in
-#align probability_theory.Indep_set.indep_generate_from_of_disjoint ProbabilityTheory.IndepSet.indep_generateFrom_of_disjoint
+#align probability_theory.Indep_set.indep_generate_from_of_disjoint ProbabilityTheory.iIndepSet.indep_generateFrom_of_disjoint
 
 theorem indep_iSup_of_disjoint [ProbabilityMeasure μ] {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ m0) (h_indep : iIndep m μ) {S T : Set ι} (hST : Disjoint S T) :
@@ -481,25 +480,25 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) :
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ := by
-  convert IndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
+  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
     (Set.disjoint_singleton_left.mpr (lt_irrefl _))
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set.indep_generate_from_lt ProbabilityTheory.iIndepSet.indep_generateFrom_lt
 
-theorem IndepSet.indep_generateFrom_le [LinearOrder ι] [ProbabilityMeasure μ] {s : ι → Set Ω}
+theorem iIndepSet.indep_generateFrom_le [LinearOrder ι] [ProbabilityMeasure μ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ := by
-  convert IndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
+  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
       (Set.disjoint_singleton_left.mpr hk.not_le)
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 set_option linter.uppercaseLean3 false in
-#align probability_theory.Indep_set.indep_generate_from_le ProbabilityTheory.IndepSet.indep_generateFrom_le
+#align probability_theory.Indep_set.indep_generate_from_le ProbabilityTheory.iIndepSet.indep_generateFrom_le
 
 theorem iIndepSet.indep_generateFrom_le_nat [ProbabilityMeasure μ] {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (n : ℕ) :
     Indep (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) μ :=
-  IndepSet.indep_generateFrom_le hsm hs _ n.lt_succ_self
+  iIndepSet.indep_generateFrom_le hsm hs _ n.lt_succ_self
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set.indep_generate_from_le_nat ProbabilityTheory.iIndepSet.indep_generateFrom_le_nat
 
@@ -734,14 +733,14 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
 #align probability_theory.indep_fun.comp ProbabilityTheory.IndepFun.comp
 
-/-- If `f` is a family of mutually independent random variables (`Indep_fun m f μ`) and `S, T` are
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
 theorem iIndepFun.indepFun_finset [ProbabilityMeasure μ] {ι : Type _} {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ := by
-  -- We introduce π-systems, build from the π-system of boxes which generates `measurable_space.pi`.
+  -- We introduce π-systems, build from the π-system of boxes which generates `MeasurableSpace.pi`.
   let πSβ := Set.pi (Set.univ : Set S) ''
     Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
