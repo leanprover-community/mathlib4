@@ -188,8 +188,8 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
   suffices
     TendstoUniformlyOn (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
         (l ×ˢ l) (Metric.ball x r) ∧
-      TendstoUniformlyOn (fun (n : ι × ι) (_ : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (Metric.ball x r)
-    by
+      TendstoUniformlyOn (fun (n : ι × ι) (_ : E) => f n.1 x - f n.2 x) 0
+        (l ×ˢ l) (Metric.ball x r) by
     have := this.1.add this.2
     rw [add_zero] at this
     refine' this.congr _
@@ -322,8 +322,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   rw [hasFDerivAt_iff_tendsto]
   -- Introduce extra quantifier via curried filters
   suffices
-    Tendsto (fun y : ι × E => ‖y.2 - x‖⁻¹ * ‖g y.2 - g x - (g' x) (y.2 - x)‖) (l.curry (𝓝 x)) (𝓝 0)
-    by
+    Tendsto (fun y : ι × E => ‖y.2 - x‖⁻¹ * ‖g y.2 - g x - (g' x) (y.2 - x)‖)
+      (l.curry (𝓝 x)) (𝓝 0) by
     rw [Metric.tendsto_nhds] at this ⊢
     intro ε hε
     specialize this ε hε
@@ -398,11 +398,10 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     exact (f' n.1 x - g' x).le_op_norm (n.2 - x)
 #align has_fderiv_at_of_tendsto_uniformly_on_filter hasFDerivAt_of_tendstoUniformlyOnFilter
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn f' g' l s) (hf : ∀ n, ∀ x ∈ s, HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasFDerivAt g (g' x) x :=
-  by
+    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    HasFDerivAt g (g' x) x := by
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
   have h3 : Set.univ ×ˢ s ∈ l ×ˢ 𝓝 x := by simp only [h1, prod_mem_prod_iff, univ_mem, and_self_iff]
   have h4 : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2 :=
@@ -416,8 +415,8 @@ in terms of `DifferentiableOn` rather than `HasFDerivAt`. This makes a few proof
 complex analysis where holomorphicity is assumed but the derivative is not known a priori. -/
 theorem hasFDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn (fderiv 𝕜 ∘ f) g' l s) (hf : ∀ n, DifferentiableOn 𝕜 (f n) s)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasFDerivAt g (g' x) x :=
-  by
+    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    HasFDerivAt g (g' x) x := by
   refine' hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf' (fun n z hz => _) hfg hx
   exact ((hf n z hz).differentiableAt (hs.mem_nhds hz)).hasFDerivAt
 #align has_fderiv_at_of_tendsto_locally_uniformly_on' hasFDerivAt_of_tendsto_locally_uniformly_on'
