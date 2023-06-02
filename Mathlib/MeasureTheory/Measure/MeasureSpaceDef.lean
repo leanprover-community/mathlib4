@@ -360,10 +360,10 @@ def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
 -- mathport name: «expr∀ᵐ ∂ , »
-notation3"∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
+notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
 -- mathport name: «expr∃ᵐ ∂ , »
-notation3"∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
+notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
 -- mathport name: «expr =ᵐ[ ] »
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
@@ -637,16 +637,15 @@ add_decl_doc volume
 section MeasureSpace
 
 -- mathport name: «expr∀ᵐ , »
-notation3"∀ᵐ "(...)", "r:(scoped P =>
+notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 -- mathport name: «expr∃ᵐ , »
-notation3"∃ᵐ "(...)", "r:(scoped P =>
+notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
-
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
-macro "volume_tac": tactic =>
+macro "volume_tac" : tactic =>
   `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
 
 end MeasureSpace

@@ -44,12 +44,12 @@ macro_rules
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expand_foldl% "
-  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expand_foldr% "
-  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
     term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
@@ -59,17 +59,20 @@ syntax foldKind := &"foldl" <|> &"foldr"
 /-- `notation3` argument matching `extBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
 /-- `notation3` argument simulating a Lean 3 fold notation. -/
-syntax foldAction := "(" ident strLit "*" " => " foldKind " (" ident ident " => " term ") " term ")"
+syntax foldAction := "(" ident ppSpace strLit "*" " => " foldKind
+  " (" ident ppSpace ident " => " term ") " term ")"
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
 /-- `notation3` argument. -/
+-- Note: there is deliberately no ppSpace between items
+-- so that the space in the literals themselves stands out
 syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 /--
 `notation3` declares notation using Lean 3-style syntax. This command can be used in mathlib4
 but it has an uncertain future and exists primarily for backward compatibility.
 -/
 macro doc:(docComment)? attrs:(Parser.Term.attributes)? ak:Term.attrKind
-    "notation3" prec:(precedence)? name:(namedName)? prio:(namedPrio)?
+    "notation3" prec:(precedence)? name:(namedName)? prio:(namedPrio)? ppSpace
     lits:(notation3Item)+ " => " val:term : command => do
   let mut boundNames : Lean.HashMap Name Syntax := {}
   let mut macroArgs := #[]
@@ -78,6 +81,11 @@ macro doc:(docComment)? attrs:(Parser.Term.attributes)? ak:Term.attrKind
     | `(notation3Item| $lit:str) =>
       macroArgs := macroArgs.push (← `(macroArg| $lit:str))
     | `(notation3Item| $_:bindersItem) =>
+      -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
+      -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
+      -- but extBinders already has a space before it so we strip the trailing space of "∑ "
+      if let `(macroArg| $lit:str) := macroArgs.back then
+        macroArgs := macroArgs.pop.push (← `(macroArg| $(quote lit.getString.trimRight):str))
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
       macroArgs := macroArgs.push (← `(macroArg| $id:ident:sepBy(term, $sep:str)))

@@ -209,7 +209,7 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
+syntax (name := choose) "choose" "!"? (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
@@ -217,6 +217,6 @@ elab_rules : tactic
   replaceMainGoal [g]
 
 @[inherit_doc choose]
-syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
+syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
