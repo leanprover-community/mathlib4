@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 
 ! This file was ported from Lean 3 source module data.set.ncard
+! leanprover-community/mathlib commit 74c2af38a828107941029b03839882c5c6f87a04
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.Finprod
