@@ -318,7 +318,11 @@ open FiniteField Polynomial
 
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   cases' hp.1.eq_two_or_odd with hp2 hp_odd
-  · subst p; change Fin 2 at x; fin_cases x; · use 0; simp; · use 0, 1; simp
+  · subst p
+    change Fin 2 at x
+    fin_cases x
+    · use 0; simp;
+    · use 0, 1; simp
   let f : (ZMod p)[X] := X ^ 2
   let g : (ZMod p)[X] := X ^ 2 - C x
   obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
@@ -334,7 +338,7 @@ end ZMod
 namespace CharP
 
 theorem sq_add_sq (R : Type _) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
-    ∃ a b : ℕ, (a ^ 2 + b ^ 2 : R) = x := by
+    ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
   refine' ⟨a.val, b.val, _⟩
@@ -362,9 +366,9 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1
   rw [← ZMod.eq_iff_modEq_nat]
   let x' : Units (ZMod n) := ZMod.unitOfCoprime _ h
   have := ZMod.pow_totient x'
-  apply_fun (coe : Units (ZMod n) → ZMod n)  at this
-  simpa only [-ZMod.pow_totient, Nat.succ_eq_add_one, Nat.cast_pow, Units.val_one, Nat.cast_one,
-    coe_unit_of_coprime, Units.val_pow_eq_pow_val]
+  apply_fun ((fun (x : Units (ZMod n)) => (x : ZMod n)) : Units (ZMod n) → ZMod n)  at this
+  simpa only [Nat.succ_eq_add_one, Nat.cast_pow, Units.val_one, Nat.cast_one,
+    coe_unitOfCoprime, Units.val_pow_eq_pow_val]
 #align nat.modeq.pow_totient Nat.ModEq.pow_totient
 
 section
@@ -399,7 +403,8 @@ theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := 
 #align zmod.pow_card_pow ZMod.pow_card_pow
 
 @[simp]
-theorem frobenius_zMod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by ext a;
+theorem frobenius_zMod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
+  ext a
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 #align zmod.frobenius_zmod ZMod.frobenius_zMod
 
@@ -415,7 +420,9 @@ theorem units_pow_card_sub_one_eq_one (p : ℕ) [Fact p.Prime] (a : (ZMod p)ˣ) 
 
 /-- **Fermat's Little Theorem**: for all nonzero `a : zmod p`, we have `a ^ (p - 1) = 1`. -/
 theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
-    a ^ (p - 1) = 1 := by have h := pow_card_sub_one_eq_one a ha; rwa [ZMod.card p] at h
+    a ^ (p - 1) = 1 := by
+    have h := FiniteField.pow_card_sub_one_eq_one a ha
+    rwa [ZMod.card p] at h
 #align zmod.pow_card_sub_one_eq_one ZMod.pow_card_sub_one_eq_one
 
 theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
@@ -439,11 +446,10 @@ end ZMod
 `a ^ (p - 1) ≡ 1 [ZMOD p]`. -/
 theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
     n ^ (p - 1) ≡ 1 [ZMOD p] := by
-  haveI : Fact p.prime := ⟨hp⟩
+  haveI : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
-    rw [CharP.int_cast_eq_zero_iff _ p, ← (nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
+    rw [CharP.int_cast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
     · exact hpn.symm
-    exact ZMod.charP p
   simpa [← ZMod.int_cast_eq_int_cast_iff] using ZMod.pow_card_sub_one_eq_one this
 #align int.modeq.pow_card_sub_one_eq_one Int.ModEq.pow_card_sub_one_eq_one
 
@@ -470,10 +476,11 @@ theorem exists_nonsquare (hF : ringChar F ≠ 2) : ∃ a : F, ¬IsSquare a := by
   have h : ¬Function.Injective sq := by
     simp only [Function.Injective, not_forall, exists_prop]
     refine' ⟨-1, 1, _, Ring.neg_one_ne_one_of_char_ne_two hF⟩
-    simp only [sq, one_pow, neg_one_sq]
+    simp only [one_pow, neg_one_sq]
   rw [Finite.injective_iff_surjective] at h
   -- sq not surjective
   simp_rw [IsSquare, ← pow_two, @eq_comm _ _ (_ ^ 2)]
+  unfold Function.Surjective at h
   push_neg  at h⊢
   exact h
 #align finite_field.exists_nonsquare FiniteField.exists_nonsquare
@@ -535,6 +542,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
       have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card (by norm_num)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
       refine' ⟨g ^ m, _⟩
+      dsimp
       rw [mul_comm, pow_mul, pow_two]
 #align finite_field.unit_is_square_iff FiniteField.unit_isSquare_iff
 
