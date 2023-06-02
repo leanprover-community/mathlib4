@@ -21,15 +21,15 @@ and `q` is notation for the cardinality of `K`.
 
 See `ring_theory.integral_domain` for the fact that the unit group of a finite field is a
 cyclic group, as well as the fact that every finite integral domain is a field
-(`fintype.field_of_domain`).
+(`Fintype.fieldOfDomain`).
 
 ## Main results
 
-1. `fintype.card_units`: The unit group of a finite field is has cardinality `q - 1`.
+1. `Fintype.card_units`: The unit group of a finite field is has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
    - `q-1` if `q-1 ∣ i`
    - `0`   otherwise
-3. `finite_field.card`: The cardinality `q` is a power of the characteristic of `K`.
+3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
    See `card'` for a variant.
 
 ## Notation
@@ -39,9 +39,9 @@ and `q` is notation for the cardinality of `K`.
 
 ## Implementation notes
 
-While `fintype Kˣ` can be inferred from `fintype K` in the presence of `decidable_eq K`,
-in this file we take the `fintype Kˣ` argument directly to reduce the chance of typeclass
-diamonds, as `fintype` carries data.
+While `Fintype Kˣ` can be inferred from `Fintype K` in the presence of `DecidableEq K`,
+in this file we take the `Fintype Kˣ` argument directly to reduce the chance of typeclass
+diamonds, as `Fintype` carries data.
 
 -/
 
@@ -351,7 +351,7 @@ open scoped Nat
 
 open ZMod
 
-/-- The **Fermat-Euler totient theorem**. `nat.modeq.pow_totient` is an alternative statement
+/-- The **Fermat-Euler totient theorem**. `Nat.ModEq.pow_totient` is an alternative statement
   of the same theorem. -/
 @[simp]
 theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
@@ -360,7 +360,7 @@ theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
   · rw [← card_units_eq_totient, pow_card_eq_one]
 #align zmod.pow_totient ZMod.pow_totient
 
-/-- The **Fermat-Euler totient theorem**. `zmod.pow_totient` is an alternative statement
+/-- The **Fermat-Euler totient theorem**. `ZMod.pow_totient` is an alternative statement
   of the same theorem. -/
 theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
   rw [← ZMod.eq_iff_modEq_nat]
@@ -389,7 +389,7 @@ open FiniteField
 
 namespace ZMod
 
-/-- A variation on Fermat's little theorem. See `zmod.pow_card_sub_one_eq_one` -/
+/-- A variation on Fermat's little theorem. See `ZMod.pow_card_sub_one_eq_one` -/
 @[simp]
 theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
   have h := FiniteField.pow_card x; rwa [ZMod.card p] at h
@@ -413,12 +413,12 @@ theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 :=
   rw [Fintype.card_units, card]
 #align zmod.card_units ZMod.card_units
 
-/-- **Fermat's Little Theorem**: for every unit `a` of `zmod p`, we have `a ^ (p - 1) = 1`. -/
+/-- **Fermat's Little Theorem**: for every unit `a` of `ZMod p`, we have `a ^ (p - 1) = 1`. -/
 theorem units_pow_card_sub_one_eq_one (p : ℕ) [Fact p.Prime] (a : (ZMod p)ˣ) : a ^ (p - 1) = 1 := by
   rw [← card_units p, pow_card_eq_one]
 #align zmod.units_pow_card_sub_one_eq_one ZMod.units_pow_card_sub_one_eq_one
 
-/-- **Fermat's Little Theorem**: for all nonzero `a : zmod p`, we have `a ^ (p - 1) = 1`. -/
+/-- **Fermat's Little Theorem**: for all nonzero `a : ZMod p`, we have `a ^ (p - 1) = 1`. -/
 theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p - 1) = 1 := by
     have h := FiniteField.pow_card_sub_one_eq_one a ha
