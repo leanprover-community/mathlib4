@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.RingedSpace
-import Mathbin.AlgebraicGeometry.Stalks
+import Mathlib.AlgebraicGeometry.RingedSpace
+import Mathlib.AlgebraicGeometry.Stalks
 
 /-!
 # The category of locally ringed spaces
@@ -136,8 +136,7 @@ instance : Category LocallyRingedSpace where
 
 /-- The forgetful functor from `LocallyRingedSpace` to `SheafedSpace CommRing`. -/
 @[simps]
-def forgetToSheafedSpace : LocallyRingedSpace ⥤ SheafedSpace CommRingCat
-    where
+def forgetToSheafedSpace : LocallyRingedSpace ⥤ SheafedSpace CommRingCat where
   obj X := X.toSheafedSpace
   map X Y f := f.1
 #align algebraic_geometry.LocallyRingedSpace.forget_to_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.forgetToSheafedSpace
@@ -213,8 +212,7 @@ instance is_sheafedSpace_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) [IsIso f] 
 -/
 @[simps]
 def restrict {U : TopCat} (X : LocallyRingedSpace) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f) :
-    LocallyRingedSpace
-    where
+    LocallyRingedSpace where
   LocalRing := by
     intro x
     dsimp at *
@@ -267,8 +265,7 @@ theorem Γ_map_op {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Γ.map f.op = f.1.c
 theorem preimage_basicOpen {X Y : LocallyRingedSpace} (f : X ⟶ Y) {U : Opens Y}
     (s : Y.Presheaf.obj (op U)) :
     (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
-      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.1.c.app _ s) :=
-  by
+      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.1.c.app _ s) := by
   ext
   constructor
   · rintro ⟨⟨y, hyU⟩, hy : IsUnit _, rfl : y = _⟩
@@ -284,8 +281,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace} (f : X ⟶ Y) {U : Opens Y
 -- This actually holds for all ringed spaces with nontrivial stalks.
 @[simp]
 theorem basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
-    X.toRingedSpace.basicOpen (0 : X.Presheaf.obj <| op U) = ⊥ :=
-  by
+    X.toRingedSpace.basicOpen (0 : X.Presheaf.obj <| op U) = ⊥ := by
   simp only [RingedSpace.basic_open, isUnit_zero_iff, map_zero, zero_ne_one' (X.presheaf.stalk _),
     Set.setOf_false, Set.image_empty]
   rfl
