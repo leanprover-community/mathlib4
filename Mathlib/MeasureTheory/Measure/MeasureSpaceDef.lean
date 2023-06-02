@@ -638,11 +638,11 @@ section MeasureSpace
 
 -- mathport name: «expr∀ᵐ , »
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
-  Filter.Eventually P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
+  Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 -- mathport name: «expr∃ᵐ , »
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
-  Filter.Frequently P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
+  Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
 macro "volume_tac" : tactic =>
