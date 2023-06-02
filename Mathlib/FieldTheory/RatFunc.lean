@@ -602,9 +602,10 @@ instance instCommRing : CommRing (RatFunc K) :=
     npow := npowRec }
 #align ratfunc.comm_ring RatFunc.instCommRing
 
+variable {K}
+
 section LiftHom
 
-variable {K}
 variable {G₀ L R S F : Type _} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
 
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
@@ -787,6 +788,8 @@ theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function
 #align ratfunc.lift_ring_hom_injective RatFunc.liftRingHom_injective
 
 end LiftHom
+
+variable (K)
 
 instance [IsDomain K] : Field (RatFunc K) :=
   { RatFunc.instCommRing K, RatFunc.instNontrivial K with
