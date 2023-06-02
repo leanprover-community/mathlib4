@@ -113,8 +113,10 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
 
-/-- A recursor for `Opposite`. Use as `induction x using Opposite.rec'`. -/
-@[simp]
+/-- A recursor for `Opposite`.
+The `@[eliminator]` attribute should make it the default induction principle for `Opposite`,
+although if this fails one could use `induction x using Opposite.rec'`. -/
+@[simp, eliminator]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align opposite.rec Opposite.rec'
 

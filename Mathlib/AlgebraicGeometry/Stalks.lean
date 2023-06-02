@@ -25,21 +25,16 @@ noncomputable section
 
 universe v u v' u'
 
-open CategoryTheory
-
-open CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Functor
-
-open AlgebraicGeometry
-
-open TopologicalSpace
-
-open Opposite
+open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
+  AlgebraicGeometry TopologicalSpace
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
 -- Porting note : no tidy tactic
 -- attribute [local tidy] tactic.op_induction' tactic.auto_cases_opens
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- this could be replaced by
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
 
@@ -60,7 +55,7 @@ def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap
 
-@[simp, elementwise, reassoc]
+@[elementwise (attr := simp), reassoc (attr := simp)]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
     (x : (Opens.map α.base).obj U) :
     Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ stalkMap α ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
@@ -94,7 +89,7 @@ theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso_hom_eq_germ AlgebraicGeometry.PresheafedSpace.restrictStalkIso_hom_eq_germ
 
-@[simp, elementwise, reassoc]
+@[elementwise (attr := simp), reassoc (attr := simp)]
 theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
     X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
@@ -108,7 +103,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = stalkMap (X.ofRestrict h) x := by
   refine colimit.hom_ext fun V => ?_
-  induction V using Opposite.rec' with | h V => ?_
+  induction V with | h V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
@@ -137,7 +132,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   dsimp [stalkMap]
   simp only [stalkPushforward.id]
   erw [← map_comp]
-  convert(stalkFunctor C x).map_id X.presheaf
+  convert (stalkFunctor C x).map_id X.presheaf
   refine NatTrans.ext _ _ <| funext fun x => ?_
   simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
   rfl
@@ -151,7 +146,7 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
   refine colimit.hom_ext fun U => ?_
-  induction U using Opposite.rec' with | h U => ?_
+  induction U with | h U => ?_
   cases U
   simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, unop_op, OpenNhds.inclusion_obj,
     ι_colimMap_assoc, pushforwardObj_obj, Opens.map_comp_obj, whiskerLeft_app, comp_c_app,
@@ -207,8 +202,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
       erw [← stalkMap.comp β α (α.base x)]
       rw [congr_hom _ _ (IsIso.inv_hom_id α), stalkMap.id, eqToHom_trans_assoc, eqToHom_refl,
         Category.id_comp]
-    ·
-      rw [Category.assoc, ← stalkMap.comp, congr_hom _ _ (IsIso.hom_inv_id α), stalkMap.id,
+    · rw [Category.assoc, ← stalkMap.comp, congr_hom _ _ (IsIso.hom_inv_id α), stalkMap.id,
         eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.is_iso AlgebraicGeometry.PresheafedSpace.stalkMap.isIso
@@ -230,7 +224,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
   refine colimit.hom_ext fun j => ?_
-  induction j using Opposite.rec' with | h j => ?_
+  induction j with | h j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, colimit.map_desc,
     OpenNhds.inclusion_obj, pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app,
