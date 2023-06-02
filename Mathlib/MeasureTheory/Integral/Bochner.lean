@@ -364,7 +364,7 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
       exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
     · dsimp
       rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
-        measure.restrict_apply (f.measurable_set_preimage _)]
+        Measure.restrict_apply (f.measurableSet_preimage _)]
       exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 #align measure_theory.simple_func.integral_piecewise_zero MeasureTheory.SimpleFunc.integral_piecewise_zero
 
@@ -381,15 +381,15 @@ theorem map_integral (f : α →ₛ E) (g : E → F) (hf : Integrable f μ) (hg 
 theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : Integrable f μ) (hg0 : g 0 = 0)
     (ht : ∀ b, g b ≠ ∞) :
     (f.map (ENNReal.toReal ∘ g)).integral μ = ENNReal.toReal (∫⁻ a, g (f a) ∂μ) := by
-  have hf' : f.fin_meas_supp μ := integrable_iff_fin_meas_supp.1 hf
+  have hf' : f.FinMeasSupp μ := integrable_iff_finMeasSupp.1 hf
   simp only [← map_apply g f, lintegral_eq_lintegral]
   rw [map_integral f _ hf, map_lintegral, ENNReal.toReal_sum]
   · refine' Finset.sum_congr rfl fun b hb => _
-    rw [smul_eq_mul, to_real_mul, mul_comm]
+    rw [smul_eq_mul, toReal_mul, mul_comm]
   · intro a ha
     by_cases a0 : a = 0
     · rw [a0, hg0, MulZeroClass.zero_mul]; exact WithTop.zero_ne_top
-    · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).Ne
+    · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 #align measure_theory.simple_func.integral_eq_lintegral' MeasureTheory.SimpleFunc.integral_eq_lintegral'
 
@@ -435,24 +435,24 @@ theorem norm_setToSimpleFunc_le_integral_norm (T : Set α → E →L[ℝ] F) {C 
   calc
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x in f.range, ENNReal.toReal (μ (f ⁻¹' {x})) * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_mul_norm_of_integrable T hT_norm f hf
-    _ = C * (f.map norm).integral μ := by rw [map_integral f norm hf norm_zero];
-      simp_rw [smul_eq_mul]
+    _ = C * (f.map norm).integral μ := by
+      rw [map_integral f norm hf norm_zero]; simp_rw [smul_eq_mul]
 
 #align measure_theory.simple_func.norm_set_to_simple_func_le_integral_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_integral_norm
 
 theorem norm_integral_le_integral_norm (f : α →ₛ E) (hf : Integrable f μ) :
     ‖f.integral μ‖ ≤ (f.map norm).integral μ := by
   refine' (norm_setToSimpleFunc_le_integral_norm _ (fun s _ _ => _) hf).trans (one_mul _).le
-  exact (norm_weighted_smul_le s).trans (one_mul _).symm.le
+  exact (norm_weightedSMul_le s).trans (one_mul _).symm.le
 #align measure_theory.simple_func.norm_integral_le_integral_norm MeasureTheory.SimpleFunc.norm_integral_le_integral_norm
 
 theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)) :
     f.integral (μ + ν) = f.integral μ + f.integral ν := by
   simp_rw [integral_def]
   refine'
-    setToSimpleFunc_add_left' (weighted_smul μ) (weighted_smul ν) (weighted_smul (μ + ν))
+    setToSimpleFunc_add_left' (weightedSMul μ) (weightedSMul ν) (weightedSMul (μ + ν))
       (fun s hs hμνs => _) hf
-  rw [lt_top_iff_ne_top, measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
+  rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 #align measure_theory.simple_func.integral_add_measure MeasureTheory.SimpleFunc.integral_add_measure
 
@@ -462,16 +462,16 @@ end SimpleFunc
 
 namespace L1
 
-open AeEqFun Lp.SimpleFunc Lp
+open AEEqFun Lp.simpleFunc Lp
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] {m : MeasurableSpace α} {μ : Measure α}
 
-variable {α E μ}
+variable {E μ}
 
 namespace SimpleFunc
 
 theorem norm_eq_integral (f : α →₁ₛ[μ] E) : ‖f‖ = ((toSimpleFunc f).map norm).integral μ := by
-  rw [norm_eq_sum_mul f, (to_simple_func f).map_integral norm (simple_func.integrable f) norm_zero]
+  rw [norm_eq_sum_mul f, (toSimpleFunc f).map_integral norm (SimpleFunc.integrable f) norm_zero]
   simp_rw [smul_eq_mul]
 #align measure_theory.L1.simple_func.norm_eq_integral MeasureTheory.L1.SimpleFunc.norm_eq_integral
 
@@ -481,9 +481,9 @@ section PosPart
 def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
   ⟨Lp.posPart (f : α →₁[μ] ℝ), by
     rcases f with ⟨f, s, hsf⟩
-    use s.pos_part
-    simp only [Subtype.coe_mk, Lp.coe_pos_part, ← hsf, ae_eq_fun.pos_part_mk, simple_func.pos_part,
-      simple_func.coe_map, mk_eq_mk]⟩
+    use s.posPart
+    simp only [Subtype.coe_mk, Lp.coe_posPart, ← hsf, AEEqFun.posPart_mk,
+      SimpleFunc.coe_map, mk_eq_mk]⟩
 #align measure_theory.L1.simple_func.pos_part MeasureTheory.L1.SimpleFunc.posPart
 
 /-- Negative part of a simple function in L1 space. -/
@@ -584,8 +584,8 @@ section PosPart
 theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     toSimpleFunc (posPart f) =ᵐ[μ] (toSimpleFunc f).posPart := by
   have eq : ∀ a, (to_simple_func f).posPart a = max ((to_simple_func f) a) 0 := fun a => rfl
-  have ae_eq : ∀ᵐ a ∂μ, to_simple_func (pos_part f) a = max ((to_simple_func f) a) 0 := by
-    filter_upwards [to_simple_func_eq_to_fun (pos_part f), Lp.coe_fn_pos_part (f : α →₁[μ] ℝ),
+  have ae_eq : ∀ᵐ a ∂μ, to_simple_func (posPart f) a = max ((to_simple_func f) a) 0 := by
+    filter_upwards [to_simple_func_eq_to_fun (posPart f), Lp.coe_fn_posPart (f : α →₁[μ] ℝ),
       to_simple_func_eq_to_fun f]with _ _ h₂ _
     convert h₂
   refine' ae_eq.mono fun a h => _
@@ -595,7 +595,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
 theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     toSimpleFunc (negPart f) =ᵐ[μ] (toSimpleFunc f).neg_part := by
   rw [simple_func.neg_part, MeasureTheory.SimpleFunc.negPart]
-  filter_upwards [pos_part_to_simple_func (-f), neg_to_simple_func f]
+  filter_upwards [posPart_to_simple_func (-f), neg_to_simple_func f]
   intro a h₁ h₂
   rw [h₁]
   show max _ _ = max _ _
@@ -605,8 +605,8 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
 
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
   -- Convert things in `L¹` to their `simple_func` counterpart
-  have ae_eq₁ : (to_simple_func f).posPart =ᵐ[μ] (to_simple_func (pos_part f)).map norm := by
-    filter_upwards [pos_part_to_simple_func f]with _ h
+  have ae_eq₁ : (to_simple_func f).posPart =ᵐ[μ] (to_simple_func (posPart f)).map norm := by
+    filter_upwards [posPart_to_simple_func f]with _ h
     rw [simple_func.map_apply, h]
     conv_lhs => rw [← simple_func.pos_part_map_norm, simple_func.map_apply]
   -- Convert things in `L¹` to their `simple_func` counterpart
