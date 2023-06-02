@@ -18,8 +18,8 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 
 ## Main results
 
-- `derivation`: The type of `R`-derivations from `A` to `M`. This has an `A`-module structure.
-- `derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
+- `Derivation`: The type of `R`-derivations from `A` to `M`. This has an `A`-module structure.
+- `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
 See `ring_theory.derivation.lie` for
@@ -38,7 +38,7 @@ and `ring_theory.derivation.to_square_zero` for
 open Algebra
 open scoped BigOperators
 
-/-- `D : derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
+/-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
 equality. We also require that `D 1 = 0`. See `derivation.mk'` for a constructor that deduces this
 assumption from the Leibniz rule when `M` is cancellative.
 
@@ -49,7 +49,7 @@ structure Derivation (R : Type _) (A : Type _) [CommSemiring R] [CommSemiring A]
   protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
 #align derivation Derivation
 
-/-- The `linear_map` underlying a `derivation`. -/
+/-- The `LinearMap` underlying a `Derivation`. -/
 add_decl_doc Derivation.toLinearMap
 
 namespace Derivation
@@ -256,7 +256,7 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
-/-- `coe_fn` as an `add_monoid_hom`. -/
+/-- `coe_fn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (↑)
   map_zero' := coe_zero
@@ -354,7 +354,7 @@ section Cancel
 variable {R : Type _} [CommSemiring R] {A : Type _} [CommSemiring A] [Algebra R A] {M : Type _}
   [AddCancelCommMonoid M] [Module R M] [Module A M]
 
-/-- Define `derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
+/-- Define `Derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
 rule. -/
 def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
