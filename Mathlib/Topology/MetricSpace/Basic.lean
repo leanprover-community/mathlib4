@@ -792,7 +792,7 @@ protected theorem mk_uniformity_basis_le {β : Type _} {p : β → Prop} {f : β
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_setOf.2 hx.le)⟩
 #align metric.mk_uniformity_basis_le Metric.mk_uniformity_basis_le
 
-/-- Contant size closed neighborhoods of the diagonal form a basis
+/-- Constant size closed neighborhoods of the diagonal form a basis
 of the uniformity filter. -/
 theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=

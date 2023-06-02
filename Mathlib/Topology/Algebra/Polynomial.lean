@@ -192,7 +192,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
 #align polynomial.coeff_le_of_roots_le Polynomial.coeff_le_of_roots_le
 
 /-- The coefficients of the monic polynomials of bounded degree with bounded roots are
-uniformely bounded. -/
+uniformly bounded. -/
 theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1 : p.Monic)
     (h2 : Splits f p) (h3 : p.natDegree ≤ d) (h4 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) (i : ℕ) :
     ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) := by

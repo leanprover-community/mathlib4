@@ -71,7 +71,7 @@ with compositions fully right associated and identities removed.
 Returns the proof of the new theorem along with (optionally) a new level metavariable
 for the first universe parameter to `ConcreteCategory`.
 
-The `simpSides` option controles whether to simplify both sides of the equality, for simpNF
+The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
 def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
