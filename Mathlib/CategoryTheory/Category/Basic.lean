@@ -83,13 +83,9 @@ If it is omitted a "free" universe will be used.
 namespace Std.Tactic.Ext
 open Lean Elab Tactic
 
-/-- A wrapper for `ext` that will fail if it does not make progress. -/
--- After https://github.com/leanprover/std4/pull/33
--- we can just `` evalTactic (← `(tactic| ext))``
--- (But it would be good to have a name for that, too, so we can pass it to aesop.)
+/-- A wrapper for `ext` that we can pass to `aesop`. -/
 def extCore' : TacticM Unit := do
-  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
-  replaceMainGoal <| gs.map (·.1) |>.toList
+  evalTactic (← `(tactic| ext))
 
 end Std.Tactic.Ext
 
@@ -141,7 +137,7 @@ attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCor
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
--- when etaExperiment is on.
+-- now that etaExperiment is always on.
 attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
