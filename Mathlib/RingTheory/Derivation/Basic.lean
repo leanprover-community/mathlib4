@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Derivations
@@ -67,8 +67,7 @@ variable {M : Type _} [AddCommMonoid M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
-instance : AddMonoidHomClass (Derivation R A M) A M
-    where
+instance : AddMonoidHomClass (Derivation R A M) A M where
   coe D := D.toFun
   coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact FunLike.coe_injective h
   map_add D := D.toLinearMap.map_add'
@@ -161,8 +160,7 @@ theorem map_coe_nat (n : ℕ) : D (n : A) = 0 := by
 #align derivation.map_coe_nat Derivation.map_coe_nat
 
 @[simp]
-theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a :=
-  by
+theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
   · rw [pow_zero, map_one_eq_zero, zero_smul]
   · rcases(zero_le n).eq_or_lt with (rfl | hpos)
@@ -260,8 +258,7 @@ instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.AddCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 /-- `coe_fn` as an `add_monoid_hom`. -/
-def coeFnAddMonoidHom : Derivation R A M →+ A → M
-    where
+def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := coeFn
   map_zero' := coe_zero
   map_add' := coe_add
@@ -294,8 +291,7 @@ variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
-def LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N
-    where
+def LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
       map_one_eq_zero' := by simp only [LinearMap.comp_apply, coe_fn_coe, map_one_eq_zero, map_zero]
@@ -318,8 +314,7 @@ theorem coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →
 
 /-- The composition of a derivation with a linear map as a bilinear map -/
 @[simps]
-def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A N
-    where
+def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A N where
   toFun f := f.compDer
   map_add' f₁ f₂ := by ext; rfl
   map_smul' r D := by ext; rfl
@@ -345,8 +340,7 @@ variable (R)
 
 /-- If `A` is both an `R`-algebra and an `S`-algebra; `M` is both an `R`-module and an `S`-module,
 then an `S`-derivation `A → M` is also an `R`-derivation if it is also `R`-linear. -/
-protected def restrictScalars (d : Derivation S A M) : Derivation R A M
-    where
+protected def restrictScalars (d : Derivation S A M) : Derivation R A M where
   map_one_eq_zero' := d.map_one_eq_zero
   leibniz' := d.leibniz
   toLinearMap := d.toLinearMap.restrictScalars R
@@ -363,8 +357,7 @@ variable {R : Type _} [CommSemiring R] {A : Type _} [CommSemiring A] [Algebra R 
 
 /-- Define `derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
 rule. -/
-def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M
-    where
+def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
   map_one_eq_zero' := add_right_eq_self.1 <| by simpa only [one_smul, one_mul] using (h 1 1).symm
   leibniz' := h
@@ -407,8 +400,7 @@ theorem map_coe_int (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 #align derivation.map_coe_int Derivation.map_coe_int
 
-theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :=
-  by
+theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
   refine' eq_neg_of_add_eq_zero_left _
   calc
@@ -423,8 +415,7 @@ theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
 theorem leibniz_inv {K : Type _} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
-    (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a :=
-  by
+    (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
   · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
