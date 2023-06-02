@@ -26,7 +26,7 @@ open Filter Set Metric
 
 theorem setOf_liouville_eq_iInter_iUnion :
     { x | Liouville x } =
-      ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b),
+      ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_hb : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
   ext x
   simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, mem_diff,
@@ -36,7 +36,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
 theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
   refine isGδ_iInter fun n => IsOpen.isGδ ?_
-  refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun hb => ?_
+  refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
   exact isOpen_ball.inter isClosed_singleton.isOpen_compl
 set_option linter.uppercaseLean3 false in
 #align is_Gδ_set_of_liouville isGδ_setOf_liouville
@@ -48,7 +48,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
     rw [setOf_liouville_eq_iInter_iUnion]
-    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => diff_subset _ _
+    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset _ _
   · simp only [inter_iInter, inter_iUnion, setOf_liouville_eq_iInter_iUnion]
     refine iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
     rw [inter_comm]
@@ -62,7 +62,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   refine eventually_residual_irrational.and ?_
   refine eventually_residual.2 ⟨_, ?_, Rat.denseEmbedding_coe_real.dense.mono ?_, Subset.rfl⟩
   · exact isGδ_iInter fun n => IsOpen.isGδ <|
-          isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun hb => isOpen_ball
+          isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => isOpen_ball
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
