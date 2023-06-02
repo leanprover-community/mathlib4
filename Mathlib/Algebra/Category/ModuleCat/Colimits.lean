@@ -52,12 +52,13 @@ on a collection of types indexed by the objects of `J`.
 -/
 inductive Prequotient
   -- There's always `of`
-  | of : ∀ (j : J) (x : F.obj j), Prequotient
+  | of : ∀ (j : J) (_ : F.obj j), Prequotient
   -- Then one generator for each operation
   | zero : Prequotient
   | neg : Prequotient → Prequotient
   | add : Prequotient → Prequotient → Prequotient
   | smul : R → Prequotient → Prequotient
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.prequotient ModuleCat.Colimits.Prequotient
 
 instance : Inhabited (Prequotient F) :=
@@ -72,8 +73,8 @@ because one element is mapped to another by a morphism in the diagram.
 inductive Relation : Prequotient F → Prequotient F → Prop
   -- Make it an equivalence relation:
   | refl : ∀ x, Relation x x
-  | symm : ∀ (x y) (h : Relation x y), Relation y x
-  | trans : ∀ (x y z) (h : Relation x y) (k : Relation y z), Relation x z
+  | symm : ∀ (x y) (_ : Relation x y), Relation y x
+  | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z), Relation x z
   -- There's always a `map` Relation
   | map : ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
     Relation (Prequotient.of j' (F.map f x)) (Prequotient.of j x)
@@ -86,10 +87,10 @@ inductive Relation : Prequotient F → Prequotient F → Prop
   | smul : ∀ (j) (s) (x : F.obj j),
     Relation (Prequotient.of j (s • x)) (smul s (Prequotient.of j x))
   -- Then one Relation per argument of each operation
-  | neg_1 : ∀ (x x') (r : Relation x x'), Relation (neg x) (neg x')
-  | add_1 : ∀ (x x' y) (r : Relation x x'), Relation (add x y) (add x' y)
-  | add_2 : ∀ (x y y') (r : Relation y y'), Relation (add x y) (add x y')
-  | smul_1 : ∀ (s) (x x') (r : Relation x x'), Relation (smul s x) (smul s x')
+  | neg_1 : ∀ (x x') (_ : Relation x x'), Relation (neg x) (neg x')
+  | add_1 : ∀ (x x' y) (_ : Relation x x'), Relation (add x y) (add x' y)
+  | add_2 : ∀ (x y y') (_ : Relation y y'), Relation (add x y) (add x y')
+  | smul_1 : ∀ (s) (x x') (_ : Relation x x'), Relation (smul s x) (smul s x')
   -- And one Relation per axiom
   | zero_add : ∀ x, Relation (add zero x) x
   | add_zero : ∀ x, Relation (add x zero) x
@@ -102,6 +103,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop
   | smul_zero : ∀ s, Relation (smul s zero) zero
   | add_smul : ∀ s t x, Relation (smul (s + t) x) (add (smul s x) (smul t x))
   | zero_smul : ∀ x, Relation (smul 0 x) zero
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.relation ModuleCat.Colimits.Relation
 
 /-- The setoid corresponding to module expressions modulo module relations and identifications.
@@ -109,6 +111,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop
 def colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_setoid ModuleCat.Colimits.colimitSetoid
 
 attribute [instance] colimitSetoid
@@ -117,6 +120,7 @@ attribute [instance] colimitSetoid
 -/
 def ColimitType : Type max u v w :=
   Quotient (colimitSetoid F)
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_type ModuleCat.Colimits.ColimitType
 
 instance : Inhabited (ColimitType F) := ⟨Quot.mk _ <| .zero⟩
@@ -199,6 +203,7 @@ instance : Module R (ColimitType F) where
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.quot_zero ModuleCat.Colimits.quot_zero
 
 def ColimitType.mk {F : J ⥤ ModuleCat R} (x : Prequotient F) : ColimitType F := Quot.mk Setoid.r x
@@ -206,34 +211,40 @@ def ColimitType.mk {F : J ⥤ ModuleCat R} (x : Prequotient F) : ColimitType F :
 @[simp]
 theorem quot_neg (x) : Quot.mk Setoid.r (neg x) = (-ColimitType.mk x : ColimitType F) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.quot_neg ModuleCat.Colimits.quot_neg
 
 @[simp]
 theorem quot_add (x y) :
     Quot.mk Setoid.r (add x y) = (ColimitType.mk x + ColimitType.mk y : ColimitType F) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.quot_add ModuleCat.Colimits.quot_add
 
 @[simp]
 theorem quot_smul (s x) : Quot.mk Setoid.r (smul s x) = (s • ColimitType.mk x : ColimitType F) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.quot_smul ModuleCat.Colimits.quot_smul
 
 /-- The bundled module giving the colimit of a diagram. -/
 def colimit : ModuleCat R :=
   ModuleCat.of R (ColimitType F)
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit ModuleCat.Colimits.colimit
 
 /-- The function from a given module in the diagram to the colimit module. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_fun ModuleCat.Colimits.coconeFun
 
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_smul' := by intros <;> apply Quot.sound <;> apply Relation.smul
-  map_add' := by intros <;> apply Quot.sound <;> apply Relation.add
+  map_smul' := by intros ; apply Quot.sound ; apply Relation.smul
+  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
 
 @[simp]
@@ -242,6 +253,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
   ext
   apply Quot.sound
   apply ModuleCat.Colimits.Relation.map
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_naturality ModuleCat.Colimits.cocone_naturality
 
 @[simp]
@@ -249,12 +261,14 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_naturality_components ModuleCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit module. -/
 def colimitCocone : Cocone F where
   pt := colimit F
   ι := { app := coconeMorphism F }
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_cocone ModuleCat.Colimits.colimitCocone
 
 /-- The function from the free module on the diagram to the cone point of any other cocone. -/
@@ -265,6 +279,7 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | neg x => -descFunLift _ x
   | add x y => descFunLift _ x + descFunLift _ y
   | smul s x => s • descFunLift _ x
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_fun_lift ModuleCat.Colimits.descFunLift
 
 /-- The function from the colimit module to the cone point of any other cocone. -/
@@ -320,13 +335,15 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     · rw [add_smul]
     -- zero_smul
     · rw [zero_smul]
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_fun ModuleCat.Colimits.descFun
 
 /-- The group homomorphism from the colimit module to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
-  map_smul' s x := by rcases x <;> rfl
-  map_add' x y := by rcases x <;> rcases y <;> rfl
+  map_smul' s x := by rcases x ; rfl
+  map_add' x y := by rcases x ; rcases y ; rfl
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
@@ -351,34 +368,40 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
     · rw [quot_smul, map_smul, map_smul]  -- porting note: this was closed by `simp [*]`
       congr 1
     · rfl -- porting note: this wasn't here
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_cocone_is_colimit ModuleCat.Colimits.colimitCoconeIsColimit
 
 instance hasColimits_moduleCat : HasColimits (ModuleCat.{max v u} R)
-    where has_colimits_of_shape J 𝒥 :=
+    where has_colimits_of_shape _ _ :=
     { has_colimit := fun F =>
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitCoconeIsColimit F } }
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_Module ModuleCat.Colimits.hasColimits_moduleCat
 
 instance hasColimitsOfSize_moduleCat : HasColimitsOfSize.{v} (ModuleCat.{max v u} R) :=
   hasColimitsOfSize_shrink _
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_of_size_Module ModuleCat.Colimits.hasColimitsOfSize_moduleCat
 
 instance hasColimitsOfSize_zero_moduleCat : HasColimitsOfSize.{0} (ModuleCat.{max v u} R) :=
   @hasColimitsOfSize_shrink.{0} (ModuleCat.{max v u} R) _ ModuleCat.Colimits.hasColimits_moduleCat
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_of_size_zero_Module ModuleCat.Colimits.hasColimitsOfSize_zero_moduleCat
 
 -- We manually add a `has_colimits` instance with universe parameters swapped, for otherwise
 -- the instance is not found by typeclass search.
 instance hasColimits_Module' (R : Type u) [Ring R] : HasColimits (ModuleCat.{max u v} R) :=
   ModuleCat.Colimits.hasColimits_moduleCat.{u, v}
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_Module' ModuleCat.Colimits.hasColimits_Module'
 
 -- We manually add a `has_colimits` instance with equal universe parameters, for otherwise
 -- the instance is not found by typeclass search.
 instance hasColimits_Module'' (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
   ModuleCat.Colimits.hasColimits_moduleCat.{u, u}
+set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_Module'' ModuleCat.Colimits.hasColimits_Module''
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
