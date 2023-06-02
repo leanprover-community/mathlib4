@@ -8,7 +8,8 @@ def moreServerArgs := #[
 
 -- These settings only apply during `lake build`, but not in VSCode editor.
 def moreLeanArgs := #[
-  "-DwarningAsError=true"
+  "-DwarningAsError=true",
+  "-Dcompiler.enableNew=false"
 ] ++ moreServerArgs
 
 package mathlib where
@@ -27,6 +28,7 @@ meta if get_config? doc = some "on" then -- do not download and build doc-gen4 b
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
 require std from git "https://github.com/leanprover/std4" @ "main"
+  with NameMap.empty.insert `disable_new_compiler ""
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 

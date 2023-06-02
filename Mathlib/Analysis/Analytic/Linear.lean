@@ -32,7 +32,9 @@ namespace ContinuousLinearMap
 
 /-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
 `f y = f x + f (y - x)`. -/
-@[simp]
+-- @[simp] -- Porting note: removed during !4#4573
+-- This was interacting badly with disabling the new compiler.
+-- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/initialization.20order.20fiasco
 def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
   | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
@@ -83,7 +85,9 @@ theorem uncurryBilinear_apply (f : E →L[𝕜] F →L[𝕜] G) (m : Fin 2 → E
 #align continuous_linear_map.uncurry_bilinear_apply ContinuousLinearMap.uncurryBilinear_apply
 
 /-- Formal multilinear series expansion of a bilinear function `f : E →L[𝕜] F →L[𝕜] G`. -/
-@[simp]
+-- @[simp] -- Porting note: removed during !4#4573
+-- This was interacting badly with disabling the new compiler.
+-- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/initialization.20order.20fiasco
 def fpowerSeriesBilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) : FormalMultilinearSeries 𝕜 (E × F) G
   | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x.1 x.2)
   | 1 => (continuousMultilinearCurryFin1 𝕜 (E × F) G).symm (f.deriv₂ x)
