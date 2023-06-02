@@ -120,7 +120,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
   suffices
     TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
         (l ×ˢ l) (𝓝 x) ∧
-      TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (𝓝 x) by
+      TendstoUniformlyOnFilter (fun (n : ι × ι) (_ : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (𝓝 x) by
     have := this.1.add this.2
     rw [add_zero] at this
     exact this.congr (by simp)
@@ -160,8 +160,10 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     exact
       eventually_prod_iff.mpr
         ⟨fun n : ι × ι => f n.1 x ∈ t ∧ f n.2 x ∈ t,
-          eventually_prod_iff.mpr ⟨_, ht, _, ht, fun {n} hn {n'} hn' => ⟨hn, hn'⟩⟩, fun y => True, by
-          simp, fun {n} hn {y} hy => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
+          eventually_prod_iff.mpr ⟨_, ht, _, ht, fun {n} hn {n'} hn' => ⟨hn, hn'⟩⟩,
+          fun _ => True,
+          by simp,
+          fun {n} hn {y} _ => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
 #align uniform_cauchy_seq_on_filter_of_fderiv uniformCauchySeqOnFilter_of_fderiv
 
 /-- A variant of the second fundamental theorem of calculus (FTC-2): If a sequence of functions
@@ -186,13 +188,13 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
   suffices
     TendstoUniformlyOn (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
         (l ×ˢ l) (Metric.ball x r) ∧
-      TendstoUniformlyOn (fun (n : ι × ι) (z : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (Metric.ball x r)
+      TendstoUniformlyOn (fun (n : ι × ι) (_ : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (Metric.ball x r)
     by
     have := this.1.add this.2
     rw [add_zero] at this
     refine' this.congr _
     apply eventually_of_forall
-    intro n z hz
+    intro n z _
     simp
   constructor
   · -- This inequality follows from the mean value theorem
@@ -218,7 +220,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
     obtain ⟨t, ht, ht'⟩ := (Metric.cauchy_iff.mp hfg).2 ε hε
     rw [eventually_prod_iff]
     refine' ⟨fun n => f n x ∈ t, ht, fun n => f n x ∈ t, ht, _⟩
-    intro n hn n' hn' z hz
+    intro n hn n' hn' z _
     rw [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg, ← dist_eq_norm]
     exact ht' _ hn _ hn'
 #align uniform_cauchy_seq_on_ball_of_fderiv uniformCauchySeqOn_ball_of_fderiv
@@ -404,7 +406,7 @@ theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsO
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
   have h3 : Set.univ ×ˢ s ∈ l ×ˢ 𝓝 x := by simp only [h1, prod_mem_prod_iff, univ_mem, and_self_iff]
   have h4 : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2 :=
-    eventually_of_mem h3 fun ⟨n, z⟩ ⟨hn, hz⟩ => hf n z hz
+    eventually_of_mem h3 fun ⟨n, z⟩ ⟨_, hz⟩ => hf n z hz
   refine' hasFDerivAt_of_tendstoUniformlyOnFilter _ h4 (eventually_of_mem h1 hfg)
   simpa [IsOpen.nhdsWithin_eq hs hx] using tendstoLocallyUniformlyOn_iff_filter.mp hf' x hx
 #align has_fderiv_at_of_tendsto_locally_uniformly_on hasFDerivAt_of_tendstoLocallyUniformlyOn
@@ -426,7 +428,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ n : ι, ∀ x : E, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hfg : ∀ x : E, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) :
-    ∀ x : E, x ∈ s → HasFDerivAt g (g' x) x := fun x =>
+    ∀ x : E, x ∈ s → HasFDerivAt g (g' x) x := fun _ =>
   hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg
 #align has_fderiv_at_of_tendsto_uniformly_on hasFDerivAt_of_tendstoUniformlyOn
 
@@ -535,7 +537,7 @@ theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : I
     (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
   have h2 : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2 :=
-    eventually_prod_iff.2 ⟨_, hf, fun x => x ∈ s, h1, fun n => id⟩
+    eventually_prod_iff.2 ⟨_, hf, fun x => x ∈ s, h1, fun {n} => id⟩
   refine' hasDerivAt_of_tendstoUniformlyOnFilter _ h2 (eventually_of_mem h1 hfg)
   simpa [IsOpen.nhdsWithin_eq hs hx] using tendstoLocallyUniformlyOn_iff_filter.mp hf' x hx
 #align has_deriv_at_of_tendsto_locally_uniformly_on hasDerivAt_of_tendstoLocallyUniformlyOn
@@ -555,7 +557,7 @@ theorem hasDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ s → HasDerivAt (f n) (f' n x) x)
     (hfg : ∀ x : 𝕜, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) :
-    ∀ x : 𝕜, x ∈ s → HasDerivAt g (g' x) x := fun x =>
+    ∀ x : 𝕜, x ∈ s → HasDerivAt g (g' x) x := fun _ =>
   hasDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg
 #align has_deriv_at_of_tendsto_uniformly_on hasDerivAt_of_tendstoUniformlyOn
 
@@ -564,7 +566,7 @@ theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l
     (hfg : ∀ x : 𝕜, Tendsto (fun n => f n x) l (𝓝 (g x))) : ∀ x : 𝕜, HasDerivAt g (g' x) x := by
   intro x
   have hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ Set.univ → HasDerivAt (f n) (f' n x) x := by
-    filter_upwards [hf]with n h x hx using h x
+    filter_upwards [hf]with n h x _ using h x
   have hfg : ∀ x : 𝕜, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
   exact hasDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
