@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false in
  such that the morphims induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type u where
-  /-- the underlying morphism between ringed space -/
+  /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalRingHom (PresheafedSpace.stalkMap val x)
