@@ -1323,7 +1323,7 @@ theorem lintegral_indicator_const_comp {mβ : MeasurableSpace β} {f : α → β
 #align measure_theory.lintegral_indicator_const_comp MeasureTheory.lintegral_indicator_const_comp
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
-measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` wich
+measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which
 applies to any measurable `g : α → β` but requires that `f` is measurable as well. -/
 theorem _root_.MeasurableEmbedding.lintegral_map [MeasurableSpace β] {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : (∫⁻ a, f a ∂map g μ) = ∫⁻ a, f (g a) ∂μ := by

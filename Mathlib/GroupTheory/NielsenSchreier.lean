@@ -194,7 +194,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 #align is_free_groupoid.spanning_tree.loop_of_hom IsFreeGroupoid.SpanningTree.loopOfHom
 
-/-- Turning an edge in the spanning tree into a loop gives the indentity loop. -/
+/-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]

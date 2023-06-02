@@ -51,7 +51,7 @@ namespace ShrinkingLemma
 * if `i ∈ carrier v`, then `closure (v i) ⊆ u i`;
 * if `i ∉ carrier`, then `v i = u i`.
 
-This type is equipped with the folowing partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
+This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
 -- porting note: @[nolint has_nonempty_instance] is not here yet
