@@ -75,7 +75,8 @@ noncomputable def homotopyEquiv : HomotopyEquiv (cylinder K) K where
       . simp only [MappingCone.inr_fst]
       . simp only [MappingCone.inr_snd, ← Cochain.ofHom_comp, ← Cochain.ofHom_add]
         apply congr_arg
-        ext1 <;> ext1 <;> simp)
+        apply biprod.hom_ext' <;> apply biprod.hom_ext
+        all_goals dsimp ; simp)
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
 end cylinder

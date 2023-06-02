@@ -107,11 +107,11 @@ lemma admissibleSplitMono_stableUnderComposition :
           simp only [assoc, biprod.lift_fst, biprod.inl_desc_assoc, id_comp, biprod.inl_fst]
           rw [h₂.f_r_assoc, h₁.s_g]
         . dsimp
+          simp only [biprod.inl_desc_assoc, assoc, biprod.lift_snd, comp_id, biprod.inl_snd,
+            zero₂, comp_zero]
+        . dsimp
           simp only [assoc, biprod.lift_fst, biprod.inr_desc_assoc,
             h₂.s_r_assoc, zero_comp, id_comp, biprod.inr_fst]
-        . dsimp
-          simp only [assoc, biprod.lift_snd, biprod.inl_desc_assoc, id_comp,
-            biprod.inl_snd, zero₂, comp_zero]
         . dsimp
           simp only [assoc, biprod.lift_snd, biprod.inr_desc_assoc, id_comp, biprod.inr_snd]
           rw [h₂.s_g]
