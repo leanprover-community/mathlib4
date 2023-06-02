@@ -88,7 +88,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           done := done + 1
           let now ← IO.monoMsNow
           if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded {success} file(s) [{done}/{size} = {100*done/size}%]"
+            let mut msg := s!"\rAttempted: {done} file(s) [{done}/{size} = {100*done/size}%] --- Successful: {success} file(s) [{success}/{done} = {100*success/done}%] "
             if failed != 0 then
               msg := msg ++ ", {failed} failed"
             IO.eprint msg
@@ -96,7 +96,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         pure (last, success, failed, done)
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded {success} file(s) [{success}/{size} = {100*success/size}%]"
+        let mut msg := s!"\rAttempted: {done} file(s) [{done}/{size} = {100*done/size}%] --- Successful: {success} file(s) [{success}/{done} = {100*success/done}%] "
         if failed != 0 then
           msg := msg ++ ", {failed} failed"
         IO.eprintln msg
