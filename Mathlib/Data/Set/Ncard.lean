@@ -27,9 +27,9 @@ in `set α`) via default arguments.
 ## Main Definitions
 
 * `Set.ncard s` is the cardinality of the set `s` as a natural number, provided `s` is Finite.
-  If `s` is Infinite, then `set.ncard s = 0`.
-* `toFinite_tac` is a tactic that tries to synthesize an `set.Finite s` argument with
-  `set.toFinite`. This will work for `s : set α` where there is a `Finite α` instance.
+  If `s` is Infinite, then `Set.ncard s = 0`.
+* `toFinite_tac` is a tactic that tries to synthesize an `Set.Finite s` argument with
+  `Set.toFinite`. This will work for `s : set α` where there is a `Finite α` instance.
 
 ## Implementation Notes
 
