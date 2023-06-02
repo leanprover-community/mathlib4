@@ -131,6 +131,7 @@ instance ptTop : TopologicalSpace (pt_obj L) where
       subst h
       exact ⟨u, ht, hp⟩
 
+/-- Characterizes when a subset of the space of points is open. -/
 lemma open_in_pt_space_iff (U : Set (pt_obj L)) :
   IsOpen U ↔ ∃ u : L, U = {x : pt_obj L | x u} := by
   unfold IsOpen TopologicalSpace.IsOpen ptTop Set.range setOf; tauto
@@ -163,13 +164,15 @@ variable (X : Type _) [TopologicalSpace X] (L : FrmCat)
 -- TODO: should this be moved somewhere else?
 lemma elim_exists_prop (A : Prop → Prop) : (∃ p, (A p) ∧ p) ↔ (A True) := by aesop
 
+/-- The function that associates with a point `x` of the space `X` a point of the frame of
+    opens of `X` -/
 def frame_point_of_space_point (x : X) : FrameHom (Opens X) Prop where
   toFun u := x ∈ u
   map_inf' a b := by simp; rfl
   map_top'     := by simp; rfl
   map_sSup' S  := by simp [elim_exists_prop, iff_true]
 
-/- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
+/-- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
 def neighborhoods : ContinuousMap X (pt_obj (Opens X)) where
   toFun := frame_point_of_space_point X
   continuous_toFun := by
@@ -186,30 +189,36 @@ def neighborhoods : ContinuousMap X (pt_obj (Opens X)) where
     rw [key]
     exact u.2
 
+/-- The function underlying the counit. -/
 def counit_fun (u : L) : Opens (pt_obj L) where
   carrier := open_of_element_hom L u
   is_open' := by use u; rfl
 
+/-- The counit is a frame homomorphism. -/
 def counit_app_cont : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := counit_fun L
   map_inf' a b := by simp [counit_fun]
   map_top' := by simp [counit_fun]; rfl
   map_sSup' S := by simp [counit_fun]; ext x; simp
 
+/-- The component of the counit at an object of FrmCatᵒᵖ. -/
 def counit_app (Lop : FrmCatᵒᵖ) : (pt.comp 𝒪).obj Lop ⟶ Lop where
   unop := counit_app_cont Lop.unop
 
+/-- The counit as a natural transformation. -/
 def counit : pt.comp 𝒪 ⟶ 𝟭 FrmCatᵒᵖ where
   app := counit_app
 
+/-- The unit as a natural transformation. -/
 def unit : 𝟭 TopCat ⟶ 𝒪.comp pt where
   app X := neighborhoods X
 
+/-- The pair of unit and counit. -/
 def unitCounit : Adjunction.CoreUnitCounit 𝒪 pt where
  unit := unit
  counit := counit
 
--- the final goal
+/-- The contravariant functor `𝒪` is left adjoint to the contravariant functor `pt`. -/
 def frame_top_adjunction : 𝒪 ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
 
 end frame_top_adjunction
