@@ -16,9 +16,6 @@ import Mathlib.RingTheory.Polynomial.Content
 /-!
 # The field of rational functions
 
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
-
 This file defines the field `RatFunc K` of rational functions over a field `K`,
 and shows it is the field of fractions of `K[X]`.
 
