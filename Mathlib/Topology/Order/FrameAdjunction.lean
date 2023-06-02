@@ -36,7 +36,7 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 ## References
 
-*
+* [J. Picado and A. Pultr, Frames and Locales: topology without points][picado2011frames]
 
 ## Tags
 
