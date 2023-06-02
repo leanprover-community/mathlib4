@@ -103,19 +103,19 @@ irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α →
 
 -- mathport name: «expr∫⁻ , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
+notation3 "∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
 
 -- mathport name: «expr∫⁻ , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
+notation3 "∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
 
 -- mathport name: «expr∫⁻ in , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
 
 -- mathport name: «expr∫⁻ in , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
 
 open Lean in
 @[app_unexpander MeasureTheory.lintegral]

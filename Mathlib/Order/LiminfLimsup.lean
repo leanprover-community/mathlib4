@@ -315,12 +315,12 @@ in complete and conditionally complete lattices but let automation fill automati
 boundedness proofs in complete lattices, we use the tactic `isBounded_default` in the statements,
 in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
 
-macro "isBoundedDefault ": tactic =>
-  `(tactic| (first
-  | apply isCobounded_le_of_bot
-  | apply isCobounded_ge_of_top
-  | apply isBounded_le_of_top
-  | apply isBounded_ge_of_bot))
+macro "isBoundedDefault" : tactic =>
+  `(tactic| first
+    | apply isCobounded_le_of_bot
+    | apply isCobounded_ge_of_top
+    | apply isBounded_le_of_top
+    | apply isBounded_ge_of_bot)
 
 -- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
 -- unsafe def is_bounded_default : tactic Unit :=

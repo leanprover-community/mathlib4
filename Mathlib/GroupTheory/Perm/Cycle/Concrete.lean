@@ -521,7 +521,7 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
-notation3"c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+notation3 "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (↑l) (Cycle.nodup_coe_iff.mpr _)
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=

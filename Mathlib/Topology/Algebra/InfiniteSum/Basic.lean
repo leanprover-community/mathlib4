@@ -71,7 +71,7 @@ irreducible_def tsum {β} (f : β → α) :=
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tsum]
-notation3"∑' "(...)", "r:(scoped f => tsum f) => r
+notation3 "∑' "(...)", "r:(scoped f => tsum f) => r
 
 variable {f g : β → α} {a b : α} {s : Finset β}
 

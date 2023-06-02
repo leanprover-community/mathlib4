@@ -32,7 +32,7 @@ initialize registerTraceClass `Elab.fbinop
 
 /-- `fbinop% f x y` elaborates `f x y` for `x : S α` and `y : S' β`, taking into account
 any coercions that the "functors" `S` and `S'` possess. -/
-syntax:max (name := prodSyntax) "fbinop% " ident term:max term:max : term
+syntax:max (name := prodSyntax) "fbinop% " ident ppSpace term:max ppSpace term:max : term
 
 /-- Tree recording the structure of the `fbinop%` expression. -/
 private inductive Tree where
