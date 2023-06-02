@@ -8,9 +8,9 @@ Authors: Aaron Anderson, Jalex Stark
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathbin.FieldTheory.Finite.Basic
-import Mathbin.Data.Matrix.CharP
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Data.Matrix.CharP
 
 /-!
 # Results on characteristic polynomials and traces over finite fields.
@@ -27,8 +27,7 @@ variable {n : Type _} [DecidableEq n] [Fintype n]
 
 @[simp]
 theorem FiniteField.Matrix.charpoly_pow_card {K : Type _} [Field K] [Fintype K] (M : Matrix n n K) :
-    (M ^ Fintype.card K).charpoly = M.charpoly :=
-  by
+    (M ^ Fintype.card K).charpoly = M.charpoly := by
   cases (isEmpty_or_nonempty n).symm
   · cases' CharP.exists K with p hp; letI := hp
     rcases FiniteField.card K p with ⟨⟨k, kpos⟩, ⟨hp, hk⟩⟩
@@ -54,8 +53,7 @@ theorem ZMod.charpoly_pow_card {p : ℕ} [Fact p.Prime] (M : Matrix n n (ZMod p)
 #align zmod.charpoly_pow_card ZMod.charpoly_pow_card
 
 theorem FiniteField.trace_pow_card {K : Type _} [Field K] [Fintype K] (M : Matrix n n K) :
-    trace (M ^ Fintype.card K) = trace M ^ Fintype.card K :=
-  by
+    trace (M ^ Fintype.card K) = trace M ^ Fintype.card K := by
   cases isEmpty_or_nonempty n
   · simp [zero_pow Fintype.card_pos, Matrix.trace]
   rw [Matrix.trace_eq_neg_charpoly_coeff, Matrix.trace_eq_neg_charpoly_coeff,
