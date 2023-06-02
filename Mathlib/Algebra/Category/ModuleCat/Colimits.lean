@@ -331,7 +331,6 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
-  fac := sorry -- Workaround https://github.com/JLimperg/aesop/issues/57 Remove after `uniq` done.
   desc s := descMorphism F s
   uniq s m w := by
     ext ⟨⟨x_j, x_x⟩⟩
