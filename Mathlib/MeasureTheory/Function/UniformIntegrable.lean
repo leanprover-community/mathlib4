@@ -180,7 +180,7 @@ theorem Memℒp.integral_indicator_norm_ge_le (hf : Memℒp f 1 μ) (hmeas : Str
     {ε : ℝ} (hε : 0 < ε) :
     ∃ M : ℝ, (∫⁻ x, ‖{ x | M ≤ ‖f x‖₊ }.indicator f x‖₊ ∂μ) ≤ ENNReal.ofReal ε := by
   have htendsto :
-    ∀ᵐ x ∂μ, Tendsto (fun M : ℕ => { x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f x) atTop (𝓝 0) :=
+      ∀ᵐ x ∂μ, Tendsto (fun M : ℕ => { x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f x) atTop (𝓝 0) :=
     univ_mem' (id fun x => tendsto_indicator_ge f x)
   have hmeas : ∀ M : ℕ, AEStronglyMeasurable ({ x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f) μ := by
     intro M
@@ -232,15 +232,15 @@ theorem Memℒp.integral_indicator_norm_ge_nonneg_le (hf : Memℒp f 1 μ) {ε :
 #align measure_theory.mem_ℒp.integral_indicator_norm_ge_nonneg_le MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le
 
 theorem Memℒp.snormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
-    (hmeas : StronglyMeasurable f) : ∃ M : ℝ, snormEssSup ({ x | M ≤ ‖f x‖₊ }.indicator f) μ = 0 :=
-  by
+    (hmeas : StronglyMeasurable f) :
+    ∃ M : ℝ, snormEssSup ({ x | M ≤ ‖f x‖₊ }.indicator f) μ = 0 := by
   have hbdd : snormEssSup f μ < ∞ := hf.snorm_lt_top
   refine' ⟨(snorm f ∞ μ + 1).toReal, _⟩
   rw [snormEssSup_indicator_eq_snormEssSup_restrict]
   have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
     simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
-    have :
-      { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆ { x : α | snormEssSup f μ < ‖f x‖₊ } := by
+    have : { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
+        { x : α | snormEssSup f μ < ‖f x‖₊ } := by
       intro x hx
       rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
         ENNReal.coe_toReal, coe_nnnorm]
@@ -269,9 +269,8 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
     obtain ⟨M, hM⟩ := hf.snormEssSup_indicator_norm_ge_eq_zero μ hmeas
     refine' ⟨M, _⟩
     simp only [snorm_exponent_top, hM, zero_le]
-  obtain ⟨M, hM', hM⟩ :=
-    @Memℒp.integral_indicator_norm_ge_nonneg_le _ _ _ μ _ (fun x => ‖f x‖ ^ p.toReal)
-      (hf.norm_rpow hp_ne_zero hp_ne_top) _ (Real.rpow_pos_of_pos hε p.toReal)
+  obtain ⟨M, hM', hM⟩ := Memℒp.integral_indicator_norm_ge_nonneg_le
+    (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (Real.rpow_pos_of_pos hε p.toReal)
   refine' ⟨M ^ (1 / p.toReal), _⟩
   rw [snorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (ENNReal.ofReal ε)]
   conv_rhs => rw [← mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
@@ -283,10 +282,9 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
   rw [ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg, nnnorm_indicator_eq_indicator_nnnorm,
     nnnorm_indicator_eq_indicator_nnnorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
-    rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm, ←
-      Real.rpow_le_rpow_iff hM' (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _)
-        (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top),
-      ← Real.rpow_mul (norm_nonneg _),
+    rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
+      ← Real.rpow_le_rpow_iff hM' (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _)
+        (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]; rfl
@@ -349,13 +347,11 @@ variable {f : α → β}
 /-- Auxiliary lemma for `MeasureTheory.Memℒp.snorm_indicator_le`. -/
 theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ),
-      ∀ s,
-        MeasurableSet s →
-          μ s ≤ ENNReal.ofReal δ → snorm (s.indicator f) p μ ≤ 2 * ENNReal.ofReal ε := by
+    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+      snorm (s.indicator f) p μ ≤ 2 * ENNReal.ofReal ε := by
   obtain ⟨M, hMpos, hM⟩ := hf.snorm_indicator_norm_ge_pos_le μ hmeas hε
   obtain ⟨δ, hδpos, hδ⟩ :=
-    @snorm_indicator_le_of_bound _ _ _ μ _ _ ({ x | ‖f x‖ < M }.indicator f) hp_top _ hε M (by
+    snorm_indicator_le_of_bound μ (f := { x | ‖f x‖ < M }.indicator f) hp_top hε (by
       intro x
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
       split_ifs with h
@@ -383,8 +379,8 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
 measurability on `f`. -/
 theorem Memℒp.snorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s,
-      MeasurableSet s → μ s ≤ ENNReal.ofReal δ → snorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
+    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+      snorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   obtain ⟨δ, hδpos, hδ⟩ := hf.snorm_indicator_le' μ hp_one hp_top hmeas (half_pos hε)
   refine' ⟨δ, hδpos, fun s hs hμs => le_trans (hδ s hs hμs) _⟩
   rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
@@ -394,8 +390,8 @@ theorem Memℒp.snorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ �
 
 theorem Memℒp.snorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ) {ε : ℝ}
     (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s,
-      MeasurableSet s → μ s ≤ ENNReal.ofReal δ → snorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
+    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+      snorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   have hℒp := hf
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
   obtain ⟨δ, hδpos, hδ⟩ := (hℒp.ae_eq heq).snorm_indicator_le_of_meas μ hp_one hp_top hf' hε
@@ -512,25 +508,16 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [FiniteMeasure μ] (hp : 1 ≤ p) (hp' 
   obtain ⟨δ₂, hδ₂, hsnorm₂⟩ := hg'.snorm_indicator_le μ hp hp' hε'
   obtain ⟨t, htm, ht₁, ht₂⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hg hfg (lt_min hδ₁ hδ₂)
   rw [Metric.tendstoUniformlyOn_iff] at ht₂
-  specialize
-    ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
-      (div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by norm_num) hpow))
+  specialize ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
+    (div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by norm_num) hpow))
   obtain ⟨N, hN⟩ := eventually_atTop.1 ht₂; clear ht₂
   refine' ⟨N, fun n hn => _⟩
   rw [← t.indicator_self_add_compl (f n - g)]
-  refine'
-    le_trans
-      (snorm_add_le (((hf n).sub hg).indicator htm).aestronglyMeasurable
-        (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable hp)
-      _
+  refine' le_trans (snorm_add_le (((hf n).sub hg).indicator htm).aestronglyMeasurable
+    (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable hp) _
   rw [sub_eq_add_neg, Set.indicator_add' t, Set.indicator_neg']
-  refine'
-    le_trans
-      (add_le_add_right
-        (snorm_add_le ((hf n).indicator htm).aestronglyMeasurable
-          (hg.indicator htm).neg.aestronglyMeasurable hp)
-        _)
-      _
+  refine' le_trans (add_le_add_right (snorm_add_le ((hf n).indicator htm).aestronglyMeasurable
+    (hg.indicator htm).neg.aestronglyMeasurable hp) _) _
   have hnf : snorm (t.indicator (f n)) p μ ≤ ENNReal.ofReal (ε.toReal / 3) := by
     refine' hsnorm₁ n t htm (le_trans ht₁ _)
     rw [ENNReal.ofReal_le_ofReal_iff hδ₁.le]
@@ -544,18 +531,16 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [FiniteMeasure μ] (hp : 1 ≤ p) (hp' 
     have : 0 ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)) := by
       rw [div_mul_eq_div_mul_one_div]
       exact mul_nonneg hε'.le (one_div_nonneg.2 hpow.le)
-    have :=
-      snorm_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
-        (dist_comm (g x) (f n x) ▸ (hN x hx).le :
-          dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
+    have := snorm_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
+      (dist_comm (g x) (f n x) ▸ (hN x hx).le :
+        dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine' le_trans this _
     rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ (tᶜ)).ne,
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine' ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le _)
       rw [mul_comm, mul_one_div, div_le_one]
-      · refine'
-          Real.rpow_le_rpow ENNReal.toReal_nonneg
-            (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le _) hdivp
+      · refine' Real.rpow_le_rpow ENNReal.toReal_nonneg
+          (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le _) hdivp
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]
         exact measure_mono (Set.subset_univ _)
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
@@ -628,13 +613,11 @@ theorem tendsto_Lp_of_tendstoInMeasure [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : 
     (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
   refine' tendsto_of_subseq_tendsto fun ns hns => _
   obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
-  exact
-    ⟨ms,
-      tendsto_Lp_of_tendsto_ae μ hp hp' (fun _ => hf _) hg
-        (fun ε hε =>
-          let ⟨δ, hδ, hδ'⟩ := hui hε
-          ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
-        hms'⟩
+  exact ⟨ms,
+    tendsto_Lp_of_tendsto_ae μ hp hp' (fun _ => hf _) hg (fun ε hε =>
+      let ⟨δ, hδ, hδ'⟩ := hui hε
+      ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
+      hms'⟩
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_Lp_of_tendsto_in_measure MeasureTheory.tendsto_Lp_of_tendstoInMeasure
 
@@ -663,10 +646,9 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     exact hμ.symm ▸ unifIntegrable_zero_meas
   intro ε hε
   obtain ⟨C, hCpos, hC⟩ := h (ε / 2) (half_pos hε)
-  refine'
-    ⟨(ε / (2 * C)) ^ ENNReal.toReal p,
-      Real.rpow_pos_of_pos (div_pos hε (mul_pos two_pos (NNReal.coe_pos.2 hCpos))) _,
-      fun i s hs hμs => _⟩
+  refine' ⟨(ε / (2 * C)) ^ ENNReal.toReal p,
+    Real.rpow_pos_of_pos (div_pos hε (mul_pos two_pos (NNReal.coe_pos.2 hCpos))) _,
+    fun i s hs hμs => _⟩
   by_cases hμs' : μ s = 0
   · rw [(snorm_eq_zero_iff ((hf i).indicator hs).aestronglyMeasurable hpzero).2
         (indicator_meas_zero hμs')]
@@ -675,25 +657,18 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     snorm (Set.indicator s (f i)) p μ ≤
         snorm (Set.indicator (s ∩ { x | C ≤ ‖f i x‖₊ }) (f i)) p μ +
           snorm (Set.indicator (s ∩ { x | ‖f i x‖₊ < C }) (f i)) p μ := by
-      refine'
-        le_trans (Eq.le _)
-          (snorm_add_le
-            (StronglyMeasurable.aestronglyMeasurable
-              ((hf i).indicator
-                (hs.inter (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm))))
-            (StronglyMeasurable.aestronglyMeasurable
-              ((hf i).indicator
-                (hs.inter ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const))))
-            hp)
+      refine' le_trans (Eq.le _) (snorm_add_le
+        (StronglyMeasurable.aestronglyMeasurable
+          ((hf i).indicator (hs.inter (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm))))
+        (StronglyMeasurable.aestronglyMeasurable
+          ((hf i).indicator (hs.inter ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const))))
+        hp)
       congr
-      change
-        _ = fun x =>
-          (s ∩ { x : α | C ≤ ‖f i x‖₊ }).indicator (f i) x +
-            (s ∩ { x : α | ‖f i x‖₊ < C }).indicator (f i) x
+      change _ = fun x => (s ∩ { x : α | C ≤ ‖f i x‖₊ }).indicator (f i) x +
+        (s ∩ { x : α | ‖f i x‖₊ < C }).indicator (f i) x
       rw [← Set.indicator_union_of_disjoint]
       · congr
-        rw [← Set.inter_union_distrib_left,
-          (by ext; simp [le_or_lt] :
+        rw [← Set.inter_union_distrib_left, (by ext; simp [le_or_lt] :
             { x : α | C ≤ ‖f i x‖₊ } ∪ { x : α | ‖f i x‖₊ < C } = Set.univ),
           Set.inter_univ]
       · refine' (Disjoint.inf_right' _ _).inf_left' _
@@ -792,9 +767,8 @@ theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ 
   refine' ⟨fun n => (hf n).1, unifIntegrable_finite μ hp_one hp_top hf, _⟩
   by_cases hι : Nonempty ι
   · choose _ hf using hf
-    set C :=
-      (Finset.univ.image fun i : ι => snorm (f i) p μ).max'
-        ⟨snorm (f hι.some) p μ, Finset.mem_image.2 ⟨hι.some, Finset.mem_univ _, rfl⟩⟩
+    set C := (Finset.univ.image fun i : ι => snorm (f i) p μ).max'
+      ⟨snorm (f hι.some) p μ, Finset.mem_image.2 ⟨hι.some, Finset.mem_univ _, rfl⟩⟩
     refine' ⟨C.toNNReal, fun i => _⟩
     rw [ENNReal.coe_toNNReal]
     · exact Finset.le_max' (α := ℝ≥0∞) _ _ (Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩)
@@ -825,23 +799,19 @@ theorem uniformIntegrable_of' [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
       ∀ i, snorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
     UniformIntegrable f p μ := by
-  refine'
-    ⟨fun i => (hf i).aestronglyMeasurable,
-      unifIntegrable_of μ hp hp' (fun i => (hf i).aestronglyMeasurable) h, _⟩
+  refine' ⟨fun i => (hf i).aestronglyMeasurable,
+    unifIntegrable_of μ hp hp' (fun i => (hf i).aestronglyMeasurable) h, _⟩
   obtain ⟨C, hC⟩ := h 1 one_pos
   refine' ⟨((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1).toNNReal, fun i => _⟩
   calc
     snorm (f i) p μ ≤
         snorm ({ x : α | ‖f i x‖₊ < C }.indicator (f i)) p μ +
           snorm ({ x : α | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ := by
-      refine'
-        le_trans (snorm_mono fun x => _)
-          (snorm_add_le
-            (StronglyMeasurable.aestronglyMeasurable
-              ((hf i).indicator ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const)))
-            (StronglyMeasurable.aestronglyMeasurable
-              ((hf i).indicator (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm)))
-            hp)
+      refine' le_trans (snorm_mono fun x => _) (snorm_add_le
+        (StronglyMeasurable.aestronglyMeasurable
+          ((hf i).indicator ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const)))
+        (StronglyMeasurable.aestronglyMeasurable
+          ((hf i).indicator (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm))) hp)
       · rw [Pi.add_apply, Set.indicator_apply]
         split_ifs with hx
         · rw [Set.indicator_of_not_mem, add_zero]
@@ -858,12 +828,10 @@ theorem uniformIntegrable_of' [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞
       exact le_rfl
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
       rw [ENNReal.coe_toNNReal]
-      exact
-        ENNReal.add_ne_top.2
-          ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top
-              (ENNReal.rpow_ne_top_of_nonneg (inv_nonneg.2 ENNReal.toReal_nonneg)
-                (measure_lt_top _ _).ne),
-            ENNReal.one_ne_top⟩
+      exact ENNReal.add_ne_top.2
+        ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top (ENNReal.rpow_ne_top_of_nonneg
+          (inv_nonneg.2 ENNReal.toReal_nonneg) (measure_lt_top _ _).ne),
+        ENNReal.one_ne_top⟩
 #align measure_theory.uniform_integrable_of' MeasureTheory.uniformIntegrable_of'
 
 /-- A sequene of functions `(fₙ)` is uniformly integrable in the probability sense if for all
@@ -903,21 +871,19 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
         C • (δ : ℝ≥0∞) ^ (1 / p.toReal) ≤ C • μ { x | C ≤ ‖f (ℐ C) x‖₊ } ^ (1 / p.toReal) := by
           rw [ENNReal.smul_def, ENNReal.smul_def, smul_eq_mul, smul_eq_mul]
           simp_rw [ENNReal.ofReal_coe_nnreal] at hℐ
-          refine'
-            mul_le_mul' le_rfl
-              (ENNReal.rpow_le_rpow (hℐ C).le (one_div_nonneg.2 ENNReal.toReal_nonneg))
+          refine' mul_le_mul' le_rfl
+            (ENNReal.rpow_le_rpow (hℐ C).le (one_div_nonneg.2 ENNReal.toReal_nonneg))
         _ ≤ snorm ({ x | C ≤ ‖f (ℐ C) x‖₊ }.indicator (f (ℐ C))) p μ := by
-          refine'
-            snorm_indicator_ge_of_bdd_below hp hp' _
-              (measurableSet_le measurable_const (hf _).nnnorm.measurable)
-              (eventually_of_forall fun x hx => _)
+          refine' snorm_indicator_ge_of_bdd_below hp hp' _
+            (measurableSet_le measurable_const (hf _).nnnorm.measurable)
+            (eventually_of_forall fun x hx => _)
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ snorm (f (ℐ C)) p μ := snorm_indicator_le _
     specialize this (2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal))
     rw [ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
       smul_eq_mul, mul_assoc, NNReal.inv_rpow,
-      inv_mul_cancel (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul, ←
-      NNReal.inv_rpow] at this
+      inv_mul_cancel (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul,
+      ← NNReal.inv_rpow] at this
     refine' (lt_of_le_of_lt (le_trans
       (hM <| ℐ <| 2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal)) (le_max_left (M : ℝ≥0∞) 1))
         (lt_of_lt_of_le _ this)).ne rfl
@@ -949,8 +915,8 @@ theorem uniformIntegrable_iff [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞
       (∀ i, AEStronglyMeasurable (f i) μ) ∧
         ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
           ∀ i, snorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε :=
-  ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne.symm hp'⟩, fun h =>
-    uniformIntegrable_of hp hp' h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne.symm hp'⟩,
+    fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
 #align measure_theory.uniform_integrable_iff MeasureTheory.uniformIntegrable_iff
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
@@ -959,9 +925,8 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
   refine' ⟨fun n => _, fun ε hε => _, _⟩
   · simp_rw [div_eq_mul_inv]
-    exact
-      (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).mul
-        (aestronglyMeasurable_const : AEStronglyMeasurable (fun _ => (↑n : ℝ)⁻¹) μ)
+    exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).mul
+      (aestronglyMeasurable_const : AEStronglyMeasurable (fun _ => (↑n : ℝ)⁻¹) μ)
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine' ⟨δ, hδ₁, fun n s hs hle => _⟩
     simp_rw [div_eq_mul_inv, Finset.sum_mul, Set.indicator_finset_sum]
