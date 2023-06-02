@@ -70,9 +70,9 @@ class SuccOrder (α : Type _) [Preorder α] where
   le_succ : ∀ a, a ≤ succ a
   /--Proof of interaction between `succ` and maximal element-/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /--Proof that `succ` satifies ordering invariants betweeen `LT` and `LE`-/
+  /--Proof that `succ` satisfies ordering invariants between `LT` and `LE`-/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
-  /--Proof that `succ` satifies ordering invariants betweeen `LE` and `LT`-/
+  /--Proof that `succ` satisfies ordering invariants between `LE` and `LT`-/
   le_of_lt_succ {a b} : a < succ b → a ≤ b
 #align succ_order SuccOrder
 #align succ_order.ext_iff SuccOrder.ext_iff
@@ -87,9 +87,9 @@ class PredOrder (α : Type _) [Preorder α] where
   pred_le : ∀ a, pred a ≤ a
   /--Proof of interaction between `pred` and minimal element-/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /--Proof that `pred` satifies ordering invariants betweeen `LT` and `LE`-/
+  /--Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
-  /--Proof that `pred` satifies ordering invariants betweeen `LE` and `LT`-/
+  /--Proof that `pred` satisfies ordering invariants between `LE` and `LT`-/
   le_of_pred_lt {a b} : pred a < b → a ≤ b
 #align pred_order PredOrder
 #align pred_order.ext PredOrder.ext

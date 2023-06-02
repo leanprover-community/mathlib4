@@ -212,7 +212,7 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
-/-- Auxilliary definition for `monoidal_coherence`. -/
+/-- Auxiliary definition for `monoidal_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
 -- but it would require preparing many implicit arguments by hand.
 def mkProjectMapExpr (e : Expr) : TermElabM Expr := do

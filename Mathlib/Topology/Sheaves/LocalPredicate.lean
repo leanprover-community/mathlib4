@@ -313,8 +313,8 @@ def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat.{v}) :
     (fun X =>
       { hom := by rintro ⟨f, c⟩; exact ⟨f, c⟩
         inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩
-        hom_inv_id := by ext (⟨f, p⟩x); rfl
-        inv_hom_id := by ext (⟨f, p⟩x); rfl })
+        hom_inv_id := by ext ⟨f, p⟩; rfl
+        inv_hom_id := by ext ⟨f, p⟩; rfl })
     (by aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align Top.subpresheaf_continuous_prelocal_iso_presheaf_to_Top TopCat.subpresheafContinuousPrelocalIsoPresheafToTop
