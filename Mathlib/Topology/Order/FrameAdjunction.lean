@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Anne Baanen, Sam v. Gool, Leo Mayer, and Brendan S. Murphy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Sam v. Gool, Leo Mayer, and Brendan S. Murphy
+-/
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bases
@@ -7,20 +12,66 @@ import Mathlib.CategoryTheory.Opposites
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Order.Category.FrmCat
 
+/-!
+# Adjunction between Frames and Topological Spaces
+
+This file defines contravariant functors between the categories of Frames and Topological Spaces and proves that they form an adjunction.
+
+## Main definitions and statement
+
+- `pt`: the *points* functor from the opposite of the category of Frames (`FrmCat`) to the category of Topological Spaces (`TopCat`).
+
+- `𝒪`: the *open sets* functor from the category of Topological Spaces to the category of Frames.
+
+- `frame_top_adjunction`: the theorem that 𝒪 is left adjoint to pt.
+
+## Motivation
+
+This adjunction provides a framework in which several Stone-type dualities fit.
+
+## Implementation notes
+
+- In naming the various functions below, we follow common terminology and reserve the word *point* for an inhabitant of a type `X` which is a topological space, while we use the word *element* for an inhabitant of a type `L` which is a frame.
+
+
+## References
+
+*
+
+## Tags
+
+topological space, frame, Stone duality, adjunction, points
+
+-/
+
 open CategoryTheory Topology TopologicalSpace
 universe u
-variable (X : Type u)
 
-/- Definition of the functor `pt` --/
+section O_definition
+/- ### Definition of the open sets functor `𝒪`. -/
 
-/- `points_of_frame L` is the type of points of a frame `L`, where a *point* of a frame is,
-   by definition, a frame homomorphism to the frame `Prop`. -/
+/-- The contravariant functor from the category of topological spaces to the category of frames, which sends a space `X` to the frame of open sets of `X`, and sends a continuous function `f : X → Y` to the inverse image map, viewed as a frame homomorphism from the frame of open sets of `Y` to the frame of open sets of `X`. -/
+def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
+  obj X := ⟨Opens X.α, by infer_instance⟩
+  map {X Y} f :=
+  @Opposite.op
+      (Bundled.mk (Opens ↑Y) (@Opens.instFrameOpens (↑Y) _)
+       ⟶ (Bundled.mk (Opens ↑X) (@Opens.instFrameOpens (↑X) _)))
+      (Opens.comap f)
+
+end O_definition
+
+section pt_definition
+/- ### Definition of the points functor `pt` --/
+
+variable (L : Type _) [Order.Frame L]
+
+/-- The type of points of a frame `L`, where a *point* of a frame is, by definition, a frame homomorphism from `L` to the frame `Prop`. -/
 @[reducible]
-def pt_obj (L : Type _) [Order.Frame L] := FrameHom L Prop
+def pt_obj  := FrameHom L Prop
 
-/- The frame homomorphism `open_of_element_hom` from a frame L to
-   the frame `Set (points_of_frame L)`. -/
-def open_of_element_hom (L : Type _) [Order.Frame L] : FrameHom L (Set (pt_obj L)) where
+/-- The frame homomorphism from a frame `L` to the frame of sets of points of `L`. -/
+def open_of_element_hom : FrameHom L (Set (pt_obj L)) where
   toFun u :=  {x | x u}
   map_inf' a b := by simp; rfl
   map_top'     := by simp; rfl
@@ -44,8 +95,8 @@ def open_of_element_hom (L : Type _) [Order.Frame L] : FrameHom L (Set (pt_obj L
       exact ⟨x, hx, hxZ⟩
   }
 
-/- The topology on the set of points. -/
-instance ptTop (L : Type _) [Order.Frame L] : TopologicalSpace (pt_obj L) where
+/-- The topology on the set of points of the frame `L`. -/
+instance ptTop : TopologicalSpace (pt_obj L) where
   IsOpen := Set.range fun u ↦ { x : pt_obj L | x u }
   isOpen_univ := ⟨⊤, by simp only [map_top]; exact rfl⟩
   isOpen_inter := by
@@ -72,17 +123,11 @@ instance ptTop (L : Type _) [Order.Frame L] : TopologicalSpace (pt_obj L) where
       subst h
       exact ⟨u, ht, hp⟩
 
-lemma open_in_pt_space_iff (L : Type _) [Order.Frame L] (U : Set (pt_obj L)) :
+lemma open_in_pt_space_iff (U : Set (pt_obj L)) :
   IsOpen U ↔ ∃ u : L, U = {x : pt_obj L | x u} := by
   unfold IsOpen TopologicalSpace.IsOpen ptTop Set.range setOf; tauto
 
---the map from a frame L to the opens of the points of L
---probably could use a better name
-def pt_open (L : Type _) [Order.Frame L] (l : L) : Opens (pt_obj L) where
-  carrier := open_of_element_hom L l
-  is_open' := by use l; rfl
-
-/- The action of the functor `pt` on frame homomorphisms. -/
+/-- The action of the functor `pt` on frame homomorphisms. -/
 @[reducible]
 def pt_map {L L' : Type _} [Order.Frame L] [Order.Frame L']
   (f : FrameHom L' L) : C(pt_obj L, pt_obj L') where
@@ -94,21 +139,15 @@ def pt_map {L L' : Type _} [Order.Frame L] [Order.Frame L']
     ext p
     simp only [Set.mem_setOf_eq, Set.preimage_setOf_eq, FrameHom.comp_apply]⟩
 
-
+/-- The contravariant functor from the category of frames to the category of topological spaces, which sends a frame `L` to the topological space `pt_obj L` of homomorphisms from `L` to `Prop` and a frame homomorphism `f` to the continuous function `pt_map f`. -/
 def pt : FrmCatᵒᵖ ⥤ TopCat where
   obj L    := ⟨pt_obj L.unop, by infer_instance⟩
   map f    := pt_map f.unop
 
-/- Definition of the functor `𝒪`. -/
-def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
-  obj X := ⟨Opens X.α, by infer_instance⟩
-  map {X Y} f :=
-  @Opposite.op
-      (Bundled.mk (Opens ↑Y) (@Opens.instFrameOpens (↑Y) _)
-       ⟶ (Bundled.mk (Opens ↑X) (@Opens.instFrameOpens (↑X) _)))
-      (Opens.comap f)
+end pt_definition
 
--- TODO: is this in the library?
+section frame_top_adjunction
+-- TODO: should this be moved somewhere else?
 lemma elim_exists_prop (A : Prop → Prop) : (∃ p, (A p) ∧ p) ↔ (A True) := by aesop
 
 def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : FrameHom (Opens X) Prop where
@@ -116,8 +155,6 @@ def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : Frame
   map_inf' a b := by simp; rfl
   map_top'     := by simp; rfl
   map_sSup' S  := by simp [elim_exists_prop, iff_true]
-
--- lemma inv_img_of_open (X : Type _) [τ : TopologicalSpace X] (U : Set (pt_obj (Opens X))) : frame_point_of_space_point X ⁻¹' U = U := sorry
 
 /- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
 def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
@@ -136,11 +173,15 @@ def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_o
     rw [key]
     exact u.2
 
+def counit_fun (L : FrmCat) (u : L) : Opens (pt_obj L) where
+  carrier := open_of_element_hom L u
+  is_open' := by use u; rfl
+
 def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
-  toFun := pt_open L
-  map_inf' a b := by simp [pt_open]
-  map_top' := by simp [pt_open]; rfl
-  map_sSup' S := by simp [pt_open]; ext x; simp
+  toFun := counit_fun L
+  map_inf' a b := by simp [counit_fun]
+  map_top' := by simp [counit_fun]; rfl
+  map_sSup' S := by simp [counit_fun]; ext x; simp
 
 def counit_app (L : FrmCatᵒᵖ) : (pt.comp 𝒪).obj L ⟶ L where
   unop := counit_app_cont L.unop
@@ -157,3 +198,5 @@ def unitCounit : Adjunction.CoreUnitCounit 𝒪 pt where
 
 -- the final goal
 theorem frame_top_adjunction : 𝒪 ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
+
+end frame_top_adjunction
