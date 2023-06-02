@@ -25,7 +25,7 @@ example (i j k : ℕ)
 ```
 
 * TODO: Deal with `let`
-* TODO: Add functionality to preduce a named `theorem` via `extractGoal thmName`
+* TODO: Add functionality to produce a named `theorem` via `extractGoal thmName`
 * TODO: Add tactic code actions?
 
 Check that these issues are resolved:
