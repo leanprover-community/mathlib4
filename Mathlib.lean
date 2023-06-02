@@ -1547,6 +1547,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.Ratfunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.Subfield
