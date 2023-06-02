@@ -515,7 +515,7 @@ and prove basic properties of this integral. -/
 variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type _}
   [NormedAddCommGroup F'] [NormedSpace ℝ F']
 
-attribute [local instance] simple_func.normed_space
+attribute [local instance] simpleFunc.normedSpace
 
 /-- The Bochner integral over simple functions in L1 space. -/
 def integral (f : α →₁ₛ[μ] E) : E :=
@@ -528,7 +528,7 @@ theorem integral_eq_integral (f : α →₁ₛ[μ] E) : integral f = (toSimpleFu
 
 theorem integral_eq_lintegral {f : α →₁ₛ[μ] ℝ} (h_pos : 0 ≤ᵐ[μ] toSimpleFunc f) :
     integral f = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ((toSimpleFunc f) a) ∂μ) := by
-  rw [integral, simple_func.integral_eq_lintegral (simple_func.integrable f) h_pos]
+  rw [integral, SimpleFunc.integral_eq_lintegral (SimpleFunc.integrable f) h_pos]
 #align measure_theory.L1.simple_func.integral_eq_lintegral MeasureTheory.L1.SimpleFunc.integral_eq_lintegral
 
 theorem integral_eq_setToL1s (f : α →₁ₛ[μ] E) : integral f = setToL1s (weightedSMul μ) f :=
@@ -583,19 +583,19 @@ section PosPart
 
 theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     toSimpleFunc (posPart f) =ᵐ[μ] (toSimpleFunc f).posPart := by
-  have eq : ∀ a, (to_simple_func f).posPart a = max ((to_simple_func f) a) 0 := fun a => rfl
-  have ae_eq : ∀ᵐ a ∂μ, to_simple_func (posPart f) a = max ((to_simple_func f) a) 0 := by
-    filter_upwards [to_simple_func_eq_to_fun (posPart f), Lp.coe_fn_posPart (f : α →₁[μ] ℝ),
-      to_simple_func_eq_to_fun f]with _ _ h₂ _
+  have eq : ∀ a, (toSimpleFunc f).posPart a = max ((toSimpleFunc f) a) 0 := fun a => rfl
+  have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
+    filter_upwards [toSimpleFunc_eq_to_fun (posPart f), Lp.coe_fn_posPart (f : α →₁[μ] ℝ),
+      toSimpleFunc_eq_to_fun f]with _ _ h₂ _
     convert h₂
   refine' ae_eq.mono fun a h => _
   rw [h, Eq]
 #align measure_theory.L1.simple_func.pos_part_to_simple_func MeasureTheory.L1.SimpleFunc.posPart_toSimpleFunc
 
 theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
-    toSimpleFunc (negPart f) =ᵐ[μ] (toSimpleFunc f).neg_part := by
-  rw [simple_func.neg_part, MeasureTheory.SimpleFunc.negPart]
-  filter_upwards [posPart_to_simple_func (-f), neg_to_simple_func f]
+    toSimpleFunc (negPart f) =ᵐ[μ] (toSimpleFunc f).negPart := by
+  rw [simple_func.negPart, MeasureTheory.SimpleFunc.negPart]
+  filter_upwards [posPart_toSimpleFunc (-f), neg_toSimpleFunc f]
   intro a h₁ h₂
   rw [h₁]
   show max _ _ = max _ _
@@ -605,31 +605,31 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
 
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
   -- Convert things in `L¹` to their `simple_func` counterpart
-  have ae_eq₁ : (to_simple_func f).posPart =ᵐ[μ] (to_simple_func (posPart f)).map norm := by
-    filter_upwards [posPart_to_simple_func f]with _ h
+  have ae_eq₁ : (toSimpleFunc f).posPart =ᵐ[μ] (toSimpleFunc (posPart f)).map norm := by
+    filter_upwards [posPart_toSimpleFunc f]with _ h
     rw [simple_func.map_apply, h]
     conv_lhs => rw [← simple_func.pos_part_map_norm, simple_func.map_apply]
   -- Convert things in `L¹` to their `simple_func` counterpart
-  have ae_eq₂ : (to_simple_func f).neg_part =ᵐ[μ] (to_simple_func (neg_part f)).map norm := by
-    filter_upwards [neg_part_to_simple_func f]with _ h
+  have ae_eq₂ : (toSimpleFunc f).negPart =ᵐ[μ] (toSimpleFunc (negPart f)).map norm := by
+    filter_upwards [negPart_toSimpleFunc f]with _ h
     rw [simple_func.map_apply, h]
-    conv_lhs => rw [← simple_func.neg_part_map_norm, simple_func.map_apply]
+    conv_lhs => rw [← simple_func.negPart_map_norm, simple_func.map_apply]
   -- Convert things in `L¹` to their `simple_func` counterpart
   have ae_eq :
     ∀ᵐ a ∂μ,
-      (to_simple_func f).posPart a - (to_simple_func f).neg_part a =
-        (to_simple_func (pos_part f)).map norm a - (to_simple_func (neg_part f)).map norm a := by
+      (toSimpleFunc f).posPart a - (toSimpleFunc f).negPart a =
+        (toSimpleFunc (pos_part f)).map norm a - (toSimpleFunc (negPart f)).map norm a := by
     filter_upwards [ae_eq₁, ae_eq₂]with _ h₁ h₂
     rw [h₁, h₂]
   rw [integral, norm_eq_integral, norm_eq_integral, ← simple_func.integral_sub]
   · show
-      (to_simple_func f).integral μ =
-        ((to_simple_func (pos_part f)).map norm - (to_simple_func (neg_part f)).map norm).integral μ
+      (toSimpleFunc f).integral μ =
+        ((toSimpleFunc (pos_part f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (simple_func.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂]with _ h₁ h₂
     show _ = _ - _
     rw [← h₁, ← h₂]
-    have := (to_simple_func f).posPart_sub_negPart
+    have := (toSimpleFunc f).posPart_sub_negPart
     conv_lhs => rw [← this]
     rfl
   · exact (simple_func.integrable f).posPart.congr ae_eq₁
@@ -644,7 +644,6 @@ end SimpleFunc
 
 open SimpleFunc
 
--- mathport name: simple_func.integral_clm
 local notation "Integral" => @integralClm α E _ _ _ _ _ μ _
 
 variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
@@ -652,14 +651,14 @@ variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 section IntegrationInL1
 
-attribute [local instance] simple_func.normed_space
+attribute [local instance] simpleFunc.normedSpace
 
 open ContinuousLinearMap
 
 variable (𝕜)
 
 /-- The Bochner integral in L1 space as a continuous linear map. -/
-def integralClm' : (α →₁[μ] E) →L[𝕜] E :=
+nonrec def integralClm' : (α →₁[μ] E) →L[𝕜] E :=
   (integralClm' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
     simpleFunc.uniformInducing
 #align measure_theory.L1.integral_clm' MeasureTheory.L1.integralClm'
