@@ -335,8 +335,12 @@ theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α �
     f.integral μ = ∑ x in s, (μ (f ⁻¹' {x})).toReal • x := by
   rw [SimpleFunc.integral_eq_sum_filter, Finset.sum_subset hs]
   rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne.def, Classical.not_not] at hx
-  rcases hx with (hx | rfl) <;> [skip; simp]
-  rw [SimpleFunc.mem_range] at hx ;
+  -- Porting note: reordered for clarity
+  rcases hx.symm with (rfl | hx)
+  · simp
+  rw [SimpleFunc.mem_range] at hx
+  -- Porting note: added
+  simp only [Set.mem_range, not_exists] at hx
   rw [preimage_eq_empty] <;> simp [Set.disjoint_singleton_left, hx]
 #align measure_theory.simple_func.integral_eq_sum_of_subset MeasureTheory.SimpleFunc.integral_eq_sum_of_subset
 
@@ -346,8 +350,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
   classical calc
       (const α y).integral μ = ∑ z in {y}, (μ (const α y ⁻¹' {z})).toReal • z :=
         integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
-      _ = (μ univ).toReal • y := by simp
-
+      _ = (μ univ).toReal • y := by simp [Set.preimage] -- Porting note: added `Set.preimage`
 #align measure_theory.simple_func.integral_const MeasureTheory.SimpleFunc.integral_const
 
 @[simp]
@@ -360,7 +363,7 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     · intro y hy
       simp only [mem_filter, mem_range, coe_piecewise, coe_zero, piecewise_eq_indicator,
         mem_range_indicator] at *
-      rcases hy with ⟨⟨rfl, -⟩ | ⟨x, hxs, rfl⟩, h₀⟩
+      rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
       exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
     · dsimp
       rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
@@ -451,7 +454,7 @@ theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)
   simp_rw [integral_def]
   refine'
     setToSimpleFunc_add_left' (weightedSMul μ) (weightedSMul ν) (weightedSMul (μ + ν))
-      (fun s hs hμνs => _) hf
+      (fun s _ hμνs => _) hf
   rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 #align measure_theory.simple_func.integral_add_measure MeasureTheory.SimpleFunc.integral_add_measure
@@ -466,8 +469,6 @@ open AEEqFun Lp.simpleFunc Lp
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] {m : MeasurableSpace α} {μ : Measure α}
 
-variable {E μ}
-
 namespace SimpleFunc
 
 theorem norm_eq_integral (f : α →₁ₛ[μ] E) : ‖f‖ = ((toSimpleFunc f).map norm).integral μ := by
@@ -478,12 +479,14 @@ theorem norm_eq_integral (f : α →₁ₛ[μ] E) : ‖f‖ = ((toSimpleFunc f).
 section PosPart
 
 /-- Positive part of a simple function in L1 space.  -/
-def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
+nonrec def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
   ⟨Lp.posPart (f : α →₁[μ] ℝ), by
     rcases f with ⟨f, s, hsf⟩
     use s.posPart
     simp only [Subtype.coe_mk, Lp.coe_posPart, ← hsf, AEEqFun.posPart_mk,
-      SimpleFunc.coe_map, mk_eq_mk]⟩
+      SimpleFunc.coe_map, mk_eq_mk]
+    -- Porting note: added
+    simp [SimpleFunc.posPart, Function.comp, EventuallyEq.rfl] ⟩
 #align measure_theory.L1.simple_func.pos_part MeasureTheory.L1.SimpleFunc.posPart
 
 /-- Negative part of a simple function in L1 space. -/
@@ -526,31 +529,31 @@ theorem integral_eq_integral (f : α →₁ₛ[μ] E) : integral f = (toSimpleFu
   rfl
 #align measure_theory.L1.simple_func.integral_eq_integral MeasureTheory.L1.SimpleFunc.integral_eq_integral
 
-theorem integral_eq_lintegral {f : α →₁ₛ[μ] ℝ} (h_pos : 0 ≤ᵐ[μ] toSimpleFunc f) :
+nonrec theorem integral_eq_lintegral {f : α →₁ₛ[μ] ℝ} (h_pos : 0 ≤ᵐ[μ] toSimpleFunc f) :
     integral f = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ((toSimpleFunc f) a) ∂μ) := by
   rw [integral, SimpleFunc.integral_eq_lintegral (SimpleFunc.integrable f) h_pos]
 #align measure_theory.L1.simple_func.integral_eq_lintegral MeasureTheory.L1.SimpleFunc.integral_eq_lintegral
 
-theorem integral_eq_setToL1s (f : α →₁ₛ[μ] E) : integral f = setToL1s (weightedSMul μ) f :=
+theorem integral_eq_setToL1S (f : α →₁ₛ[μ] E) : integral f = setToL1S (weightedSMul μ) f :=
   rfl
-#align measure_theory.L1.simple_func.integral_eq_set_to_L1s MeasureTheory.L1.SimpleFunc.integral_eq_setToL1s
+#align measure_theory.L1.simple_func.integral_eq_set_to_L1s MeasureTheory.L1.SimpleFunc.integral_eq_setToL1S
 
-theorem integral_congr {f g : α →₁ₛ[μ] E} (h : toSimpleFunc f =ᵐ[μ] toSimpleFunc g) :
+nonrec theorem integral_congr {f g : α →₁ₛ[μ] E} (h : toSimpleFunc f =ᵐ[μ] toSimpleFunc g) :
     integral f = integral g :=
   SimpleFunc.integral_congr (SimpleFunc.integrable f) h
 #align measure_theory.L1.simple_func.integral_congr MeasureTheory.L1.SimpleFunc.integral_congr
 
 theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f + integral g :=
-  setToL1s_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
+  setToL1S_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
 #align measure_theory.L1.simple_func.integral_add MeasureTheory.L1.SimpleFunc.integral_add
 
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
-  setToL1s_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
+  setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
 #align measure_theory.L1.simple_func.integral_smul MeasureTheory.L1.SimpleFunc.integral_smul
 
 theorem norm_integral_le_norm (f : α →₁ₛ[μ] E) : ‖integral f‖ ≤ ‖f‖ := by
   rw [integral, norm_eq_integral]
-  exact (to_simple_func f).norm_integral_le_integral_norm (simple_func.integrable f)
+  exact (toSimpleFunc f).norm_integral_le_integral_norm (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.norm_integral_le_norm MeasureTheory.L1.SimpleFunc.norm_integral_le_norm
 
 variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
@@ -559,7 +562,7 @@ variable (α E μ 𝕜)
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map. -/
 def integralClm' : (α →₁ₛ[μ] E) →L[𝕜] E :=
-  LinearMap.mkContinuous ⟨integral, integral_add, integral_smul⟩ 1 fun f =>
+  LinearMap.mkContinuous ⟨⟨integral, integral_add⟩, integral_smul⟩ 1 fun f =>
     le_trans (norm_integral_le_norm _) <| by rw [one_mul]
 #align measure_theory.L1.simple_func.integral_clm' MeasureTheory.L1.SimpleFunc.integralClm'
 
@@ -585,16 +588,18 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     toSimpleFunc (posPart f) =ᵐ[μ] (toSimpleFunc f).posPart := by
   have eq : ∀ a, (toSimpleFunc f).posPart a = max ((toSimpleFunc f) a) 0 := fun a => rfl
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
-    filter_upwards [toSimpleFunc_eq_to_fun (posPart f), Lp.coe_fn_posPart (f : α →₁[μ] ℝ),
-      toSimpleFunc_eq_to_fun f]with _ _ h₂ _
-    convert h₂
+    filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
+      toSimpleFunc_eq_toFun f]with _ _ h₂ h₃
+    convert h₂ using 1
+    -- Porting note: added
+    rw [h₃]
   refine' ae_eq.mono fun a h => _
-  rw [h, Eq]
+  rw [h, eq]
 #align measure_theory.L1.simple_func.pos_part_to_simple_func MeasureTheory.L1.SimpleFunc.posPart_toSimpleFunc
 
 theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     toSimpleFunc (negPart f) =ᵐ[μ] (toSimpleFunc f).negPart := by
-  rw [simple_func.negPart, MeasureTheory.SimpleFunc.negPart]
+  rw [SimpleFunc.negPart, MeasureTheory.SimpleFunc.negPart]
   filter_upwards [posPart_toSimpleFunc (-f), neg_toSimpleFunc f]
   intro a h₁ h₂
   rw [h₁]
