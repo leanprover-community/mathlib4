@@ -19,9 +19,9 @@ A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are princ
 Notible examples include principal ideal rings, valuation rings, and the ring of algebraic integers.
 
 ## Main results
-- `is_bezout.iff_span_pair_is_principal`: It suffices to verify every `span {x, y}` is principal.
+- `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
 - `is_bezout.to_gcd_monoid`: Every Bézout domain is a GCD domain. This is not an instance.
-- `is_bezout.tfae`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
+- `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
 
@@ -88,7 +88,7 @@ theorem gcd_eq_sum (x y : R) : ∃ a b : R, a * x + b * y = gcd x y :=
 
 variable (R)
 
-/-- Any bezout domain is a GCD domain. This is not an instance since `gcd_monoid` contains data,
+/-- Any bezout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
 noncomputable def toGCDDomain [IsDomain R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD gcd gcd_dvd_left gcd_dvd_right fun  hac hab => dvd_gcd hac hab
@@ -98,7 +98,7 @@ end Gcd
 
 attribute [local instance] toGCDDomain
 
--- Note that the proof, despite being `infer_instance`, depends on the `local attribute [instance]`
+-- Note that the proof, despite being `inferInstance`, depends on the `local attribute [instance]`
 -- lemma above, and is thus necessary to be restated.
 instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
   classical exact GCDMonoid.toIsIntegrallyClosed
@@ -118,7 +118,7 @@ instance (priority := 100) of_isPrincipalIdealRing [IsPrincipalIdealRing R] : Is
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 #align is_bezout.of_is_principal_ideal_ring IsBezout.of_isPrincipalIdealRing
 
-theorem tFAE [IsBezout R] [IsDomain R] :
+theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
@@ -144,6 +144,6 @@ theorem tFAE [IsBezout R] [IsDomain R] :
             rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
             rfl }
     tfae_finish
-#align is_bezout.tfae IsBezout.tFAE
+#align is_bezout.tfae IsBezout.TFAE
 
 end IsBezout
