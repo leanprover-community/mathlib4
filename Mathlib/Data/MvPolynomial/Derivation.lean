@@ -39,34 +39,38 @@ Use `mv_polynomial.mk_derivation` instead. -/
 def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
   Finsupp.lsum R fun xs : σ →₀ ℕ =>
     (LinearMap.ringLmapEquivSelf R R A).symm <|
-      xs.Sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i
+      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i
 #align mv_polynomial.mk_derivationₗ MvPolynomial.mkDerivationₗ
 
 end
 
 theorem mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivationₗ R f (monomial s r) =
-      r • s.Sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
+      r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
   sum_monomial_eq <| LinearMap.map_zero _
 #align mv_polynomial.mk_derivationₗ_monomial MvPolynomial.mkDerivationₗ_monomial
 
-theorem mkDerivationₗ_c (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
+theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)
-#align mv_polynomial.mk_derivationₗ_C MvPolynomial.mkDerivationₗ_c
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.mk_derivationₗ_C MvPolynomial.mkDerivationₗ_C
 
-theorem mkDerivationₗ_x (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
+theorem mkDerivationₗ_X (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
   (mkDerivationₗ_monomial f _ _).trans <| by simp
-#align mv_polynomial.mk_derivationₗ_X MvPolynomial.mkDerivationₗ_x
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.mk_derivationₗ_X MvPolynomial.mkDerivationₗ_X
 
 @[simp]
-theorem derivation_c (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
+theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
   D.map_algebraMap a
-#align mv_polynomial.derivation_C MvPolynomial.derivation_c
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.derivation_C MvPolynomial.derivation_C
 
 @[simp]
-theorem derivation_c_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
+theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
     D (C a * f) = a • D f := by rw [C_mul', D.map_smul]
-#align mv_polynomial.derivation_C_mul MvPolynomial.derivation_c_mul
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.derivation_C_mul MvPolynomial.derivation_C_mul
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
 `mv_polynomial.supported R s`. -/
@@ -89,12 +93,12 @@ theorem derivation_eq_zero_of_forall_mem_vars {D : Derivation R (MvPolynomial σ
 @[ext]
 theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀ i, D₁ (X i) = D₂ (X i)) :
     D₁ = D₂ :=
-  Derivation.ext fun f => derivation_eq_of_forall_mem_vars fun i _ => h i
+  Derivation.ext fun _ => derivation_eq_of_forall_mem_vars fun i _ => h i
 #align mv_polynomial.derivation_ext MvPolynomial.derivation_ext
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
-theorem leibniz_iff_x (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
+theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔
       ∀ s i,
         D (monomial s 1 * X i) =
@@ -107,44 +111,50 @@ theorem leibniz_iff_x (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     induction' p using MvPolynomial.induction_on' with s r p q hp hq
     · rw [← mul_one r, ← C_mul_monomial, mul_assoc, C_mul', D.map_smul, H, C_mul', smul_assoc,
         smul_add, D.map_smul, smul_comm r (X i)]
-      infer_instance
     · rw [add_mul, map_add, map_add, hp, hq, add_smul, smul_add, add_add_add_comm]
   intro p q
-  induction q using MvPolynomial.induction_on
-  case h_C c =>
+  induction q using MvPolynomial.induction_on with
+  | h_C c =>
     rw [mul_comm, C_mul', hC, smul_zero, zero_add, D.map_smul, C_eq_smul_one, smul_one_smul]
-  case h_add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
-  case h_X q i hq =>
-    simp only [this, ← mul_assoc, hq, mul_smul, smul_add, smul_comm (X i), add_assoc]
-#align mv_polynomial.leibniz_iff_X MvPolynomial.leibniz_iff_x
+  | h_add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
+  | h_X q i hq =>
+    simp only [this, ← mul_assoc, hq, mul_smul, smul_add, add_assoc]
+    rw [smul_comm (X i), smul_comm (X i)]
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.leibniz_iff_X MvPolynomial.leibniz_iff_X
 
 variable (R)
 
 /-- The derivation on `mv_polynomial σ R` that takes value `f i` on `X i`. -/
 def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   toLinearMap := mkDerivationₗ R f
-  map_one_eq_zero' := mkDerivationₗ_c _ 1
+  map_one_eq_zero' := mkDerivationₗ_C _ 1
   leibniz' :=
-    (leibniz_iff_x (mkDerivationₗ R f) (mkDerivationₗ_c _ 1)).2 fun s i => by
-      simp only [mk_derivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
-      rw [Finsupp.sum_add_index'] <;> [skip; · simp;
-        · intros; simp only [Nat.cast_add, (monomial _).map_add, add_smul]]
-      rw [Finsupp.sum_single_index, Finsupp.sum_single_index] <;> [skip; · simp; · simp]
-      rw [tsub_self, add_tsub_cancel_right, Nat.cast_one, ← C_apply, C_1, one_smul, add_comm,
-        Finsupp.smul_sum]
-      refine' congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj => _); dsimp only
-      rw [smul_smul, monomial_mul, one_mul, add_comm s, add_tsub_assoc_of_le]
-      rwa [Finsupp.single_le_iff, Nat.succ_le_iff, pos_iff_ne_zero, ← Finsupp.mem_support_iff]
+    (leibniz_iff_X (mkDerivationₗ R f) (mkDerivationₗ_C _ 1)).2 fun s i => by
+      simp only [mkDerivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
+      rw [Finsupp.sum_add_index', Finsupp.sum_single_index, Finsupp.sum_single_index]
+      · rw [add_comm, Finsupp.smul_sum]
+        congr 1
+        · simp
+        · refine Finset.sum_congr rfl fun j hj ↦ ?_
+          have : Finsupp.single j 1 ≤ s
+          · simpa [Nat.one_le_iff_ne_zero] using hj
+          simp only [← tsub_add_eq_add_tsub this, smul_smul, monomial_mul, add_comm, one_mul]
+      · simp
+      · simp
+      · intro; simp only [Nat.cast_zero, map_zero, zero_smul]
+      · intros; simp only [Nat.cast_add, map_add, add_smul]
 #align mv_polynomial.mk_derivation MvPolynomial.mkDerivation
 
 @[simp]
-theorem mkDerivation_x (f : σ → A) (i : σ) : mkDerivation R f (X i) = f i :=
-  mkDerivationₗ_x f i
-#align mv_polynomial.mk_derivation_X MvPolynomial.mkDerivation_x
+theorem mkDerivation_X (f : σ → A) (i : σ) : mkDerivation R f (X i) = f i :=
+  mkDerivationₗ_X f i
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.mk_derivation_X MvPolynomial.mkDerivation_X
 
 theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivation R f (monomial s r) =
-      r • s.Sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
+      r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
   mkDerivationₗ_monomial f s r
 #align mv_polynomial.mk_derivation_monomial MvPolynomial.mkDerivation_monomial
 
@@ -153,11 +163,13 @@ def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A 
   LinearEquiv.symm <|
     { invFun := mkDerivation R
       toFun := fun D i => D (X i)
-      map_add' := fun D₁ D₂ => rfl
-      map_smul' := fun c D => rfl
-      left_inv := fun D => derivation_ext <| mkDerivation_x _ _
-      right_inv := fun f => funext <| mkDerivation_x _ _ }
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
+      left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
+      right_inv := fun _ => funext <| mkDerivation_X _ _ }
 #align mv_polynomial.mk_derivation_equiv MvPolynomial.mkDerivationEquiv
+
+end
 
 end MvPolynomial
 
