@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.IntegralClosure
-import Mathbin.RingTheory.Localization.Integral
+import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Integrally closed rings
@@ -51,8 +51,7 @@ variable (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
 theorem isIntegrallyClosed_iff :
-    IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x :=
-  by
+    IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x := by
   let e : K ≃ₐ[R] FractionRing R := IsLocalization.algEquiv R⁰ _ _
   constructor
   · rintro ⟨cl⟩
@@ -67,8 +66,7 @@ theorem isIntegrallyClosed_iff :
 
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
 theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIntegralClosure R R K :=
-  (isIntegrallyClosed_iff K).trans <|
-    by
+  (isIntegrallyClosed_iff K).trans <| by
     let e : K ≃ₐ[R] FractionRing R := IsLocalization.algEquiv R⁰ _ _
     constructor
     · intro cl
@@ -114,8 +112,7 @@ include id ifr
 
 variable {R} (K)
 
-theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R :=
-  by
+theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R := by
   refine' eq_bot_iff.trans _
   constructor
   · rw [isIntegrallyClosed_iff K]
