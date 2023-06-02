@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 # Convex sets and functions in vector spaces
 
 In a 𝕜-vector space, we define the following objects and properties.
-* `convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
+* `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
 * `stdSimplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `Fintype ι`). It is the
   intersection of the positive quadrant with the hyperplane `s.sum = 1`.
 
@@ -248,7 +248,6 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
     _ = r := Convex.combo_self hab _
 #align convex_Iic convex_Iic
 
-set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
   @convex_Iic 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ici convex_Ici
@@ -288,7 +287,6 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     _ = r := Convex.combo_self hab _
 #align convex_Iio convex_Iio
 
-set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) :=
   @convex_Iio 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ioi convex_Ioi
@@ -349,13 +347,11 @@ theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β)
       (max_rec' { x | f x < r } hx.2 hy.2)⟩
 #align monotone_on.convex_lt MonotoneOn.convex_lt
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
   @MonotoneOn.convex_le 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r
 #align monotone_on.convex_ge MonotoneOn.convex_ge
 
-set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
   @MonotoneOn.convex_lt 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r
@@ -476,11 +472,18 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 #align convex.smul_mem_of_zero_mem Convex.smul_mem_of_zero_mem
 
+theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
+    MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
+  simpa only [mapsTo', segment_eq_image_lineMap] using h.segment_subset hx hy
+
+theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
+    (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
+  h.mapsTo_lineMap hx hy ht
+
 theorem Convex.add_smul_sub_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • (y - x) ∈ s := by
-  apply h.segment_subset hx hy
-  rw [segment_eq_image']
-  exact mem_image_of_mem _ ht
+  rw [add_comm]
+  exact h.lineMap_mem hx hy ht
 #align convex.add_smul_sub_mem Convex.add_smul_sub_mem
 
 /-- Affine subspaces are convex. -/
@@ -556,7 +559,7 @@ end LinearOrderedField
 
 /-!
 #### Convex sets in an ordered space
-Relates `convex` and `OrdConnected`.
+Relates `Convex` and `OrdConnected`.
 -/
 
 

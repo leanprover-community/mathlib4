@@ -8,7 +8,6 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.WLOG
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Order.LeftRight
 

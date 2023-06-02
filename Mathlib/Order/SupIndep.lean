@@ -334,8 +334,8 @@ theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k 
       rw [(huniv j).resolve_right hj]
 #align complete_lattice.independent_pair CompleteLattice.independent_pair
 
-/-- Composing an indepedent indexed family with an order isomorphism on the elements results in
-another indepedendent indexed family. -/
+/-- Composing an independent indexed family with an order isomorphism on the elements results in
+another independent indexed family. -/
 theorem Independent.map_orderIso {ι : Sort _} {α β : Type _} [CompleteLattice α]
     [CompleteLattice β] (f : α ≃o β) {a : ι → α} (ha : Independent a) : Independent (f ∘ a) :=
   fun i => ((ha i).map_orderIso f).mono_right (f.monotone.le_map_iSup₂ _)
@@ -350,7 +350,7 @@ theorem independent_map_orderIso_iff {ι : Sort _} {α β : Type _} [CompleteLat
     fun h => h.map_orderIso f⟩
 #align complete_lattice.independent_map_order_iso_iff CompleteLattice.independent_map_orderIso_iff
 
-/-- If the elements of a set are independent, then any element is disjoint from the `supr` of some
+/-- If the elements of a set are independent, then any element is disjoint from the `iSup` of some
 subset of the rest. -/
 theorem Independent.disjoint_biSup {ι : Type _} {α : Type _} [CompleteLattice α] {t : ι → α}
     (ht : Independent t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=

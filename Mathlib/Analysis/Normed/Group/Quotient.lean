@@ -25,7 +25,7 @@ topology and the projection is a normed group homomorphism which is norm non-inc
 universal property is that every normed group hom defined on `M` which vanishes on `S` descends
 to a normed group hom defined on `M ⧸ S`.
 
-This file also introduces a predicate `is_quotient` characterizing normed group homs that
+This file also introduces a predicate `IsQuotient` characterizing normed group homs that
 are isomorphic to the canonical projection onto a normed group quotient.
 
 In addition, this file also provides normed structures for quotients of modules by submodules, and
@@ -41,36 +41,36 @@ this instance in `Submodule.Quotient.completeSpace` so that it applies to these 
 
 We use `M` and `N` to denote seminormed groups and `S : AddSubgroup M`.
 All the following definitions are in the `AddSubgroup` namespace. Hence we can access
-`AddSubgroup.normedMk S` as `S.normed_mk`.
+`AddSubgroup.normedMk S` as `S.normedMk`.
 
-* `seminormed_add_comm_group_quotient` : The seminormed group structure on the quotient by
-    an additive subgroup. This is an instance so there is no need to explictly use it.
+* `seminormedAddCommGroupQuotient` : The seminormed group structure on the quotient by
+    an additive subgroup. This is an instance so there is no need to explicitly use it.
 
-* `normed_add_comm_group_quotient` : The normed group structure on the quotient by
-    a closed additive subgroup. This is an instance so there is no need to explictly use it.
+* `normedAddCommGroupQuotient` : The normed group structure on the quotient by
+    a closed additive subgroup. This is an instance so there is no need to explicitly use it.
 
-* `normed_mk S` : the normed group hom from `M` to `M ⧸ S`.
+* `normedMk S` : the normed group hom from `M` to `M ⧸ S`.
 
 * `lift S f hf`: implements the universal property of `M ⧸ S`. Here
     `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
     `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
 
-* `is_quotient`: given `f : NormedAddGroupHom M N`, `is_quotient f` means `N` is isomorphic
+* `IsQuotient`: given `f : NormedAddGroupHom M N`, `IsQuotient f` means `N` is isomorphic
     to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
     surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
 
 ## Main results
 
-* `norm_normed_mk` : the operator norm of the projection is `1` if the subspace is not dense.
+* `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
 
-* `is_quotient.norm_lift`: Provided `f : normed_hom M N` satisfies `is_quotient f`, for every
+* `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
      `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
 
 
 ## Implementation details
 
 For any `SeminormedAddCommGroup M` and any `S : AddSubgroup M` we define a norm on `M ⧸ S` by
-`‖x‖ = Inf (norm '' {m | mk' S m = x})`. This formula is really an implementation detail, it
+`‖x‖ = sInf (norm '' {m | mk' S m = x})`. This formula is really an implementation detail, it
 shouldn't be needed outside of this file setting up the theory.
 
 Since `M ⧸ S` is automatically a topological space (as any quotient of a topological space),
@@ -252,8 +252,7 @@ noncomputable instance AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgro
   toUniformSpace := TopologicalAddGroup.toUniformSpace (M ⧸ S)
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_zero', ((quotient_nhd_basis S).comap _).eq_biInf]
-    simp only [dist, quotient_norm_sub_rev (Prod.fst _)]
-    rfl
+    simp only [dist, quotient_norm_sub_rev (Prod.fst _), preimage_setOf_eq]
 #align add_subgroup.seminormed_add_comm_group_quotient AddSubgroup.seminormedAddCommGroupQuotient
 
 -- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
@@ -285,18 +284,18 @@ noncomputable def normedMk (S : AddSubgroup M) : NormedAddGroupHom M (M ⧸ S) :
     bound' := ⟨1, fun m => by simpa [one_mul] using quotient_norm_mk_le _ m⟩ }
 #align add_subgroup.normed_mk AddSubgroup.normedMk
 
-/-- `S.normed_mk` agrees with `QuotientAddGroup.mk' S`. -/
+/-- `S.normedMk` agrees with `QuotientAddGroup.mk' S`. -/
 @[simp]
 theorem normedMk.apply (S : AddSubgroup M) (m : M) : normedMk S m = QuotientAddGroup.mk' S m :=
   rfl
 #align add_subgroup.normed_mk.apply AddSubgroup.normedMk.apply
 
-/-- `S.normed_mk` is surjective. -/
+/-- `S.normedMk` is surjective. -/
 theorem surjective_normedMk (S : AddSubgroup M) : Function.Surjective (normedMk S) :=
   surjective_quot_mk _
 #align add_subgroup.surjective_normed_mk AddSubgroup.surjective_normedMk
 
-/-- The kernel of `S.normed_mk` is `S`. -/
+/-- The kernel of `S.normedMk` is `S`. -/
 theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=
   QuotientAddGroup.ker_mk' _
 #align add_subgroup.ker_normed_mk AddSubgroup.ker_normedMk
@@ -343,7 +342,7 @@ end AddSubgroup
 
 namespace NormedAddGroupHom
 
-/-- `is_quotient f`, for `f : M ⟶ N` means that `N` is isomorphic to the quotient of `M`
+/-- `IsQuotient f`, for `f : M ⟶ N` means that `N` is isomorphic to the quotient of `M`
 by the kernel of `f`. -/
 structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
   protected surjective : Function.Surjective f
@@ -374,7 +373,7 @@ theorem lift_unique {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
   rfl
 #align normed_add_group_hom.lift_unique NormedAddGroupHom.lift_unique
 
-/-- `S.normed_mk` satisfies `is_quotient`. -/
+/-- `S.normedMk` satisfies `IsQuotient`. -/
 theorem isQuotientQuotient (S : AddSubgroup M) : IsQuotient S.normedMk :=
   ⟨S.surjective_normedMk, fun m => by simpa [S.ker_normedMk] using quotient_norm_mk_eq _ m⟩
 #align normed_add_group_hom.is_quotient_quotient NormedAddGroupHom.isQuotientQuotient
@@ -489,19 +488,15 @@ section Ideal
 
 variable {R : Type _} [SeminormedCommRing R] (I : Ideal R)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=
   norm_mk_lt x hε
 #align ideal.quotient.norm_mk_lt Ideal.Quotient.norm_mk_lt
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ :=
   quotient_norm_mk_le I.toAddSubgroup r
 #align ideal.quotient.norm_mk_le Ideal.Quotient.norm_mk_le
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-set_option maxHeartbeats 400000 in
 instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   dist_eq := dist_eq_norm
   mul_comm := _root_.mul_comm
@@ -520,15 +515,12 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 #align ideal.quotient.semi_normed_comm_ring Ideal.Quotient.semiNormedCommRing
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 #align ideal.quotient.normed_comm_ring Ideal.Quotient.normedCommRing
 
 variable (𝕜 : Type _) [NormedField 𝕜]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-set_option maxHeartbeats 700000 in
 instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra

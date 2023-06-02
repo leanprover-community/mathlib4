@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.continuous_on
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit d4f691b9e5f94cfc64639973f3544c95f8d5d494
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -128,25 +128,15 @@ theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 #align mem_nhds_within_iff_eventually_eq mem_nhdsWithin_iff_eventuallyEq
 
-theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t := by
-  simp_rw [Filter.ext_iff, mem_nhdsWithin_iff_eventually, eventuallyEq_set]
-  constructor
-  · intro h
-    filter_upwards [(h t).mpr (eventually_of_forall fun x => id),
-      (h s).mp (eventually_of_forall fun x => id)]
-    exact fun x => Iff.intro
-  · refine' fun h u => eventually_congr (h.mono fun x h => _)
-    rw [h]
+theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
+  set_eventuallyEq_iff_inf_principal.symm
 #align nhds_within_eq_iff_eventually_eq nhdsWithin_eq_iff_eventuallyEq
 
-theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x := by
-  simp_rw [Filter.le_def, mem_nhdsWithin_iff_eventually]
-  constructor
-  · exact fun h => (h t <| eventually_of_forall fun x => id).mono fun x => id
-  · exact fun h u hu => (h.and hu).mono fun x hx h => hx.2 <| hx.1 h
+theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
+  set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 #align nhds_within_le_iff nhdsWithin_le_iff
 
--- porting note: golfed, droped an unneeded assumption
+-- porting note: golfed, dropped an unneeded assumption
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
@@ -1058,7 +1048,7 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
       and_imp]
     exact forall_congr' fun t => forall_swap
 
--- porting note: droped an unneeded assumption
+-- porting note: dropped an unneeded assumption
 theorem continuousOn_open_of_generateFrom {β : Type _} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=

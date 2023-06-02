@@ -1410,7 +1410,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left, right]
+  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]
@@ -1531,17 +1531,14 @@ theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
 #align int.ceil_congr Int.ceil_congr
 
-set_option synthInstance.etaExperiment true in
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋ = ⌊a⌋ :=
   floor_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_floor Int.map_floor
 
-set_option synthInstance.etaExperiment true in
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉ = ⌈a⌉ :=
   ceil_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_ceil Int.map_ceil
 
-set_option synthInstance.etaExperiment true in
 theorem map_fract (f : F) (hf : StrictMono f) (a : α) : fract (f a) = f (fract a) := by
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]
 #align int.map_fract Int.map_fract

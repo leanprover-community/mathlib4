@@ -20,7 +20,7 @@ Relations are also known as set-valued functions, or partial multifunctions.
 ## Main declarations
 
 * `Rel α β`: Relation between `α` and `β`.
-* `Rel.inv`: `r.inv` is the `rel β α` obtained by swapping the arguments of `r`.
+* `Rel.inv`: `r.inv` is the `Rel β α` obtained by swapping the arguments of `r`.
 * `Rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
 * `Rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
   `r x y`.
@@ -79,12 +79,12 @@ def codom := { y | ∃ x, r x y }
 #align rel.codom Rel.codom
 
 theorem codom_inv : r.inv.codom = r.dom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.codom_inv Rel.codom_inv
 
 theorem dom_inv : r.inv.dom = r.codom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.dom_inv Rel.dom_inv
 

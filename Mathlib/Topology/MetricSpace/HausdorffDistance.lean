@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.metric_space.hausdorff_distance
-! leanprover-community/mathlib commit c1686dff26eaecf4efd4edd141ebf78de309ae80
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Instances.ENNReal
 
 /-!
@@ -37,7 +37,7 @@ This files introduces:
 
 noncomputable section
 
-open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter
+open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter Pointwise
 
 universe u v w
 
@@ -196,6 +196,13 @@ theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x 
 theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdist x t := by
   simp only [infEdist, iInf_image, hΦ.edist_eq]
 #align emetric.inf_edist_image EMetric.infEdist_image
+
+@[to_additive (attr := simp)]
+theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+    infEdist (c • x) (c • s) = infEdist x s :=
+  infEdist_image (isometry_smul _ _)
+#align emetric.inf_edist_smul EMetric.infEdist_smul
+#align emetric.inf_edist_vadd EMetric.infEdist_vadd
 
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ (⋃ n, F n) = U ∧ Monotone F := by
@@ -1221,8 +1228,7 @@ theorem diam_thickening_le {α : Type _} [PseudoMetricSpace α] (s : Set α) (h�
   obtain rfl | hε := hε.eq_or_lt
   · simp [thickening_of_nonpos, diam_nonneg]
   · rw [diam_eq_zero_of_unbounded (mt (Bounded.mono <| self_subset_thickening hε _) hs)]
-    -- porting note: was `positivity`
-    exact add_nonneg diam_nonneg (mul_nonneg zero_le_two hε.le)
+    positivity
 #align metric.diam_thickening_le Metric.diam_thickening_le
 
 @[simp]

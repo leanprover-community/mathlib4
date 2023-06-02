@@ -9,7 +9,6 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Tactic.WLOG
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
 

@@ -568,7 +568,7 @@ partial def transformDeclAux
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre env.mainModule do
       transformDeclAux cfg pre tgt_pre n
-  -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
+  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
     insertTranslation src tgt
@@ -1051,7 +1051,7 @@ To use this attribute, just write:
 
 ```
 @[to_additive]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := mul_comm x y
 ```
 
 This code will generate a theorem named `add_comm'`. It is also

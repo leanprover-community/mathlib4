@@ -102,7 +102,6 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If the codomain of an injective linear map is finite dimensional, the domain must be as well. -/
 theorem of_injective (f : V →ₗ[K] V₂) (w : Function.Injective f) [FiniteDimensional K V₂] :
     FiniteDimensional K V :=
@@ -110,7 +109,6 @@ theorem of_injective (f : V →ₗ[K] V₂) (w : Function.Injective f) [FiniteDi
   Module.Finite.of_injective f w
 #align finite_dimensional.of_injective FiniteDimensional.of_injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If the domain of a surjective linear map is finite dimensional, the codomain must be as well. -/
 theorem of_surjective (f : V →ₗ[K] V₂) (w : Function.Surjective f) [FiniteDimensional K V] :
     FiniteDimensional K V₂ :=
@@ -119,7 +117,6 @@ theorem of_surjective (f : V →ₗ[K] V₂) (w : Function.Surjective f) [Finite
 
 variable (K V)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance finiteDimensional_pi {ι : Type _} [Finite ι] : FiniteDimensional K (ι → K) :=
   iff_fg.1 isNoetherian_pi
 #align finite_dimensional.finite_dimensional_pi FiniteDimensional.finiteDimensional_pi
@@ -236,12 +233,11 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
   rw [Cardinal.mk_fintype, finrank_eq_card_basis h]
 #align finite_dimensional.finrank_eq_card_basis' FiniteDimensional.finrank_eq_card_basis'
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given a basis of a division ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 noncomputable def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank K K) :=
     (FiniteDimensional.finrank_eq_card_basis' b).symm
-  -- porting note: replace `algebra_map.coe_one` with `Nat.cast_one`
+  -- porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
   simp only [Cardinal.eq_one_iff_unique, FiniteDimensional.finrank_self, Nat.cast_one] at A
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
 #align basis.unique Basis.unique
@@ -263,7 +259,6 @@ noncomputable def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : fi
 
 variable {K V}
 
-set_option synthInstance.etaExperiment true in
 /-- A module with dimension 1 has a basis with one element. -/
 noncomputable def basisUnique (ι : Type _) [Unique ι] (h : finrank K V = 1) : Basis ι K V :=
   haveI : FiniteDimensional _ _ :=
@@ -383,7 +378,6 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
 
 variable (K)
 
-set_option synthInstance.etaExperiment true in
 instance finiteDimensional_self : FiniteDimensional K K := by infer_instance
 #align finite_dimensional.finite_dimensional_self FiniteDimensional.finiteDimensional_self
 
@@ -402,7 +396,6 @@ instance span_finset (s : Finset V) : FiniteDimensional K (span K (s : Set V)) :
   span_of_finite K <| s.finite_toSet
 #align finite_dimensional.span_finset FiniteDimensional.span_finset
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Pushforwards of finite-dimensional submodules are finite-dimensional. -/
 instance (f : V →ₗ[K] V₂) (p : Submodule K V) [FiniteDimensional K p] :
     FiniteDimensional K (p.map f) :=
@@ -511,7 +504,7 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
   -- and setting the value of `f` at `x₀` to ensure `∑ e in t, f e = 0`.
   let f : V → K := fun z => if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
   refine' ⟨f, _, _, _⟩
-  -- After this, it's a matter of verifiying the properties,
+  -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · show (∑ e : V in t, f e • e) = 0
     -- We prove this by splitting off the `x₀` term of the sum,
@@ -595,7 +588,6 @@ end
 
 end
 
-set_option synthInstance.etaExperiment true in
 /-- In a vector space with dimension 1, each set {v} is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -614,14 +606,12 @@ noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1)
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel _ h
       right_inv := fun f => by
-        ext a
-        rw [Subsingleton.elim a default] -- porting note: added
+        ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel _ h }
 #align finite_dimensional.basis_singleton FiniteDimensional.basisSingleton
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem basisSingleton_apply (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -705,7 +695,7 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
-theorem fg_iff_finiteDimensional (s : Submodule K V) : s.Fg ↔ FiniteDimensional K s :=
+theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
   ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
 #align submodule.fg_iff_finite_dimensional Submodule.fg_iff_finiteDimensional
 
@@ -821,7 +811,6 @@ open FiniteDimensional
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Finite dimensionality is preserved under linear equivalence. -/
 protected theorem finiteDimensional (f : V ≃ₗ[K] V₂) [FiniteDimensional K V] :
     FiniteDimensional K V₂ :=
@@ -868,7 +857,6 @@ theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K 
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given isomorphic subspaces `p q` of vector spaces `V` and `V₁` respectively,
   `p.quotient` is isomorphic to `q.quotient`. -/
 noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace K V₂}
@@ -880,7 +868,6 @@ noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace 
         LinearEquiv.finrank_eq f₂])
 #align finite_dimensional.linear_equiv.quot_equiv_of_equiv FiniteDimensional.LinearEquiv.quotEquivOfEquiv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 -- TODO: generalize to the case where one of `p` and `q` is finite-dimensional.
 /-- Given the subspaces `p q`, if `p.quotient ≃ₗ[K] q`, then `q.quotient ≃ₗ[K] p` -/
 noncomputable def LinearEquiv.quotEquivOfQuotEquiv {p q : Subspace K V} (f : (V ⧸ p) ≃ₗ[K] q) :
@@ -904,7 +891,6 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- On a finite-dimensional space, an injective linear map is surjective. -/
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
@@ -913,21 +899,18 @@ theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hin
   exact range_eq_top.1 (eq_top_of_finrank_eq h.symm)
 #align linear_map.surjective_of_injective LinearMap.surjective_of_injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
 theorem finiteDimensional_of_surjective [FiniteDimensional K V] (f : V →ₗ[K] V₂)
     (hf : LinearMap.range f = ⊤) : FiniteDimensional K V₂ :=
   Module.Finite.of_surjective f <| range_eq_top.1 hf
 #align linear_map.finite_dimensional_of_surjective LinearMap.finiteDimensional_of_surjective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The range of a linear map defined on a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_range [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
     FiniteDimensional K (LinearMap.range f) :=
   Module.Finite.range f
 #align linear_map.finite_dimensional_range LinearMap.finiteDimensional_range
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- On a finite-dimensional space, a linear map is injective if and only if it is surjective. -/
 theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
     Injective f ↔ Surjective f :=
@@ -938,13 +921,11 @@ theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
         this).injective⟩
 #align linear_map.injective_iff_surjective LinearMap.injective_iff_surjective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
 #align linear_map.ker_eq_bot_iff_range_eq_top LinearMap.ker_eq_bot_iff_range_eq_top
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- In a finite-dimensional space, if linear maps are inverse to each other on one side then they
 are also inverse to each other on the other side. -/
 theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
@@ -957,21 +938,18 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 #align linear_map.mul_eq_one_of_mul_eq_one LinearMap.mul_eq_one_of_mul_eq_one
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- In a finite-dimensional space, linear maps are inverse to each other on one side if and only if
 they are inverse to each other on the other side. -/
 theorem mul_eq_one_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f * g = 1 ↔ g * f = 1 :=
   ⟨mul_eq_one_of_mul_eq_one, mul_eq_one_of_mul_eq_one⟩
 #align linear_map.mul_eq_one_comm LinearMap.mul_eq_one_comm
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- In a finite-dimensional space, linear maps are inverse to each other on one side if and only if
 they are inverse to each other on the other side. -/
 theorem comp_eq_id_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f.comp g = id ↔ g.comp f = id :=
   mul_eq_one_comm
 #align linear_map.comp_eq_id_comm LinearMap.comp_eq_id_comm
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- rank-nullity theorem : the dimensions of the kernel and the range of a linear map add up to
 the dimension of the source space. -/
 theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
@@ -992,27 +970,23 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 variable [FiniteDimensional K V]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-/-- The linear equivalence corresponging to an injective endomorphism. -/
+/-- The linear equivalence corresponding to an injective endomorphism. -/
 noncomputable def ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) : V ≃ₗ[K] V :=
   LinearEquiv.ofBijective f ⟨h_inj, LinearMap.injective_iff_surjective.mp h_inj⟩
 #align linear_equiv.of_injective_endo LinearEquiv.ofInjectiveEndo
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
     ⇑(ofInjectiveEndo f h_inj) = f :=
   rfl
 #align linear_equiv.coe_of_injective_endo LinearEquiv.coe_ofInjectiveEndo
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     f * (ofInjectiveEndo f h_inj).symm = 1 :=
   LinearMap.ext <| (ofInjectiveEndo f h_inj).apply_symm_apply
 #align linear_equiv.of_injective_endo_right_inv LinearEquiv.ofInjectiveEndo_right_inv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
@@ -1025,7 +999,6 @@ namespace LinearMap
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
     IsUnit f ↔ (LinearMap.ker f) = ⊥ := by
   constructor
@@ -1038,7 +1011,6 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
       rfl⟩
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
     IsUnit f ↔ (LinearMap.range f) = ⊤ :=
   by rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
@@ -1070,7 +1042,6 @@ namespace LinearMap
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
@@ -1082,14 +1053,12 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     exact finrank_eq_zero.1 (add_right_injective _ this)
 #align linear_map.injective_iff_surjective_of_finrank_eq_finrank LinearMap.injective_iff_surjective_of_finrank_eq_finrank
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective_of_finrank_eq_finrank H]
 #align linear_map.ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank LinearMap.ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given a linear map `f` between two vector spaces with the same dimension, if
 `ker f = ⊥` then `linearEquivOfInjective` is the induced isomorphism
 between the two vector spaces. -/
@@ -1099,7 +1068,6 @@ noncomputable def linearEquivOfInjective [FiniteDimensional K V] [FiniteDimensio
     ⟨hf, (LinearMap.injective_iff_surjective_of_finrank_eq_finrank hdim).mp hf⟩
 #align linear_map.linear_equiv_of_injective LinearMap.linearEquivOfInjective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linearEquivOfInjective_apply [FiniteDimensional K V] [FiniteDimensional K V₂]
     {f : V →ₗ[K] V₂} (hf : Injective f) (hdim : finrank K V = finrank K V₂) (x : V) :
@@ -1111,7 +1079,6 @@ end LinearMap
 
 section
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
 noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
@@ -1127,7 +1094,6 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring
     inv_zero := dif_pos rfl }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
-set_option synthInstance.etaExperiment true in
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
@@ -1395,8 +1361,6 @@ However, this approach doesn't scale very well, so we should consider holding of
 them until we have no choice.
 -/
 
-set_option synthInstance.maxHeartbeats 300000
-set_option synthInstance.etaExperiment true in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -1408,21 +1372,16 @@ alias Subalgebra.finiteDimensional_toSubmodule ↔
 #align finite_dimensional.of_subalgebra_to_submodule FiniteDimensional.of_subalgebra_toSubmodule
 #align finite_dimensional.subalgebra_to_submodule FiniteDimensional.subalgebra_toSubmodule
 
-set_option synthInstance.etaExperiment true in
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-set_option maxHeartbeats 300000
-set_option synthInstance.etaExperiment true in
 instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
   nontriviality E
   exact finiteDimensional_of_rank_eq_one Subalgebra.rank_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
-set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 450000 in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
@@ -1445,28 +1404,24 @@ theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S =
     rw [← finrank_eq_rank, h, Nat.cast_one]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     Module.rank F S = 1 ↔ S = ⊥ :=
   ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     finrank F S = 1 ↔ S = ⊥ :=
   ⟨Subalgebra.eq_bot_of_finrank_one, fun h => h.symm ▸ Subalgebra.finrank_bot⟩
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
-set_option synthInstance.etaExperiment true in
 theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   -- porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
-set_option synthInstance.etaExperiment true in
 theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
@@ -1481,7 +1436,6 @@ alias Subalgebra.bot_eq_top_iff_finrank_eq_one ↔ _ Subalgebra.bot_eq_top_of_fi
 
 attribute [simp] Subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
   let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
@@ -1582,7 +1536,6 @@ open Module
 
 open Cardinal
 
-set_option synthInstance.etaExperiment true in
 theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] : (#V) = (#K) ^ Module.rank K V := by
   let s := Basis.ofVectorSpaceIndex K V

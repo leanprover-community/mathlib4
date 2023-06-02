@@ -194,5 +194,4 @@ end
 end Subsemigroup
 
 -- Guard against import creep
--- Porting note: Not implemented yet
--- assert_not_exists finset
+assert_not_exists Finset

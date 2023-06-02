@@ -166,7 +166,6 @@ theorem toMatrix_inv_vecMul_toMatrix (x : P) :
     Matrix.vecMul_one]
 #align affine_basis.to_matrix_inv_vec_mul_to_matrix AffineBasis.toMatrix_inv_vecMul_toMatrix
 
-set_option synthInstance.etaExperiment true in
 /-- If we fix a background affine basis `b`, then for any other basis `b₂`, we can characterise
 the barycentric coordinates provided by `b₂` in terms of determinants relative to `b`. -/
 theorem det_smul_coords_eq_cramer_coords (x : P) :

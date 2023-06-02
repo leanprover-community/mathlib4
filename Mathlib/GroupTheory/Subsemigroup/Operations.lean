@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
   `S` and `T`.
 * `Subsemigroup.prodEquiv`: semigroup isomorphism between `s.prod t` and `s × t`;
 
-### Operations on `mul_hom`s
+### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
 * `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;
@@ -643,7 +643,8 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
 #align add_subsemigroup.prod AddSubsemigroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align subsemigroup.coe_prod Subsemigroup.coe_prod
 #align add_subsemigroup.coe_prod AddSubsemigroup.coe_prod
