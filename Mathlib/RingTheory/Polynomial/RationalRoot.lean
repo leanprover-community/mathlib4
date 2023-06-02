@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.IntegrallyClosed
-import Mathbin.RingTheory.Localization.NumDenom
-import Mathbin.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.IntegrallyClosed
+import Mathlib.RingTheory.Localization.NumDenom
+import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Rational root theorem and integral root theorem
@@ -41,8 +41,7 @@ variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsF
 open Finsupp IsFractionRing IsLocalization Polynomial
 
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
-    (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 :=
-  by
+    (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scale_roots_eval₂_eq_zero (algebraMap A S) hr
   rw [aeval_def, mk'_spec' _ r s]
 #align scale_roots_aeval_eq_zero_of_aeval_mk'_eq_zero scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero
@@ -50,8 +49,7 @@ theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
 variable [IsDomain A]
 
 theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
-    (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (Num A x) :=
-  by
+    (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (Num A x) := by
   apply is_root_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
   refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
   rw [mk'_num_denom]
@@ -71,10 +69,8 @@ open IsFractionRing IsLocalization Polynomial UniqueFactorizationMonoid
 /-- Rational root theorem part 1:
 if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the numerator of `r` divides the constant coefficient -/
-theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : Num A r ∣ p.coeff 0 :=
-  by
-  suffices Num A r ∣ (scale_roots p (denom A r)).coeff 0
-    by
+theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : Num A r ∣ p.coeff 0 := by
+  suffices Num A r ∣ (scale_roots p (denom A r)).coeff 0 by
     simp only [coeff_scale_roots, tsub_zero] at this 
     haveI := Classical.propDecidable
     by_cases hr : Num A r = 0
@@ -97,10 +93,8 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : Num A r ∣
 if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the denominator of `r` divides the leading coefficient -/
 theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
-    (den A r : A) ∣ p.leadingCoeff :=
-  by
-  suffices (denom A r : A) ∣ p.leading_coeff * Num A r ^ p.nat_degree
-    by
+    (den A r : A) ∣ p.leadingCoeff := by
+  suffices (denom A r : A) ∣ p.leading_coeff * Num A r ^ p.nat_degree by
     refine'
       dvd_of_dvd_mul_left_of_no_prime_factors (mem_non_zero_divisors_iff_ne_zero.mp (denom A r).2) _
         this
