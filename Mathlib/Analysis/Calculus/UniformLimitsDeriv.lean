@@ -122,7 +122,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
         (l ×ᶠ l) (𝓝 x) ∧
       TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 x - f n.2 x) 0 (l ×ᶠ l) (𝓝 x) by
     have := this.1.add this.2
-    rw [add_zero] at this 
+    rw [add_zero] at this
     exact this.congr (by simp)
   constructor
   · -- This inequality follows from the mean value theorem. To apply it, we will need to shrink our
@@ -138,7 +138,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
       hR' (lt_of_lt_of_le (metric.mem_ball.mp hy) (min_le_right _ _))
     have hxy : ∀ y : E, y ∈ Metric.ball x r → ‖y - x‖ < 1 := by
       intro y hy
-      rw [Metric.mem_ball, dist_eq_norm] at hy 
+      rw [Metric.mem_ball, dist_eq_norm] at hy
       exact lt_of_lt_of_le hy (min_le_left _ _)
     have hxyε : ∀ y : E, y ∈ Metric.ball x r → ε * ‖y - x‖ < ε := by
       intro y hy
@@ -190,7 +190,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
       TendstoUniformlyOn (fun (n : ι × ι) (z : E) => f n.1 x - f n.2 x) 0 (l ×ᶠ l) (Metric.ball x r)
     by
     have := this.1.add this.2
-    rw [add_zero] at this 
+    rw [add_zero] at this
     refine' this.congr _
     apply eventually_of_forall
     intro n z hz
@@ -275,8 +275,8 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero]
   rw [Metric.tendstoUniformlyOnFilter_iff]
   have hfg' := hf'.uniform_cauchy_seq_on_filter
-  rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hfg' 
-  rw [Metric.tendstoUniformlyOnFilter_iff] at hfg' 
+  rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hfg'
+  rw [Metric.tendstoUniformlyOnFilter_iff] at hfg'
   intro ε hε
   obtain ⟨q, hqpos, hqε⟩ := exists_pos_rat_lt hε
   specialize hfg' (q : ℝ) (by simp [hqpos])
@@ -293,7 +293,7 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
   by_cases hyz' : x = y; · simp [hyz', hqpos.le]
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
   rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
-  simp only [Pi.zero_apply, dist_zero_left] at e 
+  simp only [Pi.zero_apply, dist_zero_left] at e
   refine'
     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
       (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).HasFDerivWithinAt)
@@ -327,8 +327,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     rw [Metric.tendsto_nhds] at this ⊢
     intro ε hε
     specialize this ε hε
-    rw [eventually_curry_iff] at this 
-    simp only at this 
+    rw [eventually_curry_iff] at this
+    simp only at this
     exact (eventually_const.mp this).mono (by simp only [imp_self, forall_const])
   -- With the new quantifier in hand, we can perform the famous `ε/3` proof. Specifically,
   -- we will break up the limit (the difference functions minus the derivative go to 0) into 3:
@@ -355,13 +355,13 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   refine' tendsto.add (tendsto.add _ _) _
   simp only
   · have := difference_quotients_converge_uniformly hf' hf hfg
-    rw [Metric.tendstoUniformlyOnFilter_iff] at this 
+    rw [Metric.tendstoUniformlyOnFilter_iff] at this
     rw [Metric.tendsto_nhds]
     intro ε hε
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    rw [← smul_sub] at hn 
+    rw [← smul_sub] at hn
     rwa [sub_zero]
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]
@@ -369,7 +369,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     rw [eventually_curry_iff]
     refine' hf.curry.mono fun n hn => _
     have := hn.self_of_nhds
-    rw [hasFDerivAt_iff_tendsto, Metric.tendsto_nhds] at this 
+    rw [hasFDerivAt_iff_tendsto, Metric.tendsto_nhds] at this
     refine' (this ε hε).mono fun y hy => _
     rw [dist_eq_norm] at hy ⊢
     simp only [sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
@@ -378,7 +378,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   · -- hfg' after specializing to `x` and applying the definition of the operator norm
     refine' tendsto.mono_left _ curry_le_prod
     have h1 : tendsto (fun n : ι × E => g' n.2 - f' n.1 n.2) (l ×ᶠ 𝓝 x) (𝓝 0) := by
-      rw [Metric.tendstoUniformlyOnFilter_iff] at hf' 
+      rw [Metric.tendstoUniformlyOnFilter_iff] at hf'
       exact metric.tendsto_nhds.mpr fun ε hε => by simpa using hf' ε hε
     have h2 : tendsto (fun n : ι => g' x - f' n x) l (𝓝 0) := by
       rw [Metric.tendsto_nhds] at h1 ⊢
@@ -483,15 +483,15 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ᶠ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
-  simp_rw [hasDerivAt_iff_hasFDerivAt] at hf 
+  simp_rw [hasDerivAt_iff_hasFDerivAt] at hf
   exact uniformCauchySeqOnFilter_of_fderiv hf'.one_smul_right hf hfg
 #align uniform_cauchy_seq_on_filter_of_deriv uniformCauchySeqOnFilter_of_deriv
 
 theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : 𝕜, y ∈ Metric.ball x r → HasDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
-  simp_rw [hasDerivAt_iff_hasFDerivAt] at hf 
-  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf' 
+  simp_rw [hasDerivAt_iff_hasFDerivAt] at hf
+  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf'
   have hf' :
     UniformCauchySeqOn (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smul_right (f' n z)) l
       (Metric.ball x r) := by
@@ -571,4 +571,3 @@ theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l
 #align has_deriv_at_of_tendsto_uniformly hasDerivAt_of_tendstoUniformly
 
 end deriv
-
