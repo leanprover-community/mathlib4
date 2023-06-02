@@ -1186,7 +1186,10 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
   simp_rw [integral_eq_lintegral_of_nonneg_ae (eventually_of_forall fun x => (f x).coe_nonneg)
       hfi.aestronglyMeasurable, ← ENNReal.coe_nnreal_eq]
   rw [ENNReal.ofReal_toReal]
-  rw [← lt_top_iff_ne_top]; convert hfi.hasFiniteIntegral; ext1 x; rw [NNReal.nnnorm_eq]
+  rw [← lt_top_iff_ne_top]
+  convert hfi.hasFiniteIntegral
+  -- Porting note: `convert` no longer unfolds `HasFiniteIntegral`
+  simp_rw [HasFiniteIntegral, NNReal.nnnorm_eq]
 #align measure_theory.lintegral_coe_eq_integral MeasureTheory.lintegral_coe_eq_integral
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
@@ -1195,7 +1198,7 @@ theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f
       (show f =ᵐ[μ] fun x => ‖f x‖ by
         filter_upwards [f_nn]with x hx
         rw [Real.norm_eq_abs, abs_eq_self.mpr hx]),
-    of_real_integral_norm_eq_lintegral_nnnorm hfi, ← ofReal_norm_eq_coe_nnnorm]
+    ofReal_integral_norm_eq_lintegral_nnnorm hfi, ← ofReal_norm_eq_coe_nnnorm]
   apply lintegral_congr_ae
   filter_upwards [f_nn]with x hx
   exact congr_arg ENNReal.ofReal (by rw [Real.norm_eq_abs, abs_eq_self.mpr hx])
