@@ -414,6 +414,25 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
       refine Measurable.add ?_ measurable_snd
       refine measurable_pi_lambda _ fun _ => Measurable.const_mul ?_ _
       exact this.comp measurable_fst
+    /-
+    Porting note: TODO
+    In Lean 4, the following tc search fails, even if we make `volume` reducible in
+    `MeasureSpaceDef`.
+    ```lean
+    variable [Fintype ι]
+    #synth SigmaFinite (volume : Measure (ι → ℝ))
+    -- fails
+    #synth SigmaFinite (Measure.pi fun _ => volume : Measure (ι → ℝ))
+    -- defeq and succeeds
+    #synth AddLeftInvariant (volume : Measure (ι → ℝ))
+    -- fails
+    #synth AddLeftInvariant (Measure.pi fun _ =>
+      (stdOrthonormalBasis ℝ ℝ).toBasis.addHaar : Measure (ι → ℝ))
+    -- defeq and succeeds
+    ```
+    These instances are required in this file.
+    This file can be built by specifying latter measures now, but this should be fixed clearly.
+    -/
     (MeasurePreserving.id _).skew_product (μb := Measure.pi fun _ => volume)
       (μd := Measure.pi fun _ => volume) g_meas
       (eventually_of_forall fun a => map_add_left_eq_self
