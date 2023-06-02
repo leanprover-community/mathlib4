@@ -21,16 +21,16 @@ _uniformly_. The formal statement appears as `has_fderiv_at_of_tendsto_locally_u
 
 ## Main statements
 
-* `uniform_cauchy_seq_on_filter_of_fderiv`: If
+* `uniformCauchySeqOnFilter_of_fderiv`: If
     1. `f : ℕ → E → G` is a sequence of functions which have derivatives
        `f' : ℕ → E → (E →L[𝕜] G)` on a neighborhood of `x`,
     2. the functions `f` converge at `x`, and
     3. the derivatives `f'` form a Cauchy sequence uniformly on a neighborhood of `x`,
   then the `f` form a Cauchy sequence _uniformly_ on a neighborhood of `x`
-* `has_fderiv_at_of_tendsto_uniformly_on_filter` : Suppose (1), (2), and (3) above are true. Let
+* `hasFDerivAt_of_tendstoUniformlyOnFilter` : Suppose (1), (2), and (3) above are true. Let
   `g` (resp. `g'`) be the limiting function of the `f` (resp. `g'`). Then `f'` is the derivative of
   `g` on a neighborhood of `x`
-* `has_fderiv_at_of_tendsto_uniformly_on`: An often-easier-to-use version of the above theorem when
+* `hasFDerivAt_of_tendstoUniformlyOn`: An often-easier-to-use version of the above theorem when
   *all* the derivatives exist and functions converge on a common open set and the derivatives
   converge uniformly there.
 
@@ -83,13 +83,13 @@ call a "curried filter"
 tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top.curry (𝓝 x)) (𝓝 0)
 ```
 
-Then the above implications are `filter.tendsto.curry` and
-`filter.tendsto.mono_left filter.curry_le_prod`. We will use both of these deductions as part of
+Then the above implications are `Filter.Tendsto.curry` and
+`Filter.Tendsto.mono_left Filter.curry_le_prod`. We will use both of these deductions as part of
 our proof.
 
 We note that if you loosen the assumptions of the main theorem then the proof becomes quite a bit
 easier. In particular, if you assume there is a common neighborhood `s` where all of the three
-assumptions of `has_fderiv_at_of_tendsto_uniformly_on_filter` hold and that the `f'` are
+assumptions of `hasFDerivAt_of_tendstoUniformlyOnFilter` hold and that the `f'` are
 continuous, then you can avoid the mean value theorem and much of the work around curried filters.
 
 ## Tags
@@ -174,7 +174,7 @@ functions form a uniform Cauchy sequence on the ball.
 NOTE: The fact that we work on a ball is typically all that is necessary to work with power series
 and Dirichlet series (our primary use case). However, this can be generalized by replacing the ball
 with any connected, bounded, open set and replacing uniform convergence with local uniform
-convergence. See `cauchy_map_of_uniform_cauchy_seq_on_fderiv`.
+convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 -/
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
@@ -411,8 +411,8 @@ theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsO
   simpa [IsOpen.nhdsWithin_eq hs hx] using tendstoLocallyUniformlyOn_iff_filter.mp hf' x hx
 #align has_fderiv_at_of_tendsto_locally_uniformly_on hasFDerivAt_of_tendstoLocallyUniformlyOn
 
-/-- A slight variant of `has_fderiv_at_of_tendsto_locally_uniformly_on` with the assumption stated
-in terms of `differentiable_on` rather than `has_fderiv_at`. This makes a few proofs nicer in
+/-- A slight variant of `hasFDerivAt_of_tendstoLocallyUniformlyOn` with the assumption stated
+in terms of `DifferentiableOn` rather than `HasFDerivAt`. This makes a few proofs nicer in
 complex analysis where holomorphicity is assumed but the derivative is not known a priori. -/
 theorem hasFDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn (fderiv 𝕜 ∘ f) g' l s) (hf : ∀ n, DifferentiableOn 𝕜 (f n) s)
@@ -507,7 +507,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasDerivAt g (g' x) x := by
   -- The first part of the proof rewrites `hf` and the goal to be functions so that Lean
-  -- can recognize them when we apply `has_fderiv_at_of_tendsto_uniformly_on_filter`
+  -- can recognize them when we apply `hasFDerivAt_of_tendstoUniformlyOnFilter`
   let F' n z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)
   let G' z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
@@ -542,8 +542,8 @@ theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : I
   simpa [IsOpen.nhdsWithin_eq hs hx] using tendstoLocallyUniformlyOn_iff_filter.mp hf' x hx
 #align has_deriv_at_of_tendsto_locally_uniformly_on hasDerivAt_of_tendstoLocallyUniformlyOn
 
-/-- A slight variant of `has_deriv_at_of_tendsto_locally_uniformly_on` with the assumption stated in
-terms of `differentiable_on` rather than `has_deriv_at`. This makes a few proofs nicer in complex
+/-- A slight variant of `hasDerivAt_of_tendstoLocallyUniformlyOn` with the assumption stated in
+terms of `DifferentiableOn` rather than `HasDerivAt`. This makes a few proofs nicer in complex
 analysis where holomorphicity is assumed but the derivative is not known a priori. -/
 theorem hasDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn (deriv ∘ f) g' l s)
