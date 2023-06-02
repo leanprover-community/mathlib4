@@ -290,11 +290,11 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
       mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]; rfl
-    change _ ≤ _
+    rw [Set.mem_setOf_eq]
     rwa [← hiff]
   · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem]
     · simp [(ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
-    · change ¬_ ≤ _
+    · rw [Set.mem_setOf_eq]
       rwa [← hiff]
 #align measure_theory.mem_ℒp.snorm_indicator_norm_ge_le MeasureTheory.Memℒp.snorm_indicator_norm_ge_le
 
@@ -306,21 +306,19 @@ theorem Memℒp.snorm_indicator_norm_ge_pos_le (hf : Memℒp f p μ) (hmeas : St
   refine'
     ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), le_trans (snorm_mono fun x => _) hM⟩
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  refine' Set.indicator_le_indicator_of_subset (fun x hx => _) (fun x => norm_nonneg _) x
-  change max _ _ ≤ _ at hx
-  -- removing the `change` breaks the proof!
+  refine' Set.indicator_le_indicator_of_subset (fun x hx => _) (fun x => norm_nonneg (f x)) x
+  rw [Set.mem_setOf_eq] at hx -- removing the `rw` breaks the proof!
   exact (max_le_iff.1 hx).1
 #align measure_theory.mem_ℒp.snorm_indicator_norm_ge_pos_le MeasureTheory.Memℒp.snorm_indicator_norm_ge_pos_le
 
 end
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:38: in filter_upwards #[[], [], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error @ arg 0: next failed, no more args -/
 theorem snorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε : ℝ} (hε : 0 < ε) {M : ℝ}
     (hf : ∀ x, ‖f x‖ < M) :
     ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s,
       MeasurableSet s → μ s ≤ ENNReal.ofReal δ → snorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   by_cases hM : M ≤ 0
-  · refine' ⟨1, zero_lt_one, fun s hs hμ => _⟩
+  · refine' ⟨1, zero_lt_one, fun s _ _ => _⟩
     rw [(_ : f = 0)]
     · simp [hε.le]
     · ext x
@@ -332,8 +330,7 @@ theorem snorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε : �
   · simp [hp]
   rw [snorm_indicator_eq_snorm_restrict hs]
   have haebdd : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ M := by
-    trace
-      "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:38: in filter_upwards #[[], [], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error @ arg 0: next failed, no more args"
+    filter_upwards
     exact fun x => (hf x).le
   refine' le_trans (snorm_le_of_ae_bound haebdd) _
   rw [Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
@@ -435,23 +432,25 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   revert f
   induction' n with n h
   · intro f hf
+    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
     exact unifIntegrable_subsingleton μ hp_one hp_top hf
   intro f hfLp ε hε
-  set g : Fin n → α → β := fun k => f k with hg
-  have hgLp : ∀ i, mem_ℒp (g i) p μ := fun i => hfLp i
+  let g : Fin n → α → β := fun k => f k
+  have hgLp : ∀ i, Memℒp (g i) p μ := fun i => hfLp i
   obtain ⟨δ₁, hδ₁pos, hδ₁⟩ := h hgLp hε
   obtain ⟨δ₂, hδ₂pos, hδ₂⟩ := (hfLp n).snorm_indicator_le μ hp_one hp_top hε
   refine' ⟨min δ₁ δ₂, lt_min hδ₁pos hδ₂pos, fun i s hs hμs => _⟩
   by_cases hi : i.val < n
   · rw [(_ : f i = g ⟨i.val, hi⟩)]
     · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
-    · rw [hg]; simp
+    · simp
   · rw [(_ : i = n)]
     · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
-      simp [← le_antisymm hi' hi]
+      -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
+      ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
 #align measure_theory.unif_integrable_fin MeasureTheory.unifIntegrable_fin
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
@@ -498,9 +497,9 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [FiniteMeasure μ] (hp : 1 ≤ p) (hp' 
   intro ε hε
   by_cases ε < ∞; swap
   · rw [not_lt, top_le_iff] at h
-    exact ⟨0, fun n hn => by simp [h]⟩
+    exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
-  · exact ⟨0, fun n hn => by simp [hμ]⟩
+  · exact ⟨0, fun n _ => by simp [hμ]⟩
   have hε' : 0 < ε.toReal / 3 :=
     div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (by norm_num)
   have hdivp : 0 ≤ 1 / p.toReal := by
@@ -542,8 +541,11 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [FiniteMeasure μ] (hp : 1 ≤ p) (hp' 
     exact min_le_right _ _
   have hlt : snorm (tᶜ.indicator (f n - g)) p μ ≤ ENNReal.ofReal (ε.toReal / 3) := by
     specialize hN n hn
+    have : 0 ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)) := by
+      rw [div_mul_eq_div_mul_one_div]
+      exact mul_nonneg hε'.le (one_div_nonneg.2 hpow.le)
     have :=
-      snorm_sub_le_of_dist_bdd μ hp' htm.compl _ fun x hx =>
+      snorm_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
         (dist_comm (g x) (f n x) ▸ (hN x hx).le :
           dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine' le_trans this _
@@ -555,11 +557,9 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [FiniteMeasure μ] (hp : 1 ≤ p) (hp' 
           Real.rpow_le_rpow ENNReal.toReal_nonneg
             (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le _) hdivp
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]
-        exact measure_mono (subset_univ _)
+        exact measure_mono (Set.subset_univ _)
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
     · refine' mul_nonneg hε'.le (one_div_nonneg.2 hpow.le)
-    · rw [div_mul_eq_div_mul_one_div]
-      exact mul_nonneg hε'.le (one_div_nonneg.2 hpow.le)
   have : ENNReal.ofReal (ε.toReal / 3) = ε / 3 := by
     rw [ENNReal.ofReal_div_of_pos (show (0 : ℝ) < 3 by norm_num), ENNReal.ofReal_toReal h.ne]
     simp
@@ -586,7 +586,7 @@ theorem tendsto_Lp_of_tendsto_ae [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ 
   filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
   convert hx_tendsto
-  ext1 n
+  rename_i n
   exact (hxf_eq n).symm
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_Lp_of_tendsto_ae MeasureTheory.tendsto_Lp_of_tendsto_ae
