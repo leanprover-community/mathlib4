@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Liouville.Basic
-import Mathbin.Topology.MetricSpace.Baire
-import Mathbin.Topology.Instances.Irrational
+import Mathlib.NumberTheory.Liouville.Basic
+import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Density of Liouville numbers
@@ -27,15 +27,13 @@ open Filter Set Metric
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (a b) -/
 theorem setOf_liouville_eq_iInter_iUnion :
     { x | Liouville x } =
-      ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b), ball (a / b) (1 / b ^ n) \ {a / b} :=
-  by
+      ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b), ball (a / b) (1 / b ^ n) \ {a / b} := by
   ext x
   simp only [mem_Inter, mem_Union, Liouville, mem_set_of_eq, exists_prop, mem_diff,
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm']
 #align set_of_liouville_eq_Inter_Union setOf_liouville_eq_iInter_iUnion
 
-theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } :=
-  by
+theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
   refine' isGδ_iInter fun n => IsOpen.isGδ _
   refine' isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun hb => _
@@ -45,8 +43,7 @@ theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } :=
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (a b) -/
 theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
-      { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b), ball (a / b) (1 / b ^ n) :=
-  by
+      { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b), ball (a / b) (1 / b ^ n) := by
   refine' subset.antisymm _ _
   · refine' subset_inter (fun x hx => hx.Irrational) _
     rw [setOf_liouville_eq_iInter_iUnion]
@@ -59,8 +56,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
 #align set_of_liouville_eq_irrational_inter_Inter_Union setOf_liouville_eq_irrational_inter_iInter_iUnion
 
 /-- The set of Liouville numbers is a residual set. -/
-theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
-  by
+theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
   refine' eventually_residual_irrational.and _
   refine' eventually_residual.2 ⟨_, _, rat.dense_embedding_coe_real.dense.mono _, subset.rfl⟩
