@@ -11,7 +11,6 @@ Authors: Chris Hughes
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Artinian rings and modules

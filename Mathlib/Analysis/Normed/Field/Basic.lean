@@ -1030,8 +1030,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- porting note: add this back in once `assert_not_exists` is ported
-/-
 -- Guard again import creep.
 assert_not_exists RestrictScalars
--/

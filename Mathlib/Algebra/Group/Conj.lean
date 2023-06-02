@@ -332,5 +332,4 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 
 end ConjClasses
 
--- porting notes: not implemented
--- assert_not_exists multiset
+assert_not_exists Multiset

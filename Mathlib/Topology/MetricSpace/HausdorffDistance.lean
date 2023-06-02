@@ -1221,8 +1221,7 @@ theorem diam_thickening_le {α : Type _} [PseudoMetricSpace α] (s : Set α) (h�
   obtain rfl | hε := hε.eq_or_lt
   · simp [thickening_of_nonpos, diam_nonneg]
   · rw [diam_eq_zero_of_unbounded (mt (Bounded.mono <| self_subset_thickening hε _) hs)]
-    -- porting note: was `positivity`
-    exact add_nonneg diam_nonneg (mul_nonneg zero_le_two hε.le)
+    positivity
 #align metric.diam_thickening_le Metric.diam_thickening_le
 
 @[simp]

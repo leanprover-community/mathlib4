@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit c1686dff26eaecf4efd4edd141ebf78de309ae80
+! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -464,6 +464,7 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
 #align ennreal.coe_of_nnreal_hom ENNReal.coe_ofNNRealHom
 
+-- TODO: generalize some of these (and subsequent lemmas about `smul`) to `WithTop α`
 section Actions
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
@@ -559,6 +560,15 @@ theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
+-- porting note: added missing `DecidableEq R`
+theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
+    c • ∞ = if c = 0 then 0 else ∞ := by
+  rw [← smul_one_mul, mul_top']
+  -- porting note: need the primed version of `one_ne_zero` now
+  simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
+#align ennreal.smul_top ENNReal.smul_top
+
 -- porting note: todo: assume `n ≠ 0` instead of `0 < n`
 -- porting note: todo: generalize to `WithTop`
 theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
@@ -590,7 +600,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
     rw [← or_assoc, or_iff_not_imp_right, or_iff_not_imp_right]
     intro hb ha
     exact ⟨lt_top_of_mul_ne_top_left h.ne hb, lt_top_of_mul_ne_top_right h.ne ha⟩
-  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne, simp, simp]
+  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne; simp; simp]
 #align ennreal.mul_lt_top_iff ENNReal.mul_lt_top_iff
 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by

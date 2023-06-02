@@ -38,7 +38,7 @@ We also register the fact that `ℂ` is an `IsROrC` field.
 -/
 
 
--- porting note: todo: restore assert_not_exists Absorbs
+assert_not_exists Absorbs
 
 noncomputable section
 

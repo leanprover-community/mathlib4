@@ -10,7 +10,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 /-!
 # The Fréchet derivative
@@ -485,7 +485,7 @@ theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
   exact hs.sup ht
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
 
-theorem HasFDerivWithinAt.nhdsWithin (h : HasFDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
+protected theorem HasFDerivWithinAt.nhdsWithin (h : HasFDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
     HasFDerivWithinAt f f' t x :=
   (hasFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
 #align has_fderiv_within_at.nhds_within HasFDerivWithinAt.nhdsWithin
@@ -531,7 +531,7 @@ theorem DifferentiableOn.eventually_differentiableAt (h : DifferentiableOn 𝕜 
   (eventually_eventually_nhds.2 hs).mono fun _ => h.differentiableAt
 #align differentiable_on.eventually_differentiable_at DifferentiableOn.eventually_differentiableAt
 
-theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x = f' := by
+protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x = f' := by
   ext
   rw [h.unique h.differentiableAt.hasFDerivAt]
 #align has_fderiv_at.fderiv HasFDerivAt.fderiv
@@ -549,7 +549,7 @@ theorem DifferentiableAt.le_of_lip {f : E → F} {x₀ : E} (hf : Differentiable
   hf.hasFDerivAt.le_of_lip hs hlip
 #align fderiv_at.le_of_lip DifferentiableAt.le_of_lip
 
-theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x)
+protected theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
   (hxs.eq h h.differentiableWithinAt.hasFDerivWithinAt).symm
 #align has_fderiv_within_at.fderiv_within HasFDerivWithinAt.fderivWithin
@@ -609,7 +609,7 @@ theorem Differentiable.differentiableAt (h : Differentiable 𝕜 f) : Differenti
   h x
 #align differentiable.differentiable_at Differentiable.differentiableAt
 
-theorem DifferentiableAt.fderivWithin (h : DifferentiableAt 𝕜 f x)
+protected theorem DifferentiableAt.fderivWithin (h : DifferentiableAt 𝕜 f x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   h.hasFDerivAt.hasFDerivWithinAt.fderivWithin hxs
 #align differentiable_at.fderiv_within DifferentiableAt.fderivWithin
@@ -1136,7 +1136,8 @@ theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := by
   exact nmem_support.mpr (h2x.fderiv_eq.trans <| fderiv_const_apply 0)
 #align support_fderiv_subset support_fderiv_subset
 
-theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) : HasCompactSupport (fderiv 𝕜 f) :=
+protected theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) :
+    HasCompactSupport (fderiv 𝕜 f) :=
   hf.mono' <| support_fderiv_subset 𝕜
 #align has_compact_support.fderiv HasCompactSupport.fderiv
 

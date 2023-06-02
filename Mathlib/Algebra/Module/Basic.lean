@@ -767,5 +767,4 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
--- Porting note: `assert_not_exists` not implemented yet
--- assert_not_exists multiset
+assert_not_exists Multiset

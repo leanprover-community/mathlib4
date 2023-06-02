@@ -128,19 +128,19 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
     (lift <|
       DirectSum.toModule R _ _ fun i =>
         (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule R _ _ fun i => rtensor _ (DirectSum.lof R ι₁ _ _))
+    (DirectSum.toModule R _ _ fun i => rTensor _ (DirectSum.lof R ι₁ _ _))
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
         LinearMap.ext₂ fun m₁ m₂ => by
           dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
-          simp_rw [DirectSum.toModule_lof, rtensor_tmul, lift.tmul, DirectSum.toModule_lof,
+          simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
             compr₂_apply, mk_apply])
     (TensorProduct.ext <|
       DirectSum.linearMap_ext R fun i =>
         LinearMap.ext₂ fun m₁ m₂ => by
           dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
           simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
-            mk_apply, DirectSum.toModule_lof, rtensor_tmul])
+            mk_apply, DirectSum.toModule_lof, rTensor_tmul])
 #align tensor_product.direct_sum_left TensorProduct.directSumLeft
 
 /-- Tensor products distribute over a direct sum on the right. -/

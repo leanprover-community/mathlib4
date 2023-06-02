@@ -138,7 +138,7 @@ def transReflReparamAux (t : I) : ℝ :=
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
-    [continuity, continuity, continuity, continuity, skip]
+    [continuity; continuity; continuity; continuity; skip]
   intro x hx
   -- Porting note: norm_num ignores arguments.
   simp [hx]
@@ -203,7 +203,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _)
       (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
       _ <;>
-    [continuity, continuity, continuity, continuity, continuity, continuity, continuity, skip,
+    [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
       -- Porting note: norm_num ignores arguments.

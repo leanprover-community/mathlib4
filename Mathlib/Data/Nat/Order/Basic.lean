@@ -259,7 +259,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left, right]
+  cases' le_or_lt m k with h' h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'

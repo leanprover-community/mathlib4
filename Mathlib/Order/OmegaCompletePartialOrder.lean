@@ -811,7 +811,7 @@ def apply : (α →𝒄 β) × α →𝒄 β where
   toFun f := f.1 f.2
   monotone' x y h := by
     dsimp
-    trans y.fst x.snd <;> [apply h.1, apply y.1.monotone h.2]
+    trans y.fst x.snd <;> [apply h.1; apply y.1.monotone h.2]
   cont := by
     intro _ c
     apply le_antisymm

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -431,11 +431,7 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 
 theorem smul_iSup [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {ι} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
-  ext fun s => by
-  rw [smul_apply, ← smul_one_mul, iSup]
-  simp only [iSup_apply, smul_apply, ← smul_one_mul c (f _ _)]
-  rw [←iSup, ←ENNReal.mul_iSup]
-  simp
+  ext fun s => by simp only [smul_apply, iSup_apply, ENNReal.smul_iSup]
 #align measure_theory.outer_measure.smul_supr MeasureTheory.OuterMeasure.smul_iSup
 
 end Supremum
@@ -886,6 +882,20 @@ theorem le_bounded_by' {μ : OuterMeasure α} :
   cases' s.eq_empty_or_nonempty with h h <;> simp [h]
 #align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
 
+@[simp]
+theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
+  rw [eq_top_iff, le_bounded_by']
+  intro s hs
+  rw [top_apply hs]
+  exact le_rfl
+#align measure_theory.outer_measure.bounded_by_top MeasureTheory.OuterMeasure.boundedBy_top
+
+@[simp]
+theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 := by
+  rw [← coe_bot, eq_bot_iff]
+  apply boundedBy_le
+#align measure_theory.outer_measure.bounded_by_zero MeasureTheory.OuterMeasure.boundedBy_zero
+
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
   simp only [boundedBy , smul_ofFunction hc]
   congr 1 with s : 1
@@ -1315,6 +1325,16 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 #align measure_theory.extend_eq_top MeasureTheory.extend_eq_top
 
+theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+    c • extend m = extend fun s h => c • m s h := by
+  ext1 s
+  dsimp [extend]
+  by_cases h : P s
+  · simp [h]
+  · simp [h, ENNReal.smul_top, hc]
+#align measure_theory.smul_extend MeasureTheory.smul_extend
+
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]
   intro
@@ -1327,6 +1347,11 @@ theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s →
     extend m sa = extend mb sb :=
   iInf_congr_Prop hP fun _h => hm _ _
 #align measure_theory.extend_congr MeasureTheory.extend_congr
+
+@[simp]
+theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+  funext fun _ => iInf_eq_top.mpr fun _ => rfl
+#align measure_theory.extend_top MeasureTheory.extend_top
 
 end Extend
 
@@ -1641,6 +1666,11 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 #align measure_theory.outer_measure.trim_trim MeasureTheory.OuterMeasure.trim_trim
+
+@[simp]
+theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
+  eq_top_iff.2 <| le_trim _
+#align measure_theory.outer_measure.trim_top MeasureTheory.OuterMeasure.trim_top
 
 @[simp]
 theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=

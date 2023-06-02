@@ -3686,4 +3686,4 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
 
 end IsConj
 
--- assert_not_exists Multiset
+assert_not_exists Multiset

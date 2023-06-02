@@ -553,7 +553,7 @@ theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.
   induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
     simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
   · simp only [← k_ih]
-  · split_ifs <;> [rfl, simp only [← k_ih, bind_assoc]]
+  · split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 #align turing.to_partrec.cont.then_eval Turing.ToPartrec.Cont.then_eval
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
@@ -621,7 +621,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   case case f g IHf IHg =>
     rw [stepNormal]
     simp only []
-    cases v.headI <;> simp only [] <;> [apply IHf, apply IHg]
+    cases v.headI <;> simp only [] <;> [apply IHf; apply IHg]
   case fix f IHf => apply IHf
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret
 
@@ -670,7 +670,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
         · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
           simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂)),
+          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
             exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
@@ -714,7 +714,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [stepRet, IHf]
   case case f g IHf IHg =>
     simp only [Code.eval]
-    cases v.headI <;> simp only [Code.eval] <;> [apply IHf, apply IHg]
+    cases v.headI <;> simp only [Code.eval] <;> [apply IHf; apply IHg]
   case fix f IHf => rw [cont_eval_fix IHf]
 #align turing.to_partrec.code_is_ok Turing.ToPartrec.code_is_ok
 

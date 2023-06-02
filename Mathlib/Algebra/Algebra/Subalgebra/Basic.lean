@@ -374,7 +374,8 @@ instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R'
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
 
-instance : Algebra R S := S.algebra'
+instance algebra : Algebra R S := S.algebra'
+#align subalgebra.algebra Subalgebra.algebra
 
 end
 

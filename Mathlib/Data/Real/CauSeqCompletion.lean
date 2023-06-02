@@ -234,7 +234,7 @@ noncomputable instance : Inv (Cauchy abv) :=
 -- porting note: simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_limZero]
+  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
@@ -266,7 +266,7 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h], rfl]
+  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /- porting note: This takes a long time to compile.

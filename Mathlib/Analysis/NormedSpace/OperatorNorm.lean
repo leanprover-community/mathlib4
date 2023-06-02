@@ -717,25 +717,39 @@ theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x
 
 variable [RingHomIsometric σ₂₃]
 
+lemma norm_mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ)
+    (h : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) (x : E) :
+    ‖(f x).mkContinuous (C * ‖x‖) (h x)‖ ≤ max C 0 * ‖x‖ :=
+  (mkContinuous_norm_le' (f x) (h x)).trans_eq <| by
+    rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
+
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
-map and a bound on the norm of the image. The linear map can be constructed using
-`LinearMap.mk₂`. -/
-def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
-    E →SL[σ₁₃] F →SL[σ₂₃] G :=
-  LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) (hC x)
+map and existence of a bound on the norm of the image. The linear map can be constructed using
+`LinearMap.mk₂`.
+
+If you have an explicit bound, use `LinearMap.mkContinuous₂` instead, as a norm estimate will
+follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
+def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
+    (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
+  LinearMap.mkContinuousOfExistsBound
+    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
       map_add' := fun x y => by
         ext z
-        rw [ContinuousLinearMap.add_apply, mkContinuous_apply, mkContinuous_apply,
-          mkContinuous_apply, map_add, add_apply]
+        rw [ContinuousLinearMap.add_apply, mkContinuousOfExistsBound_apply,
+          mkContinuousOfExistsBound_apply, mkContinuousOfExistsBound_apply, map_add, add_apply]
       map_smul' := fun c x => by
         ext z
-        rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
-          smul_apply] }
-    (max C 0) fun x => by
-      dsimp
-      exact (mkContinuous_norm_le' _ _).trans_eq <| by
-        rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+        rw [ContinuousLinearMap.smul_apply, mkContinuousOfExistsBound_apply,
+          mkContinuousOfExistsBound_apply, map_smulₛₗ, smul_apply] } <|
+    let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
+
+/-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
+map and a bound on the norm of the image. The linear map can be constructed using
+`LinearMap.mk₂`. Lemmas `LinearMap.mkContinuous₂_norm_le'` and `LinearMap.mkContinuous₂_norm_le`
+provide estimates on the norm of an operator constructed using this function. -/
+def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
+    E →SL[σ₁₃] F →SL[σ₂₃] G :=
+  mkContinuousOfExistsBound₂ f ⟨C, hC⟩
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 @[simp]
@@ -746,7 +760,7 @@ theorem mkContinuous₂_apply (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G
 
 theorem mkContinuous₂_norm_le' (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ max C 0 :=
-  mkContinuous_norm_le _ (le_max_iff.2 <| Or.inr le_rfl) _
+  mkContinuous_norm_le _ (le_max_iff.2 <| Or.inr le_rfl) (norm_mkContinuous₂_aux f C hC)
 #align linear_map.mk_continuous₂_norm_le' LinearMap.mkContinuous₂_norm_le'
 
 theorem mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
