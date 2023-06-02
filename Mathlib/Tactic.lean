@@ -137,3 +137,4 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Zify.Attr
+import Mathlib.Tactic.extractGoal
