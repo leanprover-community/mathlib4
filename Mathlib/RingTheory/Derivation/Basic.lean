@@ -35,9 +35,7 @@ and `ring_theory.derivation.to_square_zero` for
 
 -/
 
-
 open Algebra
-
 open scoped BigOperators
 
 /-- `D : derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
@@ -45,11 +43,10 @@ equality. We also require that `D 1 = 0`. See `derivation.mk'` for a constructor
 assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
-@[protect_proj]
 structure Derivation (R : Type _) (A : Type _) [CommSemiring R] [CommSemiring A] [Algebra R A]
     (M : Type _) [AddCommMonoid M] [Module A M] [Module R M] extends A →ₗ[R] M where
-  map_one_eq_zero' : to_linear_map 1 = 0
-  leibniz' (a b : A) : to_linear_map (a * b) = a • to_linear_map b + b • to_linear_map a
+  protected map_one_eq_zero' : toLinearMap 1 = 0
+  protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
 #align derivation Derivation
 
 /-- The `linear_map` underlying a `derivation`. -/
@@ -76,12 +73,14 @@ instance : AddMonoidHomClass (Derivation R A M) A M where
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun (Derivation R A M) fun _ => A → M :=
-  ⟨fun D => D.toLinearMap.toFun⟩
+  ⟨FunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coe_fn_coe` + `to_linear_map_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 #align derivation.to_fun_eq_coe Derivation.toFun_eq_coe
+
+attribute [coe] toLinearMap
 
 instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
@@ -102,7 +101,7 @@ theorem coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
   rfl
 #align derivation.coe_fn_coe Derivation.coeFn_coe
 
-theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) coeFn :=
+theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.coe :=
   FunLike.coe_injective
 #align derivation.coe_injective Derivation.coe_injective
 
@@ -162,11 +161,11 @@ theorem map_coe_nat (n : ℕ) : D (n : A) = 0 := by
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
-  · rw [pow_zero, map_one_eq_zero, zero_smul]
-  · rcases(zero_le n).eq_or_lt with (rfl | hpos)
-    · rw [pow_one, one_smul, pow_zero, one_smul]
+  · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
+  · rcases (zero_le n).eq_or_lt with (rfl | hpos)
+    · erw [pow_one, one_smul, pow_zero, one_smul]
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ, Nat.sub_add_cancel hpos]
-      simp only [pow_succ, leibniz, ihn, smul_comm a n, smul_smul a, add_smul, this,
+      simp only [pow_succ, leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
 #align derivation.leibniz_pow Derivation.leibniz_pow
 
@@ -178,7 +177,7 @@ theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin 
 /-- If adjoin of a set is the whole algebra, then any two derivations equal on this set are equal
 on the whole algebra. -/
 theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D1 D2 s) : D1 = D2 :=
-  ext fun a => eqOn_adjoin h <| hs.symm ▸ trivial
+  ext fun _ => eqOn_adjoin h <| hs.symm ▸ trivial
 #align derivation.ext_of_adjoin_eq_top Derivation.ext_of_adjoin_eq_top
 
 -- Data typeclasses
@@ -206,7 +205,7 @@ instance : Add (Derivation R A M) :=
     { toLinearMap := D1 + D2
       map_one_eq_zero' := by simp
       leibniz' := fun a b => by
-        simp only [leibniz, LinearMap.add_apply, coe_fn_coe, smul_add, add_add_add_comm] }⟩
+        simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
 @[simp]
 theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
@@ -235,10 +234,10 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass 
 
 instance (priority := 100) : SMul S (Derivation R A M) :=
   ⟨fun r D =>
-    { toLinearMap := r • D
-      map_one_eq_zero' := by rw [LinearMap.smul_apply, coe_fn_coe, D.map_one_eq_zero, smul_zero]
-      leibniz' := fun a b => by
-        simp only [LinearMap.smul_apply, coe_fn_coe, leibniz, smul_add, smul_comm r] }⟩
+    { toLinearMap := r • D.1
+      map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
+      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
+        smul_comm r (_ : A) (_ : M)] }⟩
 
 @[simp]
 theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • D :=
@@ -255,11 +254,11 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 #align derivation.smul_apply Derivation.smul_apply
 
 instance : AddCommMonoid (Derivation R A M) :=
-  coe_injective.AddCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 /-- `coe_fn` as an `add_monoid_hom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
-  toFun := coeFn
+  toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
 #align derivation.coe_fn_add_monoid_hom Derivation.coeFnAddMonoidHom
@@ -271,10 +270,10 @@ instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] : IsCentralScalar
     where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
-  ⟨fun x y z => ext fun a => smul_assoc _ _ _⟩
+  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
-  ⟨fun x y z => ext fun a => smul_comm _ _ _⟩
+  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
 end Scalar
 
@@ -291,15 +290,15 @@ variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
-def LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
+def _root_.LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
-      map_one_eq_zero' := by simp only [LinearMap.comp_apply, coe_fn_coe, map_one_eq_zero, map_zero]
+      map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
       leibniz' := fun a b => by
-        simp only [coe_fn_coe, LinearMap.comp_apply, LinearMap.map_add, leibniz,
+        simp only [coeFn_coe, LinearMap.comp_apply, LinearMap.map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by ext; exact LinearMap.map_smul _ _ _
+  map_smul' r D := by dsimp; ext; exact LinearMap.map_smul (f : M →ₗ[R] N) _ _
 #align linear_map.comp_der LinearMap.compDer
 
 @[simp]
@@ -321,7 +320,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
 #align derivation.llcomp Derivation.llcomp
 
 /-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
-def LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
+def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
@@ -424,7 +423,7 @@ theorem leibniz_inv {K : Type _} [Field K] [Module K M] [Algebra R K] (D : Deriv
 instance : Neg (Derivation R A M) :=
   ⟨fun D =>
     mk' (-D) fun a b => by
-      simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coe_fn_coe, add_comm]⟩
+      simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
 @[simp]
 theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
@@ -443,7 +442,7 @@ theorem neg_apply : (-D) a = -D a :=
 instance : Sub (Derivation R A M) :=
   ⟨fun D1 D2 =>
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
-      simp only [LinearMap.sub_apply, leibniz, coe_fn_coe, smul_sub, add_sub_add_comm]⟩
+      simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
 @[simp]
 theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
@@ -460,7 +459,7 @@ theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
 #align derivation.sub_apply Derivation.sub_apply
 
 instance : AddCommGroup (Derivation R A M) :=
-  coe_injective.AddCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 end
 
