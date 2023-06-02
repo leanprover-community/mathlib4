@@ -47,32 +47,30 @@ the compositions modulo some adjustments of domains and codomains of 2-morphisms
 structure OplaxNatTrans (F G : OplaxFunctor B C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ⟶ app a ≫ G.map f
-  naturality_naturality' :
+  naturality_naturality :
     ∀ {a b : B} {f g : a ⟶ b} (η : f ⟶ g),
-      F.zipWith η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.zipWith η := by
-    obviously
-  naturality_id' :
+      F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
+    aesop_cat
+  naturality_id :
     ∀ a : B,
-      naturality (𝟙 a) ≫ app a ◁ G.map_id a =
-        F.map_id a ▷ app a ≫ (λ_ (app a)).Hom ≫ (ρ_ (app a)).inv := by
-    obviously
-  naturality_comp' :
+      naturality (𝟙 a) ≫ app a ◁ G.mapId a =
+        F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
+    aesop_cat
+  naturality_comp :
     ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
-      naturality (f ≫ g) ≫ app a ◁ G.map_comp f g =
-        F.map_comp f g ▷ app c ≫
-          (α_ _ _ _).Hom ≫
-            F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).Hom := by
-    obviously
+      naturality (f ≫ g) ≫ app a ◁ G.mapComp f g =
+        F.mapComp f g ▷ app c ≫
+          (α_ _ _ _).hom ≫
+            F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
+    aesop_cat
 #align category_theory.oplax_nat_trans CategoryTheory.OplaxNatTrans
+-- TODO: add align statements for structure fields
 
-restate_axiom oplax_nat_trans.naturality_naturality'
+/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
+  needed in Lean 4 -/
 
-restate_axiom oplax_nat_trans.naturality_id'
-
-restate_axiom oplax_nat_trans.naturality_comp'
-
-attribute [simp, reassoc] oplax_nat_trans.naturality_naturality oplax_nat_trans.naturality_id
-  oplax_nat_trans.naturality_comp
+attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
+  OplaxNatTrans.naturality_comp
 
 namespace OplaxNatTrans
 
@@ -84,7 +82,7 @@ variable (F : OplaxFunctor B C)
 @[simps]
 def id : OplaxNatTrans F F where
   app a := 𝟙 (F.obj a)
-  naturality a b f := (ρ_ (F.map f)).Hom ≫ (λ_ (F.map f)).inv
+  naturality {a b} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 #align category_theory.oplax_nat_trans.id CategoryTheory.OplaxNatTrans.id
 
 instance : Inhabited (OplaxNatTrans F F) :=
@@ -169,7 +167,7 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         _ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ _ :=
         _
       _ = _ := _
-      
+
     exact (α_ _ _ _).inv
     exact (α_ _ _ _).Hom ▷ _ ≫ (α_ _ _ _).Hom
     exact _ ◁ (α_ _ _ _).Hom ≫ (α_ _ _ _).inv
@@ -283,4 +281,3 @@ end
 end OplaxNatTrans
 
 end CategoryTheory
-
