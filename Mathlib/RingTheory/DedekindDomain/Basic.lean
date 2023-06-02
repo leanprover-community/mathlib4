@@ -19,9 +19,9 @@ as a Noetherian integrally closed commutative ring of Krull dimension at most on
 
 ## Main definitions
 
- - `is_dedekind_domain` defines a Dedekind domain as a commutative ring that is
+ - `IsDedekindDomain` defines a Dedekind domain as a commutative ring that is
    Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
-   `is_dedekind_domain_iff` shows that this does not depend on the choice of field of fractions.
+   `isDedekindDomain_iff` shows that this does not depend on the choice of field of fractions.
 
 ## Implementation notes
 
@@ -29,7 +29,7 @@ The definitions that involve a field of fractions choose a canonical field of fr
 but are independent of that choice. The `..._iff` lemmas express this independence.
 
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
-to add a `(h : ¬ is_field A)` assumption whenever this is explicitly needed.
+to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
@@ -96,7 +96,7 @@ has Krull dimension at most one.
 This is definition 3.2 of [Neukirch1992].
 
 The integral closure condition is independent of the choice of field of fractions:
-use `is_dedekind_domain_iff` to prove `is_dedekind_domain` for a given `fraction_map`.
+use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
 This is the default implementation, but there are equivalent definitions,
 `is_dedekind_domain_dvr` and `is_dedekind_domain_inv`.
