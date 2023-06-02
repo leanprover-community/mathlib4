@@ -224,17 +224,4 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
         . apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
-def Adjunction.restrictFullyFaithful'
-    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R)
-    (P : C → Prop) (Q : D → Prop)
-    (h1 : ∀ {X}, P X → Q (L.obj X)) (h2 : ∀ {Y}, Q Y → P (R.obj Y))
-    : (FullSubcategory.lift Q (fullSubcategoryInclusion P ⋙ L) (fun X ↦ h1 X.property))
-    ⊣ (FullSubcategory.lift P (fullSubcategoryInclusion Q ⋙ R) (fun Y ↦ h2 Y.property)) :=
-    Adjunction.restrictFullyFaithful (fullSubcategoryInclusion P)
-                                     (fullSubcategoryInclusion Q)
-                                     adj
-                                     (by apply Iso.symm
-                                         apply FullSubcategory.lift_comp_inclusion)
-                                     (by apply Iso.symm
-                                         apply FullSubcategory.lift_comp_inclusion)
 end CategoryTheory
