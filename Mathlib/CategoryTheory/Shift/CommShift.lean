@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 # Functors which commute with shifts
 
 Let `C` and `D` be two categories equipped with shifts by an additive monoid `A`. In this file,
-we define the notion of functor `F : C ⥤ D` which "commute" with these shifts. The associated
+we define the notion of functor `F : C ⥤ D` which "commutes" with these shifts. The associated
 type class is `[F.CommShift A]`. The data consists of commutation isomorphisms
 `F.commShiftIso a : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` for all `a : A`
 which satisfy a compatibility with the addition and the zero. After this was formalised in Lean,
@@ -49,7 +49,7 @@ noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor 
 variable {F A}
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
-shifts by `a` and `b`, then there is a commutation isomorphism for the shift by `c` when
+shifts by `a` and `b`, then there is a commutation isomorphism with the shift by `c` when
 `a + b = c`. -/
 @[simps!]
 noncomputable def isoAdd' {a b c : A} (h : a + b = c)
@@ -61,7 +61,7 @@ noncomputable def isoAdd' {a b c : A} (h : a + b = c)
       Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (shiftFunctorAdd' D _ _ _ h).symm
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
-shifts by `a` and `b`, then there is a commutation isomorphism for the shift by `a + b`. -/
+shifts by `a` and `b`, then there is a commutation isomorphism with the shift by `a + b`. -/
 noncomputable def isoAdd {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) :
@@ -88,7 +88,7 @@ lemma isoAdd_inv_app  {a b : A}
 
 end CommShift
 
-/-- A functor `F` commute with the shift by a monoid `A` if it is equipped with
+/-- A functor `F` commutes with the shift by a monoid `A` if it is equipped with
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
 class CommShift where
@@ -98,9 +98,13 @@ class CommShift where
 
 variable {A}
 
+section
+
+variable [F.CommShift A]
+
 /-- If a functor `F` commutes with the shift by `A` (i.e. `[F.CommShift A]`), then
 `F.commShiftIso a` is the given isomorphism `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a`. -/
-def commShiftIso [F.CommShift A] (a : A) :
+def commShiftIso (a : A) :
     shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
   CommShift.iso a
 
@@ -110,33 +114,35 @@ def commShiftIso [F.CommShift A] (a : A) :
 -- `F.commShiftIso a`. Otherwise, we would be forced to use `erw [NatTrans.naturality]`.
 
 @[reassoc (attr := simp)]
-lemma commShiftIso_hom_naturality [F.CommShift A] {X Y : C} (f : X ⟶ Y) (a : A) :
+lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
     F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
-lemma commShiftIso_inv_naturality [F.CommShift A] {X Y : C} (f : X ⟶ Y) (a : A) :
+lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
     (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 
 variable (A)
 
-lemma commShiftIso_zero [F.CommShift A] :
-  F.commShiftIso (0 : A) = CommShift.isoZero F A :=
+lemma commShiftIso_zero :
+    F.commShiftIso (0 : A) = CommShift.isoZero F A :=
   CommShift.zero
 
 variable {A}
 
-lemma commShiftIso_add [F.CommShift A] (a b : A):
-  F.commShiftIso (a + b) = CommShift.isoAdd (F.commShiftIso a) (F.commShiftIso b) :=
+lemma commShiftIso_add (a b : A) :
+    F.commShiftIso (a + b) = CommShift.isoAdd (F.commShiftIso a) (F.commShiftIso b) :=
   CommShift.add a b
 
-lemma commShiftIso_add' [F.CommShift A] {a b c : A} (h : a + b = c) :
-  F.commShiftIso c = CommShift.isoAdd' h (F.commShiftIso a) (F.commShiftIso b) := by
+lemma commShiftIso_add' {a b c : A} (h : a + b = c) :
+    F.commShiftIso c = CommShift.isoAdd' h (F.commShiftIso a) (F.commShiftIso b) := by
   subst h
   simp only [commShiftIso_add, CommShift.isoAdd]
+
+end
 
 namespace CommShift
 

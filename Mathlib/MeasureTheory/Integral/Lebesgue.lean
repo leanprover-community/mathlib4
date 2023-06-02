@@ -117,23 +117,6 @@ notation3 "∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measu
 @[inherit_doc MeasureTheory.lintegral]
 notation3 "∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
 
-open Lean in
-@[app_unexpander MeasureTheory.lintegral]
-def _root_.unexpandLIntegral : PrettyPrinter.Unexpander
-  | `($(_) $μ fun $x:ident => $b) =>
-    match μ with
-    | `(Measure.restrict volume $s) => `(∫⁻ $x:ident in $s, $b)
-    | `(volume) => `(∫⁻ $x:ident, $b)
-    | `(Measure.restrict $ν $s) => `(∫⁻ $x:ident in $s, $b ∂$ν)
-    | _ => `(∫⁻ $x:ident, $b ∂$μ)
-  | `($(_) $μ fun ($x:ident : $t) => $b) =>
-    match μ with
-    | `(Measure.restrict volume $s) => `(∫⁻ ($x:ident : $t) in $s, $b)
-    | `(volume) => `(∫⁻ ($x:ident : $t), $b)
-    | `(Measure.restrict $ν $s) => `(∫⁻ ($x:ident : $t) in $s, $b ∂$ν)
-    | _ => `(∫⁻ ($x:ident : $t), $b ∂$μ)
-  | _ => throw ()
-
 theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) :
     (∫⁻ a, f a ∂μ) = f.lintegral μ := by
   rw [MeasureTheory.lintegral]

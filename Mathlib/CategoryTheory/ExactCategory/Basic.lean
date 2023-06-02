@@ -265,12 +265,12 @@ instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [Admissib
 lemma shortExact_of_isZero_of_isIso (S : ShortComplex C) (h₁ : IsZero S.X₁) (_ : IsIso S.g) :
     S ∈ shortExact C :=
   shortExact_of_admissibleEpi_of_isLimit S inferInstance
-    (KernelFork.IsLimit.ofIsZeroOfMono _ inferInstance h₁)
+    (KernelFork.IsLimit.ofMonoOfIsZero _ inferInstance h₁)
 
 lemma shortExact_of_isIso_of_isZero (S : ShortComplex C) (h₃ : IsZero S.X₃) (_ : IsIso S.f) :
     S ∈ shortExact C :=
   shortExact_of_admissibleMono_of_isColimit S inferInstance
-    (CokernelCofork.IsColimit.ofIsZeroOfEpi _ inferInstance h₃)
+    (CokernelCofork.IsColimit.ofEpiOfIsZero _ inferInstance h₃)
 
 lemma shortExact_of_isZero (S : ShortComplex C)
     (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : S ∈ shortExact C :=

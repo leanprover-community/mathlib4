@@ -133,7 +133,7 @@ lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
     S.Exact ↔ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
   haveI : HasCokernel _ := HasLeftHomology.hasCokernel S
   haveI : HasKernel _ := HasRightHomology.hasKernel S
-  exact S.exact_iff_i_p_zero (LeftHomologyData.ofKerOfCoker S)
+  exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofKerOfCoker S)
 
 variable {S}
@@ -237,7 +237,7 @@ lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
     apply mono_comp
   . intro
     rw [(HomologyData.ofIsLimitKernelFork S hf _
-      (KernelFork.IsLimit.ofIsZeroOfMono (KernelFork.ofι (0 : 0 ⟶ S.X₂) zero_comp)
+      (KernelFork.IsLimit.ofMonoOfIsZero (KernelFork.ofι (0 : 0 ⟶ S.X₂) zero_comp)
         inferInstance (isZero_zero C))).exact_iff]
     exact isZero_zero C
 
@@ -253,7 +253,7 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
     apply epi_comp
   . intro
     rw [(HomologyData.ofIsColimitCokernelCofork S hg _
-      (CokernelCofork.IsColimit.ofIsZeroOfEpi (CokernelCofork.ofπ (0 : S.X₂ ⟶ 0) comp_zero)
+      (CokernelCofork.IsColimit.ofEpiOfIsZero (CokernelCofork.ofπ (0 : S.X₂ ⟶ 0) comp_zero)
         inferInstance (isZero_zero C))).exact_iff]
     exact isZero_zero C
 
@@ -306,7 +306,7 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   wi := kf.condition
   hi := IsLimit.ofIsoLimit hkf (Fork.ext (Iso.refl _) (by simp))
   wπ := comp_zero
-  hπ := CokernelCofork.IsColimit.ofIsZeroOfEpi _ (by
+  hπ := CokernelCofork.IsColimit.ofEpiOfIsZero _ (by
     have := hS.hasHomology
     have := hS.epi_toCycles
     have fac : hkf.lift (KernelFork.ofι _ S.zero) = S.toCycles ≫
@@ -332,7 +332,7 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wp := cc.condition
   hp := IsColimit.ofIsoColimit hcc (Cofork.ext (Iso.refl _) (by simp))
   wι := zero_comp
-  hι := KernelFork.IsLimit.ofIsZeroOfMono _ (by
+  hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
     have := hS.mono_fromCyclesCo
     have fac : hcc.desc (CokernelCofork.ofπ _ S.zero) =
@@ -491,7 +491,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     erw [Fork.IsLimit.lift_ι hi]
     simp only [Fork.ι_ofι, id_comp]
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
-  have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofIsZeroOfEpi _
+  have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
       (by rw [hf'] ; infer_instance) (isZero_zero _)
   exact
   { K := S.X₁
@@ -517,7 +517,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     erw [Cofork.IsColimit.π_desc hp]
     simp only [Cofork.π_ofπ, comp_id]
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
-  have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofIsZeroOfMono _
+  have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
       (by rw [hg'] ; dsimp ; infer_instance) (isZero_zero _)
   exact
   { Q := S.X₃

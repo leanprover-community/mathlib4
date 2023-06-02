@@ -39,6 +39,8 @@ variable {C D : Type _} [Category C] [Category D]
 
 namespace ShortComplex
 
+/-- An homology data for a short complex consists of two compatible left and
+right homology data -/
 structure HomologyData where
   left : S.LeftHomologyData
   right : S.RightHomologyData
