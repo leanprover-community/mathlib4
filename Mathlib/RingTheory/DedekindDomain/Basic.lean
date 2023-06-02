@@ -8,8 +8,8 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Over
-import Mathbin.RingTheory.Polynomial.RationalRoot
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 # Dedekind domains
