@@ -803,7 +803,7 @@ instance [IsDomain K] : Field (RatFunc K) :=
 
 section IsFractionRing
 
-/-! ### `ratfunc` as field of fractions of `polynomial` -/
+/-! ### `RatFunc` as field of fractions of `Polynomial` -/
 
 section IsDomain
 
