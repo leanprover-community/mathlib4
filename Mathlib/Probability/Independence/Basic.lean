@@ -81,7 +81,7 @@ for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `.
 It will be used for families of pi_systems. -/
 def iIndepSets [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop :=
-    ∀ (s : Finset ι) {f : ι → Set Ω} (H : ∀ i, i ∈ s → f i ∈ π i),
+    ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
     μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i)
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_sets ProbabilityTheory.iIndepSets
@@ -158,14 +158,14 @@ theorem Indep.symm {m₁ m₂ : MeasurableSpace Ω} [MeasurableSpace Ω] {μ : M
 
 theorem indep_bot_right (m' : MeasurableSpace Ω) {m : MeasurableSpace Ω} {μ : Measure Ω}
     [ProbabilityMeasure μ] : Indep m' ⊥ μ := by
-  intro s t hs ht
+  intro s t _hs ht
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   cases' ht with ht ht
   · rw [ht, Set.inter_empty, measure_empty, MulZeroClass.mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]
 #align probability_theory.indep_bot_right ProbabilityTheory.indep_bot_right
 
-theorem indep_bot_left (m' : MeasurableSpace Ω) {m : MeasurableSpace Ω} {μ : Measure Ω}
+theorem indep_bot_left (m' : MeasurableSpace Ω) {_m : MeasurableSpace Ω} {μ : Measure Ω}
     [ProbabilityMeasure μ] : Indep ⊥ m' μ := (indep_bot_right m').symm
 #align probability_theory.indep_bot_left ProbabilityTheory.indep_bot_left
 
@@ -175,7 +175,7 @@ theorem indepSet_empty_right {m : MeasurableSpace Ω} {μ : Measure Ω} [Probabi
   exact indep_bot_right _
 #align probability_theory.indep_set_empty_right ProbabilityTheory.indepSet_empty_right
 
-theorem indepSet_empty_left {m : MeasurableSpace Ω} {μ : Measure Ω} [ProbabilityMeasure μ]
+theorem indepSet_empty_left {_m : MeasurableSpace Ω} {μ : Measure Ω} [ProbabilityMeasure μ]
     (s : Set Ω) : IndepSet ∅ s μ := (indepSet_empty_right s).symm
 #align probability_theory.indep_set_empty_left ProbabilityTheory.indepSet_empty_left
 
@@ -276,7 +276,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {μ 
     have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
     have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
     have h_inter :
-      (⋂ (t : ι) (H : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂) =
+      (⋂ (t : ι) (_H : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂) =
         ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ :=
       by simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
     have h_prod :
@@ -298,7 +298,7 @@ theorem iIndep.indep {m : ι → MeasurableSpace Ω} [MeasurableSpace Ω] {μ : 
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep.indep ProbabilityTheory.iIndep.indep
 
-theorem iIndepFun.indepFun {m₀ : MeasurableSpace Ω} {μ : Measure Ω} {β : ι → Type _}
+theorem iIndepFun.indepFun {_m₀ : MeasurableSpace Ω} {μ : Measure Ω} {β : ι → Type _}
     {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f μ) {i j : ι}
     (hij : i ≠ j) : IndepFun (f i) (f j) μ :=
   hf_Indep.indep hij
@@ -378,7 +378,7 @@ theorem IndepSets.indep {m1 m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω} {�
   exact indep_sets.indep_aux h2 hp2 hpm2 hyp ht ht2
 #align probability_theory.indep_sets.indep ProbabilityTheory.IndepSets.indep
 
-theorem IndepSets.indep' {m : MeasurableSpace Ω} {μ : Measure Ω} [ProbabilityMeasure μ]
+theorem IndepSets.indep' {_m : MeasurableSpace Ω} {μ : Measure Ω} [ProbabilityMeasure μ]
     {p1 p2 : Set (Set Ω)} (hp1m : ∀ s ∈ p1, MeasurableSet s) (hp2m : ∀ s ∈ p2, MeasurableSet s)
     (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2) (hyp : IndepSets p1 p2 μ) :
     Indep (generateFrom p1) (generateFrom p2) μ :=
@@ -606,13 +606,13 @@ theorem indepSet_iff_indepSets_singleton {m0 : MeasurableSpace Ω} (hs_meas : Me
       (IsPiSystem.singleton t) rfl rfl h⟩
 #align probability_theory.indep_set_iff_indep_sets_singleton ProbabilityTheory.indepSet_iff_indepSets_singleton
 
-theorem indepSet_iff_measure_inter_eq_mul {m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
+theorem indepSet_iff_measure_inter_eq_mul {_m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω := by volume_tac)
     [ProbabilityMeasure μ] : IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t :=
   (indepSet_iff_indepSets_singleton hs_meas ht_meas μ).trans indepSets_singleton_iff
 #align probability_theory.indep_set_iff_measure_inter_eq_mul ProbabilityTheory.indepSet_iff_measure_inter_eq_mul
 
-theorem IndepSets.indepSet_of_mem {m0 : MeasurableSpace Ω} (hs : s ∈ S) (ht : t ∈ T)
+theorem IndepSets.indepSet_of_mem {_m0 : MeasurableSpace Ω} (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t)
     (μ : Measure Ω := by volume_tac) [ProbabilityMeasure μ]
     (h_indep : IndepSets S T μ) : IndepSet s t μ :=
@@ -637,10 +637,10 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {μ 
     · exact fun f hf => MeasurableSet.iUnion hf
 #align probability_theory.indep.indep_set_of_measurable_set ProbabilityTheory.Indep.indepSet_of_measurableSet
 
-theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {m0 : MeasurableSpace Ω}
+theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t μ :=
-  ⟨fun h => fun s t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
+  ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
     h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton s))
       (measurableSet_generateFrom (Set.mem_singleton t))⟩
 #align probability_theory.indep_iff_forall_indep_set ProbabilityTheory.indep_iff_forall_indepSet
@@ -669,7 +669,7 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
 theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Type _}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
     iIndepFun m f μ ↔
-      ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
+      ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i in S, μ (f i ⁻¹' sets i) := by
   refine' ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, _⟩
   intro h S setsΩ h_meas
@@ -770,11 +770,11 @@ theorem iIndepFun.indepFun_finset [ProbabilityMeasure μ] {ι : Type _} {β : ι
       dite (i ∈ S) (fun hi => sets_s ⟨i, hi⟩) fun _ => Set.univ
     have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by
       intro i hi; simp_rw [dif_pos hi]
-    have h_sets_s'_univ : ∀ {i} (hi : i ∈ T), sets_s' i = Set.univ := by
+    have h_sets_s'_univ : ∀ {i} (_hi : i ∈ T), sets_s' i = Set.univ := by
       intro i hi; simp_rw [dif_neg (Finset.disjoint_right.mp hST hi)]
     let sets_t' : ∀ i : ι, Set (β i) := fun i =>
       dite (i ∈ T) (fun hi => sets_t ⟨i, hi⟩) fun _ => Set.univ
-    have h_sets_t'_univ : ∀ {i} (hi : i ∈ S), sets_t' i = Set.univ := by
+    have h_sets_t'_univ : ∀ {i} (_hi : i ∈ S), sets_t' i = Set.univ := by
       intro i hi; simp_rw [dif_neg (Finset.disjoint_left.mp hST hi)]
     have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by
       intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _
@@ -876,17 +876,17 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [ProbabilityMeasure μ] {ι : 
     (hf_Indep : iIndepFun (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι}
     (hi : i ∉ s) : IndepFun (∏ j in s, f j) (f i) μ := by
   classical
-    have h_right : f i = (fun p : ∀ j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
+    have h_right : f i = (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
       fun a (j : ({i} : Finset ι)) => f j a := rfl
-    have h_meas_right : Measurable fun p : ∀ j : ({i} : Finset ι), β
+    have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
       => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : (∏ j in s, f j) = (fun p : ∀ j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
+    have h_left : (∏ j in s, f j) = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
       ext1 a
       simp only [Function.comp_apply]
       have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
       rw [this, Finset.prod_coe_sort]
-    have h_meas_left : Measurable fun p : ∀ j : s, β => ∏ j, p j :=
-      Finset.univ.measurable_prod fun (j : ↥s) (H : j ∈ Finset.univ) => measurable_pi_apply j
+    have h_meas_left : Measurable fun p : ∀ _j : s, β => ∏ j, p j :=
+      Finset.univ.measurable_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
     rw [h_left, h_right]
     exact
       (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
@@ -908,12 +908,12 @@ set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_sum_range_succ ProbabilityTheory.iIndepFun.indepFun_sum_range_succ
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
-    (hs : iIndepSet s μ) : iIndepFun (fun n => m) (fun n => (s n).indicator fun ω => 1) μ := by
+    (hs : iIndepSet s μ) : iIndepFun (fun _n => m) (fun n => (s n).indicator fun _ω => 1) μ := by
   classical
     rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
-    rintro S π hπ
+    rintro S π _hπ
     simp_rw [Set.indicator_const_preimage_eq_union]
-    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s iᶜ) ∅) fun i hi => _
+    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s iᶜ) ∅) fun i _hi => _
     have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
       measurableSet_generateFrom (Set.mem_singleton _)
     refine'
