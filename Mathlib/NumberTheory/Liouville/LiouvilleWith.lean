@@ -18,19 +18,19 @@ import Mathlib.Topology.Instances.Irrational
 We say that a real number `x` is a Liouville number with exponent `p : ℝ` if there exists a real
 number `C` such that for infinitely many denominators `n` there exists a numerator `m` such that
 `x ≠ m / n` and `|x - m / n| < C / n ^ p`. A number is a Liouville number in the sense of
-`liouville` if it is `liouville_with` any real exponent, see `forall_liouville_with_iff`.
+`Liouville` if it is `LiouvilleWith` any real exponent, see `forall_liouvilleWith_iff`.
 
 * If `p ≤ 1`, then this condition is trivial.
 
-* If `1 < p ≤ 2`, then this condition is equivalent to `irrational x`. The forward implication
-  does not require `p ≤ 2` and is formalized as `liouville_with.irrational`; the other implication
+* If `1 < p ≤ 2`, then this condition is equivalent to `Irrational x`. The forward implication
+  does not require `p ≤ 2` and is formalized as `LiouvilleWith.irrational`; the other implication
   follows from approximations by continued fractions and is not formalized yet.
 
 * If `p > 2`, then this is a non-trivial condition on irrational numbers. In particular,
   [Thue–Siegel–Roth theorem](https://en.wikipedia.org/wiki/Roth's_theorem) states that such numbers
   must be transcendental.
 
-In this file we define the predicate `liouville_with` and prove some basic facts about this
+In this file we define the predicate `LiouvilleWith` and prove some basic facts about this
 predicate.
 
 ## Tags
@@ -47,13 +47,13 @@ open scoped Filter Topology
 number `C` such that for infinitely many denominators `n` there exists a numerator `m` such that
 `x ≠ m / n` and `|x - m / n| < C / n ^ p`.
 
-A number is a Liouville number in the sense of `liouville` if it is `liouville_with` any real
+A number is a Liouville number in the sense of `Liouville` if it is `LiouvilleWith` any real
 exponent. -/
 def LiouvilleWith (p x : ℝ) : Prop :=
   ∃ C, ∃ᶠ n : ℕ in atTop, ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < C / n ^ p
 #align liouville_with LiouvilleWith
 
-/-- For `p = 1` (hence, for any `p ≤ 1`), the condition `liouville_with p x` is trivial. -/
+/-- For `p = 1` (hence, for any `p ≤ 1`), the condition `LiouvilleWith p x` is trivial. -/
 theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   use 2
   refine ((eventually_gt_atTop 0).mono fun n hn => ?_).frequently
@@ -72,11 +72,11 @@ namespace LiouvilleWith
 
 variable {p q x y : ℝ} {r : ℚ} {m : ℤ} {n : ℕ}
 
-/-- The constant `C` provided by the definition of `liouville_with` can be made positive.
+/-- The constant `C` provided by the definition of `LiouvilleWith` can be made positive.
 We also add `1 ≤ n` to the list of assumptions about the denominator. While it is equivalent to
 the original statement, the case `n = 0` breaks many arguments. -/
 theorem exists_pos (h : LiouvilleWith p x) :
-    ∃ (C : ℝ) (h₀ : 0 < C),
+    ∃ (C : ℝ) (_h₀ : 0 < C),
       ∃ᶠ n : ℕ in atTop, 1 ≤ n ∧ ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < C / n ^ p := by
   rcases h with ⟨C, hC⟩
   refine ⟨max C 1, zero_lt_one.trans_le <| le_max_right _ _, ?_⟩
@@ -99,7 +99,7 @@ theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
 satisfies Liouville condition with exponent `q` and constant `1`. -/
 theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
     ∃ᶠ n : ℕ in atTop, ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < n ^ (-q) := by
-  rcases h.exists_pos with ⟨C, hC₀, hC⟩
+  rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   have : ∀ᶠ n : ℕ in atTop, C < n ^ (p - q) := by
     simpa only [(· ∘ ·), neg_sub, one_div] using
       ((tendsto_rpow_atTop (sub_pos.2 hlt)).comp tendsto_nat_cast_atTop_atTop).eventually
@@ -113,9 +113,9 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
 
 /-- The product of a Liouville number and a nonzero rational number is again a Liouville number.  -/
 theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r) := by
-  rcases h.exists_pos with ⟨C, hC₀, hC⟩
+  rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   refine ⟨r.den ^ p * (|r| * C), (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
-  rintro n ⟨hn, m, hne, hlt⟩
+  rintro n ⟨_hn, m, hne, hlt⟩
   have A : (↑(r.num * m) : ℝ) / ↑(r.den • id n) = m / n * r := by
     simp [← div_mul_div_comm, ← r.cast_def, mul_comm]
   refine ⟨r.num * m, ?_, ?_⟩
@@ -182,7 +182,7 @@ theorem nat_mul (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (n * x)
 #align liouville_with.nat_mul LiouvilleWith.nat_mul
 
 theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := by
-  rcases h.exists_pos with ⟨C, hC₀, hC⟩
+  rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have hr : (0 : ℝ) < r.den := Nat.cast_pos.2 r.pos
@@ -359,7 +359,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     refine (H.eventually (hx.irrational.eventually_forall_le_dist_cast_div b)).mono ?_
     exact fun m hm a => hm a
   have : ∀ᶠ m : ℕ in atTop, ∀ b < N, 1 < b → ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| :=
-    (finite_lt_nat N).eventually_all.2 fun b hb => eventually_imp_distrib_left.2 (this b)
+    (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
   rcases(this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast  at hb ; push_cast at hne hlt
@@ -375,7 +375,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by
   suffices : LiouvilleWith ⌈p⌉₊ x; exact this.mono (Nat.le_ceil p)
   refine ⟨1, ((eventually_gt_atTop 1).and_frequently (hx.frequently_exists_num ⌈p⌉₊)).mono ?_⟩
-  rintro b ⟨hb, a, hne, hlt⟩
+  rintro b ⟨_hb, a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩
   rwa [rpow_nat_cast]
 #align liouville.liouville_with Liouville.liouvilleWith
