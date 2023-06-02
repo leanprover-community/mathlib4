@@ -125,7 +125,7 @@ variable [CommRing K]
 
 section Rec
 
-/-! ### Constructing `ratfunc`s and their induction principles -/
+/-! ### Constructing `RatFunc`s and their induction principles -/
 
 theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → RatFunc K) :=
   fun _ _ => ofFractionRing.inj
