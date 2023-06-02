@@ -166,15 +166,9 @@ theorem card' : ∃ (p : ℕ)(n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n
   ⟨p, @FiniteField.card K _ _ p hc⟩
 #align finite_field.card' FiniteField.card'
 
-@[simp]
+--Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
-  rcases CharP.exists K with ⟨p, _char_p⟩; skip
-  rcases card K p with ⟨n, _, hn⟩
-  simp only [CharP.cast_eq_zero_iff K p, hn]
-  conv =>
-    congr
-    rw [← pow_one p]
-  exact pow_dvd_pow _ n.2
+  simp
 #align finite_field.cast_card_eq_zero FiniteField.cast_card_eq_zero
 
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
@@ -408,7 +402,7 @@ theorem frobenius_zMod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 #align zmod.frobenius_zmod ZMod.frobenius_zMod
 
-@[simp]
+--Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
 theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
   rw [Fintype.card_units, card]
 #align zmod.card_units ZMod.card_units
