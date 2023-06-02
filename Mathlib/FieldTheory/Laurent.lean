@@ -98,12 +98,14 @@ theorem laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (tayl
 
 @[simp]
 theorem laurent_X : laurent r X = X + C r := by
-  rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebra_map_C]
+  rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebraMap_C]
+set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_X RatFunc.laurent_X
 
 @[simp]
 theorem laurent_C (x : R) : laurent r (C x) = C x := by
   rw [← algebraMap_C, laurent_algebraMap, taylor_C]
+set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_C RatFunc.laurent_C
 
 @[simp]
@@ -119,5 +121,6 @@ theorem laurent_injective : Function.Injective (laurent r) := fun _ _ h => by
   simpa [laurent_laurent] using congr_arg (laurent (-r)) h
 #align ratfunc.laurent_injective RatFunc.laurent_injective
 
-end RatFunc
+end
 
+end RatFunc
