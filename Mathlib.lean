@@ -453,6 +453,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDerivMeasurable
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.LHopital
 import Mathlib.Analysis.Calculus.LocalExtr
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.TangentCone
