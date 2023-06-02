@@ -97,8 +97,8 @@ measure `μ` (typically defined on a finer σ-algebra) if the family of sets of 
 define is independent. `m : ι → MeasurableSpace Ω` is independent with respect to measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. -/
-def iIndep (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac) : Prop :=
-    iIndepSets (fun x => { s | MeasurableSet[m x] s }) μ
+def iIndep (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac) :
+    Prop := iIndepSets (fun x => { s | MeasurableSet[m x] s }) μ
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep ProbabilityTheory.iIndep
 
@@ -876,7 +876,8 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [ProbabilityMeasure μ] {ι : 
     (hf_Indep : iIndepFun (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι}
     (hi : i ∉ s) : IndepFun (∏ j in s, f j) (f i) μ := by
   classical
-    have h_right : f i = (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
+    have h_right : f i =
+      (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
       fun a (j : ({i} : Finset ι)) => f j a := rfl
     have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
       => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
