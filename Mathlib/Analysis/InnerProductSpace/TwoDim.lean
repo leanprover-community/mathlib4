@@ -77,14 +77,16 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
-attribute [local instance] fact_finite_dimensional_of_finrank_eq_succ
+lemma FiniteDimensional.fact_finiteDimensional_of_finrank_eq_two {K V : Type _} [DivisionRing K]
+    [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
+  fact_finiteDimensional_of_finrank_eq_succ 1
+
+attribute [local instance] FiniteDimensional.fact_finiteDimensional_of_finrank_eq_two
 
 variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
 namespace Orientation
-
-include o
 
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
 notation `ω`).  When evaluated on two vectors, it gives the oriented area of the parallelogram they
@@ -97,7 +99,6 @@ irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   exact y ∘ₗ AlternatingMap.curryLeftLinearMap o.volume_form
 #align orientation.area_form Orientation.areaForm
 
-omit o
 
 -- mathport name: exprω
 local notation "ω" => o.areaForm
