@@ -83,7 +83,9 @@ set_option linter.uppercaseLean3 false in
  such that the morphims induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type u where
+  /-- the underlying morphism between ringed space -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
+  /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalRingHom (PresheafedSpace.stalkMap val x)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.hom AlgebraicGeometry.LocallyRingedSpace.Hom
@@ -172,9 +174,11 @@ theorem comp_val {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val AlgebraicGeometry.LocallyRingedSpace.comp_val
 
+-- Porting note : complains that `(f ≫ g).val.c` can be further simplified
+-- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
 theorem comp_val_c {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).val.c = g.val.c ≫ (Presheaf.pushforward _ g.val.base).map f.val.c :=
+    (f.1 ≫ g.1).c = g.val.c ≫ (Presheaf.pushforward _ g.val.base).map f.val.c :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val_c AlgebraicGeometry.LocallyRingedSpace.comp_val_c
@@ -314,8 +318,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace} (f : X ⟶ Y) {U : Opens Y
     exact (isUnit_map_iff (PresheafedSpace.stalkMap f.1 _) _).mp hy
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
-set_option maxHeartbeats 0
-example (R : CommRingCat) [LocalRing R] : (0 : R) ≠ 1 := by exact zero_ne_one
+
 -- This actually holds for all ringed spaces with nontrivial stalks.
 @[simp]
 theorem basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
