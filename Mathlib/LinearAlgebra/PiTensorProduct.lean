@@ -118,6 +118,7 @@ variable {R}
 -- mathport name: pi_tensor_product
 -- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type _`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
+/-- notation for tensor product over some indexed type -/
 notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
@@ -312,6 +313,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 variable {R}
 
 -- mathport name: «expr⨂ₜ[ ] , »
+/-- pure tensor in tensor product over some index type -/
 notation3:100"⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
@@ -556,6 +558,9 @@ theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : ι → M) : isEmptyEquiv ι (
 
 variable {ι}
 
+/--
+Tensor product of `M` over a singleton set is equivalent to `M`
+-/
 @[simps symm_apply]
 def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _i : ι, M) ≃ₗ[R] M where
   toFun := lift (MultilinearMap.ofSubsingleton R M i₀)
