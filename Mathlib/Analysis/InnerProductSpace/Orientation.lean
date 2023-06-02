@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 
 ! This file was ported from Lean 3 source module analysis.inner_product_space.orientation
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
+! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -187,7 +187,7 @@ alternating form uniquely defined by compatibility with the orientation and inne
 irreducible_def volumeForm : AlternatingMap ℝ E ℝ (Fin n) := by
   classical
     cases' n with n
-    · let opos : AlternatingMap ℝ E ℝ (Fin 0) := AlternatingMap.constOfIsEmpty ℝ E (1 : ℝ)
+    · let opos : AlternatingMap ℝ E ℝ (Fin 0) := AlternatingMap.constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
       exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
     · exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
 #align orientation.volume_form Orientation.volumeForm
