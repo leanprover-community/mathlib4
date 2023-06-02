@@ -34,7 +34,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 ## Implementation notes
 
 - In naming the various functions below, we follow common terminology and reserve the word *point*
-  for an inhabitant of a type `X` which is a topological space, while we use the word *element* for an inhabitant of a type `L` which is a frame.
+  for an inhabitant of a type `X` which is a topological space, while we use the word *element* for
+  an inhabitant of a type `L` which is a frame.
 
 
 ## References
@@ -156,17 +157,20 @@ def pt : FrmCatᵒᵖ ⥤ TopCat where
 end pt_definition
 
 section frame_top_adjunction
+
+variable (X : Type _) [TopologicalSpace X] (L : FrmCat)
+
 -- TODO: should this be moved somewhere else?
 lemma elim_exists_prop (A : Prop → Prop) : (∃ p, (A p) ∧ p) ↔ (A True) := by aesop
 
-def frame_point_of_space_point (X : Type _) [TopologicalSpace X] (x : X) : FrameHom (Opens X) Prop where
+def frame_point_of_space_point (x : X) : FrameHom (Opens X) Prop where
   toFun u := x ∈ u
   map_inf' a b := by simp; rfl
   map_top'     := by simp; rfl
   map_sSup' S  := by simp [elim_exists_prop, iff_true]
 
 /- The continuous function from a topological space `X` to `pt 𝒪 X`.-/
-def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_obj (Opens X)) where
+def neighborhoods : ContinuousMap X (pt_obj (Opens X)) where
   toFun := frame_point_of_space_point X
   continuous_toFun := by
     rw [continuous_def]; intro U; rw[open_in_pt_space_iff]
@@ -182,18 +186,18 @@ def neighborhoods (X : Type _) [τ : TopologicalSpace X] : ContinuousMap X (pt_o
     rw [key]
     exact u.2
 
-def counit_fun (L : FrmCat) (u : L) : Opens (pt_obj L) where
+def counit_fun (u : L) : Opens (pt_obj L) where
   carrier := open_of_element_hom L u
   is_open' := by use u; rfl
 
-def counit_app_cont (L : FrmCat) : FrameHom L (Opens (FrameHom L Prop)) where
+def counit_app_cont : FrameHom L (Opens (FrameHom L Prop)) where
   toFun := counit_fun L
   map_inf' a b := by simp [counit_fun]
   map_top' := by simp [counit_fun]; rfl
   map_sSup' S := by simp [counit_fun]; ext x; simp
 
-def counit_app (L : FrmCatᵒᵖ) : (pt.comp 𝒪).obj L ⟶ L where
-  unop := counit_app_cont L.unop
+def counit_app (Lop : FrmCatᵒᵖ) : (pt.comp 𝒪).obj Lop ⟶ Lop where
+  unop := counit_app_cont Lop.unop
 
 def counit : pt.comp 𝒪 ⟶ 𝟭 FrmCatᵒᵖ where
   app := counit_app
