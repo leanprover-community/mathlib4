@@ -387,7 +387,7 @@ def mapCoeffs : Basis ι R' M := by
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically infered from the definition of
+    -- Porting note: in Lean 3, these were automatically inferred from the definition of
     -- `mapCoeffs`.
     letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
     haveI : IsScalarTower R' R M :=

@@ -60,9 +60,7 @@ separately.
 -/
 
 
-open NNReal ENNReal
-
-open NNReal ContinuousLinearMap MulOpposite
+open NNReal ENNReal ContinuousLinearMap MulOpposite
 
 universe u v
 
@@ -87,7 +85,9 @@ open MultiplierAlgebra
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     (a b : 𝓜(𝕜, A)) (h : a.toProd = b.toProd) : a = b := by
-  cases a; cases b; simpa using h
+  cases a
+  cases b
+  simpa using h
 
 namespace DoubleCentralizer
 
@@ -185,8 +185,8 @@ end Scalars
 instance instOne : One 𝓜(𝕜, A) :=
   ⟨⟨1, fun _x _y => rfl⟩⟩
 
-instance instMul : Mul 𝓜(𝕜, A)
-    where mul a b :=
+instance instMul : Mul 𝓜(𝕜, A) where
+  mul a b :=
     { toProd := (a.fst.comp b.fst, b.snd.comp a.snd)
       central := fun x y => show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp only [central] }
 
@@ -327,7 +327,7 @@ theorem pow_snd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
   rfl
 #align double_centralizer.pow_snd DoubleCentralizer.pow_snd
 
-/-- The natural injection from `double_centralizer.to_prod` except the second coordinate inherits
+/-- The natural injection from `DoubleCentralizer.toProd` except the second coordinate inherits
 `MulOpposite.op`. The ring structure on `𝓜(𝕜, A)` is the pullback under this map. -/
 def toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ := fun a =>
   (a.fst, MulOpposite.op a.snd)
@@ -376,7 +376,7 @@ def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜]
 #align double_centralizer.to_prod_mul_opposite_hom DoubleCentralizer.toProdMulOppositeHom
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
-`double_centralizer.to_prod : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
+`DoubleCentralizer.toProd : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
 instance instModule {S : Type _} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
   Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
@@ -424,7 +424,7 @@ section Star
 variable [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A]
 
 /-- The star operation on `a : 𝓜(𝕜, A)` is given by
-`(star a).to_prod = (star ∘ a.snd ∘ star, star ∘ a.fst ∘ star)`. -/
+`(star a).toProd = (star ∘ a.snd ∘ star, star ∘ a.fst ∘ star)`. -/
 instance instStar : Star 𝓜(𝕜, A) where
   star a :=
     { fst :=
@@ -511,7 +511,6 @@ theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, �
   simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
     flip_apply, one_mul] <;>
   simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
-  exact mul_comm _ _
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra

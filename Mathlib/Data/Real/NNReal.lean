@@ -45,7 +45,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   `↑(Real.toNNReal x) = 0` otherwise.
 
 We also define an instance `CanLift ℝ ℝ≥0`. This instance can be used by the `lift` tactic to
-replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurences
+replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurrences
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 

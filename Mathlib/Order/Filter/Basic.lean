@@ -49,7 +49,7 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
 * `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `measure_theory.measure_space`)
+  `MeasureTheory.MeasureSpace`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
@@ -233,9 +233,9 @@ theorem forall_in_swap {β : Type _} {p : Set α → β → Prop} :
 
 end Filter
 
-namespace Lean.Parser.Tactic
+namespace Mathlib.Tactic
 
-open Elab.Tactic
+open Lean Meta Elab Tactic
 
 /--
 `filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
@@ -252,27 +252,28 @@ Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] wi
 Note that in this case, the `aᵢ` terms can be used in `e`.
 -/
 syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
-  ("with" (colGt term:max)*)? ("using" term)? : tactic
+  (" with" (ppSpace colGt term:max)*)? (" using " term)? : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) =>
-  withMainContext do
-    for e in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
-      let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
-      liftMetaTactic fun goal => do
-        goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
-    liftMetaTactic fun goal => do
-      goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-    evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
-    match wth with
-    | some l => evalTactic <|← `(tactic| intro $[$l]*)
-    | none   => evalTactic <|← `(tactic| skip)
-    match usingArg with
-    | some e => evalTactic <|← `(tactic| exact $e)
-    | none   => evalTactic <|← `(tactic| skip)
+| `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
+  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
+  for e in args.getD #[] |>.reverse do
+    let goal ← getMainGoal
+    replaceMainGoal <| ← goal.withContext <| runTermElab do
+      let m ← mkFreshExprMVar none
+      let lem ← Term.elabTermEnsuringType
+        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
+      goal.assign lem
+      return [m.mvarId!]
+  liftMetaTactic fun goal => do
+    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
+  evalTactic <|← `(tactic| dsimp only [Set.mem_setOf_eq])
+  if let some l := wth then
+    evalTactic <|← `(tactic| intro $[$l]*)
+  if let some e := usingArg then
+    evalTactic <|← `(tactic| exact $e)
 
-end Lean.Parser.Tactic
+end Mathlib.Tactic
 
 namespace Filter
 
@@ -2775,7 +2776,7 @@ end Bind
 
 section ListTraverse
 
-/- This is a separate section in order to open `list`, but mostly because of universe
+/- This is a separate section in order to open `List`, but mostly because of universe
    equality requirements in `traverse` -/
 open List
 

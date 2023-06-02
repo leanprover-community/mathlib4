@@ -116,14 +116,14 @@ open Std.ExtendedBinder
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-notation3"∑ᶠ "(...)", "r:(scoped f => finsum f) => r
+notation3 "∑ᶠ "(...)", "r:(scoped f => finsum f) => r
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-notation3"∏ᶠ "(...)", "r:(scoped f => finprod f) => r
+notation3 "∏ᶠ "(...)", "r:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
@@ -940,7 +940,7 @@ theorem finprod_mem_image {s : Set β} {g : β → α} (hg : s.InjOn g) :
 #align finprod_mem_image finprod_mem_image
 #align finsum_mem_image finsum_mem_image
 
-/-- The product of `f y` over `y ∈ set.range g` equals the product of `f (g i)` over all `i`
+/-- The product of `f y` over `y ∈ Set.range g` equals the product of `f (g i)` over all `i`
 provided that `g` is injective on `mulSupport (f ∘ g)`. -/
 @[to_additive
       "The sum of `f y` over `y ∈ Set.range g` equals the sum of `f (g i)` over all `i`
