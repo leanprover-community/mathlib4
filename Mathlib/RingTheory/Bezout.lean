@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.PrincipalIdealDomain
-import Mathbin.Algebra.GcdMonoid.IntegrallyClosed
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 
 /-!
 
@@ -76,8 +76,7 @@ theorem gcd_dvd_right (x y : R) : gcd x y ∣ y :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
 #align is_bezout.gcd_dvd_right IsBezout.gcd_dvd_right
 
-theorem dvd_gcd {x y z : R} (hx : z ∣ x) (hy : z ∣ y) : z ∣ gcd x y :=
-  by
+theorem dvd_gcd {x y z : R} (hx : z ∣ x) (hy : z ∣ y) : z ∣ gcd x y := by
   rw [← Ideal.span_singleton_le_span_singleton] at hx hy ⊢
   rw [span_gcd, Ideal.span_insert, sup_le_iff]
   exact ⟨hx, hy⟩
@@ -105,8 +104,7 @@ instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := b
   classical exact GCDMonoid.toIsIntegrallyClosed
 
 theorem Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
-    (hf : Function.Surjective f) [IsBezout R] : IsBezout S :=
-  by
+    (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
   rw [iff_span_pair_is_principal]
   intro x y
   obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hf x, hf y
