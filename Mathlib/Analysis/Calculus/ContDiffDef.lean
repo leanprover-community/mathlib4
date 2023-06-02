@@ -187,7 +187,7 @@ derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a pred
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
-  fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
+  protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
   cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (p · m) s
 #align has_ftaylor_series_up_to_on HasFTaylorSeriesUpToOn
