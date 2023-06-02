@@ -314,7 +314,7 @@ variable {R}
 
 -- mathport name: «expr⨂ₜ[ ] , »
 /-- pure tensor in tensor product over some index type -/
-notation3:100"⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
+notation "⨂ₜ[" R "]" x => tprod R x
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
@@ -522,7 +522,6 @@ theorem reindex_symm (e : ι ≃ ι₂) : (reindex R M e).symm = reindex R M e.s
 theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
   apply LinearEquiv.toLinearMap_injective
   refine ext ?_
-  ext1
   rw [reindex_comp_tprod, LinearEquiv.refl_toLinearMap, Equiv.refl_symm]
   rfl
 #align pi_tensor_product.reindex_refl PiTensorProduct.reindex_refl
