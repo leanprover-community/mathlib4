@@ -70,8 +70,8 @@ def triangleLTGE : F.ι ⥤ C ⥤ Triangle C where
   map φ := Triangle.functorHomMk' (F.truncLT.map φ) (𝟙 _) ((F.truncGE.map φ))
     (by simp) (by simp ) (by simp)
 
-class IsDistinguishedTriangleLTGE where
-  distinguished (a : F.ι) (X : C) : (F.triangleLTGE.obj a).obj X ∈ distTriang C
+--class IsDistinguishedTriangleLTGE where
+--  distinguished (a : F.ι) (X : C) : (F.triangleLTGE.obj a).obj X ∈ distTriang C
 
 def truncGELT : Arrow F.ι ⥤ C ⥤ C where
   obj D := F.truncLT.obj D.right ⋙ F.truncGE.obj D.left
@@ -80,11 +80,6 @@ def truncGELT : Arrow F.ι ⥤ C ⥤ C where
 def triangleLTGEPrecompTruncGELT : Arrow₂ F.ι ⥤ C ⥤ Triangle C :=
   (((whiskeringRight₂ (Arrow₂ F.ι) _ _ _).obj ((whiskeringLeft C C (Triangle C)))).obj
     (Arrow₂.δ₁ ⋙ F.truncGELT)).obj (Arrow₂.obj₁ ⋙ F.triangleLTGE)
-
-lemma triangleLTGEPrecompTruncGELT_distinguished
-    [hF : F.IsDistinguishedTriangleLTGE] (D : Arrow₂ F.ι) (X : C) :
-    (F.triangleLTGEPrecompTruncGELT.obj D).obj X ∈ distTriang C :=
-  hF.distinguished D.X₁ _
 
 @[simp]
 def TruncGEToTruncGEGE.app (a b : F.ι) :
@@ -125,8 +120,16 @@ class IsCompatible where
   truncGEπ_compatibility' (a : F.ι) (X : C) :
     (F.truncGE.obj a).map ((F.truncGEπ a).app X) =
       (F.truncGEπ a).app ((F.truncGE.obj a).obj X)
+  truncLTι_compatibility' (a : F.ι) (X : C) :
+    (F.truncLT.obj a).map ((F.truncLTι a).app X) =
+      (F.truncLTι a).app ((F.truncLT.obj a).obj X)
+  distinguished (a : F.ι) (X : C) : (F.triangleLTGE.obj a).obj X ∈ distTriang C
 
 variable [F.IsCompatible]
+
+lemma triangleLTGEPrecompTruncGELT_distinguished (D : Arrow₂ F.ι) (X : C) :
+    (F.triangleLTGEPrecompTruncGELT.obj D).obj X ∈ distTriang C :=
+  IsCompatible.distinguished _ _
 
 attribute [instance] IsCompatible.isIso_truncGEToTruncGEGE
   IsCompatible.isIso_truncLTLTToTruncLT
@@ -159,6 +162,11 @@ lemma truncGEπ_compatibility (a : F.ι) (X : C) :
       (F.truncGEπ a).app ((F.truncGE.obj a).obj X) :=
   IsCompatible.truncGEπ_compatibility' _ _
 
+lemma truncLTι_compatibility (a : F.ι) (X : C) :
+    (F.truncLT.obj a).map ((F.truncLTι a).app X) =
+      (F.truncLTι a).app ((F.truncLT.obj a).obj X) :=
+  IsCompatible.truncLTι_compatibility' _ _
+
 @[reassoc]
 lemma truncGEGELTIsoTruncGELT_compatibility (D : Arrow₂ F.ι) (X : C) :
   (F.truncGELTπ.app D).app X ≫ (F.truncGEGELTIsoTruncGELT.hom.app D).app X =
@@ -188,6 +196,12 @@ def truncLTGE : Arrow F.ι ⥤ C ⥤ C where
 
 /-def truncLTGEIsoTruncGELT : F.truncLTGE ≅ F.truncGELT := sorry
 
+@[reassoc]
+lemma truncLTGEIsoTruncGELT_compatibility {a b : F.ι} (φ : a ⟶ b) (X : C) :
+    (F.truncLTGEIsoTruncGELT.hom.app (Arrow.mk φ)).app X ≫
+      (F.truncGE.obj a).map ((F.truncLTι b).app X) =
+      (F.truncLTι b).app ((F.truncGE.obj a).obj X) := sorry
+
 noncomputable def truncGELTLTIsoTruncGELT :
     (((whiskeringRight₂ (Arrow₂ F.ι) _ _ _).obj ((whiskeringLeft C C C))).obj
       (Arrow₂.obj₂ ⋙ F.truncLT)).obj (Arrow₂.δ₂ ⋙ F.truncGELT) ≅
@@ -198,7 +212,8 @@ noncomputable def truncGELTLTIsoTruncGELT :
       ext X
       have eq := congr_app (F.truncLTGEIsoTruncGELT.inv.naturality
         (Arrow₂.δ₂.map φ)) ((F.truncLT.obj D₂.X₂).obj X)
-      have eq' := (F.truncLTGEIsoTruncGELT.inv.app (Arrow.mk D₁.f)).naturality ((F.truncLT.map φ.τ₂).app X)
+      have eq' := (F.truncLTGEIsoTruncGELT.inv.app (Arrow.mk D₁.f)).naturality
+        ((F.truncLT.map φ.τ₂).app X)
       simp only [NatTrans.naturality_assoc, assoc, Functor.map_comp, NatTrans.naturality]
       dsimp [truncGELT, truncLTGE] at eq eq' ⊢
       simp only [assoc] at eq eq' ⊢
@@ -216,15 +231,30 @@ noncomputable def truncLTGELTIsoTruncGELT :
 def truncGELTι := whiskerRight Arrow₂.δ₂Toδ₁ F.truncGELT
 
 @[reassoc]
+lemma truncLTGELTIsoTruncGELT_compatibility' (D : Arrow₂ F.ι) (X : C) :
+    (F.truncLTGELTIsoTruncGELT.inv.app D).app X ≫
+      ((F.truncGELTι).app D).app X =
+    (F.truncLTι D.X₁).app ((F.truncGELT.obj (Arrow₂.δ₁.obj D)).obj X) := by
+  dsimp [truncLTGELTIsoTruncGELT, truncGELTι, truncGELT,
+    truncLTLTIsoTruncLT, truncGELTLTIsoTruncGELT]
+  rw [Functor.map_id, NatTrans.id_app, id_comp, assoc, ← Functor.map_comp,
+    NatTrans.naturality, F.truncLTι_compatibility, ← NatTrans.comp_app, truncLTmap_ι,
+    truncLTGEIsoTruncGELT_compatibility]
+
+@[reassoc]
 lemma truncLTGELTIsoTruncGELT_compatibility (D : Arrow₂ F.ι) (X : C) :
     (F.truncLTGELTIsoTruncGELT.hom.app D).app X ≫
       (F.truncLTι D.X₁).app ((F.truncGELT.obj (Arrow₂.δ₁.obj D)).obj X) =
-    ((F.truncGELTι).app D).app X := sorry
+    ((F.truncGELTι).app D).app X := by
+  simp only [← truncLTGELTIsoTruncGELT_compatibility',
+    ← NatTrans.comp_app, Iso.hom_inv_id_assoc]
 
 noncomputable def truncGELTδ : Arrow₂.δ₀ ⋙ F.truncGELT ⟶
     Arrow₂.δ₂ ⋙ F.truncGELT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) := by
-  refine' F.truncGEGELTIsoTruncGELT.hom ≫ (((whiskeringRight₂ (Arrow₂ F.ι) (C ⥤ C) (C ⥤ C) (C ⥤ C)).obj
-    (whiskeringLeft C C C)).obj (Arrow₂.δ₁ ⋙ F.truncGELT)).map (whiskerLeft Arrow₂.obj₁ F.truncLTδGE) ≫ _ ≫
+  refine' F.truncGEGELTIsoTruncGELT.hom ≫
+    (((whiskeringRight₂ (Arrow₂ F.ι) (C ⥤ C) (C ⥤ C) (C ⥤ C)).obj
+      (whiskeringLeft C C C)).obj (Arrow₂.δ₁ ⋙ F.truncGELT)).map
+        (whiskerLeft Arrow₂.obj₁ F.truncLTδGE) ≫ _ ≫
     whiskerRight F.truncLTGELTIsoTruncGELT.inv
       ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
   exact { app := fun D => 𝟙 _ }
@@ -255,7 +285,8 @@ noncomputable def triangleObjIsoTriangleLTGEPrecompTruncGELTObj (D : Arrow₂ F.
     erw [id_comp, assoc, assoc, ← Functor.map_comp, ← NatTrans.comp_app, Iso.inv_hom_id_app,
       NatTrans.id_app, Functor.map_id, id_comp, Functor.map_id, comp_id]
 
-noncomputable def triangleIsoTriangleLTGEPrecompTruncGELT : F.triangle ≅ F.triangleLTGEPrecompTruncGELT :=
+noncomputable def triangleIsoTriangleLTGEPrecompTruncGELT :
+    F.triangle ≅ F.triangleLTGEPrecompTruncGELT :=
   NatIso.ofComponents F.triangleObjIsoTriangleLTGEPrecompTruncGELTObj (fun φ => by
     ext X
     . exact congr_app (F.truncLTGELTIsoTruncGELT.hom.naturality φ) X
@@ -263,13 +294,12 @@ noncomputable def triangleIsoTriangleLTGEPrecompTruncGELT : F.triangle ≅ F.tri
       rw [comp_id, id_comp]
     . exact congr_app (F.truncGEGELTIsoTruncGELT.hom.naturality φ) X)
 
-lemma triangle_distinguished
-    [F.IsDistinguishedTriangleLTGE] (D : Arrow₂ F.ι) (X : C) :
+lemma triangle_distinguished (D : Arrow₂ F.ι) (X : C) :
     (F.triangle.obj D).obj X ∈ distTriang C :=
   isomorphic_distinguished _ (F.triangleLTGEPrecompTruncGELT_distinguished D X) _
     (((F.triangleIsoTriangleLTGEPrecompTruncGELT).app D).app X)
 
-noncomputable def spectralObject [F.IsDistinguishedTriangleLTGE] (X : C) :
+noncomputable def spectralObject (X : C) :
     SpectralObject C F.ι where
   ω₁ := ((whiskeringRight (Arrow F.ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT
   δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
