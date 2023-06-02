@@ -120,6 +120,7 @@ import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Div
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GcdMonoid.IntegrallyClosed
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction

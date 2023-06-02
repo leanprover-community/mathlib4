@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GcdMonoid.Basic
-import Mathbin.RingTheory.IntegrallyClosed
-import Mathbin.RingTheory.Polynomial.Eisenstein.Basic
+import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.RingTheory.IntegrallyClosed
+import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 /-!
 
@@ -24,8 +24,7 @@ open scoped BigOperators Polynomial
 variable {R A : Type _} [CommRing R] [IsDomain R] [GCDMonoid R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A] (z : A) :
-    ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a :=
-  by
+    ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
   obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective M z
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
@@ -36,8 +35,7 @@ theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A]
 #align is_localization.surj_of_gcd_domain IsLocalization.surj_of_gcd_domain
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R :=
-  ⟨fun X ⟨p, hp₁, hp₂⟩ =>
-    by
+  ⟨fun X ⟨p, hp₁, hp₂⟩ => by
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
     have :=
       Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R <| FractionRing R)
