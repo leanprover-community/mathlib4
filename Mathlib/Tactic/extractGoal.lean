@@ -6,14 +6,14 @@ Authors: Simon Hudon, Damiano Testa
 import Std.Data.List.Basic
 
 /-!
-#  `extractGoal`: Format the current goal as a stand-alone example
+#  `extract_goal`: Format the current goal as a stand-alone example
 
 Useful for testing tactics or creating
 [minimal working examples](https://leanprover-community.github.io/mwe.html).
 
 ```lean
 example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
-  extractGoal
+  extract_goal
 
 /-
 example (i j k : ℕ)
@@ -25,7 +25,7 @@ example (i j k : ℕ)
 ```
 
 * TODO: Deal with `let`
-* TODO: Add functionality to preduce a named `theorem` via `extractGoal thmName`
+* TODO: Add functionality to preduce a named `theorem` via `extract_goal thmName`
 * TODO: Add tactic code actions?
 
 Check that these issues are resolved:
@@ -62,12 +62,12 @@ def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
     do pure (l ++ middle ++ (← ppExpr type) ++ r )
 
 /--
-`extractGoal` formats the current goal as a stand-alone example.
+`extract_goal` formats the current goal as a stand-alone example.
 
 It tries to produce an output that can be copy-pasted and just work.
 It renames a "hygienic" variable `n✝` to `n_hyg`.
 -/
-elab (name := extractGoal) name:"extractGoal" : tactic => do (← getMainGoal).withContext do
+elab (name := extractGoal) name:"extract_goal" : tactic => do (← getMainGoal).withContext do
   let dc := (← getLCtx).decls.toList.reduceOption.drop 1
   let gps := dc.groupBy (fun x y => x.binderInfo == y.binderInfo ∧ x.type == y.type)
   let fmts := ← gps.mapM (oneBlock ·)
