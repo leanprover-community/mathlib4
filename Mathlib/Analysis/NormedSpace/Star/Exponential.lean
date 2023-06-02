@@ -8,7 +8,7 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.Exponential
 
 /-! # The exponential map from selfadjoint to unitary
 In this file, we establish various propreties related to the map `λ a, exp ℂ A (I • a)` between the
@@ -41,8 +41,7 @@ noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
 open selfAdjoint
 
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
-    expUnitary (a + b) = expUnitary a * expUnitary b :=
-  by
+    expUnitary (a + b) = expUnitary a * expUnitary b := by
   ext
   have hcomm : Commute (I • (a : A)) (I • (b : A))
   calc
