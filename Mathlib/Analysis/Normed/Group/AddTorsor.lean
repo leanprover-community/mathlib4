@@ -100,7 +100,6 @@ theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = d
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
 -- porting note: new
-@[simp]
 theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
