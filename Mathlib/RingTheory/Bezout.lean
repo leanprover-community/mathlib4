@@ -32,7 +32,7 @@ variable (R : Type u) [CommRing R]
 
 /-- A Bézout ring is a ring whose finitely generated ideals are principal. -/
 class IsBezout : Prop where
-  isPrincipal_of_fG : ∀ I : Ideal R, I.FG → I.IsPrincipal
+  isPrincipal_of_FG : ∀ I : Ideal R, I.FG → I.IsPrincipal
 #align is_bezout IsBezout
 
 namespace IsBezout
@@ -40,7 +40,7 @@ namespace IsBezout
 variable {R}
 
 instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y} : Ideal R).IsPrincipal :=
-  by classical exact is_principal_of_fg (Ideal.span {x, y}) ⟨{x, y}, by simp⟩
+  by classical exact isPrincipal_of_FG (Ideal.span {x, y}) ⟨{x, y}, by simp⟩
 #align is_bezout.span_pair_is_principal IsBezout.span_pair_isPrincipal
 
 theorem iff_span_pair_isPrincipal :
@@ -60,8 +60,7 @@ section Gcd
 variable [IsBezout R]
 
 /-- The gcd of two elements in a bezout domain. -/
-noncomputable def gcd (x y : R) : R :=
-  Submodule.IsPrincipal.generator (Ideal.span {x, y})
+noncomputable def gcd (x y : R) : R := Submodule.IsPrincipal.generator (Ideal.span {x, y})
 #align is_bezout.gcd IsBezout.gcd
 
 theorem span_gcd (x y : R) : (Ideal.span {gcd x y} : Ideal R) = Ideal.span {x, y} :=
@@ -90,22 +89,22 @@ variable (R)
 
 /-- Any bezout domain is a GCD domain. This is not an instance since `gcd_monoid` contains data,
 and this might not be how we would like to construct it. -/
-noncomputable def toGcdDomain [IsDomain R] [DecidableEq R] : GCDMonoid R :=
-  gcdMonoidOfGCD gcd gcd_dvd_left gcd_dvd_right fun _ _ _ => dvd_gcd
-#align is_bezout.to_gcd_domain IsBezout.toGcdDomain
+noncomputable def toGCDDomain [IsDomain R] [DecidableEq R] : GCDMonoid R :=
+  gcdMonoidOfGCD gcd gcd_dvd_left gcd_dvd_right fun  hac hab => dvd_gcd hac hab
+#align is_bezout.to_gcd_domain IsBezout.toGCDDomain
 
 end Gcd
 
-attribute [local instance] to_gcd_domain
+attribute [local instance] toGCDDomain
 
 -- Note that the proof, despite being `infer_instance`, depends on the `local attribute [instance]`
 -- lemma above, and is thus necessary to be restated.
 instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
   classical exact GCDMonoid.toIsIntegrallyClosed
 
-theorem Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
+theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
-  rw [iff_span_pair_is_principal]
+  rw [iff_span_pair_isPrincipal]
   intro x y
   obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hf x, hf y
   use f (gcd x y)
@@ -119,11 +118,11 @@ instance (priority := 100) of_isPrincipalIdealRing [IsPrincipalIdealRing R] : Is
 #align is_bezout.of_is_principal_ideal_ring IsBezout.of_isPrincipalIdealRing
 
 theorem tFAE [IsBezout R] [IsDomain R] :
-    TFAE [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] :=
-  by
+    List.TFAE
+    [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
     tfae_have 1 → 2
-    · intro H; exact ⟨fun I => is_principal_of_fg _ (IsNoetherian.noetherian _)⟩
+    · intro H; exact ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
     tfae_have 2 → 3
     · intro; infer_instance
     tfae_have 3 → 4
@@ -133,15 +132,17 @@ theorem tFAE [IsBezout R] [IsDomain R] :
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       apply RelEmbedding.wellFounded _ h
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
-        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_fG I hI).1
-      choose f hf
+        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
+      choose f hf using this
       exact
         { toFun := f
           inj' := fun x y e => by ext1; rw [hf, hf, e]
-          map_rel_iff' := fun x y => by dsimp;
-            rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]; rfl }
+          map_rel_iff' := by
+            dsimp
+            intro a b
+            rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
+            rfl }
     tfae_finish
 #align is_bezout.tfae IsBezout.tFAE
 
 end IsBezout
-
