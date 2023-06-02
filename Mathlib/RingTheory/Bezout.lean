@@ -20,7 +20,7 @@ Notible examples include principal ideal rings, valuation rings, and the ring of
 
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `is_bezout.to_gcd_monoid`: Every Bézout domain is a GCD domain. This is not an instance.
+- `Is_bezout.toGCDDomain`: Every Bézout domain is a GCD domain. This is not an instance.
 - `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
