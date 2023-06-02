@@ -51,6 +51,9 @@ open SheafedSpace
 
 variable (X : RingedSpace.{v})
 
+instance : CoeSort RingedSpace (Type _) where
+  coe X := X.carrier
+
 /--
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.
