@@ -17,8 +17,8 @@ datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
 `K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
-TODO: When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
-and we define `S.leftHomology` to be the `H` field of a chosen left homology data.
+When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
+and (TODO) we shall define `S.leftHomology` to be the `H` field of a chosen left homology data.
 Similarly, we shall define `S.cycles` to be the `K` field.
 
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
