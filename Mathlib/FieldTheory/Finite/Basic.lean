@@ -495,8 +495,7 @@ theorem even_card_iff_char_two : ringChar F = 2 ↔ Fintype.card F % 2 = 0 := by
   rw [h, Nat.pow_mod]
   constructor
   · intro hF
-    rw [hF]
-    simp only [Nat.bit0_mod_two, zero_pow', Ne.def, PNat.ne_zero, not_false_iff, Nat.zero_mod]
+    simp [hF]
   · rw [← Nat.even_iff, Nat.even_pow]
     rintro ⟨hev, hnz⟩
     rw [Nat.even_iff, Nat.mod_mod] at hev
@@ -531,7 +530,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     constructor
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
-      apply_fun @coe Fˣ F _ using Units.ext
+      apply_fun Units.val using Units.ext (α := F)
       · push_cast
         exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
