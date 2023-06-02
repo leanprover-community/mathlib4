@@ -397,7 +397,7 @@ theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' �
 @[simp]
 theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
     (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
-  ext fun r s => updateColumn_ne (Fin.succAbove_ne i s)
+  ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
 #align matrix.submatrix_update_column_succ_above Matrix.submatrix_updateColumn_succAbove
 
 end Submatrix
