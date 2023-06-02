@@ -29,13 +29,12 @@ theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A]
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
-  convert IsLocalization.mk'_mul_cancel_left _ _ using 2
-  · rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
-  · infer_instance
+  convert IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
+  rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
 #align is_localization.surj_of_gcd_domain IsLocalization.surj_of_gcd_domain
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R :=
-  ⟨fun X ⟨p, hp₁, hp₂⟩ => by
+  ⟨fun {X} ⟨p, hp₁, hp₂⟩ => by
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
     have :=
       Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R <| FractionRing R)
@@ -49,4 +48,3 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R
     erw [map_mul, ← Units.coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he⟩
 #align gcd_monoid.to_is_integrally_closed GCDMonoid.toIsIntegrallyClosed
-
