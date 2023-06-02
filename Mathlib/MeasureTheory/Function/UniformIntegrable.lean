@@ -824,7 +824,7 @@ theorem uniformIntegrable_of' [FiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞
         simp_rw [nnnorm_indicator_eq_indicator_nnnorm]
         exact Set.indicator_le fun x (hx : _ < _) => hx.le
       refine' add_le_add (le_trans (snorm_le_of_ae_bound this) _) (ENNReal.ofReal_one ▸ hC i)
-      rw [ENNReal.ofReal_coe_nnreal, mul_comm]
+      simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnreal, mul_comm]
       exact le_rfl
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
       rw [ENNReal.coe_toNNReal]
