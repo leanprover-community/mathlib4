@@ -134,7 +134,7 @@ lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
   haveI : HasCokernel _ := HasLeftHomology.hasCokernel S
   haveI : HasKernel _ := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
-    (RightHomologyData.ofKerOfCoker S)
+    (RightHomologyData.ofHasCokernelOfHasKernel S)
 
 variable {S}
 

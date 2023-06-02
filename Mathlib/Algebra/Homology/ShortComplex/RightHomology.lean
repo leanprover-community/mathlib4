@@ -53,7 +53,7 @@ initialize_simps_projections RightHomologyData (-hp, -hι)
 namespace RightHomologyData
 
 @[simps]
-noncomputable def ofKerOfCoker [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
+noncomputable def ofHasCokernelOfHasKernel [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
   S.RightHomologyData :=
 { Q := cokernel S.f,
   H := kernel (cokernel.desc S.f S.g S.zero),
@@ -221,9 +221,9 @@ namespace HasRightHomology
 lemma mk' (h : S.RightHomologyData) : HasRightHomology S :=
 ⟨Nonempty.intro h⟩
 
-instance of_ker_of_coker
+instance of_hasCokernel_of_hasKernel
     [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.HasRightHomology := HasRightHomology.mk' (RightHomologyData.ofKerOfCoker S)
+  S.HasRightHomology := HasRightHomology.mk' (RightHomologyData.ofHasCokernelOfHasKernel S)
 
 instance of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasRightHomology :=
@@ -1068,7 +1068,7 @@ end HasRightHomology
 noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S.f]
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
-  (RightHomologyData.ofKerOfCoker S).rightHomologyIso
+  (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
 
 namespace RightHomologyData
 
