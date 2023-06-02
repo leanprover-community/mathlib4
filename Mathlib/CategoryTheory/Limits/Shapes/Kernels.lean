@@ -32,7 +32,7 @@ Besides the definition and lifts, we prove
 * `kernel.liftMono`: the lift of a monomorphism `k : W ⟶ X` such that `k ≫ f = 0`
   is still a monomorphism
 * `kernel.isLimitConeZeroCone`: if our category has a zero object, then the map from the zero
-  obect is a kernel map of any monomorphism
+  object is a kernel map of any monomorphism
 * `kernel.ιOfZero`: `kernel.ι (0 : X ⟶ Y)` is an isomorphism
 
 and the corresponding dual statements.

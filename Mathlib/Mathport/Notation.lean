@@ -48,12 +48,12 @@ macro_rules
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expand_foldl% "
-  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expand_foldr% "
-  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
     term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
@@ -63,10 +63,13 @@ syntax foldKind := &"foldl" <|> &"foldr"
 /-- `notation3` argument matching `extBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
 /-- `notation3` argument simulating a Lean 3 fold notation. -/
-syntax foldAction := "(" ident strLit "*" " => " foldKind " (" ident ident " => " term ") " term ")"
+syntax foldAction := "(" ident ppSpace strLit "*" " => " foldKind
+  " (" ident ppSpace ident " => " term ") " term ")"
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
 /-- `notation3` argument. -/
+-- Note: there is deliberately no ppSpace between items
+-- so that the space in the literals themselves stands out
 syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 
 /-! ### Expression matching
@@ -403,8 +406,8 @@ This command can be used in mathlib4 but it has an uncertain future and was crea
 for backward compatibility.
 -/
 elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" pp?:(prettyPrintOpt)? prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
-    items:(notation3Item)+ " => " val:term : command => do
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
+    ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
   let mut boundIdents : HashMap Name Ident := {}
@@ -443,6 +446,11 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
       hasBindersItem := true
+      -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
+      -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
+      -- but extBinders already has a space before it so we strip the trailing space of "∑ "
+      if let `(stx| $lit:str) := syntaxArgs.back then
+        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←

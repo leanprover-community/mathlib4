@@ -103,19 +103,19 @@ irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α →
 
 -- mathport name: «expr∫⁻ , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
+notation3 "∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
 
 -- mathport name: «expr∫⁻ , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
+notation3 "∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
 
 -- mathport name: «expr∫⁻ in , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
 
 -- mathport name: «expr∫⁻ in , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
 
 theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) :
     (∫⁻ a, f a ∂μ) = f.lintegral μ := by
@@ -1306,7 +1306,7 @@ theorem lintegral_indicator_const_comp {mβ : MeasurableSpace β} {f : α → β
 #align measure_theory.lintegral_indicator_const_comp MeasureTheory.lintegral_indicator_const_comp
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
-measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` wich
+measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which
 applies to any measurable `g : α → β` but requires that `f` is measurable as well. -/
 theorem _root_.MeasurableEmbedding.lintegral_map [MeasurableSpace β] {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : (∫⁻ a, f a ∂map g μ) = ∫⁻ a, f (g a) ∂μ := by

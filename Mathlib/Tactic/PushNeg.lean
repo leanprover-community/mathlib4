@@ -122,7 +122,7 @@ writing `push_neg` will turn the target into
 ```lean
 | ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`
@@ -173,7 +173,7 @@ writing `push_neg at h` will turn `h` into
 ```lean
 h : ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`
@@ -184,7 +184,7 @@ using say `push_neg at h h' ⊢` as usual.
 This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
-elab "push_neg" loc:(ppSpace location)? : tactic =>
+elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
     pushNegLocalDecl

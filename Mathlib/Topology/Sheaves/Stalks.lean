@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Sites.Pushforward
 
@@ -561,7 +561,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
       intro x
       rw [← comp_apply, ← f.1.naturality, comp_apply, s_spec, heq]
   intro x y
-  -- What's left to show here is that the secions `sf` are compatible, i.e. they agree on
+  -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.
   apply section_ext
   intro z
