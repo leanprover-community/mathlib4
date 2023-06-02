@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Damiano Testa
 -/
-import Std.Data.List.Basic
+import Mathlib.Lean.Expr.Basic
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -33,13 +33,6 @@ Check that these issues are resolved:
 * Deal with named instances -- fixed?
 -/
 
-/-- Translate a `BinderInfo` into the appropriate left-right pair of parentheses. -/
-def Lean.BinderInfo.toParens : BinderInfo → String × String
-  | .default =>        ("(", ")")
-  | .implicit =>       ("{", "}")
-  | .strictImplicit => ("⦃", "⦄")
-  | .instImplicit =>   ("[", "]")
-
 open Lean LocalDecl Elab Meta Tactic BinderInfo
 
 /-- `oneBlock L` assumes that `L` is a list of `LocalDecl` that all have the same
@@ -51,7 +44,7 @@ def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
   | []    => pure ""
   | ls@(d::_) =>
     let (bi, type) := (d.binderInfo, d.type)
-    let (l,r) := bi.toParens
+    let (l,r) := bi.brackets
     let comp := ls.map ((toString ∘ LocalDecl.userName) ·)
     let new := comp.map fun x =>
       let xspl := x.splitOn "."
