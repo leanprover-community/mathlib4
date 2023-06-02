@@ -2243,6 +2243,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod

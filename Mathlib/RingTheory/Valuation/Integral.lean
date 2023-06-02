@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.IntegrallyClosed
-import Mathbin.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.IntegrallyClosed
+import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # Integral elements over the ring of integers of a valution
@@ -38,8 +38,7 @@ open Polynomial
 
 theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
   let ⟨p, hpm, hpx⟩ := hx
-  le_of_not_lt fun hvx : 1 < v x =>
-    by
+  le_of_not_lt fun hvx : 1 < v x => by
     rw [hpm.as_sum, eval₂_add, eval₂_pow, eval₂_X, eval₂_finset_sum, add_eq_zero_iff_eq_neg] at hpx 
     replace hpx := congr_arg v hpx; refine' ne_of_gt _ hpx
     rw [v.map_neg, v.map_pow]
