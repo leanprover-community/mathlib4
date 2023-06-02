@@ -18,12 +18,12 @@ which proves that any two 2-morphisms (with the same source and target)
 in a bicategory which are built out of associators and unitors
 are equal.
 
-We also provide `f ⊗≫ g`, the `bicategorical_comp` operation,
+We also provide `f ⊗≫ g`, the `bicategoricalComp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 
 This file mainly deals with the type class setup for the coherence tactic. The actual front end
-tactic is given in `category_theory/monooidal/coherence.lean` at the same time as the coherence
+tactic is given in `CategoryTheory.Monoidal.Coherence` at the same time as the coherence
 tactic for monoidal categories.
 -/
 
@@ -42,7 +42,7 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 namespace CategoryTheory.Bicategory
 
-/-- A typeclass carrying a choice of lift of a 1-morphism from `B` to `free_bicategory B`. -/
+/-- A typeclass carrying a choice of lift of a 1-morphism from `B` to `FreeBicategory B`. -/
 class LiftHom {a b : B} (f : a ⟶ b) where
   lift : of.obj a ⟶ of.obj b
 #align category_theory.bicategory.lift_hom CategoryTheory.Bicategory.LiftHom
@@ -57,7 +57,7 @@ instance liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftH
 instance (priority := 100) liftHomOf (f : a ⟶ b) : LiftHom f where lift := of.map f
 #align category_theory.bicategory.lift_hom_of CategoryTheory.Bicategory.liftHomOf
 
-/-- A typeclass carrying a choice of lift of a 2-morphism from `B` to `free_bicategory B`. -/
+/-- A typeclass carrying a choice of lift of a 2-morphism from `B` to `FreeBicategory B`. -/
 class LiftHom₂ {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) where
   lift : LiftHom.lift f ⟶ LiftHom.lift g
 #align category_theory.bicategory.lift_hom₂ CategoryTheory.Bicategory.LiftHom₂
@@ -65,16 +65,16 @@ class LiftHom₂ {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) where
 instance liftHom₂Id (f : a ⟶ b) [LiftHom f] : LiftHom₂ (𝟙 f) where lift := 𝟙 _
 #align category_theory.bicategory.lift_hom₂_id CategoryTheory.Bicategory.liftHom₂Id
 
-instance liftHom₂LeftUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).Hom
-    where lift := (λ_ (LiftHom.lift f)).Hom
+instance liftHom₂LeftUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).hom
+    where lift := (λ_ (LiftHom.lift f)).hom
 #align category_theory.bicategory.lift_hom₂_left_unitor_hom CategoryTheory.Bicategory.liftHom₂LeftUnitorHom
 
 instance liftHom₂LeftUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).inv
     where lift := (λ_ (LiftHom.lift f)).inv
 #align category_theory.bicategory.lift_hom₂_left_unitor_inv CategoryTheory.Bicategory.liftHom₂LeftUnitorInv
 
-instance liftHom₂RightUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).Hom
-    where lift := (ρ_ (LiftHom.lift f)).Hom
+instance liftHom₂RightUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).hom
+    where lift := (ρ_ (LiftHom.lift f)).hom
 #align category_theory.bicategory.lift_hom₂_right_unitor_hom CategoryTheory.Bicategory.liftHom₂RightUnitorHom
 
 instance liftHom₂RightUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).inv
@@ -82,8 +82,8 @@ instance liftHom₂RightUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f)
 #align category_theory.bicategory.lift_hom₂_right_unitor_inv CategoryTheory.Bicategory.liftHom₂RightUnitorInv
 
 instance liftHom₂AssociatorHom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
-    [LiftHom h] : LiftHom₂ (α_ f g h).Hom
-    where lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).Hom
+    [LiftHom h] : LiftHom₂ (α_ f g h).hom
+    where lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).hom
 #align category_theory.bicategory.lift_hom₂_associator_hom CategoryTheory.Bicategory.liftHom₂AssociatorHom
 
 instance liftHom₂AssociatorInv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
@@ -103,18 +103,23 @@ instance liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [Lift
     {h : b ⟶ c} [LiftHom h] : LiftHom₂ (η ▷ h) where lift := LiftHom₂.lift η ▷ LiftHom.lift h
 #align category_theory.bicategory.lift_hom₂_whisker_right CategoryTheory.Bicategory.liftHom₂WhiskerRight
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`Hom] [] -/
 /-- A typeclass carrying a choice of bicategorical structural isomorphism between two objects.
 Used by the `⊗≫` bicategorical composition operator, and the `coherence` tactic.
 -/
 class BicategoricalCoherence (f g : a ⟶ b) [LiftHom f] [LiftHom g] where
-  Hom : f ⟶ g
-  [IsIso : IsIso hom]
+  hom' : f ⟶ g
+  [isIso : IsIso hom']
 #align category_theory.bicategory.bicategorical_coherence CategoryTheory.Bicategory.BicategoricalCoherence
 
-attribute [instance] bicategorical_coherence.is_iso
 
 namespace BicategoricalCoherence
+
+attribute [instance] isIso
+
+-- porting note: the field `BicategoricalCoherence.hom'` was named `hom` in mathlib3, but in Lean4
+-- `f` and `g` are not explicit parameters, so that we have to redefine `hom` as follows
+@[reducible]
+def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
 
 @[simps]
 instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
@@ -142,13 +147,13 @@ instance tensorRight (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
 @[simps]
 instance tensorRight' (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
     [BicategoricalCoherence g (𝟙 b)] : BicategoricalCoherence (f ≫ g) f :=
-  ⟨f ◁ BicategoricalCoherence.hom g (𝟙 b) ≫ (ρ_ f).Hom⟩
+  ⟨f ◁ BicategoricalCoherence.hom g (𝟙 b) ≫ (ρ_ f).hom⟩
 #align category_theory.bicategory.bicategorical_coherence.tensor_right' CategoryTheory.Bicategory.BicategoricalCoherence.tensorRight'
 
 @[simps]
 instance left (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence (𝟙 a ≫ f) g :=
-  ⟨(λ_ f).Hom ≫ BicategoricalCoherence.hom f g⟩
+  ⟨(λ_ f).hom ≫ BicategoricalCoherence.hom f g⟩
 #align category_theory.bicategory.bicategorical_coherence.left CategoryTheory.Bicategory.BicategoricalCoherence.left
 
 @[simps]
@@ -160,7 +165,7 @@ instance left' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f
 @[simps]
 instance right (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence (f ≫ 𝟙 b) g :=
-  ⟨(ρ_ f).Hom ≫ BicategoricalCoherence.hom f g⟩
+  ⟨(ρ_ f).hom ≫ BicategoricalCoherence.hom f g⟩
 #align category_theory.bicategory.bicategorical_coherence.right CategoryTheory.Bicategory.BicategoricalCoherence.right
 
 @[simps]
@@ -171,13 +176,15 @@ instance right' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence 
 
 @[simps]
 instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
-    [LiftHom i] [BicategoricalCoherence (f ≫ g ≫ h) i] : BicategoricalCoherence ((f ≫ g) ≫ h) i :=
-  ⟨(α_ f g h).Hom ≫ BicategoricalCoherence.hom (f ≫ g ≫ h) i⟩
+    [LiftHom i] [BicategoricalCoherence (f ≫ g ≫ h) i] :
+    BicategoricalCoherence ((f ≫ g) ≫ h) i :=
+  ⟨(α_ f g h).hom ≫ BicategoricalCoherence.hom (f ≫ g ≫ h) i⟩
 #align category_theory.bicategory.bicategorical_coherence.assoc CategoryTheory.Bicategory.BicategoricalCoherence.assoc
 
 @[simps]
 instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
-    [LiftHom i] [BicategoricalCoherence i (f ≫ g ≫ h)] : BicategoricalCoherence i ((f ≫ g) ≫ h) :=
+    [LiftHom i] [BicategoricalCoherence i (f ≫ g ≫ h)] :
+    BicategoricalCoherence i ((f ≫ g) ≫ h) :=
   ⟨BicategoricalCoherence.hom i (f ≫ g ≫ h) ≫ (α_ f g h).inv⟩
 #align category_theory.bicategory.bicategorical_coherence.assoc' CategoryTheory.Bicategory.BicategoricalCoherence.assoc'
 
@@ -197,7 +204,8 @@ def bicategoricalComp {f g h i : a ⟶ b} [LiftHom g] [LiftHom h] [Bicategorical
 #align category_theory.bicategory.bicategorical_comp CategoryTheory.Bicategory.bicategoricalComp
 
 -- mathport name: bicategorical_comp
-scoped[Bicategory] infixr:80 " ⊗≫ " => CategoryTheory.Bicategory.bicategoricalComp
+scoped[CategoryTheory.Bicategory] infixr:80 " ⊗≫ " =>
+  CategoryTheory.Bicategory.bicategoricalComp
 
 -- type as \ot \gg
 /-- Compose two isomorphisms in a bicategorical category,
@@ -208,21 +216,23 @@ def bicategoricalIsoComp {f g h i : a ⟶ b} [LiftHom g] [LiftHom h] [Bicategori
 #align category_theory.bicategory.bicategorical_iso_comp CategoryTheory.Bicategory.bicategoricalIsoComp
 
 -- mathport name: bicategorical_iso_comp
-scoped[Bicategory] infixr:80 " ≪⊗≫ " => CategoryTheory.Bicategory.bicategoricalIsoComp
+scoped[CategoryTheory.Bicategory] infixr:80 " ≪⊗≫ " =>
+  CategoryTheory.Bicategory.bicategoricalIsoComp
 
 -- type as \ot \gg
 example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} {h' : a ⟶ d} (η : f' ⟶ f ≫ g ≫ h)
     (θ : (f ≫ g) ≫ h ⟶ h') : f' ⟶ h' :=
-  η ⊗≫ θ
+    η ⊗≫ θ
 
 -- To automatically insert unitors/associators at the beginning or end,
 -- you can use `η ⊗≫ 𝟙 _`
-example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} (η : f' ⟶ (f ≫ g) ≫ h) : f' ⟶ f ≫ g ≫ h :=
+example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} (η : f' ⟶ (f ≫ g) ≫ h) :
+    f' ⟶ f ≫ g ≫ h :=
   η ⊗≫ 𝟙 _
 
 @[simp]
 theorem bicategoricalComp_refl {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) : η ⊗≫ θ = η ≫ θ := by
-  dsimp [bicategorical_comp]; simp
+  dsimp [bicategoricalComp]; simp
 #align category_theory.bicategory.bicategorical_comp_refl CategoryTheory.Bicategory.bicategoricalComp_refl
 
 end CategoryTheory.Bicategory
@@ -270,13 +280,13 @@ unsafe def whisker_simps : tactic Unit :=
 namespace Coherence
 
 -- We have unused typeclass arguments here.
--- They are intentional, to ensure that `simp only [assoc_lift_hom₂]` only left associates
+-- They are intentional, to ensure that `simp only [assoc_liftHom₂]` only left associates
 -- bicategorical structural morphisms.
 /-- Auxiliary simp lemma for the `coherence` tactic:
 this move brackets to the left in order to expose a maximal prefix
 built out of unitors and associators.
 -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h] (η : f ⟶ g) (θ : g ⟶ h)
     (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
   (Category.assoc _ _ _).symm
@@ -287,4 +297,3 @@ end Coherence
 end Bicategory
 
 end Tactic
-
