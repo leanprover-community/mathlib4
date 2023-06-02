@@ -133,7 +133,7 @@ lemma commShiftIso_zero :
 
 variable {A}
 
-lemma commShiftIso_add (a b : A):
+lemma commShiftIso_add (a b : A) :
     F.commShiftIso (a + b) = CommShift.isoAdd (F.commShiftIso a) (F.commShiftIso b) :=
   CommShift.add a b
 
