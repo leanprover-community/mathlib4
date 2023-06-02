@@ -73,7 +73,7 @@ variable {β}
 
 -- mathport name: «exprΠ₀ , »
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `Dfinsupp β`. -/
-notation3"Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
+notation3 "Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
 
 -- mathport name: «expr →ₚ »
 @[inherit_doc]

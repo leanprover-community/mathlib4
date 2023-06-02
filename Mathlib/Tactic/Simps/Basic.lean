@@ -267,11 +267,11 @@ syntax simpsRule.erase := "-" ident
 /-- Syntax for making a projection default in `initialize_simps_projections`. -/
 syntax simpsRule.add := "+" ident
 /-- Syntax for making a projection prefix. -/
-syntax simpsRule.prefix := &"as_prefix" ident
+syntax simpsRule.prefix := &"as_prefix " ident
 /-- Syntax for a single rule in `initialize_simps_projections`. -/
 syntax simpsRule := simpsRule.prefix <|> simpsRule.rename <|> simpsRule.erase <|> simpsRule.add
 /-- Syntax for `initialize_simps_projections`. -/
-syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
+syntax simpsProj := ppSpace ident (" (" simpsRule,+ ")")?
 
 /--
 This command specifies custom names and custom projections for the simp attribute `simpsAttr`.

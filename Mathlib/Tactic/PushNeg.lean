@@ -184,7 +184,7 @@ using say `push_neg at h h' ⊢` as usual.
 This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
-elab "push_neg" loc:(ppSpace location)? : tactic =>
+elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
     pushNegLocalDecl
