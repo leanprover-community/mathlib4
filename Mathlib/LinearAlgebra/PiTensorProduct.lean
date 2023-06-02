@@ -314,7 +314,7 @@ variable {R}
 
 -- mathport name: «expr⨂ₜ[ ] , »
 /-- pure tensor in tensor product over some index type -/
-notation "⨂ₜ[" R "]" x => tprod R x
+notation3:100"⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
