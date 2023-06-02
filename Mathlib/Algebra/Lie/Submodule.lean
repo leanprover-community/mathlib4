@@ -236,7 +236,8 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 #align lie_mem_left lie_mem_left
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
--- Porting note: added `@[coe]` to fix `norm_cast` issues, but this causes bad pretty-printing.
+-- Porting note: added `@[coe]` to fix `norm_cast` issues, but this causes bad pretty-printing:
+-- `(I : LieSubalgebra R L)` becomes `(↑R L I)`
 @[coe]
 def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
