@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.Order.LeftRightLim
 # Stieltjes measures on the real line
 
 Consider a function `f : ℝ → ℝ` which is monotone and right-continuous. Then one can define a
-corrresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
+corresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
 
 ## Main definitions
 

@@ -50,7 +50,7 @@ class IsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
   protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
 #align has_isometric_smul IsometricSMul
 
--- Porting note: Lean 4 doesn' support `[]` in classes, so make a lemma instead of `export`ing
+-- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
 @[to_additive]
 theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=

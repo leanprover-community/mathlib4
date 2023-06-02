@@ -585,7 +585,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
     }custom projection)."
   pure projs
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
@@ -681,7 +681,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
       return (projExpr, projName)
   return none
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :

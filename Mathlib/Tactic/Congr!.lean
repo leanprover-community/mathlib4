@@ -802,7 +802,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
-        trace[congr!] "pass succeded: {passName}"
+        trace[congr!] "pass succeeded: {passName}"
         return mvarIds
     catch e =>
       throwTacticEx `congr! mvarId

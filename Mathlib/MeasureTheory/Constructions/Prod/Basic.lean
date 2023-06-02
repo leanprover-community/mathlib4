@@ -737,7 +737,7 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
 #align measure_theory.lintegral_prod MeasureTheory.lintegral_prod
 
-/-- The symmetric verion of Tonelli's Theorem: For `ℝ≥0∞`-valued almost everywhere measurable
+/-- The symmetric version of Tonelli's Theorem: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `α × β`,  the integral of `f` is equal to the iterated integral, in reverse order. -/
 theorem lintegral_prod_symm [SigmaFinite μ] (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     (∫⁻ z, f z ∂μ.prod ν) = ∫⁻ y, ∫⁻ x, f (x, y) ∂μ ∂ν := by
@@ -745,7 +745,7 @@ theorem lintegral_prod_symm [SigmaFinite μ] (f : α × β → ℝ≥0∞) (hf :
   exact lintegral_prod _ hf.prod_swap
 #align measure_theory.lintegral_prod_symm MeasureTheory.lintegral_prod_symm
 
-/-- The symmetric verion of Tonelli's Theorem: For `ℝ≥0∞`-valued measurable
+/-- The symmetric version of Tonelli's Theorem: For `ℝ≥0∞`-valued measurable
 functions on `α × β`,  the integral of `f` is equal to the iterated integral, in reverse order. -/
 theorem lintegral_prod_symm' [SigmaFinite μ] (f : α × β → ℝ≥0∞) (hf : Measurable f) :
     (∫⁻ z, f z ∂μ.prod ν) = ∫⁻ y, ∫⁻ x, f (x, y) ∂μ ∂ν :=

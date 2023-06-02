@@ -112,7 +112,7 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
 Discharging function used during simplification in the "squash" step.
 
 TODO: normCast takes a list of expressions to use as lemmas for the discharger
-TODO: a tactic to print the results the discharger fails to proove
+TODO: a tactic to print the results the discharger fails to prove
 -/
 def prove (e : Expr) : SimpM (Option Expr) := do
   withTraceNode `Tactic.norm_cast (return m!"{exceptOptionEmoji ·} discharging: {e}") do

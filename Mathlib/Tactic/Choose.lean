@@ -186,7 +186,7 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
   `h : ∀ (x : X) (y : Y), P x y (a x) (b x)` and
   `h' : ∀ (x : X) (y : Y), Q x y (a x) (b x)`.
 
-The `using hyp` part can be ommited,
+The `using hyp` part can be omitted,
 which will effectively cause `choose` to start with an `intro hyp`.
 
 Examples:

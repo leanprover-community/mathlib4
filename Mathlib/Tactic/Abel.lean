@@ -156,7 +156,7 @@ theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
-Intepret the sum of two expressions in `abel`'s normal form.
+Interpret the sum of two expressions in `abel`'s normal form.
 -/
 partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
   | zero _, e₂ => do

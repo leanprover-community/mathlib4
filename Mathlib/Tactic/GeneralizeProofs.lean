@@ -9,7 +9,7 @@ import Mathlib.Lean.Expr.Basic
 /-!
 # The `generalize_proofs` tactic
 
-Generalize any proofs occuring in the goal or in chosen hypotheses, replacing them by
+Generalize any proofs occurring in the goal or in chosen hypotheses, replacing them by
 named hypotheses so that they can be referred to later in the proof easily.
 Commonly useful when dealing with functions like `Classical.choose` that produce data from proofs.
 
@@ -53,7 +53,7 @@ private def mkGen (e : Expr) : M Unit := do
     | _ => mkFreshUserName `h
   modify fun s ↦ { s with curIdx := s.curIdx.push ⟨e, t, none⟩ }
 
-/-- Recursively generalize proofs occuring in e -/
+/-- Recursively generalize proofs occurring in e -/
 partial def visit (e : Expr) : M Expr := do
   if e.isAtomic then
     pure e

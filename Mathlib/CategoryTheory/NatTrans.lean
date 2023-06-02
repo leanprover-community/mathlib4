@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
@@ -65,7 +65,7 @@ pp_extended_field_notation NatTrans.app
 attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
 -- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transfomations moving earlier.
+-- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
 #align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 

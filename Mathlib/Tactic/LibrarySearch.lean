@@ -124,7 +124,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
-Try applying the given lemma (with symmetry modifer) to the goal,
+Try applying the given lemma (with symmetry modifier) to the goal,
 then try to close subsequent goals using `solveByElim`.
 If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
 otherwise the full list of subgoals.
