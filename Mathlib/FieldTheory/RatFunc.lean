@@ -19,70 +19,70 @@ import Mathlib.RingTheory.Polynomial.Content
 > THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
 > Any changes to this file require a corresponding PR to mathlib4.
 
-This file defines the field `ratfunc K` of rational functions over a field `K`,
+This file defines the field `RatFunc K` of rational functions over a field `K`,
 and shows it is the field of fractions of `K[X]`.
 
 ## Main definitions
 
 Working with rational functions as polynomials:
- - `ratfunc.field` provides a field structure
- - `ratfunc.C` is the constant polynomial
- - `ratfunc.X` is the indeterminate
- - `ratfunc.eval` evaluates a rational function given a value for the indeterminate
-You can use `is_fraction_ring` API to treat `ratfunc` as the field of fractions of polynomials:
- * `algebra_map K[X] (ratfunc K)` maps polynomials to rational functions
- * `is_fraction_ring.alg_equiv` maps other fields of fractions of `K[X]` to `ratfunc K`,
-    in particular:
- * `fraction_ring.alg_equiv K[X] (ratfunc K)` maps the generic field of
-    fraction construction to `ratfunc K`. Combine this with `alg_equiv.restrict_scalars` to change
-    the `fraction_ring K[X] ≃ₐ[K[X]] ratfunc K` to
-    `fraction_ring K[X] ≃ₐ[K] ratfunc K`.
+ - `RatFunc.field` provides a field structure
+ - `RatFunc.C` is the constant polynomial
+ - `RatFunc.X` is the indeterminate
+ - `RatFunc.eval` evaluates a rational function given a value for the indeterminate
+You can use `IsFractionRing` API to treat `RatFunc` as the field of fractions of polynomials:
+ * `algebraMap K[X] (RatFunc K)` maps polynomials to rational functions
+ * `IsFractionRing.algEquiv` maps other fields of fractions of `K[X]` to `RatFunc K`,
+in particular:
+ * `FractionRing.algEquiv K[X] (RatFunc K)` maps the generic field of
+    fraction construction to `RatFunc K`. Combine this with `AlgEquiv.restrictScalars` to change
+    the `FractionRing K[X] ≃ₐ[K[X]] RatFunc K` to
+    `FractionRing K[X] ≃ₐ[K] RatFunc K`.
 
 Working with rational functions as fractions:
- - `ratfunc.num` and `ratfunc.denom` give the numerator and denominator.
-   These values are chosen to be coprime and such that `ratfunc.denom` is monic.
+ - `RatFunc.num` and `RatFunc.denom` give the numerator and denominator.
+   These values are chosen to be coprime and such that `RatFunc.denom` is monic.
 
 Embedding of rational functions into Laurent series, provided as a coercion, utilizing
-the underlying `ratfunc.coe_alg_hom`.
+the underlying `RatFunc.coeAlgHom`.
 
 Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
 as the homomorphism retains the non-zero-divisor property:
-  - `ratfunc.lift_monoid_with_zero_hom` lifts a `K[X] →*₀ G₀` to
-      a `ratfunc K →*₀ G₀`, where `[comm_ring K] [comm_group_with_zero G₀]`
-  - `ratfunc.lift_ring_hom` lifts a `K[X] →+* L` to a `ratfunc K →+* L`,
-      where `[comm_ring K] [field L]`
-  - `ratfunc.lift_alg_hom` lifts a `K[X] →ₐ[S] L` to a `ratfunc K →ₐ[S] L`,
-      where `[comm_ring K] [field L] [comm_semiring S] [algebra S K[X]] [algebra S L]`
+  - `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
+      a `RatFunc K →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
+  - `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `RatFunc K →+* L`,
+      where `[CommRing K] [Field L]`
+  - `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `RatFunc K →ₐ[S] L`,
+      where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
 This is satisfied by injective homs.
 We also have lifting homomorphisms of polynomials to other polynomials,
 with the same condition on retaining the non-zero-divisor property across the map:
-  - `ratfunc.map` lifts `K[X] →* R[X]` when `[comm_ring K] [comm_ring R]`
-  - `ratfunc.map_ring_hom` lifts `K[X] →+* R[X]` when `[comm_ring K] [comm_ring R]`
-  - `ratfunc.map_alg_hom` lifts `K[X] →ₐ[S] R[X]` when
-    `[comm_ring K] [is_domain K] [comm_ring R] [is_domain R]`
+  - `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
+  - `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
+  - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
+    `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 
 We also have a set of recursion and induction principles:
- - `ratfunc.lift_on`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+ - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
    if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
- - `ratfunc.lift_on'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+ - `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
    if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
- - `ratfunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
+ - `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
    rational functions
 
 We define the degree of a rational function, with values in `ℤ`:
- - `int_degree` is the degree of a rational function, defined as the difference between the
-   `nat_degree` of its numerator and the `nat_degree` of its denominator. In particular,
-   `int_degree 0 = 0`.
+ - `intDegree` is the degree of a rational function, defined as the difference between the
+   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
+   `intDegree 0 = 0`.
 
 ## Implementation notes
 
 To provide good API encapsulation and speed up unification problems,
-`ratfunc` is defined as a structure, and all operations are `@[irreducible] def`s
+`RatFunc` is defined as a structure, and all operations are `@[irreducible] def`s
 
-We need a couple of maps to set up the `field` and `is_fraction_ring` structure,
-namely `ratfunc.of_fraction_ring`, `ratfunc.to_fraction_ring`, `ratfunc.mk` and
-`ratfunc.to_fraction_ring_ring_equiv`.
-All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (ratfunc K)`
+We need a couple of maps to set up the `field` and `IsFractionRing` structure,
+namely `RatFunc.of_fraction_ring`, `RatFunc.to_fraction_ring`, `RatFunc.mk` and
+`RatFunc.to_fraction_ring_ring_equiv`.
+All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (RatFunc K)`
 and `is_localization.alg_equiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
@@ -106,11 +106,11 @@ universe u v
 
 variable (K : Type u)
 
-/-- `ratfunc K` is `K(x)`, the field of rational functions over `K`.
+/-- `RatFunc K` is `K(X)`, the field of rational functions over `K`.
 
-The inclusion of polynomials into `ratfunc` is `algebra_map K[X] (ratfunc K)`,
-the maps between `ratfunc K` and another field of fractions of `K[X]`,
-especially `fraction_ring K[X]`, are given by `is_localization.algebra_equiv`.
+The inclusion of polynomials into `RatFunc` is `algebraMap K[X] (RatFunc K)`,
+the maps between `RatFunc K` and another field of fractions of `K[X]`,
+especially `FractionRing K[X]`, are given by `is_localization.algebra_equiv`.
 -/
 structure RatFunc [CommRing K] : Type u where ofFractionRing ::
   toFractionRing : FractionRing K[X]
@@ -130,8 +130,8 @@ section Rec
 
 /-! ### Constructing `ratfunc`s and their induction principles -/
 
-theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → RatFunc K) := fun x y =>
-  ofFractionRing.inj
+theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → RatFunc K) :=
+  fun _ _ => ofFractionRing.inj
 #align ratfunc.of_fraction_ring_injective RatFunc.ofFractionRing_injective
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
