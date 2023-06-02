@@ -308,8 +308,8 @@ lemma congr_φK {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = �
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
 def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
-  LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
-    (LeftHomologyData.ofZeros S₂ hf₂ hg₂) where
+    LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
+      (LeftHomologyData.ofZeros S₂ hf₂ hg₂) where
   φK := φ.τ₂
   φH := φ.τ₂
 
@@ -319,11 +319,11 @@ short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such t
 `φ.τ₂ ≫ c₂.π = c₁.π ≫ f`. -/
 @[simps]
 def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
-  (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
-  (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
-  (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
-  LeftHomologyMapData φ (LeftHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
-    (LeftHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
+    (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
+    (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
+    (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
+    LeftHomologyMapData φ (LeftHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
+      (LeftHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
   φK := φ.τ₂
   φH := f
   commπ := comm.symm
@@ -335,11 +335,11 @@ short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such t
 `c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι`. -/
 @[simps]
 def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
-  (hf₁ : S₁.f = 0) (c₁ : KernelFork S₁.g) (hc₁ : IsLimit c₁)
-  (hf₂ : S₂.f = 0) (c₂ : KernelFork S₂.g) (hc₂ : IsLimit c₂) (f : c₁.pt ⟶ c₂.pt)
-  (comm : c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι) :
-  LeftHomologyMapData φ (LeftHomologyData.ofIsLimitKernelFork S₁ hf₁ c₁ hc₁)
-    (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ c₂ hc₂) where
+    (hf₁ : S₁.f = 0) (c₁ : KernelFork S₁.g) (hc₁ : IsLimit c₁)
+    (hf₂ : S₂.f = 0) (c₂ : KernelFork S₂.g) (hc₂ : IsLimit c₂) (f : c₁.pt ⟶ c₂.pt)
+    (comm : c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι) :
+    LeftHomologyMapData φ (LeftHomologyData.ofIsLimitKernelFork S₁ hf₁ c₁ hc₁)
+      (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ c₂ hc₂) where
   φK := f
   φH := f
   commi := comm.symm
@@ -351,9 +351,9 @@ data (for the identity of `S`) which relates the left homology data `ofZeros` an
 `ofIsColimitCokernelCofork`. -/
 @[simps]
 def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
-  (c : CokernelCofork S.f) (hc : IsColimit c) :
-  LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofZeros S hf hg)
-    (LeftHomologyData.ofIsColimitCokernelCofork S hg c hc) where
+    (c : CokernelCofork S.f) (hc : IsColimit c) :
+    LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofZeros S hf hg)
+      (LeftHomologyData.ofIsColimitCokernelCofork S hg c hc) where
   φK := 𝟙 _
   φH := c.π
 
@@ -362,10 +362,9 @@ data (for the identity of `S`) which relates the left homology data
 `LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
 def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
-  (c : KernelFork S.g) (hc : IsLimit c) :
-  LeftHomologyMapData (𝟙 S)
-    (LeftHomologyData.ofIsLimitKernelFork S hf c hc)
-    (LeftHomologyData.ofZeros S hf hg) where
+    (c : KernelFork S.g) (hc : IsLimit c) :
+    LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofIsLimitKernelFork S hf c hc)
+      (LeftHomologyData.ofZeros S hf hg) where
   φK := c.ι
   φH := c.ι
 
