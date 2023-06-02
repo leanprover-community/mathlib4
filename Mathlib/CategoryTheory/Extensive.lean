@@ -11,7 +11,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Topology.Category.Top.Limits.Pullbacks
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 /-!
@@ -130,6 +130,7 @@ and binary coproducts are van Kampen.
 TODO: Show that this is iff all finite coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
+  /-- In a finitary extensive category, all coproducts are van Kampen-/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
@@ -311,6 +312,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
 #align category_theory.finitary_extensive_iff_of_is_terminal CategoryTheory.finitaryExtensive_iff_of_isTerminal
 
 instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
+  classical
   rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPunit _
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
@@ -322,14 +324,14 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
         cases' h : s.fst x with val val
-        · simp_rw [Sum.inl_injective.eq_iff]
-          exact exists_unique_eq'
+        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
+            exists_unique_eq']
         · apply_fun f  at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val : _).symm
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ h₂ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
     · refine' ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ _⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
@@ -337,12 +339,12 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         cases' h : s.fst x with val val
         · apply_fun f  at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val : _).symm
-        · simp_rw [Sum.inr_injective.eq_iff]
-          exact exists_unique_eq'
+        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
+            exists_unique_eq']
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ h₂ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]
     delta Types.PullbackObj
@@ -351,12 +353,12 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts[Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext <;> rfl,
-        fun _ => by ext <;> rfl⟩
+      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
+        fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
-        fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext <;> rfl, fun _ => by ext <;> rfl⟩
-    fapply BinaryCofan.is_colimit_mk
+        fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
+    fapply BinaryCofan.isColimitMk
     · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
         fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
     · intro s
@@ -366,7 +368,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, hx⟩
       dsimp
-      split_ifs
+      split_ifs with h
       · cases h.symm.trans hx
       · rfl
     · intro s m e₁ e₂
@@ -381,7 +383,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
 section TopCat
 
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
-def finitaryExtensiveTopCatAux (Z : TopCat.{u})
+-- Porting note : needs to add noncomputable modifier
+noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     (f : Z ⟶ TopCat.of (Sum PUnit.{u + 1} PUnit.{u + 1})) :
     IsColimit (BinaryCofan.mk
       (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inl)
@@ -390,12 +393,12 @@ def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     intro x
     rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
     exacts[Or.inl rfl, Or.inr rfl]
-  let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
+  letI eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
     ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inl <| Subsingleton.elim _ _)⟩,
-      fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext <;> rfl, fun _ => by ext <;> rfl⟩
-  let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
+      fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
+  letI eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
     ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
-      fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext <;> rfl, fun _ => by ext <;> rfl⟩
+      fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
   fapply BinaryCofan.isColimitMk
   classical -- Porting note: Added
   · refine' fun s => ⟨fun x => dite _
@@ -410,6 +413,8 @@ def finitaryExtensiveTopCatAux (Z : TopCat.{u})
             s.inl ⟨(x.1, PUnit.unit), x.2⟩
         · ext ⟨x, hx⟩
           exact dif_pos hx
+        -- Porting note : this `(BinaryCofan.inl s).2` was unnecessary
+        have := (BinaryCofan.inl s).2
         continuity
       · convert f.2.1 _ openEmbedding_inl.open_range
         rename_i x
@@ -422,6 +427,8 @@ def finitaryExtensiveTopCatAux (Z : TopCat.{u})
             s.inr ⟨(x.1, PUnit.unit), (this _).resolve_left x.2⟩
         · ext ⟨x, hx⟩
           exact dif_neg hx
+        -- Porting note : this `(BinaryCofan.inr s).2` was unnecessary
+        have := (BinaryCofan.inr s).2
         continuity
       · convert f.2.1 _ openEmbedding_inr.open_range
         rename_i x
@@ -432,9 +439,11 @@ def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         · exact ⟨fun h => ⟨_, h.symm⟩,
             fun ⟨e, h⟩ => h.symm.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩
   · intro s
-    ext ⟨⟨x, ⟨⟩⟩, _⟩
+    ext ⟨⟨x, ⟨⟩⟩, (hx : f x = Sum.inl PUnit.unit)⟩
     change dite _ _ _ = _
-    split_ifs <;> rfl
+    split_ifs with h
+    . rfl
+    . cases (h hx) -- Porting note : in Lean3 it is `rfl`
   · intro s
     ext ⟨⟨x, ⟨⟩⟩, hx⟩
     change dite _ _ _ = _
@@ -457,24 +466,23 @@ instance : FinitaryExtensive TopCat.{u} := by
       (TopCat.binaryCofanIsColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _
       fun f g => TopCat.pullbackConeIsLimit f g
-  · intro _ _ _ _ f hαX hαY
+  · intro X' Y' αX αY f hαX hαY
     constructor
     · refine' ⟨⟨hαX.symm⟩, ⟨PullbackCone.isLimitAux' _ _⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
         cases' h : s.fst x with val val
-        · simp_rw [Sum.inl_injective.eq_iff]
-          exact exists_unique_eq'
+        · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
         · apply_fun f  at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαY val : _).symm
       delta ExistsUnique at this
       choose l hl hl' using this
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ h₂ => ContinuousMap.ext fun x =>
+        fun {l'} h₁ _ => ContinuousMap.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply embedding_inl.toInducing.continuous_iff.mpr
+      apply (embedding_inl (α := X') (β := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
     · refine' ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ _⟩⟩
@@ -485,14 +493,13 @@ instance : FinitaryExtensive TopCat.{u} := by
         · apply_fun f  at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val : _).symm
-        · simp_rw [Sum.inr_injective.eq_iff]
-          exact exists_unique_eq'
+        · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ h₂ =>
+        fun {l'} h₁ _ =>
           ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply embedding_inr.toInducing.continuous_iff.mpr
+      apply (embedding_inr (α := X') (β := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
   · intro Z f
