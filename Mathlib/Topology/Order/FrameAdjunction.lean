@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Anne Baanen, Sam v. Gool, Leo Mayer, and Brendan S. Murphy. All rights reserved.
+Copyright (c) 2023 Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Sam v. Gool, Leo Mayer, and Brendan S. Murphy
+Authors: Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy
 -/
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Topology.Basic
@@ -15,11 +15,13 @@ import Mathlib.Order.Category.FrmCat
 /-!
 # Adjunction between Frames and Topological Spaces
 
-This file defines contravariant functors between the categories of Frames and Topological Spaces and proves that they form an adjunction.
+This file defines contravariant functors between the categories of Frames and Topological Spaces
+and proves that they form an adjunction.
 
 ## Main definitions and statement
 
-- `pt`: the *points* functor from the opposite of the category of Frames (`FrmCat`) to the category of Topological Spaces (`TopCat`).
+- `pt`: the *points* functor from the opposite of the category of Frames (`FrmCat`) to the
+  category of Topological Spaces (`TopCat`).
 
 - `𝒪`: the *open sets* functor from the category of Topological Spaces to the category of Frames.
 
@@ -31,7 +33,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 ## Implementation notes
 
-- In naming the various functions below, we follow common terminology and reserve the word *point* for an inhabitant of a type `X` which is a topological space, while we use the word *element* for an inhabitant of a type `L` which is a frame.
+- In naming the various functions below, we follow common terminology and reserve the word *point*
+  for an inhabitant of a type `X` which is a topological space, while we use the word *element* for an inhabitant of a type `L` which is a frame.
 
 
 ## References
@@ -50,7 +53,10 @@ universe u
 section O_definition
 /- ### Definition of the open sets functor `𝒪`. -/
 
-/-- The contravariant functor from the category of topological spaces to the category of frames, which sends a space `X` to the frame of open sets of `X`, and sends a continuous function `f : X → Y` to the inverse image map, viewed as a frame homomorphism from the frame of open sets of `Y` to the frame of open sets of `X`. -/
+/-- The contravariant functor from the category of topological spaces to the category of frames,
+    which sends a space `X` to the frame of open sets of `X`, and sends a continuous function
+    `f : X → Y` to the inverse image map, viewed as a frame homomorphism from the frame of open
+    sets of `Y` to the frame of open sets of `X`. -/
 def 𝒪 : TopCat ⥤ FrmCatᵒᵖ where
   obj X := ⟨Opens X.α, by infer_instance⟩
   map {X Y} f :=
@@ -66,7 +72,8 @@ section pt_definition
 
 variable (L : Type _) [Order.Frame L]
 
-/-- The type of points of a frame `L`, where a *point* of a frame is, by definition, a frame homomorphism from `L` to the frame `Prop`. -/
+/-- The type of points of a frame `L`, where a *point* of a frame is, by definition, a frame
+    homomorphism from `L` to the frame `Prop`. -/
 @[reducible]
 def pt_obj  := FrameHom L Prop
 
@@ -139,7 +146,9 @@ def pt_map {L L' : Type _} [Order.Frame L] [Order.Frame L']
     ext p
     simp only [Set.mem_setOf_eq, Set.preimage_setOf_eq, FrameHom.comp_apply]⟩
 
-/-- The contravariant functor from the category of frames to the category of topological spaces, which sends a frame `L` to the topological space `pt_obj L` of homomorphisms from `L` to `Prop` and a frame homomorphism `f` to the continuous function `pt_map f`. -/
+/-- The contravariant functor from the category of frames to the category of topological spaces,
+    which sends a frame `L` to the topological space `pt_obj L` of homomorphisms from `L` to `Prop`
+    and a frame homomorphism `f` to the continuous function `pt_map f`. -/
 def pt : FrmCatᵒᵖ ⥤ TopCat where
   obj L    := ⟨pt_obj L.unop, by infer_instance⟩
   map f    := pt_map f.unop
