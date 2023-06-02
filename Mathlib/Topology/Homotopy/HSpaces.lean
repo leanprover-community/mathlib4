@@ -287,7 +287,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
 /-- The loop space at x carries a structure of a `H-space`. Note that the field `eHmul`
-(resp. `HmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
+(resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/
 instance (x : X) : HSpace (Path x x) where
