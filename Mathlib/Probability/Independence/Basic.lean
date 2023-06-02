@@ -564,7 +564,6 @@ theorem iIndepSets.iIndep [ProbabilityMeasure μ] (m : ι → MeasurableSpace Ω
       rw [Finset.set_biInter_insert, Finset.prod_insert ha_notin_S, ← h_rec hf_m_S]
       let p := piiUnionInter π S
       set m_p := generateFrom p with hS_eq_generate
-      -- Porting note: Lean needs to know about m0
       have h_indep : @Indep Ω m_p (m a) m0 μ := by
         have hp : IsPiSystem p := isPiSystem_piiUnionInter π h_pi S
         have h_le' : ∀ i, generateFrom (π i) ≤ m0 := fun i => (h_generate i).symm.trans_le (h_le i)
@@ -623,13 +622,11 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {μ 
     (h_indep : Indep m₁ m₂ μ) {s t : Set Ω} (hs : MeasurableSet[m₁] s)
     (ht : MeasurableSet[m₂] t) : IndepSet s t μ := by
   refine fun s' t' hs' ht' => h_indep s' t' ?_ ?_
-  -- Porting note: TODO
   · refine @generateFrom_induction _ (fun u => MeasurableSet[m₁] u) {s} ?_ ?_ ?_ ?_ _ hs'
     · simp only [Set.mem_singleton_iff, forall_eq, hs]
     · exact @MeasurableSet.empty _ m₁
     · exact fun u hu => hu.compl
     · exact fun f hf => MeasurableSet.iUnion hf
-  -- Porting note: TODO
   · refine @generateFrom_induction _ (fun u => MeasurableSet[m₂] u) {t} ?_ ?_ ?_ ?_ _ ht'
     · simp only [Set.mem_singleton_iff, forall_eq, ht]
     · exact @MeasurableSet.empty _ m₂
@@ -708,11 +705,10 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
   · rwa [← indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) μ]
 #align probability_theory.indep_fun_iff_indep_set_preimage ProbabilityTheory.indepFun_iff_indepSet_preimage
 
--- Porting note: TODO
--- @[symm]
--- theorem IndepFun.symm {mβ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFun f g μ) :
---    IndepFun g f μ := hfg.symm
--- #align probability_theory.indep_fun.symm ProbabilityTheory.IndepFun.symm
+@[symm]
+nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFun f g μ) :
+    IndepFun g f μ := hfg.symm
+#align probability_theory.indep_fun.symm ProbabilityTheory.IndepFun.symm
 
 theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
@@ -744,16 +740,13 @@ theorem iIndepFun.indepFun_finset [ProbabilityMeasure μ] {ι : Type _} {β : ι
   let πSβ := Set.pi (Set.univ : Set S) ''
     Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
-  -- Porting note : TODO
   have hπS_pi : IsPiSystem πS := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
-  -- Porting note : TODO
   have hπS_gen : (MeasurableSpace.pi.comap fun a (i : S) => f i a) = generateFrom πS := by
     rw [generateFrom_pi.symm, comap_generateFrom]
     congr
   let πTβ := Set.pi (Set.univ : Set T) ''
       Set.pi (Set.univ : Set T) fun i => { s : Set (β i) | MeasurableSet[m i] s }
   let πT := { s : Set Ω | ∃ t ∈ πTβ, (fun a (i : T) => f i a) ⁻¹' t = s }
-  -- Porting note : TODO
   have hπT_pi : IsPiSystem πT := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
   have hπT_gen : (MeasurableSpace.pi.comap fun a (i : T) => f i a) = generateFrom πT := by
     rw [generateFrom_pi.symm, comap_generateFrom]
