@@ -1184,7 +1184,7 @@ section Add
 theorem HasFTaylorSeriesUpToOn.add {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
   convert HasFTaylorSeriesUpToOn.continuousLinearMap_comp
-    (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg) 
+    (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
 
 -- The sum is smooth.
 theorem contDiff_add : ContDiff 𝕜 n fun p : F × F => p.1 + p.2 :=
@@ -2565,30 +2565,29 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   -- use the inductive assumption to bound the derivatives of `g' ∘ f`.
   have I :
     ∀ i ∈ Finset.range (n + 1),
-      ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ ≤ i ! * C * D ^ i := by
-    intro i hi
+      ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ ≤ i ! * C * D ^ i
+  · intro i hi
     simp only [Finset.mem_range_succ_iff] at hi
     apply IH i hi
-    apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
-    · intro j hj h'j
-      exact hD j hj (h'j.trans (hi.trans n.le_succ))
     · apply hg.fderivWithin ht
       simp only [Nat.cast_succ]
       exact add_le_add_right (Nat.cast_le.2 hi) _
+    · apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
     · intro j hj
-      have :
-        ‖iteratedFDerivWithin 𝕜 j (fderivWithin 𝕜 g t) t (f x)‖ =
+      have : ‖iteratedFDerivWithin 𝕜 j (fderivWithin 𝕜 g t) t (f x)‖ =
           ‖iteratedFDerivWithin 𝕜 (j + 1) g t (f x)‖ :=
-        by rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), LinearIsometryEquiv.norm_map]
+        by rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), comp_apply,
+          LinearIsometryEquiv.norm_map]
       rw [this]
       exact hC (j + 1) (add_le_add (hj.trans hi) le_rfl)
+    · intro j hj h'j
+      exact hD j hj (h'j.trans (hi.trans n.le_succ))
   -- reformulate `hD` as a bound for the derivatives of `f'`.
   have J : ∀ i, ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ ≤ D ^ (n - i + 1) := by
     intro i
-    have :
-      ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ =
-        ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖ :=
-      by rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, LinearIsometryEquiv.norm_map]
+    have : ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ =
+        ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖
+    · rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
     rw [this]
     apply hD
     · simp only [le_add_iff_nonneg_left, zero_le']
@@ -2596,13 +2595,11 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   -- Now put these together: first, notice that we have to bound `D^n (g' ∘ f ⬝ f')`.
   calc
     ‖iteratedFDerivWithin 𝕜 (n + 1) (g ∘ f) s x‖ =
-        ‖iteratedFDerivWithin 𝕜 n (fun y : E => fderivWithin 𝕜 (g ∘ f) s y) s x‖ :=
-      by rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, LinearIsometryEquiv.norm_map]
-    _ =
-        ‖iteratedFDerivWithin 𝕜 n
-            (fun y : E =>
-              ContinuousLinearMap.compL 𝕜 E Fu Gu (fderivWithin 𝕜 g t (f y)) (fderivWithin 𝕜 f s y))
-            s x‖ := by
+        ‖iteratedFDerivWithin 𝕜 n (fun y : E => fderivWithin 𝕜 (g ∘ f) s y) s x‖ := by
+      rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply,
+        LinearIsometryEquiv.norm_map]
+    _ = ‖iteratedFDerivWithin 𝕜 n (fun y : E => ContinuousLinearMap.compL 𝕜 E Fu Gu
+        (fderivWithin 𝕜 g t (f y)) (fderivWithin 𝕜 f s y)) s x‖ := by
       have L : (1 : ℕ∞) ≤ n.succ := by simpa only [ENat.coe_one, Nat.one_le_cast] using n.succ_pos
       congr 1
       refine' iteratedFDerivWithin_congr (fun y hy => _) hx _
@@ -2610,11 +2607,11 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
       · exact hg.differentiableOn L _ (hst hy)
       · exact hf.differentiableOn L _ hy
     -- bound it using the fact that the composition of linear maps is a bilinear operation,
-        -- for which we have bounds for the`n`-th derivative.
-        _ ≤
-        ∑ i in Finset.range (n + 1),
-          (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ *
-            ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ := by
+    -- for which we have bounds for the`n`-th derivative.
+    _ ≤
+    ∑ i in Finset.range (n + 1),
+      (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ *
+        ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ := by
       have A : ContDiffOn 𝕜 n (fderivWithin 𝕜 g t ∘ f) s := by
         apply ContDiffOn.comp _ (hf.of_le M.le) hst
         apply hg.fderivWithin ht
@@ -2622,23 +2619,20 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
       have B : ContDiffOn 𝕜 n (fderivWithin 𝕜 f s) s := by
         apply hf.fderivWithin hs
         simp only [Nat.cast_succ, le_refl]
-      exact
-        (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one A B
-          hs hx le_rfl (ContinuousLinearMap.norm_compL_le 𝕜 E Fu Gu)
+      exact (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
+          A B hs hx le_rfl (ContinuousLinearMap.norm_compL_le 𝕜 E Fu Gu)
     -- bound each of the terms using the estimates on previous derivatives (that use the inductive
-        -- assumption for `g' ∘ f`).
-        _ ≤
-        ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by
+    -- assumption for `g' ∘ f`).
+    _ ≤ ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by
       apply Finset.sum_le_sum fun i hi => _
       simp only [mul_assoc (n.choose i : ℝ)]
       refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
       apply mul_le_mul (I i hi) (J i) (norm_nonneg _)
       positivity
     -- We are left with trivial algebraic manipulations to see that this is smaller than
-        -- the claimed bound.
-        _ =
-        ∑ i in Finset.range (n + 1),
-          (n ! : ℝ) * (i !⁻¹ * i !) * C * (D ^ i * D ^ (n - i + 1)) * (n - i)!⁻¹ := by
+    -- the claimed bound.
+    _ = ∑ i in Finset.range (n + 1),
+      (n ! : ℝ) * ((i ! : ℝ)⁻¹ * i !) * C * (D ^ i * D ^ (n - i + 1)) * (n - i)!⁻¹ := by
       apply Finset.sum_congr rfl fun i hi => _
       simp only [Nat.cast_choose ℝ (Finset.mem_range_succ_iff.1 hi), div_eq_inv_mul, mul_inv]
       ring
