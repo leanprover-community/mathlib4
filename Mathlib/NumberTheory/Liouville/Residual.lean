@@ -55,7 +55,6 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
     exact diff_subset_diff Subset.rfl (singleton_subset_iff.2 ⟨a / b, by norm_cast⟩)
 #align set_of_liouville_eq_irrational_inter_Inter_Union setOf_liouville_eq_irrational_inter_iInter_iUnion
 
-set_option maxHeartbeats 0 in
 /-- The set of Liouville numbers is a residual set. -/
 theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
