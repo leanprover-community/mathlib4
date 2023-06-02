@@ -11,6 +11,7 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.LowerTopology
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Scott topology
@@ -368,7 +369,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
   . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
-lemma isClosed_iff_lower_and_closed_under_Directed_Sup (s : Set α) : IsClosed s
+lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
   ↔ (IsLowerSet s ∧
   ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s ) := by
   rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
@@ -380,16 +381,27 @@ lemma isClosed_iff_lower_and_closed_under_Directed_Sup (s : Set α) : IsClosed s
 
 end complete_lattice
 
-lemma UpperSet_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+variable [Preorder α]
+
+lemma UpperSet_le_Scott' : @upperSetTopology α ≤ @ScottTopology' α := le_sup_left
+
+lemma UpperSet_le_Scott [TopologicalSpace α] [ScottTopology α] :
 upperSetTopology ≤ ‹TopologicalSpace α› := by
   rw [ScottTopology.topology_eq α, ScottTopology']
   apply le_sup_left
 
-lemma Scott_Hausdorff_le_Scott [Preorder α] [TopologicalSpace α] [ScottTopology α] :
+lemma Scott_Hausdorff_le_Scott' : @ScottHausdorffTopology α ≤ @ScottTopology' α :=
+  le_sup_right
+
+lemma Scott_Hausdorff_le_Scott [TopologicalSpace α] [ScottTopology α] :
 ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
   rw [ScottTopology.topology_eq α, ScottTopology']
   apply le_sup_right
 
-lemma Scott_Hausdorff_le_Lower [Preorder α] [TopologicalSpace α] [LowerTopology α] :
+lemma Scott_Hausdorff_le_Lower' : @ScottHausdorffTopology α ≤ @LowerTopology' α :=
+  fun _ s h => ScottHausdorffTopology.Lower_IsOpen s
+    (@LowerTopology.isLowerSet_of_isOpen (WithLowerTopology α) _ _  _ s h)
+
+lemma Scott_Hausdorff_le_Lower [TopologicalSpace α] [LowerTopology α] :
 ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
   fun _ h => ScottHausdorffTopology.Lower_IsOpen _ (LowerTopology.isLowerSet_of_isOpen h)
