@@ -8,8 +8,8 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathbin.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Finitely strongly measurable functions in `Lp`
