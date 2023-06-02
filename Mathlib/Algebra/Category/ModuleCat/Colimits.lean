@@ -333,7 +333,10 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
-    ext ⟨⟨x_j, x_x⟩⟩
+    ext x
+    refine Quot.rec (motive := fun x ↦ m x = _) (fun x ↦ ?_) (fun x_a x_b x_p ↦ ?_) x
+    dsimp
+    induction' x with x_j x_x
     · have w' :=
         congr_fun (congr_arg (fun f : F.obj x_j ⟶ s.pt => (f : F.obj x_j → s.pt)) (w x_j)) x_x
       simp only at w'
@@ -341,9 +344,13 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
       rfl
     · rw [quot_zero, map_zero] -- porting note: was `simp` but `map_zero` won't fire
       rfl
-    · sorry -- simp [*]
-    · sorry -- simp [*]
-    · sorry -- simp [*]
+    · rw [quot_neg, map_neg, map_neg, neg_inj] -- porting note: this was closed by `simp [*]`
+      assumption
+    · rw [quot_add, map_add, map_add]  -- porting note: this was closed by `simp [*]`
+      congr 1
+    · rw [quot_smul, map_smul, map_smul]  -- porting note: this was closed by `simp [*]`
+      congr 1
+    · rfl -- porting note: this wasn't here
 #align Module.colimits.colimit_cocone_is_colimit ModuleCat.Colimits.colimitCoconeIsColimit
 
 instance hasColimits_moduleCat : HasColimits (ModuleCat.{max v u} R)
