@@ -14,7 +14,7 @@ In this file, the `polyrith` tactic is created.  This tactic, which
 works over `Field`s, attempts to prove a multivariate polynomial target over said
 field by using multivariable polynomial hypotheses/proof terms over the same field.
 Used as is, the tactic makes use of those hypotheses in the local context that are
-over the same field as the target. However, the user can also specifiy which hypotheses
+over the same field as the target. However, the user can also specify which hypotheses
 from the local context to use, along with proof terms that might not already be in the
 local context. Note: since this tactic uses SageMath via an API call done in Python,
 it can only be used with a working internet connection, and with a local installation of Python.

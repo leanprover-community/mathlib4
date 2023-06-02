@@ -568,7 +568,7 @@ partial def transformDeclAux
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre env.mainModule do
       transformDeclAux cfg pre tgt_pre n
-  -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
+  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
     insertTranslation src tgt

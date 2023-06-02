@@ -517,22 +517,17 @@ def toFractionRingRingEquiv : RatFunc R ≃+* FractionRing R[X] where
 #align ratfunc.to_fraction_ring_ring_equiv RatFunc.toFractionRingRingEquiv
 
 -- porting note: reimplemented the `frac_tac` and `smul_tac` as close to the originals as I could
-open Lean Elab.Tactic in
 /-- Solve equations for `RatFunc K` by working in `FractionRing K[X]`. -/
-elab (name := frac_tac) "frac_tac" : tactic => do
-  evalTactic (← `(tactic| repeat (rintro (⟨⟩ : RatFunc _))
-  <;>
+macro "frac_tac" : tactic => `(tactic| repeat (rintro (⟨⟩ : RatFunc _)) <;>
   simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
     ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
     ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
     add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
-    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg]))
+    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg])
 
-open Lean Elab.Tactic in
 /-- Solve equations for `RatFunc K` by applying `RatFunc.induction_on`. -/
-elab (name := smul_tac) "smul_tac" : tactic => do
-  evalTactic (← `(tactic|
+macro "smul_tac" : tactic => `(tactic|
     repeat
       (first
         | rintro (⟨⟩ : RatFunc _)
@@ -543,7 +538,7 @@ elab (name := smul_tac) "smul_tac" : tactic => do
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
       Int.cast_negSucc, Int.cast_ofNat, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
-      ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg]))
+      ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
 
 -- Porting note: split the CommRing instance up into multiple defs because it was hard to see
 -- if the big instance declaration made any progress.

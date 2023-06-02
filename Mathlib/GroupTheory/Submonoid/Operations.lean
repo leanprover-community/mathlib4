@@ -1012,7 +1012,7 @@ interchangeable without proof obligations.
 
 A convenient candidate definition for range which is mathematically correct is `map ⊤ f`, just as
 `Set.range` could have been defined as `f '' Set.univ`. However, this lacks the desired definitional
-convenience, in that it both does not match `Set.range`, and that it introduces a redudant `x ∈ ⊤`
+convenience, in that it both does not match `Set.range`, and that it introduces a redundant `x ∈ ⊤`
 term which clutters proofs. In such a case one may resort to the `copy`
 pattern. A `copy` function converts the definitional problem for the carrier set of a subobject
 into a one-off propositional proof obligation which one discharges while writing the definition of
@@ -1471,8 +1471,8 @@ section Actions
 
 /-! ### Actions by `Submonoid`s
 
-These instances tranfer the action by an element `m : M` of a monoid `M` written as `m • a` onto the
-action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
+These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
+the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
 
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.

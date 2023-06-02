@@ -1203,7 +1203,7 @@ variable [CancelCommMonoidWithZero α]
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
 multisets in `FactorSet α` are unique by equality and restricted to irreducible elements. This
 gives us a representation of each element as a unique multisets (or the added ⊤ for 0), which has a
-complete lattice struture. Infimum is the greatest common divisor and supremum is the least common
+complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
 @[reducible]

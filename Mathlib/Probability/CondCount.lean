@@ -17,7 +17,7 @@ The classical formulation of probability states that the probability of an event
 finite probability space is the ratio of that event to all possible events.
 This notion can be expressed with measure theory using
 the counting measure. In particular, given the sets `s` and `t`, we define the probability of `t`
-occuring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the the probability over
+occurring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the the probability over
 the entire sample space when `s = Set.univ`.
 
 Classical probability is often used in combinatorics and we prove some useful lemmas in this file
@@ -191,7 +191,7 @@ theorem condCount_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
     (Measure.count_apply_lt_top.2 hs).ne]
 #align probability_theory.cond_count_disjoint_union ProbabilityTheory.condCount_disjoint_union
 
-/-- A version of the law of total probability for counting probabilites. -/
+/-- A version of the law of total probability for counting probabilities. -/
 theorem condCount_add_compl_eq (u t : Set Ω) (hs : s.Finite) :
     condCount (s ∩ u) t * condCount s u + condCount (s ∩ uᶜ) t * condCount s (uᶜ) =
       condCount s t := by

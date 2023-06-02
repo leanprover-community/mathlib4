@@ -211,6 +211,11 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 #align continuous_map.coe_const ContinuousMap.coe_const
 
+/-- `Function.const α b` as a bundled continuous function of `b`. -/
+@[simps (config := .asFn)]
+def constPi : C(β, α → β) where
+  toFun b := Function.const α b
+
 instance [Inhabited β] : Inhabited C(α, β) :=
   ⟨const α default⟩
 
@@ -313,6 +318,10 @@ def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α�
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=
   rfl
 #align continuous_map.prod_eval ContinuousMap.prod_eval
+
+/-- `Prod.swap` bundled as a `ContinuousMap`. -/
+@[simps!]
+def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 

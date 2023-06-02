@@ -252,7 +252,7 @@ theorem discreteTopology_subtype_iff {S : Set α} : DiscreteTopology S ↔ ∀ x
 
 end Topα
 
-/-- A type synonym equiped with the topology whose open sets are the empty set and the sets with
+/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements. -/
 def CofiniteTopology (α : Type _) :=
   α

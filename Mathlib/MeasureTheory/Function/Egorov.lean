@@ -131,7 +131,7 @@ theorem notConvergentSeqLtIndex_spec (hε : 0 < ε) (hf : ∀ n, StronglyMeasura
 #align measure_theory.egorov.not_convergent_seq_lt_index_spec MeasureTheory.Egorov.notConvergentSeqLtIndex_spec
 
 /-- Given some `ε > 0`, `iUnionNotConvergentSeq` is the union of `notConvergentSeq` with
-specific indicies such that `iUnionNotConvergentSeq` has measure less equal than `ε`.
+specific indices such that `iUnionNotConvergentSeq` has measure less equal than `ε`.
 
 This definition is useful for Egorov's theorem. -/
 def iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))

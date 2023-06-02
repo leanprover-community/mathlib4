@@ -1106,7 +1106,7 @@ theorem orthogonalProjection_isSymmetric [CompleteSpace K] :
 open FiniteDimensional
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`
-containined in it, the dimensions of `K₁` and the intersection of its
+contained in it, the dimensions of `K₁` and the intersection of its
 orthogonal subspace with `K₂` add to that of `K₂`. -/
 theorem Submodule.finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
@@ -1121,7 +1121,7 @@ theorem Submodule.finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜
 #align submodule.finrank_add_inf_finrank_orthogonal Submodule.finrank_add_inf_finrank_orthogonal
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`
-containined in it, the dimensions of `K₁` and the intersection of its
+contained in it, the dimensions of `K₁` and the intersection of its
 orthogonal subspace with `K₂` add to that of `K₂`. -/
 theorem Submodule.finrank_add_inf_finrank_orthogonal' {K₁ K₂ : Submodule 𝕜 E}
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) {n : ℕ} (h_dim : finrank 𝕜 K₁ + n = finrank 𝕜 K₂) :

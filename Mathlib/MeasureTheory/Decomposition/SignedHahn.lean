@@ -75,7 +75,7 @@ of negative measure, hence proving our claim.
 In the case that the sequence does not terminate, it is easy to see that
 $i \setminus \bigcup_{k = 0}^\infty A_k$ is the required negative set.
 
-To implement this in Lean, we define several auxilary definitions.
+To implement this in Lean, we define several auxiliary definitions.
 
 - given the sets `i` and the natural number `n`, `ExistsOneDivLT s i n` is the property that
   there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`.
