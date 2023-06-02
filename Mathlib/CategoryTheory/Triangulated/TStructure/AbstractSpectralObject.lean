@@ -114,9 +114,38 @@ def truncLTLTToTruncLT :
     simp only [NatTrans.naturality, assoc, ← Functor.map_comp,
       ← NatTrans.comp_app, truncLTmap_ι]
 
+def truncLTGE : Arrow F.ι ⥤ C ⥤ C where
+  obj D := F.truncGE.obj D.left ⋙ F.truncLT.obj D.right
+  map φ := F.truncGE.map φ.left ◫ F.truncLT.map φ.right
+
+def truncLTGELTSelfToTruncLTGE :
+    (((whiskeringRight₂ (Arrow F.ι) _ _ _).obj ((whiskeringLeft C C C))).obj
+      (Arrow.rightFunc ⋙ F.truncLT)).obj F.truncLTGE ⟶ F.truncLTGE where
+  app D := whiskerRight (F.truncLTι D.right) (F.truncLTGE.obj D)
+  naturality {D₁ D₂} φ:= by
+    ext X
+    dsimp
+    simp only [NatTrans.naturality, assoc, ← Functor.map_comp,
+      ← NatTrans.comp_app, truncLTmap_ι]
+
+def truncLTGELTSelfToTruncGELT :
+    (((whiskeringRight₂ (Arrow F.ι) _ _ _).obj ((whiskeringLeft C C C))).obj
+      (Arrow.rightFunc ⋙ F.truncLT)).obj F.truncLTGE ⟶ F.truncGELT where
+  app D := whiskerLeft (F.truncGELT.obj D) (F.truncLTι D.right)
+  naturality {D₁ D₂} φ := by
+    ext
+    dsimp [truncLTGE, truncGELT]
+    simp only [NatTrans.naturality_assoc, assoc, NatTrans.naturality,
+      Functor.id_obj, Functor.id_map]
+    simp only [← assoc]
+    congr 2
+    rw [← NatTrans.comp_app, truncLTmap_ι]
+
 class IsCompatible where
   isIso_truncGEToTruncGEGE : IsIso F.truncGEToTruncGEGE
   isIso_truncLTLTToTruncLT : IsIso F.truncLTLTToTruncLT
+  isIso_truncLTGELTSelfToTruncLTGE : IsIso F.truncLTGELTSelfToTruncLTGE
+  isIso_truncLTGELTSelfToTruncGELT : IsIso F.truncLTGELTSelfToTruncGELT
   truncGEπ_compatibility' (a : F.ι) (X : C) :
     (F.truncGE.obj a).map ((F.truncGEπ a).app X) =
       (F.truncGEπ a).app ((F.truncGE.obj a).obj X)
@@ -132,7 +161,8 @@ lemma triangleLTGEPrecompTruncGELT_distinguished (D : Arrow₂ F.ι) (X : C) :
   IsCompatible.distinguished _ _
 
 attribute [instance] IsCompatible.isIso_truncGEToTruncGEGE
-  IsCompatible.isIso_truncLTLTToTruncLT
+  IsCompatible.isIso_truncLTLTToTruncLT IsCompatible.isIso_truncLTGELTSelfToTruncLTGE
+  IsCompatible.isIso_truncLTGELTSelfToTruncGELT
 
 @[simps! hom]
 noncomputable def truncGEIsoTruncGEGE := asIso F.truncGEToTruncGEGE
@@ -190,17 +220,25 @@ noncomputable def truncGELTIsoTruncGELTLT :
         congr 2
         rw [NatTrans.naturality, ← NatTrans.comp_app, truncLTmap_ι]))
 
-def truncLTGE : Arrow F.ι ⥤ C ⥤ C where
-  obj D := F.truncGE.obj D.left ⋙ F.truncLT.obj D.right
-  map φ := F.truncGE.map φ.left ◫ F.truncLT.map φ.right
+noncomputable def truncLTGELTSelfIsoTruncLTGE := asIso F.truncLTGELTSelfToTruncLTGE
+noncomputable def truncLTGELTSelfIsoTruncGELT := asIso F.truncLTGELTSelfToTruncGELT
 
-/-def truncLTGEIsoTruncGELT : F.truncLTGE ≅ F.truncGELT := sorry
+noncomputable def truncLTGEIsoTruncGELT : F.truncLTGE ≅ F.truncGELT :=
+  F.truncLTGELTSelfIsoTruncLTGE.symm ≪≫ F.truncLTGELTSelfIsoTruncGELT
 
 @[reassoc]
 lemma truncLTGEIsoTruncGELT_compatibility {a b : F.ι} (φ : a ⟶ b) (X : C) :
     (F.truncLTGEIsoTruncGELT.hom.app (Arrow.mk φ)).app X ≫
       (F.truncGE.obj a).map ((F.truncLTι b).app X) =
-      (F.truncLTι b).app ((F.truncGE.obj a).obj X) := sorry
+      (F.truncLTι b).app ((F.truncGE.obj a).obj X) := by
+  have eq₁ := congr_app (F.truncLTGELTSelfIsoTruncLTGE.hom_inv_id_app (Arrow.mk φ)) X
+  rw [NatTrans.comp_app] at eq₁
+  dsimp [truncLTGEIsoTruncGELT]
+  simp only [← cancel_epi ((F.truncLTGELTSelfIsoTruncLTGE.hom.app (Arrow.mk φ)).app X), assoc,
+    reassoc_of% eq₁, NatTrans.id_app, id_comp]
+  dsimp [truncLTGELTSelfIsoTruncGELT, truncLTGELTSelfIsoTruncLTGE,
+    truncLTGELTSelfToTruncGELT, truncLTGELTSelfToTruncLTGE, asIso, truncLTGE, truncGELT]
+  simp only [NatTrans.naturality, Functor.id_obj, Functor.id_map]
 
 noncomputable def truncGELTLTIsoTruncGELT :
     (((whiskeringRight₂ (Arrow₂ F.ι) _ _ _).obj ((whiskeringLeft C C C))).obj
@@ -303,7 +341,7 @@ noncomputable def spectralObject (X : C) :
     SpectralObject C F.ι where
   ω₁ := ((whiskeringRight (Arrow F.ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT
   δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
-  distinguished' D := F.triangle_distinguished D X-/
+  distinguished' D := F.triangle_distinguished D X
 
 end CandidateAbstractSpectralObject
 
