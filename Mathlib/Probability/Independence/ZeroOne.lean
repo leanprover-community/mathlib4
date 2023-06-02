@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Independence.Basic
+import Mathlib.Probability.Independence.Basic
 
 /-!
 # Kolmogorov's 0-1 law
@@ -33,8 +33,7 @@ namespace ProbabilityTheory
 variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem measure_eq_zero_or_one_or_top_of_indepSetCat_self {t : Set Ω}
-    (h_indep : IndepSetCat t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ :=
-  by
+    (h_indep : IndepSetCat t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
   specialize
     h_indep t t (measurable_set_generate_from (Set.mem_singleton t))
       (measurable_set_generate_from (Set.mem_singleton t))
@@ -47,8 +46,7 @@ theorem measure_eq_zero_or_one_or_top_of_indepSetCat_self {t : Set Ω}
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSetCat_self
 
 theorem measure_eq_zero_or_one_of_indepSetCat_self [FiniteMeasure μ] {t : Set Ω}
-    (h_indep : IndepSetCat t t μ) : μ t = 0 ∨ μ t = 1 :=
-  by
+    (h_indep : IndepSetCat t t μ) : μ t = 0 ∨ μ t = 1 := by
   have h_0_1_top := measure_eq_zero_or_one_or_top_of_indep_set_self h_indep
   simpa [measure_ne_top μ] using h_0_1_top
 #align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSetCat_self
@@ -78,8 +76,7 @@ For the example of `f = at_top`, we can take `p = bdd_above` and `ns : ι → se
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic filter.is_bounded_default -/
 theorem indepCat_bsupr_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
-    {t : Set ι} (ht : p t) : IndepCat (⨆ n ∈ t, s n) (limsup s f) μ :=
-  by
+    {t : Set ι} (ht : p t) : IndepCat (⨆ n ∈ t, s n) (limsup s f) μ := by
   refine' indep_of_indep_of_le_right (indep_bsupr_compl h_le h_indep t) _
   refine'
     Limsup_le_of_le
@@ -93,8 +90,7 @@ theorem indepCat_bsupr_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ) 
 
 theorem indepCat_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
-    IndepCat (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) μ :=
-  by
+    IndepCat (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) μ := by
   refine' indep_supr_of_directed_le _ _ _ _
   · exact fun a => indep_bsupr_limsup h_le h_indep hf (hnsp a)
   · exact fun a => iSup₂_le fun n hn => h_le n
@@ -108,8 +104,7 @@ theorem indepCat_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : Inde
 
 theorem indepCat_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
-    IndepCat (⨆ n, s n) (limsup s f) μ :=
-  by
+    IndepCat (⨆ n, s n) (limsup s f) μ := by
   suffices (⨆ a, ⨆ n ∈ ns a, s n) = ⨆ n, s n by
     rw [← this]
     exact indep_supr_directed_limsup h_le h_indep hf hns hnsp
@@ -143,8 +138,7 @@ section AtTop
 variable [SemilatticeSup ι] [NoMaxOrder ι] [Nonempty ι]
 
 theorem indepCat_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ) :
-    IndepCat (limsup s atTop) (limsup s atTop) μ :=
-  by
+    IndepCat (limsup s atTop) (limsup s atTop) μ := by
   let ns : ι → Set ι := Set.Iic
   have hnsp : ∀ i, BddAbove (ns i) := fun i => bddAbove_Iic
   refine' indep_limsup_self h_le h_indep _ _ hnsp _
@@ -175,8 +169,7 @@ section AtBot
 variable [SemilatticeInf ι] [NoMinOrder ι] [Nonempty ι]
 
 theorem indepCat_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : Indep s μ) :
-    IndepCat (limsup s atBot) (limsup s atBot) μ :=
-  by
+    IndepCat (limsup s atBot) (limsup s atBot) μ := by
   let ns : ι → Set ι := Set.Ici
   have hnsp : ∀ i, BddBelow (ns i) := fun i => bddBelow_Ici
   refine' indep_limsup_self h_le h_indep _ _ hnsp _
