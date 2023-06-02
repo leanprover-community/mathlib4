@@ -365,6 +365,7 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.PresheafedSpace
 import Mathlib.AlgebraicGeometry.PresheafedSpace.HasColimits
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
@@ -1274,6 +1275,7 @@ import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Derivation
 import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Expand
@@ -1558,6 +1560,7 @@ import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Minpoly.Basic
@@ -1788,6 +1791,7 @@ import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.Circulant
@@ -1936,6 +1940,7 @@ import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.MutuallySingular
@@ -1980,6 +1985,7 @@ import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.NumberTheory.Liouville.Basic
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
+import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
@@ -2123,6 +2129,8 @@ import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.Probability.Independence.Basic
+import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Monad
@@ -2242,6 +2250,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
