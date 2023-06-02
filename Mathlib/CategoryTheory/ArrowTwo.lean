@@ -103,6 +103,21 @@ def δ₁Toδ₀ : (δ₁ : Arrow₂ C ⥤ _) ⟶ δ₀ where
     { left := D.f
       right := 𝟙 _ }
 
+@[simps]
+def obj₀ : Arrow₂ C ⥤ C where
+  obj D := D.X₀
+  map φ := φ.τ₀
+
+@[simps]
+def obj₁ : Arrow₂ C ⥤ C where
+  obj D := D.X₁
+  map φ := φ.τ₁
+
+@[simps]
+def obj₂ : Arrow₂ C ⥤ C where
+  obj D := D.X₂
+  map φ := φ.τ₂
+
 end Arrow₂
 
 end CategoryTheory
