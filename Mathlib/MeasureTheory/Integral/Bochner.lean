@@ -760,7 +760,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
   -- Show that the property holds for all simple functions in the `L¹` space.
   · intro s
     norm_cast
-    exact simple_func.integral_eq_norm_posPart_sub _
+    exact simpleFunc.integral_eq_norm_posPart_sub _
 #align measure_theory.L1.integral_eq_norm_pos_part_sub MeasureTheory.L1.integral_eq_norm_posPart_sub
 
 end PosPart
@@ -931,7 +931,7 @@ theorem continuous_integral : Continuous fun f : α →₁[μ] E => ∫ a, f a �
 
 theorem norm_integral_le_lintegral_norm (f : α → E) :
     ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
-  by_cases hf : integrable f μ
+  by_cases hf : Integrable f μ
   · rw [integral_eq f hf, ← integrable.norm_to_L1_eq_lintegral_norm f hf]
     exact L1.norm_integral_le _
   · rw [integral_undef hf, norm_zero]; exact to_real_nonneg
@@ -1020,9 +1020,9 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     intro n
     filter_upwards [hb_nonneg,
       bound_summable]with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
-  have hF_integrable : ∀ n, integrable (F n) μ := by
+  have hF_integrable : ∀ n, Integrable (F n) μ := by
     refine' fun n => bound_integrable.mono' (hF_meas n) _
-    exact eventually_le.trans (h_bound n) (hb_le_tsum n)
+    exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine'
     tendsto_integral_filter_of_dominated_convergence (fun a => ∑' n, bound n a) _ _ bound_integrable
@@ -1298,9 +1298,9 @@ theorem integral_mono {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable
 
 theorem integral_mono_of_nonneg {f g : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hgi : Integrable g μ)
     (h : f ≤ᵐ[μ] g) : (∫ a, f a ∂μ) ≤ ∫ a, g a ∂μ := by
-  by_cases hfm : ae_strongly_measurable f μ
+  by_cases hfm : AEStronglyMeasurable f μ
   · refine' integral_mono_ae ⟨hfm, _⟩ hgi h
-    refine' hgi.has_finite_integral.mono <| h.mp <| hf.mono fun x hf hfg => _
+    refine' hgi.hasFiniteIntegral.mono <| h.mp <| hf.mono fun x hf hfg => _
     simpa [abs_of_nonneg hf, abs_of_nonneg (le_trans hf hfg)]
   · rw [integral_non_ae_strongly_measurable hfm]
     exact integral_nonneg_of_ae (hf.trans h)
@@ -1308,8 +1308,8 @@ theorem integral_mono_of_nonneg {f g : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hgi : 
 
 theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 ≤ᵐ[ν] f)
     (hfi : Integrable f ν) : (∫ a, f a ∂μ) ≤ ∫ a, f a ∂ν := by
-  have hfi' : integrable f μ := hfi.mono_measure hle
-  have hf' : 0 ≤ᵐ[μ] f := hle.absolutely_continuous hf
+  have hfi' : Integrable f μ := hfi.mono_measure hle
+  have hf' : 0 ≤ᵐ[μ] f := hle.absolutelyContinuous hf
   rw [integral_eq_lintegral_of_nonneg_ae hf' hfi'.1, integral_eq_lintegral_of_nonneg_ae hf hfi.1,
     ENNReal.toReal_le_toReal]
   exacts [lintegral_mono' hle le_rfl, ((has_finite_integral_iff_of_real hf').1 hfi'.2).Ne,
@@ -1347,18 +1347,18 @@ theorem SimpleFunc.integral_eq_integral (f : α →ₛ E) (hfi : Integrable f μ
 
 theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
     (∫ x, f x ∂μ) = ∑ x in f.range, ENNReal.toReal (μ (f ⁻¹' {x})) • x := by
-  rw [← f.integral_eq_integral hfi, simple_func.integral, ← simple_func.integral_eq]; rfl
+  rw [← f.integral_eq_integral hfi, SimpleFunc.integral, ← SimpleFunc.integral_eq]; rfl
 #align measure_theory.simple_func.integral_eq_sum MeasureTheory.SimpleFunc.integral_eq_sum
 
 @[simp]
 theorem integral_const (c : E) : (∫ x : α, c ∂μ) = (μ univ).toReal • c := by
   cases' (@le_top _ _ _ (μ univ)).lt_or_eq with hμ hμ
-  · haveI : is_finite_measure μ := ⟨hμ⟩
+  · haveI : IsFiniteMeasure μ := ⟨hμ⟩
     simp only [integral, L1.integral]
     exact set_to_fun_const (dominated_fin_meas_additive_weighted_smul _) _
   · by_cases hc : c = 0
     · simp [hc, integral_zero]
-    · have : ¬integrable (fun x : α => c) μ := by
+    · have : ¬Integrable (fun x : α => c) μ := by
         simp only [integrable_const_iff, not_or]
         exact ⟨hc, hμ.not_lt⟩
       simp [integral_undef, *]
@@ -1377,8 +1377,8 @@ theorem tendsto_integral_approxOn_of_measurable [MeasurableSpace E] [BorelSpace 
     (hs : ∀ᵐ x ∂μ, f x ∈ closure s) {y₀ : E} (h₀ : y₀ ∈ s) (h₀i : Integrable (fun x => y₀) μ) :
     Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ) atTop (𝓝 <| ∫ x, f x ∂μ) :=
   by
-  have hfi' := simple_func.integrable_approx_on hfm hfi h₀ h₀i
-  simp only [simple_func.integral_eq_integral _ (hfi' _), integral, L1.integral]
+  have hfi' := SimpleFunc.integrable_approx_on hfm hfi h₀ h₀i
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral]
   exact
     tendsto_set_to_fun_approx_on_of_measurable (dominated_fin_meas_additive_weighted_smul μ) hfi hfm
       hs h₀ h₀i
