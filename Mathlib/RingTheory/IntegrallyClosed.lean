@@ -38,6 +38,7 @@ This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClos
 if you want to choose another field of fractions for `R`.
 -/
 class IsIntegrallyClosed (R : Type _) [CommRing R] [IsDomain R] : Prop where
+  /-- All integral elements of `Frac(R)` are also elements of `R`. -/
   algebraMap_eq_of_integral :
     ∀ {x : FractionRing R}, IsIntegral R x → ∃ y, algebraMap R (FractionRing R) y = x
 #align is_integrally_closed IsIntegrallyClosed
