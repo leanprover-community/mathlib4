@@ -129,4 +129,132 @@ theorem ofFin_toFin {n} (v : Bitvec n) : ofFin (toFin v) = v := by
   rw [toFin_val, ofNat_toNat]
 #align bitvec.of_fin_to_fin Bitvec.ofFin_toFin
 
+instance : NatCast (Bitvec n) := ⟨Bitvec.ofNat _⟩
+
+instance : IntCast (Bitvec n) := ⟨Bitvec.ofInt _⟩
+
+theorem foldl_addLsb_add : ∀ (n k : ℕ) (x : List Bool),
+    x.foldl addLsb (n + k) = 2 ^ x.length * k + x.foldl addLsb n
+  | n, k, [] => by simp [addLsb, add_comm, add_assoc, add_left_comm]
+  | n, k, a::l => by
+    have : (n + k) + (n + k) + cond a 1 0 = (n + n + cond a 1 0) + (k + k) :=
+      by simp [add_assoc, add_comm, add_left_comm]
+    rw [List.foldl_cons, List.foldl_cons, addLsb, addLsb, this, foldl_addLsb_add _ (k + k) l]
+    simp [pow_succ, two_mul, mul_add, add_mul, add_assoc]
+
+theorem foldl_addLsb_eq_add_foldl_addLsb_zero (x : List Bool) (k : ℕ) :
+    x.foldl addLsb k = 2 ^ x.length * k + x.foldl addLsb 0 := by
+  rw [← foldl_addLsb_add, zero_add]
+
+/-- Theorem useful for proving properties of `toNat` -/
+theorem foldl_addLsb_cons_zero (a : Bool) (x : List Bool) :
+    (a::x).foldl addLsb 0 = 2^x.length * cond a 1 0 + x.foldl addLsb 0 :=
+  calc (a::x).foldl addLsb 0
+     = x.foldl addLsb (0 + 0 + cond a 1 0) := rfl
+   _ = _ := by rw [foldl_addLsb_add]
+
+theorem toNat_cons (a : Bool) (x : Bitvec n) :
+    Bitvec.toNat (a::ᵥx) = 2^x.length * cond a 1 0 + x.toNat := by
+  rcases x with ⟨x, rfl⟩
+  exact foldl_addLsb_cons_zero a x
+
+theorem zero_def : (0 : Bitvec n) = ⟨List.replicate n false, (0 : Bitvec n).2⟩  := rfl
+
+@[simp]
+theorem toList_zero : Vector.toList (0 : Bitvec n) = List.replicate n false := rfl
+
+@[simp]
+theorem toNat_zero : ∀ {n : Nat}, (0 : Bitvec n).toNat = 0
+  | 0 => rfl
+  | n+1 => by simpa [Bitvec.toNat, toList_zero, bitsToNat] using @toNat_zero n
+
+@[simp]
+theorem ofNat_zero : Bitvec.ofNat w 0 = 0 := by
+  rw [← toNat_zero, ofNat_toNat]
+
+theorem toList_one {n : ℕ} : (1 : Bitvec (n + 1)).toList = List.replicate n false ++ [true] := rfl
+
+theorem toNat_one : ∀ {n : Nat}, (1 : Bitvec n).toNat = if n = 0 then 0 else 1
+  | 0 => rfl
+  | 1 => rfl
+  | n+2 => by
+    have := @toNat_one (n+1)
+    simp only [Bitvec.toNat, bitsToNat, List.foldl, Nat.add_eq, add_zero, List.append_eq,
+      List.foldl_append, add_eq_zero, and_false, ite_false, toList_one] at *
+    simp only [addLsb, cond_true, add_left_eq_self, add_eq_zero, and_self] at this
+    rw [foldl_addLsb_eq_add_foldl_addLsb_zero, this]
+    simp [addLsb]
+
+private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.length y),
+    List.foldl addLsb (addLsb 0 (List.mapAccumr₂
+        (fun x y c => (Bitvec.carry x y c, Bitvec.xor3 x y c)) x y false).fst)
+      (List.mapAccumr₂ (fun x y c => (Bitvec.carry x y c, Bitvec.xor3 x y c)) x y false).snd =
+    List.foldl addLsb 0 x + List.foldl addLsb 0 y
+| [], [], _ => rfl
+| a::x, b::y, h => by
+  simp only [List.length_cons, Nat.succ.injEq] at h
+  rw [foldl_addLsb_cons_zero, foldl_addLsb_cons_zero, add_add_add_comm, ← toNat_adc_aux h,
+    List.mapAccumr₂, foldl_addLsb_eq_add_foldl_addLsb_zero, foldl_addLsb_cons_zero,
+    foldl_addLsb_eq_add_foldl_addLsb_zero _ (addLsb _ _)]
+  cases a <;> cases b <;>
+  simp only [Bool.xor_false_right, Bool.xor_assoc, Bool.true_xor, List.length_cons,
+    List.length_mapAccumr₂, h, min_self, pow_succ, two_mul, Bool.and_false, Bool.true_and,
+    Bool.false_or, Bool.false_and, Bool.or_false, addLsb, add_zero, zero_add, add_mul,
+    Bool.cond_not, add_left_comm, add_assoc, cond_true, mul_one, cond_false, mul_zero, add_comm,
+    Bool.xor_false, Bool.false_xor, Bool.true_or, Bool.not_true, Bitvec.carry, Bitvec.xor3] <;>
+  cases (List.mapAccumr₂ (fun x y c => (x && y || x && c || y && c, xor x (xor y c))) x y false).fst
+    <;> simp [h]
+
+@[simp]
+theorem toNat_adc {n : Nat} {x y : Bitvec n} :
+    (adc x y false).toNat = x.toNat + y.toNat := by
+  rcases x with ⟨x, rfl⟩
+  rcases y with ⟨y, hy⟩
+  dsimp [Bitvec.toNat, bitsToNat]
+  exact toNat_adc_aux hy.symm
+
+theorem toNat_tail : ∀ {n : Nat} (x : Bitvec n), Bitvec.toNat x.tail = x.toNat % 2^(n-1)
+  | 0, ⟨[], _⟩ => rfl
+  | n+1, ⟨a::l, h⟩ => by
+    conv_lhs => rw [← Nat.mod_eq_of_lt (Bitvec.toNat_lt (Vector.tail ⟨a::l, h⟩))]
+    simp only [List.length_cons, Nat.succ.injEq] at h
+    simp only [Bitvec.toNat, bitsToNat, foldl_addLsb_cons_zero, Vector.toList, h]
+    simp only [Vector.tail_val, List.tail_cons, ge_iff_le, add_le_iff_nonpos_left,
+      nonpos_iff_eq_zero, add_tsub_cancel_right, mul_comm, Nat.mul_add_mod]
+
+@[simp]
+theorem toNat_add {n : Nat} (x y : Bitvec n) : (x + y).toNat = (x.toNat + y.toNat) % 2^n := by
+  show Bitvec.toNat (x.adc y false).tail = (x.toNat + y.toNat) % 2^n
+  rw [toNat_tail, toNat_adc, add_tsub_cancel_right]
+
+theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (h : x.length = y.length),
+    x.zipWith (. && .) y = List.replicate x.length false →
+    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).fst = false
+  | [], [], _ => fun _ => rfl
+  | a::x, b::y, h => fun h' => by
+    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
+      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
+    have := add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2
+    unfold Bitvec.carry at this
+    rcases h'.1 with rfl | rfl <;>
+    simp [List.mapAccumr₂, Bitvec.carry, this]
+
+theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (h : x.length = y.length),
+    x.zipWith (. && .) y = List.replicate x.length false →
+    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).snd =
+    x.zipWith (. || .) y
+  | [], [], _ => fun _ => rfl
+  | a::x, b::y, h => fun h' => by
+    dsimp [List.mapAccumr₂]
+    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
+      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
+    rw [add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2,
+      add_eq_or_of_and_eq_zero_aux₂ (Nat.succ.inj h) h'.2]
+    rcases h'.1 with rfl | rfl <;>
+    simp [List.mapAccumr₂, Bitvec.carry, Bitvec.xor3]
+
+theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) : x + y = x.or y :=
+  Subtype.ext (add_eq_or_of_and_eq_zero_aux₂ (x.2.trans y.2.symm)
+    (by convert congr_arg Vector.toList hxy; simp))
+
 end Bitvec
