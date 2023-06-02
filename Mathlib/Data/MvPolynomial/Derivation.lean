@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Derivation.Basic
 In this file we prove that a derivation of `MvPolynomial σ R` is determined by its values on all
 monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDerivation` that
 builds a derivation from its values on `X i`s and a linear equivalence
-`mv_polynomial.equiv_derivation` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
+`MvPolynomial.equivDerivation` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
 
 
@@ -66,11 +66,17 @@ theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) 
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C MvPolynomial.derivation_C
 
-@[simp]
+-- @[simp] -- Porting note: simp normal form is `derivation_C_mul'`
 theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
     D (C a * f) = a • D f := by rw [C_mul', D.map_smul]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C_mul MvPolynomial.derivation_C_mul
+
+@[simp]
+theorem derivation_C_mul' (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
+    C (σ := σ) a • D f = a • D f := by
+  have : C (σ := σ) a • D f = D (C a * f) := by simp
+  rw [this, derivation_C_mul]
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
 `MvPolynomial.supported R s`. -/
@@ -99,11 +105,8 @@ theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
 theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
-    (∀ p q, D (p * q) = p • D q + q • D p) ↔
-      ∀ s i,
-        D (monomial s 1 * X i) =
-          (monomial s 1 : MvPolynomial σ R) • D (X i) +
-            (X i : MvPolynomial σ R) • D (monomial s 1) := by
+    (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
+    (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by
   refine' ⟨fun H p i => H _ _, fun H => _⟩
   have hC : ∀ r, D (C r) = 0 := by intro r; rw [C_eq_smul_one, D.map_smul, h₁, smul_zero]
   have : ∀ p i, D (p * X i) = p • D (X i) + (X i : MvPolynomial σ R) • D p := by
@@ -132,18 +135,14 @@ def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   leibniz' :=
     (leibniz_iff_X (mkDerivationₗ R f) (mkDerivationₗ_C _ 1)).2 fun s i => by
       simp only [mkDerivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
-      rw [Finsupp.sum_add_index', Finsupp.sum_single_index, Finsupp.sum_single_index]
-      · rw [add_comm, Finsupp.smul_sum]
-        congr 1
-        · simp
-        · refine Finset.sum_congr rfl fun j hj ↦ ?_
-          have : Finsupp.single j 1 ≤ s
-          · simpa [Nat.one_le_iff_ne_zero] using hj
-          simp only [← tsub_add_eq_add_tsub this, smul_smul, monomial_mul, add_comm, one_mul]
-      · simp
-      · simp
-      · intro; simp only [Nat.cast_zero, map_zero, zero_smul]
-      · intros; simp only [Nat.cast_add, map_add, add_smul]
+      rw [Finsupp.sum_add_index'] <;>
+        [skip; simp; (intros; simp only [Nat.cast_add, (monomial _).map_add, add_smul])]
+      rw [Finsupp.sum_single_index, Finsupp.sum_single_index] <;> [skip; simp; simp]
+      rw [tsub_self, add_tsub_cancel_right, Nat.cast_one, ← C_apply, C_1, one_smul, add_comm,
+        Finsupp.smul_sum]
+      refine' congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj => _); dsimp only
+      rw [smul_smul, monomial_mul, one_mul, add_comm s, add_tsub_assoc_of_le]
+      rwa [Finsupp.single_le_iff, Nat.succ_le_iff, pos_iff_ne_zero, ← Finsupp.mem_support_iff]
 #align mv_polynomial.mk_derivation MvPolynomial.mkDerivation
 
 @[simp]
@@ -172,4 +171,3 @@ def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A 
 end
 
 end MvPolynomial
-
