@@ -8,9 +8,9 @@ Authors: Niels Voss
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Prime
-import Mathbin.FieldTheory.Finite.Basic
-import Mathbin.Order.Filter.Cofinite
+import Mathlib.Data.Nat.Prime
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Fermat Pseudoprimes
@@ -105,8 +105,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 #align fermat_psp.coprime_of_probable_prime FermatPsp.coprime_of_probablePrime
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
-    ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] :=
-  by
+    ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
   have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
   -- For exact_mod_cast
   rw [Nat.ModEq.comm]
@@ -123,16 +122,14 @@ positive.
 
 This lemma is a small wrapper based on `coprime_of_probable_prime`
 -/
-theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.coprime n b :=
-  by
+theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.coprime n b := by
   rcases h with ⟨hp, hn₁, hn₂⟩
   exact coprime_of_probable_prime hp (by linarith) h₁
 #align fermat_psp.coprime_of_fermat_psp FermatPsp.coprime_of_fermatPsp
 
 /-- All composite numbers are Fermat pseudoprimes to base 1.
 -/
-theorem base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 :=
-  by
+theorem base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 := by
   refine' ⟨show n ∣ 1 ^ (n - 1) - 1 from _, h₂, h₁⟩
   exact show 0 = 1 ^ (n - 1) - 1 by norm_num ▸ dvd_zero n
 #align fermat_psp.base_one FermatPsp.base_one
@@ -144,16 +141,14 @@ section HelperLemmas
 private theorem pow_gt_exponent {a : ℕ} (b : ℕ) (h : 2 ≤ a) : b < a ^ b :=
   lt_of_lt_of_le (Nat.lt_two_pow b) <| Nat.pow_le_pow_of_le_left h _
 
-private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) :=
-  by
+private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
   convert pow_lt_pow (Nat.lt_of_succ_le ha) hb
   rw [pow_one]
 
-private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) :=
-  by
+private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
   apply Nat.succ_le_succ
   calc
@@ -163,8 +158,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
     
 
 private theorem AB_id_helper (b p : ℕ) (hb : 2 ≤ b) (hp : Odd p) :
-    (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
-  by
+    (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
   have q₁ : b - 1 ∣ b ^ p - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow b 1 p
   have q₂ : b + 1 ∣ b ^ p + 1 := by simpa only [one_pow] using hp.nat_add_dvd_pow_add_pow b 1
   convert Nat.div_mul_div_comm q₁ q₂ <;> rw [mul_comm (_ - 1), ← Nat.sq_sub_sq]
@@ -213,8 +207,7 @@ The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes
 We use <https://primes.utm.edu/notes/proofs/a_pseudoprimes.html> as a rough outline of the proof.
 -/
 private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_prime : p.Prime)
-    (p_gt_two : 2 < p) (not_dvd : ¬p ∣ b * (b ^ 2 - 1)) : FermatPsp (pspFromPrime b p) b :=
-  by
+    (p_gt_two : 2 < p) (not_dvd : ¬p ∣ b * (b ^ 2 - 1)) : FermatPsp (pspFromPrime b p) b := by
   unfold psp_from_prime
   set A := (b ^ p - 1) / (b - 1)
   set B := (b ^ p + 1) / (b + 1)
@@ -237,8 +230,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- pseudoprime are satisfied, we only need to show that `A * B` is probable prime to base `b`
   refine' ⟨_, AB_not_prime, hi_AB⟩
   -- Used to prove that `2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1)`.
-  have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) :=
-    by
+  have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) := by
     apply_fun fun x => x * (b ^ 2 - 1)  at AB_id 
     rw [Nat.div_mul_cancel hd] at AB_id 
     apply_fun fun x => x - (b ^ 2 - 1)  at AB_id 
@@ -260,8 +252,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
       exact even_iff_two_dvd.mp this
   -- Since `b` isn't divisible by `p`, `b` is coprime with `p`. we can use Fermat's Little Theorem
   -- to prove this.
-  have ha₃ : p ∣ b ^ (p - 1) - 1 :=
-    by
+  have ha₃ : p ∣ b ^ (p - 1) - 1 := by
     have : ¬p ∣ b := mt (fun h : p ∣ b => dvd_mul_of_dvd_left h _) not_dvd
     have : p.coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
     have : IsCoprime (b : ℤ) ↑p := this.symm.is_coprime
@@ -270,8 +261,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     exact_mod_cast this
   -- Because `p - 1` is even, there is a `c` such that `2 * c = p - 1`. `nat_sub_dvd_pow_sub_pow`
   -- implies that `b ^ c - 1 ∣ (b ^ c) ^ 2 - 1`, and `(b ^ c) ^ 2 = b ^ (p - 1)`.
-  have ha₄ : b ^ 2 - 1 ∣ b ^ (p - 1) - 1 :=
-    by
+  have ha₄ : b ^ 2 - 1 ∣ b ^ (p - 1) - 1 := by
     cases' p_odd with k hk
     have : 2 ∣ p - 1 := ⟨k, by simp [hk]⟩
     cases' this with c hc
@@ -280,8 +270,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     have : b ^ 2 - 1 ∣ b ^ (2 * c) - 1 := by rwa [← pow_mul] at this 
     rwa [← hc] at this 
   -- Used to prove that `2 * p` divides `A * B - 1`
-  have ha₅ : 2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1) :=
-    by
+  have ha₅ : 2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1) := by
     suffices q : 2 * p * (b ^ 2 - 1) ∣ b * (b ^ (p - 1) - 1) * (b ^ p + b)
     · rwa [ha₁]
     -- We already proved that `b ^ 2 - 1 ∣ b ^ (p - 1) - 1`.
@@ -322,8 +311,7 @@ This is a proof that the number produced using `psp_from_prime` is greater than 
 to create it. The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes`.
 -/
 private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_prime : p.Prime)
-    (p_gt_two : 2 < p) : p < pspFromPrime b p :=
-  by
+    (p_gt_two : 2 < p) : p < pspFromPrime b p := by
   unfold psp_from_prime
   set A := (b ^ p - 1) / (b - 1)
   set B := (b ^ p + 1) / (b + 1)
@@ -396,8 +384,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) : ∃ n :
     exact ⟨base_one (by linarith) this, by linarith⟩
 #align fermat_psp.exists_infinite_pseudoprimes FermatPsp.exists_infinite_pseudoprimes
 
-theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b :=
-  by
+theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
   -- Based on the proof of `nat.frequently_at_top_modeq_one`
   refine' Filter.frequently_atTop.2 fun n => _
   obtain ⟨p, hp⟩ := exists_infinite_pseudoprimes h n
