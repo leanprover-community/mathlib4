@@ -1967,6 +1967,7 @@ import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.LSeries
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+import Mathlib.NumberTheory.Liouville.Basic
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
