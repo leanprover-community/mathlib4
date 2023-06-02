@@ -102,7 +102,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   /-
     Here's the first step of the proof.
     Recall that `X →₀ R` is Lean's way of talking about the free `R`-module
-    on a type `X`. The universal property `finsupp.total` says that to a map
+    on a type `X`. The universal property `Finsupp.total` says that to a map
     `X → N` from a type to an `R`-module, we get an associated R-module map
     `(X →₀ R) →ₗ N`. Apply this to a (noncomputable) map `P → M` coming from the map
     `P →ₗ N` and a random splitting of the surjection `M →ₗ N`, and we get
@@ -154,7 +154,6 @@ section Ring
 
 variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
 
-set_option synthInstance.etaExperiment true in
 /-- Free modules are projective. -/
 theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
@@ -190,7 +189,6 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
 #align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
 -- porting note: todo: generalize to `P : Type v`?
-set_option synthInstance.etaExperiment true in
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

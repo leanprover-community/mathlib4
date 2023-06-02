@@ -8,7 +8,6 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.WLOG
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Order.LeftRight
 
@@ -91,10 +90,10 @@ namespace Monotone
 variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 
-theorem leftLim_eq_supₛ [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
-    leftLim f x = supₛ (f '' Iio x) :=
+theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
+    leftLim f x = sSup (f '' Iio x) :=
   leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
-#align monotone.left_lim_eq_Sup Monotone.leftLim_eq_supₛ
+#align monotone.left_lim_eq_Sup Monotone.leftLim_eq_sSup
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -102,8 +101,8 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simpa [leftLim, h'] using hf h
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
-  rw [leftLim_eq_supₛ hf h']
-  refine' csupₛ_le _ _
+  rw [leftLim_eq_sSup hf h']
+  refine' csSup_le _ _
   · simp only [nonempty_image_iff]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -117,8 +116,8 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
   · rw [leftLim_eq_of_eq_bot _ h']
     exact hf h.le
-  rw [leftLim_eq_supₛ hf h']
-  refine' le_csupₛ ⟨f y, _⟩ (mem_image_of_mem _ h)
+  rw [leftLim_eq_sSup hf h']
+  refine' le_csSup ⟨f y, _⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_setOf_eq]
   intro z hz
@@ -168,7 +167,7 @@ variable [TopologicalSpace α] [OrderTopology α]
 theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) := by
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
-  rw [leftLim_eq_supₛ hf h']
+  rw [leftLim_eq_sSup hf h']
   exact hf.tendsto_nhdsWithin_Iio x
 #align monotone.tendsto_left_lim Monotone.tendsto_leftLim
 

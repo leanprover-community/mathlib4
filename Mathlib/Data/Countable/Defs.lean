@@ -9,7 +9,6 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Countable types

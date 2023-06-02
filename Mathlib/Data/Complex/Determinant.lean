@@ -19,7 +19,6 @@ space over `ℝ`.
 
 -/
 
-set_option synthInstance.etaExperiment true
 
 namespace Complex
 

@@ -9,6 +9,7 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Set
 import Qq
 
 /-!
@@ -51,7 +52,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analagous field_simp discharger `field_simp.ne_zero`
+    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),

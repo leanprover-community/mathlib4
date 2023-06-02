@@ -141,10 +141,10 @@ instance lawfulApplicative : LawfulApplicative Finset :=
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
-      simp_rw [seq_def, fmap_def, sup_image, sup_eq_bunionᵢ]
-      change (s.bunionᵢ fun a => t.image fun b => (a, b))
-        = t.bunionᵢ fun b => s.image fun a => (a, b)
-      trans s.product t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] }
+      simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
+      change (s.biUnion fun a => t.image fun b => (a, b))
+        = t.biUnion fun b => s.image fun a => (a, b)
+      trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative
 
@@ -168,7 +168,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ←sup_bunionᵢ, sup_eq_bunionᵢ, bunionᵢ_bunionᵢ] }
+    bind_assoc := fun s f g => by simp only [bind, ←sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 

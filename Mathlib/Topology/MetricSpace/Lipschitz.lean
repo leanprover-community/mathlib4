@@ -37,7 +37,7 @@ uniformly continuous.
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
@@ -642,7 +642,7 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken (zero_le _), eqOn_empty _ _⟩
   have : Nonempty s := by simp only [hs, nonempty_coe_sort]
-  let g := fun y : α => infᵢ fun x : s => f x + K * dist y x
+  let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
     rcases hs with ⟨z, hz⟩
     refine' ⟨f z - K * dist y z, _⟩
@@ -654,14 +654,14 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
       _ ≤ f t + K * (dist y z + dist y t) :=
         add_le_add_left (mul_le_mul_of_nonneg_left (dist_triangle_left _ _ _) K.2) _
   have E : EqOn f g s := fun x hx => by
-    refine' le_antisymm (le_cinfᵢ fun y => hf.le_add_mul hx y.2) _
-    simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using cinfᵢ_le (B x) ⟨x, hx⟩
+    refine' le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) _
+    simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
   refine' ⟨g, LipschitzWith.of_le_add_mul K fun x y => _, E⟩
   rw [← sub_le_iff_le_add]
-  refine' le_cinfᵢ fun z => _
+  refine' le_ciInf fun z => _
   rw [sub_le_iff_le_add]
   calc
-    g x ≤ f z + K * dist x z := cinfᵢ_le (B x) _
+    g x ≤ f z + K * dist x z := ciInf_le (B x) _
     _ ≤ f z + K * dist y z + K * dist x y := by
       rw [add_assoc, ← mul_add, add_comm (dist y z)]
       exact add_le_add_left (mul_le_mul_of_nonneg_left (dist_triangle _ _ _) K.2) _

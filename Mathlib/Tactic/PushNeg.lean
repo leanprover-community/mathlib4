@@ -31,11 +31,11 @@ theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-/-- Make `push_neg` use `not_and_distrib` rather than the default `not_and`. -/
+/-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     group := ""
-    descr := "Make `push_neg` use `not_and_distrib` rather than the default `not_and`." }
+    descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
 /-- Push negations at the top level of the current expression. -/
 def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
@@ -122,7 +122,7 @@ writing `push_neg` will turn the target into
 ```lean
 | ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`
@@ -173,7 +173,7 @@ writing `push_neg at h` will turn `h` into
 ```lean
 h : ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`

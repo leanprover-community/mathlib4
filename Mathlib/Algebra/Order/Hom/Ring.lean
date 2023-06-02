@@ -12,9 +12,6 @@ import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.WLOG
 
 /-!
 # Ordered ring homomorphisms
