@@ -17,9 +17,9 @@ import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 In this file we define Lebesgue measure on `ℂ`. Since `ℂ` is defined as a `structure` as the
 push-forward of the volume on `ℝ²` under the natural isomorphism. There are (at least) two
-frequently used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `fin 2 → ℝ`. We define measurable
-equivalences (`measurable_equiv`) to both types and prove that both of them are volume preserving
-(in the sense of `measure_theory.measure_preserving`).
+frequently used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`. We define measurable
+equivalences (`MeasurableEquiv`) to both types and prove that both of them are volume preserving
+(in the sense of `MeasureTheory.measurePreserving`).
 -/
 
 
@@ -34,7 +34,7 @@ instance measureSpace : MeasureSpace ℂ :=
   ⟨Measure.map basisOneI.equivFun.symm volume⟩
 #align complex.measure_space Complex.measureSpace
 
-/-- Measurable equivalence between `ℂ` and `ℝ² = fin 2 → ℝ`. -/
+/-- Measurable equivalence between `ℂ` and `ℝ² = Fin 2 → ℝ`. -/
 def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
   basisOneI.equivFun.toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv
 #align complex.measurable_equiv_pi Complex.measurableEquivPi
@@ -45,7 +45,7 @@ def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
 #align complex.measurable_equiv_real_prod Complex.measurableEquivRealProd
 
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi :=
-  (measurableEquivPi.symm.Measurable.MeasurePreserving _).symm _
+  (measurableEquivPi.symm.measurable.measurePreserving _).symm _
 #align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
 
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=
@@ -53,4 +53,3 @@ theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRea
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
 
 end Complex
-
