@@ -643,13 +643,15 @@ def tmulEquiv : ((⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M) ≃ₗ[R] ⨂[
 
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
-    tmulEquiv (ι := ι) (ι₂ := ι₂) R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i :=
+    tmulEquiv (ι := ι) (ι₂ := ι₂) R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) =
+    ⨂ₜ[R] i, Sum.elim a b i :=
   tmul_apply a b
 #align pi_tensor_product.tmul_equiv_apply PiTensorProduct.tmulEquiv_apply
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : Sum ι ι₂ → M) :
-    (tmulEquiv (ι := ι) (ι₂ := ι₂) R M).symm (⨂ₜ[R] i, a i) = (⨂ₜ[R] i, a (Sum.inl i)) ⊗ₜ[R] ⨂ₜ[R] i, a (Sum.inr i) :=
+    (tmulEquiv (ι := ι) (ι₂ := ι₂) R M).symm (⨂ₜ[R] i, a i) =
+    (⨂ₜ[R] i, a (Sum.inl i)) ⊗ₜ[R] ⨂ₜ[R] i, a (Sum.inr i) :=
   tmulSymm_apply a
 #align pi_tensor_product.tmul_equiv_symm_apply PiTensorProduct.tmulEquiv_symm_apply
 
