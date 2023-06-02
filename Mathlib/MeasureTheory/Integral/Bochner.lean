@@ -165,7 +165,7 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ
 
 /-- Given a set `s`, return the continuous linear map `λ x, (μ s).to_real • x`. The extension of
 that set function through `set_to_L1` gives the Bochner integral of L1 functions. -/
-def weightedSMul {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : F →L[ℝ] F :=
+def weightedSMul {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) : F →L[ℝ] F :=
   (μ s).toReal • ContinuousLinearMap.id ℝ F
 #align measure_theory.weighted_smul MeasureTheory.weightedSMul
 
@@ -243,7 +243,7 @@ theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] 
 
 #align measure_theory.norm_weighted_smul_le MeasureTheory.norm_weightedSMul_le
 
-theorem dominatedFinMeasAdditive_weightedSMul {m : MeasurableSpace α} (μ : Measure α) :
+theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Measure α) :
     DominatedFinMeasAdditive μ (weightedSMul μ : Set α → F →L[ℝ] F) 1 :=
   ⟨weightedSMul_union, fun s _ _ => (norm_weightedSMul_le s).trans (one_mul _).symm.le⟩
 #align measure_theory.dominated_fin_meas_additive_weighted_smul MeasureTheory.dominatedFinMeasAdditive_weightedSMul
@@ -309,11 +309,11 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : 
 
 /-- Bochner integral of simple functions whose codomain is a real `normed_space`.
 This is equal to `∑ x in f.range, (μ (f ⁻¹' {x})).to_real • x` (see `integral_eq`). -/
-def integral {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
+def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
   f.setToSimpleFunc (weightedSMul μ)
 #align measure_theory.simple_func.integral MeasureTheory.SimpleFunc.integral
 
-theorem integral_def {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) :
+theorem integral_def {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) :
     f.integral μ = f.setToSimpleFunc (weightedSMul μ) :=
   rfl
 #align measure_theory.simple_func.integral_def MeasureTheory.SimpleFunc.integral_def
@@ -387,9 +387,10 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
   have hf' : f.FinMeasSupp μ := integrable_iff_finMeasSupp.1 hf
   simp only [← map_apply g f, lintegral_eq_lintegral]
   rw [map_integral f _ hf, map_lintegral, ENNReal.toReal_sum]
-  · refine' Finset.sum_congr rfl fun b hb => _
-    rw [smul_eq_mul, toReal_mul, mul_comm]
-  · intro a ha
+  · refine' Finset.sum_congr rfl fun b _ => _
+    -- Porting note: added `Function.comp_apply`
+    rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply]
+  · rintro a -
     by_cases a0 : a = 0
     · rw [a0, hg0, MulZeroClass.zero_mul]; exact WithTop.zero_ne_top
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
@@ -400,7 +401,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommCl
 
 theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ] g) :
     f.integral μ = g.integral μ :=
-  setToSimpleFunc_congr (weightedSMul μ) (fun s hs => weightedSMul_null) weightedSMul_union hf h
+  setToSimpleFunc_congr (weightedSMul μ) (fun _ _ => weightedSMul_null) weightedSMul_union hf h
 #align measure_theory.simple_func.integral_congr MeasureTheory.SimpleFunc.integral_congr
 
 /-- `simple_func.bintegral` and `simple_func.integral` agree when the integrand has type
@@ -547,6 +548,13 @@ theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f 
   setToL1S_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
 #align measure_theory.L1.simple_func.integral_add MeasureTheory.L1.SimpleFunc.integral_add
 
+-- Porting note: why did this need to be added?
+instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := by
+  haveI : NormedSpace 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
+  haveI : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
+  haveI : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
+  infer_instance
+
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
   setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
 #align measure_theory.L1.simple_func.integral_smul MeasureTheory.L1.SimpleFunc.integral_smul
@@ -636,8 +644,8 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
     rw [← h₁, ← h₂]
     have := (toSimpleFunc f).posPart_sub_negPart
     conv_lhs => rw [← this]
-  · exact (SimpleFunc.integrable f).posPart.congr ae_eq₁
-  · exact (SimpleFunc.integrable f).negPart.congr ae_eq₂
+  · exact (SimpleFunc.integrable f).pos_part.congr ae_eq₁
+  · exact (SimpleFunc.integrable f).neg_part.congr ae_eq₂
 #align measure_theory.L1.simple_func.integral_eq_norm_pos_part_sub MeasureTheory.L1.SimpleFunc.integral_eq_norm_posPart_sub
 
 end PosPart
