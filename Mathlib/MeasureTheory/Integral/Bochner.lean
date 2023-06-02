@@ -682,16 +682,18 @@ def integralClm : (α →₁[μ] E) →L[ℝ] E :=
   integralClm' ℝ
 #align measure_theory.L1.integral_clm MeasureTheory.L1.integralClm
 
+-- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
 irreducible_def integral (f : α →₁[μ] E) : E :=
-  integralClm f
+  integralClm (E := E) f
 #align measure_theory.L1.integral MeasureTheory.L1.integral
 
-theorem integral_eq (f : α →₁[μ] E) : integral f = integralClm f := by simp only [integral]
+theorem integral_eq (f : α →₁[μ] E) : integral f = integralClm (E := E) f := by simp only [integral]
 #align measure_theory.L1.integral_eq MeasureTheory.L1.integral_eq
 
 theorem integral_eq_setToL1 (f : α →₁[μ] E) :
-    integral f = setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f := by simp only [integral]; rfl
+    integral f = setToL1 (E := E) (dominatedFinMeasAdditive_weightedSMul μ) f := by
+  simp only [integral]; rfl
 #align measure_theory.L1.integral_eq_set_to_L1 MeasureTheory.L1.integral_eq_setToL1
 
 @[norm_cast]
@@ -713,22 +715,23 @@ variable {α E}
 
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
   simp only [integral]
-  exact map_add integral_clm f g
+  exact map_add integralClm f g
 #align measure_theory.L1.integral_add MeasureTheory.L1.integral_add
 
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
   simp only [integral]
-  exact map_neg integral_clm f
+  exact map_neg integralClm f
 #align measure_theory.L1.integral_neg MeasureTheory.L1.integral_neg
 
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
   simp only [integral]
-  exact map_sub integral_clm f g
+  exact map_sub integralClm f g
 #align measure_theory.L1.integral_sub MeasureTheory.L1.integral_sub
 
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integral_clm' 𝕜) (c • f) = c • (integral_clm' 𝕜) f; exact map_smul (integral_clm' 𝕜) c f
+  show (integralClm' (E := E) 𝕜) (c • f) = c • (integralClm' (E := E) 𝕜) f
+  exact map_smul (integralClm' (E := E) 𝕜) c f
 #align measure_theory.L1.integral_smul MeasureTheory.L1.integral_smul
 
 -- mathport name: integral_clm
