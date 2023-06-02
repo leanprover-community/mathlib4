@@ -8,11 +8,11 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Identities
-import Mathbin.Data.Zmod.Basic
-import Mathbin.FieldTheory.Finite.Basic
-import Mathbin.Data.Int.Parity
-import Mathbin.Data.Fintype.BigOperators
+import Mathlib.Algebra.GroupPower.Identities
+import Mathlib.Data.ZMod.Basic
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Data.Int.Parity
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Lagrange's four square theorem
@@ -40,8 +40,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
   (mul_right_inj' (show (2 * 2 : ℤ) ≠ 0 by decide)).1 <|
     calc
       2 * 2 * m = (x - y) ^ 2 + (x + y) ^ 2 := by rw [mul_assoc, h] <;> ring
-      _ = (2 * ((x - y) / 2)) ^ 2 + (2 * ((x + y) / 2)) ^ 2 :=
-        by
+      _ = (2 * ((x - y) / 2)) ^ 2 + (2 * ((x + y) / 2)) ^ 2 := by
         rw [even_iff_two_dvd] at hxsuby hxaddy 
         rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
@@ -119,8 +118,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
   let ⟨x, hx⟩ := h01
   let ⟨y, hy⟩ := h23
   ⟨(f (σ 0) - f (σ 1)) / 2, (f (σ 0) + f (σ 1)) / 2, (f (σ 2) - f (σ 3)) / 2,
-    (f (σ 2) + f (σ 3)) / 2,
-    by
+    (f (σ 2) + f (σ 3)) / 2, by
     rw [← Int.sq_add_sq_of_two_mul_sq_add_sq hx.symm, add_assoc, ←
       Int.sq_add_sq_of_two_mul_sq_add_sq hy.symm, ← mul_right_inj' (show (2 : ℤ) ≠ 0 by decide), ←
       h, mul_add, ← hx, ← hy]
@@ -132,8 +130,7 @@ private theorem prime_sum_four_squares (p : ℕ) [hp : Fact p.Prime] :
   have hm : ∃ m < p, 0 < m ∧ ∃ a b c d : ℤ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p :=
     let ⟨a, b, k, hk⟩ := exists_sq_add_sq_add_one_eq_k p
     ⟨k, hk.2,
-      Nat.pos_of_ne_zero fun hk0 =>
-        by
+      Nat.pos_of_ne_zero fun hk0 => by
         rw [hk0, Int.ofNat_zero, MulZeroClass.zero_mul] at hk 
         exact
           ne_of_gt
@@ -263,8 +260,7 @@ theorem sum_four_squares : ∀ n : ℕ, ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2
         prime_sum_four_squares (min_fac (k + 2))
     let ⟨w, x, y, z, h₂⟩ := sum_four_squares (n / minFac n)
     ⟨(a * w - b * x - c * y - d * z).natAbs, (a * x + b * w + c * z - d * y).natAbs,
-      (a * y - b * z + c * w + d * x).natAbs, (a * z + b * y - c * x + d * w).natAbs,
-      by
+      (a * y - b * z + c * w + d * x).natAbs, (a * z + b * y - c * x + d * w).natAbs, by
       rw [← Int.coe_nat_inj', ← Nat.mul_div_cancel' (min_fac_dvd (k + 2)), Int.ofNat_mul, ← h₁, ←
         h₂]
       simp [sum_four_sq_mul_sum_four_sq]⟩
