@@ -94,7 +94,7 @@ theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [v
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
 #align real.volume_Ioc Real.volume_Ioc
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
 #align real.volume_singleton Real.volume_singleton
 
