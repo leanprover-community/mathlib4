@@ -39,7 +39,7 @@ open Algebra
 open scoped BigOperators
 
 /-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
-equality. We also require that `D 1 = 0`. See `derivation.mk'` for a constructor that deduces this
+equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor that deduces this
 assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
