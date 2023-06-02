@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Supported
-import Mathbin.RingTheory.Derivation.Basic
+import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Derivations of multivariate polynomials
@@ -99,12 +99,10 @@ theorem leibniz_iff_x (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
       ∀ s i,
         D (monomial s 1 * X i) =
           (monomial s 1 : MvPolynomial σ R) • D (X i) +
-            (X i : MvPolynomial σ R) • D (monomial s 1) :=
-  by
+            (X i : MvPolynomial σ R) • D (monomial s 1) := by
   refine' ⟨fun H p i => H _ _, fun H => _⟩
   have hC : ∀ r, D (C r) = 0 := by intro r; rw [C_eq_smul_one, D.map_smul, h₁, smul_zero]
-  have : ∀ p i, D (p * X i) = p • D (X i) + (X i : MvPolynomial σ R) • D p :=
-    by
+  have : ∀ p i, D (p * X i) = p • D (X i) + (X i : MvPolynomial σ R) • D p := by
     intro p i
     induction' p using MvPolynomial.induction_on' with s r p q hp hq
     · rw [← mul_one r, ← C_mul_monomial, mul_assoc, C_mul', D.map_smul, H, C_mul', smul_assoc,
@@ -123,13 +121,11 @@ theorem leibniz_iff_x (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
 variable (R)
 
 /-- The derivation on `mv_polynomial σ R` that takes value `f i` on `X i`. -/
-def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A
-    where
+def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   toLinearMap := mkDerivationₗ R f
   map_one_eq_zero' := mkDerivationₗ_c _ 1
   leibniz' :=
-    (leibniz_iff_x (mkDerivationₗ R f) (mkDerivationₗ_c _ 1)).2 fun s i =>
-      by
+    (leibniz_iff_x (mkDerivationₗ R f) (mkDerivationₗ_c _ 1)).2 fun s i => by
       simp only [mk_derivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
       rw [Finsupp.sum_add_index'] <;> [skip; · simp;
         · intros; simp only [Nat.cast_add, (monomial _).map_add, add_smul]]
