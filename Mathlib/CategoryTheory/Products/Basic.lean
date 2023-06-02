@@ -229,7 +229,7 @@ def evaluationUncurried : C × (C ⥤ D) ⥤ D
 
 variable {C}
 
-/-- The constant functor followed by the evalutation functor is just the identity. -/
+/-- The constant functor followed by the evaluation functor is just the identity. -/
 @[simps!]
 def Functor.constCompEvaluationObj (X : C) : Functor.const C ⋙ (evaluation C D).obj X ≅ 𝟭 D :=
   NatIso.ofComponents (fun Y => Iso.refl _) fun {Y} {Z} f => by simp

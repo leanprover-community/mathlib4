@@ -97,7 +97,7 @@ example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   assumption
 ```
 -/
-syntax (name := nontriviality) "nontriviality" (ppSpace (colGt term))?
+syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
   (" using " Parser.Tactic.simpArg,+)? : tactic
 
 /-- Elaborator for the `nontriviality` tactic. -/

@@ -111,7 +111,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/
-elab "whatsnew" "in" ppLine cmd:command : command => do
+elab "whatsnew " "in" ppLine cmd:command : command => do
   let oldEnv ← getEnv
   try
     elabCommand cmd

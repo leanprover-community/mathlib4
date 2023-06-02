@@ -241,7 +241,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
     Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply, mul_eq_mul]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with (i' j') <;> simp [stdBasisMatrix]
+  congr with i' <;> simp [stdBasisMatrix]
 #align mat_poly_equiv_coeff_apply_aux_1 matPolyEquiv_coeff_apply_aux_1
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :

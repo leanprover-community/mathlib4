@@ -37,7 +37,7 @@ uniformly continuous.
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/

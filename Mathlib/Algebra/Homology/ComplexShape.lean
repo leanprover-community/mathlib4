@@ -136,7 +136,7 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
   congr
   exact c.prev_eq rik rjk
 
-/-- An arbitary choice of index `j` such that `Rel i j`, if such exists.
+/-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
@@ -144,7 +144,7 @@ def next (c : ComplexShape ι) (i : ι) : ι :=
   exact if h : ∃ j, c.Rel i j then h.choose else i
 #align complex_shape.next ComplexShape.next
 
-/-- An arbitary choice of index `i` such that `Rel i j`, if such exists.
+/-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/
 def prev (c : ComplexShape ι) (j : ι) : ι :=

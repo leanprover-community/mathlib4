@@ -745,7 +745,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
@@ -1017,7 +1017,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/

@@ -70,7 +70,7 @@ variable {ι : Type _}
 -/
 
 
-/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Repesents the product
+/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type _) where
   (lower upper : ι → ℝ)
