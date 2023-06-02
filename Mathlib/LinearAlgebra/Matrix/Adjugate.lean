@@ -423,22 +423,19 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
 
 theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
-    adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) :=
-  by
+    adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
   simp_rw [adjugate_apply, det_succ_row _ j, update_row_self, submatrix_update_row_succ_above]
   rw [Fintype.sum_eq_single i fun h hjk => _, Pi.single_eq_same, mul_one]
   rw [Pi.single_eq_of_ne hjk, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
 #align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
 
 theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
-    det A = ∑ j : n, A i j * adjugate A j i :=
-  by
+    det A = ∑ j : n, A i j * adjugate A j i := by
   haveI : Nonempty n := ⟨i⟩
   obtain ⟨n', hn'⟩ := Nat.exists_eq_succ_of_ne_zero (Fintype.card_ne_zero : Fintype.card n ≠ 0)
   obtain ⟨e⟩ := Fintype.truncEquivFinOfCardEq hn'
   let A' := reindex e e A
-  suffices det A' = ∑ j : Fin n'.succ, A' (e i) j * adjugate A' j (e i)
-    by
+  suffices det A' = ∑ j : Fin n'.succ, A' (e i) j * adjugate A' j (e i) by
     simp_rw [A', det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
       Equiv.symm_apply_apply] at this
     exact this
