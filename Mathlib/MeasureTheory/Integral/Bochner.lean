@@ -607,33 +607,32 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
   -- Convert things in `L¹` to their `simple_func` counterpart
   have ae_eq₁ : (toSimpleFunc f).posPart =ᵐ[μ] (toSimpleFunc (posPart f)).map norm := by
     filter_upwards [posPart_toSimpleFunc f]with _ h
-    rw [simple_func.map_apply, h]
-    conv_lhs => rw [← simple_func.pos_part_map_norm, simple_func.map_apply]
+    rw [SimpleFunc.map_apply, h]
+    conv_lhs => rw [← SimpleFunc.posPart_map_norm, SimpleFunc.map_apply]
   -- Convert things in `L¹` to their `simple_func` counterpart
   have ae_eq₂ : (toSimpleFunc f).negPart =ᵐ[μ] (toSimpleFunc (negPart f)).map norm := by
     filter_upwards [negPart_toSimpleFunc f]with _ h
-    rw [simple_func.map_apply, h]
-    conv_lhs => rw [← simple_func.negPart_map_norm, simple_func.map_apply]
+    rw [SimpleFunc.map_apply, h]
+    conv_lhs => rw [← SimpleFunc.negPart_map_norm, SimpleFunc.map_apply]
   -- Convert things in `L¹` to their `simple_func` counterpart
   have ae_eq :
     ∀ᵐ a ∂μ,
       (toSimpleFunc f).posPart a - (toSimpleFunc f).negPart a =
-        (toSimpleFunc (pos_part f)).map norm a - (toSimpleFunc (negPart f)).map norm a := by
+        (toSimpleFunc (posPart f)).map norm a - (toSimpleFunc (negPart f)).map norm a := by
     filter_upwards [ae_eq₁, ae_eq₂]with _ h₁ h₂
     rw [h₁, h₂]
-  rw [integral, norm_eq_integral, norm_eq_integral, ← simple_func.integral_sub]
+  rw [integral, norm_eq_integral, norm_eq_integral, ← SimpleFunc.integral_sub]
   · show
       (toSimpleFunc f).integral μ =
-        ((toSimpleFunc (pos_part f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
-    apply MeasureTheory.SimpleFunc.integral_congr (simple_func.integrable f)
+        ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
+    apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂]with _ h₁ h₂
     show _ = _ - _
     rw [← h₁, ← h₂]
     have := (toSimpleFunc f).posPart_sub_negPart
     conv_lhs => rw [← this]
-    rfl
-  · exact (simple_func.integrable f).posPart.congr ae_eq₁
-  · exact (simple_func.integrable f).neg_part.congr ae_eq₂
+  · exact (SimpleFunc.integrable f).posPart.congr ae_eq₁
+  · exact (SimpleFunc.integrable f).negPart.congr ae_eq₂
 #align measure_theory.L1.simple_func.integral_eq_norm_pos_part_sub MeasureTheory.L1.SimpleFunc.integral_eq_norm_posPart_sub
 
 end PosPart
@@ -750,19 +749,18 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
     integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖ := by
   -- Use `is_closed_property` and `is_closed_eq`
   refine'
-    @isClosed_property _ _ _ (coe : (α →₁ₛ[μ] ℝ) → α →₁[μ] ℝ)
-      (fun f : α →₁[μ] ℝ => integral f = ‖Lp.pos_part f‖ - ‖Lp.neg_part f‖)
-      (simple_func.dense_range one_ne_top) (isClosed_eq _ _) _ f
+    @isClosed_property _ _ _ ((↑) : (α →₁ₛ[μ] ℝ) → α →₁[μ] ℝ)
+      (fun f : α →₁[μ] ℝ => integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖)
+      (simpleFunc.dense_range one_ne_top) (isClosed_eq _ _) _ f
   · simp only [integral]
     exact cont _
-  ·
-    refine'
-      Continuous.sub (continuous_norm.comp Lp.continuous_pos_part)
-        (continuous_norm.comp Lp.continuous_neg_part)
+  · refine'
+      Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
+        (continuous_norm.comp Lp.continuous_negPart)
   -- Show that the property holds for all simple functions in the `L¹` space.
   · intro s
     norm_cast
-    exact simple_func.integral_eq_norm_pos_part_sub _
+    exact simple_func.integral_eq_norm_posPart_sub _
 #align measure_theory.L1.integral_eq_norm_pos_part_sub MeasureTheory.L1.integral_eq_norm_posPart_sub
 
 end PosPart
@@ -831,8 +829,8 @@ theorem L1.integral_eq_integral (f : α →₁[μ] E) : L1.integral f = ∫ a, f
   exact (L1.set_to_fun_eq_set_to_L1 (dominated_fin_meas_additive_weighted_smul μ) f).symm
 #align measure_theory.L1.integral_eq_integral MeasureTheory.L1.integral_eq_integral
 
-theorem integral_undef (h : ¬Integrable f μ) : (∫ a, f a ∂μ) = 0 := by rw [integral];
-  exact @dif_neg _ (id _) h _ _ _
+theorem integral_undef (h : ¬Integrable f μ) : (∫ a, f a ∂μ) = 0 := by
+  rw [integral]; exact @dif_neg _ (id _) h _ _ _
 #align measure_theory.integral_undef MeasureTheory.integral_undef
 
 theorem integral_non_aEStronglyMeasurable (h : ¬AEStronglyMeasurable f μ) : (∫ a, f a ∂μ) = 0 :=
@@ -1096,7 +1094,7 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [L1.norm_def]
     congr 1
     apply lintegral_congr_ae
-    filter_upwards [Lp.coe_fn_pos_part f₁, hf.coe_fn_to_L1]with _ h₁ h₂
+    filter_upwards [Lp.coeFn_posPart f₁, hf.coeFn_toL1]with _ h₁ h₂
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
@@ -1107,14 +1105,14 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [L1.norm_def]
     congr 1
     apply lintegral_congr_ae
-    filter_upwards [Lp.coe_fn_neg_part f₁, hf.coe_fn_to_L1]with _ h₁ h₂
+    filter_upwards [Lp.coeFn_negPart f₁, hf.coeFn_toL1]with _ h₁ h₂
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
     simp only [Real.coe_toNNReal', coe_nnnorm, nnnorm_neg]
     rw [Real.norm_of_nonpos (min_le_right _ _), ← max_neg_neg, neg_zero]
   rw [eq₁, eq₂, integral, dif_pos]
-  exact L1.integral_eq_norm_pos_part_sub _
+  exact L1.integral_eq_norm_posPart_sub _
 #align measure_theory.integral_eq_lintegral_pos_part_sub_lintegral_neg_part MeasureTheory.integral_eq_lintegral_pos_part_sub_lintegral_neg_part
 
 theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
