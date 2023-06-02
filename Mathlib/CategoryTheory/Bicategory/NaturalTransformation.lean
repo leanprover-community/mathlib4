@@ -8,7 +8,7 @@ Authors: Yuma Mizuno
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor
 
 /-!
 # Oplax natural transformations
@@ -151,14 +151,12 @@ end
 
 /-- Vertical composition of oplax natural transformations. -/
 @[simps]
-def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H
-    where
+def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H where
   app a := η.app a ≫ θ.app a
   naturality a b f :=
     (α_ _ _ _).inv ≫
       η.naturality f ▷ θ.app b ≫ (α_ _ _ _).Hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
-  naturality_comp' a b c f g :=
-    by
+  naturality_comp' a b c f g := by
     calc
       _ =
           _ ≫
@@ -184,8 +182,7 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H
 variable (B C)
 
 @[simps]
-instance : CategoryStruct (OplaxFunctor B C)
-    where
+instance : CategoryStruct (OplaxFunctor B C) where
   Hom := OplaxNatTrans
   id := OplaxNatTrans.id
   comp F G H := OplaxNatTrans.vcomp
@@ -259,8 +256,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between oplax_functors. -/
 @[simps]
-instance category (F G : OplaxFunctor B C) : Category (F ⟶ G)
-    where
+instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp η θ ι := Modification.vcomp
