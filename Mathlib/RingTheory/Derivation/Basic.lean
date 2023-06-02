@@ -75,7 +75,7 @@ directly. -/
 instance : CoeFun (Derivation R A M) fun _ => A → M :=
   ⟨FunLike.coe⟩
 
--- Not a simp lemma because it can be proved via `coe_fn_coe` + `to_linear_map_eq_coe`
+-- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 #align derivation.to_fun_eq_coe Derivation.toFun_eq_coe
@@ -86,10 +86,7 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
-@[simp]
-theorem toLinearMap_eq_coe : D.toLinearMap = D :=
-  rfl
-#align derivation.to_linear_map_eq_coe Derivation.toLinearMap_eq_coe
+#noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=
@@ -240,12 +237,12 @@ instance (priority := 100) : SMul S (Derivation R A M) :=
         smul_comm r (_ : A) (_ : M)] }⟩
 
 @[simp]
-theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • D :=
+theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
   rfl
 #align derivation.coe_smul Derivation.coe_smul
 
 @[simp]
-theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = (r • D : A →ₗ[R] M) :=
+theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_smul_linear_map Derivation.coe_smul_linearMap
 
@@ -466,4 +463,3 @@ end
 end
 
 end Derivation
-
