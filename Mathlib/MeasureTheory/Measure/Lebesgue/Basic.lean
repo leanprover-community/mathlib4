@@ -44,9 +44,6 @@ open ENNReal (ofReal)
 
 open scoped BigOperators ENNReal NNReal Topology
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
-
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
 -/
@@ -389,9 +386,9 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   let p : ι → Prop := fun i => i ≠ t.i
   let α : Type _ := { x // p x }
   let β : Type _ := { x // ¬p x }
-  let g : (α → ℝ) → (β → ℝ) → β → ℝ := fun a b => (fun x => t.c * a ⟨t.j, t.hij.symm⟩) + b
+  let g : (α → ℝ) → (β → ℝ) → β → ℝ := fun a b => (fun _ => t.c * a ⟨t.j, t.hij.symm⟩) + b
   let F : (α → ℝ) × (β → ℝ) → (α → ℝ) × (β → ℝ) := fun p => (id p.1, g p.1 p.2)
-  let e : (ι → ℝ) ≃ᵐ (α → ℝ) × (β → ℝ) := MeasurableEquiv.piEquivPiSubtypeProd (fun i : ι => ℝ) p
+  let e : (ι → ℝ) ≃ᵐ (α → ℝ) × (β → ℝ) := MeasurableEquiv.piEquivPiSubtypeProd (fun _ : ι => ℝ) p
   have : (toLin' t.toMatrix : (ι → ℝ) → ι → ℝ) = e.symm ∘ F ∘ e := by
     cases t with | mk t_i t_j t_hij t_c =>
     ext (f k)
@@ -409,16 +406,18 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
         MulZeroClass.mul_zero]
   rw [this]
   have A : MeasurePreserving e := by
-    convert volume_preserving_piEquivPiSubtypeProd (fun i : ι => ℝ) p
+    convert volume_preserving_piEquivPiSubtypeProd (fun _ : ι => ℝ) p
   have B : MeasurePreserving F :=
     haveI g_meas : Measurable (Function.uncurry g) := by
       have : Measurable fun c : α → ℝ => c ⟨t.j, t.hij.symm⟩ :=
         measurable_pi_apply ⟨t.j, t.hij.symm⟩
       refine Measurable.add ?_ measurable_snd
-      refine measurable_pi_lambda _ fun i => Measurable.const_mul ?_ _
+      refine measurable_pi_lambda _ fun _ => Measurable.const_mul ?_ _
       exact this.comp measurable_fst
-    (MeasurePreserving.id _).skew_product g_meas
-      (eventually_of_forall fun a => map_add_left_eq_self _ _)
+    (MeasurePreserving.id _).skew_product (μb := Measure.pi fun _ => volume)
+      (μd := Measure.pi fun _ => volume) g_meas
+      (eventually_of_forall fun a => map_add_left_eq_self
+        (Measure.pi fun _ => (stdOrthonormalBasis ℝ ℝ).toBasis.addHaar) _)
   exact ((A.symm e).comp B).comp A
 #align real.volume_preserving_transvection_struct Real.volume_preserving_transvectionStruct
 
