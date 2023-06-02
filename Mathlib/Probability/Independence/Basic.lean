@@ -90,7 +90,7 @@ set_option linter.uppercaseLean3 false in
 `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
 def IndepSets [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop
     := ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → μ (t1 ∩ t2) = μ t1 * μ t2
-#align probability_theory.indep_sets ProbabilityTheory.iIndepSets
+#align probability_theory.indep_sets ProbabilityTheory.IndepSets
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
