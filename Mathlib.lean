@@ -1916,6 +1916,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
+import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpaceDef
