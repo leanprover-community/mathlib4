@@ -594,7 +594,7 @@ theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) 
 section Tmul
 
 /-- Collapse a `TensorProduct` of `PiTensorProduct`s. -/
-private def tmul : ((⨂[R] _i : ι, M) ⊗[R] ⨂[R] i : ι₂, M) →ₗ[R] ⨂[R] i : Sum ι ι₂, M :=
+private def tmul : ((⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M) →ₗ[R] ⨂[R] _i : Sum ι ι₂, M :=
   TensorProduct.lift
     { toFun := fun a ↦
         PiTensorProduct.lift <|
