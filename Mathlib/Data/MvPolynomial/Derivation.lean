@@ -14,10 +14,10 @@ import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of multivariate polynomials
 
-In this file we prove that a derivation of `mv_polynomial σ R` is determined by its values on all
-monomials `mv_polynomial.X i`. We also provide a constructor `mv_polynomial.mk_derivation` that
+In this file we prove that a derivation of `MvPolynomial σ R` is determined by its values on all
+monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDerivation` that
 builds a derivation from its values on `X i`s and a linear equivalence
-`mv_polynomial.equiv_derivation` between `σ → A` and `derivation (mv_polynomial σ R) A`.
+`mv_polynomial.equiv_derivation` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
 
 
@@ -34,8 +34,8 @@ section
 
 variable (R)
 
-/-- The derivation on `mv_polynomial σ R` that takes value `f i` on `X i`, as a linear map.
-Use `mv_polynomial.mk_derivation` instead. -/
+/-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`, as a linear map.
+Use `MvPolynomial.mkDerivation` instead. -/
 def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
   Finsupp.lsum R fun xs : σ →₀ ℕ =>
     (LinearMap.ringLmapEquivSelf R R A).symm <|
@@ -73,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C_mul MvPolynomial.derivation_C_mul
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
-`mv_polynomial.supported R s`. -/
+`MvPolynomial.supported R s`. -/
 theorem derivation_eqOn_supported {D₁ D₂ : Derivation R (MvPolynomial σ R) A} {s : Set σ}
     (h : Set.EqOn (D₁ ∘ X) (D₂ ∘ X) s) {f : MvPolynomial σ R} (hf : f ∈ supported R s) :
     D₁ f = D₂ f :=
@@ -125,7 +125,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (R)
 
-/-- The derivation on `mv_polynomial σ R` that takes value `f i` on `X i`. -/
+/-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`. -/
 def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   toLinearMap := mkDerivationₗ R f
   map_one_eq_zero' := mkDerivationₗ_C _ 1
@@ -158,7 +158,7 @@ theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
   mkDerivationₗ_monomial f s r
 #align mv_polynomial.mk_derivation_monomial MvPolynomial.mkDerivation_monomial
 
-/-- `mv_polynomial.mk_derivation` as a linear equivalence. -/
+/-- `MvPolynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A :=
   LinearEquiv.symm <|
     { invFun := mkDerivation R
