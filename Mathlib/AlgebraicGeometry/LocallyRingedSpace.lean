@@ -199,8 +199,8 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace} (f : X.toSheafedSpace
     [IsIso f] : X ⟶ Y :=
   Hom.mk f fun x =>
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
-    -- This can be solved by type class inference, because stalk maps of isomorphisms are isomorphisms
-    -- and isomorphisms are local ring homomorphisms.
+    -- This can be solved by type class inference, because stalk maps of isomorphisms
+    -- are isomorphisms and isomorphisms are local ring homomorphisms.
     show IsLocalRingHom (PresheafedSpace.stalkMap (SheafedSpace.forgetToPresheafedSpace.map f) x) by
       infer_instance
 set_option linter.uppercaseLean3 false in
@@ -324,8 +324,9 @@ set_option linter.uppercaseLean3 false in
 theorem basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_right,
-    exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false, iff_false, not_exists]
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
+    exists_and_right, exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false,
+    iff_false, not_exists]
   intros hx
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.stalk x) ≠ (1 : X.stalk x)
