@@ -773,7 +773,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 
 namespace Perm
 
-/-- A family of permutations `Π a, Perm (β a)` generates a permuation `Perm (Σ a, β₁ a)`. -/
+/-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
 @[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight

@@ -71,7 +71,7 @@ with compositions fully right associated and identities removed.
 Returns the proof of the new theorem along with (optionally) a new level metavariable
 for the first universe parameter to `ConcreteCategory`.
 
-The `simpSides` option controles whether to simplify both sides of the equality, for simpNF
+The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
 def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
@@ -178,7 +178,7 @@ The name of the produced lemma can be specified with `@[elementwise other_lemma_
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
 syntax (name := elementwise) "elementwise"
-  "nosimp"? ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
@@ -228,7 +228,7 @@ elab "elementwise_of% " t:term : term => do
   return pf
 
 -- TODO: elementwise tactic
-syntax "elementwise" (ppSpace (colGt ident))* : tactic
-syntax "elementwise!" (ppSpace (colGt ident))* : tactic
+syntax "elementwise" (ppSpace colGt ident)* : tactic
+syntax "elementwise!" (ppSpace colGt ident)* : tactic
 
 end Tactic.Elementwise

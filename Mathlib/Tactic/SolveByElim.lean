@@ -340,7 +340,7 @@ syntax star := "*"
 /-- Syntax for adding or removing a term, or `*`, in `solve_by_elim`. -/
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
-syntax args := " [" SolveByElim.arg,* "] "
+syntax args := " [" SolveByElim.arg,* "]"
 /-- Syntax for using all lemmas labelled with an attribute in `solve_by_elim`. -/
 syntax using_ := " using " ident,*
 

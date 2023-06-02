@@ -535,7 +535,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 
 @[simp]
 theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
-  ext (i j)
+  ext i
   refine' Fin.cases _ _ i
   · rfl
   simp

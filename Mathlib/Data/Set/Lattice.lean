@@ -110,10 +110,10 @@ def iInter (s : ι → Set β) : Set β :=
 #align set.Inter Set.iInter
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
-notation3"⋃ "(...)", "r:(scoped f => iUnion f) => r
+notation3 "⋃ "(...)", "r:(scoped f => iUnion f) => r
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
-notation3"⋂ "(...)", "r:(scoped f => iInter f) => r
+notation3 "⋂ "(...)", "r:(scoped f => iInter f) => r
 
 @[simp]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
