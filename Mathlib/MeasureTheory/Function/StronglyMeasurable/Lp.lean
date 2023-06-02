@@ -18,9 +18,9 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 ## Main statements
 
-* `mem_ℒp.ae_fin_strongly_measurable`: if `mem_ℒp f p μ` with `0 < p < ∞`, then
-  `ae_fin_strongly_measurable f μ`.
-* `Lp.fin_strongly_measurable`: for `0 < p < ∞`, `Lp` functions are finitely strongly measurable.
+* `Memℒp.aefinStronglyMeasurable`: if `Memℒp f p μ` with `0 < p < ∞`, then
+  `AEFinStronglyMeasurable f μ`.
+* `Lp.finStronglyMeasurable`: for `0 < p < ∞`, `Lp` functions are finitely strongly measurable.
 
 ## References
 
@@ -45,37 +45,37 @@ theorem Memℒp.finStronglyMeasurable_of_stronglyMeasurable (hf : Memℒp f p μ
     (hf_meas : StronglyMeasurable f) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ := by
   borelize G
-  haveI : separable_space (Set.range f ∪ {0} : Set G) :=
-    hf_meas.separable_space_range_union_singleton
-  let fs := simple_func.approx_on f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
+  haveI : SeparableSpace (Set.range f ∪ {0} : Set G) :=
+    hf_meas.separableSpace_range_union_singleton
+  let fs := SimpleFunc.approxOn f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
   refine' ⟨fs, _, _⟩
-  · have h_fs_Lp : ∀ n, mem_ℒp (fs n) p μ :=
-      simple_func.mem_ℒp_approx_on_range hf_meas.measurable hf
+  · have h_fs_Lp : ∀ n, Memℒp (fs n) p μ :=
+      SimpleFunc.memℒp_approxOn_range hf_meas.measurable hf
     exact fun n => (fs n).measure_support_lt_top_of_memℒp (h_fs_Lp n) hp_ne_zero hp_ne_top
   · intro x
-    apply simple_func.tendsto_approx_on
+    apply SimpleFunc.tendsto_approxOn
     apply subset_closure
     simp
 #align measure_theory.mem_ℒp.fin_strongly_measurable_of_strongly_measurable MeasureTheory.Memℒp.finStronglyMeasurable_of_stronglyMeasurable
 
-theorem Memℒp.aEFinStronglyMeasurable (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+theorem Memℒp.aefinStronglyMeasurable (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     AEFinStronglyMeasurable f μ :=
-  ⟨hf.AEStronglyMeasurable.mk f,
-    ((memℒp_congr_ae hf.AEStronglyMeasurable.ae_eq_mk).mp
+  ⟨hf.aestronglyMeasurable.mk f,
+    ((memℒp_congr_ae hf.aestronglyMeasurable.ae_eq_mk).mp
           hf).finStronglyMeasurable_of_stronglyMeasurable
-      hf.AEStronglyMeasurable.stronglyMeasurable_mk hp_ne_zero hp_ne_top,
-    hf.AEStronglyMeasurable.ae_eq_mk⟩
-#align measure_theory.mem_ℒp.ae_fin_strongly_measurable MeasureTheory.Memℒp.aEFinStronglyMeasurable
+      hf.aestronglyMeasurable.stronglyMeasurable_mk hp_ne_zero hp_ne_top,
+    hf.aestronglyMeasurable.ae_eq_mk⟩
+#align measure_theory.mem_ℒp.ae_fin_strongly_measurable MeasureTheory.Memℒp.aefinStronglyMeasurable
 
 theorem Integrable.aEFinStronglyMeasurable (hf : Integrable f μ) : AEFinStronglyMeasurable f μ :=
-  (memℒp_one_iff_integrable.mpr hf).AEFinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top
+  (memℒp_one_iff_integrable.mpr hf).aefinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top
 #align measure_theory.integrable.ae_fin_strongly_measurable MeasureTheory.Integrable.aEFinStronglyMeasurable
 
 theorem Lp.finStronglyMeasurable (f : Lp G p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ :=
   (Lp.memℒp f).finStronglyMeasurable_of_stronglyMeasurable (Lp.stronglyMeasurable f) hp_ne_zero
     hp_ne_top
+set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp.fin_strongly_measurable MeasureTheory.Lp.finStronglyMeasurable
 
 end MeasureTheory
-
