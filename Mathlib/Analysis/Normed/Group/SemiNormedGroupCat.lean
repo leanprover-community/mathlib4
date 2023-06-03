@@ -75,12 +75,14 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroup.of V :
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroup.coe_of
 
-@[simp]
+-- Porting note : marked with high priority to short circuit simplifier's path
+@[simp (high)]
 theorem coe_id (V : SemiNormedGroup) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroup.coe_id
 
-@[simp]
+-- Porting note : marked with high priority to short circuit simplifier's path
+@[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroup} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup.coe_comp SemiNormedGroup.coe_comp
@@ -235,7 +237,7 @@ theorem coe_id (V : SemiNormedGroup₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroup₁.coe_id
 
-@[simp]
+-- Porting note : removed `simp` attribute for not being simp normal form
 theorem coe_comp {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroup₁.coe_comp
