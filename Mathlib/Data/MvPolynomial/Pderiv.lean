@@ -8,8 +8,8 @@ Authors: Shing Tak Lam, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Variables
-import Mathbin.Data.MvPolynomial.Derivation
+import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Derivation
 
 /-!
 # Partial derivatives of polynomials
