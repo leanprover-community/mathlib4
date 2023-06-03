@@ -26,10 +26,10 @@ example (i j k : ℕ)
 
 * TODO: Deal with `let`
 * TODO: Add functionality to produce a named `theorem` via `extract_goal thmName`
+* TODO: Deal with auto-implicit universes.
 * TODO: Add tactic code actions?
 
 Check that these issues are resolved:
-* Deal with universes -- fixed?  Not much to do, it seems.
 * Deal with named instances -- fixed?
 -/
 
@@ -54,20 +54,22 @@ def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
                   else (middle ++ " : ")
     do pure (l ++ middle ++ (← ppExpr type) ++ r )
 
+def Lean.MetavarDecl.formatMVarDecls (decl : MetavarDecl) : MetaM Format := do
+  let dcls := decl.lctx.decls.toList.reduceOption.drop 1
+  let dgps := dcls.groupBy (fun x y => x.binderInfo == y.binderInfo ∧ x.type == y.type)
+  let fmts := ← dgps.mapM (oneBlock ·)
+  let indt := f!"\n    "
+  let fmts := fmts.intersperse indt
+  let coln := if (fmts.length = 0) then f!":" else f!" :"
+  let finf := (fmts.foldr (· ++ ·) coln) ++ indt ++ (← ppExpr decl.type)
+  -- a miserable hack to replace the hygienic dagger `✝` with `_hyg` so that it can be pasted.
+  return (finf.pretty.replace "✝" "_hyg") ++ f!" := by\n  sorry"
+
 /--
 `extract_goal` formats the current goal as a stand-alone example.
 
 It tries to produce an output that can be copy-pasted and just work.
 It renames a "hygienic" variable `n✝` to `n_hyg`.
 -/
-elab (name := extractGoal) name:"extract_goal" : tactic => do (← getMainGoal).withContext do
-  let dc := (← getLCtx).decls.toList.reduceOption.drop 1
-  let gps := dc.groupBy (fun x y => x.binderInfo == y.binderInfo ∧ x.type == y.type)
-  let fmts := ← gps.mapM (oneBlock ·)
-  let ind : Format := "\n    "
-  let fmts := fmts.intersperse ind
-  let tgt := ← getMainTarget
-  -- a miserable hack to replace the hygienic dagger `✝` with `_hyg` so that it can be pasted.
-  let targ := (← ppExpr tgt).pretty.replace "✝" "_hyg"
-  let bod := f!"example " ++ (fmts.foldr (fun x y => f!"{x}" ++ y) f!" :") ++ ind ++ targ
-  logInfoAt name (bod ++ f!" := by\n  sorry")
+elab (name := extractGoal) name:"extract_goal" : tactic => withMainContext do
+  logInfoAt name (f!"example " ++ (← (← getMainDecl).formatMVarDecls))
