@@ -16,18 +16,18 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 # Adhesive categories
 
 ## Main definitions
-- `category_theory.is_pushout.is_van_kampen`: A convenience formulation for a pushout being
+- `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
   a van Kampen colimit.
-- `category_theory.adhesive`: A category is adhesive if it has pushouts and pullbacks along
+- `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along
   monomorphisms, and such pushouts are van Kampen.
 
 ## Main Results
-- `category_theory.type.adhesive`: The category of `Type` is adhesive.
-- `category_theory.adhesive.is_pullback_of_is_pushout_of_mono_left`: In adhesive categories,
+- `CategoryTheory.Type.adhesive`: The category of `Type` is adhesive.
+- `CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left`: In adhesive categories,
   pushouts along monomorphisms are pullbacks.
-- `category_theory.adhesive.mono_of_is_pushout_of_mono_left`: In adhesive categories,
+- `CategoryTheory.Adhesive.mono_of_isPushout_of_mono_left`: In adhesive categories,
   monomorphisms are stable under pushouts.
-- `category_theory.adhesive.to_regular_mono_category`: Monomorphisms in adhesive categories are
+- `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
 
 ## TODO
@@ -55,7 +55,7 @@ variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
 /-- A convenience formulation for a pushout being a van Kampen colimit.
-See `is_pushout.is_van_kampen_iff` below. -/
+See `IsPushout.isVanKampen_iff` below. -/
 @[nolint unusedArguments]
 def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
   ∀ ⦃W' X' Y' Z' : C⦄ (f' : W' ⟶ X') (g' : W' ⟶ Y') (h' : X' ⟶ Z') (i' : Y' ⟶ Z') (αW : W' ⟶ W)
