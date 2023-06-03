@@ -8,7 +8,7 @@ Authors: Damiano Testa, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Liouville.Basic
+import Mathlib.NumberTheory.Liouville.Basic
 
 /-!
 
@@ -159,8 +159,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
         (sub_one_div_inv_le_two hm) (by positivity)
     _ = 2 / m ^ (n + 1)! := (mul_one_div 2 _)
     _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg ((· / ·) 2) (congr_arg (pow m) (mul_comm _ _)))
-    _ ≤ 1 / m ^ (n ! * n) :=
-      by
+    _ ≤ 1 / m ^ (n ! * n) := by
       -- [ NB: in this block, I do not follow the brace convention for subgoals -- I wait until
       --   I solve all extraneous goals at once with `exact pow_pos (zero_lt_two.trans_le hm) _`. ]
       -- Clear denominators and massage*
@@ -188,8 +187,7 @@ theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m
 
 /-- The sum of the `k` initial terms of the Liouville number to base `m` is a ratio of natural
 numbers where the denominator is `m ^ k!`. -/
-theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) : ∃ p : ℕ, partialSum m k = p / m ^ k ! :=
-  by
+theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) : ∃ p : ℕ, partialSum m k = p / m ^ k ! := by
   induction' k with k h
   · exact ⟨1, by rw [partial_sum, range_one, sum_singleton, Nat.cast_one]⟩
   · rcases h with ⟨p_k, h_k⟩
@@ -205,8 +203,7 @@ end liouvilleNumber
 
 open liouvilleNumber
 
-theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) :=
-  by
+theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) := by
   -- two useful inequalities
   have mZ1 : 1 < (m : ℤ) := by norm_cast; exact one_lt_two.trans_le hm
   have m1 : 1 < (m : ℝ) := by norm_cast; exact one_lt_two.trans_le hm
