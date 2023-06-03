@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.BoxIntegral.Partition.Additive
-import Mathbin.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.Analysis.BoxIntegral.Partition.Additive
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Box-additive functions defined by measures
@@ -85,8 +85,7 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal :=
-  by
+    (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.Union_def, measure_bUnion_finset π.pairwise_disjoint]
   exacts [fun J hJ => J.measurableSet_coe, fun J hJ => (J.measure_coe_lt_top μ).Ne]
 #align box_integral.prepartition.measure_Union_to_real BoxIntegral.Prepartition.measure_iUnion_toReal
@@ -104,8 +103,7 @@ namespace Measure
 /-- If `μ` is a locally finite measure on `ℝⁿ`, then `λ J, (μ J).to_real` is a box-additive
 function. -/
 @[simps]
-def toBoxAdditive (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ
-    where
+def toBoxAdditive (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
   toFun J := (μ J).toReal
   sum_partition_boxes' J hJ π hπ := by rw [← π.measure_Union_to_real, hπ.Union_eq]
 #align measure_theory.measure.to_box_additive MeasureTheory.Measure.toBoxAdditive
