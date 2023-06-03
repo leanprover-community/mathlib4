@@ -365,12 +365,15 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable R I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by
   dsimp only [derivedAbelianOfIdeal]
-  cases' h : derivedAbelianOfIdeal R L I with k
-  · rw [derivedLength_zero] at h ; rw [h]; rfl
-  · obtain ⟨h₁, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
+  split -- Porting note: Original tactic was `cases' h : derivedAbelianOfIdeal R L I with k`
+  · rename_i h
+    rw [derivedLength_zero] at h
+    rw [h]
+  · rename_i k h
+    obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
     change derivedSeriesOfIdeal R L k I = ⊥ ↔ I = ⊥
-    constructor <;> contradiction
+    simp only [h₂, h₃]
 #align lie_algebra.abelian_of_solvable_ideal_eq_bot_iff LieAlgebra.abelian_of_solvable_ideal_eq_bot_iff
 
 end LieAlgebra
