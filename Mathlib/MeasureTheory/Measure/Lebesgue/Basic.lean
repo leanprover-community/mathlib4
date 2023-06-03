@@ -98,7 +98,7 @@ theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [v
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
 #align real.volume_singleton Real.volume_singleton
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this, after mathlib4#4628
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
     calc
