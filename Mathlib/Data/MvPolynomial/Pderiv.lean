@@ -21,8 +21,8 @@ It is based purely on the polynomial exponents and coefficients.
 
 ## Main declarations
 
-* `mv_polynomial.pderiv i p` : the partial derivative of `p` with respect to `i`, as a bundled
-  derivation of `mv_polynomial σ R`.
+* `MvPolynomial.pderiv i p` : the partial derivative of `p` with respect to `i`, as a bundled
+  derivation of `MvPolynomial σ R`.
 
 ## Notation
 
@@ -30,16 +30,16 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type _` (indexing the variables)
 
-+ `R : Type _` `[comm_ring R]` (the coefficients)
++ `R : Type _` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
+This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `a : R`
 
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
-+ `p : mv_polynomial σ R`
++ `p : MvPolynomial σ R`
 
 -/
 
