@@ -64,7 +64,20 @@ structure OplaxNatTrans (F G : OplaxFunctor B C) where
             F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
     aesop_cat
 #align category_theory.oplax_nat_trans CategoryTheory.OplaxNatTrans
--- TODO: add align statements for structure fields
+#align category_theory.oplax_nat_trans.app CategoryTheory.OplaxNatTrans.app
+#align category_theory.oplax_nat_trans.naturality CategoryTheory.OplaxNatTrans.naturality
+#align category_theory.oplax_nat_trans.naturality_naturality' CategoryTheory.OplaxNatTrans.naturality_naturality
+#align category_theory.oplax_nat_trans.naturality_naturality CategoryTheory.OplaxNatTrans.naturality_naturality
+#align category_theory.oplax_nat_trans.naturality_id' CategoryTheory.OplaxNatTrans.naturality_id
+#align category_theory.oplax_nat_trans.naturality_id CategoryTheory.OplaxNatTrans.naturality_id
+#align category_theory.oplax_nat_trans.naturality_comp' CategoryTheory.OplaxNatTrans.naturality_comp
+#align category_theory.oplax_nat_trans.naturality_comp CategoryTheory.OplaxNatTrans.naturality_comp
+
+attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
+  CategoryTheory.OplaxNatTrans.naturality
+  CategoryTheory.OplaxNatTrans.naturality_naturality
+  CategoryTheory.OplaxNatTrans.naturality_id
+  CategoryTheory.OplaxNatTrans.naturality_comp
 
 /- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
   needed in Lean 4 -/
@@ -167,7 +180,6 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
         ?_
       _ = _ := ?_
-
     exact (α_ _ _ _).inv
     exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
     exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
@@ -217,8 +229,17 @@ structure Modification (η θ : F ⟶ G) where
       F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by
     aesop_cat
 #align category_theory.oplax_nat_trans.modification CategoryTheory.OplaxNatTrans.Modification
+#align category_theory.oplax_nat_trans.modification.app CategoryTheory.OplaxNatTrans.Modification
+#align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
+#align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
 
-attribute [simp, reassoc] Modification.naturality
+attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
+  CategoryTheory.OplaxNatTrans.Modification.naturality
+
+/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
+  needed in Lean 4 -/
+
+attribute [reassoc (attr := simp)] Modification.naturality
 
 variable {η θ ι : F ⟶ G}
 
