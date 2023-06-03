@@ -605,7 +605,6 @@ def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) 
         Cocones.ext (Iso.refl _)
           (by
             intro k
-            dsimp
             simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)))
       (by aesop_cat)
 #align category_theory.limits.cocones.whiskering_equivalence CategoryTheory.Limits.Cocones.whiskeringEquivalence
@@ -673,19 +672,13 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
       NatIso.ofComponents (fun c => Cocones.ext (e.unitIso.app _) (by aesop_cat)) (by aesop_cat)
     counitIso :=
       NatIso.ofComponents
-        (fun c =>
-          Cocones.ext (e.counitIso.app _)
+        (fun c => Cocones.ext (e.counitIso.app _)
             (by
-              -- Unfortunately this doesn't work by `tidy`.
+              -- Unfortunately this doesn't work by `aesop_cat`.
               -- In this configuration `simp` reaches a dead-end and needs help.
               intro j
-              dsimp
-              simp only [← Equivalence.counitInv_app_functor, Iso.inv_hom_id_app, map_comp,
-                Equivalence.fun_inv_map, assoc, id_comp, Iso.inv_hom_id_app_assoc]
-              dsimp; simp))-- See note [dsimp, simp].
-      fun {c} {c'} f => by
-        apply CoconeMorphism.ext
-        simp
+              simp [← Equivalence.counitInv_app_functor]))
+      (by aesop_cat)
   }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
@@ -935,11 +928,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
             apply ConeMorphism.w } }
   unitIso :=
     NatIso.ofComponents
-      (fun c =>
-        Cocones.ext (Iso.refl _)
-          (by
-            dsimp
-            simp))
+      (fun c => Cocones.ext (Iso.refl _) (by simp))
       fun {X} {Y} f => by
       apply CoconeMorphism.ext
       simp
@@ -949,17 +938,9 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
         induction c using Opposite.rec'
         dsimp
         apply Iso.op
-        exact
-          Cones.ext (Iso.refl _)
-            (by
-              dsimp
-              simp))
+        exact Cones.ext (Iso.refl _) (by simp))
       fun {X} {Y} f =>
-      Quiver.Hom.unop_inj
-        (ConeMorphism.ext _ _
-          (by
-            dsimp
-            simp))
+      Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
   functor_unitIso_comp c := by
     apply Quiver.Hom.unop_inj
     apply ConeMorphism.ext
