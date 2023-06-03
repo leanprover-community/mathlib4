@@ -30,18 +30,18 @@ in this file).
 
 The main definitions for this file are
 
-- `fermat_psp.probable_prime`: A number `n` is a probable prime to base `b` if it passes the Fermat
+- `FermatPsp.ProbablePrime`: A number `n` is a probable prime to base `b` if it passes the Fermat
   primality test; that is, if `n` divides `b ^ (n - 1) - 1`
-- `fermat_psp`: A number `n` is a pseudoprime to base `b` if it is a probable prime to base `b`, is
+- `FermatPsp`: A number `n` is a pseudoprime to base `b` if it is a probable prime to base `b`, is
   composite, and is coprime with `b` (this last condition is automatically true if `n` divides
   `b ^ (n - 1) - 1`, but some sources include it in the definition).
 
 Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definiton of
-`probable_prime` in this file implies that all numbers are probable primes to bases 0 and 1, and
+`ProbablePrime` in this file implies that all numbers are probable primes to bases 0 and 1, and
 that 0 and 1 are probable primes to any base.
 
 The main theorems are
-- `fermat_psp.exists_infinite_pseudoprimes`: there are infinite pseudoprimes to any base `b ≥ 1`
+- `FermatPsp.exists_infinite_pseudoprimes`: there are infinite pseudoprimes to any base `b ≥ 1`
 -/
 
 
@@ -80,7 +80,7 @@ instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
 theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 ≤ n) (h₂ : 1 ≤ b) :
     Nat.coprime n b := by
   by_cases h₃ : 2 ≤ n
-  · -- To prove that `n` is coprime with `b`, we we need to show that for all prime factors of `n`,
+  · -- To prove that `n` is coprime with `b`, we need to show that for all prime factors of `n`,
     -- we can derive a contradiction if `n` divides `b`.
     apply Nat.coprime_of_dvd
     -- If `k` is a prime number that divides both `n` and `b`, then we know that `n = m * k` and
@@ -98,7 +98,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
     -- suffices to show that `n - 1` isn't zero. However, we know that `n - 1` isn't zero because we
     -- assumed `2 ≤ n` when doing `by_cases`.
     refine' dvd_of_mul_right_dvd (dvd_pow_self (k * j) _)
-    linarith
+    linarith [tsub_pos_of_lt (one_lt_two.trans_le h₃)]
   -- If `n = 1`, then it follows trivially that `n` is coprime with `b`.
   · rw [show n = 1 by linarith]
     norm_num
@@ -215,7 +215,12 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_AB : 1 < A * B := one_lt_mul'' hi_A hi_B
   have hi_b : 0 < b := by linarith
   have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
-  have hi_bsquared : 0 < b ^ 2 - 1 := by nlinarith [Nat.one_le_pow 2 b hi_b]
+  have hi_bsquared : 0 < b ^ 2 - 1 := by
+    -- Porting note: was `by nlinarith [Nat.one_le_pow 2 b hi_b]`
+    have h0 := mul_le_mul b_ge_two b_ge_two zero_le_two hi_b.le
+    have h1 : 1 < 2 * 2 := by linarith
+    have := tsub_pos_of_lt (h1.trans_le h0)
+    rwa [pow_two]
   have hi_bpowtwop : 1 ≤ b ^ (2 * p) := Nat.one_le_pow (2 * p) b hi_b
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts
@@ -344,12 +349,12 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
 
 /-- For all positive bases, there exist Fermat infinite pseudoprimes to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
-that `m ≤ n`. This form is similar to `nat.exists_infinite_primes`.
+that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/
-theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) : ∃ n : ℕ, FermatPsp n b ∧ m ≤ n :=
-  by
+theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
+    ∃ n : ℕ, FermatPsp n b ∧ m ≤ n := by
   by_cases b_ge_two : 2 ≤ b
-  -- If `2 ≤ b`, then because there exist infinite prime numbers, there is a prime number p such
+  -- If `2 ≤ b`, then because there exist infinite prime numbers, there is a prime number p with
   -- `m ≤ p` and `¬p ∣ b*(b^2 - 1)`. We pick a prime number `b*(b^2 - 1) + 1 + m ≤ p` because we
   -- automatically know that `p` is greater than m and that it does not divide `b*(b^2 - 1)`
   -- (because `p` can't divide a number less than `p`).
@@ -383,7 +388,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) : ∃ n :
 #align fermat_psp.exists_infinite_pseudoprimes FermatPsp.exists_infinite_pseudoprimes
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
-  -- Based on the proof of `nat.frequently_at_top_modeq_one`
+  -- Based on the proof of `Nat.frequently_atTop_modEq_one`
   refine' Filter.frequently_atTop.2 fun n => _
   obtain ⟨p, hp⟩ := exists_infinite_pseudoprimes h n
   exact ⟨p, hp.2, hp.1⟩
