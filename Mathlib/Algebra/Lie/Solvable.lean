@@ -313,7 +313,8 @@ theorem derivedSeries_of_derivedLength_succ (I : LieIdeal R L) (k : ℕ) :
     derivedLengthOfIdeal R L I = k + 1 ↔
       IsLieAbelian (derivedSeriesOfIdeal R L k I) ∧ derivedSeriesOfIdeal R L k I ≠ ⊥ := by
   rw [abelian_iff_derived_succ_eq_bot]
-  let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }; change Inf s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s
+  let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }
+  change sInf s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s
   have hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := by
     intro k₁ k₂ h₁₂ h₁
     suffices derivedSeriesOfIdeal R L k₂ I ≤ ⊥ by exact eq_bot_iff.mpr this
@@ -326,7 +327,7 @@ theorem derivedLength_eq_derivedLengthOfIdeal (I : LieIdeal R L) :
     derivedLength R I = derivedLengthOfIdeal R L I := by
   let s₁ := { k | derivedSeries R I k = ⊥ }
   let s₂ := { k | derivedSeriesOfIdeal R L k I = ⊥ }
-  change Inf s₁ = Inf s₂
+  change sInf s₁ = sInf s₂
   congr; ext k; exact I.derivedSeries_eq_bot_iff k
 #align lie_algebra.derived_length_eq_derived_length_of_ideal LieAlgebra.derivedLength_eq_derivedLengthOfIdeal
 
@@ -352,7 +353,8 @@ theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
 
 theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
     derivedLengthOfIdeal R L I = 0 ↔ I = ⊥ := by
-  let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }; change Inf s = 0 ↔ _
+  let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }
+  change sInf s = 0 ↔ _
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
     refine' Set.Nonempty.ne_empty ⟨k, _⟩
