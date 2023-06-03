@@ -52,7 +52,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analagous field_simp discharger `field_simp.ne_zero`
+    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
@@ -130,7 +130,7 @@ The tactics are not related: `cancel_denoms` will only handle numeric denominato
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
 syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (simpArgs)? (ppSpace location)? : tactic
+  (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?

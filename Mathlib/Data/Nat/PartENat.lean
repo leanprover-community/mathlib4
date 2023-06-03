@@ -624,7 +624,7 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 end WithTop
 
 -- Porting note : new, extracted from `withTopEquiv`.
-/-- Coersion from `ℕ∞` to `PartENat`. -/
+/-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
   fun x => match x with

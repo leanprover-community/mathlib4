@@ -1189,7 +1189,7 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the succesor of the cast. See `Fin.succ_cast_eq` for rewriting in
+/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
 the reverse direction. -/
 @[simp]
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
