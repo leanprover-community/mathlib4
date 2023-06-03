@@ -8,7 +8,7 @@ Authors: Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Jordan rings
@@ -96,8 +96,7 @@ class IsCommJordan [Mul A] where
 
 -- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multipication -/
-instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsCommJordan A] : IsJordan A
-    where
+instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [IsCommJordan.mul_comm, IsCommJordan.mul_comm a b]
   lmul_lmul_comm_lmul a b := by
     rw [IsCommJordan.mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
@@ -112,8 +111,7 @@ instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsCommJordan A] : Is
 
 -- see Note [lower instance priority]
 /-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
-instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A
-    where
+instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
   lmul_lmul_comm_lmul a b := by rw [mul_assoc, mul_assoc]
   lmul_comm_rmul_rmul a b := by rw [mul_assoc]
@@ -122,8 +120,7 @@ instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A
 #align semigroup.is_jordan Semigroup.isJordan
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsCommJordan A
-    where
+instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsCommJordan A where
   mul_comm := mul_comm
   lmul_comm_rmul_rmul a b := mul_assoc _ _ _
 #align comm_semigroup.is_comm_jordan CommSemigroup.isCommJordan
@@ -179,8 +176,7 @@ with a Lie Bracket via `ring.has_bracket`.
 
 
 theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
-    2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ :=
-  by
+    2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
   convert(commute_lmul_lmul_sq (a + b)).lie_eq
@@ -190,8 +186,7 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
 #align two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add
 
 theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
-    2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 :=
-  by
+    2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 := by
   symm
   calc
     0 = ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ := by
@@ -199,8 +194,7 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     _ =
         ⁅L a + L b + L c,
           L (a * a) + L (a * b) + L (a * c) + (L (b * a) + L (b * b) + L (b * c)) +
-            (L (c * a) + L (c * b) + L (c * c))⁆ :=
-      by
+            (L (c * a) + L (c * b) + L (c * c))⁆ := by
       rw [add_mul, add_mul, mul_add, mul_add, mul_add, mul_add, mul_add, mul_add, map_add, map_add,
         map_add, map_add, map_add, map_add, map_add, map_add, map_add, map_add]
     _ =
@@ -210,8 +204,7 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
       by rw [IsCommJordan.mul_comm b a, IsCommJordan.mul_comm c a, IsCommJordan.mul_comm c b]
     _ =
         ⁅L a + L b + L c,
-          L (a * a) + L (b * b) + L (c * c) + 2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ :=
-      by
+          L (a * a) + L (b * b) + L (c * c) + 2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ := by
       rw [two_smul, two_smul, two_smul]
       simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]; abel
     _ =
@@ -223,8 +216,7 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
               ⁅L b, 2 • L (b * c)⁆) +
           (⁅L c, L (a * a)⁆ + ⁅L c, L (b * b)⁆ + ⁅L c, L (c * c)⁆ + ⁅L c, 2 • L (a * b)⁆ +
               ⁅L c, 2 • L (c * a)⁆ +
-            ⁅L c, 2 • L (b * c)⁆) :=
-      by
+            ⁅L c, 2 • L (b * c)⁆) := by
       rw [add_lie, add_lie, lie_add, lie_add, lie_add, lie_add, lie_add, lie_add, lie_add, lie_add,
         lie_add, lie_add, lie_add, lie_add, lie_add, lie_add, lie_add]
     _ =
@@ -233,8 +225,7 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
             (⁅L b, L (a * a)⁆ + ⁅L b, L (c * c)⁆ + ⁅L b, 2 • L (a * b)⁆ + ⁅L b, 2 • L (c * a)⁆ +
               ⁅L b, 2 • L (b * c)⁆) +
           (⁅L c, L (a * a)⁆ + ⁅L c, L (b * b)⁆ + ⁅L c, 2 • L (a * b)⁆ + ⁅L c, 2 • L (c * a)⁆ +
-            ⁅L c, 2 • L (b * c)⁆) :=
-      by
+            ⁅L c, 2 • L (b * c)⁆) := by
       rw [(commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq,
         (commute_lmul_lmul_sq c).lie_eq, zero_add, add_zero, add_zero]
     _ =
@@ -251,8 +242,7 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
             (⁅L b, L (c * c)⁆ + ⁅L c, L (b * b)⁆ + 2 • (⁅L b, L (b * c)⁆ + ⁅L c, L (b * c)⁆)) +
           (2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆) :=
       by abel
-    _ = 2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ :=
-      by
+    _ = 2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ := by
       rw [add_left_eq_self]
       nth_rw 2 [IsCommJordan.mul_comm a b]
       nth_rw 1 [IsCommJordan.mul_comm c a]
