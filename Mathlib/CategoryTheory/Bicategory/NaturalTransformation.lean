@@ -20,10 +20,10 @@ transformations.
 
 ## Main definitions
 
-* `oplax_nat_trans F G` : oplax natural transformations between oplax functors `F` and `G`
-* `oplax_nat_trans.vcomp η θ` : the vertical composition of oplax natural transformations `η`
+* `OplaxNatTrans F G` : oplax natural transformations between oplax functors `F` and `G`
+* `OplaxNatTrans.vcomp η θ` : the vertical composition of oplax natural transformations `η`
   and `θ`
-* `oplax_nat_trans.category F G` : the category structure on the oplax natural transformations
+* `OplaxNatTrans.category F G` : the category structure on the oplax natural transformations
   between `F` and `G`
 -/
 
@@ -191,13 +191,13 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
         whiskerRight_naturality_comp_assoc, pentagon_assoc, whiskerRight_comp,
         pentagon_hom_inv_inv_inv_inv_assoc]
     · simp
-  -- Porting note: this used to be automatic via `tidy`, which did `intros, simp`
   naturality_id _ := by
+    -- Porting note: this used to be automatic via `tidy`, which did `intros, simp`
     simp only [comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, whiskerLeft_naturality_id_assoc,
       whiskerLeft_rightUnitor_inv, Iso.hom_inv_id, comp_id, whiskerRight_naturality_id_assoc,
       leftUnitor_whiskerRight, triangle_assoc, inv_hom_whiskerRight_assoc, whiskerRight_comp]
-  -- Porting note: this used to be automatic via `tidy`, wich did `intros, simp`
   naturality_naturality {_ _ _ _} _ := by
+    -- Porting note: this used to be automatic via `tidy`, wich did `intros, simp`
     simp only [whiskerRight_comp, assoc, Iso.hom_inv_id_assoc,
       whiskerRight_naturality_naturality_assoc, Iso.inv_hom_id_assoc,
       whiskerLeft_naturality_naturality_assoc, comp_whiskerLeft]
@@ -281,15 +281,15 @@ end
 @[simps]
 def vcomp (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
   app a := Γ.app a ≫ Δ.app a
-  -- Porting note: this used to be automatic via `tidy`, wich did `intros, simp`
   naturality := by
+    -- Porting note: this used to be automatic via `tidy`, wich did `intros, simp`
     intros
     simp only [whiskerLeft_comp, assoc, naturality, naturality_assoc, comp_whiskerRight]
 #align category_theory.oplax_nat_trans.modification.vcomp CategoryTheory.OplaxNatTrans.Modification.vcomp
 
 end Modification
 
-/-- Category structure on the oplax natural transformations between oplax_functors. -/
+/-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
 instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
@@ -312,10 +312,12 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
   hom_inv_id := by
+    -- Porting note: this used to be automatic via `tidy`, which did `intros, ext, simp`.
     refine' Modification.ext _ _ (funext (fun b => _))
     simp only [category_comp, Modification.vcomp_app, Iso.hom_inv_id, category_id,
       Modification.id_app]
   inv_hom_id := by
+    -- Porting note: this used to be automatic via `tidy`, which did `intros, ext, simp`.
     refine' Modification.ext _ _ (funext (fun b => _))
     simp only [category_comp, Modification.vcomp_app, Iso.inv_hom_id, category_id,
       Modification.id_app]
