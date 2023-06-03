@@ -193,13 +193,13 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
   simp [← h, ← hx']
 #align lie_submodule.sup_lie LieSubmodule.sup_lie
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem lie_inf : ⁅I, N ⊓ N'⁆ ≤ ⁅I, N⁆ ⊓ ⁅I, N'⁆ := by
   rw [le_inf_iff]; constructor <;>
   apply mono_lie_right <;> [exact inf_le_left; exact inf_le_right]
 #align lie_submodule.lie_inf LieSubmodule.lie_inf
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem inf_lie : ⁅I ⊓ J, N⁆ ≤ ⁅I, N⁆ ⊓ ⁅J, N⁆ := by
   rw [le_inf_iff]; constructor <;>
   apply mono_lie_left <;> [exact inf_le_left; exact inf_le_right]
