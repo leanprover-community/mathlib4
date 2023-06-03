@@ -241,6 +241,7 @@ open CategoryTheory.Bicategory
 
 namespace Tactic
 
+/-
 /- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34:
   unsupported: setup_tactic_parser -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
@@ -270,13 +271,44 @@ namespace Tactic
             congr
 #align tactic.bicategorical_coherence tactic.bicategorical_coherence
 
+The original Lean3 code was :
+/-- Coherence tactic for bicategories. -/
+meta def bicategorical_coherence : tactic unit :=
+focus1 $
+do
+  o ← get_options, set_options $ o.set_nat `class.instance_max_depth 128,
+  try `[dsimp],
+  `(%%lhs = %%rhs) ← target,
+  to_expr  ``((free_bicategory.lift (prefunctor.id _)).map₂ (lift_hom₂.lift %%lhs) =
+    (free_bicategory.lift (prefunctor.id _)).map₂ (lift_hom₂.lift %%rhs))
+    >>= tactic.change,
+  congr-/
+
+
+
 namespace Bicategory
 
+/-
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /-- Simp lemmas for rewriting a 2-morphism into a normal form. -/
 unsafe def whisker_simps : tactic Unit :=
   sorry
 #align tactic.bicategory.whisker_simps tactic.bicategory.whisker_simps
+
+The origiginal Lean3 code was :
+/-- Simp lemmas for rewriting a 2-morphism into a normal form. -/
+meta def whisker_simps : tactic unit :=
+`[simp only [
+    category_theory.category.assoc,
+    category_theory.bicategory.comp_whisker_left,
+    category_theory.bicategory.id_whisker_left,
+    category_theory.bicategory.whisker_right_comp,
+    category_theory.bicategory.whisker_right_id,
+    category_theory.bicategory.whisker_left_comp,
+    category_theory.bicategory.whisker_left_id,
+    category_theory.bicategory.comp_whisker_right,
+    category_theory.bicategory.id_whisker_right,
+    category_theory.bicategory.whisker_assoc]]-/
 
 namespace Coherence
 
@@ -288,8 +320,8 @@ this move brackets to the left in order to expose a maximal prefix
 built out of unitors and associators.
 -/
 @[nolint unusedArguments]
-theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h] (η : f ⟶ g) (θ : g ⟶ h)
-    (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
+theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h]
+    (η : f ⟶ g) (θ : g ⟶ h) (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
   (Category.assoc _ _ _).symm
 #align tactic.bicategory.coherence.assoc_lift_hom₂ Tactic.Bicategory.Coherence.assoc_liftHom₂
 
