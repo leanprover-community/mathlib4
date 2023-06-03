@@ -687,9 +687,9 @@ theorem integral_eq_setToL1 (f : α →₁[μ] E) :
 
 @[norm_cast]
 theorem SimpleFunc.integral_L1_eq_integral (f : α →₁ₛ[μ] E) :
-    integral (f : α →₁[μ] E) = SimpleFunc.integral f := by
-  simp only [integral]
-  exact set_to_L1_eq_set_to_L1s_clm (dominatedFinMeasAdditive_weightedSMul μ) f
+    L1.integral (f : α →₁[μ] E) = SimpleFunc.integral f := by
+  simp only [integral, L1.integral]
+  exact setToL1_eq_setToL1SCLM (dominatedFinMeasAdditive_weightedSMul μ) f
 #align measure_theory.L1.simple_func.integral_L1_eq_integral MeasureTheory.L1.SimpleFunc.integral_L1_eq_integral
 
 variable (α E)
@@ -729,14 +729,14 @@ local notation "Integral" => @integralClm α E _ _ μ _ _
 -- mathport name: simple_func.integral_clm'
 local notation "sIntegral" => @SimpleFunc.integralClm α E _ _ μ _
 
-theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
+theorem norm_Integral_le_one : ‖integralClm (α := α) (E := E) (μ := μ)‖ ≤ (1 : ℝ) :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
 #align measure_theory.L1.norm_Integral_le_one MeasureTheory.L1.norm_Integral_le_one
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
-    ‖integral f‖ = ‖Integral f‖ := by simp only [integral]
-    _ ≤ ‖Integral‖ * ‖f‖ := (le_op_norm _ _)
+    ‖integral f‖ = ‖integralClm (E := E) f‖ := by simp only [integral]
+    _ ≤ ‖integralClm (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_op_norm _ _)
     _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
