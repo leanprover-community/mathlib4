@@ -56,7 +56,7 @@ open scoped BigOperators
 
 variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
 
-section Pderiv
+section PDeriv
 
 variable [CommSemiring R]
 
@@ -66,10 +66,8 @@ def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
   mkDerivation R <| Pi.single i 1
 #align mv_polynomial.pderiv MvPolynomial.pderiv
 
-theorem pderiv_def [h : DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.single i 1) := by
-  -- porting note: was `convert rfl`
-  obtain rfl : h = Classical.decEq σ := Subsingleton.elim _ _
-  rfl
+theorem pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.single i 1) := by
+  unfold pderiv; congr!
 #align mv_polynomial.pderiv_def MvPolynomial.pderiv_def
 
 @[simp]
@@ -78,7 +76,7 @@ theorem pderiv_monomial {i : σ} :
   classical
     simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
       ← (monomial _).map_smul]
-    refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
+    refine' (Finset.sum_eq_single i (fun j _ hne => _) fun hi => _).trans _
     · simp [Pi.single_eq_of_ne hne]
     · rw [Finsupp.not_mem_support_iff] at hi ; simp [hi]
     · simp
@@ -94,7 +92,7 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 
 @[simp]
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv i (X j : MvPolynomial σ R) = @Pi.single _ (fun _ ↦ MvPolynomial σ R) _ _ i 1 j := by
+    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun j => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X MvPolynomial.pderiv_X
@@ -112,12 +110,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem pderiv_eq_zero_of_not_mem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
     pderiv i f = 0 :=
-  derivation_eq_zero_of_forall_mem_vars fun _j hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
+  derivation_eq_zero_of_forall_mem_vars fun _ hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
 #align mv_polynomial.pderiv_eq_zero_of_not_mem_vars MvPolynomial.pderiv_eq_zero_of_not_mem_vars
 
-theorem pderiv_monomial_single {i : σ} {n : ℕ} :
-    pderiv i (monomial (Finsupp.single i n) a) =
-      monomial (Finsupp.single i (n - 1)) (a * n) := by simp
+theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
+    monomial (single i (n - 1)) (a * n) := by simp
 #align mv_polynomial.pderiv_monomial_single MvPolynomial.pderiv_monomial_single
 
 theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
@@ -125,12 +122,12 @@ theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
   simp only [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
 #align mv_polynomial.pderiv_mul MvPolynomial.pderiv_mul
 
--- porting note: was `@[simp]`, now `simp` can prove it
+-- @[simp] -- Porting note: simp can prove this
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f :=
   (derivation_C_mul _ _ _).trans C_mul'.symm
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul
 
-end Pderiv
+end PDeriv
 
 end MvPolynomial
