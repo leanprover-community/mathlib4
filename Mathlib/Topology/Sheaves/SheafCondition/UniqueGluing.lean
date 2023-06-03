@@ -68,7 +68,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
@@ -220,7 +220,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
 
@@ -248,7 +248,7 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
 
@@ -332,7 +332,9 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
       constructor
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up True)
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up False)
-    · rintro ⟨_ | _⟩ <;> simp [h₁, h₂]
+    · rintro ⟨_ | _⟩
+      any_goals exact h₁
+      any_goals exact h₂
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq₂ TopCat.Sheaf.eq_of_locally_eq₂
 

@@ -52,9 +52,8 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      simp only [TopCat.comp_app]
-      simp only [hom_apply]
-      simp [h, ← hom_apply])
+      rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]
+      exact h)
 #align Top.pullback_cone TopCat.pullbackCone
 
 /-- The constructed cone is a limit. -/
@@ -73,15 +72,13 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         }
       refine' ⟨_, _, _⟩
       · delta pullbackCone
-        apply Faithful.map_injective (F := (forget TopCat))
         ext a
-        rw [TopCat.comp_app]
-        simp [hom_apply]
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · delta pullbackCone
-        apply Faithful.map_injective (F := (forget TopCat))
         ext a
-        rw [TopCat.comp_app]
-        simp [hom_apply]
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · intro m h₁ h₂
         -- Porting note: used to be ext x
         apply ContinuousMap.ext; intro x
@@ -169,10 +166,14 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
-    · conv_rhs => rw [hom_apply]
-      simp
-    · conv_rhs => rw [hom_apply]
-      simp
+    · rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π]
+      simp only [pair_obj_left, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+        pullbackIsoProdSubtype_inv_fst]
+      rfl
+    · rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π]
+      simp only [pair_obj_right, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+        pullbackIsoProdSubtype_inv_snd]
+      rfl
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -195,6 +196,9 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   ext
   constructor
   · rintro ⟨y, rfl⟩
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    refine ⟨⟨(pullback.fst (f := f₁) (g := f₂) y), ?_⟩, ⟨(pullback.snd (f := f₁) (g := f₂) y), ?_⟩⟩ <;>
+    rw [←comp_apply, ←comp_apply] <;>
     simp
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
@@ -210,9 +214,16 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     simp only [← comp_apply]
     have : pullback.fst ≫ g₁ = limit.π (cospan g₁ g₂) none := by
       apply limit.w _ WalkingCospan.Hom.inl
-    rw [this]
-  · simp [hx₁]
-  · simp [hx₂]
+    simp only [cospan_one, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+      Functor.const_obj_obj, pullbackIsoProdSubtype_inv_fst_assoc]
+    rw [←this, comp_apply, comp_apply, comp_apply, ←hx₁]
+    congr
+  · rw [←comp_apply, ←comp_apply, Category.assoc, limit.lift_π,
+      PullbackCone.mk_π_app, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply, comp_apply]
+    exact hx₁
+  · rw [←comp_apply, ←comp_apply, Category.assoc, limit.lift_π,
+      PullbackCone.mk_π_app, pullbackIsoProdSubtype_inv_snd_assoc, comp_apply, comp_apply]
+    exact hx₂
 #align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
@@ -310,7 +321,8 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
   congr
-  exact (limit.w _ WalkingCospan.Hom.inr).symm
+  rw [←limit.w _ WalkingCospan.Hom.inr]
+  rfl
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
 
 theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
@@ -338,7 +350,8 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
   erw [← coe_comp]
   congr
-  exact (limit.w _ WalkingCospan.Hom.inr).symm
+  rw [←(limit.w _ WalkingCospan.Hom.inr)]
+  rfl
 #align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}

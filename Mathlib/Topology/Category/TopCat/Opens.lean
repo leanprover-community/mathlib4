@@ -296,10 +296,12 @@ def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
   unitIso :=
-    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
+    NatIso.ofComponents (fun U => eqToIso
+      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
       (by intros; simp)
   counitIso :=
-    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
+    NatIso.ofComponents (fun U => eqToIso
+      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
       (by intros; simp)
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 
@@ -391,7 +393,7 @@ theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
   refine' Set.image_preimage_eq_inter_range.trans _
-  rw [set_range_forget_map_inclusion U]
+  erw [set_range_forget_map_inclusion U]
   rfl
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf
 

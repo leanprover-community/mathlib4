@@ -56,7 +56,7 @@ variable {C}
 namespace Presheaf
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.hasCoeToFun
+  CategoryTheory.ConcreteCategory.funLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheafs -/
 macro "sheaf_restrict" : attr =>
@@ -330,8 +330,8 @@ variable {X Y : TopCat.{v}} (ℱ : Y.Presheaf C)
 def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
   NatIso.ofComponents
     (fun U =>
-      pullbackObjObjOfImageOpen (𝟙 _) ℱ (unop U) (by simpa using U.unop.2) ≪≫
-        ℱ.mapIso (eqToIso (by simp)))
+      pullbackObjObjOfImageOpen (𝟙 _) ℱ (unop U) (by simpa [id_apply] using U.unop.2) ≪≫
+        ℱ.mapIso (eqToIso (by simp [id_apply])))
     fun {U V} i => by
       simp only [pullbackObj_obj]
       ext
@@ -414,7 +414,7 @@ set_option linter.uppercaseLean3 false in
 theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
-      ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
+      ℱ.map (eqToHom (by simp [←comp_apply, id_apply, Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   delta toPushforwardOfIso
   -- Porting note : originally is a single invocation of `simp`
@@ -445,7 +445,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
-        𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
+        𝒢.map (eqToHom (by simp [← comp_apply, id_apply, Opens.map, Set.preimage_preimage])) := by
   simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app

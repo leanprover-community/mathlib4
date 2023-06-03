@@ -59,7 +59,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.hasCoeToFun in
+attribute [instance] ConcreteCategory.funLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
@@ -134,8 +134,8 @@ set_option linter.uppercaseLean3 false in
 def homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
+  left_inv x := by simp [←comp_apply, id_apply]
+  right_inv x := by simp [←comp_apply, id_apply]
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 set_option linter.uppercaseLean3 false in

@@ -100,14 +100,20 @@ variable {C : Type v} [Category C] [ConcreteCategory.{w} C]
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
 
+@[reducible]
+def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
+  coe f := (forget C).map f
+  coe_injective' _ _ h := (forget C).map_injective h
+attribute [local instance] ConcreteCategory.funLike
+
+/-
 /-- Usually a bundled hom structure already has a coercion to function
 that works with different universes. So we don't use this as a global instance. -/
 @[reducible]
 def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨fun f => (forget _).map f⟩
 #align category_theory.concrete_category.has_coe_to_fun CategoryTheory.ConcreteCategory.hasCoeToFun
-
-attribute [local instance] ConcreteCategory.hasCoeToFun
+-/
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
 @[ext 900] -- Porting note: lowered priority
@@ -145,6 +151,10 @@ theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
 theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   congr_fun ((forget _).map_comp _ _) x
 #align category_theory.comp_apply CategoryTheory.comp_apply
+
+theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) :=
+  congr_fun ((forget _).map_comp _ _) x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x

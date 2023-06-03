@@ -139,9 +139,9 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
   naturality := by
     have := elementwise_of% f.naturality
     intros
-    ext
-    simp [this]
-    rfl
+    refine funext fun x => Subtype.ext ?_
+    simp only [toPresheaf_obj, types_comp_apply]
+    exact this _ _
 #align category_theory.grothendieck_topology.subpresheaf.lift CategoryTheory.GrothendieckTopology.Subpresheaf.lift
 
 @[reassoc (attr := simp)]

@@ -423,12 +423,13 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
   fapply NatIso.ofComponents
   · intro X
     refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
-    simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
-      Set.preimage_preimage]
-    simp_rw [← comp_app]
-    refine congr_arg (Set.preimage . U.1) (funext fun x => congr_fun ?_ x)
-    congr
-    exact ι_preservesColimitsIso_inv (forget C) F (unop X)
+    simp only [comp_obj, forget_obj, colimitCocone_pt, colimit_carrier, Iso.symm_hom, op_obj,
+      unop_op, op_inj_iff, SetLike.ext'_iff, Opens.map_coe, Set.preimage_preimage]
+    refine congr_arg (Set.preimage . U.1) (funext fun x => ?_)
+    have := ι_preservesColimitsIso_inv (forget C) F (unop X)
+    dsimp at this
+    erw [←this]
+    rfl
   · intro X Y f
     change ((F.map f.unop).c.app _ ≫ _ ≫ _) ≫ (F.obj (unop Y)).presheaf.map _ = _ ≫ _
     rw [TopCat.Presheaf.Pushforward.comp_inv_app]
