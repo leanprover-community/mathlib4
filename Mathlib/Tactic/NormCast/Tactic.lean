@@ -112,7 +112,7 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
 Discharging function used during simplification in the "squash" step.
 
 TODO: normCast takes a list of expressions to use as lemmas for the discharger
-TODO: a tactic to print the results the discharger fails to proove
+TODO: a tactic to print the results the discharger fails to prove
 -/
 def prove (e : Expr) : SimpM (Option Expr) := do
   withTraceNode `Tactic.norm_cast (return m!"{exceptOptionEmoji ·} discharging: {e}") do
@@ -210,7 +210,7 @@ def normCastHyp (fvarId : FVarId) : TacticM Unit :=
     let prf ← derive hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
-elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
+elab "norm_cast0" loc:((location)?) : tactic =>
   withMainContext do
     match expandOptLocation loc with
     | Location.targets hyps target =>
@@ -227,13 +227,13 @@ macro "assumption_mod_cast" : tactic => `(tactic| norm_cast0 at * <;> assumption
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
-macro "norm_cast" loc:(ppSpace location)? : tactic =>
+macro "norm_cast" loc:(location)? : tactic =>
   `(tactic| norm_cast0 $[$loc]? <;> try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
 -/
-syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
+syntax "rw_mod_cast" (config)? rwRuleSeq (location)? : tactic
 macro_rules
   | `(tactic| rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
     let tacs ← rules.getElems.mapM fun rule ↦
@@ -255,8 +255,8 @@ syntax (name := convNormCast) "norm_cast" : conv
   open Elab.Tactic.Conv in fun _ ↦ withMainContext do
     applySimpResult (← derive (← getLhs))
 
-syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")?
-  ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
+syntax (name := pushCast) "push_cast " (config)? (discharger)? (&" only")?
+  (" [" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx ↦ do
   let { ctx, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)

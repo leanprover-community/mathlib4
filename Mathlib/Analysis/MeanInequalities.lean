@@ -380,7 +380,7 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjuga
 #align nnreal.inner_le_Lp_mul_Lq NNReal.inner_le_Lp_mul_Lq
 
 /-- Hölder inequality: the scalar product of two functions is bounded by the product of their
-`L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `nnreal`-valued
+`L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_hasSum`. -/
 theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjugateExponent q)
@@ -416,7 +416,7 @@ theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsC
 #align nnreal.inner_le_Lp_mul_Lq_tsum' NNReal.inner_le_Lp_mul_Lq_tsum'
 
 /-- Hölder inequality: the scalar product of two functions is bounded by the product of their
-`L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `nnreal`-valued
+`L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum`.  -/
 theorem inner_le_Lp_mul_Lq_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p q : ℝ}

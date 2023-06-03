@@ -66,10 +66,16 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
-namespace Parser.Tactic
+end Lean
 
-syntax withArgs := " with " (colGt ident)+
+namespace Mathlib.Tactic
+
+-- FIXME: we cannot write this line when `Lean.Parser.Tactic` is open,
+-- or it will get an extra `group`
+syntax withArgs := " with" (ppSpace colGt ident)+
 syntax usingArg := " using " term
+
+open Lean Parser.Tactic
 
 /-- Extract the arguments from a `simpArgs` syntax as an array of syntaxes -/
 def getSimpArgs : Syntax → TacticM (Array Syntax)
@@ -97,8 +103,7 @@ the tactic is applied recursively to the generated subgoals until it eventually 
 -/
 macro "repeat1 " seq:tacticSeq : tactic => `(tactic| (($seq); repeat $seq))
 
-end Parser.Tactic
-end Lean
+end Mathlib.Tactic
 
 namespace Lean.Elab.Tactic
 

@@ -120,7 +120,7 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
 /-- If any two points of a set are contained in a preconnected subset,
 then the original set is preconnected as well. -/
 theorem isPreconnected_of_forall_pair {s : Set α}
-    (H : ∀ x, x ∈ s → ∀ y, y ∈ s → ∃ t, t ⊆ s ∧ x ∈ t ∧ y ∈ t ∧ IsPreconnected t) :
+    (H : ∀ x ∈ s, ∀ y ∈ s, ∃ t, t ⊆ s ∧ x ∈ t ∧ y ∈ t ∧ IsPreconnected t) :
     IsPreconnected s := by
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
   exacts [isPreconnected_empty, isPreconnected_of_forall x fun y => H x hx y]
@@ -283,8 +283,8 @@ theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.N
 
 end SuccOrder
 
-/-- Theorem of bark and tree: if a set is within a (pre)connected set
-and its closure, then it is (pre)connected as well. -/
+/-- Theorem of bark and tree: if a set is within a preconnected set and its closure, then it is
+preconnected as well. See also `IsConnected.subset_closure`. -/
 protected theorem IsPreconnected.subset_closure {s : Set α} {t : Set α} (H : IsPreconnected s)
     (Kst : s ⊆ t) (Ktcs : t ⊆ closure s) : IsPreconnected t :=
   fun u v hu hv htuv ⟨_y, hyt, hyu⟩ ⟨_z, hzt, hzv⟩ =>
@@ -294,22 +294,25 @@ protected theorem IsPreconnected.subset_closure {s : Set α} {t : Set α} (H : I
   ⟨r, Kst hrs, hruv⟩
 #align is_preconnected.subset_closure IsPreconnected.subset_closure
 
+/-- Theorem of bark and tree: if a set is within a connected set and its closure, then it is
+connected as well. See also `IsPreconnected.subset_closure`. -/
 protected theorem IsConnected.subset_closure {s : Set α} {t : Set α} (H : IsConnected s)
     (Kst : s ⊆ t) (Ktcs : t ⊆ closure s) : IsConnected t :=
   ⟨Nonempty.mono Kst H.left, IsPreconnected.subset_closure H.right Kst Ktcs⟩
 #align is_connected.subset_closure IsConnected.subset_closure
 
-/-- The closure of a (pre)connected set is (pre)connected as well. -/
+/-- The closure of a preconnected set is preconnected as well. -/
 protected theorem IsPreconnected.closure {s : Set α} (H : IsPreconnected s) :
     IsPreconnected (closure s) :=
   IsPreconnected.subset_closure H subset_closure Subset.rfl
 #align is_preconnected.closure IsPreconnected.closure
 
+/-- The closure of a connected set is connected as well. -/
 protected theorem IsConnected.closure {s : Set α} (H : IsConnected s) : IsConnected (closure s) :=
   IsConnected.subset_closure H subset_closure <| Subset.rfl
 #align is_connected.closure IsConnected.closure
 
-/-- The image of a (pre)connected set is (pre)connected as well. -/
+/-- The image of a preconnected set is preconnected as well. -/
 protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : IsPreconnected s)
     (f : α → β) (hf : ContinuousOn f s) : IsPreconnected (f '' s) := by
   -- Unfold/destruct definitions in hypotheses
@@ -331,6 +334,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
   exact ⟨f z, ⟨z, hz.1.2, rfl⟩, hz.1.1, hz.2.1⟩
 #align is_preconnected.image IsPreconnected.image
 
+/-- The image of a connected set is connected as well. -/
 protected theorem IsConnected.image [TopologicalSpace β] {s : Set α} (H : IsConnected s) (f : α → β)
     (hf : ContinuousOn f s) : IsConnected (f '' s) :=
   ⟨nonempty_image_iff.mpr H.nonempty, H.isPreconnected.image f hf⟩
@@ -1431,7 +1435,7 @@ def ConnectedComponents (α : Type u) [TopologicalSpace α] :=
 
 namespace ConnectedComponents
 
-/-- Coersion from a topological space to the set of connected components of this space. -/
+/-- Coercion from a topological space to the set of connected components of this space. -/
 def mk : α → ConnectedComponents α := Quotient.mk''
 
 instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩

@@ -103,36 +103,19 @@ irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α →
 
 -- mathport name: «expr∫⁻ , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
+notation3 "∫⁻ "(...)", "r:(scoped f => f)" ∂"μ => lintegral μ r
 
 -- mathport name: «expr∫⁻ , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
+notation3 "∫⁻ "(...)", "r:(scoped f => lintegral volume f) => r
 
 -- mathport name: «expr∫⁻ in , ∂ »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => f)" ∂"μ => lintegral (Measure.restrict μ s) r
 
 -- mathport name: «expr∫⁻ in , »
 @[inherit_doc MeasureTheory.lintegral]
-notation3"∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
-
-open Lean in
-@[app_unexpander MeasureTheory.lintegral]
-def _root_.unexpandLIntegral : PrettyPrinter.Unexpander
-  | `($(_) $μ fun $x:ident => $b) =>
-    match μ with
-    | `(Measure.restrict volume $s) => `(∫⁻ $x:ident in $s, $b)
-    | `(volume) => `(∫⁻ $x:ident, $b)
-    | `(Measure.restrict $ν $s) => `(∫⁻ $x:ident in $s, $b ∂$ν)
-    | _ => `(∫⁻ $x:ident, $b ∂$μ)
-  | `($(_) $μ fun ($x:ident : $t) => $b) =>
-    match μ with
-    | `(Measure.restrict volume $s) => `(∫⁻ ($x:ident : $t) in $s, $b)
-    | `(volume) => `(∫⁻ ($x:ident : $t), $b)
-    | `(Measure.restrict $ν $s) => `(∫⁻ ($x:ident : $t) in $s, $b ∂$ν)
-    | _ => `(∫⁻ ($x:ident : $t), $b ∂$μ)
-  | _ => throw ()
+notation3 "∫⁻ "(...)" in "s", "r:(scoped f => lintegral (Measure.restrict volume s) f) => r
 
 theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) :
     (∫⁻ a, f a ∂μ) = f.lintegral μ := by
@@ -847,7 +830,7 @@ theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f
 #align measure_theory.mul_meas_ge_le_lintegral₀ MeasureTheory.mul_meas_ge_le_lintegral₀
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
-`ae_measurable`, see `mul_meas_ge_le_lintegral₀`. -/
+`AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
@@ -1016,7 +999,7 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
 
-/-- Known as Fatou's lemma, version with `ae_measurable` functions -/
+/-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
     (∫⁻ a, liminf (fun n => f n a) atTop ∂μ) ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   calc
@@ -1323,7 +1306,7 @@ theorem lintegral_indicator_const_comp {mβ : MeasurableSpace β} {f : α → β
 #align measure_theory.lintegral_indicator_const_comp MeasureTheory.lintegral_indicator_const_comp
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
-measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` wich
+measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which
 applies to any measurable `g : α → β` but requires that `f` is measurable as well. -/
 theorem _root_.MeasurableEmbedding.lintegral_map [MeasurableSpace β] {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : (∫⁻ a, f a ∂map g μ) = ∫⁻ a, f (g a) ∂μ := by
@@ -1738,7 +1721,7 @@ theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞}
   · exact hf (measurableSet_singleton 0).compl
 #align measure_theory.ae_with_density_iff_ae_restrict MeasureTheory.ae_withDensity_iff_ae_restrict
 
-theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
+theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
   constructor
@@ -1762,7 +1745,7 @@ theorem aEMeasurable_withDensity_eNNReal_iff {f : α → ℝ≥0} (hf : Measurab
     filter_upwards [hg']
     intro x hx h'x
     rw [← hx, ← mul_assoc, ENNReal.inv_mul_cancel h'x ENNReal.coe_ne_top, one_mul]
-#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aEMeasurable_withDensity_eNNReal_iff
+#align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 end Lintegral
 

@@ -493,7 +493,7 @@ The equalities also hold in semifields of characteristic `0`.
 
 
 /- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`division_semiring` + `char_zero` -/
+`DivisionSemiring` + `CharZero` -/
 theorem add_halves (a : α) : a / 2 + a / 2 = a := by
   rw [div_add_div_same, ← two_mul, mul_div_cancel_left a two_ne_zero]
 #align add_halves add_halves

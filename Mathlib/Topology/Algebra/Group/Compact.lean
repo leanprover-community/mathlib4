@@ -41,7 +41,7 @@ is locally compact. -/
 @[to_additive
       "Every separated topological group in which there exists a compact set with nonempty
       interior is locally compact."]
-theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group [T2Space G]
+theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
     (K : PositiveCompacts G) : LocallyCompactSpace G := by
   refine' locally_compact_of_compact_nhds fun x => _
   obtain ⟨y, hy⟩ := K.interior_nonempty
@@ -55,8 +55,8 @@ theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group [T2Space 
       inv_inv, Homeomorph.coe_mulLeft, inv_mul_cancel_right]
   rw [this]
   exact mem_interior_iff_mem_nhds.1 hy
-#align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group
-#align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_AddGroup
+#align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
+#align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
 
 end
 

@@ -43,11 +43,6 @@ open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
 open MonCat.FilteredColimits (colimit_one_eq colimit_mul_mk_eq)
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
-
 namespace SemiRingCat.FilteredColimits
 
 section
