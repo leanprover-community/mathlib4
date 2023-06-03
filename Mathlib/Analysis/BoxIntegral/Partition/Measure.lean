@@ -120,9 +120,6 @@ open MeasureTheory
 
 namespace Box
 
--- Porting note: TODO fix this instance
-instance : LocallyFiniteMeasure (volume : Measure (ι → ℝ)) := sorry
-
 @[simp]
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
