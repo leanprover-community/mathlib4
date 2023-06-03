@@ -290,12 +290,13 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroup₁.{u} :=
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroup₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGroup₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (i.hom : V →+ W)
-  refine' AddMonoidHomClass.isometry_of_norm i.hom _
+  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [iso.hom_inv_id_apply]
+    ‖v‖ = ‖ (i.hom ≫ i.inv) v‖ := by rw [Iso.hom_inv_id]; rfl
+    _ = ‖i.inv (i.hom v)‖ := rfl
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 #align SemiNormedGroup₁.iso_isometry SemiNormedGroup₁.iso_isometry
 
