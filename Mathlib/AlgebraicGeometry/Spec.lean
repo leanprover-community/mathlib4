@@ -132,9 +132,10 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_comp f g) <|
     NatTrans.ext _ _ <| funext fun U => by
       rw [NatTrans.comp_app, sheafedSpaceMap_c_app, SheafedSpace.comp_c_app]
-      simp only [sheafedSpaceObj_carrier, sheafedSpaceObj_presheaf, SheafedSpace.comp_base, sheafedSpaceMap_base,
-        Functor.comp_obj, Functor.op_obj, TopologicalSpace.Opens.map_comp_obj, TopCat.Presheaf.pushforwardObj_obj,
-        eqToHom_refl, whiskerRight_id', NatTrans.id_app, Category.comp_id, unop_op, sheafedSpaceMap_c_app]
+      simp only [sheafedSpaceObj_carrier, sheafedSpaceObj_presheaf, SheafedSpace.comp_base,
+        sheafedSpaceMap_base, Functor.comp_obj, Functor.op_obj, TopologicalSpace.Opens.map_comp_obj,
+        TopCat.Presheaf.pushforwardObj_obj, eqToHom_refl, whiskerRight_id', NatTrans.id_app,
+        Category.comp_id, unop_op, sheafedSpaceMap_c_app]
       erw [comap_comp f g]
       rfl
 set_option linter.uppercaseLean3 false in
@@ -265,7 +266,8 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat} (f : R ⟶ S) :
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f) fun p =>
     IsLocalRingHom.mk fun a ha => by
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
-      -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring homomorphism.
+      -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
+      -- homomorphism.
       erw [← localRingHom_comp_stalkIso_apply] at ha
       replace ha := (stalkIso S p).hom.isUnit_map ha
       -- Porting note : this change was not necessary
@@ -467,8 +469,9 @@ set_option linter.uppercaseLean3 false in
 instance isLocalizedModule_toPushforwardStalkAlgHom :
     IsLocalizedModule p.asIdeal.primeCompl (toPushforwardStalkAlgHom R S p).toLinearMap := by
   apply IsLocalizedModule.mkOfAlgebra
-  · intro x hx; rw [algebraMap_pushforward_stalk, toPushforwardStalk_comp] -- , comp_apply]
-    change IsUnit ((TopCat.Presheaf.stalkFunctor CommRingCat p).map (Spec.sheafedSpaceMap (algebraMap ↑R ↑S)).c _)
+  · intro x hx; rw [algebraMap_pushforward_stalk, toPushforwardStalk_comp]
+    change IsUnit ((TopCat.Presheaf.stalkFunctor CommRingCat p).map
+      (Spec.sheafedSpaceMap (algebraMap ↑R ↑S)).c _)
     exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
   · apply is_localized_module_toPushforwardStalkAlgHom_aux
   · intro x hx
