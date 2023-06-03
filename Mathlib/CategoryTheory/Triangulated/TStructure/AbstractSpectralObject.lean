@@ -22,7 +22,7 @@ structure AbstractSpectralObject where
   truncGE : ι ⥤ C ⥤ C
   truncLTObjTopIso' : truncLT.obj top ≅ 𝟭 C
   truncGEObjBotIso' : truncGE.obj bot ≅ 𝟭 C
-  truncLTδGE : truncGE ⟶ truncLT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
+  truncGEδLT : truncGE ⟶ truncLT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
 
 variable {C}
 variable (F : AbstractSpectralObject C)
@@ -65,8 +65,9 @@ lemma truncGEπ_map {a b : F.ι} (φ : a ⟶ b) :
   dsimp only [truncGEπ]
   simp only [assoc, ← Functor.map_comp, fromBot_comp]
 
+@[simps]
 def triangleLTGE : F.ι ⥤ C ⥤ Triangle C where
-  obj a := Triangle.functorMk (F.truncLTι a) (F.truncGEπ a) (F.truncLTδGE.app a)
+  obj a := Triangle.functorMk (F.truncLTι a) (F.truncGEπ a) (F.truncGEδLT.app a)
   map φ := Triangle.functorHomMk' (F.truncLT.map φ) (𝟙 _) ((F.truncGE.map φ))
     (by simp) (by simp ) (by simp)
 
@@ -289,7 +290,7 @@ noncomputable def truncGELTδ : Arrow₂.δ₀ ⋙ F.truncGELT ⟶
   refine' F.truncGEGELTIsoTruncGELT.hom ≫
     (((whiskeringRight₂ (Arrow₂ F.ι) (C ⥤ C) (C ⥤ C) (C ⥤ C)).obj
       (whiskeringLeft C C C)).obj (Arrow₂.δ₁ ⋙ F.truncGELT)).map
-        (whiskerLeft Arrow₂.obj₁ F.truncLTδGE) ≫ _ ≫
+        (whiskerLeft Arrow₂.obj₁ F.truncGEδLT) ≫ _ ≫
     whiskerRight F.truncLTGELTIsoTruncGELT.inv
       ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
   exact { app := fun D => 𝟙 _ }

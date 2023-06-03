@@ -25,11 +25,19 @@ def _root_.ιℤt  : ℤ ⥤ ℤt := ℤt.mk_monotone.functor
 instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
   IsIso.of_iso (Iso.refl a)
 
-instance : HasTerminal ℤt := (@isTerminalTop (WithTop (WithBot ℤ)) _  _).hasTerminal
-instance : HasInitial ℤt := (@isInitialBot (WithTop (WithBot ℤ)) _  _).hasInitial
-
 abbrev subInfinity : ℤt := some none
 abbrev infinity : ℤt := none
+
+lemma isInitial_subInfinity : IsInitial subInfinity :=
+  @isInitialBot (WithTop (WithBot ℤ)) _  _
+
+lemma isTerminal_infinity : IsTerminal infinity :=
+  @isTerminalTop (WithTop (WithBot ℤ)) _ _
+
+
+instance : HasTerminal ℤt := isTerminal_infinity.hasTerminal
+instance : HasInitial ℤt := isInitial_subInfinity.hasInitial
+
 
 @[simp]
 lemma some_le_some_none_iff (a : ℤ) :
