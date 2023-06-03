@@ -25,12 +25,12 @@ make such a definition in this file.
 
 ## Main definitions
 
- * `lie_algebra.of_associative_algebra`
- * `lie_algebra.of_associative_algebra_hom`
- * `lie_module.to_endomorphism`
- * `lie_algebra.ad`
- * `linear_equiv.lie_conj`
- * `alg_equiv.to_lie_equiv`
+ * `LieAlgebra.ofAssociativeAlgebra`
+ * `LieAlgebra.ofAssociativeAlgebraHom`
+ * `LieModule.toEndomorphism`
+ * `LieAlgebra.ad`
+ * `LinearEquiv.lieConj`
+ * `AlgEquiv.toLieEquiv`
 
 ## Tags
 
@@ -69,14 +69,11 @@ namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
 instance (priority := 100) ofAssociativeRing : LieRing A where
-  add_lie := by
-    simp only [Ring.lie_def, right_distrib, left_distrib, sub_eq_add_neg, add_comm, add_left_comm,
-      forall_const, eq_self_iff_true, neg_add_rev]
-  lie_add := by
-    simp only [Ring.lie_def, right_distrib, left_distrib, sub_eq_add_neg, add_comm, add_left_comm,
-      forall_const, eq_self_iff_true, neg_add_rev]
+  add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
+  lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
-  leibniz_lie x y z := by repeat' rw [Ring.lie_def]; noncomm_ring
+  leibniz_lie _ _ _ := by
+    simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
 #align lie_ring.of_associative_ring LieRing.ofAssociativeRing
 
 theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
@@ -98,9 +95,9 @@ variable {M : Type w} [AddCommGroup M] [Module A M]
 bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
-specifically we can build two mathematically-different `has_bracket A A`s:
- 1. `@ring.has_bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@lie_ring_module.of_associative_module A _ A _ _).to_has_bracket` which says `⁅a, b⁆ = a • b`
+specifically we can build two mathematically-different `bracket A A`s:
+ 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+ 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
     (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
@@ -126,8 +123,8 @@ variable {R : Type u} [CommRing R] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
-instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A
-    where lie_smul t x y := by
+instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A where
+  lie_smul t x y := by
     rw [LieRing.of_associative_ring_bracket, LieRing.of_associative_ring_bracket,
       Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_sub]
 #align lie_algebra.of_associative_algebra LieAlgebra.ofAssociativeAlgebra
@@ -141,7 +138,7 @@ variable {M : Type w} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower 
 /-- A representation of an associative algebra `A` is also a representation of `A`, regarded as a
 Lie algebra via the ring commutator.
 
-See the comment at `lie_ring_module.of_associative_module` for why the possibility `M = A` means
+See the comment at `LieRingModule.ofAssociativeModule` for why the possibility `M = A` means
 this cannot be a global instance. -/
 def LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
@@ -164,13 +161,11 @@ variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R
 
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
-/-- The map `of_associative_algebra` associating a Lie algebra to an associative algebra is
+/-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
 functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
   { f.toLinearMap with
-    map_lie' := fun x y =>
-      show f ⁅x, y⁆ = ⁅f x, f y⁆ by
-        simp only [LieRing.of_associative_ring_bracket, AlgHom.map_sub, AlgHom.map_mul] }
+    map_lie' := fun {_ _} => by simp [LieRing.of_associative_ring_bracket] }
 #align alg_hom.to_lie_hom AlgHom.toLieHom
 
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
@@ -220,7 +215,7 @@ variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
 
-See also `lie_module.to_module_hom`. -/
+See also `LieModule.toModuleHom`. -/
 @[simps]
 def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
@@ -229,7 +224,7 @@ def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
       map_smul' := fun t => lie_smul t x }
   map_add' x y := by ext m; apply add_lie
   map_smul' t x := by ext m; apply smul_lie
-  map_lie' x y := by ext m; apply lie_lie
+  map_lie' {x y} := by ext m; apply lie_lie
 #align lie_module.to_endomorphism LieModule.toEndomorphism
 
 /-- The adjoint action of a Lie algebra on itself. -/
@@ -275,14 +270,14 @@ theorem coe_map_toEndomorphism_le :
 variable (N x)
 
 theorem toEndomorphism_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
-    (toEndomorphism R L M x).comp (N : Submodule R M).Subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
+    (toEndomorphism R L M x).comp (N : Submodule R M).subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
   simpa using N.lie_mem hm
 #align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEndomorphism_comp_subtype_mem
 
 @[simp]
 theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_subtype_mem x) :
-    (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by ext;
-  simp [LinearMap.restrict_apply]
+    (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
+  ext; simp [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
 
 end LieSubmodule
@@ -290,8 +285,8 @@ end LieSubmodule
 open LieAlgebra
 
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
-    (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by ext (a b);
-  simp [LieRing.of_associative_ring_bracket]
+    (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
+  ext (a b); simp [LieRing.of_associative_ring_bracket]
 #align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
 
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
@@ -306,13 +301,13 @@ end AdjointAction
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
 def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
-  { A'.toSubmodule with
-    lie_mem' := fun x y hx hy => by
-      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx ; change y ∈ A' at hy 
+  { Subalgebra.toSubmodule A' with
+    lie_mem' := fun {x y} hx hy => by
+      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx ; change y ∈ A' at hy
       rw [LieRing.of_associative_ring_bracket]
       have hxy := A'.mul_mem hx hy
       have hyx := A'.mul_mem hy hx
-      exact Submodule.sub_mem A'.to_submodule hxy hyx }
+      exact Submodule.sub_mem (Subalgebra.toSubmodule A') hxy hyx }
 #align lie_subalgebra_of_subalgebra lieSubalgebraOfSubalgebra
 
 namespace LinearEquiv
@@ -326,7 +321,7 @@ variable (e : M₁ ≃ₗ[R] M₂)
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
-    map_lie' := fun f g =>
+    map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
         simp only [LieRing.of_associative_ring_bracket, LinearMap.mul_eq_comp, e.conj_comp,
           LinearEquiv.map_sub] }
@@ -356,7 +351,9 @@ variable (e : A₁ ≃ₐ[R] A₂)
 def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
   { e.toLinearEquiv with
     toFun := e.toFun
-    map_lie' := fun x y => by simp [LieRing.of_associative_ring_bracket] }
+    map_lie' := fun {x y} => by
+      have : e.toEquiv.toFun = e := rfl
+      simp_rw [LieRing.of_associative_ring_bracket, this, map_sub, map_mul] }
 #align alg_equiv.to_lie_equiv AlgEquiv.toLieEquiv
 
 @[simp]
@@ -370,4 +367,3 @@ theorem toLieEquiv_symm_apply (x : A₂) : e.toLieEquiv.symm x = e.symm x :=
 #align alg_equiv.to_lie_equiv_symm_apply AlgEquiv.toLieEquiv_symm_apply
 
 end AlgEquiv
-
