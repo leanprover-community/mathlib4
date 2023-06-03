@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # The Chevalley–Warning theorem
@@ -57,8 +57,7 @@ variable {K σ ι : Type _} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
 local notation "q" => Fintype.card K
 
 theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
-    (h : f.totalDegree < (q - 1) * Fintype.card σ) : (∑ x, eval x f) = 0 :=
-  by
+    (h : f.totalDegree < (q - 1) * Fintype.card σ) : (∑ x, eval x f) = 0 := by
   haveI : DecidableEq K := Classical.decEq K
   calc
     (∑ x, eval x f) = ∑ x : σ → K, ∑ d in f.support, f.coeff d * ∏ i, x i ^ d i := by
@@ -121,8 +120,7 @@ Assume that the sum of the total degrees of the `f i` is less than the cardinali
 Then the number of common solutions of the `f i` is divisible by `p`. -/
 theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomial σ K}
     (h : (∑ i in s, (f i).totalDegree) < Fintype.card σ) :
-    p ∣ Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } :=
-  by
+    p ∣ Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
   let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }
   have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by intro x;
@@ -133,8 +131,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     Hence the sum of its values is equal to the cardinality of
     `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}` modulo `p`. -/
   let F : MvPolynomial σ K := ∏ i in s, 1 - f i ^ (q - 1)
-  have hF : ∀ x, eval x F = if x ∈ S then 1 else 0 :=
-    by
+  have hF : ∀ x, eval x F = if x ∈ S then 1 else 0 := by
     intro x
     calc
       eval x F = ∏ i in s, eval x (1 - f i ^ (q - 1)) := eval_prod s _ x
@@ -200,8 +197,7 @@ Assume that the total degree of `f` is less than the cardinality of `σ`.
 Then the number of solutions of `f` is divisible by `p`.
 See `char_dvd_card_solutions_of_sum_lt` for a version that takes a family of polynomials `f i`. -/
 theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fintype.card σ) :
-    p ∣ Fintype.card { x : σ → K // eval x f = 0 } :=
-  by
+    p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
   simpa only [F, Fintype.univ_punit, forall_eq, mem_singleton] using
@@ -215,8 +211,7 @@ Assume that the sum of the total degrees of `f₁` and `f₂` is less than the c
 Then the number of common solutions of the `f₁` and `f₂` is divisible by `p`. -/
 theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
     (h : f₁.totalDegree + f₂.totalDegree < Fintype.card σ) :
-    p ∣ Fintype.card { x : σ → K // eval x f₁ = 0 ∧ eval x f₂ = 0 } :=
-  by
+    p ∣ Fintype.card { x : σ → K // eval x f₁ = 0 ∧ eval x f₂ = 0 } := by
   let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
   simpa only [F, Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
