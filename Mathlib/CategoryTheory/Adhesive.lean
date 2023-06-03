@@ -115,7 +115,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · rintro ⟨h₁, h₂⟩ (_ | _ | _)
         · dsimp; rw [PushoutCocone.condition_zero]; exact hf.paste_horiz h₁
         exacts [h₁, h₂]
-    · exact ⟨fun h => h.2, fun h => ⟨_, h⟩⟩
+    · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
 #align category_theory.is_pushout.is_van_kampen_iff CategoryTheory.IsPushout.isVanKampen_iff
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
