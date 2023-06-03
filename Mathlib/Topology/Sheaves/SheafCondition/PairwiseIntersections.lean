@@ -365,15 +365,10 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
           { app := _
             naturality := _ }⟩ ≫
       F.1.map (eqToHom hι).op
-  · apply Opposite.rec'
-    rintro ((_ | _) | (_ | _))
-    exacts[s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
+  · rintro ((_ | _) | (_ | _))
+    exacts [s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
       s.snd ≫ F.1.map (homOfLE inf_le_left).op]
-  rintro i j f
-  induction i using Opposite.rec' with
-  | h i => ?_
-  induction j using Opposite.rec' with
-  | h j => ?_
+  rintro ⟨i⟩ ⟨j⟩ f
   let g : j ⟶ i := f.unop
   have : f = g.op := rfl
   clear_value g
@@ -429,7 +424,6 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   · intro m h₁ h₂
     rw [← cancel_mono (F.1.map (eqToHom hι.symm).op)]
     apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.hom_ext
-    apply Opposite.rec'
     rintro ((_ | _) | (_ | _)) <;>
     rw [Category.assoc, Category.assoc]
     · erw [← F.1.map_comp]
