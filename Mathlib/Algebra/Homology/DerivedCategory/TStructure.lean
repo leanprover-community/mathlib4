@@ -204,7 +204,7 @@ open DerivedCategory.TStructure
 
 variable (C)
 
-abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
+/-abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
 abbrev Plus := (t : TStructure (DerivedCategory C)).plus.category
 abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.category
 
@@ -212,6 +212,6 @@ variable {C}
 
 abbrev ιMinus : Minus C ⥤ DerivedCategory C := t.minus.ι
 abbrev ιPlus : Plus C ⥤ DerivedCategory C := t.plus.ι
-abbrev ιBounded : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+abbrev ιBounded : Bounded C ⥤ DerivedCategory C := t.bounded.ι-/
 
 end DerivedCategory

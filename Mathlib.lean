@@ -1005,7 +1005,6 @@ import Mathlib.CategoryTheory.Triangulated.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
-import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated

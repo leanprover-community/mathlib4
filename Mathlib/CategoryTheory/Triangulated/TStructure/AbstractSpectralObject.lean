@@ -11,7 +11,7 @@ namespace Triangulated
 
 namespace SpectralObject
 
-structure CandidateAbstractSpectralObject where
+structure AbstractSpectralObject where
   ι : Type _
   hι : Category ι
   bot : ι
@@ -25,9 +25,9 @@ structure CandidateAbstractSpectralObject where
   truncLTδGE : truncGE ⟶ truncLT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
 
 variable {C}
-variable (F : CandidateAbstractSpectralObject C)
+variable (F : AbstractSpectralObject C)
 
-namespace CandidateAbstractSpectralObject
+namespace AbstractSpectralObject
 
 instance : Bot F.ι := ⟨F.bot⟩
 instance : Top F.ι := ⟨F.top⟩
@@ -69,9 +69,6 @@ def triangleLTGE : F.ι ⥤ C ⥤ Triangle C where
   obj a := Triangle.functorMk (F.truncLTι a) (F.truncGEπ a) (F.truncLTδGE.app a)
   map φ := Triangle.functorHomMk' (F.truncLT.map φ) (𝟙 _) ((F.truncGE.map φ))
     (by simp) (by simp ) (by simp)
-
---class IsDistinguishedTriangleLTGE where
---  distinguished (a : F.ι) (X : C) : (F.triangleLTGE.obj a).obj X ∈ distTriang C
 
 def truncGELT : Arrow F.ι ⥤ C ⥤ C where
   obj D := F.truncLT.obj D.right ⋙ F.truncGE.obj D.left
@@ -343,7 +340,7 @@ noncomputable def spectralObject (X : C) :
   δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
   distinguished' D := F.triangle_distinguished D X
 
-end CandidateAbstractSpectralObject
+end AbstractSpectralObject
 
 end SpectralObject
 
