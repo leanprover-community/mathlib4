@@ -142,8 +142,10 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
   have : (∑ x, f (σ x) ^ 2) = ∑ x, f x ^ 2 := Equiv.sum_comp σ (f · ^ 2)
   simpa only [← hx, ← hy, Fin.sum_univ_four, add_assoc] using this
 
-private theorem prime_sum_four_squares (p : ℕ) [hp : Fact p.Prime] :
+/-- Lagrange's **four squares theorem** for a prime number. Use `Nat.sum_four_squares` instead. -/
+protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = p := by
+  have := Fact.mk hp
   -- Find `a`, `b`, `c`, `d`, `0 < m < p` such that `a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p`
   have natAbs_iff {a b c d : ℤ} {k : ℕ} :
       a.natAbs ^ 2 + b.natAbs ^ 2 + c.natAbs ^ 2 + d.natAbs ^ 2 = k ↔
@@ -162,32 +164,43 @@ private theorem prime_sum_four_squares (p : ℕ) [hp : Fact p.Prime] :
   exfalso
   have : NeZero m := ⟨hm₀.ne'⟩
   by_cases hm : 2 ∣ m
-  · rcases hm with ⟨m, rfl⟩
+  · -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares
+    rcases hm with ⟨m, rfl⟩
     rw [zero_lt_mul_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd
     obtain ⟨_, _, _, _, h⟩ := sum_four_squares_of_two_mul_sum_four_squares habcd
     exact hmin m hm₂ ⟨hm₂.trans hmp, hm₀, _, _, _, _, natAbs_iff.2 h⟩
-  · obtain ⟨f, hf_lt, hf_mod⟩ : ∃ f : ℕ → ℤ, (∀ x, 2 * (f x).natAbs < m) ∧ ∀ x, (f x : ZMod m) = x
+  · -- For each `x` in `a`, `b`, `c`, `d`, take a number `f x ≡ x [ZMOD m]` with least possible
+    -- absolute value
+    obtain ⟨f, hf_lt, hf_mod⟩ : ∃ f : ℕ → ℤ, (∀ x, 2 * (f x).natAbs < m) ∧ ∀ x, (f x : ZMod m) = x
     · refine ⟨fun x ↦ (x : ZMod m).valMinAbs, fun x ↦ ?_, fun x ↦ (x : ZMod m).coe_valMinAbs⟩
       exact (mul_le_mul' le_rfl (x : ZMod m).natAbs_valMinAbs_le).trans_lt
         (Nat.mul_div_lt_iff_not_dvd.2 hm)
+    -- Since `|f x| ^ 2 = (f x) ^ 2 ≡ x ^ 2 [ZMOD m]`, we have
+    -- `m ∣ |f a| ^ 2 + |f b| ^ 2 + |f c| ^ 2 + |f d| ^ 2`
     obtain ⟨r, hr⟩ : m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2
     · simp only [← Int.coe_nat_dvd, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
       push_cast [hf_mod, sq_abs]
       norm_cast
       simp [habcd]
+    -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence
+    -- `m` divides each `a`, `b`, `c`, `d`, thus `m ∣ p` which is impossible.
     rcases (zero_le r).eq_or_gt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0; · simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d
       · simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
-      exact (hp.1.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
+      exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
+    -- Since `2 * |f x| < m` for each `x ∈ {a, b, c, d}`, we have `r < m`
     have hrm : r < m
     · rw [mul_comm] at hr
       apply lt_of_sum_four_squares_eq_mul hr <;> apply hf_lt
+    -- Now it suffices to represent `r * p` as a sum of four squares
+    -- More precisely, we will represent `(m * r) * (m * p)` as a sum of squares of four numbers,
+    -- each of them is divisible by `m`
     rsuffices ⟨w, x, y, z, hw, hx, hy, hz, h⟩ : ∃ w x y z : ℤ, ↑m ∣ w ∧ ↑m ∣ x ∧ ↑m ∣ y ∧ ↑m ∣ z ∧
       w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = ↑(m * r) * ↑(m * p)
     · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p)
@@ -196,6 +209,7 @@ private theorem prime_sum_four_squares (p : ℕ) [hp : Fact p.Prime] :
         simp only [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
       rw [← natAbs_iff] at this
       exact hmin r hrm ⟨hrm.trans hmp, hr₀, _, _, _, _, this⟩
+    -- To do the last step, we apply the Euler's four square identity once more
     replace hr : (f b) ^ 2 + (f a) ^ 2 + (f d) ^ 2 + (-f c) ^ 2 = ↑(m * r)
     · rw [← natAbs_iff, natAbs_neg, ← hr]
       ac_rfl
@@ -213,10 +227,12 @@ private theorem prime_sum_four_squares (p : ℕ) [hp : Fact p.Prime] :
 
 /-- **Four squares theorem** -/
 theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n := by
+  -- The proof is by induction on prime factorization. The case of prime `n` was proved above,
+  -- the inductive step follows from `Nat.euler_four_squares`.
   induction n using Nat.recOnMul with
   | h0 => exact ⟨0, 0, 0, 0, rfl⟩
   | h1 => exact ⟨1, 0, 0, 0, rfl⟩
-  | hp p hp => have := Fact.mk hp; exact prime_sum_four_squares p
+  | hp p hp => exact hp.sum_four_squares
   | h m n hm hn =>
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
