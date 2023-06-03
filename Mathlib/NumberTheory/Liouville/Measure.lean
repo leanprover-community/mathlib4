@@ -18,7 +18,7 @@ import Mathlib.Analysis.PSeries
 
 In this file we prove that the set of Liouville numbers with exponent (irrationality measure)
 strictly greater than two is a set of Lebesuge measure zero, see
-`volume_Union_set_of_liouville_with`.
+`volume_iUnion_setOf_liouvilleWith`.
 
 Since this set is a residual set, we show that the filters `residual` and `volume.ae` are disjoint.
 These filters correspond to two common notions of genericity on `ℝ`: residual sets and sets of full
