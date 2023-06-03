@@ -49,16 +49,13 @@ theorem diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
 
 variable [Algebra A B] [IsScalarTower R A B]
 
-include hI
-
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : ideal B`, each lift `A →ₐ[R] B`
 of the canonical map `A →ₐ[R] B ⧸ I` corresponds to a `R`-derivation from `A` to `I`. -/
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
-    (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) : Derivation R A I :=
-  by
+    (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
+    Derivation R A I := by
   refine'
-    {
-      diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B)
+    { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B)
         _ with
       map_one_eq_zero' := _
       leibniz' := _ }
@@ -74,8 +71,9 @@ def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
       diffToIdealOfQuotientCompEq_apply, Submodule.coe_smul_of_tower, IsScalarTower.coe_toAlgHom',
       LinearMap.toFun_eq_coe]
     simp only [map_mul, sub_mul, mul_sub, Algebra.smul_def] at this ⊢
-    rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this 
-    rw [this]
+    rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this
+    simp only [LinearMap.coe_toAddHom, diffToIdealOfQuotientCompEq_apply, map_mul, this,
+      IsScalarTower.coe_toAlgHom']
     ring
 #align derivation_to_square_zero_of_lift derivationToSquareZeroOfLift
 
@@ -89,13 +87,13 @@ theorem derivationToSquareZeroOfLift_apply (f : A →ₐ[R] B)
 from `A` to `I` corresponds to a lift `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
 @[simps (config := { attrs := [] })]
 def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
-  {
-    ((I.restrictScalars R).Subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :
+  { ((I.restrictScalars R).subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
-    map_one' := by rw [map_one, f.map_one_eq_zero, Submodule.coe_zero, zero_add]
+    map_one' := by dsimp; rw [map_one, f.map_one_eq_zero, Submodule.coe_zero, zero_add]
     map_mul' := fun x y => by
-      have : (f x : B) * f y = 0 := by rw [← Ideal.mem_bot, ← hI, pow_two];
+      have : (f x : B) * f y = 0 := by
+        rw [← Ideal.mem_bot, ← hI, pow_two]
         convert Ideal.mul_mem_mul (f x).2 (f y).2 using 1
       simp only [map_mul, f.leibniz, add_mul, mul_add, Submodule.coe_add,
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
@@ -104,14 +102,14 @@ def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
       simp only [Derivation.map_algebraMap, eq_self_iff_true, zero_add, Submodule.coe_zero, ←
         IsScalarTower.algebraMap_apply R A B r]
     map_zero' :=
-      ((I.restrictScalars R).Subtype.comp f.toLinearMap +
+      ((I.restrictScalars R).subtype.comp f.toLinearMap +
           (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
 #align lift_of_derivation_to_square_zero liftOfDerivationToSquareZero
 
 @[simp]
 theorem liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
     Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
-  rw [liftOfDerivationToSquareZero_apply, map_add, ideal.quotient.eq_zero_iff_mem.mpr (d x).Prop,
+  rw [liftOfDerivationToSquareZero_apply, map_add, Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop,
     zero_add]
   rfl
 #align lift_of_derivation_to_square_zero_mk_apply liftOfDerivationToSquareZero_mk_apply
@@ -119,18 +117,14 @@ theorem liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : ideal B`,
 there is a 1-1 correspondance between `R`-derivations from `A` to `I` and
 lifts `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
-@[simps]
-def derivationToSquareZeroEquivLift :
-    Derivation R A I ≃
-      { f : A →ₐ[R] B // (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I) } :=
-  by
-  refine'
-    ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, _⟩, fun f =>
-      (derivationToSquareZeroOfLift I hI f.1 f.2 : _), _, _⟩
+@[simps!]
+def derivationToSquareZeroEquivLift : Derivation R A I ≃
+    { f : A →ₐ[R] B // (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I) } := by
+  refine' ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, _⟩, fun f =>
+    (derivationToSquareZeroOfLift I hI f.1 f.2 : _), _, _⟩
   · ext x; exact liftOfDerivationToSquareZero_mk_apply I hI d x
   · intro d; ext x; exact add_sub_cancel (d x : B) (algebraMap A B x)
   · rintro ⟨f, hf⟩; ext x; exact sub_add_cancel (f x) (algebraMap A B x)
 #align derivation_to_square_zero_equiv_lift derivationToSquareZeroEquivLift
 
 end ToSquareZero
-
