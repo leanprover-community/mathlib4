@@ -26,14 +26,25 @@ example (i j k : ℕ)
 
 * TODO: Deal with `let`
 * TODO: Add functionality to produce a named `theorem` via `extract_goal thmName`
-* TODO: Deal with auto-implicit universes.
 * TODO: Add tactic code actions?
 
 Check that these issues are resolved:
+* Deal with universes of auto-implicit Sorts -- fixed?
 * Deal with named instances -- fixed?
 -/
 
 open Lean LocalDecl Elab Meta Tactic BinderInfo
+
+/--  `qToUnder S T?` takes as input a string `S` and, optionally, another string `T?`.
+It returns
+* `Type T?` if `S` begins with `S = Type ?u.`;
+* `Sort T?` if `S` begins with `S = Sort ?u.`;
+otherwise, it leave `S` unchanged.  If the optional string `T?` is not given, it uses `T? := "_"`.
+-/
+def qToUnder (S : String) (T : String := "_") : String :=
+if      "Type ?u.".isPrefixOf S then "Type " ++ T
+else if "Sort ?u.".isPrefixOf S then "Sort " ++ T
+else S
 
 /-- `oneBlock L` assumes that `L` is a list of `LocalDecl` that all have the same
 binder type (i.e. (strict) implicit, explicit, instance) and all have the same
@@ -42,7 +53,7 @@ Example: `oneBlock [x,y,z] = {x y z : ℕ}`.
 -/
 def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
   | []    => pure ""
-  | ls@(d::_) =>
+  | ls@(d::_) => do
     let (bi, type) := (d.binderInfo, d.type)
     let (l,r) := bi.brackets
     let comp := ls.map ((toString ∘ LocalDecl.userName) ·)
@@ -50,9 +61,12 @@ def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
       let xspl := x.splitOn "."
       if bi != instImplicit && xspl.contains "_hyg" then xspl[0]! ++ "_hyg" else x
     let middle := " ".intercalate new
+    let ppt := (← ppExpr type).pretty
+    let pptype := if type.isSort then qToUnder ppt ("univ_" ++ new.getD 0 "bug!") else ppt
     let middle := if bi == instImplicit && (middle.splitOn ".").contains "_hyg" then ""
                   else (middle ++ " : ")
-    do pure (l ++ middle ++ (← ppExpr type) ++ r )
+    -- is it possible to get the pretty-printed type, without going via `MetaM`?
+    pure (l ++ middle ++ pptype ++ r )
 
 def Lean.MetavarDecl.formatMVarDecls (decl : MetavarDecl) : MetaM Format := do
   let dcls := decl.lctx.decls.toList.reduceOption.drop 1
