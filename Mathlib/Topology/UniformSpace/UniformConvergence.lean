@@ -717,7 +717,7 @@ theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
   intro u hu x hx
   rcases h u hu (g x) (hg hx) with ⟨a, ha, H⟩
   have : g ⁻¹' a ∈ 𝓝[t] x :=
-    (cg x hx).preimage_mem_nhds_within' (nhdsWithin_mono (g x) hg.image_subset ha)
+    (cg x hx).preimage_mem_nhdsWithin' (nhdsWithin_mono (g x) hg.image_subset ha)
   exact ⟨g ⁻¹' a, this, H.mono fun n hn y hy => hn _ hy⟩
 #align tendsto_locally_uniformly_on.comp TendstoLocallyUniformlyOn.comp
 

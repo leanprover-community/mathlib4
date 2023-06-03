@@ -114,8 +114,8 @@ instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
 
 /-- A recursor for `Opposite`.
-The `@[eliminator]` attribute should make it the default induction principle for `Opposite`,
-although if this fails one could use `induction x using Opposite.rec'`. -/
+The `@[eliminator]` attribute makes it the default induction principle for `Opposite`
+so you don't need to use `induction x using Opposite.rec'`. -/
 @[simp, eliminator]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align opposite.rec Opposite.rec'

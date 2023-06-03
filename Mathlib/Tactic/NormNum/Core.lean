@@ -24,7 +24,7 @@ open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
-syntax (name := norm_num) "norm_num" term,+ : attr
+syntax (name := norm_num) "norm_num " term,+ : attr
 
 namespace Mathlib
 namespace Meta.NormNum
