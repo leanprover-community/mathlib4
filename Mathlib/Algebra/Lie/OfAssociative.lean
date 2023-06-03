@@ -8,10 +8,10 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Basic
-import Mathbin.Algebra.Lie.Subalgebra
-import Mathbin.Algebra.Lie.Submodule
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.Algebra.Lie.Submodule
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -68,8 +68,7 @@ theorem Commute.lie_eq {x y : A} (h : Commute x y) : ⁅x, y⁆ = 0 :=
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A
-    where
+instance (priority := 100) ofAssociativeRing : LieRing A where
   add_lie := by
     simp only [Ring.lie_def, right_distrib, left_distrib, sub_eq_add_neg, add_comm, add_left_comm,
       forall_const, eq_self_iff_true, neg_add_rev]
@@ -106,8 +105,7 @@ specifically we can build two mathematically-different `has_bracket A A`s:
 
 See note [reducible non-instances] -/
 @[reducible]
-def LieRingModule.ofAssociativeModule : LieRingModule A M
-    where
+def LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul
   lie_add := smul_add
@@ -145,8 +143,7 @@ Lie algebra via the ring commutator.
 
 See the comment at `lie_ring_module.of_associative_module` for why the possibility `M = A` means
 this cannot be a global instance. -/
-def LieModule.ofAssociativeModule : LieModule R A M
-    where
+def LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
@@ -225,8 +222,7 @@ variable [LieRingModule L M] [LieModule R L M]
 
 See also `lie_module.to_module_hom`. -/
 @[simps]
-def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M
-    where
+def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
     { toFun := fun m => ⁅x, m⁆
       map_add' := lie_add x
@@ -271,8 +267,7 @@ open LieModule
 variable {N : LieSubmodule R L M} {x : L}
 
 theorem coe_map_toEndomorphism_le :
-    (N : Submodule R M).map (LieModule.toEndomorphism R L M x) ≤ N :=
-  by
+    (N : Submodule R M).map (LieModule.toEndomorphism R L M x) ≤ N := by
   rintro n ⟨m, hm, rfl⟩
   exact N.lie_mem hm
 #align lie_submodule.coe_map_to_endomorphism_le LieSubmodule.coe_map_toEndomorphism_le
@@ -300,8 +295,7 @@ theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra
 #align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
 
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
-    (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) :=
-  by
+    (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) := by
   ext y
   simp only [ad_apply, LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, LinearMap.coe_comp,
     LieSubalgebra.coe_bracket, Function.comp_apply]
