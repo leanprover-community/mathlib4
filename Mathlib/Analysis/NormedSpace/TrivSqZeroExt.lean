@@ -13,20 +13,20 @@ import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
 /-!
-# Results on `triv_sq_zero_ext R M` related to the norm
+# Results on `TrivSqZeroExt R M` related to the norm
 
 For now, this file contains results about `exp` for this type.
 
 ## Main results
 
-* `triv_sq_zero_ext.fst_exp`
-* `triv_sq_zero_ext.snd_exp`
-* `triv_sq_zero_ext.exp_inl`
-* `triv_sq_zero_ext.exp_inr`
+* `TrivSqZeroExt.fst_exp`
+* `TrivSqZeroExt.snd_exp`
+* `TrivSqZeroExt.exp_inl`
+* `TrivSqZeroExt.exp_inr`
 
 ## TODO
 
-* Actually define a sensible norm on `triv_sq_zero_ext R M`, so that we have access to lemmas
+* Actually define a sensible norm on `TrivSqZeroExt R M`, so that we have access to lemmas
   like `exp_add`.
 * Generalize more of these results to non-commutative `R`. In principle, under sufficient conditions
   we should expect
@@ -39,7 +39,6 @@ For now, this file contains results about `exp` for this type.
 
 variable (𝕜 : Type _) {R M : Type _}
 
--- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt
 
 namespace TrivSqZeroExt
@@ -69,11 +68,11 @@ theorem hasSum_snd_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] 
   simp_rw [expSeries_apply_eq] at *
   conv =>
     congr
-    ext
+    ext n
     rw [snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 n, smul_smul, inv_mul_eq_div, ←
       inv_div, ← smul_assoc]
   apply HasSum.smul_const
-  rw [← hasSum_nat_add_iff' 1]; swap; infer_instance
+  rw [← hasSum_nat_add_iff' 1]
   rw [Finset.range_one, Finset.sum_singleton, Nat.cast_zero, div_zero, inv_zero, zero_smul,
     sub_zero]
   simp_rw [← Nat.succ_eq_add_one, Nat.pred_succ, Nat.factorial_succ, Nat.cast_mul, ←
@@ -90,8 +89,8 @@ theorem hasSum_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] [Add
     {e : R} (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => expSeries 𝕜 (tsze R M) n fun _ => x) (inl e + inr (e • x.snd)) := by
   simpa only [inl_fst_add_inr_snd_eq] using
-    (has_sum_inl _ <| has_sum_fst_exp_series 𝕜 x h).add
-      (has_sum_inr _ <| has_sum_snd_exp_series_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ <| hasSum_fst_expSeries 𝕜 x h).add
+      (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 #align triv_sq_zero_ext.has_sum_exp_series_of_smul_comm TrivSqZeroExt.hasSum_expSeries_of_smul_comm
 
 end Topology
@@ -113,7 +112,7 @@ variable [CompleteSpace R] [T2Space R] [T2Space M]
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
-  refine' (has_sum_exp_series_of_smul_comm 𝕜 x hx _).tsum_eq
+  refine' (hasSum_expSeries_of_smul_comm 𝕜 x hx _).tsum_eq
   exact expSeries_hasSum_exp _
 #align triv_sq_zero_ext.exp_def_of_smul_comm TrivSqZeroExt.exp_def_of_smul_comm
 
@@ -182,7 +181,7 @@ variable [TopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [CompleteSpace R] [T2Space R] [T2Space M]
 
-/-- More convenient version of `triv_sq_zero_ext.eq_smul_exp_of_invertible` for when `R` is a
+/-- More convenient version of `TrivSqZeroExt.eq_smul_exp_of_invertible` for when `R` is a
 field. -/
 theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
     x = x.fst • exp 𝕜 (x.fst⁻¹ • inr x.snd) :=
@@ -193,4 +192,3 @@ theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
 end NormedField
 
 end TrivSqZeroExt
-
