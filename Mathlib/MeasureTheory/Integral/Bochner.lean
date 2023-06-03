@@ -1273,15 +1273,20 @@ set_option linter.uppercaseLean3 false in
 theorem Memℒp.snorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0) (hp2 : p ≠ ∞)
     (hf : Memℒp f p μ) :
     snorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
-  have A : (∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ) = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
-    apply lintegral_congr fun x => _
-    rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
+  have A : (∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^  p.toReal) ∂μ) = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
+    apply lintegral_congr
+    intro x
+    rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm,
+      -- Porting note: Here and below `ENNReal.coe_rpow_of_nonneg` was not needed
+      ← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
   simp only [snorm_eq_lintegral_rpow_nnnorm hp1 hp2, one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact eventually_of_forall fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
-  exact (lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp1 hp2 hf.2).ne
+  · simp_rw [← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
+  · simp_rw [← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
+    exact (lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp1 hp2 hf.2).ne
 #align measure_theory.mem_ℒp.snorm_eq_integral_rpow_norm MeasureTheory.Memℒp.snorm_eq_integral_rpow_norm
 
 end NormedAddCommGroup
