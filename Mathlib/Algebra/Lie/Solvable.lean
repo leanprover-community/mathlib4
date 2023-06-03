@@ -372,7 +372,6 @@ theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable 
   · rename_i k h
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
-    change derivedSeriesOfIdeal R L k I = ⊥ ↔ I = ⊥
     simp only [h₂, h₃]
 #align lie_algebra.abelian_of_solvable_ideal_eq_bot_iff LieAlgebra.abelian_of_solvable_ideal_eq_bot_iff
 
