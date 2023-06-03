@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.OfAssociative
-import Mathbin.LinearAlgebra.Matrix.Reindex
-import Mathbin.LinearAlgebra.Matrix.ToLinearEquiv
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Lie algebras of matrices
