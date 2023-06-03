@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Symmetry of the second derivative
@@ -75,8 +75,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     (fun h : ℝ =>
         f (x + h • v + h • w) - f (x + h • v) - h • f' x w - h ^ 2 • f'' v w -
           (h ^ 2 / 2) • f'' w w) =o[𝓝[>] 0]
-      fun h => h ^ 2 :=
-  by
+      fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
   apply is_o.trans_is_O (is_o_iff.2 fun ε εpos => _) (is_O_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
@@ -84,8 +83,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   -- good up to `δ`.
   rw [HasFDerivWithinAt, HasFDerivAtFilter, is_o_iff] at hx 
   rcases Metric.mem_nhdsWithin_iff.1 (hx εpos) with ⟨δ, δpos, sδ⟩
-  have E1 : ∀ᶠ h in 𝓝[>] (0 : ℝ), h * (‖v‖ + ‖w‖) < δ :=
-    by
+  have E1 : ∀ᶠ h in 𝓝[>] (0 : ℝ), h * (‖v‖ + ‖w‖) < δ := by
     have : Filter.Tendsto (fun h => h * (‖v‖ + ‖w‖)) (𝓝[>] (0 : ℝ)) (𝓝 (0 * (‖v‖ + ‖w‖))) :=
       (continuous_id.mul continuous_const).ContinuousWithinAt
     apply (tendsto_order.1 this).2 δ
@@ -97,8 +95,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   -- we consider `h` small enough that all points under consideration belong to this ball,
   -- and also with `0 < h < 1`.
   replace hpos : 0 < h := hpos
-  have xt_mem : ∀ t ∈ Icc (0 : ℝ) 1, x + h • v + (t * h) • w ∈ interior s :=
-    by
+  have xt_mem : ∀ t ∈ Icc (0 : ℝ) 1, x + h • v + (t * h) • w ∈ interior s := by
     intro t ht
     have : x + h • v ∈ interior s := s_conv.add_smul_mem_interior xs hv ⟨hpos, h_lt_1.le⟩
     rw [← smul_smul]
@@ -117,8 +114,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     f' (x + h • v + (t * h) • w) (h • w) - h • f' x w - h ^ 2 • f'' v w - (t * h ^ 2) • f'' w w with
     hg'
   -- check that `g'` is the derivative of `g`, by a straightforward computation
-  have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t :=
-    by
+  have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t := by
     intro t ht
     apply_rules [HasDerivWithinAt.sub, HasDerivWithinAt.add]
     · refine' (hf _ _).comp_hasDerivWithinAt _ _
@@ -136,8 +132,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
   -- check that `g'` is uniformly bounded, with a suitable bound `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2`.
-  have g'_bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖g' t‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 :=
-    by
+  have g'_bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖g' t‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     intro t ht
     have I : ‖h • v + (t * h) • w‖ ≤ h * (‖v‖ + ‖w‖) :=
       calc
@@ -151,8 +146,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         _ = h * (‖v‖ + ‖w‖) := by ring
         
     calc
-      ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ :=
-        by
+      ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ := by
         rw [hg']
         have : h * (t * h) = t * (h * h) := by ring
         simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.map_add, pow_two,
@@ -160,17 +154,14 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
           ContinuousLinearMap.coe_smul', Pi.sub_apply, ContinuousLinearMap.map_smul, this]
       _ ≤ ‖f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)‖ * ‖h • w‖ :=
         (ContinuousLinearMap.le_op_norm _ _)
-      _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ :=
-        by
+      _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
-        have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s :=
-          by
+        have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s := by
           refine' ⟨_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
         simpa only [mem_set_of_eq, add_assoc x, add_sub_cancel'] using sδ H
-      _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ :=
-        by
+      _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         apply mul_le_mul_of_nonneg_left _ εpos.le
         apply (norm_add_le _ _).trans
@@ -205,47 +196,39 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
         f (x + h • (2 • v + 2 • w)) + f (x + h • (v + w)) - f (x + h • (2 • v + w)) -
             f (x + h • (v + 2 • w)) -
           h ^ 2 • f'' v w) =o[𝓝[>] 0]
-      fun h => h ^ 2 :=
-  by
+      fun h => h ^ 2 := by
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have C : ∀ w : E, (2 : ℝ) • w = 2 • w := fun w => by simp only [two_smul]
-  have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s :=
-    by
+  have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
     simp only [smul_sub, smul_smul, one_div, add_sub_add_left_eq_sub, mul_add, add_smul]
     norm_num
     simp only [show (4 : ℝ) = (2 : ℝ) + (2 : ℝ) by norm_num, add_smul]
     abel
-  have h2vww : x + (2 • v + w) + w ∈ interior s :=
-    by
+  have h2vww : x + (2 • v + w) + w ∈ interior s := by
     convert h2v2w using 1
     simp only [two_smul]
     abel
-  have h2v : x + (2 : ℝ) • v ∈ interior s :=
-    by
+  have h2v : x + (2 : ℝ) • v ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
     simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
     norm_num
-  have h2w : x + (2 : ℝ) • w ∈ interior s :=
-    by
+  have h2w : x + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
     simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
     norm_num
-  have hvw : x + (v + w) ∈ interior s :=
-    by
+  have hvw : x + (v + w) ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
     simp only [smul_smul, one_div, add_sub_cancel', add_right_inj, smul_add, smul_sub]
     norm_num
     abel
-  have h2vw : x + (2 • v + w) ∈ interior s :=
-    by
+  have h2vw : x + (2 • v + w) ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
     simp only [smul_add, smul_sub, smul_smul, ← C]
     norm_num
     abel
-  have hvww : x + (v + w) + w ∈ interior s :=
-    by
+  have hvww : x + (v + w) + w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
     simp only [one_div, add_sub_cancel', inv_smul_smul₀, add_sub_add_right_eq_sub, Ne.def,
       not_false_iff, bit0_eq_zero, one_ne_zero]
@@ -269,15 +252,13 @@ removes the assumption that `v` and `w` point inside `s`.
 theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) : f'' w v = f'' v w :=
   by
-  have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 :=
-    by
+  have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
     convert(s_conv.is_o_alternate_sum_square hf xs hx h4v h4w).sub
         (s_conv.is_o_alternate_sum_square hf xs hx h4w h4v)
     ext h
     simp only [add_comm, smul_add, smul_sub]
     abel
-  have B : (fun h : ℝ => f'' w v - f'' v w) =o[𝓝[>] 0] fun h => (1 : ℝ) :=
-    by
+  have B : (fun h : ℝ => f'' w v - f'' v w) =o[𝓝[>] 0] fun h => (1 : ℝ) := by
     have : (fun h : ℝ => 1 / h ^ 2) =O[𝓝[>] 0] fun h => 1 / h ^ 2 := is_O_refl _ _
     have C := this.smul_is_o A
     apply C.congr' _ _
@@ -298,16 +279,14 @@ derivative at a point of this convex set, then this second derivative is symmetr
 theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
     (hne : (interior s).Nonempty) {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
-    (hx : HasFDerivWithinAt f' f'' (interior s) x) (v w : E) : f'' v w = f'' w v :=
-  by
+    (hx : HasFDerivWithinAt f' f'' (interior s) x) (v w : E) : f'' v w = f'' w v := by
   /- we work around a point `x + 4 z` in the interior of `s`. For any vector `m`,
     then `x + 4 (z + t m)` also belongs to the interior of `s` for small enough `t`. This means that
     we will be able to apply `second_derivative_within_at_symmetric_of_mem_interior` to show
     that `f''` is symmetric, after cancelling all the contributions due to `z`. -/
   rcases hne with ⟨y, hy⟩
   obtain ⟨z, hz⟩ : ∃ z, z = ((1 : ℝ) / 4) • (y - x) := ⟨((1 : ℝ) / 4) • (y - x), rfl⟩
-  have A : ∀ m : E, Filter.Tendsto (fun t : ℝ => x + (4 : ℝ) • (z + t • m)) (𝓝 0) (𝓝 y) :=
-    by
+  have A : ∀ m : E, Filter.Tendsto (fun t : ℝ => x + (4 : ℝ) • (z + t • m)) (𝓝 0) (𝓝 y) := by
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
@@ -315,8 +294,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     refine' tendsto_const_nhds.smul _
     refine' tendsto_const_nhds.add _
     exact continuous_at_id.smul continuousAt_const
-  have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s :=
-    by
+  have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m
     apply nhdsWithin_le_nhds
     apply A m
@@ -353,8 +331,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
 derivative is symmetric. -/
 theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E →L[ℝ] F}
     {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
-    (v w : E) : f'' v w = f'' w v :=
-  by
+    (v w : E) : f'' v w = f'' w v := by
   rcases Metric.mem_nhds_iff.1 hf with ⟨ε, εpos, hε⟩
   have A : (interior (Metric.ball x ε)).Nonempty := by
     rwa [metric.is_open_ball.interior_eq, Metric.nonempty_ball]

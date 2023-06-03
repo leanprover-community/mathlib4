@@ -456,6 +456,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDerivMeasurable
+import Mathlib.Analysis.Calculus.FderivSymmetric
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
