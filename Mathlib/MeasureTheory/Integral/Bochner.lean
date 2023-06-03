@@ -1221,10 +1221,13 @@ theorem integral_nonpos {f : α → ℝ} (hf : f ≤ 0) : (∫ a, f a ∂μ) ≤
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     (∫ x, f x ∂μ) = 0 ↔ f =ᵐ[μ] 0 := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae hf hfi.1, ENNReal.toReal_eq_zero_iff,
-    lintegral_eq_zero_iff' (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable), ←
-    ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true, or_false_iff, ←
-    hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE, (· ∘ ·), Pi.zero_apply,
-    ENNReal.ofReal_eq_zero]
+    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true, or_false_iff]
+  -- Porting note: split into parts, to make `rw` and `simp` work
+  rw [lintegral_eq_zero_iff']
+  · rw [← hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE]
+    simp only [Pi.zero_apply, ofReal_eq_zero]
+  · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
+
 #align measure_theory.integral_eq_zero_iff_of_nonneg_ae MeasureTheory.integral_eq_zero_iff_of_nonneg_ae
 
 theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : Integrable f μ) :
