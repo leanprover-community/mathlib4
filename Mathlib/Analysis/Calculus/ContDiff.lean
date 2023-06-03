@@ -2344,6 +2344,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
           (fun i j => ‖iteratedFDerivWithin 𝕜 i f s x‖ * ‖iteratedFDerivWithin 𝕜 j g s x‖) n).symm
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_aux ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux
 
+set_option maxHeartbeats 0 in
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear:
 `‖D^n (x ↦ B (f x) (g x))‖ ≤ ‖B‖ ∑_{k ≤ n} n.choose k ‖D^k f‖ ‖D^{n-k} g‖` -/
@@ -2367,20 +2368,44 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
   have isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
   -- lift `f` and `g` to versions `fu` and `gu` on the lifted spaces.
-  let fu : Du → Eu := isoE.symm ∘ f ∘ isoD
-  let gu : Du → Fu := isoF.symm ∘ g ∘ isoD
+  set fu : Du → Eu := isoE.symm ∘ f ∘ isoD with hfu
+  set gu : Du → Fu := isoF.symm ∘ g ∘ isoD with hgu
   -- lift the bilinear map `B` to a bilinear map `Bu` on the lifted spaces.
-  let Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G
-  exact ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
+  set Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
+    with hBu₀
   let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu;
   exact
     ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
+  have hBu : Bu = ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
+      (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
     ext1 y
-    simp only [ContinuousLinearMap.compL_apply, Function.comp_apply,
-      ContinuousLinearMap.coe_comp', LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
-      LinearIsometryEquiv.apply_symm_apply]
+    rw [hBu]
+    rw [ContinuousLinearMap.compL_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [ContinuousLinearMap.compL_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [hBu₀]
+    rw [ContinuousLinearMap.flip_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [ContinuousLinearMap.flip_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [hfu]
+    rw [Function.comp_apply]
+    rw [LinearIsometryEquiv.coe_coe'']
+    rw [LinearIsometryEquiv.coe_coe'']
+    rw [LinearIsometryEquiv.apply_symm_apply isoE]
+    rw [Function.comp_apply]
+    rw [hgu]
+    rw [LinearIsometryEquiv.coe_coe'']
+    rw [Function.comp_apply]
+    rw [LinearIsometryEquiv.apply_symm_apply isoF]
+    simp only [Function.comp_apply]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun y => _
@@ -2388,6 +2413,18 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp only [ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
       Function.comp_apply, LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
       LinearIsometryEquiv.norm_map]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [ContinuousLinearMap.compL_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [ContinuousLinearMap.flip_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    rw [ContinuousLinearMap.flip_apply]
+    rw [ContinuousLinearMap.coe_comp']
+    rw [Function.comp_apply]
+    simp only [LinearIsometryEquiv.coe_coe'', LinearIsometryEquiv.norm_map]
     calc
       ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_op_norm _ _
       _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ :=
