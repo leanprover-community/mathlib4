@@ -314,7 +314,7 @@ variable {R}
 
 -- mathport name: «expr⨂ₜ[ ] , »
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `Funlike.coe` as an explicit coercion to help `notation3` pretty print,
+-- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
 -- was just `tprod R f`.
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
 
