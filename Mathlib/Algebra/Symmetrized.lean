@@ -8,8 +8,8 @@ Authors: Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Jordan.Basic
-import Mathbin.Algebra.Module.Basic
+import Mathlib.Algebra.Jordan.Basic
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Symmetrized algebra
@@ -336,11 +336,9 @@ theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [Invertible (2 : α)] (
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 #align sym_alg.mul_comm SymAlg.mul_comm
 
-instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ
-    where
+instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   mul_comm := SymAlg.mul_comm
-  lmul_comm_rmul_rmul a b :=
-    by
+  lmul_comm_rmul_rmul a b := by
     -- Rearrange LHS
     have commute_half_left := fun a : α => (Commute.one_left a).bit0_left.invOf_left.Eq
     rw [mul_def, mul_def a b, unsym_sym, ← mul_assoc, ← commute_half_left (unsym (a * a)),
