@@ -197,7 +197,8 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   constructor
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    refine ⟨⟨(pullback.fst (f := f₁) (g := f₂) y), ?_⟩, ⟨(pullback.snd (f := f₁) (g := f₂) y), ?_⟩⟩ <;>
+    refine ⟨⟨(pullback.fst (f := f₁) (g := f₂) y), ?_⟩,
+      ⟨(pullback.snd (f := f₁) (g := f₂) y), ?_⟩⟩ <;>
     rw [←comp_apply, ←comp_apply] <;>
     simp
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩

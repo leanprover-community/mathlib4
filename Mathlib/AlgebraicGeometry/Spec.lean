@@ -132,9 +132,10 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_comp f g) <|
     NatTrans.ext _ _ <| funext fun U =>
       show ((sheafedSpaceMap <| g.comp f).c ≫ _).app U = RingHom.comp _ _ by
-      simp only [sheafedSpaceObj_carrier, sheafedSpaceObj_presheaf, SheafedSpace.comp_base, sheafedSpaceMap_base,
-        Functor.comp_obj, Functor.op_obj, TopologicalSpace.Opens.map_comp_obj, eqToHom_refl, whiskerRight_id',
-        TopCat.Presheaf.pushforwardObj_obj, TopCat.Presheaf.pushforward_map_app', sheafedSpaceMap_c_app, unop_op]
+      simp only [sheafedSpaceObj_carrier, sheafedSpaceObj_presheaf, SheafedSpace.comp_base,
+        sheafedSpaceMap_base, Functor.comp_obj, Functor.op_obj, TopologicalSpace.Opens.map_comp_obj,
+        eqToHom_refl, whiskerRight_id', TopCat.Presheaf.pushforwardObj_obj,
+        TopCat.Presheaf.pushforward_map_app', sheafedSpaceMap_c_app, unop_op]
       rw [NatTrans.comp_app]
       simp only [TopCat.Presheaf.pushforwardObj_obj, Functor.op_obj, Functor.comp_obj,
         TopologicalSpace.Opens.map_comp_obj, sheafedSpaceMap_c_app, NatTrans.id_app, unop_op]

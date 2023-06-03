@@ -331,7 +331,8 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       simp only [Functor.map_comp]
 
       erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
-        ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
+        ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
+            (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
       aesop
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
