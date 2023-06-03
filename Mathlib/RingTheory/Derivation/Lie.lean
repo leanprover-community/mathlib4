@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.OfAssociative
-import Mathbin.RingTheory.Derivation.Basic
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Results
@@ -35,8 +35,7 @@ section LieStructures
 /-- The commutator of derivations is again a derivation. -/
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
-    mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b =>
-      by
+    mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
       simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, LinearMap.mul_apply, leibniz,
         coe_fn_coe, LinearMap.sub_apply]
       ring⟩
@@ -50,8 +49,7 @@ theorem commutator_apply : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
   rfl
 #align derivation.commutator_apply Derivation.commutator_apply
 
-instance : LieRing (Derivation R A A)
-    where
+instance : LieRing (Derivation R A A) where
   add_lie d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
   lie_add d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
   lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf
