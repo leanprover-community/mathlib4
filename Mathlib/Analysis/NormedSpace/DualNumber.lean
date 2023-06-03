@@ -12,9 +12,9 @@ import Mathlib.Algebra.DualNumber
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
 
 /-!
-# Results on `dual_number R` related to the norm
+# Results on `DualNumber R` related to the norm
 
-These are just restatements of similar statements about `triv_sq_zero_ext R M`.
+These are just restatements of similar statements about `TrivSqZeroExt R M`.
 
 ## Main results
 
@@ -40,8 +40,7 @@ theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
 
 @[simp]
 theorem exp_smul_eps (r : R) : exp 𝕜 (r • eps : DualNumber R) = 1 + r • eps := by
-  rw [eps, ← inr_smul, exp_inr]
+  rw [eps, ← inr_smul, exp_inr, Nat.cast_one]
 #align dual_number.exp_smul_eps DualNumber.exp_smul_eps
 
 end DualNumber
-
