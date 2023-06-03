@@ -21,15 +21,15 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 ## Main definitions
 
-  * `lie_algebra.derived_series_of_ideal`
-  * `lie_algebra.derived_series`
-  * `lie_algebra.is_solvable`
-  * `lie_algebra.is_solvable_add`
-  * `lie_algebra.radical`
-  * `lie_algebra.radical_is_solvable`
-  * `lie_algebra.derived_length_of_ideal`
-  * `lie_algebra.derived_length`
-  * `lie_algebra.derived_abelian_of_ideal`
+  * `LieAlgebra.derivedSeriesOfIdeal`
+  * `LieAlgebra.derivedSeries`
+  * `LieAlgebra.IsSolvable`
+  * `LieAlgebra.isSolvableAdd`
+  * `LieAlgebra.radical`
+  * `LieAlgebra.radicalIsSolvable`
+  * `LieAlgebra.derivedLengthOfIdeal`
+  * `LieAlgebra.derivedLength`
+  * `LieAlgebra.derivedAbelianOfIdeal`
 
 ## Tags
 
@@ -53,8 +53,8 @@ It can be more convenient to work with this generalisation when considering the 
 an ideal since it provides a type-theoretic expression of the fact that the terms of the ideal's
 derived series are also ideals of the enclosing algebra.
 
-See also `lie_ideal.derived_series_eq_derived_series_of_ideal_comap` and
-`lie_ideal.derived_series_eq_derived_series_of_ideal_map` below. -/
+See also `LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_comap` and
+`LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_map` below. -/
 def derivedSeriesOfIdeal (k : ℕ) : LieIdeal R L → LieIdeal R L :=
   (fun I => ⁅I, I⁆)^[k]
 #align lie_algebra.derived_series_of_ideal LieAlgebra.derivedSeriesOfIdeal
@@ -82,7 +82,6 @@ theorem derivedSeries_def (k : ℕ) : derivedSeries R L k = derivedSeriesOfIdeal
 
 variable {R L}
 
--- mathport name: exprD
 local notation "D" => derivedSeriesOfIdeal R L
 
 theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
@@ -269,7 +268,7 @@ instance (priority := 100) ofAbelianIsSolvable [IsLieAbelian L] : IsSolvable R L
   infer_instance
 #align lie_algebra.of_abelian_is_solvable LieAlgebra.ofAbelianIsSolvable
 
-/-- The (solvable) radical of Lie algebra is the `Sup` of all solvable ideals. -/
+/-- The (solvable) radical of Lie algebra is the `sSup` of all solvable ideals. -/
 def radical :=
   sSup { I : LieIdeal R L | IsSolvable R I }
 #align lie_algebra.radical LieAlgebra.radical
@@ -284,7 +283,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
     apply LieAlgebra.isSolvableAdd R L
 #align lie_algebra.radical_is_solvable LieAlgebra.radicalIsSolvable
 
-/-- The `→` direction of this lemma is actually true without the `is_noetherian` assumption. -/
+/-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
 theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
     IsSolvable R I ↔ I ≤ radical R L :=
   ⟨fun h => le_sSup h, fun h => le_solvable_ideal_solvable h inferInstance⟩
@@ -305,7 +304,7 @@ noncomputable def derivedLengthOfIdeal (I : LieIdeal R L) : ℕ :=
 
 /-- The derived length of a Lie algebra is the derived length of its 'top' Lie ideal.
 
-See also `lie_algebra.derived_length_eq_derived_length_of_ideal`. -/
+See also `LieAlgebra.derivedLength_eq_derivedLengthOfIdeal`. -/
 noncomputable abbrev derivedLength : ℕ :=
   derivedLengthOfIdeal R L ⊤
 #align lie_algebra.derived_length LieAlgebra.derivedLength
@@ -351,7 +350,7 @@ theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
   · rw [derivedSeries_of_derivedLength_succ] at h ; exact h.1
 #align lie_algebra.abelian_derived_abelian_of_ideal LieAlgebra.abelian_derivedAbelianOfIdeal
 
-theorem derived_length_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
+theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
     derivedLengthOfIdeal R L I = 0 ↔ I = ⊥ := by
   let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }; change Inf s = 0 ↔ _
   have hne : s ≠ ∅ := by
@@ -359,13 +358,13 @@ theorem derived_length_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
     refine' Set.Nonempty.ne_empty ⟨k, _⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk ; exact hk
   simp [hne]
-#align lie_algebra.derived_length_zero LieAlgebra.derived_length_zero
+#align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable R I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by
   dsimp only [derivedAbelianOfIdeal]
   cases' h : derivedAbelianOfIdeal R L I with k
-  · rw [derived_length_zero] at h ; rw [h]; rfl
+  · rw [derivedLength_zero] at h ; rw [h]; rfl
   · obtain ⟨h₁, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
     change derivedSeriesOfIdeal R L k I = ⊥ ↔ I = ⊥
