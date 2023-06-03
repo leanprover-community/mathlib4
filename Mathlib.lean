@@ -1986,6 +1986,7 @@ import Mathlib.NumberTheory.LSeries
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.NumberTheory.Liouville.Basic
+import Mathlib.NumberTheory.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
