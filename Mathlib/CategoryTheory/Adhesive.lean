@@ -125,14 +125,15 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
   · rintro ⟨h⟩
     refine' ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ _⟩⟩
     intro s
-    dsimp
+    dsimp only [PushoutCocone.inr, PushoutCocone.mk] -- Porting note: Originally `dsimp`
     refine' ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, _, _⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩
     · intro m e₁ e₂
       apply BinaryCofan.IsColimit.hom_ext h
-      · dsimp; rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
+      · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
+        rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
       · refine' e₁.trans (Eq.symm _); exact h.fac _ _
   · refine' fun H => ⟨_⟩
     fapply Limits.BinaryCofan.isColimitMk
