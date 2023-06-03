@@ -96,11 +96,11 @@ add_decl_doc PrelaxFunctor.toPrefunctor
 
 namespace PrelaxFunctor
 
--- attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
+attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
--- instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
-  -- ⟨toPrefunctor⟩
---#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
+instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
+  ⟨toPrefunctor⟩
+#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
 
 variable (F : PrelaxFunctor B C)
 
@@ -124,7 +124,7 @@ instance : Inhabited (PrelaxFunctor B B) :=
 /-- Composition of prelax functors. -/
 @[simps]
 def comp (F : PrelaxFunctor B C) (G : PrelaxFunctor C D) : PrelaxFunctor B D :=
-  { (F.toPrefunctor : Prefunctor B C).comp G.toPrefunctor with map₂ := fun η => by exact G.map₂ (F.map₂ η) }
+  { (F : Prefunctor B C).comp ↑G with map₂ := fun η => by exact G.map₂ (F.map₂ η) }
 #align category_theory.prelax_functor.comp CategoryTheory.PrelaxFunctor.comp
 
 end PrelaxFunctor
@@ -242,9 +242,9 @@ attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
   CategoryTheory.OplaxFunctor.map₂_leftUnitor
   CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
--- instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
---   ⟨toPrelaxFunctor⟩
--- #align category_theory.oplax_functor.has_coe_to_prelax CategoryTheory.OplaxFunctor.hasCoeToPrelax
+instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
+  ⟨toPrelaxFunctor⟩
+#align category_theory.oplax_functor.has_coe_to_prelax CategoryTheory.OplaxFunctor.hasCoeToPrelax
 
 variable (F : OplaxFunctor B C)
 
@@ -285,7 +285,7 @@ instance : Inhabited (OplaxFunctor B B) :=
 --@[simps]
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
   {
-    (F.toPrelaxFunctor : PrelaxFunctor B C).comp G.toPrelaxFunctor with
+    (F : PrelaxFunctor B C).comp G with
     mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
     mapComp := fun f g => by
       exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
@@ -519,7 +519,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
 -/
 @[simps]
 def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C :=
-  { (F.toPrelaxFunctor : PrelaxFunctor B C) with
+  { (F : PrelaxFunctor B C) with
     mapId := F'.mapIdIso
     mapComp := F'.mapCompIso
     map₂_whisker_left := fun f g h η => by
@@ -542,7 +542,7 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C :=
 @[simps]
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
-  { (F.toPrelaxFunctor : PrelaxFunctor B C) with
+  { (F : PrelaxFunctor B C) with
     mapId := fun a => asIso (F.mapId a)
     mapComp := fun f g => asIso (F.mapComp f g)
     map₂_whisker_left := fun f g h η => by
