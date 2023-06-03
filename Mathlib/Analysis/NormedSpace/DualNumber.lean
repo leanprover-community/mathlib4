@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DualNumber
-import Mathbin.Analysis.NormedSpace.TrivSqZeroExt
+import Mathlib.Algebra.DualNumber
+import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
 
 /-!
 # Results on `dual_number R` related to the norm
