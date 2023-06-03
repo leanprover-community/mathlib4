@@ -8,7 +8,7 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Submodule
+import Mathlib.Algebra.Lie.Submodule
 
 /-!
 # Ideal operations for Lie algebras
@@ -68,12 +68,10 @@ theorem lieIdeal_oper_eq_span :
 `lie_submodule.lie_ideal_oper_eq_tensor_map_range`. -/
 theorem lieIdeal_oper_eq_linear_span :
     (↑⁅I, N⁆ : Submodule R M) =
-      Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } :=
-  by
+      Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } := by
   apply le_antisymm
   · let s := { m : M | ∃ (x : ↥I) (n : ↥N), ⁅(x : L), (n : M)⁆ = m }
-    have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s :=
-      by
+    have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s := by
       intro y m' hm'; apply Submodule.span_induction hm'
       · rintro m'' ⟨x, n, hm''⟩; rw [← hm'', leibniz_lie]
         refine' Submodule.add_mem _ _ _ <;> apply Submodule.subset_span
@@ -89,8 +87,7 @@ theorem lieIdeal_oper_eq_linear_span :
 #align lie_submodule.lie_ideal_oper_eq_linear_span LieSubmodule.lieIdeal_oper_eq_linear_span
 
 theorem lieIdeal_oper_eq_linear_span' :
-    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m } :=
-  by
+    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m } := by
   rw [lie_ideal_oper_eq_linear_span]
   congr
   ext m
@@ -101,8 +98,7 @@ theorem lieIdeal_oper_eq_linear_span' :
     exact ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩
 #align lie_submodule.lie_ideal_oper_eq_linear_span' LieSubmodule.lieIdeal_oper_eq_linear_span'
 
-theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' :=
-  by
+theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lie_ideal_oper_eq_span, LieSubmodule.lieSpan_le]
   refine' ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
@@ -117,8 +113,7 @@ theorem lie_mem_lie {x : L} {m : M} (hx : x ∈ I) (hm : m ∈ N) : ⁅x, m⁆ �
   N.lie_coe_mem_lie I ⟨x, hx⟩ ⟨m, hm⟩
 #align lie_submodule.lie_mem_lie LieSubmodule.lie_mem_lie
 
-theorem lie_comm : ⁅I, J⁆ = ⁅J, I⁆ :=
-  by
+theorem lie_comm : ⁅I, J⁆ = ⁅J, I⁆ := by
   suffices ∀ I J : LieIdeal R L, ⁅I, J⁆ ≤ ⁅J, I⁆ by exact le_antisymm (this I J) (this J I)
   clear I J; intro I J
   rw [lie_ideal_oper_eq_span, lie_span_le]; rintro x ⟨y, z, h⟩; rw [← h]
@@ -126,8 +121,7 @@ theorem lie_comm : ⁅I, J⁆ = ⁅J, I⁆ :=
   apply lie_coe_mem_lie
 #align lie_submodule.lie_comm LieSubmodule.lie_comm
 
-theorem lie_le_right : ⁅I, N⁆ ≤ N :=
-  by
+theorem lie_le_right : ⁅I, N⁆ ≤ N := by
   rw [lie_ideal_oper_eq_span, lie_span_le]; rintro m ⟨x, n, hn⟩; rw [← hn]
   exact N.lie_mem n.property
 #align lie_submodule.lie_le_right LieSubmodule.lie_le_right
@@ -143,23 +137,20 @@ theorem lie_bot : ⁅I, (⊥ : LieSubmodule R L M)⁆ = ⊥ := by rw [eq_bot_iff
 #align lie_submodule.lie_bot LieSubmodule.lie_bot
 
 @[simp]
-theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ :=
-  by
+theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
   suffices ⁅(⊥ : LieIdeal R L), N⁆ ≤ ⊥ by exact le_bot_iff.mp this
   rw [lie_ideal_oper_eq_span, lie_span_le]; rintro m ⟨⟨x, hx⟩, n, hn⟩; rw [← hn]
   change x ∈ (⊥ : LieIdeal R L) at hx ; rw [mem_bot] at hx ; simp [hx]
 #align lie_submodule.bot_lie LieSubmodule.bot_lie
 
-theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 :=
-  by
+theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lie_ideal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
   refine' ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
 
-theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ :=
-  by
+theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lie_ideal_oper_eq_span, mem_lie_span] at h ; rw [lie_ideal_oper_eq_span, mem_lie_span]
   intro N hN; apply h; rintro m' ⟨⟨x, hx⟩, ⟨n, hn⟩, hm⟩; rw [← hm]; apply hN
@@ -175,8 +166,7 @@ theorem mono_lie_right (h : N ≤ N') : ⁅I, N⁆ ≤ ⁅I, N'⁆ :=
 #align lie_submodule.mono_lie_right LieSubmodule.mono_lie_right
 
 @[simp]
-theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ :=
-  by
+theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
   have h : ⁅I, N⁆ ⊔ ⁅I, N'⁆ ≤ ⁅I, N ⊔ N'⁆ := by rw [sup_le_iff];
     constructor <;> apply mono_lie_right <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I, N ⊔ N'⁆ ≤ ⁅I, N⁆ ⊔ ⁅I, N'⁆ by exact le_antisymm this h; clear h
@@ -188,8 +178,7 @@ theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ :=
 #align lie_submodule.lie_sup LieSubmodule.lie_sup
 
 @[simp]
-theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ :=
-  by
+theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
   have h : ⁅I, N⁆ ⊔ ⁅J, N⁆ ≤ ⁅I ⊔ J, N⁆ := by rw [sup_le_iff];
     constructor <;> apply mono_lie_left <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I ⊔ J, N⁆ ≤ ⁅I, N⁆ ⊔ ⁅J, N⁆ by exact le_antisymm this h; clear h
@@ -212,8 +201,7 @@ theorem inf_lie : ⁅I ⊓ J, N⁆ ≤ ⁅I, N⁆ ⊓ ⁅J, N⁆ := by rw [le_in
 
 variable (f : M →ₗ⁅R,L⁆ M₂)
 
-theorem map_bracket_eq : map f ⁅I, N⁆ = ⁅I, map f N⁆ :=
-  by
+theorem map_bracket_eq : map f ⁅I, N⁆ = ⁅I, map f N⁆ := by
   rw [← coe_to_submodule_eq_iff, coe_submodule_map, lie_ideal_oper_eq_linear_span,
     lie_ideal_oper_eq_linear_span, Submodule.map_span]
   congr
@@ -231,8 +219,7 @@ theorem map_comap_le : map f (comap f N₂) ≤ N₂ :=
   (N₂ : Set M₂).image_preimage_subset f
 #align lie_submodule.map_comap_le LieSubmodule.map_comap_le
 
-theorem map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ :=
-  by
+theorem map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ := by
   rw [SetLike.ext'_iff]
   exact Set.image_preimage_eq_of_subset hf
 #align lie_submodule.map_comap_eq LieSubmodule.map_comap_eq
@@ -241,22 +228,19 @@ theorem le_comap_map : N ≤ comap f (map f N) :=
   (N : Set M).subset_preimage_image f
 #align lie_submodule.le_comap_map LieSubmodule.le_comap_map
 
-theorem comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N :=
-  by
+theorem comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N := by
   rw [SetLike.ext'_iff]
   exact (N : Set M).preimage_image_eq (f.ker_eq_bot.mp hf)
 #align lie_submodule.comap_map_eq LieSubmodule.comap_map_eq
 
 theorem comap_bracket_eq (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
-    comap f ⁅I, N₂⁆ = ⁅I, comap f N₂⁆ :=
-  by
+    comap f ⁅I, N₂⁆ = ⁅I, comap f N₂⁆ := by
   conv_lhs => rw [← map_comap_eq N₂ f hf₂]
   rw [← map_bracket_eq, comap_map_eq _ f hf₁]
 #align lie_submodule.comap_bracket_eq LieSubmodule.comap_bracket_eq
 
 @[simp]
-theorem map_comap_incl : map N.incl (comap N.incl N') = N ⊓ N' :=
-  by
+theorem map_comap_incl : map N.incl (comap N.incl N') = N ⊓ N' := by
   rw [← coe_to_submodule_eq_iff]
   exact (N : Submodule R M).map_comap_subtype N'
 #align lie_submodule.map_comap_incl LieSubmodule.map_comap_incl
@@ -277,8 +261,7 @@ variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 
 /-- Note that the inequality can be strict; e.g., the inclusion of an Abelian subalgebra of a
 simple algebra. -/
-theorem map_bracket_le {I₁ I₂ : LieIdeal R L} : map f ⁅I₁, I₂⁆ ≤ ⁅map f I₁, map f I₂⁆ :=
-  by
+theorem map_bracket_le {I₁ I₂ : LieIdeal R L} : map f ⁅I₁, I₂⁆ ≤ ⁅map f I₁, map f I₂⁆ := by
   rw [map_le_iff_le_comap]; erw [LieSubmodule.lieSpan_le]
   intro x hx; obtain ⟨⟨y₁, hy₁⟩, ⟨y₂, hy₂⟩, hx⟩ := hx; rw [← hx]
   let fy₁ : ↥(map f I₁) := ⟨f y₁, mem_map hy₁⟩
@@ -289,8 +272,7 @@ theorem map_bracket_le {I₁ I₂ : LieIdeal R L} : map f ⁅I₁, I₂⁆ ≤ �
 #align lie_ideal.map_bracket_le LieIdeal.map_bracket_le
 
 theorem map_bracket_eq {I₁ I₂ : LieIdeal R L} (h : Function.Surjective f) :
-    map f ⁅I₁, I₂⁆ = ⁅map f I₁, map f I₂⁆ :=
-  by
+    map f ⁅I₁, I₂⁆ = ⁅map f I₁, map f I₂⁆ := by
   suffices ⁅map f I₁, map f I₂⁆ ≤ map f ⁅I₁, I₂⁆ by exact le_antisymm (map_bracket_le f) this
   rw [← LieSubmodule.coeSubmodule_le_coeSubmodule, coe_map_of_surjective h,
     LieSubmodule.lieIdeal_oper_eq_linear_span, LieSubmodule.lieIdeal_oper_eq_linear_span,
@@ -303,8 +285,7 @@ theorem map_bracket_eq {I₁ I₂ : LieIdeal R L} (h : Function.Surjective f) :
   apply f.map_lie
 #align lie_ideal.map_bracket_eq LieIdeal.map_bracket_eq
 
-theorem comap_bracket_le {J₁ J₂ : LieIdeal R L'} : ⁅comap f J₁, comap f J₂⁆ ≤ comap f ⁅J₁, J₂⁆ :=
-  by
+theorem comap_bracket_le {J₁ J₂ : LieIdeal R L'} : ⁅comap f J₁, comap f J₂⁆ ≤ comap f ⁅J₁, J₂⁆ := by
   rw [← map_le_iff_le_comap]
   exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie _ _ _ _ map_comap_le map_comap_le)
 #align lie_ideal.comap_bracket_le LieIdeal.comap_bracket_le
@@ -316,8 +297,7 @@ theorem map_comap_incl {I₁ I₂ : LieIdeal R L} : map I₁.incl (comap I₁.in
 #align lie_ideal.map_comap_incl LieIdeal.map_comap_incl
 
 theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
-    comap f ⁅f.idealRange ⊓ J₁, f.idealRange ⊓ J₂⁆ = ⁅comap f J₁, comap f J₂⁆ ⊔ f.ker :=
-  by
+    comap f ⁅f.idealRange ⊓ J₁, f.idealRange ⊓ J₂⁆ = ⁅comap f J₁, comap f J₂⁆ ⊔ f.ker := by
   rw [← LieSubmodule.coe_to_submodule_eq_iff, comap_coe_submodule,
     LieSubmodule.sup_coe_to_submodule, f.ker_coe_submodule, ← Submodule.comap_map_eq,
     LieSubmodule.lieIdeal_oper_eq_linear_span, LieSubmodule.lieIdeal_oper_eq_linear_span,
@@ -339,15 +319,13 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
 #align lie_ideal.comap_bracket_eq LieIdeal.comap_bracket_eq
 
 theorem map_comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
-    map f ⁅comap f J₁, comap f J₂⁆ = ⁅f.idealRange ⊓ J₁, f.idealRange ⊓ J₂⁆ :=
-  by
+    map f ⁅comap f J₁, comap f J₂⁆ = ⁅f.idealRange ⊓ J₁, f.idealRange ⊓ J₂⁆ := by
   rw [← map_sup_ker_eq_map, ← comap_bracket_eq h, map_comap_eq h, inf_eq_right]
   exact le_trans (LieSubmodule.lie_le_left _ _) inf_le_left
 #align lie_ideal.map_comap_bracket_eq LieIdeal.map_comap_bracket_eq
 
 theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
-    ⁅comap I.incl I₁, comap I.incl I₂⁆ = comap I.incl ⁅I ⊓ I₁, I ⊓ I₂⁆ :=
-  by
+    ⁅comap I.incl I₁, comap I.incl I₂⁆ = comap I.incl ⁅I ⊓ I₁, I ⊓ I₂⁆ := by
   conv_rhs =>
     congr
     skip
