@@ -1283,6 +1283,7 @@ import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.MvPolynomial.Funext
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Monad
+import Mathlib.Data.MvPolynomial.PDeriv
 import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Supported
@@ -1985,6 +1986,7 @@ import Mathlib.NumberTheory.LSeries
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.NumberTheory.Liouville.Basic
+import Mathlib.NumberTheory.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
@@ -2148,13 +2150,16 @@ import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.Derivation.Lie
+import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
