@@ -198,8 +198,9 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
       leftUnitor_whiskerRight, triangle_assoc, inv_hom_whiskerRight_assoc, whiskerRight_comp]
   -- Porting note: this used to be automatic via `tidy`, wich did `intros, simp`
   naturality_naturality {_ _ _ _} _ := by
-    simp only [whiskerRight_comp, assoc, Iso.hom_inv_id_assoc, whiskerRight_naturality_naturality_assoc,
-      Iso.inv_hom_id_assoc, whiskerLeft_naturality_naturality_assoc, comp_whiskerLeft]
+    simp only [whiskerRight_comp, assoc, Iso.hom_inv_id_assoc,
+      whiskerRight_naturality_naturality_assoc, Iso.inv_hom_id_assoc,
+      whiskerLeft_naturality_naturality_assoc, comp_whiskerLeft]
 #align category_theory.oplax_nat_trans.vcomp CategoryTheory.OplaxNatTrans.vcomp
 
 variable (B C)
@@ -312,10 +313,12 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
   hom_inv_id := by
     refine' Modification.ext _ _ (funext (fun b => _))
-    simp only [category_comp, Modification.vcomp_app, Iso.hom_inv_id, category_id, Modification.id_app]
+    simp only [category_comp, Modification.vcomp_app, Iso.hom_inv_id, category_id,
+      Modification.id_app]
   inv_hom_id := by
     refine' Modification.ext _ _ (funext (fun b => _))
-    simp only [category_comp, Modification.vcomp_app, Iso.inv_hom_id, category_id, Modification.id_app]
+    simp only [category_comp, Modification.vcomp_app, Iso.inv_hom_id, category_id,
+      Modification.id_app]
 #align category_theory.oplax_nat_trans.modification_iso.of_components CategoryTheory.OplaxNatTrans.ModificationIso.ofComponents
 
 end
