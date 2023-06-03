@@ -413,6 +413,12 @@ instance {X Y : Type _}
     [SigmaFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
 
+instance {X Y : Type _}
+    [TopologicalSpace X] [MeasureSpace X] [FiniteMeasureOnCompacts (volume : Measure X)]
+    [TopologicalSpace Y] [MeasureSpace Y] [FiniteMeasureOnCompacts (volume : Measure Y)]
+    [SigmaFinite (volume : Measure Y)] : FiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
+  prod.instFiniteMeasureOnCompacts _ _
+
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
