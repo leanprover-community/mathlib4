@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.LocalPredicate
-import Mathbin.Topology.Sheaves.Stalks
+import Mathlib.Topology.Sheaves.LocalPredicate
+import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Sheafification of `Type` valued presheaves
@@ -52,8 +52,7 @@ namespace Sheafify
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
-def isGerm : PrelocalPredicate fun x => F.stalk x
-    where
+def isGerm : PrelocalPredicate fun x => F.stalk x where
   pred U f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ x g
   res := fun V U i f ⟨g, p⟩ =>
     ⟨F.map i.op g, fun x => (p (i x)).trans (F.germ_res_apply _ _ _).symm⟩
@@ -79,8 +78,7 @@ def sheafify : Sheaf (Type v) X :=
 sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
-def toSheafify : F ⟶ F.sheafify.1
-    where
+def toSheafify : F ⟶ F.sheafify.1 where
   app U f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality' U U' f := by ext (x⟨u, m⟩); exact germ_res_apply F f.unop ⟨u, m⟩ x
 #align Top.presheaf.to_sheafify TopCat.Presheaf.toSheafify
@@ -92,8 +90,7 @@ def stalkToFiber (x : X) : F.sheafify.Presheaf.stalk x ⟶ F.stalk x :=
   stalkToFiber (Sheafify.isLocallyGerm F) x
 #align Top.presheaf.stalk_to_fiber TopCat.Presheaf.stalkToFiber
 
-theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) :=
-  by
+theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply stalk_to_fiber_surjective
   intro t
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
@@ -103,8 +100,7 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
     · exact ⟨prelocal_predicate.sheafify_of ⟨s, fun _ => rfl⟩, rfl⟩
 #align Top.presheaf.stalk_to_fiber_surjective TopCat.Presheaf.stalkToFiber_surjective
 
-theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :=
-  by
+theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply stalk_to_fiber_injective
   intros
   rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
