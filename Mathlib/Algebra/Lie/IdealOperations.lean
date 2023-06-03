@@ -20,10 +20,10 @@ define solvability / nilpotency of a Lie algebra via the derived / lower-central
 
 ## Main definitions
 
-  * `lie_submodule.has_bracket`
-  * `lie_submodule.lie_ideal_oper_eq_linear_span`
-  * `lie_ideal.map_bracket_le`
-  * `lie_ideal.comap_bracket_le`
+  * `LieSubmodule.hasBracket`
+  * `LieSubmodule.lieIdeal_oper_eq_linear_span`
+  * `LieIdeal.map_bracket_le`
+  * `LieIdeal.comap_bracket_le`
 
 ## Notation
 
@@ -64,7 +64,7 @@ theorem lieIdeal_oper_eq_span :
   rfl
 #align lie_submodule.lie_ideal_oper_eq_span LieSubmodule.lieIdeal_oper_eq_span
 
-/-- See also `lie_submodule.lie_ideal_oper_eq_linear_span'` and
+/-- See also `LieSubmodule.lieIdeal_oper_eq_linear_span'` and
 `lie_submodule.lie_ideal_oper_eq_tensor_map_range`. -/
 theorem lieIdeal_oper_eq_linear_span :
     (↑⁅I, N⁆ : Submodule R M) =
