@@ -20,7 +20,7 @@ $$
 a \circ b = \frac{1}{2}(ab + ba)
 $$
 
-We provide the symmetrized version of a type `α` as `sym_alg α`, with notation `αˢʸᵐ`.
+We provide the symmetrized version of a type `α` as `SymAlg α`, with notation `αˢʸᵐ`.
 
 ## Implementation notes
 
@@ -48,7 +48,7 @@ namespace SymAlg
 
 variable {α : Type _}
 
-/-- The element of `sym_alg α` that represents `a : α`. -/
+/-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
 -- Porting note: removed @[pp_nodot]
 def sym : α ≃ αˢʸᵐ :=
