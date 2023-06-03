@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Derivation.Basic
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Results
@@ -66,8 +66,7 @@ def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
   · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
   · intro x y
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
-    have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 :=
-      by
+    have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 := by
       rw [← Ideal.mem_bot, ← hI, pow_two]
       convert Ideal.mul_mem_mul (F x).2 (F y).2 using 1
     ext
@@ -95,8 +94,7 @@ def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
     map_one' := by rw [map_one, f.map_one_eq_zero, Submodule.coe_zero, zero_add]
-    map_mul' := fun x y =>
-      by
+    map_mul' := fun x y => by
       have : (f x : B) * f y = 0 := by rw [← Ideal.mem_bot, ← hI, pow_two];
         convert Ideal.mul_mem_mul (f x).2 (f y).2 using 1
       simp only [map_mul, f.leibniz, add_mul, mul_add, Submodule.coe_add,
@@ -112,8 +110,7 @@ def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
 
 @[simp]
 theorem liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
-    Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x :=
-  by
+    Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
   rw [liftOfDerivationToSquareZero_apply, map_add, ideal.quotient.eq_zero_iff_mem.mpr (d x).Prop,
     zero_add]
   rfl
