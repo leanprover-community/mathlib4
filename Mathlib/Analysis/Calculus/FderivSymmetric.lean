@@ -15,7 +15,7 @@ import Mathlib.Analysis.Calculus.MeanValue
 
 We show that, over the reals, the second derivative is symmetric.
 
-The most precise result is `convex.second_derivative_within_at_symmetric`. It asserts that,
+The most precise result is `Convex.second_derivative_within_at_symmetric`. It asserts that,
 if a function is differentiable inside a convex set `s` with nonempty interior, and has a second
 derivative within `s` at a point `x`, then this second derivative at `x` is symmetric. Note that
 this result does not require continuity of the first derivative.
@@ -33,7 +33,7 @@ derivative at `x`, then this second derivative is symmetric.
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
 using the mean value inequality applied to a suitable function along the
 segment `[x + v, x + v + w]`. This expansion involves `f'' ⬝ w` as we move along a segment directed
-by `w` (see `convex.taylor_approx_two_segment`).
+by `w` (see `Convex.taylor_approx_two_segment`).
 
 Consider the alternate sum `f (x + v + w) + f x - f (x + v) - f (x + w)`, corresponding to the
 values of `f` along a rectangle based at `x` with sides `v` and `w`. One can write it using the two
@@ -45,7 +45,7 @@ the equality `f'' v w = f'' w v` follows.
 In our most general statement, we only assume that `f` is differentiable inside a convex set `s`, so
 a few modifications have to be made. Since we don't assume continuity of `f` at `x`, we consider
 instead the rectangle based at `x + v + w` with sides `v` and `w`,
-in `convex.is_o_alternate_sum_square`, but the argument is essentially the same. It only works
+in `Convex.isLittleO_alternate_sum_square`, but the argument is essentially the same. It only works
 when `v` and `w` both point towards the interior of `s`, to make sure that all the sides of the
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
@@ -67,13 +67,11 @@ Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v +
 bilinear estimate for `f (x + hv + hw) - f (x + hv)` in terms of `f' w` and of `f'' ⬝ w`, up to
 `o(h^2)`.
 
-This is a technical statement used to show that the second derivative is symmetric.
--/
+This is a technical statement used to show that the second derivative is symmetric. -/
 theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     (hw : x + v + w ∈ interior s) :
-    (fun h : ℝ =>
-        f (x + h • v + h • w) - f (x + h • v) - h • f' x w - h ^ 2 • f'' v w -
-          (h ^ 2 / 2) • f'' w w) =o[𝓝[>] 0]
+    (fun h : ℝ => f (x + h • v + h • w)
+        - f (x + h • v) - h • f' x w - h ^ 2 • f'' v w - (h ^ 2 / 2) • f'' w w) =o[𝓝[>] 0]
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
@@ -91,7 +89,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have E2 : ∀ᶠ h in 𝓝[>] (0 : ℝ), (h : ℝ) < 1 :=
     mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.2
       ⟨(1 : ℝ), by simp only [mem_Ioi, zero_lt_one], fun x hx => hx.2⟩
-  filter_upwards [E1, E2, self_mem_nhdsWithin]with h hδ h_lt_1 hpos
+  filter_upwards [E1, E2, self_mem_nhdsWithin] with h hδ h_lt_1 hpos
   -- we consider `h` small enough that all points under consideration belong to this ball,
   -- and also with `0 < h < 1`.
   replace hpos : 0 < h := hpos
@@ -123,11 +121,9 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         hasDerivAt_mul_const]
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
-    · suffices H :
-        HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
+    · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
           ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t
       · convert H using 2
-        --rw [Nat.cast_two]
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -188,10 +184,8 @@ In a setting where `f` is not guaranteed to be continuous at `f`, we can still
 get this if we use a quadrilateral based at `h v + h w`. -/
 theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) • v ∈ interior s)
     (h4w : x + (4 : ℝ) • w ∈ interior s) :
-    (fun h : ℝ =>
-        f (x + h • (2 • v + 2 • w)) + f (x + h • (v + w)) - f (x + h • (2 • v + w)) -
-            f (x + h • (v + 2 • w)) -
-          h ^ 2 • f'' v w) =o[𝓝[>] 0]
+    (fun h : ℝ => f (x + h • (2 • v + 2 • w)) + f (x + h • (v + w))
+        - f (x + h • (2 • v + w)) - f (x + h • (v + 2 • w)) - h ^ 2 • f'' v w) =o[𝓝[>] 0]
       fun h => h ^ 2 := by
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
@@ -240,15 +234,14 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one
-has `f'' v w = f'' w v`. Superseded by `convex.second_derivative_within_at_symmetric`, which
-removes the assumption that `v` and `w` point inside `s`.
--/
+has `f'' v w = f'' w v`. Superseded by `Convex.second_derivative_within_at_symmetric`, which
+removes the assumption that `v` and `w` point inside `s`. -/
 theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
-    (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) : f'' w v = f'' v w :=
-  by
+    (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
+    f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
     convert (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
-        (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
+      (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
     ext h
     simp only [add_comm, smul_add, smul_sub]
     abel
@@ -282,9 +275,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
-    refine' tendsto_const_nhds.add _
-    refine' tendsto_const_nhds.smul _
-    refine' tendsto_const_nhds.add _
+    refine' tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add _
     exact continuousAt_id.smul continuousAt_const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m
@@ -312,9 +303,8 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
   simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_add, smul_smul,
     ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
-  rw [← sub_eq_zero] at this
-  abel at this
-  simp only [one_zsmul, neg_smul, sub_eq_zero, mul_comm, ← sub_eq_add_neg] at this
+  rw [add_assoc, add_assoc, add_right_inj, add_left_comm, add_right_inj, add_right_inj, mul_comm]
+    at this
   apply smul_right_injective F _ this
   simp [(tpos v).ne', (tpos w).ne']
 #align convex.second_derivative_within_at_symmetric Convex.second_derivative_within_at_symmetric
