@@ -8,10 +8,10 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.Lebesgue.Basic
-import Mathbin.NumberTheory.Liouville.Residual
-import Mathbin.NumberTheory.Liouville.LiouvilleWith
-import Mathbin.Analysis.PSeries
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.NumberTheory.Liouville.Residual
+import Mathlib.NumberTheory.Liouville.LiouvilleWith
+import Mathlib.Analysis.PSeries
 
 /-!
 # Volume of the set of Liouville numbers
@@ -42,8 +42,7 @@ theorem setOf_liouvilleWith_subset_aux :
           ⋃ n > (0 : ℕ),
             { x : ℝ |
               ∃ᶠ b : ℕ in atTop,
-                ∃ a ∈ Finset.Icc (0 : ℤ) b, |x - (a : ℤ) / b| < 1 / b ^ (2 + 1 / n : ℝ) } :=
-  by
+                ∃ a ∈ Finset.Icc (0 : ℤ) b, |x - (a : ℤ) / b| < 1 / b ^ (2 + 1 / n : ℝ) } := by
   rintro x ⟨p, hp, hxp⟩
   rcases exists_nat_one_div_lt (sub_pos.2 hp) with ⟨n, hn⟩
   rw [lt_sub_iff_add_lt'] at hn 
@@ -52,8 +51,7 @@ theorem setOf_liouvilleWith_subset_aux :
       LiouvilleWith p y →
         y ∈ Ico (0 : ℝ) 1 →
           ∃ᶠ b : ℕ in at_top,
-            ∃ a ∈ Finset.Icc (0 : ℤ) b, |y - a / b| < 1 / b ^ (2 + 1 / (n + 1 : ℕ) : ℝ)
-    by
+            ∃ a ∈ Finset.Icc (0 : ℤ) b, |y - a / b| < 1 / b ^ (2 + 1 / (n + 1 : ℕ) : ℝ) by
     simp only [mem_Union, mem_preimage]
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
       simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
@@ -91,8 +89,7 @@ theorem setOf_liouvilleWith_subset_aux :
 measure zero. -/
 @[simp]
 theorem volume_iUnion_setOf_liouvilleWith :
-    volume (⋃ (p : ℝ) (hp : 2 < p), { x : ℝ | LiouvilleWith p x }) = 0 :=
-  by
+    volume (⋃ (p : ℝ) (hp : 2 < p), { x : ℝ | LiouvilleWith p x }) = 0 := by
   simp only [← set_of_exists]
   refine' measure_mono_null setOf_liouvilleWith_subset_aux _
   rw [measure_Union_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
@@ -102,14 +99,12 @@ theorem volume_iUnion_setOf_liouvilleWith :
   refine' measure_set_of_frequently_eq_zero _
   simp only [set_of_exists, ← Real.dist_eq, ← mem_ball, set_of_mem_eq]
   set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / b ^ r)
-  have hB : ∀ a b, volume (B a b) = ↑(2 / b ^ r : ℝ≥0) :=
-    by
+  have hB : ∀ a b, volume (B a b) = ↑(2 / b ^ r : ℝ≥0) := by
     intro a b
     rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_nat_cast, ← NNReal.coe_rpow, ←
       NNReal.coe_div, ENNReal.ofReal_coe_nnreal]
   have :
-    ∀ b : ℕ, volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ (2 * (b ^ (1 - r) + b ^ (-r)) : ℝ≥0) :=
-    by
+    ∀ b : ℕ, volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ (2 * (b ^ (1 - r) + b ^ (-r)) : ℝ≥0) := by
     intro b
     calc
       volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a in Finset.Icc (0 : ℤ) b, volume (B a b) :=
