@@ -201,6 +201,7 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
