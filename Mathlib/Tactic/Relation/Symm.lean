@@ -62,49 +62,36 @@ and in `Lean.MVarId.symm` and `Lean.MVarId.symmAt` this result will be a new goa
 -- This function is rather opaque, but the design with a generic continuation `k`
 -- is necessary in order to factor out all the common requirements below.
 def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MetaM α) : MetaM α := do
-  let .app (.app rel _) _ := tgt
-    | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
-  for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
+  let s ← saveState
+  for lem in ← (symmExt.getState (← getEnv)).getMatch (← whnfR <|← instantiateMVars tgt) do
     try
       let lem ← mkConstWithFreshMVarLevels lem
-      let (args, _, body) ← withReducible <| forallMetaTelescopeReducing (← inferType lem)
+      let (args, _, body) ← withReducible <| forallMetaTelescope (← inferType lem)
       return (← k lem args body)
-    catch _ => pure ()
+    catch _ => s.restore
   throwError "no applicable symmetry lemma found for{indentExpr tgt}"
 
 /-- Given a term `e : a ~ b`, construct a term in `b ~ a` using `@[symm]` lemmas. -/
 def symm (e : Expr) : MetaM Expr := do
-  symmAux (← instantiateMVars (← inferType e)) fun lem args body => do
-    let .true ← isDefEq args.back e | failure
+  symmAux (← inferType e) fun lem args body => do
+    guard <|← isDefEq args.back e
     mkExpectedTypeHint (mkAppN lem args) (← instantiateMVars body)
 
 end Lean.Expr
 
 namespace Lean.MVarId
 
-/--
-Internal implementation of `Lean.MVarId.symm` and the user-facing tactic.
-
-`tgt` should be of the form `a ~ b`, and is used to index the symm lemmas.
-
-`k lem args body goal` should transform `goal` into a new goal,
-given a candidate `symm` lemma `lem`, which will have type `∀ args, body`.
-Depending on whether we are working on a hypothesis or a goal,
-`k` will internally use either `replace` or `assign`.
--/
-def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM MVarId) (g : MVarId) :
-    MetaM MVarId := do
-  tgt.symmAux fun lem args body => do
-    let g' ← k lem args body g
-    g'.setTag (← g.getTag)
-    return g'
-
-/-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable. -/
-def symm (g : MVarId) : MetaM MVarId := do
-  g.symmAux (← g.getType') fun lem args body g => do
-    let .true ← isDefEq (← g.getType) body | failure
+/-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable of type `x ∼ y`. Returns the symmetry hypothesis of type `y ∼ x` as long as it is unassigned, together with any   -/
+def symm (g : MVarId) : MetaM (Option MVarId × List MVarId) := do
+  (← g.getType).symmAux fun lem args body => do
+    guard <|← isDefEq (← g.getType) body
     g.assign (mkAppN lem args)
-    return args.back.mvarId!
+    let some h := args.back? | failure
+    let g' := h.mvarId!
+    g'.setTag (← g.getTag)
+    let g'? ← mkUserFacingMVar? g' `symm
+    let argList ← mkUserFacingMVarsArray (args.pop.map (·.mvarId!)) `symm_side
+    return (g'?, argList.toList)
 
 /-- Use a symmetry lemma (i.e. marked with `@[symm]`) to replace a hypothesis in a goal. -/
 def symmAt (h : FVarId) (g : MVarId) : MetaM MVarId := do
@@ -139,7 +126,9 @@ open Lean.Elab.Tactic
 -/
 elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
   let atHyp h := liftMetaTactic1 fun g => g.symmAt h
-  let atTarget := liftMetaTactic1 fun g => g.symm
+  let atTarget := liftMetaTactic fun g => do
+    let (g'?, args) ← g.symm
+    if let some g' := g'? then pure (g' :: args) else pure args
   withLocation (expandOptLocation loc) atHyp atTarget fun _ ↦ throwError "symm made no progress"
 
 /-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
