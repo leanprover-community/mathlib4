@@ -707,12 +707,12 @@ as the fact that a measure which is finite on compacts is locally finite is not 
 instance, to avoid an instance loop.
 
 See Note [lower instance priority]"]
-instance (priority := 100) locallyIsFiniteMeasure_of_isHaarMeasure {G : Type _} [Group G]
+instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type _} [Group G]
     [MeasurableSpace G] [TopologicalSpace G] [LocallyCompactSpace G] (μ : Measure G)
     [IsHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
-  locallyIsFiniteMeasure_of_isFiniteMeasureOnCompacts
-#align measure_theory.measure.is_locally_finite_measure_of_is_haar_measure MeasureTheory.Measure.locallyIsFiniteMeasure_of_isHaarMeasure
-#align measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure MeasureTheory.Measure.locallyIsFiniteMeasure_of_isAddHaarMeasure
+  isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
+#align measure_theory.measure.is_locally_finite_measure_of_is_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isHaarMeasure
+#align measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isAddHaarMeasure
 
 section
 

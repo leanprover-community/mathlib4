@@ -104,7 +104,7 @@ is automatically satisfied by any finite measure on a metric space.
 *  `MeasurableSet.exists_lt_isCompact_of_ne_top` and `MeasurableSet.exists_isCompact_lt_add`:
   a measurable set of finite measure can be approximated by a compact subset (stated as
   `r < μ K` and `μ s < μ K + ε`, respectively).
-* `MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_locallyIsFiniteMeasure` is an
+* `MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure` is an
   instance registering that a locally finite measure on a `σ`-compact metric space is regular (in
   fact, an emetric space is enough).
 
@@ -653,12 +653,12 @@ attribute [local instance] EMetric.secondCountable_of_sigmaCompact
 
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact (e)metric space is regular. -/
-instance (priority := 100) Regular.of_sigmaCompactSpace_of_locallyIsFiniteMeasure {X : Type _}
+instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type _}
     [EMetricSpace X] [SigmaCompactSpace X] [MeasurableSpace X] [BorelSpace X] (μ : Measure X)
     [IsLocallyFiniteMeasure μ] : Regular μ where
   lt_top_of_isCompact _K hK := hK.measure_lt_top
   innerRegular := (InnerRegular.isCompact_isClosed μ).trans (InnerRegular.of_pseudoEMetricSpace μ)
-#align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_locallyIsFiniteMeasure
+#align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure
 
 end Measure
 

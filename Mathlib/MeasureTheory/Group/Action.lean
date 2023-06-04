@@ -227,14 +227,14 @@ instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
 @[to_additive]
-theorem locallyIsFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
+theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
     ⟨(· • ·) g ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
-#align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.locallyIsFiniteMeasure_of_smulInvariant
-#align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.locallyIsFiniteMeasure_of_vaddInvariant
+#align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.isLocallyFiniteMeasure_of_smulInvariant
+#align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.isLocallyFiniteMeasure_of_vaddInvariant
 
 variable [Measure.Regular μ]
 

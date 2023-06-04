@@ -3909,7 +3909,7 @@ theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure
     (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
 #align measure_theory.measure.exists_is_open_measure_lt_top MeasureTheory.Measure.exists_isOpen_measure_lt_top
 
-instance locallyIsFiniteMeasureSmulNnreal [TopologicalSpace α] (μ : Measure α)
+instance isLocallyFiniteMeasureSmulNnreal [TopologicalSpace α] (μ : Measure α)
     [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
   refine' ⟨fun x => _⟩
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
@@ -3917,7 +3917,7 @@ instance locallyIsFiniteMeasureSmulNnreal [TopologicalSpace α] (μ : Measure α
   apply ENNReal.mul_lt_top _ μo.ne
   simp only [RingHom.id_apply, RingHom.toMonoidHom_eq_coe, ENNReal.coe_ne_top,
     ENNReal.coe_ofNNRealHom, Ne.def, not_false_iff]
-#align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.locallyIsFiniteMeasureSmulNnreal
+#align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.isLocallyFiniteMeasureSmulNnreal
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :
@@ -3967,7 +3967,7 @@ protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Mea
 #align measure_theory.is_finite_measure_on_compacts.smul MeasureTheory.IsFiniteMeasureOnCompacts.smul
 
 /-- Note this cannot be an instance because it would form a typeclass loop with
-`isFiniteMeasureOnCompacts_of_locallyIsFiniteMeasure`. -/
+`isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure`. -/
 theorem CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
     [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasure μ :=
   ⟨IsFiniteMeasureOnCompacts.lt_top_of_isCompact isCompact_univ⟩
@@ -3984,13 +3984,13 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 
 /-- A measure which is finite on compact sets in a locally compact space is locally finite.
 Not registered as an instance to avoid a loop with the other direction. -/
-theorem locallyIsFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
+theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [LocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨by
     intro x
     rcases exists_compact_mem_nhds x with ⟨K, K_compact, K_mem⟩
     exact ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
-#align measure_theory.is_locally_finite_measure_of_is_finite_measure_on_compacts MeasureTheory.locallyIsFiniteMeasure_of_isFiniteMeasureOnCompacts
+#align measure_theory.is_locally_finite_measure_of_is_finite_measure_on_compacts MeasureTheory.isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
 
 theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : (⋃ i, U i) = univ)
     (hμ : μ ≠ 0) : ∃ i, 0 < μ (U i) := by
@@ -4156,11 +4156,11 @@ theorem finiteAt_principal : μ.FiniteAtFilter (𝓟 s) ↔ μ s < ∞ :=
   ⟨fun ⟨_t, ht, hμ⟩ => (measure_mono ht).trans_lt hμ, fun h => ⟨s, mem_principal_self s, h⟩⟩
 #align measure_theory.measure.finite_at_principal MeasureTheory.Measure.finiteAt_principal
 
-theorem locallyIsFiniteMeasure_of_le [TopologicalSpace α] {_m : MeasurableSpace α} {μ ν : Measure α}
+theorem isLocallyFiniteMeasure_of_le [TopologicalSpace α] {_m : MeasurableSpace α} {μ ν : Measure α}
     [H : IsLocallyFiniteMeasure μ] (h : ν ≤ μ) : IsLocallyFiniteMeasure ν :=
   let F := H.finiteAtNhds
   ⟨fun x => (F x).measure_mono h⟩
-#align measure_theory.measure.is_locally_finite_measure_of_le MeasureTheory.Measure.locallyIsFiniteMeasure_of_le
+#align measure_theory.measure.is_locally_finite_measure_of_le MeasureTheory.Measure.isLocallyFiniteMeasure_of_le
 
 end Measure
 
@@ -4496,11 +4496,11 @@ theorem measure_zero_of_nhdsWithin (hs : IsCompact s) :
 end IsCompact
 
 -- see Note [lower instance priority]
-instance (priority := 100) isFiniteMeasureOnCompacts_of_locallyIsFiniteMeasure [TopologicalSpace α]
+instance (priority := 100) isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure [TopologicalSpace α]
     {_ : MeasurableSpace α} {μ : Measure α} [IsLocallyFiniteMeasure μ] :
     IsFiniteMeasureOnCompacts μ :=
   ⟨fun _s hs => hs.measure_lt_top_of_nhdsWithin fun _ _ => μ.finiteAt_nhdsWithin _ _⟩
-#align is_finite_measure_on_compacts_of_is_locally_finite_measure isFiniteMeasureOnCompacts_of_locallyIsFiniteMeasure
+#align is_finite_measure_on_compacts_of_is_locally_finite_measure isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure
 
 theorem isFiniteMeasure_iff_isFiniteMeasureOnCompacts_of_compactSpace [TopologicalSpace α]
     [MeasurableSpace α] {μ : Measure α} [CompactSpace α] :
