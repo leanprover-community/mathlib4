@@ -105,8 +105,8 @@ Suppose that all functions `f i` as well as `φ` are strictly differentiable at 
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : E →L[ℝ] ℝ` are linearly dependent:
 there exist `Λ : ι → ℝ` and `Λ₀ : ℝ`, `(Λ, Λ₀) ≠ 0`, such that `∑ i, Λ i • f' i + Λ₀ • φ' = 0`.
 
-See also `is_local_extr_on.linear_dependent_of_has_strict_fderiv_at` for a version that
-states `¬linear_independent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
+See also `IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt` for a version that
+states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
 theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type _} [Fintype ι]
     {f : ι → E → ℝ} {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
@@ -128,9 +128,9 @@ Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x
 Suppose that all functions `f i` as well as `φ` are strictly differentiable at `x₀`.
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : E →L[ℝ] ℝ` are linearly dependent.
 
-See also `is_local_extr_on.exists_multipliers_of_has_strict_fderiv_at` for a version that
+See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version that
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
-`¬linear_independent ℝ _` -/
+`¬LinearIndependent ℝ _` -/
 theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type _} [Finite ι] {f : ι → E → ℝ}
     {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
