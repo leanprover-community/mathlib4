@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Rigid.Basic
-import Mathbin.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
@@ -30,8 +30,7 @@ variable {C D : Type _} [Groupoid C] [Category D] [MonoidalCategory D]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F
-    where
+instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
     { obj := fun X => F.obj Xᘁ
       map := fun X Y f => F.map (inv f)ᘁ
@@ -58,8 +57,7 @@ instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F
-    where
+instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
     { obj := fun X => ᘁF.obj X
       map := fun X Y f => ᘁF.map (inv f)
