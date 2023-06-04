@@ -31,6 +31,10 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
 
+attribute [symm] Ne.symm
+
+example (h : ¬ a = b) : ¬ b = a := by symm; assumption
+
 structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 
 #check @MulEquiv
