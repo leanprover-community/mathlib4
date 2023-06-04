@@ -94,11 +94,11 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
 #align measure_theory.map_mul_right_eq_self MeasureTheory.map_mul_right_eq_self
 #align measure_theory.map_add_right_eq_self MeasureTheory.map_add_right_eq_self
 
-@[to_additive MeasureTheory.IsAddLeftInvariant_smul]
+@[to_additive MeasureTheory.isAddLeftInvariant_smul]
 instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
   ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
 #align measure_theory.is_mul_left_invariant_smul MeasureTheory.isMulLeftInvariant_smul
-#align measure_theory.is_add_left_invariant_smul MeasureTheory.IsAddLeftInvariant_smul
+#align measure_theory.is_add_left_invariant_smul MeasureTheory.isAddLeftInvariant_smul
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul]
 instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
@@ -107,12 +107,12 @@ instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
 #align measure_theory.is_mul_right_invariant_smul MeasureTheory.isMulRightInvariant_smul
 #align measure_theory.is_add_right_invariant_smul MeasureTheory.isAddRightInvariant_smul
 
-@[to_additive MeasureTheory.IsAddLeftInvariant_smul_nnreal]
+@[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
 instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
     IsMulLeftInvariant (c • μ) :=
   MeasureTheory.isMulLeftInvariant_smul (c : ℝ≥0∞)
 #align measure_theory.is_mul_left_invariant_smul_nnreal MeasureTheory.isMulLeftInvariant_smul_nnreal
-#align measure_theory.is_add_left_invariant_smul_nnreal MeasureTheory.IsAddLeftInvariant_smul_nnreal
+#align measure_theory.is_add_left_invariant_smul_nnreal MeasureTheory.isAddLeftInvariant_smul_nnreal
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul_nnreal]
 instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
@@ -527,7 +527,7 @@ any open set. -/
 @[to_additive
 "If a left-invariant measure gives positive mass to a compact set, then it gives positive mass to
 any open set."]
-theorem isOpenPosMeasure_of_isMulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
+theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
     (h : μ K ≠ 0) : IsOpenPosMeasure μ := by
   refine' ⟨fun U hU hne => _⟩
   contrapose! h
@@ -539,23 +539,23 @@ theorem isOpenPosMeasure_of_isMulLeftInvariant_of_compact (K : Set G) (hK : IsCo
     μ K ≤ μ (⋃ (g : G) (_H : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
     _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := (measure_biUnion_finset_le _ _)
     _ = 0 := by simp [measure_preimage_mul, h]
-#align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_isMulLeftInvariant_of_compact
+#align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_compact
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_isAddLeftInvariant_of_compact
 
 /-- A nonzero left-invariant regular measure gives positive mass to any open set. -/
 @[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
-theorem isOpenPosMeasure_of_isMulLeftInvariant_of_regular [Regular μ] (h₀ : μ ≠ 0) :
+theorem isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] (h₀ : μ ≠ 0) :
     IsOpenPosMeasure μ :=
   let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr h₀
-  isOpenPosMeasure_of_isMulLeftInvariant_of_compact K hK h2K
-#align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_isMulLeftInvariant_of_regular
+  isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
+#align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_regular
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_isAddLeftInvariant_of_regular
 
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
   by_cases h3μ : μ = 0; · simp [h3μ]
-  · haveI := isOpenPosMeasure_of_isMulLeftInvariant_of_regular h3μ
+  · haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular h3μ
     simp only [h3μ, or_false_iff, hs.measure_eq_zero_iff μ]
 #align measure_theory.null_iff_of_is_mul_left_invariant MeasureTheory.null_iff_of_isMulLeftInvariant
 #align measure_theory.null_iff_of_is_add_left_invariant MeasureTheory.null_iff_of_isAddLeftInvariant
@@ -742,7 +742,7 @@ theorem isHaarMeasure_of_isCompact_nonempty_interior [TopologicalGroup G] [Borel
     (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsHaarMeasure μ :=
   { lt_top_of_isCompact := fun _L hL =>
       measure_lt_top_of_isCompact_of_isMulLeftInvariant' h'K h' hL
-    toIsOpenPosMeasure := isOpenPosMeasure_of_isMulLeftInvariant_of_compact K hK h }
+    toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
 #align measure_theory.measure.is_haar_measure_of_is_compact_nonempty_interior MeasureTheory.Measure.isHaarMeasure_of_isCompact_nonempty_interior
 #align measure_theory.measure.is_add_haar_measure_of_is_compact_nonempty_interior MeasureTheory.Measure.isAddHaarMeasure_of_isCompact_nonempty_interior
 
