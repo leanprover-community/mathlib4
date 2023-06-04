@@ -20,7 +20,7 @@ Briefly, consider a polynomial `Φ : MvPolynomial idx ℤ` over the integers,
 with polynomials variables indexed by an arbitrary type `idx`.
 
 Then there exists a unique family of polynomials `φ : ℕ → MvPolynomial (idx × ℕ) Φ`
-such that for all `n : ℕ` we have (`witt_structure_int_existsUnique`)
+such that for all `n : ℕ` we have (`wittStructureInt_existsUnique`)
 ```
 bind₁ φ (wittPolynomial p ℤ n) = bind₁ (λ i, (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
@@ -40,7 +40,7 @@ addition and multiplication on the ring of Witt vectors.
 
 ## Outline of the proof
 
-The proof of `witt_structure_int_existsUnique` is rather technical, and takes up most of this file.
+The proof of `wittStructureInt_existsUnique` is rather technical, and takes up most of this file.
 
 We start by proving the analogous version for polynomials with rational coefficients,
 instead of integer coefficients.
@@ -57,7 +57,7 @@ of `wittStructureInt Φ n` from the integers to the rationals,
 one obtains `wittStructureRat Φ n`.
 Ultimately, the proof of `map_wittStructureInt` relies on
 ```
-dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
+dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} :
     (p : R) ∣ a - b → ∀ (k : ℕ), (p : R) ^ (k + 1) ∣ a ^ p ^ k - b ^ p ^ k
 ```
 
@@ -73,13 +73,13 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 * `wittStructureInt_prop`: the proof that `wittStructureInt` indeed satisfies the property.
 * Five families of polynomials that will be used to define the ring structure
   on the ring of Witt vectors:
-  - `witt_vector.witt_zero`
-  - `witt_vector.witt_one`
-  - `witt_vector.witt_add`
-  - `witt_vector.witt_mul`
-  - `witt_vector.witt_neg`
-  (We also define `witt_vector.witt_sub`, and later we will prove that it describes subtraction,
-  which is defined as `λ a b, a + -b`. See `witt_vector.sub_coeff` for this proof.)
+  - `WittVector.wittZero`
+  - `WittVector.wittOne`
+  - `WittVector.wittAdd`
+  - `WittVector.wittMul`
+  - `WittVector.wittNeg`
+  (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
+  which is defined as `λ a b, a + -b`. See `WittVector.sub_coeff` for this proof.)
 
 ## References
 
@@ -128,7 +128,7 @@ In other words: evaluating the `n`-th Witt polynomial on the family `wittStructu
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
 See `wittStructureRat_prop` for this property,
-and `witt_structure_rat_existsUnique` for the fact that `wittStructureRat`
+and `wittStructureRat_existsUnique` for the fact that `wittStructureRat`
 gives the unique family of polynomials with this property.
 
 These polynomials turn out to have integral coefficients,
@@ -149,10 +149,9 @@ theorem wittStructureRat_prop (Φ : MvPolynomial idx ℚ) (n : ℕ) :
       by rw [bind₁_bind₁]; exact eval₂Hom_congr (RingHom.ext_rat _ _) rfl rfl
     _ = bind₁ (fun i => rename (Prod.mk i) (W_ ℚ n)) Φ := by
       rw [bind₁_xInTermsOfW_wittPolynomial p _ n, bind₁_X_right]
-
 #align witt_structure_rat_prop wittStructureRat_prop
 
-theorem witt_structure_rat_existsUnique (Φ : MvPolynomial idx ℚ) :
+theorem wittStructureRat_existsUnique (Φ : MvPolynomial idx ℚ) :
     ∃! φ : ℕ → MvPolynomial (idx × ℕ) ℚ,
       ∀ n : ℕ, bind₁ φ (W_ ℚ n) = bind₁ (fun i => rename (Prod.mk i) (W_ ℚ n)) Φ := by
   refine' ⟨wittStructureRat p Φ, _, _⟩
@@ -163,7 +162,7 @@ theorem witt_structure_rat_existsUnique (Φ : MvPolynomial idx ℚ) :
         rw [bind₁_wittPolynomial_xInTermsOfW p, bind₁_X_right]]
     rw [bind₁_bind₁]
     exact eval₂Hom_congr (RingHom.ext_rat _ _) (funext H) rfl
-#align witt_structure_rat_exists_unique witt_structure_rat_existsUnique
+#align witt_structure_rat_exists_unique wittStructureRat_existsUnique
 
 theorem wittStructureRat_rec_aux (Φ : MvPolynomial idx ℚ) (n : ℕ) :
     wittStructureRat p Φ n * C ((p : ℚ) ^ n) =
@@ -188,7 +187,6 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
   calc
     wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := ?_
     _ = _ := by rw [wittStructureRat_rec_aux]
-
   rw [mul_left_comm, ← C_mul, div_mul_cancel, C_1, mul_one]
   exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.1.ne_zero)
 #align witt_structure_rat_rec wittStructureRat_rec
@@ -203,7 +201,7 @@ In other words: evaluating the `n`-th Witt polynomial on the family `wittStructu
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
 See `wittStructureInt_prop` for this property,
-and `witt_structure_int_existsUnique` for the fact that `wittStructureInt`
+and `wittStructureInt_existsUnique` for the fact that `wittStructureInt`
 gives the unique family of polynomials with this property. -/
 noncomputable def wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) : MvPolynomial (idx × ℕ) ℤ :=
   Finsupp.mapRange Rat.num (Rat.coe_int_num 0) (wittStructureRat p (map (Int.castRingHom ℚ) Φ) n)
@@ -254,7 +252,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  -- Porting note: was extremely slow
+  -- Porting note: was much slower
   -- simp only [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← mul_sub, ←
   --   Nat.cast_pow]
   rw [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
@@ -267,7 +265,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   apply mul_dvd_mul_left ((p : MvPolynomial (idx × ℕ) ℤ) ^ k)
   rw [show p ^ (n + 1 - k) = p * p ^ (n - k) by rw [← pow_succ, ← tsub_add_eq_add_tsub hk]]
   rw [pow_mul]
-  rw [← Nat.cast_pow] -- added
+  rw [← Nat.cast_pow] -- Porting note: added
   -- the machine!
   apply dvd_sub_pow_of_dvd_sub
   rw [← C_eq_coe_nat, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_expand, RingHom.map_pow,
@@ -323,7 +321,7 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   -- Porting note: was `refine' congr_fun _ k`
   revert k
   refine' congr_fun _
-  apply ExistsUnique.unique (witt_structure_rat_existsUnique p (map (Int.castRingHom ℚ) Φ))
+  apply ExistsUnique.unique (wittStructureRat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n
     apply_fun map (Int.castRingHom ℚ)  at h
@@ -332,12 +330,12 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   · intro n; apply wittStructureRat_prop
 #align eq_witt_structure_int eq_wittStructureInt
 
-theorem witt_structure_int_existsUnique (Φ : MvPolynomial idx ℤ) :
+theorem wittStructureInt_existsUnique (Φ : MvPolynomial idx ℤ) :
     ∃! φ : ℕ → MvPolynomial (idx × ℕ) ℤ,
       ∀ n : ℕ,
         bind₁ φ (wittPolynomial p ℤ n) = bind₁ (fun i : idx => rename (Prod.mk i) (W_ ℤ n)) Φ :=
   ⟨wittStructureInt p Φ, wittStructureInt_prop _ _, eq_wittStructureInt _ _⟩
-#align witt_structure_int_exists_unique witt_structure_int_existsUnique
+#align witt_structure_int_exists_unique wittStructureInt_existsUnique
 
 theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
     aeval (fun i => map (Int.castRingHom R) (wittStructureInt p Φ i)) (wittPolynomial p ℤ n) =
