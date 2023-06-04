@@ -144,18 +144,32 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
 def unassigned? (g : MVarId) : MetaM (Option MVarId) := do
   if ← g.isAssigned then pure none else pure g
 
-/-- Optionally rename an mvar with `name` if it has an internal username.
+def tidyMVars (hs : Array MVarId) (bis : Array BinderInfo) (except : Option (Array MVarId) := none)
+    : MetaM (Array MVarId) := do
+  let (explicit, implicit, inst) := groupByBinderInfo hs bis
+  let implicitSolved ←
+    if let some except := except then
+      implicit.allM fun h => pure (except.contains h) <||> h.isAssigned
+    else
+      implicit.allM (·.isAssigned)
+  unless implicitSolved do throwError "unsolved implicit metavariables"
+  inst.forM fun h => do
+    unless ← h.isAssigned do h.synthInstance
+  return explicit
 
-If `removeAssigned` is true (the default), `none` will be returned if the goal has already been
-assigned.
+def mkUserFacingMVar (goal : MVarId) (name : Name) (setSyntheticOpaque := true)
+    : MetaM MVarId := do
+  if setSyntheticOpaque then goal.setKind .syntheticOpaque
+  if (← goal.getTag).isInternal then goal.setUserName name
+  pure goal
+
+/-- Optionally rename an mvar with `name` if it has an internal username, checking that it's
+unassigned. `none` will be returned if the goal has already been assigned.
 
 If `setSyntheticOpaque` is true (the default), the goal will also be set to `.syntheticOpaque`. -/
-def mkUserFacingMVar? (goal : MVarId) (name : Name) (removeAssigned := true)
+def mkUserFacingMVar? (goal : MVarId) (name : Name)
     (setSyntheticOpaque := true) : MetaM (Option MVarId) := do
-  if ← pure removeAssigned <&&> goal.isAssigned then pure none else
-    if setSyntheticOpaque then goal.setKind .syntheticOpaque
-    if (← goal.getTag).isInternal then goal.setUserName name
-    pure (some goal)
+  if ← goal.isAssigned then pure none else mkUserFacingMVar goal name setSyntheticOpaque
 
 end Lean.MVarId
 
