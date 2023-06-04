@@ -8,7 +8,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.RealDeriv
+import Mathlib.Analysis.Complex.RealDeriv
 
 /-!
 # Complex and real exponential
@@ -32,8 +32,7 @@ namespace Complex
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
-theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x :=
-  by
+theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
   have : (1 : ℕ) < 2 := by norm_num
   refine' (is_O.of_bound ‖exp x‖ _).trans_isLittleO (is_o_pow_id this)
@@ -61,8 +60,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
-theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp :=
-  by
+theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
   refine' contDiff_all_iff_nat.2 fun n => _
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
