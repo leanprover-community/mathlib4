@@ -19,26 +19,26 @@ or with boundary or with corners. As a concrete example, we construct explicitly
 boundary structure on the real interval `[x, y]`.
 
 More specifically, we introduce
-* `model_with_corners ℝ (euclidean_space ℝ (fin n)) (euclidean_half_space n)` for the model space
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary
-* `model_with_corners ℝ (euclidean_space ℝ (fin n)) (euclidean_quadrant n)` for the model space used
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 ## Notations
 
 In the locale `manifold`, we introduce the notations
-* `𝓡 n` for the identity model with corners on `euclidean_space ℝ (fin n)`
-* `𝓡∂ n` for `model_with_corners ℝ (euclidean_space ℝ (fin n)) (euclidean_half_space n)`.
+* `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
+* `𝓡∂ n` for `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`.
 
-For instance, if a manifold `M` is boundaryless, smooth and modelled on `euclidean_space ℝ (fin m)`,
-and `N` is smooth with boundary modelled on `euclidean_half_space n`, and `f : M → N` is a smooth
+For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
+and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
 model with corners can not be implicit, see the discussion in `smooth_manifold_with_corners.lean`).
 
 ## Implementation notes
 
 The manifold structure on the interval `[x, y] = Icc x y` requires the assumption `x < y` as a
-typeclass. We provide it as `[fact (x < y)]`.
+typeclass. We provide it as `[Fact (x < y)]`.
 -/
 
 
@@ -104,7 +104,7 @@ theorem range_quadrant (n : ℕ) :
 end
 
 /--
-Definition of the model with corners `(euclidean_space ℝ (fin n), euclidean_half_space n)`, used as
+Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `manifold`, use the shortcut `𝓡∂ n`.
 -/
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
@@ -131,7 +131,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
 #align model_with_corners_euclidean_half_space modelWithCornersEuclideanHalfSpace
 
 /--
-Definition of the model with corners `(euclidean_space ℝ (fin n), euclidean_quadrant n)`, used as a
+Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
 model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
@@ -166,7 +166,7 @@ scoped[Manifold]
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
-`euclidean_half_space 1`.
+`EuclideanHalfSpace 1`.
 -/
 def IccLeftChart (x y : ℝ) [h : Fact (x < y)] : LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
@@ -213,7 +213,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] : LocalHomeomorph (Icc x y) (Euc
 #align Icc_left_chart IccLeftChart
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
-`euclidean_half_space 1`.
+`EuclideanHalfSpace 1`.
 -/
 def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
@@ -262,7 +262,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 #align Icc_right_chart IccRightChart
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
-`euclidean_half_space 1`.
+`EuclideanHalfSpace 1`.
 -/
 instance IccManifold (x y : ℝ) [h : Fact (x < y)] : ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
