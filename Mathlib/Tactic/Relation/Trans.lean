@@ -54,50 +54,85 @@ def _root_.Trans.het {a : α} {b : β} {c : γ}
   {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
   [Trans r s t] : r a b → s b c → t a c := trans
 
+open private mkFun in mkAppM in
+/-- Applies all `@[trans]` lemmas to the goal, optionally using `y?` as a "bridge" argument. Fails
+if no lemma can be applied.
+
+If a lemma of type `..hyps → x ∼ y → y ∼ z → x ∼ z` can be applied to the goal of type `x ∼ z`,
+this returns `?g₁ : x ∼ y`, `?g₂ : y ∼ z`, and `?y` in that order, along with an array of any
+unsolved explicit arguments in `hyps`. If any of these mvars have been assigned over the course of
+`trans`, we return `none` instead.
+
+If the argument `y?` is provided as `none`, a new metavariable will be created for `y` if
+necessary; otherwise the third component of the return value will be `none`.
+
+If `userFacingGoals` is `true`, the returned goals will be renamed appropriately and changed from
+`.natural` (the default) to `.syntheticOpaque`, except for `?y` (if present). This allows `?y` to
+be assigned in the course of solving for the other goals. -/
+def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacingGoals := false)
+    : MetaM (Option MVarId × Option MVarId × Option MVarId × Array MVarId) := withReducible do
+  let tgt ← g.getType'
+  let s ← saveState
+  for lem in (← (transExt.getState (← getEnv)).getUnify tgt) ++ #[``Trans.simple, ``Trans.het] do
+    trace[Tactic.trans] "trying {lem}"
+    try
+      let (l, lType) ← mkFun lem
+      let (hs, bs, targetTy) ← forallMetaTelescope lType
+      let g₂ := hs.back.mvarId!
+      let g₁ := hs[hs.size - 2]!.mvarId!
+      -- Assign mvars in `targetTy` (and therefore in `hs`)
+      unless ← isDefEq targetTy tgt do throwError "doesn't apply!"
+      -- Process optional "bridge" argument
+      let yz ← (← inferType hs.back).getNumExplicitArgs 2
+      let yGoal? ← match y? with
+        | none => pure yz[0]!.mvarId?
+        | some y => match yz[0]!.mvarId? with
+          | some mvarId => do
+            unless (← isDefEq (.mvar mvarId) y) do
+              throwError "could not use {y}; was not defeq to {yz[0]!}"
+            unless (← mvarId.isAssigned) do mvarId.assign y -- `isDefEq` doesn't always assign mvars
+            pure none
+          | none => throwError "could not use {y}; {yz[0]!} is not a metavariable"
+      -- We use `mkAppNUnifying` to account for the new assignments.
+      let proof ← mkAppNUnifying l hs
+      let (explicitHyps, implicitHyps, instImplicitHyps) := groupByBinderInfo hs.pop.pop bs.pop.pop
+      -- Assign the proof to `g`
+      unless ← isDefEq (.mvar g) proof do
+        throwError "{← g.getType} is not defeq to {← inferType proof}"
+      unless (← g.isAssigned) do g.assign proof -- `isDefEq` doesn't always assign mvars
+      instImplicitHyps.forM fun mvar => do
+        let mvarId := mvar.mvarId!
+        unless ← mvarId.isAssigned do
+          let mvarVal ← synthInstance (← instantiateMVars <|← mvarId.getType)
+          mvarId.assign mvarVal
+      -- Make sure all implicit hypotheses in `hs` got assigned, but make an exception for the
+      -- "bridge" argument `y`, if there is one.
+      let allImplicitHypsAssigned ←
+        if let some yGoal := yGoal? then
+          implicitHyps.allM fun h => do
+            let mvarId := h.mvarId!
+            pure (mvarId == yGoal) <||> mvarId.isAssigned
+        else
+          implicitHyps.allM (·.mvarId!.isAssigned)
+      unless allImplicitHypsAssigned do
+        throwError "could not unify all implicit arguments, namely {
+          ← implicitHyps.filterM (notM ·.mvarId!.isAssigned)}"
+      if userFacingGoals then return (
+          ← g₁.mkUserFacingMVar? `trans₁,
+          ← g₂.mkUserFacingMVar? `trans₂,
+          (← yGoal?.mapM (·.mkUserFacingMVar? `trans_y (setSyntheticOpaque := false))).join,
+          ← mkUserFacingMVarsArray (explicitHyps.map (·.mvarId!)) `trans_side)
+      else return (
+          ← g₁.unassigned?,
+          ← g₂.unassigned?,
+          yGoal?,
+          ← explicitHyps.filterMapM (·.mvarId!.unassigned?))
+    catch e =>
+      trace[Tactic.trans] "failed: {e.toMessageData}"
+      s.restore
+  throwError "no trans lemmas applied"
 
 open Lean.Elab.Tactic
-
-/-- solving `e ← mkAppM' f #[x]` -/
-def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
-  match e with
-  | Expr.app f a => do
-    if ← isDefEq (← mkAppM' f #[a]) e then
-      return some (f, a)
-    else
-      getExplicitFuncArg? f
-  | _ => return none
-
-/-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
-def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
-  | Expr.app rel x => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if check then
-      return some (rel, x)
-    else
-      getExplicitRelArg? tgt rel z
-  | _ => return none
-
-/-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
-def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
-  match rel with
-  | Expr.app rel' _ => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel' #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if !check then
-      return (rel, x)
-    else
-      getExplicitRelArgCore tgt rel' x z
-  | _ => return (rel ,x)
 
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
@@ -107,69 +142,16 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * If `s` is omitted, then a metavariable is used instead.
 -/
 elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
-  let tgt ← getMainTarget
-  let (rel, x, z) ←
-    match tgt with
-    | Expr.app f z =>
-      match (← getExplicitRelArg? tgt f z) with
-      | some (rel, x) =>
-        let (rel, x) ← getExplicitRelArgCore tgt rel x z
-        pure (rel, x, z)
-      | none => throwError "transitivity lemmas only apply to
-        binary relations, not {indentExpr tgt}"
-    | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  trace[Tactic.trans]"goal decomposed"
-  trace[Tactic.trans]"rel: {indentExpr rel}"
-  trace[Tactic.trans]"x: {indentExpr x}"
-  trace[Tactic.trans]"z: {indentExpr z}"
-  -- first trying the homogeneous case
-  try
-    let ty ← inferType x
-    let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
-    let s ← saveState
-    trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
-      trace[Tactic.trans]"trying lemma {lem}"
-      try
-        liftMetaTactic fun g ↦ do
-          let lemTy ← inferType (← mkConstWithLevelParams lem)
-          let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-          let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
-          let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-          let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-          g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-          pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-        return
-      catch _ => s.restore
-    pure ()
-  catch _ =>
-  trace[Tactic.trans]"trying heterogeneous case"
-  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
-  let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
-    try
-      liftMetaTactic fun g ↦ do
-        trace[Tactic.trans]"trying lemma {lem}"
-        let lemTy ← inferType (← mkConstWithLevelParams lem)
-        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-        trace[Tactic.trans]"arity: {arity}"
-        trace[Tactic.trans]"lemma-type: {lemTy}"
-        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
-        trace[Tactic.trans]"obtained y: {y}"
-        trace[Tactic.trans]"rel: {indentExpr rel}"
-        trace[Tactic.trans]"x:{indentExpr x}"
-        trace[Tactic.trans]"z:  {indentExpr z}"
-        let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-        trace[Tactic.trans]"obtained g₂: {g₂}"
-        let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-        trace[Tactic.trans]"obtained g₁: {g₁}"
-        g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-      return
-    catch e =>
-      trace[Tactic.trans]"failed: {e.toMessageData}"
-      s.restore
-
-  throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
-"
+  let yGoals? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
+  let (y?, goals?) := match yGoals? with
+    | some (y, goals) => (some y, some goals)
+    | none => (none, none)
+  let (g₁?, g₂?, yGoal?, otherGoals) ← liftMetaM <| (← getMainGoal).trans y?
+  let goals? ← goals?.mapM (mkUserFacingMVars · `trans_y_side)
+  let mut allGoals := #[]
+  if let some g₁ := g₁?    then allGoals := allGoals.push g₁
+  if let some g₂ := g₂?    then allGoals := allGoals.push g₂
+  if let some y  := yGoal? then allGoals := allGoals.push y
+  if let some gs := goals? then allGoals := allGoals ++ gs
+  allGoals := allGoals ++ otherGoals
+  replaceMainGoal allGoals.toList
