@@ -431,6 +431,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.ContDiffDef
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -478,6 +479,7 @@ import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Between
