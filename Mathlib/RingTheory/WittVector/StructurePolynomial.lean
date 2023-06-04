@@ -89,9 +89,7 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [comm_ring R] {p : ℕ} {a b : R} :
 -/
 
 
-open MvPolynomial
-
-open Set
+open MvPolynomial Set
 
 open Finset (range)
 
@@ -240,8 +238,8 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
           map (Int.castRingHom ℚ) (wittStructureInt p Φ m) =
             wittStructureRat p (map (Int.castRingHom ℚ) Φ) m) :
     (C (p ^ n : ℤ) : MvPolynomial (idx × ℕ) ℤ) ∣
-      (bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ : MvPolynomial (idx × ℕ) ℤ) -
-        (∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) : MvPolynomial (idx × ℕ) ℤ) := by
+      bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
+        ∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   cases' n with n
   · simp only [isUnit_one, Int.ofNat_zero, Int.ofNat_succ, zero_add, pow_zero, C_1, IsUnit.dvd,
       Nat.cast_one, Nat.zero_eq]
@@ -288,7 +286,8 @@ theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
   intro c
   rw [wittStructureRat_rec, coeff_C_mul, mul_comm, mul_div_assoc', mul_one]
   have sum_induction_steps :
-    map (Int.castRingHom ℚ) (∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i)) =
+      map (Int.castRingHom ℚ)
+        (∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i)) =
       ∑ i in range n,
         C ((p : ℚ) ^ i) * wittStructureRat p (map (Int.castRingHom ℚ) Φ) i ^ p ^ (n - i) := by
     rw [map_sum]
@@ -392,7 +391,6 @@ theorem constantCoeff_wittStructureInt (Φ : MvPolynomial idx ℤ) (h : constant
 
 variable (R)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- we could relax the fintype on `idx`, but then we need to cast from finset to set.
 -- for our applications `idx` is always finite.
 theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ) :
@@ -409,7 +407,6 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
   exact lt_of_lt_of_le hj hk
 #align witt_structure_rat_vars wittStructureRat_vars
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- we could relax the fintype on `idx`, but then we need to cast from finset to set.
 -- for our applications `idx` is always finite.
 theorem wittStructureInt_vars [Fintype idx] (Φ : MvPolynomial idx ℤ) (n : ℕ) :
