@@ -496,5 +496,10 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.relAssumption hyps
     -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
-    let (_, #[]) ← g.relCongr none [] disch assum
-      | throwError "rel failed, cannot prove goal by 'substituting' the listed relationships"
+    let (_, goals) ← g.relCongr none [] disch assum
+    match goals.toList with
+    | [] => pure ()
+    | l => do
+      let g ← @List.mapM MetaM _ _ _ MVarId.getType l
+      throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. {""
+        }The steps which could not be automatically justified were: {g}"
