@@ -869,7 +869,7 @@ notation. -/
 theorem StructureGroupoid.compatible {H : Type _} [TopologicalSpace H] (G : StructureGroupoid H)
     {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
     {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
-  HasGroupoid.compatible he he'
+  G.compatible he he'
 #align structure_groupoid.compatible StructureGroupoid.compatible
 
 theorem hasGroupoid_of_le {G₁ G₂ : StructureGroupoid H} (h : HasGroupoid M G₁) (hle : G₁ ≤ G₂) :
