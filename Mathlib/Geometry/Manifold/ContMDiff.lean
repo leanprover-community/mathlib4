@@ -497,8 +497,8 @@ theorem contMDiffAt_iff_source_of_mem_source {x' : M} (hx' : x' ∈ (chartAt H x
 theorem contMDiffOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
     ContMDiffOn I I' n f s ↔
-      ContinuousOn f s ∧ ContDiffOn 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) :=
-  by
+      ContinuousOn f s ∧
+        ContDiffOn 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) := by
   simp_rw [ContinuousOn, ContDiffOn, Set.ball_image_iff, ← forall_and, ContMDiffOn]
   exact forall₂_congr fun x hx => contMDiffWithinAt_iff_image he he' hs (hs hx) (h2s hx)
 #align cont_mdiff_on_iff_of_mem_maximal_atlas contMDiffOn_iff_of_mem_maximalAtlas
@@ -598,9 +598,8 @@ theorem contMDiff_iff :
 target. -/
 theorem contMDiff_iff_target :
     ContMDiff I I' n f ↔
-      Continuous f ∧
-        ∀ y : M', ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) :=
-  by
+      Continuous f ∧ ∀ y : M',
+        ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← contMDiffOn_univ, contMDiffOn_iff_target]
   simp [continuous_iff_continuousOn_univ]
 #align cont_mdiff_iff_target contMDiff_iff_target
@@ -683,7 +682,6 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 /-! ### `C^∞` smoothness -/
 
-
 theorem contMDiffWithinAt_top :
     SmoothWithinAt I I' f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
   ⟨fun h n => ⟨h.1, contDiffWithinAt_top.1 h.2 n⟩, fun H =>
@@ -711,7 +709,6 @@ theorem contMDiffWithinAt_iff_nat :
 #align cont_mdiff_within_at_iff_nat contMDiffWithinAt_iff_nat
 
 /-! ### Restriction to a smaller set -/
-
 
 theorem ContMDiffWithinAt.mono_of_mem (hf : ContMDiffWithinAt I I' n f s x) (hts : s ∈ 𝓝[t] x) :
     ContMDiffWithinAt I I' n f t x :=
@@ -958,8 +955,8 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, y ∈ e.target ∧ f (e.symm y) ∈ t ∧
       f (e.symm y) ∈ e'.source ∧ g (f (e.symm y)) ∈ e''.source := by
     simp only [← map_extChartAt_nhdsWithin, eventually_map]
-    filter_upwards [hf.1.Tendsto (extChartAt_source_mem_nhds I' (f x)),
-      (hg.1.comp hf.1 st).Tendsto (extChartAt_source_mem_nhds I'' (g (f x))),
+    filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds I' (f x)),
+      (hg.1.comp hf.1 st).tendsto (extChartAt_source_mem_nhds I'' (g (f x))),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ _) (hgfx' : g (f x') ∈ _) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and_iff, e.left_inv hx', st hx's, *]
