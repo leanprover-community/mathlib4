@@ -793,7 +793,7 @@ theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
-    (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_hi : p i), f i := by
+    (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
   rw [iInf_subtype']
   exact eq_iInf_of_mem_iff_exists_mem <| fun {_} => by simp only [Subtype.exists, h, exists_prop]
 #align filter.eq_binfi_of_mem_iff_exists_mem Filter.eq_biInf_of_mem_iff_exists_memₓ
@@ -1095,7 +1095,7 @@ protected theorem Eventually.and {p q : α → Prop} {f : Filter α} :
   inter_mem
 #align filter.eventually.and Filter.Eventually.and
 
-@[simp] theorem eventually_true (f : Filter α) : ∀ᶠ _x in f, True := univ_mem
+@[simp] theorem eventually_true (f : Filter α) : ∀ᶠ _ in f, True := univ_mem
 #align filter.eventually_true Filter.eventually_true
 
 theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
@@ -1103,12 +1103,12 @@ theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x)
 #align filter.eventually_of_forall Filter.eventually_of_forall
 
 @[simp]
-theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _x in f, False) ↔ f = ⊥ :=
+theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔ f = ⊥ :=
   empty_mem_iff_bot
 #align filter.eventually_false_iff_eq_bot Filter.eventually_false_iff_eq_bot
 
 @[simp]
-theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _x in f, p) ↔ p :=
+theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _ in f, p) ↔ p :=
   by_cases (fun h : p => by simp [h]) fun h => by simpa [h] using t.ne
 #align filter.eventually_const Filter.eventually_const
 
@@ -1323,16 +1323,16 @@ theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x
 #align filter.not_frequently Filter.not_frequently
 
 @[simp]
-theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _x in f, True) ↔ NeBot f := by
+theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ NeBot f := by
   simp [Filter.Frequently, -not_eventually, eventually_false_iff_eq_bot, neBot_iff]
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
-theorem frequently_false (f : Filter α) : ¬∃ᶠ _x in f, False := by simp
+theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp
 #align filter.frequently_false Filter.frequently_false
 
 @[simp]
-theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _x in f, p) ↔ p :=
+theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _ in f, p) ↔ p :=
   by_cases (fun h : p => by simpa [h] ) fun h => by simp [h]
 #align filter.frequently_const Filter.frequently_const
 
@@ -2498,7 +2498,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
-    map m (⨅ (i) (_h : p i), f i) = ⨅ (i) (_h : p i), map m (f i) := by
+    map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
   haveI := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val

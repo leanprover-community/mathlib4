@@ -93,7 +93,7 @@ variable {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
 irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
-  ⨆ (g : α →ₛ ℝ≥0∞) (_hf : ⇑g ≤ f), g.lintegral μ
+  ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 #align measure_theory.lintegral MeasureTheory.lintegral
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
@@ -140,7 +140,7 @@ theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : (∫⁻ a, 
 #align measure_theory.lintegral_mono_nnreal MeasureTheory.lintegral_mono_nnreal
 
 theorem iSup_lintegral_measurable_le_eq_lintegral (f : α → ℝ≥0∞) :
-    (⨆ (g : α → ℝ≥0∞) (_g_meas : Measurable g) (_hg : g ≤ f), ∫⁻ a, g a ∂μ) = ∫⁻ a, f a ∂μ := by
+    (⨆ (g : α → ℝ≥0∞) (_ : Measurable g) (_ : g ≤ f), ∫⁻ a, g a ∂μ) = ∫⁻ a, f a ∂μ := by
   apply le_antisymm
   · exact iSup_le fun i => iSup_le fun _ => iSup_le fun h'i => lintegral_mono h'i
   · rw [lintegral]
@@ -163,12 +163,12 @@ theorem monotone_lintegral {_ : MeasurableSpace α} (μ : Measure α) : Monotone
 #align measure_theory.monotone_lintegral MeasureTheory.monotone_lintegral
 
 @[simp]
-theorem lintegral_const (c : ℝ≥0∞) : (∫⁻ _a, c ∂μ) = c * μ univ := by
+theorem lintegral_const (c : ℝ≥0∞) : (∫⁻ _, c ∂μ) = c * μ univ := by
   rw [← SimpleFunc.const_lintegral, ← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_const]
   rfl
 #align measure_theory.lintegral_const MeasureTheory.lintegral_const
 
-theorem lintegral_zero : (∫⁻ _a : α, 0 ∂μ) = 0 := by simp
+theorem lintegral_zero : (∫⁻ _ : α, 0 ∂μ) = 0 := by simp
 #align measure_theory.lintegral_zero MeasureTheory.lintegral_zero
 
 theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
@@ -176,23 +176,23 @@ theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
 #align measure_theory.lintegral_zero_fun MeasureTheory.lintegral_zero_fun
 
 -- @[simp] -- Porting note: simp can prove this
-theorem lintegral_one : (∫⁻ _a, (1 : ℝ≥0∞) ∂μ) = μ univ := by rw [lintegral_const, one_mul]
+theorem lintegral_one : (∫⁻ _, (1 : ℝ≥0∞) ∂μ) = μ univ := by rw [lintegral_const, one_mul]
 #align measure_theory.lintegral_one MeasureTheory.lintegral_one
 
-theorem set_lintegral_const (s : Set α) (c : ℝ≥0∞) : (∫⁻ _a in s, c ∂μ) = c * μ s := by
+theorem set_lintegral_const (s : Set α) (c : ℝ≥0∞) : (∫⁻ _ in s, c ∂μ) = c * μ s := by
   rw [lintegral_const, Measure.restrict_apply_univ]
 #align measure_theory.set_lintegral_const MeasureTheory.set_lintegral_const
 
-theorem set_lintegral_one (s) : (∫⁻ _a in s, 1 ∂μ) = μ s := by rw [set_lintegral_const, one_mul]
+theorem set_lintegral_one (s) : (∫⁻ _ in s, 1 ∂μ) = μ s := by rw [set_lintegral_const, one_mul]
 #align measure_theory.set_lintegral_one MeasureTheory.set_lintegral_one
 
 theorem set_lintegral_const_lt_top [IsFiniteMeasure μ] (s : Set α) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    (∫⁻ _a in s, c ∂μ) < ∞ := by
+    (∫⁻ _ in s, c ∂μ) < ∞ := by
   rw [lintegral_const]
   exact ENNReal.mul_lt_top hc (measure_ne_top (μ.restrict s) univ)
 #align measure_theory.set_lintegral_const_lt_top MeasureTheory.set_lintegral_const_lt_top
 
-theorem lintegral_const_lt_top [IsFiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : (∫⁻ _a, c ∂μ) < ∞ := by
+theorem lintegral_const_lt_top [IsFiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : (∫⁻ _, c ∂μ) < ∞ := by
   simpa only [Measure.restrict_univ] using set_lintegral_const_lt_top (univ : Set α) hc
 #align measure_theory.lintegral_const_lt_top MeasureTheory.lintegral_const_lt_top
 
@@ -226,7 +226,7 @@ end
 functions `φ : α →ₛ ℝ≥0`. -/
 theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : Measure α) :
     (∫⁻ a, f a ∂μ) =
-      ⨆ (φ : α →ₛ ℝ≥0) (_hf : ∀ x, ↑(φ x) ≤ f x), (φ.map ((↑) : ℝ≥0 → ℝ≥0∞)).lintegral μ := by
+      ⨆ (φ : α →ₛ ℝ≥0) (_ : ∀ x, ↑(φ x) ≤ f x), (φ.map ((↑) : ℝ≥0 → ℝ≥0∞)).lintegral μ := by
   rw [lintegral]
   refine'
     le_antisymm (iSup₂_le fun φ hφ => _) (iSup_mono' fun φ => ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
@@ -871,7 +871,7 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (∫⁻ a, f a ∂μ) = 0 ↔ f =ᵐ[μ] 0 :=
-  have : (∫⁻ _a : α, 0 ∂μ) ≠ ∞ := by simp [lintegral_zero, zero_ne_top]
+  have : (∫⁻ _ : α, 0 ∂μ) ≠ ∞ := by simp [lintegral_zero, zero_ne_top]
   ⟨fun h =>
     (ae_eq_of_ae_le_of_lintegral_le (ae_of_all _ <| zero_le f) this hf
         (h.trans lintegral_zero.symm).le).symm,
@@ -1406,7 +1406,7 @@ theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
 #align measure_theory.lintegral_count MeasureTheory.lintegral_count
 
 theorem _root_.ENNReal.tsum_const_eq [MeasurableSingletonClass α] (c : ℝ≥0∞) :
-    (∑' _i : α, c) = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]
+    (∑' _ : α, c) = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]
 #align ennreal.tsum_const_eq ENNReal.tsum_const_eq
 
 /-- Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. -/
@@ -1486,7 +1486,7 @@ theorem lintegral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α →
 
 theorem lintegral_unique [Unique α] (f : α → ℝ≥0∞) : (∫⁻ x, f x ∂μ) = f default * μ univ :=
   calc
-    (∫⁻ x, f x ∂μ) = ∫⁻ _x, f default ∂μ := lintegral_congr <| Unique.forall_iff.2 rfl
+    (∫⁻ x, f x ∂μ) = ∫⁻ _, f default ∂μ := lintegral_congr <| Unique.forall_iff.2 rfl
     _ = f default * μ univ := lintegral_const _
 #align measure_theory.lintegral_unique MeasureTheory.lintegral_unique
 

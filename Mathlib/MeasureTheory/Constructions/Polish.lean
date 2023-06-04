@@ -464,7 +464,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type _} [TopologicalSp
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  let F : ℕ → Set β := fun n => ⋃ (s : b) (_hs : Bounded s.1 ∧ diam s.1 ≤ u n), E s
+  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : Bounded s.1 ∧ diam s.1 ≤ u n), E s
   -- it is enough to show that `range f = ⋂ F n`, as the latter set is obviously measurable.
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
