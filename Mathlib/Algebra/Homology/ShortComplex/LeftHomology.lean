@@ -18,8 +18,8 @@ datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
-and (TODO) we shall define `S.leftHomology` to be the `H` field of a chosen left homology data.
-Similarly, we shall define `S.cycles` to be the `K` field.
+and we define `S.leftHomology` to be the `H` field of a chosen left homology data.
+Similarly, we define `S.cycles` to be the `K` field.
 
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
@@ -365,24 +365,27 @@ namespace LeftHomologyMapData
 attribute [reassoc (attr := simp)] commi commf' commπ
 attribute [nolint simpNF] mk.injEq
 
+/-- The left homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
 def zero (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
-  LeftHomologyMapData 0 h₁ h₂ where
+    LeftHomologyMapData 0 h₁ h₂ where
   φK := 0
   φH := 0
 
+/-- The left homology map data associated to the identity morphism of a short complex. -/
 @[simps]
 def id (h : S.LeftHomologyData) : LeftHomologyMapData (𝟙 S) h h where
   φK := 𝟙 _
   φH := 𝟙 _
 
+/-- The composition of left homology map data. -/
 @[simps]
-def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃} {h₁ : S₁.LeftHomologyData}
-  {h₂ : S₂.LeftHomologyData} {h₃ : S₃.LeftHomologyData}
-  (ψ : LeftHomologyMapData φ h₁ h₂) (ψ' : LeftHomologyMapData φ' h₂ h₃) :
-  LeftHomologyMapData (φ ≫ φ') h₁ h₃ :=
-{ φK := ψ.φK ≫ ψ'.φK,
-  φH := ψ.φH ≫ ψ'.φH, }
+def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃}
+    {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData} {h₃ : S₃.LeftHomologyData}
+    (ψ : LeftHomologyMapData φ h₁ h₂) (ψ' : LeftHomologyMapData φ' h₂ h₃) :
+    LeftHomologyMapData (φ ≫ φ') h₁ h₃ where
+  φK := ψ.φK ≫ ψ'.φK
+  φH := ψ.φH ≫ ψ'.φH
 
 instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
   ⟨fun ψ₁ ψ₂ => by
@@ -391,8 +394,6 @@ instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
     cases ψ₁
     cases ψ₂
     congr⟩
-
-attribute [-simp] mk.injEq
 
 instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   let φK : h₁.K ⟶ h₂.K := h₂.liftK (h₁.i ≫ φ.τ₂)
@@ -406,60 +407,72 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
 
 instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
 
-def _root_.CategoryTheory.ShortComplex.leftHomologyMapData :
-  LeftHomologyMapData φ h₁ h₂ := default
-
 variable {φ h₁ h₂}
 
 lemma congr_φH {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
 lemma congr_φK {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φK = γ₂.φK := by rw [eq]
 
+/-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on left homology of a
+morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
 def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
-  LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
-    (LeftHomologyData.ofZeros S₂ hf₂ hg₂) where
+    LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
+      (LeftHomologyData.ofZeros S₂ hf₂ hg₂) where
   φK := φ.τ₂
   φH := φ.τ₂
 
+/-- When `S₁.g` and `S₂.g` are zero and we have chosen colimit cokernel coforks `c₁` and `c₂`
+for `S₁.f` and `S₂.f` respectively, the action on left homology of a morphism `φ : S₁ ⟶ S₂` of
+short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
+`φ.τ₂ ≫ c₂.π = c₁.π ≫ f`. -/
 @[simps]
 def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
-  (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
-  (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
-  (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
-  LeftHomologyMapData φ (LeftHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
-    (LeftHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
+    (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
+    (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
+    (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
+    LeftHomologyMapData φ (LeftHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
+      (LeftHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
   φK := φ.τ₂
   φH := f
   commπ := comm.symm
   commf' := by simp only [LeftHomologyData.ofIsColimitCokernelCofork_f', φ.comm₁₂]
 
+/-- When `S₁.f` and `S₂.f` are zero and we have chosen limit kernel forks `c₁` and `c₂`
+for `S₁.g` and `S₂.g` respectively, the action on left homology of a morphism `φ : S₁ ⟶ S₂` of
+short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
+`c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι`. -/
 @[simps]
 def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
-  (hf₁ : S₁.f = 0) (c₁ : KernelFork S₁.g) (hc₁ : IsLimit c₁)
-  (hf₂ : S₂.f = 0) (c₂ : KernelFork S₂.g) (hc₂ : IsLimit c₂) (f : c₁.pt ⟶ c₂.pt)
-  (comm : c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι) :
-  LeftHomologyMapData φ (LeftHomologyData.ofIsLimitKernelFork S₁ hf₁ c₁ hc₁)
-    (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ c₂ hc₂) where
+    (hf₁ : S₁.f = 0) (c₁ : KernelFork S₁.g) (hc₁ : IsLimit c₁)
+    (hf₂ : S₂.f = 0) (c₂ : KernelFork S₂.g) (hc₂ : IsLimit c₂) (f : c₁.pt ⟶ c₂.pt)
+    (comm : c₁.ι ≫ φ.τ₂ = f ≫ c₂.ι) :
+    LeftHomologyMapData φ (LeftHomologyData.ofIsLimitKernelFork S₁ hf₁ c₁ hc₁)
+      (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ c₂ hc₂) where
   φK := f
   φH := f
   commi := comm.symm
 
 variable (S)
 
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+data (for the identity of `S`) which relates the left homology data `ofZeros` and
+`ofIsColimitCokernelCofork`. -/
 @[simps]
 def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
-  (c : CokernelCofork S.f) (hc : IsColimit c) :
-  LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofZeros S hf hg)
-    (LeftHomologyData.ofIsColimitCokernelCofork S hg c hc) where
+    (c : CokernelCofork S.f) (hc : IsColimit c) :
+    LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofZeros S hf hg)
+      (LeftHomologyData.ofIsColimitCokernelCofork S hg c hc) where
   φK := 𝟙 _
   φH := c.π
 
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+data (for the identity of `S`) which relates the left homology data
+`LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
 def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
-  (c : KernelFork S.g) (hc : IsLimit c) :
-  LeftHomologyMapData (𝟙 S)
-    (LeftHomologyData.ofIsLimitKernelFork S hf c hc)
-    (LeftHomologyData.ofZeros S hf hg) where
+    (c : KernelFork S.g) (hc : IsLimit c) :
+    LeftHomologyMapData (𝟙 S) (LeftHomologyData.ofIsLimitKernelFork S hf c hc)
+      (LeftHomologyData.ofZeros S hf hg) where
   φK := c.ι
   φH := c.ι
 
@@ -467,79 +480,102 @@ end LeftHomologyMapData
 
 end
 
+section
+
 variable (S)
+variable [S.HasLeftHomology]
 
-noncomputable def leftHomology [HasLeftHomology S] : C := S.leftHomologyData.H
-noncomputable def cycles [HasLeftHomology S] : C := S.leftHomologyData.K
-noncomputable def leftHomologyπ [HasLeftHomology S] : S.cycles ⟶ S.leftHomology :=
-  S.leftHomologyData.π
-noncomputable def iCycles [HasLeftHomology S] : S.cycles ⟶ S.X₂ := S.leftHomologyData.i
-noncomputable def toCycles [HasLeftHomology S] : S.X₁ ⟶ S.cycles := S.leftHomologyData.f'
+/-- The left homology of a short complex, given by the `H` field of a chosen left homology data.  -/
+noncomputable def leftHomology : C := S.leftHomologyData.H
+
+/-- The cycles of a short complex, given by the `K` field of a chosen left homology data.  -/
+noncomputable def cycles : C := S.leftHomologyData.K
+
+/-- The "homology class" map `S.cycles ⟶ S.leftHomology`. -/
+noncomputable def leftHomologyπ : S.cycles ⟶ S.leftHomology := S.leftHomologyData.π
+
+/-- The inclusion `S.cycles ⟶ S.X₂`. -/
+noncomputable def iCycles : S.cycles ⟶ S.X₂ := S.leftHomologyData.i
+
+/-- The "boundaries" map `S.X₁ ⟶ S.cycles`. (Note that in this homology API, we make no use
+of the "image" of this morphism, which under some categorical assumptions would be a subobject
+of `S.X₂` contained in `S.cycles`.) -/
+noncomputable def toCycles : S.X₁ ⟶ S.cycles := S.leftHomologyData.f'
 
 @[reassoc (attr := simp)]
-lemma iCycles_g [HasLeftHomology S] : S.iCycles ≫ S.g = 0 :=
-  S.leftHomologyData.wi
+lemma iCycles_g : S.iCycles ≫ S.g = 0 := S.leftHomologyData.wi
 
 @[reassoc (attr := simp)]
-lemma toCycles_i [HasLeftHomology S] : S.toCycles ≫ S.iCycles = S.f :=
-  S.leftHomologyData.f'_i
+lemma toCycles_i : S.toCycles ≫ S.iCycles = S.f := S.leftHomologyData.f'_i
 
-instance [HasLeftHomology S] : Mono S.iCycles := by
+instance : Mono S.iCycles := by
   dsimp only [iCycles]
   infer_instance
 
-instance [HasLeftHomology S] : Epi S.leftHomologyπ := by
+instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
-variable {S}
+end
 
-def leftHomologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
-  h₁.H ⟶ h₂.H := (leftHomologyMapData φ _ _).φH
+section
 
-def cyclesMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
-  h₁.K ⟶ h₂.K := (leftHomologyMapData φ _ _).φK
+variable (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
+
+/-- The (unique) left homology map data associated to a morphism of short complexes that
+are both equipped with left homology data. -/
+def leftHomologyMapData : LeftHomologyMapData φ h₁ h₂ := default
+
+/-- Given a morphism `φ : S₁ ⟶ S₂` of short complexes and left homology data `h₁` and `h₂`
+for `S₁` and `S₂` respectively, this is the induced left homology map `h₁.H ⟶ h₁.H`. -/
+def leftHomologyMap' : h₁.H ⟶ h₂.H := (leftHomologyMapData φ _ _).φH
+
+/-- Given a morphism `φ : S₁ ⟶ S₂` of short complexes and left homology data `h₁` and `h₂`
+for `S₁` and `S₂` respectively, this is the induced morphism `h₁.K ⟶ h₁.K` on cycles. -/
+def cyclesMap' : h₁.K ⟶ h₂.K := (leftHomologyMapData φ _ _).φK
 
 @[reassoc (attr := simp)]
-lemma cyclesMap'_i (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
-    cyclesMap' φ h₁ h₂ ≫ h₂.i = h₁.i ≫ φ.τ₂ :=
+lemma cyclesMap'_i : cyclesMap' φ h₁ h₂ ≫ h₂.i = h₁.i ≫ φ.τ₂ :=
   LeftHomologyMapData.commi _
 
 @[reassoc (attr := simp)]
-lemma f'_cyclesMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
-    h₁.f' ≫ cyclesMap' φ h₁ h₂ = φ.τ₁ ≫ h₂.f' := by
+lemma f'_cyclesMap' : h₁.f' ≫ cyclesMap' φ h₁ h₂ = φ.τ₁ ≫ h₂.f' := by
   simp only [← cancel_mono h₂.i, assoc, φ.comm₁₂, cyclesMap'_i,
     LeftHomologyData.f'_i_assoc, LeftHomologyData.f'_i]
 
 @[reassoc (attr := simp)]
-lemma leftHomologyπ_naturality' (φ : S₁ ⟶ S₂)
-    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+lemma leftHomologyπ_naturality' :
     h₁.π ≫ leftHomologyMap' φ h₁ h₂ = cyclesMap' φ h₁ h₂ ≫ h₂.π :=
   LeftHomologyMapData.commπ _
 
-noncomputable def leftHomologyMap [HasLeftHomology S₁] [HasLeftHomology S₂]
-    (φ : S₁ ⟶ S₂) : S₁.leftHomology ⟶ S₂.leftHomology :=
+end
+
+section
+
+variable [HasLeftHomology S₁] [HasLeftHomology S₂] (φ : S₁ ⟶ S₂)
+
+/-- The (left) homology map `S₁.leftHomology ⟶ S₂.leftHomology` induced by a morphism
+`S₁ ⟶ S₂` of short complexes. -/
+noncomputable def leftHomologyMap : S₁.leftHomology ⟶ S₂.leftHomology :=
   leftHomologyMap' φ _ _
 
-noncomputable def cyclesMap [HasLeftHomology S₁] [HasLeftHomology S₂]
-    (φ : S₁ ⟶ S₂) : S₁.cycles ⟶ S₂.cycles :=
-  cyclesMap' φ _ _
+/-- The morphism `S₁.cycles ⟶ S₂.cycles` induced by a morphism `S₁ ⟶ S₂` of short complexes. -/
+noncomputable def cyclesMap : S₁.cycles ⟶ S₂.cycles := cyclesMap' φ _ _
 
 @[reassoc (attr := simp)]
-lemma cyclesMap_i (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    cyclesMap φ ≫ S₂.iCycles = S₁.iCycles ≫ φ.τ₂ :=
+lemma cyclesMap_i : cyclesMap φ ≫ S₂.iCycles = S₁.iCycles ≫ φ.τ₂ :=
   cyclesMap'_i _ _ _
 
 @[reassoc (attr := simp)]
-lemma toCycles_naturality (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    S₁.toCycles ≫ cyclesMap φ = φ.τ₁ ≫ S₂.toCycles :=
+lemma toCycles_naturality : S₁.toCycles ≫ cyclesMap φ = φ.τ₁ ≫ S₂.toCycles :=
   f'_cyclesMap' _ _ _
 
 @[reassoc (attr := simp)]
-lemma leftHomologyπ_naturality [HasLeftHomology S₁] [HasLeftHomology S₂]
-    (φ : S₁ ⟶ S₂) :
+lemma leftHomologyπ_naturality :
     S₁.leftHomologyπ ≫ leftHomologyMap φ = cyclesMap φ ≫ S₂.leftHomologyπ :=
   leftHomologyπ_naturality' _ _ _
+
+end
 
 namespace LeftHomologyMapData
 
