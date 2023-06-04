@@ -168,7 +168,8 @@ scoped[Manifold]
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
-def IccLeftChart (x y : ℝ) [h : Fact (x < y)] : LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
+    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
@@ -264,7 +265,8 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance IccManifold (x y : ℝ) [h : Fact (x < y)] : ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
+instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
+    ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
   mem_chart_source z := by
