@@ -246,21 +246,20 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         apply mul_le_mul_of_nonneg_left _ (NNReal.coe_nonneg c)
         simpa [hv, dist_eq_norm'] using f'symm.bound (y - f z)
       _ = c * f'symm.nnnorm * dist (f z) y := by ring
-      
   -- Third bound: a complicated bound on `dist w b` (that will show up in the induction) is enough
   -- to check that `w` is in the ball on which one has controls. Will be used to check that `u n`
   -- belongs to this ball for all `n`.
   have C :
     ∀ (n : ℕ) (w : E),
       dist w b ≤
-          f'symm.nnnorm * (1 - (c * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) * dist (f b) y →
+          f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) * dist (f b) y →
         w ∈ closedBall b ε := by
     intro n w hw
     apply hw.trans
     rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
     calc
-      (f'symm.nnnorm : ℝ) * (1 - (c * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - (c * f'symm.nnnorm) ^ n) :=
+      (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
+          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) :=
         by ring
       _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
         apply mul_le_mul_of_nonneg_left _ (mul_nonneg (NNReal.coe_nonneg _) dist_nonneg)
@@ -275,72 +274,55 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
-  have D :
-    ∀ n : ℕ,
-      dist (f (u n)) y ≤ (c * f'symm.nnnorm) ^ n * dist (f b) y ∧
-        dist (u n) b ≤
-          f'symm.nnnorm * (1 - (c * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) * dist (f b) y :=
-    by
-    intro n
+  have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
+      dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
+        (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
     induction' n with n IH; · simp [hu, le_refl]
     rw [usucc]
-    have Ign :
-      dist (g (u n)) b ≤
-        f'symm.nnnorm * (1 - (c * f'symm.nnnorm) ^ n.succ) / (1 - c * f'symm.nnnorm) *
-          dist (f b) y :=
+    have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
+        (1 - c * f'symm.nnnorm) * dist (f b) y :=
       calc
         dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
         _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := (add_le_add (A _) le_rfl)
-        _ ≤
-            f'symm.nnnorm * ((c * f'symm.nnnorm) ^ n * dist (f b) y) +
-              f'symm.nnnorm * (1 - (c * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
+        _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
+              f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
                 dist (f b) y :=
           (add_le_add (mul_le_mul_of_nonneg_left IH.1 (NNReal.coe_nonneg _)) IH.2)
-        _ =
-            f'symm.nnnorm * (1 - (c * f'symm.nnnorm) ^ n.succ) / (1 - c * f'symm.nnnorm) *
-              dist (f b) y :=
-          by field_simp [Jcf']; ring
-        
+        _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
+              (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
+          field_simp [Jcf', pow_succ]; ring
     refine' ⟨_, Ign⟩
     calc
       dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
         B _ (C n _ IH.2) (C n.succ _ Ign)
-      _ ≤ c * f'symm.nnnorm * ((c * f'symm.nnnorm) ^ n * dist (f b) y) :=
+      _ ≤ (c : ℝ) * f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) :=
         (mul_le_mul_of_nonneg_left IH.1 (mul_nonneg (NNReal.coe_nonneg _) (NNReal.coe_nonneg _)))
-      _ = (c * f'symm.nnnorm) ^ n.succ * dist (f b) y := by ring
-      
+      _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
-  have : CauchySeq u :=
-    haveI :
-      ∀ n : ℕ, dist (u n) (u (n + 1)) ≤ f'symm.nnnorm * dist (f b) y * (c * f'symm.nnnorm) ^ n := by
-      intro n
-      calc
-        dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
-        _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
-        _ ≤ f'symm.nnnorm * ((c * f'symm.nnnorm) ^ n * dist (f b) y) :=
-          (mul_le_mul_of_nonneg_left (D n).1 (NNReal.coe_nonneg _))
-        _ = f'symm.nnnorm * dist (f b) y * (c * f'symm.nnnorm) ^ n := by ring
-        
-    cauchySeq_of_le_geometric _ _ Icf' this
-  obtain ⟨x, hx⟩ : ∃ x, tendsto u at_top (𝓝 x) := cauchySeq_tendsto_of_complete this
+  have : CauchySeq u
+  · refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
+    calc
+      dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
+      _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
+      _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) :=
+        (mul_le_mul_of_nonneg_left (D n).1 (NNReal.coe_nonneg _))
+      _ = f'symm.nnnorm * dist (f b) y * ((c : ℝ) * f'symm.nnnorm) ^ n := by ring
+  obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
   -- As all the `uₙ` belong to the ball `closed_ball b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
-    is_closed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
+    isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
   refine' ⟨x, xmem, _⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closed_ball b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
-  have hx' : tendsto u at_top (𝓝[closedBall b ε] x) := by
+  have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
     simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, ge_iff_le, tendsto_principal]
     exact eventually_of_forall fun n => C n _ (D n).2
-  have T1 : tendsto (fun n => f (u n)) at_top (𝓝 (f x)) :=
-    (hf.continuous_on.mono hε x xmem).Tendsto.comp hx'
-  have T2 : tendsto (fun n => f (u n)) at_top (𝓝 y) := by
+  have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
+    (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
+  have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
-    refine' squeeze_zero (fun n => dist_nonneg) (fun n => (D n).1) _
-    simpa using
-      (tendsto_pow_atTop_nhds_0_of_lt_1 (mul_nonneg (NNReal.coe_nonneg _) (NNReal.coe_nonneg _))
-            Icf').mul
-        tendsto_const_nhds
+    refine' squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) _
+    simpa using (tendsto_pow_atTop_nhds_0_of_lt_1 (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 #align approximates_linear_on.surj_on_closed_ball_of_nonlinear_right_inverse ApproximatesLinearOn.surjOn_closedBall_of_nonlinearRightInverse
 
@@ -351,9 +333,7 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
   intro x hx
   rcases hs x hx with ⟨ε, ε0, hε⟩
   refine' ⟨(f'symm.nnnorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, _⟩
-  exact
-    (hf.surjOn_closedBall_of_nonlinear_right_inverse f'symm (le_of_lt ε0) hε).mono hε
-      (subset.refl _)
+  exact (hf.surjOn_closedBall_of_nonlinearRightInverse f'symm (le_of_lt ε0) hε).mono hε Subset.rfl
 #align approximates_linear_on.open_image ApproximatesLinearOn.open_image
 
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
@@ -416,7 +396,7 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     have hp : ∀ᶠ r : ℝ in atTop, p ((N⁻¹ - c) * r) := by
       have hr : ∀ᶠ r : ℝ in atTop, 0 ≤ r := eventually_ge_atTop 0
       refine' hr.mono fun r hr => Subset.trans _ (image_subset_range f (closedBall 0 r))
-      refine' hf.surjOn_closedBall_of_nonlinear_right_inverse f'.to_nonlinear_right_inverse hr _
+      refine' hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse hr _
       exact subset_univ _
     refine' ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono _
     exact fun R h y hy => h hy
@@ -435,18 +415,18 @@ def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toLocalEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
-  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.to_local_equiv hc).right_inv').continuous
-  exact fun x hx => (hf.to_local_equiv hc).map_target hx
+  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.toLocalEquiv hc).right_inv').continuous
+  exact fun x hx => (hf.toLocalEquiv hc).map_target hx
 #align approximates_linear_on.inverse_continuous_on ApproximatesLinearOn.inverse_continuousOn
 
 /-- The inverse function is approximated linearly on `f '' s` by `f'.symm`. -/
 theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Subsingleton E ∨ c < N⁻¹) :
     ApproximatesLinearOn (hf.toLocalEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
       (N * (N⁻¹ - c)⁻¹ * c) := fun x hx y hy ↦ by
-  set A := hf.to_local_equiv hc with hA
+  set A := hf.toLocalEquiv hc with hA
   have Af : ∀ z, A z = f z := fun z => rfl
-  rcases(mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
-  rcases(mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
+  rcases (mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
+  rcases (mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]
   calc
     ‖x' - y' - f'.symm (A x' - A y')‖ ≤ N * ‖f' (x' - y' - f'.symm (A x' - A y'))‖ :=
@@ -460,8 +440,8 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       apply_rules [mul_le_mul_of_nonneg_left, NNReal.coe_nonneg]
       rw [← dist_eq_norm, ← dist_eq_norm]
       exact (hf.antilipschitz hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
-    _ = (N * (N⁻¹ - c)⁻¹ * c : ℝ≥0) * ‖A x' - A y'‖ := by simp only [norm_sub_rev, Nonneg.coe_mul];
-      ring
+    _ = (N * (N⁻¹ - c)⁻¹ * c : ℝ≥0) * ‖A x' - A y'‖ := by
+      simp only [norm_sub_rev, NNReal.coe_mul]; ring
 #align approximates_linear_on.to_inv ApproximatesLinearOn.to_inv
 
 section
@@ -554,7 +534,6 @@ sense. Then `f` approximates `f'` in the sense of `approximates_linear_on` on an
 of `a`, and we can apply `approximates_linear_on.to_local_homeomorph` to construct the inverse
 function. -/
 
-
 namespace HasStrictFDerivAt
 
 /-- If `f` has derivative `f'` at `a` in the strict sense and `c > 0`, then `f` approximates `f'`
@@ -584,19 +563,18 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
   simp [ne_of_gt f'symm_pos]
 #align has_strict_fderiv_at.map_nhds_eq_of_surj HasStrictFDerivAt.map_nhds_eq_of_surj
 
-variable [cs : CompleteSpace E] {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
+variable [CompleteSpace E] {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
 
 theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
-    ∃ (s : Set E) (hs : a ∈ s ∧ IsOpen s),
+    ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
-  refine' ((nhdsBasis_opens a).exists_iff _).1 _
+  simp only [← and_assoc]
+  refine' ((nhds_basis_opens a).exists_iff _).1 _
   exact fun s t => ApproximatesLinearOn.mono_set
   exact
     hf.approximates_deriv_on_nhds <|
       f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
 #align has_strict_fderiv_at.approximates_deriv_on_open_nhds HasStrictFDerivAt.approximates_deriv_on_open_nhds
-
-include cs
 
 variable (f)
 
@@ -606,10 +584,10 @@ The other part `has_strict_fderiv_at.to_local_inverse` states that the inverse f
 of this `local_homeomorph` has derivative `f'.symm`. -/
 def toLocalHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : LocalHomeomorph E F :=
   ApproximatesLinearOn.toLocalHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
-    (Classical.choose_spec hf.approximates_deriv_on_open_nhds).snd
+    (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
     (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
-    (Classical.choose_spec hf.approximates_deriv_on_open_nhds).fst.2
+    (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
 #align has_strict_fderiv_at.to_local_homeomorph HasStrictFDerivAt.toLocalHomeomorph
 
 variable {f}
@@ -622,7 +600,7 @@ theorem toLocalHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a)
 
 theorem mem_toLocalHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     a ∈ (hf.toLocalHomeomorph f).source :=
-  (Classical.choose_spec hf.approximates_deriv_on_open_nhds).fst.1
+  (Classical.choose_spec hf.approximates_deriv_on_open_nhds).1
 #align has_strict_fderiv_at.mem_to_local_homeomorph_source HasStrictFDerivAt.mem_toLocalHomeomorph_source
 
 theorem image_mem_toLocalHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
@@ -687,7 +665,7 @@ then the inverse function `hf.local_inverse f` has derivative `f'.symm` at `f a`
 theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     HasStrictFDerivAt (hf.localInverse f f' a) (f'.symm : F →L[𝕜] E) (f a) :=
   (hf.toLocalHomeomorph f).hasStrictFDerivAt_symm hf.image_mem_toLocalHomeomorph_target <| by
-    simpa [← local_inverse_def] using hf
+    simpa [← localInverse_def] using hf
 #align has_strict_fderiv_at.to_local_inverse HasStrictFDerivAt.to_localInverse
 
 /-- If `f : E → F` has an invertible derivative `f'` at `a` in the sense of strict differentiability
@@ -719,9 +697,7 @@ We use `continuous_linear_equiv.units_equiv_aut` to translate `has_strict_deriv_
 
 namespace HasStrictDerivAt
 
-variable [cs : CompleteSpace 𝕜] {f : 𝕜 → 𝕜} {f' a : 𝕜} (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
-
-include cs
+variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} {f' a : 𝕜} (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
 
 variable (f f' a)
 
@@ -774,7 +750,7 @@ variable [CompleteSpace E'] (f : E' → F') {f' : E' ≃L[𝕂] F'} {a : E'}
 derivative at `a`, returns a `local_homeomorph` with `to_fun = f` and `a ∈ source`. -/
 def toLocalHomeomorph {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a)
     (hn : 1 ≤ n) : LocalHomeomorph E' F' :=
-  (hf.hasStrictFDeriv_at' hf' hn).toLocalHomeomorph f
+  (hf.hasStrictFDerivAt' hf' hn).toLocalHomeomorph f
 #align cont_diff_at.to_local_homeomorph ContDiffAt.toLocalHomeomorph
 
 variable {f}
@@ -789,25 +765,25 @@ theorem toLocalHomeomorph_coe {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
 theorem mem_toLocalHomeomorph_source {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     a ∈ (hf.toLocalHomeomorph f hf' hn).source :=
-  (hf.hasStrictFDeriv_at' hf' hn).mem_toLocalHomeomorph_source
+  (hf.hasStrictFDerivAt' hf' hn).mem_toLocalHomeomorph_source
 #align cont_diff_at.mem_to_local_homeomorph_source ContDiffAt.mem_toLocalHomeomorph_source
 
 theorem image_mem_toLocalHomeomorph_target {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     f a ∈ (hf.toLocalHomeomorph f hf' hn).target :=
-  (hf.hasStrictFDeriv_at' hf' hn).image_mem_toLocalHomeomorph_target
+  (hf.hasStrictFDerivAt' hf' hn).image_mem_toLocalHomeomorph_target
 #align cont_diff_at.image_mem_to_local_homeomorph_target ContDiffAt.image_mem_toLocalHomeomorph_target
 
 /-- Given a `cont_diff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, returns a function that is locally inverse to `f`. -/
 def localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a)
     (hn : 1 ≤ n) : F' → E' :=
-  (hf.hasStrictFDeriv_at' hf' hn).localInverse f f' a
+  (hf.hasStrictFDerivAt' hf' hn).localInverse f f' a
 #align cont_diff_at.local_inverse ContDiffAt.localInverse
 
 theorem localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) : hf.localInverse hf' hn (f a) = a :=
-  (hf.hasStrictFDeriv_at' hf' hn).localInverse_apply_image
+  (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
 #align cont_diff_at.local_inverse_apply_image ContDiffAt.localInverse_apply_image
 
 /-- Given a `cont_diff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
@@ -816,10 +792,9 @@ also `cont_diff`. -/
 theorem to_localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     ContDiffAt 𝕂 n (hf.localInverse hf' hn) (f a) := by
-  have := hf.local_inverse_apply_image hf' hn
-  apply
-    (hf.toLocalHomeomorph f hf' hn).contDiffAt_symm
-      (image_mem_toLocalHomeomorph_target hf hf' hn)
+  have := hf.localInverse_apply_image hf' hn
+  apply (hf.toLocalHomeomorph f hf' hn).contDiffAt_symm
+    (image_mem_toLocalHomeomorph_target hf hf' hn)
   · convert hf'
   · convert hf
 #align cont_diff_at.to_local_inverse ContDiffAt.to_localInverse
