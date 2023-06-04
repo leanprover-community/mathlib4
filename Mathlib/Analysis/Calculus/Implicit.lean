@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Inverse
-import Mathbin.Analysis.NormedSpace.Complemented
+import Mathlib.Analysis.Calculus.Inverse
+import Mathlib.Analysis.NormedSpace.Complemented
 
 /-!
 # Implicit function theorem
@@ -204,8 +204,7 @@ theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
 theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
-    HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) :=
-  by
+    HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
   have := φ.has_strict_fderiv_at.to_local_inverse
   simp only [prod_fun] at this 
   convert this.comp (φ.right_fun φ.pt) ((hasStrictFDerivAt_const _ _).Prod (hasStrictFDerivAt_id _))
@@ -247,8 +246,7 @@ variable (f f')
 differentiable map such that its derivative is surjective and has a complemented kernel. -/
 @[simp]
 def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
-    (hker : (ker f').ClosedComplemented) : ImplicitFunctionData 𝕜 E F (ker f')
-    where
+    (hker : (ker f').ClosedComplemented) : ImplicitFunctionData 𝕜 E F (ker f') where
   leftFun := f
   leftDeriv := f'
   rightFun x := Classical.choose hker (x - a)
@@ -344,8 +342,7 @@ theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
 @[simp]
 theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
-    hf.implicitFunctionOfComplemented f f' hf' hker (f a) 0 = a :=
-  by
+    hf.implicitFunctionOfComplemented f f' hf' hker (f a) 0 = a := by
   convert
     (hf.implicit_to_local_homeomorph_of_complemented f f' hf' hker).left_inv
       (hf.mem_implicit_to_local_homeomorph_of_complemented_source hf' hker)
@@ -444,8 +441,7 @@ theorem mem_implicitToLocalHomeomorph_target (hf : HasStrictFDerivAt f f' a) (hf
 theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) {α : Type _}
     {l : Filter α} {g₁ : α → F} {g₂ : α → ker f'} (h₁ : Tendsto g₁ l (𝓝 <| f a))
     (h₂ : Tendsto g₂ l (𝓝 0)) :
-    Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) :=
-  by
+    Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
   refine'
     ((hf.implicit_to_local_homeomorph f f' hf').tendsto_symm
           (hf.mem_implicit_to_local_homeomorph_source hf')).comp
