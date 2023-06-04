@@ -43,7 +43,6 @@ section RealDerivOfComplex
 
 /-! ### Differentiability of the restriction to `ℝ` of complex functions -/
 
-
 open Complex
 
 variable {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
@@ -52,13 +51,13 @@ variable {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
 differentiable at this point, with a derivative equal to the real part of the complex derivative. -/
 theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
     HasStrictDerivAt (fun x : ℝ => (e x).re) e'.re z := by
-  have A : HasStrictFDerivAt (coe : ℝ → ℂ) of_real_clm z := of_real_clm.has_strict_fderiv_at
+  have A : HasStrictFDerivAt ((↑) : ℝ → ℂ) ofRealClm z := ofRealClm.hasStrictFDerivAt
   have B :
     HasStrictFDerivAt e ((ContinuousLinearMap.smulRight 1 e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
-      (of_real_clm z) :=
-    h.has_strict_fderiv_at.restrict_scalars ℝ
-  have C : HasStrictFDerivAt re re_clm (e (of_real_clm z)) := re_clm.has_strict_fderiv_at
-  simpa using (C.comp z (B.comp z A)).HasStrictDerivAt
+      (ofRealClm z) :=
+    h.hasStrictFDerivAt.restrictScalars ℝ
+  have C : HasStrictFDerivAt re reClm (e (ofRealClm z)) := reClm.hasStrictFDerivAt
+  simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
 #align has_strict_deriv_at.real_of_complex HasStrictDerivAt.real_of_complex
 
 /-- If a complex function `e` is differentiable at a real point, then the function `ℝ → ℝ` given by
@@ -66,76 +65,76 @@ the real part of `e` is also differentiable at this point, with a derivative equ
 of the complex derivative. -/
 theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
     HasDerivAt (fun x : ℝ => (e x).re) e'.re z := by
-  have A : HasFDerivAt (coe : ℝ → ℂ) of_real_clm z := of_real_clm.has_fderiv_at
+  have A : HasFDerivAt ((↑) : ℝ → ℂ) ofRealClm z := ofRealClm.hasFDerivAt
   have B :
     HasFDerivAt e ((ContinuousLinearMap.smulRight 1 e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
-      (of_real_clm z) :=
-    h.has_fderiv_at.restrict_scalars ℝ
-  have C : HasFDerivAt re re_clm (e (of_real_clm z)) := re_clm.has_fderiv_at
-  simpa using (C.comp z (B.comp z A)).HasDerivAt
+      (ofRealClm z) :=
+    h.hasFDerivAt.restrictScalars ℝ
+  have C : HasFDerivAt re reClm (e (ofRealClm z)) := reClm.hasFDerivAt
+  simpa using (C.comp z (B.comp z A)).hasDerivAt
 #align has_deriv_at.real_of_complex HasDerivAt.real_of_complex
 
 theorem ContDiffAt.real_of_complex {n : ℕ∞} (h : ContDiffAt ℂ n e z) :
     ContDiffAt ℝ n (fun x : ℝ => (e x).re) z := by
-  have A : ContDiffAt ℝ n (coe : ℝ → ℂ) z := of_real_clm.cont_diff.cont_diff_at
+  have A : ContDiffAt ℝ n ((↑) : ℝ → ℂ) z := ofRealClm.contDiff.contDiffAt
   have B : ContDiffAt ℝ n e z := h.restrict_scalars ℝ
-  have C : ContDiffAt ℝ n re (e z) := re_clm.cont_diff.cont_diff_at
+  have C : ContDiffAt ℝ n re (e z) := reClm.contDiff.contDiffAt
   exact C.comp z (B.comp z A)
 #align cont_diff_at.real_of_complex ContDiffAt.real_of_complex
 
 theorem ContDiff.real_of_complex {n : ℕ∞} (h : ContDiff ℂ n e) :
     ContDiff ℝ n fun x : ℝ => (e x).re :=
-  contDiff_iff_contDiffAt.2 fun x => h.ContDiffAt.real_of_complex
+  contDiff_iff_contDiffAt.2 fun _ => h.contDiffAt.real_of_complex
 #align cont_diff.real_of_complex ContDiff.real_of_complex
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictDerivAt.complexToReal_fderiv' {f : ℂ → E} {x : ℂ} {f' : E}
     (h : HasStrictDerivAt f f' x) :
-    HasStrictFDerivAt f (reClm.smul_right f' + I • imClm.smul_right f') x := by
+    HasStrictFDerivAt f (reClm.smulRight f' + I • imClm.smulRight f') x := by
   simpa only [Complex.restrictScalars_one_smulRight'] using
-    h.has_strict_fderiv_at.restrict_scalars ℝ
+    h.hasStrictFDerivAt.restrictScalars ℝ
 #align has_strict_deriv_at.complex_to_real_fderiv' HasStrictDerivAt.complexToReal_fderiv'
 
 theorem HasDerivAt.complexToReal_fderiv' {f : ℂ → E} {x : ℂ} {f' : E} (h : HasDerivAt f f' x) :
-    HasFDerivAt f (reClm.smul_right f' + I • imClm.smul_right f') x := by
-  simpa only [Complex.restrictScalars_one_smulRight'] using h.has_fderiv_at.restrict_scalars ℝ
+    HasFDerivAt f (reClm.smulRight f' + I • imClm.smulRight f') x := by
+  simpa only [Complex.restrictScalars_one_smulRight'] using h.hasFDerivAt.restrictScalars ℝ
 #align has_deriv_at.complex_to_real_fderiv' HasDerivAt.complexToReal_fderiv'
 
 theorem HasDerivWithinAt.complexToReal_fderiv' {f : ℂ → E} {s : Set ℂ} {x : ℂ} {f' : E}
     (h : HasDerivWithinAt f f' s x) :
-    HasFDerivWithinAt f (reClm.smul_right f' + I • imClm.smul_right f') s x := by
+    HasFDerivWithinAt f (reClm.smulRight f' + I • imClm.smulRight f') s x := by
   simpa only [Complex.restrictScalars_one_smulRight'] using
-    h.has_fderiv_within_at.restrict_scalars ℝ
+    h.hasFDerivWithinAt.restrictScalars ℝ
 #align has_deriv_within_at.complex_to_real_fderiv' HasDerivWithinAt.complexToReal_fderiv'
 
 theorem HasStrictDerivAt.complexToReal_fderiv {f : ℂ → ℂ} {f' x : ℂ} (h : HasStrictDerivAt f f' x) :
     HasStrictFDerivAt f (f' • (1 : ℂ →L[ℝ] ℂ)) x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.has_strict_fderiv_at.restrict_scalars ℝ
+  simpa only [Complex.restrictScalars_one_smulRight] using h.hasStrictFDerivAt.restrictScalars ℝ
 #align has_strict_deriv_at.complex_to_real_fderiv HasStrictDerivAt.complexToReal_fderiv
 
 theorem HasDerivAt.complexToReal_fderiv {f : ℂ → ℂ} {f' x : ℂ} (h : HasDerivAt f f' x) :
     HasFDerivAt f (f' • (1 : ℂ →L[ℝ] ℂ)) x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.has_fderiv_at.restrict_scalars ℝ
+  simpa only [Complex.restrictScalars_one_smulRight] using h.hasFDerivAt.restrictScalars ℝ
 #align has_deriv_at.complex_to_real_fderiv HasDerivAt.complexToReal_fderiv
 
 theorem HasDerivWithinAt.complexToReal_fderiv {f : ℂ → ℂ} {s : Set ℂ} {f' x : ℂ}
     (h : HasDerivWithinAt f f' s x) : HasFDerivWithinAt f (f' • (1 : ℂ →L[ℝ] ℂ)) s x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.has_fderiv_within_at.restrict_scalars ℝ
+  simpa only [Complex.restrictScalars_one_smulRight] using h.hasFDerivWithinAt.restrictScalars ℝ
 #align has_deriv_within_at.complex_to_real_fderiv HasDerivWithinAt.complexToReal_fderiv
 
 /-- If a complex function `e` is differentiable at a real point, then its restriction to `ℝ` is
 differentiable there as a function `ℝ → ℂ`, with the same derivative. -/
 theorem HasDerivAt.comp_of_real (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y : ℝ => e ↑y) e' z :=
-  by simpa only [of_real_clm_apply, of_real_one, mul_one] using hf.comp z of_real_clm.has_deriv_at
+  by simpa only [ofRealClm_apply, ofReal_one, mul_one] using hf.comp z ofRealClm.hasDerivAt
 #align has_deriv_at.comp_of_real HasDerivAt.comp_of_real
 
 /-- If a function `f : ℝ → ℝ` is differentiable at a (real) point `x`, then it is also
 differentiable as a function `ℝ → ℂ`. -/
 theorem HasDerivAt.of_real_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u z) :
     HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u z := by
-  simpa only [of_real_clm_apply, of_real_one, real_smul, mul_one] using
-    of_real_clm.has_deriv_at.scomp z hf
+  simpa only [ofRealClm_apply, ofReal_one, real_smul, mul_one] using
+    ofRealClm.hasDerivAt.scomp z hf
 #align has_deriv_at.of_real_comp HasDerivAt.of_real_comp
 
 end RealDerivOfComplex
@@ -143,7 +142,6 @@ end RealDerivOfComplex
 section Conformality
 
 /-! ### Conformality of real-differentiable complex maps -/
-
 
 open Complex ContinuousLinearMap
 
@@ -156,7 +154,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : 
     This is a version of the Cauchy-Riemann equations. -/
 theorem DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv f z ≠ 0) :
     ConformalAt f z := by
-  rw [conformalAt_iff_isConformalMap_fderiv, (h.has_fderiv_at.restrict_scalars ℝ).fderiv]
+  rw [conformalAt_iff_isConformalMap_fderiv, (h.hasFDerivAt.restrictScalars ℝ).fderiv]
   apply isConformalMap_complex_linear
   simpa only [Ne.def, ext_ring_iff]
 #align differentiable_at.conformal_at DifferentiableAt.conformalAt
@@ -174,10 +172,10 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   apply or_congr
   · rw [differentiableAt_iff_restrictScalars ℝ h_diff]
   rw [← conj_conj z] at h_diff 
-  rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conj_cle.differentiable_at)]
+  rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCle.differentiableAt)]
   refine' exists_congr fun g => rfl.congr _
-  have : fderiv ℝ conj (conj z) = _ := conj_cle.fderiv
-  simp [fderiv.comp _ h_diff conj_cle.differentiable_at, this, conj_conj]
+  have : fderiv ℝ conj (conj z) = _ := conjCle.fderiv
+  simp [fderiv.comp _ h_diff conjCle.differentiableAt, this, conj_conj]
 #align conformal_at_iff_differentiable_at_or_differentiable_at_comp_conj conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj
 
 end Conformality
