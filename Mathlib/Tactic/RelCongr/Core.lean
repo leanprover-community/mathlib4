@@ -375,17 +375,17 @@ def exactRefl (h : Expr) (goal : MVarId) : MetaM Unit := do
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
 these hypotheses. -/
-def _root_.Lean.MVarId.relAssumption (hs : Array Expr) (g : MVarId) : MetaM Unit :=
+def _root_.Lean.MVarId.relCongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
   withReducible do
     let s ← saveState
-    withTraceNode `Meta.rel (fun _ => return m!"rel_assumption: ⊢ {← g.getType}") do
+    withTraceNode `Meta.rel (fun _ => return m!"rel_congr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
     for h in hs do
       try
         firstFunM g (List.map (fun f ↦ f h) [MVarId.exact, symmExact, exactLeOfLt, exactRefl])
         return
       catch _ => s.restore
-    throwError "rel_assumption failed"
+    throwError "rel_congr_forward failed"
 
 syntax "rel_congr_discharger" : tactic
 
@@ -441,7 +441,7 @@ elab "rel_congr" template:(colGt term)?
     let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
       | failure
   -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
-  -- consisting of running `Lean.MVarId.relAssumption` (trying a term together with limited
+  -- consisting of running `Lean.MVarId.relCongrForward` (trying a term together with limited
   -- forward-reasoning on that term) on each nontrivial hypothesis.
   let assum g := do
     let mut hs := #[]
@@ -449,8 +449,8 @@ elab "rel_congr" template:(colGt term)?
     for h in ← getLCtx do
       if !h.isImplementationDetail then
         hs := hs.push (.fvar h.fvarId)
-    -- run `Lean.MVarId.relAssumption` on each one
-    g.relAssumption hs
+    -- run `Lean.MVarId.relCongrForward` on each one
+    g.relCongrForward hs
   -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
   replaceMainGoal (← g.relCongr template names disch assum).2.toList
 
@@ -492,9 +492,9 @@ elab_rules : tactic
       let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
         | failure
     -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
-    -- consisting of running `Lean.MVarId.relAssumption` (trying a term together with limited
+    -- consisting of running `Lean.MVarId.relCongrForward` (trying a term together with limited
     -- forward-reasoning on that term) on each of the listed terms.
-    let assum g := g.relAssumption hyps
+    let assum g := g.relCongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
     let (_, unsolvedGoalStates) ← g.relCongr none [] disch assum
     match unsolvedGoalStates.toList with
