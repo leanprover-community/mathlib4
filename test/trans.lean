@@ -69,3 +69,5 @@ example (a : α)(c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
     trans b
     assumption
     assumption
+
+example (Q : Prop) (q : Q) (h₁ : P → Q) (h₂ : Q → R) : P → R := by trans <;> assumption
