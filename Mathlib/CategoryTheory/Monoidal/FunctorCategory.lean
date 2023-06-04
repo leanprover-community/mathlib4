@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Braided
-import Mathbin.CategoryTheory.Functor.Category
-import Mathbin.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -60,8 +60,7 @@ variable (α : F ⟶ G) (β : F' ⟶ G')
 Tensor product of natural transformations into `D`, when `D` is monoidal.
 -/
 @[simps]
-def tensorHom : tensorObj F F' ⟶ tensorObj G G'
-    where
+def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
   app X := α.app X ⊗ β.app X
   naturality' X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
 #align category_theory.monoidal.functor_category.tensor_hom CategoryTheory.Monoidal.FunctorCategory.tensorHom
@@ -74,8 +73,7 @@ open CategoryTheory.Monoidal.FunctorCategory
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D)
-    where
+instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom F G F' G' α β := tensorHom α β
   tensor_id' F G := by ext; dsimp; rw [tensor_id]
@@ -185,8 +183,7 @@ variable [BraidedCategory.{v₂} D]
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
-instance functorCategoryBraided : BraidedCategory (C ⥤ D)
-    where
+instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
   braiding F G := NatIso.ofComponents (fun X => β_ _ _) (by tidy)
   hexagon_forward' F G H := by ext X; apply hexagon_forward
   hexagon_reverse' F G H := by ext X; apply hexagon_reverse
