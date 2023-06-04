@@ -199,7 +199,8 @@ initialize registerBuiltinAttribute {
         pure mainSubgoals
       i := i + 1
     -- store all the information from this parse of the lemma's structure in a `RelCongrLemma`
-    relCongrExt.add ((relName, head, varyingArgs), { declName := decl, mainSubgoals, varyingArgs }) kind
+    relCongrExt.add
+      ((relName, head, varyingArgs), { declName := decl, mainSubgoals, varyingArgs }) kind
 }
 
 initialize registerTraceClass `Meta.rel
