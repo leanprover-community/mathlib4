@@ -234,7 +234,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     ∀ z ∈ closedBall b ε,
       g z ∈ closedBall b ε → dist (f (g z)) y ≤ c * f'symm.nnnorm * dist (f z) y := by
     intro z hz hgz
-    set v := f'symm (y - f z) with hv
+    set v := f'symm (y - f z)
     calc
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
@@ -244,7 +244,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
         apply mul_le_mul_of_nonneg_left _ (NNReal.coe_nonneg c)
-        simpa [hv, dist_eq_norm'] using f'symm.bound (y - f z)
+        simpa [dist_eq_norm'] using f'symm.bound (y - f z)
       _ = c * f'symm.nnnorm * dist (f z) y := by ring
   -- Third bound: a complicated bound on `dist w b` (that will show up in the induction) is enough
   -- to check that `w` is in the ball on which one has controls. Will be used to check that `u n`
@@ -423,7 +423,7 @@ theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) 
 theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Subsingleton E ∨ c < N⁻¹) :
     ApproximatesLinearOn (hf.toLocalEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
       (N * (N⁻¹ - c)⁻¹ * c) := fun x hx y hy ↦ by
-  set A := hf.toLocalEquiv hc with hA
+  set A := hf.toLocalEquiv hc
   have Af : ∀ z, A z = f z := fun z => rfl
   rcases (mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
   rcases (mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
