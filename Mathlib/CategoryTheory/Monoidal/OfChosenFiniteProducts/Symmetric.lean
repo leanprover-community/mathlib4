@@ -8,8 +8,8 @@ Authors: Scott Morrison, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Braided
-import Mathbin.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 /-!
 # The symmetric monoidal structure on a category with chosen finite products.
@@ -45,8 +45,7 @@ open MonoidalCategory
 
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     tensorHom ℬ f g ≫ (Limits.BinaryFan.braiding (ℬ Y Y').IsLimit (ℬ Y' Y).IsLimit).Hom =
-      (Limits.BinaryFan.braiding (ℬ X X').IsLimit (ℬ X' X).IsLimit).Hom ≫ tensorHom ℬ g f :=
-  by
+      (Limits.BinaryFan.braiding (ℬ X X').IsLimit (ℬ X' X).IsLimit).Hom ≫ tensorHom ℬ g f := by
   dsimp [tensor_hom, limits.binary_fan.braiding]
   apply (ℬ _ _).IsLimit.hom_ext;
   rintro ⟨⟨⟩⟩ <;> · dsimp [limits.is_limit.cone_point_unique_up_to_iso]; simp
@@ -59,8 +58,7 @@ theorem hexagon_forward (X Y Z : C) :
           (BinaryFan.associatorOfLimitCone ℬ Y Z X).Hom =
       tensorHom ℬ (Limits.BinaryFan.braiding (ℬ X Y).IsLimit (ℬ Y X).IsLimit).Hom (𝟙 Z) ≫
         (BinaryFan.associatorOfLimitCone ℬ Y X Z).Hom ≫
-          tensorHom ℬ (𝟙 Y) (Limits.BinaryFan.braiding (ℬ X Z).IsLimit (ℬ Z X).IsLimit).Hom :=
-  by
+          tensorHom ℬ (𝟙 Y) (Limits.BinaryFan.braiding (ℬ X Z).IsLimit (ℬ Z X).IsLimit).Hom := by
   dsimp [tensor_hom, limits.binary_fan.braiding]
   apply (ℬ _ _).IsLimit.hom_ext; rintro ⟨⟨⟩⟩
   · dsimp [limits.is_limit.cone_point_unique_up_to_iso]; simp
@@ -75,8 +73,7 @@ theorem hexagon_reverse (X Y Z : C) :
           (BinaryFan.associatorOfLimitCone ℬ Z X Y).inv =
       tensorHom ℬ (𝟙 X) (Limits.BinaryFan.braiding (ℬ Y Z).IsLimit (ℬ Z Y).IsLimit).Hom ≫
         (BinaryFan.associatorOfLimitCone ℬ X Z Y).inv ≫
-          tensorHom ℬ (Limits.BinaryFan.braiding (ℬ X Z).IsLimit (ℬ Z X).IsLimit).Hom (𝟙 Y) :=
-  by
+          tensorHom ℬ (Limits.BinaryFan.braiding (ℬ X Z).IsLimit (ℬ Z X).IsLimit).Hom (𝟙 Y) := by
   dsimp [tensor_hom, limits.binary_fan.braiding]
   apply (ℬ _ _).IsLimit.hom_ext; rintro ⟨⟨⟩⟩
   · apply (ℬ _ _).IsLimit.hom_ext;
@@ -92,8 +89,7 @@ theorem hexagon_reverse (X Y Z : C) :
 theorem symmetry (X Y : C) :
     (Limits.BinaryFan.braiding (ℬ X Y).IsLimit (ℬ Y X).IsLimit).Hom ≫
         (Limits.BinaryFan.braiding (ℬ Y X).IsLimit (ℬ X Y).IsLimit).Hom =
-      𝟙 (tensorObj ℬ X Y) :=
-  by
+      𝟙 (tensorObj ℬ X Y) := by
   dsimp [tensor_hom, limits.binary_fan.braiding]
   apply (ℬ _ _).IsLimit.hom_ext;
   rintro ⟨⟨⟩⟩ <;> · dsimp [limits.is_limit.cone_point_unique_up_to_iso]; simp
