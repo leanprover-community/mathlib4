@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
 /-!
 # Transport rigid structures over a monoidal equivalence.
@@ -31,8 +31,7 @@ the equations holds automatically. -/
 def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 𝟙_ C)
     (coeval : 𝟙_ C ⟶ X ⊗ Y) [ExactPairing (F.obj X) (F.obj Y)]
     (map_eval : F.map eval = inv (F.μ _ _) ≫ ε_ _ _ ≫ F.ε)
-    (map_coeval : F.map coeval = inv F.ε ≫ η_ _ _ ≫ F.μ _ _) : ExactPairing X Y
-    where
+    (map_coeval : F.map coeval = inv F.ε ≫ η_ _ _ ≫ F.μ _ _) : ExactPairing X Y where
   evaluation := eval
   coevaluation := coeval
   evaluation_coevaluation' :=
@@ -85,8 +84,7 @@ def rightRigidCategoryOfEquivalence [IsEquivalence F.toFunctor] [RightRigidCateg
 #align category_theory.right_rigid_category_of_equivalence CategoryTheory.rightRigidCategoryOfEquivalence
 
 /-- Pull back a rigid structure along an equivalence. -/
-def rigidCategoryOfEquivalence [IsEquivalence F.toFunctor] [RigidCategory D] : RigidCategory C
-    where
+def rigidCategoryOfEquivalence [IsEquivalence F.toFunctor] [RigidCategory D] : RigidCategory C where
   leftDual X := hasLeftDualOfEquivalence F X
   rightDual X := hasRightDualOfEquivalence F X
 #align category_theory.rigid_category_of_equivalence CategoryTheory.rigidCategoryOfEquivalence
