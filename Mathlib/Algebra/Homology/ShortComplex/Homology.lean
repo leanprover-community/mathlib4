@@ -1000,11 +1000,27 @@ noncomputable def asIsoHomologyπ (hf : S.f = 0) [S.HasHomology] :
   have := S.isIso_homologyπ hf
   exact asIso S.homologyπ
 
+@[reassoc (attr := simp)]
+lemma asIsoHomologyπ_inv_comp_homologyπ (hf : S.f = 0) [S.HasHomology] :
+  (S.asIsoHomologyπ hf).inv ≫ S.homologyπ = 𝟙 _ := Iso.inv_hom_id _
+
+@[reassoc (attr := simp)]
+lemma homologyπ_comp_asIsoHomologyπ_inv (hf : S.f = 0) [S.HasHomology] :
+  S.homologyπ ≫ (S.asIsoHomologyπ hf).inv  = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
+
 @[simps! hom]
 noncomputable def asIsoHomologyι (hg : S.g = 0) [S.HasHomology] :
     S.homology ≅ S.cyclesCo := by
   have := S.isIso_homologyι hg
   exact asIso S.homologyι
+
+@[reassoc (attr := simp)]
+lemma asIsoHomologyι_inv_comp_homologyι (hg : S.g = 0) [S.HasHomology] :
+  (S.asIsoHomologyι hg).inv ≫ S.homologyι = 𝟙 _ := Iso.inv_hom_id _
+
+@[reassoc (attr := simp)]
+lemma homologyι_comp_asIsoHomologyι_inv (hg : S.g = 0) [S.HasHomology] :
+  S.homologyι ≫ (S.asIsoHomologyι hg).inv  = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
 
 end ShortComplex
 

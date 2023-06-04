@@ -125,9 +125,9 @@ def shortComplex₃ : ShortComplex C :=
   ShortComplex.mk _ _ S.zero₃
 
 structure Exact : Prop where
-  exact₁ : S.shortComplex₁.Exact
-  exact₂ : S.shortComplex₂.Exact
-  exact₃ : S.shortComplex₃.Exact
+  exact₂ : S.shortComplex₁.Exact
+  exact₃ : S.shortComplex₂.Exact
+  exact₄ : S.shortComplex₃.Exact
 
 end
 

@@ -248,8 +248,8 @@ def shortComplex₄ : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
 pp_extended_field_notation shortComplex₄
 
 lemma shortComplex₄_exact : (X.shortComplex₄ n₀ n₁ hn₁).Exact where
-  exact₁ := X.shortComplex₂_exact n₀
-  exact₂ := X.shortComplex₃_exact n₀ n₁ hn₁
+  exact₂ := X.shortComplex₂_exact n₀
+  exact₃ := X.shortComplex₃_exact n₀ n₁ hn₁
 
 def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
   X₁ := Arrow₃.hMor ⋙ X.H n₀

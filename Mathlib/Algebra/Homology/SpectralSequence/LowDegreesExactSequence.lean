@@ -127,9 +127,17 @@ lemma shortComplexDegreeOne_shortExact [E.HasPage 2] : (shortComplexDegreeOne h)
     (E.isoPageInfinityOfLE ⟨0,1⟩ 3 E.rMin_zero_one_le_of_isFirstQuadrant).symm _ _
   all_goals dsimp [shortComplexDegreeOne] ; aesop_cat
 
+instance [E.HasPage 2] : Mono (shortComplexDegreeOne h).f :=
+  (shortComplexDegreeOne_shortExact h).mono_f
+
+instance [E.HasPage 2] : Epi (shortComplexDegreeOne h).g :=
+  (shortComplexDegreeOne_shortExact h).epi_g
+
+
 variable (E)
 
-noncomputable def shortComplex₄ [E.HasPage 2] : ShortComplex₄ C where
+@[simps]
+noncomputable def shortComplex₄d₂ [E.HasPage 2] : ShortComplex₄ C where
   X₁ := E.page 3 ⟨0, 1⟩
   X₂ := E.page 2 ⟨0, 1⟩
   X₃ := E.page 2 ⟨2, 0⟩
@@ -137,6 +145,11 @@ noncomputable def shortComplex₄ [E.HasPage 2] : ShortComplex₄ C where
   f := E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl
   g := E.d 2 ⟨0, 1⟩ ⟨2, 0⟩ rfl
   h := E.edgeEpiStep ⟨2,0⟩ 2 3 rfl
+
+lemma shortComplex₄d₂_exact [E.HasPage 2] :
+    (LowDegreesExactSequence.shortComplex₄d₂ E).Exact where
+  exact₂ := E.edgeMonoStepShortComplex_exact _ _ _ _ _ _
+  exact₃ := E.edgeEpiStepShortComplex_exact _ _ _ _ _ _
 
 variable {E}
 
@@ -148,7 +161,44 @@ noncomputable def E₃TwoZeroMonoAbutmentTwo [E.HasPage 3] : E.page 3 ⟨2, 0⟩
         dsimp [cohomologicalStripes]
         exact Or.inr (by linarith))
 
+instance [E.HasPage 3] : Mono (E₃TwoZeroMonoAbutmentTwo h) := by
+  dsimp [E₃TwoZeroMonoAbutmentTwo]
+  infer_instance
+
+@[simps!]
+noncomputable def shortComplex₄ [E.HasPage 2] : ShortComplex₄ C :=
+  ShortComplex₄.connectShortComplex (LowDegreesExactSequence.shortComplexDegreeOne h)
+    (shortComplex₄d₂ E).shortComplex₁ (Iso.refl _)
+    ((shortComplexDegreeOne h).g ≫ E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl) (by simp)
+
+lemma shortComplex₄_exact [E.HasPage 2] :
+    (shortComplex₄ h).Exact := by
+  apply ShortComplex₄.connectShortComplex_exact'
+  . exact (shortComplexDegreeOne_shortExact h).exact
+  . exact (shortComplex₄d₂_exact E).exact₂
+  . infer_instance
+  . dsimp
+    infer_instance
+
+@[simps!]
+noncomputable def shortComplex₄' [E.HasPage 2] : ShortComplex₄ C :=
+  ShortComplex₄.connectShortComplex (shortComplex₄d₂ E).shortComplex₂
+    (ShortComplex.mk _ _ (cokernel.condition
+      (LowDegreesExactSequence.E₃TwoZeroMonoAbutmentTwo h))) (Iso.refl _)
+    (E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl ≫ LowDegreesExactSequence.E₃TwoZeroMonoAbutmentTwo h) (by simp)
+
+lemma shortComplex₄'_exact [E.HasPage 2] :
+    (shortComplex₄' h).Exact := by
+  apply ShortComplex₄.connectShortComplex_exact'
+  . exact (shortComplex₄d₂_exact E).exact₃
+  . exact ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
+  . dsimp
+    infer_instance
+  . infer_instance
+
 end LowDegreesExactSequence
+
+variable (E)
 
 noncomputable def lowDegreesShortComplex₅ [E.HasPage 2] : ShortComplex₅ C where
   X₁ := E.page 2 ⟨1, 0⟩
@@ -160,6 +210,16 @@ noncomputable def lowDegreesShortComplex₅ [E.HasPage 2] : ShortComplex₅ C wh
   g := (LowDegreesExactSequence.shortComplexDegreeOne h).g ≫ E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl
   h := E.d 2 ⟨0, 1⟩ ⟨2, 0⟩ rfl
   i := E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl ≫ LowDegreesExactSequence.E₃TwoZeroMonoAbutmentTwo h
+
+instance [E.HasPage 2] : Mono (E.lowDegreesShortComplex₅ h).f := by
+  dsimp [lowDegreesShortComplex₅]
+  infer_instance
+
+lemma lowDegreesShortComplex₅_exact [E.HasPage 2] :
+    (E.lowDegreesShortComplex₅ h).Exact where
+  exact₂ := (LowDegreesExactSequence.shortComplex₄_exact h).exact₂
+  exact₃ := (LowDegreesExactSequence.shortComplex₄_exact h).exact₃
+  exact₄ := (LowDegreesExactSequence.shortComplex₄'_exact h).exact₂
 
 end
 

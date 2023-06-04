@@ -110,8 +110,8 @@ def shortComplex₂ : ShortComplex C :=
   ShortComplex.mk _ _ S.zero₂
 
 structure Exact : Prop where
-  exact₁ : S.shortComplex₁.Exact
-  exact₂ : S.shortComplex₂.Exact
+  exact₂ : S.shortComplex₁.Exact
+  exact₃ : S.shortComplex₂.Exact
 
 section
 
@@ -187,10 +187,14 @@ instance : IsIso (connectShortComplexπ S T e φ hφ).τ₃ := by dsimp ; infer_
 
 lemma connectShortComplex_exact (hS : S.Exact) (hT : T.Exact) [Epi S.g] [Mono T.f] :
     (connectShortComplex S T e φ hφ).Exact where
-  exact₁ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
-    (connectShortComplexι S T e φ hφ)).1 hS
   exact₂ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
+    (connectShortComplexι S T e φ hφ)).1 hS
+  exact₃ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
     (connectShortComplexπ S T e φ hφ)).2 hT
+
+lemma connectShortComplex_exact' (hS : S.Exact) (hT : T.Exact) (_ : Epi S.g) (_ : Mono T.f) :
+    (connectShortComplex S T e φ hφ).Exact :=
+  connectShortComplex_exact S T e φ hφ hS hT
 
 end
 
@@ -231,8 +235,8 @@ variable {S}
 variable [Balanced C]
 
 lemma Exact.isIso_cokerToKer' : IsIso (S.cokerToKer' cc kf hcc hkf) := by
-  have := S.mono_cokerToKer' cc kf hcc hkf hS.exact₁
-  have := S.epi_cokerToKer' cc kf hcc hkf hS.exact₂
+  have := S.mono_cokerToKer' cc kf hcc hkf hS.exact₂
+  have := S.epi_cokerToKer' cc kf hcc hkf hS.exact₃
   apply isIso_of_mono_of_epi
 
 lemma Exact.isIso_cokerToKer [HasCokernel S.f] [HasKernel S.h] :

@@ -171,10 +171,29 @@ lemma edgeMonoStep_comp_d (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.Ha
   dsimp [edgeMonoStep]
   erw [assoc, assoc, (E.shortComplex r pq).iCycles_g, comp_zero, comp_zero]
 
-noncomputable def edgeMonoStepSortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+@[reassoc (attr := simp)]
+lemma iso_hom_comp_edgeMonoStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+  [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r]  :
+    (E.iso r r' hr pq).hom ≫ E.edgeMonoStep pq r r' hr =
+      (ShortComplex.asIsoHomologyπ  _
+        (by apply E.d_eq_zero_of_hasEdgeMonoAt)).inv ≫ ShortComplex.iCycles _ := by
+  simp [edgeMonoStep]
+
+@[simps]
+noncomputable def edgeMonoStepShortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
     [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r]
     (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') : ShortComplex C :=
   ShortComplex.mk _ _ (E.edgeMonoStep_comp_d pq r r' hr pq' hpq')
+
+lemma edgeMonoStepShortComplex_exact (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r]
+    (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') :
+    (E.edgeMonoStepShortComplex pq r r' hr pq' hpq').Exact := by
+  subst pq'
+  apply ShortComplex.exact_of_f_is_kernel
+  refine' IsLimit.ofIsoLimit ((E.shortComplex r pq).cyclesIsKernel) _
+  exact Fork.ext ((E.shortComplex r pq).asIsoHomologyπ (by simp) ≪≫
+    E.iso r r' hr pq) (by simp)
 
 /-- This means that the differential from an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
 class HasEdgeEpiAt (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] : Prop where
@@ -208,10 +227,21 @@ lemma d_comp_edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.Has
   dsimp [edgeEpiStep]
   erw [(E.shortComplex r pq).f_pCyclesCo_assoc, zero_comp]
 
-noncomputable def edgeEpiStepSortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+@[simps]
+noncomputable def edgeEpiStepShortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
     [E.HasPage r] [E.HasPage r']
     [E.HasEdgeEpiAt pq r] (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq) : ShortComplex C :=
   ShortComplex.mk _ _ (E.d_comp_edgeEpiStep pq r r' hr pq' hpq')
+
+lemma edgeEpiStepShortComplex_exact (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq r]
+    (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq) :
+    (E.edgeEpiStepShortComplex pq r r' hr pq' hpq').Exact := by
+  obtain rfl : pq' = pq - degrees r := by aesop
+  apply ShortComplex.exact_of_g_is_cokernel
+  refine' IsColimit.ofIsoColimit ((E.shortComplex r pq).cyclesCoIsCokernel) _
+  exact Cofork.ext (((E.shortComplex r pq).asIsoHomologyι (by simp)).symm ≪≫
+    E.iso r r' hr pq) rfl
 
 def pageIsoOfEq (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr' : r = r') (pq : ℤ × ℤ) :
     E.page r pq ≅ E.page r' pq := eqToIso (by congr)
