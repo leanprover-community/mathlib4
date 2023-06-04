@@ -19,35 +19,35 @@ has an invertible strict derivative `f'` at `a`, then it is locally invertible,
 and the inverse function has derivative `f' ⁻¹`.
 
 We define `has_strict_deriv_at.to_local_homeomorph` that repacks a function `f`
-with a `hf : has_strict_fderiv_at f f' a`, `f' : E ≃L[𝕜] F`, into a `local_homeomorph`.
-The `to_fun` of this `local_homeomorph` is `defeq` to `f`, so one can apply theorems
-about `local_homeomorph` to `hf.to_local_homeomorph f`, and get statements about `f`.
+with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `LocalHomeomorph`.
+The `to_fun` of this `LocalHomeomorph` is `defeq` to `f`, so one can apply theorems
+about `LocalHomeomorph` to `hf.to_local_homeomorph f`, and get statements about `f`.
 
-Then we define `has_strict_fderiv_at.local_inverse` to be the `inv_fun` of this `local_homeomorph`,
+Then we define `HasStrictFDerivAt.localInverse` to be the `inv_fun` of this `LocalHomeomorph`,
 and prove two versions of the inverse function theorem:
 
-* `has_strict_fderiv_at.to_local_inverse`: if `f` has an invertible derivative `f'` at `a` in the
+* `HasStrictFDerivAt.to_localInverse`: if `f` has an invertible derivative `f'` at `a` in the
   strict sense (`hf`), then `hf.local_inverse f f' a` has derivative `f'.symm` at `f a` in the
   strict sense;
 
-* `has_strict_fderiv_at.to_local_left_inverse`: if `f` has an invertible derivative `f'` at `a` in
+* `HasStrictFDerivAt.to_local_left_inverse`: if `f` has an invertible derivative `f'` at `a` in
   the strict sense and `g` is locally left inverse to `f` near `a`, then `g` has derivative
   `f'.symm` at `f a` in the strict sense.
 
-In the one-dimensional case we reformulate these theorems in terms of `has_strict_deriv_at` and
+In the one-dimensional case we reformulate these theorems in terms of `HasStrictDerivAt` and
 `f'⁻¹`.
 
-We also reformulate the theorems in terms of `cont_diff`, to give that `C^k` (respectively,
+We also reformulate the theorems in terms of `ContDiff`, to give that `C^k` (respectively,
 smooth) inputs give `C^k` (smooth) inverses.  These versions require that continuous
 differentiability implies strict differentiability; this is false over a general field, true over
-`ℝ` or `ℂ` and implemented here assuming `is_R_or_C 𝕂`.
+`ℝ` or `ℂ` and implemented here assuming `IsROrC 𝕂`.
 
 Some related theorems, providing the derivative and higher regularity assuming that we already know
 the inverse function, are formulated in `fderiv.lean`, `deriv.lean`, and `cont_diff.lean`.
 
 ## Notations
 
-In the section about `approximates_linear_on` we introduce some `local notation` to make formulas
+In the section about `ApproximatesLinearOn` we introduce some `local notation` to make formulas
 shorter:
 
 * by `N` we denote `‖f'⁻¹‖`;
@@ -92,11 +92,11 @@ behave like `f a + f' (x - a)` near each `a ∈ s`.
 When `f'` is onto, we show that `f` is locally onto.
 
 When `f'` is a continuous linear equiv, we show that `f` is a homeomorphism
-between `s` and `f '' s`. More precisely, we define `approximates_linear_on.to_local_homeomorph` to
-be a `local_homeomorph` with `to_fun = f`, `source = s`, and `target = f '' s`.
+between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toLocalHomeomorph` to
+be a `LocalHomeomorph` with `to_fun = f`, `source = s`, and `target = f '' s`.
 
 Maps of this type naturally appear in the proof of the inverse function theorem (see next section),
-and `approximates_linear_on.to_local_homeomorph` will imply that the locally inverse function
+and `ApproximatesLinearOn.toLocalHomeomorph` will imply that the locally inverse function
 exists.
 
 We define this auxiliary notion to split the proof of the inverse function theorem into small
@@ -128,7 +128,7 @@ namespace ApproximatesLinearOn
 
 variable [CompleteSpace E] {f : E → F}
 
-/-! First we prove some properties of a function that `approximates_linear_on` a (not necessarily
+/-! First we prove some properties of a function that `ApproximatesLinearOn` a (not necessarily
 invertible) continuous linear map. -/
 
 
@@ -411,7 +411,7 @@ def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   (hf.injOn hc).toLocalEquiv _ _
 #align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toLocalEquiv
 
-/-- The inverse function is continuous on `f '' s`. Use properties of `local_homeomorph` instead. -/
+/-- The inverse function is continuous on `f '' s`. Use properties of `LocalHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toLocalEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
@@ -530,8 +530,8 @@ end ApproximatesLinearOn
 
 Now we prove the inverse function theorem. Let `f : E → F` be a map defined on a complete vector
 space `E`. Assume that `f` has an invertible derivative `f' : E ≃L[𝕜] F` at `a : E` in the strict
-sense. Then `f` approximates `f'` in the sense of `approximates_linear_on` on an open neighborhood
-of `a`, and we can apply `approximates_linear_on.to_local_homeomorph` to construct the inverse
+sense. Then `f` approximates `f'` in the sense of `ApproximatesLinearOn` on an open neighborhood
+of `a`, and we can apply `ApproximatesLinearOn.toLocalHomeomorph` to construct the inverse
 function. -/
 
 namespace HasStrictFDerivAt
@@ -578,10 +578,10 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
 
 variable (f)
 
-/-- Given a function with an invertible strict derivative at `a`, returns a `local_homeomorph`
+/-- Given a function with an invertible strict derivative at `a`, returns a `LocalHomeomorph`
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
-The other part `has_strict_fderiv_at.to_local_inverse` states that the inverse function
-of this `local_homeomorph` has derivative `f'.symm`. -/
+The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
+of this `LocalHomeomorph` has derivative `f'.symm`. -/
 def toLocalHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : LocalHomeomorph E F :=
   ApproximatesLinearOn.toLocalHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
@@ -671,7 +671,7 @@ theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
 /-- If `f : E → F` has an invertible derivative `f'` at `a` in the sense of strict differentiability
 and `g (f x) = x` in a neighborhood of `a`, then `g` has derivative `f'.symm` at `f a`.
 
-For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[complete_space E]`
+For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[CompleteSpace E]`
 see `of_local_left_inverse`.  -/
 theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) (f a) :=
@@ -690,8 +690,8 @@ theorem open_map_of_strict_fderiv_equiv [CompleteSpace E] {f : E → F} {f' : E 
 ### Inverse function theorem, 1D case
 
 In this case we prove a version of the inverse function theorem for maps `f : 𝕜 → 𝕜`.
-We use `continuous_linear_equiv.units_equiv_aut` to translate `has_strict_deriv_at f f' a` and
-`f' ≠ 0` into `has_strict_fderiv_at f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
+We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f' a` and
+`f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
 
 
@@ -746,8 +746,8 @@ variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
 
 variable [CompleteSpace E'] (f : E' → F') {f' : E' ≃L[𝕂] F'} {a : E'}
 
-/-- Given a `cont_diff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
-derivative at `a`, returns a `local_homeomorph` with `to_fun = f` and `a ∈ source`. -/
+/-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
+derivative at `a`, returns a `LocalHomeomorph` with `to_fun = f` and `a ∈ source`. -/
 def toLocalHomeomorph {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a)
     (hn : 1 ≤ n) : LocalHomeomorph E' F' :=
   (hf.hasStrictFDerivAt' hf' hn).toLocalHomeomorph f
@@ -774,7 +774,7 @@ theorem image_mem_toLocalHomeomorph_target {n : ℕ∞} (hf : ContDiffAt 𝕂 n 
   (hf.hasStrictFDerivAt' hf' hn).image_mem_toLocalHomeomorph_target
 #align cont_diff_at.image_mem_to_local_homeomorph_target ContDiffAt.image_mem_toLocalHomeomorph_target
 
-/-- Given a `cont_diff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
+/-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, returns a function that is locally inverse to `f`. -/
 def localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a)
     (hn : 1 ≤ n) : F' → E' :=
@@ -786,9 +786,9 @@ theorem localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
   (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
 #align cont_diff_at.local_inverse_apply_image ContDiffAt.localInverse_apply_image
 
-/-- Given a `cont_diff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
+/-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, the inverse function (produced by `cont_diff.to_local_homeomorph`) is
-also `cont_diff`. -/
+also `ContDiff`. -/
 theorem to_localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     ContDiffAt 𝕂 n (hf.localInverse hf' hn) (f a) := by
