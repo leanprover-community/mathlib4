@@ -55,9 +55,9 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
         contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * sqrt x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
-    · simpa using sq_local_homeomorph.has_strict_deriv_at_symm hx this (hasStrictDerivAt_pow 2 _)
+    · simpa using sqLocalHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
     · exact fun n => sqLocalHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
-        (cont_diff_at_id.pow 2)
+        (contDiffAt_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
 
 theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x :=
