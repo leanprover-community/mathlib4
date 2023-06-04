@@ -602,7 +602,8 @@ instance pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α 
 
 @[to_additive]
 instance {G : ι → Type _} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
-    [∀ i, SigmaFinite (volume : Measure (G i))] [∀ i, IsMulRightInvariant (volume : Measure (G i))] :
+    [∀ i, SigmaFinite (volume : Measure (G i))]
+    [∀ i, IsMulRightInvariant (volume : Measure (G i))] :
     IsMulRightInvariant (volume : Measure (∀ i, G i)) :=
   pi.isMulRightInvariant _
 
