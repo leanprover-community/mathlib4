@@ -57,7 +57,12 @@ theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
       (ofRealClm z) :=
     h.hasStrictFDerivAt.restrictScalars ℝ
   have C : HasStrictFDerivAt re reClm (e (ofRealClm z)) := reClm.hasStrictFDerivAt
-  simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
+  -- Porting note: this should be by:
+  -- simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
+  -- but for some reason simp can not use `ContinuousLinearMap.comp_apply`
+  convert (C.comp z (B.comp z A)).hasStrictDerivAt
+  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
+  simp
 #align has_strict_deriv_at.real_of_complex HasStrictDerivAt.real_of_complex
 
 /-- If a complex function `e` is differentiable at a real point, then the function `ℝ → ℝ` given by
@@ -71,7 +76,12 @@ theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
       (ofRealClm z) :=
     h.hasFDerivAt.restrictScalars ℝ
   have C : HasFDerivAt re reClm (e (ofRealClm z)) := reClm.hasFDerivAt
-  simpa using (C.comp z (B.comp z A)).hasDerivAt
+  -- Porting note: this should be by:
+  -- simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
+  -- but for some reason simp can not use `ContinuousLinearMap.comp_apply`
+  convert (C.comp z (B.comp z A)).hasDerivAt
+  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
+  simp
 #align has_deriv_at.real_of_complex HasDerivAt.real_of_complex
 
 theorem ContDiffAt.real_of_complex {n : ℕ∞} (h : ContDiffAt ℂ n e z) :
@@ -171,7 +181,7 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   have h_diff := h.imp_symm fderiv_zero_of_not_differentiableAt
   apply or_congr
   · rw [differentiableAt_iff_restrictScalars ℝ h_diff]
-  rw [← conj_conj z] at h_diff 
+  rw [← conj_conj z] at h_diff
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCle.differentiableAt)]
   refine' exists_congr fun g => rfl.congr _
   have : fderiv ℝ conj (conj z) = _ := conjCle.fderiv
@@ -179,4 +189,3 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
 #align conformal_at_iff_differentiable_at_or_differentiable_at_comp_conj conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj
 
 end Conformality
-
