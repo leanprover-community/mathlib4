@@ -22,8 +22,8 @@ so on) preserve `C^n` functions. We also expand the API around `C^n` functions.
 
 ## Main results
 
-* `cont_diff.comp` states that the composition of two `C^n` functions is `C^n`.
-* `norm_iterated_fderiv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
+* `ContDiff.comp` states that the composition of two `C^n` functions is `C^n`.
+* `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
   of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
   derivative of `f` is bounded by `D ^ i`.
 
@@ -569,14 +569,14 @@ in any universe in `u, v, w, max u v, max v w, max u v w`, but it would be extre
 lead to a lot of duplication. Instead, we formulate the above proof when all spaces live in the same
 universe (where everything is fine), and then we deduce the general result by lifting all our spaces
 to a common universe. We use the trick that any space `H` is isomorphic through a continuous linear
-equiv to `continuous_multilinear_map (λ (i : fin 0), E × F × G) H` to change the universe level,
+equiv to `ContinuousMultilinearMap (λ (i : Fin 0), E × F × G) H` to change the universe level,
 and then argue that composing with such a linear equiv does not change the fact of being `C^n`,
 which we have already proved previously.
 -/
 
 
 /-- Auxiliary lemma proving that the composition of `C^n` functions on domains is `C^n` when all
-spaces live in the same universe. Use instead `cont_diff_on.comp` which removes the universe
+spaces live in the same universe. Use instead `ContDiffOn.comp` which removes the universe
 assumption (but is deduced from this one). -/
 private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
     {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
@@ -743,12 +743,12 @@ theorem contDiff_fst : ContDiff 𝕜 n (Prod.fst : E × F → E) :=
   IsBoundedLinearMap.contDiff IsBoundedLinearMap.fst
 #align cont_diff_fst contDiff_fst
 
-/-- Postcomposing `f` with `prod.fst` is `C^n` -/
+/-- Postcomposing `f` with `Prod.fst` is `C^n` -/
 theorem ContDiff.fst {f : E → F × G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (f x).1 :=
   contDiff_fst.comp hf
 #align cont_diff.fst ContDiff.fst
 
-/-- Precomposing `f` with `prod.fst` is `C^n` -/
+/-- Precomposing `f` with `Prod.fst` is `C^n` -/
 theorem ContDiff.fst' {f : E → G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x : E × F => f x.1 :=
   hf.comp contDiff_fst
 #align cont_diff.fst' ContDiff.fst'
@@ -768,19 +768,19 @@ theorem contDiffAt_fst {p : E × F} : ContDiffAt 𝕜 n (Prod.fst : E × F → E
   contDiff_fst.contDiffAt
 #align cont_diff_at_fst contDiffAt_fst
 
-/-- Postcomposing `f` with `prod.fst` is `C^n` at `(x, y)` -/
+/-- Postcomposing `f` with `Prod.fst` is `C^n` at `(x, y)` -/
 theorem ContDiffAt.fst {f : E → F × G} {x : E} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => (f x).1) x :=
   contDiffAt_fst.comp x hf
 #align cont_diff_at.fst ContDiffAt.fst
 
-/-- Precomposing `f` with `prod.fst` is `C^n` at `(x, y)` -/
+/-- Precomposing `f` with `Prod.fst` is `C^n` at `(x, y)` -/
 theorem ContDiffAt.fst' {f : E → G} {x : E} {y : F} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x : E × F => f x.1) (x, y) :=
   ContDiffAt.comp (x, y) hf contDiffAt_fst
 #align cont_diff_at.fst' ContDiffAt.fst'
 
-/-- Precomposing `f` with `prod.fst` is `C^n` at `x : E × F` -/
+/-- Precomposing `f` with `Prod.fst` is `C^n` at `x : E × F` -/
 theorem ContDiffAt.fst'' {f : E → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.1) :
     ContDiffAt 𝕜 n (fun x : E × F => f x.1) x :=
   hf.comp x contDiffAt_fst
@@ -797,12 +797,12 @@ theorem contDiff_snd : ContDiff 𝕜 n (Prod.snd : E × F → F) :=
   IsBoundedLinearMap.contDiff IsBoundedLinearMap.snd
 #align cont_diff_snd contDiff_snd
 
-/-- Postcomposing `f` with `prod.snd` is `C^n` -/
+/-- Postcomposing `f` with `Prod.snd` is `C^n` -/
 theorem ContDiff.snd {f : E → F × G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (f x).2 :=
   contDiff_snd.comp hf
 #align cont_diff.snd ContDiff.snd
 
-/-- Precomposing `f` with `prod.snd` is `C^n` -/
+/-- Precomposing `f` with `Prod.snd` is `C^n` -/
 theorem ContDiff.snd' {f : F → G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x : E × F => f x.2 :=
   hf.comp contDiff_snd
 #align cont_diff.snd' ContDiff.snd'
@@ -822,19 +822,19 @@ theorem contDiffAt_snd {p : E × F} : ContDiffAt 𝕜 n (Prod.snd : E × F → F
   contDiff_snd.contDiffAt
 #align cont_diff_at_snd contDiffAt_snd
 
-/-- Postcomposing `f` with `prod.snd` is `C^n` at `x` -/
+/-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
 theorem ContDiffAt.snd {f : E → F × G} {x : E} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => (f x).2) x :=
   contDiffAt_snd.comp x hf
 #align cont_diff_at.snd ContDiffAt.snd
 
-/-- Precomposing `f` with `prod.snd` is `C^n` at `(x, y)` -/
+/-- Precomposing `f` with `Prod.snd` is `C^n` at `(x, y)` -/
 theorem ContDiffAt.snd' {f : F → G} {x : E} {y : F} (hf : ContDiffAt 𝕜 n f y) :
     ContDiffAt 𝕜 n (fun x : E × F => f x.2) (x, y) :=
   ContDiffAt.comp (x, y) hf contDiffAt_snd
 #align cont_diff_at.snd' ContDiffAt.snd'
 
-/-- Precomposing `f` with `prod.snd` is `C^n` at `x : E × F` -/
+/-- Precomposing `f` with `Prod.snd` is `C^n` at `x : E × F` -/
 theorem ContDiffAt.snd'' {f : F → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.2) :
     ContDiffAt 𝕜 n (fun x : E × F => f x.2) x :=
   hf.comp x contDiffAt_snd
@@ -923,7 +923,7 @@ theorem contDiff_prodAssoc : ContDiff 𝕜 ⊤ <| Equiv.prodAssoc E F G :=
 
 /-- The natural equivalence `E × (F × G) ≃ (E × F) × G` is smooth.
 
-Warning: see remarks attached to `cont_diff_prod_assoc`
+Warning: see remarks attached to `contDiff_prodAssoc`
 -/
 theorem contDiff_prodAssoc_symm : ContDiff 𝕜 ⊤ <| (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
@@ -931,7 +931,7 @@ theorem contDiff_prodAssoc_symm : ContDiff 𝕜 ⊤ <| (Equiv.prodAssoc E F G).s
 
 /-! ### Bundled derivatives are smooth -/
 
-/-- One direction of `cont_diff_within_at_succ_iff_has_fderiv_within_at`, but where all derivatives
+/-- One direction of `contDiffWithinAt_succ_iff_hasFDerivWithinAt`, but where all derivatives
 taken within the same set. Version for partial derivatives / functions with parameters.  f x` is a
 `C^n+1` family of functions and `g x` is a `C^n` family of points, then the derivative of `f x` at
 `g x` depends in a `C^n` way on `x`. We give a general version of this fact relative to sets which
@@ -970,7 +970,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem x₀ (contDiffWithinAt_id.prod hg) hst
 #align cont_diff_within_at.has_fderiv_within_at_nhds ContDiffWithinAt.hasFDerivWithinAt_nhds
 
-/-- The most general lemma stating that `x ↦ fderiv_within 𝕜 (f x) t (g x)` is `C^n`
+/-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
 To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within `s`, we require that
 * `f` is `C^n` at `(x₀, g(x₀))` within `(s ∪ {x₀}) × t` for `n ≥ m+1`.
@@ -997,7 +997,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
   exact this _ le_rfl
 #align cont_diff_within_at.fderiv_within'' ContDiffWithinAt.fderivWithin''
 
-/-- A special case of `cont_diff_within_at.fderiv_within''` where we require that `s ⊆ g⁻¹(t)`. -/
+/-- A special case of `ContDiffWithinAt.fderivWithin''` where we require that `s ⊆ g⁻¹(t)`. -/
 theorem ContDiffWithinAt.fderivWithin' {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ∞}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀)
@@ -1006,7 +1006,7 @@ theorem ContDiffWithinAt.fderivWithin' {f : E → F → G} {g : E → F} {t : Se
   hf.fderivWithin'' hg ht hmn <| mem_of_superset self_mem_nhdsWithin <| image_subset_iff.mpr hst
 #align cont_diff_within_at.fderiv_within' ContDiffWithinAt.fderivWithin'
 
-/-- A special case of `cont_diff_within_at.fderiv_within'` where we require that `x₀ ∈ s` and there
+/-- A special case of `ContDiffWithinAt.fderivWithin'` where we require that `x₀ ∈ s` and there
 are unique derivatives everywhere within `t`. -/
 protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ∞}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (s ×ˢ t) (x₀, g x₀))
@@ -1219,7 +1219,7 @@ theorem ContDiffOn.add {s : Set E} {f g : E → F} (hf : ContDiffOn 𝕜 n f s)
 variable {i : ℕ}
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
-See also `iterated_fderiv_within_add_apply'`, which uses the spelling `(λ x, f x + g x)`
+See also `iteratedFDerivWithin_add_apply'`, which uses the spelling `(λ x, f x + g x)`
 instead of `f + g`. -/
 theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
     (hg : ContDiffOn 𝕜 i g s) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
@@ -1230,7 +1230,7 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
-This is the same as `iterated_fderiv_within_add_apply`, but using the spelling `(λ x, f x + g x)`
+This is the same as `iteratedFDerivWithin_add_apply`, but using the spelling `(λ x, f x + g x)`
 instead of `f + g`, which can be handy for some rewrites.
 TODO: use one form consistently. -/
 theorem iteratedFDerivWithin_add_apply' {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
@@ -1695,7 +1695,7 @@ theorem contDiffOn_inv {n} : ContDiffOn 𝕜 n (Inv.inv : 𝕜' → 𝕜') ({0}�
 variable {𝕜}
 
 -- TODO: the next few lemmas don't need `𝕜` or `𝕜'` to be complete
--- A good way to show this is to generalize `cont_diff_at_ring_inverse` to the setting
+-- A good way to show this is to generalize `contDiffAt_ring_inverse` to the setting
 -- of a function `f` such that `∀ᶠ x in 𝓝 a, x * f x = 1`.
 theorem ContDiffWithinAt.inv {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 𝕜 n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt 𝕜 n (fun x => (f x)⁻¹) s x :=
@@ -1752,14 +1752,14 @@ inversion is `C^n`, for all `n`. -/
 theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
     ContDiffAt 𝕜 n inverse (e : E →L[𝕜] F) := by
   nontriviality E
-  -- first, we use the lemma `to_ring_inverse` to rewrite in terms of `ring.inverse` in the ring
+  -- first, we use the lemma `to_ring_inverse` to rewrite in terms of `Ring.inverse` in the ring
   -- `E →L[𝕜] E`
   let O₁ : (E →L[𝕜] E) → F →L[𝕜] E := fun f => f.comp (e.symm : F →L[𝕜] E)
   let O₂ : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (to_ring_inverse e)
   rw [this]
-  -- `O₁` and `O₂` are `cont_diff`,
-  -- so we reduce to proving that `ring.inverse` is `cont_diff`
+  -- `O₁` and `O₂` are `ContDiff`,
+  -- so we reduce to proving that `Ring.inverse` is `ContDiff`
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine' h₁.contDiffAt.comp _ (ContDiffAt.comp _ _ h₂.contDiffAt)
@@ -1812,8 +1812,8 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
         exact hff' (f.symm x) hxu
       convert f.hasFDerivAt_symm hx.1 h_deriv
       simp [← he]
-    · -- Then we check that the formula, being a composition of `cont_diff` pieces, is
-      -- itself `cont_diff`
+    · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
+      -- itself `ContDiff`
       have h_deriv₁ : ContDiffAt 𝕜 n inverse (f' (f.symm a)) := by
         rw [eq_f₀']
         exact contDiffAt_map_inverse _
@@ -1896,10 +1896,10 @@ theorem contDiff_clm_apply_iff {n : ℕ∞} {f : E → F →L[𝕜] G} [FiniteDi
 /-- This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
 When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
 assuming you have already computed the derivative. The advantage of this version over
-`cont_diff_succ_iff_fderiv` is that both occurences of `cont_diff` are for functions with the same
-domain and codomain (`E` and `F`). This is not the case for `cont_diff_succ_iff_fderiv`, which
+`contDiff_succ_iff_fderiv` is that both occurences of `ContDiff` are for functions with the same
+domain and codomain (`E` and `F`). This is not the case for `contDiff_succ_iff_fderiv`, which
 often requires an inconvenient need to generalize `F`, which results in universe issues
-(see the discussion in the section of `cont_diff.comp`).
+(see the discussion in the section of `ContDiff.comp`).
 
 This lemma avoids these universe issues, but only applies for finite dimensional `E`. -/
 theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} :
@@ -2064,7 +2064,7 @@ variable {f₂ : 𝕜 → F} {s₂ : Set 𝕜}
 open ContinuousLinearMap (smulRight)
 
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
-differentiable there, and its derivative (formulated with `deriv_within`) is `C^n`. -/
+differentiable there, and its derivative (formulated with `derivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f₂ s₂ ↔
       DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 n (derivWithin f₂ s₂) s₂ := by
@@ -2095,7 +2095,7 @@ theorem contDiffOn_succ_iff_deriv_of_open {n : ℕ} (hs : IsOpen s₂) :
 #align cont_diff_on_succ_iff_deriv_of_open contDiffOn_succ_iff_deriv_of_open
 
 /-- A function is `C^∞` on a domain with unique derivatives if and only if it is differentiable
-there, and its derivative (formulated with `deriv_within`) is `C^∞`. -/
+there, and its derivative (formulated with `derivWithin`) is `C^∞`. -/
 theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
   constructor
@@ -2239,7 +2239,7 @@ end RestrictScalars
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
 assuming all spaces live in the same universe, to enable an induction. Use instead
-`continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear` that removes this assumption. -/
+`ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear` that removes this assumption. -/
 theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu Fu Gu : Type u}
     [NormedAddCommGroup Du] [NormedSpace 𝕜 Du] [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
     [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] [NormedAddCommGroup Gu] [NormedSpace 𝕜 Gu]
@@ -2357,7 +2357,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
           (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
             ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   /- We reduce the bound to the case where all spaces live in the same universe (in which we
-    already have proved the result), by using linear isometries between the spaces and their `ulift`
+    already have proved the result), by using linear isometries between the spaces and their `ULift`
     to a common universe. These linear isometries preserve the norm of the iterated derivative. -/
   let Du : Type max uD uE uF uG := ULift.{max uE uF uG, uD} D
   let Eu : Type max uD uE uF uG := ULift.{max uD uF uG, uE} E
@@ -2582,7 +2582,7 @@ set_option maxHeartbeats 300000 in
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.
 This lemma proves this estimate assuming additionally that two of the spaces live in the same
-universe, to make an induction possible. Use instead `norm_iterated_fderiv_within_comp_le` that
+universe, to make an induction possible. Use instead `norm_iteratedFDerivWithin_comp_le` that
 removes this assumption. -/
 theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGroup Fu]
     [NormedSpace 𝕜 Fu] [NormedAddCommGroup Gu] [NormedSpace 𝕜 Gu] {g : Fu → Gu} {f : E → Fu} {n : ℕ}
@@ -2595,7 +2595,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     derivatives of `g' ∘ f` are controlled thanks to the inductive assumption, and those of `f'` are
     controlled by assumption.
     As composition of linear maps is a bilinear map, one may use
-    `continuous_linear_map.norm_iterated_fderiv_le_of_bilinear_of_le_one` to get from these a bound
+    `ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one` to get from these a bound
     on `D^n (g ' ∘ f ⬝ f')`. -/
   induction' n using Nat.case_strong_induction_on with n IH generalizing Gu
   · simpa [norm_iteratedFDerivWithin_zero, Nat.factorial_zero, algebraMap.coe_one, one_mul,
@@ -2711,7 +2711,7 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDerivWithin 𝕜 i f s x‖ ≤ D ^ i) :
     ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ ≤ n ! * C * D ^ n := by
   /- We reduce the bound to the case where all spaces live in the same universe (in which we
-    already have proved the result), by using linear isometries between the spaces and their `ulift`
+    already have proved the result), by using linear isometries between the spaces and their `ULift`
     to a common universe. These linear isometries preserve the norm of the iterated derivative. -/
   let Fu : Type max uF uG := ULift.{uG, uF} F
   let Gu : Type max uF uG := ULift.{uF, uG} G
