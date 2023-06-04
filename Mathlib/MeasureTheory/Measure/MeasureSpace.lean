@@ -3200,10 +3200,10 @@ export MeasureTheory.IsProbabilityMeasure (measure_univ)
 
 attribute [simp] IsProbabilityMeasure.measure_univ
 
-instance (priority := 100) IsProbabilityMeasure.toIsIsFiniteMeasure (μ : Measure α)
+instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
-#align measure_theory.is_probability_measure.to_is_finite_measure MeasureTheory.IsProbabilityMeasure.toIsIsFiniteMeasure
+#align measure_theory.is_probability_measure.to_is_finite_measure MeasureTheory.IsProbabilityMeasure.toIsFiniteMeasure
 
 theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ ≠ 0 :=
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]

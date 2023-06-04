@@ -160,7 +160,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
 #align ergodic.ae_empty_or_univ_of_image_ae_le' Ergodic.ae_empty_or_univ_of_image_ae_le'
 
-section IsIsFiniteMeasure
+section IsFiniteMeasure
 
 variable [IsFiniteMeasure μ]
 
@@ -179,6 +179,6 @@ theorem ae_empty_or_univ_of_image_ae_le (hf : Ergodic f μ) (hs : MeasurableSet 
   ae_empty_or_univ_of_image_ae_le' hf hs hs' <| measure_ne_top μ s
 #align ergodic.ae_empty_or_univ_of_image_ae_le Ergodic.ae_empty_or_univ_of_image_ae_le
 
-end IsIsFiniteMeasure
+end IsFiniteMeasure
 
 end Ergodic

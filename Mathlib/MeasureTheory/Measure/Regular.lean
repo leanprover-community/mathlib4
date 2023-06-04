@@ -534,7 +534,7 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [Regular μ] �
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β] [T2Space β]
     [BorelSpace β] [Regular μ] (f : α ≃ₜ β) : (Measure.map f μ).Regular := by
   haveI := OuterRegular.map f μ
-  haveI := IsIsFiniteMeasureOnCompacts.map μ f
+  haveI := IsFiniteMeasureOnCompacts.map μ f
   exact
     ⟨Regular.innerRegular.map f.toEquiv f.measurable.aemeasurable
         (fun U hU => hU.preimage f.continuous) (fun K hK => hK.image f.continuous)
