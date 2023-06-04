@@ -851,7 +851,7 @@ scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
-theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
+theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_ : IsOpen s) (_ : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), iInf_and]
 #align nhds_def' nhds_def'
 

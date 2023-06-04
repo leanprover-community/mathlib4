@@ -153,7 +153,7 @@ theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a :=
 #align gauge_le_of_mem gauge_le_of_mem
 
 theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s) (ha : 0 ≤ a) :
-    { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_H : a < r), r • s := by
+    { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
   simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
   refine' ⟨fun h r hr => _, fun h => le_of_forall_pos_lt_add fun ε hε => _⟩
@@ -171,7 +171,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
 #align gauge_le_eq gauge_le_eq
 
 theorem gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
-    { x | gauge s x < a } = ⋃ (r : ℝ) (_H : 0 < r) (_H : r < a), r • s := by
+    { x | gauge s x < a } = ⋃ (r : ℝ) (_ : 0 < r) (_ : r < a), r • s := by
   ext
   simp_rw [mem_setOf, mem_iUnion, exists_prop]
   exact

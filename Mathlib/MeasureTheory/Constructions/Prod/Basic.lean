@@ -341,7 +341,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
       μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
-      _ = ∫⁻ _x in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
+      _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
       _ ≤ ∫⁻ x in s', f x ∂μ := (set_lintegral_mono measurable_const hfm fun x => id)
       _ ≤ ∫⁻ x, f x ∂μ := (lintegral_mono' restrict_le_self le_rfl)
       _ = μ.prod ν ST := (prod_apply hSTm).symm
